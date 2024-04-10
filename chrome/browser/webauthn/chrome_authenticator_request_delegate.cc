@@ -20,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
-#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -39,10 +38,8 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
-#include "chrome/browser/webauthn/enclave_manager.h"
-#include "chrome/browser/webauthn/enclave_manager_factory.h"
+#include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
-#include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/chrome_switches.h"
@@ -107,8 +104,6 @@
 #include "chromeos/components/webauthn/webauthn_request_registrar.h"
 #include "ui/aura/window.h"
 #endif
-
-using AccountState = AuthenticatorRequestDialogController::AccountState;
 
 namespace {
 
@@ -295,54 +290,6 @@ class CableLinkingEventHandler : public ProfileObserver {
  private:
   raw_ptr<Profile> profile_;
 };
-
-// EnclaveUserVerificationMethod enumerates the possible ways that user
-// verification will be performed for an enclave transaction.
-enum class EnclaveUserVerificationMethod {
-  // No user verification will be performed.
-  kNone,
-  // The user will enter a GPM PIN.
-  kPIN,
-  // The operating system will perform user verification and allow signing
-  // with the UV key.
-  kUVKeyWithSystemUI,
-  // Chrome will show user verification UI for the operating system, which will
-  // then allow signing
-  // with the UV key.
-  kUVKeyWithChromeUI,
-  // The request cannot be satisfied.
-  kUnsatisfiable,
-};
-
-// Pick an enclave user verification method for a specific request.
-EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
-    device::UserVerificationRequirement uv,
-    bool has_pin,
-    EnclaveManager::UvKeyState uv_key_state) {
-  switch (uv) {
-    case device::UserVerificationRequirement::kDiscouraged:
-      return EnclaveUserVerificationMethod::kNone;
-
-    case device::UserVerificationRequirement::kPreferred:
-    case device::UserVerificationRequirement::kRequired:
-      switch (uv_key_state) {
-        case EnclaveManager::UvKeyState::kNone:
-          if (has_pin) {
-            return EnclaveUserVerificationMethod::kPIN;
-          } else if (uv == device::UserVerificationRequirement::kPreferred) {
-            return EnclaveUserVerificationMethod::kNone;
-          } else {
-            return EnclaveUserVerificationMethod::kUnsatisfiable;
-          }
-
-        case EnclaveManager::UvKeyState::kUsesSystemUI:
-          return EnclaveUserVerificationMethod::kUVKeyWithSystemUI;
-
-        case EnclaveManager::UvKeyState::kUsesChromeUI:
-          return EnclaveUserVerificationMethod::kUVKeyWithChromeUI;
-      }
-  }
-}
 
 }  // namespace
 
@@ -646,6 +593,11 @@ ChromeAuthenticatorRequestDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+GPMEnclaveController*
+ChromeAuthenticatorRequestDelegate::enclave_controller_for_testing() const {
+  return enclave_controller_.get();
+}
+
 void ChromeAuthenticatorRequestDelegate::SetRelyingPartyId(
     const std::string& rp_id) {
   dialog_model_->relying_party_id = rp_id;
@@ -749,9 +701,8 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
   account_preselected_callback_ = std::move(account_preselected_callback);
 
   dialog_controller_->SetRequestCallback(request_callback);
-  dialog_controller_->SetAccountPreselectedCallback(base::BindRepeating(
-      &ChromeAuthenticatorRequestDelegate::OnAccountPreselected,
-      weak_ptr_factory_.GetWeakPtr()));
+  dialog_controller_->SetAccountPreselectedCallback(
+      account_preselected_callback_);
   dialog_controller_->SetBluetoothAdapterPowerOnCallback(
       bluetooth_adapter_power_on_callback);
 }
@@ -822,32 +773,14 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     auto* const identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-      webauthn::PasskeyModel* passkey_model =
-          PasskeyModelFactory::GetInstance()->GetForProfile(profile);
-      gpm_credentials_ = passkey_model->GetPasskeysForRelyingPartyId(rp_id);
-
-      enclave_manager_ = EnclaveManagerFactory::GetForProfile(profile);
-      enclave_manager_observer_ =
-          std::make_unique<EnclaveManagerObserver>(this, enclave_manager_);
-      if (gpm_credentials_->empty() &&
-          request_type == device::FidoRequestType::kGetAssertion) {
-        // No possibility of using GPM for this request.
-        FIDO_LOG(EVENT) << "Enclave is not a candidate for this request";
-        dialog_controller_->set_account_state(AccountState::kNone);
-      } else if (enclave_manager_->is_ready()) {
-        FIDO_LOG(EVENT) << "Enclave is ready";
-        SetAccountStateReady();
-      } else if (enclave_manager_->is_loaded()) {
-        FIDO_LOG(EVENT) << "Account state needs to be checked";
-        dialog_controller_->set_account_state(AccountState::kChecking);
-        DownloadAccountState();
-      } else {
-        FIDO_LOG(EVENT) << "Enclave state is loading";
-        enclave_manager_->Load(
-            base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnEnclaveLoaded,
-                           weak_ptr_factory_.GetWeakPtr()));
-        dialog_controller_->set_account_state(AccountState::kLoading);
+      enclave_controller_ = std::make_unique<GPMEnclaveController>(
+          GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
+          user_verification_requirement);
+      if (pending_trusted_vault_connection_) {
+        enclave_controller_->SetTrustedVaultConnectionForTesting(
+            std::move(pending_trusted_vault_connection_));
       }
+      dialog_controller_->set_enclave_enabled(true);
     }
   }
 
@@ -962,7 +895,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 
   if (non_extension_cablev2_enabled || cablev2_extension_provided ||
-      enclave_manager_) {
+      enclave_controller_) {
     if (SystemNetworkContextManager::GetInstance()) {
       // TODO(nsatragno): this should probably use a storage partition network
       // context instead. See the SystemNetworkContextManager class comments.
@@ -1012,8 +945,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 #endif
 
-  if (enclave_manager_) {
-    ConfigureEnclaveDiscovery(rp_id, discovery_factory);
+  if (enclave_controller_) {
+    enclave_controller_->ConfigureDiscoveries(discovery_factory);
   }
 
   dialog_controller_->set_is_non_webauthn_request(
@@ -1105,7 +1038,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     }
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
-      (can_use_synced_phone_passkeys_ || enclave_manager_) &&
+      (can_use_synced_phone_passkeys_ || enclave_controller_) &&
       !IsVirtualEnvironmentEnabled()) {
     GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
   }
@@ -1136,9 +1069,10 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     return;
   }
 
-  if (enclave_manager_ && !enclave_manager_->is_loaded()) {
+  if (enclave_controller_ && !enclave_controller_->ready_for_ui()) {
     // Delay showing UI until the enclave state is loaded. This avoids some
     // complexity later that would other come from dealing with this case.
+    // Showing the UI is handled in `OnReadyForUI`.
     pending_transport_availability_info_ = std::make_unique<
         device::FidoRequestHandlerBase::TransportAvailabilityInfo>(
         std::move(data));
@@ -1239,49 +1173,6 @@ void ChromeAuthenticatorRequestDelegate::OnModelDestroyed(
   DCHECK_EQ(model, dialog_model_.get());
 }
 
-void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
-  bool start_transaction = false;
-
-  if (dialog_model_->step() ==
-      AuthenticatorRequestDialogModel::Step::kWaitingForEnclave) {
-    if (dialog_controller_->account_state() == AccountState::kRecoverable &&
-        enclave_manager_->has_pending_keys()) {
-      // In this case, we were waiting for the user to create their GPM PIN
-      // and the needed enclave action is to set up using that PIN.
-      gpm_pin_stashed_ = dialog_controller_->TakeGPMPin();
-      enclave_manager_->AddDeviceAndPINToAccount(
-          *gpm_pin_stashed_,
-          base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnDeviceAdded,
-                         weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
-
-    if (dialog_controller_->account_state() == AccountState::kEmpty) {
-      // The user has set a PIN to create the account.
-      gpm_pin_stashed_ = dialog_controller_->TakeGPMPin();
-      enclave_manager_->SetupWithPIN(
-          *gpm_pin_stashed_,
-          base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnDeviceAdded,
-                         weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
-
-    start_transaction = true;
-  } else if (dialog_model_->step() == AuthenticatorRequestDialogModel::Step::
-                                          kRecoverSecurityDomain &&
-             enclave_manager_->is_ready()) {
-    // Finished setting up without enrolling a GPM PIN.
-    start_transaction = true;
-  }
-
-  if (start_transaction) {
-    access_token_fetcher_ = enclave_manager_->GetAccessToken(
-        base::BindOnce(&ChromeAuthenticatorRequestDelegate::
-                           MaybeHashPinAndStartEnclaveTransaction,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
 void ChromeAuthenticatorRequestDelegate::OnCancelRequest() {
   // |cancel_callback_| must be invoked at most once as invocation of
   // |cancel_callback_| will destroy |this|.
@@ -1309,30 +1200,13 @@ void ChromeAuthenticatorRequestDelegate::SetPassEmptyUsbDeviceManagerForTesting(
 
 void ChromeAuthenticatorRequestDelegate::SetTrustedVaultConnectionForTesting(
     std::unique_ptr<trusted_vault::TrustedVaultConnection> connection) {
-  vault_connection_override_ = std::move(connection);
+  if (enclave_controller_) {
+    enclave_controller_->SetTrustedVaultConnectionForTesting(
+        std::move(connection));
+  } else {
+    pending_trusted_vault_connection_ = std::move(connection);
+  }
 }
-
-class ChromeAuthenticatorRequestDelegate::EnclaveManagerObserver
-    : public EnclaveManager::Observer {
- public:
-  EnclaveManagerObserver(ChromeAuthenticatorRequestDelegate* delegate,
-                         EnclaveManager* manager)
-      : delegate_(delegate), manager_(manager) {
-    manager_->AddObserver(this);
-  }
-
-  ~EnclaveManagerObserver() override { manager_->RemoveObserver(this); }
-
-  // EnclaveManager::Observer:
-  void OnKeysStored() override {
-    // `delegate_` owns this object and so `delegate_` must be valid.
-    delegate_->OnKeysStored();
-  }
-
- private:
-  const raw_ptr<ChromeAuthenticatorRequestDelegate> delegate_;
-  const raw_ptr<EnclaveManager> manager_;
-};
 
 content::RenderFrameHost*
 ChromeAuthenticatorRequestDelegate::GetRenderFrameHost() const {
@@ -1356,280 +1230,16 @@ void ChromeAuthenticatorRequestDelegate::ShowUI(
   }
 }
 
-void ChromeAuthenticatorRequestDelegate::OnEnclaveLoaded() {
-  CHECK_EQ(dialog_controller_->account_state(), AccountState::kLoading);
-
-  if (enclave_manager_->is_ready()) {
-    FIDO_LOG(EVENT) << "Enclave is ready";
-    SetAccountStateReady();
-  } else {
-    FIDO_LOG(EVENT) << "Account state needs to be checked";
-    dialog_controller_->set_account_state(AccountState::kChecking);
-    DownloadAccountState();
-  }
-
-  if (pending_transport_availability_info_) {
-    auto pending_transport_availability_info =
-        std::move(pending_transport_availability_info_);
-    pending_transport_availability_info_.reset();
-
-    ShowUI(std::move(*pending_transport_availability_info));
-  }
-}
-
-void ChromeAuthenticatorRequestDelegate::OnKeysStored() {
-  if (dialog_model_->step() !=
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain) {
-    return;
-  }
-  CHECK(enclave_manager_->has_pending_keys());
-  CHECK(!enclave_manager_->is_ready());
-
-  if (pin_metadata_.has_value()) {
-    // The account already has a GPM PIN.
-    if (!enclave_manager_->AddDeviceToAccount(
-            std::move(pin_metadata_),
-            base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnDeviceAdded,
-                           weak_ptr_factory_.GetWeakPtr()))) {
-      // TODO(enclave): move the UI to a to-be-created error state.
-      NOTREACHED();
-    }
-  } else {
-    // If the user has local biometrics, and an existing recovery factor,
-    // we'll likely choose not to create a GPM PIN. For now, however, we
-    // always do:
-    dialog_controller_->OnCreateGPMPin();
-  }
-}
-
-void ChromeAuthenticatorRequestDelegate::OnDeviceAdded(bool success) {
-  if (!success) {
-    // TODO(enclave): move the UI to a to-be-created error state.
-    NOTREACHED();
+void ChromeAuthenticatorRequestDelegate::OnReadyForUI() {
+  if (!pending_transport_availability_info_) {
     return;
   }
 
-  SetAccountStateReady();
-  // Trigger the authenticator request to the enclave.
-  OnStepTransition();
-}
+  auto pending_transport_availability_info =
+      std::move(pending_transport_availability_info_);
+  pending_transport_availability_info_.reset();
 
-void ChromeAuthenticatorRequestDelegate::OnAccountPreselected(
-    device::DiscoverableCredentialMetadata descriptor) {
-  preselected_cred_id_ = descriptor.cred_id;
-  account_preselected_callback_.Run(std::move(descriptor));
-}
-
-void ChromeAuthenticatorRequestDelegate::DownloadAccountState() {
-  auto* const identity_manager = IdentityManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(GetBrowserContext()));
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory();
-  std::unique_ptr<trusted_vault::TrustedVaultConnection> trusted_vault_conn =
-      vault_connection_override_
-          ? std::move(vault_connection_override_)
-          : trusted_vault::NewFrontendTrustedVaultConnection(
-                trusted_vault::SecurityDomainId::kPasskeys, identity_manager,
-                url_loader_factory);
-  download_account_state_request_ =
-      trusted_vault_conn->DownloadAuthenticationFactorsRegistrationState(
-          identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin),
-          base::BindOnce(
-              &ChromeAuthenticatorRequestDelegate::OnAccountStateDownloaded,
-              weak_ptr_factory_.GetWeakPtr(), std::move(trusted_vault_conn)));
-}
-
-void ChromeAuthenticatorRequestDelegate::SetAccountStateReady() {
-  const bool has_pin = enclave_manager_->has_wrapped_pin();
-
-  AccountState account_state;
-  switch (PickEnclaveUserVerificationMethod(*user_verification_requirement_,
-                                            enclave_manager_->has_wrapped_pin(),
-                                            enclave_manager_->uv_key_state())) {
-    case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
-    case EnclaveUserVerificationMethod::kNone:
-      account_state = AccountState::kReady;
-      break;
-
-    case EnclaveUserVerificationMethod::kPIN:
-      account_state = AccountState::kReadyWithPIN;
-      break;
-
-    case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
-      account_state = AccountState::kReadyWithBiometrics;
-      break;
-
-    case EnclaveUserVerificationMethod::kUnsatisfiable:
-      account_state = AccountState::kNone;
-      break;
-  }
-
-  dialog_controller_->set_gpm_pin_is_arbitrary(
-      has_pin && enclave_manager_->wrapped_pin_is_arbitrary());
-  dialog_controller_->set_account_state(account_state);
-}
-
-void ChromeAuthenticatorRequestDelegate::OnAccountStateDownloaded(
-    std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
-    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-        result) {
-  using Result =
-      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult;
-  download_account_state_request_.reset();
-  const char* state_str;
-  switch (result.state) {
-    case Result::State::kError:
-      state_str = "Error";
-      dialog_controller_->set_account_state(AccountState::kNone);
-      break;
-
-    case Result::State::kEmpty:
-      state_str = "Empty";
-      dialog_controller_->set_account_state(AccountState::kEmpty);
-      break;
-
-    case Result::State::kRecoverable:
-      state_str = "Recoverable";
-      dialog_controller_->set_account_state(AccountState::kRecoverable);
-      break;
-
-    case Result::State::kIrrecoverable:
-      state_str = "Irrecoverable";
-      dialog_controller_->set_account_state(AccountState::kIrrecoverable);
-      break;
-  }
-
-  FIDO_LOG(EVENT) << "Download account state result: " << state_str
-                  << ", key_version: " << result.key_version.value_or(0)
-                  << ", has PIN: " << result.gpm_pin_metadata.has_value();
-
-  if (result.gpm_pin_metadata) {
-    pin_metadata_ = std::move(result.gpm_pin_metadata);
-  }
-}
-
-void ChromeAuthenticatorRequestDelegate::MaybeHashPinAndStartEnclaveTransaction(
-    std::optional<std::string> token) {
-  std::string pin = gpm_pin_stashed_.has_value()
-                        ? std::move(*gpm_pin_stashed_)
-                        : dialog_controller_->TakeGPMPin();
-  gpm_pin_stashed_.reset();
-  if (pin.empty()) {
-    StartEnclaveTransaction(std::move(token), nullptr);
-    return;
-  }
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(
-          [](std::string pin,
-             std::unique_ptr<webauthn_pb::EnclaveLocalState_WrappedPIN>
-                 wrapped_pin) -> std::unique_ptr<device::enclave::ClaimedPIN> {
-            return EnclaveManager::MakeClaimedPINSlowly(std::move(pin),
-                                                        std::move(wrapped_pin));
-          },
-          std::move(pin), enclave_manager_->GetWrappedPIN()),
-      base::BindOnce(
-          &ChromeAuthenticatorRequestDelegate::StartEnclaveTransaction,
-          weak_ptr_factory_.GetWeakPtr(), std::move(token)));
-}
-
-void ChromeAuthenticatorRequestDelegate::StartEnclaveTransaction(
-    std::optional<std::string> token,
-    std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin) {
-  CHECK(request_type_);
-  CHECK(user_verification_requirement_);
-  // The UI has advanced to the point where it wants to perform an enclave
-  // transaction. This code collects the needed values and triggers
-  // `enclave_request_callback_` which surfaces in
-  // `EnclaveDiscovery::OnUIRequest`.
-
-  auto request = std::make_unique<device::enclave::CredentialRequest>();
-
-  switch (PickEnclaveUserVerificationMethod(*user_verification_requirement_,
-                                            enclave_manager_->has_wrapped_pin(),
-                                            enclave_manager_->uv_key_state())) {
-    case EnclaveUserVerificationMethod::kNone:
-      request->signing_callback =
-          enclave_manager_->HardwareKeySigningCallback();
-      break;
-
-    case EnclaveUserVerificationMethod::kPIN:
-      request->signing_callback =
-          enclave_manager_->HardwareKeySigningCallback();
-      CHECK(claimed_pin);
-      request->claimed_pin = std::move(claimed_pin);
-      break;
-
-    case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
-    case EnclaveUserVerificationMethod::kUVKeyWithSystemUI: {
-      EnclaveManager::UVKeyOptions uv_options;
-#if BUILDFLAG(IS_MAC)
-      uv_options.lacontext = dialog_controller_->TakeLAContext();
-#endif  // BUILDFLAG(IS_MAC)
-      request->signing_callback =
-          enclave_manager_->UserVerifyingKeySigningCallback(
-              std::move(uv_options));
-      break;
-    }
-    case EnclaveUserVerificationMethod::kUnsatisfiable:
-      NOTREACHED_NORETURN();
-  }
-
-  // If fetching the access token failed a transaction is still started. Without
-  // a token it will fail, but that failure will trigger suitable error
-  // messages.
-  // TODO(enclave): jump directly to some future error state instead.
-  if (token) {
-    request->access_token = std::move(*token);
-  }
-
-  switch (*request_type_) {
-    case device::FidoRequestType::kMakeCredential: {
-      int32_t version;
-      std::vector<uint8_t> wrapped_secret;
-      std::tie(version, wrapped_secret) =
-          enclave_manager_->GetCurrentWrappedSecret();
-      request->wrapped_secret_version = version;
-      request->wrapped_secrets.emplace_back(std::move(wrapped_secret));
-      break;
-    }
-
-    case device::FidoRequestType::kGetAssertion: {
-      std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
-      for (const auto& cred : *gpm_credentials_) {
-        if (base::ranges::equal(
-                base::as_bytes(base::make_span(cred.credential_id())),
-                base::make_span(*preselected_cred_id_))) {
-          entity = std::make_unique<sync_pb::WebauthnCredentialSpecifics>(cred);
-          break;
-        }
-      }
-      CHECK(entity);
-
-      if (entity->key_version()) {
-        std::optional<std::vector<uint8_t>> wrapped_secret =
-            enclave_manager_->GetWrappedSecret(entity->key_version());
-        if (wrapped_secret) {
-          request->wrapped_secrets.emplace_back(std::move(*wrapped_secret));
-        } else {
-          FIDO_LOG(ERROR)
-              << "Unexpectedly did not have a wrapped key for epoch "
-              << entity->key_version();
-        }
-      }
-      if (request->wrapped_secrets.empty()) {
-        request->wrapped_secrets = enclave_manager_->GetWrappedSecrets();
-      }
-      CHECK(!request->wrapped_secrets.empty());
-
-      request->entity = std::move(entity);
-      break;
-    }
-  }
-
-  enclave_request_callback_.Run(std::move(request));
+  ShowUI(std::move(*pending_transport_availability_info));
 }
 
 bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
@@ -1680,11 +1290,8 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
   // If `gpm_credentials_` is set then the sync entities have already been
   // fetched and should be reused so that a consistent set of entities is used
   // throughout.
-  const bool use_gpm_credentials =
-      gpm_credentials_.has_value() &&
-      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
   std::vector<sync_pb::WebauthnCredentialSpecifics> credentials_vec;
-  if (!use_gpm_credentials) {
+  if (!enclave_controller_) {
     webauthn::PasskeyModel* passkey_model =
         PasskeyModelFactory::GetInstance()->GetForProfile(
             Profile::FromBrowserContext(GetBrowserContext()));
@@ -1694,8 +1301,8 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
   }
 
   const std::vector<sync_pb::WebauthnCredentialSpecifics>& credentials =
-      use_gpm_credentials ? *gpm_credentials_ : credentials_vec;
-  device::AuthenticatorType type = enclave_manager_
+      enclave_controller_ ? enclave_controller_->creds() : credentials_vec;
+  device::AuthenticatorType type = enclave_controller_
                                        ? device::AuthenticatorType::kEnclave
                                        : device::AuthenticatorType::kPhone;
   for (const sync_pb::WebauthnCredentialSpecifics& passkey : credentials) {
@@ -1708,28 +1315,6 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
                                  passkey.user_id().end()),
             passkey.user_name(), passkey.user_display_name()));
   }
-}
-
-void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
-    const std::string& rp_id,
-    device::FidoDiscoveryFactory* discovery_factory) {
-  discovery_factory->set_enclave_passkey_creation_callback(
-      base::BindRepeating(&ChromeAuthenticatorRequestDelegate::OnPasskeyCreated,
-                          weak_ptr_factory_.GetWeakPtr()));
-
-  using EnclaveEventStream = device::FidoDiscoveryBase::EventStream<
-      std::unique_ptr<device::enclave::CredentialRequest>>;
-  std::unique_ptr<EnclaveEventStream> event_stream;
-  std::tie(enclave_request_callback_, event_stream) = EnclaveEventStream::New();
-  discovery_factory->set_enclave_ui_request_stream(std::move(event_stream));
-}
-
-void ChromeAuthenticatorRequestDelegate::OnPasskeyCreated(
-    sync_pb::WebauthnCredentialSpecifics passkey) {
-  webauthn::PasskeyModel* passkey_model =
-      PasskeyModelFactory::GetInstance()->GetForProfile(
-          Profile::FromBrowserContext(GetBrowserContext()));
-  passkey_model->CreatePasskey(passkey);
 }
 
 #if BUILDFLAG(IS_MAC)

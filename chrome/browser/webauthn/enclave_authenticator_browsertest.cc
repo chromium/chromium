@@ -29,6 +29,7 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
+#include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -569,8 +570,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kMechanismSelection);
-  EXPECT_EQ(request_delegate()->dialog_controller()->account_state(),
-            AuthenticatorRequestDialogController::AccountState::kEmpty);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kEmpty);
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kGPMOnboarding);
   SimulateEnclaveMechanismSelection();
@@ -619,8 +622,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
-  EXPECT_EQ(request_delegate()->dialog_controller()->account_state(),
-            AuthenticatorRequestDialogController::AccountState::kRecoverable);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
   dialog_model()->OnUserConfirmedPriorityMechanism();

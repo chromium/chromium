@@ -400,7 +400,6 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
     case Step::kConditionalMediation:
     case Step::kClosed:
     case Step::kRecoverSecurityDomain:
-    case Step::kWaitingForEnclave:
     case Step::kGPMPasskeySaved:
     case Step::kGPMReauthAccount:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(

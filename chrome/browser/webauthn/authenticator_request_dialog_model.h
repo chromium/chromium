@@ -106,7 +106,11 @@ class AuthenticatorRequestDialogController;
   /* Called when the user cancelled WebAuthn request by clicking the */       \
   /* "cancel" button or the back arrow in the UI dialog. */                   \
   AUTHENTICATOR_REQUEST_EVENT_0(OnCancelRequest)                              \
+  /* Called when the user picks Google Password Manager from the */           \
+  /* mechanism selection sheet. */                                            \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMSelected)                                \
   /* Called when the user accepts the create passkey sheet. */                \
+  /* (But not the GPM one.) */                                                \
   AUTHENTICATOR_REQUEST_EVENT_0(OnCreatePasskeyAccepted)                      \
   /* Called when the user accepts passkey creation in the GPM bubble. */      \
   /* TODO(enclave): Add transition to authentication or bootstrapping  */     \
@@ -122,6 +126,9 @@ class AuthenticatorRequestDialogController;
   /* the interstitial that warns that platform/caBLE authenticators may */    \
   /* record information even in incognito mode. */                            \
   AUTHENTICATOR_REQUEST_EVENT_0(OnOffTheRecordInterstitialAccepted)           \
+  /* Sent by GPMEnclaveController when it's ready for the UI to be */         \
+  /* displayed. */                                                            \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnReadyForUI)                                 \
   /* Called when a user closes the MagicArch window. */                       \
   AUTHENTICATOR_REQUEST_EVENT_0(OnRecoverSecurityDomainClosed)                \
   /* To be called when the Web Authentication request is complete. */         \
@@ -159,6 +166,9 @@ class AuthenticatorRequestDialogController;
   /* OnAttestationPermissionResponse is called when the user either */        \
   /* allows or disallows an attestation permission request. */                \
   AUTHENTICATOR_REQUEST_EVENT_1(OnAttestationPermissionResponse, bool)        \
+  /* Called when the user selects a GPM passkey. */                           \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPasskeySelected,                         \
+                                base::span<const uint8_t>)                    \
   /* Called when the user enters the GPM pin in the UI (during initial */     \
   /* setup or authentication). */                                             \
   AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPinEntered, const std::u16string&)       \
@@ -294,7 +304,6 @@ struct AuthenticatorRequestDialogModel {
     // Device bootstrap to use GPM passkeys.
     kRecoverSecurityDomain,
     kTrustThisComputer,
-    kWaitingForEnclave,
 
     // Changing GPM PIN.
     kGPMReauthAccount,
@@ -510,29 +519,6 @@ class AuthenticatorRequestDialogController
   using TransportAvailabilityInfo =
       device::FidoRequestHandlerBase::TransportAvailabilityInfo;
 
-  enum class AccountState {
-    // There isn't a primary account, or enclave support is disabled.
-    kNone,
-    // The enclave state is still being loaded from disk.
-    kLoading,
-    // The state of the account is unknown pending network requests.
-    kChecking,
-    // The account can be recovered via user action.
-    kRecoverable,
-    // The account cannot be recovered, but could be reset.
-    kIrrecoverable,
-    // The security domain is empty.
-    kEmpty,
-    // The enclave is ready to use.
-    kReady,
-    // The enclave is ready to use, but the UI needs to collect a PIN before
-    // making a transaction.
-    kReadyWithPIN,
-    // The enclave is ready to use, but the UI needs to collect biometrics
-    // before making a transaction.
-    kReadyWithBiometrics,
-  };
-
   explicit AuthenticatorRequestDialogController(Model* model);
 
   AuthenticatorRequestDialogController(
@@ -747,21 +733,6 @@ class AuthenticatorRequestDialogController
   void OnResidentCredentialConfirmed() override;
   void OnAttestationPermissionResponse(
       bool attestation_permission_granted) override;
-  void OnGPMOnboardingAccepted() override;
-  void OnGPMCreatePasskey() override;
-  void OnGPMPinEntered(const std::u16string& pin) override;
-  void OnTrustThisComputer() override;
-
-  // Called when the user needs to set their GPM PIN for the first time.
-  void OnCreateGPMPin();
-
-  void OnGPMPinOptionChanged(bool is_arbitrary) override;
-
-  // Return the last entered GPM PIN.
-  std::string&& TakeGPMPin();
-
-  // Called when the passkey creation is successful.
-  void OnGPMPasskeySaved();
 
   // Adds or removes an authenticator to the list of known authenticators. The
   // first authenticator added with transport `kInternal` (or without a
@@ -837,11 +808,6 @@ class AuthenticatorRequestDialogController
     is_non_webauthn_request_ = is_non_webauthn_request;
   }
 
-  AccountState account_state() const;
-  void set_account_state(AccountState);
-
-  void set_gpm_pin_is_arbitrary(bool is_arbitrary);
-
   void SetHints(
       const content::AuthenticatorRequestClientDelegate::Hints& hints) {
     hints_ = hints;
@@ -860,13 +826,9 @@ class AuthenticatorRequestDialogController
 
   void set_allow_icloud_keychain(bool);
   void set_should_create_in_icloud_keychain(bool);
+  void set_enclave_enabled(bool);
 
 #if BUILDFLAG(IS_MAC)
-  void OnTouchIDComplete(bool success) override;
-
-  // Returns the authenticated LAContext, if any.
-  std::optional<crypto::ScopedLAContext> TakeLAContext();
-
   void RecordMacOsStartedHistogram();
   void RecordMacOsSuccessHistogram(device::FidoRequestType,
                                    device::AuthenticatorType);
@@ -980,9 +942,6 @@ class AuthenticatorRequestDialogController
 
   void OnUserConfirmedPriorityMechanism() override;
 
-  // Disables the UI elements of the currently displayed sheet.
-  void DisableUI();
-
   raw_ptr<Model> model_;
 
   // Identifier for the RenderFrameHost of the frame that initiated the current
@@ -1076,22 +1035,13 @@ class AuthenticatorRequestDialogController
   // profile authenticator.
   bool should_create_in_icloud_keychain_ = false;
 
+  // enclave_enabled_ is true if a "Google Password Manager" entry should be
+  // offered as a mechanism for creating a credential.
+  bool enclave_enabled_ = false;
+
   // The RP's hints. See
   // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
   content::AuthenticatorRequestClientDelegate::Hints hints_;
-
-  // Records the state of the primary account for the profile, if any.
-  AccountState account_state_ = AccountState::kNone;
-
-  // If true then the GPM PIN is known to be an arbitrary string rather than
-  // the default 6-digit number.
-  bool gpm_pin_is_arbitrary_ = false;
-
-  // The entered GPM PIN.
-  std::string gpm_pin_;
-
-  // Whether the UI is currently disabled, waiting for account state to load.
-  bool waiting_for_account_state_to_start_enclave_ = false;
 
 #if BUILDFLAG(IS_MAC)
   // did_record_macos_start_histogram_ is set to true if a histogram record of
