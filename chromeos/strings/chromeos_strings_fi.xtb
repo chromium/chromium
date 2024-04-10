@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Esikatselukuva</translation>
 <translation id="1611649489706141841">seuraava</translation>
 <translation id="1615335640928990664">Datan käyttö <ph name="FRIENDLY_DATE" /> jälkeen</translation>
+<translation id="1618566998877964907">Käytä teemaa</translation>
 <translation id="1621067168122174824">Suorita lataustesti</translation>
 <translation id="1622402072367425417">hohtavat kuplat</translation>
 <translation id="1626590945318984973">Pikanäppäin ei ole käytettävissä. Paina uutta pikanäppäintä ilman toiminto‑ ja <ph name="META_KEY" />-näppäimiä.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">oliivi</translation>
 <translation id="8373046809163484087">Käytä taustakuvaasi vastaavia väriteemoja</translation>
 <translation id="8380114448424469341">Kiinnitä ikkuna näytön toiseen puoleen (<ph name="DIRECTION" />)</translation>
+<translation id="8391349326751432483">Tarvitset muistitestin suorittamiseen ainakin 500 Mt vapaata tilaa. Vapauta muistia sulkemalla välilehtiä ja sovelluksia.</translation>
 <translation id="8395584934117017006">Tämä <ph name="DEVICE_TYPE" /> on yrityksen ylläpitämä</translation>
 <translation id="8398927464629426868">Laitteen tämänhetkinen latausnopeus tai latauksen purkunopeus</translation>
 <translation id="8403988360557588704">Maalaus: <ph name="ART_FEATURE" />, tyylinä <ph name="ART_MOVEMENT" /></translation>

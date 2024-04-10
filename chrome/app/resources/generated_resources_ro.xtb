@@ -3161,7 +3161,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="338323348408199233">Blochează traficul fără VPN</translation>
 <translation id="3384362484379805487">Fișierele de limbă sunt trimise utilizatorilor pentru a economisi spațiu pe disc.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
-<translation id="3385509471227300644">Navigarea sigură Google scanează acum fișierele suspecte pe care încerci să le descarci în cadrul protecției îmbunătățite pe care ai ales-o.</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387588771342841525">Când opțiunea este activată, parolele se salvează în <ph name="EMAIL" />. Când opțiunea este dezactivată, parolele se salvează numai pe acest dispozitiv.</translation>
@@ -6731,6 +6730,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6148576794665275391">Deschide acum</translation>
 <translation id="614890671148262506">Permite întotdeauna notificările de la acest site</translation>
 <translation id="6149015141270619212">Nu se poate conecta la internet</translation>
+<translation id="6149061208933997199">Folosește parola</translation>
 <translation id="6149791593592044995">Folosește aplicarea mărcilor moderne ale accentului</translation>
 <translation id="6150116777338468525">Calitatea audio</translation>
 <translation id="6150278227694566734">Anumite persoane de contact</translation>
@@ -8365,7 +8365,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7434509671034404296">Dezvoltator</translation>
 <translation id="7434757724413878233">Accelerarea mouse-ului</translation>
 <translation id="7434969625063495310">Nu s-a putut adăuga serverul de imprimare. Verifică ce configurație are serverul și încearcă din nou.</translation>
-<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Examinează o extensie care a fost eliminată din Magazinul web Chrome}few{Examinează {NUM_EXTENSIONS} extensii care au fost eliminate din Magazinul web Chrome}other{Examinează {NUM_EXTENSIONS} de extensii care au fost eliminate din Magazinul web Chrome}}</translation>
 <translation id="7436921188514130341">Of, nu mai merge! A apărut o eroare la redenumire.</translation>
 <translation id="7439519621174723623">Adaugă un nume de dispozitiv pentru a continua</translation>
 <translation id="7441736532026945583">Selectează „Ascunde grupul” pentru a elimina grupul din bara de file</translation>
@@ -8383,7 +8382,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7450926666485653189">Trimite la Google un fragment de adresă URL codificat printr-un server de confidențialitate care îți ascunde adresa IP</translation>
 <translation id="7453008956351770337">Selectând această imprimantă, acorzi următoarei extensii permisiunea de a accesa imprimanta:</translation>
 <translation id="7453467225369441013">Te deconectează de pe majoritatea site-urilor. Nu te va deconecta de la Contul Google.</translation>
-<translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{Această extensie ar putea fi nesigură. Chrome recomandă să o elimini.}few{Aceste extensii ar putea fi nesigure. Chrome recomandă să le elimini.}other{Aceste extensii ar putea fi nesigure. Chrome recomandă să le elimini.}}</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Organizația ta a dezactivat salvarea parolelor</translation>
 <translation id="7455730275746867420">Gestionează containere suplimentare</translation>
@@ -8877,7 +8875,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7803657407897251194">Pentru a continua configurarea folosind dispozitivul Android, conectează dispozitivul <ph name="DEVICE_TYPE" /> la o rețea</translation>
 <translation id="7804072833593604762">Fila a fost închisă</translation>
-<translation id="780446144738273886">Scanează fișierul PDF pentru a extrage text pentru cititorul de ecran. Se acceptă numai în browserul Chrome</translation>
 <translation id="7805371082115476536">Mică</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7805906048382884326">Închide sfatul</translation>

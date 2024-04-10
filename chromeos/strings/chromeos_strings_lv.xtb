@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Priekšskatīt attēlu</translation>
 <translation id="1611649489706141841">pārsūtīt</translation>
 <translation id="1615335640928990664">Datu lietojums kopš šī datuma: <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Motīva izmantošana</translation>
 <translation id="1621067168122174824">Veikt uzlādes pārbaudi</translation>
 <translation id="1622402072367425417">mirdzoši burbuļi</translation>
 <translation id="1626590945318984973">Šie īsinājumtaustiņi nav pieejami. Nospiediet jaunus īsinājumtaustiņus, neizmantojot funkciju taustiņu un <ph name="META_KEY" /> taustiņu.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">olīvzaļa</translation>
 <translation id="8373046809163484087">Izmantojiet savai fona tapetei atbilstošas krāsu kopas.</translation>
 <translation id="8380114448424469341">Dokot logu šajā ekrāna pusē: <ph name="DIRECTION" /></translation>
+<translation id="8391349326751432483">Lai izpildītu atmiņas pārbaudi, jābūt vismaz 500 MB brīvas vietas. Lai atbrīvotu vietu atmiņā, aizveriet cilnes un lietotnes.</translation>
 <translation id="8395584934117017006">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda uzņēmums.</translation>
 <translation id="8398927464629426868">Ātrums, ar kādu pašlaik notiek ierīces uzlāde vai izlāde.</translation>
 <translation id="8403988360557588704">Glezna ar šādu objektu: <ph name="ART_FEATURE" />. Stils: <ph name="ART_MOVEMENT" /></translation>

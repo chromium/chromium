@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Ta bort från gruppen</translation>
 <translation id="3008554597174452548">Sluta spåra produkten</translation>
 <translation id="3052964831964880138">Priset på <ph name="PRODUCT_NAME" /> sänkt med <ph name="PRICE_DROP" /></translation>
+<translation id="3078350928901129212">Ikon för flikgruppsfärgen <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Du har <ph name="TABS_COUNT_ONE" /> arkiverad flik}other{Du har <ph name="TABS_COUNT_MANY" /> arkiverade flikar}}</translation>
 <translation id="3194464645767632461">betyg</translation>
 <translation id="3291470810748040983">Du får en avisering när det finns ett lägre pris på en öppen flik</translation>

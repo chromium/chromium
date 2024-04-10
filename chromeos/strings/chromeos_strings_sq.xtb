@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Shiko paraprakisht imazhin</translation>
 <translation id="1611649489706141841">përpara</translation>
 <translation id="1615335640928990664">Përdorimi i të dhënave që prej ditës: <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Përdor një temë</translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
 <translation id="1622402072367425417">flluska që shkëlqejnë</translation>
 <translation id="1626590945318984973">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re pa përdorur tastet e funksioneve dhe tastin "<ph name="META_KEY" />".</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">ulliri</translation>
 <translation id="8373046809163484087">Përdor paketat e ngjyrave që përputhen me imazhin tënd të sfondit</translation>
 <translation id="8380114448424469341">Dritarja e stacionit në gjysmën <ph name="DIRECTION" /> të ekranit</translation>
+<translation id="8391349326751432483">Të duhen të paktën 500 MB hapësirë e lirë për ekzekutimin e një testi të memories. Për të liruar memorien, mbyll skedat dhe aplikacionet.</translation>
 <translation id="8395584934117017006">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga ndërmarrja</translation>
 <translation id="8398927464629426868">Shpejtësia me të cilën pajisja aktualisht po karikohet ose po shkarkohet</translation>
 <translation id="8403988360557588704">Një pikturë me një <ph name="ART_FEATURE" /> në stilin <ph name="ART_MOVEMENT" /></translation>

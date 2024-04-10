@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 инчи</translation>
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1181381397492575884">Chrome блокира сајтовите да користат колачиња од трети страни за да ве следат додека прелистувате. Одете во поставките за <ph name="LINK" />.</translation>
+<translation id="1185343831726846924">Потврда дека виртуелната картичка не може да се вклучи</translation>
 <translation id="1186201132766001848">Провери ги лозинките</translation>
 <translation id="1187430513518041110">Автомобили и возила</translation>
 <translation id="1190491977647722791">Хартија (дебела)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
 <translation id="1574714699824202614">Се потврдува начинот на плаќање</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
+<translation id="1579189948231786790">Вашата организација го блокирала сајтов</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Не истекува</translation>
 <translation id="1583429793053364125">Нешто тргна наопаку при прикажувањето на оваа веб-страница.</translation>
@@ -1475,6 +1477,7 @@
 <translation id="3807366285948165054">Промена на сликата X</translation>
 <translation id="3807709094043295184">Класични рок и стари хитови</translation>
 <translation id="3807873520724684969">Блокирани се штетни содржини.</translation>
+<translation id="380865868633614173">Се зачувуваат податоците за картичката</translation>
 <translation id="3810770279996899697">Password Manager бара пристап до macOS Keychain</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="3812398568375898177">Ова е важно ажурирање што ја подобрува изведбата на апликациите за Android на ChromeOS.</translation>
@@ -2188,6 +2191,7 @@
 <translation id="5238301240406177137">Зачувајте на сметката</translation>
 <translation id="5239119062986868403">Стандардна цена</translation>
 <translation id="5239623327352565343">Локацијата е дозволена</translation>
+<translation id="5241048084654737238">Потврда дека податоците за картичката не може да се зачуваат</translation>
 <translation id="5242610955375133957">Сува фолија</translation>
 <translation id="5244521145258281926">Копче за управување со сметката на Google, активирајте го за да управувате со податоците, приватноста и безбедноста на сметката на Google</translation>
 <translation id="5244732203286792411">Се вчитува…
@@ -2203,6 +2207,7 @@
 <translation id="5266128565379329178">Врзување горе</translation>
 <translation id="5269225904387178860">Четири дупки долу</translation>
 <translation id="5269999699920406580">Функциите што се применуваат на целиот систем може да ги постави само сопственикот: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">„<ph name="DATA_CONTROLS_ATTRIBUTE" />“ не е поддржан услов за „<ph name="DATA_CONTROLS_RESTRICTION" />“</translation>
 <translation id="5273658854610202413">Предупредување: правилово не беше споено како што е наведено во правилото PolicyDictionaryMultipleSourceMergeList бидејќи не е дел од правилата на речникот што може да се спојат.</translation>
 <translation id="5279286380302340275">Управувајте со преземањата</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3174,6 +3179,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{За да ја испратите датотекава со <ph name="FEATURE_NAME" />, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на вашиот уред}one{За да ги испратите датотекиве со <ph name="FEATURE_NAME" />, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на вашиот уред}other{За да ги испратите датотекиве со <ph name="FEATURE_NAME" />, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на вашиот уред}}</translation>
 <translation id="7160999678034985039">Зачувајте ја вашата работа и започнете го ажурирањето кога ќе бидете подготвени.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Да се копира доверливата датотека?}one{Да се копираат доверливите датотеки?}other{Да се копираат доверливите датотеки?}}</translation>
+<translation id="7168625890036931112">„<ph name="DATA_CONTROLS_RESTRICTION" />“ не е поддржано ограничување на оваа платформа</translation>
 <translation id="717330890047184534">ID на Gaia:</translation>
 <translation id="7174545416324379297">Споена</translation>
 <translation id="7175097078723125014">Избрана е опцијата за изменување адреса</translation>
@@ -3246,6 +3252,7 @@
 <translation id="7310392214323165548">Уредот ќе се рестартира наскоро</translation>
 <translation id="7311244614769792472">Не се најдени резултати</translation>
 <translation id="7311837626618954149">Chromium блокира сајтовите да користат колачиња од трети страни за да ве следат додека прелистувате.</translation>
+<translation id="7313107491291103073">Вашата организација го означи сајтов бидејќи можеби прекршува правило.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помош за поврзување</translation>
 <translation id="7323804146520582233">Скриј го делот „<ph name="SECTION" />“</translation>
@@ -3571,6 +3578,7 @@
 <translation id="7888575728750733395">Намера за прикажување на печатењето</translation>
 <translation id="7894280532028510793">Ако правописот е точен, <ph name="BEGIN_LINK" />извршете дијагностика на мрежата<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Плик 7 x 9 in</translation>
+<translation id="7908648876066812348">Се вклучува виртуелна картичка</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да појдете на страницата за „Безбедносна проверка“ на Chrome во поставките</translation>
 <translation id="791551905239004656">Цртање и боење</translation>
 <translation id="7916162853251942238">Флексибилна основа</translation>
@@ -4078,6 +4086,7 @@
 <translation id="8874790741333031443">Обидете се со привремено дозволување колачиња од трети страни, што значи помала заштита при прелистување, но поголема веројатност функциите на сајтот да работат според очекувањата.</translation>
 <translation id="8874824191258364635">Внесете важечки број на картичка</translation>
 <translation id="8877780815363510165">Риболов</translation>
+<translation id="888117890813270681">„<ph name="DATA_CONTROLS_RESTRICTION" />“ не може да се постави на „<ph name="DATA_CONTROLS_LEVEL" />“</translation>
 <translation id="8884537526797090108">Не може да се снимаат доверливи содржини</translation>
 <translation id="8888187300091017436">Душеци</translation>
 <translation id="8890048757975398817">Контролирање на уредот <ph name="READERNAME" /> и пристап до паметната картичка што може да пристапи до него.</translation>

@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Preview image</translation>
 <translation id="1611649489706141841">forward</translation>
 <translation id="1615335640928990664">Data usage since <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Use a theme</translation>
 <translation id="1621067168122174824">Run charge test</translation>
 <translation id="1622402072367425417">glowing bubbles</translation>
 <translation id="1626590945318984973">Shortcut not available. Press a new shortcut without using function and <ph name="META_KEY" /> keys.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">olive</translation>
 <translation id="8373046809163484087">Use colour sets that match your wallpaper</translation>
 <translation id="8380114448424469341">Dock window on the <ph name="DIRECTION" /> half of the screen</translation>
+<translation id="8391349326751432483">You need at least 500 MB free to run a memory test. To free up memory, close tabs and apps.</translation>
 <translation id="8395584934117017006">This <ph name="DEVICE_TYPE" /> is enterprise managed</translation>
 <translation id="8398927464629426868">The rate at which the device is currently charging or discharging</translation>
 <translation id="8403988360557588704">A painting of a <ph name="ART_FEATURE" /> in the <ph name="ART_MOVEMENT" /> style</translation>

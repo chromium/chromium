@@ -136,6 +136,7 @@
 <translation id="1687475363370981210">সমস্ত পঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="1689333818294560261">বিশেষ নাম</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি নির্বাচিত</translation>
+<translation id="1710698977900873766">উন্নত সুরক্ষা চালু করুন</translation>
 <translation id="1713777106376424209">ডেলিভার করছে:</translation>
 <translation id="1715515772563243997"><ph name="SITE" />-এর উপর ভরসা থাকলে, আপনি সেভ করা পাসওয়ার্ড সাইন-ইন করার জন্য ব্যবহার করতে পারেন।</translation>
 <translation id="1740468249224277719">ইনস্টল করতে দুবার আলতো চাপুন।</translation>
@@ -311,6 +312,7 @@
 <translation id="2625189173221582860">পাসওয়ার্ড কপি করা হয়েছে</translation>
 <translation id="2626236249646841566">ইন্টারনেট কানেকশন চেক করে আবার সাইন-ইন করার চেষ্টা করুন।</translation>
 <translation id="2637313651144986786">ট্যাব সার্চ করুন...</translation>
+<translation id="2640733327287333451">কোনও ইউজারনেম নেই ••••••</translation>
 <translation id="2648721026697078500">কখনও সরাবেন না</translation>
 <translation id="2648803196158606475">’পড়া হয়েছে’ মুছুন</translation>
 <translation id="2664621323652615289">বন্ধ করুন</translation>
@@ -1281,6 +1283,7 @@
 <translation id="7569588934989281656">বিভিন্ন ট্যাবের মধ্যে পাল্টে নিতে আপনি ট্যাব বার সোয়াইপ করতে পারেন।</translation>
 <translation id="7582857256643797524">আপনার ডিভাইসে এই সেটিং চালু করা আছে</translation>
 <translation id="7583004045319035904">আপনার ছদ্মবেশী ট্যাব আনলক করতে, <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যবহার করুন।</translation>
+<translation id="7598439272585186139">আরও সুরক্ষা পান</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কখনও অনুবাদ করবেন না</translation>
 <translation id="7603852183842204213">পপ-আপ ব্লক (<ph name="NUMBER_OF_BLOCKED_POPUPS" />টি)</translation>
 <translation id="7607521702806708809">পাসওয়ার্ড মুছুন</translation>

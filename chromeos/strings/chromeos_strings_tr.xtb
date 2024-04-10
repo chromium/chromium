@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Resmi Önizle</translation>
 <translation id="1611649489706141841">ileri</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sonrası veri kullanımı</translation>
+<translation id="1618566998877964907">Tema kullanın</translation>
 <translation id="1621067168122174824">Şarj testini çalıştır</translation>
 <translation id="1622402072367425417">parlayan baloncuklar</translation>
 <translation id="1626590945318984973">Kısayol kullanılamıyor. İşlev ve <ph name="META_KEY" /> tuşlarını kullanmadan yeni bir kısayola basın.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">zeytin yeşili</translation>
 <translation id="8373046809163484087">Duvar kağıdınızla eşleşen renkler kullanın</translation>
 <translation id="8380114448424469341">Pencereyi, ekranın <ph name="DIRECTION" /> yarısına sabitleyin</translation>
+<translation id="8391349326751432483">Bellek testi yapmak için en az 500 MB boş alana ihtiyacınız var. Bellekte yer açmak için sekmeleri ve uygulamaları kapatın.</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" />, kuruluş tarafından yönetiliyor</translation>
 <translation id="8398927464629426868">Cihazın şu andaki şarj olma veya şarjının boşalma hızı</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> tarzda bir <ph name="ART_FEATURE" /> resmi</translation>

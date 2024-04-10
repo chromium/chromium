@@ -3158,7 +3158,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="338323348408199233">Blokiraj saobraćaj bez VPN-a</translation>
 <translation id="3384362484379805487">Korisnici mogu da dele fajlove za jezike da bi uštedeli prostor na disku.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
-<translation id="3385509471227300644">Google bezbedno pregledanje sada skenira sumnjive fajlove koje pokušavate da preuzmete u okviru izabrane Poboljšane zaštite.</translation>
 <translation id="338583716107319301">Razdelnik</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387588771342841525">Kada je uključeno, lozinke se čuvaju na nalogu <ph name="EMAIL" />. Kada je isključeno, lozinke se čuvaju samo na ovom uređaju.</translation>
@@ -6728,6 +6727,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6148576794665275391">Otvori odmah</translation>
 <translation id="614890671148262506">Uvek dozvoli obaveštenja sa ovog sajta</translation>
 <translation id="6149015141270619212">Ne možete da se povežete na internet</translation>
+<translation id="6149061208933997199">Koristi lozinku</translation>
 <translation id="6149791593592044995">Koristi moderne oznake za ton</translation>
 <translation id="6150116777338468525">Kvalitet zvuka</translation>
 <translation id="6150278227694566734">Neki kontakti</translation>
@@ -8364,7 +8364,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7434509671034404296">Programer</translation>
 <translation id="7434757724413878233">Ubrzavanje miša</translation>
 <translation id="7434969625063495310">Dodavanje servera za štampanje nije uspelo. Proverite konfiguraciju servera i probajte ponovo.</translation>
-<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Pregledajte 1 dodatak koji je uklonjen iz Chrome veb-prodavnice}one{Pregledajte {NUM_EXTENSIONS} dodatak koji je uklonjen iz Chrome veb-prodavnice}few{Pregledajte {NUM_EXTENSIONS} dodatka koji su uklonjeni iz Chrome veb-prodavnice}other{Pregledajte {NUM_EXTENSIONS} dodataka koji su uklonjeni iz Chrome veb-prodavnice}}</translation>
 <translation id="7436921188514130341">O, ne! Došlo je do greške tokom promene naziva.</translation>
 <translation id="7439519621174723623">Dodajte naziv uređaja da biste nastavili</translation>
 <translation id="7441736532026945583">Izaberite Sakrij grupu da biste uklonili grupu sa trake sa karticama</translation>
@@ -8382,7 +8381,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7450926666485653189">Šalje maskirani deo URL-a Google-u preko servera za privatnost koji krije IP adresu</translation>
 <translation id="7453008956351770337">Kada izaberete ovaj štampač, dajete dozvolu za pristup štampaču sledećem dodatku:</translation>
 <translation id="7453467225369441013">Odjaviće vas sa većine sajtova. Neće vas odjaviti sa Google naloga.</translation>
-<translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{Ovaj dodatak možda nije bezbedan. Chrome preporučuje da ga uklonite.}one{Ovi dodaci možda nisu bezbedni. Chrome preporučuje da ih uklonite.}few{Ovi dodaci možda nisu bezbedni. Chrome preporučuje da ih uklonite.}other{Ovi dodaci možda nisu bezbedni. Chrome preporučuje da ih uklonite.}}</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Organizacija je isključila čuvanje lozinki</translation>
 <translation id="7455730275746867420">Upravljajte dodatnim kontejnerima</translation>
@@ -8876,7 +8874,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7803657407897251194">Da biste nastavili sa podešavanjem Android uređaja, povežite <ph name="DEVICE_TYPE" /> sa mrežom</translation>
 <translation id="7804072833593604762">Kartica je zatvorena</translation>
-<translation id="780446144738273886">Skenirajte PDF da biste izdvojili tekst za čitač ekrana. Podržano samo u Chrome pregledaču</translation>
 <translation id="7805371082115476536">Mala</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Zatvori savet</translation>

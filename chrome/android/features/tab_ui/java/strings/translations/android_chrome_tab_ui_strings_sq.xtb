@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Hiq nga grupi</translation>
 <translation id="3008554597174452548">Ndalo monitorimin e produktit</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> ulje çmimi në <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Ikona e ngjyrës së grupit të skedave: <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Ke <ph name="TABS_COUNT_ONE" /> skedë të arkivuar}other{Ke <ph name="TABS_COUNT_MANY" /> skeda të arkivuara}}</translation>
 <translation id="3194464645767632461">vlerësimi</translation>
 <translation id="3291470810748040983">Do të marrësh një alarm sinjalizues kur ka një çmim më të ulët në një skedë të hapur</translation>

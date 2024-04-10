@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Poista ryhmästä</translation>
 <translation id="3008554597174452548">Lopeta tuotteen seuraaminen</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />:n hinnanalennus / <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Välilehtiryhmän (<ph name="COLOR_NAME" />) värikuvake</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Sinulla on <ph name="TABS_COUNT_ONE" /> arkistoitu välilehti}other{Sinulla on <ph name="TABS_COUNT_MANY" /> arkistoitua välilehteä}}</translation>
 <translation id="3194464645767632461">arvio</translation>
 <translation id="3291470810748040983">Saat ilmoituksen, kun avoimella välilehdellä oleva hinta laskee</translation>

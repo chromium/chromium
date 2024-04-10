@@ -112,6 +112,7 @@
 <translation id="160633243685262989">ছবির প্রিভিউ দেখুন</translation>
 <translation id="1611649489706141841">ফরওয়ার্ড</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> পর্যন্ত ডেটার ব্যবহার</translation>
+<translation id="1618566998877964907">থিম ব্যবহার করুন</translation>
 <translation id="1621067168122174824">চার্জ টেস্ট করুন</translation>
 <translation id="1622402072367425417">গ্লোয়িং বাবল</translation>
 <translation id="1626590945318984973">শর্টকাট উপলভ্য নেই। ফাংশন ও <ph name="META_KEY" /> 'কী' ব্যবহার না করেই একটি নতুন শর্টকাটে প্রেস করুন।</translation>
@@ -844,6 +845,8 @@
 <translation id="5946538341867151940">আপনি এখনও কানেক্ট হননি। যদি আপনার মোবাইল পরিষেবা প্রদানকারী একটি কাস্টম APN প্রস্তাব করে, "+ নতুন APN" বেছে নিন এবং APN তথ্য লিখুন</translation>
 <translation id="5947266287934282605">এই দিনটি, মাসের শেষ দিনটির আগে হলে, ডেটা মাসের শেষ দিনে রিসেট করা হবে</translation>
 <translation id="5948460390109837040">কুকুর</translation>
+<translation id="594989847980441553">AI ব্যবহার করে কোনও ছবি তৈরি করতে, "তৈরি করুন" বিকল্পটি বেছে নিন।
+        তৈরি করা সবকটি ছবি অটোমেটিক এখানে দেখা যাবে।</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">কোরাল</translation>
 <translation id="5984145644188835034">ডিফল্ট ওয়ালপেপার</translation>
@@ -1274,6 +1277,7 @@
 <translation id="8372667721254470022">অলিভ</translation>
 <translation id="8373046809163484087">আপনার ওয়ালপেপারের সাথে মেলে এমন রঙের সেট ব্যবহার করুন</translation>
 <translation id="8380114448424469341">স্ক্রিনের <ph name="DIRECTION" /> দিকের অর্ধেক জায়গায় উইন্ডো ডক করুন</translation>
+<translation id="8391349326751432483">মেমরি টেস্ট করাতে আপনার ডিভাইসে অন্তত ৫০০ এমবি খালি জায়গা থাকতে হবে। মেমরি খালি করতে ট্যাব ও অ্যাপ বন্ধ করুন।</translation>
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" /> এন্টারপ্রাইজ ম্যানেজ করে</translation>
 <translation id="8398927464629426868">বর্তমানে যে হারে ডিভাইসটি চার্জ হচ্ছে বা এটির চার্জ শেষ হচ্ছে</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> স্টাইলের <ph name="ART_FEATURE" /> পেন্টিং</translation>

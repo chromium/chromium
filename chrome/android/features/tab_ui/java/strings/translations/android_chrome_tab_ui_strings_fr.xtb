@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Retirer du groupe</translation>
 <translation id="3008554597174452548">Arrêter de suivre le produit</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> : prix en baisse (-<ph name="PRICE_DROP" />)</translation>
+<translation id="3078350928901129212">Icône <ph name="COLOR_NAME" /> du groupe d'onglets</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Vous avez <ph name="TABS_COUNT_ONE" /> onglet archivé}one{Vous avez <ph name="TABS_COUNT_MANY" /> onglet archivé}other{Vous avez <ph name="TABS_COUNT_MANY" /> onglets archivés}}</translation>
 <translation id="3194464645767632461">note</translation>
 <translation id="3291470810748040983">Vous serez averti en cas de prix inférieur dans un onglet ouvert</translation>

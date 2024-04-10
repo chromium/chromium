@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Εικόνα προεπισκόπησης</translation>
 <translation id="1611649489706141841">προώθηση</translation>
 <translation id="1615335640928990664">Χρήση δεδομένων από τις <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Χρήση θέματος</translation>
 <translation id="1621067168122174824">Εκτέλεση δοκιμής φόρτισης</translation>
 <translation id="1622402072367425417">λαμπερές φούσκες</translation>
 <translation id="1626590945318984973">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χωρίς να χρησιμοποιήσετε τα πλήκτρα λειτουργιών και <ph name="META_KEY" />.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">λαδί</translation>
 <translation id="8373046809163484087">Χρησιμοποιήστε σύνολα χρωμάτων που ταιριάζουν με την ταπετσαρία σας</translation>
 <translation id="8380114448424469341">Αγκύρωση παραθύρου στο <ph name="DIRECTION" /> μισό μέρος της οθόνης</translation>
+<translation id="8391349326751432483">Χρειάζεστε τουλάχιστον 500 MB ελεύθερης μνήμης για να εκτελέσετε μια δοκιμή μνήμης. Για να ελευθερώσετε μνήμη, κλείστε τις καρτέλες και τις εφαρμογές.</translation>
 <translation id="8395584934117017006">Η διαχείριση αυτής της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από επιχείρηση.</translation>
 <translation id="8398927464629426868">Ο ρυθμός με τον οποίο φορτίζεται ή εκφορτίζεται η συσκευή αυτήν τη στιγμή.</translation>
 <translation id="8403988360557588704">Πίνακας με <ph name="ART_FEATURE" /> σε στιλ <ph name="ART_MOVEMENT" /></translation>

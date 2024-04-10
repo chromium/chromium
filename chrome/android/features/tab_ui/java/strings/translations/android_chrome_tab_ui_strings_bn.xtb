@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">গ্রুপ থেকে সরান</translation>
 <translation id="3008554597174452548">প্রোডাক্ট আর ট্র্যাক করতে চাই না</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-এ <ph name="PRICE_DROP" /> দাম কমে গেছে</translation>
+<translation id="3078350928901129212">ট্যাব গ্রুপ রঙের আইকন <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{আপনার <ph name="TABS_COUNT_ONE" />টি আর্কাইভ করা ট্যাব আছে}one{আপনার <ph name="TABS_COUNT_MANY" />টি আর্কাইভ করা ট্যাব আছে}other{আপনার <ph name="TABS_COUNT_MANY" />টি আর্কাইভ করা ট্যাব আছে}}</translation>
 <translation id="3194464645767632461">রেটিং</translation>
 <translation id="3291470810748040983">খুলে রাখা কোনও ট্যাবে জিনিসের দাম কমলে আপনি তার বিজ্ঞপ্তি পাবেন</translation>

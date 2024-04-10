@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Прегледајте ја сликата</translation>
 <translation id="1611649489706141841">напред</translation>
 <translation id="1615335640928990664">Потрошен интернет од <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Користете тема</translation>
 <translation id="1621067168122174824">Изврши тест за наполнетост</translation>
 <translation id="1622402072367425417">сјајни меурчиња</translation>
 <translation id="1626590945318984973">Кратенката не е достапна. Притиснете нова кратенка без користење на функциските и копчињата за <ph name="META_KEY" />.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">маслинеста</translation>
 <translation id="8373046809163484087">Користете комплети бои што се совпаѓаат со вашиот тапет</translation>
 <translation id="8380114448424469341">Приклучи го прозорецот на док на половината <ph name="DIRECTION" /> на екранот</translation>
+<translation id="8391349326751432483">Треба да имате слободен простор од најмалку 500 MB за да извршите тестирање на меморијата. За да ослободите меморија, затворете ги картичките и апликациите.</translation>
 <translation id="8395584934117017006">Организација управува со овој <ph name="DEVICE_TYPE" /></translation>
 <translation id="8398927464629426868">Брзината со која уредот се полни или празни во моментов</translation>
 <translation id="8403988360557588704">Слика на <ph name="ART_FEATURE" /> во стилот на <ph name="ART_MOVEMENT" /></translation>

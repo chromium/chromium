@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Бүлгээс хасах</translation>
 <translation id="3008554597174452548">Бүтээгдэхүүн хянахаа зогсоох</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-н үнэ <ph name="PRICE_DROP" />-р буурсан</translation>
+<translation id="3078350928901129212"><ph name="COLOR_NAME" /> табын бүлгийн өнгөний дүрс тэмдэг</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Танд <ph name="TABS_COUNT_ONE" /> архивласан таб байна}other{Танд <ph name="TABS_COUNT_MANY" /> архивласан таб байна}}</translation>
 <translation id="3194464645767632461">үнэлгээ</translation>
 <translation id="3291470810748040983">Та нээлттэй табд илүү хямд үнэ байгаа тохиолдолд сэрэмжлүүлэг авна</translation>

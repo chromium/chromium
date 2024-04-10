@@ -3166,7 +3166,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="338323348408199233">VPN tarmoqdan tashqari trafikni bloklash</translation>
 <translation id="3384362484379805487">Diskda joy egallamaslik uchun til fayllari foydalanuvchilararo ulashiladi.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
-<translation id="3385509471227300644">Siz tanlagan kuchaytirilgan himoyaning bir qismi sifatida Google Saytlarni xavfsiz kezish endi shubhali fayllarni yuklab olganingizda ularni tekshiradi.</translation>
 <translation id="338583716107319301">Ajratuvchi</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387588771342841525">Yoniqligida parollar <ph name="EMAIL" /> hisobiga saqlanadi. Oʻchiq boʻlsa, parollar faqat bu qurilmaga saqlanadi.</translation>
@@ -6741,6 +6740,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6148576794665275391">Hozir ochish</translation>
 <translation id="614890671148262506">Bu sayt bildirishnomalariga doim ruxsat berish</translation>
 <translation id="6149015141270619212">Internetga ulanish imkonsiz</translation>
+<translation id="6149061208933997199">Paroldan foydalanish</translation>
 <translation id="6149791593592044995">Zamonaviy ohang belgilaridan foydalanish</translation>
 <translation id="6150116777338468525">Audio sifati</translation>
 <translation id="6150278227694566734">Ayrim kontaktlar</translation>
@@ -8372,7 +8372,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7434509671034404296">Dasturchilar uchun</translation>
 <translation id="7434757724413878233">Sichqonchani tezlatish</translation>
 <translation id="7434969625063495310">Bosma server kiritilmadi. Server sozlamalarini tekshiring va qaytadan urining.</translation>
-<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Chrome Web Store xizmatidan olib tashlangan 1 ta kengaytmani tekshiring}other{Chrome Web Store xizmatidan olib tashlangan {NUM_EXTENSIONS} ta kengaytmani tekshiring}}</translation>
 <translation id="7436921188514130341">Ana xolos! Nomni o‘zgartirishda xatolik yuz berdi.</translation>
 <translation id="7439519621174723623">Davom etish uchun qurilma kiriting</translation>
 <translation id="7441736532026945583">Guruhni varaqlar panelidan olish uchun "Guruhni yashirish" bandini tanlang</translation>
@@ -8390,7 +8389,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7450926666485653189">Himoyalangan URL parchasini IP manzilni yashuruvchi maxfiy server orqali Googlega yuboradi</translation>
 <translation id="7453008956351770337">Bu printerni tanlash orqali siz quyidagi kengaytmaga printeringizdan foydalanishga ruxsat berasiz:</translation>
 <translation id="7453467225369441013">Bir nechta saytdagi hisobingizdan chiqasiz, lekin Google hisobingizdan emas.</translation>
-<translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{Bu kengaytma xavfli boʻlishi mumkin. Chrome uni olib tashlashni tavsiya qiladi.}other{Bu kengaytmalar xavfli boʻlishi mumkin. Chrome ularni olib tashlashni tavsiya qiladi.}}</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Tashkilotingiz parollarni saqlashni taqiqlang</translation>
 <translation id="7455730275746867420">Qoʻshimcha konteynerlarni boshqarish</translation>
@@ -8884,7 +8882,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="780301667611848630">Kerak emas</translation>
 <translation id="7803657407897251194">Sozlashni Android qurilmasida davom ettirish uchun <ph name="DEVICE_TYPE" /> qurilmasini tarmoqqa ulang</translation>
 <translation id="7804072833593604762">Varaq yopildi</translation>
-<translation id="780446144738273886">Skrin-rideri uchun PDF fayllarni skanerlab, matn chiqaring. Faqat Chrome brauzerida ishlaydi</translation>
 <translation id="7805371082115476536">Biroz</translation>
 <translation id="7805768142964895445">Holat</translation>
 <translation id="7805906048382884326">Maslahatni yopish</translation>

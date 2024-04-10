@@ -102,6 +102,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1178821169867863726">12 x 16 collas</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1181381397492575884">Pārlūkā Chrome vietnēm tiek liegts pārlūkošanas laikā izmantot trešo pušu sīkfailus, lai izsekotu jūsu darbības. Lai <ph name="LINK" />, pārejiet uz iestatījumiem.</translation>
+<translation id="1185343831726846924">Apstiprināt, ka sapratāt — virtuālo karti nevar aktivizēt</translation>
 <translation id="1186201132766001848">Pārbaudīt paroles</translation>
 <translation id="1187430513518041110">Automašīnas un transportlīdzekļi</translation>
 <translation id="1190491977647722791">Papīrs (augsta gramāža)</translation>
@@ -324,6 +325,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> collas</translation>
 <translation id="1574714699824202614">Maksājuma veida verifikācija</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
+<translation id="1579189948231786790">Šo vietni ir bloķējusi jūsu organizācija</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Beztermiņa</translation>
 <translation id="1583429793053364125">Šīs tīmekļa lapas rādīšanas laikā radās kļūda.</translation>
@@ -1474,6 +1476,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3807366285948165054">Attēla nobīde uz X ass</translation>
 <translation id="3807709094043295184">Klasiskais roks un vecās dziesmas</translation>
 <translation id="3807873520724684969">Tika bloķēts kaitīgs saturs.</translation>
+<translation id="380865868633614173">Notiek kartes informācijas saglabāšana</translation>
 <translation id="3810770279996899697">Paroļu pārvaldniekam ir nepieciešama piekļuve MacOS sistēmai Keychain</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
 <translation id="3812398568375898177">Šis ir svarīgs atjauninājums, kas uzlabo Android lietotņu veiktspēju operētājsistēmā Chrome OS.</translation>
@@ -2187,6 +2190,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5238301240406177137">Saglabāt kontā</translation>
 <translation id="5239119062986868403">Parastā cena</translation>
 <translation id="5239623327352565343">Piekļuve atrašanās vietai ir atļauta</translation>
+<translation id="5241048084654737238">Apstiprināt, ka sapratāt — kartes informāciju nevar saglabāt</translation>
 <translation id="5242610955375133957">Sausa plēve</translation>
 <translation id="5244521145258281926">Poga “Pārvaldīt Google kontu”. Aktivizējiet, lai Google kontā pārvaldītu informāciju, konfidencialitātes un drošības iestatījumus.</translation>
 <translation id="5244732203286792411">Notiek ielāde…
@@ -2202,6 +2206,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5266128565379329178">Iesējums augšdaļā</translation>
 <translation id="5269225904387178860">Četri caurumi apakšdaļā</translation>
 <translation id="5269999699920406580">Tikai īpašnieks <ph name="OWNER_EMAIL" /> var iestatīt funkcijas, kas tiek lietotas visai sistēmai.</translation>
+<translation id="5271381225185906340">Atribūts “<ph name="DATA_CONTROLS_ATTRIBUTE" />” netiek atbalstīts kā nosacījums laukam “<ph name="DATA_CONTROLS_RESTRICTION" />”.</translation>
 <translation id="5273658854610202413">Brīdinājums! Šī politika netika apvienota, kā norādīts politikā PolicyDictionaryMultipleSourceMergeList, jo tā nav daļa no apvienojamām vārdnīcu politikām.</translation>
 <translation id="5279286380302340275">Pārvaldīt lejupielādes</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3173,6 +3178,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Lai nosūtītu šo failu, izmantojot funkciju “<ph name="FEATURE_NAME" />”, atbrīvojiet vietu ierīcē (<ph name="DISK_SPACE_SIZE" />).}zero{Lai nosūtītu šos failus, izmantojot funkciju “<ph name="FEATURE_NAME" />”, atbrīvojiet vietu ierīcē (<ph name="DISK_SPACE_SIZE" />).}one{Lai nosūtītu šos failus, izmantojot funkciju “<ph name="FEATURE_NAME" />”, atbrīvojiet vietu ierīcē (<ph name="DISK_SPACE_SIZE" />).}other{Lai nosūtītu šos failus, izmantojot funkciju “<ph name="FEATURE_NAME" />”, atbrīvojiet vietu ierīcē (<ph name="DISK_SPACE_SIZE" />).}}</translation>
 <translation id="7160999678034985039">Lūdzu, saglabājiet savu darbu un sāciet atjaunināšanu, kad esat gatavs.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vai kopēt konfidenciālu failu?}zero{Vai kopēt konfidenciālus failus?}one{Vai kopēt konfidenciālus failus?}other{Vai kopēt konfidenciālus failus?}}</translation>
+<translation id="7168625890036931112">Ierobežojums “<ph name="DATA_CONTROLS_RESTRICTION" />” šajā platformā netiek atbalstīts.</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
 <translation id="7174545416324379297">Apvienota</translation>
 <translation id="7175097078723125014">Tika atlasīta opcija Rediģēt adresi</translation>
@@ -3245,6 +3251,7 @@ Papildu informācija:
 <translation id="7310392214323165548">Ierīce ļoti drīz tiks restartēta</translation>
 <translation id="7311244614769792472">Netika atrasts neviens rezultāts</translation>
 <translation id="7311837626618954149">Pārlūkā Chromium vietnēm tiek liegts pārlūkošanas laikā izmantot trešo pušu sīkfailus, lai izsekotu jūsu darbības.</translation>
+<translation id="7313107491291103073">Jūsu organizācija ir atzīmējusi šo vietni kā nepiemērotu, jo ar to, iespējams, tiek pārkāpta politika.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Savienojuma palīdzība</translation>
 <translation id="7323804146520582233">Paslēpt sadaļu “<ph name="SECTION" />”</translation>
@@ -3570,6 +3577,7 @@ Papildu informācija:
 <translation id="7888575728750733395">Drukāšanas krāsu atveide</translation>
 <translation id="7894280532028510793">Ja nav pareizrakstības kļūdu, <ph name="BEGIN_LINK" />mēģiniet palaist tīkla diagnostiku<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Aploksne (7 x 9 collas)</translation>
+<translation id="7908648876066812348">Notiek virtuālās kartes aktivizēšana</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai iestatījumos pārietu uz Chrome drošības pārbaudes lapu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="791551905239004656">Zīmēšana un krāsošana</translation>
 <translation id="7916162853251942238">Fleksogrāfijas pamatne</translation>
@@ -4078,6 +4086,7 @@ Papildu informācija:
 <translation id="8874790741333031443">Īslaicīgi atļaujiet izmantot trešo pušu sīkfailus. Tas nozīmē, ka pārlūkošanas aizsardzības līmenis būs zemāks, taču pastāv lielāka iespēja, ka vietnes funkcijas darbosies, kā paredzēts.</translation>
 <translation id="8874824191258364635">Ievadiet derīgu kartes numuru</translation>
 <translation id="8877780815363510165">Makšķerēšana</translation>
+<translation id="888117890813270681">Laukam “<ph name="DATA_CONTROLS_RESTRICTION" />” nevar iestatīt vērtību “<ph name="DATA_CONTROLS_LEVEL" />”.</translation>
 <translation id="8884537526797090108">Konfidenciālu saturu nevar ierakstīt</translation>
 <translation id="8888187300091017436">Matrači</translation>
 <translation id="8890048757975398817">Pārvaldīt ierīci <ph name="READERNAME" /> un iegūt piekļuvi viedkartei, kas ierīcei ir pieejama.</translation>

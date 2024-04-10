@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Qrupdan çıxarın</translation>
 <translation id="3008554597174452548">Məhsulu izləməyi dayandırın</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> üçün <ph name="PRICE_DROP" /> endirim</translation>
+<translation id="3078350928901129212"><ph name="COLOR_NAME" /> tab qrupu rəngi ikonası</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Arxivə atılmış <ph name="TABS_COUNT_ONE" /> tab var}other{Arxivə atılmış <ph name="TABS_COUNT_MANY" /> tab var}}</translation>
 <translation id="3194464645767632461">reytinq</translation>
 <translation id="3291470810748040983">Qiymət endirildikdə açıq tabda bildiriş alacaqsınız</translation>

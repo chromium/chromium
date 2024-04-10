@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Հեռացնել խմբից</translation>
 <translation id="3008554597174452548">Այլևս չհետևել ապրանքին</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> գնիջեցում <ph name="PRODUCT_NAME" />-ի համար</translation>
+<translation id="3078350928901129212">Ներդիրների խմբի <ph name="COLOR_NAME" /> գույնի պատկերակ</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Դուք ունեք <ph name="TABS_COUNT_ONE" /> արխիվացված ներդիր}one{Դուք ունեք <ph name="TABS_COUNT_MANY" /> արխիվացված ներդիր}other{Դուք ունեք <ph name="TABS_COUNT_MANY" /> արխիվացված ներդիր}}</translation>
 <translation id="3194464645767632461">գնահատական</translation>
 <translation id="3291470810748040983">Դուք ծանուցում կստանաք, երբ բացված ներդիրում ավելի ցածր գին հայտնաբերվի</translation>

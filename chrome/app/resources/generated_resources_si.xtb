@@ -3164,7 +3164,6 @@
 <translation id="338323348408199233">VPN රහිත තදබදය අවහිර කරන්න</translation>
 <translation id="3384362484379805487">තැටි ඉඩ ඉතිරි කර ගැනීම සඳහා භාෂා ගොනු පරිශීලකයන් අතර බෙදා ගැනේ.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
-<translation id="3385509471227300644">Google ආරක්ෂිත බ්‍රවුස් කිරීම දැන් ඔබ තෝරන ලද වැඩිදියුණු කළ ආරක්ෂාවේ කොටසක් ලෙස ඔබ බාගැනීමට උත්සාහ කරන සැක සහිත ගොනු ස්කෑන් කරයි.</translation>
 <translation id="338583716107319301">විභේදකය</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387588771342841525">ක්‍රියාත්මක වූ විට, මුරපද <ph name="EMAIL" /> තුළ සුරකිනු ලැබේ. ක්‍රියාවිරහිත වූ විට, මුරපද සුරැකෙන්නේ මෙම උපාංගයට පමණි.</translation>
@@ -6736,6 +6735,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6148576794665275391">දැන් විවෘත කරන්න</translation>
 <translation id="614890671148262506">මෙම අඩවියෙන් සැම විටම දැනුම්දීම්වලට ඉඩ දෙන්න</translation>
 <translation id="6149015141270619212">අන්තර්ජාලය වෙත සම්බන්ධ විය නොහැකි ය</translation>
+<translation id="6149061208933997199">මුරපදය භාවිත කරන්න</translation>
 <translation id="6149791593592044995">නවීන තාන සලකුණු ස්ථාපනය භාවිත කරන්න</translation>
 <translation id="6150116777338468525">ශ්‍රව්‍ය ගුණත්වය</translation>
 <translation id="6150278227694566734">සමහර සම්බන්ධතා</translation>
@@ -8367,7 +8367,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7434509671034404296">සංවර්ධක</translation>
 <translation id="7434757724413878233">මූසික ත්වරණය</translation>
 <translation id="7434969625063495310">මුද්‍රණ සේවාදායකය එක් කළ නොහැකි විය. සේවාදායකයේ වින්‍යාසය පරීක්‍ෂා කර නැවත උත්සාහ කරන්න.</translation>
-<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Chrome Web Store වෙතින් ඉවත් කරන ලද 1 දිගුවක් සමාලෝචනය කරන්න}one{Chrome Web Store වෙතින් ඉවත් කරන ලද දිගු {NUM_EXTENSIONS}ක් සමාලෝචනය කරන්න}other{Chrome Web Store වෙතින් ඉවත් කරන ලද දිගු {NUM_EXTENSIONS}ක් සමාලෝචනය කරන්න}}</translation>
 <translation id="7436921188514130341">අනේ, අපොයි! යළි නම් කිරීමේ දී ගැටලුවක් ඇති විය.</translation>
 <translation id="7439519621174723623">ඉදිරියට යාමට උපාංග නමක් එක් කරන්න</translation>
 <translation id="7441736532026945583">ඔබේ පටිති තීරුවෙන් සමූහය ඉවත් කිරීමට "සමූහය සඟවන්න" තෝරන්න</translation>
@@ -8385,7 +8384,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7450926666485653189">ඔබේ IP ලිපිනය සඟවන පෞද්ගලිකත්ව සේවාදායකයක් හරහා URL හි අපැහැදිලි කොටසක් Google වෙත යවයි</translation>
 <translation id="7453008956351770337">මෙම මුද්‍රණ යන්ත්‍රය තේරීමෙන්, ඔබ ඔබේ මුද්‍රණ යන්ත්‍රය වෙත පිවිසීමට පහත දිගුවට අවසර දෙයි:</translation>
 <translation id="7453467225369441013">ඔබව බොහෝ අඩවිවලින් වරනු ඇත. ඔබව ඔබේ Google ගිණුමෙන් නොවරනු ඇත.</translation>
-<translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{මෙම දිගුව අනාරක්ෂිත විය හැක. ඔබ එය ඉවත් කරන ලෙස Chrome නිර්දේශ කරයි.}one{මෙම දිගු අනාරක්ෂිත විය හැක. ඔබ ඒවා ඉවත් කරන ලෙස Chrome නිර්දේශ කරයි.}other{මෙම දිගු අනාරක්ෂිත විය හැක. ඔබ ඒවා ඉවත් කරන ලෙස Chrome නිර්දේශ කරයි.}}</translation>
 <translation id="7454548535253569100">ද්වාරය: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">ඔබේ සංවිධානය මුරපද සුරැකීම අක්‍රිය කර ඇත</translation>
 <translation id="7455730275746867420">අමතර බහාලුම් කළමනාකරණය කරන්න</translation>
@@ -8878,7 +8876,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7803657407897251194">ඔබේ Android උපාංගය සැකසීම දිගටම කරගෙන යාමට, ඔබේ <ph name="DEVICE_TYPE" /> ජාලයකට සම්බන්ධ කරන්න</translation>
 <translation id="7804072833593604762">ටැබය වසන ලදි</translation>
-<translation id="780446144738273886">තිර කියවනය සඳහා පෙළ උපුටා ගැනීමට PDF ස්කෑන් කරන්න. Chrome බ්‍රව්සරයෙහි පමණක් සහාය දක්වයි</translation>
 <translation id="7805371082115476536">සැහැල්ලු</translation>
 <translation id="7805768142964895445">තත්වය</translation>
 <translation id="7805906048382884326">ඉඟිය වසන්න</translation>

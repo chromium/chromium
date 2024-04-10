@@ -845,6 +845,8 @@
 <translation id="5946538341867151940">ທ່ານຍັງບໍ່ໄດ້ເຊື່ອມຕໍ່ເທື່ອ. ຫາກຜູ້ໃຫ້ບໍລິການມືຖືຂອງທ່ານແນະນຳ APN ແບບກຳນົດເອງ, ໃຫ້ລະບຸຂໍ້ມູນ APN ດັ່ງກ່າວໂດຍເລືອກ "+ APN ໃໝ່"</translation>
 <translation id="5947266287934282605">ຫາກມື້ສຸດທ້າຍຂອງເດືອນຢູ່ກ່ອນມື້ນີ້, ລະບົບຈະຣີເຊັດຂໍ້ມູນໃນມື້ສຸດທ້າຍຂອງເດືອນ</translation>
 <translation id="5948460390109837040">ໝາ</translation>
+<translation id="594989847980441553">ເລືອກ "ສ້າງ" ເພື່ອສ້າງຮູບດ້ວຍ AI.
+        ຮູບທີ່ສ້າງຂຶ້ນທັງໝົດຈະປາກົດຢູ່ບ່ອນນີ້ໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="5972388717451707488">ອັບເດດລະບົບ</translation>
 <translation id="5975130252842127517">ສົ້ມແດງໂຄຣໍລ໌</translation>
 <translation id="5984145644188835034">ຮູບພື້ນຫຼັງເລີ່ມຕົ້ນ</translation>
@@ -1168,6 +1170,16 @@
 <translation id="773153675489693198">ຈຳນວນຮອບ</translation>
 <translation id="7746357909584236306">ແກ້ໄຂໄດ້</translation>
 <translation id="7747039790905080783">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
+<translation id="7748162180830414915">ເລືອກຮູບແບບສີສັນ ແລະ ຈາກນັ້ນເລືອກຄຳທີ່ຂີດກ້ອງໄວ້ເພື່ອປັບແຕ່ງສ່ວນຕົວຮູບ AI ຂອງທ່ານ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ເລືອກ "ສ້າງແຮງບັນດານໃຈໃຫ້ຂ້ອຍ" ເພື່ອຮັບຕົວເລືອກຮູບ AI ທີ່ເປັນເອກະລັກ ແລະ ຫຼາກຫຼາຍຍິ່ງຂຶ້ນ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ເມື່ອທ່ານສ້າງດ້ວຍ AI, prompt ຈະຖືກສົ່ງໄປຫາເຊີບເວີ Google AI ເພື່ອສ້າງຮູບ ແລະ ປັບປຸງສິນຄ້າ, ເຊິ່ງຂຶ້ນກັບ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວຂອງ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI ສ້າງເນື້ອຫາແມ່ນຄຸນສົມບັດການທົດລອງ, ໃນການພັດທະນາໄລຍະເລີ່ມຕົ້ນ ແລະ ຕອນນີ້ອາດມີໃຫ້ໃຊ້ໃນວົງຈຳກັດ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7752963721013053477">ຮຸ່ງອະລຸນສູ່ຄວາມມືດ - ພິເສດສະເພາະ</translation>
 <translation id="7762130827864645708">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານສຳເລັດແລ້ວ. ກະລຸນາໃຊ້ລະຫັດຜ່ານໃໝ່ນັບຈາກນີ້ໄປ.</translation>
 <translation id="7763470514545477072">ຈັບຄູ່ສ່ວນຕໍ່ທ້າຍຂອງໂດເມນ</translation>
@@ -1201,6 +1213,7 @@
 <translation id="7936303884198020182">ບໍ່ພົບເຊີບເວີຊື່</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
 <translation id="7943235353293548836">ໄລຍະເວລາຂອງ keepalive ຕໍ່ເນື່ອງ</translation>
+<translation id="7943516765291457328">ເປີດ Bluetooth ເພື່ອສະແກນຫາຮັອດສະປອດໃກ້ຄຽງ</translation>
 <translation id="7944562637040950644">ສະຫຼັບໄຟພື້ນຫຼັງແປ້ນພິມ</translation>
 <translation id="7953669802889559161">ການປ້ອນຂໍ້ມູນ</translation>
 <translation id="7955587717700691983">ແປ້ນພິມ Bluetooth</translation>
@@ -1330,6 +1343,7 @@
 <translation id="8747900814994928677">ຢືນຢັນການປ່ຽນແປງ</translation>
 <translation id="8749478549112817787">ພາບພື້ນຫຼັງກ້ອງຖ່າຍຮູບ</translation>
 <translation id="8755946156089753497">ຫໍຄອຍ</translation>
+<translation id="8756235582947991808">ວິທີສ້າງດ້ວຍ AI ແລະ ບາງສິ່ງທີ່ຕ້ອງຄຳນຶງເຖິງ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">ອະລະບໍ້າ Google ຮູບພາບ</translation>
 <translation id="8775713578693478175">APN ຂອງໂມເດັມ</translation>

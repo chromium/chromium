@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Зургийг урьдчилан үзэх</translation>
 <translation id="1611649489706141841">цааш</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />-с хойших дата ашиглалт</translation>
+<translation id="1618566998877964907">Загвар ашиглах</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
 <translation id="1622402072367425417">гэрэлтэж буй бөмбөлгүүд</translation>
 <translation id="1626590945318984973">Товчлол боломжгүй байна. Функц болон <ph name="META_KEY" /> товчнуудыг ашиглалгүйгээр шинэ товчлолыг дарна уу.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">чидун жимс</translation>
 <translation id="8373046809163484087">Таны дэлгэцийн зурагтай таарах өнгөний багцыг ашиглана уу</translation>
 <translation id="8380114448424469341">Дэлгэцийн <ph name="DIRECTION" /> талд цонхыг суурилуулах</translation>
+<translation id="8391349326751432483">Санах ойн шалгалт явуулахын тулд танд дор хаяж 500 МБ-ын сул зай шаардлагатай. Санах ойг суллахын тулд таб болон аппуудыг хаана уу.</translation>
 <translation id="8395584934117017006">Энэ <ph name="DEVICE_TYPE" />-г байгууллага удирддаг</translation>
 <translation id="8398927464629426868">Төхөөрөмжийн одоогийн цэнэглэгдэж эсвэл цэнэгээ алдаж байгаа хувь</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" />-н хэв маягтай <ph name="ART_FEATURE" />-н уран зураг</translation>

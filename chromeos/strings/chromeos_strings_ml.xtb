@@ -112,6 +112,7 @@
 <translation id="160633243685262989">പ്രിവ്യൂ ചിത്രം</translation>
 <translation id="1611649489706141841">കൈമാറുക</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> മുതലുള്ള ഡാറ്റാ ഉപയോഗം</translation>
+<translation id="1618566998877964907">തീം ഉപയോഗിക്കുക</translation>
 <translation id="1621067168122174824">ചാർജ് ടെസ്റ്റ് റൺ ചെയ്യുക</translation>
 <translation id="1622402072367425417">തിളക്കമുള്ള ബബിളുകൾ</translation>
 <translation id="1626590945318984973">കുറുക്കുവഴി ലഭ്യമല്ല. ഫംഗ്‌ഷനും <ph name="META_KEY" /> കീകളും ഉപയോഗിക്കാതെ ഒരു പുതിയ കുറുക്കുവഴി അമർത്തുക.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">ഒലിവ്</translation>
 <translation id="8373046809163484087">നിങ്ങളുടെ വാൾപേപ്പറുമായി പൊരുത്തപ്പെടുന്ന വർണ്ണ സെറ്റുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="8380114448424469341">സ്ക്രീനിന്റെ <ph name="DIRECTION" /> ഭാഗത്തെ വലിയ വശത്ത് വിൻഡോ ഡോക്ക് ചെയ്യുക</translation>
+<translation id="8391349326751432483">മെമ്മറി ടെസ്റ്റ് റൺ ചെയ്യാൻ, കുറഞ്ഞത് 500 MB ശേഷിച്ചിരിക്കണം. ഇടം സൃഷ്‌ടിക്കാൻ, ടാബുകളും ആപ്പുകളും അടയ്ക്കുക.</translation>
 <translation id="8395584934117017006">ഈ <ph name="DEVICE_TYPE" /> എന്റർപ്രൈസ് മാനേജ് ചെയ്യുന്നു</translation>
 <translation id="8398927464629426868">ഉപകരണം നിലവിൽ ചാർജ് ചെയ്യുന്നതോ ഡിസ്‌ചാർജ് ചെയ്യുന്നതോ ആയ റേറ്റ്</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> സ്റ്റൈലിലുള്ള <ph name="ART_FEATURE" /> എന്നതിന്റെ പെയിന്റിംഗ്</translation>

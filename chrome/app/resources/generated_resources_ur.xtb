@@ -3162,7 +3162,6 @@
 <translation id="338323348408199233">‏VPN کے بغیر ٹریفک مسدود کریں</translation>
 <translation id="3384362484379805487">ڈسک اسپیس محفوظ کرنے کے لیے زبان کی فائلز صارفین کے درمیان اشتراک کی جاتی ہیں۔</translation>
 <translation id="3385092118218578224">%‎<ph name="DISPLAY_ZOOM" /></translation>
-<translation id="3385509471227300644">‏Google محفوظ براؤزنگ اب ان مشتبہ فائلوں کو اسکین کرتا ہے جنہیں آپ اپنے منتخب کردہ بہتر تحفظ کے حصے کے طور پر ڈاؤن لوڈ کرنے کی کوشش کرتے ہیں۔</translation>
 <translation id="338583716107319301">فاصل</translation>
 <translation id="3387023983419383865">،</translation>
 <translation id="3387588771342841525">آن ہونے پر پاس ورڈز <ph name="EMAIL" /> میں محفوظ ہوتے ہیں- آف ہونے پر پاس ورڈز صرف اس آلے پر محفوظ ہوتے ہیں۔</translation>
@@ -6731,6 +6730,7 @@
 <translation id="6148576794665275391">ابھی کھلا ہے</translation>
 <translation id="614890671148262506">اس سائٹ سے اطلاعات کی ہمیشہ اجازت دیں</translation>
 <translation id="6149015141270619212">انٹرنیٹ سے منسلک نہیں کیا جا سکتا</translation>
+<translation id="6149061208933997199">پاس ورڈ استعمال کریں</translation>
 <translation id="6149791593592044995">جدید ٹون کے نشان کے مقام کا استعمال کریں</translation>
 <translation id="6150116777338468525">آڈیو کا معیار</translation>
 <translation id="6150278227694566734">کچھ رابطے</translation>
@@ -8362,7 +8362,6 @@
 <translation id="7434509671034404296">ڈویلپر</translation>
 <translation id="7434757724413878233">ماؤس کا ایکسیلریشن</translation>
 <translation id="7434969625063495310">پرنٹ سرور شامل نہیں کر سکا۔ براہ کرم سرور کی کنفیگریشن کو چیک کریں اور دوبارہ کوشش کریں۔</translation>
-<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{‏1 ایکسٹینشن کا جائزہ لیں جسے Chrome ویب اسٹور سے ہٹا دیا گیا تھا}other{‏{NUM_EXTENSIONS} ایکسٹینشنز کا جائزہ لیں جنہیں Chrome ویب اسٹور سے ہٹا دیا گیا تھا}}</translation>
 <translation id="7436921188514130341">افوہ! نام کی تبدیلی کے دوران ایک خرابی تھی۔</translation>
 <translation id="7439519621174723623">جاری رکھنے کیلئے ایک آلے کا نام شامل کریں</translation>
 <translation id="7441736532026945583">اپنی ٹیب اسٹرپ سے گروپ کو ہٹانے کے لیے "گروپ چھپائیں" کو منتخب کریں</translation>
@@ -8380,7 +8379,6 @@
 <translation id="7450926666485653189">‏URL کا ایک مبہم حصہ Google کو رازداری کے سرور کے ذریعے بھیجتا ہے جو آپ کا IP پتہ چھپاتا ہے</translation>
 <translation id="7453008956351770337">یہ پرنٹر منتخب کر کے، آپ مندرجہ ذیل ایکسٹینشن کو اپنے پرنٹر تک رسائی کی اجازت دے رہے ہیں:</translation>
 <translation id="7453467225369441013">‏اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے۔ آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔</translation>
-<translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{‏ہو سکتا ہے کہ یہ ایکسٹینشن محفوظ نہ ہو۔ Chrome تجویز کرتا ہے کہ آپ اسے ہٹا دیں۔}other{‏ہو سکتا ہے کہ یہ ایکسٹینشنز محفوظ نہ ہوں۔ Chrome تجویز کرتا ہے کہ آپ انہیں ہٹا دیں۔}}</translation>
 <translation id="7454548535253569100">پورٹل: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">آپ کی تنظیم نے پاس ورڈ محفوظ کرنا بند کر دیا ہے</translation>
 <translation id="7455730275746867420">اضافی کنٹینرز کا نظم کریں</translation>
@@ -8874,7 +8872,6 @@
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7803657407897251194">‏اپنے Android آلے کی مدد سے سیٹ اپ کرنا جاری رکھنے کیلئے، اپنے <ph name="DEVICE_TYPE" /> کو کسی نیٹ ورک سے منسلک کریں</translation>
 <translation id="7804072833593604762">ٹیب بند ہو گیا</translation>
-<translation id="780446144738273886">‏اسکرین ریڈر کی خاطر ٹیکسٹ نکالنے کے لیے PDF کو اسکین کریں۔ صرف Chrome براؤزر پر تعاون یافتہ ہے</translation>
 <translation id="7805371082115476536">روشنی</translation>
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7805906048382884326">ٹپ بند کریں</translation>

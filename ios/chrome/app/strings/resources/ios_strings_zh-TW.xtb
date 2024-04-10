@@ -311,6 +311,7 @@
 <translation id="2625189173221582860">已複製密碼</translation>
 <translation id="2626236249646841566">請檢查你的連線狀態，然後再次嘗試登入。</translation>
 <translation id="2637313651144986786">搜尋分頁...</translation>
+<translation id="2640733327287333451">沒有使用者名稱 ••••••</translation>
 <translation id="2648721026697078500">永不移動</translation>
 <translation id="2648803196158606475">刪除已讀取的項目</translation>
 <translation id="2664621323652615289">停止</translation>
@@ -1280,6 +1281,7 @@
 <translation id="7569588934989281656">只要滑動分頁列，即可切換分頁。</translation>
 <translation id="7582857256643797524">裝置已啟用這項設定</translation>
 <translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁。</translation>
+<translation id="7598439272585186139">提升安全性</translation>
 <translation id="7600965453749440009">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">已封鎖彈出式視窗 (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">刪除密碼</translation>

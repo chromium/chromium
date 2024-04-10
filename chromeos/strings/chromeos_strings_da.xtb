@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Forhåndsvisning</translation>
 <translation id="1611649489706141841">videresend</translation>
 <translation id="1615335640928990664">Dataforbrug siden <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Brug et tema</translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
 <translation id="1622402072367425417">lysende bobler</translation>
 <translation id="1626590945318984973">Genvejen er ikke tilgængelig. Tryk en ny genvej uden at bruge funktions- og <ph name="META_KEY" />-tasterne.</translation>
@@ -844,6 +845,8 @@
 <translation id="5946538341867151940">Du har ikke oprettet forbindelse endnu. Hvis dit mobilselskab anbefaler et tilpasset APN, skal du angive APN-oplysningerne ved at vælge "+ Nyt adgangspunkt"</translation>
 <translation id="5947266287934282605">Hvis den sidste dag i måneden ligger før denne dato, nulstilles dataene den sidste dag i måneden</translation>
 <translation id="5948460390109837040">hunde</translation>
+<translation id="594989847980441553">Vælg "Opret" for at oprette et billede med AI.
+        Alle oprettede billeder vises automatisk her.</translation>
 <translation id="5972388717451707488">Opdater maskine</translation>
 <translation id="5975130252842127517">koralrød</translation>
 <translation id="5984145644188835034">Standardbaggrund</translation>
@@ -1274,6 +1277,7 @@
 <translation id="8372667721254470022">oliven</translation>
 <translation id="8373046809163484087">Brug farvesæt, der matcher din baggrund</translation>
 <translation id="8380114448424469341">Fastgør vinduet på halvdelen af skærmen (<ph name="DIRECTION" />)</translation>
+<translation id="8391349326751432483">Du skal have mindst 500 MB ledig hukommelse for at køre en hukommelsestest. Luk faner og apps for at frigøre plads i hukommelsen.</translation>
 <translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" /> administreres af en virksomhed</translation>
 <translation id="8398927464629426868">Den aktuelle hastighed for opladning eller afladning på enheden</translation>
 <translation id="8403988360557588704">Et maleri af <ph name="ART_FEATURE" /> inden for stilarten <ph name="ART_MOVEMENT" /></translation>

@@ -102,6 +102,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1178821169867863726">12 in x 16 in</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1181381397492575884">Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK" />.</translation>
+<translation id="1185343831726846924">Confirming that virtual card can't be turned on</translation>
 <translation id="1186201132766001848">Check Passwords</translation>
 <translation id="1187430513518041110">Cars and vehicles</translation>
 <translation id="1190491977647722791">Paper (heavyweight)</translation>
@@ -324,6 +325,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
 <translation id="1574714699824202614">Verifying payment method</translation>
 <translation id="1576277203042721907">Shopping insights</translation>
+<translation id="1579189948231786790">This site is blocked by your organisation</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Does not expire</translation>
 <translation id="1583429793053364125">Something went wrong while displaying this web page.</translation>
@@ -1475,6 +1477,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3807366285948165054">Image X shift</translation>
 <translation id="3807709094043295184">Classic rock and oldies</translation>
 <translation id="3807873520724684969">Harmful content blocked.</translation>
+<translation id="380865868633614173">Saving card info</translation>
 <translation id="3810770279996899697">Password Manager needs access to MacOS Keychain</translation>
 <translation id="3810973564298564668">Manage</translation>
 <translation id="3812398568375898177">This is a critical update that improves performance of Android apps on ChromeOS.</translation>
@@ -2188,6 +2191,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5238301240406177137">Save in Account</translation>
 <translation id="5239119062986868403">Typical price</translation>
 <translation id="5239623327352565343">Location allowed</translation>
+<translation id="5241048084654737238">Confirming that card info can't be saved</translation>
 <translation id="5242610955375133957">Dry film</translation>
 <translation id="5244521145258281926">Manage Google Account, activate to manage your info, privacy and security in your Google Account</translation>
 <translation id="5244732203286792411">Loading…
@@ -2203,6 +2207,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5266128565379329178">Bind top</translation>
 <translation id="5269225904387178860">Quad punch bottom</translation>
 <translation id="5269999699920406580">Features that apply system-wide can only be set by the owner: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">'<ph name="DATA_CONTROLS_ATTRIBUTE" />' is not a supported condition for '<ph name="DATA_CONTROLS_RESTRICTION" />'</translation>
 <translation id="5273658854610202413">Warning: This policy was not merged as specified in PolicyDictionaryMultipleSourceMergeList policy because it is not part of the dictionary policies that can be merged.</translation>
 <translation id="5279286380302340275">Manage downloads</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3174,6 +3179,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="715996170234243096">{NUM_FILES,plural, =1{To send this file using <ph name="FEATURE_NAME" />, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{To send these files using <ph name="FEATURE_NAME" />, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}}</translation>
 <translation id="7160999678034985039">Please save your work and start the update when you're ready.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Copy confidential file?}other{Copy confidential files?}}</translation>
+<translation id="7168625890036931112">'<ph name="DATA_CONTROLS_RESTRICTION" />' is not a supported restriction on this platform</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">Merged</translation>
 <translation id="7175097078723125014">The edit address option was selected</translation>
@@ -3246,6 +3252,7 @@ Additional details:
 <translation id="7310392214323165548">Device will restart very soon</translation>
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7311837626618954149">Chromium blocks sites from using third-party cookies to track you as you browse.</translation>
+<translation id="7313107491291103073">Your organisation has flagged this site as it might violate a policy.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Connection help</translation>
 <translation id="7323804146520582233">Hide the '<ph name="SECTION" />' section</translation>
@@ -3571,6 +3578,7 @@ Additional details:
 <translation id="7888575728750733395">Print rendering intent</translation>
 <translation id="7894280532028510793">If spelling is correct, <ph name="BEGIN_LINK" />try running network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 in</translation>
+<translation id="7908648876066812348">Turning on virtual card</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to go to Chrome safety check page in settings</translation>
 <translation id="791551905239004656">Drawing and colouring</translation>
 <translation id="7916162853251942238">Flexo base</translation>
@@ -4078,6 +4086,7 @@ Additional details:
 <translation id="8874790741333031443">Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.</translation>
 <translation id="8874824191258364635">Enter a valid card number</translation>
 <translation id="8877780815363510165">Fishing</translation>
+<translation id="888117890813270681">'<ph name="DATA_CONTROLS_RESTRICTION" />' cannot be set to '<ph name="DATA_CONTROLS_LEVEL" />'</translation>
 <translation id="8884537526797090108">Can't record confidential content</translation>
 <translation id="8888187300091017436">Mattresses</translation>
 <translation id="8890048757975398817">Control <ph name="READERNAME" /> and gain access to the smart card accessible to it.</translation>

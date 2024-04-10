@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Forskoða mynd</translation>
 <translation id="1611649489706141841">áfram</translation>
 <translation id="1615335640928990664">Gagnanotkun síðan <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Nota þema</translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
 <translation id="1622402072367425417">glóandi kúlum</translation>
 <translation id="1626590945318984973">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil án þess að nota virkni- og <ph name="META_KEY" />-lykla.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">ólífugrænn</translation>
 <translation id="8373046809163484087">Notaðu liti sem passa við veggfóðrið</translation>
 <translation id="8380114448424469341">Festa glugga til <ph name="DIRECTION" /> á skjánum</translation>
+<translation id="8391349326751432483">Þú verður að hafa a.m.k. 500 MB laus til að keyra minnisprófun. Til að losa um minni skaltu loka flipum og forritum.</translation>
 <translation id="8395584934117017006">Þessu <ph name="DEVICE_TYPE" /> tæki er stjórnað af fyrirtæki</translation>
 <translation id="8398927464629426868">Núverandi hleðslu- eða afhleðsluhraði tækisins</translation>
 <translation id="8403988360557588704">Málverk af <ph name="ART_FEATURE" /> í <ph name="ART_MOVEMENT" /></translation>

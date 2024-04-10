@@ -857,7 +857,7 @@
 <translation id="4375482231364171368">Мекенжай жолағынан іздеу</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, сигнал күші <ph name="SIGNAL_STRENGTH" /> пайыз.</translation>
-<translation id="4378551569595875038">Қосылуда…</translation>
+<translation id="4378551569595875038">Қосылып жатыр…</translation>
 <translation id="4379531060876907730">Стилус құралдары</translation>
 <translation id="4381031910344220229">Бұл — микрофон рұқсаты бар барлық қолданба мен веб-сайт және <ph name="APP_NAME" /> қолданбасы үшін микрофонды пайдалануға мүмкіндік береді</translation>
 <translation id="4382340674111381977">Алдыңғы бетке өту</translation>
@@ -1116,7 +1116,7 @@
 <translation id="5322611492012084517">Телефоныңызды табу мүмкін емес</translation>
 <translation id="5323994101633366939">Жұмыс үстелі атын жасыру</translation>
 <translation id="5327248766486351172">Аты</translation>
-<translation id="5329548388331921293">Қосылуда…</translation>
+<translation id="5329548388331921293">Қосылып жатыр…</translation>
 <translation id="5331975486040154427">USB-C құрылғысы (сол жақ артқы порты)</translation>
 <translation id="533282197239610265">Трансляциялау құрылғыларын көрсету</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (оң)</translation>
@@ -1263,6 +1263,7 @@
 <translation id="5867606971598166637">Әкімшіңіз экрандарды бақылап отыр.</translation>
 <translation id="5876666360658629066">Ата-ана кодын енгізіңіз</translation>
 <translation id="5881540930187678962">Phone Hub кейін орнату</translation>
+<translation id="588258955323874662">Толық экран</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> терезесі <ph name="DESK_TITLE" /> жұмыс үстеліне тағайындалып, басқаларының бәрінен алынды.</translation>
 <translation id="588817334757907802">Файлды Chrome браузерінде ашу</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
@@ -1540,6 +1541,7 @@
 <translation id="6961840794482373852">Alt + жоғарыға бағыттауыш перне тіркесімінің функциясы өзгерді. Page Up пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + жоғарыға бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="696267987219125751">Камерамен кадрлау өшірулі.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
+<translation id="6972629891077993081">HID құрылғылары</translation>
 <translation id="6972754398087986839">Іске кірісу</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">insert</translation>

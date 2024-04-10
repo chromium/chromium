@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Förhandsgranska bild</translation>
 <translation id="1611649489706141841">framåt</translation>
 <translation id="1615335640928990664">Dataanvändning sedan <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Använd ett tema</translation>
 <translation id="1621067168122174824">Kör laddningstest</translation>
 <translation id="1622402072367425417">lysande bubblor</translation>
 <translation id="1626590945318984973">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando utan att använda funktions- och <ph name="META_KEY" />tangenterna.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">olivfärgad</translation>
 <translation id="8373046809163484087">Använd färguppsättningar som matchar din bakgrund</translation>
 <translation id="8380114448424469341">Docka fönstret på den <ph name="DIRECTION" /> halvan av skärmen</translation>
+<translation id="8391349326751432483">Du behöver minst 500 MB ledigt utrymme för att köra ett minnestest. Stäng flikar och appar för att frigöra minne.</translation>
 <translation id="8395584934117017006">Denna <ph name="DEVICE_TYPE" /> är företagshanterad</translation>
 <translation id="8398927464629426868">Hur fort enheten laddas eller laddas ur för närvarande</translation>
 <translation id="8403988360557588704">En målning av <ph name="ART_FEATURE" /> i stilen <ph name="ART_MOVEMENT" /></translation>

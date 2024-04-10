@@ -112,7 +112,7 @@
 <translation id="160633243685262989">Slika pregleda</translation>
 <translation id="1611649489706141841">prosljeđivanje</translation>
 <translation id="1615335640928990664">Prijenos podataka od datuma <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1618566998877964907">Upotrijebite temu</translation>
+<translation id="1618566998877964907">Koristite temu</translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
 <translation id="1622402072367425417">svijetleći oblačići</translation>
 <translation id="1626590945318984973">Prečica nije dostupna. Pritisnite novu prečicu bez korištenja funkcijske tipke i tipke <ph name="META_KEY" />.</translation>
@@ -926,7 +926,7 @@
 <translation id="6382182670717268353">Pregled čuvara ekrana</translation>
 <translation id="6388847657025262518">Ulagač za dokumente skenera se zaglavio. Provjerite ulagač i pokušajte ponovo.</translation>
 <translation id="6394634179843537518">Dodajte fajl</translation>
-<translation id="6396719002784938593">osušeno kovilje</translation>
+<translation id="6396719002784938593">Osušeno kovilje</translation>
 <translation id="639964859328803943">popodnevni čaj</translation>
 <translation id="6400680457268373900">Surealan objekt "<ph name="DREAMSCAPES_OBJECT" />" izrađen od <ph name="DREAMSCAPES_MATERIAL" /> u <ph name="DREAMSCAPES_COLORS" /> boji</translation>
 <translation id="6401427872449207797">pretraživanje u pregledniku</translation>
@@ -968,7 +968,7 @@
 <translation id="6575134580692778371">Nije konfigurirano</translation>
 <translation id="6576005492601044801">lijevo</translation>
 <translation id="6579509898032828423">Koristi ovu fotografiju</translation>
-<translation id="6587870930887634392">sukulent</translation>
+<translation id="6587870930887634392">Sukulent</translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6599673642868607614">Hvala vam na povratnim informacijama. Vaše povratne informacije nam pomažu da poboljšamo iskustvo s Chrombookom i naš tim će ih pregledati. Zbog velikog broja prijava, nećemo moći poslati odgovor.</translation>
 <translation id="6618744767048954150">Pokrenuto</translation>
@@ -1129,7 +1129,7 @@
 <translation id="7497215489070763236">CA certifikat servera</translation>
 <translation id="7501957181231305652">ili</translation>
 <translation id="7502658306369382406">IPv6 adresa</translation>
-<translation id="7507061649493508884">Blistav objekt "<ph name="FLOWER_COLOR" />" <ph name="FLOWER_TYPE" /></translation>
+<translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> u jarkoj nijansi boje <ph name="FLOWER_COLOR" /></translation>
 <translation id="7513770521371759388">donji dio</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Kreiraj</translation>
@@ -1189,7 +1189,7 @@
 <translation id="7850847810298646851">Pozadinske slike koje omogućava Google AI</translation>
 <translation id="785170686607360576">tulipan</translation>
 <translation id="7856267634822906833">Bluetooth ekran na dodir</translation>
-<translation id="7859006200041800233">cvijet kaktusa</translation>
+<translation id="7859006200041800233">Cvijet kaktusa</translation>
 <translation id="7869143217755017858">Onemogući tamni način rada</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Vrsta pružaoca usluge</translation>
@@ -1275,7 +1275,7 @@
 <translation id="8372667721254470022">maslinaste</translation>
 <translation id="8373046809163484087">Koristite skupove boja koji odgovaraju pozadinskoj slici</translation>
 <translation id="8380114448424469341">Priključivanje prozora na <ph name="DIRECTION" /> polovini ekrana</translation>
-<translation id="8391349326751432483">Da biste testirali memoriju, najmanje 500 MB mora biti slobodno. Da biste oslobodili memoriju, zatvorite kartice i aplikacije.</translation>
+<translation id="8391349326751432483">Morate imati slobodno najmanje 500 MB da pokrenete test memorije. Da oslobodite memoriju, zatvorite kartice i aplikacije.</translation>
 <translation id="8395584934117017006">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja preduzeće</translation>
 <translation id="8398927464629426868">Brzina kojom se uređaj trenutno puni ili prazni</translation>
 <translation id="8403988360557588704">Slika "<ph name="ART_FEATURE" />" u stilu "<ph name="ART_MOVEMENT" />"</translation>

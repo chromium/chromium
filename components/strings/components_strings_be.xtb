@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 цаляў</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1181381397492575884">Chrome блакіруе для сайтаў магчымасць выкарыстоўваць староннія файлы cookie, якія дазваляюць адсочваць вашы дзеянні ў інтэрнэце. Каб <ph name="LINK" />, перайдзіце ў налады.</translation>
+<translation id="1185343831726846924">Я разумею, што падключыць віртуальную картку не ўдалося</translation>
 <translation id="1186201132766001848">Праверыць паролі</translation>
 <translation id="1187430513518041110">Аўтамабілі і іншыя транспартныя сродкі</translation>
 <translation id="1190491977647722791">Шчыльная папера</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> цал.</translation>
 <translation id="1574714699824202614">Спраўджваецца спосаб аплаты</translation>
 <translation id="1576277203042721907">Статыстыка купляў</translation>
+<translation id="1579189948231786790">Ваша арганізацыя заблакіравала гэты сайт</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Без тэрміну дзеяння</translation>
 <translation id="1583429793053364125">Падчас паказу вэб-старонкі нешта пайшло не так.</translation>
@@ -1475,6 +1477,7 @@
 <translation id="3807366285948165054">Зрух відарыса па восі X</translation>
 <translation id="3807709094043295184">Класічны рок і старыя хіты</translation>
 <translation id="3807873520724684969">Заблакіравана шкоднае змесціва.</translation>
+<translation id="380865868633614173">Інфармацыя пра картку захоўваецца</translation>
 <translation id="3810770279996899697">Менеджару пароляў патрабуецца доступ да звязка ключоў macOS</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="3812398568375898177">Гэта важнае абнаўленне, якое паляпшае прадукцыйнасць праграм для Android на ChromeOS.</translation>
@@ -2188,6 +2191,7 @@
 <translation id="5238301240406177137">Захаваць ва ўліковым запісе</translation>
 <translation id="5239119062986868403">Звычайная цана</translation>
 <translation id="5239623327352565343">Выкарыстанне геаданых дазволена</translation>
+<translation id="5241048084654737238">Я разумею, што інфармацыю пра картку захаваць не ўдалося</translation>
 <translation id="5242610955375133957">Сухая плёнка</translation>
 <translation id="5244521145258281926">Кіраванне Уліковым запісам Google. Каб кіраваць параметрамі даных, прыватнасці і бяспекі ва Уліковым запісе Google, націсніце яе.</translation>
 <translation id="5244732203286792411">Загрузка...
@@ -2203,6 +2207,7 @@
 <translation id="5266128565379329178">Пераплёт зверху</translation>
 <translation id="5269225904387178860">Чатыры дзіркі знізу</translation>
 <translation id="5269999699920406580">Задаваць агульнасістэмныя функцыі можа толькі ўладальнік: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">Умова "<ph name="DATA_CONTROLS_ATTRIBUTE" />" не падтрымліваецца для правіла "<ph name="DATA_CONTROLS_RESTRICTION" />".</translation>
 <translation id="5273658854610202413">Увага: гэта палітыка не была аб'яднана згодна з параметрамі "PolicyDictionaryMultipleSourceMergeList", бо яна не ўваходзіць у слоўнікавыя палітыкі, якія можна аб'яднаць.</translation>
 <translation id="5279286380302340275">Кіраваць спампоўкамі</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3174,6 +3179,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Каб адправіць гэты файл з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}one{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}few{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}many{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}other{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}}</translation>
 <translation id="7160999678034985039">Захавайце працу і пачніце абнаўленне, калі будзеце гатовыя.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Капіраваць канфідэнцыяльны файл?}one{Капіраваць канфідэнцыяльныя файлы?}few{Капіраваць канфідэнцыяльныя файлы?}many{Капіраваць канфідэнцыяльныя файлы?}other{Капіраваць канфідэнцыяльныя файлы?}}</translation>
+<translation id="7168625890036931112">Абмежаванне "<ph name="DATA_CONTROLS_RESTRICTION" />" не падтрымліваецца на гэтай платформе.</translation>
 <translation id="717330890047184534">Ідэнтыфікатар GAIA:</translation>
 <translation id="7174545416324379297">Аб'яднана</translation>
 <translation id="7175097078723125014">Выбраны варыянт "Змяніць адрас"</translation>
@@ -3246,6 +3252,7 @@
 <translation id="7310392214323165548">Скора прылада перазапусціцца</translation>
 <translation id="7311244614769792472">Вынікі не знойдзены</translation>
 <translation id="7311837626618954149">Chromium блакіруе для сайтаў магчымасць выкарыстоўваць староннія файлы cookie, якія дазваляюць адсочваць вашы дзеянні ў інтэрнэце.</translation>
+<translation id="7313107491291103073">Ваша арганізацыя пазначыла, што гэты сайт, магчыма, парушае правілы.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Даведка па падключэнні</translation>
 <translation id="7323804146520582233">Схаваць раздзел "<ph name="SECTION" />"</translation>
@@ -3572,6 +3579,7 @@
 <translation id="7888575728750733395">Намер візуалізацыі раздрукоўкі</translation>
 <translation id="7894280532028510793">Калі напісанне правільнае, <ph name="BEGIN_LINK" />паспрабуйце запусціць дыягностыку сеткі<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Канверт 7 x 9 цаляў</translation>
+<translation id="7908648876066812348">Віртуальная картка падключаецца</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб перайсці на старонку праверкі бяспекі Chrome у наладах, націсніце Tab, затым Увод.</translation>
 <translation id="791551905239004656">Рысаванне і размалёўванне</translation>
 <translation id="7916162853251942238">Аснова для флексаграфічнага друку</translation>
@@ -4079,6 +4087,7 @@
 <translation id="8874790741333031443">Паспрабуйце часова дазволіць староннія файлы cookie – гэта знізіць вашу абароненасць падчас прагляду вэб-сайтаў, але павысіць імавернасць таго, што функцыі сайта будуць працаваць карэктна.</translation>
 <translation id="8874824191258364635">Увядзіце сапраўдны нумар карткі</translation>
 <translation id="8877780815363510165">Рыбалка</translation>
+<translation id="888117890813270681">Для правіла "<ph name="DATA_CONTROLS_RESTRICTION" />" нельга задаць узровень "<ph name="DATA_CONTROLS_LEVEL" />".</translation>
 <translation id="8884537526797090108">Немагчыма зрабіць запіс з-за наяўнасці на экране прыватнага змесціва</translation>
 <translation id="8888187300091017436">Матрацы</translation>
 <translation id="8890048757975398817">кантраляваць прыладу "<ph name="READERNAME" />" і атрымаць доступ да разумнай карткі, звязанай з ёй.</translation>

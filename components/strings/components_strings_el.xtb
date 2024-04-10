@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 ίντσες</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1181381397492575884">Το Chrome δεν επιτρέπει στους ιστοτόπους να χρησιμοποιούν cookie τρίτου μέρους που σας παρακολουθούν καθώς περιηγείστε. Μεταβείτε στις ρυθμίσεις για <ph name="LINK" />.</translation>
+<translation id="1185343831726846924">Επιβεβαίωση αδυναμίας ενεργοποίησης εικονικής κάρτας</translation>
 <translation id="1186201132766001848">Έλεγχος κωδικών πρόσβασης</translation>
 <translation id="1187430513518041110">Αυτοκίνητα και άλλα οχήματα</translation>
 <translation id="1190491977647722791">Χαρτί (Βαρύ)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ίντσες</translation>
 <translation id="1574714699824202614">Επαλήθευση τρόπου πληρωμής</translation>
 <translation id="1576277203042721907">Insight Αγορών</translation>
+<translation id="1579189948231786790">Αυτός ο ιστότοπος έχει αποκλειστεί από τον οργανισμό σας</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Δεν λήγει</translation>
 <translation id="1583429793053364125">Παρουσιάστηκε πρόβλημα κατά την εμφάνιση αυτής της ιστοσελίδας.</translation>
@@ -1475,6 +1477,7 @@
 <translation id="3807366285948165054">Μετατόπιση εικόνας στον άξονα X</translation>
 <translation id="3807709094043295184">Κλασικό ροκ και παλιές επιτυχίες</translation>
 <translation id="3807873520724684969">Το επιβλαβές περιεχόμενο αποκλείστηκε.</translation>
+<translation id="380865868633614173">Αποθήκευση πληροφοριών κάρτας</translation>
 <translation id="3810770279996899697">Ο Διαχειριστής κωδικών πρόσβασης χρειάζεται πρόσβαση στην Κλειδοθήκη macOS</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
 <translation id="3812398568375898177">Αυτή είναι μια σημαντική ενημέρωση που βελτιώνει την απόδοση των εφαρμογών Android στο ChromeOS.</translation>
@@ -2189,6 +2192,7 @@
 <translation id="5238301240406177137">Αποθήκευση στον λογαριασμό</translation>
 <translation id="5239119062986868403">Συνήθης τιμή</translation>
 <translation id="5239623327352565343">Η πρόσβαση στην τοποθεσία επιτράπηκε</translation>
+<translation id="5241048084654737238">Επιβεβαίωση αδυναμίας αποθήκευσης πληροφοριών κάρτας</translation>
 <translation id="5242610955375133957">Ξηρό φιλμ</translation>
 <translation id="5244521145258281926">Κουμπί Διαχείριση Λογαριασμού Google, ενεργοποιήστε την για να διαχειριστείτε τις πληροφορίες, το απόρρητο και την ασφάλεια στον Λογαριασμό σας Google</translation>
 <translation id="5244732203286792411">Φόρτωση…
@@ -2204,6 +2208,7 @@
 <translation id="5266128565379329178">Βιβλιοδεσία στο επάνω μέρος</translation>
 <translation id="5269225904387178860">Τετραπλό τρύπημα στο κάτω μέρος</translation>
 <translation id="5269999699920406580">Οι λειτουργίες που ισχύουν για ολόκληρο το σύστημα μπορούν να οριστούν μόνο από τον κάτοχο: <ph name="OWNER_EMAIL" />.</translation>
+<translation id="5271381225185906340">Το στοιχείο <ph name="DATA_CONTROLS_ATTRIBUTE" /> δεν είναι υποστηριζόμενη συνθήκη για το στοιχείο <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
 <translation id="5273658854610202413">Προειδοποίηση: Αυτή η πολιτική δεν συγχωνεύτηκε, όπως ορίζεται στην πολιτική PolicyDictionaryMultipleSourceMergeList, επειδή δεν ανήκει στις πολιτικές λεξικού που μπορούν να συγχωνευτούν.</translation>
 <translation id="5279286380302340275">Διαχείριση στοιχείων λήψης</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3175,6 +3180,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Για να στείλετε αυτό το αρχείο χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}other{Για να στείλετε αυτά τα αρχεία χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}}</translation>
 <translation id="7160999678034985039">Αποθηκεύστε την εργασία σας και ξεκινήστε την ενημέρωση όταν είστε έτοιμοι.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Αντιγραφή εμπιστευτικού αρχείου;}other{Αντιγραφή εμπιστευτικών αρχείων;}}</translation>
+<translation id="7168625890036931112">Το στοιχείο <ph name="DATA_CONTROLS_RESTRICTION" /> δεν είναι υποστηριζόμενος περιορισμός σε αυτή την πλατφόρμα</translation>
 <translation id="717330890047184534">Αναγνωριστικό Gaia:</translation>
 <translation id="7174545416324379297">Έγινε συγχώνευση</translation>
 <translation id="7175097078723125014">Ορίστηκε η επιλογή για την επεξεργασία της διεύθυνσης</translation>
@@ -3247,6 +3253,7 @@
 <translation id="7310392214323165548">Θα γίνει επανεκκίνηση της συσκευής πολύ σύντομα</translation>
 <translation id="7311244614769792472">Δεν βρέθηκαν αποτελέσματα</translation>
 <translation id="7311837626618954149">Το Chromium δεν επιτρέπει στους ιστοτόπους να χρησιμοποιούν cookie τρίτου μέρους που σας παρακολουθούν καθώς περιηγείστε.</translation>
+<translation id="7313107491291103073">Ο οργανισμός σας έχει επισημάνει αυτόν τον ιστότοπο, καθώς ενδέχεται να παραβαίνει μια πολιτική.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Βοήθεια σύνδεσης</translation>
 <translation id="7323804146520582233">Απόκρυψη της ενότητας "<ph name="SECTION" />"</translation>
@@ -3572,6 +3579,7 @@
 <translation id="7888575728750733395">Εκτύπωση intent απόδοσης</translation>
 <translation id="7894280532028510793">Εάν δεν υπάρχει ορθογραφικό λάθος, <ph name="BEGIN_LINK" />δοκιμάστε να εκτελέσετε έναν έλεγχο Διαγνωστικών δικτύου<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Φάκελος 7 x 9 ίντσες</translation>
+<translation id="7908648876066812348">Ενεργοποίηση εικονικής κάρτας</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και μετά το Enter για να μεταβείτε στη σελίδα του ελέγχου ασφαλείας του Chrome στις ρυθμίσεις</translation>
 <translation id="791551905239004656">Ζωγραφική και χρωματισμός</translation>
 <translation id="7916162853251942238">Βάση Flexo</translation>
@@ -4080,6 +4088,7 @@
 <translation id="8874790741333031443">Δοκιμάστε να επιτρέψετε προσωρινά τα cookie τρίτου μέρους, κάτι που σημαίνει ότι θα έχετε λιγότερη προστασία κατά την περιήγηση, αλλά οι ιστότοποι θα είναι πιο πιθανό να λειτουργούν όπως αναμένεται.</translation>
 <translation id="8874824191258364635">Εισαγάγετε έναν έγκυρο αριθμό κάρτας</translation>
 <translation id="8877780815363510165">Ψάρεμα</translation>
+<translation id="888117890813270681">Το στοιχείο <ph name="DATA_CONTROLS_RESTRICTION" /> δεν μπορεί να οριστεί σε <ph name="DATA_CONTROLS_LEVEL" /></translation>
 <translation id="8884537526797090108">Δεν είναι δυνατή η εγγραφή εμπιστευτικού περιεχομένου</translation>
 <translation id="8888187300091017436">Στρώματα</translation>
 <translation id="8890048757975398817">Έλεγχος <ph name="READERNAME" /> και εκχώρηση πρόσβασης στην έξυπνη κάρτα στην οποία έχει πρόσβαση.</translation>

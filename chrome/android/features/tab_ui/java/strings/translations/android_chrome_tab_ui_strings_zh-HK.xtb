@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">從群組中移除</translation>
 <translation id="3008554597174452548">停止追蹤產品</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 降價 <ph name="PRICE_DROP" /></translation>
+<translation id="3078350928901129212"><ph name="COLOR_NAME" />分頁群組顏色圖示</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{你有 <ph name="TABS_COUNT_ONE" /> 個已封存的分頁}other{你有 <ph name="TABS_COUNT_MANY" /> 個已封存的分頁}}</translation>
 <translation id="3194464645767632461">評分</translation>
 <translation id="3291470810748040983">當開啟的分頁中有產品降價，您就會收到通知</translation>

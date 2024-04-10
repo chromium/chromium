@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Obtener vista previa de la imagen</translation>
 <translation id="1611649489706141841">adelante</translation>
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Usa un tema</translation>
 <translation id="1621067168122174824">Ejecutar prueba de carga</translation>
 <translation id="1622402072367425417">burbujas brillantes</translation>
 <translation id="1626590945318984973">La combinación de teclas no está disponible. Usa una nueva combinación de teclas sin presionar las teclas de función ni de <ph name="META_KEY" />.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">verde oliva</translation>
 <translation id="8373046809163484087">Usa combinaciones de colores que combinen con tu fondo de pantalla</translation>
 <translation id="8380114448424469341">Anclar la ventana en la mitad <ph name="DIRECTION" /> de la pantalla</translation>
+<translation id="8391349326751432483">Necesitas al menos 500 MB libres para ejecutar una prueba de memoria. Para liberar memoria, cierra pestañas y apps.</translation>
 <translation id="8395584934117017006">Una empresa administra el dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8398927464629426868">La tasa a la que el dispositivo se está cargando o descargando</translation>
 <translation id="8403988360557588704">Una pintura de <ph name="ART_FEATURE" /> en estilo <ph name="ART_MOVEMENT" /></translation>

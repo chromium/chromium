@@ -1263,6 +1263,7 @@
 <translation id="5867606971598166637">시스템 관리자가 화면을 모니터링하고 있습니다.</translation>
 <translation id="5876666360658629066">부모 코드 입력</translation>
 <translation id="5881540930187678962">휴대전화 허브 나중에 설정하기</translation>
+<translation id="588258955323874662">전체화면</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> 창이 <ph name="DESK_TITLE" />에 할당되고 다른 모든 데스크에서 할당 취소되었습니다.</translation>
 <translation id="588817334757907802">Chrome 브라우저에서 파일 열기</translation>
 <translation id="5895138241574237353">다시 시작</translation>
@@ -1540,6 +1541,7 @@
 <translation id="6961840794482373852">Alt + 위쪽 화살표 단축키가 변경되었습니다. Page Up 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 위쪽 화살표 키를 누르세요.</translation>
 <translation id="696267987219125751">카메라 프레이밍이 사용 중지되어 있습니다.</translation>
 <translation id="6965382102122355670">확인</translation>
+<translation id="6972629891077993081">HID 기기</translation>
 <translation id="6972754398087986839">시작하기</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">삽입</translation>

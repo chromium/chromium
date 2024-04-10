@@ -753,7 +753,7 @@
 <translation id="3984536049089846927">下一頁</translation>
 <translation id="3986082989454912832">接聽</translation>
 <translation id="3990002060657467458">「快速設定」內含 Wi-Fi、藍牙和音量等常用控制項，你亦可透過「快速設定」擷取螢幕截圖。</translation>
-<translation id="3991203706072366707">已為「<ph name="GAME_APP_NAME" />」關閉</translation>
+<translation id="3991203706072366707">已為《<ph name="GAME_APP_NAME" />》關閉</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右側後方連接埠)</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="40062176907008878">手寫</translation>
@@ -1262,6 +1262,7 @@
 <translation id="5867606971598166637">系統管理員正在監控您的畫面</translation>
 <translation id="5876666360658629066">輸入家長存取碼</translation>
 <translation id="5881540930187678962">稍後再設定 Phone Hub</translation>
+<translation id="588258955323874662">全螢幕</translation>
 <translation id="5887954372087850114">「<ph name="WINDOW_TITLE" />」視窗已指派給「<ph name="DESK_TITLE" />」，並取消指派給所有其他桌面</translation>
 <translation id="588817334757907802">在 Chrome 瀏覽器中開啟檔案</translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -1407,7 +1408,7 @@
 <translation id="6453179446719226835">語言已變更</translation>
 <translation id="6459472438155181876">正在擴充 <ph name="DISPLAY_NAME" /> 螢幕</translation>
 <translation id="6464094930452079790">圖片</translation>
-<translation id="6467290994038932560">已為「<ph name="GAME_APP_NAME" />」開啟</translation>
+<translation id="6467290994038932560">已為《<ph name="GAME_APP_NAME" />》開啟</translation>
 <translation id="6469104339369989396">切換熱點</translation>
 <translation id="6477681113376365978">無法下載檔案</translation>
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
@@ -1538,6 +1539,7 @@
 <translation id="6961840794482373852">「Alt + 向上箭咀」的鍵盤快速鍵已變更。如要使用 Page Up 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向上箭咀。</translation>
 <translation id="696267987219125751">相機取景功能已關閉。</translation>
 <translation id="6965382102122355670">確定</translation>
+<translation id="6972629891077993081">HID 裝置</translation>
 <translation id="6972754398087986839">開始使用</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6980402667292348590">Insert 鍵</translation>

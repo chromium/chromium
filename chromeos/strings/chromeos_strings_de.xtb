@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Bild in der Vorschau anzeigen</translation>
 <translation id="1611649489706141841">Weiter</translation>
 <translation id="1615335640928990664">Datennutzung seit <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Design verwenden</translation>
 <translation id="1621067168122174824">Ladetest ausführen</translation>
 <translation id="1622402072367425417">leuchtenden Blasen</translation>
 <translation id="1626590945318984973">Tastenkombination nicht verfügbar. Drücke eine neue Tastenkombination ohne die Verwendung von Funktionstasten oder <ph name="META_KEY" />-Tasten.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">olivgrünen</translation>
 <translation id="8373046809163484087">Farbpaletten passend zum Hintergrund verwenden</translation>
 <translation id="8380114448424469341">Fenster an dieser Hälfte des Bildschirms fixieren: <ph name="DIRECTION" /></translation>
+<translation id="8391349326751432483">Zum Ausführen eines Speichertests müssen mindestens 500 MB frei sein. Schließe Tabs und Apps, um Arbeitsspeicher freizugeben.</translation>
 <translation id="8395584934117017006">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von einem Unternehmen verwaltet</translation>
 <translation id="8398927464629426868">Die Stromstärke, mit der das Gerät momentan geladen oder entladen wird</translation>
 <translation id="8403988360557588704">Gemälde von „<ph name="ART_FEATURE" />“ in der Stilrichtung <ph name="ART_MOVEMENT" /></translation>

@@ -112,6 +112,7 @@
 <translation id="160633243685262989">फोटो प्रिभ्यू गर्नुहोस्</translation>
 <translation id="1611649489706141841">फर्वाड गर्नुहोस्</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> देखि प्रयोग गरिएको डेटा</translation>
+<translation id="1618566998877964907">कुनै थिम प्रयोग गर्नुहोस्</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="1622402072367425417">ग्लोविङ बबल</translation>
 <translation id="1626590945318984973">यो सर्टकट उपलब्ध छैन। फङ्सन की र <ph name="META_KEY" /> की प्रयोग नगरिकनै नयाँ सर्टकटमा थिच्नुहोस्।</translation>
@@ -286,7 +287,7 @@
 <translation id="2512979179176933762">"विन्डोहरू देखाइऊन्" जनाउने आइकन</translation>
 <translation id="2513396635448525189">प्रोफाइल फोटो</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
-<translation id="2520213071283358374">यो APN प्रयोग गरियोस्</translation>
+<translation id="2520213071283358374">यो APN प्रयोग गर्नुहोस्</translation>
 <translation id="2521835766824839541">"अघिल्लो ट्रयाक" जनाउने आइकन</translation>
 <translation id="2526590354069164005">डेस्कटप</translation>
 <translation id="253029298928638905">रिस्टार्ट गरिँदै छ...</translation>
@@ -1276,6 +1277,7 @@
 <translation id="8372667721254470022">ओलिभहरू</translation>
 <translation id="8373046809163484087">तपाईंको वालपेपरसँग मिल्ने खालका कलर सेट प्रयोग गर्नुहोस्</translation>
 <translation id="8380114448424469341">विन्डोलाई स्क्रिनको <ph name="DIRECTION" />तिरको आधा भागमा डक गर्नुहोस्</translation>
+<translation id="8391349326751432483">मेमोरीको जाँच गर्न तपाईंको डिभाइसको मेमोरीमा कम्तीमा ५०० एम.बि. खाली ठाउँ हुनु पर्छ। मेमोरीमा ठाउँ खाली गर्न ट्याब र एपहरू बन्द गर्नुहोस्।</translation>
 <translation id="8395584934117017006">इन्टरप्राइजले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
 <translation id="8398927464629426868">यन्त्र हाल चार्ज वा डिस्चार्ज भइरहेको दर</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> शैलीमा <ph name="ART_FEATURE" /> को चित्रकला</translation>

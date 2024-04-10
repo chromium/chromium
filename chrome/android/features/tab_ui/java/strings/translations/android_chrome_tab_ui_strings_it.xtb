@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Rimuovi dal gruppo</translation>
 <translation id="3008554597174452548">Interrompi il monitoraggio del prodotto</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> in meno su <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Icona del colore del gruppo di schede <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Hai <ph name="TABS_COUNT_ONE" /> scheda archiviata}other{Hai <ph name="TABS_COUNT_MANY" /> schede archiviate}}</translation>
 <translation id="3194464645767632461">valutazione</translation>
 <translation id="3291470810748040983">Riceverai un avviso quando ci sarà un prezzo più basso in una scheda aperta</translation>

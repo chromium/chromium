@@ -312,6 +312,7 @@
 <translation id="2625189173221582860">पासवर्ड कपी गरियो</translation>
 <translation id="2626236249646841566">आफ्नो इन्टरनेट जाँच्नुहोस् र फेरि साइन इन गरी हेर्नुहोस्।</translation>
 <translation id="2637313651144986786">ट्याबहरू खोज्नुहोस्...</translation>
+<translation id="2640733327287333451">युजरनेम छैन ••••••</translation>
 <translation id="2648721026697078500">कहिल्यै पनि नसारियोस्</translation>
 <translation id="2648803196158606475">पढिसकिएकोलाई मेट्नुहोस्</translation>
 <translation id="2664621323652615289">रोक्नुहोस्</translation>
@@ -1281,6 +1282,7 @@
 <translation id="7569588934989281656">तपाईं एउटा ट्याबबाट अर्को ट्याबमा जान ट्याब स्ट्रिपमा स्वाइप गर्न सक्नुहुन्छ।</translation>
 <translation id="7582857256643797524">यो सेटिङ तपाईंको डिभाइसमा अन गरिएको छ</translation>
 <translation id="7583004045319035904">आफ्ना इन्कोग्निटो ट्याबहरू अनलक गर्न <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गर्नुहोस्।</translation>
+<translation id="7598439272585186139">थप सुरक्षा प्राप्त गर्नुहोस्</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="7603852183842204213">पप-अपहरु ब्लक गरियो (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">पासवर्ड मेट्नुहोस्</translation>
@@ -1370,7 +1372,7 @@
 <translation id="8005666035647241369">यो डिभाइसमा Google पासवर्ड म्यानेजरमा</translation>
 <translation id="8009225694047762179">पासवर्डहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8011489434346330032">वेब इन्स्पेक्टर</translation>
-<translation id="8016714545083187120">सधैँ सुरक्षित कनेक्सन प्रयोग गरियोस्</translation>
+<translation id="8016714545083187120">सधैँ सुरक्षित कनेक्सन प्रयोग गर्नुहोस्</translation>
 <translation id="802154636333426148">डाउनलोड गर्न सकिएन</translation>
 <translation id="8023878949384262191">खण्ड विस्तार गर्छ</translation>
 <translation id="8027581147000338959">नयाँ विन्डोमा खोल्नुहोस्</translation>

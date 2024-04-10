@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Fjern fra gruppe</translation>
 <translation id="3008554597174452548">Stop med at holde øje med produktet</translation>
 <translation id="3052964831964880138">Prisfald på <ph name="PRICE_DROP" /> på <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Farveikon for fanegruppen <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Du har <ph name="TABS_COUNT_ONE" /> arkiveret fane}one{Du har <ph name="TABS_COUNT_MANY" /> arkiveret fane}other{Du har <ph name="TABS_COUNT_MANY" /> arkiverede faner}}</translation>
 <translation id="3194464645767632461">bedømmelse</translation>
 <translation id="3291470810748040983">Du får en notifikation, når der er en lavere pris på en åben fane</translation>

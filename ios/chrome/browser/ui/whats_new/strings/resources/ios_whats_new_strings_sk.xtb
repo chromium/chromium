@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1533488253335887280">Jednoduchý a zabezpečený prístup k heslám z plochy.</translation>
+<translation id="1590550141045148182">Otvárajte alebo zatvárajte karty podľa potreby.</translation>
+<translation id="2036020471903443693">Kartu uvidíte pripnutú k dolnej časti obrazovky.</translation>
+<translation id="2984477737332162971">Prejdite na otvorené karty.</translation>
+<translation id="3595188309555410362">Ak máte karty, ktoré ste dlhšie nepoužili, budú presunuté do sekcie Neaktívne karty.</translation>
+<translation id="3941788408634637840">Klepnite na Neaktívne karty (ak ich máte).</translation>
+<translation id="3942215673032261195">Obľúbené weby si môžete pripnúť, aby ste k nim mali neskôr jednoduchý prístup.</translation>
+<translation id="4196935312151003338">V ponuke vyberte Pripnúť kartu.</translation>
+<translation id="4497631794981705027">Pridržte plochu.</translation>
+<translation id="463279609093232564">Na obrazovke vľavo hore klepnite na +.</translation>
+<translation id="5604467549230434026">Do poľa Miniaplikácie Vyhľadávanie zadajte Chrome.</translation>
+<translation id="5639067007765618198">Miniaplikácia Správca hesiel Google</translation>
 <translation id="5922999516621365983">Ak kartu chcete pripnúť, presuňte ju sem.</translation>
 <translation id="5979837087407522202">Vyhľadajte heslá</translation>
+<translation id="6109989197058801417">Pridržte kartu, ktorú chcete pripnúť.</translation>
+<translation id="639614003069108254">Vyberte Správcu hesiel a klepnite na Pridať miniaplikáciu.</translation>
+<translation id="6905308710260460250">Pripnuté karty</translation>
+<translation id="720206380500582061">Nastavenia neaktívnych kariet môžete spravovať v sekcii Nastavenia &gt; Karty.</translation>
 <translation id="8077675488769462025">Neaktívne karty</translation>
+<translation id="8602952180069641300">Posuňte sa do hornej časti sekcie Karty.</translation>
+<translation id="979990360845983227">Nepoužívané minimálne 14 dní</translation>
 </translationbundle>

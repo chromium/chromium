@@ -1263,6 +1263,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5867606971598166637">Mae gweinyddwr eich system yn monitro eich sgriniau</translation>
 <translation id="5876666360658629066">Rhowch y cod rhiant</translation>
 <translation id="5881540930187678962">Gosod Phone Hub yn nes ymlaen</translation>
+<translation id="588258955323874662">Sgrîn lawn</translation>
 <translation id="5887954372087850114">Mae'r ffenestr <ph name="WINDOW_TITLE" /> wedi'i haseinio i <ph name="DESK_TITLE" /> a'i ddadaseinio o bob tasg arall.</translation>
 <translation id="588817334757907802">Agor y ffeil yn y porwr Chrome</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
@@ -1540,6 +1541,7 @@ Gosodiad newydd</translation>
 <translation id="6961840794482373852">Mae'r llwybr byr bysellfwrdd Alt + Saeth i fyny wedi newid. I ddefnyddio'r fysell Page Up, pwyswch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth i fyny.</translation>
 <translation id="696267987219125751">Mae fframio'r camera wedi'i ddiffodd.</translation>
 <translation id="6965382102122355670">Iawn</translation>
+<translation id="6972629891077993081">Dyfeisiau HID</translation>
 <translation id="6972754398087986839">Cychwyn arni</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">mewnbynnu</translation>

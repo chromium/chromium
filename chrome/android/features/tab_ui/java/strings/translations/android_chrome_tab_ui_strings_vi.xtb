@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Xóa khỏi nhóm</translation>
 <translation id="3008554597174452548">Dừng theo dõi sản phẩm</translation>
 <translation id="3052964831964880138">Giảm giá <ph name="PRICE_DROP" /> đối với <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Biểu tượng màu của nhóm thẻ: <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Bạn có <ph name="TABS_COUNT_ONE" /> thẻ được lưu trữ}other{Bạn có <ph name="TABS_COUNT_MANY" /> thẻ được lưu trữ}}</translation>
 <translation id="3194464645767632461">điểm xếp hạng</translation>
 <translation id="3291470810748040983">Bạn sẽ nhận được thông báo khi có ưu đãi giảm giá trong một thẻ đang mở</translation>

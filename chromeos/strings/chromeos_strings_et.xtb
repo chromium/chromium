@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Pildi eelvaade</translation>
 <translation id="1611649489706141841">edasi</translation>
 <translation id="1615335640928990664">Andmekasutus alates: <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Teema kasutamine</translation>
 <translation id="1621067168122174824">Käita laadimistest</translation>
 <translation id="1622402072367425417">helendavad mullid</translation>
 <translation id="1626590945318984973">Otsetee pole saadaval. Vajutage uut otseteed ilma funktsiooni ja klahve <ph name="META_KEY" /> kasutamata.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">oliivirohelistes toonides</translation>
 <translation id="8373046809163484087">Kasutage värvilahendusi, mis sobivad teie taustapildiga</translation>
 <translation id="8380114448424469341">Doki aken ekraani <ph name="DIRECTION" /> poolele</translation>
+<translation id="8391349326751432483">Mälutesti käitamiseks on vaja vähemalt 500 MB vaba ruumi. Mälu vabastamiseks sulgege vahelehed ja rakendused.</translation>
 <translation id="8395584934117017006">Seda seadet <ph name="DEVICE_TYPE" /> haldab ettevõte</translation>
 <translation id="8398927464629426868">Praegune seadme laadimise või tühjenemise kiirus</translation>
 <translation id="8403988360557588704">Maal nähtusest <ph name="ART_FEATURE" />, stiil: <ph name="ART_MOVEMENT" /></translation>

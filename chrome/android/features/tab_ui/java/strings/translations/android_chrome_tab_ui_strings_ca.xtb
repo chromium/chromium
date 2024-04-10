@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Suprimeix del grup</translation>
 <translation id="3008554597174452548">Atura el seguiment del producte</translation>
 <translation id="3052964831964880138">Baixada de preu de <ph name="PRICE_DROP" /> per a <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Icona del color del grup de pestanyes (<ph name="COLOR_NAME" />)</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Tens <ph name="TABS_COUNT_ONE" /> pestanya arxivada}other{Tens <ph name="TABS_COUNT_MANY" /> pestanyes arxivades}}</translation>
 <translation id="3194464645767632461">puntuació</translation>
 <translation id="3291470810748040983">Rebràs una alerta quan hi hagi un preu més baix en una pestanya oberta</translation>

@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Pratinjau Gambar</translation>
 <translation id="1611649489706141841">maju</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Gunakan tema</translation>
 <translation id="1621067168122174824">Jalankan pengujian Pengisian Daya</translation>
 <translation id="1622402072367425417">gelembung bersinar</translation>
 <translation id="1626590945318984973">Pintasan tidak tersedia. Tekan pintasan baru tanpa menggunakan tombol fungsi dan <ph name="META_KEY" />.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">hijau zaitun</translation>
 <translation id="8373046809163484087">Gunakan kumpulan warna yang cocok dengan wallpaper Anda</translation>
 <translation id="8380114448424469341">Kaitkan jendela di paruh <ph name="DIRECTION" /> layar</translation>
+<translation id="8391349326751432483">Anda perlu minimal 500 MB untuk menjalankan pengujian Memori. Untuk mengosongkan memori, tutup tab dan aplikasi.</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini dikelola perusahaan</translation>
 <translation id="8398927464629426868">Kecepatan pengisian atau pemakaian daya perangkat saat ini</translation>
 <translation id="8403988360557588704">Lukisan <ph name="ART_FEATURE" /> dalam gaya <ph name="ART_MOVEMENT" /></translation>

@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Keluarkan dari grup</translation>
 <translation id="3008554597174452548">Hentikan pemantauan produk</translation>
 <translation id="3052964831964880138">Diskon <ph name="PRICE_DROP" /> untuk <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">Ikon warna grup tab <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Anda memiliki <ph name="TABS_COUNT_ONE" /> tab yang diarsipkan}other{Anda memiliki <ph name="TABS_COUNT_MANY" /> tab yang diarsipkan}}</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3291470810748040983">Anda akan mendapatkan notifikasi saat terdapat harga lebih rendah di tab yang terbuka</translation>

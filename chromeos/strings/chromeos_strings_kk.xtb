@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Кескінді алдын ала көру</translation>
 <translation id="1611649489706141841">алға</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> бергі дерек трафигі</translation>
+<translation id="1618566998877964907">Тақырып пайдалану</translation>
 <translation id="1621067168122174824">Заряд тексерісін іске қосу</translation>
 <translation id="1622402072367425417">жылтыраған көпіршіктер</translation>
 <translation id="1626590945318984973">Пернелер тіркесімі қолжетімді емес. Функциялық және <ph name="META_KEY" /> пернелерін пайдаланбай, жаңа пернелер тіркесімін басыңыз.</translation>
@@ -573,7 +574,7 @@
 <translation id="437477383107495720">қояндар</translation>
 <translation id="4376423484621194274">Әкімшіңіз <ph name="APP_NAME" /> қолданбасын жабуға рұқсат бермейді</translation>
 <translation id="4378373042927530923">Іске қосылмаған</translation>
-<translation id="4378551569595875038">Қосылуда…</translation>
+<translation id="4378551569595875038">Қосылып жатыр…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Өшіру</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> қайта қосылуда</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">зәйтүн түсті</translation>
 <translation id="8373046809163484087">Тұсқағазыңызға сәйкес келетін түс жинақтарын пайдаланыңыз</translation>
 <translation id="8380114448424469341">Терезені экранның <ph name="DIRECTION" /> жартысына бекіту</translation>
+<translation id="8391349326751432483">Жад тексерісін іске қосу үшін кемінде 500 МБ бос орын керек. Жадты босату үшін қойындылар мен қолданбаларды жабыңыз.</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> құрылғысын кәсіпорын басқарады.</translation>
 <translation id="8398927464629426868">Құрылғының зарядталу немесе зарядын жоғалту көрсеткіші.</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> стиліндегі <ph name="ART_FEATURE" /> суреті</translation>

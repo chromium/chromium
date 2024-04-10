@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 ഇഞ്ച്</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1181381397492575884">നിങ്ങൾ ബ്രൗസ് ചെയ്യുമ്പോൾ നിങ്ങളെ ട്രാക്ക് ചെയ്യുന്നതിന് മൂന്നാം കക്ഷി കുക്കികൾ ഉപയോഗിക്കുന്നതിൽ നിന്ന് സൈറ്റുകളെ Chrome ബ്ലോക്ക് ചെയ്യുന്നു. <ph name="LINK" /> എന്നതിന് ക്രമീകരണം സന്ദർശിക്കുക.</translation>
+<translation id="1185343831726846924">വെർച്വൽ കാർഡ് ഓണാക്കാനാകുന്നില്ലെന്ന് സ്ഥിരീകരിക്കുന്നു</translation>
 <translation id="1186201132766001848">പാസ്‌വേഡ് പരിശോധിക്കൂ</translation>
 <translation id="1187430513518041110">കാറുകളും വാഹനങ്ങളും</translation>
 <translation id="1190491977647722791">പേപ്പർ (ഹെവിവെയിറ്റ്)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ഇഞ്ച്</translation>
 <translation id="1574714699824202614">പേയ്‌മെന്റ് രീതി പരിശോധിച്ചുറപ്പിക്കുന്നു</translation>
 <translation id="1576277203042721907">Shopping ഉൾക്കാഴ്ചകൾ</translation>
+<translation id="1579189948231786790">നിങ്ങളുടെ ഓർഗനൈസേഷൻ ഈ സൈറ്റ് ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">കാലഹരണപ്പെടില്ല</translation>
 <translation id="1583429793053364125">ഈ വെബ്‌പേജ് പ്രദർശിപ്പിക്കുമ്പോൾ എന്തോ കുഴപ്പം സംഭവിച്ചു.</translation>
@@ -1474,6 +1476,7 @@
 <translation id="3807366285948165054">ചിത്രം X ഷിഫ്റ്റ്</translation>
 <translation id="3807709094043295184">ക്ലാസിക് റോക്കുകളും പഴയ ഗാനങ്ങളും</translation>
 <translation id="3807873520724684969">ദോഷകരമായ ഉള്ളടക്കം ബ്ലോക്ക് ചെയ്‌തു.</translation>
+<translation id="380865868633614173">കാർഡ് സംരക്ഷിക്കുന്നതിന്റെ വിവരങ്ങൾ</translation>
 <translation id="3810770279996899697">Password Manager-ന് MacOS Keychain-ലേക്ക് ആക്‌സസ് ആവശ്യമാണ്</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
 <translation id="3812398568375898177">ChromeOS-ലെ Android ആപ്പുകളുടെ പ്രകടനം മെച്ചപ്പെടുത്തുന്ന ഒരു നിർണായക അപ്‌ഡേറ്റാണിത്.</translation>
@@ -2187,6 +2190,7 @@
 <translation id="5238301240406177137">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="5239119062986868403">സാധാരണ നിരക്ക്</translation>
 <translation id="5239623327352565343">ലൊക്കേഷൻ ആക്സസ് അനുവദിച്ചു</translation>
+<translation id="5241048084654737238">കാർഡ് വിവരങ്ങൾ സംരക്ഷിക്കാനാകുന്നില്ല എന്ന് സ്ഥിരീകരിക്കുന്നു</translation>
 <translation id="5242610955375133957">ഡ്രൈ ഫിലിം</translation>
 <translation id="5244521145258281926">'Google Account മാനേജ് ചെയ്യുക, നിങ്ങളുടെ Google Account-ലെ വിവരങ്ങളും സ്വകാര്യതയും സുരക്ഷയും മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="5244732203286792411">ലോഡ് ചെയ്യുന്നു...
@@ -2202,6 +2206,7 @@
 <translation id="5266128565379329178">മുകളിൽ ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="5269225904387178860">താഴെ നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="5269999699920406580">സിസ്‌റ്റത്തിലുടനീളം ബാധകമാകുന്ന ഫീച്ചറുകൾ ഉടമയ്‌ക്ക് മാത്രമേ സജ്ജീകരിക്കാനാവൂ: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" എന്നത് "<ph name="DATA_CONTROLS_RESTRICTION" />" എന്നതിനുള്ള പിന്തുണയ്ക്കുന്ന വ്യവസ്ഥയല്ല</translation>
 <translation id="5273658854610202413">മുന്നറിയിപ്പ്: ഈ നയം ലയിപ്പിക്കാവുന്ന നിഘണ്ടു നയങ്ങളുടെ ഭാഗമല്ലാത്തതിനാലാണ് PolicyDictionaryMultipleSourceMergeList നയത്തിൽ വ്യക്തമാക്കിയിരിക്കുന്നത് പോലെ ലയിപ്പിക്കാത്തത്.</translation>
 <translation id="5279286380302340275">ഡൗൺലോഡുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3173,6 +3178,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> ഉപയോഗിച്ച് ഈ ഫയൽ അയയ്‌ക്കാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്‌ടിക്കുക}other{<ph name="FEATURE_NAME" /> ഉപയോഗിച്ച് ഈ ഫയലുകൾ അയയ്‌ക്കാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്‌ടിക്കുക}}</translation>
 <translation id="7160999678034985039">ജോലി സംരക്ഷിക്കുക, നിങ്ങൾ തയ്യാറാകുമ്പോൾ അപ്ഡേറ്റ് ചെയ്യാൻ ആരംഭിക്കുക.</translation>
 <translation id="7163295244162773898">{0,plural, =1{രഹസ്യാത്മക ഫയൽ പകർത്തണോ?}other{രഹസ്യാത്മക ഫയലുകൾ പകർത്തണോ?}}</translation>
+<translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" എന്നത് ഈ പ്ലാറ്റ്‌ഫോമിലെ പിന്തുണയുള്ള നിയന്ത്രണമല്ല</translation>
 <translation id="717330890047184534">Gaia ഐഡി:</translation>
 <translation id="7174545416324379297">ലയിപ്പിച്ചു</translation>
 <translation id="7175097078723125014">വിലാസം എഡിറ്റ് ചെയ്യുക ഓപ്‌ഷൻ തിരഞ്ഞെടുത്തു</translation>
@@ -3245,6 +3251,7 @@
 <translation id="7310392214323165548">ഉപകരണം ഉടൻ റീസ്റ്റാർട്ട് ചെയ്യും</translation>
 <translation id="7311244614769792472">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="7311837626618954149">നിങ്ങൾ ബ്രൗസ് ചെയ്യുമ്പോൾ നിങ്ങളെ ട്രാക്ക് ചെയ്യുന്നതിന് മൂന്നാം കക്ഷി കുക്കികൾ ഉപയോഗിക്കുന്നതിൽ നിന്ന് സൈറ്റുകളെ Chromium ബ്ലോക്ക് ചെയ്യുന്നു.</translation>
+<translation id="7313107491291103073">നയം ലംഘിക്കാനിടയുള്ളതിനാൽ നിങ്ങളുടെ ഓർഗനൈസേഷൻ ഈ സൈറ്റ് ഫ്ലാഗ് ചെയ്തു.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">കണക്ഷൻ സഹായം</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" വിഭാഗം മറയ്ക്കുക</translation>
@@ -3568,6 +3575,7 @@
 <translation id="7888575728750733395">പ്രിന്റ് റെൻഡറിംഗ് ഇന്റന്റ്</translation>
 <translation id="7894280532028510793">അക്ഷരങ്ങൾ ശരിയാണെങ്കിൽ <ph name="BEGIN_LINK" /> നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 ഇഞ്ച്</translation>
+<translation id="7908648876066812348">വെർച്വൽ കാർഡ് ഓണാക്കുന്നു</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ക്രമീകരണത്തിലെ Chrome സുരക്ഷാ പരിശോധനാ പേജിലേക്ക് പോകാൻ, Tab അമർത്തിയ ശേഷം Enter അമർത്തുക</translation>
 <translation id="791551905239004656">വരയ്ക്കലും നിറംകൊടുക്കലും</translation>
 <translation id="7916162853251942238">ഫ്ലെക്‌സോ ബേസ്</translation>
@@ -4075,6 +4083,7 @@
 <translation id="8874790741333031443">മൂന്നാം കക്ഷി കുക്കികളെ താൽക്കാലികമായി അനുവദിക്കാൻ ശ്രമിക്കുക, അതിനർത്ഥം ബ്രൗസിംഗ് സംരക്ഷണം കുറവായിരിക്കും, എന്നാൽ സൈറ്റ് ഫീച്ചറുകൾ പ്രതീക്ഷിച്ചത് പോലെ പ്രവർത്തിക്കാൻ കൂടുതൽ സാധ്യതയുണ്ട് എന്നാണ്.</translation>
 <translation id="8874824191258364635">ശരിയായ കാർഡ് നമ്പർ നൽകുക</translation>
 <translation id="8877780815363510165">മത്സ്യബന്ധനം</translation>
+<translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" എന്നത് "<ph name="DATA_CONTROLS_LEVEL" />" എന്നതിലേക്ക് സജ്ജീകരിക്കാനാകില്ല</translation>
 <translation id="8884537526797090108">രഹസ്യാത്മക ഉള്ളടക്കം റെക്കോർഡ് ചെയ്യാനാകില്ല</translation>
 <translation id="8888187300091017436">മെത്തകൾ</translation>
 <translation id="8890048757975398817"><ph name="READERNAME" /> എന്നത് നിയന്ത്രിച്ച് അതിന് ആക്സസുള്ള സ്മാർട്ട് കാർഡിലേക്ക് ആക്സസ് നേടുക.</translation>

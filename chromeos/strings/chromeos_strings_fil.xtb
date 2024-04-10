@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Larawan ng Preview</translation>
 <translation id="1611649489706141841">susunod</translation>
 <translation id="1615335640928990664">Paggamit ng data simula noong <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Gumamit ng tema</translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
 <translation id="1622402072367425417">mga nagliliwanag na bubble</translation>
 <translation id="1626590945318984973">Hindi available ang shortcut. Pumindot ng bagong shortcut nang hindi ginagamit ang function key at <ph name="META_KEY" /> key.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">olive</translation>
 <translation id="8373046809163484087">Gumamit ng mga hanay ng kulay na tumutugma sa iyong wallpaper</translation>
 <translation id="8380114448424469341">I-dock ang window sa <ph name="DIRECTION" /> bahagi ng screen</translation>
+<translation id="8391349326751432483">Kailangan mo ng hindi bababa sa 500 MB na bakante para makapagpatakbo ng pagsusuri sa Memory. Para magbakante ng memory, magsara ng mga tab at app.</translation>
 <translation id="8395584934117017006">Pinapamahalaan ng enterprise ang <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="8398927464629426868">Ang rate ng kasalukuyang pag-charge o pag-discharge ng device</translation>
 <translation id="8403988360557588704">Isang painting ng <ph name="ART_FEATURE" /> sa istilong <ph name="ART_MOVEMENT" /></translation>

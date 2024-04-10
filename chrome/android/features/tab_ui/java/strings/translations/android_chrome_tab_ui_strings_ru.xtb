@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Удалить из группы</translation>
 <translation id="3008554597174452548">Не отслеживать товар</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: скидка <ph name="PRICE_DROP" /></translation>
+<translation id="3078350928901129212">Цвет значка палитры для группы вкладок: <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{В архиве <ph name="TABS_COUNT_ONE" /> вкладка}one{В архиве <ph name="TABS_COUNT_MANY" /> вкладка}few{В архиве <ph name="TABS_COUNT_MANY" /> вкладки}many{В архиве <ph name="TABS_COUNT_MANY" /> вкладок}other{В архиве <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="3194464645767632461">оценка</translation>
 <translation id="3291470810748040983">Если цена на открытой вкладке снизится, вы получите оповещение.</translation>

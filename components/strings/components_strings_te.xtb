@@ -375,6 +375,7 @@
 <translation id="168693727862418163">ఈ పాలసీ విలువ దాని స్కీమాకు వ్యతిరేకంగా వాలిడేట్ చేయడంలో విఫలమైంది, కాబట్టి విస్మరించబడుతుంది.</translation>
 <translation id="168841957122794586">సర్వర్ ప్రమాణపత్రం బలహీన క్రిప్టోగ్రాఫిక్ కీని కలిగి ఉంది.</translation>
 <translation id="1689333818294560261">మారుపేరు</translation>
+<translation id="1691425742011409472">పాయింటర్ లాక్</translation>
 <translation id="1692622044604477956">సినిమా లిస్టింగ్‌లు &amp; థియేటర్ షోటైమ్‌లు</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />మీ డేటాను మీరు ఎలా మేనేజ్ చేయగలరు:<ph name="END_BOLD" /> 4 వారాల కంటే పాతవైన టాపిక్‌లను Chrome ఆటోమేటిక్‌గా తొలగిస్తుంది. మీరు బ్రౌజ్ చేస్తూ ఉన్నప్పుడు, లిస్ట్‌లో ఏదైనా ఒక టాపిక్ మళ్లీ కనిపించవచ్చు. Chrome ఏవైనా టాపిక్‌లను సైట్‌లతో షేర్ చేయకూడదు అని మీరు భావిస్తే, వాటిని మీరు బ్లాక్ చేయవచ్చు. అలాగే Chrome సెట్టింగ్‌లలో ఎప్పుడైనా యాడ్ టాపిక్‌లను ఆఫ్ చేయవచ్చు.</translation>
 <translation id="1697532407822776718">మీరు సిద్ధంగా ఉన్నారు!</translation>
@@ -724,6 +725,7 @@
 <translation id="2337852623177822836">సెట్టింగ్‌ను మీ నిర్వాహకులు నియంత్రిస్తున్నారు</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> దీనితో జత చేయాలనుకుంటోంది</translation>
 <translation id="2346319942568447007">మీరు కాపీ చేసిన చిత్రం</translation>
+<translation id="2349056830177284083">కీబోర్డ్ లాక్</translation>
 <translation id="2349957959687031096">'అజ్ఞాత ట్యాబ్‌ను తెరవండి' బటన్, ప్రైవేట్‌గా బ్రౌజ్ చేసేందుకు కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" />కి బదులుగా అన్ని <ph name="PROTOCOL" /> లింక్‌లను తెరవడానికి <ph name="HANDLER_HOSTNAME" />ను అనుమతించాలా?</translation>
 <translation id="2353297238722298836">కెమెరా మరియు మైక్రోఫోన్ అనుమతించబడ్డాయి</translation>
@@ -940,6 +942,7 @@
 <translation id="2784474685437057136">B5 అదనం</translation>
 <translation id="2784949926578158345">కనెక్షన్ మళ్ళీ సెట్ చేయబడింది.</translation>
 <translation id="2786008859124691917">సైకిళ్లు &amp; యాక్సెసరీలు</translation>
+<translation id="2791955793407772554">పాయింటర్ లాక్</translation>
 <translation id="2792012897584536778">ఈ పరికర నిర్వాహకులు మీరు సందర్శించే వెబ్‌సైట్‌ల కంటెంట్‌ను చూడటానికి వారిని అనుమతించే అవకాశం ఉండే భద్రతా సర్టిఫికెట్‌లను సెటప్ చేశారు.</translation>
 <translation id="2794233252405721443">సైట్ బ్లాక్ చేయబడింది</translation>
 <translation id="2794629552137076216">గ్లాస్ (సర్‌ఫేస్డ్)</translation>
@@ -1098,6 +1101,7 @@
 <translation id="3121994479408824897"><ph name="DOMAIN" />కు వెళ్లు</translation>
 <translation id="3126023634486644099">లేబుల్స్ (పర్మనెంట్)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ఇప్పుడు మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> సెర్చ్ చేయండి</translation>
 <translation id="3140646734028448730">బిజినెస్ సర్వీస్‌లు</translation>
 <translation id="3141093262818886744">ఏదేమైనా తెరవండి</translation>
 <translation id="3141641372357166056">సమ్మతి నిర్ణయం ఏదీ లేదు</translation>
@@ -1423,12 +1427,14 @@
 <translation id="3711895659073496551">తాత్కాలికంగా నిలిపివేయడం</translation>
 <translation id="3712006010833051684">ఎన్వలప్ #10</translation>
 <translation id="3712624925041724820">లైసెన్స్‌లు అయిపోయాయి</translation>
+<translation id="3713277100229669269">ఇప్పుడు మీరు పేమెంట్ చేసే ముందు కార్డ్ ప్రయోజనాలను చూడవచ్చు</translation>
 <translation id="371420189621607696">వీడియో గేమ్ పోటీలు</translation>
 <translation id="3714633008798122362">వెబ్ క్యాలెండర్</translation>
 <translation id="3714780639079136834">మొబైల్ డేటా లేదా Wi-Fiని ఆన్ చేయడం</translation>
 <translation id="3715016660240337709">{0,plural, =1{అప్‌లోడ్ అవ్వకుండా ఫైల్ బ్లాక్ చేయబడింది}other{అప్‌లోడ్ అవ్వకుండా <ph name="FILE_COUNT" /> ఫైల్స్ బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="3715545959749027023">సెక్యూరిటీ ఈవెంట్‌లను Chrome ద్వారా ఫ్లాగ్ చేసినప్పుడు, ఈవెంట్‌లకు సంబంధించిన డేటా మీ అడ్మినిస్ట్రేటర్‌కు పంపబడుతుంది. ఇది మీరు Chromeలో చూసే పేజీల URLలు, ఫైల్ పేర్లు లేదా మెటాడేటా, బ్రౌజర్ లేదా ట్యాబ్ క్రాష్‌లు, అలాగే వెబ్ ఆధారిత అప్లికేషన్‌లు, మీ పరికరం, Chromeకు సైన్ ఇన్ చేయడానికి ఉపయోగించే యూజర్‌నేమ్‌ను కలిగి ఉంటుంది.</translation>
 <translation id="3715597595485130451">Wi-Fiకి కనెక్ట్ చేయండి</translation>
+<translation id="3716622997181469465">కీబోర్డ్ లాక్</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ప్రాక్సీ, ఫైర్‌వాల్ మరియు DNS కాన్ఫిగరేషన్‌ను చెక్ చేయడం<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">అప్‌డేట్ సమయంలో మీరు మీ పరికరాన్ని 10 నిమిషాల వరకు ఉపయోగించలేరు.</translation>
 <translation id="372429172604983730">ఈ ఎర్రర్‌కు దారితీసే అప్లికేషన్‌లలో యాంటీవైరస్, ఫైర్‌వాల్ మరియు వెబ్ ఫిల్టరింగ్ లేదా ప్రాక్సీ సాఫ్ట్‌వేర్ ఉండవచ్చు.</translation>
@@ -2179,7 +2185,6 @@
 <translation id="5217759126664161410">చెల్లని ప్రోటోకాల్ ఫార్మాట్.</translation>
 <translation id="5222812217790122047">ఈమెయిల్‌ అవ‌స‌రం</translation>
 <translation id="5228269245420405804">దూర విద్య</translation>
-<translation id="5230428804606340145">ఇతర ఆర్థికపరమైన ఖాతాలను మేనేజ్ చేయండి</translation>
 <translation id="5230733896359313003">డెలివరీ అడ్రస్‌</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 అదనం</translation>
@@ -3513,6 +3518,7 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chromeలో ఫాంట్ సైజ్‌లను, టైప్‌ఫేస్‌లను అనుకూలంగా మార్చండి</translation>
 <translation id="7752995774971033316">నిర్వహించడం లేదు</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />‌తో చాట్ చేయండి</translation>
 <translation id="7754587126786572336">అప్‌డేట్ చేయడం ప్రారంభమైనప్పుడు మీ Chrome ట్యాబ్‌లు, యాప్‌లు మూసివేయబడతాయి</translation>
 <translation id="7755287808199759310">మీ తల్లి/తండ్రి దీన్ని మీ కోసం అన్‌బ్లాక్ చేయగలరు</translation>
 <translation id="7755624218968747854">ప్రైమరీ రోల్</translation>

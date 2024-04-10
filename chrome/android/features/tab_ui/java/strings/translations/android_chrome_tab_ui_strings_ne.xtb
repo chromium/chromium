@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">समूहबाट हटाउनुहोस्</translation>
 <translation id="3008554597174452548">उत्पादनको मूल्य ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> को मूल्य <ph name="PRICE_DROP" /> घटेको छ</translation>
+<translation id="3078350928901129212">ट्याब समूहको आइकनको रङ <ph name="COLOR_NAME" /> छ</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{तपाईंसँग अभिलेखमा राखिएको <ph name="TABS_COUNT_ONE" /> ट्याब छ}other{तपाईंसँग अभिलेखमा राखिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याबहरू छन्}}</translation>
 <translation id="3194464645767632461">मूल्याङ्कन</translation>
 <translation id="3291470810748040983">तपाईंले खोल्नुभएको ट्याबमा कुनै वस्तुको मूल्य कम हुँदा तपाईंलाई अलर्ट पठाइने छ</translation>

@@ -112,6 +112,7 @@
 <translation id="160633243685262989">預覽圖片</translation>
 <translation id="1611649489706141841">往前</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
+<translation id="1618566998877964907">使用主題</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
 <translation id="1622402072367425417">發光的泡泡</translation>
 <translation id="1626590945318984973">這組快速鍵無法使用，請使用其他快速鍵，而且當中不得有功能鍵和<ph name="META_KEY" />鍵。</translation>
@@ -454,7 +455,7 @@
 <translation id="3632579075709132555">隱私保護功能切換</translation>
 <translation id="3644695927181369554">不喜歡的建議</translation>
 <translation id="3651050199673793219">選取溫度單位</translation>
-<translation id="3661106764436337772">充滿自信地快速編寫</translation>
+<translation id="3661106764436337772">自信地快速編寫</translation>
 <translation id="3662461537616691585">勃艮第酒紅和暗紅色</translation>
 <translation id="3668449597372804501">雲朵動態桌布</translation>
 <translation id="3675132884790542448">豬</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">橄欖綠</translation>
 <translation id="8373046809163484087">使用可與桌布相配的顏色組合</translation>
 <translation id="8380114448424469341">將視窗固定在畫面<ph name="DIRECTION" />半邊</translation>
+<translation id="8391349326751432483">如要執行記憶體測試，你必須至少有 500 MB 的可用空間。如要釋出記憶體空間，請關閉分頁和應用程式。</translation>
 <translation id="8395584934117017006">這部 <ph name="DEVICE_TYPE" /> 是由企業管理</translation>
 <translation id="8398927464629426868">裝置目前的充電或放電速率</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" />風格的<ph name="ART_FEATURE" />畫作</translation>

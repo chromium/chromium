@@ -364,7 +364,7 @@
 <translation id="2486405091093637109">“<ph name="DISPLAY_NAME" />” ကို <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ပုံရိပ်ပြတ်သားကိန်းသို့ ပြောင်းလိုက်သည်။ အတည်မပြုဘဲ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ပြောင်းပါမည်။</translation>
 <translation id="2487915095798731898">ချိတ်ဆက်ပါ</translation>
 <translation id="2499445554382787206">မျက်နှာပြင် ပရိုဖိုင်မီနူး။ <ph name="DESK_NAME" /></translation>
-<translation id="2501920221385095727">Sticky keys</translation>
+<translation id="2501920221385095727">ကပ်ခွာကီးများ</translation>
 <translation id="2504454902900101003">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာနှင့် အကြောင်းကြားချက်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းခြင်းကို ပယ်ရန်</translation>
 <translation id="2505378917951323738">လုပ်ဆောင်စရာကို တည်းဖြတ်၍မရပါ။ အွန်လိုင်းချိတ်သည့်အခါ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2509468283778169019">စာလုံးကြီးရန် သော့ခလုတ် ပွင့်နေ</translation>
@@ -1263,6 +1263,7 @@
 <translation id="5867606971598166637">သင့်စီမံခန့်ခွဲသူက ဖန်သားပြင်ကို စောင့်ကြည့်စစ်ဆေးလျက်ရှိသည်</translation>
 <translation id="5876666360658629066">မိဘကုဒ်ကို ထည့်ပါ</translation>
 <translation id="5881540930187678962">'ဖုန်းစင်တာ' ကို နောင်တွင် စနစ်ထည့်သွင်းမည်</translation>
+<translation id="588258955323874662">မျက်နှာပြင် အပြည့်</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> ဝင်းဒိုးကို <ph name="DESK_TITLE" /> သို့ သတ်မှတ်ပေးပြီး အခြားမျက်နှာပြင်နေရာအားလုံးအား သတ်မှတ်ထားခြင်း မရှိတော့ပါ</translation>
 <translation id="588817334757907802">Chrome ဘရောင်ဇာတွင် ဖိုင်ဖွင့်ရန်</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
@@ -1540,6 +1541,7 @@
 <translation id="6961840794482373852">‘Alt + အပေါ်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘စာမျက်နှာ အပေါ်သို့’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘အပေါ်ညွှန်မြား’ နှိပ်ပါ။</translation>
 <translation id="696267987219125751">ကင်မရာဘောင်ချိန်ခြင်း ပိတ်ထားသည်။</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6972629891077993081">HID စက်များ</translation>
 <translation id="6972754398087986839">စကြရအောင်</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">Insert</translation>

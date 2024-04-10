@@ -112,6 +112,7 @@
 <translation id="160633243685262989">ပုံ အစမ်းကြည့်ရှုရန်</translation>
 <translation id="1611649489706141841">ရှေ့သို့</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> မှစ၍ ဒေတာသုံးစွဲမှု</translation>
+<translation id="1618566998877964907">အပြင်အဆင် သုံးပါ</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
 <translation id="1622402072367425417">တောက်ပသောပူဖောင်း</translation>
 <translation id="1626590945318984973">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ လုပ်ဆောင်ချက်နှင့် <ph name="META_KEY" /> ခလုတ်များ မသုံးဘဲ ဖြတ်လမ်းလင့်ခ်အသစ်နှိပ်ပါ။</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">သံလွင်သီးရောင်</translation>
 <translation id="8373046809163484087">သင့်နောက်ခံပုံနှင့် ကိုက်ညီသော အရောင်စုများကို သုံးနိုင်သည်</translation>
 <translation id="8380114448424469341">စခရင်၏ <ph name="DIRECTION" /> အခြမ်းတွင် ဝင်းဒိုးနေရာချရန်</translation>
+<translation id="8391349326751432483">‘မှတ်ဉာဏ်’ စစ်ဆေးမှု လုပ်ဆောင်ရန် အနည်းဆုံး ၅၀၀ MB လွတ်နေရမည်။ မှတ်ဉာဏ်ရှင်းရန် တဘ်နှင့် အက်ပ်များကို ပိတ်ပါ။</translation>
 <translation id="8395584934117017006">ဤ <ph name="DEVICE_TYPE" /> ကို လုပ်ငန်းက စီမံပါသည်</translation>
 <translation id="8398927464629426868">စက်ပစ္စည်း၏ လက်ရှိအားသွင်းနှုန်း (သို့) အားလျော့နှုန်း</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> ပုံစံဖြင့် ရေးဆွဲထားသည့် <ph name="ART_FEATURE" /> ၏ ပန်းချီပုံ</translation>

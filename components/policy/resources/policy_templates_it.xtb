@@ -2990,6 +2990,7 @@ Se il criterio viene disattivato, i file scaricati non vengono inviati per esser
 Queste limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu Link di download. Queste limitazioni non vengono applicate al salvataggio o al download della pagina attualmente visualizzata né alle opzioni di stampa relative al salvataggio come file PDF.
 
 Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="3300441638895109781">Ricarica automaticamente il flusso di autenticazione su ChromeOS</translation>
 <translation id="3300784749135986828">Attiva o disattiva la funzionalità <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Attiva estensione Insights</translation>
 <translation id="3302829897293005699">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano informazioni relative alla sessione kiosk attiva quali ID applicazione e versione.
@@ -3067,6 +3068,7 @@ Se viene disattivato, la funzionalità di scrittura predittiva sulla tastiera fi
 <translation id="3380801667330555918">Modifica la configurazione precompilata per i ticket Kerberos</translation>
 <translation id="338149029069528354">Non cancellare i dati utente locali</translation>
 <translation id="3381968327636295719">Utilizza il browser host per impostazione predefinita</translation>
+<translation id="3387117557265712991">Disabilita la crittografia per applicazioni</translation>
 <translation id="3387211681524224831">Se il criterio viene impostato su Attivato, la cronologia di navigazione non viene salvata, la sincronizzazione delle schede viene disattivata e gli utenti non possono modificare questa impostazione.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, la cronologia di navigazione viene salvata.</translation>
@@ -3563,14 +3565,6 @@ Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le ist
 
 Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="379318040165550702">Consenti agli utenti di scegliere</translation>
-<translation id="3793998702484455655">Chrome tenterà di eseguire l'upgrade di alcuni tipi di sottorisorse di contenuto misto (HTTP su un sito HTTPS) su iOS.
-Per informazioni dettagliate, visita la pagina https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
-
-La funzionalità verrà attivata per impostazione predefinita. Se il criterio viene impostato su Enabled o se non viene configurato, la funzionalità rimarrà attiva.
-
-Se il criterio viene impostato su Disabled, la funzionalità verrà disattivata.
-
-Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il lancio di alcune nuove versioni (la rimozione è prevista nella versione M113).</translation>
 <translation id="3796527892245558832">Selettore profilo disponibile all'avvio</translation>
 <translation id="3798922329287609568">La configurazione del criterio consente di limitare la modalità di stampa fronte/retro.
 
@@ -5795,6 +5789,15 @@ Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio
 Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.</translation>
 <translation id="5673254755365419402">Attiva la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Se il criterio viene impostato su True, Google riceverà rapporti sui principali eventi di installazione delle estensioni attivati dal criterio. Se il criterio viene impostato su False, non viene acquisito alcun evento. Se il criterio non viene impostato, il valore predefinito è True.</translation>
+<translation id="5673780539191375049">Consente di impostare l'intervallo di tempo (in minuti) utilizzato per ricaricare automaticamente il flusso di autenticazione dell'utente su <ph name="PRODUCT_OS_NAME" />. Questo criterio viene introdotto per gestire la scadenza di alcuni servizi utilizzati nei flussi di autenticazione quando il dispositivo rimane inattivo per un po' di tempo.
+
+Se il criterio non viene configurato o ha un valore pari a zero, il flusso di autenticazione non verrà mai ricaricato.
+
+Se il criterio viene impostato su un valore positivo, il flusso di autenticazione verrà ricaricato automaticamente in base all'intervallo impostato.
+
+L'intervallo di ricaricamento massimo è di una settimana (10.080 minuti).
+
+Il criterio riguarda i flussi di autenticazione di accesso e della schermata di blocco.</translation>
 <translation id="5676740747107495269">Mostra le opzioni di accessibilità nel menu della barra delle applicazioni nella schermata di accesso</translation>
 <translation id="5679540979548648200">Impedisci agli utenti di questo dispositivo di utilizzare il processo sideload ADB e forza la funzione Powerwash del dispositivo se tale processo è stato attivato in precedenza</translation>
 <translation id="5681258683432554972">Impostazione popup predefiniti</translation>
@@ -9240,9 +9243,6 @@ Nota: questo criterio costituisce una soluzione temporanea per aiutare la transi
 <translation id="8369602308428138533">Ritardo disattivazione schermo in caso di utilizzo di CA</translation>
 <translation id="8371178326720637170">Consente alle estensioni gestite di utilizzare l'API Enterprise Hardware Platform</translation>
 <translation id="8373176843640227330">Disattiva i report sulle informazioni Bluetooth del dispositivo</translation>
-<translation id="8373940728202278176">La configurazione del criterio consente alle origini elencate di ottenere gli attributi dei dispositivi (ad es. numero di serie, nome host) utilizzando l'API Device Attributes.
-
-      Le origini devono corrispondere alle applicazioni web con installazione forzata tramite il criterio <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o configurate come app kiosk. Per le specifiche dell'API Device Attributes, visita la pagina https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8375817202037102567">Blocca l'accesso di scrittura di file e directory su questi siti</translation>
 <translation id="8378266419596669629">Blocca l'autorizzazione per i caratteri locali su questi siti</translation>
 <translation id="8379281645427937253">Un elenco di certificati TLS che <ph name="PRODUCT_NAME" /> deve considerare attendibile per l'autenticazione del server.
@@ -9289,6 +9289,9 @@ Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL de
 
       Questo criterio verrà rimosso nelle versioni successive alla versione 115 di Chrome.</translation>
 <translation id="841395160262233331">L'Avvio app/il tasto Ricerca non sarà in grado di modificare il comportamento dei tasti funzione e questa impostazione non sarà modificabile dagli utenti.</translation>
+<translation id="8415506434606458373">La configurazione del criterio consente alle origini elencate di ottenere gli attributi dei dispositivi (ad es. numero di serie, nome host) utilizzando l'API Device Attributes.
+
+Le origini devono corrispondere alle applicazioni web con installazione forzata tramite il criterio <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (dalla versione 125) o configurate come app kiosk. Per le specifiche dell'API Device Attributes, visita la pagina https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8415953438346821074">Se attivi questa impostazione, le impostazioni memorizzate nei profili <ph name="PRODUCT_NAME" />, come i preferiti, i dati della compilazione automatica, le password e così via, saranno scritte anche in un file memorizzato nella cartella del profilo utente Roaming o in una posizione specificata dall'amministratore tramite il criterio <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Se attivi il criterio, viene disattivata la sincronizzazione nel cloud.
 
       Se il criterio viene disattivato o non viene impostato, saranno utilizzati solo i normali profili locali.</translation>
@@ -9322,6 +9325,7 @@ la configurazione.</translation>
 
       Nota per gli amministratori di <ph name="MS_WIN_NAME" />: la configurazione di questa impostazione funziona solo con le macchine che eseguono Windows 7. Per le versioni successive, è necessario eseguire il deployment di un file con associazioni di applicazioni predefinite che imposti <ph name="PRODUCT_NAME" /> come gestore dei protocolli <ph name="HTTPS_PROTOCOL" /> e <ph name="HTTP_PROTOCOL" /> (e facoltativamente del protocollo <ph name="FTP_PROTOCOL" /> e di altri formati di file). Consulta la guida di Chrome (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
 <translation id="8441105784056442638">Attiva la funzionalità di ripristino completo</translation>
+<translation id="8444157920689124099">Abilita la crittografia per applicazioni</translation>
 <translation id="8445576299806775661">Dopo ogni importante aggiornamento della versione, Chrome crea un'istantanea di alcune parti dei dati di navigazione dell'utente da usare in caso di un successivo rollback di versione di emergenza. Se viene eseguito un rollback di emergenza a una versione di cui l'utente ha un'istantanea corrispondente, vengono ripristinati i dati nell'istantanea. In questo modo gli utenti possono mantenere impostazioni quali preferiti e dati di compilazione automatica.
 
       Se questo criterio non viene impostato, viene usato il valore predefinito 3.
@@ -10338,6 +10342,11 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di IA ge
 <translation id="984365509386992443">Se questo criterio viene attivato o se non viene impostato, l'utente potrebbe ricevere sondaggi relativi a Navigazione sicura.
 Se viene disattivato, l'utente non riceverà sondaggi relativi a Navigazione sicura.</translation>
 <translation id="985148612300045106">L'Avvio app/il tasto Ricerca sarà in grado di modificare il comportamento dei tasti funzione e questa impostazione non sarà modificabile dagli utenti.</translation>
+<translation id="986223659726677100">Se il criterio viene attivato o se non viene configurato, le chiavi di crittografia utilizzate per l'archiviazione locale vengono associate a <ph name="PRODUCT_NAME" />, quando possibile.
+
+Se il criterio viene disattivato, ha un effetto negativo sulla sicurezza di <ph name="PRODUCT_NAME" />, in quanto app sconosciute e potenzialmente dannose possono recuperare le chiavi di crittografia utilizzate per proteggere i dati.
+
+Disattiva il criterio solo in caso di problemi di compatibilità, ad esempio se altre applicazioni richiedono un accesso legittimo ai dati di <ph name="PRODUCT_NAME" />, se è previsto che i dati utente criptati siano completamente portatili tra computer diversi o se l'integrità e la posizione dei file eseguibili di <ph name="PRODUCT_NAME" /> non sono coerenti.</translation>
 <translation id="987261962216071510">Consenti solo gli accessi come ospite al browser</translation>
 <translation id="987975731398348803">Se il criterio viene attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di utenti dei dispositivi che hanno eseguito l'accesso di recente.
 

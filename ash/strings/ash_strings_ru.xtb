@@ -1263,6 +1263,7 @@
 <translation id="5867606971598166637">Системный администратор видит действия на ваших экранах</translation>
 <translation id="5876666360658629066">Введите родительский код</translation>
 <translation id="5881540930187678962">Настройте функцию "Управление телефоном" позже</translation>
+<translation id="588258955323874662">Полноэкранный режим</translation>
 <translation id="5887954372087850114">Окно "<ph name="WINDOW_TITLE" />" назначено рабочему столу "<ph name="DESK_TITLE" />". Назначение для других рабочих столов отменено.</translation>
 <translation id="588817334757907802">Открыть файл в браузере Chrome</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
@@ -1540,6 +1541,7 @@
 <translation id="6961840794482373852">Функция сочетания клавиш Alt + Стрелка вверх изменилась. Чтобы выполнить действие клавиши Page Up, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вверх.</translation>
 <translation id="696267987219125751">Автомасштабирование отключено</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6972629891077993081">Устройства HID</translation>
 <translation id="6972754398087986839">Начать</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6980402667292348590">Insert</translation>

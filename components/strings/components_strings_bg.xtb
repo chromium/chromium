@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 инча</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1181381397492575884">Chrome блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате. Отворете настройките, за да <ph name="LINK" />.</translation>
+<translation id="1185343831726846924">Потвърждаване на това, че виртуалната карта не може да бъде включена</translation>
 <translation id="1186201132766001848">Проверка на паролите</translation>
 <translation id="1187430513518041110">Автомобили и превозни средства</translation>
 <translation id="1190491977647722791">Хартия (тежка)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> инча</translation>
 <translation id="1574714699824202614">Начинът на плащане се потвърждава</translation>
 <translation id="1576277203042721907">Статистика за Пазаруване</translation>
+<translation id="1579189948231786790">Организацията ви е блокирала този сайт</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Без валидност</translation>
 <translation id="1583429793053364125">Възникна проблем при показването на тази уеб страница.</translation>
@@ -1475,6 +1477,7 @@
 <translation id="3807366285948165054">Изместване на изображението по оста X</translation>
 <translation id="3807709094043295184">Класически рок и песни от миналото</translation>
 <translation id="3807873520724684969">Блокирано бе вредно съдържание.</translation>
+<translation id="380865868633614173">Информацията за картата се запазва</translation>
 <translation id="3810770279996899697">Мениджър на пароли се нуждае от достъп до Keychain на macOS</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3812398568375898177">Това е критична актуализация, която подобрява ефективността на приложенията за Android под ChromeOS.</translation>
@@ -2188,6 +2191,7 @@
 <translation id="5238301240406177137">Запазване в профила</translation>
 <translation id="5239119062986868403">Обичайна цена</translation>
 <translation id="5239623327352565343">Достъпът до местоположението е разрешен</translation>
+<translation id="5241048084654737238">Потвърждаване на това, че информацията за картата не може да бъде запазена</translation>
 <translation id="5242610955375133957">Сухо филмово покритие</translation>
 <translation id="5244521145258281926">Управление на профила в Google. Активирайте, за да управлявате информацията си и настройките за поверителност и сигурност в профила си в Google</translation>
 <translation id="5244732203286792411">Зарежда се...
@@ -2203,6 +2207,7 @@
 <translation id="5266128565379329178">Подвързване в горната част</translation>
 <translation id="5269225904387178860">Четворно перфориране в долната част</translation>
 <translation id="5269999699920406580">Функциите, които се прилагат за цялата система, могат да бъдат зададени само от собственика: <ph name="OWNER_EMAIL" />.</translation>
+<translation id="5271381225185906340"><ph name="DATA_CONTROLS_ATTRIBUTE" /> не е поддържано условие за <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
 <translation id="5273658854610202413">Предупреждение: Това правило не бе обединено според посоченото в правилото PolicyDictionaryMultipleSourceMergeList, тъй като не е част от правилата речници с възможност за обединяване.</translation>
 <translation id="5279286380302340275">Управление на изтеглянията</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3174,6 +3179,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{За да изпратите този файл чрез „<ph name="FEATURE_NAME" />“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}other{За да изпратите тези файлове чрез „<ph name="FEATURE_NAME" />“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}}</translation>
 <translation id="7160999678034985039">Моля, запазете работата си и стартирайте актуализацията, когато сте готови.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Да се копира ли поверителният файл?}other{Да се копират ли поверителните файлове?}}</translation>
+<translation id="7168625890036931112"><ph name="DATA_CONTROLS_RESTRICTION" /> не е поддържано ограничение в тази платформа</translation>
 <translation id="717330890047184534">Идентификатор в GAIA:</translation>
 <translation id="7174545416324379297">Обединени стойности</translation>
 <translation id="7175097078723125014">Избрана бе опцията за редактиране на адреса</translation>
@@ -3246,6 +3252,7 @@
 <translation id="7310392214323165548">Устройството ще се рестартира много скоро</translation>
 <translation id="7311244614769792472">Няма намерени резултати</translation>
 <translation id="7311837626618954149">Chromium блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.</translation>
+<translation id="7313107491291103073">Организацията ви е подала сигнал за този сайт, защото може да нарушава дадено правило.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помощ при проблеми с връзката</translation>
 <translation id="7323804146520582233">Скриване на секцията „<ph name="SECTION" />“</translation>
@@ -3571,6 +3578,7 @@
 <translation id="7888575728750733395">Режим на изобразяване на цветовете при отпечатване</translation>
 <translation id="7894280532028510793">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте мрежова диагностика<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Плик 7 x 9 инча</translation>
+<translation id="7908648876066812348">Виртуалната карта се включва</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да отворите страницата за проверка на безопасността в Chrome от настройките</translation>
 <translation id="791551905239004656">Рисуване и оцветяване</translation>
 <translation id="7916162853251942238">Флексопечат</translation>
@@ -4078,6 +4086,7 @@
 <translation id="8874790741333031443">Опитайте временно да разрешите „бисквитките“ на трети страни. Това ще понижи нивото на защита при сърфиране, но е по-вероятно функциите на сайта да работят по очаквания начин.</translation>
 <translation id="8874824191258364635">Въведете валиден номер на карта</translation>
 <translation id="8877780815363510165">Риболов</translation>
+<translation id="888117890813270681">За <ph name="DATA_CONTROLS_RESTRICTION" /> не може да се зададе <ph name="DATA_CONTROLS_LEVEL" /></translation>
 <translation id="8884537526797090108">Не е възможно записване на поверително съдържание</translation>
 <translation id="8888187300091017436">Матраци</translation>
 <translation id="8890048757975398817">контролира устройството <ph name="READERNAME" /> и да получи достъп до свързаната с него смарткарта.</translation>

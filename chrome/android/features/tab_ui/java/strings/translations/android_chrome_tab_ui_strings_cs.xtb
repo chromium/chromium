@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Odebrat ze skupiny</translation>
 <translation id="3008554597174452548">Přestat produkt sledovat</translation>
 <translation id="3052964831964880138">U produktu <ph name="PRODUCT_NAME" /> klesla cena o <ph name="PRICE_DROP" /></translation>
+<translation id="3078350928901129212"><ph name="COLOR_NAME" /> ikona barvy skupiny karet</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Máte <ph name="TABS_COUNT_ONE" /> archivovanou kartu}few{Máte <ph name="TABS_COUNT_MANY" /> archivované karty}many{Máte <ph name="TABS_COUNT_MANY" /> archivované karty}other{Máte <ph name="TABS_COUNT_MANY" /> archivovaných karet}}</translation>
 <translation id="3194464645767632461">hodnocení</translation>
 <translation id="3291470810748040983">Když bude na otevřené kartě nižší cena, dostanete upozornění</translation>

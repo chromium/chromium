@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Перадпрагляд відарыса</translation>
 <translation id="1611649489706141841">наперад</translation>
 <translation id="1615335640928990664">Выкарыстанне трафіка з <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Скарыстайце тэму</translation>
 <translation id="1621067168122174824">Выканаць праверку зарадкі</translation>
 <translation id="1622402072367425417">яркія бурбалкі</translation>
 <translation id="1626590945318984973">Гэта спалучэнне клавіш недаступнае – выберыце іншае, націснуўшы клавішы ў такой камбінацыі, якая не будзе ўключаць у сябе функцыянальную клавішу і клавішу "<ph name="META_KEY" />".</translation>
@@ -1272,6 +1273,7 @@
 <translation id="8372667721254470022">аліўкавы</translation>
 <translation id="8373046809163484087">Выкарыстоўвайце колеравыя схемы, якія адпавядаюць вашым шпалерам</translation>
 <translation id="8380114448424469341">Замацаваць акно <ph name="DIRECTION" /> на палову экрана</translation>
+<translation id="8391349326751432483">Для праверкі памяці патрабуецца не менш за 500 МБ вольнага месца. Каб вызваліць памяць, закрыйце ўкладкі і праграмы.</translation>
 <translation id="8395584934117017006">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе арганізацыя</translation>
 <translation id="8398927464629426868">Цяперашняя хуткасць зарадкі або разрадкі прылады</translation>
 <translation id="8403988360557588704">Карціна – <ph name="ART_FEATURE" />, стыль – <ph name="ART_MOVEMENT" /></translation>

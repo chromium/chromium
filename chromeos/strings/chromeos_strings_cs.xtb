@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Náhled obrázku</translation>
 <translation id="1611649489706141841">vpřed</translation>
 <translation id="1615335640928990664">Využití dat od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Použijte motiv</translation>
 <translation id="1621067168122174824">Spustit test nabití</translation>
 <translation id="1622402072367425417">zářící bubliny</translation>
 <translation id="1626590945318984973">Zkratka není k dispozici. Stiskněte novou zkratku bez funkčních a kláves a bez klávesy <ph name="META_KEY" />.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">olivová</translation>
 <translation id="8373046809163484087">Použijte sady barev odpovídající vaší tapetě</translation>
 <translation id="8380114448424469341">Ukotvit okno na polovinu obrazovky <ph name="DIRECTION" /></translation>
+<translation id="8391349326751432483">Ke spuštění testu paměti potřebujete minimálně 500 MB volného místa. Pokud chcete uvolnit paměť, zavřete karty a aplikace.</translation>
 <translation id="8395584934117017006">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
 <translation id="8398927464629426868">Rychlost, s jakou se zařízení momentálně nabíjí nebo vybíjí</translation>
 <translation id="8403988360557588704">Obraz na téma <ph name="ART_FEATURE" /> ve stylu <ph name="ART_MOVEMENT" /></translation>

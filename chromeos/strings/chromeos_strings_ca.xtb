@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Previsualitza la imatge</translation>
 <translation id="1611649489706141841">avança</translation>
 <translation id="1615335640928990664">Ús de dades des de <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Utilitza un tema</translation>
 <translation id="1621067168122174824">Executa la prova de càrrega</translation>
 <translation id="1622402072367425417">bombolles brillants</translation>
 <translation id="1626590945318984973">La drecera no està disponible. Prem una drecera nova sense utilitzar les tecles de funció ni de <ph name="META_KEY" />.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">oliva</translation>
 <translation id="8373046809163484087">Utilitza conjunts de colors que encaixin amb el teu fons de pantalla</translation>
 <translation id="8380114448424469341">Ancora la finestra a la meitat <ph name="DIRECTION" /> de la pantalla</translation>
+<translation id="8391349326751432483">Necessites com a mínim 500 MB lliures per executar una prova de memòria. Per alliberar memòria, tanca pestanyes i aplicacions.</translation>
 <translation id="8395584934117017006">Aquest <ph name="DEVICE_TYPE" /> està gestionat per una empresa</translation>
 <translation id="8398927464629426868">El percentatge al qual s'està carregant o descarregant el dispositiu actualment</translation>
 <translation id="8403988360557588704">Una pintura amb <ph name="ART_FEATURE" /> d'estil <ph name="ART_MOVEMENT" /></translation>

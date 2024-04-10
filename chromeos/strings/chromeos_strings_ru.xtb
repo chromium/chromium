@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Предварительный просмотр изображения</translation>
 <translation id="1611649489706141841">вперед</translation>
 <translation id="1615335640928990664">Передача данных с <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Выберите тему</translation>
 <translation id="1621067168122174824">Запустить проверку зарядки</translation>
 <translation id="1622402072367425417">сияющие пузыри</translation>
 <translation id="1626590945318984973">Недопустимое сочетание клавиш. Выберите новое без функциональных клавиш и клавиши <ph name="META_KEY" />.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">оливковый</translation>
 <translation id="8373046809163484087">Используйте цвета в тон обоев</translation>
 <translation id="8380114448424469341">Закрепить окно <ph name="DIRECTION" /> на половину экрана</translation>
+<translation id="8391349326751432483">Для запуска проверки требуется хотя бы 500 МБ неиспользуемой памяти. Чтобы освободить память, закройте вкладки и приложения.</translation>
 <translation id="8395584934117017006">Этим устройством <ph name="DEVICE_TYPE" /> управляет организация.</translation>
 <translation id="8398927464629426868">Скорость, с которой устройство заряжается или разряжается в настоящее время</translation>
 <translation id="8403988360557588704">Картина – <ph name="ART_FEATURE" />, стиль – <ph name="ART_MOVEMENT" /></translation>

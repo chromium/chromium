@@ -3002,6 +3002,7 @@ Politika, Devre dışı değerine ayarlanırsa, indirilen dosyalar güvenilir bi
 Bu kısıtlamalar hem web sayfası içeriğinden hem de Bağlantıyı indir menü seçeneğinden tetiklenen indirmeler için geçerlidir. Bu kısıtlamalar, görüntülenmekte olan sayfanın kaydedilmesi veya indirilmesinde ya da yazdırma seçeneklerinden PDF olarak kaydedilmesinde geçerli değildir.
 
 <ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
+<translation id="3300441638895109781">ChromeOS'te kimlik doğrulama akışını otomatik olarak yeniden yükle</translation>
 <translation id="3300784749135986828"><ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> özelliğini etkinleştir veya devre dışı bırak.</translation>
 <translation id="3301698868852716692">Analizler uzantısını etkinleştir</translation>
 <translation id="3302829897293005699">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar uygulama kimliği ve sürümü gibi aktif kiosk oturumuyla ilgili bilgileri rapor eder.
@@ -3079,6 +3080,7 @@ Bu politika, Devre Dışı değerine ayarlanırsa fiziksel klavyede tahmine daya
 <translation id="3380801667330555918">Kerberos kayıtları için önceden doldurulmuş yapılandırmayı değiştir</translation>
 <translation id="338149029069528354">Yerel kullanıcı verilerini silme</translation>
 <translation id="3381968327636295719">Varsayılan olarak ana makine tarayıcısını kullan</translation>
+<translation id="3387117557265712991">Uygulamaya bağlı şifrelemeyi devre dışı bırak</translation>
 <translation id="3387211681524224831">Politika, Etkin değerine ayarlanırsa tarama geçmişi kaydedilmez, sekme senkronizasyonu kapalı olur ve kullanıcılar bu ayarı değiştiremez.
 
       Politika, Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa tarama geçmişi kaydedilir.</translation>
@@ -3598,14 +3600,6 @@ Hem <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> hem de <ph name="HOMEPAGE_IS_NEW
 
 <ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="379318040165550702">Kullanıcıların seçmelerine izin ver</translation>
-<translation id="3793998702484455655">Chrome, iOS'te bazı karma içerik (HTTPS sitesinde HTTP) alt kaynaklarını yükseltmeye çalışır.
-Ayrıntılar için https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md sayfasına göz atın.
-
-Bu özellik varsayılan olarak etkinleştirilir. Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa özellik etkin kalır.
-
-Politika, Devre Dışı değerine ayarlanırsa özellik devre dışı bırakılır.
-
-Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırılacaktır (kaldırma işleminin geçici olarak M113 sürümünde gerçekleşmesi planlanmaktadır).</translation>
 <translation id="3796527892245558832">Başlangıçta profil seçiciyi etkinleştir</translation>
 <translation id="3798922329287609568">Politika ayarlanırsa dupleks modunda yazdırma kısıtlanır.
 
@@ -5845,6 +5839,15 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 Politika, Devre dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" /> kapatılır.</translation>
 <translation id="5673254755365419402"><ph name="PRIVACY_SANDBOX_NAME" /> Dijital Parmak İzi Koruması özelliğini etkinleştir.</translation>
 <translation id="567377007899266033">Politika True (Doğru) değerine ayarlandığında politika tarafından tetiklenen, önemli eklenti yükleme etkinliklerinin raporları Google'a gönderilir. Politikanın False (Yanlış) değerine ayarlanması, hiçbir etkinliğin yakalanmayacağı anlamına gelir. Bu politika ayarlanmadan bırakıldığında varsayılan değer True (Doğru) değerine ayarlanır.</translation>
+<translation id="5673780539191375049">Kullanıcının kimlik doğrulama akışının, <ph name="PRODUCT_OS_NAME" /> cihazında otomatik olarak yeniden yükleneceği zaman aralığını (dakika cinsinden) ayarlar. Bu politika, kimlik doğrulama akışlarında kullanılan bazı hizmetlerin cihaz bir süre boşta kaldığında geçerlilik süresinin dolmasına çözüm olarak kullanıma sunulmuştur.
+
+Politika ayarlanmazsa veya sıfır değerine ayarlanırsa kimlik doğrulama akışı hiçbir zaman yeniden yüklenmez.
+
+Politika pozitif bir değere ayarlanırsa kimlik doğrulama akışı, belirlenen zaman aralığında otomatik olarak yeniden yüklenir.
+
+Olası maksimum yeniden yükleme aralığı 1 haftadır (10.080 dakika).
+
+Bu politika hem giriş hem de kilit ekranı kimlik doğrulama akışlarını etkiler.</translation>
 <translation id="5676740747107495269">Erişilebilirlik seçeneklerini giriş ekranında sistem tepsisi menüsünde gösterme</translation>
 <translation id="5679540979548648200">Bu cihaz kullanıcılarının ADB başka cihazdan yükleme işlevini kullanmalarını engelleyin ve başka cihazdan yükleme daha önce etkinleştirildiyse cihazda Powerwash işlemi uygulayın</translation>
 <translation id="5681258683432554972">Varsayılan pop-up'lar ayarı</translation>
@@ -9342,9 +9345,6 @@ cihazın klavye arka ışığı rengi varsayılan olarak ayarlanır.</translatio
 <translation id="8369602308428138533">AC güçle çalışırken ekran kapatma gecikmesi</translation>
 <translation id="8371178326720637170">Yönetilen uzantıların Kurumsal Donanım Platformu API'sini kullanmasını sağlar</translation>
 <translation id="8373176843640227330">Cihazın Bluetooth bilgileri raporlamasını devre dışı bırak</translation>
-<translation id="8373940728202278176">Politika ayarlanırsa, listelenen kaynaklar Device Attributes API'yi kullanarak cihaz özelliklerini (ör. seri numarası, ana makine adı) alabilir.
-
-      Kaynaklar, <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> politikası kullanılarak zorunlu yüklenmiş veya kiosk uygulaması olarak ayarlanmış web uygulamalarına karşılık gelmelidir. Device Attributes API teknik özellikleri için lütfen https://wicg.github.io/WebApiDevice/device_attributes adresini ziyaret edin.</translation>
 <translation id="8375817202037102567">Bu sitelerde dosya ve dizinlere yazma erişimini engelle</translation>
 <translation id="8378266419596669629">Bu sitelerde yerel yazı tipleri iznini engelle</translation>
 <translation id="8379281645427937253">Sunucu kimlik doğrulaması için <ph name="PRODUCT_NAME" /> tarafından güvenilmesi gereken TLS sertifikalarının listesi.
@@ -9424,6 +9424,7 @@ kısayolları yapılandırmasına olanak tanır.</translation>
 
       Not: <ph name="MS_WIN_NAME" /> yöneticileri için bu ayar yalnızca Windows 7 çalıştıran makinelerde etkinleştirilebilir. Daha yeni sürümlerde <ph name="PRODUCT_NAME" /> ürününü <ph name="HTTPS_PROTOCOL" /> ve <ph name="HTTP_PROTOCOL" /> protokollerinin (ve isteğe bağlı olarak <ph name="FTP_PROTOCOL" /> protokolünün ve diğer dosya biçimlerinin) işleyicisi haline getiren bir "varsayılan uygulama ilişkilendirmeleri" dosyası dağıtmanız gerekir. Daha fazla bilgi için Chrome Yardımı'na (https://support.google.com/chrome?p=make_chrome_default_win) bakabilirsiniz.</translation>
 <translation id="8441105784056442638">Tam geri yükleme özelliğini etkinleştir</translation>
+<translation id="8444157920689124099">Uygulamaya bağlı şifrelemeyi etkinleştir</translation>
 <translation id="8445576299806775661">Her büyük sürüm güncellemesinin ardından Chrome, daha sonra bir acil sürüm geri alma durumunda kullanılmak üzere kullanıcının tarama verilerinin belirli bölümlerinin anlık görüntüsünü oluşturur. Kullanıcının karşılık gelen anlık görüntüsüne sahip olduğu bir sürümde acil durum geri alma gerçekleştirilirse anlık görüntüdeki veriler geri yüklenir. Bu, kullanıcıların yer işaretleri ve otomatik doldurma verileri gibi ayarları saklamasına olanak tanır.
 
       Bu politika ayarlanmazsa varsayılan değer olan 3 değeri kullanılır
@@ -10459,6 +10460,11 @@ Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
 <translation id="984365509386992443">Bu politika etkinleştirildiğinde veya ayarlanmadan bırakıldığında kullanıcı, Güvenli Tarama ile ilgili anketler alabilir.
 Bu politika devre dışı bırakıldığında kullanıcı, Güvenli Tarama ile ilgili anketleri almaz.</translation>
 <translation id="985148612300045106">Başlatıcı/arama tuşu, işlev tuşlarının çalışma biçimini değiştirebilir, ancak bu ayar kullanıcılar tarafından değiştirilemez.</translation>
+<translation id="986223659726677100">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa yerel veri depolama için kullanılan şifreleme anahtarları mümkün olduğunda <ph name="PRODUCT_NAME" /> ürününe bağlanır.
+
+Bilinmeyen ve zararlı olabilecek uygulamalar, verilerin güvenliğini sağlamak için kullanılan şifreleme anahtarlarını alabileceğinden politikanın Devre Dışı değerine ayarlanması, <ph name="PRODUCT_NAME" /> ürününün güvenliğini olumsuz yönde etkiler.
+
+Politikayı yalnızca <ph name="PRODUCT_NAME" /> verilerine yasal olarak erişmesi gereken diğer uygulamalar gibi uyumluluk sorunları varsa, şifrelenmiş kullanıcı verilerinin farklı bilgisayarlar arasında tamamen taşınabilir olması bekleniyorsa veya <ph name="PRODUCT_NAME" /> yürütülebilir dosyalarının konumu ve doğruluğu tutarlı değilse devre dışı bırakın.</translation>
 <translation id="987261962216071510">Yalnızca tarayıcıya misafir girişlerine izin ver</translation>
 <translation id="987975731398348803">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar kısa süre önce oturum açan cihaz kullanıcılarının listesini bildirir.
 

@@ -3178,7 +3178,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="338323348408199233">Rhwystro traffig heb VPN</translation>
 <translation id="3384362484379805487">Rhennir ffeiliau iaith ymhlith defnyddwyr i gadw lle ar y disg.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
-<translation id="3385509471227300644">Mae Pori'n Ddiogel gyda Google bellach yn sganio ffeiliau amheus rydych yn ceisio eu lawrlwytho fel rhan o'r amddiffyniad uwch a ddewisoch.</translation>
 <translation id="338583716107319301">Gwahanydd</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387588771342841525">Pan fydd ymlaen, caiff cyfrineiriau eu cadw yn <ph name="EMAIL" />. Pan fydd wedi'i ddiffodd, dim ond ar y ddyfais hon y caiff cyfrineiriau eu cadw.</translation>
@@ -6749,6 +6748,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6148576794665275391">Agor nawr</translation>
 <translation id="614890671148262506">Caniatáu hysbysiadau o'r wefan hon bob amser</translation>
 <translation id="6149015141270619212">Nid oes modd cysylltu â'r rhyngrwyd</translation>
+<translation id="6149061208933997199">Defnyddio'r Cyfrinair</translation>
 <translation id="6149791593592044995">Defnyddiwch leoliad marc tôn modern</translation>
 <translation id="6150116777338468525">Ansawdd Sain</translation>
 <translation id="6150278227694566734">Rhai cysylltiadau</translation>
@@ -8388,7 +8388,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7434509671034404296">Datblygwr</translation>
 <translation id="7434757724413878233">Cyflymiad llygoden</translation>
 <translation id="7434969625063495310">Ni ellid ychwanegu gweinydd yr argraffydd. Gwiriwch ffurfweddiad y gweinydd a rhowch gynnig arall arni.</translation>
-<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Adolygwch 1 estyniad a dynnwyd o'r Chrome Web Store}zero{Adolygwch {NUM_EXTENSIONS} estyniad a dynnwyd o'r Chrome Web Store}two{Adolygwch {NUM_EXTENSIONS} estyniad a dynnwyd o'r Chrome Web Store}few{Adolygwch {NUM_EXTENSIONS} estyniad a dynnwyd o'r Chrome Web Store}many{Adolygwch {NUM_EXTENSIONS} estyniad a dynnwyd o'r Chrome Web Store}other{Adolygwch {NUM_EXTENSIONS} estyniad a dynnwyd o'r Chrome Web Store}}</translation>
 <translation id="7436921188514130341">Damo! Bu gwall wrth ailenwi.</translation>
 <translation id="7439519621174723623">Ychwanegwch enw dyfais i barhau</translation>
 <translation id="7441736532026945583">Dewiswch "Cuddio Grŵp" i dynnu'r grŵp o'ch stribed tabiau</translation>
@@ -8406,7 +8405,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7450926666485653189">Yn anfon rhan o'r URL sydd wedi'i dwyllo at Google drwy weinydd preifatrwydd sy'n cuddio eich cyfeiriad IP</translation>
 <translation id="7453008956351770337">Drwy ddewis yr argraffydd hwn, rydych yn rhoi caniatâd i'r estyniad canlynol gael mynediad at eich argraffydd:</translation>
 <translation id="7453467225369441013">Yn eich allgofnodi o'r mwyafrif o wefannau. Ni fyddwch yn cael eich allgofnodi o'ch Cyfrif Google.</translation>
-<translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{Gallai'r estyniad hwn fod yn anniogel. Mae Chrome yn argymell eich bod yn ei dynnu.}zero{Gallai'r estyniadau hyn fod yn anniogel. Mae Chrome yn argymell eich bod yn eu tynnu.}two{Gallai'r estyniadau hyn fod yn anniogel. Mae Chrome yn argymell eich bod yn eu tynnu.}few{Gallai'r estyniadau hyn fod yn anniogel. Mae Chrome yn argymell eich bod yn eu tynnu.}many{Gallai'r estyniadau hyn fod yn anniogel. Mae Chrome yn argymell eich bod yn eu tynnu.}other{Gallai'r estyniadau hyn fod yn anniogel. Mae Chrome yn argymell eich bod yn eu tynnu.}}</translation>
 <translation id="7454548535253569100">Porth: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Mae'ch sefydliad wedi diffodd cadw cyfrineiriau</translation>
 <translation id="7455730275746867420">Rheoli cynwysyddion ychwanegol</translation>
@@ -8900,7 +8898,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="780301667611848630">Dim diolch</translation>
 <translation id="7803657407897251194">I barhau i osod eich dyfais Android, cysylltwch eich <ph name="DEVICE_TYPE" /> i rwydwaith.</translation>
 <translation id="7804072833593604762">Mae'r Tab wedi'i Gau</translation>
-<translation id="780446144738273886">Sganiwch PDF i echdynnu testun ar gyfer y darllenydd sgrîn. Cefnogir ar borwr Chrome yn unig</translation>
 <translation id="7805371082115476536">Golau</translation>
 <translation id="7805768142964895445">Statws</translation>
 <translation id="7805906048382884326">Cau awgrym</translation>

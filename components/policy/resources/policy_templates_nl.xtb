@@ -578,7 +578,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="1468702975912409463">Toestaan dat gebruikers met externe toegang URL's aan de hostzijde openen in hun lokale clientbrowser</translation>
 <translation id="1474273443907024088">TLS False Start uitzetten</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
-<translation id="1478529725439951221">De provider van UI-automatisering wordt aan- of uitgezet via het framework voor varianten.</translation>
+<translation id="1478529725439951221">De provider van UI Automation wordt aan- of uitgezet via het framework voor varianten.</translation>
 <translation id="1479427764273213107">Als je het beleid instelt, wordt de lijst met USB-apparaten gedefinieerd die door gebruikers mogen worden ontkoppeld van hun kernel-driver, zodat ze via de chrome.usb API rechtstreeks kunnen worden gebruikt in een web-app. Items zijn paren van de ID van de USB-leverancier en de ID van het product, zodat specifieke hardware kan worden geïdentificeerd.
 
       Als je het beleid niet instelt, is de lijst met USB-apparaten die kunnen worden ontkoppeld leeg.</translation>
@@ -3528,14 +3528,6 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="379318040165550702">Gebruikers laten kiezen</translation>
-<translation id="3793998702484455655">Chrome probeert bepaalde typen subresources met gemengde content (HTTP op een HTTPS-site) te upgraden op iOS.
-Zie https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md voor meer informatie.
-
-De functie wordt standaard aangezet. Als je het beleid toepast of niet instelt, blijft de functie aanstaan.
-
-Als je het beleid niet toepast, wordt de functie uitgezet.
-
-Dit beleid is een tijdelijke oplossing en wordt na bepaalde tijd verwijderd (de verwijdering is voorlopig gepland in M113).</translation>
 <translation id="3796527892245558832">Profielkiezer beschikbaar bij opstarten</translation>
 <translation id="3798922329287609568">Als je dit beleid instelt, wordt de duplexstand voor afdrukken beperkt.
 
@@ -5761,7 +5753,7 @@ Dit beleid heeft invloed op de verificatieprocessen voor zowel inloggen als het 
       Opmerking: Gebruik bij meerdere waarden een komma als scheidingsteken.</translation>
 <translation id="5693469654327063861">Gegevensmigratie toestaan</translation>
 <translation id="56936613186060503">Downloadbeheer heeft geen optie om bestanden op te slaan in <ph name="GOOGLE_DRIVE_NAME" />.</translation>
-<translation id="5693942129376744977">De provider van UI-automatisering uitzetten.</translation>
+<translation id="5693942129376744977">De provider van UI Automation uitzetten.</translation>
 <translation id="5695209488612697377">Hiermee wordt een standaard zoekprovider in het contextmenu gebruikt.
 
           Als je dit beleid niet toepast, is de zoekoptie in het contextmenu die je standaard zoekprovider gebruikt niet beschikbaar.
@@ -5835,13 +5827,13 @@ Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <p
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, worden de VPD-gegevens van het apparaat gerapporteerd.
       VPD (Vital Product Data) is een verzameling configuratiegegevens en informatie, zoals onderdeel- en serienummers, die bij het apparaat horen.</translation>
-<translation id="5760227556806302854">Hiermee wordt de provider van het toegankelijkheidsframework voor UI-automatisering in <ph name="PRODUCT_NAME" /> aangezet voor gebruik door toegankelijkheidstools.
+<translation id="5760227556806302854">Hiermee wordt de provider van het UI Automation-toegankelijkheidsframework in <ph name="PRODUCT_NAME" /> aangezet voor gebruik door toegankelijkheidstools.
 
-Dit beleid wordt in <ph name="PRODUCT_NAME" /> ondersteund voor een overgangsperiode van één jaar, zodat bedrijfsbeheerders de implementatie van de provider van het toegankelijkheidsframework voor UI-automatisering van de browser kunnen beheren. Voor toegankelijkheid en andere tools die het toegankelijkheidsframework voor UI-automatisering gebruiken voor samenwerking met de browser, zijn misschien updates nodig voor een goede werking met de provider van UI-automatisering. Beheerders kunnen dit beleid gebruiken om de provider van UI-automatisering van de browser tijdelijk uit te zetten (waardoor het beleid wordt teruggezet naar het oude gedrag) terwijl ze samenwerken met leveranciers om updates voor getroffen tools te leveren.
+Dit beleid wordt in <ph name="PRODUCT_NAME" /> ondersteund voor een overgangsperiode van één jaar, zodat bedrijfsbeheerders de implementatie van de provider van het UI Automation-toegankelijkheidsframework van de browser kunnen beheren. Voor toegankelijkheid en andere tools die het UI Automation-toegankelijkheidsframework gebruiken voor samenwerking met de browser, zijn misschien updates nodig voor een goede werking met de provider van UI Automation. Beheerders kunnen dit beleid gebruiken om de provider van UI Automation van de browser tijdelijk uit te zetten (waardoor het beleid wordt teruggezet naar het oude gedrag) terwijl ze samenwerken met leveranciers om updates voor getroffen tools te leveren.
 
-Als je dit beleid instelt op Onwaar, zet <ph name="PRODUCT_NAME" /> alleen de Microsoft Active Accessibility-provider aan. Toegankelijkheid en andere tools die het nieuwere toegankelijkheidsframework voor UI-automatisering gebruiken voor samenwerking met de browser, communiceren via een tussenliggende compatibiliteitsfunctie in <ph name="MS_WIN_NAME" />.
+Als je dit beleid instelt op Onwaar, zet <ph name="PRODUCT_NAME" /> alleen de Microsoft Active Accessibility-provider aan. Toegankelijkheid en andere tools die het nieuwere UI Automation-toegankelijkheidsframework gebruiken voor samenwerking met de browser, communiceren via een tussenliggende compatibiliteitsfunctie in <ph name="MS_WIN_NAME" />.
 
-Als je dit instelt op Waar, zet <ph name="PRODUCT_NAME" /> de provider van UI-automatisering aan in aanvulling op de Microsoft Active Accessibility-provider. Toegankelijkheid en andere tools die het nieuwere toegankelijkheidsframework voor UI-automatisering gebruiken voor samenwerking met de browser, communiceren rechtstreeks met de browser.
+Als je dit instelt op Waar, zet <ph name="PRODUCT_NAME" /> de provider van UI Automation aan in aanvulling op de Microsoft Active Accessibility-provider. Toegankelijkheid en andere tools die het nieuwere UI Automation-toegankelijkheidsframework gebruiken voor samenwerking met de browser, communiceren rechtstreeks met de browser.
 
 Als je dit beleid niet instelt, wordt het framework voor varianten in <ph name="PRODUCT_NAME" /> gebruikt om de provider aan of uit te zetten.
 
@@ -7528,7 +7520,7 @@ Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
       Als het beleid niet wordt ingesteld, wordt de plank standaard onderaan het scherm geplaatst en kan de gebruiker de positie van de plank zelf wijzigen.</translation>
 <translation id="7039815268521168329">Voice Match-proces van de Google Assistent laten zien tijdens de eerste installatie</translation>
 <translation id="7040229947030068419">Voorbeeldwaarde:</translation>
-<translation id="7043157348967593138">De provider van het toegankelijkheidsframework voor UI-automatisering van de browser aanzetten in Windows</translation>
+<translation id="7043157348967593138">De provider van het UI Automation-toegankelijkheidsframework van de browser aanzetten in Windows</translation>
 <translation id="7044883996351280650">De Android-service 'Back-up maken en terugzetten' beheren</translation>
 <translation id="7045221780834308118">Als je het beleid toepast, kunnen web-apps van derden de Desk API gebruiken om <ph name="PRODUCT_OS_NAME" />-bureaus te beheren. Als je het beleid niet instelt of niet toepast, is <ph name="DESK_API_NAME" /> niet beschikbaar. Het beleid geldt alleen voor ingeschreven apparaten.</translation>
 <translation id="7046113122884041950">Smart Lock niet toestaan</translation>
@@ -8467,7 +8459,7 @@ Ga naar https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-e
 
        Als je het beleid niet toepast of niet instelt, blijft de ontwikkelaarsmodus beschikbaar voor het apparaat.</translation>
 <translation id="7824000841504721945">Atomische beleidsgroepen uitzetten</translation>
-<translation id="7824833865123899471">De provider van UI-automatisering aanzetten.</translation>
+<translation id="7824833865123899471">De provider van UI Automation aanzetten.</translation>
 <translation id="782661371433719637">Geen sites toestemming geven om leestoegang tot bestanden of directory's te vragen via de File System API</translation>
 <translation id="7827127381981620448">Platform-app</translation>
 <translation id="7829436838673974723">Toestaan dat pagina's synchrone XHR-verzoeken sturen tijdens het sluiten van pagina's</translation>
@@ -9128,9 +9120,6 @@ Opmerking: Dit beleid is een tijdelijke oplossing om de overstap te maken van AP
 <translation id="8369602308428138533">Vertraging voor uitzetten van scherm als op netstroom wordt gewerkt</translation>
 <translation id="8371178326720637170">Hiermee kunnen beheerde extensies de Enterprise Hardware Platform-API gebruiken</translation>
 <translation id="8373176843640227330">Rapportage van bluetooth-informatie van apparaat uitzetten</translation>
-<translation id="8373940728202278176">Als je het beleid instelt, kunnen vermelde oorsprongen apparaatkenmerken (zoals serienummer, hostnaam) ophalen via de Device Attributes API.
-
-      Oorsprongen moeten overeenkomen met web-apps die afgedwongen zijn geïnstalleerd met het beleid <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> of zijn ingesteld als kiosk-app. Ga naar https://wicg.github.io/WebApiDevice/device_attributes voor de specificaties van de Device Attributes API.</translation>
 <translation id="8375817202037102567">Schrijftoegang tot bestanden en directory's voor deze sites blokkeren</translation>
 <translation id="8378266419596669629">Het recht voor lokale lettertypen blokkeren op deze sites</translation>
 <translation id="8379281645427937253">Een lijst met TLS-certificaten die <ph name="PRODUCT_NAME" /> moet vertrouwen voor serververificatie.

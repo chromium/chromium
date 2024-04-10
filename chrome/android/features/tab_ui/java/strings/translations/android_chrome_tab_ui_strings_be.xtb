@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Выдаліць з групы</translation>
 <translation id="3008554597174452548">Перастаць адсочваць прадукт</translation>
 <translation id="3052964831964880138">Зніжэнне цаны на <ph name="PRODUCT_NAME" /> на <ph name="PRICE_DROP" /></translation>
+<translation id="3078350928901129212">Колер значка гэтай групы ўкладак: <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{У архіве <ph name="TABS_COUNT_ONE" /> укладка}one{У архіве <ph name="TABS_COUNT_MANY" /> укладка}few{У архіве <ph name="TABS_COUNT_MANY" /> укладкі}many{У архіве <ph name="TABS_COUNT_MANY" /> укладак}other{У архіве <ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
 <translation id="3194464645767632461">ацэнка</translation>
 <translation id="3291470810748040983">Вы атрымаеце абвестку, калі цана на прадукт на адкрытай укладцы знізіцца</translation>

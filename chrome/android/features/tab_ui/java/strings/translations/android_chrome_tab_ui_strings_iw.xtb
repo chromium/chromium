@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
 <translation id="3008554597174452548">הפסקת המעקב אחר המוצר הזה</translation>
 <translation id="3052964831964880138">הנחה בסך <ph name="PRICE_DROP" /> על <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">סמל בצבע <ph name="COLOR_NAME" /> של קבוצת הכרטיסיות</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{יש לך כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שהועברה לארכיון}one{יש לך <ph name="TABS_COUNT_MANY" /> כרטיסיות שהועברו לארכיון}two{יש לך <ph name="TABS_COUNT_MANY" /> כרטיסיות שהועברו לארכיון}other{יש לך <ph name="TABS_COUNT_MANY" /> כרטיסיות שהועברו לארכיון}}</translation>
 <translation id="3194464645767632461">דירוג</translation>
 <translation id="3291470810748040983">תתקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה</translation>

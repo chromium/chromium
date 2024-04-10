@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Şəkli Önizləyin</translation>
 <translation id="1611649489706141841">irəli</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> tarixindən bəri data istifadəsi</translation>
+<translation id="1618566998877964907">Tema istifadə edin</translation>
 <translation id="1621067168122174824">Şarj testini icra edin</translation>
 <translation id="1622402072367425417">parlayan qabarcıqlar</translation>
 <translation id="1626590945318984973">Qısayol əlçatan deyil. Funksiya və <ph name="META_KEY" /> düymələrindən istifadə etmədən yeni qısayola basın.</translation>
@@ -844,6 +845,8 @@
 <translation id="5946538341867151940">Hələ qoşulmamısınız. Mobil operator fərdi APN tövsiyə edirsə, "+Yeni APN" seçməklə APN məlumatını daxil edin</translation>
 <translation id="5947266287934282605">Ayın son günü bu gündən əvvəl olarsa, data ayın son günündə sıfırlanacaq</translation>
 <translation id="5948460390109837040">itlər</translation>
+<translation id="594989847980441553">"Yaradın" seçərək Sİ ilə şəkil yaradın.
+        Yaradılmış bütün şəkillər avtomatik burada görünəcək.</translation>
 <translation id="5972388717451707488">Güncəlləmə Mexanizmi</translation>
 <translation id="5975130252842127517">mərcan</translation>
 <translation id="5984145644188835034">Defolt Divar Kağızı</translation>
@@ -1274,6 +1277,7 @@
 <translation id="8372667721254470022">zeytun</translation>
 <translation id="8373046809163484087">Divar kağızına uyğun rəng qruplarından istifadə edin</translation>
 <translation id="8380114448424469341">Pəncərəni ekranın <ph name="DIRECTION" /> yarısına əlavə edin</translation>
+<translation id="8391349326751432483">Yaddaş testi üçün minimum 500 MB boş yaddaş olmalıdır. Yaddaşı boşaltmaq üçün tab və tətbiqləri bağlayın.</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" /> müəssisə tərəfindən idarə edilir</translation>
 <translation id="8398927464629426868">Cihazın hazırda şarj və ya deşarj olma sürəti</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> üslubunda <ph name="ART_FEATURE" /> rəsmi</translation>

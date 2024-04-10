@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Gruptan kaldır</translation>
 <translation id="3008554597174452548">Ürünü takip etmeyi bırak</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ürünün fiyatı <ph name="PRICE_DROP" /> düştü</translation>
+<translation id="3078350928901129212"><ph name="COLOR_NAME" /> sekme grubu renk simgesi</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Arşivlenmiş <ph name="TABS_COUNT_ONE" /> sekmeniz var}other{Arşivlenmiş <ph name="TABS_COUNT_MANY" /> sekmeniz var}}</translation>
 <translation id="3194464645767632461">puan</translation>
 <translation id="3291470810748040983">Açık bir sekmede daha düşük fiyat varsa uyarı alırsınız</translation>

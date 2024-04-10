@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Визуализация на изображението</translation>
 <translation id="1611649489706141841">напред</translation>
 <translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Използване на тема</translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
 <translation id="1622402072367425417">светещи балончета</translation>
 <translation id="1626590945318984973">Клавишната комбинация не е налице. Използвайте друга, без да натискате функционалните клавиши и клавиша „<ph name="META_KEY" />“.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">маслинен</translation>
 <translation id="8373046809163484087">Използване на цветови набори, съответстващи на тапета ви</translation>
 <translation id="8380114448424469341">Прикрепване на прозореца в <ph name="DIRECTION" /> половина на екрана</translation>
+<translation id="8391349326751432483">За да извършите тест на паметта, трябва да имате поне 500 MB свободно място. За да освободите памет, затворете раздели и приложения.</translation>
 <translation id="8395584934117017006">Това устройство <ph name="DEVICE_TYPE" /> се управлява корпоративно</translation>
 <translation id="8398927464629426868">Скоростта, с която устройството се зарежда или разрежда в момента</translation>
 <translation id="8403988360557588704">Картина на <ph name="ART_FEATURE" /> в стил <ph name="ART_MOVEMENT" /></translation>

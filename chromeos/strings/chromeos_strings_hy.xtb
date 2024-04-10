@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Պատկերի նախադիտում</translation>
 <translation id="1611649489706141841">փոխանցել</translation>
 <translation id="1615335640928990664">Տվյալների օգտագործում <ph name="FRIENDLY_DATE" />-ից ի վեր</translation>
+<translation id="1618566998877964907">Օգտագործեք թեմա</translation>
 <translation id="1621067168122174824">Փորձարկել լիցքավորումը</translation>
 <translation id="1622402072367425417">փայլուն ամպիկներ</translation>
 <translation id="1626590945318984973">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում առանց օգտագործելու գործառնական և «<ph name="META_KEY" />» ստեղները։</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">ձիթականաչ</translation>
 <translation id="8373046809163484087">Օգտագործեք գունային հավաքածուներ, որոնք համապատասխանում են ձեր պաստառին</translation>
 <translation id="8380114448424469341">Ամրացնել պատուհանը էկրանի <ph name="DIRECTION" />ի կեսում</translation>
+<translation id="8391349326751432483">Հիշողության ստուգումը գործարկելու համար ձեզ անհրաժեշտ է նվազագույնը 500 ՄԲ ազատ տարածք։ Տարածք ազատելու համար փակեք ներդիրներն ու հավելվածները։</translation>
 <translation id="8395584934117017006">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է կազմակերպության կողմից</translation>
 <translation id="8398927464629426868">Սարքի ընթացիկ լիցքավորման կամ լիցքաթափման արագությունը</translation>
 <translation id="8403988360557588704">Նկար՝ <ph name="ART_FEATURE" />, <ph name="ART_MOVEMENT" /> ոճով</translation>

@@ -112,6 +112,7 @@
 <translation id="160633243685262989">התצוגה המקדימה של התמונה</translation>
 <translation id="1611649489706141841">קדימה</translation>
 <translation id="1615335640928990664">שימוש בחבילת הגלישה מאז <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">שימוש בעיצוב</translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
 <translation id="1622402072367425417">בועות זוהרות</translation>
 <translation id="1626590945318984973">מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש בלי להשתמש במקשי הפונקציות ובמקש <ph name="META_KEY" />.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">זית</translation>
 <translation id="8373046809163484087">שימוש בקבוצות צבעים שמתאימות לטפט שלך</translation>
 <translation id="8380114448424469341">קיבוע החלון בחצי המסך בצד <ph name="DIRECTION" /></translation>
+<translation id="8391349326751432483">‏צריך נפח אחסון פנוי של MB‏500 לפחות כדי להריץ בדיקת זיכרון. כדי לפנות מקום בזיכרון, אפשר לסגור כרטיסיות ואפליקציות.</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> זה מנוהל על ידי ארגון</translation>
 <translation id="8398927464629426868">קצב הטעינה או קצב הפריקה הנוכחיים של המכשיר</translation>
 <translation id="8403988360557588704">ציור של <ph name="ART_FEATURE" /> בסגנון <ph name="ART_MOVEMENT" /></translation>

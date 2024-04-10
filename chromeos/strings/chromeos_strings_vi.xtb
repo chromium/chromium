@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Xem trước hình ảnh</translation>
 <translation id="1611649489706141841">chuyển tiếp</translation>
 <translation id="1615335640928990664">Mức sử dụng dữ liệu kể từ <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Sử dụng một giao diện</translation>
 <translation id="1621067168122174824">Chạy quá trình Kiểm tra sạc</translation>
 <translation id="1622402072367425417">bong bóng toả sáng</translation>
 <translation id="1626590945318984973">Không có phím tắt này. Nhấn một phím tắt mới không dùng phím chức năng và phím <ph name="META_KEY" />.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">màu ôliu</translation>
 <translation id="8373046809163484087">Sử dụng tập hợp màu phù hợp với hình nền</translation>
 <translation id="8380114448424469341">Gắn cửa sổ vào nửa <ph name="DIRECTION" /> của màn hình</translation>
+<translation id="8391349326751432483">Bạn cần ít nhất 500 MB trống để chạy tính năng Kiểm tra bộ nhớ. Để giải phóng bộ nhớ, hãy đóng các thẻ và ứng dụng.</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> này do doanh nghiệp quản lý</translation>
 <translation id="8398927464629426868">Tốc độ sạc hoặc xả pin hiện tại của thiết bị</translation>
 <translation id="8403988360557588704">Bức tranh về <ph name="ART_FEATURE" /> theo phong cách <ph name="ART_MOVEMENT" /></translation>

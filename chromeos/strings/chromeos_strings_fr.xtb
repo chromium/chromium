@@ -112,6 +112,7 @@
 <translation id="160633243685262989">Prévisualiser l'image</translation>
 <translation id="1611649489706141841">suivant</translation>
 <translation id="1615335640928990664">Consommation des données depuis le <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1618566998877964907">Utiliser un thème</translation>
 <translation id="1621067168122174824">Lancer le test de recharge</translation>
 <translation id="1622402072367425417">bulles lumineuses</translation>
 <translation id="1626590945318984973">Raccourci non disponible. Appuyez sur un nouveau raccourci sans utiliser les touches de fonction ni la touche <ph name="META_KEY" />.</translation>
@@ -1274,6 +1275,7 @@
 <translation id="8372667721254470022">olive</translation>
 <translation id="8373046809163484087">Utiliser des jeux de couleurs assortis à votre fond d'écran</translation>
 <translation id="8380114448424469341">Épingler la fenêtre sur la moitié <ph name="DIRECTION" /> de l'écran</translation>
+<translation id="8391349326751432483">Vous devez avoir au moins 500 Mo d'espace disponible pour exécuter un test de mémoire. Pour libérer de la mémoire, fermez des onglets et applis.</translation>
 <translation id="8395584934117017006">Votre <ph name="DEVICE_TYPE" /> est géré par une entreprise</translation>
 <translation id="8398927464629426868">Taux auquel l'appareil se recharge ou se décharge actuellement</translation>
 <translation id="8403988360557588704">Peinture d'un(e) <ph name="ART_FEATURE" /> dans le style <ph name="ART_MOVEMENT" /></translation>

@@ -1264,6 +1264,7 @@
 <translation id="5867606971598166637">Администраторот на системот ги надгледува вашите екрани</translation>
 <translation id="5876666360658629066">Внесете го кодот на родител</translation>
 <translation id="5881540930187678962">Поставете ја Phone Hub подоцна</translation>
+<translation id="588258955323874662">Цел екран</translation>
 <translation id="5887954372087850114">Прозорецот <ph name="WINDOW_TITLE" /> е доделен на <ph name="DESK_TITLE" /> и отстранет од сите други работни површини</translation>
 <translation id="588817334757907802">Отворете датотека во прелистувачот Chrome</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
@@ -1381,7 +1382,7 @@
 <translation id="6324916366299863871">Изменете ја кратенката</translation>
 <translation id="6330012934079202188">Се прикажуваат прозорци од сите работни површина, притиснете го копчето со стрелка за нагоре за да се прикажат прозорци од тековната работна површина</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> е управувана сесија со којашто управува <ph name="MANAGER" /></translation>
-<translation id="6344138931392227467"><ph name="DEVICE_NAME" /> е поврзан</translation>
+<translation id="6344138931392227467"><ph name="DEVICE_NAME" /> – поврзано</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потоа <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> или <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ПРЕДЛОЗИ ЗА АПЛИКАЦИИ</translation>
 <translation id="6352082849089527770">Непознати мрежи</translation>
@@ -1541,6 +1542,7 @@
 <translation id="6961840794482373852">Кратенката од тастатура Alt + Стрелка нагоре се промени. За да го користите копчето Page Up, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка нагоре.</translation>
 <translation id="696267987219125751">Врамувањето на камера е исклучено.</translation>
 <translation id="6965382102122355670">Во ред</translation>
+<translation id="6972629891077993081">HID-уреди</translation>
 <translation id="6972754398087986839">Започни</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6980402667292348590">копче insert</translation>

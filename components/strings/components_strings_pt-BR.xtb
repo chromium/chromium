@@ -1093,7 +1093,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3113284927548439113">Terceiro turno</translation>
 <translation id="3114040155724590991">Atualizando o sistema Android
     A inicialização do app pode levar mais tempo do que o normal.</translation>
-<translation id="3115363211799416195">{0,plural, =1{Fazer o download do arquivo confidencial?}one{Fazer o download do arquivo confidencial?}other{Fazer o download dos arquivos confidenciais?}}</translation>
+<translation id="3115363211799416195">{0,plural, =1{Baixar o arquivo confidencial?}one{Baixar o arquivo confidencial?}other{Baixar os arquivos confidenciais?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminar</translation>
 <translation id="3119689199889622589">Alimentos orgânicos e naturais</translation>
@@ -2184,7 +2184,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5217759126664161410">Formato do protocolo inválido.</translation>
 <translation id="5222812217790122047">E-mail obrigatório</translation>
 <translation id="5228269245420405804">Ensino à distância</translation>
-<translation id="5230428804606340145">Gerenciar outras contas financeiras</translation>
 <translation id="5230733896359313003">Endereço de entrega</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2639,7 +2638,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6120950591512958208">Use este código ao finalizar a compra.</translation>
 <translation id="612178891608320683">Culinária vegana</translation>
 <translation id="6122181661879998141">parte da frente do cartão</translation>
-<translation id="6124058285696691147">Fazer o download do anexo</translation>
+<translation id="6124058285696691147">Baixar o anexo</translation>
 <translation id="6124432979022149706">Conectores do Chrome Enterprise</translation>
 <translation id="6126565365696310362">Envelope chinês 2</translation>
 <translation id="6127379762771434464">Item removido</translation>

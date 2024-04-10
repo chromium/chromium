@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Verwyder uit groep</translation>
 <translation id="3008554597174452548">Hou op om produk na te spoor</translation>
 <translation id="3052964831964880138">Prysverlaging van <ph name="PRICE_DROP" /> op <ph name="PRODUCT_NAME" /></translation>
+<translation id="3078350928901129212">kleurikoon van <ph name="COLOR_NAME" />-oortjiegroep</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Jy het <ph name="TABS_COUNT_ONE" /> geargiveerde oortjie}other{Jy het <ph name="TABS_COUNT_MANY" /> geargiveerde oortjies}}</translation>
 <translation id="3194464645767632461">gradering</translation>
 <translation id="3291470810748040983">Jy sal 'n opletberig kry wanneer daar 'n laer prys in 'n oop oortjie is</translation>

@@ -2964,6 +2964,7 @@ Si cette règle est désactivée, la fonctionnalité de navigation sécurisée n
 Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et avec l'option de menu "Télécharger le lien". Elles ne s'appliquent pas à l'enregistrement ou au téléchargement de la page actuellement affichée ni à l'enregistrement au format PDF depuis les options d'impression.
 
 Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="3300441638895109781">Actualiser automatiquement le flux d'authentification sur ChromeOS</translation>
 <translation id="3300784749135986828">Activer ou désactiver <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Activer l'extension des insights</translation>
 <translation id="3302829897293005699">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent des informations sur la session kiosque active telles que l'ID et la version de l'application.
@@ -3037,6 +3038,7 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
 <translation id="3380801667330555918">Modifier la configuration préremplie pour les demandes Kerberos</translation>
 <translation id="338149029069528354">Ne pas effacer les données utilisateur locales</translation>
 <translation id="3381968327636295719">Utiliser le navigateur hôte par défaut</translation>
+<translation id="3387117557265712991">Désactiver le chiffrement lié à l'appli</translation>
 <translation id="3387211681524224831">Si cette règle est activée, l'historique de navigation n'est pas enregistré, la synchronisation des onglets est désactivée et les utilisateurs ne peuvent pas modifier ce paramètre.
 
       Si cette règle est désactivée ou si elle n'est pas configurée, l'historique de navigation est enregistré.</translation>
@@ -3533,14 +3535,6 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 
 Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="379318040165550702">Autoriser les utilisateurs à choisir</translation>
-<translation id="3793998702484455655">Chrome tentera de mettre à niveau certains types de sous-ressources de contenu mixte (HTTP sur un site HTTPS) sur iOS.
-Pour en savoir plus, consultez la page https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
-
-Cette fonctionnalité sera activée par défaut. Si cette règle est activée ou qu'elle n'est pas configurée, la fonctionnalité reste activée.
-
-Si elle est désactivée, la fonctionnalité est désactivée.
-
-Cette règle est une mesure temporaire et sera supprimée dans une future version (la suppression est envisagée pour M113).</translation>
 <translation id="3796527892245558832">Outil de sélection du profil disponible au démarrage</translation>
 <translation id="3798922329287609568">La définition de cette règle limite l'impression en mode recto verso.
 
@@ -5750,6 +5744,15 @@ Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle
 Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> le sera également.</translation>
 <translation id="5673254755365419402">Activer la fonctionnalité de protection contre le fingerprinting de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Si cette règle est définie sur "True", des rapports sur les événements critiques d'installation d'extensions déclenchée par des règles sont transmis à Google. Si elle est définie sur "False", aucun événement n'est enregistré. Si elle n'est pas configurée, la valeur par défaut est définie sur "True".</translation>
+<translation id="5673780539191375049">Définit l'intervalle de temps (en minutes) pour actualiser automatiquement le flux d'authentification de l'utilisateur sur son appareil <ph name="PRODUCT_OS_NAME" />. Cette règle permet de gérer l'expiration de certains services utilisés dans les flux d'authentification lorsque l'appareil est inactif pendant un certain temps.
+
+Si cette règle n'est pas configurée ou qu'elle est définie sur zéro, le flux d'authentification n'est jamais actualisé.
+
+Lorsque cette règle est définie sur une valeur positive, le flux d'authentification est automatiquement actualisé selon l'intervalle défini.
+
+L'intervalle d'actualisation maximal possible est d'une semaine (10 080 minutes).
+
+Cette règle concerne à la fois les flux d'authentification à la connexion et sur l'écran de verrouillage.</translation>
 <translation id="5676740747107495269">Permet d'afficher les options d'accessibilité dans le menu de la barre d'état système, sur l'écran de connexion</translation>
 <translation id="5679540979548648200">Empêche les utilisateurs de cet appareil de recourir au téléchargement indépendant adb, et soumet l'appareil à la réinitialisation Powerwash si le téléchargement indépendant était activé auparavant</translation>
 <translation id="5681258683432554972">Paramètre de pop-up par défaut</translation>
@@ -9154,9 +9157,6 @@ Remarque : Cette règle est une solution temporaire pour faciliter la transitio
 <translation id="8369602308428138533">Délai d'arrêt de l'écran (secteur)</translation>
 <translation id="8371178326720637170">Autorise les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
 <translation id="8373176843640227330">Désactiver les rapports Bluetooth de l'appareil</translation>
-<translation id="8373940728202278176">Si cette règle est configurée, les origines listées peuvent récupérer les attributs de l'appareil (par ex. : numéro de série ou nom d'hôte) à l'aide de l'API Device Attributes.
-
-      Les origines doivent correspondre aux applications Web installées d'office à l'aide de la règle <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou configurées en tant qu'applications kiosque. Pour connaître les spécifications de l'API Device Attributes, veuillez consulter https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8375817202037102567">Bloquer l'accès en écriture aux fichiers et répertoires pour ces sites</translation>
 <translation id="8378266419596669629">Bloquer l'autorisation des polices locales pour ces sites</translation>
 <translation id="8379281645427937253">Liste des certificats TLS qui devraient être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur.
@@ -9231,6 +9231,7 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur 0, l'URL sél
 
       Remarque (pour les administrateurs <ph name="MS_WIN_NAME" />) : Ce paramètre ne peut être activé que pour les ordinateurs sous Windows 7. Pour les versions ultérieures, vous devez déployer un fichier d'associations d'applications par défaut qui définisse <ph name="PRODUCT_NAME" /> comme le gestionnaire des protocoles <ph name="HTTPS_PROTOCOL" /> et <ph name="HTTP_PROTOCOL" /> (et éventuellement du protocole <ph name="FTP_PROTOCOL" /> ainsi que d'autres formats de fichiers). Pour en savoir plus, consultez l'aide de Chrome à l'adresse https://support.google.com/chrome?p=make_chrome_default_win.</translation>
 <translation id="8441105784056442638">Activer la fonctionnalité de restauration complète</translation>
+<translation id="8444157920689124099">Activer le chiffrement lié à l'appli</translation>
 <translation id="8445576299806775661">Après chaque mise à jour de version majeure, Chrome crée un instantané de certaines portions des données de navigation de l'utilisateur en prévision d'un éventuel rollback de version d'urgence. Si un rollback d'urgence a lieu et que Chrome dispose de l'instantané correspondant, les données de cet instantané sont restaurées. L'utilisateur récupérera ainsi ses favoris et ses données de saisie automatique, entre autres.
 
       Si la règle n'est pas définie, la valeur par défaut 3 est utilisée.
@@ -10266,6 +10267,11 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="984365509386992443">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur peut recevoir des enquêtes sur la navigation sécurisée.
 Si cette règle est désactivée, l'utilisateur ne reçoit pas ces enquêtes.</translation>
 <translation id="985148612300045106">La touche du Lanceur d'applications/de recherche pourra modifier le comportement des touches de fonction, et les utilisateurs ne pourront pas modifier ce paramètre.</translation>
+<translation id="986223659726677100">Si cette règle est activée ou n'est pas configurée, les clés de chiffrement utilisées pour le stockage local des données sont liées à <ph name="PRODUCT_NAME" /> chaque fois que cela est possible.
+
+Si cette règle est désactivée, cela nuit à la sécurité de <ph name="PRODUCT_NAME" />, car des applis inconnues et potentiellement hostiles pourront récupérer les clés de chiffrement utilisées pour sécuriser les données.
+
+Ne désactivez cette règle qu'en cas de problèmes de compatibilité (par exemple, si d'autres applis ont besoin d'un accès légitime aux données de <ph name="PRODUCT_NAME" />, si les données utilisateur chiffrées sont censées être entièrement portables entre différents ordinateurs, ou si l'intégrité et l'emplacement des fichiers exécutables de <ph name="PRODUCT_NAME" /> ne sont pas cohérents).</translation>
 <translation id="987261962216071510">Autoriser uniquement les connexions au navigateur en mode Invité</translation>
 <translation id="987975731398348803">Si cette règle est activée ou n'est pas configurée, les appareils enregistrés communiquent la liste des utilisateurs qui se sont récemment connectés.
 

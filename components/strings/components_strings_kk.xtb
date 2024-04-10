@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 дюйм</translation>
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1181381397492575884">Chrome сайттарды браузер пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын қолданудан блоктайды. <ph name="LINK" /> үшін параметрлерге өтіңіз.</translation>
+<translation id="1185343831726846924">Виртуалдық картаны қосу мүмкін еместігін растау</translation>
 <translation id="1186201132766001848">Құпия сөздерді тексеру</translation>
 <translation id="1187430513518041110">Көліктер мен оларға қызмет көрсету</translation>
 <translation id="1190491977647722791">Қағаз (ауыр)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> дюйм</translation>
 <translation id="1574714699824202614">Төлеу әдісі расталып жатыр</translation>
 <translation id="1576277203042721907">Сауда-саттық статистикасы</translation>
+<translation id="1579189948231786790">Ұйымыңыз бұл сайтты блоктады</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Мерзімі шексіз</translation>
 <translation id="1583429793053364125">Бұл веб-бетті көрсету кезінде қате кетті.</translation>
@@ -1474,6 +1476,7 @@
 <translation id="3807366285948165054">Кескіннің Х осі бойынша ығысуы</translation>
 <translation id="3807709094043295184">Классикалық рок және ескі әндер</translation>
 <translation id="3807873520724684969">Зиянды контентке тыйым салынды.</translation>
+<translation id="380865868633614173">Карта туралы ақпарат сақталып жатыр</translation>
 <translation id="3810770279996899697">Password Manager қызметіне MacOS кілттер тізбегін пайдалануға рұқсат қажет</translation>
 <translation id="3810973564298564668">Басқару</translation>
 <translation id="3812398568375898177">Бұл — ChromeOS жүйесіндегі Android қолданбаларының өнімділігін жақсартатын маңызды жаңарту.</translation>
@@ -2187,6 +2190,7 @@
 <translation id="5238301240406177137">Аккаунтта сақтау</translation>
 <translation id="5239119062986868403">Әдеттегі бағасы</translation>
 <translation id="5239623327352565343">Локацияны пайдалануға рұқсат берілді.</translation>
+<translation id="5241048084654737238">Карта туралы ақпаратты сақтау мүмкін еместігін растау</translation>
 <translation id="5242610955375133957">Құрғақ үлдір</translation>
 <translation id="5244521145258281926">Google аккаунтын басқару, Google аккаунтыңыздағы ақпаратты, құпиялықты және қауіпсіздікті басқару үшін белсендіріңіз</translation>
 <translation id="5244732203286792411">Жүктелуде…
@@ -2202,6 +2206,7 @@
 <translation id="5266128565379329178">Жоғарғы жағын байлау</translation>
 <translation id="5269225904387178860">Төменгі жағын төрт рет тесу</translation>
 <translation id="5269999699920406580">Жүйеге толығымен қолданылатын функцияларды тек иесі орната алады: <ph name="OWNER_EMAIL" /></translation>
+<translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" "<ph name="DATA_CONTROLS_RESTRICTION" />" үшін қолдау көрсетілетін шарт емес</translation>
 <translation id="5273658854610202413">Ескерту: бұл саясат PolicyDictionaryMultipleSourceMergeList саясатында көрсетілгендей біріктірілмеген, себебі ол біріктіруге болатын сөздік саясаттарының бөлігі емес.</translation>
 <translation id="5279286380302340275">Жүктеп алынғандарды басқару</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3173,6 +3178,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Бұл файлды <ph name="FEATURE_NAME" /> көмегімен жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}other{Бұл файлдарды <ph name="FEATURE_NAME" /> көмегімен жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}}</translation>
 <translation id="7160999678034985039">Жұмысыңызды сақтаңыз және дайын болған кезде жаңартуды бастаңыз.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Құпия файл көшірілсін бе?}other{Құпия файлдар көшірілсін бе?}}</translation>
+<translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" бұл платформада қолдау көрсетілетін шектеу емес</translation>
 <translation id="717330890047184534">GAIA идентификаторы:</translation>
 <translation id="7174545416324379297">Біріктірілген</translation>
 <translation id="7175097078723125014">Мекенжайды өзгерту опциясы таңдалды</translation>
@@ -3245,6 +3251,7 @@
 <translation id="7310392214323165548">Құрылғы сәлден соң өшіп, қайта қосылады.</translation>
 <translation id="7311244614769792472">Ешбір нәтиже табылмады</translation>
 <translation id="7311837626618954149">Chromium сайттарды браузер пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын қолданудан блоктайды.</translation>
+<translation id="7313107491291103073">Ұйымыңыз бұл сайтты саясатқа қайшы деп белгіледі.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Байланыс анықтамасы</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" бөлімін жасыру</translation>
@@ -3570,6 +3577,7 @@
 <translation id="7888575728750733395">Басып шығарудың рендеринг мақсаты</translation>
 <translation id="7894280532028510793">Дұрыс жазылған болса, <ph name="BEGIN_LINK" />Network Diagnostics құралын іске қосып көріңіз<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">178 x 229 мм хатқалта</translation>
+<translation id="7908648876066812348">Виртуалдық карта қосылып жатыр</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, параметрлердегі Chrome қауіпсіздік тексерісі бетіне өту үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="791551905239004656">Сурет салу және бояу</translation>
 <translation id="7916162853251942238">Флексографиялық база</translation>
@@ -4077,6 +4085,7 @@
 <translation id="8874790741333031443">Үшінші тарап cookie файлдарына уақытша рұқсат беріп көріңіз. Бұл жағдайда қорғаныс дәрежесі төмен болады, бірақ сайт функцияларының ойдағыдай жұмыс істеу ықтималдығы артады.</translation>
 <translation id="8874824191258364635">Дұрыс карта нөмірін енгізіңіз</translation>
 <translation id="8877780815363510165">Балық аулау</translation>
+<translation id="888117890813270681">"<ph name="DATA_CONTROLS_RESTRICTION" />" саясатын "<ph name="DATA_CONTROLS_LEVEL" />" мәніне орнату мүмкін емес</translation>
 <translation id="8884537526797090108">Құпия контентті жазу мүмкін емес</translation>
 <translation id="8888187300091017436">Матрастар</translation>
 <translation id="8890048757975398817"><ph name="READERNAME" /> құрылғысын басқарып, оған қолжетімді смарт картаны пайдалану рұқсатын алу.</translation>

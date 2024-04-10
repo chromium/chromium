@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Aus Gruppe entfernen</translation>
 <translation id="3008554597174452548">Produkt nicht mehr beobachten</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> Preisnachlass auf das Produkt „<ph name="PRODUCT_NAME" />“</translation>
+<translation id="3078350928901129212">Farbe des Symbols für Tabgruppe (<ph name="COLOR_NAME" />)</translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Du hast <ph name="TABS_COUNT_ONE" /> archivierten Tab}other{Du hast <ph name="TABS_COUNT_MANY" /> archivierte Tabs}}</translation>
 <translation id="3194464645767632461">Bewertung</translation>
 <translation id="3291470810748040983">Du erhältst eine Benachrichtigung, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist</translation>

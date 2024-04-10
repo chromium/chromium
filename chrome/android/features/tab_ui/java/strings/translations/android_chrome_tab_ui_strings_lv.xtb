@@ -36,6 +36,7 @@
 <translation id="2977480621796371840">Noņemt no grupas</translation>
 <translation id="3008554597174452548">Vairs neizsekot produktam</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> cenas kritums produktam “<ph name="PRODUCT_NAME" />”</translation>
+<translation id="3078350928901129212">Ciļņu grupas ikonas krāsa ir <ph name="COLOR_NAME" /></translation>
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Jums ir <ph name="TABS_COUNT_ONE" /> arhivēta cilne}zero{Jums ir <ph name="TABS_COUNT_MANY" /> arhivētas cilnes}one{Jums ir <ph name="TABS_COUNT_MANY" /> arhivēta cilne}other{Jums ir <ph name="TABS_COUNT_MANY" /> arhivētas cilnes}}</translation>
 <translation id="3194464645767632461">vērtējums</translation>
 <translation id="3291470810748040983">Jūs saņemsiet brīdinājumu, kad kādā atvērtajā cilnē būs pieejama zemāka cena.</translation>

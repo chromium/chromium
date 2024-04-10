@@ -300,7 +300,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1216542092748365687">Remover impressão digital</translation>
 <translation id="1216891999012841486">Saiba mais sobre como corrigir erros de atualização</translation>
 <translation id="1217114730239853757">Você quer ativar o ChromeVox, o leitor de tela integrado do ChromeOS Flex? Se for o caso, pressione a barra de espaço.</translation>
-<translation id="1217117837721346030">Fazer o download do arquivo suspeito</translation>
+<translation id="1217117837721346030">Baixar o arquivo suspeito</translation>
 <translation id="1217483152325416304">Seus dados locais serão excluídos em breve</translation>
 <translation id="1217668622537098248">Reverter para o clique com botão esquerdo após a ação</translation>
 <translation id="1218015446623563536">Excluir Linux</translation>
@@ -3176,7 +3176,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="338323348408199233">Bloquear tráfego sem VPN</translation>
 <translation id="3384362484379805487">Os arquivos de idioma são compartilhados entre os usuários para economizar espaço em disco.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
-<translation id="3385509471227300644">Agora, a Navegação segura do Google verifica os arquivos suspeitos que você tenta transferir por download como parte da proteção reforçada escolhida.</translation>
 <translation id="338583716107319301">Separador</translation>
 <translation id="3387023983419383865">,</translation>
 <translation id="3387588771342841525">Quando essa configuração está ativada, as senhas são salvas em <ph name="EMAIL" />. Quando está desativada, elas são salvas apenas neste dispositivo.</translation>
@@ -5255,7 +5254,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4965808351167763748">Você quer mesmo configurar este dispositivo para executar o Google Meet?</translation>
 <translation id="4966972803217407697">Você está no modo de navegação anônima</translation>
 <translation id="4967227914555989138">Adicionar uma observação</translation>
-<translation id="4967360192915400530">Fazer o download do arquivo perigoso</translation>
+<translation id="4967360192915400530">Baixar o arquivo perigoso</translation>
 <translation id="496742804571665842">Desativar perfis de eSIM</translation>
 <translation id="4967571733817147990">Personalizar botões do mouse</translation>
 <translation id="4967852842111017386">Nome do dispositivo do <ph name="FEATURE_NAME" /></translation>
@@ -6748,6 +6747,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6148576794665275391">Abrir agora</translation>
 <translation id="614890671148262506">Sempre permitir notificações deste site</translation>
 <translation id="6149015141270619212">Não foi possível se conectar à Internet</translation>
+<translation id="6149061208933997199">Usar senha</translation>
 <translation id="6149791593592044995">Usar o posicionamento moderno de marcas de entonação</translation>
 <translation id="6150116777338468525">Qualidade do áudio</translation>
 <translation id="6150278227694566734">Alguns contatos</translation>
@@ -6799,7 +6799,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6184868291074982484">O Chrome limita automaticamente os cookies de terceiros</translation>
 <translation id="6185132558746749656">Localização do dispositivo</translation>
 <translation id="6190953336330058278">Apps do recurso Seu smartphone</translation>
-<translation id="6192333916571137726">Fazer o download do arquivo</translation>
+<translation id="6192333916571137726">Baixar o arquivo</translation>
 <translation id="6192413564913825901">Mover para todos os favoritos</translation>
 <translation id="6194333736420234626">Formas de pagamento</translation>
 <translation id="6195005504600220730">Ler informações sobre seu navegador, SO e dispositivo</translation>
@@ -8382,7 +8382,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7434509671034404296">Desenvolvedor</translation>
 <translation id="7434757724413878233">Aceleração do mouse</translation>
 <translation id="7434969625063495310">Não foi possível adicionar o servidor de impressão. Verifique a configuração do servidor e tente novamente.</translation>
-<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Avalie 1 extensão que foi removida da Chrome Web Store}one{Avalie {NUM_EXTENSIONS} extensão que foi removida da Chrome Web Store}other{Avalie {NUM_EXTENSIONS} extensões que foram removidas da Chrome Web Store}}</translation>
 <translation id="7436921188514130341">Ah, não! Ocorreu um erro durante a renomeação.</translation>
 <translation id="7439519621174723623">Adicione um nome de dispositivo para continuar</translation>
 <translation id="7441736532026945583">Selecione "Ocultar grupo" para remover o grupo da sua barra de guias</translation>
@@ -8400,7 +8399,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7450926666485653189">Envia apenas uma parte ofuscada do URL ao Google por um servidor de privacidade que oculta seu endereço IP</translation>
 <translation id="7453008956351770337">Ao selecionar esta impressora, você concede permissão para acessar sua impressora à seguinte extensão:</translation>
 <translation id="7453467225369441013">Desconecta você da maioria dos sites, mas não da sua Conta do Google.</translation>
-<translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{Esta extensão pode não ser segura. O Chrome recomenda a remoção dela.}one{Esta extensão pode não ser segura. O Chrome recomenda a remoção dela.}other{Estas extensões podem não ser seguras. O Chrome recomenda a remoção delas.}}</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Sua organização desativou o salvamento de senhas</translation>
 <translation id="7455730275746867420">Gerenciar contêineres extras</translation>
@@ -8894,7 +8892,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="780301667611848630">Agora não</translation>
 <translation id="7803657407897251194">Para continuar a configuração com o dispositivo Android, conecte o <ph name="DEVICE_TYPE" /> a uma rede</translation>
 <translation id="7804072833593604762">Guia fechada</translation>
-<translation id="780446144738273886">Digitalize um PDF para extrair texto para o leitor de tela. Esse recurso só está disponível no navegador Chrome</translation>
 <translation id="7805371082115476536">Claro</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Fechar dica</translation>
@@ -9308,7 +9305,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8101987792947961127">Powerwash obrigatório na próxima reinicialização</translation>
 <translation id="8102139037507939978">Remover informações de identificação pessoal de system_logs.txt.</translation>
 <translation id="810362914482827094">Pesquisar senhas de acesso</translation>
-<translation id="8104088837833760645">Fazer o download do perfil do eSIM</translation>
+<translation id="8104088837833760645">Baixar o perfil do eSIM</translation>
 <translation id="8105273883928376822">Faça login para continuar.</translation>
 <translation id="8107015733319732394">Instalando a Google Play Store no seu <ph name="DEVICE_TYPE" />. Isso pode demorar alguns minutos.</translation>
 <translation id="810728361871746125">Resolução da tela</translation>
@@ -9482,7 +9479,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8244201515061746038">Botão "Saiba mais" da correção automática. Acesse a página de configurações da correção automática. Pressione "Enter" para ativar ou "Esc" para dispensar.</translation>
 <translation id="8244514732452879619">Está quase na hora de dormir</translation>
 <translation id="8246776524656196770">Proteja sua chave de segurança com um número de identificação pessoal (PIN, na sigla em inglês)</translation>
-<translation id="8247795734638043885">Fazer o download do arquivo não seguro</translation>
+<translation id="8247795734638043885">Baixar o arquivo não seguro</translation>
 <translation id="8248050856337841185">&amp;Colar</translation>
 <translation id="8248381369318572865">Acessar seu microfone e analisar sua fala</translation>
 <translation id="8248887045858762645">Dica do Chrome</translation>
@@ -9549,7 +9546,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8288553158681886528">Extrair texto do PDF</translation>
 <translation id="8289128870594824098">Tamanho do disco</translation>
 <translation id="8289509909262565712">Olá! Você está no <ph name="DEVICE_OS" /></translation>
-<translation id="8291415872436043161">Faça o download do Chrome</translation>
+<translation id="8291415872436043161">Baixe o Chrome</translation>
 <translation id="8291942417224950075">Para uso pessoal</translation>
 <translation id="8293206222192510085">Adicionar favorito</translation>
 <translation id="8294431847097064396">Origem</translation>

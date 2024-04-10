@@ -311,6 +311,7 @@
 <translation id="2625189173221582860">Գաղտնաբառը պատճենվեց</translation>
 <translation id="2626236249646841566">Ստուգեք կապը և նորից փորձեք մուտք գործել։</translation>
 <translation id="2637313651144986786">Որոնեք ներդիրներում</translation>
+<translation id="2640733327287333451">Օգտանուն չկա ••••••</translation>
 <translation id="2648721026697078500">Երբեք չտեղափոխել</translation>
 <translation id="2648803196158606475">Ջնջել կարդացվածները</translation>
 <translation id="2664621323652615289">Կանգնեցնել</translation>
@@ -1280,6 +1281,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7569588934989281656">Մեկ ներդիրից մյուսն անցնելու համար կարող եք թերթել ներդիրների հատվածը։</translation>
 <translation id="7582857256643797524">Այս կարգավորումը միացված է ձեր սարքում</translation>
 <translation id="7583004045319035904">Ապակողպեք ձեր ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />։</translation>
+<translation id="7598439272585186139">Ստացեք ավելի շատ անվտանգություն</translation>
 <translation id="7600965453749440009">Երբեք չթարգմանել <ph name="LANGUAGE" /> էջերը</translation>
 <translation id="7603852183842204213">Ելնող պատուհաններն արգելափակվել են (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Ջնջել գաղտնաբառը</translation>

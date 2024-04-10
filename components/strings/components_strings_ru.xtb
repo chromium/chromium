@@ -102,6 +102,7 @@
 <translation id="1178821169867863726">12 x 16 дюймов</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1181381397492575884">Chrome запрещает сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете. Чтобы <ph name="LINK" />, перейдите в настройки.</translation>
+<translation id="1185343831726846924">Я понимаю, что подключить виртуальную карту нельзя</translation>
 <translation id="1186201132766001848">Проверить пароли</translation>
 <translation id="1187430513518041110">Автотранспорт</translation>
 <translation id="1190491977647722791">Бумага (плотная)</translation>
@@ -324,6 +325,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" />"</translation>
 <translation id="1574714699824202614">Подтверждение способа оплаты…</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
+<translation id="1579189948231786790">Этот сайт заблокирован вашей организацией</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Срок действия не ограничен</translation>
 <translation id="1583429793053364125">При загрузке этой страницы возникли неполадки.</translation>
@@ -1474,6 +1476,7 @@
 <translation id="3807366285948165054">Смещение изображения по оси X</translation>
 <translation id="3807709094043295184">Классический рок и ретромузыка</translation>
 <translation id="3807873520724684969">Заблокирован опасный контент</translation>
+<translation id="380865868633614173">Сохраняется информация о карте</translation>
 <translation id="3810770279996899697">Менеджеру паролей необходим доступ к Связке ключей macOS</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3812398568375898177">Это важное обновление, которое улучшает производительность приложений для Android на ChromeOS.</translation>
@@ -2187,6 +2190,7 @@
 <translation id="5238301240406177137">Сохранить в аккаунте</translation>
 <translation id="5239119062986868403">Средняя цена</translation>
 <translation id="5239623327352565343">Доступ к данным о местоположении разрешен</translation>
+<translation id="5241048084654737238">Я понимаю, что информацию о карте нельзя сохранить</translation>
 <translation id="5242610955375133957">Сухая пленка</translation>
 <translation id="5244521145258281926">Кнопка "Параметры аккаунта Google". Нажмите ее, чтобы управлять своей информацией, а также настройками конфиденциальности и безопасности в аккаунте Google.</translation>
 <translation id="5244732203286792411">Загрузка…
@@ -2202,6 +2206,7 @@
 <translation id="5266128565379329178">Скрепление сверху</translation>
 <translation id="5269225904387178860">Четыре отверстия снизу</translation>
 <translation id="5269999699920406580">Системные функции может устанавливать только владелец (<ph name="OWNER_EMAIL" />).</translation>
+<translation id="5271381225185906340">условие "<ph name="DATA_CONTROLS_ATTRIBUTE" />" не поддерживается для "<ph name="DATA_CONTROLS_RESTRICTION" />".</translation>
 <translation id="5273658854610202413">Внимание! Это правило не объединено в соответствии с правилом PolicyDictionaryMultipleSourceMergeList, так как оно не относится к словарю.</translation>
 <translation id="5279286380302340275">Открыть список скачанных файлов</translation>
 <translation id="5283044957620376778">B1</translation>
@@ -3173,6 +3178,7 @@
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Чтобы отправить этот файл с помощью функции "<ph name="FEATURE_NAME" />", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}one{Чтобы отправить эти файлы с помощью функции "<ph name="FEATURE_NAME" />", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}few{Чтобы отправить эти файлы с помощью функции "<ph name="FEATURE_NAME" />", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}many{Чтобы отправить эти файлы с помощью функции "<ph name="FEATURE_NAME" />", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}other{Чтобы отправить эти файлы с помощью функции "<ph name="FEATURE_NAME" />", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}}</translation>
 <translation id="7160999678034985039">Сохраните результаты работы и запустите обновление.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Скопировать конфиденциальный файл?}one{Скопировать конфиденциальные файлы?}few{Скопировать конфиденциальные файлы?}many{Скопировать конфиденциальные файлы?}other{Скопировать конфиденциальные файлы?}}</translation>
+<translation id="7168625890036931112">ограничение "<ph name="DATA_CONTROLS_RESTRICTION" />" не поддерживается на этой платформе.</translation>
 <translation id="717330890047184534">Идентификатор GAIA:</translation>
 <translation id="7174545416324379297">Объединенное правило</translation>
 <translation id="7175097078723125014">Нажата кнопка "Изменить адрес"</translation>
@@ -3245,6 +3251,7 @@
 <translation id="7310392214323165548">Скоро устройство будет перезагружено</translation>
 <translation id="7311244614769792472">Ничего не найдено</translation>
 <translation id="7311837626618954149">Chromium запрещает сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете.</translation>
+<translation id="7313107491291103073">Возможно, он нарушает правила.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Устранение ошибок при подключении к Интернету</translation>
 <translation id="7323804146520582233">Скрыть раздел "<ph name="SECTION" />"</translation>
@@ -3570,6 +3577,7 @@
 <translation id="7888575728750733395">Способ цветового пересчета для печати</translation>
 <translation id="7894280532028510793">Если все правильно, <ph name="BEGIN_LINK" />выполните диагностику сети<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Конверт 178 x 229 мм</translation>
+<translation id="7908648876066812348">Подключается виртуальная карта</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы перейти на страницу проверки безопасности Chrome в настройках.</translation>
 <translation id="791551905239004656">Рисование и раскраски</translation>
 <translation id="7916162853251942238">Основа для флексопечати</translation>
@@ -4077,6 +4085,7 @@
 <translation id="8874790741333031443">Попробуйте временно разрешить сторонние файлы cookie. Браузер будет хуже защищен, но функции сайта могут начать работать правильно.</translation>
 <translation id="8874824191258364635">Введите действительный номер карты.</translation>
 <translation id="8877780815363510165">Рыбалка</translation>
+<translation id="888117890813270681">для "<ph name="DATA_CONTROLS_RESTRICTION" />" нельзя установить уровень "<ph name="DATA_CONTROLS_LEVEL" />".</translation>
 <translation id="8884537526797090108">Не удается записать видео конфиденциального контента</translation>
 <translation id="8888187300091017436">Матрасы</translation>
 <translation id="8890048757975398817">доступ к устройству "<ph name="READERNAME" />" и смарт-карте, связанной с ним.</translation>
