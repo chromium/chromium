@@ -302,7 +302,7 @@ public class ReadAloudController
             }
 
             WebContents webContents = tab.getWebContents();
-            if (webContents != null) {
+            if (webContents != null && mHandle != 0L) {
                 TranslateBridge.removeTranslationObserver(webContents, mHandle);
             }
 
