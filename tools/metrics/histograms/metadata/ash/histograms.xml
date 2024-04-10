@@ -8245,6 +8245,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.VideoConferenceTray.BackgroundImageButton.Click"
+    enum="BooleanOpened" expires_after="2024-09-22">
+  <owner>charleszhao@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the background image button in video conference tray is
+    clicked to apply background image replace.
+  </summary>
+</histogram>
+
+<histogram name="Ash.VideoConferenceTray.CreateWithAiButton.Click"
+    enum="BooleanOpened" expires_after="2024-09-22">
+  <owner>charleszhao@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the &quot;Create with AI&quot; button in video conference tray
+    is clicked to open VcBackgroundApp.
+  </summary>
+</histogram>
+
 <histogram name="Ash.VideoConferenceTray.StopScreenShareButton.Click"
     enum="BooleanClicked" expires_after="2025-03-16">
   <owner>leandre@google.com</owner>

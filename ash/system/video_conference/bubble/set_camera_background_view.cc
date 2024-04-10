@@ -16,6 +16,7 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,6 +38,12 @@ namespace ash::video_conference {
 namespace {
 
 using BackgroundImageInfo = CameraEffectsController::BackgroundImageInfo;
+
+constexpr char kBackgroundImageButtonHistogramName[] =
+    "Ash.VideoConferenceTray.BackgroundImageButton.Click";
+
+constexpr char kCreateWithAiButtonHistogramName[] =
+    "Ash.VideoConferenceTray.CreateWithAiButton.Click";
 
 // Decides the margin for the `SetCameraBackgroundView`.
 constexpr gfx::Insets kSetCameraBackgroundViewInsideBorderInsets =
@@ -271,6 +278,8 @@ class RecentlyUsedBackgroundView : public views::View {
 
     GetCameraEffectsController()->SetBackgroundImage(filename,
                                                      base::DoNothing());
+
+    base::UmaHistogramBoolean(kBackgroundImageButtonHistogramName, true);
   }
 
  private:
@@ -312,6 +321,8 @@ class CreateImageButton : public views::LabelButton {
  private:
   void OnButtonClicked(const ui::Event& event) {
     controller_->CreateBackgroundImage();
+
+    base::UmaHistogramBoolean(kCreateWithAiButtonHistogramName, true);
   }
 
   // Unowned by `CreateImageButton`.
