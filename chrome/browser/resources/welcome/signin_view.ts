@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './shared/action_link_style.css.js';
 import './shared/animations.css.js';
 import './shared/onboarding_background.js';

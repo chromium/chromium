@@ -14,7 +14,6 @@ js_library("paper-spinner-lite") {
   deps = [
     ".:paper-spinner-behavior",
     ".:paper-spinner-styles",
-    "../paper-styles:color",
     "../polymer:polymer_bundled",
   ]
 }

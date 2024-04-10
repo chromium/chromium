@@ -6,10 +6,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 
-js_library("color") {
-  deps = [ "../polymer:polymer_bundled" ]
-}
-
 js_library("shadow") {
   deps = [ "../polymer:polymer_bundled" ]
 }

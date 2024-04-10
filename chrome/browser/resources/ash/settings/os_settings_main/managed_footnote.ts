@@ -12,7 +12,6 @@
  */
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
 

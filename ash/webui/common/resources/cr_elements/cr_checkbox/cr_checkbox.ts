@@ -28,7 +28,6 @@
  *  --cr-checkbox-size
  *  --cr-checkbox-unchecked-box-color
  */
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../cr_shared_vars.css.js';
 
 import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';

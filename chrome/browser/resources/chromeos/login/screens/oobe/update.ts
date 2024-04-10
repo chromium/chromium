@@ -8,7 +8,6 @@
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../components/oobe_cr_lottie.js';
 import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 import '../../components/oobe_icons.html.js';

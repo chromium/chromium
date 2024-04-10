@@ -9,7 +9,6 @@ part of the polymer project is also subject to an additional IP rights grant
 found at http://polymer.github.io/PATENTS.txt
 */
 import '../polymer/polymer_bundled.min.js';
-import '../paper-styles/color.js';
 import './paper-spinner-styles.js';
 
 import {Polymer} from '../polymer/polymer_bundled.min.js';

@@ -57,7 +57,6 @@ patch -p1 --forward < chromium.patch
 patch -p1 --forward < iron_icon.patch
 patch -p1 --forward < iron_list.patch
 patch -p1 --forward < iron_overlay_backdrop.patch
-patch -p1 --forward < paper_color.patch
 patch -p1 --forward < paper_progress.patch
 patch -p1 --forward < paper_spinner.patch
 patch -p1 --forward < paper_tooltip.patch

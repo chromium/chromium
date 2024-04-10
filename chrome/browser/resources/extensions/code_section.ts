@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './strings.m.js';
 import './shared_vars.css.js';
 

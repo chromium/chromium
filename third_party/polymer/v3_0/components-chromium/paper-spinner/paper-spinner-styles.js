@@ -47,6 +47,12 @@ const template = html`<dom-module id="paper-spinner-styles">
 
         /* SHRINK_TIME */
         --paper-spinner-cooldown-duration: 400ms;
+
+        /* Colors */
+        --google-red-500: #db4437;
+        --google-blue-500: #4285f4;
+        --google-green-500: #0f9d58;
+        --google-yellow-500: #f4b400;
       }
 
       #spinnerContainer {

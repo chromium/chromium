@@ -5,7 +5,6 @@
 import '//resources/ash/common/cr_elements/icons.html.js';
 import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import './oobe_icons.html.js';
 import './common_styles/oobe_common_styles.css.js';
 

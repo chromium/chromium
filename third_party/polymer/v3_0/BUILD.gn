@@ -39,7 +39,6 @@ js_files = [
   "paper-spinner/paper-spinner-behavior.js",
   "paper-spinner/paper-spinner-lite.js",
   "paper-spinner/paper-spinner-styles.js",
-  "paper-styles/color.js",
   "paper-styles/shadow.js",
   "paper-tooltip/paper-tooltip.js",
 ]
@@ -120,7 +119,6 @@ ts_library("library") {
     "components-chromium/paper-spinner/paper-spinner-behavior.d.ts",
     "components-chromium/paper-spinner/paper-spinner-lite.d.ts",
     "components-chromium/paper-spinner/paper-spinner-styles.d.ts",
-    "components-chromium/paper-styles/color.d.ts",
     "components-chromium/paper-styles/shadow.d.ts",
     "components-chromium/paper-tooltip/paper-tooltip.d.ts",
     "components-chromium/polymer/interfaces.d.ts",

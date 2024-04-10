@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/js/action_link.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../../components/oobe_icons.html.js';

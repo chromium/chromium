@@ -59,6 +59,7 @@ paper-ripple/paper-ripple.d.ts
 paper-spinner/paper-spinner.*
 
 # paper-styles
+paper-styles/color.*
 paper-styles/classes/*
 paper-styles/demo-pages.*
 paper-styles/element-styles/*

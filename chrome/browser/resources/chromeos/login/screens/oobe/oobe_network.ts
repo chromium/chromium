@@ -6,7 +6,6 @@
  * @fileoverview Polymer element for displaying network selection OOBE dialog.
  */
 
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/ash/common/network/network_list.js';
 import '../../components/buttons/oobe_back_button.js';

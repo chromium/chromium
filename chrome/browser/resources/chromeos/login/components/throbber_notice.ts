@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import './common_styles/oobe_common_styles.css.js';
 

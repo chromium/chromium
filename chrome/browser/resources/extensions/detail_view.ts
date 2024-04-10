@@ -16,7 +16,6 @@ import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './host_permissions_toggle_list.js';
 import './runtime_host_permissions.js';
 import './shared_style.css.js';

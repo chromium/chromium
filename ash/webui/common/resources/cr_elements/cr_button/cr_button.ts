@@ -12,7 +12,6 @@
  */
 import '../cr_hidden_style.css.js';
 import '../cr_shared_vars.css.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
