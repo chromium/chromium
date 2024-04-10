@@ -431,6 +431,37 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
   FireNativeMacNotification(mac_notification, wrapper);
 }
 
+void BrowserAccessibilityManagerMac::FireAriaNotificationEvent(
+    BrowserAccessibility* node,
+    const std::string& announcement,
+    const std::string& notification_id,
+    ax::mojom::AriaNotificationInterrupt interrupt_property,
+    ax::mojom::AriaNotificationPriority priority_property) {
+  DCHECK(node);
+
+  auto* root_manager = GetManagerForRootFrame();
+  if (!root_manager) {
+    return;
+  }
+
+  auto* root_manager_mac = root_manager->ToBrowserAccessibilityManagerMac();
+
+  auto MapPropertiesToNSAccessibilityPriorityLevel =
+      [&]() -> NSAccessibilityPriorityLevel {
+    switch (priority_property) {
+      case ax::mojom::AriaNotificationPriority::kNone:
+        return NSAccessibilityPriorityMedium;
+      case ax::mojom::AriaNotificationPriority::kImportant:
+        return NSAccessibilityPriorityHigh;
+    }
+    NOTREACHED_NORETURN();
+  };
+
+  PostAnnouncementNotification(base::SysUTF8ToNSString(announcement),
+                               [root_manager_mac->GetParentView() window],
+                               MapPropertiesToNSAccessibilityPriorityLevel());
+}
+
 void BrowserAccessibilityManagerMac::FireNativeMacNotification(
     NSString* mac_notification,
     BrowserAccessibility* node) {

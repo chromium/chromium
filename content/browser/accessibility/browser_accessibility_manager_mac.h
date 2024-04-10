@@ -50,6 +50,13 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                           const ui::AXNode* node) override;
 
+  void FireAriaNotificationEvent(
+      BrowserAccessibility* node,
+      const std::string& announcement,
+      const std::string& notification_id,
+      ax::mojom::AriaNotificationInterrupt interrupt_property,
+      ax::mojom::AriaNotificationPriority priority_property) override;
+
   bool OnAccessibilityEvents(
       const AXEventNotificationDetails& details) override;
 
