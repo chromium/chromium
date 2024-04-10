@@ -291,9 +291,9 @@ cr-icon-button:focus-visible:focus {
 }
 
 #buttons cr-button {
-  --border-color: var(--help-bubble-foreground);
-  --text-color: var(--help-bubble-button-foreground);
-  background-color: var(--help-bubble-button-background);
+  --cr-button-border-color: var(--help-bubble-foreground);
+  --cr-button-text-color: var(--help-bubble-button-foreground);
+  --cr-button-background-color: var(--help-bubble-button-background);
 }
 
 #buttons cr-button:focus {

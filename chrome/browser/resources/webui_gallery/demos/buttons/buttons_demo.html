@@ -4,19 +4,6 @@
     padding: 0 12px;
     width: 45%;
   }
-
-  /* Some button styles are not available before Chrome Refresh 2023.
-   * cr-buttons that use these classes will fallback to the default
-   * button styles for non-[chrome-refresh-2023]. */
-  .tonal-button,
-  .floating-button {
-    display: none;
-  }
-
-  :host-context([chrome-refresh-2023]) .tonal-button,
-  :host-context([chrome-refresh-2023]) .floating-button {
-    display: inherit;
-  }
 </style>
 
 <h1>cr-button</h1>

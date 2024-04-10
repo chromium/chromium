@@ -15,28 +15,16 @@
     margin-top: 0;
 }
 
+/* Force dark mode colors. */
 cr-button {
-    /* Used to force dark mode */
-    --active-bg: black linear-gradient(rgba(255, 255, 255, .06),
-                                             rgba(255, 255, 255, .06));
-    --active-shadow-rgb: 0, 0, 0;
-    --active-shadow-action-rgb: var(--google-blue-500-rgb);
-    --bg-action: var(--google-blue-300);
-    --border-color: var(--google-grey-700);
-    --disabled-bg-action: var(--google-grey-800);
-    --disabled-bg: transparent;
-    --disabled-border-color: var(--google-grey-800);
-    --disabled-text-color: var(--google-grey-500);
-    --focus-shadow-color: rgba(var(--google-blue-300-rgb), .5);
-    --hover-bg-action: var(--bg-action)
-        linear-gradient(rgba(0, 0, 0, .08), rgba(0, 0, 0, .08));
-    --hover-bg-color: rgba(var(--google-blue-300-rgb), .08);
-    --ink-color-action: black;
-    --ink-color: var(--google-blue-300);
-    --ripple-opacity-action: .16;
-    --ripple-opacity: .16;
-    --text-color-action: var(--google-grey-900);
-    --text-color: var(--google-blue-300);
+  --cr-button-border-color: var(--google-grey-700);
+  --cr-button-text-color: var(--google-blue-300);
+  --cr-button-ripple-color: var(--google-blue-300);
+  --cr-button-ripple-opacity: .16;
+}
+
+cr-button:hover {
+  --cr-button-background-color: rgba(var(--google-blue-300-rgb), .08);
 }
 </style>
 

@@ -156,24 +156,27 @@
   }
 
   #wallpaperSearchButton {
-    --hover-bg-color:
+    --cr-hover-background-color:
         var(--color-new-tab-page-wallpaper-search-button-background-hovered);
-    --text-color: var(--color-new-tab-page-wallpaper-search-button-foreground);
-    background-color:
+    --cr-button-text-color:
+        var(--color-new-tab-page-wallpaper-search-button-foreground);
+    --cr-button-background-color:
         var(--color-new-tab-page-wallpaper-search-button-background);
   }
 
   #customizeButton {
-    --hover-bg-color: var(--color-new-tab-page-button-background-hovered);
-    --text-color: var(--color-new-tab-page-button-foreground);
-    background-color: var(--color-new-tab-page-button-background);
+    --cr-hover-background-color:
+        var(--color-new-tab-page-button-background-hovered);
+    --cr-button-text-color: var(--color-new-tab-page-button-foreground);
+    --cr-button-background-color: var(--color-new-tab-page-button-background);
   }
 
   :host([show-background-image_]) #customizeButton,
   :host([show-background-image_]) #wallpaperSearchButton {
-    --hover-bg-color: var(--ntp-protected-icon-background-color-hovered);
-    --text-color: white;
-    background-color: var(--ntp-protected-icon-background-color);
+    --cr-hover-background-color:
+        var(--ntp-protected-icon-background-color-hovered);
+    --cr-button-text-color: white;
+    --cr-button-background-color: var(--ntp-protected-icon-background-color);
   }
 
   #customizeButton:has(help-bubble) {
@@ -214,7 +217,7 @@
 
   .customize-icon {
     --cr-icon-button-margin-start: 0;
-    --cr-icon-color: var(--text-color);
+    --cr-icon-color: var(--cr-button-text-color);
     --cr-icon-ripple-margin: 0;
     --cr-icon-ripple-size: 16px;
     --cr-icon-size: 100%;
@@ -297,7 +300,7 @@
   while the icon has a color rule of it's own. */
   @keyframes color-text {
     from { color: rgba(0,0,0,0); }
-    to { color: var(--text-color); }
+    to { color: var(--cr-button-text-color); }
   }
 
   :host([wallpaper-search-button-animation-enabled_])
