@@ -1123,7 +1123,11 @@ RedactionToolCaller RedactionTool::GetCaller(const base::Location& location) {
 
   std::string fileName = filePath.substr(filePath.find_last_of("/\\") + 1);
 
-  if (fileName == "redaction_tool_unittest.cc") {
+  if (filePath.find("support_tool") != std::string::npos) {
+    return RedactionToolCaller::kSupportTool;
+  } else if (filePath.find("error_reporting") != std::string::npos) {
+    return RedactionToolCaller::kErrorReporting;
+  } else if (fileName == "redaction_tool_unittest.cc") {
     return RedactionToolCaller::kUnitTest;
   } else if (fileName == "system_log_uploader.cc") {
     return RedactionToolCaller::kSysLogUploader;
@@ -1133,13 +1137,8 @@ RedactionToolCaller RedactionTool::GetCaller(const base::Location& location) {
     return RedactionToolCaller::kBrowserSystemLogs;
   } else if (fileName == "feedback_common.cc") {
     return RedactionToolCaller::kFeedbackTool;
-  } else if (filePath.find("support_tool") != std::string::npos) {
-    return RedactionToolCaller::kSupportTool;
-  } else if (filePath.find("error_reporting") != std::string::npos) {
-    return RedactionToolCaller::kErrorReporting;
-  } else {
-    return RedactionToolCaller::kUnknown;
   }
+  return RedactionToolCaller::kUnknown;
 }
 
 std::string RedactionTool::RedactCustomPatternWithContext(
