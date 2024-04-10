@@ -47,6 +47,7 @@
             <span aria-hidden="true">[[getSummarySublabel_(creditCard)]]</span>
             <template is="dom-if" if="[[isCardBenefitsProductUrlAvailable_(creditCard)]]">
               (<a id="summaryTermsLink"
+                  aria-label="[[getBenefitsTermsAriaLabel_(creditCard)]]"
                   aria-description="$i18n{opensInNewTab}"
                   on-click="onSummarySublabelTermsLinkClick_"
                   href="[[getCardBenefitsProductUrl_(creditCard)]]"

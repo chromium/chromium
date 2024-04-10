@@ -142,6 +142,20 @@ export class SettingsCreditCardListEntryElement extends
     return this.creditCard.metadata!.summaryLabel;
   }
 
+  /**
+   * Returns an aria label for the benefits terms link such as "See terms for
+   * Amex ending in 0001". If no card description is available, then the
+   * default text such as "See terms here" is returned.
+   */
+  private getBenefitsTermsAriaLabel_(): string {
+    const cardNumberDescription =
+        this.getCardNumberDescription_(this.creditCard);
+    if (cardNumberDescription) {
+      return this.i18n('benefitsTermsAriaLabel', cardNumberDescription);
+    }
+    return this.i18n('benefitsTermsTagForCreditCardListEntry');
+  }
+
   private getCardExpiryDate_(): string {
     assert(this.creditCard.expirationMonth);
     assert(this.creditCard.expirationYear);

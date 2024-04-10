@@ -773,8 +773,37 @@ suite('PaymentsSectionCardRows', function() {
         CardBenefitsUserAction.CARD_BENEFITS_TERMS_LINK_CLICKED, userAction);
   });
 
-  // Test to verify the cvc tag is visible when cvc is present on a server/local
-  // cards.
+  // Test to verify the benefit terms link has an aria label that includes
+  // the card network name and last four digits.
+  test('verifyCardBenefitsTermsAriaLabel', async () => {
+    loadTimeData.overrideValues({
+      autofillCardBenefitsAvailable: true,
+    });
+
+    const creditCard = createCreditCardEntry();
+    creditCard.cardNumber = '0000000000001234';
+    creditCard.network = 'Visa';
+    creditCard.metadata!.isLocal = false;
+    creditCard.productTermsUrl = 'https://google.com/';
+    await createPaymentsSection([creditCard], /*ibans=*/[], /*prefValues=*/ {});
+
+    const paymentsList = getLocalAndServerCreditCardListItems();
+    assertTrue(!!paymentsList);
+    const termsLink =
+        paymentsList[0]!.shadowRoot!.querySelector<HTMLAnchorElement>(
+            '#summaryTermsLink');
+    assertTrue(!!termsLink);
+
+    const description = loadTimeData.substituteString(
+        loadTimeData.getString('creditCardDescription'), creditCard.network,
+        creditCard.cardNumber.substring(creditCard.cardNumber.length - 4));
+    const expectedAriaLabel = loadTimeData.substituteString(
+        loadTimeData.getString('benefitsTermsAriaLabel'), description);
+    assertEquals(termsLink.ariaLabel, expectedAriaLabel);
+  });
+
+  // Test to verify the cvc tag is visible when cvc is present on a
+  // server/local cards.
   [true, false].forEach(cvcOnServerCard => {
     test(
         'verifyCvcTagPresentFor_' +

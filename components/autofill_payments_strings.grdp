@@ -1135,6 +1135,9 @@
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY" desc="Tag present on each entry in the credit card list on the payments settings page if that entry has associated benefits and a product terms URL. It is also a hyperlink text which opens the product terms page.">
       See terms here
     </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_ARIA_LABEL" desc="Screenreader text for the benefits terms link on a credit card entry in the Autofill settings page.">
+      See terms here for <ph name="CREDIT_CARD_NAME">$1</ph>
+    </message>
   </if>
   <if expr="is_android">
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_LABEL" desc="Label for the payments settings page button that allows the user to bulk delete all the CVCs stored locally and on Google servers." formatter_data="android_java">

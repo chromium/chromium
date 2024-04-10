@@ -1088,6 +1088,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"editPasskeySiteLabel", IDS_SETTINGS_PASSKEYS_SITE_LABEL},
       {"editPasskeyUsernameLabel",
        IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_USERNAME_LABEL},
+      {"benefitsTermsAriaLabel",
+       IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_ARIA_LABEL},
 #if BUILDFLAG(IS_MAC)
       {"passkeyLengthError", IDS_SETTINGS_PASSKEYS_LENGTH_ERROR},
       {"editPasskeyDialogTitle", IDS_SETTINGS_PASSKEYS_DIALOG_TITLE},
