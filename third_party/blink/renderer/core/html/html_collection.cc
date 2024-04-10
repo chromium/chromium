@@ -555,6 +555,17 @@ void HTMLCollection::NamedItems(const AtomicString& name,
     result.AppendVector(*name_results);
 }
 
+bool HTMLCollection::HasNamedItems(const AtomicString& name) const {
+  if (name.empty()) {
+    return false;
+  }
+
+  UpdateIdNameCache();
+
+  const NamedItemCache& cache = GetNamedItemCache();
+  return cache.GetElementsById(name) || cache.GetElementsByName(name);
+}
+
 HTMLCollection::NamedItemCache::NamedItemCache() = default;
 
 void HTMLCollection::Trace(Visitor* visitor) const {

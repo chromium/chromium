@@ -93,6 +93,7 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
 
   // Non-DOM API
   void NamedItems(const AtomicString& name, HeapVector<Member<Element>>&) const;
+  bool HasNamedItems(const AtomicString& name) const;
   bool IsEmpty() const { return collection_items_cache_.IsEmpty(*this); }
   bool HasExactlyOneItem() const {
     return collection_items_cache_.HasExactlyOneNode(*this);

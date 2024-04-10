@@ -3436,21 +3436,12 @@ if (${info}.Holder()->GetRealNamedPropertyAttributesInPrototypeChain(
 """))
 
         body.extend([
-            TextNode("""\
-// TODO(ishell, 328490288): call blink_receiver->NamedPropertyQuery(...)
-// as does the getter instead of calling
-// ${class_name}::NamedPropertyGetterCallback(...) and checking the return
-// value.
-v8::PropertyCallbackInfo<v8::Value> info2(${info});
-auto intercepted =
-    ${class_name}::NamedPropertyGetterCallback(${v8_property_name}, info2);
-if (intercepted == v8::Intercepted::kNo) {
-  // Do not intercept. Fallback and let it define a new own property.
-  return v8::Intercepted::kNo;
-}
-const bool is_creating = info2.GetReturnValue().Get()->IsUndefined();\
-"""),
-            CxxUnlikelyIfNode(cond="!is_creating", body=throw_error_nodes),
+            TextNode("bool does_exist = ${blink_receiver}->NamedPropertyQuery("
+                     "${blink_property_name}, ${exception_state});"),
+            CxxUnlikelyIfNode(
+                cond="UNLIKELY(${exception_state}.HadException())",
+                body=TextNode("return v8::Intercepted::kYes;")),
+            CxxUnlikelyIfNode(cond="does_exist", body=throw_error_nodes),
             TextNode("""\
 // Do not intercept. Fallback and let it define a new own property.
 return v8::Intercepted::kNo;
@@ -3662,21 +3653,12 @@ return v8::Intercepted::kNo;
 // step 2.2.1. If creating is false and O does not implement an interface
 //   with a named property setter, then return false.\
 """),
-            TextNode("""\
-// TODO(ishell, 328490288): call blink_receiver->NamedPropertyQuery(...)
-// as does the getter instead of calling
-// ${class_name}::NamedPropertyGetterCallback(...) and checking the return
-// value.
-v8::PropertyCallbackInfo<v8::Value> info2(${info});
-auto intercepted =
-    ${class_name}::NamedPropertyGetterCallback(${v8_property_name}, info2);
-if (intercepted == v8::Intercepted::kNo) {
-  // Do not intercept. Fallback to OrdinaryDefineOwnProperty.
-  return v8::Intercepted::kNo;
-}
-const bool is_creating = info2.GetReturnValue().Get()->IsUndefined();\
-"""),
-            CxxUnlikelyIfNode(cond="!is_creating", body=throw_error_nodes),
+            TextNode("bool does_exist = ${blink_receiver}->NamedPropertyQuery("
+                     "${blink_property_name}, ${exception_state});"),
+            CxxUnlikelyIfNode(
+                cond="UNLIKELY(${exception_state}.HadException())",
+                body=TextNode("return v8::Intercepted::kYes;")),
+            CxxUnlikelyIfNode(cond="does_exist", body=throw_error_nodes),
             EmptyNode(),
             TextNode("""\
 // Do not intercept. Fallback to OrdinaryDefineOwnProperty.

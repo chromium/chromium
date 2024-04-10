@@ -60,6 +60,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   HTMLFormControlsCollection* elements();
   void GetNamedElements(const AtomicString&, HeapVector<Member<Element>>&);
+  bool HasNamedElements(const AtomicString&);
 
   unsigned length() const;
   HTMLElement* item(unsigned index);
@@ -134,6 +135,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   const HeapVector<Member<HTMLImageElement>>& ImageElements();
 
   V8UnionElementOrRadioNodeList* AnonymousNamedGetter(const AtomicString& name);
+  bool NamedPropertyQuery(const AtomicString& name, ExceptionState&);
+
   void InvalidateDefaultButtonStyle() const;
 
   // 'construct the entry list'

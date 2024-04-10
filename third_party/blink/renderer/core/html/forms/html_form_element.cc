@@ -1020,6 +1020,14 @@ void HTMLFormElement::GetNamedElements(
   }
 }
 
+bool HTMLFormElement::HasNamedElements(const AtomicString& name) {
+  // http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#dom-form-nameditem
+  if (elements()->HasNamedItems(name)) {
+    return true;
+  }
+  return ElementFromPastNamesMap(name);
+}
+
 bool HTMLFormElement::ShouldAutocomplete() const {
   return !EqualIgnoringASCIICase(
       FastGetAttribute(html_names::kAutocompleteAttr), "off");
@@ -1078,6 +1086,11 @@ V8UnionElementOrRadioNodeList* HTMLFormElement::AnonymousNamedGetter(
   }
   return MakeGarbageCollected<V8UnionElementOrRadioNodeList>(
       GetRadioNodeList(name, only_match_img));
+}
+
+bool HTMLFormElement::NamedPropertyQuery(const AtomicString& name,
+                                         ExceptionState&) {
+  return HasNamedElements(name);
 }
 
 void HTMLFormElement::InvalidateDefaultButtonStyle() const {
