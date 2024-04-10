@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -203,30 +204,27 @@ public class WebViewLayoutTest {
 
         // Check that each excluded interface and its properties are
         // not present in webviewInterfacesMap.
-        webviewExcludedInterfacesMap.forEach(
-                (interfaceInExcluded, excludedInterfaceProperties) -> {
-                    if (excludedInterfaceProperties.isEmpty()
-                            && webviewInterfacesMap.containsKey(interfaceInExcluded)) {
-                        // An interface with an empty property list in not-webview-exposed.txt
-                        // should not be in the global-interface-listing.html results for WebView.
-                        interfacesNotExposedInWebview.add(interfaceInExcluded);
-                    }
+        for (Entry<String, HashSet<String>> entry : webviewExcludedInterfacesMap.entrySet()) {
+            String interfaceInExcluded = entry.getKey();
+            HashSet<String> excludedInterfaceProperties = entry.getValue();
+            if (excludedInterfaceProperties.isEmpty()
+                    && webviewInterfacesMap.containsKey(interfaceInExcluded)) {
+                // An interface with an empty property list in not-webview-exposed.txt
+                // should not be in the global-interface-listing.html results for WebView.
+                interfacesNotExposedInWebview.add(interfaceInExcluded);
+            }
 
-                    // global-interface-listing.html and not-webview-exposed.txt are mutually
-                    // exclusive.
-                    excludedInterfaceProperties.forEach(
-                            (excludedProperty) -> {
-                                if (webviewInterfacesMap
-                                        .getOrDefault(interfaceInExcluded, new HashSet<>())
-                                        .contains(excludedProperty)) {
-                                    propertiesNotExposedInWebview.putIfAbsent(
-                                            interfaceInExcluded, new HashSet<>());
-                                    propertiesNotExposedInWebview
-                                            .get(interfaceInExcluded)
-                                            .add(excludedProperty);
-                                }
-                            });
-                });
+            // global-interface-listing.html and not-webview-exposed.txt are mutually
+            // exclusive.
+            for (String excludedProperty : excludedInterfaceProperties) {
+                if (webviewInterfacesMap
+                        .getOrDefault(interfaceInExcluded, new HashSet<>())
+                        .contains(excludedProperty)) {
+                    propertiesNotExposedInWebview.putIfAbsent(interfaceInExcluded, new HashSet<>());
+                    propertiesNotExposedInWebview.get(interfaceInExcluded).add(excludedProperty);
+                }
+            }
+        }
 
         StringBuilder errorMessage = new StringBuilder();
         if (!interfacesNotExposedInWebview.isEmpty()) {
@@ -239,10 +237,9 @@ public class WebViewLayoutTest {
                              to resolve this error.
                             """,
                             NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
-            interfacesNotExposedInWebview.forEach(
-                    illegallyExposedInterface -> {
-                        errorMessage.append("\t- ").append(illegallyExposedInterface).append("\n");
-                    });
+            for (String illegallyExposedInterface : interfacesNotExposedInWebview) {
+                errorMessage.append("\t- ").append(illegallyExposedInterface).append("\n");
+            }
         }
         String errorTemplate =
                 """
@@ -253,21 +250,21 @@ public class WebViewLayoutTest {
                 %s
                 to resolve this error
                 """;
-        propertiesNotExposedInWebview.forEach(
-                (webviewInterface, propertiesNotExposed) -> {
-                    errorMessage.append(
-                            String.format(
-                                    Locale.ROOT,
-                                    errorTemplate,
-                                    propertiesNotExposed.size(),
-                                    webviewInterface,
-                                    webviewInterface,
-                                    NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
-                    propertiesNotExposed.forEach(
-                            propertyNotExposed -> {
-                                errorMessage.append("\t- ").append(propertyNotExposed).append("\n");
-                            });
-                });
+        for (Entry<String, HashSet<String>> entry : propertiesNotExposedInWebview.entrySet()) {
+            String webviewInterface = entry.getKey();
+            HashSet<String> propertiesNotExposed = entry.getValue();
+            errorMessage.append(
+                    String.format(
+                            Locale.ROOT,
+                            errorTemplate,
+                            propertiesNotExposed.size(),
+                            webviewInterface,
+                            webviewInterface,
+                            NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
+            for (String propertyNotExposed : propertiesNotExposed) {
+                errorMessage.append("\t- ").append(propertyNotExposed).append("\n");
+            }
+        }
         if (errorMessage.length() > 0) {
             Assert.fail(errorMessage.toString());
         }
@@ -350,9 +347,9 @@ public class WebViewLayoutTest {
                             to resolve this error.
                             """,
                             NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
-            missingInterfaces.forEach(
-                    (missingInterface) ->
-                            errorMessage.append("\t- ").append(missingInterface).append("\n"));
+            for (String missingInterface : missingInterfaces) {
+                errorMessage.append("\t- ").append(missingInterface).append("\n");
+            }
         }
         String errorTemplate =
                 """
@@ -362,21 +359,19 @@ public class WebViewLayoutTest {
             %s
             to resolve this error
             """;
-        missingInterfaceProperties.forEach(
-                (blinkInterface, missingProperties) -> {
-                    errorMessage.append(
-                            String.format(
-                                    errorTemplate,
-                                    blinkInterface,
-                                    blinkInterface,
-                                    NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
-                    missingProperties.forEach(
-                            (missingProperty) ->
-                                    errorMessage
-                                            .append("\t- ")
-                                            .append(missingProperty)
-                                            .append("\n"));
-                });
+        for (Entry<String, HashSet<String>> entry : missingInterfaceProperties.entrySet()) {
+            String blinkInterface = entry.getKey();
+            HashSet<String> missingProperties = entry.getValue();
+            errorMessage.append(
+                    String.format(
+                            errorTemplate,
+                            blinkInterface,
+                            blinkInterface,
+                            NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
+            for (String missingProperty : missingProperties) {
+                errorMessage.append("\t- ").append(missingProperty).append("\n");
+            }
+        }
         Assert.assertTrue(errorMessage.toString(), errorMessage.length() == 0);
     }
 
