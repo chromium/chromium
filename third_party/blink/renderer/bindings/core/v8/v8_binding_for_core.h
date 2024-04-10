@@ -269,7 +269,7 @@ inline uint64_t DoubleToInteger(double d) {
   constexpr uint64_t kMaxULL = std::numeric_limits<uint64_t>::max();
 
   // -2^{64} < fmod_value < 2^{64}.
-  double fmod_value = fmod(trunc(d), kMaxULL + 1.0);
+  double fmod_value = fmod(trunc(d), static_cast<double>(kMaxULL) + 1.0);
   if (fmod_value >= 0) {
     // 0 <= fmod_value < 2^{64}.
     // 0 <= value < 2^{64}. This cast causes no loss.
