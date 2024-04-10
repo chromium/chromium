@@ -492,7 +492,8 @@ inline constexpr char kAccessibilityMouseKeysAcceleration[] =
 // minimum speed.
 inline constexpr char kAccessibilityMouseKeysMaxSpeed[] =
     "settings.a11y.mouse_keys.max_speed";
-// A boolean pref which determines if mouse keys uses left or right hand keys.
+// An integer pref which determines if mouse keys uses left or right hand keys.
+// Values are from the ash::MouseKeysDominantHand enum.
 inline constexpr char kAccessibilityMouseKeysDominantHand[] =
     "settings.a11y.mouse_keys.dominant_hand";
 // A boolean pref which determines whether autoclick is enabled.
