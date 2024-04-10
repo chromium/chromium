@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
+
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -10,7 +12,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
-#include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/field_trial.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -137,8 +138,9 @@ const char* kDeniedDomainsForDiacritics[] = {
 };
 
 bool IsTestUrl(const std::optional<GURL>& url) {
-  if (!url)
+  if (!url) {
     return false;
+  }
   std::string filename = url->ExtractFileName();
   for (const char* test_url : kTestUrls) {
     if (base::CompareCaseInsensitiveASCII(filename, test_url) == 0) {
@@ -149,8 +151,9 @@ bool IsTestUrl(const std::optional<GURL>& url) {
 }
 
 bool IsInternalWebsite(const std::optional<GURL>& url) {
-  if (!url)
+  if (!url) {
     return false;
+  }
   std::string host = url->host();
   for (const size_t hash_code : kHashedInternalUrls) {
     if (hash_code == base::PersistentHash(host)) {
@@ -163,8 +166,9 @@ bool IsInternalWebsite(const std::optional<GURL>& url) {
 bool AtDomainWithPathPrefix(const std::optional<GURL>& url,
                             const std::string& domain,
                             const std::string& prefix) {
-  if (!url)
+  if (!url) {
     return false;
+  }
   return url->DomainIs(domain) && url->has_path() &&
          base::StartsWith(url->path(), prefix);
 }
@@ -172,8 +176,9 @@ bool AtDomainWithPathPrefix(const std::optional<GURL>& url,
 template <size_t N>
 bool IsMatchedUrlWithPathPrefix(const char* (&expected_domains_and_paths)[N][2],
                                 const std::optional<GURL>& url) {
-  if (!url)
+  if (!url) {
     return false;
+  }
   for (size_t i = 0; i < N; i++) {
     auto domain = expected_domains_and_paths[i][0];
     auto path_prefix = expected_domains_and_paths[i][1];
@@ -187,8 +192,9 @@ bool IsMatchedUrlWithPathPrefix(const char* (&expected_domains_and_paths)[N][2],
 template <size_t N>
 bool IsMatchedExactUrl(const char* (&expected_urls)[N],
                        const std::optional<GURL>& url) {
-  if (!url)
+  if (!url) {
     return false;
+  }
   for (size_t i = 0; i < N; i++) {
     auto expected_url = expected_urls[i];
     if (base::CompareCaseInsensitiveASCII(url->spec(), expected_url) == 0) {

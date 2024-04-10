@@ -177,8 +177,9 @@ void CandidateView::SetWidths(int shortcut_width, int candidate_width) {
 
 void CandidateView::SetEntry(const ui::CandidateWindow::Entry& entry) {
   std::u16string label = entry.label;
-  if (!label.empty() && orientation_ != ui::CandidateWindow::VERTICAL)
+  if (!label.empty() && orientation_ != ui::CandidateWindow::VERTICAL) {
     label += u".";
+  }
   shortcut_label_->SetText(label);
   candidate_label_->SetText(entry.value);
   annotation_label_->SetText(entry.annotation);
@@ -186,14 +187,16 @@ void CandidateView::SetEntry(const ui::CandidateWindow::Entry& entry) {
 }
 
 void CandidateView::SetInfolistIcon(bool enable) {
-  if (infolist_icon_)
+  if (infolist_icon_) {
     infolist_icon_->SetVisible(enable);
+  }
   SchedulePaint();
 }
 
 void CandidateView::SetHighlighted(bool highlighted) {
-  if (highlighted_ == highlighted)
+  if (highlighted_ == highlighted) {
     return;
+  }
 
   highlighted_ = highlighted;
   if (highlighted) {
@@ -204,8 +207,9 @@ void CandidateView::SetHighlighted(bool highlighted) {
 
     // Cancel currently focused one.
     for (View* view : parent()->children()) {
-      if (view != this)
+      if (view != this) {
         static_cast<CandidateView*>(view)->SetHighlighted(false);
+      }
     }
   } else {
     SetBackground(nullptr);
@@ -221,8 +225,9 @@ void CandidateView::StateChanged(ButtonState old_state) {
   shortcut_label_->SetEnabledColorId(
       views::TypographyProvider::Get().GetColorId(views::style::CONTEXT_LABEL,
                                                   text_style));
-  if (GetState() == STATE_PRESSED)
+  if (GetState() == STATE_PRESSED) {
     SetHighlighted(true);
+  }
 }
 
 bool CandidateView::OnMouseDragged(const ui::MouseEvent& event) {
@@ -231,8 +236,9 @@ bool CandidateView::OnMouseDragged(const ui::MouseEvent& event) {
     gfx::Point location_in_widget(event.location());
     ConvertPointToWidget(this, &location_in_widget);
     for (View* view : parent()->children()) {
-      if (view == this)
+      if (view == this) {
         continue;
+      }
       gfx::Point location_in_sibling(location_in_widget);
       ConvertPointFromWidget(view, &location_in_sibling);
       if (view->HitTestPoint(location_in_sibling)) {
@@ -254,8 +260,9 @@ void CandidateView::Layout(PassKey) {
       orientation_ == ui::CandidateWindow::VERTICAL ? 4 : 6;
   int x = 0;
   shortcut_label_->SetBounds(x, 0, shortcut_width_, height());
-  if (shortcut_width_ > 0)
+  if (shortcut_width_ > 0) {
     x += shortcut_width_ + padding_width;
+  }
   candidate_label_->SetBounds(x, 0, candidate_width_, height());
   x += candidate_width_ + padding_width;
 

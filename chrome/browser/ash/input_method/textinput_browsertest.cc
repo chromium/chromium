@@ -76,8 +76,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, helper.GetTextInputType());
 }
 
-IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
-                       MouseClickChange) {
+IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest, MouseClickChange) {
   TextInputTestHelper helper(GetInputMethod());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
@@ -202,7 +201,6 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE, helper.GetTextInputType());
 
-
   // Disabling content editable, then expecting TEXT_INPUT_TYPE_NONE.
   ASSERT_TRUE(content::ExecJs(
       tab, "document.getElementById('anchor_id').contentEditable = false;"));
@@ -229,15 +227,15 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   InputTypeExpectation expectations[] = {
-    { "text_id", ui::TEXT_INPUT_TYPE_TEXT },
-    { "password_id", ui::TEXT_INPUT_TYPE_PASSWORD },
-    { "search_id", ui::TEXT_INPUT_TYPE_SEARCH },
-    { "email_id", ui::TEXT_INPUT_TYPE_EMAIL },
-    { "number_id", ui::TEXT_INPUT_TYPE_NUMBER },
-    { "tel_id", ui::TEXT_INPUT_TYPE_TELEPHONE },
-    { "url_id", ui::TEXT_INPUT_TYPE_URL },
-    { "textarea_id", ui::TEXT_INPUT_TYPE_TEXT_AREA },
-    { "contenteditable_id", ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE },
+      {"text_id", ui::TEXT_INPUT_TYPE_TEXT},
+      {"password_id", ui::TEXT_INPUT_TYPE_PASSWORD},
+      {"search_id", ui::TEXT_INPUT_TYPE_SEARCH},
+      {"email_id", ui::TEXT_INPUT_TYPE_EMAIL},
+      {"number_id", ui::TEXT_INPUT_TYPE_NUMBER},
+      {"tel_id", ui::TEXT_INPUT_TYPE_TELEPHONE},
+      {"url_id", ui::TEXT_INPUT_TYPE_URL},
+      {"textarea_id", ui::TEXT_INPUT_TYPE_TEXT_AREA},
+      {"contenteditable_id", ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE},
   };  // The order should be same as tab order in all_input_node.html.
 
   for (auto& expectation : expectations) {

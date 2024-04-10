@@ -7,7 +7,5 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {
-namespace ime {
-
-}  // namespace ime
+namespace ime {}  // namespace ime
 }  // namespace ui

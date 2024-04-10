@@ -176,8 +176,9 @@ void PrefChangeRecorder::OnInputMethodOptionsChanged(
       ExtractAutocorrectPrefs(pref_service_);
 
   auto pref_change = FindPrefChange(autocorrect_prefs_, new_autocorrect_prefs);
-  if (pref_change)
+  if (pref_change) {
     RecordAutocorrectPrefChangeMetric(*pref_change);
+  }
 
   autocorrect_prefs_ = std::move(new_autocorrect_prefs);
 }

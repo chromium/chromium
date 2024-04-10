@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/ui/candidate_window_view.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -11,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/ui/candidate_view.h"
 #include "chrome/browser/ash/input_method/ui/candidate_window_constants.h"
@@ -67,10 +67,12 @@ class CandidateWindowBorder : public views::BubbleBorder {
     // to be visible even when |anchor_rect| is out of the screen.
     gfx::Rect work_area =
         display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-    if (bounds.right() > work_area.right())
+    if (bounds.right() > work_area.right()) {
       bounds.set_x(work_area.right() - bounds.width());
-    if (bounds.x() < work_area.x())
+    }
+    if (bounds.x() < work_area.x()) {
       bounds.set_x(work_area.x());
+    }
 
     // For vertical offscreen, we need to check the arrow position first. Only
     // move the candidate window up when the arrow is at the bottom, and only
@@ -79,10 +81,12 @@ class CandidateWindowBorder : public views::BubbleBorder {
     // that when the arrow is on top and the candidate window is out of the
     // bottom edge of the screen, some other code will change the arrow to
     // bottom to make the candidate window inside screen.
-    if (!is_arrow_on_top(arrow()) && bounds.bottom() > work_area.bottom())
+    if (!is_arrow_on_top(arrow()) && bounds.bottom() > work_area.bottom()) {
       bounds.set_y(work_area.bottom() - bounds.height());
-    if (is_arrow_on_top(arrow()) && bounds.y() < work_area.y())
+    }
+    if (is_arrow_on_top(arrow()) && bounds.y() < work_area.y()) {
       bounds.set_y(work_area.y());
+    }
 
     return bounds;
   }
@@ -96,8 +100,9 @@ class CandidateWindowBorder : public views::BubbleBorder {
 // cursor is pointing to 13th candidate, the page index will be 1 (2nd
 // page, as the index is zero-origin). Returns -1 on error.
 int ComputePageIndex(const ui::CandidateWindow& candidate_window) {
-  if (candidate_window.page_size() > 0)
+  if (candidate_window.page_size() > 0) {
     return candidate_window.cursor_position() / candidate_window.page_size();
+  }
   return -1;
 }
 
@@ -158,8 +163,9 @@ class InformationTextArea : public views::View {
   }
 
   void UpdateBorder() {
-    if (!position_ || !GetWidget())
+    if (!position_ || !GetWidget()) {
       return;
+    }
     SetBorder(views::CreateSolidSidedBorder(
         gfx::Insets::TLBR((position_ == TOP) ? 1 : 0, 0,
                           (position_ == BOTTOM) ? 1 : 0, 0),
@@ -310,8 +316,9 @@ void CandidateWindowView::UpdateCandidates(
 
     // Compute the index of the current page.
     const int current_page_index = ComputePageIndex(new_candidate_window);
-    if (current_page_index < 0)
+    if (current_page_index < 0) {
       return;
+    }
 
     // Update the candidates in the current page.
     const size_t start_from =
@@ -353,10 +360,11 @@ void CandidateWindowView::UpdateCandidates(
 
     std::unique_ptr<CandidateWindowBorder> border =
         std::make_unique<CandidateWindowBorder>();
-    if (new_candidate_window.orientation() == ui::CandidateWindow::VERTICAL)
+    if (new_candidate_window.orientation() == ui::CandidateWindow::VERTICAL) {
       border->set_offset(max_shortcut_width);
-    else
+    } else {
       border->set_offset(0);
+    }
     GetBubbleFrameView()->SetBubbleBorder(std::move(border));
     GetBubbleFrameView()->OnThemeChanged();
   }
@@ -425,10 +433,11 @@ void CandidateWindowView::SetCursorAndCompositionBounds(
     }
   }
 
-  if (candidate_window_.show_window_at_composition())
+  if (candidate_window_.show_window_at_composition()) {
     SetAnchorRect(composition_bounds);
-  else
+  } else {
     SetAnchorRect(cursor_bounds);
+  }
 }
 
 void CandidateWindowView::OnTextFieldContextualInfoAvailable(
@@ -511,8 +520,9 @@ void CandidateWindowView::SelectCandidateAt(int index_in_page) {
 }
 
 void CandidateWindowView::CandidateViewPressed(int index) {
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnCandidateCommitted(index);
+  }
 }
 
 BEGIN_METADATA(CandidateWindowView)

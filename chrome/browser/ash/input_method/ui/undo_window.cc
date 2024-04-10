@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/ui/undo_window.h"
 
+#include <iostream>
+
 #include "ash/public/cpp/style/color_provider.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
@@ -20,8 +22,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/wm/core/window_animations.h"
-
-#include <iostream>
 namespace ui {
 namespace ime {
 

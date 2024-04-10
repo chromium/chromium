@@ -64,13 +64,15 @@ void GetFocusedTabUrl(GetFocusedTabUrlCallback callback) {
 
 WindowProperties GetFocusedWindowProperties() {
   WindowProperties properties = {.app_id = "", .arc_package_name = ""};
-  if (!exo::WMHelper::HasInstance())
+  if (!exo::WMHelper::HasInstance()) {
     return properties;
+  }
 
   auto* wm_helper = exo::WMHelper::GetInstance();
   auto* window = wm_helper ? wm_helper->GetActiveWindow() : nullptr;
-  if (!window)
+  if (!window) {
     return properties;
+  }
 
   const std::string* arc_package_name =
       window->GetProperty(ash::kArcPackageNameKey);

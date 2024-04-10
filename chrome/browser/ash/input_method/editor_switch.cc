@@ -46,12 +46,8 @@ constexpr AppType kAppTypeDenylist[] = {
 };
 
 const char* kWorkspaceDomainsWithPathDenylist[][2] = {
-    {"calendar.google", ""},
-    {"docs.google", ""},
-    {"drive.google", ""},
-    {"keep.google", ""},
-    {"mail.google", "/chat"},
-    {"mail.google", "/mail"},
+    {"calendar.google", ""}, {"docs.google", ""},      {"drive.google", ""},
+    {"keep.google", ""},     {"mail.google", "/chat"}, {"mail.google", "/mail"},
     {"meet.google", ""},
 };
 

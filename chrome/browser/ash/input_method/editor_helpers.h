@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_HELPERS_H_
 
 #include <string>
+
 #include "ui/gfx/range/range.h"
 namespace ash::input_method {
 

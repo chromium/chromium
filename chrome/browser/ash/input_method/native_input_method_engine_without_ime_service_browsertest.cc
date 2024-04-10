@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/input_method/native_input_method_engine.h"
-#include "content/public/test/browser_test_utils.h"
-
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -17,6 +14,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
+#include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/ash/input_method/stub_input_method_engine_observer.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/textinput_test_helper.h"
@@ -32,6 +30,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -181,8 +180,9 @@ class NativeInputMethodEngineWithoutImeServiceTest
                              waiterPressed.CreateCallback());
     engine_->ProcessKeyEvent({ui::ET_KEY_RELEASED, code, flags},
                              waiterReleased.CreateCallback());
-    if (need_flush)
+    if (need_flush) {
       engine_->FlushForTesting();
+    }
 
     waiterPressed.Wait();
     waiterReleased.Wait();

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/ui/announcement_view.h"
+
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -46,8 +47,9 @@ void AnnouncementView::Announce(const std::u16string& message) {
 void AnnouncementView::AnnounceAfterDelay(const std::u16string& message,
                                           base::TimeDelta delay) {
   DCHECK(announcement_label_);
-  if (message.empty())
+  if (message.empty()) {
     return;
+  }
   announcement_label_->AnnounceAfterDelay(message, delay);
 }
 

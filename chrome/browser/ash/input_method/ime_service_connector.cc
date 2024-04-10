@@ -47,8 +47,9 @@ constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
 bool IsDownloadPathValid(const base::FilePath& file_path) {
   // Only non-empty, relative path which doesn't reference a parent is allowed.
   if (file_path.empty() || file_path.IsAbsolute() ||
-      file_path.ReferencesParent())
+      file_path.ReferencesParent()) {
     return false;
+  }
 
   // Target path must be restricted in the provided path.
   base::FilePath parent(ime::kInputMethodsDirName);

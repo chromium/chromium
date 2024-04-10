@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/editor_feedback.h"
-#include "content/public/test/test_browser_context.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/test/gtest_util.h"
@@ -21,6 +20,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"

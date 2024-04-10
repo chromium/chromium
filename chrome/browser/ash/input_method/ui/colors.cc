@@ -11,8 +11,9 @@ namespace ime {
 
 bool IsDarkModeEnabled() {
   auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
-  if (!dark_light_mode_controller)
+  if (!dark_light_mode_controller) {
     return false;
+  }
   return dark_light_mode_controller->IsDarkModeEnabled();
 }
 

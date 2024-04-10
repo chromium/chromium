@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/editor_event_proxy.h"
+
 #include "base/strings/utf_offset_string_conversions.h"
 
 namespace ash::input_method {

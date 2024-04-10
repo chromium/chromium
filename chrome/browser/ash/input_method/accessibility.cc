@@ -22,8 +22,9 @@ Accessibility::~Accessibility() = default;
 void Accessibility::InputMethodChanged(InputMethodManager* imm,
                                        Profile* profile,
                                        bool show_message) {
-  if (!show_message)
+  if (!show_message) {
     return;
+  }
 
   // Get the localized display name of the changed input method.
   const InputMethodDescriptor descriptor =

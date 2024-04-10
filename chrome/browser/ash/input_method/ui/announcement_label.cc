@@ -17,8 +17,7 @@ AnnouncementLabel::AnnouncementLabel(const std::u16string& name)
 
 AnnouncementLabel::~AnnouncementLabel() = default;
 
-void AnnouncementLabel::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
+void AnnouncementLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Label::GetAccessibleNodeData(node_data);
   // If there's no text to be announced, then don't make the announcement.
   if (announcement_text_.empty()) {
@@ -34,8 +33,9 @@ void AnnouncementLabel::GetAccessibleNodeData(
 
 void AnnouncementLabel::AnnounceAfterDelay(const std::u16string& text,
                                            base::TimeDelta delay) {
-  if (text.empty())
+  if (text.empty()) {
     return;
+  }
   delay_timer_ = std::make_unique<base::OneShotTimer>();
   delay_timer_->Start(FROM_HERE, delay,
                       base::BindOnce(&AnnouncementLabel::DoAnnouncement,

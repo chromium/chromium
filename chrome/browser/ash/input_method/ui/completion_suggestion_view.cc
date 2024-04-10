@@ -169,8 +169,9 @@ void CompletionSuggestionView::SetSuggestionText(
 }
 
 void CompletionSuggestionView::SetHighlighted(bool highlighted) {
-  if (highlighted_ == highlighted)
+  if (highlighted_ == highlighted) {
     return;
+  }
 
   highlighted_ = highlighted;
   if (highlighted) {
@@ -218,8 +219,9 @@ gfx::Size CompletionSuggestionView::CalculatePreferredSize() const {
     gfx::Size annotation_size = annotation_container_->GetPreferredSize();
     size.Enlarge(annotation_size.width(), 0);
   }
-  if (min_width_ > size.width())
+  if (min_width_ > size.width()) {
     size.Enlarge(min_width_ - size.width(), 0);
+  }
   return size;
 }
 

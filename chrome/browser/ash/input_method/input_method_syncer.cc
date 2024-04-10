@@ -36,8 +36,9 @@ void CheckAndResolveInputMethodIDs(
     std::vector<std::string>* values) {
   // Extract the supported input method IDs into a set.
   std::set<std::string> supported_input_method_ids;
-  for (const auto& descriptor : supported_descriptors)
+  for (const auto& descriptor : supported_descriptors) {
     supported_input_method_ids.insert(descriptor.id());
+  }
 
   // Convert engine IDs to input method extension IDs.
   base::ranges::transform(values->begin(), values->end(), values->begin(),
@@ -47,7 +48,7 @@ void CheckAndResolveInputMethodIDs(
   auto it = values->begin();
   while (it != values->end()) {
     if (it->size() && supported_input_method_ids.find(*it) !=
-                      supported_input_method_ids.end()) {
+                          supported_input_method_ids.end()) {
       ++it;
     } else {
       it = values->erase(it);
@@ -58,8 +59,9 @@ void CheckAndResolveInputMethodIDs(
 // Checks whether each language is supported, replacing locales with variants
 // if they are available. Must be called on a thread that allows IO.
 std::string CheckAndResolveLocales(const std::string& languages) {
-  if (languages.empty())
+  if (languages.empty()) {
     return languages;
+  }
   std::vector<std::string> values = base::SplitString(
       languages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
@@ -73,8 +75,7 @@ std::string CheckAndResolveLocales(const std::string& languages) {
   auto value_iter = values.begin();
   while (value_iter != values.end()) {
     if (binary_search(accept_language_codes.begin(),
-                      accept_language_codes.end(),
-                      *value_iter)) {
+                      accept_language_codes.end(), *value_iter)) {
       ++value_iter;
       continue;
     }
@@ -84,8 +85,7 @@ std::string CheckAndResolveLocales(const std::string& languages) {
     std::string resolved_locale;
     if (l10n_util::CheckAndResolveLocale(*value_iter, &resolved_locale)) {
       if (binary_search(accept_language_codes.begin(),
-                        accept_language_codes.end(),
-                        resolved_locale)) {
+                        accept_language_codes.end(), resolved_locale)) {
         *value_iter = resolved_locale;
         ++value_iter;
         continue;
@@ -105,8 +105,9 @@ void MergeLists(std::vector<std::string_view>* dest,
 
   for (const auto& token : src) {
     // Skip token if it's already in |dest|.
-    if (binary_search(unique_tokens.begin(), unique_tokens.end(), token))
+    if (binary_search(unique_tokens.begin(), unique_tokens.end(), token)) {
       continue;
+    }
     dest->push_back(token);
     unique_tokens.insert(token);
   }
@@ -152,8 +153,7 @@ void InputMethodSyncer::Initialize() {
       &InputMethodSyncer::OnPreferenceChanged, base::Unretained(this));
   preferred_languages_.Init(language::prefs::kPreferredLanguages, prefs_,
                             callback);
-  preload_engines_.Init(prefs::kLanguagePreloadEngines,
-                        prefs_, callback);
+  preload_engines_.Init(prefs::kLanguagePreloadEngines, prefs_, callback);
   enabled_imes_.Init(prefs::kLanguageEnabledImes, prefs_, callback);
 
   // If we have already synced but haven't merged input methods yet, do so now.
@@ -216,10 +216,9 @@ void InputMethodSyncer::MergeSyncedPrefs() {
   preload_engines_syncable_.SetValue(base::JoinString(new_tokens, ","));
 
   // Second, set the local prefs, incorporating new values from the sync server.
-  preload_engines_.SetValue(
-      AddSupportedInputMethodValues(preload_engines_.GetValue(),
-                                    preload_engines_syncable,
-                                    prefs::kLanguagePreloadEngines));
+  preload_engines_.SetValue(AddSupportedInputMethodValues(
+      preload_engines_.GetValue(), preload_engines_syncable,
+      prefs::kLanguagePreloadEngines));
   enabled_imes_.SetValue(AddSupportedInputMethodValues(
       enabled_imes_.GetValue(), enabled_imes_syncable,
       prefs::kLanguageEnabledImes));
@@ -288,8 +287,9 @@ void InputMethodSyncer::OnPreferenceChanged(const std::string& pref_name) {
          pref_name == prefs::kLanguagePreloadEngines ||
          pref_name == prefs::kLanguageEnabledImes);
 
-  if (merging_ || prefs_->GetBoolean(prefs::kLanguageShouldMergeInputMethods))
+  if (merging_ || prefs_->GetBoolean(prefs::kLanguageShouldMergeInputMethods)) {
     return;
+  }
 
   // Set the language and input prefs at the same time. Otherwise we may,
   // e.g., use a stale languages setting but push a new preload engines setting.
@@ -308,12 +308,14 @@ void InputMethodSyncer::OnPreferenceChanged(const std::string& pref_name) {
 
 void InputMethodSyncer::OnIsSyncingChanged() {
   // Only merge once.
-  if (!prefs_->GetBoolean(prefs::kLanguageShouldMergeInputMethods))
+  if (!prefs_->GetBoolean(prefs::kLanguageShouldMergeInputMethods)) {
     return;
+  }
   // Wait for the correct type of prefs to sync before merging.
   bool is_syncing = prefs_->AreOsPrefsSyncing();
-  if (is_syncing)
+  if (is_syncing) {
     MergeSyncedPrefs();
+  }
 }
 
 }  // namespace input_method

@@ -32,8 +32,9 @@ CandidateWindowControllerImpl::~CandidateWindowControllerImpl() {
 }
 
 void CandidateWindowControllerImpl::InitCandidateWindowView() {
-  if (candidate_window_view_)
+  if (candidate_window_view_) {
     return;
+  }
 
   gfx::NativeView parent = gfx::NativeView();
 
@@ -50,15 +51,18 @@ void CandidateWindowControllerImpl::InitCandidateWindowView() {
   views::Widget* widget = candidate_window_view_->InitWidget();
   widget->AddObserver(this);
   widget->Show();
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.CandidateWindowOpened();
+  }
 }
 
 void CandidateWindowControllerImpl::Hide() {
-  if (candidate_window_view_)
+  if (candidate_window_view_) {
     candidate_window_view_->GetWidget()->Close();
-  if (infolist_window_)
+  }
+  if (infolist_window_) {
     infolist_window_->HideImmediately();
+  }
 }
 
 void CandidateWindowControllerImpl::SetCursorAndCompositionBounds(
@@ -68,8 +72,9 @@ void CandidateWindowControllerImpl::SetCursorAndCompositionBounds(
   // move to prevent the window from shaking up and down.
   const int kKeepPositionThreshold = 2;  // px
   gfx::Rect last_bounds;
-  if (candidate_window_view_)
+  if (candidate_window_view_) {
     last_bounds = candidate_window_view_->GetAnchorRect();
+  }
 
   const int delta_y = abs(last_bounds.y() - cursor_bounds.y());
   if ((last_bounds.x() == cursor_bounds.x()) &&
@@ -82,9 +87,10 @@ void CandidateWindowControllerImpl::SetCursorAndCompositionBounds(
   composition_bounds_ = composition_bounds;
 
   // Remember the cursor bounds.
-  if (candidate_window_view_)
+  if (candidate_window_view_) {
     candidate_window_view_->SetCursorAndCompositionBounds(cursor_bounds,
                                                           composition_bounds);
+  }
 }
 
 gfx::Rect CandidateWindowControllerImpl::GetCursorBounds() const {
@@ -93,24 +99,28 @@ gfx::Rect CandidateWindowControllerImpl::GetCursorBounds() const {
 
 void CandidateWindowControllerImpl::FocusStateChanged(bool is_focused) {
   is_focused_ = is_focused;
-  if (candidate_window_view_)
+  if (candidate_window_view_) {
     candidate_window_view_->HidePreeditText();
+  }
 }
 
 void CandidateWindowControllerImpl::HideLookupTable() {
   // If it's not visible, hide the lookup table and return.
-  if (candidate_window_view_)
+  if (candidate_window_view_) {
     candidate_window_view_->HideLookupTable();
-  if (infolist_window_)
+  }
+  if (infolist_window_) {
     infolist_window_->HideImmediately();
+  }
   // TODO(nona): Introduce unittests for crbug.com/170036.
   latest_infolist_entries_.clear();
 }
 
 void CandidateWindowControllerImpl::UpdateLookupTable(
     const ui::CandidateWindow& candidate_window) {
-  if (!candidate_window_view_)
+  if (!candidate_window_view_) {
     InitCandidateWindowView();
+  }
   candidate_window_view_->UpdateCandidates(candidate_window);
   candidate_window_view_->ShowLookupTable();
 
@@ -119,29 +129,32 @@ void CandidateWindowControllerImpl::UpdateLookupTable(
   candidate_window.GetInfolistEntries(&infolist_entries, &has_highlighted);
 
   // If there is no change, just return.
-  if (latest_infolist_entries_ == infolist_entries)
+  if (latest_infolist_entries_ == infolist_entries) {
     return;
+  }
 
   latest_infolist_entries_ = infolist_entries;
 
   if (infolist_entries.empty()) {
-    if (infolist_window_)
+    if (infolist_window_) {
       infolist_window_->HideImmediately();
+    }
     return;
   }
 
   // Highlight moves out of the infolist entries.
   if (!has_highlighted) {
-    if (infolist_window_)
+    if (infolist_window_) {
       infolist_window_->HideWithDelay();
+    }
     return;
   }
 
   if (infolist_window_) {
     infolist_window_->Relayout(infolist_entries);
   } else {
-    infolist_window_ = new ui::ime::InfolistWindow(
-        candidate_window_view_, infolist_entries);
+    infolist_window_ =
+        new ui::ime::InfolistWindow(candidate_window_view_, infolist_entries);
     infolist_window_->InitWidget();
     infolist_window_->GetWidget()->AddObserver(this);
   }
@@ -154,19 +167,22 @@ void CandidateWindowControllerImpl::UpdatePreeditText(
     bool visible) {
   // If it's not visible, hide the preedit text and return.
   if (!visible || text.empty()) {
-    if (candidate_window_view_)
+    if (candidate_window_view_) {
       candidate_window_view_->HidePreeditText();
+    }
     return;
   }
-  if (!candidate_window_view_)
+  if (!candidate_window_view_) {
     InitCandidateWindowView();
+  }
   candidate_window_view_->UpdatePreeditText(text);
   candidate_window_view_->ShowPreeditText();
 }
 
 void CandidateWindowControllerImpl::OnCandidateCommitted(int index) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.CandidateClicked(index);
+  }
 }
 
 void CandidateWindowControllerImpl::OnWidgetClosing(views::Widget* widget) {
@@ -178,8 +194,9 @@ void CandidateWindowControllerImpl::OnWidgetClosing(views::Widget* widget) {
     widget->RemoveObserver(this);
     candidate_window_view_->RemoveObserver(this);
     candidate_window_view_ = nullptr;
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.CandidateWindowClosed();
+    }
   }
 }
 

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/ui/grammar_suggestion_window.h"
-#include "base/memory/raw_ptr.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/ash/input_method/ui/mock_assistive_delegate.h"
 #include "chrome/test/views/chrome_views_test_base.h"

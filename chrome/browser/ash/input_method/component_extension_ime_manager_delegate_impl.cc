@@ -243,8 +243,9 @@ ComponentExtensionIMEManagerDelegateImpl::ParseManifest(
 bool ComponentExtensionIMEManagerDelegateImpl::IsIMEExtensionID(
     const std::string& id) {
   for (auto& extension : allowlisted_component_extensions) {
-    if (base::EqualsCaseInsensitiveASCII(id, extension.id))
+    if (base::EqualsCaseInsensitiveASCII(id, extension.id)) {
       return true;
+    }
   }
   return false;
 }
@@ -257,14 +258,16 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   DCHECK(out);
   const std::string* engine_id =
       dict.FindString(extensions::manifest_keys::kId);
-  if (!engine_id)
+  if (!engine_id) {
     return false;
+  }
   out->engine_id = *engine_id;
 
   const std::string* display_name =
       dict.FindString(extensions::manifest_keys::kName);
-  if (!display_name)
+  if (!display_name) {
     return false;
+  }
   out->display_name = *display_name;
 
   const std::string* indicator =
@@ -279,8 +282,9 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
       languages.insert(language_value->GetString());
     } else if (language_value->is_list()) {
       for (const base::Value& elem : language_value->GetList()) {
-        if (elem.is_string())
+        if (elem.is_string()) {
           languages.insert(elem.GetString());
+        }
       }
     }
   }
@@ -294,8 +298,9 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   // specify one and only one layout per input method to avoid confusion.
   const base::Value::List* layouts =
       dict.FindList(extensions::manifest_keys::kLayouts);
-  if (!layouts)
+  if (!layouts) {
     return false;
+  }
 
   if (*engine_id == "ko-t-i0-und" &&
       base::FeatureList::IsEnabled(
@@ -323,8 +328,9 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   // Information is managed on VK extension side so just use a default value
   // here.
   url = net::AppendOrReplaceRef(url, "id=default");
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
   out->input_view_url = url;
 #else
   const std::string* input_view =
@@ -335,8 +341,9 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
         extensions::Extension::GetBaseURLFromExtensionId(
             component_extension.id),
         url_string);
-    if (!url.is_valid())
+    if (!url.is_valid()) {
       return false;
+    }
     out->input_view_url = url;
   }
 #endif
@@ -354,8 +361,9 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
         extensions::Extension::GetBaseURLFromExtensionId(
             component_extension.id),
         url_string);
-    if (!options_page_url.is_valid())
+    if (!options_page_url.is_valid()) {
       return false;
+    }
     out->options_page_url = options_page_url;
   } else {
     // Fallback to extension level options page.
@@ -381,21 +389,24 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadExtensionInfo(
     ComponentExtensionIME* out) {
   const std::string* description =
       manifest.FindString(extensions::manifest_keys::kDescription);
-  if (!description)
+  if (!description) {
     return false;
+  }
   out->description = *description;
 
   const std::string* path = manifest.FindString(kImePathKeyName);
-  if (path)
+  if (path) {
     out->path = base::FilePath(*path);
+  }
   const std::string* url_string =
       manifest.FindString(extensions::manifest_keys::kOptionsPage);
   if (url_string) {
     GURL url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(extension_id),
         *url_string);
-    if (!url.is_valid())
+    if (!url.is_valid()) {
       return false;
+    }
     out->options_page_url = url;
   }
   // It's okay to return true on no option page and/or input view page case.
@@ -437,8 +448,9 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
 
     if (!component_ime.path.IsAbsolute()) {
       base::FilePath resources_path;
-      if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path))
+      if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
         NOTREACHED();
+      }
       component_ime.path = resources_path.Append(component_ime.path);
     }
 
@@ -450,8 +462,9 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
     }
 
     for (const base::Value& value : *component_list) {
-      if (!value.is_dict())
+      if (!value.is_dict()) {
         continue;
+      }
 
       const base::Value::Dict& dictionary = value.GetDict();
       ComponentExtensionEngine engine;

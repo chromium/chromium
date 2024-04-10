@@ -20,12 +20,14 @@ InputMethodDelegateImpl::InputMethodDelegateImpl() = default;
 InputMethodDelegateImpl::~InputMethodDelegateImpl() = default;
 
 std::string InputMethodDelegateImpl::GetHardwareKeyboardLayouts() const {
-  if (!g_browser_process)
+  if (!g_browser_process) {
     return "";
+  }
 
   PrefService* local_state = g_browser_process->local_state();
-  if (!local_state)
+  if (!local_state) {
     return "";
+  }
 
   return local_state->GetString(prefs::kHardwareKeyboardLayout);
 }

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/ui/infolist_window.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -11,6 +10,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/input_method/ui/candidate_window_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -148,8 +148,9 @@ InfolistEntryView::InfolistEntryView(const ui::InfolistEntry& entry,
 InfolistEntryView::~InfolistEntryView() {}
 
 void InfolistEntryView::SetEntry(const ui::InfolistEntry& entry) {
-  if (entry_ == entry)
+  if (entry_ == entry) {
     return;
+  }
 
   entry_ = entry;
   title_label_->SetText(entry_.title);
@@ -245,8 +246,9 @@ void InfolistWindow::Relayout(const std::vector<ui::InfolistEntry>& entries) {
   }
 
   if (i < entry_views_.size()) {
-    for (; i < entry_views_.size(); ++i)
+    for (; i < entry_views_.size(); ++i) {
       delete entry_views_[i];
+    }
     entry_views_.resize(entries.size());
   }
 

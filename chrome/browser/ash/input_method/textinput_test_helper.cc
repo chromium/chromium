@@ -75,8 +75,7 @@ ui::TextInputClient* TextInputTestHelper::GetTextInputClient() const {
 }
 
 void TextInputTestHelper::OnInputMethodDestroyed(
-    const ui::InputMethod* input_method) {
-}
+    const ui::InputMethod* input_method) {}
 
 void TextInputTestHelper::OnFocus() {
   focus_state_ = true;
@@ -103,8 +102,9 @@ void TextInputTestHelper::OnCaretBoundsChanged(
     if (!GetTextInputClient()->GetTextRange(&text_range) ||
         !GetTextInputClient()->GetTextFromRange(text_range,
                                                 &surrounding_text_) ||
-        !GetTextInputClient()->GetEditableSelectionRange(&selection_range_))
+        !GetTextInputClient()->GetEditableSelectionRange(&selection_range_)) {
       return;
+    }
   }
   if (waiting_type_ == WAIT_ON_CARET_BOUNDS_CHANGED) {
     if (run_loop_) {
@@ -202,17 +202,22 @@ bool TextInputTestHelper::ConvertRectFromString(const std::string& str,
   DCHECK(rect);
   std::vector<std::string_view> rect_piece = base::SplitStringPiece(
       str, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (rect_piece.size() != 4UL)
+  if (rect_piece.size() != 4UL) {
     return false;
+  }
   int x, y, width, height;
-  if (!base::StringToInt(rect_piece[0], &x))
+  if (!base::StringToInt(rect_piece[0], &x)) {
     return false;
-  if (!base::StringToInt(rect_piece[1], &y))
+  }
+  if (!base::StringToInt(rect_piece[1], &y)) {
     return false;
-  if (!base::StringToInt(rect_piece[2], &width))
+  }
+  if (!base::StringToInt(rect_piece[2], &width)) {
     return false;
-  if (!base::StringToInt(rect_piece[3], &height))
+  }
+  if (!base::StringToInt(rect_piece[3], &height)) {
     return false;
+  }
   *rect = gfx::Rect(x, y, width, height);
   return true;
 }
@@ -226,8 +231,9 @@ bool TextInputTestHelper::ClickElement(const std::string& id,
           .ExtractString();
 
   gfx::Rect rect;
-  if (!ConvertRectFromString(coordinate, &rect))
+  if (!ConvertRectFromString(coordinate, &rect)) {
     return false;
+  }
 
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseDown,

@@ -150,8 +150,9 @@ class KeyEventDoneCallback {
   ~KeyEventDoneCallback() = default;
 
   void Run(ui::ime::KeyEventHandledState consumed) {
-    if (consumed == expected_argument_)
+    if (consumed == expected_argument_) {
       run_loop_.Quit();
+    }
   }
 
   void WaitUntilCalled() { run_loop_.Run(); }

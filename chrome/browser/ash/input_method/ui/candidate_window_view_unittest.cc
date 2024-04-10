@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/ui/candidate_window_view.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/ui/candidate_view.h"
@@ -371,8 +371,9 @@ TEST_F(CandidateWindowViewTest, DoNotChangeRowHeightWithLabelSwitchTest) {
   EXPECT_EQ(-1, selected_candidate_index_in_page());
   before_height = GetCandidateAt(0)->GetContentsBounds().height();
   // Checks all entry have same row height.
-  for (size_t i = 1; i < GetCandidatesSize(); ++i)
+  for (size_t i = 1; i < GetCandidatesSize(); ++i) {
     EXPECT_EQ(before_height, GetCandidateAt(i)->GetContentsBounds().height());
+  }
 
   // Initialize with a no shortcut mode candidate window.
   MaybeInitializeCandidateViews(no_shortcut_candidate_window);
@@ -381,8 +382,9 @@ TEST_F(CandidateWindowViewTest, DoNotChangeRowHeightWithLabelSwitchTest) {
   EXPECT_EQ(-1, selected_candidate_index_in_page());
   EXPECT_EQ(before_height, GetCandidateAt(0)->GetContentsBounds().height());
   // Checks all entry have same row height.
-  for (size_t i = 1; i < GetCandidatesSize(); ++i)
+  for (size_t i = 1; i < GetCandidatesSize(); ++i) {
     EXPECT_EQ(before_height, GetCandidateAt(i)->GetContentsBounds().height());
+  }
 
   // Test for no-shortcut mode to shortcut mode.
   // Initialize with a no shortcut mode candidate window.
@@ -392,8 +394,9 @@ TEST_F(CandidateWindowViewTest, DoNotChangeRowHeightWithLabelSwitchTest) {
   EXPECT_EQ(-1, selected_candidate_index_in_page());
   before_height = GetCandidateAt(0)->GetContentsBounds().height();
   // Checks all entry have same row height.
-  for (size_t i = 1; i < GetCandidatesSize(); ++i)
+  for (size_t i = 1; i < GetCandidatesSize(); ++i) {
     EXPECT_EQ(before_height, GetCandidateAt(i)->GetContentsBounds().height());
+  }
 
   // Initialize with a shortcut mode candidate window.
   MaybeInitializeCandidateViews(candidate_window);
@@ -402,8 +405,9 @@ TEST_F(CandidateWindowViewTest, DoNotChangeRowHeightWithLabelSwitchTest) {
   EXPECT_EQ(-1, selected_candidate_index_in_page());
   EXPECT_EQ(before_height, GetCandidateAt(0)->GetContentsBounds().height());
   // Checks all entry have same row height.
-  for (size_t i = 1; i < GetCandidatesSize(); ++i)
+  for (size_t i = 1; i < GetCandidatesSize(); ++i) {
     EXPECT_EQ(before_height, GetCandidateAt(i)->GetContentsBounds().height());
+  }
 }
 
 }  // namespace ime

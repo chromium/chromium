@@ -32,8 +32,7 @@ class AnnouncementViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  raw_ptr<AnnouncementView, DanglingUntriaged>
-      announcement_view_;
+  raw_ptr<AnnouncementView, DanglingUntriaged> announcement_view_;
 };
 
 TEST_F(AnnouncementViewTest, MakesAnnouncement) {

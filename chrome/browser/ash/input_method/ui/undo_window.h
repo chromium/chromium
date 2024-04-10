@@ -45,7 +45,6 @@ class UI_CHROMEOS_EXPORT UndoWindow : public views::BubbleDialogDelegateView {
   void OnThemeChanged() override;
 
  private:
-
   void UndoButtonPressed();
 
   raw_ptr<AssistiveDelegate, DanglingUntriaged> delegate_;

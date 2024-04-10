@@ -79,7 +79,7 @@ void EditorPanelManager::BindReceiver(
 void EditorPanelManager::BindEditorClient() {
   if (!editor_client_remote_.is_bound()) {
     delegate_->BindEditorClient(
-      editor_client_remote_.BindNewPipeAndPassReceiver());
+        editor_client_remote_.BindNewPipeAndPassReceiver());
 
     editor_client_remote_.reset_on_disconnect();
   }
@@ -116,8 +116,7 @@ void EditorPanelManager::GetEditorPanelContext(
   }
 }
 
-void EditorPanelManager::OnPromoCardDismissed() {
-}
+void EditorPanelManager::OnPromoCardDismissed() {}
 
 void EditorPanelManager::OnPromoCardDeclined() {
   delegate_->OnPromoCardDeclined();
@@ -160,8 +159,7 @@ bool EditorPanelManager::IsEditorMenuVisible() const {
   return is_editor_menu_visible_;
 }
 
-void EditorPanelManager::LogEditorMode(
-    crosapi::mojom::EditorPanelMode mode) {
+void EditorPanelManager::LogEditorMode(crosapi::mojom::EditorPanelMode mode) {
   EditorOpportunityMode opportunity_mode =
       delegate_->GetEditorOpportunityMode();
   EditorMetricsRecorder* logger = delegate_->GetMetricsRecorder();

@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 
 namespace ash {

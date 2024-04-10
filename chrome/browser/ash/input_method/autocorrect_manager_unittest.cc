@@ -758,8 +758,7 @@ TEST_F(AutocorrectManagerTest,
             gfx::Range());
 }
 
-TEST_F(AutocorrectManagerTest,
-       OnBlurClearsAutocorrectRange) {
+TEST_F(AutocorrectManagerTest, OnBlurClearsAutocorrectRange) {
   manager_.HandleAutocorrect(gfx::Range(1, 4), u"teh", u"the");
   manager_.OnBlur();
 
@@ -767,8 +766,7 @@ TEST_F(AutocorrectManagerTest,
             gfx::Range());
 }
 
-TEST_F(AutocorrectManagerTest,
-       OnFocusClearsAutocorrectRange) {
+TEST_F(AutocorrectManagerTest, OnFocusClearsAutocorrectRange) {
   manager_.HandleAutocorrect(gfx::Range(1, 4), u"teh", u"the");
   manager_.OnFocus(1);
 
@@ -845,8 +843,7 @@ TEST_F(AutocorrectManagerTest,
   manager_.OnSurroundingTextChanged(u"te ", gfx::Range(1));
 }
 
-TEST_F(AutocorrectManagerTest,
-       MovingCursorRetriesPrevFailedUndoWindowHide) {
+TEST_F(AutocorrectManagerTest, MovingCursorRetriesPrevFailedUndoWindowHide) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
 

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/editor_helpers.h"
+
 #include <cstddef>
-#include "content/public/test/test_browser_context.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/test/gtest_util.h"
@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::input_method {
