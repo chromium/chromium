@@ -177,10 +177,6 @@ void ProcessGroupedLoginsAndReply(const PasswordFormDigest& form_digest,
     }
   }
 
-  std::erase_if(absl::get<LoginsResult>(logins_or_error), [](const auto& form) {
-    return form.match_type == PasswordForm::MatchType::kGrouped;
-  });
-
   std::move(callback).Run(std::move(logins_or_error));
 }
 

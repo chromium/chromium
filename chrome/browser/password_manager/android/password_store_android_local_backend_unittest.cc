@@ -239,7 +239,10 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
       "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
       GURL(u"https://m.example.com/"),
       PasswordForm::MatchType::kGrouped | PasswordForm::MatchType::kPSL));
-  // Grouped only match is filtered.
+  // Grouped only match.
+  expected_logins.push_back(CreateEntry(
+      "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
+      GURL(u"https://example.org/"), PasswordForm::MatchType::kGrouped));
 
   EXPECT_CALL(
       mock_reply,
