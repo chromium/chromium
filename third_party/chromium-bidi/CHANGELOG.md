@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.17](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.16...chromium-bidi-v0.5.17) (2024-04-10)
+
+
+### Features
+
+* **network:** support more props for `initiator` ([#2115](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2115)) ([80dd9e6](https://github.com/GoogleChromeLabs/chromium-bidi/commit/80dd9e6352cf7fac054697401bc63f92c78b3ea5))
+
+
+### Bug Fixes
+
+* **browsingContext:** emit `navigationFailed` for `navigate` command failure ([#2118](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2118)) ([382a762](https://github.com/GoogleChromeLabs/chromium-bidi/commit/382a762b159f550aaa0968eb8b20358401ed2510))
+* don't expect interception for cached events ([#2087](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2087)) ([063c1d1](https://github.com/GoogleChromeLabs/chromium-bidi/commit/063c1d1d6cfee35a6a5df33612137b95bd7075f3))
+* emit `network.responseCompleted` for redirects ([#2098](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2098)) ([219cfc9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/219cfc9201bcbfd01b00a1b9b5d4e7d995a62b6a))
+* **network:** support Interception for OOPIF ([#2110](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2110)) ([5d0845c](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5d0845c898a4008f2dccff5da220037a043f2895))
+* **script:** support PreloadScript in OOPIF ([#2109](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2109)) ([baa263e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/baa263e5f4c67df0289d4b65d1aa8e527404d9b6))
+* sending undefined viewport should keep previously set viewport ([#2119](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2119)) ([823e52d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/823e52d33648e696540ad66f9c1168ac93803c1d))
+
 ## [0.5.16](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.15...chromium-bidi-v0.5.16) (2024-03-27)
 
 
