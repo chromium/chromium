@@ -1048,6 +1048,9 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
     RecordHandshakeState(STATE_FAILED);
   }
 
+  UMA_HISTOGRAM_ENUMERATION(
+      "Net.QuicSession.EcnMarksObserved",
+      static_cast<EcnPermutations>(observed_incoming_ecn_));
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.NumTotalStreams",
                           num_total_streams_);
 
@@ -3593,6 +3596,8 @@ bool QuicChromiumClientSession::OnPacket(
     const quic::QuicSocketAddress& local_address,
     const quic::QuicSocketAddress& peer_address) {
   ProcessUdpPacket(local_address, peer_address, packet);
+  observed_incoming_ecn_ |=
+      (0x1 << static_cast<uint8_t>(packet.ecn_codepoint()));
   if (!connection()->connected()) {
     NotifyFactoryOfSessionClosedLater();
     return false;

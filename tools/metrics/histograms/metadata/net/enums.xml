@@ -356,6 +356,25 @@ chromium-metrics-reviews@google.com.
   <int value="25497" label="Kyber+X25519"/>
 </enum>
 
+<enum name="EcnPermutations">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not-ECT"/>
+  <int value="2" label="ECT(1)"/>
+  <int value="3" label="Not-ECT, ECT(1)"/>
+  <int value="4" label="ECT(0)"/>
+  <int value="5" label="Not-ECT, ECT(0)"/>
+  <int value="6" label="ECT(1), ECT(0)"/>
+  <int value="7" label="Not-ECT, ECT(1), ECT(0)"/>
+  <int value="8" label="CE"/>
+  <int value="9" label="Not-ECT, CE"/>
+  <int value="10" label="ECT(1), CE"/>
+  <int value="11" label="Not-ECT, ECT(1), CE"/>
+  <int value="12" label="ECT(0), CE"/>
+  <int value="13" label="Not-ECT, ECT(0), CE"/>
+  <int value="14" label="ECT(1), ECT(0), CE"/>
+  <int value="15" label="Not-ECT, ECT(1), ECT(0), CE"/>
+</enum>
+
 <enum name="FetchManagerLoaderCheckPoint">
   <int value="0" label="FetchManager::Loader Constructor"/>
   <int value="1" label="FetchManager::Loader::Failed"/>

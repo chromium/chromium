@@ -143,6 +143,30 @@ enum class ProbingResult {
   FAILURE,                          // Probing failed for other reason.
 };
 
+// All possible combinations of observed ECN codepoints in a session. Several of
+// these should not be sent by a well-behaved sender.
+// These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class EcnPermutations {
+  kUnknown = 0,
+  kNotEct = 1,
+  kEct1 = 2,
+  kNotEctEct1 = 3,
+  kEct0 = 4,
+  kNotEctEct0 = 5,
+  kEct1Ect0 = 6,
+  kNotEctEct1Ect0 = 7,
+  kCe = 8,
+  kNotEctCe = 9,
+  kEct1Ce = 10,
+  kNotEctEct1Ce = 11,
+  kEct0Ce = 12,
+  kNotEctEct0Ce = 13,
+  kEct1Ect0Ce = 14,
+  kNotEctEct1Ect0Ce = 15,
+  kMaxValue = kNotEctEct1Ect0Ce,
+};
+
 class NET_EXPORT_PRIVATE QuicChromiumClientSession
     : public quic::QuicSpdyClientSessionBase,
       public MultiplexedSession,
@@ -1126,6 +1150,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       accept_ch_entries_received_via_alps_;
 
   std::vector<uint8_t> ech_config_list_;
+
+  // Bitmap of incoming IP ECN marks observed on this session. Bit 0 = Not-ECT,
+  // Bit 1 = ECT(1), Bit 2 = ECT(0), Bit 3 = CE. Reported to metrics at the
+  // end of the session.
+  uint8_t observed_incoming_ecn_ = 0;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };
