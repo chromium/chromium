@@ -99,6 +99,10 @@ void Manager::OnMetadataReady() {
         content_settings::RuleMetaData();
     rule_metadata.set_tpcd_metadata_rule_source(
         Parser::ToRuleSource(metadata_entry.source()));
+    // TODO(http://b/330759665): Get the cohort from the experiment
+    // picker/prefs.
+    rule_metadata.set_tpcd_metadata_cohort(
+        content_settings::mojom::TpcdMetadataCohort::DEFAULT);
 
     grants.emplace_back(primary_pattern, secondary_pattern, std::move(value),
                         /*source=*/std::string(), /*incognito=*/false,

@@ -56,6 +56,13 @@ class RuleMetaData {
     tpcd_metadata_rule_source_ = rule_source;
   }
 
+  mojom::TpcdMetadataCohort tpcd_metadata_cohort() const {
+    return tpcd_metadata_cohort_;
+  }
+  void set_tpcd_metadata_cohort(const mojom::TpcdMetadataCohort cohort) {
+    tpcd_metadata_cohort_ = cohort;
+  }
+
   base::TimeDelta lifetime() const { return lifetime_; }
 
   // Sets member variables based on `constraints`.
@@ -105,6 +112,8 @@ class RuleMetaData {
   // cleanup.
   mojom::TpcdMetadataRuleSource tpcd_metadata_rule_source_ =
       mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED;
+  mojom::TpcdMetadataCohort tpcd_metadata_cohort_ =
+      mojom::TpcdMetadataCohort::DEFAULT;
 };
 
 }  // namespace content_settings

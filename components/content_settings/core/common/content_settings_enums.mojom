@@ -5,8 +5,9 @@
 [JavaPackage="org.chromium.components.content_settings"]
 module content_settings.mojom;
 
-// TODO(http://b/324406007): The enum is currently specific to the TPCD
-// Metadata Source and is expected to be cleaned up with the mitigation cleanup.
+// TODO(http://b/324406007): The enum is currently specific to the TPCD (Third
+// Party Cookies Deprecation) Metadata Source and is expected to be cleaned up
+// with the mitigation cleanup.
 enum TpcdMetadataRuleSource {
   SOURCE_UNSPECIFIED = 0,
   SOURCE_TEST,
@@ -16,6 +17,23 @@ enum TpcdMetadataRuleSource {
   SOURCE_CRITICAL_SECTOR,
   SOURCE_CUJ,
   SOURCE_GOV_EDU_TLD,
+};
+
+// TODO(http://b/324406007): The enum is currently specific to the TPCD (Third
+// Party Cookies Deprecation) Metadata DTRP (Deprecation Trial Rollout
+// Percentage) and is expected to be cleaned up with the mitigation cleanup.
+enum TpcdMetadataCohort {
+  // Attributed to any entry not participating in any staged control of the TPCD
+  // Metadata.
+  DEFAULT = 0,
+  // Attributed to any entry participating in the staged rollback of the
+  // deprecation trial grace period that should consider the deprecation trial
+  // token over the TPCD Metadata equivalent entry.
+  GRACE_PERIOD_FORCED_OFF,
+  // Attributed to any entry participating in the staged rollback of the
+  // deprecation trial grace period that should not consider the deprecation
+  // trial token over the TPCD Metadata equivalent entry.
+  GRACE_PERIOD_FORCED_ON,
 };
 
 // Options to restrict the scope of a content setting. These specify the
