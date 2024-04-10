@@ -1424,8 +1424,9 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
           // If region complexity is above our threshold, remove the smallest
           // rects from occlusion region.
           occlusion_in_target_space.Union(sqs_rect_in_target);
-          while (occlusion_in_target_space.GetRegionComplexity() >
-                 settings_.kMaximumOccluderComplexity) {
+          while (
+              occlusion_in_target_space.GetRegionComplexity() >
+              settings_.occlusion_culler_settings.maximum_occluder_complexity) {
             gfx::Rect smallest_rect = *occlusion_in_target_space.begin();
             for (auto occluding_rect : occlusion_in_target_space) {
               if (occluding_rect.size().GetCheckedArea().ValueOrDefault(
@@ -1460,8 +1461,9 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
           // the reversed directional translation. Therefore, |transform| is
           // always invertible.
           gfx::Transform reverse_transform = transform.GetCheckedInverse();
-          DCHECK_LE(occlusion_in_target_space.GetRegionComplexity(),
-                    settings_.kMaximumOccluderComplexity);
+          DCHECK_LE(
+              occlusion_in_target_space.GetRegionComplexity(),
+              settings_.occlusion_culler_settings.maximum_occluder_complexity);
 
           // Since transform can only be a scale or a translation matrix, it is
           // safe to use function MapEnclosedRectWith2dAxisAlignedTransform to
@@ -1516,12 +1518,15 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
         const bool should_split_quads =
             !overlay_processor_->DisableSplittingQuads() &&
             !visible_region.Intersects(render_pass_quads_in_content_space) &&
-            ReduceComplexity(visible_region, settings_.quad_split_limit,
-                             &cached_visible_region_) &&
-            CanSplitQuad(quad->material, cached_visible_region_,
-                         visible_region.bounds().size(),
-                         settings_.minimum_fragments_reduced,
-                         device_scale_factor_);
+            ReduceComplexity(
+                visible_region,
+                settings_.occlusion_culler_settings.quad_split_limit,
+                &cached_visible_region_) &&
+            CanSplitQuad(
+                quad->material, cached_visible_region_,
+                visible_region.bounds().size(),
+                settings_.occlusion_culler_settings.minimum_fragments_reduced,
+                device_scale_factor_);
         if (should_split_quads) {
           auto new_quad = pass->quad_list.InsertCopyBeforeDrawQuad(
               quad, cached_visible_region_.size() - 1);

@@ -47,6 +47,28 @@ struct StructTraits<viz::mojom::DebugRendererSettingsDataView,
 };
 
 template <>
+struct StructTraits<viz::mojom::OcclusionCullerSettingsDataView,
+                    viz::RendererSettings::OcclusionCullerSettings> {
+  static int quad_split_limit(
+      const viz::RendererSettings::OcclusionCullerSettings& input) {
+    return input.quad_split_limit;
+  }
+
+  static int maximum_occluder_complexity(
+      const viz::RendererSettings::OcclusionCullerSettings& input) {
+    return input.maximum_occluder_complexity;
+  }
+
+  static int minimum_fragments_reduced(
+      const viz::RendererSettings::OcclusionCullerSettings& input) {
+    return input.minimum_fragments_reduced;
+  }
+
+  static bool Read(viz::mojom::OcclusionCullerSettingsDataView data,
+                   viz::RendererSettings::OcclusionCullerSettings* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::RendererSettingsDataView,
                     viz::RendererSettings> {
   static bool allow_antialiasing(const viz::RendererSettings& input) {
@@ -92,8 +114,9 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
     return input.requires_alpha_channel;
   }
 
-  static uint16_t quad_split_limit(const viz::RendererSettings& input) {
-    return input.quad_split_limit;
+  static viz::RendererSettings::OcclusionCullerSettings
+  occlusion_culler_settings(const viz::RendererSettings& input) {
+    return input.occlusion_culler_settings;
   }
 
 #if BUILDFLAG(IS_ANDROID)

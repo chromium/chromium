@@ -915,7 +915,7 @@ TEST_F(DisplayTest, CompositorFrameDamagesCorrectDisplay) {
 // regardless of full opacity.
 TEST_F(DisplayTest, DrawOcclusionWithBlending) {
   RendererSettings settings;
-  settings.minimum_fragments_reduced = 0;
+  settings.occlusion_culler_settings.minimum_fragments_reduced = 0;
   SetUpGpuDisplay(settings);
   display_->Initialize(client_.get(), manager_.surface_manager());
   AggregatedFrame frame = MakeDefaultAggregatedFrame(/*num_render_passes=*/2);
@@ -965,7 +965,7 @@ TEST_F(DisplayTest, DrawOcclusionWithBlending) {
 // underlying quad.
 TEST_F(DisplayTest, DrawOcclusionWithIntersectingBackdropFilter) {
   RendererSettings settings;
-  settings.minimum_fragments_reduced = 0;
+  settings.occlusion_culler_settings.minimum_fragments_reduced = 0;
   SetUpGpuDisplay(settings);
   display_->Initialize(client_.get(), manager_.surface_manager());
   AggregatedFrame frame = MakeDefaultAggregatedFrame(/*num_render_passes=*/2);

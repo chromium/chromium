@@ -73,9 +73,10 @@ RendererSettings CreateRendererSettings() {
   constexpr int kMinDrawQuadSplitLimit = 1;
   constexpr int kMaxDrawQuadSplitLimit = 15;
   if (command_line->HasSwitch(switches::kDrawQuadSplitLimit)) {
-    GetSwitchValueAsInt(command_line, switches::kDrawQuadSplitLimit,
-                        kMinDrawQuadSplitLimit, kMaxDrawQuadSplitLimit,
-                        &renderer_settings.quad_split_limit);
+    GetSwitchValueAsInt(
+        command_line, switches::kDrawQuadSplitLimit, kMinDrawQuadSplitLimit,
+        kMaxDrawQuadSplitLimit,
+        &renderer_settings.occlusion_culler_settings.quad_split_limit);
   }
 #endif
 

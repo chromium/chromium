@@ -13,6 +13,17 @@
 namespace mojo {
 
 // static
+bool StructTraits<viz::mojom::OcclusionCullerSettingsDataView,
+                  viz::RendererSettings::OcclusionCullerSettings>::
+    Read(viz::mojom::OcclusionCullerSettingsDataView data,
+         viz::RendererSettings::OcclusionCullerSettings* out) {
+  out->quad_split_limit = data.quad_split_limit();
+  out->maximum_occluder_complexity = data.maximum_occluder_complexity();
+  out->minimum_fragments_reduced = data.minimum_fragments_reduced();
+  return true;
+}
+
+// static
 bool StructTraits<viz::mojom::DebugRendererSettingsDataView,
                   viz::DebugRendererSettings>::
     Read(viz::mojom::DebugRendererSettingsDataView data,
@@ -42,7 +53,10 @@ bool StructTraits<viz::mojom::RendererSettingsDataView, viz::RendererSettings>::
       data.slow_down_compositing_scale_factor();
   out->auto_resize_output_surface = data.auto_resize_output_surface();
   out->requires_alpha_channel = data.requires_alpha_channel();
-  out->quad_split_limit = data.quad_split_limit();
+
+  if (!data.ReadOcclusionCullerSettings(&out->occlusion_culler_settings)) {
+    return false;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   if (!data.ReadInitialScreenSize(&out->initial_screen_size))
