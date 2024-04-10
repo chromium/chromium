@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -216,12 +217,15 @@ public class WebViewLayoutTest {
 
             // global-interface-listing.html and not-webview-exposed.txt are mutually
             // exclusive.
+            HashSet<String> actualInterfaceProperties =
+                    Objects.requireNonNull(
+                            webviewInterfacesMap.getOrDefault(
+                                    interfaceInExcluded, new HashSet<>()));
             for (String excludedProperty : excludedInterfaceProperties) {
-                if (webviewInterfacesMap
-                        .getOrDefault(interfaceInExcluded, new HashSet<>())
-                        .contains(excludedProperty)) {
-                    propertiesNotExposedInWebview.putIfAbsent(interfaceInExcluded, new HashSet<>());
-                    propertiesNotExposedInWebview.get(interfaceInExcluded).add(excludedProperty);
+                if (actualInterfaceProperties.contains(excludedProperty)) {
+                    propertiesNotExposedInWebview
+                            .computeIfAbsent(interfaceInExcluded, k -> new HashSet<>())
+                            .add(excludedProperty);
                 }
             }
         }
@@ -330,8 +334,9 @@ public class WebViewLayoutTest {
                 if (!subsetWebView.contains(propertyBlink)) {
                     // At least one of the properties of this interface is unexpectedly missing from
                     // WebView.
-                    missingInterfaceProperties.putIfAbsent(interfaceS, new HashSet<>());
-                    missingInterfaceProperties.get(interfaceS).add(propertyBlink);
+                    missingInterfaceProperties
+                            .computeIfAbsent(interfaceS, k -> new HashSet<>())
+                            .add(propertyBlink);
                 }
             }
         }
@@ -568,11 +573,7 @@ public class WebViewLayoutTest {
         for (String line : lineByLine) {
             String s = trimAndRemoveComments(line);
             if (isInterfaceOrGlobalObject(s)) {
-                subset = interfaces.get(s);
-                if (subset == null) {
-                    subset = new HashSet<>();
-                    interfaces.put(s, subset);
-                }
+                subset = interfaces.computeIfAbsent(s, k -> new HashSet<>());
             } else if (isInterfaceProperty(s) && subset != null) {
                 subset.add(s);
             }
