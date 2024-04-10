@@ -108,6 +108,7 @@ class ScheduledMetricsManager;
 }  // namespace metrics
 
 class BookmarkUpdateManager;
+class ClusterManager;
 class DiscountsStorage;
 class ParcelsManager;
 class ProductSpecificationsServerProxy;
@@ -705,6 +706,9 @@ class ShoppingService : public KeyedService,
   // A list of UrlInfo ordered by most recently viewed. This is based on
   // selected tab (not necessarily navigation).
   std::vector<UrlInfo> recently_visited_tabs_;
+
+  // Class for clustering products.
+  std::unique_ptr<ClusterManager> cluster_manager_;
 
   // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   //     See ConsentLevel::kSync documentation for details.

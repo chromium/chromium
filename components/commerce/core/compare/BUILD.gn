@@ -4,6 +4,8 @@
 
 source_set("compare") {
   sources = [
+    "cluster_manager.cc",
+    "cluster_manager.h",
     "product_specifications_server_proxy.cc",
     "product_specifications_server_proxy.h",
   ]
@@ -24,6 +26,7 @@ source_set("compare") {
     "//net/traffic_annotation:traffic_annotation",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp:cpp",
+    "//url",
   ]
 }
 

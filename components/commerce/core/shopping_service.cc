@@ -24,6 +24,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/compare/cluster_manager.h"
 #include "components/commerce/core/compare/product_specifications_server_proxy.h"
 #include "components/commerce/core/discounts_storage.h"
 #include "components/commerce/core/feature_utils.h"
@@ -217,6 +218,8 @@ ShoppingService::ShoppingService(
   product_specs_server_proxy_ =
       std::make_unique<ProductSpecificationsServerProxy>(
           account_checker_.get(), identity_manager, url_loader_factory);
+
+  cluster_manager_ = std::make_unique<ClusterManager>();
 }
 
 AccountChecker* ShoppingService::GetAccountChecker() {
@@ -230,6 +233,7 @@ void ShoppingService::WebWrapperCreated(WebWrapper* web) {
 void ShoppingService::DidNavigatePrimaryMainFrame(WebWrapper* web) {
   HandleDidNavigatePrimaryMainFrameForProductInfo(web);
   HandleDidNavigatePrimaryMainFrameForPriceInsightsInfo(web);
+  cluster_manager_->DidNavigatePrimaryMainFrame(web->GetLastCommittedURL());
 }
 
 void ShoppingService::HandleDidNavigatePrimaryMainFrameForProductInfo(
@@ -274,6 +278,7 @@ void ShoppingService::HandleDidNavigatePrimaryMainFrameForProductInfo(
 void ShoppingService::DidNavigateAway(WebWrapper* web, const GURL& from_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   commerce_info_cache_.RemoveRef(web->GetLastCommittedURL());
+  cluster_manager_->DidNavigateAway(web->GetLastCommittedURL(), from_url);
 }
 
 void ShoppingService::DidStopLoading(WebWrapper* web) {
@@ -491,6 +496,7 @@ void ShoppingService::WebWrapperDestroyed(WebWrapper* web) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   open_web_wrappers_.erase(web);
   commerce_info_cache_.RemoveRef(web->GetLastCommittedURL());
+  cluster_manager_->WebWrapperDestroyed(web->GetLastCommittedURL());
 }
 
 void ShoppingService::UpdateProductInfoCache(
