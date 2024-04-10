@@ -22,22 +22,7 @@ namespace media {
 
 MediaGpuChannelManager::MediaGpuChannelManager(
     gpu::GpuChannelManager* channel_manager)
-    : channel_manager_(channel_manager) {
-#if BUILDFLAG(IS_WIN)
-  gpu::ContextResult result;
-  auto shared_context_state = channel_manager_->GetSharedContextState(&result);
-  if (shared_context_state) {
-    d3d11_device_ = shared_context_state->GetD3D11Device();
-    if (base::FeatureList::IsEnabled(kD3D12VideoDecoder)) {
-      Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-      CHECK_EQ(d3d11_device_.As(&dxgi_device), S_OK);
-      Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
-      CHECK_EQ(dxgi_device->GetAdapter(&adapter), S_OK);
-      d3d12_device_ = CreateD3D12Device(adapter.Get());
-    }
-  }
-#endif
-}
+    : channel_manager_(channel_manager) {}
 
 MediaGpuChannelManager::~MediaGpuChannelManager() = default;
 
@@ -83,6 +68,13 @@ void MediaGpuChannelManager::SetOverlayFactory(
 
 AndroidOverlayMojoFactoryCB MediaGpuChannelManager::GetOverlayFactory() {
   return overlay_factory_cb_;
+}
+
+scoped_refptr<gpu::SharedContextState>
+MediaGpuChannelManager::GetSharedContextState() {
+  // FIXME: Should we be checking `result` == SUCCESS?
+  gpu::ContextResult result;
+  return channel_manager_->GetSharedContextState(&result);
 }
 
 }  // namespace media

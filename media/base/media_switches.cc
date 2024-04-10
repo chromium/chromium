@@ -1822,6 +1822,17 @@ bool IsChromeWideEchoCancellationEnabled() {
 #endif
 }
 
+bool IsDedicatedMediaServiceThreadEnabled(gl::ANGLEImplementation impl) {
+#if BUILDFLAG(IS_WIN)
+  // Only D3D11 device supports multi-threaded use.
+  if (impl != gl::ANGLEImplementation::kD3D11) {
+    return false;
+  }
+#endif
+
+  return base::FeatureList::IsEnabled(kDedicatedMediaServiceThread);
+}
+
 int GetProcessingAudioFifoSize() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (!IsChromeWideEchoCancellationEnabled()) {

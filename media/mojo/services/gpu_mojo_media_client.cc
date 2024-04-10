@@ -79,59 +79,65 @@ SupportedVideoDecoderConfigs GetVDAVideoDecoderConfigs(
 
 }  // namespace
 
+// Forward declaration of the platform specific GpuMojoMediaClient factory
+// function.
+std::unique_ptr<GpuMojoMediaClient> CreateGpuMediaService(
+    GpuMojoMediaClientTraits& traits);
+
 VideoDecoderTraits::~VideoDecoderTraits() = default;
 VideoDecoderTraits::VideoDecoderTraits(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     std::unique_ptr<MediaLog> media_log,
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace* target_color_space,
-    gpu::GpuPreferences gpu_preferences,
-    gpu::GpuFeatureInfo gpu_feature_info,
-    gpu::GPUInfo gpu_info,
-    const gpu::GpuDriverBugWorkarounds* gpu_workarounds,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     GetConfigCacheCB get_cached_configs_cb,
     GetCommandBufferStubCB get_command_buffer_stub_cb,
-    AndroidOverlayMojoFactoryCB android_overlay_factory_cb,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-    base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager)
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
     : task_runner(std::move(task_runner)),
-      gpu_task_runner(std::move(gpu_task_runner)),
       media_log(std::move(media_log)),
       request_overlay_info_cb(request_overlay_info_cb),
       target_color_space(target_color_space),
-      gpu_preferences(gpu_preferences),
-      gpu_feature_info(gpu_feature_info),
-      gpu_info(gpu_info),
-      gpu_workarounds(gpu_workarounds),
-      gpu_memory_buffer_factory(gpu_memory_buffer_factory),
       get_cached_configs_cb(std::move(get_cached_configs_cb)),
       get_command_buffer_stub_cb(std::move(get_command_buffer_stub_cb)),
-      android_overlay_factory_cb(std::move(android_overlay_factory_cb)),
-      oop_video_decoder(std::move(oop_video_decoder)),
-      media_gpu_channel_manager(media_gpu_channel_manager) {}
+      oop_video_decoder(std::move(oop_video_decoder)) {}
 
-GpuMojoMediaClient::GpuMojoMediaClient(
+GpuMojoMediaClientTraits::~GpuMojoMediaClientTraits() = default;
+GpuMojoMediaClientTraits::GpuMojoMediaClientTraits(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::GPUInfo& gpu_info,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-    base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
-    AndroidOverlayMojoFactoryCB android_overlay_factory_cb)
-    : gpu_preferences_(gpu_preferences),
-      gpu_workarounds_(gpu_workarounds),
-      gpu_feature_info_(gpu_feature_info),
-      gpu_info_(gpu_info),
-      gpu_task_runner_(std::move(gpu_task_runner)),
-      media_gpu_channel_manager_(std::move(media_gpu_channel_manager)),
-      android_overlay_factory_cb_(std::move(android_overlay_factory_cb)),
-      gpu_memory_buffer_factory_(gpu_memory_buffer_factory) {
+    AndroidOverlayMojoFactoryCB android_overlay_factory_cb,
+    base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager)
+    : gpu_preferences(gpu_preferences),
+      gpu_workarounds(gpu_workarounds),
+      gpu_feature_info(gpu_feature_info),
+      gpu_info(gpu_info),
+      gpu_task_runner(std::move(gpu_task_runner)),
+      android_overlay_factory_cb(std::move(android_overlay_factory_cb)),
+      media_gpu_channel_manager(std::move(media_gpu_channel_manager)) {}
+
+std::unique_ptr<GpuMojoMediaClient> GpuMojoMediaClient::Create(
+    GpuMojoMediaClientTraits& traits) {
+  DCHECK(traits.gpu_task_runner->BelongsToCurrentThread());
+  DCHECK(traits.media_gpu_channel_manager);
+
+  auto client = CreateGpuMediaService(traits);
+  DCHECK(client);
+
   base::UmaHistogramEnumeration("Media.GPU.VideoDecoderType",
-                                GetDecoderImplementationType());
+                                client->GetDecoderImplementationType());
+  return client;
 }
+
+GpuMojoMediaClient::GpuMojoMediaClient(GpuMojoMediaClientTraits& traits)
+    : gpu_preferences_(std::move(traits.gpu_preferences)),
+      gpu_workarounds_(std::move(traits.gpu_workarounds)),
+      gpu_feature_info_(std::move(traits.gpu_feature_info)),
+      gpu_info_(std::move(traits.gpu_info)),
+      gpu_task_runner_(std::move(traits.gpu_task_runner)),
+      media_gpu_channel_manager_(std::move(traits.media_gpu_channel_manager)) {}
 
 GpuMojoMediaClient::~GpuMojoMediaClient() = default;
 
@@ -150,8 +156,7 @@ std::unique_ptr<AudioEncoder> GpuMojoMediaClient::CreateAudioEncoder(
 }
 
 VideoDecoderType GpuMojoMediaClient::GetDecoderImplementationType() {
-  return GetPlatformDecoderImplementationType(gpu_workarounds_,
-                                              gpu_preferences_, gpu_info_);
+  return GetPlatformDecoderImplementationType();
 }
 
 SupportedVideoDecoderConfigs
@@ -165,9 +170,9 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
          gpu::kGpuFeatureStatusEnabled)) {
       supported_config_cache_ = SupportedVideoDecoderConfigs();
     } else {
-      supported_config_cache_ = GetSupportedVideoDecoderConfigsStatic(
-          media_gpu_channel_manager_, gpu_preferences_, gpu_workarounds_,
-          gpu_info_);
+      supported_config_cache_ =
+          GetPlatformSupportedVideoDecoderConfigs(base::BindOnce(
+              &GetVDAVideoDecoderConfigs, gpu_preferences_, gpu_workarounds_));
     }
 
     // Once per GPU process record accelerator information. Profile support is
@@ -208,18 +213,6 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   return supported_config_cache_.value_or(SupportedVideoDecoderConfigs{});
 }
 
-std::optional<SupportedVideoDecoderConfigs>
-GpuMojoMediaClient::GetSupportedVideoDecoderConfigsStatic(
-    base::WeakPtr<MediaGpuChannelManager> manager,
-    const gpu::GpuPreferences& gpu_preferences,
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUInfo& gpu_info) {
-  return GetPlatformSupportedVideoDecoderConfigs(
-      manager, gpu_workarounds, gpu_preferences, gpu_info,
-      base::BindOnce(&GetVDAVideoDecoderConfigs, gpu_preferences,
-                     gpu_workarounds));
-}
-
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 void GpuMojoMediaClient::NotifyDecoderSupportKnown(
     mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
@@ -231,8 +224,7 @@ void GpuMojoMediaClient::NotifyDecoderSupportKnown(
   // should not need to know what video acceleration API is used. Until then, we
   // must guard this with (USE_VAAPI || USE_V4L2_CODEC) to be able to compile
   // Linux/CrOS builds that don't use either API (e.g., linux-x64-castos).
-  NotifyPlatformDecoderSupport(gpu_preferences_, gpu_info_,
-                               std::move(oop_video_decoder), std::move(cb));
+  NotifyPlatformDecoderSupport(std::move(oop_video_decoder), std::move(cb));
 #else
   DCHECK(!oop_video_decoder);
   std::move(cb).Run(std::move(oop_video_decoder));
@@ -263,16 +255,13 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
       &GetCommandBufferStub, gpu_task_runner_, media_gpu_channel_manager_,
       command_buffer_id->channel_token, command_buffer_id->route_id);
   VideoDecoderTraits traits(
-      task_runner, gpu_task_runner_, std::move(log),
-      std::move(request_overlay_info_cb), &target_color_space, gpu_preferences_,
-      gpu_feature_info_, gpu_info_, &gpu_workarounds_,
-      gpu_memory_buffer_factory_,
+      task_runner, std::move(log), std::move(request_overlay_info_cb),
+      &target_color_space,
       // CreatePlatformVideoDecoder does not keep a reference to |traits|
       // so this bound method will not outlive |this|
       base::BindRepeating(&GpuMojoMediaClient::GetSupportedVideoDecoderConfigs,
                           base::Unretained(this)),
-      get_stub_cb, android_overlay_factory_cb_, std::move(oop_video_decoder),
-      media_gpu_channel_manager_);
+      get_stub_cb, std::move(oop_video_decoder));
 
   return CreatePlatformVideoDecoder(traits);
 }
@@ -280,6 +269,25 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
 std::unique_ptr<CdmFactory> GpuMojoMediaClient::CreateCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
   return CreatePlatformCdmFactory(frame_interfaces);
+}
+
+std::unique_ptr<AudioDecoder> GpuMojoMediaClient::CreatePlatformAudioDecoder(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<MediaLog> media_log) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+std::unique_ptr<AudioEncoder> GpuMojoMediaClient::CreatePlatformAudioEncoder(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+std::unique_ptr<CdmFactory> GpuMojoMediaClient::CreatePlatformCdmFactory(
+    mojom::FrameInterfaceFactory* frame_interfaces) {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 }  // namespace media

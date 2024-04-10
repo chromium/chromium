@@ -16,6 +16,7 @@
 #include "media/base/media_export.h"
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
+#include "ui/gl/angle_implementation.h"
 
 namespace base {
 class CommandLine;
@@ -535,6 +536,8 @@ MEDIA_EXPORT std::string GetEffectiveAutoplayPolicy(
     const base::CommandLine& command_line);
 
 MEDIA_EXPORT bool IsChromeWideEchoCancellationEnabled();
+MEDIA_EXPORT bool IsDedicatedMediaServiceThreadEnabled(
+    gl::ANGLEImplementation impl);
 MEDIA_EXPORT int GetProcessingAudioFifoSize();
 MEDIA_EXPORT bool IsHardwareSecureDecryptionEnabled();
 MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
