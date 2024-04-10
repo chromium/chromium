@@ -612,6 +612,56 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, MAYBE_ShowNameOnSync) {
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
+// Check www.crbug.com/331499330: This test makes sure that no states attempt to
+// request an update during their construction. But rather do so after all the
+// states are created and the view is added to the Widget.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       DISABLED_OpenNewBrowserWhileNameIsShown) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  std::u16string email(u"test@gmail.com");
+  std::u16string name(u"TestName");
+  AccountInfo account_info = Signin(email, name);
+  // Make a second account available so that the name is shown on browser
+  // startup.
+  signin::MakeAccountAvailable(GetIdentityManager(), "test2@gmail.com");
+
+  // The button is in a waiting for image state, the name is not yet displayed.
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+
+  // The name will only show when the image is loaded.
+  AddSignedInImage(account_info.account_id);
+  EXPECT_EQ(avatar_button->GetText(), name);
+
+  ASSERT_TRUE(GetIdentityManager()->AreRefreshTokensLoaded());
+  // Increase the text duration length to accommodate for the browser creation
+  // and the widget to be properly set.
+  AvatarToolbarButton::SetTextDurationForTesting(base::Milliseconds(500));
+  // Creating a new browser while the refresh tokens are already loaded and the
+  // name showing should not break/crash.
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  AvatarToolbarButton* new_avatar_button = GetAvatarToolbarButton(new_browser);
+  // Name is expected to be shown while it is still shown on the first browser.
+  EXPECT_EQ(new_avatar_button->GetText(), name);
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       DISABLED_ShowNameDoesNotAppearOnNewBrowserIfNotShowing) {
+  // Name is shown and cleared after waiting.
+  SigninAndWait(u"test@gmail.com");
+
+  // Increase the text duration length to accommodate for the browser creation
+  // and the widget to be properly set.
+  AvatarToolbarButton::SetTextDurationForTesting(base::Milliseconds(500));
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  AvatarToolbarButton* new_avatar_button = GetAvatarToolbarButton(new_browser);
+  // Name is not expected to be shown since it was already shown and cleared on
+  // the first browser.
+  EXPECT_EQ(new_avatar_button->GetText(), std::u16string());
+}
+
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncPaused) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
@@ -1239,10 +1289,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
-// TODO(b/331746545): The delay enforced in tests seems not to be enough for
-// windows bots causing falkiness in tests running on Windows. Investigate how
-// to fix this, or if it is feasible not to test on windows.
-#if !BUILDFLAG(IS_WIN)
 class AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest
     : public AvatarToolbarButtonBrowserTest {
  private:
@@ -1250,8 +1296,12 @@ class AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest
       switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
+// TODO(b/331746545): The delay enforced in tests seems not to be enough for
+// windows bots causing falkiness in tests running on Windows. Investigate how
+// to fix this, or if it is feasible not to test on windows.
+#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
-                       SigninPausedFromExternalError) {
+                       SigninPausedFromExternalError_ThenReauth) {
   SigninAndWait(u"test@gmail.com");
 
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
@@ -1424,6 +1474,24 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
   // is meaningful.
   ASSERT_LT(base::Time::Now() - time_of_error, max_time);
 }
+
 #endif  // !BUILDFLAG(IS_WIN)
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
+                       SigninPaused_ThenSignout) {
+  SigninAndWait(u"test@gmail.com");
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  SimulateSigninError(/*web_sign_out=*/false);
+
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+
+  Signout();
+
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

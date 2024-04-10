@@ -57,7 +57,6 @@ class AvatarToolbarButton : public ToolbarButton {
   ~AvatarToolbarButton() override;
 
   void UpdateText();
-  void UpdateIconWithoutObservers();
 
   // Expands the pill to show the intercept text.
   // Returns a callback to be used when the shown text should be hidden.
@@ -97,6 +96,7 @@ class AvatarToolbarButton : public ToolbarButton {
   std::optional<SkColor> GetHighlightBorderColor() const override;
   bool ShouldPaintBorder() const override;
   bool ShouldBlendHighlightColor() const override;
+  void AddedToWidget() override;
 
   void ButtonPressed(bool is_source_accelerator = false);
 

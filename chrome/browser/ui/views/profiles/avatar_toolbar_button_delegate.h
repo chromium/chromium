@@ -53,6 +53,12 @@ class AvatarToolbarButtonDelegate {
 
   ~AvatarToolbarButtonDelegate();
 
+  // Expected to be called once the avatar button view is properly added to the
+  // widget. Expected to be called once to initialize the StateManager. Using
+  // `state_manager_` can only be done after calling this method.
+  void InitializeStateManager();
+  bool IsStateManagerInitialized() const;
+
   // These info are based on the `ButtonState`.
   std::pair<std::u16string, std::optional<SkColor>> GetTextAndColor(
       const ui::ColorProvider* const color_provider) const;
@@ -74,8 +80,6 @@ class AvatarToolbarButtonDelegate {
   static void SetTextDurationForTesting(base::TimeDelta duration);
 
  private:
-  internal::ButtonState ComputeState() const;
-
   std::u16string GetProfileName() const;
   std::u16string GetShortProfileName() const;
   // Must only be called in states which have an avatar image (i.e. not
@@ -89,12 +93,7 @@ class AvatarToolbarButtonDelegate {
   const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;
 
-  // Text to be displayed while the state is
-  // `ButtonState::kExplicitTextShowing`.
-  // TODO(b/324018028): Move this info into it's own implementation of
-  // StateProvider.
-  std::u16string explicit_text_;
-
+  // Initialized in `InitializeStates()`.
   std::unique_ptr<internal::StateManager> state_manager_;
 
   base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
