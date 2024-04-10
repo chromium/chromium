@@ -33,15 +33,15 @@ import org.chromium.ui.util.AttrUtils;
 /** View showing a toggle and a description for tracking protection for a site. */
 public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
-    private static final String COOKIE_SWITCH_PREFERENCE = "cookie_switch";
-    private static final String COOKIE_IN_USE_PREFERENCE = "cookie_in_use";
+    private static final String TP_SWITCH_PREFERENCE = "tp_switch";
+    private static final String STORAGE_IN_USE_PREFERENCE = "storage_in_use";
     private static final String FPS_IN_USE_PREFERENCE = "fps_in_use";
     private static final String TPC_TITLE = "tpc_title";
     private static final String TPC_SUMMARY = "tpc_summary";
     private static final int EXPIRATION_FOR_TESTING = 33;
 
     private ChromeSwitchPreference mCookieSwitch;
-    private ChromeImageViewPreference mCookieInUse;
+    private ChromeImageViewPreference mStorageInUse;
     private ChromeImageViewPreference mFPSInUse;
     private TextMessagePreference mThirdPartyCookiesTitle;
     private TextMessagePreference mThirdPartyCookiesSummary;
@@ -85,8 +85,8 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
         }
         SettingsUtils.addPreferencesFromResource(
                 this, R.xml.page_info_tracking_protection_preference);
-        mCookieSwitch = findPreference(COOKIE_SWITCH_PREFERENCE);
-        mCookieInUse = findPreference(COOKIE_IN_USE_PREFERENCE);
+        mCookieSwitch = findPreference(TP_SWITCH_PREFERENCE);
+        mStorageInUse = findPreference(STORAGE_IN_USE_PREFERENCE);
         mFPSInUse = findPreference(FPS_IN_USE_PREFERENCE);
         mFPSInUse.setVisible(false);
         mThirdPartyCookiesTitle = findPreference(TPC_TITLE);
@@ -142,18 +142,18 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
                     return true;
                 });
 
-        mCookieInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.gm_database_24));
-        mCookieInUse.setImageView(
+        mStorageInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.gm_database_24));
+        mStorageInUse.setImageView(
                 R.drawable.ic_delete_white_24dp, R.string.page_info_cookies_clear, null);
         // Disabling enables passthrough of clicks to the main preference.
-        mCookieInUse.setImageViewEnabled(false);
+        mStorageInUse.setImageViewEnabled(false);
         mDeleteDisabled = params.disableCookieDeletion;
-        mCookieInUse.setOnPreferenceClickListener(
+        mStorageInUse.setOnPreferenceClickListener(
                 preference -> {
                     showClearCookiesConfirmation();
                     return true;
                 });
-        updateCookieDeleteButton();
+        updateStorageDeleteButton();
 
         mOnClearCallback = params.onClearCallback;
         mOnFeedbackClicked = params.onFeedbackLinkClicked;
@@ -280,36 +280,23 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
         updateCookieSwitch();
     }
 
-    public void setCookiesCount(int allowedCookies, int blockedCookies) {
-        mCookieSwitch.setSummary(
-                blockedCookies > 0
-                        ? getQuantityString(
-                                R.plurals.cookie_controls_blocked_cookies, blockedCookies)
-                        : null);
-        mCookieInUse.setTitle(
-                getQuantityString(R.plurals.page_info_cookies_in_use, allowedCookies));
-
-        mDataUsed |= allowedCookies != 0;
-        updateCookieDeleteButton();
-    }
-
     public void setSitesCount(int allowedSites, int blockedSites) {
         mAllowedSites = allowedSites;
         mBlockedSites = blockedSites;
 
         mDataUsed |= allowedSites != 0;
-        updateCookieDeleteButton();
+        updateStorageDeleteButton();
         updateCookieSwitch();
     }
 
     public void setStorageUsage(long storageUsage) {
-        mCookieInUse.setTitle(
+        mStorageInUse.setTitle(
                 String.format(
                         getString(R.string.origin_settings_storage_usage_brief),
                         Formatter.formatShortFileSize(getContext(), storageUsage)));
 
         mDataUsed |= storageUsage != 0;
-        updateCookieDeleteButton();
+        updateStorageDeleteButton();
     }
 
     /**
@@ -360,8 +347,8 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
         return (int) ((expirationMidnight - currentMidnight) / DateUtils.DAY_IN_MILLIS);
     }
 
-    private void updateCookieDeleteButton() {
-        mCookieInUse.setImageColor(
+    private void updateStorageDeleteButton() {
+        mStorageInUse.setImageColor(
                 !mDeleteDisabled && mDataUsed
                         ? R.color.default_icon_color_accent1_tint_list
                         : R.color.default_icon_color_disabled);

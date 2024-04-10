@@ -367,13 +367,6 @@
         <ph name="TYPE_1">%1$s<ex>2 compromised passwords</ex></ph>. <ph name="TYPE_2">%2$s<ex>7 weak passwords</ex></ph>.
       </message>
 
-      <!-- Cookie controls UI -->
-      <message name="IDS_COOKIE_CONTROLS_BLOCKED_COOKIES" desc="Text showing the number of blocked cookies on a site.">
-        {COOKIE_COUNT, plural,
-            =1 {1 cookie blocked}
-            other {# cookies blocked}}
-      </message>
-
       <!-- Certificate viewer -->
       <message name="IDS_CERTTITLE" desc="Dialog box title for viewing security certificates. [CHAR_LIMIT=32]">
         Certificate viewer
@@ -600,11 +593,6 @@
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TRACKING_PROTECTION" desc="Descriptive text in the Page Info UI explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
         Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
-      </message>
-      <message name="IDS_PAGE_INFO_COOKIES_IN_USE" desc="Label showing the amount of cookies being used by a site.">
-        {NUM_SELECTED, plural,
-          =1 {1 cookie in use}
-          other {# cookies in use}}
       </message>
       <message name="IDS_PAGE_INFO_SITES_ALLOWED" desc="Label showing the number of sites where cookies are allowed.">
         {NUM_SELECTED, plural,

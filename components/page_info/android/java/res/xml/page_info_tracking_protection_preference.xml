@@ -13,7 +13,7 @@ found in the LICENSE file.
         android:layout="@layout/page_info_summary" />
 
     <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
-        android:key="cookie_in_use" />
+        android:key="storage_in_use" />
 
     <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
         android:key="fps_in_use"
@@ -30,7 +30,7 @@ found in the LICENSE file.
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:key="cookie_switch"
+        android:key="tp_switch"
         android:persistent="false"
         android:title="@string/page_info_cookies_third_party_cookies_label"
         app:allowDividerAbove="false" />

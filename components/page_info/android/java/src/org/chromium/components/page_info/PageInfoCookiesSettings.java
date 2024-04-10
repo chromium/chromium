@@ -261,19 +261,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         updateCookieSwitch();
     }
 
-    public void setCookiesCount(int allowedCookies, int blockedCookies) {
-        mCookieSwitch.setSummary(
-                blockedCookies > 0
-                        ? getQuantityString(
-                                R.plurals.cookie_controls_blocked_cookies, blockedCookies)
-                        : null);
-        mCookieInUse.setTitle(
-                getQuantityString(R.plurals.page_info_cookies_in_use, allowedCookies));
-
-        mDataUsed |= allowedCookies != 0;
-        updateCookieDeleteButton();
-    }
-
     public void setSitesCount(int allowedSites, int blockedSites) {
         mAllowedSites = allowedSites;
         mBlockedSites = blockedSites;
