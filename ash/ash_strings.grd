@@ -7099,6 +7099,18 @@ New install
       <message name="IDS_PICKER_CLIPBOARD_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show clipboard results.">
         Clipboard
       </message>
+      <message name="IDS_PICKER_UPPER_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to upper case.">
+        Turn into uppercase
+      </message>
+      <message name="IDS_PICKER_LOWER_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to lower case.">
+        Turn into lowercase
+      </message>
+      <message name="IDS_PICKER_SENTENCE_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to sentence case.">
+        Turn into sentence case
+      </message>
+      <message name="IDS_PICKER_TITLE_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to title case.">
+        Turn into title case
+      </message>
       <message name="IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI.">
         Search to insert
       </message>
@@ -7128,6 +7140,9 @@ New install
       </message>
       <message name="IDS_PICKER_CALCULATIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains calculation categories, e.g. Dates and Maths.">
         Calculations
+      </message>
+      <message name="IDS_PICKER_CASE_TRANSFORMATIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains case transformation actions.">
+        Transform letter case
       </message>
       <message name="IDS_PICKER_SUGGESTED_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains suggested items.">
         You may want to insert

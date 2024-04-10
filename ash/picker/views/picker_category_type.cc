@@ -21,6 +21,11 @@ ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
     case PickerCategory::kDatesTimes:
     case PickerCategory::kUnitsMaths:
       return PickerCategoryType::kCalculations;
+    case PickerCategory::kUpperCase:
+    case PickerCategory::kLowerCase:
+    case PickerCategory::kSentenceCase:
+    case PickerCategory::kTitleCase:
+      return PickerCategoryType::kCaseTransformations;
   }
 }
 

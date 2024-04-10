@@ -43,7 +43,10 @@ TEST(PickerModel, AvailableCategoriesWithSelectedText) {
   client.SetTextAndSelection(u"a", gfx::Range(0, 1));
 
   PickerModel model(&client);
-  EXPECT_THAT(model.GetAvailableCategories(), ElementsAre());
+  EXPECT_THAT(
+      model.GetAvailableCategories(),
+      ElementsAre(PickerCategory::kUpperCase, PickerCategory::kLowerCase,
+                  PickerCategory::kSentenceCase, PickerCategory::kTitleCase));
 }
 
 }  // namespace

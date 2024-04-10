@@ -15,6 +15,7 @@ enum class ASH_EXPORT PickerCategoryType {
   kEditors,
   kGeneral,
   kCalculations,
+  kCaseTransformations,
 };
 
 ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category);

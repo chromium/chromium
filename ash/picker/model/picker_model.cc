@@ -28,7 +28,12 @@ PickerModel::PickerModel(ui::TextInputClient* focused_client)
 
 std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   if (has_selected_text_) {
-    return std::vector<PickerCategory>{};
+    return std::vector<PickerCategory>{
+        PickerCategory::kUpperCase,
+        PickerCategory::kLowerCase,
+        PickerCategory::kSentenceCase,
+        PickerCategory::kTitleCase,
+    };
   }
 
   return std::vector<PickerCategory>{

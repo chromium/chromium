@@ -11,14 +11,22 @@ namespace ash {
 
 // A category specifies a type of data that can be searched for.
 enum class ASH_PUBLIC_EXPORT PickerCategory {
+  // Editor categories:
   kEditor,
+  // General categories:
   kLinks,
   kExpressions,
   kClipboard,
   kDriveFiles,
   kLocalFiles,
+  // Calculation categories:
   kDatesTimes,
   kUnitsMaths,
+  // Case transformation categories:
+  kUpperCase,
+  kLowerCase,
+  kSentenceCase,
+  kTitleCase,
 };
 
 }  // namespace ash

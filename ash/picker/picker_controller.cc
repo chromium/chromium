@@ -260,6 +260,10 @@ void PickerController::GetResultsForCategory(PickerCategory category,
   std::vector<ash::PickerSearchResult> recent_results;
   switch (category) {
     case PickerCategory::kEditor:
+    case PickerCategory::kUpperCase:
+    case PickerCategory::kLowerCase:
+    case PickerCategory::kSentenceCase:
+    case PickerCategory::kTitleCase:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
       // TODO: b/330589902 - Use correct PickerSectionType for this.
