@@ -12,16 +12,16 @@ namespace web_package {
 SignedWebBundleSignatureStackEntry::SignedWebBundleSignatureStackEntry(
     const std::vector<uint8_t>& complete_entry_cbor,
     const std::vector<uint8_t>& attributes_cbor,
-    const SignedWebBundleSignature signature)
+    SignedWebBundleSignatureInfo signature_info)
     : complete_entry_cbor_(complete_entry_cbor),
       attributes_cbor_(attributes_cbor),
-      signature_(std::move(signature)) {}
+      signature_info_(std::move(signature_info)) {}
 
 bool SignedWebBundleSignatureStackEntry::operator==(
     const SignedWebBundleSignatureStackEntry& other) const {
   return complete_entry_cbor_ == other.complete_entry_cbor_ &&
          attributes_cbor_ == other.attributes_cbor_ &&
-         signature_ == other.signature_;
+         signature_info_ == other.signature_info_;
 }
 
 bool SignedWebBundleSignatureStackEntry::operator!=(
@@ -38,10 +38,5 @@ SignedWebBundleSignatureStackEntry::operator=(
 
 SignedWebBundleSignatureStackEntry::~SignedWebBundleSignatureStackEntry() =
     default;
-
-SignedWebBundleSignatureEd25519::SignedWebBundleSignatureEd25519(
-    Ed25519PublicKey public_key,
-    Ed25519Signature signature)
-    : public_key_(std::move(public_key)), signature_(std::move(signature)) {}
 
 }  // namespace web_package

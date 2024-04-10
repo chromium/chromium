@@ -130,13 +130,13 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
                     verification_action_callback) {
               EXPECT_THAT(integrity_block.signature_stack().size(), Eq(1ul));
 
-              auto* ed25519_signature =
-                  absl::get_if<web_package::SignedWebBundleSignatureEd25519>(
-                      &integrity_block.signature_stack()
-                           .entries()[0]
-                           .signature());
-              ASSERT_TRUE(ed25519_signature);
-              EXPECT_THAT(ed25519_signature->public_key().bytes(),
+              auto* ed25519_signature_info = absl::get_if<
+                  web_package::SignedWebBundleSignatureInfoEd25519>(
+                  &integrity_block.signature_stack()
+                       .entries()[0]
+                       .signature_info());
+              ASSERT_TRUE(ed25519_signature_info);
+              EXPECT_THAT(ed25519_signature_info->public_key().bytes(),
                           testing::ElementsAreArray(kTestPublicKey));
 
               std::move(verification_action_callback).Run(verification_action);
@@ -376,13 +376,13 @@ class SignedWebBundleReaderTest : public testing::Test {
                 base::OnceCallback<void(VerificationAction)> callback) {
               EXPECT_THAT(integrity_block.signature_stack().size(), Eq(1ul));
 
-              auto* ed25519_signature =
-                  absl::get_if<web_package::SignedWebBundleSignatureEd25519>(
-                      &integrity_block.signature_stack()
-                           .entries()[0]
-                           .signature());
-              ASSERT_TRUE(ed25519_signature);
-              EXPECT_THAT(ed25519_signature->public_key().bytes(),
+              auto* ed25519_signature_info = absl::get_if<
+                  web_package::SignedWebBundleSignatureInfoEd25519>(
+                  &integrity_block.signature_stack()
+                       .entries()[0]
+                       .signature_info());
+              ASSERT_TRUE(ed25519_signature_info);
+              EXPECT_THAT(ed25519_signature_info->public_key().bytes(),
                           Eq(kEd25519PublicKey));
 
               std::move(callback).Run(verification_action);

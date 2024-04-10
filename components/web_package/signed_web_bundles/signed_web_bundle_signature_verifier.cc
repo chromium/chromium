@@ -191,13 +191,13 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
 
   bool valid_signature = absl::visit(
       base::Overloaded{
-          [&payload_to_verify](
-              const SignedWebBundleSignatureEd25519& ed25519_signature) {
-            return ed25519_signature.signature().Verify(
-                payload_to_verify, ed25519_signature.public_key());
+          [&payload_to_verify](const SignedWebBundleSignatureInfoEd25519&
+                                   ed25519_signature_info) {
+            return ed25519_signature_info.signature().Verify(
+                payload_to_verify, ed25519_signature_info.public_key());
           },
-          [](const SignedWebBundleSignatureUnknown&) { return false; }},
-      signature_stack_entry.signature());
+          [](const SignedWebBundleSignatureInfoUnknown&) { return false; }},
+      signature_stack_entry.signature_info());
 
   if (!valid_signature) {
     std::move(callback).Run(

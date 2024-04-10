@@ -12,45 +12,53 @@
 
 namespace web_package {
 
-class SignedWebBundleSignatureEd25519 {
+template <typename PublicKey, typename Signature>
+class SignedWebBundleSignatureInfoBase {
  public:
-  SignedWebBundleSignatureEd25519(Ed25519PublicKey public_key,
-                                  Ed25519Signature signature);
+  SignedWebBundleSignatureInfoBase(PublicKey public_key, Signature signature)
+      : public_key_(std::move(public_key)), signature_(std::move(signature)) {}
 
-  SignedWebBundleSignatureEd25519(const SignedWebBundleSignatureEd25519&) =
+  SignedWebBundleSignatureInfoBase(const SignedWebBundleSignatureInfoBase&) =
       default;
-  SignedWebBundleSignatureEd25519& operator=(
-      const SignedWebBundleSignatureEd25519&) = default;
+  SignedWebBundleSignatureInfoBase& operator=(
+      const SignedWebBundleSignatureInfoBase&) = default;
 
-  ~SignedWebBundleSignatureEd25519() = default;
+  ~SignedWebBundleSignatureInfoBase() = default;
 
-  bool operator==(const SignedWebBundleSignatureEd25519& other) const = default;
-  bool operator!=(const SignedWebBundleSignatureEd25519& other) const = default;
+  bool operator==(const SignedWebBundleSignatureInfoBase& other) const =
+      default;
+  bool operator!=(const SignedWebBundleSignatureInfoBase& other) const =
+      default;
 
-  const Ed25519PublicKey& public_key() const { return public_key_; }
-  const Ed25519Signature& signature() const { return signature_; }
+  const PublicKey& public_key() const { return public_key_; }
+  const Signature& signature() const { return signature_; }
 
  private:
-  Ed25519PublicKey public_key_;
-  Ed25519Signature signature_;
+  PublicKey public_key_;
+  Signature signature_;
 };
 
-struct SignedWebBundleSignatureUnknown {
+struct SignedWebBundleSignatureInfoUnknown {
  public:
-  SignedWebBundleSignatureUnknown() = default;
+  SignedWebBundleSignatureInfoUnknown() = default;
 
-  SignedWebBundleSignatureUnknown(const SignedWebBundleSignatureUnknown&) =
+  SignedWebBundleSignatureInfoUnknown(
+      const SignedWebBundleSignatureInfoUnknown&) = default;
+  SignedWebBundleSignatureInfoUnknown& operator=(
+      const SignedWebBundleSignatureInfoUnknown&) = default;
+
+  ~SignedWebBundleSignatureInfoUnknown() = default;
+
+  bool operator==(const SignedWebBundleSignatureInfoUnknown& other) const =
       default;
-  SignedWebBundleSignatureUnknown& operator=(
-      const SignedWebBundleSignatureUnknown&) = default;
-
-  ~SignedWebBundleSignatureUnknown() = default;
-
-  bool operator==(const SignedWebBundleSignatureUnknown& other) const = default;
 };
 
-using SignedWebBundleSignature = absl::variant<SignedWebBundleSignatureUnknown,
-                                               SignedWebBundleSignatureEd25519>;
+using SignedWebBundleSignatureInfoEd25519 =
+    SignedWebBundleSignatureInfoBase<Ed25519PublicKey, Ed25519Signature>;
+
+using SignedWebBundleSignatureInfo =
+    absl::variant<SignedWebBundleSignatureInfoUnknown,
+                  SignedWebBundleSignatureInfoEd25519>;
 
 // This class represents an entry on the signature stack of the integrity block
 // of a Signed Web Bundle. See the documentation of
@@ -60,7 +68,7 @@ class SignedWebBundleSignatureStackEntry {
   SignedWebBundleSignatureStackEntry(
       const std::vector<uint8_t>& complete_entry_cbor,
       const std::vector<uint8_t>& attributes_cbor,
-      const SignedWebBundleSignature signature);
+      SignedWebBundleSignatureInfo signature_info);
 
   SignedWebBundleSignatureStackEntry(const SignedWebBundleSignatureStackEntry&);
   SignedWebBundleSignatureStackEntry& operator=(
@@ -77,13 +85,14 @@ class SignedWebBundleSignatureStackEntry {
   const std::vector<uint8_t>& attributes_cbor() const {
     return attributes_cbor_;
   }
-
-  const SignedWebBundleSignature& signature() const { return signature_; }
+  const SignedWebBundleSignatureInfo& signature_info() const {
+    return signature_info_;
+  }
 
  private:
   std::vector<uint8_t> complete_entry_cbor_;
   std::vector<uint8_t> attributes_cbor_;
-  SignedWebBundleSignature signature_;
+  SignedWebBundleSignatureInfo signature_info_;
 };
 
 }  // namespace web_package

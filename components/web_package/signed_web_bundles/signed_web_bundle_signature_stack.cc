@@ -8,7 +8,6 @@
 #include "base/containers/to_vector.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
-#include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 
@@ -18,19 +17,21 @@ namespace {
 
 SignedWebBundleSignatureStackEntry CreateSignatureEntry(
     const mojom::BundleIntegrityBlockSignatureStackEntryPtr& entry) {
-  if (entry->signature_info->is_ed25519()) {
-    auto const& signature = entry->signature_info->get_ed25519();
-
-    return SignedWebBundleSignatureStackEntry(
-        entry->complete_entry_cbor, entry->attributes_cbor,
-        SignedWebBundleSignatureEd25519(signature->public_key,
-                                        signature->signature));
-  } else {
-    return SignedWebBundleSignatureStackEntry(
-        entry->complete_entry_cbor, entry->attributes_cbor,
-        SignedWebBundleSignatureUnknown());
+  const auto& signature_info = entry->signature_info;
+  switch (signature_info->which()) {
+    case mojom::SignatureInfo::Tag::kEd25519:
+      return SignedWebBundleSignatureStackEntry(
+          entry->complete_entry_cbor, entry->attributes_cbor,
+          SignedWebBundleSignatureInfoEd25519(
+              signature_info->get_ed25519()->public_key,
+              signature_info->get_ed25519()->signature));
+    case mojom::SignatureInfo::Tag::kUnknown:
+      return SignedWebBundleSignatureStackEntry(
+          entry->complete_entry_cbor, entry->attributes_cbor,
+          SignedWebBundleSignatureInfoUnknown());
   }
 }
+
 }  // namespace
 
 // static

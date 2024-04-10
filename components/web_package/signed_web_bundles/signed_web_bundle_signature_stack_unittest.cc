@@ -61,7 +61,7 @@ TEST(SignedWebBundleSignatureStack,
      CreateFromVectorOfSignedWebBundleSignatureStackEntry) {
   SignedWebBundleSignatureStackEntry entry(
       /*complete_entry_cbor=*/{1, 2, 3}, /*attributes_cbor=*/{4, 5},
-      SignedWebBundleSignatureEd25519(
+      SignedWebBundleSignatureInfoEd25519(
           Ed25519PublicKey::Create(base::make_span(kTestPublicKey1)),
           Ed25519Signature::Create(base::make_span(kTestSignature1))));
 
@@ -78,12 +78,12 @@ TEST(SignedWebBundleSignatureStack,
      CreateFromVectorOfMultipleSignedWebBundleSignatureStackEntry) {
   SignedWebBundleSignatureStackEntry entry1(
       /*complete_entry_cbor=*/{1, 2, 3}, /*attributes_cbor=*/{4, 5},
-      SignedWebBundleSignatureEd25519(
+      SignedWebBundleSignatureInfoEd25519(
           Ed25519PublicKey::Create(base::make_span(kTestPublicKey1)),
           Ed25519Signature::Create(base::make_span(kTestSignature1))));
   SignedWebBundleSignatureStackEntry entry2(
       /*complete_entry_cbor=*/{6, 7}, /*attributes_cbor=*/{8, 9, 0},
-      SignedWebBundleSignatureEd25519(
+      SignedWebBundleSignatureInfoEd25519(
           Ed25519PublicKey::Create(base::make_span(kTestPublicKey2)),
           Ed25519Signature::Create(base::make_span(kTestSignature2))));
 
@@ -116,40 +116,40 @@ TEST(SignedWebBundleSignatureStack,
       auto result, SignedWebBundleSignatureStack::Create(std::move(entries)));
   EXPECT_EQ(result.size(), 1u);
 
-  auto* ed25519_signature =
-      absl::get_if<web_package::SignedWebBundleSignatureEd25519>(
-          &result.entries()[0].signature());
-  ASSERT_TRUE(ed25519_signature);
+  auto* ed25519_signature_info_ptr =
+      absl::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
+          &result.entries()[0].signature_info());
+  ASSERT_TRUE(ed25519_signature_info_ptr);
 
   EXPECT_EQ(result.entries()[0].complete_entry_cbor(),
             entry->complete_entry_cbor);
   EXPECT_EQ(result.entries()[0].attributes_cbor(), entry->attributes_cbor);
-  EXPECT_EQ(ed25519_signature->public_key(),
+  EXPECT_EQ(ed25519_signature_info_ptr->public_key(),
             entry->signature_info->get_ed25519()->public_key);
-  EXPECT_EQ(ed25519_signature->signature(),
+  EXPECT_EQ(ed25519_signature_info_ptr->signature(),
             entry->signature_info->get_ed25519()->signature);
 }
 
 TEST(SignedWebBundleSignatureStack, Comparators) {
   const SignedWebBundleSignatureStackEntry ed25519_entry1(
       /*complete_entry_cbor=*/{1}, /*attributes_cbor=*/{},
-      SignedWebBundleSignatureEd25519(
+      SignedWebBundleSignatureInfoEd25519(
           Ed25519PublicKey::Create(base::make_span(kTestPublicKey1)),
           Ed25519Signature::Create(base::make_span(kTestSignature1))));
 
   const SignedWebBundleSignatureStackEntry ed25519_entry2(
       /*complete_entry_cbor=*/{2}, /*attributes_cbor=*/{},
-      SignedWebBundleSignatureEd25519(
+      SignedWebBundleSignatureInfoEd25519(
           Ed25519PublicKey::Create(base::make_span(kTestPublicKey1)),
           Ed25519Signature::Create(base::make_span(kTestSignature1))));
 
   const SignedWebBundleSignatureStackEntry unknown_entry1(
       /*complete_entry_cbor=*/{2}, /*attributes_cbor=*/{},
-      SignedWebBundleSignatureUnknown());
+      SignedWebBundleSignatureInfoUnknown());
 
   const SignedWebBundleSignatureStackEntry unknown_entry2(
       /*complete_entry_cbor=*/{2}, /*attributes_cbor=*/{},
-      SignedWebBundleSignatureUnknown());
+      SignedWebBundleSignatureInfoUnknown());
 
   SignedWebBundleSignatureStack stack1a =
       *SignedWebBundleSignatureStack::Create(
