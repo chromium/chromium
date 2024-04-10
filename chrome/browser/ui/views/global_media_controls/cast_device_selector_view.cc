@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
-#include "components/global_media_controls/public/views/media_item_ui_view.h"
+#include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -42,9 +42,10 @@ CastDeviceSelectorView::CastDeviceSelectorView(
   device_container_view_->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
 
-  SetVisible(false);
   if (show_devices) {
     ShowDevices();
+  } else {
+    UpdateVisibility();
   }
 }
 
@@ -53,25 +54,21 @@ CastDeviceSelectorView::~CastDeviceSelectorView() = default;
 ///////////////////////////////////////////////////////////////////////////////
 // global_media_controls::MediaItemUIDeviceSelector implementations:
 
-void CastDeviceSelectorView::SetMediaItemUIView(
-    global_media_controls::MediaItemUIView* view) {
-  media_item_ui_view_ = view;
+void CastDeviceSelectorView::SetMediaItemUIUpdatedView(
+    global_media_controls::MediaItemUIUpdatedView* view) {
+  media_item_ui_updated_view_ = view;
 }
 
 void CastDeviceSelectorView::ShowDevices() {
   CHECK(!is_expanded_);
   is_expanded_ = true;
-
-  SetVisible(is_expanded_);
-  PreferredSizeChanged();
+  UpdateVisibility();
 }
 
 void CastDeviceSelectorView::HideDevices() {
   CHECK(is_expanded_);
   is_expanded_ = false;
-
-  SetVisible(is_expanded_);
-  PreferredSizeChanged();
+  UpdateVisibility();
 }
 
 bool CastDeviceSelectorView::IsDeviceSelectorExpanded() {
@@ -92,11 +89,9 @@ void CastDeviceSelectorView::OnDevicesUpdated(
         media_color_theme_.secondary_foreground_color_id, device);
     device_container_view_->AddChildView(std::move(device_view));
   }
-  SetVisible(is_expanded_);
-  PreferredSizeChanged();
-
-  if (media_item_ui_view_) {
-    media_item_ui_view_->OnDeviceSelectorViewDevicesChanged(
+  UpdateVisibility();
+  if (media_item_ui_updated_view_) {
+    media_item_ui_updated_view_->OnDeviceSelectorViewDevicesChanged(
         device_container_view_->children().size() > 0);
   }
 }
@@ -109,6 +104,16 @@ void CastDeviceSelectorView::OnCastDeviceSelected(
   if (device_list_host_) {
     device_list_host_->SelectDevice(device_id);
   }
+}
+
+void CastDeviceSelectorView::UpdateVisibility() {
+  // Show the view if user requests to show the list and there are also
+  // available devices.
+  SetVisible(is_expanded_ && (device_container_view_->children().size() > 0));
+
+  // Visibility changes can result in size changes, which should change sizes of
+  // parent views too.
+  PreferredSizeChanged();
 }
 
 BEGIN_METADATA(CastDeviceSelectorView)

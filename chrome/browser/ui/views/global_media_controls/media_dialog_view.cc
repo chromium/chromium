@@ -705,8 +705,12 @@ MediaDialogView::BuildMediaItemUIUpdatedView(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
   CHECK(media_color_theme_);
+  bool show_devices =
+      entry_point_ == GlobalMediaControlsEntryPoint::kPresentation;
   return std::make_unique<global_media_controls::MediaItemUIUpdatedView>(
-      id, item, media_color_theme_.value());
+      id, item, media_color_theme_.value(),
+      BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
+                          show_devices, media_color_theme_));
 }
 
 BEGIN_METADATA(MediaDialogView)

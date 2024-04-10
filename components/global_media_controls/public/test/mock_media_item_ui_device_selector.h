@@ -24,6 +24,7 @@ class MockMediaItemUIDeviceSelector : public MediaItemUIDeviceSelector {
 
   // MediaItemUIDeviceSelector:
   MOCK_METHOD(void, SetMediaItemUIView, (MediaItemUIView*));
+  MOCK_METHOD(void, SetMediaItemUIUpdatedView, (MediaItemUIUpdatedView*));
   MOCK_METHOD(void, OnColorsChanged, (SkColor, SkColor));
   MOCK_METHOD(void, UpdateCurrentAudioDevice, (const std::string&));
   MOCK_METHOD(void, ShowDevices, ());

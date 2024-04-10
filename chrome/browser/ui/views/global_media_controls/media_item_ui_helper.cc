@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
+#include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_cast_footer_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
@@ -223,11 +224,19 @@ BuildDeviceSelector(
     return nullptr;
   }
 
+  auto device_set = CreateHostAndClient(profile, id, item, device_service);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (media_color_theme.has_value()) {
+    return std::make_unique<CastDeviceSelectorView>(
+        std::move(device_set.host), std::move(device_set.client),
+        media_color_theme.value(), show_devices);
+  }
+#endif
+
   const bool is_local_media_session =
       item->GetSourceType() ==
       media_message_center::SourceType::kLocalMediaSession;
-
-  auto device_set = CreateHostAndClient(profile, id, item, device_service);
 
   return std::make_unique<MediaItemUIDeviceSelectorView>(
       id, selector_delegate, std::move(device_set.host),

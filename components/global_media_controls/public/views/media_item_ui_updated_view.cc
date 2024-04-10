@@ -36,7 +36,7 @@ constexpr int kBackgroundSeparator = 16;
 constexpr int kArtworkRowSeparator = 12;
 constexpr int kMediaInfoSeparator = 8;
 constexpr int kSourceRowSeparator = 16;
-constexpr int kSourceRowButtonContainerSeparator = 8;
+constexpr int kSourceRowButtonContainerSeparator = 4;
 constexpr int kMetadataRowSeparator = 16;
 constexpr int kMetadataColumnSeparator = 4;
 constexpr int kProgressRowSeparator = 4;
@@ -68,7 +68,8 @@ gfx::Size ScaleImageSizeToFitView(const gfx::Size& image_size,
 MediaItemUIUpdatedView::MediaItemUIUpdatedView(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    media_message_center::MediaColorTheme media_color_theme)
+    media_message_center::MediaColorTheme media_color_theme,
+    std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view)
     : id_(id), item_(std::move(item)), media_color_theme_(media_color_theme) {
   CHECK(item_);
 
@@ -128,6 +129,18 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       source_row->AddChildView(std::make_unique<views::BoxLayoutView>());
   source_row_button_container->SetBetweenChildSpacing(
       kSourceRowButtonContainerSeparator);
+
+  // Create the start casting button.
+  if (device_selector_view) {
+    start_casting_button_ = CreateMediaActionButton(
+        source_row_button_container, kEmptyMediaActionButtonId,
+        vector_icons::kCastIcon,
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
+    start_casting_button_->SetCallback(
+        base::BindRepeating(&MediaItemUIUpdatedView::StartCastingButtonPressed,
+                            base::Unretained(this)));
+    start_casting_button_->SetVisible(false);
+  }
 
   // Create the picture-in-picture button.
   picture_in_picture_button_ = CreateMediaActionButton(
@@ -213,6 +226,12 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       vector_icons::kSkipNextIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK);
 
+  // Add the device selector view below the |progress_row| if there is one.
+  if (device_selector_view) {
+    device_selector_view_ = AddChildView(std::move(device_selector_view));
+    device_selector_view_->SetMediaItemUIUpdatedView(this);
+  }
+
   item_->SetView(this);
 }
 
@@ -227,6 +246,14 @@ MediaItemUIUpdatedView::~MediaItemUIUpdatedView() {
 
 ///////////////////////////////////////////////////////////////////////////////
 // views::View implementations:
+
+void MediaItemUIUpdatedView::AddedToWidget() {
+  // Ink drop on the start casting button requires color provider to be ready,
+  // so we need to update the state after the widget is ready.
+  if (device_selector_view_) {
+    UpdateCastingState();
+  }
+}
 
 void MediaItemUIUpdatedView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
@@ -418,6 +445,60 @@ void MediaItemUIUpdatedView::SeekTo(double seek_progress) {
   item_->SeekTo(seek_progress * position_.duration());
 }
 
+void MediaItemUIUpdatedView::OnDeviceSelectorViewDevicesChanged(
+    bool has_devices) {
+  CHECK(start_casting_button_);
+  // Do not show the start casting button if this media item is being casted to
+  // another device and has a footer view of stop casting button.
+  // TODO(yrw): Add "&& !footer_view_" when it is ready.
+  bool visible = has_devices;
+  if (visible != start_casting_button_->GetVisible()) {
+    start_casting_button_->SetVisible(visible);
+    UpdateCastingState();
+  }
+}
+
+void MediaItemUIUpdatedView::StartCastingButtonPressed() {
+  CHECK(device_selector_view_);
+  if (device_selector_view_->IsDeviceSelectorExpanded()) {
+    device_selector_view_->HideDevices();
+  } else {
+    device_selector_view_->ShowDevices();
+  }
+  UpdateCastingState();
+}
+
+void MediaItemUIUpdatedView::UpdateCastingState() {
+  CHECK(start_casting_button_);
+  CHECK(device_selector_view_);
+
+  if (start_casting_button_->GetVisible()) {
+    bool is_expanded = device_selector_view_->IsDeviceSelectorExpanded();
+    if (is_expanded) {
+      // Use the ink drop color as the button background if user clicks the
+      // button to show devices.
+      views::InkDrop::Get(start_casting_button_)
+          ->GetInkDrop()
+          ->SnapToActivated();
+
+      // Indicate the user can hide the device list.
+      start_casting_button_->UpdateText(
+          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_HIDE_DEVICE_LIST);
+    } else {
+      // Hide the ink drop color if user clicks the button to hide devices.
+      views::InkDrop::Get(start_casting_button_)->GetInkDrop()->SnapToHidden();
+
+      // Indicate the user can show the device list.
+      start_casting_button_->UpdateText(
+          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
+    }
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnMediaItemUISizeChanged();
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions for testing:
 
@@ -446,6 +527,15 @@ MediaActionButton* MediaItemUIUpdatedView::GetMediaActionButtonForTesting(
 
 MediaProgressView* MediaItemUIUpdatedView::GetProgressViewForTesting() {
   return progress_view_;
+}
+
+MediaActionButton* MediaItemUIUpdatedView::GetStartCastingButtonForTesting() {
+  return start_casting_button_;
+}
+
+MediaItemUIDeviceSelector*
+MediaItemUIUpdatedView::GetDeviceSelectorForTesting() {
+  return device_selector_view_;
 }
 
 BEGIN_METADATA(MediaItemUIUpdatedView)

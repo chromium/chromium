@@ -4,11 +4,13 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 
+#include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_observer.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/mock_media_notification_item.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
@@ -16,10 +18,12 @@
 
 namespace global_media_controls {
 
+using ::global_media_controls::test::MockMediaItemUIDeviceSelector;
 using ::global_media_controls::test::MockMediaItemUIObserver;
 using ::media_message_center::test::MockMediaNotificationItem;
 using ::media_session::mojom::MediaSessionAction;
 using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace {
 
@@ -40,8 +44,12 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
 
     item_ = std::make_unique<NiceMock<MockMediaNotificationItem>>();
     widget_ = CreateTestWidget();
+    auto device_selector =
+        std::make_unique<NiceMock<MockMediaItemUIDeviceSelector>>();
+    device_selector_ = device_selector.get();
     view_ = widget_->SetContentsView(std::make_unique<MediaItemUIUpdatedView>(
-        kTestId, item_->GetWeakPtr(), media_message_center::MediaColorTheme()));
+        kTestId, item_->GetWeakPtr(), media_message_center::MediaColorTheme(),
+        std::move(device_selector)));
 
     observer_ = std::make_unique<NiceMock<MockMediaItemUIObserver>>();
     view_->AddObserver(observer_.get());
@@ -50,6 +58,7 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
 
   void TearDown() override {
     view_->RemoveObserver(observer_.get());
+    device_selector_ = nullptr;
     view_ = nullptr;
     widget_.reset();
     views::ViewsTestBase::TearDown();
@@ -83,12 +92,14 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
   MediaItemUIUpdatedView* view() { return view_; }
   MockMediaNotificationItem& item() { return *item_; }
   MockMediaItemUIObserver& observer() { return *observer_; }
+  MockMediaItemUIDeviceSelector* device_selector() { return device_selector_; }
 
  private:
   base::flat_set<MediaSessionAction> actions_;
   raw_ptr<MediaItemUIUpdatedView> view_;
   std::unique_ptr<MockMediaNotificationItem> item_;
   std::unique_ptr<MockMediaItemUIObserver> observer_;
+  raw_ptr<MockMediaItemUIDeviceSelector> device_selector_;
   std::unique_ptr<views::Widget> widget_;
 };
 
@@ -218,6 +229,47 @@ TEST_F(MediaItemUIUpdatedViewTest, MediaActionButtonPressed) {
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
                           MediaSessionAction::kNextTrack));
   SimulateButtonClick(MediaSessionAction::kNextTrack);
+}
+
+TEST_F(MediaItemUIUpdatedViewTest, DeviceSelectorViewCheck) {
+  EXPECT_NE(view()->GetStartCastingButtonForTesting(), nullptr);
+  EXPECT_FALSE(view()->GetStartCastingButtonForTesting()->GetVisible());
+  EXPECT_EQ(view()->GetDeviceSelectorForTesting(), device_selector());
+
+  // Add devices to the list to show the start casting button.
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(false));
+  EXPECT_CALL(observer(), OnMediaItemUISizeChanged());
+  view()->OnDeviceSelectorViewDevicesChanged(/*has_devices=*/true);
+  EXPECT_TRUE(view()->GetStartCastingButtonForTesting()->GetVisible());
+
+  // Click the start casting button to show devices.
+  EXPECT_CALL(*device_selector(), ShowDevices());
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
+  EXPECT_CALL(observer(), OnMediaItemUISizeChanged());
+  views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_EQ(views::InkDropState::ACTIVATED,
+            views::InkDrop::Get(view()->GetStartCastingButtonForTesting())
+                ->GetInkDrop()
+                ->GetTargetInkDropState());
+
+  // Click the start casting button to hide devices.
+  EXPECT_CALL(*device_selector(), HideDevices());
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(true))
+      .WillOnce(Return(false));
+  EXPECT_CALL(observer(), OnMediaItemUISizeChanged());
+  views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_EQ(views::InkDropState::HIDDEN,
+            views::InkDrop::Get(view()->GetStartCastingButtonForTesting())
+                ->GetInkDrop()
+                ->GetTargetInkDropState());
 }
 
 }  // namespace global_media_controls

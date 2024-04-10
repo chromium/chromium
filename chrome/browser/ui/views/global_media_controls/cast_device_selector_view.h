@@ -13,7 +13,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace global_media_controls {
-class MediaItemUIView;
+class MediaItemUIUpdatedView;
 }  // namespace global_media_controls
 
 namespace views {
@@ -41,8 +41,8 @@ class CastDeviceSelectorView
   ~CastDeviceSelectorView() override;
 
   // global_media_controls::MediaItemUIDeviceSelector:
-  void SetMediaItemUIView(
-      global_media_controls::MediaItemUIView* view) override;
+  void SetMediaItemUIUpdatedView(
+      global_media_controls::MediaItemUIUpdatedView* view) override;
   void OnColorsChanged(SkColor foreground_color,
                        SkColor background_color) override {}
   void UpdateCurrentAudioDevice(const std::string& current_device_id) override {
@@ -60,8 +60,13 @@ class CastDeviceSelectorView
 
   void OnCastDeviceSelected(const std::string& device_id);
 
+  // Update the visibility of the whole view which changes its size too.
+  void UpdateVisibility();
+
   bool is_expanded_ = false;
-  raw_ptr<global_media_controls::MediaItemUIView> media_item_ui_view_ = nullptr;
+
+  raw_ptr<global_media_controls::MediaItemUIUpdatedView>
+      media_item_ui_updated_view_ = nullptr;
 
   raw_ptr<views::BoxLayoutView> device_container_view_ = nullptr;
 
