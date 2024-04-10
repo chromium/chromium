@@ -12,10 +12,10 @@ import '../shared/step_indicator.js';
 import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isRTL} from 'chrome://resources/js/util.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
 import type {BookmarkProxy} from '../shared/bookmark_proxy.js';
@@ -100,11 +100,6 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
     this.bookmarkBarManager_ = BookmarkBarManager.getInstance();
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-    afterNextRender(this, () => IronA11yAnnouncer.requestAvailability());
-  }
-
   override onRouteEnter() {
     this.finalized_ = false;
     this.metricsManager_.recordPageInitialized();
@@ -153,8 +148,7 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
   }
 
   private announceA11y_(text: string) {
-    this.dispatchEvent(new CustomEvent(
-        'iron-announce', {bubbles: true, composed: true, detail: {text}}));
+    getAnnouncerInstance().announce(text);
   }
 
   /**
