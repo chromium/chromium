@@ -1167,6 +1167,15 @@
 <translation id="773153675489693198">Liczba cykli</translation>
 <translation id="7746357909584236306">do edycji</translation>
 <translation id="7747039790905080783">Klucz wstępny</translation>
+<translation id="7748162180830414915">Wybierz motyw, a następnie podkreślone słowa, aby spersonalizować obrazy AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />Wybierz „Zainspiruj mnie”, aby uzyskać dostęp do bardziej unikalnych i zróżnicowanych opcji obrazów AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Gdy tworzysz treści za pomocą AI, prompt jest wysyłany na serwery AI od Google w celu wygenerowania obrazów oraz użycia go ulepszania usługi, zgodnie z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Polityką prywatności Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatywna AI to funkcja eksperymentalna, która znajduje się we wczesnej fazie rozwoju i obecnie jest dostępna z ograniczeniami. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7752963721013053477">Od świtu do zmierzchu – na wyłączność</translation>
 <translation id="7762130827864645708">Hasło zostało zmienione. Od teraz używaj nowego hasła.</translation>
 <translation id="7763470514545477072">Dopasowanie sufiksu domeny</translation>
@@ -1200,6 +1209,7 @@
 <translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7943235353293548836">Trwały odstęp utrzymywania aktywności</translation>
+<translation id="7943516765291457328">Włącz Bluetooth, aby skanować w poszukiwaniu hotspotów w pobliżu</translation>
 <translation id="7944562637040950644">przełącz podświetlenie klawiatury</translation>
 <translation id="7953669802889559161">Metody wprowadzania</translation>
 <translation id="7955587717700691983">Klawiatura Bluetooth</translation>
@@ -1329,6 +1339,7 @@
 <translation id="8747900814994928677">Potwierdź zmianę</translation>
 <translation id="8749478549112817787">Tło aparatu</translation>
 <translation id="8755946156089753497">wieży</translation>
+<translation id="8756235582947991808">Jak tworzyć treści z wykorzystaniem AI i o czym trzeba pamiętać</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Zdjęcia Google</translation>
 <translation id="8775713578693478175">APN modemu</translation>

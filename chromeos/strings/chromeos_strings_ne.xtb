@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
-<translation id="1003363546227723021">मेरो स्क्रिन निष्क्रिय अवस्थामा हुँदा फोटो, समय, मौसम र मिडियासम्बन्धी जानकारी देखाइयोस्</translation>
+<translation id="1003363546227723021">मेरो स्क्रिन निष्क्रिय अवस्थामा हुँदा फोटो, समय, मौसम र मिडियासम्बन्धी जानकारी देखाउनुहोस्</translation>
 <translation id="1014750484722996375">डेस्कहरू</translation>
 <translation id="1018219910092211213">DNS समाधान गर्न सकिएन</translation>
 <translation id="1018656279737460067">रद्द गरियो</translation>
@@ -492,7 +492,7 @@
 <translation id="387301095347517405">तपाईंको डिभाइसको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
 <translation id="3877066159641251281">अनुवादित टेक्स्ट सुन्नुहोस्</translation>
 <translation id="3885327323343477505">स्क्रिन सेभर बदल्नुहोस्</translation>
-<translation id="3889914174935857450">मिति रिसेट गरियोस्</translation>
+<translation id="3889914174935857450">मिति रिसेट गर्नुहोस्</translation>
 <translation id="3897092660631435901">मेनु</translation>
 <translation id="391412459402535266">डिभाइसको परीक्षण गर्न सकिँदैन। परीक्षण गर्न ल्यापटप मोड प्रयोग गर्नुहोस्।</translation>
 <translation id="3916998944874125962">"स्क्रिनसट लिनुहोस्" जनाउने आइकन</translation>
@@ -776,7 +776,7 @@
 <translation id="554067135846762198">कोरल र ट्यान</translation>
 <translation id="5543701552415191873">लक गरिएको छ</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5559898619118303662">सूर्यास्तपछि स्वतः अँध्यारो थिम लागू गरियोस्</translation>
+<translation id="5559898619118303662">सूर्यास्तपछि स्वतः अँध्यारो थिम लागू गर्नुहोस्</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> को सेड भएको <ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -906,7 +906,7 @@
 <translation id="6283581480003247988">निलो र बैजनी</translation>
 <translation id="6284632978374966585">अँध्यारो थिम अन गर्नुहोस्‌</translation>
 <translation id="628726841779494414">प्रिन्टरसम्बन्धी सेटिङमा गई आफ्ना प्रिन्टरहरू व्यवस्थापन गर्नुहोस्</translation>
-<translation id="6292095526077353682">चार्ज भइरहेका बेला निम्न अवधिका लागि स्क्रिनसेभर देखाइयोस्</translation>
+<translation id="6292095526077353682">चार्ज भइरहेका बेला निम्न अवधिका लागि स्क्रिनसेभर देखाउनुहोस्</translation>
 <translation id="629550705077076970">किबोर्डको ब्याकलाइटको चमक कम गर्नुहोस्</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> परीक्षण रद्द गरिएको छ</translation>
 <translation id="631063167932043783">एक्स्प्लोर एप</translation>
@@ -1120,7 +1120,7 @@
 <translation id="7401543881546089382">शर्टकट मेटाउनुहोस्</translation>
 <translation id="741244894080940828">रूपान्तरण</translation>
 <translation id="7415801143053185905">HTTP को विलम्बता अति धेरै छ</translation>
-<translation id="7425037327577270384">मलाई लेख्न मद्दत गरियोस्</translation>
+<translation id="7425037327577270384">मलाई लेख्न मद्दत गर्नुहोस्</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">यो APN अफ गर्न वा हटाउन मिल्दैन। अन गरिएका <ph name="ATTACH" /> APN हरू अफ गरिएका वा हटाइएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="7458970041932198923">अवतारहरू हेर्न र सेट गर्न इन्टरनेटमा कनेक्ट गर्नुहोस् र यो पेज रिलोड गर्नुहोस्।</translation>
@@ -1169,6 +1169,16 @@
 <translation id="773153675489693198">साइकल काउन्ट</translation>
 <translation id="7746357909584236306">सम्पादन गर्न मिल्छ</translation>
 <translation id="7747039790905080783">अग्रिम रूपमा सेयर गरिएको की</translation>
+<translation id="7748162180830414915">आफ्ना AI फोटोहरू पर्सनलाइज गर्न कुनै थिम रोज्नुहोस् अनि अन्डरलाइन गरिएका शब्दहरू चयन गर्नुहोस्।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI फोटोका अझ धेरै अद्वितीय तथा विविधतायुक्त विकल्पहरू प्राप्त गर्न "मलाई कुनै प्रेरणादायी कुरा बताऊ" चयन गर्नुहोस्।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          तपाईंले AI प्रयोग गरी फोटो बनाउँदा फोटोहरू बनाउने र उत्पादनको गुणस्तर सुधार गर्ने प्रयोजनका लागि तपाईंको प्रम्प्ट <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google को गोपनीयता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />बमोजिम Google AI का सर्भरमा पठाइन्छ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          जेनेरेटिभ AI परीक्षणकै क्रममा छ, पूर्ण रूपमा तयार भइसकेको छैन र हाल सीमित रूपमा उपलब्ध छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7752963721013053477">डन टु डार्क - विशेष</translation>
 <translation id="7762130827864645708">तपाईंको पासवर्ड परिवर्तन गरिएको छ। कृपया अबदेखि नयाँ पासवर्ड प्रयोग गर्नुहोस्।</translation>
 <translation id="7763470514545477072">डोमेन सफिक्ससँग मिल्दोजुल्दो</translation>
@@ -1202,6 +1212,7 @@
 <translation id="7936303884198020182">कुनै पनि डोमेन नेम सर्भर फेला परेन</translation>
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7943235353293548836">पर्सिस्टेन्ट किपअलाइभ इन्टर्भल</translation>
+<translation id="7943516765291457328">नजिकैका हटस्पटहरू स्क्यान गर्न ब्लुटुथ अन गर्नुहोस्</translation>
 <translation id="7944562637040950644">"किबोर्ड ब्याकलाइट टगल गर्नुहोस्" जनाउने आइकन</translation>
 <translation id="7953669802889559161">इनपुटहरू</translation>
 <translation id="7955587717700691983">ब्लुटुथ भएको किबोर्ड</translation>
@@ -1331,6 +1342,7 @@
 <translation id="8747900814994928677">परिवर्तनको पुष्टि गर्नुहोस्</translation>
 <translation id="8749478549112817787">क्यामेराको ब्याकग्राउन्ड</translation>
 <translation id="8755946156089753497">टावर</translation>
+<translation id="8756235582947991808">AI प्रयोग गरी फोटो बनाउने तरिका र ध्यान दिनु पर्ने केही कुराहरू</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos को एल्बम</translation>
 <translation id="8775713578693478175">मोडेम APN</translation>

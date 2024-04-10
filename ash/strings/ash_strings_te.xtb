@@ -230,7 +230,7 @@
 <translation id="1882814835921407042">మొబైల్ నెట్‌వర్క్ ఏదీ అందుబాటులో లేదు</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />కు మిర్రరింగ్ చేస్తోంది</translation>
 <translation id="1885785240814121742">వేలిముద్రతో అన్‌లాక్ చేయండి</translation>
-<translation id="1894024878080591367">మీ కీబోర్డ్‌తో ప్లే చేయడానికి సెటప్ చేయండి</translation>
+<translation id="1894024878080591367">మీ కీబోర్డ్‌తో ఆడేందుకు సెటప్ చేయండి</translation>
 <translation id="1904997243703671177">మీరు బ్లూటూత్‌ను ఆఫ్ చేసినప్పుడు, <ph name="DEVICE_COUNT" /> వెలుపలి పరికరాలు మీ <ph name="DEVICE_TYPE" /> నుండి డిస్‌కనెక్ట్ చేయబడతాయి, వీటితో సహా:</translation>
 <translation id="1908992311423394684">కొత్తగా ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="1915307458270490472">కాల్‌ను ముగించు</translation>
@@ -635,7 +635,7 @@
 <translation id="3560174576767922131">వీడియోను రికార్డ్ చేయండి</translation>
 <translation id="3563775809269155755">హాట్‌స్పాట్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="3566240529365775567">ఇప్పుడే తెరిచారు</translation>
-<translation id="3571734092741541777">సెటప్ చేయి</translation>
+<translation id="3571734092741541777">సెటప్ చేయండి</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"కు వెనుక‌కు మార్చండి (పునఃప్రారంభం అవసరం)</translation>
 <translation id="3576141592585647168">సమయ మండలిని మార్చండి</translation>
 <translation id="3577473026931028326">ఏదో తప్పు జరిగింది. మళ్లీ ట్రై చేయండి.</translation>
@@ -1030,7 +1030,7 @@
 <translation id="4981175556418720939"><ph name="DATE_AND_TIME" />న ఎడిట్ చేయబడింది</translation>
 <translation id="4987738733603015246">డెస్క్ 16</translation>
 <translation id="4989163558385430922">అన్నీ చూడండి</translation>
-<translation id="4995963195354861331">స్వాగత డైలాగ్</translation>
+<translation id="4995963195354861331">వెల్‌కమ్ డైలాగ్</translation>
 <translation id="4996265698919320288">రికార్డ్ అవుతోంది</translation>
 <translation id="5003993274120026347">తర్వాతి వాక్యం</translation>
 <translation id="5004607513195820459">నెట్‌వర్క్ మేనేజ్ చేయబడుతోంది</translation>

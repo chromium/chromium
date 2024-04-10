@@ -226,6 +226,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1864454756846565995">Urządzenie USB-C (tylny port)</translation>
 <translation id="1869497990620230175">Szybkie pliki</translation>
 <translation id="1871023081802165724">Odtwórz multimedia</translation>
+<translation id="1871915835366697861">Funkcja niedostępna w przypadku tej gry</translation>
 <translation id="1879018240766558464">Okna incognito nie są obecnie obsługiwane. Inne aplikacje zostaną zapisane.</translation>
 <translation id="1882814835921407042">Brak sieci komórkowej</translation>
 <translation id="1882897271359938046">Kopia na <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="79341161159229895">Kontem zarządzają <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Naciśnij <ph name="SHORTCUT_KEY_NAME" /> + V, by przejrzeć zawartość schowka. Znajdziesz tam ostatnie 5 skopiowanych elementów.</translation>
 <translation id="7942349550061667556">Czerwony</translation>
+<translation id="7943516765291457328">Włącz Bluetooth, aby skanować w poszukiwaniu hotspotów w pobliżu</translation>
 <translation id="7944023924886109030">Zobacz wszystkie dzisiejsze wydarzenia</translation>
 <translation id="7945357288295809525">Pokaż ustawienia ułatwień dostępu, włączono „<ph name="ENABLED_FEATURES" />”.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> chce użyć urządzenia <ph name="DEVICE_NAME" /></translation>
