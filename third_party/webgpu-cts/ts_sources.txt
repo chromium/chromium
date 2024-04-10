@@ -756,6 +756,7 @@ src/webgpu/shader/validation/expression/call/builtin/dot4I8Packed.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/dot4U8Packed.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/exp.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/exp2.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/extractBits.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/faceForward.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/firstLeadingBit.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/firstTrailingBit.spec.ts
@@ -791,6 +792,7 @@ src/webgpu/shader/validation/expression/call/builtin/smoothstep.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/step.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/tan.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/tanh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureGather.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureGatherCompare.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureLoad.spec.ts
