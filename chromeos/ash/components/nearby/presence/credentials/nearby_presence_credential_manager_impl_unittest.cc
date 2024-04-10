@@ -34,7 +34,6 @@
 
 namespace {
 
-const std::string kUserEmail = "testtester@gmail.com";
 const std::string kDeviceName = "Test's Chromebook";
 const std::string kUserName = "Test Tester";
 const std::string kProfileUrl = "https://example.com";
@@ -45,6 +44,11 @@ std::vector<base::TimeDelta> kUpdateCredentialCoolDownPeriods = {
     base::Seconds(0), base::Seconds(15), base::Seconds(30), base::Minutes(1),
     base::Minutes(2), base::Minutes(5),  base::Minutes(10)};
 constexpr int kServerCommunicationMaxAttempts = 5;
+const std::vector<uint8_t> kBluetoothMacAddress = {0x12, 0x34, 0x56,
+                                                   0x78, 0x9a, 0xbc};
+const std::vector<uint8_t> kMetadataDeviceId = {
+    0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+    0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
 const long kId1 = 111;
 const long kId2 = 222;
 const long kId3 = 333;
@@ -74,14 +78,14 @@ BuildSharedCredentials() {
   return shared_credentials;
 }
 
-::nearby::internal::Metadata BuildTestMetadata() {
+::nearby::internal::DeviceIdentityMetaData BuildTestMetadata() {
   return ash::nearby::presence::proto::BuildMetadata(
       /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS,
-      /*account_name=*/kUserEmail,
       /*device_name=*/kDeviceName,
-      /*user_name=*/kUserName,
-      /*profile_url=*/kProfileUrl,
-      /*mac_address=*/std::string());
+      /*bluetooth_mac_address=*/
+      std::string(kBluetoothMacAddress.begin(), kBluetoothMacAddress.end()),
+      /*device_id=*/
+      std::string(kMetadataDeviceId.begin(), kMetadataDeviceId.end()));
 }
 
 }  // namespace
@@ -133,6 +137,10 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
 
     // Simulate first time registration flow.
     fake_local_device_data_provider_->SetRegistrationComplete(false);
+
+    // Even before registration, the LocalDeviceDataProvider can provide
+    // all fields in its Metadata. Simulate that.
+    fake_local_device_data_provider_->SetDeviceMetadata(BuildTestMetadata());
 
     // Simulate the device id which will be generated in a call to
     // |GetDeviceId|.
@@ -223,7 +231,6 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
   void SimulateDeviceAlreadyRegistered() {
     // Simulate that it is not first time registration flow.
     fake_local_device_data_provider_->SetRegistrationComplete(true);
-    fake_local_device_data_provider_->SetDeviceMetadata(BuildTestMetadata());
     fake_local_device_data_provider_->SaveUserRegistrationInfo(
         /*display_name=*/kUserName, /*image_url=*/kProfileUrl);
   }
@@ -350,12 +357,11 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, SetDeviceMetadata) {
 
   auto* local_device_metadata = fake_nearby_presence_.GetLocalDeviceMetadata();
   EXPECT_TRUE(local_device_metadata);
-  EXPECT_EQ(kProfileUrl, local_device_metadata->device_profile_url);
-  EXPECT_EQ(kUserName, local_device_metadata->user_name);
-  EXPECT_EQ(kUserEmail, local_device_metadata->account_name);
   EXPECT_EQ(mojom::PresenceDeviceType::kChromeos,
             local_device_metadata->device_type);
   EXPECT_EQ(kDeviceName, local_device_metadata->device_name);
+  EXPECT_EQ(kBluetoothMacAddress, local_device_metadata->bluetooth_mac_address);
+  EXPECT_EQ(kMetadataDeviceId, local_device_metadata->device_id);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, RegistrationSuccess) {

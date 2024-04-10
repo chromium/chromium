@@ -10,7 +10,7 @@
 
 namespace nearby::internal {
 class SharedCredential;
-class Metadata;
+class DeviceIdentityMetaData;
 }  // namespace nearby::internal
 
 namespace ash::nearby::presence {
@@ -33,12 +33,12 @@ class LocalDeviceDataProvider {
       const std::vector<::nearby::internal::SharedCredential>&
           new_shared_credentials) = 0;
 
-  // Returns the unique device identifier if it exists. If not,generates a
+  // Returns the unique device identifier if it exists. If not, generates a
   // unique device identifier, persists to prefs, and returns it.
   virtual std::string GetDeviceId() = 0;
 
-  // Constructs and returns a Metadata object for the local device.
-  virtual ::nearby::internal::Metadata GetDeviceMetadata() = 0;
+  // Constructs and returns metadata for the local device.
+  virtual ::nearby::internal::DeviceIdentityMetaData GetDeviceMetadata() = 0;
 
   // Returns the cacancolized account name for the user.
   virtual std::string GetAccountName() = 0;

@@ -138,13 +138,14 @@ ash::nearby::presence::mojom::ActionType ActionTypeToMojom(uint32_t action) {
 }
 
 ash::nearby::presence::mojom::MetadataPtr MetadataToMojom(
-    ::nearby::internal::Metadata metadata) {
+    ::nearby::internal::DeviceIdentityMetaData metadata) {
   return ash::nearby::presence::mojom::Metadata::New(
       ash::nearby::presence::proto::DeviceTypeToMojom(metadata.device_type()),
-      metadata.account_name(), metadata.device_name(), metadata.user_name(),
-      metadata.device_profile_url(),
+      metadata.device_name(),
       std::vector<uint8_t>(metadata.bluetooth_mac_address().begin(),
-                           metadata.bluetooth_mac_address().end()));
+                           metadata.bluetooth_mac_address().end()),
+      std::vector<uint8_t>(metadata.device_id().begin(),
+                           metadata.device_id().end()));
 }
 
 ash::nearby::presence::mojom::CredentialType CredentialTypeToMojom(
@@ -210,7 +211,8 @@ ash::nearby::presence::mojom::PresenceDevicePtr BuildPresenceMojomDevice(
 
   return ash::nearby::presence::mojom::PresenceDevice::New(
       device.GetEndpointId(), std::move(actions),
-      /*stable_device_id=*/std::nullopt, MetadataToMojom(device.GetMetadata()),
+      /*stable_device_id=*/std::nullopt,
+      MetadataToMojom(device.GetDeviceIdentityMetadata()),
       device.GetDecryptSharedCredential()
           ? SharedCredentialToMojom(device.GetDecryptSharedCredential().value())
           : nullptr);

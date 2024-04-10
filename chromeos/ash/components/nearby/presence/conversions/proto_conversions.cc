@@ -8,21 +8,16 @@
 
 namespace ash::nearby::presence::proto {
 
-::nearby::internal::Metadata BuildMetadata(
+::nearby::internal::DeviceIdentityMetaData BuildMetadata(
     ::nearby::internal::DeviceType device_type,
-    const std::string& account_name,
     const std::string& device_name,
-    const std::string& user_name,
-    const std::string& profile_url,
-    const std::string& mac_address) {
-  ::nearby::internal::Metadata proto;
+    const std::string& mac_address,
+    const std::string& device_id) {
+  ::nearby::internal::DeviceIdentityMetaData proto;
   proto.set_device_type(device_type);
-  proto.set_account_name(account_name);
-  proto.set_user_name(user_name);
   proto.set_device_name(device_name);
-  proto.set_user_name(user_name);
-  proto.set_device_profile_url(profile_url);
   proto.set_bluetooth_mac_address(mac_address);
+  proto.set_device_id(device_id);
   return proto;
 }
 
@@ -87,13 +82,14 @@ mojom::PrivateKeyPtr PrivateKeyToMojom(
   }
 }
 
-mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata) {
+mojom::MetadataPtr MetadataToMojom(
+    ::nearby::internal::DeviceIdentityMetaData metadata) {
   return mojom::Metadata::New(
-      DeviceTypeToMojom(metadata.device_type()), metadata.account_name(),
-      metadata.device_name(), metadata.user_name(),
-      metadata.device_profile_url(),
+      DeviceTypeToMojom(metadata.device_type()), metadata.device_name(),
       std::vector<uint8_t>(metadata.bluetooth_mac_address().begin(),
-                           metadata.bluetooth_mac_address().end()));
+                           metadata.bluetooth_mac_address().end()),
+      std::vector<uint8_t>(metadata.device_id().begin(),
+                           metadata.device_id().end()));
 }
 
 ::nearby::internal::LocalCredential::PrivateKey PrivateKeyFromMojom(

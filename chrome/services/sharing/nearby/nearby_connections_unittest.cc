@@ -55,10 +55,10 @@ const char kFastAdvertisementServiceUuid[] =
 const char kEndpointId[] = "ABCD";
 const size_t kEndpointIdLength = 4u;
 const char kEndpointInfo[] = {0x0d, 0x07, 0x07, 0x07, 0x07};
-const char kAccountName[] = "criscros@gmail.com";
-const char kUserName[] = "CrisCrOS";
 const char kDeviceName[] = "Cris Cros's Pixel";
-const char kDeviceProfileUrl[] = "cris_cros_url";
+const std::vector<uint8_t> kDeviceId = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab,
+                                        0xcd, 0xef, 0x01, 0x23, 0x45, 0x67,
+                                        0x89, 0xab, 0xcd, 0xef};
 const char kRemoteEndpointInfo[] = {0x0d, 0x07, 0x06, 0x08, 0x09};
 const char kAuthenticationToken[] = "authentication_token";
 const char kRawAuthenticationToken[] = {0x00, 0x05, 0x04, 0x03, 0x02};
@@ -120,14 +120,12 @@ const EndpointData CreateEndpointData(int id) {
   return endpoint_data;
 }
 
-nearby::internal::Metadata CreateMetadata() {
-  nearby::internal::Metadata metadata;
+nearby::internal::DeviceIdentityMetaData CreateMetadata() {
+  nearby::internal::DeviceIdentityMetaData metadata;
   metadata.set_device_type(nearby::internal::DeviceType::DEVICE_TYPE_PHONE);
-  metadata.set_account_name(kAccountName);
-  metadata.set_user_name(kUserName);
   metadata.set_device_name(kDeviceName);
-  metadata.set_device_profile_url(kDeviceProfileUrl);
   metadata.set_bluetooth_mac_address((char*)kBluetoothMacAddress);
+  metadata.set_device_id(std::string(kDeviceId.begin(), kDeviceId.end()));
   return metadata;
 }
 
@@ -700,6 +698,26 @@ class NearbyConnectionsTest : public testing::Test {
           reject_connection_run_loop.Quit();
         }));
     reject_connection_run_loop.Run();
+  }
+
+  void VerifyRemoteDevice(
+      const PresenceDevicePtr& remote_device,
+      const nearby::presence::PresenceDevice& expected_device) {
+    EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
+    EXPECT_EQ(remote_device->metadata->device_name,
+              expected_device.GetDeviceIdentityMetadata().device_name());
+
+    auto mac_addr_str =
+        std::string(remote_device->metadata->bluetooth_mac_address.begin(),
+                    remote_device->metadata->bluetooth_mac_address.end());
+    EXPECT_EQ(
+        mac_addr_str,
+        expected_device.GetDeviceIdentityMetadata().bluetooth_mac_address());
+
+    auto device_id_str = std::string(remote_device->metadata->device_id.begin(),
+                                     remote_device->metadata->device_id.end());
+    EXPECT_EQ(device_id_str,
+              expected_device.GetDeviceIdentityMetadata().device_id());
   }
 
  protected:
@@ -1620,7 +1638,7 @@ TEST_F(NearbyConnectionsTest, ReceiveStreamPayload) {
 
 TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
   nearby::presence::PresenceDevice presence_device(kEndpointId);
-  presence_device.SetMetadata(CreateMetadata());
+  presence_device.SetDeviceIdentityMetaData(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1631,15 +1649,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
   fake_connection_listener_v3.initiated_cb =
       base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
                                      mojom::InitialConnectionInfoV3Ptr info) {
-        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
-        EXPECT_EQ(remote_device->metadata->device_name,
-                  presence_device.GetMetadata().device_name());
-        EXPECT_EQ(remote_device->metadata->account_name,
-                  presence_device.GetMetadata().account_name());
-        EXPECT_EQ(remote_device->metadata->user_name,
-                  presence_device.GetMetadata().user_name());
-        EXPECT_EQ(remote_device->metadata->device_profile_url,
-                  presence_device.GetMetadata().device_profile_url());
+        VerifyRemoteDevice(remote_device, presence_device);
         EXPECT_EQ(info->authentication_status,
                   mojom::AuthenticationStatus::kSuccess);
 
@@ -1654,7 +1664,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
 
 TEST_F(NearbyConnectionsTest, RequestConnectionV3FailtoAuthenticate) {
   nearby::presence::PresenceDevice presence_device(kEndpointId);
-  presence_device.SetMetadata(CreateMetadata());
+  presence_device.SetDeviceIdentityMetaData(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1665,15 +1675,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3FailtoAuthenticate) {
   fake_connection_listener_v3.initiated_cb =
       base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
                                      mojom::InitialConnectionInfoV3Ptr info) {
-        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
-        EXPECT_EQ(remote_device->metadata->device_name,
-                  presence_device.GetMetadata().device_name());
-        EXPECT_EQ(remote_device->metadata->account_name,
-                  presence_device.GetMetadata().account_name());
-        EXPECT_EQ(remote_device->metadata->user_name,
-                  presence_device.GetMetadata().user_name());
-        EXPECT_EQ(remote_device->metadata->device_profile_url,
-                  presence_device.GetMetadata().device_profile_url());
+        VerifyRemoteDevice(remote_device, presence_device);
         EXPECT_EQ(info->authentication_status,
                   mojom::AuthenticationStatus::kFailure);
 
@@ -1688,7 +1690,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3FailtoAuthenticate) {
 
 TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
   nearby::presence::PresenceDevice presence_device(kEndpointId);
-  presence_device.SetMetadata(CreateMetadata());
+  presence_device.SetDeviceIdentityMetaData(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1699,15 +1701,7 @@ TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
   fake_connection_listener_v3.initiated_cb =
       base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
                                      mojom::InitialConnectionInfoV3Ptr info) {
-        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
-        EXPECT_EQ(remote_device->metadata->device_name,
-                  presence_device.GetMetadata().device_name());
-        EXPECT_EQ(remote_device->metadata->account_name,
-                  presence_device.GetMetadata().account_name());
-        EXPECT_EQ(remote_device->metadata->user_name,
-                  presence_device.GetMetadata().user_name());
-        EXPECT_EQ(remote_device->metadata->device_profile_url,
-                  presence_device.GetMetadata().device_profile_url());
+        VerifyRemoteDevice(remote_device, presence_device);
         EXPECT_EQ(info->authentication_status,
                   mojom::AuthenticationStatus::kSuccess);
 
@@ -1738,7 +1732,7 @@ TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
 
 TEST_F(NearbyConnectionsTest, RejectConnectionV3) {
   nearby::presence::PresenceDevice presence_device(kEndpointId);
-  presence_device.SetMetadata(CreateMetadata());
+  presence_device.SetDeviceIdentityMetaData(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1756,7 +1750,7 @@ TEST_F(NearbyConnectionsTest, RejectConnectionV3) {
 
 TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
   nearby::presence::PresenceDevice presence_device(kEndpointId);
-  presence_device.SetMetadata(CreateMetadata());
+  presence_device.SetDeviceIdentityMetaData(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1767,14 +1761,7 @@ TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
   fake_connection_listener_v3.initiated_cb =
       base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
                                      mojom::InitialConnectionInfoV3Ptr info) {
-        EXPECT_EQ(remote_device->metadata->device_name,
-                  presence_device.GetMetadata().device_name());
-        EXPECT_EQ(remote_device->metadata->account_name,
-                  presence_device.GetMetadata().account_name());
-        EXPECT_EQ(remote_device->metadata->user_name,
-                  presence_device.GetMetadata().user_name());
-        EXPECT_EQ(remote_device->metadata->device_profile_url,
-                  presence_device.GetMetadata().device_profile_url());
+        VerifyRemoteDevice(remote_device, presence_device);
         EXPECT_EQ(info->authentication_status,
                   mojom::AuthenticationStatus::kSuccess);
 
@@ -1837,7 +1824,7 @@ TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
 
 TEST_F(NearbyConnectionsTest, BandwidthChangedV3CallbackSucceeds) {
   nearby::presence::PresenceDevice presence_device(kEndpointId);
-  presence_device.SetMetadata(CreateMetadata());
+  presence_device.SetDeviceIdentityMetaData(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,

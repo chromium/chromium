@@ -19,8 +19,10 @@ namespace ash::nearby::presence {
 mojom::PresenceDeviceType DeviceTypeToMojom(
     ::nearby::internal::DeviceType device_type);
 
-::nearby::internal::Metadata MetadataFromMojom(mojom::Metadata* metadata);
-mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata);
+::nearby::internal::DeviceIdentityMetaData MetadataFromMojom(
+    mojom::Metadata* metadata);
+mojom::MetadataPtr MetadataToMojom(
+    ::nearby::internal::DeviceIdentityMetaData metadata);
 
 mojom::IdentityType ConvertIdentityTypeToMojom(
     ::nearby::internal::IdentityType identity_type);
