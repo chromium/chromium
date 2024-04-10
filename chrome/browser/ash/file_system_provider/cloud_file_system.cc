@@ -74,14 +74,14 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         ProvidedFileSystemObserver::Changes changes) {
-  if (changes.empty()) {
+                         ProvidedFileSystemObserver::Changes* changes) {
+  if (!changes) {
     return out << "none";
   }
-  for (size_t i = 0; i < changes.size(); ++i) {
-    const auto& [entry_path, change_type] = changes[i];
+  for (size_t i = 0; i < changes->size(); ++i) {
+    const auto& [entry_path, change_type] = (*changes)[i];
     out << entry_path << ": " << change_type;
-    if (i < changes.size() - 1) {
+    if (i < changes->size() - 1) {
       out << ", ";
     }
   }
@@ -449,9 +449,7 @@ void CloudFileSystem::Notify(
     storage::AsyncFileUtil::StatusCallback callback) {
   VLOG(2) << "Notify {fsid = '" << GetFileSystemId() << "', recursive = '"
           << recursive << "', change_type = '" << change_type << "', tag = '"
-          << tag << "', changes = {"
-          << (changes ? *changes : ProvidedFileSystemObserver::Changes())
-          << "}}";
+          << tag << "', changes = {" << changes.get() << "}}";
   return file_system_->Notify(entry_path, recursive, change_type,
                               std::move(changes), tag, std::move(callback));
 }

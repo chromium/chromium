@@ -6,9 +6,13 @@
 
 namespace ash::file_system_provider {
 
-ProvidedFileSystemObserver::Change::Change()
-    : change_type(storage::WatcherManager::CHANGED) {
-}
+ProvidedFileSystemObserver::Change::Change(
+    base::FilePath entry_path,
+    storage::WatcherManager::ChangeType change_type)
+    : entry_path(entry_path),
+      change_type(change_type) {}
+
+ProvidedFileSystemObserver::Change::Change(Change&&) = default;
 
 ProvidedFileSystemObserver::Change::~Change() = default;
 

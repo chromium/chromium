@@ -27,7 +27,16 @@ class ProvidedFileSystemObserver {
 
   // Describes a change related to a watched entry.
   struct Change {
-    Change();
+    Change(base::FilePath entry_path,
+           storage::WatcherManager::ChangeType change_type);
+
+    // Not copyable.
+    Change(const Change&) = delete;
+    Change& operator=(const Change&) = delete;
+
+    // Movable
+    Change(Change&&);
+
     ~Change();
 
     base::FilePath entry_path;

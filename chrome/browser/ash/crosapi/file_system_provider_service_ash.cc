@@ -205,10 +205,8 @@ storage::WatcherManager::ChangeType ParseChangeType(mojom::FSPChangeType type) {
 
 // Convert the change from the mojom type to a native type.
 ProvidedFileSystemObserver::Change ParseChange(mojom::FSPChangePtr change) {
-  ProvidedFileSystemObserver::Change result;
-  result.entry_path = change->path;
-  result.change_type = ParseChangeType(change->type);
-  return result;
+  return ProvidedFileSystemObserver::Change(
+      change->path, ParseChangeType(change->type));
 }
 
 // Converts a list of child changes from the mojom type to a native type.
