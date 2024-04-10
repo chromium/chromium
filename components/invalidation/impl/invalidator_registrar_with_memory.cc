@@ -31,17 +31,6 @@ constexpr char kDeprecatedSyncInvalidationGCMSenderId[] = "8181035976";
 constexpr char kHandler[] = "handler";
 constexpr char kIsPublic[] = "is_public";
 
-std::optional<TopicData> FindAnyDuplicatedTopic(
-    const std::set<TopicData>& lhs,
-    const std::set<TopicData>& rhs) {
-  auto intersection =
-      base::STLSetIntersection<std::vector<TopicData>>(lhs, rhs);
-  if (!intersection.empty()) {
-    return intersection[0];
-  }
-  return std::nullopt;
-}
-
 std::string DumpRegisteredHandlers(
     const base::ObserverList<InvalidationHandler, true>& handlers) {
   if (handlers.empty()) {
@@ -203,19 +192,23 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
   //
   // TODO(crbug.com/1051893): make the unsubscription behaviour consistent
   // regardless of browser restart in between.
-  auto topics_to_unregister =
-      base::STLSetDifference<std::set<TopicData>>(old_topics, topics);
-  RemoveSubscribedTopics(handler, topics_to_unregister);
 
   ScopedDictPrefUpdate update(prefs_, kTopicsToHandler);
   base::Value::Dict* pref_data = update->FindDict(sender_id_);
+  CHECK(pref_data);
+  auto& topic_map =
+      handler_name_to_subscribed_topics_map_[handler->GetOwnerName()];
+
+  for (const TopicData& topic : old_topics) {
+    pref_data->Remove(topic.name);
+    topic_map.erase(topic);
+  }
+
   for (const auto& topic : topics) {
-    handler_name_to_subscribed_topics_map_[handler->GetOwnerName()].insert(
-        topic);
-    base::Value::Dict handler_pref;
-    handler_pref.Set(kHandler, handler->GetOwnerName());
-    handler_pref.Set(kIsPublic, topic.is_public);
-    pref_data->Set(topic.name, std::move(handler_pref));
+    topic_map.insert(topic);
+    pref_data->Set(topic.name, base::Value::Dict()
+                                   .Set(kHandler, handler->GetOwnerName())
+                                   .Set(kIsPublic, topic.is_public));
   }
   return true;
 }
@@ -298,35 +291,24 @@ InvalidatorState InvalidatorRegistrarWithMemory::GetInvalidatorState() const {
 
 bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(
     InvalidationHandler* handler,
-    const std::set<TopicData>& topics) const {
-  for (const auto& handler_and_topics : registered_handler_to_topics_map_) {
-    if (handler_and_topics.first == handler) {
+    const std::set<TopicData>& new_topics) const {
+  for (const auto& [registered_handler, handler_topics] :
+       registered_handler_to_topics_map_) {
+    if (registered_handler == handler) {
       continue;
     }
 
-    if (std::optional<TopicData> duplicate =
-            FindAnyDuplicatedTopic(topics, handler_and_topics.second)) {
-      DVLOG(1) << "Duplicate registration: trying to register "
-               << duplicate->name << " for " << handler
-               << " when it's already registered for "
-               << handler_and_topics.first;
-      return true;
+    for (const auto& new_topic : new_topics) {
+      if (handler_topics.contains(new_topic)) {
+        DVLOG(1) << "Duplicate registration: trying to register "
+                 << new_topic.name << " for " << handler->GetOwnerName()
+                 << " when it's already registered for "
+                 << registered_handler->GetOwnerName();
+        return true;
+      }
     }
   }
   return false;
-}
-
-void InvalidatorRegistrarWithMemory::RemoveSubscribedTopics(
-    const InvalidationHandler* handler,
-    const std::set<TopicData>& topics_to_unsubscribe) {
-  ScopedDictPrefUpdate update(prefs_, kTopicsToHandler);
-  base::Value::Dict* pref_data = update->FindDict(sender_id_);
-  DCHECK(pref_data);
-  for (const TopicData& topic : topics_to_unsubscribe) {
-    pref_data->Remove(topic.name);
-    handler_name_to_subscribed_topics_map_[handler->GetOwnerName()].erase(
-        topic);
-  }
 }
 
 }  // namespace invalidation

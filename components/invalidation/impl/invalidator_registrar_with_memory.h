@@ -105,13 +105,11 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   InvalidatorState GetInvalidatorState() const;
 
  private:
-  // Checks if any of the |topics| is already registered for a *different*
+  // Checks if any of the |new_topics| is already registered for a *different*
   // handler than the given one.
-  bool HasDuplicateTopicRegistration(InvalidationHandler* handler,
-                                     const std::set<TopicData>& topics) const;
-
-  void RemoveSubscribedTopics(const InvalidationHandler* handler,
-                              const std::set<TopicData>& topics_to_unsubscribe);
+  bool HasDuplicateTopicRegistration(
+      InvalidationHandler* handler,
+      const std::set<TopicData>& new_topics) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
