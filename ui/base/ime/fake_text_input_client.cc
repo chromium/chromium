@@ -174,6 +174,10 @@ bool FakeTextInputClient::DeleteRange(const gfx::Range& range) {
 
 bool FakeTextInputClient::GetTextFromRange(const gfx::Range& range,
                                            std::u16string* text) const {
+  if (range.GetMax() <= text_.length()) {
+    *text = text_.substr(range.GetMin(), range.length());
+    return true;
+  }
   return false;
 }
 

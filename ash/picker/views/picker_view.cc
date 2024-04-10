@@ -288,9 +288,8 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
 
   if (GetPickerCategoryType(category) ==
       PickerCategoryType::kCaseTransformations) {
-    if (auto* widget = GetWidget()) {
-      widget->Close();
-    }
+    delegate_->TransformSelectedText(category);
+    GetWidget()->Close();
     return;
   }
 

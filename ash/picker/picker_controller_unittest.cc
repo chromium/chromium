@@ -9,6 +9,7 @@
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
+#include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
@@ -338,5 +339,73 @@ TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {
                                          base::Seconds(3), 1);
 }
 
+TEST_F(PickerControllerTest, GetUpperCaseSelectedText) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  input_field.SetTextAndSelection(u"abc", gfx::Range(0, 3));
+  PickerController controller;
+  TestPickerClient client(&controller);
+
+  controller.ToggleWidget();
+  controller.TransformSelectedText(PickerCategory::kUpperCase);
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(input_field.text(), u"ABC");
+}
+
+TEST_F(PickerControllerTest, GetLowerCaseSelectedText) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  input_field.SetTextAndSelection(u"XYZ", gfx::Range(0, 3));
+  PickerController controller;
+  TestPickerClient client(&controller);
+
+  controller.ToggleWidget();
+  controller.TransformSelectedText(PickerCategory::kLowerCase);
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(input_field.text(), u"xyz");
+}
+
+TEST_F(PickerControllerTest, GetTitleCaseSelectedText) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  input_field.SetTextAndSelection(u"how are you", gfx::Range(0, 11));
+  PickerController controller;
+  TestPickerClient client(&controller);
+
+  controller.ToggleWidget();
+  controller.TransformSelectedText(PickerCategory::kTitleCase);
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(input_field.text(), u"How Are You");
+}
+
+TEST_F(PickerControllerTest, GetSentenceCaseSelectedText) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  input_field.SetTextAndSelection(u"how are you? fine. thanks!  ok",
+                                  gfx::Range(0, 30));
+  PickerController controller;
+  TestPickerClient client(&controller);
+
+  controller.ToggleWidget();
+  controller.TransformSelectedText(PickerCategory::kSentenceCase);
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(input_field.text(), u"How are you? Fine. Thanks!  Ok");
+}
 }  // namespace
 }  // namespace ash

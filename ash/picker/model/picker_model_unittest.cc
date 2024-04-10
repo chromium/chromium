@@ -49,5 +49,23 @@ TEST(PickerModel, AvailableCategoriesWithSelectedText) {
                   PickerCategory::kSentenceCase, PickerCategory::kTitleCase));
 }
 
+TEST(PickerModel, GetsEmptySelectedText) {
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+  client.SetTextAndSelection(u"abcd", gfx::Range(1, 1));
+
+  PickerModel model(&client);
+  EXPECT_FALSE(model.HasSelectedText());
+  EXPECT_EQ(model.selected_text(), u"");
+}
+
+TEST(PickerModel, GetsNonEmptySelectedText) {
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+  client.SetTextAndSelection(u"abcd", gfx::Range(1, 3));
+
+  PickerModel model(&client);
+  EXPECT_TRUE(model.HasSelectedText());
+  EXPECT_EQ(model.selected_text(), u"bc");
+}
+
 }  // namespace
 }  // namespace ash

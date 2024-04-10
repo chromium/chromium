@@ -34,6 +34,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   bool ShouldShowSuggestedResults() override { return false; }
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {}
+  void TransformSelectedText(PickerCategory category) override {}
   void StartSearch(const std::u16string& query,
                    std::optional<PickerCategory> category,
                    SearchResultsCallback callback) override {}

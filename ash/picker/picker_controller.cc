@@ -38,6 +38,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/hash/sha1.h"
+#include "base/i18n/case_conversion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -174,6 +175,66 @@ std::vector<PickerSearchResultsSection> CreateSingleSectionForCategoryResults(
                                      /*has_more_results*/ false)};
 }
 
+bool u16_isalpha(char16_t ch) {
+  return (ch >= u'A' && ch <= u'Z') || (ch >= u'a' && ch <= u'z');
+}
+
+bool u16_is_sentence_end(char16_t ch) {
+  return ch == u'.' || ch == u'!' || ch == '?';
+}
+
+std::u16string ToTitleCase(std::u16string_view text) {
+  std::u16string result(text);
+  std::u16string uppercase_text = base::i18n::ToUpper(text);
+  for (size_t i = 0; i < result.length(); i++) {
+    if (u16_isalpha(result[i]) && (i == 0 || result[i - 1] == u' ')) {
+      result[i] = uppercase_text[i];
+    }
+  }
+  return result;
+}
+
+std::u16string ToSentenceCase(std::u16string_view text) {
+  std::u16string result(text);
+  std::u16string uppercase_text = base::i18n::ToUpper(text);
+  bool sentence_start = true;
+  for (size_t i = 0; i < result.length(); i++) {
+    if (u16_isalpha(result[i]) && sentence_start) {
+      result[i] = uppercase_text[i];
+    }
+    if (u16_is_sentence_end(result[i])) {
+      sentence_start = true;
+    } else if (result[i] != u' ') {
+      sentence_start = false;
+    }
+  }
+  return result;
+}
+
+std::u16string TransformText(std::u16string_view text,
+                             PickerCategory category) {
+  switch (category) {
+    case PickerCategory::kUpperCase:
+      return base::i18n::ToUpper(text);
+    case PickerCategory::kLowerCase:
+      return base::i18n::ToLower(text);
+    case PickerCategory::kSentenceCase:
+      return ToSentenceCase(text);
+    case PickerCategory::kTitleCase:
+      return ToTitleCase(text);
+    case PickerCategory::kEditor:
+    case PickerCategory::kLinks:
+    case PickerCategory::kExpressions:
+    case PickerCategory::kDriveFiles:
+    case PickerCategory::kLocalFiles:
+    case PickerCategory::kDatesTimes:
+    case PickerCategory::kUnitsMaths:
+    case PickerCategory::kClipboard:
+      NOTREACHED_NORETURN();
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 PickerController::PickerController() {
@@ -251,7 +312,7 @@ std::vector<PickerCategory> PickerController::GetAvailableCategories() {
 }
 
 bool PickerController::ShouldShowSuggestedResults() {
-  return model_ && !model_->has_selected_text();
+  return model_ && !model_->HasSelectedText();
 }
 
 void PickerController::GetResultsForCategory(PickerCategory category,
@@ -300,6 +361,15 @@ void PickerController::GetResultsForCategory(PickerCategory category,
               .Then(std::move(callback)));
       return;
   }
+}
+
+void PickerController::TransformSelectedText(PickerCategory category) {
+  if (!model_) {
+    return;
+  }
+  std::u16string_view selected_text = model_->selected_text();
+  InsertResultOnNextFocus(
+      PickerSearchResult::Text(TransformText(selected_text, category)));
 }
 
 void PickerController::StartSearch(const std::u16string& query,

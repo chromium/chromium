@@ -11,23 +11,24 @@
 namespace ash {
 namespace {
 
-bool HasSelectedText(ui::TextInputClient* client) {
+std::u16string GetSelectedText(ui::TextInputClient* client) {
   gfx::Range selection_range;
-  if (client == nullptr ||
-      !client->GetEditableSelectionRange(&selection_range)) {
-    return false;
+  std::u16string result;
+  if (client && client->GetEditableSelectionRange(&selection_range) &&
+      selection_range.IsValid() && !selection_range.is_empty() &&
+      client->GetTextFromRange(selection_range, &result)) {
+    return result;
   }
-
-  return selection_range.IsValid() && !selection_range.is_empty();
+  return u"";
 }
 
 }  // namespace
 
 PickerModel::PickerModel(ui::TextInputClient* focused_client)
-    : has_selected_text_(HasSelectedText(focused_client)) {}
+    : selected_text_(GetSelectedText(focused_client)) {}
 
 std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
-  if (has_selected_text_) {
+  if (HasSelectedText()) {
     return std::vector<PickerCategory>{
         PickerCategory::kUpperCase,
         PickerCategory::kLowerCase,
@@ -42,6 +43,14 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
       PickerCategory::kLocalFiles, PickerCategory::kDatesTimes,
       PickerCategory::kUnitsMaths,
   };
+}
+
+bool PickerModel::HasSelectedText() const {
+  return !selected_text_.empty();
+}
+
+std::u16string_view PickerModel::selected_text() const {
+  return selected_text_;
 }
 
 }  // namespace ash

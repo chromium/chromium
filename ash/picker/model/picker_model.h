@@ -23,10 +23,12 @@ class ASH_EXPORT PickerModel {
 
   std::vector<PickerCategory> GetAvailableCategories() const;
 
-  bool has_selected_text() const { return has_selected_text_; }
+  std::u16string_view selected_text() const;
+
+  bool HasSelectedText() const;
 
  private:
-  bool has_selected_text_;
+  std::u16string selected_text_;
 };
 
 }  // namespace ash
