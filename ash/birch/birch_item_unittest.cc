@@ -124,7 +124,8 @@ TEST_F(BirchItemTest, Calendar_PerformAction_BothConferenceAndCalendar) {
                          /*end_time=*/now + base::Minutes(30),
                          /*calendar_url=*/GURL("http://calendar.com"),
                          /*conference_url=*/GURL("http://meet.com"),
-                         /*event_id=*/"000");
+                         /*event_id=*/"000",
+                         /*all_day_event=*/false);
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("http://calendar.com/"));
@@ -140,7 +141,8 @@ TEST_F(BirchItemTest, Calendar_PerformAction_Histograms) {
                          /*end_time=*/base::Time(),
                          /*calendar_url=*/GURL("http://calendar.com"),
                          /*conference_url=*/GURL("http://meet.com"),
-                         /*event_id=*/"000");
+                         /*event_id=*/"000",
+                         /*all_day_event=*/false);
   item.PerformAction();
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Activate",
@@ -158,7 +160,8 @@ TEST_F(BirchItemTest, Calendar_PerformAction_CalendarOnly) {
                          /*end_time=*/base::Time(),
                          /*calendar_url=*/GURL("http://calendar.com"),
                          /*conference_url=*/GURL(),
-                         /*event_id=*/"000");
+                         /*event_id=*/"000",
+                         /*all_day_event=*/false);
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("http://calendar.com/"));
@@ -175,7 +178,8 @@ TEST_F(BirchItemTest, Calendar_PerformAction_NoURL) {
                          /*end_time=*/base::Time(),
                          /*calendar_url=*/GURL(),
                          /*conference_url=*/GURL(),
-                         /*event_id=*/"000");
+                         /*event_id=*/"000",
+                         /*all_day_event=*/false);
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
 }
@@ -188,7 +192,8 @@ TEST_F(BirchItemTest, Calendar_ShouldShowSecondaryAction) {
                           /*end_time=*/now + base::Hours(2),
                           /*calendar_url=*/GURL("http://calendar.com"),
                           /*conference_url=*/GURL("http://meet.com"),
-                          /*event_id=*/"000");
+                          /*event_id=*/"000",
+                          /*all_day_event=*/false);
 
   // The meeting is in the future, so don't show the "Join" button.
   EXPECT_FALSE(item0.secondary_action().has_value());
@@ -199,7 +204,8 @@ TEST_F(BirchItemTest, Calendar_ShouldShowSecondaryAction) {
                           /*end_time=*/now + base::Minutes(30),
                           /*calendar_url=*/GURL("http://calendar.com"),
                           /*conference_url=*/GURL("http://meet.com"),
-                          /*event_id=*/"001");
+                          /*event_id=*/"001",
+                          /*all_day_event=*/false);
 
   // The meeting is happening now, so show the "Join" button.
   EXPECT_TRUE(item1.secondary_action().has_value());
@@ -209,7 +215,8 @@ TEST_F(BirchItemTest, Calendar_ShouldShowSecondaryAction) {
                           /*end_time=*/now + base::Minutes(33),
                           /*calendar_url=*/GURL("http://calendar.com"),
                           /*conference_url=*/GURL("http://meet.com"),
-                          /*event_id=*/"002");
+                          /*event_id=*/"002",
+                          /*all_day_event=*/false);
 
   // The meeting is very soon, so show the "Join" button.
   EXPECT_TRUE(item2.secondary_action().has_value());
@@ -221,7 +228,8 @@ TEST_F(BirchItemTest, Calendar_Subtitle_Ongoing) {
                          /*end_time=*/base::Time::Now() + base::Minutes(30),
                          /*calendar_url=*/GURL("http://calendar.com"),
                          /*conference_url=*/GURL(),
-                         /*event_id=*/"000");
+                         /*event_id=*/"000",
+                         /*all_day_event=*/false);
   EXPECT_EQ(item.subtitle(), u"Now · Ends 5:30 PM");
 }
 
@@ -231,7 +239,8 @@ TEST_F(BirchItemTest, Calendar_Subtitle_Soon) {
                          /*end_time=*/base::Time::Now() + base::Hours(1),
                          /*calendar_url=*/GURL("http://calendar.com"),
                          /*conference_url=*/GURL(),
-                         /*event_id=*/"000");
+                         /*event_id=*/"000",
+                         /*all_day_event=*/false);
   EXPECT_EQ(item.subtitle(), u"In 15 mins · 5:15 PM - 6:00 PM");
 }
 
@@ -241,7 +250,8 @@ TEST_F(BirchItemTest, Calendar_Subtitle_NotSoon) {
                          /*end_time=*/base::Time::Now() + base::Hours(2),
                          /*calendar_url=*/GURL("http://calendar.com"),
                          /*conference_url=*/GURL(),
-                         /*event_id=*/"000");
+                         /*event_id=*/"000",
+                         /*all_day_event=*/false);
   EXPECT_EQ(item.subtitle(), u"6:00 PM - 7:00 PM");
 }
 
@@ -252,8 +262,21 @@ TEST_F(BirchItemTest, Calendar_Subtitle_Tomorrow) {
                          /*end_time=*/next_midnight + base::Hours(2),
                          /*calendar_url=*/GURL("http://calendar.com"),
                          /*conference_url=*/GURL(),
-                         /*event_id=*/"000");
+                         /*event_id=*/"000",
+                         /*all_day_event=*/false);
   EXPECT_EQ(item.subtitle(), u"Tomorrow · 1:00 AM - 2:00 AM");
+}
+
+TEST_F(BirchItemTest, Calendar_Subtitle_AllDay) {
+  base::Time next_midnight = base::Time::Now().LocalMidnight() + base::Days(1);
+  BirchCalendarItem item(u"item",
+                         /*start_time=*/next_midnight - base::Days(1),
+                         /*end_time=*/next_midnight,
+                         /*calendar_url=*/GURL("http://calendar.com"),
+                         /*conference_url=*/GURL(),
+                         /*event_id=*/"000",
+                         /*all_day_event=*/true);
+  EXPECT_EQ(item.subtitle(), u"All Day");
 }
 
 TEST_F(BirchItemTest, Attachment_PerformAction_ValidUrl) {
@@ -436,7 +459,8 @@ TEST_F(BirchItemIconTest, Calendar_LoadIcon) {
                          /*end_time=*/base::Time(),
                          /*calendar_url=*/GURL("http://calendar.com"),
                          /*conference_url=*/GURL("http://meet.com"),
-                         /*event_id=*/"000");
+                         /*event_id=*/"000",
+                         /*all_day_event=*/false);
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));

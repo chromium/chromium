@@ -293,7 +293,8 @@ class BirchBarTest : public AshTestBase {
           /*end_time=*/base::Time(),
           /*calendar_url=*/GURL(),
           /*conference_url=*/GURL(),
-          /*event_id=*/base::StringPrintf("event_id_%ld", i));
+          /*event_id=*/base::StringPrintf("event_id_%ld", i),
+          /*all_day_event=*/false);
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetCalendarItems(item_list);
@@ -361,7 +362,7 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
   std::vector<BirchCalendarItem> items;
   items.emplace_back(u"Event", base::Time::Now() - base::Minutes(30),
                      base::Time::Now() + base::Minutes(30), GURL(), GURL(),
-                     std::string());
+                     std::string(), /*all_day_event=*/false);
   birch_client_->SetCalendarItems(items);
 
   // Entering overview shows the birch bar.

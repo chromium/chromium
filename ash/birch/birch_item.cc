@@ -106,8 +106,9 @@ BirchCalendarItem::BirchCalendarItem(const std::u16string& title,
                                      const base::Time& end_time,
                                      const GURL& calendar_url,
                                      const GURL& conference_url,
-                                     const std::string& event_id)
-    : BirchItem(title, GetSubtitle(start_time, end_time)),
+                                     const std::string& event_id,
+                                     const bool all_day_event)
+    : BirchItem(title, GetSubtitle(start_time, end_time, all_day_event)),
       start_time_(start_time),
       end_time_(end_time),
       calendar_url_(calendar_url),
@@ -174,9 +175,15 @@ void BirchCalendarItem::LoadIcon(LoadIconCallback callback) const {
 
 // static
 std::u16string BirchCalendarItem::GetSubtitle(base::Time start_time,
-                                              base::Time end_time) {
+                                              base::Time end_time,
+                                              bool all_day_event) {
   base::Time now = base::Time::Now();
   if (start_time < now && now < end_time) {
+    // This event is set to last all day.
+    if (all_day_event) {
+      return l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_ALL_DAY);
+    }
+
     // This is an ongoing event. Return "Now · Ends 11:20 AM".
     return l10n_util::GetStringFUTF16(IDS_ASH_BIRCH_CALENDAR_ONGOING_SUBTITLE,
                                       base::TimeFormatTimeOfDay(end_time));

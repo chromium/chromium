@@ -104,7 +104,8 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
                     const base::Time& end_time,
                     const GURL& calendar_url,
                     const GURL& conference_url,
-                    const std::string& event_id);
+                    const std::string& event_id,
+                    const bool all_day_event);
   BirchCalendarItem(BirchCalendarItem&&);
   BirchCalendarItem(const BirchCalendarItem&);
   BirchCalendarItem& operator=(const BirchCalendarItem&);
@@ -124,7 +125,9 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   const std::string& event_id() const { return event_id_; }
 
  private:
-  static std::u16string GetSubtitle(base::Time start_time, base::Time end_time);
+  static std::u16string GetSubtitle(base::Time start_time,
+                                    base::Time end_time,
+                                    bool all_day_event);
 
   // Returns a string like "10:00 AM - 10:30 AM".
   static std::u16string GetStartEndString(base::Time start_time,

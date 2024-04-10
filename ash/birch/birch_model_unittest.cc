@@ -51,7 +51,8 @@ std::vector<BirchCalendarItem> MakeCalendarItemList(int event_count) {
         /*end_time=*/base::Time(),
         /*calendar_url=*/GURL(),
         /*conference_url=*/GURL(),
-        /*event_id=*/"event_id_" + base::NumberToString(i));
+        /*event_id=*/"event_id_" + base::NumberToString(i),
+        /*all_day_event=*/false);
   }
   return calendar_item_list;
 }

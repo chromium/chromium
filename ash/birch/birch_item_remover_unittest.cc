@@ -64,13 +64,16 @@ TEST_F(BirchItemRemoverTest, RemoveTab) {
 TEST_F(BirchItemRemoverTest, RemoveCalendarItem) {
   BirchCalendarItem item0(u"Event 0", /*start_time=*/base::Time(),
                           /*end_time=*/base::Time(), /*calendar_url=*/GURL(),
-                          /*conference_url=*/GURL(), /*event_id=*/"000");
+                          /*conference_url=*/GURL(), /*event_id=*/"000",
+                          /*all_day_event=*/false);
   BirchCalendarItem item1(u"Event 1", /*start_time=*/base::Time(),
                           /*end_time=*/base::Time(), /*calendar_url=*/GURL(),
-                          /*conference_url=*/GURL(), /*event_id=*/"111");
+                          /*conference_url=*/GURL(), /*event_id=*/"111",
+                          /*all_day_event=*/false);
   BirchCalendarItem item2(u"Event 2", /*start_time=*/base::Time(),
                           /*end_time=*/base::Time(), /*calendar_url=*/GURL(),
-                          /*conference_url=*/GURL(), /*event_id=*/"222");
+                          /*conference_url=*/GURL(), /*event_id=*/"222",
+                          /*all_day_event=*/false);
   std::vector<BirchCalendarItem> calendar_items = {item0, item1, item2};
 
   // Filter `calendar_items` before any items are removed. The list should
