@@ -239,6 +239,11 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
+    public void getTypesWithUnsyncedData(Callback<Set<Integer>> callback) {
+        mDelegate.getTypesWithUnsyncedData(callback);
+    }
+
+    @Override
     public boolean hasKeepEverythingSynced() {
         return mDelegate.hasKeepEverythingSynced();
     }

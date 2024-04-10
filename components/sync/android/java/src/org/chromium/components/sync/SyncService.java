@@ -120,12 +120,15 @@ public interface SyncService {
     /**
      * Gets the set of types that the user has selected.
      *
-     * NOTE: This returns "all types" by default, even if the user has never
-     *       enabled Sync, or if only Sync-the-transport is running.
-     *
      * @return UserSelectableType set of selected types.
      */
     public Set<Integer> getSelectedTypes();
+
+    /**
+     * Returns the datatypes which have local changes that have not yet been synced with the server.
+     * Note: This includes deletions as well.
+     */
+    public void getTypesWithUnsyncedData(Callback<Set<Integer>> callback);
 
     public boolean hasKeepEverythingSynced();
 

@@ -186,6 +186,13 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
+    public void getTypesWithUnsyncedData(Callback<Set<Integer>> callback) {
+        ThreadUtils.assertOnUiThread();
+        assert mSyncServiceAndroidBridge != 0;
+        SyncServiceImplJni.get().getTypesWithUnsyncedData(mSyncServiceAndroidBridge, callback);
+    }
+
+    @Override
     public boolean isTypeManagedByPolicy(@UserSelectableType int type) {
         ThreadUtils.assertOnUiThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -470,6 +477,12 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
                 .keepAccountSettingsPrefsOnlyForUsers(mSyncServiceAndroidBridge, gaiaIds);
     }
 
+    @CalledByNative
+    private static void onGetTypesWithUnsyncedDataResult(
+            Callback<Set<Integer>> callback, Set<Integer> types) {
+        callback.onResult(types);
+    }
+
     /** Invokes the onResult method of the callback from native code. */
     @CalledByNative
     private static void onGetAllNodesResult(Callback<JSONArray> callback, String serializedNodes) {
@@ -540,6 +553,9 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         int[] getActiveDataTypes(long nativeSyncServiceAndroidBridge);
 
         int[] getSelectedTypes(long nativeSyncServiceAndroidBridge);
+
+        void getTypesWithUnsyncedData(
+                long nativeSyncServiceAndroidBridge, Callback<Set<Integer>> callback);
 
         boolean isTypeManagedByPolicy(long nativeSyncServiceAndroidBridge, int type);
 

@@ -36,23 +36,6 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
-// Native callback for the JNI GetAllNodes method. When
-// SyncService::GetAllNodesForDebugging() completes, this method is called and
-// the results are sent to the Java callback.
-void NativeGetAllNodesCallback(
-    JNIEnv* env,
-    const base::android::ScopedJavaGlobalRef<jobject>& callback,
-    base::Value::List result) {
-  std::string json_string;
-  if (!base::JSONWriter::Write(result, &json_string)) {
-    DVLOG(1) << "Writing as JSON failed. Passing empty string to Java code.";
-    json_string = std::string();
-  }
-
-  Java_SyncServiceImpl_onGetAllNodesResult(
-      env, callback, ConvertUTF8ToJavaString(env, json_string));
-}
-
 ScopedJavaLocalRef<jintArray> ModelTypeSetToJavaIntArray(
     JNIEnv* env,
     syncer::ModelTypeSet types) {
@@ -71,6 +54,34 @@ ScopedJavaLocalRef<jintArray> UserSelectableTypeSetToJavaIntArray(
     type_vector.push_back(static_cast<int>(type));
   }
   return base::android::ToJavaIntArray(env, type_vector);
+}
+
+// Native callback for the JNI GetTypesWithUnsyncedData method. When
+// SyncService::GetTypesWithUnsyncedData() completes, this method is called and
+// the results are sent to the Java callback.
+void NativeGetTypesWithUnsyncedDataCallback(
+    JNIEnv* env,
+    const base::android::ScopedJavaGlobalRef<jobject>& callback,
+    syncer::ModelTypeSet types) {
+  Java_SyncServiceImpl_onGetTypesWithUnsyncedDataResult(
+      env, callback, ModelTypeSetToJavaIntArray(env, types));
+}
+
+// Native callback for the JNI GetAllNodes method. When
+// SyncService::GetAllNodesForDebugging() completes, this method is called and
+// the results are sent to the Java callback.
+void NativeGetAllNodesCallback(
+    JNIEnv* env,
+    const base::android::ScopedJavaGlobalRef<jobject>& callback,
+    base::Value::List result) {
+  std::string json_string;
+  if (!base::JSONWriter::Write(result, &json_string)) {
+    DVLOG(1) << "Writing as JSON failed. Passing empty string to Java code.";
+    json_string = std::string();
+  }
+
+  Java_SyncServiceImpl_onGetAllNodesResult(
+      env, callback, ConvertUTF8ToJavaString(env, json_string));
 }
 
 syncer::UserSelectableType IntToUserSelectableTypeChecked(int type) {
@@ -179,6 +190,17 @@ ScopedJavaLocalRef<jintArray> SyncServiceAndroidBridge::GetSelectedTypes(
   user_selectable_types =
       native_sync_service_->GetUserSettings()->GetSelectedTypes();
   return UserSelectableTypeSetToJavaIntArray(env, user_selectable_types);
+}
+
+void SyncServiceAndroidBridge::GetTypesWithUnsyncedData(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& callback) {
+  base::android::ScopedJavaGlobalRef<jobject> java_callback;
+  java_callback.Reset(env, callback);
+  native_sync_service_->GetTypesWithUnsyncedData(
+      syncer::TypesRequiringUnsyncedDataCheckOnSignout(),
+      base::BindOnce(&NativeGetTypesWithUnsyncedDataCallback, env,
+                     java_callback));
 }
 
 jboolean SyncServiceAndroidBridge::IsTypeManagedByPolicy(JNIEnv* env,
