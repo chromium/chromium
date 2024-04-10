@@ -11,16 +11,21 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_printer.h"
+#include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
+#include "components/media_router/common/providers/cast/certificate/switches.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -36,13 +41,6 @@
 #include "third_party/boringssl/src/pki/path_builder.h"
 #include "third_party/boringssl/src/pki/simple_path_builder_delegate.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
-
-// Used specifically when CAST_ALLOW_DEVELOPER_CERTIFICATE is true:
-#include "base/command_line.h"
-#include "base/memory/weak_ptr.h"
-#include "base/path_service.h"
-#include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
-#include "components/media_router/common/providers/cast/certificate/switches.h"
 
 namespace cast_certificate {
 namespace {
@@ -90,38 +88,43 @@ class CastTrustStore {
     AddAnchor(kCastRootCaDer);
     AddAnchor(kEurekaRootCaDer);
 
-    // Adding developer certificates must be done off of the IO thread due
-    // to blocking file access.
-#if defined(CAST_ALLOW_DEVELOPER_CERTIFICATE)
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock()},
-        // NOTE: the singleton instance is never destroyed, so we can use
-        // Unretained here instead of a weak pointer.
-        base::BindOnce(&CastTrustStore::AddDeveloperCertificates,
-                       base::Unretained(this)));
+    auto developer_cert_path = GetDeveloperCertificatePathFromCommandLine();
+    if (!developer_cert_path.empty()) {
+      // Adding developer certificates must be done off of the IO thread due
+      // to blocking file access.
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::MayBlock()},
+          // NOTE: the singleton instance is never destroyed, so we can use
+          // Unretained here instead of a weak pointer.
+          base::BindOnce(&CastTrustStore::AddDeveloperCertificate,
+                         base::Unretained(this),
+                         std::move(developer_cert_path)));
+    }
   }
 
-  // Check for custom root developer certificate and create a trust store
-  // from it if present and enabled.
-  void AddDeveloperCertificates() {
-    base::AutoLock guard(lock_);
+  // Returns the cast developer certificate path command line switch if it is
+  // set. Otherwise, returns an empty file path.
+  static base::FilePath GetDeveloperCertificatePathFromCommandLine() {
     auto* command_line = base::CommandLine::ForCurrentProcess();
-    std::string cert_path_arg = command_line->GetSwitchValueASCII(
+    return command_line->GetSwitchValuePath(
         switches::kCastDeveloperCertificatePath);
-    if (!cert_path_arg.empty()) {
-      base::FilePath cert_path(cert_path_arg);
-      if (!cert_path.IsAbsolute()) {
-        base::FilePath path;
-        base::PathService::Get(base::DIR_CURRENT, &path);
-        cert_path = path.Append(cert_path);
-      }
-      VLOG(1) << "Using cast developer certificate path " << cert_path;
-      if (!PopulateStoreWithCertsFromPath(&store_, cert_path)) {
-        LOG(WARNING) << "No developer certs added to store, only official"
-                        "Google root CA certificates will work.";
-      }
+  }
+
+  // Create a trust store from custom root developer certificate
+  void AddDeveloperCertificate(base::FilePath cert_path) {
+    base::AutoLock guard(lock_);
+    if (!cert_path.IsAbsolute()) {
+      base::FilePath path;
+      base::PathService::Get(base::DIR_CURRENT, &path);
+      cert_path = path.Append(cert_path);
     }
-#endif
+    VLOG(1) << "Using cast developer certificate path " << cert_path;
+    if (!PopulateStoreWithCertsFromPath(&store_, cert_path)) {
+      LOG(WARNING) << "Unable to add Cast developer certificates at "
+                   << cert_path
+                   << " to Cast root store; only Google-provided Cast root "
+                      "certificates will be used.";
+    }
   }
 
   // Adds a trust anchor given a DER-encoded certificate from static

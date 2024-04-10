@@ -2,16 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import(
-    "//third_party/openscreen/src/cast/common/public/developer_certificate.gni")
-
-config("developer_certificate_config") {
-  defines = []
-  if (cast_allow_developer_certificate) {
-    defines += [ "CAST_ALLOW_DEVELOPER_CERTIFICATE" ]
-  }
-}
-
 source_set("certificate_reader") {
   sources = [
     "cast_cert_reader.cc",
@@ -44,21 +34,14 @@ static_library("certificate") {
     "switches.cc",
     "switches.h",
   ]
-  configs += [
-    ":developer_certificate_config",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
+    ":certificate_reader",
     ":certificate_roots",
     "//base",
     "//net",
     "//third_party/boringssl",
     "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
-
-    # Although we won't use the reader unless cast_allow_developer_certificate
-    # is enabled, the buildfiles generation step requires the inclusion
-    # anyway since it doesn't check preprocesser macros.
-    ":certificate_reader",
   ]
 }
 

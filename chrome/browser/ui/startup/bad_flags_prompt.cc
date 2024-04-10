@@ -28,6 +28,7 @@
 #include "components/history_clusters/core/file_clustering_backend.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/media_router/common/providers/cast/certificate/switches.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/translate/core/common/translate_switches.h"
@@ -178,6 +179,10 @@ const char* const kBadFlags[] = {
     // in tests and performance benchmarks. Using it could allow faking user
     // interaction across origins.
     cc::switches::kEnableGpuBenchmarking,
+
+    // This flag enables loading a developer-signed certificate for Cast
+    // streaming receivers and should only be used for testing purposes.
+    cast_certificate::switches::kCastDeveloperCertificatePath,
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
