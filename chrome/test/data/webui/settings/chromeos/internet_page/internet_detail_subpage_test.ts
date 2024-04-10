@@ -237,6 +237,7 @@ suite('<settings-internet-detail-subpage>', () => {
 
   function getDefaultGlobalPolicy(): GlobalPolicy {
     return {
+      allowApnModification: false,
       allowOnlyPolicyWifiNetworksToConnect: false,
       allowCellularSimLock: false,
       allowCellularHotspot: false,

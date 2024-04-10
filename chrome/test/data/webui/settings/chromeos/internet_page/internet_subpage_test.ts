@@ -243,6 +243,7 @@ suite('<settings-internet-subpage>', () => {
           InhibitReason.kNotInhibited, simInfos);
 
       cellularNetworkList.globalPolicy = {
+        allowApnModification: false,
         allowOnlyPolicyWifiNetworksToConnect: false,
         allowCellularSimLock: false,
         allowCellularHotspot: false,

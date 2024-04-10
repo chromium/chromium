@@ -1071,6 +1071,9 @@ struct CellularSimState {
 // configuration as a whole instead of individual network configurations.
 // Default values should be explicitly provided for boolean values.
 struct GlobalPolicy {
+  // If true, users will be allowed to modify APNs.
+  bool allow_apn_modification = true;
+
   // If true, allow PIN locking of SIMs attached to the device.
   // If false, PIN locking is prohibited.
   bool allow_cellular_sim_lock = true;

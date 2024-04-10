@@ -4159,6 +4159,7 @@ TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
+  EXPECT_TRUE(policy->allow_apn_modification);
   EXPECT_TRUE(policy->allow_cellular_sim_lock);
   EXPECT_FALSE(policy->allow_only_policy_cellular_networks);
   EXPECT_TRUE(policy->allow_only_policy_networks_to_autoconnect);
@@ -4179,6 +4180,7 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   EXPECT_EQ(0, observer()->GetPolicyAppliedCount(/*userhash=*/std::string()));
 
   base::Value::Dict global_config;
+  global_config.Set(::onc::global_network_config::kAllowAPNModification, false);
   global_config.Set(::onc::global_network_config::kAllowCellularSimLock, false);
   global_config.Set(::onc::global_network_config::kAllowCellularHotspot, false);
   global_config.Set(
@@ -4191,6 +4193,7 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
+  EXPECT_TRUE(policy->allow_apn_modification);
   EXPECT_FALSE(policy->allow_cellular_sim_lock);
   EXPECT_FALSE(policy->allow_cellular_hotspot);
   EXPECT_TRUE(policy->allow_only_policy_cellular_networks);
@@ -4204,6 +4207,10 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   EXPECT_EQ(mojom::SuppressionType::kUnset, policy->allow_text_messages);
 
   EXPECT_EQ(1, observer()->GetPolicyAppliedCount(/*userhash=*/std::string()));
+
+  feature_list.InitAndEnableFeature(features::kApnPolicies);
+  policy = GetGlobalPolicy();
+  EXPECT_FALSE(policy->allow_apn_modification);
 }
 
 TEST_F(CrosNetworkConfigTest,
