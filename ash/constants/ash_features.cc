@@ -2253,7 +2253,7 @@ BASE_FEATURE(kParentAccessJelly,
 // Enables user to display Passpoint credentials in the UI.
 BASE_FEATURE(kPasspointSettings,
              "PasspointSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature allows usage of passwordless flow in GAIA.
 // (This feature is only available for consumer users)
