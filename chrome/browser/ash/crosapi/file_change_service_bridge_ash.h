@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_CROSAPI_FILE_CHANGE_SERVICE_BRIDGE_ASH_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -18,7 +20,8 @@ namespace crosapi {
 // `FileChangeServiceBridge` in Lacros via crosapi. This bridge enables file
 // change events originating from Lacros to be propagated to the
 // `FileChangeService`, and its observers, in Ash.
-class FileChangeServiceBridgeAsh : public mojom::FileChangeServiceBridge {
+class FileChangeServiceBridgeAsh : public mojom::FileChangeServiceBridge,
+                                   public ProfileObserver {
  public:
   explicit FileChangeServiceBridgeAsh(Profile* profile);
   FileChangeServiceBridgeAsh(const FileChangeServiceBridgeAsh&) = delete;
@@ -30,6 +33,9 @@ class FileChangeServiceBridgeAsh : public mojom::FileChangeServiceBridge {
   void BindReceiver(
       mojo::PendingReceiver<mojom::FileChangeServiceBridge> receiver);
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
  private:
   // mojom::FileChangeServiceBridge:
   void OnFileCreatedFromShowSaveFilePicker(
@@ -38,7 +44,9 @@ class FileChangeServiceBridgeAsh : public mojom::FileChangeServiceBridge {
 
   // The Ash profile associated with the `FileChangeService` for which this
   // bridge exists.
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile> profile_;
+
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   // The set of receivers bound to `this` for use by crosapi.
   mojo::ReceiverSet<mojom::FileChangeServiceBridge> receivers_;
