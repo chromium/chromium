@@ -872,7 +872,8 @@ TEST_F(AutofillProfileImportProcessTest,
 TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
   // Ineligible user.
   {
-    personal_data_manager_.SetIsEligibleForAddressAccountStorage(false);
+    personal_data_manager_.test_address_data_manager()
+        .SetIsEligibleForAddressAccountStorage(false);
     ProfileImportProcess import_data(test::StandardProfile(), "en_US", url_,
                                      &personal_data_manager_,
                                      /*allow_only_silent_updates=*/false);
@@ -882,7 +883,8 @@ TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
 
   // Eligible user.
   {
-    personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
+    personal_data_manager_.test_address_data_manager()
+        .SetIsEligibleForAddressAccountStorage(true);
     ProfileImportProcess import_data(test::StandardProfile(), "en_US", url_,
                                      &personal_data_manager_,
                                      /*allow_only_silent_updates=*/false);
@@ -909,7 +911,8 @@ TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount) {
   const AutofillProfile other_profile = test::DifferentFromStandardProfile();
   personal_data_manager_.AddProfile(profile_to_migrate);
   personal_data_manager_.AddProfile(other_profile);
-  personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
+  personal_data_manager_.test_address_data_manager()
+      .SetIsEligibleForAddressAccountStorage(true);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/profile_to_migrate, "en_US", url_,
@@ -935,7 +938,8 @@ TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount_SilentUpdate) {
   const AutofillProfile profile_to_migrate = test::UpdateableStandardProfile();
   const AutofillProfile observed_profile = test::StandardProfile();
   personal_data_manager_.AddProfile(profile_to_migrate);
-  personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
+  personal_data_manager_.test_address_data_manager()
+      .SetIsEligibleForAddressAccountStorage(true);
 
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
                                    &personal_data_manager_,
@@ -963,7 +967,8 @@ TEST_F(AutofillProfileImportProcessTest,
   const AutofillProfile migration_candidate = test::UpdateableStandardProfile();
   const AutofillProfile observed_profile = test::StandardProfile();
   personal_data_manager_.AddProfile(migration_candidate);
-  personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
+  personal_data_manager_.test_address_data_manager()
+      .SetIsEligibleForAddressAccountStorage(true);
 
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
                                    &personal_data_manager_,
@@ -982,7 +987,8 @@ TEST_F(AutofillProfileImportProcessTest,
        MigrateProfileToAccount_IneligibleUser) {
   const AutofillProfile profile = test::StandardProfile();
   personal_data_manager_.AddProfile(profile);
-  personal_data_manager_.SetIsEligibleForAddressAccountStorage(false);
+  personal_data_manager_.test_address_data_manager()
+      .SetIsEligibleForAddressAccountStorage(false);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/profile, "en_US", url_, &personal_data_manager_,

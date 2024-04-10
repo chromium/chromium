@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_member.h"
+#include "components/sync/service/sync_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
 class PrefService;
@@ -55,6 +56,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   AddressDataManager(scoped_refptr<AutofillWebDataService> webdata_service,
                      PrefService* pref_service,
+                     syncer::SyncService* sync_service,
                      StrikeDatabaseBase* strike_database,
                      base::RepeatingClosure notify_pdm_observers,
                      const std::string& app_locale);
@@ -112,6 +114,10 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Removes the profile by `guid`.
   virtual void RemoveProfile(const std::string& guid);
+
+  // Determines whether the logged in user (if any) is eligible to store
+  // Autofill address profiles to their account.
+  virtual bool IsEligibleForAddressAccountStorage() const;
 
   // Migrates a given kLocalOrSyncable `profile` to source kAccount. This has
   // multiple side-effects for the profile:
@@ -214,6 +220,16 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Returns the value of the AutofillProfileEnabled pref.
   virtual bool IsAutofillProfileEnabled() const;
+
+  // Sets the Sync UserSelectableType::kAutofill toggle value.
+  // TODO(crbug.com/1502843): Used for the toggle on the Autofill Settings page
+  // only. It controls syncing of autofill data stored in user accounts for
+  // non-syncing users. Remove when toggle becomes available on the Sync page.
+  void SetAutofillSelectableTypeEnabled(bool enabled);
+
+  void SetSyncServiceForTest(syncer::SyncService* sync_service) {
+    sync_service_ = sync_service;
+  }
 
  protected:
   // Profiles of different sources are stored in different vectors.
@@ -327,6 +343,9 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Used to check whether address Autofill is enabled. May be null in tests,
   // but must otherwise outlive this instance.
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  // May be null in tests, but must otherwise outlive this instance.
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
   // Make sure to get notified about changes to `AddressAutofillTable` via sync.
   base::ScopedObservation<AutofillWebDataService,

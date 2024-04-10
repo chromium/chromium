@@ -233,15 +233,6 @@ TEST_F(PersonalDataManagerTest, OnAccountsCookieDeletedByUserAction) {
   EXPECT_TRUE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 }
 
-TEST_F(PersonalDataManagerTest, IsEligibleForAddressAccountStorage) {
-  // All data types are running by default.
-  EXPECT_TRUE(personal_data_->IsEligibleForAddressAccountStorage());
-
-  // No Sync, no account storage.
-  personal_data_->SetSyncServiceForTest(nullptr);
-  EXPECT_FALSE(personal_data_->IsEligibleForAddressAccountStorage());
-}
-
 TEST_F(PersonalDataManagerTest, IsCountryEligibleForAccountStorage) {
   EXPECT_TRUE(personal_data_->IsCountryEligibleForAccountStorage("AT"));
   EXPECT_FALSE(personal_data_->IsCountryEligibleForAccountStorage("IR"));

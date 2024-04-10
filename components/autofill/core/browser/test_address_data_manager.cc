@@ -14,6 +14,7 @@ TestAddressDataManager::TestAddressDataManager(
     base::RepeatingClosure notify_pdm_observers)
     : AddressDataManager(/*webdata_service=*/nullptr,
                          /*pref_service=*/nullptr,
+                         /*sync_service=*/nullptr,
                          /*strike_database=*/nullptr,
                          notify_pdm_observers,
                          "en-US") {
@@ -70,6 +71,12 @@ bool TestAddressDataManager::IsAutofillProfileEnabled() const {
     return autofill_profile_enabled_.value();
   }
   return AddressDataManager::IsAutofillProfileEnabled();
+}
+
+bool TestAddressDataManager::IsEligibleForAddressAccountStorage() const {
+  return eligible_for_account_storage_.has_value()
+             ? *eligible_for_account_storage_
+             : AddressDataManager::IsEligibleForAddressAccountStorage();
 }
 
 void TestAddressDataManager::ClearProfiles() {

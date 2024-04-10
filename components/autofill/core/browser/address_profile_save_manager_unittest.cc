@@ -1387,7 +1387,8 @@ TEST_P(AddressProfileSaveManagerTest,
 // `kLocalOrSyncable` profiles.
 TEST_P(AddressProfileSaveManagerTest, Migration_Accept) {
   const AutofillProfile standard_profile = test::StandardProfile();
-  personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
+  personal_data_manager_.test_address_data_manager()
+      .SetIsEligibleForAddressAccountStorage(true);
   ImportScenarioTestCase test_scenario{
       .existing_profiles = {standard_profile},
       .observed_profile = standard_profile,
@@ -1404,7 +1405,8 @@ TEST_P(AddressProfileSaveManagerTest, Migration_Accept) {
 // Tests declining a migration. The strike count should be increased.
 TEST_P(AddressProfileSaveManagerTest, Migration_Decline) {
   const AutofillProfile standard_profile = test::StandardProfile();
-  personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
+  personal_data_manager_.test_address_data_manager()
+      .SetIsEligibleForAddressAccountStorage(true);
   ImportScenarioTestCase test_scenario{
       .existing_profiles = {standard_profile},
       .observed_profile = standard_profile,
@@ -1422,7 +1424,8 @@ TEST_P(AddressProfileSaveManagerTest, Migration_Decline) {
 // strike count is incremented up to the strike limit.
 TEST_P(AddressProfileSaveManagerTest, Migration_Never) {
   const AutofillProfile standard_profile = test::StandardProfile();
-  personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
+  personal_data_manager_.test_address_data_manager()
+      .SetIsEligibleForAddressAccountStorage(true);
   ImportScenarioTestCase test_scenario{
       .existing_profiles = {standard_profile},
       .observed_profile = standard_profile,

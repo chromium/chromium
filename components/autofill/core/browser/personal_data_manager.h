@@ -224,10 +224,6 @@ class PersonalDataManager : public KeyedService,
   // TODO(crbug.com/1487119): Change return type to const AutofillProfile*
   AutofillProfile* GetProfileByGUID(const std::string& guid) const;
 
-  // Determines whether the logged in user (if any) is eligible to store
-  // Autofill address profiles to their account.
-  virtual bool IsEligibleForAddressAccountStorage() const;
-
   // Users based in unsupported countries and profiles with a country value set
   // to an unsupported country are not eligible for account storage. This
   // function determines if the `country_code` is eligible.
@@ -429,12 +425,6 @@ class PersonalDataManager : public KeyedService,
 
   // Returns true if the user's selectable `type` is enabled.
   bool IsUserSelectableTypeEnabled(syncer::UserSelectableType type) const;
-
-  // Sets the Sync UserSelectableType::kAutofill toggle value.
-  // TODO(crbug.com/1502843): Used for the toggle on the Autofill Settings page
-  // only. It controls syncing of autofill data stored in user accounts for
-  // non-syncing users. Remove when toggle becomes available on the Sync page.
-  void SetAutofillSelectableTypeEnabled(bool enabled);
 
   // TODO(b/322170538): Deprecated. Use the functions in
   // `payments_data_manager()` instead. Some callers on iOS still rely on this.

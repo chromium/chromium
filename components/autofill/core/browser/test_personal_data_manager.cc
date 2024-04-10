@@ -28,12 +28,6 @@ TestPersonalDataManager::TestPersonalDataManager()
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;
 
-bool TestPersonalDataManager::IsEligibleForAddressAccountStorage() const {
-  return eligible_for_account_storage_.has_value()
-             ? *eligible_for_account_storage_
-             : PersonalDataManager::IsEligibleForAddressAccountStorage();
-}
-
 const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
     const {
   if (default_country_code_.empty())

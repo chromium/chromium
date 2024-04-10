@@ -29,6 +29,7 @@ class TestAddressDataManager : public AddressDataManager {
   void LoadProfiles() override;
   void RecordUseOf(const AutofillProfile& profile) override;
   bool IsAutofillProfileEnabled() const override;
+  bool IsEligibleForAddressAccountStorage() const override;
 
   void ClearProfiles();
 
@@ -36,8 +37,13 @@ class TestAddressDataManager : public AddressDataManager {
     autofill_profile_enabled_ = autofill_profile_enabled;
   }
 
+  void SetIsEligibleForAddressAccountStorage(bool eligible) {
+    eligible_for_account_storage_ = eligible;
+  }
+
  private:
   std::optional<bool> autofill_profile_enabled_;
+  std::optional<bool> eligible_for_account_storage_;
   TestInMemoryStrikeDatabase inmemory_strike_database_;
 };
 

@@ -19,6 +19,8 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/webdata/common/web_data_results.h"
 
 namespace autofill {
@@ -55,11 +57,13 @@ void OrderProfiles(std::vector<AutofillProfile*>& profiles,
 AddressDataManager::AddressDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
     PrefService* pref_service,
+    syncer::SyncService* sync_service,
     StrikeDatabaseBase* strike_database,
     base::RepeatingClosure notify_pdm_observers,
     const std::string& app_locale)
     : notify_pdm_observers_(notify_pdm_observers),
       webdata_service_(webdata_service),
+      sync_service_(sync_service),
       app_locale_(app_locale) {
   if (webdata_service_) {
     // The `webdata_service_` is null when the TestPDM is used.
@@ -250,6 +254,13 @@ void AddressDataManager::RemoveProfile(const std::string& guid) {
       AutofillProfileChange(AutofillProfileChange::REMOVE, guid, *profile),
       /*is_ongoing=*/false);
   HandleNextProfileChange(guid);
+}
+
+bool AddressDataManager::IsEligibleForAddressAccountStorage() const {
+  // The CONTACT_INFO data type is only running for eligible users. See
+  // ContactInfoModelTypeController.
+  return sync_service_ &&
+         sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO);
 }
 
 void AddressDataManager::MigrateProfileToAccount(
@@ -491,6 +502,13 @@ AddressDataManager::GetAddressSuggestionStrikeDatabase() const {
 
 bool AddressDataManager::IsAutofillProfileEnabled() const {
   return prefs::IsAutofillProfileEnabled(pref_service_);
+}
+
+void AddressDataManager::SetAutofillSelectableTypeEnabled(bool enabled) {
+  if (sync_service_ != nullptr) {
+    sync_service_->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kAutofill, enabled);
+  }
 }
 
 void AddressDataManager::CancelPendingQuery(

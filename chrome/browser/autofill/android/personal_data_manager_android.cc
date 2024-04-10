@@ -214,7 +214,8 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetProfileByGUID(
 
 jboolean PersonalDataManagerAndroid::IsEligibleForAddressAccountStorage(
     JNIEnv* env) {
-  return personal_data_manager_->IsEligibleForAddressAccountStorage();
+  return personal_data_manager_->address_data_manager()
+      .IsEligibleForAddressAccountStorage();
 }
 
 base::android::ScopedJavaLocalRef<jstring>

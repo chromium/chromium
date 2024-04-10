@@ -96,7 +96,8 @@ class AddNewAddressBubbleControllerTest : public ::testing::Test {
 TEST_F(AddNewAddressBubbleControllerTest, SavingIntoChrome) {
   autofill_client()
       ->GetPersonalDataManager()
-      ->SetIsEligibleForAddressAccountStorage(false);
+      ->test_address_data_manager()
+      .SetIsEligibleForAddressAccountStorage(false);
 
   auto controller = CreateController();
 
@@ -109,7 +110,8 @@ TEST_F(AddNewAddressBubbleControllerTest, SavingIntoChrome) {
 TEST_F(AddNewAddressBubbleControllerTest, SavingIntoAccount) {
   autofill_client()
       ->GetPersonalDataManager()
-      ->SetIsEligibleForAddressAccountStorage(true);
+      ->test_address_data_manager()
+      .SetIsEligibleForAddressAccountStorage(true);
 
   auto controller = CreateController();
   std::u16string email =

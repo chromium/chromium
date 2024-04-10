@@ -32,7 +32,7 @@ bool IsEligibleForAccountStorage(content::WebContents* web_contents,
   // Note: addresses from unsupported countries can't be saved in account.
   // TODO(crbug.com/1432505): remove temporary unsupported countries
   // filtering.
-  return pdm->IsEligibleForAddressAccountStorage() &&
+  return pdm->address_data_manager().IsEligibleForAddressAccountStorage() &&
          pdm->IsCountryEligibleForAccountStorage(country_code);
 }
 

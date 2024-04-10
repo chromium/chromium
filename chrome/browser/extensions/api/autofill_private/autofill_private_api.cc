@@ -112,7 +112,7 @@ autofill::AutofillProfile CreateNewAutofillProfile(
     autofill::PersonalDataManager* personal_data,
     std::optional<std::string_view> country_code) {
   autofill::AutofillProfile::Source source =
-      personal_data->IsEligibleForAddressAccountStorage()
+      personal_data->address_data_manager().IsEligibleForAddressAccountStorage()
           ? autofill::AutofillProfile::Source::kAccount
           : autofill::AutofillProfile::Source::kLocalOrSyncable;
   if (country_code && !personal_data->IsCountryEligibleForAccountStorage(
@@ -1049,7 +1049,8 @@ AutofillPrivateSetAutofillSyncToggleEnabledFunction::Run() {
               args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  personal_data->SetAutofillSelectableTypeEnabled(parameters->enabled);
+  personal_data->address_data_manager().SetAutofillSelectableTypeEnabled(
+      parameters->enabled);
 
   return RespondNow(NoArguments());
 }

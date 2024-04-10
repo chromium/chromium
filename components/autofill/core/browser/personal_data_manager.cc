@@ -96,8 +96,8 @@ void PersonalDataManager::Init(
   auto notify_observers = base::BindRepeating(
       &PersonalDataManager::NotifyPersonalDataObserver, base::Unretained(this));
   address_data_manager_ = std::make_unique<AddressDataManager>(
-      profile_database, pref_service, strike_database, notify_observers,
-      app_locale_);
+      profile_database, pref_service, sync_service, strike_database,
+      notify_observers, app_locale_);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
@@ -249,13 +249,6 @@ AutofillProfile* PersonalDataManager::GetProfileByGUID(
   return address_data_manager_->GetProfileByGUID(guid);
 }
 
-bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
-  // The CONTACT_INFO data type is only running for eligible users. See
-  // ContactInfoModelTypeController.
-  return sync_service_ &&
-         sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO);
-}
-
 bool PersonalDataManager::IsCountryEligibleForAccountStorage(
     std::string_view country_code) const {
   constexpr char const* kUnsupportedCountries[] = {"CU", "IR", "KP", "SD",
@@ -306,6 +299,7 @@ void PersonalDataManager::SetSyncServiceForTest(
     sync_service_->RemoveObserver(this);
     sync_service_ = nullptr;
   }
+  address_data_manager_->SetSyncServiceForTest(sync_service);   // IN-TEST
   payments_data_manager_->SetSyncServiceForTest(sync_service);  // IN-TEST
   SetSyncService(sync_service);
 }
@@ -468,13 +462,6 @@ bool PersonalDataManager::IsUserSelectableTypeEnabled(
          sync_service_->GetUserSettings()->GetSelectedTypes().Has(type);
 }
 
-void PersonalDataManager::SetAutofillSelectableTypeEnabled(bool enabled) {
-  if (sync_service_ != nullptr) {
-    sync_service_->GetUserSettings()->SetSelectedType(
-        syncer::UserSelectableType::kAutofill, enabled);
-  }
-}
-
 void PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
     bool enabled) {
   payments_data_manager_->SetPaymentMethodsMandatoryReauthEnabled(enabled);
@@ -508,6 +495,9 @@ void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
   CHECK(!sync_service_);
 
   sync_service_ = sync_service;
+  // `address_data_manager_` and `payments_data_manager_` were already
+  // initialised with the correct `sync_service` (`SetSyncService()` is only
+  // called a single time during construction).
   if (sync_service_) {
     sync_service_->AddObserver(this);
     if (identity_manager_) {

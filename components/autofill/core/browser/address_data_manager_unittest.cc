@@ -625,6 +625,17 @@ TEST_F(AddressDataManagerTest, UpdateProfile_ResetObservations) {
           ProfileTokenQuality::ObservationType::kEditedFallback));
 }
 
+TEST_F(AddressDataManagerTest, IsEligibleForAddressAccountStorage) {
+  // All data types are running by default.
+  EXPECT_TRUE(personal_data_->address_data_manager()
+                  .IsEligibleForAddressAccountStorage());
+
+  // No Sync, no account storage.
+  personal_data_->SetSyncServiceForTest(nullptr);
+  EXPECT_FALSE(personal_data_->address_data_manager()
+                   .IsEligibleForAddressAccountStorage());
+}
+
 TEST_F(AddressDataManagerTest, MigrateProfileToAccount) {
   const AutofillProfile kLocalProfile = test::GetFullProfile();
   ASSERT_EQ(kLocalProfile.source(), AutofillProfile::Source::kLocalOrSyncable);
