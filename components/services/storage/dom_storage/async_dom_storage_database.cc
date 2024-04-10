@@ -58,44 +58,6 @@ AsyncDomStorageDatabase::AsyncDomStorageDatabase() = default;
 
 AsyncDomStorageDatabase::~AsyncDomStorageDatabase() = default;
 
-void AsyncDomStorageDatabase::Put(const std::vector<uint8_t>& key,
-                                  const std::vector<uint8_t>& value,
-                                  StatusCallback callback) {
-  RunDatabaseTask(
-      base::BindOnce(
-          [](const std::vector<uint8_t>& key, const std::vector<uint8_t>& value,
-             const DomStorageDatabase& db) { return db.Put(key, value); },
-          key, value),
-      std::move(callback));
-}
-
-void AsyncDomStorageDatabase::Delete(const std::vector<uint8_t>& key,
-                                     StatusCallback callback) {
-  RunDatabaseTask(
-      base::BindOnce(
-          [](const std::vector<uint8_t>& key, const DomStorageDatabase& db) {
-            return db.Delete(key);
-          },
-          key),
-      std::move(callback));
-}
-
-void AsyncDomStorageDatabase::DeletePrefixed(
-    const std::vector<uint8_t>& key_prefix,
-    StatusCallback callback) {
-  RunDatabaseTask(
-      base::BindOnce(
-          [](const std::vector<uint8_t>& prefix, const DomStorageDatabase& db) {
-            leveldb::WriteBatch batch;
-            leveldb::Status status = db.DeletePrefixed(prefix, &batch);
-            if (!status.ok())
-              return status;
-            return db.Commit(&batch);
-          },
-          key_prefix),
-      std::move(callback));
-}
-
 void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
   DCHECK(database_);
   database_.PostTaskWithThisObject(base::BindOnce(
@@ -106,27 +68,6 @@ void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
             FROM_HERE, base::BindOnce(std::move(callback), db->RewriteDB()));
       },
       std::move(callback), base::SequencedTaskRunner::GetCurrentDefault()));
-}
-
-void AsyncDomStorageDatabase::Get(const std::vector<uint8_t>& key,
-                                  GetCallback callback) {
-  struct GetResult {
-    leveldb::Status status;
-    DomStorageDatabase::Value value;
-  };
-  RunDatabaseTask(
-      base::BindOnce(
-          [](const std::vector<uint8_t>& key, const DomStorageDatabase& db) {
-            GetResult result;
-            result.status = db.Get(key, &result.value);
-            return result;
-          },
-          key),
-      base::BindOnce(
-          [](GetCallback callback, GetResult result) {
-            std::move(callback).Run(result.status, result.value);
-          },
-          std::move(callback)));
 }
 
 void AsyncDomStorageDatabase::CopyPrefixed(

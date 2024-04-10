@@ -565,9 +565,16 @@ void LocalStorageImpl::OnDatabaseOpened(leveldb::Status status) {
 
   // Verify DB schema version.
   if (database_) {
-    database_->Get(std::vector<uint8_t>(kVersionKey.begin(), kVersionKey.end()),
-                   base::BindOnce(&LocalStorageImpl::OnGotDatabaseVersion,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    database_->RunDatabaseTask(
+        base::BindOnce(
+            [](const std::vector<uint8_t>& key, const DomStorageDatabase& db) {
+              DomStorageDatabase::Value value;
+              leveldb::Status status = db.Get(key, &value);
+              return std::make_tuple(status, std::move(value));
+            },
+            std::vector<uint8_t>(kVersionKey.begin(), kVersionKey.end())),
+        base::BindOnce(&LocalStorageImpl::OnGotDatabaseVersion,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -575,7 +582,7 @@ void LocalStorageImpl::OnDatabaseOpened(leveldb::Status status) {
 }
 
 void LocalStorageImpl::OnGotDatabaseVersion(leveldb::Status status,
-                                            const std::vector<uint8_t>& value) {
+                                            DomStorageDatabase::Value value) {
   if (status.IsNotFound()) {
     // New database, nothing more to do. Current version will get written
     // when first data is committed.
@@ -583,7 +590,7 @@ void LocalStorageImpl::OnGotDatabaseVersion(leveldb::Status status,
     // Existing database, check if version number matches current schema
     // version.
     int64_t db_version;
-    if (!base::StringToInt64(std::string(value.begin(), value.end()),
+    if (!base::StringToInt64(base::as_string_view(base::span(value)),
                              &db_version) ||
         db_version < kMinSchemaVersion ||
         db_version > kCurrentLocalStorageSchemaVersion) {

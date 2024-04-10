@@ -971,12 +971,14 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
 
   // Clear all the data from the backing database.
   base::RunLoop loop;
-  session_storage_impl()->DatabaseForTesting()->DeletePrefixed(
-      StringViewToUint8Vector("map"),
-      base::BindLambdaForTesting([&](leveldb::Status status) {
-        loop.Quit();
-        EXPECT_TRUE(status.ok());
-      }));
+  session_storage_impl()->DatabaseForTesting()->RunDatabaseTask(
+      base::BindOnce([](const DomStorageDatabase& db) {
+        leveldb::WriteBatch batch;
+        db.DeletePrefixed(StringViewToUint8Vector("map"), &batch);
+        EXPECT_TRUE(db.Commit(&batch).ok());
+        return 0;
+      }),
+      base::IgnoreArgs<int>(loop.QuitClosure()));
   loop.Run();
 
   // Now open many new wrappers (for different storage_keys) to trigger clean

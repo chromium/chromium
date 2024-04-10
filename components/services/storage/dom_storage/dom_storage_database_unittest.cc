@@ -204,14 +204,6 @@ TEST_F(StorageServiceDomStorageDatabaseTest, BasicOperations) {
     EXPECT_STATUS_OK(db.Get(MakeBytes(kTestKey), &value));
     EXPECT_VALUE_EQ(kTestValue, value);
   });
-
-  // Now delete the key and expect the following read to fail.
-  DoSync(database, [&](const DomStorageDatabase& db) {
-    EXPECT_STATUS_OK(db.Delete(MakeBytes(kTestKey)));
-
-    DomStorageDatabase::Value value;
-    EXPECT_STATUS(IsNotFound, db.Get(MakeBytes(kTestKey), &value));
-  });
 }
 
 TEST_F(StorageServiceDomStorageDatabaseTest, Reopen) {

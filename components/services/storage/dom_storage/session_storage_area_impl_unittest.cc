@@ -63,8 +63,12 @@ class SessionStorageAreaImplTest : public testing::Test {
         std::nullopt, "SessionStorageAreaImplTestDatabase",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::DoNothing());
-    leveldb_database_->Put(StdStringToUint8Vector("map-0-key1"),
-                           StdStringToUint8Vector("data1"), base::DoNothing());
+    leveldb_database_->RunDatabaseTask(
+        base::BindOnce([](const DomStorageDatabase& db) {
+          return db.Put(StdStringToUint8Vector("map-0-key1"),
+                        StdStringToUint8Vector("data1"));
+        }),
+        base::DoNothing());
 
     std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks =
         metadata_.SetupNewDatabase();

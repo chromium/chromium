@@ -116,7 +116,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void InitiateConnection(bool in_memory_only = false);
   void OnDatabaseOpened(leveldb::Status status);
   void OnGotDatabaseVersion(leveldb::Status status,
-                            const std::vector<uint8_t>& value);
+                            DomStorageDatabase::Value value);
   void OnConnectionFinished();
   void DeleteAndRecreateDatabase();
   void OnDBDestroyed(bool recreate_in_memory, leveldb::Status status);

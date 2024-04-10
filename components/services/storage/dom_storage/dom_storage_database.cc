@@ -300,13 +300,6 @@ DomStorageDatabase::Status DomStorageDatabase::Put(KeyView key,
   return db_->Put(leveldb::WriteOptions(), MakeSlice(key), MakeSlice(value));
 }
 
-DomStorageDatabase::Status DomStorageDatabase::Delete(KeyView key) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_)
-    return Status::IOError(kInvalidDatabaseMessage);
-  return db_->Delete(leveldb::WriteOptions(), MakeSlice(key));
-}
-
 DomStorageDatabase::Status DomStorageDatabase::GetPrefixed(
     KeyView prefix,
     std::vector<KeyValuePair>* entries) const {

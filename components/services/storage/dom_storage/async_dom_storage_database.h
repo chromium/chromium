@@ -57,20 +57,7 @@ class AsyncDomStorageDatabase {
     return database_;
   }
 
-  void Put(const std::vector<uint8_t>& key,
-           const std::vector<uint8_t>& value,
-           StatusCallback callback);
-
-  void Delete(const std::vector<uint8_t>& key, StatusCallback callback);
-
-  void DeletePrefixed(const std::vector<uint8_t>& key_prefix,
-                      StatusCallback callback);
-
   void RewriteDB(StatusCallback callback);
-
-  using GetCallback = base::OnceCallback<void(leveldb::Status status,
-                                              const std::vector<uint8_t>&)>;
-  void Get(const std::vector<uint8_t>& key, GetCallback callback);
 
   void CopyPrefixed(const std::vector<uint8_t>& source_key_prefix,
                     const std::vector<uint8_t>& destination_key_prefix,

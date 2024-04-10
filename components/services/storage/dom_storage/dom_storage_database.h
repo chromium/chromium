@@ -126,9 +126,6 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
   // Sets the database entry for |key| to |value|.
   Status Put(KeyView key, ValueView value) const;
 
-  // Deletes the database entry for |key|.
-  Status Delete(KeyView key) const;
-
   // Gets all database entries whose key starts with |prefix|.
   Status GetPrefixed(KeyView prefix, std::vector<KeyValuePair>* entries) const;
 
