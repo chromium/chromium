@@ -35,15 +35,15 @@ export class SettingsGetMostChromePageElement extends
 
   static get properties() {
     return {
-      expandedMoreThanABrowser_: Boolean,
-      expandedYourDataInChrome_: Boolean,
-      expandedBeyondCookies_: Boolean,
+      expandedFirst_: Boolean,
+      expandedSecond_: Boolean,
+      expandedThird_: Boolean,
     };
   }
 
-  private expandedMoreThanABrowser_: boolean;
-  private expandedYourDataInChrome_: boolean;
-  private expandedBeyondCookies_: boolean;
+  private expandedFirst_: boolean;
+  private expandedSecond_: boolean;
+  private expandedThird_: boolean;
 
   override currentRouteChanged(newRoute: Route) {
     if (newRoute === Router.getInstance().getRoutes().GET_MOST_CHROME) {

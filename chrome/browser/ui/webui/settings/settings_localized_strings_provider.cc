@@ -564,8 +564,8 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
 void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"getTheMostOutOfChrome", IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME},
-      {"getTheMostOutOfChromeMoreThanABrowser",
-       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_MORE_THAN_A_BROWSER},
+      {"getTheMostOutOfChromeBetterForYou",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_FOR_YOU},
       {"getTheMostOutOfChromeYourDataInChrome",
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_IN_CHROME},
       {"getTheMostOutOfChromeBeyondCookies",
