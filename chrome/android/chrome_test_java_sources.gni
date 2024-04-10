@@ -445,6 +445,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/site_settings/CookieControlsBridgeTest.java",
   "javatests/src/org/chromium/chrome/browser/site_settings/CookieControlsServiceBridgeTest.java",
   "javatests/src/org/chromium/chrome/browser/site_settings/CookieSettingsTest.java",
+  "javatests/src/org/chromium/chrome/browser/site_settings/FakeRwsPrivacySandboxBridge.java",
   "javatests/src/org/chromium/chrome/browser/site_settings/FamilyLinkControlsTest.java",
   "javatests/src/org/chromium/chrome/browser/site_settings/ManageSpaceActivityTest.java",
   "javatests/src/org/chromium/chrome/browser/site_settings/PermissionInfoTest.java",
