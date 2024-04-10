@@ -192,7 +192,10 @@ bool IsEmptyNTP(web::WebState* web_state) {
 // WebStateList.
 //
 // NTPs with navigations are all preserved. If there are none, an empty NTP is
-// preserved and not removed.
+// preserved.
+// TODO(crbug.com/330328126): NTPs in tab groups are currently all preserved.
+// Instead, preserve only NTPs with navigations or at most one empty NTP per
+// group.
 - (void)removeExcessNTPsInBrowser:(Browser*)browser {
   WebStateList* webStateList = browser->GetWebStateList();
 
@@ -202,6 +205,11 @@ bool IsEmptyNTP(web::WebState* web_state) {
   std::vector<int> indicesToRemove;
   web::WebState* lastNTPWithNavigation = nullptr;
   for (int i = 0; i < webStateList->count(); i++) {
+    if (webStateList->GetGroupOfWebStateAt(i) != nullptr) {
+      // The tab is grouped. Preserve it unconditionally for now.
+      // TODO(crbug.com/330328126): Remove empty NTPs.
+      continue;
+    }
     web::WebState* webState = webStateList->GetWebStateAt(i);
     if (IsEmptyNTP(webState)) {
       indicesToRemove.push_back(i);

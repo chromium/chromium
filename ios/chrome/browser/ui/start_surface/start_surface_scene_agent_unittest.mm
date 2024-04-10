@@ -241,6 +241,50 @@ TEST_F(StartSurfaceSceneAgentTest, KeepAndActivateNonEmptyNTP) {
   EXPECT_EQ(web_state_list->GetWebStateAt(1)->GetVisibleURL(), kURL);
 }
 
+// Tests that empty NTPs in tab groups are preserved.
+// TODO(crbug.com/330328126): Only keep at most one empty NTP per group.
+TEST_F(StartSurfaceSceneAgentTest, KeepEmptyNTPsInGroups) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  std::vector<base::test::FeatureRef> enabled_features;
+  enabled_features.push_back(kRemoveExcessNTPs);
+
+  scoped_feature_list.InitWithFeatures(enabled_features, {});
+  InsertNewWebStateWithNavigationHistory(0, GURL(kChromeUINewTabURL));
+  InsertNewWebState(1, GURL(kURL));
+  InsertNewWebState(2, GURL(kChromeUINewTabURL));
+  InsertNewWebState(3, GURL(kChromeUINewTabURL));
+  InsertNewWebState(4, GURL(kChromeUINewTabURL));
+  InsertNewWebStateWithNavigationHistory(5, GURL(kChromeUINewTabURL));
+  InsertNewWebState(6, GURL(kChromeUINewTabURL));
+  WebStateList* web_state_list =
+      scene_state_.browserProviderInterface.mainBrowserProvider.browser
+          ->GetWebStateList();
+  web_state_list->CreateGroup({0, 1, 2, 3}, {});
+  [agent_ sceneState:scene_state_
+      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  histogram_tester_->ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);
+
+  // Transition to the background, triggering the NTP clean up.
+  [agent_ sceneState:scene_state_
+      transitionedToActivationLevel:SceneActivationLevelBackground];
+
+  // Expect 2 calls to IOS.NTP.ExcessRemovedTabCount. One for the regular
+  // browser, one for the incognito browser.
+  histogram_tester_->ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 2);
+  // Regular browser got 2 NTP removed.
+  histogram_tester_->ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 2, 1);
+  // Incognito browser got no NTP removed.
+  histogram_tester_->ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 0, 1);
+  ASSERT_EQ(5, web_state_list->count());
+  EXPECT_TRUE(IsUrlNtp(web_state_list->GetWebStateAt(0)->GetVisibleURL()));
+  EXPECT_GT(web_state_list->GetWebStateAt(0)->GetNavigationItemCount(), 1);
+  EXPECT_EQ(web_state_list->GetWebStateAt(1)->GetVisibleURL(), kURL);
+  EXPECT_TRUE(IsUrlNtp(web_state_list->GetWebStateAt(2)->GetVisibleURL()));
+  EXPECT_TRUE(IsUrlNtp(web_state_list->GetWebStateAt(3)->GetVisibleURL()));
+  EXPECT_TRUE(IsUrlNtp(web_state_list->GetWebStateAt(4)->GetVisibleURL()));
+  EXPECT_GT(web_state_list->GetWebStateAt(4)->GetNavigationItemCount(), 1);
+}
+
 // Tests that IOS.StartSurfaceShown is correctly logged for a valid warm start
 // open.
 TEST_F(StartSurfaceSceneAgentTest, LogCorrectWarmStartHistogram) {
