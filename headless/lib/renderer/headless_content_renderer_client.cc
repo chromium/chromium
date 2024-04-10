@@ -6,6 +6,11 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
+#include "base/command_line.h"
+#include "base/strings/string_util.h"
+#include "headless/public/switches.h"
+#include "media/base/video_codecs.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -15,7 +20,16 @@
 
 namespace headless {
 
-HeadlessContentRendererClient::HeadlessContentRendererClient() = default;
+HeadlessContentRendererClient::HeadlessContentRendererClient() {
+  const auto& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+  if (command_line.HasSwitch(switches::kAllowVideoCodecs)) {
+    video_codecs_allowlist_.emplace(
+        base::ToLowerASCII(
+            command_line.GetSwitchValueASCII(switches::kAllowVideoCodecs)),
+        /*default_allow=*/false);
+  }
+}
 
 HeadlessContentRendererClient::~HeadlessContentRendererClient() = default;
 
@@ -25,6 +39,13 @@ void HeadlessContentRendererClient::RenderFrameCreated(
   new printing::PrintRenderFrameHelper(
       render_frame, std::make_unique<HeadlessPrintRenderFrameHelperDelegate>());
 #endif
+}
+
+bool HeadlessContentRendererClient::IsSupportedVideoType(
+    const media::VideoType& type) {
+  return !video_codecs_allowlist_ ||
+         video_codecs_allowlist_->IsAllowed(
+             base::ToLowerASCII(GetCodecName(type.codec)));
 }
 
 }  // namespace headless

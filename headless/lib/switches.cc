@@ -12,6 +12,14 @@ namespace switches {
 // letter code from ISO-639.
 const char kAcceptLang[] = "accept-lang";
 
+// A comma-separated, case-insenitive list of video codecs to allow. If
+// specified, codecs not matching the list will not be used. '*' will match
+// everything,
+// '-' at the start of an entry means codec is disallowed. First entry that
+// matches determines the outcome. Codec names are as returned by
+// `GetCodecName()` in media/base/video_codecs.cc
+const char kAllowVideoCodecs[] = "allow-video-codecs";
+
 // Allowlist for Negotiate Auth servers.
 const char kAuthServerAllowlist[] = "auth-server-allowlist";
 

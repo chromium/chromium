@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -193,14 +194,6 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-  const base::CommandLine& old_command_line(
-      *base::CommandLine::ForCurrentProcess());
-  if (old_command_line.HasSwitch(switches::kDisablePDFTagging))
-    command_line->AppendSwitch(switches::kDisablePDFTagging);
-  if (old_command_line.HasSwitch(switches::kGeneratePDFDocumentOutline)) {
-    command_line->AppendSwitch(switches::kGeneratePDFDocumentOutline);
-  }
-
   // If we're spawning a renderer, then override the language switch.
   std::string process_type =
       command_line->GetSwitchValueASCII(::switches::kProcessType);
@@ -223,11 +216,16 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
     }
 
     // Please keep this in alphabetical order.
-    static const char* const kSwitchNames[] = {
+    static const char* const kForwardSwitches[] = {
         embedder_support::kOriginTrialDisabledFeatures,
         embedder_support::kOriginTrialPublicKey,
+        switches::kAllowVideoCodecs,
+        switches::kDisablePDFTagging,
     };
-    command_line->CopySwitchesFrom(old_command_line, kSwitchNames);
+    const base::CommandLine& old_command_line =
+        CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+
+    command_line->CopySwitchesFrom(old_command_line, kForwardSwitches);
   }
 }
 

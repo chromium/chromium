@@ -262,6 +262,8 @@ component("headless_non_renderer") {
     "lib/headless_content_client.h",
     "lib/headless_content_main_delegate.cc",
     "lib/headless_content_main_delegate.h",
+    "lib/renderer/allowlist.cc",
+    "lib/renderer/allowlist.h",
     "lib/renderer/headless_content_renderer_client.cc",
     "lib/renderer/headless_content_renderer_client.h",
     "lib/switches.cc",
@@ -518,6 +520,7 @@ test("headless_unittests") {
   sources = [
     "lib/browser/headless_browser_impl_unittest.cc",
     "lib/browser/headless_client_hints_controller_delegate_unittest.cc",
+    "lib/renderer/allowlist_unittest.cc",
   ]
 
   defines = []

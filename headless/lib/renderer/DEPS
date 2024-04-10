@@ -1,7 +1,7 @@
 include_rules = [
   "+components/printing/renderer",
   "+content/public/renderer",
-  "+gin",
+  "+media/base",
   "+printing",
   "+third_party/blink/public",
   "+v8/include",

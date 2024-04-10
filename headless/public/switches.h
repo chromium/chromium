@@ -14,6 +14,7 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 
 HEADLESS_EXPORT extern const char kAcceptLang[];
+HEADLESS_EXPORT extern const char kAllowVideoCodecs[];
 HEADLESS_EXPORT extern const char kAuthServerAllowlist[];
 HEADLESS_EXPORT extern const char kBlockNewWebContents[];
 HEADLESS_EXPORT extern const char kCrashDumpsDir[];

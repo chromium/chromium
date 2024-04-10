@@ -6,6 +6,7 @@
 #define HEADLESS_LIB_RENDERER_HEADLESS_CONTENT_RENDERER_CLIENT_H_
 
 #include "content/public/renderer/content_renderer_client.h"
+#include "headless/lib/renderer/allowlist.h"
 
 namespace headless {
 
@@ -20,7 +21,11 @@ class HeadlessContentRendererClient : public content::ContentRendererClient {
   ~HeadlessContentRendererClient() override;
 
  private:
+  // content::ContentRendererClient overrides.
+  bool IsSupportedVideoType(const media::VideoType& type) override;
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
+
+  std::optional<Allowlist> video_codecs_allowlist_;
 };
 
 }  // namespace headless

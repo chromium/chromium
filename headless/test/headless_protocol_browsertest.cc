@@ -412,6 +412,54 @@ class HeadlessProtocolBrowserTestWithProxy
 HEADLESS_PROTOCOL_TEST_WITH_PROXY(BrowserSetProxyConfig,
                                   "sanity/browser-set-proxy-config.js")
 
+class HeadlessAllowedVideoCodecsTest
+    : public HeadlessDevTooledBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (is_codec_enabled()) {
+      command_line->AppendSwitchASCII("allow-video-codecs", "vp8,-*");
+    } else {
+      command_line->AppendSwitchASCII("allow-video-codecs", "-vp8,*");
+    }
+  }
+
+  void RunDevTooledTest() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    SendCommandSync(devtools_client_, "Page.enable");
+    devtools_client_.AddEventHandler(
+        "Page.loadEventFired",
+        base::BindRepeating(&HeadlessAllowedVideoCodecsTest::OnLoadEventFired,
+                            base::Unretained(this)));
+    devtools_client_.SendCommand(
+        "Page.navigate",
+        Param("url", embedded_test_server()->GetURL("/hello.html").spec()));
+  }
+
+  void OnLoadEventFired(const base::Value::Dict& params) {
+    base::Value::Dict eval_params;
+    eval_params.Set("returnByValue", true);
+    eval_params.Set("awaitPromise", true);
+    eval_params.Set("expression", R"(
+      VideoDecoder.isConfigSupported({codec: "vp8"})
+          .then(result => result.supported)
+    )");
+    base::Value::Dict result = SendCommandSync(
+        devtools_client_, "Runtime.evaluate", std::move(eval_params));
+    EXPECT_THAT(result.FindBoolByDottedPath("result.result.value"),
+                testing::Optional(is_codec_enabled()));
+    FinishAsynchronousTest();
+  }
+
+  bool is_codec_enabled() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeadlessAllowedVideoCodecsTest,
+                         testing::Values(false, true));
+
+HEADLESS_DEVTOOLED_TEST_P(HeadlessAllowedVideoCodecsTest);
+
 // TODO(crbug.com/1086872): The whole test suite is flaky on Mac ASAN.
 #if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
 #define MAYBE_IN_PROC_BROWSER_TEST_F(CLASS, TEST_NAME) \
