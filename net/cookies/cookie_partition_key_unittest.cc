@@ -389,7 +389,8 @@ TEST_P(CookiePartitionKeyTest, Equality_WithNonce) {
   EXPECT_EQ(key1, key3);
 
   auto unnonced_key = CookiePartitionKey::FromNetworkIsolationKey(
-      NetworkIsolationKey(top_level_site, frame_site));
+      NetworkIsolationKey(top_level_site, frame_site), SiteForCookies(),
+      frame_site);
   EXPECT_NE(key1, unnonced_key);
 }
 
@@ -397,12 +398,14 @@ TEST_P(CookiePartitionKeyTest, Localhost) {
   SchemefulSite top_level_site(GURL("https://localhost:8000"));
 
   auto key = CookiePartitionKey::FromNetworkIsolationKey(
-      NetworkIsolationKey(top_level_site, top_level_site));
+      NetworkIsolationKey(top_level_site, top_level_site), SiteForCookies(),
+      top_level_site);
   EXPECT_TRUE(key.has_value());
 
   SchemefulSite frame_site(GURL("https://cookiesite.com"));
   key = CookiePartitionKey::FromNetworkIsolationKey(
-      NetworkIsolationKey(top_level_site, frame_site));
+      NetworkIsolationKey(top_level_site, frame_site), SiteForCookies(),
+      top_level_site);
   EXPECT_TRUE(key.has_value());
 }
 

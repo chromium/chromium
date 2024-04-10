@@ -1085,12 +1085,17 @@ void CorsURLLoader::StartNetworkRequest() {
         cross_origin_embedder_policy_, factory_client_security_state_);
   }
 
+  // TODO when crbug.com/40093296 "Don't trust |site_for_cookies| provided by
+  // the renderer" is fixed. Update the FromNetworkIsolationKey method to use
+  // request_.site_for_cookies instead of
+  // isolation_info_.site_for_cookies.
   if (cache_key.has_value()) {
     context_->GetMemoryCache()->CreateLoaderAndStart(
         network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
         *cache_key, request_, net_log_,
         net::CookiePartitionKey::FromNetworkIsolationKey(
-            isolation_info_.network_isolation_key()),
+            isolation_info_.network_isolation_key(), request_.site_for_cookies,
+            net::SchemefulSite(request_.url)),
         network_client_receiver_.BindNewPipeAndPassRemote());
     memory_cache_was_used_ = true;
   } else if (sync_network_loader_factory_) {

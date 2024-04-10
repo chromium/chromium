@@ -465,7 +465,9 @@ RestrictedCookieManager::RestrictedCookieManager(
       cookie_observer_(std::move(cookie_observer)),
       first_party_set_metadata_(std::move(first_party_set_metadata)),
       cookie_partition_key_(net::CookiePartitionKey::FromNetworkIsolationKey(
-          isolation_info.network_isolation_key())),
+          isolation_info.network_isolation_key(),
+          isolation_info.site_for_cookies(),
+          net::SchemefulSite(origin))),
       cookie_partition_key_collection_(
           net::CookiePartitionKeyCollection::FromOptional(
               cookie_partition_key_)),
@@ -527,6 +529,10 @@ void RestrictedCookieManager::OverrideIsolationInfoForTesting(
   base::RunLoop run_loop;
   isolation_info_ = new_isolation_info;
 
+  cookie_partition_key_ = net::CookiePartitionKey::FromNetworkIsolationKey(
+      isolation_info_.network_isolation_key(),
+      isolation_info_.site_for_cookies(), net::SchemefulSite(origin_));
+
   ComputeFirstPartySetMetadata(
       origin_, cookie_store_, isolation_info_,
       base::BindOnce(
@@ -540,7 +546,8 @@ void RestrictedCookieManager::OnGotFirstPartySetMetadataForTesting(
     net::FirstPartySetMetadata first_party_set_metadata) {
   first_party_set_metadata_ = std::move(first_party_set_metadata);
   cookie_partition_key_ = net::CookiePartitionKey::FromNetworkIsolationKey(
-      isolation_info_.network_isolation_key());
+      isolation_info_.network_isolation_key(),
+      isolation_info_.site_for_cookies(), net::SchemefulSite(origin_));
   cookie_partition_key_collection_ =
       net::CookiePartitionKeyCollection::FromOptional(cookie_partition_key_);
   std::move(done_closure).Run();

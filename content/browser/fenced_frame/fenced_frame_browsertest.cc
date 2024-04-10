@@ -3010,7 +3010,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   EXPECT_TRUE(isolation_info.nonce());
   std::optional<net::CookiePartitionKey> partition_key =
       net::CookiePartitionKey::FromNetworkIsolationKey(
-          isolation_info.network_isolation_key());
+          isolation_info.network_isolation_key(),
+          isolation_info.site_for_cookies(), net::SchemefulSite(https_url));
   EXPECT_TRUE(partition_key && partition_key->nonce());
   net::CookiePartitionKeyCollection cookie_partition_key_collection =
       net::CookiePartitionKeyCollection::FromOptional(partition_key);
@@ -3023,6 +3024,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
     EXPECT_TRUE(cookie.IsPartitioned());
     EXPECT_TRUE(cookie.PartitionKey() && cookie.PartitionKey()->nonce());
     EXPECT_EQ(cookie.PartitionKey()->nonce(), partition_key->nonce());
+    EXPECT_EQ(cookie.PartitionKey()->IsThirdParty(),
+              partition_key->IsThirdParty());
     EXPECT_EQ("3", cookie.Value());
   }
 
@@ -3116,7 +3119,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(isolation_info.nonce());
   std::optional<net::CookiePartitionKey> partition_key =
       net::CookiePartitionKey::FromNetworkIsolationKey(
-          isolation_info.network_isolation_key());
+          isolation_info.network_isolation_key(),
+          isolation_info.site_for_cookies(), net::SchemefulSite(https_url));
   EXPECT_TRUE(partition_key && partition_key->nonce());
   net::CookiePartitionKeyCollection cookie_partition_key_collection =
       net::CookiePartitionKeyCollection::FromOptional(partition_key);
@@ -3129,6 +3133,8 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_TRUE(cookie.IsPartitioned());
     EXPECT_TRUE(cookie.PartitionKey() && cookie.PartitionKey()->nonce());
     EXPECT_EQ(cookie.PartitionKey()->nonce(), partition_key->nonce());
+    EXPECT_EQ(cookie.PartitionKey()->IsThirdParty(),
+              partition_key->IsThirdParty());
     EXPECT_EQ("3", cookie.Value());
   }
 

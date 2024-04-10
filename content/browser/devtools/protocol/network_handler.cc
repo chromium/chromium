@@ -230,6 +230,7 @@ class CookieRetrieverNetworkService
   static void Retrieve(network::mojom::CookieManager* cookie_manager,
                        const std::vector<GURL> urls,
                        const net::NetworkIsolationKey& network_isolation_key,
+                       const net::SiteForCookies& site_for_cookies,
                        std::unique_ptr<GetCookiesCallback> callback) {
     scoped_refptr<CookieRetrieverNetworkService> self =
         new CookieRetrieverNetworkService(std::move(callback));
@@ -239,7 +240,8 @@ class CookieRetrieverNetworkService
           url, cookie_options,
           net::CookiePartitionKeyCollection::FromOptional(
               net::CookiePartitionKey::FromNetworkIsolationKey(
-                  network_isolation_key)),
+                  network_isolation_key, site_for_cookies,
+                  net::SchemefulSite(url))),
           base::BindOnce(&CookieRetrieverNetworkService::GotCookies, self));
     }
   }
@@ -1612,7 +1614,8 @@ void NetworkHandler::GetCookies(Maybe<Array<String>> protocol_urls,
 
   CookieRetrieverNetworkService::Retrieve(
       storage_partition_->GetCookieManagerForBrowserProcess(), urls,
-      host_->GetNetworkIsolationKey(), std::move(callback));
+      host_->GetNetworkIsolationKey(), host_->ComputeSiteForCookies(),
+      std::move(callback));
 }
 
 void NetworkHandler::GetAllCookies(

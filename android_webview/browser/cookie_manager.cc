@@ -491,7 +491,9 @@ void CookieManager::SetCookieHelper(const GURL& host,
 
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       new_host, value, base::Time::Now(), std::nullopt /* server_time */,
-      net::CookiePartitionKey::FromWire(net::SchemefulSite(new_host)),
+      net::CookiePartitionKey::FromWire(
+          net::SchemefulSite(new_host),
+          net::CookiePartitionKey::AncestorChainBit::kSameSite),
       /*block_truncated=*/true, net::CookieSourceType::kOther,
       /*status=*/nullptr));
 
@@ -564,15 +566,17 @@ void CookieManager::GetCookieListAsyncHelper(const GURL& host,
   if (GetMojoCookieManager()) {
     GetMojoCookieManager()->GetCookieList(
         host, options,
-        net::CookiePartitionKeyCollection(
-            net::CookiePartitionKey::FromWire(net::SchemefulSite(host))),
+        net::CookiePartitionKeyCollection(net::CookiePartitionKey::FromWire(
+            net::SchemefulSite(host),
+            net::CookiePartitionKey::AncestorChainBit::kSameSite)),
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   } else {
     GetCookieStore()->GetCookieListWithOptionsAsync(
         host, options,
-        net::CookiePartitionKeyCollection(
-            net::CookiePartitionKey::FromWire(net::SchemefulSite(host))),
+        net::CookiePartitionKeyCollection(net::CookiePartitionKey::FromWire(
+            net::SchemefulSite(host),
+            net::CookiePartitionKey::AncestorChainBit::kSameSite)),
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   }

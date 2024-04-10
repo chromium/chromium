@@ -291,7 +291,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void set_isolation_info(const IsolationInfo& isolation_info) {
     isolation_info_ = isolation_info;
     cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
-        isolation_info.network_isolation_key());
+        isolation_info.network_isolation_key(),
+        isolation_info_.site_for_cookies(), net::SchemefulSite(original_url()));
   }
 
   // This will convert the passed NetworkAnonymizationKey to an IsolationInfo.

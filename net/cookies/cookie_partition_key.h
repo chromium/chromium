@@ -97,23 +97,17 @@ class NET_EXPORT CookiePartitionKey {
   // Create a partition key from a network isolation key. Partition key is
   // derived from the key's top-frame site. For scripts, the request_site
   // is the url of the context running the code.
-  //
-  // TODO (crbug.com/325439525) Once all call sites no longer utilize default
-  // parameters. Remove existing default parameters and replace with const refs.
   static std::optional<CookiePartitionKey> FromNetworkIsolationKey(
       const NetworkIsolationKey& network_isolation_key,
-      SiteForCookies site_for_cookies = SiteForCookies(),
-      SchemefulSite request_site = SchemefulSite());
+      SiteForCookies site_for_cookies,
+      SchemefulSite request_site);
 
   // Create a new CookiePartitionKey from the site of an existing
   // CookiePartitionKey. This should only be used for sites of partition keys
   // which were already created using Deserialize or FromNetworkIsolationKey.
-  //
-  // TODO (crbug.com/325439525) Once all call sites no longer utilize default
-  // parameters. Remove existing default parameters and replace with const refs.
   static CookiePartitionKey FromWire(
       const SchemefulSite& site,
-      AncestorChainBit ancestor_chain_bit = AncestorChainBit::kCrossSite,
+      AncestorChainBit ancestor_chain_bit,
       std::optional<base::UnguessableToken> nonce = std::nullopt) {
     return CookiePartitionKey(site, nonce, ancestor_chain_bit);
   }
@@ -138,9 +132,6 @@ class NET_EXPORT CookiePartitionKey {
   // Forwards to FromWire, but unlike that method in this one the optional nonce
   // argument has no default. It also checks that cookie partitioning is enabled
   // before returning a valid key, which FromWire does not check.
-  //
-  // TODO (crbug.com/325439525) Once all call sites no longer utilize default
-  // parameters. Remove existing default parameters and replace with const refs.
   [[nodiscard]] static std::optional<CookiePartitionKey>
   FromStorageKeyComponents(const SchemefulSite& top_level_site,
                            AncestorChainBit ancestor_chain_bit,
