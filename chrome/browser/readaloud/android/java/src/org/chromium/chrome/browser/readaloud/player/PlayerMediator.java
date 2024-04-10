@@ -92,7 +92,7 @@ class PlayerMediator implements InteractionHandler {
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (!fromUser) {
+                    if (!fromUser || mPlayback == null) {
                         return;
                     }
                     float percent = (float) progress / (float) seekBar.getMax();
@@ -294,6 +294,10 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public void onSpeedChange(float newSpeed) {
+        if (mPlayback == null) {
+            return;
+        }
+
         ReadAloudPrefs.setSpeed(mDelegate.getPrefService(), newSpeed);
         mPlayback.setRate(newSpeed);
         if (newSpeed >= 2.0f) {
