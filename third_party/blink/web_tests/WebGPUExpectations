@@ -27,6 +27,12 @@ crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_clear
 crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_access/beginWebGPUAccess-texture-readback.https.html [ Skip ]
 crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_access/beginWebGPUAccess-texture-readback.https.worker.html [ Skip ]
 
+# Sandbox issue on MacOS < 14.4
+crbug.com/41485470 [ Mac ] wpt_internal/webgpu/canvas_webgpu_access/endWebGPUAccess-canvas-readback-rgba8.https.html [ Failure ]
+crbug.com/41485470 [ Mac ] wpt_internal/webgpu/canvas_webgpu_access/endWebGPUAccess-canvas-readback-rgba8.https.worker.html [ Failure ]
+crbug.com/41485470 [ Mac ] wpt_internal/webgpu/canvas_webgpu_access/endWebGPUAccess-canvas-readback-rgba16f.https.html [ Failure ]
+crbug.com/41485470 [ Mac ] wpt_internal/webgpu/canvas_webgpu_access/endWebGPUAccess-canvas-readback-rgba16f.https.worker.html [ Failure ]
+
 # Linux does not yet properly support readback on shared images.
 crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_access/beginWebGPUAccess-texture-readback.https.html [ Skip ]
 crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_access/beginWebGPUAccess-texture-readback.https.worker.html [ Skip ]
