@@ -33,7 +33,9 @@ Depending on how many crates are updated, the script may need 10-15 minutes to
 run.
 
 (Side-note: outside the rotation one may also use the script to update a single
-crate - e.g. `tools/crates/create_update_cl.py single <crate name>`.)
+crate - e.g. `tools/crates/create_update_cl.py single bytemuck`.  When working
+with multi-epoch/version crates the old version to update can be specified
+as follows: `tools/crates/create_update_cl.py single syn@2.0.55`.)
 
 Before the auto-generated CLs can be landed, some additional manual steps need
 to be done first - see the sections below.
