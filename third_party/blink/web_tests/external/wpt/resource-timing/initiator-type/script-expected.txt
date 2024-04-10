@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] The initiator type for script imported from another script must be 'script'
-  assert_equals: expected "script" but got "other"
-Harness: the test ran to completion.
-

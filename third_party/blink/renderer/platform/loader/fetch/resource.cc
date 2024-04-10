@@ -1093,41 +1093,61 @@ void Resource::DidChangePriority(ResourceLoadPriority load_priority,
 // TODO(toyoshim): Consider to generate automatically. https://crbug.com/675515.
 static const char* InitiatorTypeNameToString(
     const AtomicString& initiator_type_name) {
-  if (initiator_type_name == fetch_initiator_type_names::kAudio)
+  if (initiator_type_name == fetch_initiator_type_names::kAudio) {
     return "Audio";
-  if (initiator_type_name == fetch_initiator_type_names::kAttributionsrc)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kAttributionsrc) {
     return "Attribution resource";
-  if (initiator_type_name == fetch_initiator_type_names::kCSS)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kCSS) {
     return "CSS resource";
-  if (initiator_type_name == fetch_initiator_type_names::kDocument)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kDocument) {
     return "Document";
-  if (initiator_type_name == fetch_initiator_type_names::kIcon)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kIcon) {
     return "Icon";
-  if (initiator_type_name == fetch_initiator_type_names::kInternal)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kInternal) {
     return "Internal resource";
-  if (initiator_type_name == fetch_initiator_type_names::kFetch)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kFetch) {
     return "Fetch";
-  if (initiator_type_name == fetch_initiator_type_names::kLink)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kLink) {
     return "Link element resource";
-  if (initiator_type_name == fetch_initiator_type_names::kOther)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kOther) {
     return "Other resource";
-  if (initiator_type_name == fetch_initiator_type_names::kProcessinginstruction)
+  }
+  if (initiator_type_name ==
+      fetch_initiator_type_names::kProcessinginstruction) {
     return "Processing instruction";
-  if (initiator_type_name == fetch_initiator_type_names::kTrack)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kScript) {
+    return "Script";
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kTrack) {
     return "Track";
-  if (initiator_type_name == fetch_initiator_type_names::kUacss)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kUacss) {
     return "User Agent CSS resource";
-  if (initiator_type_name == fetch_initiator_type_names::kUse)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kUse) {
     return "SVG Use element resource";
-  if (initiator_type_name == fetch_initiator_type_names::kVideo)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kVideo) {
     return "Video";
-  if (initiator_type_name == fetch_initiator_type_names::kXml)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kXml) {
     return "XML resource";
-  if (initiator_type_name == fetch_initiator_type_names::kXmlhttprequest)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kXmlhttprequest) {
     return "XMLHttpRequest";
+  }
 
   static_assert(
-      fetch_initiator_type_names::kNamesCount == 19,
+      fetch_initiator_type_names::kNamesCount == 20,
       "New FetchInitiatorTypeNames should be handled correctly here.");
 
   return "Resource";

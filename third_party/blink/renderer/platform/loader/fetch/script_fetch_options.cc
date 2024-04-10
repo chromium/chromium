@@ -8,6 +8,7 @@
 
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -56,7 +57,8 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
 
   // Step 1. ... "script", ... [spec text]
   ResourceLoaderOptions resource_loader_options(world_for_csp);
-  resource_loader_options.initiator_info.name = AtomicString("script");
+  resource_loader_options.initiator_info.name =
+      fetch_initiator_type_names::kScript;
   resource_loader_options.reject_coep_unsafe_none = reject_coep_unsafe_none_;
   FetchParameters params(std::move(resource_request), resource_loader_options);
   params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);

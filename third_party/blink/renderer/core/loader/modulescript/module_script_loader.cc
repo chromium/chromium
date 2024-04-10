@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
@@ -159,6 +160,9 @@ void ModuleScriptLoader::FetchInternal(
 
   ResourceLoaderOptions options(&modulator_->GetScriptState()->World());
 
+  // <spec step="11">Set request's initiator type to "script".</spec>
+  options.initiator_info.name = fetch_initiator_type_names::kScript;
+
   // <spec step="12">Set up the module script request given request and
   // options.</spec>
   //
@@ -168,11 +172,6 @@ void ModuleScriptLoader::FetchInternal(
   // <spec label="SMSR">... its parser metadata to options's parser metadata,
   // ...</spec>
   options.parser_disposition = options_.ParserState();
-
-  // As initiator for module script fetch is not specified in HTML spec,
-  // we specify "" as initiator per:
-  // https://fetch.spec.whatwg.org/#concept-request-initiator
-  options.initiator_info.name = g_empty_atom;
 
   // TODO(crbug.com/1064920): Remove this once PlzDedicatedWorker ships.
   options.reject_coep_unsafe_none = options_.GetRejectCoepUnsafeNone();
