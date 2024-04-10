@@ -67,6 +67,7 @@ class CORE_EXPORT CSSLengthResolver {
 
   // The AnchorEvaluator used to evaluate anchor()/anchor-size() queries.
   virtual AnchorEvaluator* GetAnchorEvaluator() const { return nullptr; }
+  virtual const ScopedCSSName* GetPositionAnchor() const { return nullptr; }
 
   float Zoom() const { return zoom_; }
   void SetZoom(float zoom) {

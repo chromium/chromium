@@ -90,7 +90,9 @@ class CORE_EXPORT AnchorEvaluator {
   // Evaluates an anchor() or anchor-size() query.
   // Returns |nullopt| if the query is invalid (e.g., no targets or wrong
   // axis.), in which case the fallback should be used.
-  virtual std::optional<LayoutUnit> Evaluate(const AnchorQuery&) = 0;
+  virtual std::optional<LayoutUnit> Evaluate(
+      const AnchorQuery&,
+      const ScopedCSSName* position_anchor) = 0;
 
   // Take the computed inset-area and position-anchor and compute the physical
   // offsets to inset the containing block with.
@@ -103,12 +105,9 @@ class CORE_EXPORT AnchorEvaluator {
   virtual std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder&) = 0;
 
-  virtual void Trace(Visitor*) const;
+  virtual void Trace(Visitor*) const {}
 
  protected:
-  const ScopedCSSName* GetPositionAnchorName() const {
-    return position_anchor_name_;
-  }
   Mode GetMode() const { return mode_; }
   std::optional<InsetAreaOffsets> GetInsetAreaOffsets() const {
     return inset_area_offsets_;
@@ -118,17 +117,14 @@ class CORE_EXPORT AnchorEvaluator {
   friend class AnchorScope;
 
   // The computed position-anchor in use for the current try option.
-  Member<const ScopedCSSName> position_anchor_name_;
-  // The computed position-anchor in use for the current try option.
   Mode mode_ = Mode::kNone;
   // The computed inset-area offsets in use for the current try option.
   std::optional<InsetAreaOffsets> inset_area_offsets_;
 };
 
-// Temporarily changes Mode, default anchor (position-anchor), and apply the
-// current inset-area to modify the containing block position / size. When going
-// out of scope the AnchorEvaluator is reset back to its previous state with
-// caches that need to be invalidated cleared.
+// Temporarily changes Mode and the current inset-area to modify the containing
+// block position / size. When going out of scope the AnchorEvaluator is reset
+// back to its previous state with caches that need to be invalidated cleared.
 //
 // If the anchor_evaluator is nullptr the AnchorScope should have no effect.
 //
@@ -139,11 +135,10 @@ class CORE_EXPORT AnchorScope {
  public:
   using Mode = AnchorEvaluator::Mode;
 
-  // Temporarily change Mode, applied inset-area and position-anchor.
+  // Temporarily change Mode and applied inset-area.
   AnchorScope(Mode, const ComputedStyleBuilder&, AnchorEvaluator*);
   AnchorScope(Mode,
               std::optional<InsetAreaOffsets>,
-              const ScopedCSSName* position_anchor_name,
               AnchorEvaluator*);
   // Temporarily change Mode only. Applied inset-area and position-anchor stay
   // the same.
@@ -153,13 +148,11 @@ class CORE_EXPORT AnchorScope {
     if (anchor_evaluator_) {
       anchor_evaluator_->mode_ = original_mode_;
       anchor_evaluator_->inset_area_offsets_ = original_inset_area_offsets_;
-      anchor_evaluator_->position_anchor_name_ = original_position_anchor_name_;
     }
   }
 
  private:
   AnchorEvaluator* anchor_evaluator_ = nullptr;
-  const ScopedCSSName* original_position_anchor_name_ = nullptr;
   Mode original_mode_ = Mode::kNone;
   std::optional<InsetAreaOffsets> original_inset_area_offsets_;
 };

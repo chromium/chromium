@@ -310,7 +310,9 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   // Evaluates the given anchor query. Returns nullopt if the query invalid
   // (e.g., no target or wrong axis).
-  std::optional<LayoutUnit> Evaluate(const class AnchorQuery&) override;
+  std::optional<LayoutUnit> Evaluate(
+      const class AnchorQuery&,
+      const ScopedCSSName* position_anchor) override;
 
   std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
       const ScopedCSSName* position_anchor,
@@ -323,24 +325,27 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // property, or nullopt if there's no such element.
   std::optional<LogicalRect> GetAdditionalFallbackBoundsRect() const;
 
-  bool HasDefaultAnchor() const { return DefaultAnchor() != nullptr; }
-
  private:
   const LogicalAnchorQuery* AnchorQuery() const;
   const LogicalAnchorReference* ResolveAnchorReference(
-      const AnchorSpecifierValue& anchor_specifier) const;
-  bool ShouldUseScrollAdjustmentFor(const LayoutObject* anchor) const;
+      const AnchorSpecifierValue& anchor_specifier,
+      const ScopedCSSName* position_anchor) const;
+  bool ShouldUseScrollAdjustmentFor(const LayoutObject* anchor,
+                                    const ScopedCSSName* position_anchor) const;
 
   std::optional<LayoutUnit> EvaluateAnchor(
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorValue anchor_value,
-      float percentage) const;
+      float percentage,
+      const ScopedCSSName* position_anchor) const;
   std::optional<LayoutUnit> EvaluateAnchorSize(
       const AnchorSpecifierValue& anchor_specifier,
-      CSSAnchorSizeValue anchor_size_value) const;
+      CSSAnchorSizeValue anchor_size_value,
+      const ScopedCSSName* position_anchor) const;
 
-  const LayoutObject* DefaultAnchor() const;
-  const PaintLayer* DefaultAnchorScrollContainerLayer() const;
+  const LayoutObject* DefaultAnchor(const ScopedCSSName* position_anchor) const;
+  const PaintLayer* DefaultAnchorScrollContainerLayer(
+      const ScopedCSSName* position_anchor) const;
 
   bool AllowAnchor() const;
   bool AllowAnchorSize() const;
@@ -352,14 +357,12 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
                      : inset_area_modified_containing_block_rect_.Width();
   }
 
-  void ValidateDefaultAnchor() const;
   void ValidateAppliedInsetAreaOffsets() const;
   void ApplyInsetAreaOffsets() const;
 
   const LayoutObject* query_object_ = nullptr;
   mutable const LogicalAnchorQuery* anchor_query_ = nullptr;
   const LogicalAnchorQueryMap* anchor_queries_ = nullptr;
-  mutable const ScopedCSSName* position_anchor_specifier_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
   const LayoutObject* containing_block_ = nullptr;
   const WritingModeConverter container_converter_{
@@ -377,10 +380,37 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // inset_area_modified_containing_block_rect_.
   mutable std::optional<InsetAreaOffsets> applied_inset_area_offsets_;
 
-  // These fields will be populated during `anchor()` evaluation if needed.
-  mutable std::optional<const LayoutObject*> default_anchor_;
-  mutable std::optional<const PaintLayer*>
-      default_anchor_scroll_container_layer_;
+  // A single-value cache. If a call to Get has the same key as the last call,
+  // then the cached result it returned. Otherwise, the value is created using
+  // CreationFunc, then returned.
+  template <typename KeyType, typename ValueType>
+  class CachedValue {
+    STACK_ALLOCATED();
+
+   public:
+    template <typename CreationFunc>
+    ValueType Get(KeyType key, CreationFunc create) {
+      if (value_.has_value() && base::ValuesEquivalent(key_, key)) {
+        DCHECK_EQ(value_.value(), create());
+        return value_.value();
+      }
+      key_ = key;
+      value_ = create();
+      return value_.value();
+    }
+
+   private:
+    KeyType key_{};
+    std::optional<ValueType> value_;
+  };
+
+  // Caches most recent result of DefaultAnchor.
+  mutable CachedValue<const ScopedCSSName*, const LayoutObject*>
+      cached_default_anchor_;
+
+  // Caches most recent result of DefaultAnchorScrollContainerLayer.
+  mutable CachedValue<const ScopedCSSName*, const PaintLayer*>
+      cached_default_anchor_scroll_container_layer_;
 
   mutable bool needs_scroll_adjustment_in_x_ = false;
   mutable bool needs_scroll_adjustment_in_y_ = false;

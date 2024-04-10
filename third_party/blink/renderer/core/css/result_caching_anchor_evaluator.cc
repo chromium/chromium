@@ -16,15 +16,16 @@ ResultCachingAnchorEvaluator::ResultCachingAnchorEvaluator(
 }
 
 std::optional<LayoutUnit> ResultCachingAnchorEvaluator::Evaluate(
-    const AnchorQuery& query) {
+    const AnchorQuery& query,
+    const ScopedCSSName* position_anchor) {
   if (GetMode() == AnchorScope::Mode::kNone) {
     return std::nullopt;
   }
   // Forward mode to inner evaluator.
-  AnchorScope anchor_scope(GetMode(), GetInsetAreaOffsets(),
-                           GetPositionAnchorName(), evaluator_);
+  AnchorScope anchor_scope(GetMode(), GetInsetAreaOffsets(), evaluator_);
   std::optional<LayoutUnit> result =
-      evaluator_ ? evaluator_->Evaluate(query) : std::optional<LayoutUnit>();
+      evaluator_ ? evaluator_->Evaluate(query, position_anchor)
+                 : std::optional<LayoutUnit>();
   results_.Set(GetMode(), query, result);
   return result;
 }

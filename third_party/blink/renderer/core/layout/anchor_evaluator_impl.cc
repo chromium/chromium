@@ -350,34 +350,23 @@ const LogicalAnchorQuery* AnchorEvaluatorImpl::AnchorQuery() const {
 }
 
 std::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
-    const class AnchorQuery& anchor_query) {
+    const class AnchorQuery& anchor_query,
+    const ScopedCSSName* position_anchor) {
   switch (anchor_query.Type()) {
     case CSSAnchorQueryType::kAnchor:
-      return EvaluateAnchor(anchor_query.AnchorSpecifier(),
-                            anchor_query.AnchorSide(),
-                            anchor_query.AnchorSidePercentageOrZero());
+      return EvaluateAnchor(
+          anchor_query.AnchorSpecifier(), anchor_query.AnchorSide(),
+          anchor_query.AnchorSidePercentageOrZero(), position_anchor);
     case CSSAnchorQueryType::kAnchorSize:
       return EvaluateAnchorSize(anchor_query.AnchorSpecifier(),
-                                anchor_query.AnchorSize());
-  }
-}
-
-void AnchorEvaluatorImpl::ValidateDefaultAnchor() const {
-  if (!base::ValuesEquivalent(GetPositionAnchorName(),
-                              position_anchor_specifier_)) {
-    position_anchor_specifier_ = GetPositionAnchorName();
-    default_anchor_.reset();
-    default_anchor_scroll_container_layer_.reset();
-    // The effect of an applied inset-area depends on the position-anchor.
-    ApplyInsetAreaOffsets();
+                                anchor_query.AnchorSize(), position_anchor);
   }
 }
 
 const LogicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
-    const AnchorSpecifierValue& anchor_specifier) const {
-  ValidateDefaultAnchor();
-  if (!anchor_specifier.IsNamed() && !position_anchor_specifier_ &&
-      !implicit_anchor_) {
+    const AnchorSpecifierValue& anchor_specifier,
+    const ScopedCSSName* position_anchor) const {
+  if (!anchor_specifier.IsNamed() && !position_anchor && !implicit_anchor_) {
     return nullptr;
   }
   const LogicalAnchorQuery* anchor_query = AnchorQuery();
@@ -388,45 +377,29 @@ const LogicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
     return anchor_query->AnchorReference(*query_object_,
                                          &anchor_specifier.GetName());
   }
-  if (anchor_specifier.IsDefault() && position_anchor_specifier_) {
-    return anchor_query->AnchorReference(*query_object_,
-                                         position_anchor_specifier_);
+  if (anchor_specifier.IsDefault() && position_anchor) {
+    return anchor_query->AnchorReference(*query_object_, position_anchor);
   }
   return anchor_query->AnchorReference(*query_object_, implicit_anchor_);
 }
 
-const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor() const {
-  ValidateDefaultAnchor();
-  if (!default_anchor_.has_value()) {
-    const LogicalAnchorReference* reference =
-        ResolveAnchorReference(*AnchorSpecifierValue::Default());
-    default_anchor_ = reference ? reference->layout_object : nullptr;
-  } else {
-#if DCHECK_IS_ON()
-    const LogicalAnchorReference* reference =
-        ResolveAnchorReference(*AnchorSpecifierValue::Default());
-    DCHECK_EQ(*default_anchor_, reference ? reference->layout_object : nullptr);
-#endif
-  }
-  return *default_anchor_;
+const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor(
+    const ScopedCSSName* position_anchor) const {
+  return cached_default_anchor_.Get(position_anchor, [&]() {
+    const LogicalAnchorReference* reference = ResolveAnchorReference(
+        *AnchorSpecifierValue::Default(), position_anchor);
+    return reference ? reference->layout_object : nullptr;
+  });
 }
 
-const PaintLayer* AnchorEvaluatorImpl::DefaultAnchorScrollContainerLayer()
-    const {
-  ValidateDefaultAnchor();
-  if (!default_anchor_scroll_container_layer_.has_value()) {
-    // We won't reach here without a default anchor.
-    default_anchor_scroll_container_layer_ =
-        DefaultAnchor()->ContainingScrollContainerLayer(
-            true /*ignore_layout_view_for_fixed_pos*/);
-  } else {
-#if DCHECK_IS_ON()
-    DCHECK_EQ(*default_anchor_scroll_container_layer_,
-              DefaultAnchor()->ContainingScrollContainerLayer(
-                  true /*ignore_layout_view_for_fixed_pos*/));
-#endif
-  }
-  return *default_anchor_scroll_container_layer_;
+const PaintLayer* AnchorEvaluatorImpl::DefaultAnchorScrollContainerLayer(
+    const ScopedCSSName* position_anchor) const {
+  return cached_default_anchor_scroll_container_layer_.Get(
+      position_anchor, [&]() {
+        return DefaultAnchor(position_anchor)
+            ->ContainingScrollContainerLayer(
+                true /*ignore_layout_view_for_fixed_pos*/);
+      });
 }
 
 bool AnchorEvaluatorImpl::AllowAnchor() const {
@@ -474,28 +447,30 @@ bool AnchorEvaluatorImpl::IsRightOrBottom() const {
 }
 
 bool AnchorEvaluatorImpl::ShouldUseScrollAdjustmentFor(
-    const LayoutObject* anchor) const {
-  if (!DefaultAnchor()) {
+    const LayoutObject* anchor,
+    const ScopedCSSName* position_anchor) const {
+  if (!DefaultAnchor(position_anchor)) {
     return false;
   }
-  if (anchor == DefaultAnchor()) {
+  if (anchor == DefaultAnchor(position_anchor)) {
     return true;
   }
   return anchor->ContainingScrollContainerLayer(
              true /*ignore_layout_view_for_fixed_pos*/) ==
-         DefaultAnchorScrollContainerLayer();
+         DefaultAnchorScrollContainerLayer(position_anchor);
 }
 
 std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorValue anchor_value,
-    float percentage) const {
+    float percentage,
+    const ScopedCSSName* position_anchor) const {
   if (!AllowAnchor()) {
     return std::nullopt;
   }
 
   const LogicalAnchorReference* anchor_reference =
-      ResolveAnchorReference(anchor_specifier);
+      ResolveAnchorReference(anchor_specifier, position_anchor);
   if (!anchor_reference) {
     return std::nullopt;
   }
@@ -513,7 +488,8 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     bool& needs_scroll_adjustment = is_y_axis ? needs_scroll_adjustment_in_y_
                                               : needs_scroll_adjustment_in_x_;
     if (!needs_scroll_adjustment &&
-        ShouldUseScrollAdjustmentFor(anchor_reference->layout_object)) {
+        ShouldUseScrollAdjustmentFor(anchor_reference->layout_object,
+                                     position_anchor)) {
       needs_scroll_adjustment = true;
     }
     return result;
@@ -523,13 +499,14 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
 
 std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     const AnchorSpecifierValue& anchor_specifier,
-    CSSAnchorSizeValue anchor_size_value) const {
+    CSSAnchorSizeValue anchor_size_value,
+    const ScopedCSSName* position_anchor) const {
   if (!AllowAnchorSize()) {
     return std::nullopt;
   }
 
   const LogicalAnchorReference* anchor_reference =
-      ResolveAnchorReference(anchor_specifier);
+      ResolveAnchorReference(anchor_specifier, position_anchor);
   if (!anchor_reference) {
     return std::nullopt;
   }
@@ -580,12 +557,14 @@ std::optional<PhysicalOffset> AnchorEvaluatorImpl::ComputeAnchorCenterOffsets(
   {
     AnchorScope anchor_scope(AnchorScope::Mode::kTop, this);
     top = EvaluateAnchor(*AnchorSpecifierValue::Default(),
-                         CSSAnchorValue::kCenter, dummy_percentage);
+                         CSSAnchorValue::kCenter, dummy_percentage,
+                         builder.PositionAnchor());
   }
   {
     AnchorScope anchor_scope(AnchorScope::Mode::kLeft, this);
     left = EvaluateAnchor(*AnchorSpecifierValue::Default(),
-                          CSSAnchorValue::kCenter, dummy_percentage);
+                          CSSAnchorValue::kCenter, dummy_percentage,
+                          builder.PositionAnchor());
   }
   CHECK(top.has_value() == left.has_value());
   if (top.has_value()) {
@@ -600,12 +579,7 @@ AnchorEvaluatorImpl::ComputeInsetAreaOffsetsForLayout(
     InsetArea inset_area) {
   CHECK(!inset_area.IsNone());
 
-  // Set up the computed position-anchor for the HasDefaultAnchor() call below
-  // to work correctly.
-  AnchorScope outer_scope(AnchorScope::Mode::kNone, std::nullopt,
-                          position_anchor, this);
-
-  if (!HasDefaultAnchor()) {
+  if (!DefaultAnchor(position_anchor)) {
     return std::nullopt;
   }
   InsetArea physical_inset_area = inset_area.ToPhysical(
@@ -625,22 +599,22 @@ AnchorEvaluatorImpl::ComputeInsetAreaOffsetsForLayout(
   // nothing to do here for nullopt values.
   if (std::optional<blink::AnchorQuery> query = physical_inset_area.UsedTop()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBaseTop, this);
-    top = Evaluate(query.value()).value_or(LayoutUnit());
+    top = Evaluate(query.value(), position_anchor).value_or(LayoutUnit());
   }
   if (std::optional<blink::AnchorQuery> query =
           physical_inset_area.UsedBottom()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBaseBottom, this);
-    bottom = Evaluate(query.value()).value_or(LayoutUnit());
+    bottom = Evaluate(query.value(), position_anchor).value_or(LayoutUnit());
   }
   if (std::optional<blink::AnchorQuery> query =
           physical_inset_area.UsedLeft()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBaseLeft, this);
-    left = Evaluate(query.value()).value_or(LayoutUnit());
+    left = Evaluate(query.value(), position_anchor).value_or(LayoutUnit());
   }
   if (std::optional<blink::AnchorQuery> query =
           physical_inset_area.UsedRight()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBaseRight, this);
-    right = Evaluate(query.value()).value_or(LayoutUnit());
+    right = Evaluate(query.value(), position_anchor).value_or(LayoutUnit());
   }
   return InsetAreaOffsets(top, bottom, left, right);
 }

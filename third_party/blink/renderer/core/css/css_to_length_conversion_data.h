@@ -250,11 +250,15 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
    public:
     AnchorData() = default;
-    AnchorData(Element* anchored, AnchorEvaluator*);
+    AnchorData(Element* anchored,
+               AnchorEvaluator*,
+               const ScopedCSSName* position_anchor);
     AnchorEvaluator* GetEvaluator() const { return evaluator_; }
+    const ScopedCSSName* GetPositionAnchor() const { return position_anchor_; }
 
    private:
     AnchorEvaluator* evaluator_ = nullptr;
+    const ScopedCSSName* position_anchor_ = nullptr;
   };
 
   using Flags = uint16_t;
@@ -349,11 +353,17 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   void SetLineHeightSize(const LineHeightSize& line_height_size) {
     line_height_size_ = line_height_size;
   }
+  void SetAnchorData(const AnchorData& anchor_data) {
+    anchor_data_ = anchor_data;
+  }
 
   void ReferenceAnchor() const override;
 
   AnchorEvaluator* GetAnchorEvaluator() const override {
     return anchor_data_.GetEvaluator();
+  }
+  const ScopedCSSName* GetPositionAnchor() const override {
+    return anchor_data_.GetPositionAnchor();
   }
 
   // See ContainerSizes::PreCachedCopy.

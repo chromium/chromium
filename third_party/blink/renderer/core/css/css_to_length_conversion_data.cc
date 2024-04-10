@@ -294,9 +294,11 @@ std::optional<double> CSSToLengthConversionData::ContainerSizes::FindNamedSize(
                                   &container_name);
 }
 
-CSSToLengthConversionData::AnchorData::AnchorData(Element* anchored,
-                                                  AnchorEvaluator* evaluator)
-    : evaluator_(evaluator) {
+CSSToLengthConversionData::AnchorData::AnchorData(
+    Element* anchored,
+    AnchorEvaluator* evaluator,
+    const ScopedCSSName* position_anchor)
+    : evaluator_(evaluator), position_anchor_(position_anchor) {
   if (!evaluator_ && anchored) {
     if (OutOfFlowData* out_of_flow_data = anchored->GetOutOfFlowData()) {
       evaluator_ = &out_of_flow_data->GetAnchorResults();

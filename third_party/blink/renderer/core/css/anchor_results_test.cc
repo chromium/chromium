@@ -271,7 +271,8 @@ TEST_F(AnchorResultsTest, IsAnyResultDifferent_Missing) {
   AnchorResults results1;
   {
     AnchorScope anchor_scope(AnchorScope::Mode::kTop, &results1);
-    results1.Evaluate(CreateItem(Options{})->Query());
+    results1.Evaluate(CreateItem(Options{})->Query(),
+                      /* position_anchor */ nullptr);
   }
 
   AnchorResults results2;
@@ -292,7 +293,8 @@ TEST_F(AnchorResultsTest, Evaluate) {
   results.Set(mode, item->Query(), LayoutUnit(42.0));
 
   AnchorScope anchor_scope(mode, &results);
-  EXPECT_EQ(LayoutUnit(42.0), results.Evaluate(item->Query()));
+  EXPECT_EQ(LayoutUnit(42.0),
+            results.Evaluate(item->Query(), /* position_anchor */ nullptr));
 }
 
 TEST_F(AnchorResultsTest, EvaluateWrongMode) {
@@ -306,7 +308,8 @@ TEST_F(AnchorResultsTest, EvaluateWrongMode) {
   results.Set(mode, item->Query(), LayoutUnit(42.0));
 
   AnchorScope anchor_scope(AnchorScope::Mode::kTop, &results);
-  EXPECT_EQ(std::nullopt, results.Evaluate(item->Query()));
+  EXPECT_EQ(std::nullopt,
+            results.Evaluate(item->Query(), /* position_anchor */ nullptr));
 }
 
 }  // namespace blink

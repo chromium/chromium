@@ -9,30 +9,22 @@
 
 namespace blink {
 
-void AnchorEvaluator::Trace(Visitor* visitor) const {
-  visitor->Trace(position_anchor_name_);
-}
-
 AnchorScope::AnchorScope(Mode mode,
                          const ComputedStyleBuilder& builder,
                          AnchorEvaluator* anchor_evaluator)
     : AnchorScope(mode,
                   builder.InsetAreaOffsets(),
-                  builder.PositionAnchor(),
                   anchor_evaluator) {}
 
 AnchorScope::AnchorScope(Mode mode,
                          std::optional<InsetAreaOffsets> inset_area_offsets,
-                         const ScopedCSSName* position_anchor_name,
                          AnchorEvaluator* anchor_evaluator)
     : anchor_evaluator_(anchor_evaluator) {
   if (anchor_evaluator) {
     original_mode_ = anchor_evaluator_->mode_;
     original_inset_area_offsets_ = anchor_evaluator_->inset_area_offsets_;
-    original_position_anchor_name_ = anchor_evaluator_->position_anchor_name_;
     anchor_evaluator_->mode_ = mode;
     anchor_evaluator_->inset_area_offsets_ = inset_area_offsets;
-    anchor_evaluator_->position_anchor_name_ = position_anchor_name;
   }
 }
 
@@ -43,7 +35,6 @@ AnchorScope::AnchorScope(Mode mode, AnchorEvaluator* anchor_evaluator)
     anchor_evaluator->mode_ = mode;
     // Store the existing value so that we reset back to the same value
     original_inset_area_offsets_ = anchor_evaluator->inset_area_offsets_;
-    original_position_anchor_name_ = anchor_evaluator->position_anchor_name_;
   }
 }
 

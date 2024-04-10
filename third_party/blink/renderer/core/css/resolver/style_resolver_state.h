@@ -183,6 +183,7 @@ class CORE_EXPORT StyleResolverState {
   void SetEffectiveZoom(float);
   void SetWritingMode(WritingMode);
   void SetTextOrientation(ETextOrientation);
+  void SetPositionAnchor(ScopedCSSName*);
 
   CSSParserMode GetParserMode() const;
 

@@ -28,7 +28,9 @@ class ResultCachingAnchorEvaluator : public AnchorEvaluator {
  public:
   ResultCachingAnchorEvaluator(AnchorEvaluator*, AnchorResults&);
 
-  std::optional<LayoutUnit> Evaluate(const AnchorQuery&) override;
+  std::optional<LayoutUnit> Evaluate(
+      const AnchorQuery&,
+      const ScopedCSSName* position_anchor) override;
   std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
       const ScopedCSSName* position_anchor,
       InsetArea inset_area) override;

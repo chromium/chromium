@@ -190,6 +190,21 @@ const CSSValue* PositionAnchor::CSSValueFromComputedStyleInternal(
   return MakeGarbageCollected<CSSCustomIdentValue>(*style.PositionAnchor());
 }
 
+void PositionAnchor::ApplyInitial(StyleResolverState& state) const {
+  state.SetPositionAnchor(ComputedStyleInitialValues::InitialPositionAnchor());
+}
+
+void PositionAnchor::ApplyInherit(StyleResolverState& state) const {
+  state.SetPositionAnchor(state.ParentStyle()->PositionAnchor());
+}
+
+void PositionAnchor::ApplyValue(StyleResolverState& state,
+                                const CSSValue& value,
+                                ValueMode) const {
+  state.SetPositionAnchor(
+      StyleBuilderConverter::ConvertPositionAnchor(state, value));
+}
+
 // https://drafts.csswg.org/css-anchor-position-1/#position-visibility
 // position-visibility:
 //   always | [ anchors-valid | anchors-visible ] || no-overflow
