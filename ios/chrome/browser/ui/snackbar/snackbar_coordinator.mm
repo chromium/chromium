@@ -87,6 +87,14 @@ BASE_FEATURE(kSnackbarUseLegacyDismissalBehavior,
 
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message
                bottomOffset:(CGFloat)offset {
+  // TODO:(crbug.com/333567367) Clean up the killswitch.
+  if (base::FeatureList::IsEnabled(kSnackbarUseLegacyDismissalBehavior)) {
+    if ([message
+            respondsToSelector:@selector(setUsesLegacyDismissalBehavior:)]) {
+      message.usesLegacyDismissalBehavior = YES;
+    }
+  }
+
   [[MDCSnackbarManager defaultManager]
       setPresentationHostView:self.baseViewController.view.window];
   [[MDCSnackbarManager defaultManager] setBottomOffset:offset];
@@ -105,14 +113,6 @@ BASE_FEATURE(kSnackbarUseLegacyDismissalBehavior,
       [MDCSnackbarMessage messageWithText:messageText];
   message.action = action;
   message.completionHandler = completionAction;
-
-  // TODO:(crbug.com/333567367) Clean up the killswitch.
-  if (base::FeatureList::IsEnabled(kSnackbarUseLegacyDismissalBehavior)) {
-    if ([message
-            respondsToSelector:@selector(setUsesLegacyDismissalBehavior:)]) {
-      message.usesLegacyDismissalBehavior = YES;
-    }
-  }
 
   [self showSnackbarMessage:message];
 }
