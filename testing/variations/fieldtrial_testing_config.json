@@ -20349,120 +20349,6 @@
             ]
         }
     ],
-    "V8ConcurrentSparkplug": [
-        {
-            "platforms": [
-                "chromeos_lacros",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "1Thread",
-                    "params": {
-                        "V8ConcurrentSparkplugMaxThreads": "1"
-                    },
-                    "enable_features": [
-                        "V8ConcurrentSparkplug",
-                        "V8Sparkplug"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "V8ConcurrentSparkplug"
-                    ]
-                },
-                {
-                    "name": "2Threads",
-                    "params": {
-                        "V8ConcurrentSparkplugMaxThreads": "2"
-                    },
-                    "enable_features": [
-                        "V8ConcurrentSparkplug",
-                        "V8Sparkplug"
-                    ]
-                },
-                {
-                    "name": "ManyThreads",
-                    "params": {
-                        "V8ConcurrentSparkplugMaxThreads": "0"
-                    },
-                    "enable_features": [
-                        "V8ConcurrentSparkplug",
-                        "V8Sparkplug"
-                    ]
-                },
-                {
-                    "name": "NoSparkplug",
-                    "disable_features": [
-                        "V8ConcurrentSparkplug",
-                        "V8Sparkplug"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8ConcurrentSparkplugAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "1Thread",
-                    "params": {
-                        "V8ConcurrentSparkplugMaxThreads": "1"
-                    },
-                    "enable_features": [
-                        "V8ConcurrentSparkplug",
-                        "V8Sparkplug"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "V8ConcurrentSparkplug",
-                        "V8Sparkplug"
-                    ]
-                },
-                {
-                    "name": "2Threads",
-                    "params": {
-                        "V8ConcurrentSparkplugMaxThreads": "2"
-                    },
-                    "enable_features": [
-                        "V8ConcurrentSparkplug",
-                        "V8Sparkplug"
-                    ]
-                },
-                {
-                    "name": "ManyThreads",
-                    "params": {
-                        "V8ConcurrentSparkplugMaxThreads": "0"
-                    },
-                    "enable_features": [
-                        "V8ConcurrentSparkplug",
-                        "V8Sparkplug"
-                    ]
-                },
-                {
-                    "name": "WithSparkplug",
-                    "enable_features": [
-                        "V8Sparkplug"
-                    ],
-                    "disable_features": [
-                        "V8ConcurrentSparkplug"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8EfficiencyModeTiering": [
         {
             "platforms": [
@@ -20812,6 +20698,30 @@
                     "enable_features": [
                         "V8SlowHistogramsSparkplugAndroid",
                         "V8Sparkplug"
+                    ]
+                }
+            ]
+        }
+    ],
+    "V8SynchronousSparkplug": [
+        {
+            "platforms": [
+                "chromeos_lacros",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows",
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "disable_features": [
+                        "V8BaselineBatchCompilation",
+                        "V8ConcurrentSparkplug"
                     ]
                 }
             ]
