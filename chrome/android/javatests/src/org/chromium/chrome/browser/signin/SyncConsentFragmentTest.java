@@ -1028,6 +1028,7 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    @DisabledTest(message = "https://crbug.com/333735758")
     public void
             testAutomotiveDevice_deviceLockCreated_syncAcceptedSuccessfully_withMinorModeRestrictionsEnabled()
                     throws IOException {
