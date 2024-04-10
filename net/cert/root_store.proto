@@ -49,6 +49,9 @@ message TrustAnchor {
   // If not empty, the anchor is only trusted if at least one of the
   // ConstraintSets is satisfied.
   repeated ConstraintSet constraints = 4;
+
+  // Human-readable display name used to identify the certificate.
+  optional string display_name = 5;
 }
 
 // Message storing a complete Chrome Root Store.
