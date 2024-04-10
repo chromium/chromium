@@ -95,17 +95,6 @@ export class SettingsPrefsElement extends PolymerElement {
         type: Object,
         notify: true,
       },
-
-      /**
-       * Map of pref keys to values representing the state of the Chrome
-       * pref store as of the last update from the API.
-       */
-      lastPrefValues_: {
-        type: Object,
-        value() {
-          return {};
-        },
-      },
     };
   }
 
@@ -116,7 +105,13 @@ export class SettingsPrefsElement extends PolymerElement {
   }
 
   prefs: {[key: string]: any}|undefined;
-  private lastPrefValues_: {[key: string]: any};
+
+  /**
+   * Map of pref keys to values representing the state of the Chrome
+   * pref store as of the last update from the API.
+   */
+  private lastPrefValues_: Map<string, any> = new Map();
+
   private settingsApi_: typeof chrome.settingsPrivate = chrome.settingsPrivate;
   private initialized_: boolean = false;
   private boundPrefsChanged_:
@@ -166,7 +161,7 @@ export class SettingsPrefsElement extends PolymerElement {
     }
 
     const key = this.getPrefKeyFromPath_(e.path);
-    const prefStoreValue = this.lastPrefValues_[key];
+    const prefStoreValue = this.lastPrefValues_.get(key);
 
     const prefObj = this.get(key, this.prefs);
 
@@ -248,7 +243,8 @@ export class SettingsPrefsElement extends PolymerElement {
     newPrefs.forEach((newPrefObj) => {
       // Use the PrefObject from settingsPrivate to create a copy in
       // lastPrefValues_ at the pref's key.
-      this.lastPrefValues_[newPrefObj.key] = structuredClone(newPrefObj.value);
+      this.lastPrefValues_.set(
+          newPrefObj.key, structuredClone(newPrefObj.value));
 
       if (!deepEqual(this.get(newPrefObj.key, prefs), newPrefObj)) {
         // Add the pref to |prefs|.
@@ -278,7 +274,7 @@ export class SettingsPrefsElement extends PolymerElement {
     for (let i = 1; i <= parts.length; i++) {
       const key = parts.slice(0, i).join('.');
       // The lastPrefValues_ keys match the pref keys.
-      if (this.lastPrefValues_.hasOwnProperty(key)) {
+      if (this.lastPrefValues_.has(key)) {
         return key;
       }
     }
@@ -293,7 +289,7 @@ export class SettingsPrefsElement extends PolymerElement {
       return;
     }
     this.prefs = undefined;
-    this.lastPrefValues_ = {};
+    this.lastPrefValues_.clear();
     this.initialized_ = false;
     // Remove the listener added in initialize().
     this.settingsApi_.onPrefsChanged.removeListener(this.boundPrefsChanged_);
