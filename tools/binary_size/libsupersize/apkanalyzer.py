@@ -269,7 +269,19 @@ def CreateDexSymbol(name, size, source_map):
     last_idx = method.rfind('.', 0, last_idx)
     if last_idx != -1:
       old_package = method[:last_idx]
-      outer_class, name = NormalizeLine(old_package, name)
+
+      # TODO(b/333617478): Delete this work-around when R8 mapping files no
+      #     longer output this pattern.
+      suspect_class_name = old_package
+      if suspect_class_name.startswith('WV.'):
+        suspect_class_name = suspect_class_name[3:]
+      if ('.' not in suspect_class_name
+          and new_package.endswith(f'.{suspect_class_name}')):
+        name = name.replace(f' {old_package}.', ' ')
+        old_package = new_package
+      else:
+        # Non-workaround case:
+        outer_class, name = NormalizeLine(old_package, name)
 
   is_outlined = outer_class == None
   object_path = _MakeDexObjectPath(old_package, is_outlined)
