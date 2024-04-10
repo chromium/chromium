@@ -90,7 +90,8 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       content::BrowserContext* browser_context,
       const GURL& origin,
       ContentSettingsType permission) override;
-  std::optional<url::Origin> GetAutoApprovalOrigin() override;
+  std::optional<url::Origin> GetAutoApprovalOrigin(
+      content::BrowserContext* browser_context) override;
   bool CanBypassEmbeddingOriginCheck(const GURL& requesting_origin,
                                      const GURL& embedding_origin) override;
   std::optional<GURL> OverrideCanonicalOrigin(

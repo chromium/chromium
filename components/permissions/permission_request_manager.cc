@@ -228,7 +228,8 @@ void PermissionRequestManager::AddRequest(
       url::IsSameOriginWith(main_frame_origin, request->requesting_origin());
 
   std::optional<url::Origin> auto_approval_origin =
-      PermissionsClient::Get()->GetAutoApprovalOrigin();
+      PermissionsClient::Get()->GetAutoApprovalOrigin(
+          web_contents()->GetBrowserContext());
   if (auto_approval_origin) {
     if (url::Origin::Create(request->requesting_origin()) ==
         auto_approval_origin.value()) {

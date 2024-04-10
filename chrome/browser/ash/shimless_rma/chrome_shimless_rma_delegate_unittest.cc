@@ -50,6 +50,9 @@ const char kTestWrongExtId[] = "neacocmolncbbnnameegalgmoedgpfpk";
 // The IWA installation is not tested in unit test. So we don't need a real
 // IWA.
 const char kFakeIwaPath[] = "fake_iwa_path.swbn";
+// The IWA ID corresponding to the dev extension, used in development phase.
+const char kDevIwaId[] =
+    "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic";
 }  // namespace
 
 class ChromeShimlessRmaDelegateTest : public testing::Test {
@@ -254,7 +257,11 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
 
 // Verify the whole flow of `PrepareDiagnosticsAppProfile`.
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest, Success) {
+  const auto expected_url_origin =
+      url::Origin::Create(GURL(base::StrCat({"isolated-app://", kDevIwaId})));
   fake_diagnostics_app_profile_helper_delegate_->web_app().SetName("App Name");
+  fake_diagnostics_app_profile_helper_delegate_->web_app().SetStartUrl(
+      expected_url_origin.GetURL());
 
   // Call this twice to verify that even if the profile has already been loaded
   // it still works.
@@ -265,8 +272,7 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest, Success) {
 
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(result->extension_id, "jmalcmbicpnakfkncbgbcmlmgpfkhdca");
-    EXPECT_EQ(result->iwa_id.id(),
-              "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic");
+    EXPECT_EQ(result->iwa_id.id(), kDevIwaId);
     EXPECT_EQ(result->name, "App Name");
     EXPECT_EQ(result->permission_message,
               "Run ChromeOS diagnostic tests\nRead ChromeOS device information "
@@ -276,6 +282,13 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest, Success) {
     EXPECT_FALSE(context->IsOffTheRecord());
     EXPECT_TRUE(Profile::FromBrowserContext(context)->GetPrefs()->GetBoolean(
         prefs::kForceEphemeralProfiles));
+    EXPECT_TRUE(
+        DiagnosticsAppProfileHelperDelegate::GetInstalledDiagnosticsAppOrigin()
+            .has_value());
+    EXPECT_TRUE(
+        DiagnosticsAppProfileHelperDelegate::GetInstalledDiagnosticsAppOrigin()
+            .value()
+            .IsSameOriginWith(expected_url_origin));
   }
 }
 
@@ -370,4 +383,29 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), k3pDiagErrorIWACannotHasPermissionPolicy);
 }
+
+// Verify that if IWA is not installed successfully, the Delegate will not
+// return the installed app origin.
+TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
+       InstalledAppOriginNotSetAfterIwaInstallFailure) {
+  const auto expected_url_origin =
+      url::Origin::Create(GURL(base::StrCat({"isolated-app://", kDevIwaId})));
+  fake_diagnostics_app_profile_helper_delegate_->web_app().SetStartUrl(
+      expected_url_origin.GetURL());
+
+  fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
+      blink::ParsedPermissionsPolicy{{blink::ParsedPermissionsPolicyDeclaration{
+          blink::mojom::PermissionsPolicyFeature::kNotFound}}});
+
+  auto result = PrepareDiagnosticsAppBrowserContext(
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+          .Append(kTestCrxPath));
+
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), k3pDiagErrorIWACannotHasPermissionPolicy);
+  EXPECT_FALSE(
+      DiagnosticsAppProfileHelperDelegate::GetInstalledDiagnosticsAppOrigin()
+          .has_value());
+}
+
 }  // namespace ash::shimless_rma

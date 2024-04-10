@@ -105,7 +105,8 @@ PermissionsClient::HadThreeConsecutiveNotificationPermissionDenies(
   return std::nullopt;
 }
 
-std::optional<url::Origin> PermissionsClient::GetAutoApprovalOrigin() {
+std::optional<url::Origin> PermissionsClient::GetAutoApprovalOrigin(
+    content::BrowserContext* browser_context) {
   return std::nullopt;
 }
 

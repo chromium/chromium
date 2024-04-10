@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -83,8 +84,10 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -442,7 +445,8 @@ std::optional<bool> ChromePermissionsClient::HasPreviouslyAutoRevokedPermission(
                                                                      origin);
 }
 
-std::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
+std::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin(
+    content::BrowserContext* browser_context) {
   // In web kiosk mode, all permission requests are auto-approved for the origin
   // of the main app.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -455,6 +459,14 @@ std::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
         ash::WebKioskAppManager::Get()->GetAppByAccountId(account_id);
     DCHECK(app_data);
     return url::Origin::Create(app_data->install_url());
+  }
+
+  // In Shimless RMA mode, permission requests are auto-approved during runtime
+  // since the app has requested all permissions during install time.
+  if (ash::features::IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled() &&
+      ash::IsShimlessRmaAppBrowserContext(browser_context)) {
+    return ash::shimless_rma::DiagnosticsAppProfileHelperDelegate::
+        GetInstalledDiagnosticsAppOrigin();
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (profiles::IsWebKioskSession()) {

@@ -203,7 +203,8 @@ class PermissionsClient {
   // If the embedder returns an origin here, any requests matching that origin
   // will be approved. Requests that do not match the returned origin will
   // immediately be finished without granting/denying the permission.
-  virtual std::optional<url::Origin> GetAutoApprovalOrigin();
+  virtual std::optional<url::Origin> GetAutoApprovalOrigin(
+      content::BrowserContext* browser_context);
 
   // Allows the embedder to bypass checking the embedding origin when performing
   // permission availability checks. This is used for example when a permission

@@ -15,10 +15,12 @@
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper_constants.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -50,6 +52,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 namespace context {
 class BrowserContext;
@@ -75,6 +78,11 @@ constexpr auto kAllowlistedPermissionPolicyStringMap =
           IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_FULLSCREEN},
          {blink::mojom::PermissionsPolicyFeature::kHid,
           IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_HID_DEVICES}});
+
+std::optional<url::Origin>& GetInstalledDiagnosticsAppOriginInternal() {
+  static base::NoDestructor<std::optional<url::Origin>> g_origin;
+  return *g_origin;
+}
 
 extensions::ExtensionService* GetExtensionService(
     content::BrowserContext* context) {
@@ -126,6 +134,7 @@ struct PrepareDiagnosticsAppProfileState {
   std::optional<web_package::SignedWebBundleId> iwa_id;
   std::optional<std::string> name;
   std::optional<std::string> permission_message;
+  std::optional<GURL> iwa_start_url;
 };
 
 PrepareDiagnosticsAppProfileState::PrepareDiagnosticsAppProfileState() =
@@ -143,6 +152,10 @@ void ReportSuccess(std::unique_ptr<PrepareDiagnosticsAppProfileState> state) {
   CHECK(state->context);
   CHECK(state->extension_id);
   CHECK(state->iwa_id);
+  CHECK(state->iwa_start_url);
+
+  GetInstalledDiagnosticsAppOriginInternal() =
+      url::Origin::Create(state->iwa_start_url.value());
 
   std::move(state->callback)
       .Run(base::ok(
@@ -203,6 +216,7 @@ void OnIsolatedWebAppInstalled(
   }
 
   state->name = web_app->untranslated_name();
+  state->iwa_start_url = web_app->start_url();
 
   ReportSuccess(std::move(state));
 }
@@ -438,12 +452,18 @@ const web_app::WebApp* DiagnosticsAppProfileHelperDelegate::GetWebAppById(
   return registrar.GetAppById(app_id);
 }
 
+const std::optional<url::Origin>&
+DiagnosticsAppProfileHelperDelegate::GetInstalledDiagnosticsAppOrigin() {
+  return GetInstalledDiagnosticsAppOriginInternal();
+}
+
 void PrepareDiagnosticsAppProfile(
     DiagnosticsAppProfileHelperDelegate* delegate,
     const base::FilePath& crx_path,
     const base::FilePath& swbn_path,
     ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextCallback callback) {
   CHECK(::ash::features::IsShimlessRMA3pDiagnosticsEnabled());
+  GetInstalledDiagnosticsAppOriginInternal() = std::nullopt;
   auto state = std::make_unique<PrepareDiagnosticsAppProfileState>();
   state->delegate = delegate;
   state->crx_path = crx_path;
