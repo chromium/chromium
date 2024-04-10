@@ -626,6 +626,11 @@ TEST_F(DisplaySettingsProviderTest,
   feature_list_.InitAndDisableFeature(
       ash::features::kEnableBrightnessControlInSettings);
 
+  // No histograms should have been recorded.
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
+      /*expected_count=*/0);
+
   // Set the ambient_light_sensor_enabled with a sentinel value, so we can test
   // that the value doesn't change if the feature flag is disabled.
   bool initial_sensor_enabled = true;
@@ -643,6 +648,11 @@ TEST_F(DisplaySettingsProviderTest,
   // no effect, and the value should be equal to the initial value.
   EXPECT_EQ(initial_sensor_enabled,
             brightness_control_delegate_->is_ambient_light_sensor_enabled());
+
+  // When the feature flag is disabled, metrics should not be recorded either.
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
+      /*expected_count=*/0);
 }
 
 // Test the behavior when setting the internal display screen brightness (when
@@ -652,6 +662,11 @@ TEST_F(DisplaySettingsProviderTest,
   feature_list_.Reset();
   feature_list_.InitAndEnableFeature(
       ash::features::kEnableBrightnessControlInSettings);
+
+  // No histograms should have been recorded yet.
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
+      /*expected_count=*/0);
 
   // Set the ambient_light_sensor_enabled with a sentinel value, so we can test
   // that the value changes if the feature flag is enabled.
@@ -670,12 +685,30 @@ TEST_F(DisplaySettingsProviderTest,
   EXPECT_EQ(expected_sensor_enabled,
             brightness_control_delegate_->is_ambient_light_sensor_enabled());
 
+  // Metrics should be recorded for this change.
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
+      /*sample=*/expected_sensor_enabled,
+      /*expected_count=*/1);
+
   // Re-enabling the sensor from the provider should also work.
   bool expected_sensor_enabled2 = true;
   provider_->SetInternalDisplayAmbientLightSensorEnabled(
       expected_sensor_enabled2);
   EXPECT_EQ(expected_sensor_enabled2,
             brightness_control_delegate_->is_ambient_light_sensor_enabled());
+
+  // Metrics should be recorded for this change.
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
+      /*sample=*/expected_sensor_enabled2,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
+      /*expected_count=*/2);
 }
 
 // Test the behavior when setting the internal display screen brightness (when

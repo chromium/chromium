@@ -332,6 +332,11 @@ void DisplaySettingsProvider::SetInternalDisplayAmbientLightSensorEnabled(
   }
 
   brightness_control_delegate_->SetAmbientLightSensorEnabled(enabled);
+
+  // Record the auto-brightness toggle event.
+  std::string histogram_name(base::StrCat(
+      {kDisplaySettingsHistogramName, ".Internal.AutoBrightnessEnabled"}));
+  base::UmaHistogramBoolean(histogram_name, /*sample=*/enabled);
 }
 
 void DisplaySettingsProvider::HasAmbientLightSensor(
