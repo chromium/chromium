@@ -54,7 +54,6 @@ public class UrlBarCoordinator
     private Runnable mKeyboardResizeModeTask = NO_OP_RUNNABLE;
     private Runnable mKeyboardHideTask = NO_OP_RUNNABLE;
     private Callback<Boolean> mFocusChangeCallback;
-    private boolean mShouldShowModernizeVisualUpdate;
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -220,11 +219,9 @@ public class UrlBarCoordinator
     // KeyboardVisibilityDelegate.KeyboardVisibilityListener implementation.
     @Override
     public void keyboardVisibilityChanged(boolean isKeyboardShowing) {
-        if (mShouldShowModernizeVisualUpdate) {
-            // The cursor visibility should follow soft keyboard visibility and should be hidden
-            // when keyboard is dismissed for any reason (including scroll).
-            mUrlBar.setCursorVisible(isKeyboardShowing);
-        }
+        // The cursor visibility should follow soft keyboard visibility and should be hidden
+        // when keyboard is dismissed for any reason (including scroll).
+        mUrlBar.setCursorVisible(isKeyboardShowing);
     }
 
     /* package */ boolean hasFocus() {
@@ -309,8 +306,6 @@ public class UrlBarCoordinator
     /** Signals that's it safe to call code that requires native to be loaded. */
     public void onFinishNativeInitialization() {
         mUrlBar.onFinishNativeInitialization();
-        mShouldShowModernizeVisualUpdate =
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(mUrlBar.getContext());
     }
 
     /**
