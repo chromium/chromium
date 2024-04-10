@@ -178,7 +178,6 @@ public class ThemeUtils {
      */
     public static @ColorRes int getThemedToolbarIconTintResForActivityState(
             @BrandedColorScheme int brandedColorScheme, boolean isActivityFocused) {
-        // TODO(crbug.com/328054353): Update unfocused activity tint once finalized.
         @ColorRes
         int colorId =
                 isActivityFocused

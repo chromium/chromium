@@ -5,5 +5,5 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:alpha="0.65" android:color="?attr/colorOnSecondaryContainer" />
+    <item android:alpha="@dimen/default_disabled_alpha" android:color="@macro/default_icon_color" />
 </selector>
