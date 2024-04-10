@@ -958,6 +958,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "InputStreamOptimizations", "Enables optimizations to input stream handling."),
         Flag.baseFeature("WebViewOptimizeXrwNavigationFlow"),
+        Flag.baseFeature(
+                "UseMoveNotCopyInAXTreeCombiner",
+                "Enables moves instead of copies of snapshot tree data when combining updates."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
