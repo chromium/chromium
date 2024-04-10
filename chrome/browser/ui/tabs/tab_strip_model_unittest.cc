@@ -259,7 +259,6 @@ class MockTabStripModelObserver : public TabStripModelObserver {
         for (const auto& contents : change.GetRemove()->contents) {
           switch (contents.remove_reason) {
             case TabStripModelChange::RemoveReason::kDeleted:
-            case TabStripModelChange::RemoveReason::kCached:
               PushCloseState(contents.contents, contents.index);
               break;
             case TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip:

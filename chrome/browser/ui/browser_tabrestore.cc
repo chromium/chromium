@@ -46,10 +46,6 @@ namespace chrome {
 
 namespace {
 
-// TODO(https://crbug.com/1119368): Consider making CreateRestoredTab public and
-// separate AddRestoredTab from CreateRestoredTab to distinguish the cases where
-// a tab doesn't need to be created when it can be restored from the cache. At
-// that point, there would be no need for the AddRestoredTabFromCache method.
 std::unique_ptr<WebContents> CreateRestoredTab(
     Browser* browser,
     const std::vector<SerializedNavigationEntry>& navigations,
@@ -247,33 +243,6 @@ WebContents* AddRestoredTab(
 
   return AddRestoredTabImpl(std::move(web_contents), browser, tab_index, group,
                             select, pin, from_session_restore);
-}
-
-WebContents* AddRestoredTabFromCache(
-    std::unique_ptr<WebContents> web_contents,
-    Browser* browser,
-    int tab_index,
-    std::optional<tab_groups::TabGroupId> group,
-    bool select,
-    bool pin,
-    const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, std::string>& extra_data) {
-  // TODO(crbug.com/1227397): Check whether |ua_override| has changed for the
-  // tab we're trying to restore from ClosedTabCache. Don't restore if the
-  // values differ.
-  blink::UserAgentOverride ua_override;
-  ua_override.ua_string_override = user_agent_override.ua_string_override;
-  ua_override.ua_metadata_override = blink::UserAgentMetadata::Demarshal(
-      user_agent_override.opaque_ua_metadata_override);
-  web_contents->SetUserAgentOverride(ua_override, false);
-
-#if defined(TOOLKIT_VIEWS)
-  side_search::SetSideSearchTabStateFromRestoreData(web_contents.get(),
-                                                    extra_data);
-#endif  // defined(TOOLKIT_VIEWS)
-
-  return AddRestoredTabImpl(std::move(web_contents), browser, tab_index, group,
-                            select, pin, /*from_session_restore=*/false);
 }
 
 WebContents* ReplaceRestoredTab(

@@ -102,9 +102,6 @@ bool TestTabStripModelDelegate::SupportsReadLater() {
   return true;
 }
 
-void TestTabStripModelDelegate::CacheWebContents(
-    const std::vector<std::unique_ptr<DetachedWebContents>>& web_contents) {}
-
 void TestTabStripModelDelegate::FollowSite(content::WebContents* web_contents) {
 }
 

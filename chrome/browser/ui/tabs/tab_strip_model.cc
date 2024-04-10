@@ -2190,22 +2190,6 @@ bool TabStripModel::CloseWebContentses(
     detached_web_contents.push_back(std::move(dwc));
   }
 
-  if (!detached_web_contents.empty()) {
-    // ClosedTabCache will only take ownership of the last recently closed tab.
-    delegate_->CacheWebContents(detached_web_contents);
-  }
-
-  // If the delegate takes ownership, it must reset the reason.
-#if DCHECK_IS_ON()
-  for (auto& dwc : detached_web_contents)
-    if (dwc->tab && dwc->tab->contents()) {
-      DCHECK_EQ(TabStripModelChange::RemoveReason::kDeleted,
-                dwc->remove_reason);
-    } else {
-      DCHECK_EQ(TabStripModelChange::RemoveReason::kCached, dwc->remove_reason);
-    }
-#endif
-
   for (auto& dwc : detached_web_contents)
     notifications->detached_web_contents.push_back(std::move(dwc));
 

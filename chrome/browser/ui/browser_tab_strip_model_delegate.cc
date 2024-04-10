@@ -13,8 +13,6 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
-#include "chrome/browser/sessions/closed_tab_cache.h"
-#include "chrome/browser/sessions/closed_tab_cache_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
@@ -265,33 +263,6 @@ void BrowserTabStripModelDelegate::AddToReadLater(
 
 bool BrowserTabStripModelDelegate::SupportsReadLater() {
   return !browser_->profile()->IsGuestSession() && !IsForWebApp();
-}
-
-void BrowserTabStripModelDelegate::CacheWebContents(
-    const std::vector<std::unique_ptr<DetachedWebContents>>& web_contents) {
-  if (browser_shutdown::HasShutdownStarted() ||
-      browser_->profile()->IsOffTheRecord() ||
-      !ClosedTabCache::IsFeatureEnabled()) {
-    return;
-  }
-
-  DCHECK(!web_contents.empty());
-
-  ClosedTabCache& cache =
-      ClosedTabCacheServiceFactory::GetForProfile(browser_->profile())
-          ->closed_tab_cache();
-
-  // We assume a cache size of one. Only the last recently closed tab will be
-  // cached.
-  // TODO(https://crbug.com/1236077): Cache more than one tab in ClosedTabCache.
-  auto& dwc = web_contents.back();
-  if (!cache.CanCacheWebContents(dwc->id))
-    return;
-
-  std::unique_ptr<content::WebContents> wc = dwc->tab->RemoveContents();
-  dwc->remove_reason = TabStripModelChange::RemoveReason::kCached;
-  auto cached = std::make_pair(dwc->id, std::move(wc));
-  cache.CacheWebContents(std::move(cached));
 }
 
 void BrowserTabStripModelDelegate::FollowSite(

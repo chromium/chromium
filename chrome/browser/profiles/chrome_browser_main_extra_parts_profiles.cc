@@ -469,7 +469,6 @@
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
-#include "chrome/browser/sessions/closed_tab_cache_service_factory.h"
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_hats_service_factory.h"
@@ -734,7 +733,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !BUILDFLAG(IS_ANDROID)
-  ClosedTabCacheServiceFactory::GetInstance();
   companion::visual_query::VisualQuerySuggestionsServiceFactory::GetInstance();
 #endif
   commerce::ShoppingServiceFactory::GetInstance();

@@ -399,7 +399,6 @@ void BrowserAppInstanceTracker::OnTabStripModelChangeRemove(
     bool tab_will_be_closed = false;
     switch (removed_tab.remove_reason) {
       case TabStripModelChange::RemoveReason::kDeleted:
-      case TabStripModelChange::RemoveReason::kCached:
 #if DCHECK_IS_ON()
         DCHECK(!base::Contains(tabs_in_transit_, contents));
 #endif

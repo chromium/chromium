@@ -14,7 +14,6 @@
 
 class Browser;
 class GURL;
-struct DetachedWebContents;
 
 namespace tabs {
 class TabModel;
@@ -158,18 +157,6 @@ class TabStripModelDelegate {
 
   // Returns whether the tabstrip supports the read later feature.
   virtual bool SupportsReadLater() = 0;
-
-  // Gives the delegate an opportunity to cache (take ownership) of
-  // WebContents before they are destroyed. The delegate takes ownership by way
-  // of using std::move() on the `owned_contents` and resetting `remove_reason`
-  // to kCached. It is expected that any WebContents the delegate takes
-  // ownership of remain valid until the next message is pumped. In other
-  // words, the delegate must not immediately destroy any of the supplied
-  // WebContents.
-  // TODO(https://crbug.com/1234332): Provide active web contents.
-  virtual void CacheWebContents(
-      const std::vector<std::unique_ptr<DetachedWebContents>>&
-          web_contents) = 0;
 
   // Follows a web feed for the specified WebContents.
   virtual void FollowSite(content::WebContents* web_contents) = 0;

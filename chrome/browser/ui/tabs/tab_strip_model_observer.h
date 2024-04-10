@@ -47,11 +47,6 @@ class TabStripModelChange {
     // WebContents will be deleted.
     kDeleted,
 
-    // WebContents will be stored in ClosedTabCache. After some amount of time,
-    // the WebContents will either be deleted, or inserted back into another
-    // TabStripModel.
-    kCached,
-
     // WebContents got detached from a TabStrip and inserted into another
     // TabStrip.
     kInsertedIntoOtherTabStrip
