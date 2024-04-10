@@ -215,7 +215,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       // FIXME
       break;
     case UnitType::kInteger:
-      text = String::Number(GetIntValue());
+      text = String::Number(ComputeInteger());
       break;
     case UnitType::kNumber:
     case UnitType::kPercentage:
