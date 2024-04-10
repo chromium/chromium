@@ -3334,6 +3334,23 @@
     },
   },
   'leveldb_unittests': {
+    'modifications': {
+      'Linux Tests (dbg)(1)': {
+        'args': [
+          '--test-launcher-timeout=90000',
+        ],
+      },
+      'Win10 Tests x64 (dbg)': {
+        'args': [
+          '--test-launcher-timeout=90000',
+        ],
+      },
+      'win11-arm64-dbg-tests': {
+        'args': [
+          '--test-launcher-timeout=90000',
+        ],
+      },
+    },
     'remove_from': [
       # TODO(https://crbug.com/1432753): Runs too slowly in this configuration.
       'android-oreo-x86-rel',
