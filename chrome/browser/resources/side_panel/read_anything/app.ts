@@ -1315,8 +1315,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.updateSpeechRate_(chrome.readingMode.speechRate);
       this.restoreVoiceFromPrefs_();
     }
-    this.updateLineSpacing(chrome.readingMode.lineSpacing);
-    this.updateLetterSpacing(chrome.readingMode.letterSpacing);
+    this.updateLineSpacing_(chrome.readingMode.lineSpacing);
+    this.updateLetterSpacing_(chrome.readingMode.letterSpacing);
     this.updateFont_(chrome.readingMode.fontName);
     this.updateFontSize_();
     let colorSuffix: string|undefined;
@@ -1340,7 +1340,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // Do nothing
     }
     if (colorSuffix !== undefined) {
-      this.updateThemeFromWebUi(colorSuffix);
+      this.updateThemeFromWebUi_(colorSuffix);
     }
     // TODO(crbug.com/1474951): investigate using parent/child relationshiop
     // instead of element by id.
@@ -1369,13 +1369,21 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.selectedVoice = selectedVoice ? selectedVoice[0] : this.defaultVoice();
   }
 
-  updateLineSpacing(newLineHeight: number) {
+  private onLineSpacingChange_(event: CustomEvent<{data: number}>) {
+    this.updateLineSpacing_(event.detail.data);
+  }
+
+  private updateLineSpacing_(newLineHeight: number) {
     this.updateStyles({
       '--line-height': newLineHeight,
     });
   }
 
-  updateLetterSpacing(newLetterSpacing: number) {
+  private onLetterSpacingChange_(event: CustomEvent<{data: number}>) {
+    this.updateLetterSpacing_(event.detail.data);
+  }
+
+  private updateLetterSpacing_(newLetterSpacing: number) {
     this.updateStyles({
       '--letter-spacing': newLetterSpacing + 'em',
     });
@@ -1407,9 +1415,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
   }
 
+  private onThemeChange_(event: CustomEvent<{data: string}>) {
+    this.updateThemeFromWebUi_(event.detail.data);
+  }
+
   // TODO(crbug.com/1465029): This method should be renamed to updateTheme()
   // and replace the one below once we've removed the Views toolbar.
-  updateThemeFromWebUi(colorSuffix: string) {
+  private updateThemeFromWebUi_(colorSuffix: string) {
     this.currentColorSuffix_ = colorSuffix;
     const emptyStateBodyColor = colorSuffix ?
         this.getEmptyStateBodyColorFromWebUi_(colorSuffix) :

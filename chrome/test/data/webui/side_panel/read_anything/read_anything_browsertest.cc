@@ -66,6 +66,21 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FontMenu) {
   RunSidePanelTest("side_panel/read_anything/font_menu_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ColorMenu) {
+  RunSidePanelTest("side_panel/read_anything/color_menu_test.js",
+                   "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LetterSpacing) {
+  RunSidePanelTest("side_panel/read_anything/letter_spacing_test.js",
+                   "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineSpacing) {
+  RunSidePanelTest("side_panel/read_anything/line_spacing_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppReceivesToolbarChanges) {
   RunSidePanelTest(
       "side_panel/read_anything/app_receives_toolbar_changes_test.js",

@@ -24,7 +24,6 @@ import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ReadAnythingElement} from './app.js';
 import {validatedFontName} from './common.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
@@ -93,6 +92,9 @@ export const LINKS_DISABLED_ICON = 'read-anything:links-disabled';
 export const LINK_TOGGLE_BUTTON_ID = 'link-toggle-button';
 
 // Events emitted from the toolbar to the app
+export const LETTER_SPACING_EVENT = 'letter-spacing-change';
+export const LINE_SPACING_EVENT = 'line-spacing-change';
+export const THEME_EVENT = 'theme-change';
 export const FONT_SIZE_EVENT = 'font-size-change';
 export const FONT_EVENT = 'font-change';
 export const RATE_EVENT = 'rate-change';
@@ -105,8 +107,6 @@ export const LINKS_EVENT = 'links-toggle';
 const ReadAnythingToolbarElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
 export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
-  contentPage = document.querySelector('read-anything-app');
-
   static get is() {
     return 'read-anything-toolbar';
   }
@@ -625,34 +625,29 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private onLetterSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
-        this.$.letterSpacingMenu.get(),
-        ReadAnythingElement.prototype.updateLetterSpacing);
+        this.$.letterSpacingMenu.get(), LETTER_SPACING_EVENT);
   }
 
   private onLineSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
-        this.$.lineSpacingMenu.get(),
-        ReadAnythingElement.prototype.updateLineSpacing);
+        this.$.lineSpacingMenu.get(), LINE_SPACING_EVENT);
   }
 
   private onColorClick_(event: DomRepeatEvent<MenuStateItem<string>>) {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.THEME_CHANGE, this.$.colorMenu.get(),
-        ReadAnythingElement.prototype.updateThemeFromWebUi);
+        THEME_EVENT);
   }
-
 
   private onTextStyleClick_(
       event: DomRepeatEvent<MenuStateItem<any>>,
       logVal: ReadAnythingSettingsChange, menuClicked: CrActionMenuElement,
-      contentPageCallback: ((data: any) => void)) {
+      emitEventName: string) {
     event.model.item.callback();
     chrome.metricsPrivate.recordEnumerationValue(
         SETTINGS_CHANGE_UMA, logVal, ReadAnythingSettingsChange.COUNT);
-    if (this.contentPage) {
-      contentPageCallback.call(this.contentPage, event.model.item.data);
-    }
+    this.emitEvent_(emitEventName, {data: event.model.item.data});
     this.setCheckMarkForMenu_(menuClicked, event.model.index);
     this.closeMenus_();
   }

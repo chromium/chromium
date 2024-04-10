@@ -29,16 +29,16 @@ export class FakeReadingMode {
 
   // Enum values for various visual theme changes.
   standardLineSpacing: number = 0;
-  looseLineSpacing: number = 0;
-  veryLooseLineSpacing: number = 0;
-  standardLetterSpacing: number = 0;
-  wideLetterSpacing: number = 0;
-  veryWideLetterSpacing: number = 0;
-  defaultTheme: number = 0;
-  lightTheme: number = 0;
-  darkTheme: number = 0;
-  yellowTheme: number = 0;
-  blueTheme: number = 0;
+  looseLineSpacing: number = 1;
+  veryLooseLineSpacing: number = 2;
+  standardLetterSpacing: number = 3;
+  wideLetterSpacing: number = 4;
+  veryWideLetterSpacing: number = 5;
+  defaultTheme: number = 6;
+  lightTheme: number = 7;
+  darkTheme: number = 8;
+  yellowTheme: number = 9;
+  blueTheme: number = 10;
   highlightOn: number = 0;
 
   // Whether the WebUI toolbar feature flag is enabled.
@@ -136,9 +136,15 @@ export class FakeReadingMode {
   onLinkClicked(_nodeId: number) {}
 
   // Called when the line spacing is changed via the webui toolbar.
-  onStandardLineSpacing() {}
-  onLooseLineSpacing() {}
-  onVeryLooseLineSpacing() {}
+  onStandardLineSpacing() {
+    this.lineSpacing = this.standardLineSpacing;
+  }
+  onLooseLineSpacing() {
+    this.lineSpacing = this.looseLineSpacing;
+  }
+  onVeryLooseLineSpacing() {
+    this.lineSpacing = this.veryLooseLineSpacing;
+  }
 
   // Called when a user makes a font size change via the webui toolbar.
   onFontSizeChanged(_increase: boolean) {
@@ -154,16 +160,32 @@ export class FakeReadingMode {
   }
 
   // Called when the letter spacing is changed via the webui toolbar.
-  onStandardLetterSpacing() {}
-  onWideLetterSpacing() {}
-  onVeryWideLetterSpacing() {}
+  onStandardLetterSpacing() {
+    this.letterSpacing = this.standardLetterSpacing;
+  }
+  onWideLetterSpacing() {
+    this.letterSpacing = this.wideLetterSpacing;
+  }
+  onVeryWideLetterSpacing() {
+    this.letterSpacing = this.veryWideLetterSpacing;
+  }
 
   // Called when the color theme is changed via the webui toolbar.
-  onDefaultTheme() {}
-  onLightTheme() {}
-  onDarkTheme() {}
-  onYellowTheme() {}
-  onBlueTheme() {}
+  onDefaultTheme() {
+    this.colorTheme = this.defaultTheme;
+  }
+  onLightTheme() {
+    this.colorTheme = this.lightTheme;
+  }
+  onDarkTheme() {
+    this.colorTheme = this.darkTheme;
+  }
+  onYellowTheme() {
+    this.colorTheme = this.yellowTheme;
+  }
+  onBlueTheme() {
+    this.colorTheme = this.blueTheme;
+  }
 
   // Called when the font is changed via the webui toolbar.
   onFontChange(font: string) {
