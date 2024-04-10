@@ -166,15 +166,7 @@ void PersonalDataManager::OnHistoryDeletions(
   if (!deletion_info.is_from_expiration() && deletion_info.IsAllHistory()) {
     AutofillCrowdsourcingManager::ClearUploadHistory(pref_service_);
   }
-  // TODO(b/322170538): Move to ADM.
-  if (address_data_manager_->profile_save_strike_database_) {
-    address_data_manager_->profile_save_strike_database_
-        ->ClearStrikesWithHistory(deletion_info);
-  }
-  if (address_data_manager_->address_suggestion_strike_database_) {
-    address_data_manager_->address_suggestion_strike_database_
-        ->ClearStrikesWithHistory(deletion_info);
-  }
+  address_data_manager_->OnHistoryDeletions(deletion_info);
 }
 
 void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {

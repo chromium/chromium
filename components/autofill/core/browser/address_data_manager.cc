@@ -404,6 +404,16 @@ void AddressDataManager::ClearStrikesToBlockAddressSuggestions(
                                              gurl));
 }
 
+void AddressDataManager::OnHistoryDeletions(
+    const history::DeletionInfo& deletion_info) {
+  if (profile_save_strike_database_) {
+    profile_save_strike_database_->ClearStrikesWithHistory(deletion_info);
+  }
+  if (address_suggestion_strike_database_) {
+    address_suggestion_strike_database_->ClearStrikesWithHistory(deletion_info);
+  }
+}
+
 void AddressDataManager::SetPrefService(PrefService* pref_service) {
   pref_service_ = pref_service;
   profile_enabled_pref_ = std::make_unique<BooleanPrefMember>();

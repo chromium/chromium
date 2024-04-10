@@ -939,6 +939,86 @@ TEST_F(AddressDataManagerTest, SaveProfileSaveStrikes) {
   EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(domain));
 }
 
+TEST_F(AddressDataManagerTest, ClearFullBrowsingHistory) {
+  GURL domain("https://www.block.me/index.html");
+  AddressDataManager& adm = personal_data_->address_data_manager();
+
+  adm.AddStrikeToBlockNewProfileImportForDomain(domain);
+  adm.AddStrikeToBlockNewProfileImportForDomain(domain);
+  adm.AddStrikeToBlockNewProfileImportForDomain(domain);
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(domain));
+
+  history::DeletionInfo deletion_info = history::DeletionInfo::ForAllHistory();
+  adm.OnHistoryDeletions(deletion_info);
+
+  EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(domain));
+}
+
+TEST_F(AddressDataManagerTest, ClearUrlsFromBrowsingHistory) {
+  GURL first_url("https://www.block.me/index.html");
+  GURL second_url("https://www.block.too/index.html");
+
+  // Add strikes to block both domains.
+  AddressDataManager& adm = personal_data_->address_data_manager();
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(first_url));
+
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(second_url));
+
+  history::URLRows deleted_urls = {history::URLRow(first_url)};
+  history::DeletionInfo deletion_info =
+      history::DeletionInfo::ForUrls(deleted_urls, {});
+  adm.OnHistoryDeletions(deletion_info);
+
+  // The strikes for `domain` should be deleted, but the strikes for
+  // `another_domain` should not.
+  EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(first_url));
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(second_url));
+}
+
+TEST_F(AddressDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
+  GURL first_url("https://www.block.me/index.html");
+  GURL second_url("https://www.block.too/index.html");
+
+  TestAutofillClock test_clock;
+
+  // Add strikes to block both domains.
+  AddressDataManager& adm = personal_data_->address_data_manager();
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(first_url));
+
+  test_clock.Advance(base::Hours(1));
+  base::Time end_of_deletion = AutofillClock::Now();
+  test_clock.Advance(base::Hours(1));
+
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(second_url));
+
+  history::URLRows deleted_urls = {history::URLRow(first_url),
+                                   history::URLRow(second_url)};
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange(base::Time::Min(), end_of_deletion), false,
+      deleted_urls, {},
+      std::make_optional<std::set<GURL>>({first_url, second_url}));
+  adm.OnHistoryDeletions(deletion_info);
+
+  // The strikes for `first_url` should be deleted because the strikes have been
+  // added within the deletion time range.
+  EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(first_url));
+  // The last strike for 'second_url' was collected after the deletion time
+  // range and therefore, the blocking should prevail.
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(second_url));
+}
+
 }  // namespace
 
 }  // namespace autofill

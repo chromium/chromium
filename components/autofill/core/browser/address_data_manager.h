@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_member.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
@@ -192,6 +193,11 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
                                              FieldSignature field_signature,
                                              const GURL& gurl);
 
+  // Clear all relevant strike database strikes whenever some browsing history
+  // is deleted. This currently doesn't depend on a history observer directly,
+  // but is forwarded from the PDM's history observer.
+  void OnHistoryDeletions(const history::DeletionInfo& deletion_info);
+
   // Returns true if the PDM is currently awaiting an address-related responses
   // from the database. In this case, the PDM's address data is currently
   // potentially inconsistent with the database. Once the state has converged,
@@ -297,7 +303,6 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void OnProfileChangeDone(const std::string& guid);
 
   // Finds the country code that occurs most frequently among all profiles.
-  // Prefers verified profiles over unverified ones.
   const std::string& MostCommonCountryCodeFromProfiles() const;
 
   // Logs metrics around the number of stored profiles after the initial load
