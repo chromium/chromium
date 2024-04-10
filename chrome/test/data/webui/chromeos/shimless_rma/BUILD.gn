@@ -29,7 +29,7 @@ build_webui_tests("build_webui_tests") {
     "onboarding_update_page_test.ts",
     "onboarding_wait_for_manual_wp_disable_page_test.ts",
     "onboarding_wp_disable_complete_page_test.ts",
-    "reboot_page_test.js",
+    "reboot_page_test.ts",
     "reimaging_calibration_failed_page_test.js",
     "reimaging_calibration_run_page_test.js",
     "reimaging_calibration_setup_page_test.js",
