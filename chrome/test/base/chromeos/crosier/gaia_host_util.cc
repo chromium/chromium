@@ -37,7 +37,8 @@ void SkipToGaiaScreenAndWait() {
   // Wait for Gaia page to be ready and update properties..
   const std::string check_gaia_js = R"((function() {
     gaiaSignin = $('gaia-signin');
-    return !gaiaSignin.hidden && gaiaSignin.uiStep === 'online-gaia';
+    return !gaiaSignin.hidden && gaiaSignin.uiStep === 'online-gaia' &&
+        !gaiaSignin.loadingFrameContents && gaiaSignin.showViewProcessed;
   })())";
   ash::test::OobeJS().CreateWaiter(check_gaia_js)->Wait();
 }
