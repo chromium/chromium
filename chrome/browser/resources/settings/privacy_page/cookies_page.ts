@@ -137,6 +137,12 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: () => loadTimeData.getBoolean('isIpProtectionV1Enabled'),
       },
 
+      isFingerprintingProtectionAvailable_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isFingerprintingProtectionEnabled'),
+      },
+
       showTrackingProtectionRollbackNotice_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean(
@@ -159,6 +165,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private enableFirstPartySetsUI_: boolean;
   private is3pcdRedesignEnabled_: boolean;
   private isIpProtectionAvailable_: boolean;
+  private isFingerprintingProtectionAvailable_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -234,6 +241,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       this.metricsBrowserProxy_.recordAction(
           'Settings.PrivacySandbox.Block3PCookies');
     }
+  }
+
+  private onFingerprintingProtectionChanged_() {
+    this.metricsBrowserProxy_.recordSettingsPageHistogram(
+        PrivacyElementInteractions.FINGERPRINTING_PROTECTION);
   }
 
   private onIpProtectionChanged_() {

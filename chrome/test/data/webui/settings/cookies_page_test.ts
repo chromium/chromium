@@ -96,6 +96,7 @@ suite('CookiesPageTest', function() {
     // By default these toggles should be hidden.
     assertFalse(isChildVisible(page, '#blockThirdPartyToggle'));
     assertFalse(isChildVisible(page, '#ipProtectionToggle'));
+    assertFalse(isChildVisible(page, '#fingerprintingProtectionToggle'));
   });
 
   test('ThirdPartyCookiesRadioClicksRecorded', async function() {
@@ -484,6 +485,55 @@ suite('IpProtectionToggle', function() {
     assertEquals(PrivacyElementInteractions.IP_PROTECTION, result);
     assertEquals(
         page.getPref('tracking_protection.ip_protection_enabled.value'), true);
+  });
+});
+
+suite('FingerprintingProtectionToggle', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isFingerprintingProtectionEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  test('CheckVisibility', function() {
+    // Setting is visible
+    assertTrue(isChildVisible(page, '#fingerprintingProtectionToggle'));
+  });
+
+  test('ToggleFingerprintingProtection', async function() {
+    page.set(
+        'prefs.tracking_protection.fingerprinting_protection_enabled.value',
+        false);
+    const fingerprintingProtectionToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#fingerprintingProtectionToggle')!;
+    assertTrue(!!fingerprintingProtectionToggle);
+
+    fingerprintingProtectionToggle.click();
+    const result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.FINGERPRINTING_PROTECTION, result);
+    assertEquals(
+        page.getPref(
+            'tracking_protection.fingerprinting_protection_enabled.value'),
+        true);
   });
 });
 

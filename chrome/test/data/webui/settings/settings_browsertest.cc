@@ -603,6 +603,12 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, IpProtectionToggle) {
           "runMochaSuite('IpProtectionToggle')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
+                       FingerprintingProtectionToggle) {
+  RunTest("settings/cookies_page_test.js",
+          "runMochaSuite('FingerprintingProtectionToggle')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionSettings) {
   RunTest("settings/cookies_page_test.js",
           "runMochaSuite('TrackingProtectionSettings')");

@@ -252,6 +252,13 @@
         hidden="[[!isIpProtectionAvailable_]]"
         icon="settings:location-disabled">
     </settings-toggle-button>
+    <settings-toggle-button
+        id="fingerprintingProtectionToggle"
+        pref="{{prefs.tracking_protection.fingerprinting_protection_enabled}}"
+        on-settings-boolean-control-change="onFingerprintingProtectionChanged_"
+        hidden="[[!isFingerprintingProtectionAvailable_]]"
+        icon="settings:fingerprint-off">
+    </settings-toggle-button>
     <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
     </settings-do-not-track-toggle>
     <cr-link-row id="site-data-trigger" class="hr"
