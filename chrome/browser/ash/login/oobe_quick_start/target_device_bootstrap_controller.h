@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/qr_code.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"

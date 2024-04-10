@@ -8,7 +8,6 @@ assert(is_chromeos, "Nearby Share is CrOS only")
 
 source_set("common") {
   sources = [
-    "nearby_share_enums.h",
     "nearby_share_features.cc",
     "nearby_share_features.h",
     "nearby_share_prefs.cc",

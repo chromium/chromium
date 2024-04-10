@@ -14,11 +14,11 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chromeos/ash/components/data_migration/constants.h"
 #include "chromeos/ash/components/data_migration/testing/connection_barrier.h"
 #include "chromeos/ash/components/data_migration/testing/fake_nearby_connections.h"
 #include "chromeos/ash/components/data_migration/testing/fake_nearby_process_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

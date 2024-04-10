@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/browser/nearby_sharing/public",
   "+chromeos/ash/services/nearby/public",
   "+components/keyed_service/core",
+  "+chromeos/ash/components/nearby/common/connections_manager",
 
   # data_migration generally does not depend directly on the third_party/nearby
   # library. It uses chrome/browser/nearby_sharing/public instead. However,

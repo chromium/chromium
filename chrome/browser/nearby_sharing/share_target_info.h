@@ -15,8 +15,8 @@
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 #include "chrome/browser/nearby_sharing/payload_tracker.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 
 class NearbyConnection;
 

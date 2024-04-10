@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 
 struct SenderData {
   std::optional<base::TimeTicks> discovered_time = std::nullopt;

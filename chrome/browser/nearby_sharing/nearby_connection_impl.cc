@@ -4,7 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
 
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "crypto/random.h"
 
 NearbyConnectionImpl::NearbyConnectionImpl(

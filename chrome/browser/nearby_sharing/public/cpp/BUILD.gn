@@ -8,8 +8,6 @@ static_library("cpp") {
   sources = [
     "nearby_connection.cc",
     "nearby_connection.h",
-    "nearby_connections_manager.cc",
-    "nearby_connections_manager.h",
   ]
 
   deps = [
@@ -21,19 +19,4 @@ static_library("cpp") {
   ]
 
   public_deps = [ "//third_party/nearby:presence_types" ]
-}
-
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "fake_nearby_connections_manager.cc",
-    "fake_nearby_connections_manager.h",
-  ]
-
-  deps = [
-    ":cpp",
-    "//base",
-    "//chromeos/ash/services/nearby/public/mojom",
-  ]
 }

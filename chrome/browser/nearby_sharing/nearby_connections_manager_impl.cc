@@ -13,8 +13,8 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/services/sharing/nearby/common/nearby_features.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
@@ -30,14 +30,15 @@ const char kFastAdvertisementServiceUuid[] =
 const nearby::connections::mojom::Strategy kStrategy =
     nearby::connections::mojom::Strategy::kP2pPointToPoint;
 
-bool ShouldUseInternet(DataUsage data_usage, PowerLevel power_level) {
+bool ShouldUseInternet(NearbyConnectionsManager::DataUsage data_usage,
+                       NearbyConnectionsManager::PowerLevel power_level) {
   // We won't use internet if the user requested we don't.
-  if (data_usage == DataUsage::kOffline) {
+  if (data_usage == NearbyConnectionsManager::DataUsage::kOffline) {
     return false;
   }
 
   // We won't use internet in a low power mode.
-  if (power_level == PowerLevel::kLowPower) {
+  if (power_level == NearbyConnectionsManager::PowerLevel::kLowPower) {
     return false;
   }
 
@@ -52,7 +53,7 @@ bool ShouldUseInternet(DataUsage data_usage, PowerLevel power_level) {
   }
 
   // If the user wants to limit Wi-Fi, then don't use it on metered networks.
-  if (data_usage == DataUsage::kWifiOnly &&
+  if (data_usage == NearbyConnectionsManager::DataUsage::kWifiOnly &&
       net::NetworkChangeNotifier::GetConnectionCost() ==
           net::NetworkChangeNotifier::CONNECTION_COST_METERED) {
     CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
@@ -65,12 +66,14 @@ bool ShouldUseInternet(DataUsage data_usage, PowerLevel power_level) {
   return true;
 }
 
-bool ShouldEnableWebRtc(DataUsage data_usage, PowerLevel power_level) {
+bool ShouldEnableWebRtc(NearbyConnectionsManager::DataUsage data_usage,
+                        NearbyConnectionsManager::PowerLevel power_level) {
   return base::FeatureList::IsEnabled(features::kNearbySharingWebRtc) &&
          ShouldUseInternet(data_usage, power_level);
 }
 
-bool ShouldEnableWifiLan(DataUsage data_usage, PowerLevel power_level) {
+bool ShouldEnableWifiLan(NearbyConnectionsManager::DataUsage data_usage,
+                         NearbyConnectionsManager::PowerLevel power_level) {
   if (!base::FeatureList::IsEnabled(features::kNearbySharingWifiLan)) {
     return false;
   }
@@ -238,8 +241,8 @@ void NearbyConnectionsManagerImpl::Shutdown() {
 void NearbyConnectionsManagerImpl::StartAdvertising(
     std::vector<uint8_t> endpoint_info,
     IncomingConnectionListener* listener,
-    PowerLevel power_level,
-    DataUsage data_usage,
+    NearbyConnectionsManager::PowerLevel power_level,
+    NearbyConnectionsManager::DataUsage data_usage,
     ConnectionsCallback callback) {
   DCHECK(listener);
   DCHECK(!incoming_connection_listener_);
@@ -251,16 +254,19 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
     return;
   }
 
-  bool is_high_power = power_level == PowerLevel::kHighPower;
+  bool is_high_power =
+      power_level == NearbyConnectionsManager::PowerLevel::kHighPower;
   bool use_ble = features::IsNearbyBleV2Enabled() || !is_high_power;
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/is_high_power, /*ble=*/use_ble,
       // Using kHighPower here rather than power_level to signal that power
       // level isn't a factor when deciding whether or not to allow WebRTC
       // upgrades from this advertisement.
-      ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
+      ShouldEnableWebRtc(data_usage,
+                         NearbyConnectionsManager::PowerLevel::kHighPower),
       /*wifi_lan=*/
-      ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower) &&
+      ShouldEnableWifiLan(data_usage,
+                          NearbyConnectionsManager::PowerLevel::kHighPower) &&
           kIsWifiLanAdvertisingSupported);
   CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": " << "is_high_power=" << (is_high_power ? "yes" : "no")
@@ -321,7 +327,7 @@ void NearbyConnectionsManagerImpl::StopAdvertising(
 
 void NearbyConnectionsManagerImpl::StartDiscovery(
     DiscoveryListener* listener,
-    DataUsage data_usage,
+    NearbyConnectionsManager::DataUsage data_usage,
     ConnectionsCallback callback) {
   DCHECK(listener);
   DCHECK(!discovery_listener_);
@@ -336,9 +342,12 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/true,
       /*ble=*/true,
-      /*webrtc=*/ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
+      /*webrtc=*/
+      ShouldEnableWebRtc(data_usage,
+                         NearbyConnectionsManager::PowerLevel::kHighPower),
       /*wifi_lan=*/
-      ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower) &&
+      ShouldEnableWifiLan(data_usage,
+                          NearbyConnectionsManager::PowerLevel::kHighPower) &&
           kIsWifiLanDiscoverySupported);
   CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": " << "data_usage=" << data_usage
@@ -380,7 +389,7 @@ void NearbyConnectionsManagerImpl::Connect(
     std::vector<uint8_t> endpoint_info,
     const std::string& endpoint_id,
     std::optional<std::vector<uint8_t>> bluetooth_mac_address,
-    DataUsage data_usage,
+    NearbyConnectionsManager::DataUsage data_usage,
     NearbyConnectionCallback callback) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
@@ -395,8 +404,12 @@ void NearbyConnectionsManagerImpl::Connect(
 
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/true,
-      /*ble=*/false, ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
-      /*wifi_lan=*/ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower));
+      /*ble=*/false,
+      ShouldEnableWebRtc(data_usage,
+                         NearbyConnectionsManager::PowerLevel::kHighPower),
+      /*wifi_lan=*/
+      ShouldEnableWifiLan(data_usage,
+                          NearbyConnectionsManager::PowerLevel::kHighPower));
   CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": " << "data_usage=" << data_usage
       << ", allowed_mediums=" << MediumSelectionToString(*allowed_mediums);
@@ -678,7 +691,7 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
 
 void NearbyConnectionsManagerImpl::ConnectV3(
     nearby::presence::PresenceDevice remote_presence_device,
-    DataUsage data_usage,
+    NearbyConnectionsManager::DataUsage data_usage,
     NearbyConnectionCallback callback) {
   nearby::connections::mojom::NearbyConnections* nearby_connections =
       GetNearbyConnections();
@@ -687,8 +700,12 @@ void NearbyConnectionsManagerImpl::ConnectV3(
   // TODO(b/287340241): Enable BLE connections as an allowed medium.
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/true,
-      /*ble=*/false, ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
-      /*wifi_lan=*/ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower));
+      /*ble=*/false,
+      ShouldEnableWebRtc(data_usage,
+                         NearbyConnectionsManager::PowerLevel::kHighPower),
+      /*wifi_lan=*/
+      ShouldEnableWifiLan(data_usage,
+                          NearbyConnectionsManager::PowerLevel::kHighPower));
   CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": " << "data_usage=" << data_usage
       << ", allowed_mediums=" << MediumSelectionToString(*allowed_mediums);

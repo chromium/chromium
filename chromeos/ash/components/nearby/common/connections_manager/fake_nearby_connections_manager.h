@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
-#define CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
 
 #include <memory>
 #include <optional>
@@ -15,7 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 
 class NearbyConnection;
@@ -169,4 +169,4 @@ class FakeNearbyConnectionsManager
   base::WeakPtrFactory<FakeNearbyConnectionsManager> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_FAKE_NEARBY_CONNECTIONS_MANAGER_H_

@@ -21,10 +21,10 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/nearby/fake_quick_start_connectivity_service.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
-#include "chrome/browser/nearby_sharing/public/cpp/fake_nearby_connections_manager.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/fake_nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "chromeos/ash/components/quick_start/fake_quick_start_decoder.h"
 #include "chromeos/constants/devicetype.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -651,7 +651,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
           &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
-  EXPECT_EQ(PowerLevel::kHighPower,
+  EXPECT_EQ(NearbyConnectionsManager::PowerLevel::kHighPower,
             fake_nearby_connections_manager_->advertising_power_level());
   EXPECT_TRUE(start_advertising_callback_called_);
   EXPECT_TRUE(start_advertising_callback_success_);
@@ -788,7 +788,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   // begin Nearby Connections advertising without ever Fast Pair advertising.
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
-  EXPECT_EQ(PowerLevel::kHighPower,
+  EXPECT_EQ(NearbyConnectionsManager::PowerLevel::kHighPower,
             fake_nearby_connections_manager_->advertising_power_level());
   EXPECT_TRUE(start_advertising_callback_called_);
   EXPECT_TRUE(start_advertising_callback_success_);

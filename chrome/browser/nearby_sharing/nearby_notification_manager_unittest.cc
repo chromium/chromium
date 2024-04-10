@@ -30,7 +30,6 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
@@ -2171,43 +2170,44 @@ TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Contacts_Mode) {
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kIsNameEnabled});
-  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
-                           static_cast<int>(Visibility::kAllContacts));
+  pref_service_.SetInteger(
+      prefs::kNearbySharingBackgroundVisibilityName,
+      static_cast<int>(nearby_share::mojom::Visibility::kAllContacts));
 
-    manager()->ShowVisibilityReminder();
-    std::vector<message_center::Notification> notifications =
-        GetDisplayedNotifications();
-    ASSERT_EQ(1u, notifications.size());
-    const message_center::Notification& notification = notifications[0];
-    EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
-    EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_TITLE),
-              notification.title());
-    EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_MESSAGE),
-              notification.message());
-    EXPECT_TRUE(notification.icon().IsEmpty());
-    EXPECT_EQ(GURL(), notification.origin_url());
-    EXPECT_FALSE(notification.never_timeout());
-    EXPECT_FALSE(notification.renotify());
-    EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
-    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
-              notification.display_source());
-    EXPECT_EQ(2u, notification.buttons().size());
+  manager()->ShowVisibilityReminder();
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  const message_center::Notification& notification = notifications[0];
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_TITLE),
+            notification.title());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_MESSAGE),
+            notification.message());
+  EXPECT_TRUE(notification.icon().IsEmpty());
+  EXPECT_EQ(GURL(), notification.origin_url());
+  EXPECT_FALSE(notification.never_timeout());
+  EXPECT_FALSE(notification.renotify());
+  EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
+            notification.display_source());
+  EXPECT_EQ(2u, notification.buttons().size());
 
-    std::vector<std::u16string> expected_button_titles;
-    expected_button_titles.push_back(l10n_util::GetStringUTF16(
-        IDS_NEARBY_NOTIFICATION_GO_TO_SETTINGS_ACTION));
-    expected_button_titles.push_back(
-        l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DISMISS_ACTION));
+  std::vector<std::u16string> expected_button_titles;
+  expected_button_titles.push_back(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_GO_TO_SETTINGS_ACTION));
+  expected_button_titles.push_back(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DISMISS_ACTION));
 
-    const std::vector<message_center::ButtonInfo>& buttons =
-        notification.buttons();
-    ASSERT_EQ(expected_button_titles.size(), buttons.size());
+  const std::vector<message_center::ButtonInfo>& buttons =
+      notification.buttons();
+  ASSERT_EQ(expected_button_titles.size(), buttons.size());
 
-    for (size_t i = 0; i < expected_button_titles.size(); ++i) {
-      EXPECT_EQ(expected_button_titles[i], buttons[i].title);
-    }
+  for (size_t i = 0; i < expected_button_titles.size(); ++i) {
+    EXPECT_EQ(expected_button_titles[i], buttons[i].title);
+  }
 }
 
 TEST_P(NearbyNotificationManagerTest,
@@ -2216,8 +2216,9 @@ TEST_P(NearbyNotificationManagerTest,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kIsNameEnabled},
       /*disabled_features=*/{});
-  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
-                           static_cast<int>(Visibility::kAllContacts));
+  pref_service_.SetInteger(
+      prefs::kNearbySharingBackgroundVisibilityName,
+      static_cast<int>(nearby_share::mojom::Visibility::kAllContacts));
 
   manager()->ShowVisibilityReminder();
   std::vector<message_center::Notification> notifications =
@@ -2261,8 +2262,9 @@ TEST_P(NearbyNotificationManagerTest,
 }
 
 TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Hidden_Mode) {
-  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
-                           static_cast<int>(Visibility::kNoOne));
+  pref_service_.SetInteger(
+      prefs::kNearbySharingBackgroundVisibilityName,
+      static_cast<int>(nearby_share::mojom::Visibility::kNoOne));
   manager()->ShowVisibilityReminder();
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
@@ -2271,72 +2273,76 @@ TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Hidden_Mode) {
 
 TEST_P(NearbyNotificationManagerTest,
        ShowVisibilityReminder_Notification_Clicked) {
-  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
-                           static_cast<int>(Visibility::kSelectedContacts));
+  pref_service_.SetInteger(
+      prefs::kNearbySharingBackgroundVisibilityName,
+      static_cast<int>(nearby_share::mojom::Visibility::kSelectedContacts));
 
-    manager()->ShowVisibilityReminder();
-    std::vector<message_center::Notification> notifications =
-        GetDisplayedNotifications();
-    ASSERT_EQ(1u, notifications.size());
-    EXPECT_CALL(*settings_opener_, ShowSettingsPage(_, _));
-    notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                        notifications[0].id(),
-                                        /*action_index=*/std::optional<int>(),
-                                        /*reply=*/std::nullopt);
+  manager()->ShowVisibilityReminder();
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_, _));
+  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                      notifications[0].id(),
+                                      /*action_index=*/std::optional<int>(),
+                                      /*reply=*/std::nullopt);
 
-    // Notification should be closed.
-    EXPECT_EQ(0u, GetDisplayedNotifications().size());
+  // Notification should be closed.
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
 }
 
 TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Settings_Clicked) {
-  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
-                           static_cast<int>(Visibility::kAllContacts));
+  pref_service_.SetInteger(
+      prefs::kNearbySharingBackgroundVisibilityName,
+      static_cast<int>(nearby_share::mojom::Visibility::kAllContacts));
 
-    manager()->ShowVisibilityReminder();
-    std::vector<message_center::Notification> notifications =
-        GetDisplayedNotifications();
-    ASSERT_EQ(1u, notifications.size());
-    EXPECT_CALL(*settings_opener_, ShowSettingsPage(_, _));
-    notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                        notifications[0].id(),
-                                        /*action_index=*/0,
-                                        /*reply=*/std::nullopt);
+  manager()->ShowVisibilityReminder();
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_, _));
+  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                      notifications[0].id(),
+                                      /*action_index=*/0,
+                                      /*reply=*/std::nullopt);
 
-    // Notification should be closed.
-    EXPECT_EQ(0u, GetDisplayedNotifications().size());
+  // Notification should be closed.
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
 }
 
 TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Dismiss_Clicked) {
-  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
-                           static_cast<int>(Visibility::kAllContacts));
+  pref_service_.SetInteger(
+      prefs::kNearbySharingBackgroundVisibilityName,
+      static_cast<int>(nearby_share::mojom::Visibility::kAllContacts));
 
-    manager()->ShowVisibilityReminder();
-    std::vector<message_center::Notification> notifications =
-        GetDisplayedNotifications();
-    ASSERT_EQ(1u, notifications.size());
-    notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                        notifications[0].id(),
-                                        /*action_index=*/1,
-                                        /*reply=*/std::nullopt);
+  manager()->ShowVisibilityReminder();
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                      notifications[0].id(),
+                                      /*action_index=*/1,
+                                      /*reply=*/std::nullopt);
 
-    // Notification should be closed.
-    EXPECT_EQ(0u, GetDisplayedNotifications().size());
+  // Notification should be closed.
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
 }
 
 TEST_P(NearbyNotificationManagerTest,
        ShowVisibilityReminder_Notification_Closed) {
-  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
-                           static_cast<int>(Visibility::kAllContacts));
+  pref_service_.SetInteger(
+      prefs::kNearbySharingBackgroundVisibilityName,
+      static_cast<int>(nearby_share::mojom::Visibility::kAllContacts));
 
-    manager()->ShowVisibilityReminder();
-    std::vector<message_center::Notification> notifications =
-        GetDisplayedNotifications();
-    ASSERT_EQ(1u, notifications.size());
-    notification_tester_->RemoveNotification(
-        NotificationHandler::Type::NEARBY_SHARE, notifications[0].id(), true);
+  manager()->ShowVisibilityReminder();
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  notification_tester_->RemoveNotification(
+      NotificationHandler::Type::NEARBY_SHARE, notifications[0].id(), true);
 
-    // Notification should be closed.
-    EXPECT_EQ(0u, GetDisplayedNotifications().size());
+  // Notification should be closed.
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
 }
 
 TEST_P(NearbyNotificationManagerTest, ConnectionRequest_SelfShare) {

@@ -18,7 +18,8 @@ ConnectionBarrier::ConnectionBarrier(
   CHECK(nearby_connections_manager_);
   nearby_connections_manager_->StartAdvertising(
       /*endpoint_info=*/std::vector<uint8_t>(32, 0), this,
-      PowerLevel::kHighPower, ::nearby_share::mojom::DataUsage::kOffline,
+      NearbyConnectionsManager::PowerLevel::kHighPower,
+      ::nearby_share::mojom::DataUsage::kOffline,
       // If `StartAdvertising()` fails, `Wait()` will fail with a timeout, so
       // there's no need to check this callback's return value.
       base::DoNothing());

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTIONS_MANAGER_H_
-#define CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTIONS_MANAGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_NEARBY_CONNECTIONS_MANAGER_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_NEARBY_CONNECTIONS_MANAGER_H_
 
 #include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <vector>
@@ -13,14 +14,23 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 
 // A wrapper around the Nearby Connections mojo API.
 class NearbyConnectionsManager {
  public:
+  // Represents the advertising bluetooth power for Nearby Connections.
+  enum class PowerLevel {
+    kUnknown = 0,
+    kLowPower = 1,
+    kMediumPower = 2,
+    kHighPower = 3,
+    kMaxValue = kHighPower
+  };
+
   using PresenceDevice = nearby::presence::PresenceDevice;
   using Payload = nearby::connections::mojom::Payload;
   using PayloadPtr = nearby::connections::mojom::PayloadPtr;
@@ -28,6 +38,7 @@ class NearbyConnectionsManager {
   using ConnectionsCallback =
       base::OnceCallback<void(ConnectionsStatus status)>;
   using NearbyConnectionCallback = base::OnceCallback<void(NearbyConnection*)>;
+  using DataUsage = nearby_share::mojom::DataUsage;
 
   // A callback for handling incoming connections while advertising.
   class IncomingConnectionListener {
@@ -118,11 +129,12 @@ class NearbyConnectionsManager {
 
   // Starts advertising through Nearby Connections. Caller is expected to ensure
   // |listener| remains valid until StopAdvertising is called.
-  virtual void StartAdvertising(std::vector<uint8_t> endpoint_info,
-                                IncomingConnectionListener* listener,
-                                PowerLevel power_level,
-                                DataUsage data_usage,
-                                ConnectionsCallback callback) = 0;
+  virtual void StartAdvertising(
+      std::vector<uint8_t> endpoint_info,
+      IncomingConnectionListener* listener,
+      NearbyConnectionsManager::PowerLevel power_level,
+      DataUsage data_usage,
+      ConnectionsCallback callback) = 0;
 
   // Stops advertising through Nearby Connections.
   virtual void StopAdvertising(ConnectionsCallback callback) = 0;
@@ -204,4 +216,4 @@ class NearbyConnectionsManager {
   virtual base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() = 0;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTIONS_MANAGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_NEARBY_CONNECTIONS_MANAGER_H_

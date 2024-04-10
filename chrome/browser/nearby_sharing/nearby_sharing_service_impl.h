@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARING_SERVICE_IMPL_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/attachment_info.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner_feature_usage_metrics.h"
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
 #include "chrome/browser/nearby_sharing/incoming_share_target_info.h"
@@ -45,11 +45,11 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/outgoing_share_target_info.h"
 #include "chrome/browser/nearby_sharing/power_client.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
@@ -219,7 +219,7 @@ class NearbySharingServiceImpl
 
   base::ObserverList<TransferUpdateCallback>& GetReceiveCallbacksFromState(
       ReceiveSurfaceState state);
-  bool IsVisibleInBackground(Visibility visibility);
+  bool IsVisibleInBackground(nearby_share::mojom::Visibility visibility);
   const std::optional<std::vector<uint8_t>> CreateEndpointInfo(
       const std::optional<std::string>& device_name);
   void GetBluetoothAdapter();
@@ -554,7 +554,8 @@ class NearbySharingServiceImpl
 
   // The current advertising power level. PowerLevel::kUnknown while not
   // advertising.
-  PowerLevel advertising_power_level_ = PowerLevel::kUnknown;
+  NearbyConnectionsManager::PowerLevel advertising_power_level_ =
+      NearbyConnectionsManager::PowerLevel::kUnknown;
   // True if we are currently scanning for remote devices.
   bool is_scanning_ = false;
   // True if we're currently sending or receiving a file.

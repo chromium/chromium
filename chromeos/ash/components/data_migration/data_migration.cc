@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "third_party/nearby/src/internal/platform/byte_array.h"
 #include "third_party/nearby/src/internal/platform/byte_utils.h"
 
@@ -72,7 +71,8 @@ void DataMigration::StartAdvertising() {
       // `PowerLevel::kHighPower` matches what cros quick start uses and is
       // required by the `NearbyConnectionsManagerImpl` to use the bluetooth
       // classic medium.
-      BuildEndpointInfo(), this, PowerLevel::kHighPower,
+      BuildEndpointInfo(), this,
+      NearbyConnectionsManager::PowerLevel::kHighPower,
       // This causes `NearbyConnectionsManagerImpl` to disable all wifi-related
       // advertisement mechanisms (leaving only bluetooth classic). Note this
       // does not affect the medium for the main connection over which

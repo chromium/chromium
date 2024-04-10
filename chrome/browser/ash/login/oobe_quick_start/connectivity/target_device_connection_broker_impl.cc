@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -338,8 +338,9 @@ void TargetDeviceConnectionBrokerImpl::StartNearbyConnectionsAdvertising(
   // post-launch.
   quick_start_connectivity_service_->GetNearbyConnectionsManager()
       ->StartAdvertising(
-          GenerateEndpointInfo(), /*listener=*/this, PowerLevel::kHighPower,
-          DataUsage::kOffline,
+          GenerateEndpointInfo(), /*listener=*/this,
+          NearbyConnectionsManager::PowerLevel::kHighPower,
+          nearby_share::mojom::DataUsage::kOffline,
           base::BindOnce(&TargetDeviceConnectionBrokerImpl::
                              OnStartNearbyConnectionsAdvertising,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

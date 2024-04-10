@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
-#include "chrome/browser/nearby_sharing/public/cpp/fake_nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/fake_nearby_connections_manager.h"
 #include "chromeos/ash/components/quick_start/fake_quick_start_decoder.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"

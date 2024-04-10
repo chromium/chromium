@@ -10,8 +10,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chromeos/ash/components/data_migration/device.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace data_migration {

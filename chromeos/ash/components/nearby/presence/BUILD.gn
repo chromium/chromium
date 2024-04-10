@@ -48,10 +48,10 @@ source_set("unit_tests") {
   sources = [ "nearby_presence_service_impl_unittest.cc" ]
 
   deps = [
+    ":presence",
     "//base",
     "//base/test:test_support",
     "//chrome/test:test_support",
-    "//chromeos/ash/components/nearby/presence:presence",
     "//chromeos/ash/components/nearby/presence/conversions:unit_tests",
     "//chromeos/ash/components/nearby/presence/credentials",
     "//chromeos/ash/components/nearby/presence/credentials:test_support",

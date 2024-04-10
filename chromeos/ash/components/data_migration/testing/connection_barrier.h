@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 
 class NearbyConnection;
 
