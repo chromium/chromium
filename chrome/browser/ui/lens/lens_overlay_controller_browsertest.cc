@@ -138,11 +138,10 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
 };
 
-// TODO(https://crbug.com/329708692): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       DISABLED_CaptureScreenshot) {
+// TODO(https://crbug.com/329708692): If this test flakes please disable and
+// refile against the same bug.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
   WaitForPaint();
-
   // State should start in off.
   auto* controller = browser()
                          ->tab_strip_model()
