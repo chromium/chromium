@@ -164,7 +164,7 @@ public class WebViewLayoutTest {
         // Check that each current webview interface is one of webview expected interfaces.
         for (String interfaceS : webviewInterfacesMap.keySet()) {
             if (webviewExpectedInterfacesMap.get(interfaceS) == null) {
-                newInterfaces.append(interfaceS + "\n");
+                newInterfaces.append(interfaceS).append("\n");
             }
         }
 
@@ -241,7 +241,7 @@ public class WebViewLayoutTest {
                             NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
             interfacesNotExposedInWebview.forEach(
                     illegallyExposedInterface -> {
-                        errorMessage.append("\t- " + illegallyExposedInterface + "\n");
+                        errorMessage.append("\t- ").append(illegallyExposedInterface).append("\n");
                     });
         }
         String errorTemplate =
@@ -265,7 +265,7 @@ public class WebViewLayoutTest {
                                     NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
                     propertiesNotExposed.forEach(
                             propertyNotExposed -> {
-                                errorMessage.append("\t- " + propertyNotExposed + "\n");
+                                errorMessage.append("\t- ").append(propertyNotExposed).append("\n");
                             });
                 });
         if (errorMessage.length() > 0) {
@@ -351,7 +351,8 @@ public class WebViewLayoutTest {
                             """,
                             NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
             missingInterfaces.forEach(
-                    (missingInterface) -> errorMessage.append("\t- " + missingInterface + "\n"));
+                    (missingInterface) ->
+                            errorMessage.append("\t- ").append(missingInterface).append("\n"));
         }
         String errorTemplate =
                 """
@@ -371,7 +372,10 @@ public class WebViewLayoutTest {
                                     NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
                     missingProperties.forEach(
                             (missingProperty) ->
-                                    errorMessage.append("\t- " + missingProperty + "\n"));
+                                    errorMessage
+                                            .append("\t- ")
+                                            .append(missingProperty)
+                                            .append("\n"));
                 });
         Assert.assertTrue(errorMessage.toString(), errorMessage.length() == 0);
     }
