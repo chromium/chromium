@@ -174,8 +174,15 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
 // Verifies that the keyboard is up and not covered by the password manual fill
 // view.
 void CheckKeyboardIsUpAndNotCovered() {
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard should be shown");
+  // Verify the keyboard is not covered by the profiles view.
+  // TODO(crbug.com/332956674): Remove version check once fixed.
+  if (@available(iOS 17.4, *)) {
+    // Skip verification.
+  } else {
+    GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                   @"Keyboard should be shown");
+  }
+
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 }

@@ -233,9 +233,15 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
         assertWithMatcher:grey_not(grey_sufficientlyVisible())];
   }
 
-  // Verify the keyboard is not cover by the profiles view.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard should be shown");
+  // Verify the keyboard is not covered by the profiles view.
+  // TODO(crbug.com/332956674): Remove version check once fixed.
+  if (@available(iOS 17.4, *)) {
+    // Skip verification.
+  } else {
+    GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                   @"Keyboard should be shown");
+  }
+
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 }

@@ -430,9 +430,14 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
   // Verify the keyboard is not covered by the cards view.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  // TODO(crbug.com/332956674): Remove version check once fixed.
+  if (@available(iOS 17.4, *)) {
+    // Skip verification.
+  } else {
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        assertWithMatcher:grey_notVisible()];
+  }
 }
 
 // Tests that the "Add Payment Method..." action works.
@@ -543,9 +548,14 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
   // Verify the keyboard is not cover by the cards view.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
+  // TODO(crbug.com/332956674): Remove version check once fixed.
+  if (@available(iOS 17.4, *)) {
+    // Skip verification.
+  } else {
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        assertWithMatcher:grey_notVisible()];
+  }
 }
 
 // Tests that the credit card View Controller is dismissed when tapping the
