@@ -3826,6 +3826,15 @@
   <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_TITLE" desc="Title of the personalize Google services section. When clicked, takes the user to the Google Activity Controls.">
     Control how your browsing history is used to personalize Search and more
   </message>
+  <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_TITLE_V2" desc="This is the title of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. This title appears in Chrome's Advanced Sync settings, before the 'To get personalization and other features' string.">
+    Control how browsing history is used with your other data across Google services
+  </message>
+  <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_WAA_TITLE" desc="This string is found on a link in Chrome's Advanced Sync settings. When the user taps it, the link takes the user to 'Web &#38; App Activity' in the Google Account's Activity Controls. This text should match the branded term 'Web &#38; App Activity' in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&#38;tsid=77d3b75.">
+    Web &#38; App Activity
+  </message>
+  <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_LINKED_SERVICES_TITLE" desc="This string is found on a link in Chrome's Advanced Sync settings. When the user taps it, the link takes the user to 'Linked Google services' in the Google Account's Data &#38; privacy settings. The link is on a setting that users see in Chrome's Advanced Sync settings. This text should match the branded term 'linked Google services' in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&#38;tsid=517bace2.">
+    Linked Google services
+  </message>
   <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_ALWAYS_ASK" translateable="false" desc="One of three options for the setting is called 'Sign in to Chrome when you sign in to other Google services'. When the user chooses this option, the user will be asked whether they want to sign in to Chrome after they sign in to a Google service (like Gmail) using Chrome. The verb tense should be descriptive, not imperative.">
     Ask me every time
   </message>

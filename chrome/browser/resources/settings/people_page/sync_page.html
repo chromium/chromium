@@ -153,30 +153,31 @@
             </cr-link-row>
           </template>
           <template is="dom-if" if="[[enableLinkedServicesSetting_]]">
-            <!-- TODO(crbug.com/324091979): Update strings. -->
             <template is="dom-if" if="[[!isEeaChoiceCountry_]]">
               <cr-link-row class="hr" id="activityControlsLinkRowV2"
-                  label="$i18n{privacyPageTitle}"
-                  sub-label="$i18n{privacyPageTitle}"
+                  label="$i18n{personalizeGoogleServicesTitleV2}"
+                  sub-label="$i18n{personalizeGoogleServicesDesc}"
                   on-click="onActivityControlsClick_" external>
               </cr-link-row>
             </template>
             <template is="dom-if" if="[[isEeaChoiceCountry_]]">
               <cr-expand-button class="hr" id="personalizationExpandButton"
                   expanded="{{personalizationCollapseExpanded_}}">
-                $i18n{privacyPageTitle}
-                <div class="secondary">$i18n{privacyPageTitle}</div>
+                $i18n{personalizeGoogleServicesTitleV2}
+                <div class="secondary">
+                  $i18n{personalizeGoogleServicesDescWithLinkedServices}
+                </div>
               </cr-expand-button>
               <iron-collapse id="personalizationCollapse"
                   opened="[[personalizationCollapseExpanded_]]">
                 <cr-link-row external on-click="onActivityControlsClick_"
-                    label="$i18n{privacyPageTitle}"
-                    sub-label="$i18n{privacyPageTitle}">
+                    label="$i18n{personalizeGoogleServicesWaaTitle}">
                 </cr-link-row>
                 <cr-link-row external id="linkedServicesLinkRow"
                     on-click="onLinkedServicesClick_"
-                    label="$i18n{privacyPageTitle}"
-                    sub-label="$i18n{privacyPageTitle}">
+                    label="$i18n{personalizeGoogleServicesLinkedServicesTitle}"
+                    sub-label=
+                        "$i18n{personalizeGoogleServicesLinkedServicesDesc}">
                 </cr-link-row>
               </iron-collapse>
             </template>

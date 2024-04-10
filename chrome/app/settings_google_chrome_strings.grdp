@@ -319,6 +319,15 @@
   <message name="IDS_SETTINGS_SYNC_SIGN_IN_PROMPT_WITH_NO_ACCOUNT" desc="The text displayed to prompt users to sign in to Chrome.">
     Sign in to sync and personalize Chrome across your devices
   </message>
+  <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_DESC" desc="This is the subtitle of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. This subtitle appears in Chrome's Advanced Sync settings, after the 'Control how browsing history is used with your other data across Google services' string. The 'Web &#38; App Activity' text should match the branded term in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&#38;tsid=77d3b75.">
+    To get personalization, include Chrome in Web &#38; App Activity
+  </message>
+  <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_DESC_WITH_LINKED_SERVICES" desc="This is the subtitle of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. This subtitle appears in Chrome's Advanced Sync settings, after the 'Control how browsing history is used with your other data across Google services' string. The 'Web &#38; App Activity' text should match the branded term in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&#38;tsid=77d3b75. The 'linked Google services' text should match the branded term in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&#38;tsid=517bace2.">
+    To get personalization and other features, include Chrome in Web &#38; App Activity and linked Google services
+  </message>
+  <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_LINKED_SERVICES_DESC" desc="This is the subtitle of a setting that links to 'Linked Google services' in the Google Account's Data &#38; privacy settings. This subtitle appears in Chrome's Advanced Sync settings and is after the 'Linked Google services' string.">
+    Link Chrome and other Google services for personalization and other purposes
+  </message>
 
   <!-- Page content -->
   <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
