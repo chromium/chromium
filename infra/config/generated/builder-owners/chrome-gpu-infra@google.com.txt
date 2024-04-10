@@ -59,6 +59,7 @@ ci/Dawn Win10 x86 DEPS Builder
 ci/Dawn Win10 x86 DEPS Release (Intel)
 ci/Dawn Win10 x86 DEPS Release (NVIDIA)
 ci/Dawn Win10 x86 Experimental Release (Intel)
+ci/Dawn Win10 x86 Experimental Release (NVIDIA)
 ci/Dawn Win10 x86 Release (Intel)
 ci/Dawn Win10 x86 Release (NVIDIA)
 ci/GPU FYI Android arm Builder
@@ -160,6 +161,7 @@ try/dawn-try-win-x86-intel-exp
 try/dawn-try-win10-x64-intel-asan
 try/dawn-try-win10-x64-nvidia-asan
 try/dawn-try-win10-x86-rel
+try/dawn-try-xin-x86-nvidia-exp
 try/dawn-win10-x64-deps-rel
 try/dawn-win10-x86-deps-rel
 try/gpu-fyi-try-android-m-nexus-5x-64

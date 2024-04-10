@@ -703,6 +703,7 @@
     "dawn-try-win10-x64-intel-asan": "try/dawn-try-win10-x64-intel-asan/gn-args.json",
     "dawn-try-win10-x64-nvidia-asan": "try/dawn-try-win10-x64-nvidia-asan/gn-args.json",
     "dawn-try-win10-x86-rel": "try/dawn-try-win10-x86-rel/gn-args.json",
+    "dawn-try-xin-x86-nvidia-exp": "try/dawn-try-xin-x86-nvidia-exp/gn-args.json",
     "dawn-win10-x64-deps-rel": "try/dawn-win10-x64-deps-rel/gn-args.json",
     "dawn-win10-x86-deps-rel": "try/dawn-win10-x86-deps-rel/gn-args.json",
     "linux-dawn-intel-exp-rel": "try/linux-dawn-intel-exp-rel/gn-args.json",
