@@ -30,12 +30,6 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/webauthn/mac_authentication_view.h"
-#include "crypto/scoped_lacontext.h"
-#endif  // BUILDFLAG(IS_MAC)
-
 namespace {
 
 struct BubbleContents {
@@ -49,13 +43,6 @@ struct BubbleContents {
   void (AuthenticatorRequestDialogModel::*on_ok)();
   void (AuthenticatorRequestDialogModel::*on_cancel)() =
       &AuthenticatorRequestDialogModel::StartOver;
-};
-
-constexpr BubbleContents kGPMTouchID = {
-    .title = u"Touch ID to proceed (UNTRANSLATED)",
-    .body = nullptr,
-    .show_footer = false,
-    .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreatePasskey,
 };
 
 // TODO(rgod): Add username row and correct footer when mocks are ready.
@@ -110,8 +97,6 @@ class AuthenticatorRequestBubbleDelegate
   static const BubbleContents* GetContents(
       AuthenticatorRequestDialogModel::Step step) {
     switch (step) {
-      case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
-        return &kGPMTouchID;
       case AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved:
         return &kGPMPasskeySavedContents;
       default:
@@ -235,18 +220,6 @@ class AuthenticatorRequestBubbleDelegate
               .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
               .Build());
     }
-
-#if BUILDFLAG(IS_MAC)
-    if (step_ == AuthenticatorRequestDialogModel::Step::kGPMTouchID) {
-      if (__builtin_available(macos 12, *)) {
-        primary_view_->AddChildView(
-            std::make_unique<MacAuthenticationView>(base::BindOnce(
-                &AuthenticatorRequestBubbleDelegate::OnTouchIDContextReady,
-                weak_ptr_factory_.GetWeakPtr())));
-      }
-    }
-#endif  // BUILDFLAG(IS_MAC)
-
     AddChildView(std::move(primary_view));
   }
 
@@ -255,22 +228,10 @@ class AuthenticatorRequestBubbleDelegate
     UpdateHeader();
     UpdateFootnote();
   }
-
-#if BUILDFLAG(IS_MAC)
-  void OnTouchIDContextReady(std::optional<crypto::ScopedLAContext> lacontext) {
-    model_->lacontext = std::move(lacontext);
-    model_->OnTouchIDComplete(model_->lacontext.has_value());
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   raw_ptr<AuthenticatorRequestDialogModel> model_;
   AuthenticatorRequestDialogModel::Step step_;
   raw_ptr<const BubbleContents> bubble_contents_;
   raw_ptr<views::View> primary_view_;
-#if BUILDFLAG(IS_MAC)
-  base::WeakPtrFactory<AuthenticatorRequestBubbleDelegate> weak_ptr_factory_{
-      this};
-#endif  // BUILDFLAG(IS_MAC)
 };
 
 }  // namespace

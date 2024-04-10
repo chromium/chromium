@@ -29,6 +29,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -722,6 +723,11 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
     } else if (name == "touchid") {
+      model_->user_entity = local_cred1.user;
+      transport_availability.request_type =
+          device::FidoRequestType::kMakeCredential;
+      transport_availability.make_credential_attachment =
+          device::AuthenticatorAttachment::kAny;
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMTouchID);
     } else if (name == "gpm_onboarding") {
@@ -852,7 +858,9 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_touchid) {
-  ShowAndVerifyUi();
+  if (__builtin_available(macos 12, *)) {
+    ShowAndVerifyUi();
+  }
 }
 #endif  // BUILDFLAG(IS_MAC)
 

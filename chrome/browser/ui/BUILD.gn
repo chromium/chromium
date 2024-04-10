@@ -6484,6 +6484,8 @@ static_library("ui") {
         "views/permissions/permission_prompt_notifications_mac.h",
         "views/policy/enterprise_startup_dialog_mac_util.h",
         "views/policy/enterprise_startup_dialog_mac_util.mm",
+        "views/webauthn/authenticator_touch_id_view.cc",
+        "views/webauthn/authenticator_touch_id_view.h",
         "views/webauthn/mac_authentication_view.h",
         "views/webauthn/mac_authentication_view.mm",
       ]

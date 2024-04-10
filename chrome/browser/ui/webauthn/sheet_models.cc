@@ -24,11 +24,14 @@
 #include "components/strings/grit/components_strings.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "crypto/scoped_lacontext.h"
+#include "device/fido/mac/util.h"
 #endif
 
 namespace {
@@ -549,6 +552,72 @@ std::u16string AuthenticatorBlePermissionMacSheetModel::GetAcceptButtonLabel()
 
 void AuthenticatorBlePermissionMacSheetModel::OnAccept() {
   dialog_model()->OpenBlePreferences();
+}
+
+// AuthenticatorTouchIdSheetModel
+// ------------------------------------
+
+AuthenticatorTouchIdSheetModel::AuthenticatorTouchIdSheetModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {}
+
+std::u16string AuthenticatorTouchIdSheetModel::GetStepTitle() const {
+  switch (dialog_model()->request_type) {
+    case device::FidoRequestType::kGetAssertion:
+      return u"Use your passkey to sign in to " +
+             base::UTF8ToUTF16(dialog_model()->relying_party_id) + u"? (UT)";
+    case device::FidoRequestType::kMakeCredential:
+      return u"Create a passkey for " +
+             base::UTF8ToUTF16(dialog_model()->relying_party_id) + u"? (UT)";
+  }
+}
+
+std::u16string AuthenticatorTouchIdSheetModel::GetStepDescription() const {
+  return u"You can use saved passkeys on any device. It will be saved to "
+         u"Google Password Manager for your Google account (UT)";
+}
+
+bool AuthenticatorTouchIdSheetModel::IsAcceptButtonVisible() const {
+  return !device::fido::mac::DeviceHasBiometricsAvailable();
+}
+
+bool AuthenticatorTouchIdSheetModel::IsAcceptButtonEnabled() const {
+  return true;
+}
+
+bool AuthenticatorTouchIdSheetModel::IsCancelButtonVisible() const {
+  return true;
+}
+
+std::u16string AuthenticatorTouchIdSheetModel::GetAcceptButtonLabel() const {
+  return u"Use password (UT)";
+}
+
+void AuthenticatorTouchIdSheetModel::OnAccept() {
+  if (touch_id_completed_) {
+    return;
+  }
+  touch_id_completed_ = true;
+  dialog_model()->OnTouchIDComplete(false);
+}
+
+void AuthenticatorTouchIdSheetModel::OnTouchIDSensorTapped(
+    std::optional<crypto::ScopedLAContext> lacontext) {
+  // Ignore Touch ID ceremony status after the user has completed the ceremony.
+  if (touch_id_completed_) {
+    return;
+  }
+  if (!lacontext) {
+    // Authentication failed. Update the button status and rebuild the sheet,
+    // which will restart the Touch ID request if the sensor is not softlocked
+    // or display a padlock icon if it is.
+    dialog_model()->OnSheetModelChanged();
+    return;
+  }
+  touch_id_completed_ = true;
+  dialog_model()->lacontext = std::move(lacontext);
+  dialog_model()->OnTouchIDComplete(true);
 }
 
 #endif  // IS_MAC

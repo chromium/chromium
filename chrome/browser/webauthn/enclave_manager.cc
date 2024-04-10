@@ -2513,8 +2513,11 @@ EnclaveManager::UvKeyState EnclaveManager::uv_key_state() const {
   }
 #if BUILDFLAG(IS_MAC)
   if (device::fido::mac::DeviceHasBiometricsAvailable()) {
-    // Chrome will display an LAAuthenticationView with a Touch ID prompt.
-    return UvKeyState::kUsesChromeUI;
+    // LAAuthenticationView is only supported on macOS 12+.
+    if (__builtin_available(macOS 12.0, *)) {
+      // Chrome will display an LAAuthenticationView with a Touch ID prompt.
+      return UvKeyState::kUsesChromeUI;
+    }
   }
   // Delegate prompting the user for their screen lock to macOS.
   return UvKeyState::kUsesSystemUI;
