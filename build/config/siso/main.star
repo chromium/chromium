@@ -198,6 +198,7 @@ def __use_large_b289968566(ctx, step_config):
         # use_clang_coverage = true
         # use_remoteexec = false
         # use_siso = true
+        "./obj/content/test/content_browsertests__library/interest_group_browsertest.o",
         "./obj/content/test/content_browsertests__library/prerender_browsertest.o",
     ]
     if runtime.os == "windows":
