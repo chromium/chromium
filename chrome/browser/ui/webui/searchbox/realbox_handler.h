@@ -108,6 +108,9 @@ class RealboxHandler : public SearchboxHandler {
 
   base::ObserverList<OmniboxWebUIPopupChangeObserver> observers_;
 
+  // Owns this.
+  raw_ptr<LensSearchboxClient> lens_searchbox_client_;
+
   // Size of the WebUI popup element, as reported by ResizeObserver.
   gfx::Size webui_size_;
 

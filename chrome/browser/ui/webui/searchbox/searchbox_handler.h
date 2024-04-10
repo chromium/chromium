@@ -42,17 +42,18 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                        bool default_match_changed) override;
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
+
   SearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
       MetricsReporter* metrics_reporter);
-
   SearchboxHandler(const SearchboxHandler&) = delete;
   SearchboxHandler& operator=(const SearchboxHandler&) = delete;
-
   ~SearchboxHandler() override;
 
+  OmniboxController* omnibox_controller() const;
   AutocompleteController* autocomplete_controller() const;
 
   raw_ptr<Profile> profile_;

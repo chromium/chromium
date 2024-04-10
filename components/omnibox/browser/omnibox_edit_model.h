@@ -155,7 +155,8 @@ class OmniboxEditModel {
   std::u16string GetPermanentDisplayText() const;
 
   // Sets the user_text_ to |text|. Also enters user-input-in-progress mode.
-  void SetUserText(const std::u16string& text);
+  // Virtual for testing.
+  virtual void SetUserText(const std::u16string& text);
 
   // If the omnibox is currently displaying elided text, this method will
   // restore the full URL into the user text. After unelision, this selects-all,

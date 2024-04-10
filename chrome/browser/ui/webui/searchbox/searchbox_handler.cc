@@ -682,6 +682,10 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
   }
 }
 
+OmniboxController* SearchboxHandler::omnibox_controller() const {
+  return controller_;
+}
+
 AutocompleteController* SearchboxHandler::autocomplete_controller() const {
-  return controller_->autocomplete_controller();
+  return omnibox_controller()->autocomplete_controller();
 }

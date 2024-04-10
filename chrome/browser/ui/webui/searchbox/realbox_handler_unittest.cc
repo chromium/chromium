@@ -4,9 +4,15 @@
 
 #include "realbox_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/test_omnibox_client.h"
+#include "components/omnibox/browser/test_omnibox_edit_model.h"
 #include "components/search/ntp_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -14,8 +20,14 @@
 #include "content/public/test/test_web_ui_data_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
 namespace {
+
+using testing::_;
+using testing::DoAll;
+using testing::SaveArg;
 
 class MockPage : public searchbox::mojom::Page {
  public:
@@ -38,6 +50,33 @@ class MockPage : public searchbox::mojom::Page {
               (searchbox::mojom::OmniboxPopupSelectionPtr,
                searchbox::mojom::OmniboxPopupSelectionPtr));
   MOCK_METHOD(void, SetInputText, (const std::string& input_text));
+};
+
+class MockAutocompleteController : public AutocompleteController {
+ public:
+  MockAutocompleteController(
+      std::unique_ptr<AutocompleteProviderClient> provider_client,
+      int provider_types)
+      : AutocompleteController(std::move(provider_client), provider_types) {}
+  ~MockAutocompleteController() override = default;
+  MockAutocompleteController(const MockAutocompleteController&) = delete;
+  MockAutocompleteController& operator=(const MockAutocompleteController&) =
+      delete;
+
+  // AutocompleteController:
+  MOCK_METHOD1(Start, void(const AutocompleteInput&));
+};
+
+class MockOmniboxEditModel : public OmniboxEditModel {
+ public:
+  MockOmniboxEditModel(OmniboxController* omnibox_controller, OmniboxView* view)
+      : OmniboxEditModel(omnibox_controller, view) {}
+  ~MockOmniboxEditModel() override = default;
+  MockOmniboxEditModel(const MockOmniboxEditModel&) = delete;
+  MockOmniboxEditModel& operator=(const MockOmniboxEditModel&) = delete;
+
+  // OmniboxEditModel:
+  MOCK_METHOD1(SetUserText, void(const std::u16string&));
 };
 
 class TestObserver : public OmniboxWebUIPopupChangeObserver {
@@ -65,6 +104,9 @@ class RealboxHandlerTest : public ::testing::Test {
  protected:
   std::unique_ptr<RealboxHandler> handler_;
   testing::NiceMock<MockPage> page_;
+  raw_ptr<testing::NiceMock<MockAutocompleteController>>
+      autocomplete_controller_;
+  raw_ptr<testing::NiceMock<MockOmniboxEditModel>> omnibox_edit_model_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -91,7 +133,11 @@ class RealboxHandlerTest : public ::testing::Test {
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
-  void TearDown() override { handler_.reset(); }
+  void TearDown() override {
+    omnibox_edit_model_ = nullptr;
+    autocomplete_controller_ = nullptr;
+    handler_.reset();
+  }
 };
 
 TEST_F(RealboxHandlerTest, RealboxLensVariationsContainsVariations) {
@@ -159,4 +205,74 @@ TEST_F(RealboxHandlerTest, RealboxObservationWorks) {
   handler_->RemoveObserver(&observer);
   EXPECT_FALSE(handler_->HasObserver(&observer));
   EXPECT_TRUE(observer.called());
+}
+
+TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
+  // Stop observing the AutocompleteController instance which will be destroyed.
+  handler_->autocomplete_controller_observation_.Reset();
+  // Set a mock AutocompleteController.
+  auto autocomplete_controller =
+      std::make_unique<testing::NiceMock<MockAutocompleteController>>(
+          std::make_unique<MockAutocompleteProviderClient>(), 0);
+  autocomplete_controller_ = autocomplete_controller.get();
+  handler_->omnibox_controller()->SetAutocompleteControllerForTesting(
+      std::move(autocomplete_controller));
+  // Set a mock OmniboxEditModel.
+  auto omnibox_edit_model =
+      std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
+          handler_->omnibox_controller(),
+          /*view=*/nullptr);
+  omnibox_edit_model_ = omnibox_edit_model.get();
+  handler_->omnibox_controller()->SetEditModelForTesting(
+      std::move(omnibox_edit_model));
+
+  {
+    SCOPED_TRACE("Empty input");
+
+    std::u16string input_text;
+    EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
+        .Times(1)
+        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+
+    AutocompleteInput input;
+    EXPECT_CALL(*autocomplete_controller_, Start(_))
+        .Times(1)
+        .WillOnce(DoAll(SaveArg<0>(&input)));
+
+    handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false);
+
+    EXPECT_EQ(input_text, u"");
+    EXPECT_EQ(input.text(), u"");
+    EXPECT_EQ(input.focus_type(), metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    EXPECT_EQ(input.current_page_classification(),
+              metrics::OmniboxEventProto::NTP_REALBOX);
+
+    testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
+    testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
+  }
+  {
+    SCOPED_TRACE("Non-empty input");
+
+    std::u16string input_text;
+    EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
+        .Times(1)
+        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+
+    AutocompleteInput input;
+    EXPECT_CALL(*autocomplete_controller_, Start(_))
+        .Times(1)
+        .WillOnce(DoAll(SaveArg<0>(&input)));
+
+    handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false);
+
+    EXPECT_EQ(input_text, u"a");
+    EXPECT_EQ(input.text(), u"a");
+    EXPECT_EQ(input.focus_type(),
+              metrics::OmniboxFocusType::INTERACTION_DEFAULT);
+    EXPECT_EQ(input.current_page_classification(),
+              metrics::OmniboxEventProto::NTP_REALBOX);
+
+    testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
+    testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
+  }
 }

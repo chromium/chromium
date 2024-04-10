@@ -121,6 +121,7 @@ class RealboxOmniboxClient final : public OmniboxClient {
  private:
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
+  // Owns RealboxHandler which owns this.
   raw_ptr<LensSearchboxClient> lens_searchbox_client_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   // This is unused, but needed for `GetVectorIcon()`.
@@ -295,7 +296,8 @@ RealboxHandler::RealboxHandler(
     : SearchboxHandler(std::move(pending_page_handler),
                        profile,
                        web_contents,
-                       metrics_reporter) {
+                       metrics_reporter),
+      lens_searchbox_client_(lens_searchbox_client) {
   // Keep a reference to the OmniboxController instance owned by the OmniboxView
   // when the handler is being used in the context of the omnibox popup.
   // Otherwise, create own instance of OmniboxController. Either way, observe
@@ -362,25 +364,33 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
   // Omnibox.TypingDuration will be logged correctly.
   edit_model()->SetUserText(input);
 
+  // RealboxOmniboxClient::GetPageClassification() ignores the arguments.
+  const auto page_classification =
+      omnibox_controller()->client()->GetPageClassification(
+          OmniboxFocusSource::INVALID,
+          /*is_prefetch=*/false);
   AutocompleteInput autocomplete_input(
-      input, metrics::OmniboxEventProto::NTP_REALBOX,
-      ChromeAutocompleteSchemeClassifier(profile_));
+      input, page_classification, ChromeAutocompleteSchemeClassifier(profile_));
   autocomplete_input.set_focus_type(
       is_on_focus ? metrics::OmniboxFocusType::INTERACTION_FOCUS
                   : metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   autocomplete_input.set_prevent_inline_autocomplete(
       prevent_inline_autocomplete);
-
-  // We do not want keyword matches for the NTP realbox, which has no UI
-  // facilities to support them.
+  // Disable keyword matches as NTP realbox has no UI affordance for it.
   autocomplete_input.set_prefer_keyword(false);
   autocomplete_input.set_allow_exact_keyword_match(false);
+  // Set the lens overlay interaction response, if available.
+  if (lens_searchbox_client_ &&
+      lens_searchbox_client_->GetLensResponse().has_encoded_response()) {
+    autocomplete_input.set_lens_overlay_interaction_response(
+        lens_searchbox_client_->GetLensResponse());
+  }
 
-  controller_->StartAutocomplete(autocomplete_input);
+  omnibox_controller()->StartAutocomplete(autocomplete_input);
 }
 
 void RealboxHandler::StopAutocomplete(bool clear_result) {
-  controller_->StopAutocomplete(clear_result);
+  omnibox_controller()->StopAutocomplete(clear_result);
 }
 
 void RealboxHandler::OpenAutocompleteMatch(uint8_t line,
@@ -436,7 +446,7 @@ void RealboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
     // the web UI is referencing a stale match.
     return;
   }
-  controller_->StopAutocomplete(/*clear_result=*/false);
+  omnibox_controller()->StopAutocomplete(/*clear_result=*/false);
   autocomplete_controller()->DeleteMatch(*match);
 }
 
@@ -445,8 +455,8 @@ void RealboxHandler::ToggleSuggestionGroupIdVisibility(
   const auto& group_id = omnibox::GroupIdForNumber(suggestion_group_id);
   DCHECK_NE(omnibox::GROUP_INVALID, group_id);
   const bool current_visibility =
-      controller_->IsSuggestionGroupHidden(group_id);
-  controller_->SetSuggestionGroupHidden(group_id, !current_visibility);
+      omnibox_controller()->IsSuggestionGroupHidden(group_id);
+  omnibox_controller()->SetSuggestionGroupHidden(group_id, !current_visibility);
 }
 
 void RealboxHandler::ExecuteAction(uint8_t line,
@@ -514,7 +524,7 @@ void RealboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
 }
 
 OmniboxEditModel* RealboxHandler::edit_model() const {
-  return controller_->edit_model();
+  return omnibox_controller()->edit_model();
 }
 
 const AutocompleteMatch* RealboxHandler::GetMatchWithUrl(size_t index,
