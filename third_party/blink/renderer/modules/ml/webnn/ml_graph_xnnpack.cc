@@ -1327,7 +1327,6 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
   // Define XNNPACK average or max pooling 2d Node for the Subgraph object.
   const float output_min = -std::numeric_limits<float>::infinity();
   const float output_max = +std::numeric_limits<float>::infinity();
-  const uint32_t flags = 0;
   switch (pool2d->SubKind<webnn::mojom::blink::Pool2d::Kind>()) {
     case webnn::mojom::blink::Pool2d::Kind::kAveragePool2d: {
       if (dilation_height != 1 || dilation_width != 1) {
@@ -1335,14 +1334,18 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
         return xnn_status_unsupported_parameter;
       }
       if (global_pooling) {
+        // Use the XNNPACK_FLAG_KEEP_DIMS flag to ensure the output shape
+        // matches the input shape (4D). Otherwise, this operator will collapse
+        // the input shape into a 2D output shape.
         XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
             xnn_define_global_average_pooling_2d(
-                subgraph, output_min, output_max, input_id, output_id, flags));
+                subgraph, output_min, output_max, input_id, output_id,
+                /*flags=*/XNN_FLAG_KEEP_DIMS));
       } else {
         XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_average_pooling_2d(
             subgraph, padding.top, padding.right, padding.bottom, padding.left,
             filter_height, filter_width, stride_height, stride_width,
-            output_min, output_max, input_id, output_id, flags));
+            output_min, output_max, input_id, output_id, /*flags=*/0));
       }
       break;
     }
@@ -1351,7 +1354,7 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
           subgraph, padding.top, padding.right, padding.bottom, padding.left,
           filter_height, filter_width, stride_height, stride_width,
           dilation_height, dilation_width, output_min, output_max, input_id,
-          output_id, flags));
+          output_id, /*flags=*/0));
       break;
     }
     case webnn::mojom::blink::Pool2d::Kind::kL2Pool2d:
@@ -1440,7 +1443,7 @@ xnn_status DefineXnnNodeForReduce(xnn_subgraph_t subgraph,
     return base::checked_cast<size_t>(value);
   });
 
-  const uint32_t flags = 0;
+  const uint32_t flags = options->keepDimensions() ? XNN_FLAG_KEEP_DIMS : 0;
   switch (reduce->SubKind<webnn::mojom::blink::Reduce::Kind>()) {
     case webnn::mojom::blink::Reduce::Kind::kMean: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_static_mean(
