@@ -176,6 +176,7 @@ BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
       set_up_list_prefs::SetItemState(localState, item.type,
                                       SetUpListItemState::kCompleteNotInList);
     }
+    set_up_list_prefs::MarkAllItemsComplete(localState);
   }
 
   // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
@@ -255,8 +256,12 @@ BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
       set_up_list_prefs::GetItemState(_localState, item.type);
   if (state == SetUpListItemState::kCompleteInList) {
     [item markComplete];
+    BOOL allItemsComplete = [self allItemsComplete];
     [self.delegate setUpListItemDidComplete:item
-                          allItemsCompleted:[self allItemsComplete]];
+                          allItemsCompleted:allItemsComplete];
+    if (allItemsComplete) {
+      set_up_list_prefs::MarkAllItemsComplete(_localState);
+    }
   }
 }
 

@@ -20,6 +20,7 @@ extern const char kDefaultBrowserItemState[];
 extern const char kAutofillItemState[];
 extern const char kFollowItemState[];
 extern const char kNotificationsItemState[];
+extern const char kAllItemsComplete[];
 extern const char kDisabled[];
 
 // Possible values stored in prefs for each Set Up List item state.
@@ -52,6 +53,9 @@ void SetItemState(PrefService* prefs,
 
 // Marks the item as completed.
 void MarkItemComplete(PrefService* prefs, SetUpListItemType type);
+
+// Records that all items are complete.
+void MarkAllItemsComplete(PrefService* prefs);
 
 // Returns `true` if the Set Up List has been disabled.
 bool IsSetUpListDisabled(PrefService* prefs);

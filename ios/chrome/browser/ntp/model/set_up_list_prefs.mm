@@ -18,6 +18,7 @@ const char kAutofillItemState[] = "set_up_list.autofill_item.state";
 const char kFollowItemState[] = "set_up_list.follow_item.state";
 const char kNotificationsItemState[] =
     "set_up_list.content_notification_item.state";
+const char kAllItemsComplete[] = "set_up_list.all_items_complete";
 const char kDisabled[] = "set_up_list.disabled";
 const char kLastInteraction[] = "set_up_list.last_interaction";
 
@@ -28,6 +29,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kAutofillItemState, unknown);
   registry->RegisterIntegerPref(kFollowItemState, unknown);
   registry->RegisterIntegerPref(kNotificationsItemState, unknown);
+  registry->RegisterBooleanPref(kAllItemsComplete, false);
   registry->RegisterBooleanPref(kDisabled, false);
   registry->RegisterTimePref(kLastInteraction, base::Time());
 }
@@ -74,6 +76,15 @@ void MarkItemComplete(PrefService* prefs, SetUpListItemType type) {
       // Already complete, so there is nothing to do.
       break;
   }
+}
+
+void MarkAllItemsComplete(PrefService* prefs) {
+  if (prefs->GetBoolean(kAllItemsComplete)) {
+    // All items were already complete.
+    return;
+  }
+  prefs->SetBoolean(kAllItemsComplete, true);
+  set_up_list_metrics::RecordAllItemsCompleted();
 }
 
 bool IsSetUpListDisabled(PrefService* prefs) {

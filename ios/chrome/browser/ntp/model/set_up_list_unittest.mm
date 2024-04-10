@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/gtest_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/scoped_user_pref_update.h"
@@ -336,9 +337,12 @@ TEST_F(SetUpListTest, ObservesPrefs) {
 // Tests that `allItemsComplete` correctly returns whether all items are
 // complete.
 TEST_F(SetUpListTest, AllItemsComplete) {
+  base::HistogramTester histogram_tester;
   feature_list_.InitAndEnableFeature(kIOSTipsNotifications);
   BuildSetUpList();
   EXPECT_FALSE([set_up_list_ allItemsComplete]);
+  histogram_tester.ExpectBucketCount("IOS.SetUpList.AllItemsCompleted", true,
+                                     0);
 
   set_up_list_prefs::MarkItemComplete(GetLocalState(),
                                       SetUpListItemType::kSignInSync);
@@ -350,6 +354,32 @@ TEST_F(SetUpListTest, AllItemsComplete) {
                                       SetUpListItemType::kNotifications);
 
   EXPECT_TRUE([set_up_list_ allItemsComplete]);
+  histogram_tester.ExpectBucketCount("IOS.SetUpList.AllItemsCompleted", true,
+                                     1);
+}
+
+TEST_F(SetUpListTest, RecordsAllItemsCompleteOnce) {
+  base::HistogramTester histogram_tester;
+  feature_list_.InitAndEnableFeature(kIOSTipsNotifications);
+  BuildSetUpList();
+  histogram_tester.ExpectBucketCount("IOS.SetUpList.AllItemsCompleted", true,
+                                     0);
+
+  set_up_list_prefs::MarkItemComplete(GetLocalState(),
+                                      SetUpListItemType::kSignInSync);
+  set_up_list_prefs::MarkItemComplete(GetLocalState(),
+                                      SetUpListItemType::kDefaultBrowser);
+  set_up_list_prefs::MarkItemComplete(GetLocalState(),
+                                      SetUpListItemType::kAutofill);
+  set_up_list_prefs::MarkItemComplete(GetLocalState(),
+                                      SetUpListItemType::kNotifications);
+  histogram_tester.ExpectBucketCount("IOS.SetUpList.AllItemsCompleted", true,
+                                     1);
+
+  // Ensure that this metric is not double-counted, when rebuilding the list.
+  BuildSetUpList();
+  histogram_tester.ExpectBucketCount("IOS.SetUpList.AllItemsCompleted", true,
+                                     1);
 }
 
 // Tests that the Set Up List can be disabled.
