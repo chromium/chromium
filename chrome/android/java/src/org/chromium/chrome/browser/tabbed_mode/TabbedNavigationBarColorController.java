@@ -248,10 +248,15 @@ class TabbedNavigationBarColorController {
         mWindow.setNavigationBarColor(mNavigationBarColor);
         if (toEdge) return;
         setNavigationBarDividerColor();
-        // TODO(https://crbug.com/329287585): update icon color based on tab background color for
-        //     NavBarColorMatchesTabBackground experiment.
-        UiUtils.setNavigationBarIconColor(
-                mRootView, !mForceDarkNavigationBarColor && mLightNavigationBar);
+
+        if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
+            UiUtils.setNavigationBarIconColor(
+                    mRootView,
+                    ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(mNavigationBarColor)));
+        } else {
+            UiUtils.setNavigationBarIconColor(
+                    mRootView, !mForceDarkNavigationBarColor && mLightNavigationBar);
+        }
     }
 
     @SuppressLint("NewApi")

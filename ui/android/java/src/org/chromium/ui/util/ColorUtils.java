@@ -23,6 +23,7 @@ public class ColorUtils {
     private static final float LIGHTNESS_OPAQUE_BOX_THRESHOLD = 0.82f;
     private static final float MAX_LUMINANCE_FOR_VALID_THEME_COLOR = 0.94f;
     private static final float THEMED_FOREGROUND_BLACK_FRACTION = 0.64f;
+    private static final float LIGHT_DARK_LUMINANCE_THRESHOLD = 0.5f;
 
     /** Percentage to darken a color by when setting the status bar color. */
     private static final float DARKEN_COLOR_FRACTION = 0.6f;
@@ -272,5 +273,28 @@ public class ColorUtils {
     public static @ColorInt int setAlphaComponentWithFloat(
             @ColorInt int color, @FloatRange(from = 0f, to = 1f) float alpha) {
         return setAlphaComponent(color, (int) (alpha * 255));
+    }
+
+    /**
+     * Calculates the luminosity for the given color. This should match Android's region sampling
+     * calculation (go/android-luma-calculation).
+     *
+     * @return The luminance percentage for the color, with {@link Color.BLACK} having a luminance
+     *     of 0 and {@link Color.WHITE} have a luminance of 1.
+     */
+    public static float calculateLuminance(@ColorInt int color) {
+        int b = color & 0xFF;
+        int g = (color >> 8) & 0xFF;
+        int r = (color >> 16) & 0xFF;
+        int luminance = (r * 7 + b * 2 + g * 23) / 32;
+        return luminance / 255.0f;
+    }
+
+    /**
+     * Determines whether the luminance is overall high (light) or low (dark). This follows
+     * Android's NAVIGATION_LUMINANCE_THRESHOLD.
+     */
+    public static boolean isHighLuminance(float luminance) {
+        return luminance >= LIGHT_DARK_LUMINANCE_THRESHOLD;
     }
 }
