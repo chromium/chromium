@@ -4239,7 +4239,6 @@
       'android-webview-pie-x86-wpt-fyi-rel': {
         'args': [
           '--use-upstream-wpt',
-          '--timeout-multiplier=4',
         ],
       },
     },
