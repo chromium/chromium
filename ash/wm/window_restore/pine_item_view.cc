@@ -19,10 +19,10 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -157,11 +157,9 @@ void PineItemView::OnAllFaviconsLoaded(
 
     views::Builder<views::ImageView> builder;
     builder
-        // TODO(b/322360273): The border is temporary for more
-        // contrast until specs are ready.
-        .SetBorder(views::CreateRoundedRectBorder(
-            /*thickness=*/1,
-            /*corner_radius=*/kFaviconPreferredSize.width(), SK_ColorBLACK))
+        .SetBorder(std::make_unique<views::HighlightBorder>(
+            /*corner_radius=*/kFaviconPreferredSize.width(),
+            views::HighlightBorder::Type::kHighlightBorderNoShadow))
         .SetImageSize(kFaviconPreferredSize);
 
     if (inside_screenshot_) {
