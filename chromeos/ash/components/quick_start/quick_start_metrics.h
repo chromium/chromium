@@ -32,15 +32,15 @@ class QuickStartMetrics {
                          // entry point 3).
     kQSSetUpWithAndroidPhone = 5,  // Beginning of Quick Start flow.
     kQSConnectingToWifi = 6,       // Transferring wifi with Quick Start.
-    kCheckingForUpdateAndDeterminingDeviceConfiguration = 7,
+    kCheckingForUpdateAndDeterminingDeviceConfiguration = 7,  // Critical Update
     kChooseChromebookSetup = 8,
     kConsumerUpdate = 9,
     kQSResumingConnectionAfterUpdate = 10,
     kQSGettingGoogleAccountInfo = 11,
     kQSComplete = 12,
-    kSetupDevicePIN = 13,          // After Quick Start flow is complete.
-    kAskForParentPermission = 14,  // Only for Unicorn accounts.
-    kReviewPrivacyAndTerms = 15,   // Only for Unicorn accounts.
+    kSetupDevicePIN = 13,         // After Quick Start flow is complete.
+    kAddChild = 14,               // Only for Unicorn accounts.
+    kReviewPrivacyAndTerms = 15,  // Only for Unicorn accounts.
     kUnifiedSetup = 16,    // After Quick Start flow is complete, connect host
                            // phone to account.
     kGaiaInfoScreen = 17,  // Quick Start entry point 3

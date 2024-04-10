@@ -121,8 +121,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="QS Screen: Getting Google Account Info"/>
   <int value="12" label="Quick Start Complete"/>
   <int value="13" label="Setup Device PIN"/>
-  <int value="14" label="Ask for Parent Permission"/>
-  <int value="15" label="Review Privacy and Terms"/>
+  <int value="14" label="Add Child"/>
+  <int value="15" label="(Unicorn) Review Privacy and Terms"/>
   <int value="16" label="Unified Setup"/>
   <int value="17" label="Gaia Info Screen"/>
   <int value="18" label="QS Screen: Wi-Fi Credentials Received"/>

@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -80,16 +82,26 @@ std::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
 
 QuickStartMetrics::ScreenName ScreenNameFromOobeScreenId(
     OobeScreenId screen_id) {
-  // TODO(b/298042953): Check Screen IDs for Unicorn account setup flow.
-  if (screen_id == ConsumerUpdateScreenView::kScreenId) {
-    // TODO(b/298042953): Update Screen ID when the new OOBE Checking for
-    // update and determining device configuration screen is added.
+  if (screen_id == WelcomeView::kScreenId) {
+    return QuickStartMetrics::ScreenName::kWelcomeScreen;
+  } else if (screen_id == NetworkScreenView::kScreenId) {
+    return QuickStartMetrics::ScreenName::kNetworkScreen;
+  } else if (screen_id == GaiaInfoScreenView::kScreenId) {
+    return QuickStartMetrics::ScreenName::kGaiaInfoScreen;
+  } else if (screen_id == GaiaView::kScreenId) {
+    return QuickStartMetrics::ScreenName::kGaiaScreen;
+  } else if (screen_id == UpdateView::kScreenId) {
     return QuickStartMetrics::ScreenName::
         kCheckingForUpdateAndDeterminingDeviceConfiguration;
   } else if (screen_id == UserCreationView::kScreenId) {
     return QuickStartMetrics::ScreenName::kChooseChromebookSetup;
+  } else if (screen_id == ConsumerUpdateScreenView::kScreenId) {
+    return QuickStartMetrics::ScreenName::kConsumerUpdate;
+  } else if (screen_id == AddChildScreenView::kScreenId) {
+    return QuickStartMetrics::ScreenName::kAddChild;
+  } else {
+    return QuickStartMetrics::ScreenName::kOther;
   }
-  return QuickStartMetrics::ScreenName::kOther;
 }
 
 bool IsConnectedToWiFi() {

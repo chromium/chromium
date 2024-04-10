@@ -575,6 +575,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSWifiCredentialsReceived,
       0);
+  histogram_tester.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::QuickStartMetrics::ScreenName::kChooseChromebookSetup, 0);
 
   EnterQuickStartFlowFromWelcomeScreen();
   histogram_tester.ExpectBucketCount(
@@ -598,6 +601,10 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
   test::WaitForNetworkSelectionScreen();
   SkipUpdateScreenOnBrandedBuilds();
   WaitForUserCreationAndTriggerPersonalFlow();
+
+  histogram_tester.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::QuickStartMetrics::ScreenName::kChooseChromebookSetup, 1);
 
   // The flow continues to QuickStart upon reaching the GaiaInfoScreen or
   // GaiaScreen.
