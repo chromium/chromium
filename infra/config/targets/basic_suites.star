@@ -576,7 +576,7 @@ targets.legacy_basic_suite(
             # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
             # put the stub string here.
             tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
-            test_level_retries = 2,
+            test_level_retries = 1,
             # Timeout including DUT privisioning.
             timeout_sec = 14400,
             # Number of shards. Might be overriden for slower boards.

@@ -1382,7 +1382,7 @@
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
-        "test_level_retries": 2,
+        "test_level_retries": 1,
         "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "RELEASE_LKGM"
@@ -1688,7 +1688,7 @@
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
-        "test_level_retries": 2,
+        "test_level_retries": 1,
         "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "RELEASE_LKGM"
@@ -1756,7 +1756,7 @@
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
-        "test_level_retries": 2,
+        "test_level_retries": 1,
         "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "RELEASE_LKGM"
@@ -1953,7 +1953,7 @@
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
-        "test_level_retries": 2,
+        "test_level_retries": 1,
         "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "RELEASE_LKGM"

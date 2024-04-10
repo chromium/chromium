@@ -591,7 +591,7 @@
     'chromeos_chrome_all_tast_tests': {
       'chrome_all_tast_tests': {
         'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
-        'test_level_retries': 2,
+        'test_level_retries': 1,
         'timeout_sec': 14400,
         'shards': 15,
       },
