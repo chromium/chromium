@@ -840,6 +840,7 @@ src/webgpu/shader/validation/parse/must_use.spec.ts
 src/webgpu/shader/validation/parse/pipeline_stage.spec.ts
 src/webgpu/shader/validation/parse/requires.spec.ts
 src/webgpu/shader/validation/parse/semicolon.spec.ts
+src/webgpu/shader/validation/parse/shadow_builtins.spec.ts
 src/webgpu/shader/validation/parse/source.spec.ts
 src/webgpu/shader/validation/parse/statement_behavior.spec.ts
 src/webgpu/shader/validation/parse/unary_ops.spec.ts
