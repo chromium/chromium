@@ -10660,14 +10660,6 @@ const FeatureEntry kFeatureEntries[] = {
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootCrOSSOUL")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"grid-tab-switcher-android-animations",
-     flag_descriptions::kGridTabSwitcherAndroidAnimationsName,
-     flag_descriptions::kGridTabSwitcherAndroidAnimationsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kGridTabSwitcherAndroidAnimations)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     {"cdm-storage-database", flag_descriptions::kCdmStorageDatabaseName,
      flag_descriptions::kCdmStorageDatabaseDescription, kOsDesktop,

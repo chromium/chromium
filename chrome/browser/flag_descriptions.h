@@ -2042,7 +2042,6 @@ extern const char kUseSearchClickForRightClickDescription[];
 extern const char kVerticalAutomotiveBackButtonToolbarName[];
 extern const char kVerticalAutomotiveBackButtonToolbarDescription[];
 
-
 extern const char kVcBackgroundReplaceName[];
 extern const char kVcBackgroundReplaceDescription[];
 
@@ -2434,9 +2433,6 @@ extern const char kFullscreenInsetsApiMigrationOnAutomotiveDescription[];
 
 extern const char kRefreshFeedOnRestartName[];
 extern const char kRefreshFeedOnRestartDescription[];
-
-extern const char kGridTabSwitcherAndroidAnimationsName[];
-extern const char kGridTabSwitcherAndroidAnimationsDescription[];
 
 extern const char kInfoCardAcknowledgementTrackingName[];
 extern const char kInfoCardAcknowledgementTrackingDescription[];

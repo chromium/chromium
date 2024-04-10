@@ -4744,11 +4744,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "grid-tab-switcher-android-animations",
-    "owners": [ "ckitagawa@google.com", "clank-isochron-team@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "growth-campaigns",
     "owners": [ "llin@google.com", "cros-growth@google.com" ],
     "expiry_milestone": 130

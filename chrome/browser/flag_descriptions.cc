@@ -4306,12 +4306,6 @@ const char kRequestDesktopSiteWindowSettingDescription[] =
     "Secondary option in `Site settings` to request the desktop version of "
     "websites based on window width.";
 
-const char kGridTabSwitcherAndroidAnimationsName[] =
-    "Grid tab switcher Android animations";
-const char kGridTabSwitcherAndroidAnimationsDescription[] =
-    "Run grid tab switcher shrink & expand animations in Android instead of "
-    "using the compositor.";
-
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[] =
     "Revoke site-level notification permission on Android";
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[] =
