@@ -194,8 +194,8 @@ class NativeLibraryBuildVariant:
 class ClankCompiler:
   """Handles compilation of clank."""
 
-  def __init__(self, out_dir: pathlib.Path, step_recorder, options,
-               orderfile_location, native_library_build_variant):
+  def __init__(self, out_dir: pathlib.Path, step_recorder: StepRecorder,
+               options, orderfile_location, native_library_build_variant):
     self._out_dir = out_dir
     self._step_recorder = step_recorder
     self._options = options
@@ -260,8 +260,10 @@ class ClankCompiler:
     self._step_recorder.RunCommand(
         ['gn', 'gen',
          str(self._out_dir), '--args=' + ' '.join(gn_args)])
+    # Always build dump_syms as it's required by
+    # generate_breakpad_symbols.GetDumpSymsBinary in order to symbolize stacks.
     self._step_recorder.RunCommand(self._ninja_command +
-                                   [str(self._out_dir), target])
+                                   [str(self._out_dir), target, 'dump_syms'])
 
   def _ForceRelink(self):
     """Forces libmonochrome.so to be re-linked.
