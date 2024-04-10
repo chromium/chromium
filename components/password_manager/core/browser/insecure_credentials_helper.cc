@@ -87,7 +87,8 @@ void InsecureCredentialsHelper::AddPhishedCredentialsInternal(
     const MatchingReusedCredential& credential,
     LoginsResult results) {
   for (auto& form : results) {
-    if (form->username_value == credential.username) {
+    if (form->signon_realm == credential.signon_realm &&
+        form->username_value == credential.username) {
       if (form->password_issues.find(InsecureType::kPhished) ==
           form->password_issues.end()) {
         form->password_issues.insert(
@@ -104,7 +105,8 @@ void InsecureCredentialsHelper::RemovePhishedCredentialsInternal(
     const MatchingReusedCredential& credential,
     LoginsResult results) {
   for (auto& form : results) {
-    if (form->username_value == credential.username) {
+    if (form->signon_realm == credential.signon_realm &&
+        form->username_value == credential.username) {
       if (form->password_issues.find(InsecureType::kPhished) !=
           form->password_issues.end()) {
         form->password_issues.erase(InsecureType::kPhished);

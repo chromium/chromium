@@ -78,6 +78,7 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormAdd) {
   std::vector<PasswordForm> forms = {
       CreateForm("http://example.com", u"username1"),
       CreateForm("http://example.com", u"username2"),
+      CreateForm("http://foo.com", u"username2"),
   };
   PasswordForm expected_form = forms[0];
   expected_form.password_issues[InsecureType::kPhished] = InsecurityMetadata(
@@ -93,6 +94,7 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormRemove) {
   std::vector<PasswordForm> forms = {
       CreateForm("http://example.com", u"username1"),
       CreateForm("http://example.com", u"username2"),
+      CreateForm("http://foo.com", u"username2"),
   };
   forms.at(0).password_issues[InsecureType::kPhished] = InsecurityMetadata(
       base::Time::Now(), IsMuted(false), TriggerBackendNotification(false));
@@ -109,6 +111,7 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForAllMatchingFormsAdd) {
   std::vector<PasswordForm> forms = {
       CreateForm("http://example.com", u"username", u"password1"),
       CreateForm("http://example.com", u"username", u"password2"),
+      CreateForm("http://foo.com", u"username", u"password2"),
   };
   ExpectGetLogins("http://example.com");
   AddPhishedCredentials(store(),
@@ -129,6 +132,7 @@ TEST_F(InsecureCredentialsHelperTest,
   std::vector<PasswordForm> forms = {
       CreateForm("http://example.com", u"username", u"password1"),
       CreateForm("http://example.com", u"username", u"password2"),
+      CreateForm("http://foo.com", u"username", u"password2"),
   };
 
   ExpectGetLogins("http://example.com");
