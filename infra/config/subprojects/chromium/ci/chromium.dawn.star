@@ -551,6 +551,35 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "Dawn Android arm64 Release (Samsung S24)",
+    description_html = "Runs ToT Dawn tests on Samsung S24 devices",
+    triggered_by = ["ci/Dawn Android arm64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "dawn_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "arm64_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Android",
+        short_name = "s24",
+    ),
+)
+
+ci.thin_tester(
     name = "Dawn Linux x64 Experimental Release (Intel UHD 630)",
     description_html = "Runs ToT Dawn tests on experimental Linux/UHD 630 configs",
     triggered_by = ["Dawn Linux x64 Builder"],

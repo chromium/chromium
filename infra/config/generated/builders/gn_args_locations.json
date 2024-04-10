@@ -686,6 +686,7 @@
     "android-dawn-arm-rel": "try/android-dawn-arm-rel/gn-args.json",
     "android-dawn-arm64-exp-rel": "try/android-dawn-arm64-exp-rel/gn-args.json",
     "android-dawn-arm64-rel": "try/android-dawn-arm64-rel/gn-args.json",
+    "android-dawn-arm64-s24-rel": "try/android-dawn-arm64-s24-rel/gn-args.json",
     "dawn-android-arm-deps-rel": "try/dawn-android-arm-deps-rel/gn-args.json",
     "dawn-android-arm64-deps-rel": "try/dawn-android-arm64-deps-rel/gn-args.json",
     "dawn-linux-x64-deps-rel": "try/dawn-linux-x64-deps-rel/gn-args.json",

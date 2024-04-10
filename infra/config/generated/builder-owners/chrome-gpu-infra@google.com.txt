@@ -22,6 +22,7 @@ ci/Dawn Android arm64 DEPS Builder
 ci/Dawn Android arm64 DEPS Release (Pixel 6)
 ci/Dawn Android arm64 Experimental Release (Pixel 6)
 ci/Dawn Android arm64 Release (Pixel 6)
+ci/Dawn Android arm64 Release (Samsung S24)
 ci/Dawn Linux TSAN Release
 ci/Dawn Linux x64 Builder
 ci/Dawn Linux x64 DEPS Builder
@@ -144,6 +145,7 @@ ci/win-swangle-x86
 try/android-dawn-arm-rel
 try/android-dawn-arm64-exp-rel
 try/android-dawn-arm64-rel
+try/android-dawn-arm64-s24-rel
 try/dawn-android-arm-deps-rel
 try/dawn-android-arm64-deps-rel
 try/dawn-linux-x64-deps-rel

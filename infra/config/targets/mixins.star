@@ -1515,6 +1515,22 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "samsung_s24",
+    swarming = targets.swarming(
+        dimensions = {
+            # Unfortunately, "s24" is not exposed as a dimension. "e2s" appears
+            # to refer to the S24 specifically, while "s5e9945" is for the
+            # entire S24 family.
+            "device_type": "e2s",
+            "device_os": "UP1A.231005.007",
+            "device_os_type": "user",
+            "os": "Android",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "skia_gold_test",
     args = [
         "--git-revision=${got_revision}",

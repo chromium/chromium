@@ -1173,6 +1173,17 @@
       },
     },
   },
+  'samsung_s24': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'e2s',
+        'device_os': 'UP1A.231005.007',
+        'device_os_type': 'user',
+        'os': 'Android',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'shards-10': {
     'shards': 10,
   },

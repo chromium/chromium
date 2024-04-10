@@ -294,6 +294,26 @@ try_.builder(
 )
 
 try_.builder(
+    # This is not part of "android-dawn-arm64-rel" at the moment since there is
+    # not sufficient S24 capacity for that.
+    name = "android-dawn-arm64-s24-rel",
+    description_html = "Runs ToT Dawn tests on Samsung S24 devices",
+    mirrors = [
+        "ci/Dawn Android arm64 Builder",
+        "ci/Dawn Android arm64 Release (Samsung S24)",
+    ],
+    gn_args = "ci/Dawn Android arm64 Builder",
+    # TODO(crbug.com/333424893): Change this to a dedicated S24 pool once
+    # additional GCE quota is available.
+    pool = "luci.chromium.gpu.android.s23.try",
+    builderless = True,
+    os = os.LINUX_DEFAULT,
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
+try_.builder(
     name = "linux-dawn-intel-exp-rel",
     description_html = "Runs ToT Dawn tests on experimental Linux/Intel configs",
     mirrors = [
