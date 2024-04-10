@@ -61,6 +61,9 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
   return normalized;
 }
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallDialogDelegate,
+                                      kDiyAppsDialogOkButtonId);
+
 WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
     content::WebContents* web_contents,
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
@@ -69,8 +72,7 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
     PwaInProductHelpState iph_state,
     PrefService* prefs,
     feature_engagement::Tracker* tracker,
-    InstallDialogType dialog_type,
-    DiyAppTitleFieldTextTracker title_field_data)
+    InstallDialogType dialog_type)
     : content::WebContentsObserver(web_contents),
       web_contents_(web_contents),
       install_info_(std::move(web_app_info)),
@@ -79,8 +81,7 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
       iph_state_(std::move(iph_state)),
       prefs_(prefs),
       tracker_(tracker),
-      dialog_type_(dialog_type),
-      title_field_data_(title_field_data) {
+      dialog_type_(dialog_type) {
   CHECK(install_info_);
   CHECK(install_info_->manifest_id.is_valid());
   CHECK(install_tracker_);
@@ -131,7 +132,8 @@ void WebAppInstallDialogDelegate::OnAccept() {
   // DIY apps get their name from the DIY install dialog and are always set to
   // open in a new window.
   if (dialog_type_ == InstallDialogType::kDiy) {
-    install_info_->title = title_field_data_->data;
+    CHECK(!text_field_contents_.empty());
+    install_info_->title = text_field_contents_;
     install_info_->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
   }
@@ -152,6 +154,16 @@ void WebAppInstallDialogDelegate::OnClose() {
   CHECK(install_tracker_);
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
   MeasureIphOnDialogClose();
+}
+
+void WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton(
+    const std::u16string& text_field_contents) {
+  text_field_contents_ = text_field_contents;
+  ui::DialogModel::Button* ok_button =
+      dialog_model()->GetButtonByUniqueId(kDiyAppsDialogOkButtonId);
+  CHECK(ok_button);
+  dialog_model()->SetButtonEnabled(ok_button,
+                                   /*enabled=*/!text_field_contents.empty());
 }
 
 void WebAppInstallDialogDelegate::OnVisibilityChanged(

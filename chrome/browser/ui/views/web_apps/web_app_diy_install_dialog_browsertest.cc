@@ -39,7 +39,9 @@ class WebAppDiyInstallDialogBrowserTest : public DialogBrowserTest {
     auto install_info = std::make_unique<WebAppInstallInfo>(
         GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
 
-    if (name != "empty_name") {
+    if (name == "name_with_spaces") {
+      install_info->title = u"       trimmed app    ";
+    } else if (name != "empty_name") {
       install_info->title = u"test";
     }
 
@@ -180,6 +182,32 @@ IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest, InvokeUi_empty_name) {
   EXPECT_TRUE(std::get<bool>(dialog_results));
   EXPECT_EQ(std::get<std::unique_ptr<WebAppInstallInfo>>(dialog_results)->title,
             u"example.com");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest,
+                       InvokeUi_name_with_spaces) {
+  base::UserActionTester action_tester;
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+
+  base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>>
+      dialog_future;
+  OverrideDialogCallback(dialog_future.GetCallback());
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppDiyInstallDialog");
+  ShowUi("name_with_spaces");
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+
+  views::test::WidgetDestroyedWaiter destroy_waiter(widget);
+  views::test::AcceptDialog(widget);
+  destroy_waiter.Wait();
+  EXPECT_TRUE(dialog_future.Wait());
+
+  auto dialog_results = dialog_future.Take();
+  EXPECT_TRUE(std::get<bool>(dialog_results));
+  EXPECT_EQ(std::get<std::unique_ptr<WebAppInstallInfo>>(dialog_results)->title,
+            u"trimmed app");
 }
 
 }  // namespace

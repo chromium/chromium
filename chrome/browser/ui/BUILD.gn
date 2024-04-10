@@ -5265,6 +5265,8 @@ static_library("ui") {
       "views/controls/rich_controls_container_view.h",
       "views/controls/rich_hover_button.cc",
       "views/controls/rich_hover_button.h",
+      "views/controls/site_icon_text_and_origin_view.cc",
+      "views/controls/site_icon_text_and_origin_view.h",
       "views/controls/subpage_view.cc",
       "views/controls/subpage_view.h",
       "views/desktop_capture/desktop_media_list_controller.cc",
