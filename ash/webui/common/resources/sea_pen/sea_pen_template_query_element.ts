@@ -13,10 +13,12 @@ import 'chrome://resources/ash/common/personalization/personalization_shared_ico
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_options_element.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_chip_text_element.js';
+import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 
+import {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getSeaPenTemplates, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {SeaPenQuery, SeaPenThumbnail, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
@@ -123,6 +125,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   path: string;
   // TODO(b/319719709) this should be SeaPenTemplateId.
   templateId: string|null;
+  private inspireMeAnimation_: LottieRenderer|null|undefined;
   private seaPenTemplate_: SeaPenTemplate;
   private selectedOptions_: Map<SeaPenTemplateChip, SeaPenOption>;
   private templateTokens_: TemplateToken[];
@@ -146,6 +149,12 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     this.watch<SeaPenTemplateQueryElement['thumbnailsLoading_']>(
         'thumbnailsLoading_', state => state.loading.thumbnails);
     this.updateFromStore();
+
+    beforeNextRender(this, () => {
+      this.inspireMeAnimation_ =
+          this.shadowRoot?.querySelector<LottieRenderer>('#inspireMeAnimation');
+      this.inspireMeAnimation_!.autoplay = false;
+    });
   }
 
   // After exiting from the option selection (by "Esc" key or clicking on
@@ -167,6 +176,15 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
           ?.focus();
     });
   }
+
+  private startInspireIconAnimation_() {
+    this.inspireMeAnimation_?.play();
+  }
+
+  private stopInspireIconAnimation_() {
+    this.inspireMeAnimation_?.stop();
+  }
+
 
   private clearSelectedChipState_() {
     if (this.selectedChip_) {

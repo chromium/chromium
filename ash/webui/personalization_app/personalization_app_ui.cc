@@ -448,6 +448,10 @@ PersonalizationAppUI::PersonalizationAppUI(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
 
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src blob: chrome://resources 'self';");
+
   ash::EnableTrustedTypesCSP(source);
 
   AddResources(source);

@@ -93,6 +93,11 @@
     padding: 0px 12px;
   }
 
+  #inspireMeAnimation {
+    height: 20px;
+    width: 20px;
+  }
+
   .dropdown-check {
     margin-inline-end: 16px;
   }
@@ -104,6 +109,16 @@
   button {
     font: var(--cros-button-2-font);
     padding: 8px 32px 8px 16px;
+  }
+
+  #inspire:not(:hover) #inspireMeAnimation,
+  #inspire:hover #inspireIcon {
+    display: none;
+  }
+
+  #inspire:hover #inspireMeAnimation,
+  #inspire:not(:hover) #inspireIcon {
+    display: block;
   }
 </style>
 <div class="main">
@@ -156,8 +171,20 @@
       </span>
     </template>
     <template is="dom-if" if="[[!thumbnailsLoading_]]">
-      <cr-button id="inspire" on-click="onClickInspire_">
-        <iron-icon icon="sea-pen:inspire" slot="prefix-icon"></iron-icon>
+      <cr-button
+          id="inspire"
+          on-click="onClickInspire_"
+          on-mouseleave="stopInspireIconAnimation_"
+          on-mouseenter="startInspireIconAnimation_">
+        <cros-lottie-renderer
+            id="inspireMeAnimation"
+            slot="prefix-icon"
+            asset-url="chrome://resources/ash/common/sea_pen/lightbulb_icon.json"
+            loop
+            dynamic
+            aria-hidden>
+        </cros-lottie-renderer>
+        <iron-icon id="inspireIcon" icon="sea-pen:inspire" slot="prefix-icon"></iron-icon>
         <p>[[i18n('seaPenInspireMeButton')]]</p>
       </cr-button>
       <cr-button
