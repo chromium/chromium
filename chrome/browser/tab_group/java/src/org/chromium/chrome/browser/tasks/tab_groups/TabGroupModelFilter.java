@@ -225,6 +225,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             List<Integer> originalIndexes = new ArrayList<>();
             List<Integer> originalRootIds = new ArrayList<>();
             List<Token> originalTabGroupIds = new ArrayList<>();
+            Set<Integer> removedRootIds = new HashSet<>();
             String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
             int destinationGroupColorId = INVALID_COLOR_ID;
             boolean didCreateNewGroup =
@@ -267,6 +268,9 @@ public class TabGroupModelFilter extends TabModelFilter {
                     originalRootIds.add(tab.getRootId());
                     originalTabGroupIds.add(tab.getTabGroupId());
                 }
+                if (tab.getTabGroupId() != null) {
+                    removedRootIds.add(tab.getRootId());
+                }
 
                 tab.setRootId(destinationRootId);
                 tab.setTabGroupId(destinationTabGroupId);
@@ -299,6 +303,10 @@ public class TabGroupModelFilter extends TabModelFilter {
                             destinationGroupTitle,
                             destinationGroupColorId);
                 }
+
+                for (int removedRootId : removedRootIds) {
+                    observer.didRemoveTabGroup(removedRootId);
+                }
             }
         }
     }
@@ -324,6 +332,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         List<Integer> originalIndexes = new ArrayList<>();
         List<Integer> originalRootIds = new ArrayList<>();
         List<Token> originalTabGroupIds = new ArrayList<>();
+        Set<Integer> removedRootIds = new HashSet<>();
 
         // Include the destination tab in the undo list so that it gets back a null tab group ID
         // upon undo if it didn't have one.
@@ -379,7 +388,9 @@ public class TabGroupModelFilter extends TabModelFilter {
             originalIndexes.add(index);
             originalRootIds.add(tab.getRootId());
             originalTabGroupIds.add(tab.getTabGroupId());
-
+            if (tab.getTabGroupId() != null) {
+                removedRootIds.add(tab.getRootId());
+            }
             boolean isMergingBackward = index < destinationIndexInTabModel;
 
             tab.setRootId(destinationRootId);
@@ -409,14 +420,12 @@ public class TabGroupModelFilter extends TabModelFilter {
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             if (didCreateNewGroup) {
                 observer.didCreateNewGroup(destinationTab, this);
-
-                // If this is a new tab group creation, do not trigger a snackbar.
-                if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                    continue;
-                }
             }
 
-            if (notify) {
+            // If this is a new tab group creation, do not trigger a snackbar.
+            boolean skipSnackbarForCreation =
+                    didCreateNewGroup && ChromeFeatureList.sTabGroupParityAndroid.isEnabled();
+            if (notify && !skipSnackbarForCreation) {
                 observer.didCreateGroup(
                         mergedTabs,
                         originalIndexes,
@@ -424,6 +433,10 @@ public class TabGroupModelFilter extends TabModelFilter {
                         originalTabGroupIds,
                         destinationGroupTitle,
                         destinationGroupColorId);
+            }
+
+            for (int removedRootId : removedRootIds) {
+                observer.didRemoveTabGroup(removedRootId);
             }
         }
     }
@@ -452,6 +465,9 @@ public class TabGroupModelFilter extends TabModelFilter {
             if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()
                     && sourceTab.getTabGroupId() != null) {
                 mActualGroupCount--;
+                for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                    observer.didRemoveTabGroup(sourceTab.getRootId());
+                }
             }
             sourceTab.setTabGroupId(null);
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
@@ -804,15 +820,28 @@ public class TabGroupModelFilter extends TabModelFilter {
             }
         }
 
+        boolean didRemoveGroup = false;
         if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
-            if (group.size() == 0) mActualGroupCount--;
+            if (group.size() == 0) {
+                mActualGroupCount--;
+                didRemoveGroup = true;
+            }
         } else {
-            if (group.size() == 1) mActualGroupCount--;
+            if (group.size() == 1) {
+                mActualGroupCount--;
+                didRemoveGroup = true;
+            }
         }
         if (group.size() == 0) {
             updateRootIdToGroupIndexMapAfterGroupClosed(rootId);
             mRootIdToGroupIndexMap.remove(rootId);
             mRootIdToGroupMap.remove(rootId);
+        }
+
+        if (didRemoveGroup) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                observer.didRemoveTabGroup(rootId);
+            }
         }
     }
 

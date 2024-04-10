@@ -127,4 +127,12 @@ public interface TabGroupModelFilterObserver {
      * @param newRootId The new root id.
      */
     default void didChangeGroupRootId(int oldRootId, int newRootId) {}
+
+    /**
+     * Called when a tab group is removed. This could be the result of closing tabs inside the group
+     * or by ungrouping tabs from the group.
+     *
+     * @param oldRootId The root id the group previous used.
+     */
+    default void didRemoveTabGroup(int oldRootId) {}
 }
