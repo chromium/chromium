@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/mock_embedder.h"
 #include "components/history_embeddings/sql_database.h"
@@ -196,7 +197,9 @@ void HistoryEmbeddingsService::Shutdown() {
 void HistoryEmbeddingsService::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  // TODO(b/329495955): Implement actual cleanup of storage for this deletion.
+  storage_.AsyncCall(&Storage::HandleHistoryDeletions)
+      .WithArgs(deletion_info.IsAllHistory(), deletion_info.deleted_rows(),
+                deletion_info.deleted_visit_ids());
 }
 
 HistoryEmbeddingsService::Storage::Storage(const base::FilePath& storage_dir)
@@ -242,6 +245,24 @@ std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
   }
 
   return scored_urls;
+}
+
+void HistoryEmbeddingsService::Storage::HandleHistoryDeletions(
+    bool for_all_history,
+    history::URLRows deleted_rows,
+    std::set<history::VisitID> deleted_visit_ids) {
+  if (for_all_history) {
+    sql_database.DeleteAllData();
+    return;
+  }
+
+  for (history::URLRow url_row : deleted_rows) {
+    sql_database.DeleteDataForUrlId(url_row.id());
+  }
+
+  for (history::VisitID visit_id : deleted_visit_ids) {
+    sql_database.DeleteDataForVisitId(visit_id);
+  }
 }
 
 void HistoryEmbeddingsService::OnPassagesRetrieved(

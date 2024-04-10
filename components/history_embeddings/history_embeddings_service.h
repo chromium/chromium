@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/history/core/browser/history_service.h"
@@ -80,8 +81,8 @@ class HistoryEmbeddingsService : public KeyedService,
 
  private:
   friend class HistoryEmbeddingsBrowserTest;
-  FRIEND_TEST_ALL_PREFIXES(HistoryEmbeddingsTest,
-                           ConstructsAndComputesEmbeddings);
+  friend class HistoryEmbeddingsServiceTest;
+  FRIEND_TEST_ALL_PREFIXES(HistoryEmbeddingsServiceTest, OnHistoryDeletions);
 
   // A utility container to wrap anything that should be accessed on
   // the separate storage worker sequence.
@@ -98,6 +99,11 @@ class HistoryEmbeddingsService : public KeyedService,
         size_t query_id,
         Embedding query_embedding,
         size_t count);
+
+    // Handles the History deletions on the worker thread.
+    void HandleHistoryDeletions(bool for_all_history,
+                                history::URLRows deleted_rows,
+                                std::set<history::VisitID> deleted_visit_ids);
 
     // A VectorDatabase implementation that holds data in memory.
     VectorDatabaseInMemory vector_database;
