@@ -46,6 +46,7 @@ class MapValueIterator {
 const char kChromeDevToolsScheme[] = "devtools";
 const char kChromeUIScheme[] = "chrome";
 const char kExtensionScheme[] = "chrome-extension";
+const char kChromeUIUntrustedScheme[] = "chrome-untrusted";
 
 std::string ContentSettingToString(ContentSetting setting);
 

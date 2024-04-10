@@ -96,7 +96,8 @@ void ContentSettingsRegistry::Init() {
   Register(ContentSettingsType::IMAGES, "images", CONTENT_SETTING_ALLOW,
            WebsiteSettingsInfo::SYNCABLE,
            /*allowlisted_primary_schemes=*/
-           {kChromeUIScheme, kChromeDevToolsScheme, kExtensionScheme},
+           {kChromeUIScheme, kChromeDevToolsScheme, kExtensionScheme,
+            kChromeUIUntrustedScheme},
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
            WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
@@ -106,7 +107,8 @@ void ContentSettingsRegistry::Init() {
   Register(ContentSettingsType::JAVASCRIPT, "javascript", CONTENT_SETTING_ALLOW,
            WebsiteSettingsInfo::SYNCABLE,
            /*allowlisted_primary_schemes=*/
-           {kChromeUIScheme, kChromeDevToolsScheme, kExtensionScheme},
+           {kChromeUIScheme, kChromeDevToolsScheme, kExtensionScheme,
+            kChromeUIUntrustedScheme},
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
            WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
            WebsiteSettingsRegistry::DESKTOP |
