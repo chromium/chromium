@@ -315,7 +315,8 @@ bool IsAACSupported(const AudioType& type) {
 #elif BUILDFLAG(IS_MAC)
   return true;
 #elif BUILDFLAG(IS_WIN)
-  return base::win::GetVersion() >= base::win::Version::WIN11_22H2;
+  return base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
+         !base::win::OSInfo::GetInstance()->IsWindowsNSku();
 #else
   return false;
 #endif
