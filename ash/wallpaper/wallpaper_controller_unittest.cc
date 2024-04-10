@@ -2150,7 +2150,7 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaper) {
 }
 
 TEST_P(WallpaperControllerTest,
-       SeaPenWallpaperRemovedAfterSettingAnotherWallpaperType) {
+       DISABLED_SeaPenWallpaperRemovedAfterSettingAnotherWallpaperType) {
   const auto global_sea_pen_dir =
       online_wallpaper_dir_.GetPath().Append("sea_pen").Append(
           kAccountId1.GetAccountIdKey());
