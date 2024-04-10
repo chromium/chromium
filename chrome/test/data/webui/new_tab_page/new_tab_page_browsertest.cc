@@ -139,10 +139,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FileSuggestionModule) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, RecipesModule) {
-  RunTest("new_tab_page/modules/recipes/module_test.js", "mocha.run()");
-}
-
 // TODO(crbug.com/1485080): Fails on Linux Debug bots.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_ChromeCartModule DISABLED_ChromeCartModule

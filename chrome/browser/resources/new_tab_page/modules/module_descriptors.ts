@@ -17,7 +17,6 @@ import {historyClustersDescriptor} from './history_clusters/module.js';
 import type {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
-import {recipeTasksDescriptor} from './recipes/module.js';
 import {googleCalendarDescriptor} from './v2/calendar/module.js';
 // <if expr="not is_official_build">
 import {dummyV2Descriptor} from './v2/dummy/module.js';
@@ -29,7 +28,6 @@ import {tabResumptionDescriptor} from './v2/tab_resumption/module.js';
 const modulesRedesignedEnabled: boolean =
     loadTimeData.getBoolean('modulesRedesignedEnabled');
 export const descriptors: ModuleDescriptor[] = [];
-descriptors.push(recipeTasksDescriptor);
 descriptors.push(chromeCartDescriptor);
 descriptors.push(
     modulesRedesignedEnabled ? fileSuggestionDescriptor : driveDescriptor);
