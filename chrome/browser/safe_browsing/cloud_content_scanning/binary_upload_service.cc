@@ -238,6 +238,12 @@ void BinaryUploadService::Request::set_reason(
   content_analysis_request_.set_reason(reason);
 }
 
+void BinaryUploadService::Request::set_require_metadata_verdict(
+    bool require_metadata_verdict) {
+  content_analysis_request_.set_require_metadata_verdict(
+      require_metadata_verdict);
+}
+
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
   content_analysis_request_.set_request_token(

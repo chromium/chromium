@@ -183,6 +183,7 @@ class BinaryUploadService : public KeyedService {
     void set_password(const std::string& password);
     void set_reason(
         enterprise_connectors::ContentAnalysisRequest::Reason reason);
+    void set_require_metadata_verdict(bool require_metadata_verdict);
 
     std::string SetRandomRequestToken();
 

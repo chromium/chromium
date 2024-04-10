@@ -192,6 +192,14 @@ message ContentAnalysisRequest {
   // Indicates whether request is blocking until verdict given.
   optional bool blocking = 20;
 
+  // Indicates whether the request requires a metadata verdict (applicable to
+  // resumable metadata request only).
+  //
+  // The field is set to true when Chrome sends the metadata of files larger
+  // than 50MB or encrypted, because it expects a block or allow verdict from
+  // WebProtect right away, and cannot upload full content.
+  optional bool require_metadata_verdict = 21;
+
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;
 }
