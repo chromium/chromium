@@ -282,8 +282,8 @@ class LEVELDB_EXPORT DBTracker {
   // Checks if |db| is tracked.
   bool IsTrackedDB(const leveldb::DB* db) const;
 
-  void DatabaseOpened(TrackedDBImpl* database, SharedReadCacheUse cache_use);
-  void DatabaseDestroyed(TrackedDBImpl* database, SharedReadCacheUse cache_use);
+  void DatabaseOpened(TrackedDBImpl* database);
+  void DatabaseDestroyed(TrackedDBImpl* database);
 
   // Protect databases_ and mdp_ members.
   mutable base::Lock databases_lock_;
@@ -297,9 +297,9 @@ class LEVELDB_EXPORT DBTracker {
 //   1. |dbptr| is not touched on failure
 //   2. |dbptr| is not NULL on success
 //
-// Note: All |options| values are honored, except if options.env is an in-memory
-// Env. In this case the block cache is disabled and a minimum write buffer size
-// is used to conserve memory with all other values honored.
+// Note that some `options` may not be honored, for example in the case of
+// in-memory databases, the block cache is disabled and a minimum write buffer
+// size is used to conserve memory.
 LEVELDB_EXPORT leveldb::Status OpenDB(const leveldb_env::Options& options,
                                       const std::string& name,
                                       std::unique_ptr<leveldb::DB>* dbptr);

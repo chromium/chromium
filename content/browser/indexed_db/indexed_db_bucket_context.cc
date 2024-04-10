@@ -296,8 +296,6 @@ CreateLevelDBState(const leveldb_env::Options& base_options,
     leveldb_env::Options in_memory_options = base_options;
     in_memory_options.env = in_memory_env.get();
     in_memory_options.paranoid_checks = false;
-    in_memory_options.create_if_missing = true;
-    in_memory_options.write_buffer_size = 4 * 1024 * 1024;
     std::unique_ptr<leveldb::DB> db;
     leveldb::Status status =
         leveldb_env::OpenDB(in_memory_options, std::string(), &db);

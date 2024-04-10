@@ -1092,14 +1092,14 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
     } else {
       NOTREACHED();
     }
-    tracker_->DatabaseOpened(this, shared_read_cache_use_);
+    tracker_->DatabaseOpened(this);
   }
 
   TrackedDBImpl(const TrackedDBImpl&) = delete;
   TrackedDBImpl& operator=(const TrackedDBImpl&) = delete;
 
   ~TrackedDBImpl() override {
-    tracker_->DatabaseDestroyed(this, shared_read_cache_use_);
+    tracker_->DatabaseDestroyed(this);
     db_.reset();
   }
 
@@ -1351,15 +1351,13 @@ void DBTracker::VisitDatabases(const DatabaseVisitor& visitor) {
     visitor.Run(i->value());
 }
 
-void DBTracker::DatabaseOpened(TrackedDBImpl* database,
-                               SharedReadCacheUse cache_use) {
+void DBTracker::DatabaseOpened(TrackedDBImpl* database) {
   base::AutoLock lock(databases_lock_);
   databases_.Append(database);
   mdp_->DatabaseOpened(database);
 }
 
-void DBTracker::DatabaseDestroyed(TrackedDBImpl* database,
-                                  SharedReadCacheUse cache_use) {
+void DBTracker::DatabaseDestroyed(TrackedDBImpl* database) {
   base::AutoLock lock(databases_lock_);
   mdp_->DatabaseDestroyed(database);
   database->RemoveFromList();
@@ -1380,7 +1378,11 @@ leveldb::Status OpenDB(const leveldb_env::Options& options,
   if (options.env && leveldb_chrome::IsMemEnv(options.env)) {
     Options mem_options = options;
     mem_options.block_cache = leveldb_chrome::GetSharedInMemoryBlockCache();
-    mem_options.write_buffer_size = 0;  // minimum size.
+    // Minimum size to save memory and because writing is cheap.
+    mem_options.write_buffer_size = 0;
+    // All data is stored in memory so there's no cost to holding a "file" open.
+    mem_options.max_open_files = std::numeric_limits<int>::max();
+    mem_options.create_if_missing = true;
     s = DBTracker::GetInstance()->OpenDatabase(mem_options, name, &tracked_db);
   } else {
     std::string tmp_name = DatabaseNameForRewriteDB(name);
@@ -1424,9 +1426,9 @@ void SetDBFactoryForTesting(DBFactoryMethod factory) {
 leveldb::Status RewriteDB(const leveldb_env::Options& options,
                           const std::string& name,
                           std::unique_ptr<leveldb::DB>* dbptr) {
-  DCHECK(options.create_if_missing);
   if (leveldb_chrome::IsMemEnv(options.env))
     return Status::OK();
+  DCHECK(options.create_if_missing);
   TRACE_EVENT1("leveldb", "ChromiumEnv::RewriteDB", "name", name);
   leveldb::Status s;
   std::string tmp_name = DatabaseNameForRewriteDB(name);

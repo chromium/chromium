@@ -286,6 +286,32 @@ leveldb::Status RemoveEnvDirectory(const std::string& directory,
   return result;
 }
 
+// This is an empty `Cache`, suitable for use as a block cache for in-memory
+// databases. It will not function in contexts where `Cache` is expected to
+// behave consistently, i.e. where `Insert()` is expected to return a non-null
+// value that can be handled by `Lookup()` or `Value()`. The block cache in
+// particular does not have this requirement.
+class NoOpBlockCache : public Cache {
+ public:
+  NoOpBlockCache() = default;
+  ~NoOpBlockCache() override = default;
+
+  Handle* Insert(const leveldb::Slice& key,
+                 void* value,
+                 size_t charge,
+                 void (*deleter)(const leveldb::Slice& key,
+                                 void* value)) override {
+    return nullptr;
+  }
+  Handle* Lookup(const leveldb::Slice& key) override { return nullptr; }
+  void Release(Handle* handle) override {}
+  void* Value(Handle* handle) override { return nullptr; }
+  void Erase(const leveldb::Slice& key) override {}
+  uint64_t NewId() override { return 0; }
+  void Prune() override {}
+  size_t TotalCharge() const override { return 0u; }
+};
+
 }  // namespace
 
 // Returns a separate (from the default) block cache for use by web APIs.
@@ -302,9 +328,8 @@ Cache* GetSharedBrowserBlockCache() {
 }
 
 Cache* GetSharedInMemoryBlockCache() {
-  // Zero size cache to prevent cache hits.
-  static leveldb::Cache* s_empty_cache = leveldb::NewLRUCache(0);
-  return s_empty_cache;
+  static base::NoDestructor<NoOpBlockCache> s_empty_cache;
+  return s_empty_cache.get();
 }
 
 bool IsMemEnv(const leveldb::Env* env) {

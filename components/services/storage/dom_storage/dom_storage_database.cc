@@ -48,13 +48,6 @@ std::string MakeFullPersistentDBName(const base::FilePath& directory,
       .AsUTF8Unsafe();
 }
 
-leveldb_env::Options CreateDefaultInMemoryOptions() {
-  leveldb_env::Options options;
-  options.create_if_missing = true;
-  options.max_open_files = 0;
-  return options;
-}
-
 leveldb_env::Options AddEnvToOptions(const leveldb_env::Options& options,
                                      leveldb::Env* env) {
   leveldb_env::Options new_options = options;
@@ -159,7 +152,7 @@ DomStorageDatabase::DomStorageDatabase(
     StatusCallback callback)
     : DomStorageDatabase("",
                          leveldb_chrome::NewMemEnv(tracking_name),
-                         CreateDefaultInMemoryOptions(),
+                         leveldb_env::Options(),
                          memory_dump_id,
                          std::move(callback_task_runner),
                          std::move(callback)) {}
