@@ -47,6 +47,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
@@ -124,6 +125,15 @@ gfx::Rect GetFocusedWindowBounds() {
   return window_util::GetFocusedWindow()
              ? window_util::GetFocusedWindow()->GetBoundsInScreen()
              : gfx::Rect();
+}
+
+input_method::ImeKeyboard& GetImeKeyboard() {
+  auto* input_method_manager = input_method::InputMethodManager::Get();
+  CHECK(input_method_manager);
+  input_method::ImeKeyboard* ime_keyboard =
+      input_method_manager->GetImeKeyboard();
+  CHECK(ime_keyboard);
+  return *ime_keyboard;
 }
 
 // The user can ask to insert rich media, a clipboard item, or insert nothing.
@@ -230,6 +240,8 @@ std::u16string TransformText(std::u16string_view text,
     case PickerCategory::kDatesTimes:
     case PickerCategory::kUnitsMaths:
     case PickerCategory::kClipboard:
+    case PickerCategory::kCapsOn:
+    case PickerCategory::kCapsOff:
       NOTREACHED_NORETURN();
   }
   NOTREACHED_NORETURN();
@@ -292,7 +304,8 @@ void PickerController::ToggleWidget(
     widget_->Close();
     model_.reset();
   } else {
-    model_ = std::make_unique<PickerModel>(GetFocusedTextInputClient());
+    model_ = std::make_unique<PickerModel>(GetFocusedTextInputClient(),
+                                           &GetImeKeyboard());
     widget_ = PickerWidget::Create(
         this,
         GetPickerAnchorBounds(GetCaretBounds(), GetCursorPoint(),
@@ -325,6 +338,8 @@ void PickerController::GetResultsForCategory(PickerCategory category,
     case PickerCategory::kLowerCase:
     case PickerCategory::kSentenceCase:
     case PickerCategory::kTitleCase:
+    case PickerCategory::kCapsOn:
+    case PickerCategory::kCapsOff:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
       // TODO: b/330589902 - Use correct PickerSectionType for this.
@@ -431,6 +446,10 @@ void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category) {
 
 void PickerController::ShowEditor() {
   client_->ShowEditor();
+}
+
+void PickerController::SetCapsLockEnabled(bool enabled) {
+  GetImeKeyboard().SetCapsLockEnabled(enabled);
 }
 
 PickerAssetFetcher* PickerController::GetAssetFetcher() {

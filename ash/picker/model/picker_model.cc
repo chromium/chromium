@@ -5,6 +5,8 @@
 #include "ash/picker/model/picker_model.h"
 
 #include "ash/public/cpp/picker/picker_category.h"
+#include "base/check_deref.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/gfx/range/range.h"
 
@@ -24,8 +26,10 @@ std::u16string GetSelectedText(ui::TextInputClient* client) {
 
 }  // namespace
 
-PickerModel::PickerModel(ui::TextInputClient* focused_client)
-    : selected_text_(GetSelectedText(focused_client)) {}
+PickerModel::PickerModel(ui::TextInputClient* focused_client,
+                         input_method::ImeKeyboard* ime_keyboard)
+    : selected_text_(GetSelectedText(focused_client)),
+      is_caps_lock_enabled_(CHECK_DEREF(ime_keyboard).IsCapsLockEnabled()) {}
 
 std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   if (HasSelectedText()) {
@@ -38,9 +42,14 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   }
 
   return std::vector<PickerCategory>{
-      PickerCategory::kLinks,      PickerCategory::kExpressions,
-      PickerCategory::kClipboard,  PickerCategory::kDriveFiles,
-      PickerCategory::kLocalFiles, PickerCategory::kDatesTimes,
+      (is_caps_lock_enabled_ ? PickerCategory::kCapsOff
+                             : PickerCategory::kCapsOn),
+      PickerCategory::kLinks,
+      PickerCategory::kExpressions,
+      PickerCategory::kClipboard,
+      PickerCategory::kDriveFiles,
+      PickerCategory::kLocalFiles,
+      PickerCategory::kDatesTimes,
       PickerCategory::kUnitsMaths,
   };
 }

@@ -85,6 +85,7 @@ class ASH_EXPORT PickerController
   void InsertResultOnNextFocus(const PickerSearchResult& result) override;
   void ShowEmojiPicker(ui::EmojiPickerCategory category) override;
   void ShowEditor() override;
+  void SetCapsLockEnabled(bool enabled) override;
   PickerAssetFetcher* GetAssetFetcher() override;
 
   // views:WidgetObserver:

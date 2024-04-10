@@ -27,6 +27,8 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/models/image_model.h"
@@ -82,6 +84,12 @@ class ClipboardPasteWaiter : public ClipboardHistoryController::Observer {
                           ClipboardHistoryController::Observer>
       observation_{this};
 };
+
+input_method::ImeKeyboard* GetImeKeyboard() {
+  auto* input_method_manager = input_method::InputMethodManager::Get();
+  return input_method_manager ? input_method_manager->GetImeKeyboard()
+                              : nullptr;
+}
 
 class PickerControllerTest : public AshTestBase {
  public:
@@ -306,6 +314,28 @@ TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   const auto& [category, focus_behavior] = future.Get();
   EXPECT_EQ(category, ui::EmojiPickerCategory::kSymbols);
   EXPECT_EQ(focus_behavior, ui::EmojiPickerFocusBehavior::kAlwaysShow);
+}
+
+TEST_F(PickerControllerTest, SetCapsLockEnabledToTrueTurnsOnCapsLock) {
+  PickerController controller;
+  TestPickerClient client(&controller);
+
+  controller.SetCapsLockEnabled(true);
+
+  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
+  ASSERT_TRUE(ime_keyboard);
+  EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
+}
+
+TEST_F(PickerControllerTest, SetCapsLockEnabledToFalseTurnsOffCapsLock) {
+  PickerController controller;
+  TestPickerClient client(&controller);
+
+  controller.SetCapsLockEnabled(false);
+
+  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
+  ASSERT_TRUE(ime_keyboard);
+  EXPECT_FALSE(ime_keyboard->IsCapsLockEnabled());
 }
 
 TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {

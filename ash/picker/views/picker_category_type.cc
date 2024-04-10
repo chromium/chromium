@@ -26,6 +26,9 @@ ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
     case PickerCategory::kSentenceCase:
     case PickerCategory::kTitleCase:
       return PickerCategoryType::kCaseTransformations;
+    case PickerCategory::kCapsOn:
+    case PickerCategory::kCapsOff:
+      return PickerCategoryType::kFormatting;
   }
 }
 

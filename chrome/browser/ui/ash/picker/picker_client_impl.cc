@@ -261,6 +261,8 @@ void PickerClientImpl::StartCrosSearch(
     case ash::PickerCategory::kLowerCase:
     case ash::PickerCategory::kSentenceCase:
     case ash::PickerCategory::kTitleCase:
+    case ash::PickerCategory::kCapsOn:
+    case ash::PickerCategory::kCapsOff:
       DLOG(FATAL) << "Unexpected category for StartCrosSearch: "
                   << static_cast<int>(*category);
       break;
@@ -405,6 +407,8 @@ PickerClientImpl::CreateSearchProviderForCategory(
     case ash::PickerCategory::kLowerCase:
     case ash::PickerCategory::kSentenceCase:
     case ash::PickerCategory::kTitleCase:
+    case ash::PickerCategory::kCapsOn:
+    case ash::PickerCategory::kCapsOff:
       DLOG(FATAL) << "Unexpected category for autocomplete: "
                   << static_cast<int>(category);
       return nullptr;

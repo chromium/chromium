@@ -7117,6 +7117,12 @@ New install
       <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show unit and maths results.">
         Units &amp; Mathematics
       </message>
+      <message name="IDS_PICKER_CAPS_ON_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to turn on caps lock.">
+        Turn ON Caps Lock
+      </message>
+      <message name="IDS_PICKER_CAPS_OFF_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to turn off caps lock.">
+        Turn OFF Caps Lock
+      </message>
       <message name="IDS_PICKER_CLIPBOARD_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show clipboard results.">
         Clipboard
       </message>
@@ -7164,6 +7170,9 @@ New install
       </message>
       <message name="IDS_PICKER_CASE_TRANSFORMATIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains case transformation actions.">
         Transform letter case
+      </message>
+      <message name="IDS_PICKER_FORMATTING_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains formatting categories, e.g. toggling caps lock.">
+        Formatting
       </message>
       <message name="IDS_PICKER_SUGGESTED_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains suggested items.">
         You may want to insert

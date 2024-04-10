@@ -293,6 +293,13 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
     return;
   }
 
+  if (category == PickerCategory::kCapsOn ||
+      category == PickerCategory::kCapsOff) {
+    GetWidget()->Close();
+    delegate_->SetCapsLockEnabled(category == PickerCategory::kCapsOn);
+    return;
+  }
+
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
   search_field_view_->SetQueryText(std::u16string(query));

@@ -111,6 +111,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     showed_emoji_picker_ = true;
   }
   void ShowEditor() override { showed_editor_ = true; }
+  void SetCapsLockEnabled(bool enabled) override {
+    caps_lock_enabled_ = enabled;
+  }
 
   PickerAssetFetcher* GetAssetFetcher() override { return &asset_fetcher_; }
 
@@ -123,6 +126,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   std::optional<PickerCategory> requested_case_transformation_category() const {
     return requested_case_transformation_category_;
   }
+  bool caps_lock_enabled() const { return caps_lock_enabled_; }
 
  private:
   Options options_;
@@ -132,6 +136,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   bool showed_editor_ = false;
   std::optional<PickerCategory> requested_case_transformation_category_ =
       std::nullopt;
+  bool caps_lock_enabled_ = false;
 };
 
 PickerView* GetPickerViewFromWidget(views::Widget& widget) {
@@ -746,6 +751,30 @@ TEST_F(PickerViewTest,
   EXPECT_TRUE(delegate.requested_case_transformation_category().has_value());
   EXPECT_EQ(*delegate.requested_case_transformation_category(),
             PickerCategory::kUpperCase);
+}
+
+TEST_F(PickerViewTest, TurnsOnCapsLockWhenClickingCapsOn) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kCapsOn},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  LeftClickOn(GetFirstCategoryItemView(GetPickerViewFromWidget(*widget)));
+
+  EXPECT_TRUE(delegate.caps_lock_enabled());
+}
+
+TEST_F(PickerViewTest, TurnsOffCapsLockWhenClickingCapsOff) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kCapsOff},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  LeftClickOn(GetFirstCategoryItemView(GetPickerViewFromWidget(*widget)));
+
+  EXPECT_FALSE(delegate.caps_lock_enabled());
 }
 
 TEST_F(PickerViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {

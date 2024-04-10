@@ -27,6 +27,9 @@ enum class ASH_PUBLIC_EXPORT PickerCategory {
   kLowerCase,
   kSentenceCase,
   kTitleCase,
+  // Formatting categories:
+  kCapsOn,
+  kCapsOff,
 };
 
 }  // namespace ash

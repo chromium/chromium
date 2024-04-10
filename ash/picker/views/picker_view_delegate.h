@@ -59,6 +59,9 @@ class ASH_EXPORT PickerViewDelegate {
   // Shows the Editor.
   virtual void ShowEditor() = 0;
 
+  // Sets the current caps lock state.
+  virtual void SetCapsLockEnabled(bool enabled) = 0;
+
   virtual PickerAssetFetcher* GetAssetFetcher() = 0;
 };
 
