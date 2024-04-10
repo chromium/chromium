@@ -134,9 +134,16 @@ void AppInstallDialog::OnLoadIcon(apps::IconValuePtr icon_value) {
   this->RepositionNearTopOf(parent);
 }
 
-void AppInstallDialog::SetInstallComplete(const std::string* app_id) {
+void AppInstallDialog::SetInstallSucceeded(const std::string* app_id) {
   if (dialog_ui_) {
-    dialog_ui_->SetInstallComplete(app_id);
+    dialog_ui_->SetInstallComplete(app_id, std::nullopt);
+  }
+}
+
+void AppInstallDialog::SetInstallFailed(
+    base::OnceCallback<void(bool accepted)> retry_callback) {
+  if (dialog_ui_) {
+    dialog_ui_->SetInstallComplete(nullptr, std::move(retry_callback));
   }
 }
 

@@ -23,6 +23,7 @@ enum DialogState {
   INSTALLING = 'installing',
   INSTALLED = 'installed',
   NO_DATA = 'no_data',
+  FAILED_INSTALL = 'failed_install',
 }
 
 interface StateData {
@@ -116,6 +117,19 @@ class AppInstallDialogElement extends HTMLElement {
         },
         cancelButtonLabelId: 'cancel',
       },
+      [DialogState.FAILED_INSTALL]: {
+        title: {
+          iconIdQuery: '#title-icon-error',
+          labelId: 'failedInstall',
+        },
+        actionButton: {
+          labelId: 'tryAgain',
+          handler: (event: MouseEvent) => this.onInstallButtonClick(event),
+          handleOnce: true,
+          iconIdQuery: '#action-icon-try-again',
+        },
+        cancelButtonLabelId: 'cancel',
+      },
     };
   }
 
@@ -199,12 +213,8 @@ class AppInstallDialogElement extends HTMLElement {
       new Promise(resolve => setTimeout(resolve, 2000)),
     ]);
 
-    if (install_result) {
-      this.changeDialogState(DialogState.INSTALLED);
-    } else {
-      // TODO(crbug.com/1488697): Proper error display.
-      this.changeDialogState(DialogState.INSTALL);
-    }
+    this.changeDialogState(
+        install_result ? DialogState.INSTALLED : DialogState.FAILED_INSTALL);
   }
 
   private async onOpenAppButtonClick() {

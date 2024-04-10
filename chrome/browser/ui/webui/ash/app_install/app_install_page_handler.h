@@ -42,7 +42,9 @@ class AppInstallPageHandler : public mojom::PageHandler {
 
   ~AppInstallPageHandler() override;
 
-  void OnInstallComplete(const std::string* app_id);
+  void OnInstallComplete(
+      const std::string* app_id,
+      std::optional<base::OnceCallback<void(bool accepted)>> retry_callback);
 
   // mojom::PageHandler:
   void GetDialogArgs(GetDialogArgsCallback callback) override;

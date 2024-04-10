@@ -105,6 +105,7 @@ class AppInstallServiceAsh : public AppInstallService {
   void ProcessInstallResult(
       AppInstallSurface surface,
       PackageId expected_package_id,
+      AppInstallData data,
       base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
       base::OnceClosure callback,
       bool install_success);

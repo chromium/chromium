@@ -42,6 +42,7 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
       {"appInstalled", IDS_APP_INSTALL_DIALOG_APP_INSTALLED_TITLE},
       {"noAppData", IDS_APP_INSTALL_DIALOG_NO_APP_DATA_TITLE},
       {"tryAgain", IDS_APP_INSTALL_DIALOG_TRY_AGAIN_BUTTON_LABEL},
+      {"failedInstall", IDS_APP_INSTALL_DIALOG_FAILED_INSTALL_TITLE},
   };
 
   source->AddLocalizedStrings(kStrings);
@@ -82,11 +83,13 @@ void AppInstallDialogUI::SetTryAgainCallback(
   try_again_callback_ = std::move(try_again_callback);
 }
 
-void AppInstallDialogUI::SetInstallComplete(const std::string* app_id) {
+void AppInstallDialogUI::SetInstallComplete(
+    const std::string* app_id,
+    std::optional<base::OnceCallback<void(bool accepted)>> retry_callback) {
   if (!page_handler_) {
     return;
   }
-  page_handler_->OnInstallComplete(app_id);
+  page_handler_->OnInstallComplete(app_id, std::move(retry_callback));
 }
 
 void AppInstallDialogUI::BindInterface(

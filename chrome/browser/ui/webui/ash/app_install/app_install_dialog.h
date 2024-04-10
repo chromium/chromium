@@ -48,9 +48,11 @@ class AppInstallDialog : public SystemWebDialogDelegate {
                         const gfx::Image& icon);
   void OnLoadIcon(apps::IconValuePtr icon_value);
 
-  // Callers must call this once the install has finished, passing in the app_id
-  // if the installation succeeded or a nullptr if it failed.
-  void SetInstallComplete(const std::string* app_id);
+  // Callers must call one of SetInstallSucceeded or SetInstallFailed once the
+  // install has finished, passing in the app_id if the installation succeeded
+  // or a callback to retry the install if it failed.
+  void SetInstallSucceeded(const std::string* app_id);
+  void SetInstallFailed(base::OnceCallback<void(bool accepted)> retry_callback);
 
   void OnDialogShown(content::WebUI* webui) override;
 

@@ -108,13 +108,18 @@ void AppInstallPageHandler::InstallApp(InstallAppCallback callback) {
   std::move(dialog_accepted_callback_).Run(true);
 }
 
-void AppInstallPageHandler::OnInstallComplete(const std::string* app_id) {
+void AppInstallPageHandler::OnInstallComplete(
+    const std::string* app_id,
+    std::optional<base::OnceCallback<void(bool accepted)>> retry_callback) {
   if (app_id) {
     app_id_ = *app_id;
     // OnInstallComplete must not be called with an 'app_id' if the expected app
     // was not able to be installed. The app_id must match also the expected app
     // id.
     CHECK_EQ(*app_id, expected_app_id_);
+  } else {
+    CHECK(retry_callback.has_value());
+    dialog_accepted_callback_ = std::move(retry_callback.value());
   }
   if (install_app_callback_) {
     std::move(install_app_callback_).Run(/*success=*/app_id);

@@ -7476,6 +7476,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_APP_INSTALL_DIALOG_TRY_AGAIN_BUTTON_LABEL" desc="Button label in the app install dialog that opens the app that was just installed.">
     Try again
   </message>
+  <message name="IDS_APP_INSTALL_DIALOG_FAILED_INSTALL_TITLE" desc="Title shown in the app install dialog if the app failed to install.">
+    Can't install app. Something went wrong.
+  </message>
 
   <!-- Extended Updates Dialog -->
   <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_HEADING" desc="Dialog heading of the Extended Updates Dialog" translateable="false">

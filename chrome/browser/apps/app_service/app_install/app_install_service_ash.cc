@@ -370,26 +370,36 @@ void AppInstallServiceAsh::InstallIfDialogAccepted(
     return;
   }
   web_app_installer_.InstallApp(
-      surface, std::move(data),
+      surface, data,
       base::BindOnce(&AppInstallServiceAsh::ProcessInstallResult,
                      weak_ptr_factory_.GetWeakPtr(), surface,
-                     expected_package_id, dialog, std::move(callback)));
+                     expected_package_id, data, dialog, std::move(callback)));
 }
 
 void AppInstallServiceAsh::ProcessInstallResult(
     AppInstallSurface surface,
     PackageId expected_package_id,
+    AppInstallData data,
     base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
     base::OnceClosure callback,
     bool install_success) {
-  if (dialog) {
-    std::string app_id = GetAppId(expected_package_id);
-    dialog->SetInstallComplete(install_success ? &app_id : nullptr);
-  }
   RecordInstallResult(surface, install_success
                                    ? AppInstallResult::kSuccess
                                    : AppInstallResult::kAppTypeInstallFailed);
-  std::move(callback).Run();
+  if (!dialog) {
+    std::move(callback).Run();
+    return;
+  }
+  if (install_success) {
+    std::string app_id = GetAppId(expected_package_id);
+    dialog->SetInstallSucceeded(&app_id);
+    std::move(callback).Run();
+  } else {
+    dialog->SetInstallFailed(base::BindOnce(
+        &AppInstallServiceAsh::InstallIfDialogAccepted,
+        weak_ptr_factory_.GetWeakPtr(), surface, expected_package_id,
+        std::move(data), dialog, std::move(callback)));
+  }
 }
 
 }  // namespace apps

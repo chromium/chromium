@@ -145,19 +145,20 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
   base::WeakPtr<AppInstallDialog> dialog_handle =
       AppInstallDialog::CreateDialog();
 
+  // TODO(b/331310950): Add a test that sends a retry callback.
   auto args = ash::app_install::mojom::DialogArgs::New();
   args->url = GURL("https://example.org");
-  dialog_handle->ShowApp(browser()->profile(),
-                         browser()->window()->GetNativeWindow(),
-                         /* dialog_args= */ std::move(args),
-                         /* icon_width= */ 0, /* is_icon_maskable= */ true,
-                         /* expected_app_id= */ "",
-                         base::BindOnce(
-                             [](base::WeakPtr<AppInstallDialog> dialog_handle,
-                                bool dialog_accepted) {
-                               dialog_handle->SetInstallComplete(nullptr);
-                             },
-                             dialog_handle));
+  dialog_handle->ShowApp(
+      browser()->profile(), browser()->window()->GetNativeWindow(),
+      /* dialog_args= */ std::move(args),
+      /* icon_width= */ 0, /* is_icon_maskable= */ true,
+      /* expected_app_id= */ "",
+      base::BindOnce(
+          [](base::WeakPtr<AppInstallDialog> dialog_handle,
+             bool dialog_accepted) {
+            dialog_handle->SetInstallFailed(base::DoNothing());
+          },
+          dialog_handle));
 
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
@@ -171,10 +172,11 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
   while (GetActionButton(web_contents) != "Installing")
     ;
 
-  // Wait for the button text to say "Install", which means it knows the install
-  // has failed.
-  while (GetActionButton(web_contents) != "Install")
+  // Wait for the button text to say "Try again".
+  while (GetActionButton(web_contents) != "Try again")
     ;
+
+  EXPECT_EQ(GetTitle(web_contents), "Can't install app. Something went wrong.");
 }
 
 IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, NoAppError) {

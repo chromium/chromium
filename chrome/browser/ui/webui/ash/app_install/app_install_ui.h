@@ -31,7 +31,9 @@ class AppInstallDialogUI : public ui::MojoWebDialogUI,
   void SetDialogCallback(
       base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
   void SetTryAgainCallback(base::OnceClosure try_again_callback);
-  void SetInstallComplete(const std::string* app_id);
+  void SetInstallComplete(
+      const std::string* app_id,
+      std::optional<base::OnceCallback<void(bool accepted)>> retry_callback);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
