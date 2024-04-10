@@ -73,6 +73,7 @@ source_set("unit_tests") {
   deps = [
     ":audio",
     "//ash/constants",
+    "//ash/strings",
     "//base/test:test_support",
     "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/components/dbus/audio",
@@ -83,6 +84,7 @@ source_set("unit_tests") {
     "//services/media_session/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//ui/message_center",
   ]
   sources = [

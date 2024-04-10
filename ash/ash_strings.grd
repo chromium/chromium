@@ -3295,11 +3295,26 @@ No devices connected.
       <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_OUTPUT_TITLE" desc="label used for audio selection switch output title" translateable="false">
         Switch audio output?
       </message>
+      <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_SOURCE_TITLE" desc="label used for audio selection switch audio source title" translateable="false">
+        Switch audio source?
+      </message>
+      <message name="IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_TITLE" desc="label used for audio selection multiple audio sources detected title" translateable="false">
+        Multiple audio sources detected
+      </message>
       <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_OR_OUTPUT_BODY" desc="body of audio selection notification to select only or output input" translateable="false">
         Use "<ph name="DEVICE_NAME">$1<ex>Logitech Webcam</ex></ph>"
       </message>
+      <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_AND_OUTPUT_BODY" desc="body of audio selection notification to select only input and output" translateable="false">
+        Use "<ph name="DEVICE_NAME">$1<ex>Dell external display</ex></ph>" for audio input and output
+      </message>
+      <message name="IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_BODY" desc="body of audio selection notification to inform users multiple devices are detected" translateable="false">
+        Input audio is "<ph name="INPUT_DEVICE_NAME">$1<ex>Logitech Webcam</ex></ph>" and output audio is "<ph name="OUTPUT_DEVICE_NAME">$2<ex>USB Speaker</ex></ph>". Go to Settings to change.
+      </message>
       <message name="IDS_ASH_AUDIO_SELECTION_BUTTON_SWITCH" desc="label used for audio selection switch button" translateable="false">
         Switch
+      </message>
+      <message name="IDS_ASH_AUDIO_SELECTION_BUTTON_SETTINGS" desc="label used for audio selection settings button" translateable="false">
+        Settings
       </message>
       <message name="IDS_ASH_AUDIO_SELECTION_SOURCE" desc="notification source of audio selection notification" translateable="false">
         Audio selection

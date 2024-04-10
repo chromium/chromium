@@ -1882,7 +1882,14 @@ bool CrasAudioHandler::HasDeviceChange(const AudioNodeList& new_nodes,
     AudioDevice device = ConvertAudioNodeWithModifiedPriority(node);
     DeviceStatus status = CheckDeviceStatus(device);
     if (status == NEW_DEVICE) {
-      new_discovered->push_back(device);
+      // When audio selection improvement flag is off, always put the new device
+      // into the new discovered device list.
+      // When audio selection improvement flag is on, only put simple usage
+      // device into new discovered device list.
+      if (!features::IsAudioSelectionImprovementEnabled() ||
+          device.is_for_simple_usage()) {
+        new_discovered->push_back(device);
+      }
     }
     if (status == NEW_DEVICE || status == CHANGED_DEVICE) {
       new_or_changed_device = true;

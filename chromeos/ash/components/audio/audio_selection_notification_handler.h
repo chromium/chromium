@@ -27,6 +27,47 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const AudioSelectionNotificationHandler&) = delete;
   ~AudioSelectionNotificationHandler();
 
+  // The audio selection notification id, used to identify the notification
+  // itself.
+  static constexpr char kAudioSelectionNotificationId[] =
+      "audio_selection_notification";
+
+  // The audio selection notifier id.
+  static constexpr char kAudioSelectionNotifierId[] =
+      "ash.audio_selection_notification_handler";
+
+  // Different types of audio selection notification.
+  // Do not reorder since it's used in histogram metrics.
+  enum class NotificationType {
+    // A single audio device source with only input audio device. e.g. a web
+    // cam.
+    kSingleSourceWithInputOnly = 0,
+    // A single audio device source with only output audio device. e.g. a HDMI
+    // display.
+    kSingleSourceWithOutputOnly = 1,
+    // A single audio device source with both input and output audio devices.
+    // e.g. a USB audio device.
+    kSingleSourceWithInputAndOutput = 2,
+    // Multiple audio device sources, e.g. a web cam and a HDMI display.
+    kMultipleSources = 3,
+    kMaxValue = kMultipleSources,
+  };
+
+  // Stores minimal info to create a notification. The device names will be
+  // displayed in notification body. If the notification type is
+  // kMultipleSources, device name refers to currently activated device name.
+  // Otherwise, device name refers to hot plugged device name.
+  struct NotificationTemplate {
+    NotificationTemplate(NotificationType type,
+                         std::optional<std::string> input_device_name,
+                         std::optional<std::string> output_device_name);
+    ~NotificationTemplate();
+
+    NotificationType type;
+    std::optional<std::string> input_device_name;
+    std::optional<std::string> output_device_name;
+  };
+
   // Creates and displays an audio selection notification to let users make the
   // switching or not switching decision.
   // TODO(b/333608911): Revisit audio selection notification after updated audio
@@ -50,6 +91,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   // same physical audio device.
   bool AudioNodesBelongToSameSource(const AudioDevice& input_device,
                                     const AudioDevice& output_device);
+
+  // Gets necessary information to create and display notitification, such as
+  // notitication type and device name.
+  NotificationTemplate GetNotificationTemplate(
+      const AudioDeviceList& hotplug_input_devices,
+      const AudioDeviceList& hotplug_output_devices,
+      const std::optional<std::string>& active_input_device_name,
+      const std::optional<std::string>& active_output_device_name);
 
   base::WeakPtrFactory<AudioSelectionNotificationHandler> weak_ptr_factory_{
       this};
