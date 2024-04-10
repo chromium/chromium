@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 /** Tests for the facilitated payment API client. */
@@ -36,7 +37,7 @@ public class FacilitatedPaymentsApiClientUnitTest {
         public byte[] mClientToken;
 
         public boolean mIsPurchaseActionInvoked;
-        public boolean mIsPurchaseActionSuccessful;
+        public @PurchaseActionResult int mPurchaseActionResult;
 
         @Override
         public void onIsAvailable(boolean isAvailable) {
@@ -51,9 +52,9 @@ public class FacilitatedPaymentsApiClientUnitTest {
         }
 
         @Override
-        public void onPurchaseActionResult(boolean isPurchaseActionSuccessful) {
+        public void onPurchaseActionResultEnum(@PurchaseActionResult int purchaseActionResult) {
             mIsPurchaseActionInvoked = true;
-            mIsPurchaseActionSuccessful = isPurchaseActionSuccessful;
+            mPurchaseActionResult = purchaseActionResult;
         }
     }
 
@@ -87,10 +88,11 @@ public class FacilitatedPaymentsApiClientUnitTest {
         FacilitatedPaymentsApiClient apiClient =
                 FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
-        apiClient.invokePurchaseAction(new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
+        apiClient.invokePurchaseAction(
+                /* primaryAccount= */ null, new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
 
         Assert.assertTrue(delegate.mIsPurchaseActionInvoked);
-        Assert.assertFalse(delegate.mIsPurchaseActionSuccessful);
+        Assert.assertEquals(PurchaseActionResult.COULD_NOT_INVOKE, delegate.mPurchaseActionResult);
     }
 
     /** A fake implementation of the API client, which always succeeds. */
@@ -111,8 +113,8 @@ public class FacilitatedPaymentsApiClientUnitTest {
         }
 
         @Override
-        public void invokePurchaseAction(byte[] actionToken) {
-            mDelegate.onPurchaseActionResult(/* isPurchaseActionSuccessful= */ true);
+        public void invokePurchaseAction(CoreAccountInfo primaryAccount, byte[] actionToken) {
+            mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.RESULT_OK);
         }
     }
 
@@ -158,10 +160,11 @@ public class FacilitatedPaymentsApiClientUnitTest {
         FacilitatedPaymentsApiClient apiClient =
                 FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
-        apiClient.invokePurchaseAction(new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
+        apiClient.invokePurchaseAction(
+                /* primaryAccount= */ null, new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
 
         Assert.assertTrue(delegate.mIsPurchaseActionInvoked);
-        Assert.assertTrue(delegate.mIsPurchaseActionSuccessful);
+        Assert.assertEquals(PurchaseActionResult.RESULT_OK, delegate.mPurchaseActionResult);
     }
 
     /**

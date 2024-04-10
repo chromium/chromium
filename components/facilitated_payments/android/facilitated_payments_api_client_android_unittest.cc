@@ -35,6 +35,14 @@ void CaptureByteArray(bool* was_callback_invoked,
   *output = std::move(input);
 }
 
+void CaptureResultEnum(
+    bool* was_callback_invoked,
+    FacilitatedPaymentsApiClient::PurchaseActionResult* output,
+    FacilitatedPaymentsApiClient::PurchaseActionResult input) {
+  *was_callback_invoked = true;
+  *output = input;
+}
+
 TEST_F(FacilitatedPaymentsApiClientAndroidTest,
        IsAvailableResultIsFalseByDefault) {
   FacilitatedPaymentsApiClientAndroid apiClient(main_rfh());
@@ -65,17 +73,19 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
        InvokePurchaseActionResultIsFalseByDefault) {
   FacilitatedPaymentsApiClientAndroid apiClient(main_rfh());
   bool was_callback_invoked = false;
-  bool purchase_action_result = false;
+  FacilitatedPaymentsApiClient::PurchaseActionResult purchase_action_result =
+      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk;
   signin::IdentityTestEnvironment identity_test_environment;
 
   apiClient.InvokePurchaseAction(
       identity_test_environment.MakeAccountAvailable("test@example.test"),
       std::vector<uint8_t>{'A', 'c', 't', 'i', 'o', 'n'},
-      base::BindOnce(&CaptureBoolean, &was_callback_invoked,
+      base::BindOnce(&CaptureResultEnum, &was_callback_invoked,
                      &purchase_action_result));
 
   EXPECT_TRUE(was_callback_invoked);
-  EXPECT_FALSE(purchase_action_result);
+  EXPECT_EQ(FacilitatedPaymentsApiClient::PurchaseActionResult::kCouldNotInvoke,
+            purchase_action_result);
 }
 
 // Java bridge should invoke exactly one callback per method, but if it does
@@ -87,7 +97,9 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
 
   apiClient.OnIsAvailable(env, false);
   apiClient.OnGetClientToken(env, nullptr);
-  apiClient.OnPurchaseActionResult(env, false);
+  apiClient.OnPurchaseActionResultEnum(
+      env, static_cast<jint>(
+               FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk));
 }
 
 }  // namespace

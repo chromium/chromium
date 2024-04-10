@@ -58,7 +58,7 @@ void FacilitatedPaymentsApiClientAndroid::GetClientToken(
 void FacilitatedPaymentsApiClientAndroid::InvokePurchaseAction(
     CoreAccountInfo primary_account,
     base::span<const uint8_t> action_token,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(PurchaseActionResult)> callback) {
   DCHECK(!IsAnyCallbackPending());
 
   purchase_action_callback_ = std::move(callback);
@@ -89,12 +89,19 @@ void FacilitatedPaymentsApiClientAndroid::OnGetClientToken(
   }
 }
 
-void FacilitatedPaymentsApiClientAndroid::OnPurchaseActionResult(
+void FacilitatedPaymentsApiClientAndroid::OnPurchaseActionResultEnum(
     JNIEnv* env,
-    jboolean is_purchase_action_successful) {
-  if (purchase_action_callback_) {
-    std::move(purchase_action_callback_).Run(is_purchase_action_successful);
+    jint purchase_action_result) {
+  if (!purchase_action_callback_ ||
+      purchase_action_result <
+          static_cast<int>(PurchaseActionResult::kCouldNotInvoke) ||
+      purchase_action_result >
+          static_cast<int>(PurchaseActionResult::kResultCanceled)) {
+    return;
   }
+
+  std::move(purchase_action_callback_)
+      .Run(static_cast<PurchaseActionResult>(purchase_action_result));
 }
 
 bool FacilitatedPaymentsApiClientAndroid::IsAnyCallbackPending() const {

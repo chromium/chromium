@@ -84,8 +84,8 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
                 /* primaryAccount= */ null, new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
 
         verify(mBridgeNatives)
-                .onPurchaseActionResult(
-                        eq(NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID), eq(false));
+                .onPurchaseActionResultEnum(eq(NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID),
+                        eq(PurchaseActionResult.COULD_NOT_INVOKE));
     }
 
     @Test

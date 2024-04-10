@@ -42,16 +42,16 @@ class FacilitatedPaymentsApiClientAndroid
   void IsAvailable(base::OnceCallback<void(bool)> callback) override;
   void GetClientToken(
       base::OnceCallback<void(std::vector<uint8_t>)> callback) override;
-  void InvokePurchaseAction(CoreAccountInfo primary_account,
-                            base::span<const uint8_t> action_token,
-                            base::OnceCallback<void(bool)> callback) override;
+  void InvokePurchaseAction(
+      CoreAccountInfo primary_account,
+      base::span<const uint8_t> action_token,
+      base::OnceCallback<void(PurchaseActionResult)> callback) override;
 
   void OnIsAvailable(JNIEnv* env, jboolean is_available);
   void OnGetClientToken(
       JNIEnv* env,
       const base::android::JavaRef<jbyteArray>& jclient_token_byte_array);
-  void OnPurchaseActionResult(JNIEnv* env,
-                              jboolean is_purchase_action_successful);
+  void OnPurchaseActionResultEnum(JNIEnv* env, jint purchase_action_result);
 
  private:
   bool IsAnyCallbackPending() const;
@@ -59,7 +59,7 @@ class FacilitatedPaymentsApiClientAndroid
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
   base::OnceCallback<void(bool)> is_available_callback_;
   base::OnceCallback<void(std::vector<uint8_t>)> get_client_token_callback_;
-  base::OnceCallback<void(bool)> purchase_action_callback_;
+  base::OnceCallback<void(PurchaseActionResult)> purchase_action_callback_;
 };
 
 }  // namespace payments::facilitated

@@ -52,7 +52,7 @@ class MockFacilitatedPaymentsApiClient : public FacilitatedPaymentsApiClient {
               InvokePurchaseAction,
               (CoreAccountInfo,
                base::span<const uint8_t>,
-               base::OnceCallback<void(bool)>),
+               base::OnceCallback<void(PurchaseActionResult)>),
               (override));
 };
 

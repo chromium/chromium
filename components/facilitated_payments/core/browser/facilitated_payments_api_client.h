@@ -35,6 +35,19 @@ namespace payments::facilitated {
 //                                        weak_ptr_factory_.GetWeakPtr()));
 class FacilitatedPaymentsApiClient {
  public:
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.facilitated_payments
+  // The result of invoking the purchase manager with an action token.
+  enum class PurchaseActionResult : int {
+    // Could not invoke the purchase manager.
+    kCouldNotInvoke,
+
+    // The purchase manager was invoked successfully.
+    kResultOk,
+
+    // The user cancelled out of the purchase manager flow.
+    kResultCanceled,
+  };
+
   virtual ~FacilitatedPaymentsApiClient() = default;
 
   // Checks whether the facilitated payment API is available and invokes the
@@ -59,7 +72,7 @@ class FacilitatedPaymentsApiClient {
   virtual void InvokePurchaseAction(
       CoreAccountInfo primary_account,
       base::span<const uint8_t> action_token,
-      base::OnceCallback<void(bool)> callback) = 0;
+      base::OnceCallback<void(PurchaseActionResult)> callback) = 0;
 };
 
 }  // namespace payments::facilitated

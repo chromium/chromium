@@ -63,7 +63,7 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
 
     /**
      * Initiates the payment flow UI by invoking the payment manager with the action token. The
-     * result is received back in the onPurchaseActionResult(boolean) method.
+     * result is received back in the onPurchaseActionResultEnum(PurchaseActionResult) method.
      *
      * @param primaryAccount User's signed in account.
      * @param actionToken An opaque token used for invoking the purchase action.
@@ -91,11 +91,10 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
 
     // FacilitatedPaymentsApiClient.Delegate implementation:
     @Override
-    public void onPurchaseActionResult(boolean isPurchaseActionSuccessful) {
+    public void onPurchaseActionResultEnum(@PurchaseActionResult int purchaseActionResult) {
         if (mNativeFacilitatedPaymentsApiClientAndroid == 0) return;
-        FacilitatedPaymentsApiClientBridgeJni.get()
-                .onPurchaseActionResult(
-                        mNativeFacilitatedPaymentsApiClientAndroid, isPurchaseActionSuccessful);
+        FacilitatedPaymentsApiClientBridgeJni.get().onPurchaseActionResultEnum(
+                mNativeFacilitatedPaymentsApiClientAndroid, purchaseActionResult);
     }
 
     @NativeMethods
@@ -104,7 +103,7 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
 
         void onGetClientToken(long nativeFacilitatedPaymentsApiClientAndroid, byte[] clientToken);
 
-        void onPurchaseActionResult(
-                long nativeFacilitatedPaymentsApiClientAndroid, boolean isPurchaseActionSuccessful);
+        void onPurchaseActionResultEnum(long nativeFacilitatedPaymentsApiClientAndroid,
+                @PurchaseActionResult int purchaseActionResult);
     }
 }

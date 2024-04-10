@@ -85,9 +85,18 @@ public class FacilitatedPaymentsApiClient {
         default void onGetClientToken(byte[] clientToken) {}
 
         /**
+         * Notifies the delegate about the result of the facilitated payment.
+         *
+         * @param purchaseActionResult The result of the purchase action.
+         */
+        default void onPurchaseActionResultEnum(@PurchaseActionResult int purchaseActionResult) {}
+
+        /**
          * Notifies the delegate whether the facilitated payment was successful.
          *
          * @param isPurchaseActionSuccessful Whether the purchase action was successful.
+         *
+         * @Deprecated TODO(b/300335735): Remove this method.
          */
         default void onPurchaseActionResult(boolean isPurchaseActionSuccessful) {}
     }
@@ -147,7 +156,7 @@ public class FacilitatedPaymentsApiClient {
      * @param actionToken An opaque token used for invoking the purchase action.
      */
     public void invokePurchaseAction(CoreAccountInfo primaryAccount, byte[] actionToken) {
-        mDelegate.onPurchaseActionResult(/* isPurchaseActionSuccessful= */ false);
+        mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.COULD_NOT_INVOKE);
     }
 
     /**
@@ -158,6 +167,6 @@ public class FacilitatedPaymentsApiClient {
      * @Deprecated TODO(https://crbug.com/329108444): Remove this method.
      */
     public void invokePurchaseAction(byte[] actionToken) {
-        mDelegate.onPurchaseActionResult(/* isPurchaseActionSuccessful= */ false);
+        mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.COULD_NOT_INVOKE);
     }
 }
