@@ -591,4 +591,61 @@ TEST(WinUtil, GetLoggedOnUserToken) {
   ASSERT_FALSE(::IsUserAnAdmin());
 }
 
+TEST(WinUtil, IsAuditMode) {
+  if (!::IsUserAnAdmin()) {
+    GTEST_SKIP();
+  }
+  ASSERT_FALSE(IsAuditMode());
+  ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kSetupStateKey, KEY_SET_VALUE)
+                .WriteValue(L"ImageState", L"IMAGE_STATE_UNDEPLOYABLE"),
+            ERROR_SUCCESS);
+  ASSERT_TRUE(IsAuditMode());
+  ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kSetupStateKey, KEY_SET_VALUE)
+                .DeleteValue(L"ImageState"),
+            ERROR_SUCCESS);
+}
+
+TEST(WinUtil, OemInstallState) {
+  if (!::IsUserAnAdmin()) {
+    GTEST_SKIP();
+  }
+  ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kSetupStateKey, KEY_SET_VALUE)
+                .WriteValue(L"ImageState", L"IMAGE_STATE_UNDEPLOYABLE"),
+            ERROR_SUCCESS);
+  ASSERT_TRUE(SetOemInstallState());
+  ASSERT_TRUE(IsOemInstalling());
+
+  DWORD oem_install_time_minutes = 0;
+  ASSERT_EQ(
+      base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY,
+                        Wow6432(KEY_QUERY_VALUE))
+          .ReadValueDW(kRegValueOemInstallTimeMin, &oem_install_time_minutes),
+      ERROR_SUCCESS);
+
+  // Rewind to 71 hours and 58 minutes before now.
+  ASSERT_EQ(
+      base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY, Wow6432(KEY_SET_VALUE))
+          .WriteValue(
+              kRegValueOemInstallTimeMin,
+              (base::Minutes(oem_install_time_minutes + 2) - kMinOemModeTime)
+                  .InMinutes()),
+      ERROR_SUCCESS);
+  ASSERT_TRUE(IsOemInstalling());
+
+  // Rewind to 72 hours and 2 minutes before now.
+  ASSERT_EQ(
+      base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY, Wow6432(KEY_SET_VALUE))
+          .WriteValue(
+              kRegValueOemInstallTimeMin,
+              (base::Minutes(oem_install_time_minutes - 2) - kMinOemModeTime)
+                  .InMinutes()),
+      ERROR_SUCCESS);
+  ASSERT_FALSE(IsOemInstalling());
+
+  ASSERT_TRUE(ResetOemInstallState());
+  ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kSetupStateKey, KEY_SET_VALUE)
+                .DeleteValue(L"ImageState"),
+            ERROR_SUCCESS);
+}
+
 }  // namespace updater

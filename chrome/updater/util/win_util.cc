@@ -1436,4 +1436,64 @@ HResultOr<ScopedKernelHANDLE> GetLoggedOnUserToken() {
   return GetImpersonationToken(GetExplorerPid());
 }
 
+bool IsAuditMode() {
+  base::win::RegKey setup_state_key;
+  std::wstring state;
+  return setup_state_key.Open(HKEY_LOCAL_MACHINE, kSetupStateKey,
+                              KEY_QUERY_VALUE) == ERROR_SUCCESS &&
+         setup_state_key.ReadValue(kImageStateValueName, &state) ==
+             ERROR_SUCCESS &&
+         (base::EqualsCaseInsensitiveASCII(state, kImageStateUnuseableValue) ||
+          base::EqualsCaseInsensitiveASCII(state,
+                                           kImageStateGeneralAuditValue) ||
+          base::EqualsCaseInsensitiveASCII(state,
+                                           kImageStateSpecialAuditValue));
+}
+
+bool SetOemInstallState() {
+  if (!::IsUserAnAdmin() || !IsAuditMode()) {
+    return false;
+  }
+
+  const base::Time now = base::Time::Now();
+  VLOG(1) << "OEM install time set: " << now;
+  return base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY,
+                           Wow6432(KEY_SET_VALUE))
+             .WriteValue(kRegValueOemInstallTimeMin,
+                         now.ToDeltaSinceWindowsEpoch().InMinutes()) ==
+         ERROR_SUCCESS;
+}
+
+bool ResetOemInstallState() {
+  VLOG(1) << "OEM install reset at time: " << base::Time::Now();
+  return base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY,
+                           Wow6432(KEY_SET_VALUE))
+             .DeleteValue(kRegValueOemInstallTimeMin) == ERROR_SUCCESS;
+}
+
+bool IsOemInstalling() {
+  DWORD oem_install_time_minutes = 0;
+  if (base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY,
+                        Wow6432(KEY_QUERY_VALUE))
+          .ReadValueDW(kRegValueOemInstallTimeMin, &oem_install_time_minutes) !=
+      ERROR_SUCCESS) {
+    VLOG(2) << "OemInstallTime not found";
+    return false;
+  }
+  const base::Time now = base::Time::Now();
+  const base::Time oem_install_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Minutes(oem_install_time_minutes));
+  if (now < oem_install_time) {
+    LOG(ERROR) << "now < oem_install_time, now: " << now
+               << ", oem_install_time: " << oem_install_time;
+    return true;
+  }
+  const base::TimeDelta time_in_oem_mode = now - oem_install_time;
+  const bool is_oem_installing = time_in_oem_mode < kMinOemModeTime;
+  VLOG(1) << "now: " << now << ", OEM install time: " << oem_install_time
+          << ", time_in_oem_mode: " << time_in_oem_mode
+          << ", is_oem_installing: " << is_oem_installing;
+  return is_oem_installing;
+}
+
 }  // namespace updater

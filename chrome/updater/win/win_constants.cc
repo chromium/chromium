@@ -29,6 +29,16 @@ const wchar_t kRegValueName[] = L"name";
 const wchar_t kRegValueUninstallCmdLine[] = L"UninstallCmdLine";
 const wchar_t kRegValueVersion[] = L"version";
 
+const wchar_t kRegValueOemInstallTimeMin[] = L"OemInstallTime";
+const wchar_t kSetupStateKey[] =
+    L"Software\\Microsoft\\Windows\\CurrentVersion\\Setup\\State";
+const wchar_t kImageStateValueName[] = L"ImageState";
+const wchar_t kImageStateUnuseableValue[] = L"IMAGE_STATE_UNDEPLOYABLE";
+const wchar_t kImageStateGeneralAuditValue[] =
+    L"IMAGE_STATE_GENERALIZE_RESEAL_TO_AUDIT";
+const wchar_t kImageStateSpecialAuditValue[] =
+    L"IMAGE_STATE_SPECIALIZE_RESEAL_TO_AUDIT";
+
 const wchar_t kRegKeyCohort[] = L"cohort";
 const wchar_t kRegValueCohortName[] = L"name";
 const wchar_t kRegValueCohortHint[] = L"hint";

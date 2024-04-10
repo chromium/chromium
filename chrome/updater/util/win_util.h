@@ -434,6 +434,20 @@ std::wstring GetTextForSystemError(int error);
 // exists.
 HResultOr<ScopedKernelHANDLE> GetLoggedOnUserToken();
 
+// Returns true if running in Windows Audit mode, as documented at
+// http://technet.microsoft.com/en-us/library/cc721913.aspx.
+bool IsAuditMode();
+
+// Writes the OEM install beginning timestamp in the registry.
+bool SetOemInstallState();
+
+// Removes the OEM install beginning timestamp from the registry.
+bool ResetOemInstallState();
+
+// Returns `true` if the OEM install time is present and it has been less than
+// `kMinOemModeTime` since the OEM install.
+bool IsOemInstalling();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_
