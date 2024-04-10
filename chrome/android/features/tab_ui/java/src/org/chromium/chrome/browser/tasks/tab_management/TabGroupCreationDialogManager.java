@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationDialogResultAction;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationFinalSelections;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -72,8 +74,8 @@ public class TabGroupCreationDialogManager implements Destroyable {
                             /* isIncognito= */ false,
                             ColorPickerLayoutType.DYNAMIC,
                             null);
-            final @TabGroupColorId int colorId = filter.getTabGroupColor(rootId);
-            colorPickerCoordinator.setSelectedColorItem(colorId);
+            final @TabGroupColorId int defaultColorId = filter.getTabGroupColor(rootId);
+            colorPickerCoordinator.setSelectedColorItem(defaultColorId);
 
             LinearLayout linearLayout =
                     (LinearLayout) customView.findViewById(R.id.creation_dialog_layout);
@@ -103,19 +105,37 @@ public class TabGroupCreationDialogManager implements Destroyable {
                                     || dismissalCause
                                             == DialogDismissalCause
                                                     .NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
-                                final @TabGroupColorId int color =
+                                final @TabGroupColorId int currentColorId =
                                         colorPickerCoordinator.getSelectedColorSupplier().get();
-                                filter.setTabGroupColor(rootId, color);
+                                boolean didChangeColor = currentColorId != defaultColorId;
+                                filter.setTabGroupColor(rootId, currentColorId);
 
                                 // Only save the group title input text if it has been changed from
                                 // the suggested default title.
                                 String inputGroupTitle = groupTitle.getTrimmedText();
-                                if (!defaultGroupTitle.equals(inputGroupTitle)) {
+                                boolean didChangeTitle = !defaultGroupTitle.equals(inputGroupTitle);
+                                if (didChangeTitle) {
                                     filter.setTabGroupTitle(rootId, groupTitle.getTrimmedText());
                                 }
 
                                 // Refresh the GTS tab list with the newly set color and title.
                                 mOnDialogAcceptedRunnable.run();
+                                recordDialogSelectionHistogram(didChangeColor, didChangeTitle);
+
+                                if (dismissalCause
+                                        == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
+                                    TabUiMetricsHelper
+                                            .recordTabGroupCreationDialogResultActionMetrics(
+                                                    TabGroupCreationDialogResultAction
+                                                            .DISMISSED_SCRIM_OR_BACKPRESS);
+                                } else {
+                                    TabUiMetricsHelper
+                                            .recordTabGroupCreationDialogResultActionMetrics(
+                                                    TabGroupCreationDialogResultAction.ACCEPTED);
+                                }
+                            } else {
+                                TabUiMetricsHelper.recordTabGroupCreationDialogResultActionMetrics(
+                                        TabGroupCreationDialogResultAction.DISMISSED_OTHER);
                             }
                         }
                     };
@@ -219,6 +239,24 @@ public class TabGroupCreationDialogManager implements Destroyable {
 
     private ShowDialogDelegate createShowDialogDelegate() {
         return new ShowDialogDelegate();
+    }
+
+    private void recordDialogSelectionHistogram(boolean didChangeColor, boolean didChangeTitle) {
+        if (didChangeColor && didChangeTitle) {
+            TabUiMetricsHelper.recordTabGroupCreationFinalSelectionsHistogram(
+                    TabGroupCreationFinalSelections.CHANGED_COLOR_AND_TITLE);
+        } else {
+            if (didChangeColor) {
+                TabUiMetricsHelper.recordTabGroupCreationFinalSelectionsHistogram(
+                        TabGroupCreationFinalSelections.CHANGED_COLOR);
+            } else if (didChangeTitle) {
+                TabUiMetricsHelper.recordTabGroupCreationFinalSelectionsHistogram(
+                        TabGroupCreationFinalSelections.CHANGED_TITLE);
+            } else {
+                TabUiMetricsHelper.recordTabGroupCreationFinalSelectionsHistogram(
+                        TabGroupCreationFinalSelections.DEFAULT_COLOR_AND_TITLE);
+            }
+        }
     }
 
     void setShowDialogDelegateForTesting(ShowDialogDelegate delegate) {

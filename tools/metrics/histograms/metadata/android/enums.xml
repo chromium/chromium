@@ -1539,6 +1539,24 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="RightEdge"/>
 </enum>
 
+<enum name="TabGroupColorChangeActionType">
+  <int value="0" label="VIA_COLOR_ICON"/>
+  <int value="1" label="VIA_OVERFLOW_MENU"/>
+</enum>
+
+<enum name="TabGroupCreationDialogResultAction">
+  <int value="0" label="ACCEPTED"/>
+  <int value="1" label="DISMISSED_SCRIM_OR_BACKPRESS"/>
+  <int value="2" label="DISMISSED_OTHER"/>
+</enum>
+
+<enum name="TabGroupCreationFinalSelections">
+  <int value="0" label="DEFAULT_COLOR_AND_TITLE"/>
+  <int value="1" label="CHANGED_COLOR"/>
+  <int value="2" label="CHANGED_TITLE"/>
+  <int value="3" label="CHANGED_COLOR_AND_TITLE"/>
+</enum>
+
 <enum name="TabListEditorShareActionState">
   <int value="0" label="UNKNOWN_SHARE_STATE"/>
   <int value="1" label="SUCCESSFULLY_SHARED_TABS"/>

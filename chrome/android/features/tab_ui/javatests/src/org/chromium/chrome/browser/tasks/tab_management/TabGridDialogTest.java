@@ -111,6 +111,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -488,6 +489,13 @@ public class TabGridDialogTest {
         verifyGroupCreationDialogOpenedAndDismiss();
         verifyTabSwitcherCardCount(cta, 1);
 
+        // Expect the color icon to be clicked.
+        var histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                "Android.TabGroupParity.TabGroupColorChangeActionType", 0, 3)
+                        .build();
+
         // Open dialog and click the color icon to show the color picker.
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
         onView(withId(R.id.tab_group_color_icon)).perform(click());
@@ -517,6 +525,7 @@ public class TabGridDialogTest {
         // Clicking ScrimView should close the color picker pop up.
         onView(withId(R.id.tab_group_color_icon)).perform(click());
         clickScrimToExitDialog(cta);
+        histograms.assertExpected();
     }
 
     @Test
@@ -543,6 +552,11 @@ public class TabGridDialogTest {
         verifyGroupCreationDialogOpenedAndDismiss();
         verifyTabSwitcherCardCount(cta, 1);
 
+        // Expect the edit color menu item to be clicked.
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabGroupParity.TabGroupColorChangeActionType", 1);
+
         // Open dialog and click the toolbar menu item to show the color picker.
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
         openDialogToolbarMenuAndVerify(cta);
@@ -561,6 +575,7 @@ public class TabGridDialogTest {
                                 withId(R.id.color_picker_container)))
                 .check(doesNotExist());
         clickScrimToExitDialog(cta);
+        watcher.assertExpected();
     }
 
     @Test

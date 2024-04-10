@@ -75,6 +75,57 @@ public class TabUiMetricsHelper {
         int OPEN_FROM_DIALOG = 1;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        TabGroupCreationFinalSelections.DEFAULT_COLOR_AND_TITLE,
+        TabGroupCreationFinalSelections.CHANGED_COLOR,
+        TabGroupCreationFinalSelections.CHANGED_TITLE,
+        TabGroupCreationFinalSelections.CHANGED_COLOR_AND_TITLE,
+        TabGroupCreationFinalSelections.NUM_ENTRIES
+    })
+    public @interface TabGroupCreationFinalSelections {
+        int DEFAULT_COLOR_AND_TITLE = 0;
+        int CHANGED_COLOR = 1;
+        int CHANGED_TITLE = 2;
+        int CHANGED_COLOR_AND_TITLE = 3;
+
+        // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 4;
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        TabGroupCreationDialogResultAction.ACCEPTED,
+        TabGroupCreationDialogResultAction.DISMISSED_SCRIM_OR_BACKPRESS,
+        TabGroupCreationDialogResultAction.DISMISSED_OTHER,
+        TabGroupCreationDialogResultAction.NUM_ENTRIES
+    })
+    public @interface TabGroupCreationDialogResultAction {
+        int ACCEPTED = 0;
+        int DISMISSED_SCRIM_OR_BACKPRESS = 1;
+        int DISMISSED_OTHER = 2;
+
+        // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 3;
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        TabGroupColorChangeActionType.VIA_COLOR_ICON,
+        TabGroupColorChangeActionType.VIA_OVERFLOW_MENU,
+        TabGroupColorChangeActionType.NUM_ENTRIES
+    })
+    public @interface TabGroupColorChangeActionType {
+        int VIA_COLOR_ICON = 0;
+        int VIA_OVERFLOW_MENU = 1;
+
+        // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 2;
+    }
+
     // Histograms
     public static void recordEditorTimeSinceLastShownHistogram() {
         long timestampMillis = System.currentTimeMillis();
@@ -179,5 +230,29 @@ public class TabUiMetricsHelper {
                                 + actionId
                                 + " when calling recordSelectionEditorOpenMetrics with V2 enabled.";
         }
+    }
+
+    public static void recordTabGroupCreationFinalSelectionsHistogram(
+            @TabGroupCreationFinalSelections int action) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.TabGroupParity.TabGroupCreationFinalSelections",
+                action,
+                TabGroupCreationFinalSelections.NUM_ENTRIES);
+    }
+
+    public static void recordTabGroupCreationDialogResultActionMetrics(
+            @TabGroupCreationDialogResultAction int action) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.TabGroupParity.TabGroupCreationDialogResultAction",
+                action,
+                TabGroupCreationDialogResultAction.NUM_ENTRIES);
+    }
+
+    public static void recordTabGroupColorChangeActionMetrics(
+            @TabGroupColorChangeActionType int action) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.TabGroupParity.TabGroupColorChangeActionType",
+                action,
+                TabGroupColorChangeActionType.NUM_ENTRIES);
     }
 }

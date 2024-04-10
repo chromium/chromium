@@ -1697,10 +1697,17 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
+
+        // Expect that the the dialog is dismissed via another action.
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabGroupParity.TabGroupCreationDialogResultAction", 2);
+
         verifyGroupCreationDialogOpenedAndDismiss(cta);
         // Verify the color icon exists.
         onView(allOf(withId(R.id.tab_favicon), withParent(withId(R.id.card_view))))
                 .check(matches(isDisplayed()));
+        watcher.assertExpected();
     }
 
     @Test
@@ -1731,6 +1738,15 @@ public class TabSwitcherLayoutTest {
                         blueColor);
         onView(withContentDescription(notSelectedStringBlue)).perform(click());
 
+        // Expect a changed color and title selection to be recorded and an acceptance action.
+        var histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.TabGroupParity.TabGroupCreationFinalSelections", 3)
+                        .expectIntRecord(
+                                "Android.TabGroupParity.TabGroupCreationDialogResultAction", 0)
+                        .build();
+
         // Accept the change.
         onView(withId(R.id.positive_button)).perform(click());
         verifyModalDialogHidingAnimationCompleteInTabSwitcher();
@@ -1738,6 +1754,7 @@ public class TabSwitcherLayoutTest {
         verifyFirstCardTitle("Test");
         // Verify the color icon exists.
         verifyFirstCardColor(TabGroupColorId.BLUE);
+        histograms.assertExpected();
     }
 
     @Test
@@ -1759,6 +1776,11 @@ public class TabSwitcherLayoutTest {
         // Close the soft keyboard that appears when the dialog is shown.
         closeSoftKeyboard();
 
+        // Expect changed color and title selection to be recorded.
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabGroupParity.TabGroupCreationFinalSelections", 0);
+
         // Accept without changing the title.
         onView(withId(R.id.positive_button)).perform(click());
         verifyModalDialogHidingAnimationCompleteInTabSwitcher();
@@ -1766,6 +1788,7 @@ public class TabSwitcherLayoutTest {
         // Check that the title change is reflected.
         verifyFirstCardTitle("2 tabs");
         verifyFirstCardColor(TabGroupColorId.GREY);
+        watcher.assertExpected();
     }
 
     @Test
@@ -1825,6 +1848,11 @@ public class TabSwitcherLayoutTest {
                         blueColor);
         onView(withContentDescription(notSelectedStringBlue)).perform(click());
 
+        // Expect that the dismiss action is recorded.
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabGroupParity.TabGroupCreationDialogResultAction", 1);
+
         // Enact a backpress to dismiss the dialog.
         Espresso.pressBack();
         verifyModalDialogHidingAnimationCompleteInTabSwitcher();
@@ -1832,6 +1860,7 @@ public class TabSwitcherLayoutTest {
         verifyFirstCardTitle("Test");
         // Verify the color icon exists.
         verifyFirstCardColor(TabGroupColorId.BLUE);
+        watcher.assertExpected();
     }
 
     @Test

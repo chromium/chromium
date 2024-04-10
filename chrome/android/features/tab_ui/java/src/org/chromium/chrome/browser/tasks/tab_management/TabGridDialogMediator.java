@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Butt
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupColorChangeActionType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorOpenMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -360,6 +361,8 @@ public class TabGridDialogMediator
 
                     if (result == R.id.edit_group_color) {
                         mShowColorPickerPopupRunnable.run();
+                        TabUiMetricsHelper.recordTabGroupColorChangeActionMetrics(
+                                TabGroupColorChangeActionType.VIA_OVERFLOW_MENU);
                     }
                 };
 
