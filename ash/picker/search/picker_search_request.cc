@@ -53,7 +53,8 @@ PickerSearchRequest::PickerSearchRequest(
     PickerClient* client,
     emoji::EmojiSearch* emoji_search,
     base::span<const PickerCategory> available_categories)
-    : client_(CHECK_DEREF(client)),
+    : is_category_specific_search_(category.has_value()),
+      client_(CHECK_DEREF(client)),
       emoji_search_(CHECK_DEREF(emoji_search)),
       current_callback_(std::move(callback)),
       gif_search_debouncer_(kGifDebouncingDelay) {
@@ -158,8 +159,9 @@ void PickerSearchRequest::HandleCrosSearchResults(
       }
 
       // TODO: b/333295235 - Check if Omnibox results were truncated.
-      HandleSearchSourceResults(PickerSearchSource::kOmnibox,
-                                std::move(results), /*has_more_results=*/true);
+      HandleSearchSourceResults(
+          PickerSearchSource::kOmnibox, std::move(results),
+          /*has_more_results=*/!is_category_specific_search_);
       break;
     case AppListSearchResultType::kDriveSearch: {
       if (cros_search_start_.has_value()) {
@@ -167,7 +169,9 @@ void PickerSearchRequest::HandleCrosSearchResults(
         base::UmaHistogramTimes("Ash.Picker.Search.DriveProvider.QueryTime",
                                 elapsed);
       }
-      size_t files_to_remove = std::max<size_t>(results.size(), 3) - 3;
+      size_t files_to_remove = is_category_specific_search_
+                                   ? 0
+                                   : std::max<size_t>(results.size(), 3) - 3;
       results.erase(results.end() - files_to_remove, results.end());
 
       HandleSearchSourceResults(PickerSearchSource::kDrive, std::move(results),
@@ -180,7 +184,9 @@ void PickerSearchRequest::HandleCrosSearchResults(
         base::UmaHistogramTimes("Ash.Picker.Search.FileProvider.QueryTime",
                                 elapsed);
       }
-      size_t files_to_remove = std::max<size_t>(results.size(), 3) - 3;
+      size_t files_to_remove = is_category_specific_search_
+                                   ? 0
+                                   : std::max<size_t>(results.size(), 3) - 3;
       results.erase(results.end() - files_to_remove, results.end());
 
       HandleSearchSourceResults(PickerSearchSource::kLocalFile,

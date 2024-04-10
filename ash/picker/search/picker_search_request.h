@@ -71,6 +71,7 @@ class ASH_EXPORT PickerSearchRequest {
   void HandleMathSearchResults(std::optional<PickerSearchResult> result);
   void HandleClipboardSearchResults(std::vector<PickerSearchResult> results);
 
+  bool is_category_specific_search_;
   const raw_ref<PickerClient> client_;
 
   std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
