@@ -60,12 +60,12 @@ export class BrowsingContextImpl {
   readonly #browsingContextStorage: BrowsingContextStorage;
 
   #lifecycle = {
-    DOMContentLoaded: new Deferred<Protocol.Page.LifecycleEventEvent>(),
-    load: new Deferred<Protocol.Page.LifecycleEventEvent>(),
+    DOMContentLoaded: new Deferred<void>(),
+    load: new Deferred<void>(),
   };
 
   #navigation = {
-    withinDocument: new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>(),
+    withinDocument: new Deferred<void>(),
   };
 
   #url = 'about:blank';
@@ -345,7 +345,7 @@ export class BrowsingContextImpl {
         }
         const timestamp = BrowsingContextImpl.getTimestamp();
         this.#url = params.url;
-        this.#navigation.withinDocument.resolve(params);
+        this.#navigation.withinDocument.resolve();
 
         this.#eventManager.registerEvent(
           {
@@ -432,7 +432,7 @@ export class BrowsingContextImpl {
               },
               this.id
             );
-            this.#lifecycle.DOMContentLoaded.resolve(params);
+            this.#lifecycle.DOMContentLoaded.resolve();
             break;
 
           case 'load':
@@ -449,7 +449,7 @@ export class BrowsingContextImpl {
               },
               this.id
             );
-            this.#lifecycle.load.resolve(params);
+            this.#lifecycle.load.resolve();
             break;
         }
       }
@@ -565,8 +565,7 @@ export class BrowsingContextImpl {
     // Same document navigation.
     if (loaderId === undefined || this.#loaderId === loaderId) {
       if (this.#navigation.withinDocument.isFinished) {
-        this.#navigation.withinDocument =
-          new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>();
+        this.#navigation.withinDocument = new Deferred();
       } else {
         this.#logger?.(
           BrowsingContextImpl.LOGGER_PREFIX,
@@ -583,8 +582,7 @@ export class BrowsingContextImpl {
 
   #resetLifecycleIfFinished() {
     if (this.#lifecycle.DOMContentLoaded.isFinished) {
-      this.#lifecycle.DOMContentLoaded =
-        new Deferred<Protocol.Page.LifecycleEventEvent>();
+      this.#lifecycle.DOMContentLoaded = new Deferred();
     } else {
       this.#logger?.(
         BrowsingContextImpl.LOGGER_PREFIX,
@@ -593,7 +591,7 @@ export class BrowsingContextImpl {
     }
 
     if (this.#lifecycle.load.isFinished) {
-      this.#lifecycle.load = new Deferred<Protocol.Page.LifecycleEventEvent>();
+      this.#lifecycle.load = new Deferred();
     } else {
       this.#logger?.(
         BrowsingContextImpl.LOGGER_PREFIX,
