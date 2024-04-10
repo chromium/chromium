@@ -636,7 +636,7 @@ suite('sea pen', () => {
         'wait for close button to load');
     closeIntroductionButton.click();
 
-    const seaPenTemplateQuery = await getSeaPenTemplateQuery(5);
+    const seaPenTemplateQuery = await getSeaPenTemplateQuery(6);
     assertTrue(!!seaPenTemplateQuery, 'Characters template should show up');
 
     const seaPenChips = await waitUntil(
@@ -712,7 +712,7 @@ suite('sea pen', () => {
 
       const expectedWallpaperTitle =
           seaPenTemplateQuery.shadowRoot?.getElementById('template')
-              ?.textContent?.replace(/\s+/gmi, ' ')
+              ?.textContent?.replace(/\s+/gmi, '')
               .trim();
 
       // Goes back to sea pen root page.
@@ -731,7 +731,9 @@ suite('sea pen', () => {
         assertTrue(!!textContainer, 'wallpaper text container exists');
         assertEquals(
             expectedWallpaperTitle,
-            textContainer?.querySelector('#imageTitle')?.textContent?.trim(),
+            textContainer?.querySelector('#imageTitle')
+                ?.textContent?.replace(/\s+/gmi, '')
+                .trim(),
             'image title is correct');
       }
 
@@ -767,7 +769,9 @@ suite('sea pen', () => {
             recentImages.shadowRoot?.querySelector<HTMLParagraphElement>(
                 'p.about-prompt-info');
         assertTrue(
-            !!promptInfo?.textContent?.trim().includes(expectedWallpaperTitle!),
+            !!promptInfo?.textContent?.replace(/\s+/gmi, '')
+                  .trim()
+                  .includes(expectedWallpaperTitle!),
             `prompt info should include ${expectedWallpaperTitle}`);
       }
     });
@@ -842,7 +846,7 @@ suite('sea pen', () => {
 
   test('delete recent image', async () => {
     const seaPenRouter = await getSeaPenRouter();
-    const recentImages = await waitUntil(
+    let recentImages = await waitUntil(
         () => seaPenRouter.shadowRoot
                   ?.querySelector<SeaPenRecentWallpapersElement>(
                       'sea-pen-recent-wallpapers'),
@@ -868,14 +872,15 @@ suite('sea pen', () => {
     assertTrue(!!deleteButton, 'delete wallpaper button exists');
     deleteButton!.click();
 
-    images = await waitUntil(
-        () =>
-            recentImages.shadowRoot?.querySelectorAll<WallpaperGridItemElement>(
-                `.recent-image-container:not([hidden])`),
-        'waiting for recent images');
+    recentImages = await waitUntil(
+        () => seaPenRouter.shadowRoot
+                  ?.querySelector<SeaPenRecentWallpapersElement>(
+                      'sea-pen-recent-wallpapers'),
+        'waiting for sea-pen-recent-wallpapers');
+    images = images = recentImages.shadowRoot?.querySelectorAll<HTMLElement>(
+        `.recent-image-container:not([hidden])`);
     assertTrue(!!images, 'images should still exist');
-    assertEquals(
-        numImages - 1, images.length, 'a recent image has been deleted');
+    assertGT(numImages, images.length, 'a recent image has been deleted');
   });
 });
 

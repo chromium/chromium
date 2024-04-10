@@ -14,184 +14,94 @@ import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_
 export function getWallpaperTemplates(): SeaPenTemplate[] {
   return [
     {
-      id: SeaPenTemplateId.kTerrain,
-      title: loadTimeData.getString('seaPenTemplateTitleTerrain'),
+      id: SeaPenTemplateId.kGlowscapes,
+      title: loadTimeData.getString('seaPenTemplateTitleGlowscapes'),
       text: loadTimeData.getStringF(
-          'seaPenTemplateTerrain', `<${SeaPenTemplateChip.kTerrainFeature}>`,
-          `<${SeaPenTemplateChip.kTerrainColor}>`),
+          'seaPenTemplateGlowscapes',
+          `<${SeaPenTemplateChip.kGlowscapesLandscape}>`,
+          `<${SeaPenTemplateChip.kGlowscapesFeature}>`),
       preview: [{
         url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain.jpg',
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_glowscapes.jpg',
       }],
       options: new Map([
         [
-          SeaPenTemplateChip.kTerrainFeature,
+          SeaPenTemplateChip.kGlowscapesLandscape,
           [
             {
-              value: SeaPenTemplateOption.kTerrainFeatureSaltLake,
+              value: SeaPenTemplateOption.kGlowscapesLandscapeValley,
+              translation: loadTimeData.getString(
+                  'seaPenOptionGlowscapesLandscapeValley'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/valley.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kGlowscapesLandscapeHotSpring,
+              translation: loadTimeData.getString(
+                  'seaPenOptionGlowscapesLandscapeHotSpring'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/hot_spring.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kGlowscapesLandscapeMeadow,
+              translation: loadTimeData.getString(
+                  'seaPenOptionGlowscapesLandscapeMeadow'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/meadow.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kGlowscapesLandscapeCoralReef,
+              translation: loadTimeData.getString(
+                  'seaPenOptionGlowscapesLandscapeCoralReef'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/coral_reef.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kGlowscapesLandscapePond,
               translation:
-                  loadTimeData.getString('seaPenOptionTerrainFeatureSaltLake'),
+                  loadTimeData.getString('seaPenOptionGlowscapesLandscapePond'),
               previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/salt_lake.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureRiver,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainFeatureRiver'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/glacial_river.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureNorthernLights,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureNorthernLights'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/northern_lights.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureSandDunes,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainFeatureSandDunes'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sand_dune.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureClayHills,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainFeatureClayHills'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/clay_hills.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureSandyLagoon,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureSandyLagoon'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sandy_lagoon.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureMountains,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainFeatureMountains'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/mountain.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureBioluminescentBeach,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureBioluminescentBeach'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bioluminescent_beach.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureDifferentPlanet,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureDifferentPlanet'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/different_planet.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureTreeTunnel,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureTreeTunnel'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tree_tunnel.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureBaobabTrees,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureBaobabTrees'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/baobab_trees.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureMistyForest,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureMistyForest'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/misty_forest.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureCactusForest,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureCactusForest'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cactus_forest.jpg',
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pond.jpg',
             },
           ],
         ],
         [
-          SeaPenTemplateChip.kTerrainColor,
+          SeaPenTemplateChip.kGlowscapesFeature,
           [
             {
-              value: SeaPenTemplateOption.kTerrainColorPink,
+              value: SeaPenTemplateOption.kGlowscapesFeatureRiver,
               translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorPink'),
+                  loadTimeData.getString('seaPenOptionGlowscapesFeatureRiver'),
               previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pink.jpg',
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/river.jpg',
             },
             {
-              value: SeaPenTemplateOption.kTerrainColorCyan,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorCyan'),
+              value: SeaPenTemplateOption.kGlowscapesFeatureSaltRock,
+              translation: loadTimeData.getString(
+                  'seaPenOptionGlowscapesFeatureSaltRock'),
               previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cyan.jpg',
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/salt_rock.jpg',
             },
             {
-              value: SeaPenTemplateOption.kTerrainColorWhite,
+              value: SeaPenTemplateOption.kGlowscapesFeatureFlower,
               translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorWhite'),
+                  loadTimeData.getString('seaPenOptionGlowscapesFeatureFlower'),
               previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/white.jpg',
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/flower.jpg',
             },
             {
-              value: SeaPenTemplateOption.kTerrainColorPurple,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorPurple'),
+              value: SeaPenTemplateOption.kGlowscapesFeatureWalkway,
+              translation: loadTimeData.getString(
+                  'seaPenOptionGlowscapesFeatureWalkway'),
               previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/purple.jpg',
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/walkway.jpg',
             },
             {
-              value: SeaPenTemplateOption.kTerrainColorBlue,
+              value: SeaPenTemplateOption.kGlowscapesFeaturePool,
               translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorBlue'),
+                  loadTimeData.getString('seaPenOptionGlowscapesFeaturePool'),
               previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorYellow,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorYellow'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/yellow.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorMaroonPink,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorMaroonPink'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/maroon_pink.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorBluePurple,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorBluePurple'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue_purple.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorPinkYellow,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorPinkYellow'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pink_yellow.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainColorBluePink,
-              translation:
-                  loadTimeData.getString('seaPenOptionTerrainColorBluePink'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue_pink.jpg',
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pool.jpg',
             },
           ],
         ],
@@ -275,13 +185,6 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   loadTimeData.getString('seaPenOptionDreamscapesObjectPalace'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/palace.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesObjectChair,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesObjectChair'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/chair.jpg',
             },
           ],
         ],
@@ -501,94 +404,184 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
       ]),
     },
     {
-      id: SeaPenTemplateId.kGlowscapes,
-      title: loadTimeData.getString('seaPenTemplateTitleGlowscapes'),
+      id: SeaPenTemplateId.kTerrain,
+      title: loadTimeData.getString('seaPenTemplateTitleTerrain'),
       text: loadTimeData.getStringF(
-          'seaPenTemplateGlowscapes',
-          `<${SeaPenTemplateChip.kGlowscapesLandscape}>`,
-          `<${SeaPenTemplateChip.kGlowscapesFeature}>`),
+          'seaPenTemplateTerrain', `<${SeaPenTemplateChip.kTerrainFeature}>`,
+          `<${SeaPenTemplateChip.kTerrainColor}>`),
       preview: [{
         url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_glowscapes.jpg',
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain.jpg',
       }],
       options: new Map([
         [
-          SeaPenTemplateChip.kGlowscapesLandscape,
+          SeaPenTemplateChip.kTerrainFeature,
           [
             {
-              value: SeaPenTemplateOption.kGlowscapesLandscapeValley,
-              translation: loadTimeData.getString(
-                  'seaPenOptionGlowscapesLandscapeValley'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/valley.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kGlowscapesLandscapeHotSpring,
-              translation: loadTimeData.getString(
-                  'seaPenOptionGlowscapesLandscapeHotSpring'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/hot_spring.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kGlowscapesLandscapeMeadow,
-              translation: loadTimeData.getString(
-                  'seaPenOptionGlowscapesLandscapeMeadow'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/meadow.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kGlowscapesLandscapeCoralReef,
-              translation: loadTimeData.getString(
-                  'seaPenOptionGlowscapesLandscapeCoralReef'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/coral_reef.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kGlowscapesLandscapePond,
+              value: SeaPenTemplateOption.kTerrainFeatureSaltLake,
               translation:
-                  loadTimeData.getString('seaPenOptionGlowscapesLandscapePond'),
+                  loadTimeData.getString('seaPenOptionTerrainFeatureSaltLake'),
               previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pond.jpg',
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/salt_lake.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureRiver,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureRiver'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/glacial_river.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureNorthernLights,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureNorthernLights'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/northern_lights.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureSandDunes,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureSandDunes'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sand_dune.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureClayHills,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureClayHills'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/clay_hills.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureSandyLagoon,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureSandyLagoon'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sandy_lagoon.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureMountains,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureMountains'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/mountain.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureBioluminescentBeach,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureBioluminescentBeach'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bioluminescent_beach.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureDifferentPlanet,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureDifferentPlanet'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/different_planet.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureTreeTunnel,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureTreeTunnel'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tree_tunnel.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureBaobabTrees,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureBaobabTrees'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/baobab_trees.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureMistyForest,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureMistyForest'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/misty_forest.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainFeatureCactusForest,
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureCactusForest'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cactus_forest.jpg',
             },
           ],
         ],
         [
-          SeaPenTemplateChip.kGlowscapesFeature,
+          SeaPenTemplateChip.kTerrainColor,
           [
             {
-              value: SeaPenTemplateOption.kGlowscapesFeatureRiver,
+              value: SeaPenTemplateOption.kTerrainColorPink,
               translation:
-                  loadTimeData.getString('seaPenOptionGlowscapesFeatureRiver'),
+                  loadTimeData.getString('seaPenOptionTerrainColorPink'),
               previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/river.jpg',
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pink.jpg',
             },
             {
-              value: SeaPenTemplateOption.kGlowscapesFeatureSaltRock,
-              translation: loadTimeData.getString(
-                  'seaPenOptionGlowscapesFeatureSaltRock'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/salt_rock.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kGlowscapesFeatureFlower,
+              value: SeaPenTemplateOption.kTerrainColorCyan,
               translation:
-                  loadTimeData.getString('seaPenOptionGlowscapesFeatureFlower'),
+                  loadTimeData.getString('seaPenOptionTerrainColorCyan'),
               previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/flower.jpg',
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cyan.jpg',
             },
             {
-              value: SeaPenTemplateOption.kGlowscapesFeatureWalkway,
-              translation: loadTimeData.getString(
-                  'seaPenOptionGlowscapesFeatureWalkway'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/walkway.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kGlowscapesFeaturePool,
+              value: SeaPenTemplateOption.kTerrainColorWhite,
               translation:
-                  loadTimeData.getString('seaPenOptionGlowscapesFeaturePool'),
+                  loadTimeData.getString('seaPenOptionTerrainColorWhite'),
               previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pool.jpg',
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/white.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorPurple,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorPurple'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/purple.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorBlue,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorBlue'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorYellow,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorYellow'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/yellow.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorMaroonPink,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorMaroonPink'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/maroon_pink.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorBluePurple,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorBluePurple'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue_purple.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorPinkYellow,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorPinkYellow'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pink_yellow.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kTerrainColorBluePink,
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorBluePink'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue_pink.jpg',
             },
           ],
         ],
@@ -682,6 +675,230 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   'seaPenOptionSurrealSubjectGlowingBubbles'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/glowing_bubbles.jpg',
+            },
+          ],
+        ],
+      ]),
+    },
+    {
+      id: SeaPenTemplateId.kArt,
+      title: loadTimeData.getString('seaPenTemplateTitleArt'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateArt', `<${SeaPenTemplateChip.kArtFeature}>`,
+          `<${SeaPenTemplateChip.kArtMovement}>`),
+      preview: [{
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_art.jpg',
+      }],
+      options: new Map([
+        [
+          SeaPenTemplateChip.kArtFeature,
+          [
+            {
+              value: SeaPenTemplateOption.kArtFeatureField,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureField'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/field_of_flowers.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureSwamp,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureSwamp'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/swamp.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureBeach,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureBeach'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/beach.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureMeadow,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureMeadow'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/meadow.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureForest,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureForest'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/forest.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureGlacier,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureGlacier'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/glacier.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureIsland,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureIsland'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/island.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureJungle,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureJungle'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/jungle.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureLake,
+              translation: loadTimeData.getString('seaPenOptionArtFeatureLake'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lake.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureCliff,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureCliff'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cliff.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureOcean,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureOcean'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/vast_ocean.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureRiver,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureRiver'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/river.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureDune,
+              translation: loadTimeData.getString('seaPenOptionArtFeatureDune'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sand_dune.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureMountain,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureMountain'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/mountain.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureValley,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureValley'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/valley.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureWaterfall,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureWaterfall'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/waterfall.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureCanyon,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureCanyon'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/canyon.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureCityscape,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureCityscape'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cityscape.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtFeatureVillage,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureVillage'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/mediterranean_village.jpg',
+            },
+          ],
+        ],
+        [
+          SeaPenTemplateChip.kArtMovement,
+          [
+            {
+              value: SeaPenTemplateOption.kArtMovementAvantGarde,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementAvantGarde'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/avant-garde.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtMovementRealist,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementRealist'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/realist.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtMovementExpressionist,
+              translation: loadTimeData.getString(
+                  'seaPenOptionArtMovementExpressionist'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/expressionist.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtMovementImpressionist,
+              translation: loadTimeData.getString(
+                  'seaPenOptionArtMovementImpressionist'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/impressionist.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtMovementPostImpressionist,
+              translation: loadTimeData.getString(
+                  'seaPenOptionArtMovementPostImpressionist'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/post-impressionist.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtMovementArtNouveau,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementArtNouveau'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/art_nouveau.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtMovementBauhaus,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementBauhaus'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bauhaus.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtMovementWatercolor,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementWatercolor'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/watercolor.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtMovementAbstract,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementAbstract'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/abstract.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kArtMovementModernArt,
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementModernArt'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/modern_art.jpg',
             },
           ],
         ],
@@ -1490,230 +1707,6 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   'seaPenOptionCharactersBackgroundCoralPink'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/coral_pink.jpg',
-            },
-          ],
-        ],
-      ]),
-    },
-    {
-      id: SeaPenTemplateId.kArt,
-      title: loadTimeData.getString('seaPenTemplateTitleArt'),
-      text: loadTimeData.getStringF(
-          'seaPenTemplateArt', `<${SeaPenTemplateChip.kArtFeature}>`,
-          `<${SeaPenTemplateChip.kArtMovement}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_art.jpg',
-      }],
-      options: new Map([
-        [
-          SeaPenTemplateChip.kArtFeature,
-          [
-            {
-              value: SeaPenTemplateOption.kArtFeatureField,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureField'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/field_of_flowers.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureSwamp,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureSwamp'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/swamp.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureBeach,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureBeach'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/beach.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureMeadow,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureMeadow'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/meadow.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureForest,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureForest'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/forest.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureGlacier,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureGlacier'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/glacier.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureIsland,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureIsland'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/island.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureJungle,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureJungle'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/jungle.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureLake,
-              translation: loadTimeData.getString('seaPenOptionArtFeatureLake'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lake.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureCliff,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureCliff'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cliff.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureOcean,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureOcean'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/vast_ocean.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureRiver,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureRiver'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/river.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureDune,
-              translation: loadTimeData.getString('seaPenOptionArtFeatureDune'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sand_dune.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureMountain,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureMountain'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/mountain.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureValley,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureValley'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/valley.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureWaterfall,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureWaterfall'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/waterfall.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureCanyon,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureCanyon'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/canyon.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureCityscape,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureCityscape'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cityscape.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtFeatureVillage,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtFeatureVillage'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/mediterranean_village.jpg',
-            },
-          ],
-        ],
-        [
-          SeaPenTemplateChip.kArtMovement,
-          [
-            {
-              value: SeaPenTemplateOption.kArtMovementAvantGarde,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtMovementAvantGarde'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/avant-garde.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtMovementRealist,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtMovementRealist'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/realist.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtMovementExpressionist,
-              translation: loadTimeData.getString(
-                  'seaPenOptionArtMovementExpressionist'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/expressionist.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtMovementImpressionist,
-              translation: loadTimeData.getString(
-                  'seaPenOptionArtMovementImpressionist'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/impressionist.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtMovementPostImpressionist,
-              translation: loadTimeData.getString(
-                  'seaPenOptionArtMovementPostImpressionist'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/post-impressionist.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtMovementArtNouveau,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtMovementArtNouveau'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/art_nouveau.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtMovementBauhaus,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtMovementBauhaus'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bauhaus.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtMovementWatercolor,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtMovementWatercolor'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/watercolor.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtMovementAbstract,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtMovementAbstract'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/abstract.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtMovementModernArt,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtMovementModernArt'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/modern_art.jpg',
             },
           ],
         ],
@@ -2683,6 +2676,13 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
                   'seaPenOptionVcBackgroundDreamscapesObjectTower'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tower.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectChair,
+              translation: loadTimeData.getString(
+                  'seaPenOptionVcBackgroundDreamscapesObjectChair'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/chair.jpg',
             },
           ],
         ],

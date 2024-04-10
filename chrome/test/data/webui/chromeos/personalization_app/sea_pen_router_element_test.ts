@@ -131,7 +131,7 @@ suite('SeaPenRouterElementTest', function() {
             routerElement.shadowRoot?.querySelector('iron-location')?.path,
             'navigates to result page');
         assertEquals(
-            'seaPenTemplateId=10',
+            'seaPenTemplateId=4',
             routerElement.shadowRoot?.querySelector('iron-location')?.query,
             'query as selected template id');
 
