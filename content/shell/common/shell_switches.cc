@@ -8,10 +8,6 @@
 
 namespace switches {
 
-// TODO(b/1295373): Keep the old flag for a short period and remove it once we
-// are sure everything is ok.
-const char kContentShellDataPath[] = "data-path";
-
 // Makes Content Shell use the given path for its data directory.
 // NOTE: "user-data-dir" is used to align with Chromedriver's behavior. Please
 // do NOT change this to another value.
