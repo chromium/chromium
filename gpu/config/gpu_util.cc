@@ -266,11 +266,6 @@ GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
                           base::FeatureList::OVERRIDE_DISABLE_FEATURE))
     return kGpuFeatureStatusDisabled;
 
-  // VDA video decoder on ChromeOS uses legacy mailboxes which is not compatible
-  // with OOP-C
-  if (!gpu_preferences.enable_chromeos_direct_video_decoder)
-    return kGpuFeatureStatusDisabled;
-
   // On certain ChromeOS devices, using Vulkan without OOP-C results in video
   // encode artifacts (b/318721705).
   if (gpu_preferences.use_vulkan != VulkanImplementationName::kNone)
