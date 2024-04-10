@@ -70,7 +70,8 @@ constexpr char kFormZip[] = "form_zip";
 - (void)tearDown {
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearProfilesStore];
-  [PasswordManagerAppInterface clearCredentials];
+  GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
+                 @"Clearing credentials wasn't done.");
   [super tearDown];
 }
 

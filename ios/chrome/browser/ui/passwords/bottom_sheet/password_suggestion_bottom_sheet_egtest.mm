@@ -120,7 +120,8 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
 }
 
 - (void)tearDown {
-  [PasswordManagerAppInterface clearCredentials];
+  GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
+                 @"Clearing credentials wasn't done.");
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface removeMockReauthenticationModule];
 

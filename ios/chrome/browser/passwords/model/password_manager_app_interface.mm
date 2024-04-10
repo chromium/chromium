@@ -110,15 +110,23 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
                                                               URL:URL];
 }
 
-+ (void)clearCredentials {
++ (bool)clearCredentials {
   scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
       IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
           chrome_test_util::GetOriginalBrowserState(),
           ServiceAccessType::IMPLICIT_ACCESS)
           .get();
+
+  // True when the callback was called.
+  __block bool done = false;
+  auto completion_callback =
+      base::BindOnce([](bool* done, bool _) { *done = true; }, &done);
   // Remove credentials stored during executing the test.
   passwordStore->RemoveLoginsCreatedBetween(base::Time(), base::Time::Now(),
-                                            base::DoNothing());
+                                            std::move(completion_callback));
+  return WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return done;
+  });
 }
 
 + (int)storedCredentialsCount {

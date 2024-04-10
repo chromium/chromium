@@ -88,7 +88,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 }
 
 - (void)tearDown {
-  [PasswordManagerAppInterface clearCredentials];
+  GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
+                 @"Clearing credentials wasn't done.");
   [super tearDown];
 }
 

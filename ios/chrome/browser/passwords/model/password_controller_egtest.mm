@@ -95,7 +95,8 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 - (void)tearDown {
-  [PasswordManagerAppInterface clearCredentials];
+  GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
+                 @"Clearing credentials wasn't done.");
   [super tearDown];
 }
 

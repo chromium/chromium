@@ -28,7 +28,7 @@
                                password:(NSString*)password;
 
 // Clears any credentials that were stored during a test run.
-+ (void)clearCredentials;
++ (bool)clearCredentials;
 
 // Returns the number of stored credentials.
 + (int)storedCredentialsCount;
