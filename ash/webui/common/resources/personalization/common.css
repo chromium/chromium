@@ -310,3 +310,7 @@ cr-action-menu::part(dialog) {
   /* Prevent jank due to overscrolling from the dialog */
   overscroll-behavior: contain;
 }
+
+a[href] {
+  color: var(--cros-sys-primary);
+}
