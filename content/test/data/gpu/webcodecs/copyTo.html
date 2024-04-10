@@ -118,6 +118,16 @@ Take frames coming from various sources and read them using copyTo().
     let frame = await source.getNextFrame();
     let size = frame.allocationSize();
 
+    // Readback a whole frame to a regular buffer detach it
+    {
+      let buf = new ArrayBuffer(size);
+      TEST.assert(readWholeBuffer(buf) == 0, "Buffer should be zero");
+      let copy_promise = frame.copyTo(buf);
+      buf.transfer(1);
+      let layout = await copy_promise;
+      TEST.assert(layout, "layout is empty / ArrayBuffer");
+    }
+
     // Readback a whole frame to a regular buffer and send it to a worker
     {
       let {worker, worker_promise } = makeWorker();
@@ -158,4 +168,5 @@ Take frames coming from various sources and read them using copyTo().
     TEST.log('Test completed');
   }
   addManualTestButton([{'source_type': 'offscreen'}]);
+  addManualTestButton([{'source_type': 'arraybuffer'}]);
 </script>
