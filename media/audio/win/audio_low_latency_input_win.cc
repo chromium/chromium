@@ -790,8 +790,9 @@ void WASAPIAudioInputStream::Run() {
   if (recording && error) {
     // TODO(henrika): perhaps it worth improving the cleanup here by e.g.
     // stopping the audio client, joining the thread etc.?
+    auto saved_last_error = GetLastError();
     NOTREACHED() << "WASAPI capturing failed with error code "
-                 << GetLastError();
+                 << saved_last_error;
   }
 
   // Disable MMCSS.

@@ -173,7 +173,7 @@ SuspendableThreadDelegateWin::ScopedSuspendThread::~ScopedSuspendThread() {
   ScopedDisablePriorityBoost disable_priority_boost(thread_handle_);
   bool resume_thread_succeeded =
       ::ResumeThread(thread_handle_) != static_cast<DWORD>(-1);
-  CHECK(resume_thread_succeeded) << "ResumeThread failed: " << GetLastError();
+  PCHECK(resume_thread_succeeded) << "ResumeThread failed";
 }
 
 bool SuspendableThreadDelegateWin::ScopedSuspendThread::WasSuccessful() const {

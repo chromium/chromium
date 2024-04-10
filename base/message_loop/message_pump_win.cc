@@ -264,6 +264,7 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
     base::debug::Alias(&wait_flags);
     DWORD result = MsgWaitForMultipleObjectsEx(0, nullptr, delay, QS_ALLINPUT,
                                                wait_flags);
+    DPCHECK(WAIT_FAILED != result);
 
     if (WAIT_OBJECT_0 == result) {
       // A WM_* message is available.
@@ -310,8 +311,6 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
                 ->set_wait_for_object_result(result);
           });
     }
-
-    DCHECK_NE(WAIT_FAILED, result) << GetLastError();
   }
 }
 
