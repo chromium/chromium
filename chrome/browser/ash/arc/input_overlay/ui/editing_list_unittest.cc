@@ -11,6 +11,7 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/check.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
@@ -438,6 +439,24 @@ TEST_F(EditingListTest, TestScrollView) {
   window_content_height = touch_injector_->content_bounds().height();
   EXPECT_EQ(window_content_height, list_window->bounds().height() +
                                        kEditingListOffsetInsideMainWindow);
+}
+
+TEST_F(EditingListTest, TestMaximumActions) {
+  const size_t action_size = controller_->GetActiveActionsSize();
+  // Add new action util it reaches to the maximum.
+  EXPECT_GT(kMaxActionCount, action_size);
+  for (size_t i = 0; i < kMaxActionCount - action_size; i++) {
+    AddNewActionInCenter();
+    PressDoneButtonOnButtonOptionsMenu();
+  }
+
+  // Once the actions size reaches to the maximum, press add buttons shouldn't
+  // get into the button placement mode.
+  PressAddButton();
+  EXPECT_FALSE(GetTargetView());
+
+  PressAddContainerButton();
+  EXPECT_FALSE(GetTargetView());
 }
 
 }  // namespace arc::input_overlay

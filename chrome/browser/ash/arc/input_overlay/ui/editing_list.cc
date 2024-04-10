@@ -76,8 +76,6 @@ constexpr int kSpaceForFocusRing = 1 - kFocusRingHaloInset;
 // will not be cut for the top and bottom list item.
 constexpr int kAddRowBottomMargin = 8 - kSpaceForFocusRing;
 
-constexpr size_t kMaxActionCount = 50;
-
 constexpr char kKeyEditNudgeID[] = "kGameControlsKeyEditNudge";
 constexpr char kHelpUrl[] =
     "https://support.google.com/chromebook/?p=game-controls-help";
@@ -183,7 +181,16 @@ class EditingList::AddContainerButton : public views::Button {
   }
 
   void UpdateAddButtonState(size_t current_controls_size) {
-    add_button_->SetEnabled(current_controls_size < kMaxActionCount);
+    const ButtonState state = current_controls_size < kMaxActionCount
+                                  ? ButtonState::STATE_NORMAL
+                                  : ButtonState::STATE_DISABLED;
+    if (state == GetState()) {
+      return;
+    }
+
+    add_button_->SetState(state);
+    SetState(state);
+    // TODO(b/333583970): Update the colors.
   }
 
   views::LabelButton* add_button() { return add_button_; }
@@ -241,6 +248,7 @@ void EditingList::Init() {
   add_container_ =
       AddChildView(std::make_unique<AddContainerButton>(base::BindRepeating(
           &EditingList::OnAddButtonPressed, base::Unretained(this))));
+  add_container_->UpdateAddButtonState(controller_->GetActiveActionsSize());
 
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetBackgroundColor(std::nullopt);
@@ -584,7 +592,8 @@ void EditingList::VisibilityChanged(views::View* starting_from,
 
 void EditingList::OnActionAdded(Action& action) {
   DCHECK(scroll_content_);
-  if (controller_->GetActiveActionsSize() == 1u) {
+  const size_t active_action_size = controller_->GetActiveActionsSize();
+  if (active_action_size == 1u) {
     // Clear the zero-state.
     UpdateOnZeroState(/*is_zero_state=*/false);
     show_edu_ = true;
@@ -594,7 +603,7 @@ void EditingList::OnActionAdded(Action& action) {
   // Scroll the list to bottom when a new action is added.
   UpdateScrollView(/*scroll_to_bottom=*/true);
 
-  add_container_->UpdateAddButtonState(controller_->GetActiveActionsSize());
+  add_container_->UpdateAddButtonState(active_action_size);
 }
 
 void EditingList::OnActionRemoved(const Action& action) {
@@ -668,6 +677,10 @@ ash::AnchoredNudge* EditingList::GetKeyEditNudgeForTesting() const {
 
 views::LabelButton* EditingList::GetAddButtonForTesting() const {
   return add_container_->add_button();
+}
+
+views::Button* EditingList::GetAddContainerButtonForTesting() const {
+  return views::AsViewClass<views::Button>(add_container_);
 }
 
 BEGIN_METADATA(EditingList)

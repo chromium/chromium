@@ -26,6 +26,9 @@ constexpr int kAxisSize = 2;
 // Total key size for ActionMoveKey.
 constexpr size_t kActionMoveKeysSize = 4;
 
+// Maximum of actions size.
+inline constexpr size_t kMaxActionCount = 50;
+
 constexpr char16_t kUnknownBind[] = u"?";
 
 // Directions from up, left, down, right.

@@ -23,6 +23,7 @@ class LocatedEvent;
 }  // namespace ui
 
 namespace views {
+class Button;
 class Label;
 class LabelButton;
 class ScrollView;
@@ -123,6 +124,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   bool IsKeyEditNudgeShownForTesting() const;
   ash::AnchoredNudge* GetKeyEditNudgeForTesting() const;
   views::LabelButton* GetAddButtonForTesting() const;
+  views::Button* GetAddContainerButtonForTesting() const;
 
   const raw_ptr<DisplayOverlayController> controller_;
 

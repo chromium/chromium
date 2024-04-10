@@ -31,6 +31,7 @@ class OverlayViewTestBase : public GameControlsTestBase {
  protected:
   void EnableEditMode();
   void PressAddButton();
+  void PressAddContainerButton();
 
   // Adds a new action in the center of the main window.
   void AddNewActionInCenter();
