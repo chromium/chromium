@@ -1162,7 +1162,11 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
       self.webStateList->MoveGroup(tabGroupInfo.tabGroup, nextWebStateIndex);
       return;
     }
-    // TODO(crbug.com/331749094) : Add multi-window support.
+
+    int destinationWebStateIndex = WebStateIndexAfterGridDropItemIndex(
+        self.webStateList, destinationIndex);
+    MoveTabGroupToBrowser(tabGroupInfo.tabGroup, self.browser,
+                          destinationWebStateIndex);
   }
   base::UmaHistogramEnumeration(kUmaGridViewDragOrigin, DragItemOrigin::kOther);
 

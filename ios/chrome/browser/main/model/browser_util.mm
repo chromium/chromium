@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
@@ -119,4 +120,67 @@ BrowserAndIndex FindBrowserAndIndex(web::WebStateID tab_id,
     }
   }
   return BrowserAndIndex{};
+}
+
+void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
+                           Browser* destination_browser,
+                           int destination_tab_group_index) {
+  ChromeBrowserState* browser_state = destination_browser->GetBrowserState();
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state);
+  const std::set<Browser*>& browsers =
+      browser_state->IsOffTheRecord() ? browser_list->AllIncognitoBrowsers()
+                                      : browser_list->AllRegularBrowsers();
+
+  // Retrieve the `source_browser`.
+  Browser* source_browser;
+  for (Browser* browser : browsers) {
+    WebStateList* web_state_list = browser->GetWebStateList();
+    if (web_state_list->ContainsGroup(source_tab_group)) {
+      source_browser = browser;
+      break;
+    }
+  }
+
+  if (!source_browser) {
+    NOTREACHED()
+        << "Either the 'source_tab_group' is incorrect, or the user is "
+           "attempting to move a tab group across profiles (incognito <-> "
+           "regular)";
+    return;
+  }
+
+  // Get and lock `source_web_state_list` and `destination_web_state_list`.
+  WebStateList* source_web_state_list = source_browser->GetWebStateList();
+  WebStateList* destination_web_state_list =
+      destination_browser->GetWebStateList();
+  auto source_lock = source_web_state_list->StartBatchOperation();
+  auto destination_lock = destination_web_state_list->StartBatchOperation();
+
+  int source_web_state_start_index = source_tab_group->range().range_begin();
+  int tab_count = source_tab_group->range().count();
+  CHECK(tab_count > 0);
+
+  // Create the `TabGroupVisualData` for the new group.
+  const tab_groups::TabGroupVisualData destination_visual_data(
+      source_tab_group->visual_data());
+
+  // Move tabs to the new browser.
+  for (int destination_index_offset = 0; destination_index_offset < tab_count;
+       destination_index_offset++) {
+    CHECK_EQ(source_web_state_list->GetGroupOfWebStateAt(
+                 source_web_state_start_index),
+             source_tab_group);
+    MoveTabFromBrowserToBrowser(
+        source_browser, source_web_state_start_index, destination_browser,
+        destination_tab_group_index + destination_index_offset);
+  }
+
+  // Create the new group.
+  const TabGroup* destination_tab_group =
+      destination_browser->GetWebStateList()->CreateGroup(
+          TabGroupRange(destination_tab_group_index, tab_count).AsSet(),
+          destination_visual_data);
+  CHECK(destination_browser->GetWebStateList()->ContainsGroup(
+      destination_tab_group));
 }

@@ -16,6 +16,7 @@ class Browser;
 namespace web {
 class WebStateID;
 }  // namespace web
+class TabGroup;
 
 // Stores information about a tab.
 struct BrowserAndIndex {
@@ -54,5 +55,12 @@ void MoveTabToBrowser(web::WebStateID tab_id,
 // BrowserAndIndex that contains the browser and `tab_index` of the tab.
 BrowserAndIndex FindBrowserAndIndex(web::WebStateID tab_id,
                                     const std::set<Browser*>& browsers);
+
+// Moves tab group to the `destination_tab_group_index` in
+// `destination_browser`. It is an error to try to move a tab across profiles
+// (incognito <-> regular).
+void MoveTabGroupToBrowser(const TabGroup* tab_group,
+                           Browser* destination_browser,
+                           int destination_tab_group_index);
 
 #endif  // IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_UTIL_H_
