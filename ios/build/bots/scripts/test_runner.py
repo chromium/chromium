@@ -1172,4 +1172,8 @@ class DeviceTestRunner(TestRunner):
     if xcode_util.using_xcode_15_or_higher():
       LOGGER.warning(
           "Restarting usbmuxd to ensure device is re-paired to Xcode...")
-      mac_util.stop_usbmuxd()
+      try:
+        mac_util.stop_usbmuxd()
+      except subprocess.CalledProcessError as e:
+        logging.exception('Unable to restart usbmuxd:')
+        logging.error(e)
