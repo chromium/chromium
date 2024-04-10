@@ -105,7 +105,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInherited) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(100, primitive_value->GetIntValue());
+  EXPECT_EQ(
+      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueNonInherited) {
@@ -115,7 +116,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueNonInherited) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(100, primitive_value->GetIntValue());
+  EXPECT_EQ(
+      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueInitial) {
@@ -125,7 +127,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInitial) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(100, primitive_value->GetIntValue());
+  EXPECT_EQ(
+      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueEmptyInitial) {
@@ -195,7 +198,8 @@ TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
   const CSSValue* value1 =
       ParseValue(property, "100px", CSSParserLocalContext());
   EXPECT_TRUE(value1->IsPrimitiveValue());
-  EXPECT_EQ(100, To<CSSPrimitiveValue>(value1)->GetIntValue());
+  EXPECT_EQ(100, To<CSSPrimitiveValue>(value1)->ComputeLength<double>(
+                     CSSToLengthConversionData()));
 
   const CSSValue* value2 =
       ParseValue(property, "maroon", CSSParserLocalContext());
