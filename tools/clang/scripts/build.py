@@ -1516,7 +1516,7 @@ def main():
     elif sys.platform == 'darwin':
       lit_excludes += [
           # Fails on macOS 14, crbug.com/332589870
-          '^.*Sanitizer.*Darwin/malloc_zone.cpp$'
+          '^.*Sanitizer.*Darwin/malloc_zone.cpp$',
           # Fails with a recent ld, crbug.com/332589870
           '^.*ContinuousSyncMode/darwin-proof-of-concept.c$',
           '^.*instrprof-darwin-exports.c$',
