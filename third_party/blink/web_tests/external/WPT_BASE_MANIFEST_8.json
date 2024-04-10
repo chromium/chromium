@@ -444190,7 +444190,7 @@
        ]
       ],
       "color-valid-color-mix-function.html": [
-       "cd1f381a1aa8778b3c0887f011b8219d69484dfa",
+       "baa6512053fa476a979ac7f995168e70b3854e0f",
        [
         null,
         {}
@@ -578438,8 +578438,26 @@
         }
        ]
       ],
+      "interesttarget-anchor-event-dispatch.tentative.html": [
+       "b5a481ae08fc9324a2c52cf0d6c395a82f4ded7d",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "interesttarget-area-event-dispatch.tentative.html": [
+       "358acbb73ac3d607a1cd4563747d0e67fea602c6",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "interesttarget-button-event-dispatch.tentative.html": [
-       "7fdfdfaa70710515c939e01190e730d145d13b4a",
+       "69126dbe14b01c6328337a0b6f04b779413244f4",
        [
         null,
         {
@@ -579016,6 +579034,15 @@
         {
          "testdriver": true,
          "timeout": "long"
+        }
+       ]
+      ],
+      "popover-hover-crash-hang.tentative.html": [
+       "60309398db0011227a89f4485f147d253358439f",
+       [
+        null,
+        {
+         "testdriver": true
         }
        ]
       ],
