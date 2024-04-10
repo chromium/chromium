@@ -1548,8 +1548,16 @@ void BoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
         cursor->MoveToNextSkippingChildren();
         break;
       case FragmentItem::kLine:
-        NOTREACHED();
-        cursor->MoveToNext();
+        // Nested kLine items are used for ruby annotations.
+        if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+          InlineCursor line_box_cursor = cursor->CursorForDescendants();
+          PaintInlineItems(paint_info, paint_offset, parent_offset,
+                           &line_box_cursor);
+          cursor->MoveToNextSkippingChildren();
+        } else {
+          NOTREACHED();
+          cursor->MoveToNext();
+        }
         break;
       case FragmentItem::kInvalid:
         NOTREACHED_NORETURN();
@@ -2448,12 +2456,20 @@ bool BoxFragmentPainter::HitTestItemsChildren(
         return true;
     } else if (item->Type() == FragmentItem::kLine) {
       const PhysicalLineBoxFragment* child_fragment = item->LineBoxFragment();
-      DCHECK(child_fragment);
-      const PhysicalOffset child_offset =
-          hit_test.inline_root_offset + item->OffsetInContainerFragment();
-      if (HitTestLineBoxFragment(hit_test, *child_fragment, cursor,
-                                 child_offset))
-        return true;
+      if (child_fragment) {  // Top-level kLine items.
+        const PhysicalOffset child_offset =
+            hit_test.inline_root_offset + item->OffsetInContainerFragment();
+        if (HitTestLineBoxFragment(hit_test, *child_fragment, cursor,
+                                   child_offset)) {
+          return true;
+        }
+      } else {  // Nested kLine items for ruby annotations.
+        DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+        if (HitTestItemsChildren(hit_test, container,
+                                 cursor.CursorForDescendants())) {
+          return true;
+        }
+      }
     } else if (item->Type() == FragmentItem::kBox) {
       if (HitTestChildBoxItem(hit_test, container, *item, cursor))
         return true;

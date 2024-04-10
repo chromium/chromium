@@ -109,6 +109,8 @@ bool ShouldIgnoreForPositionForPoint(const FragmentItem& item) {
       // All/LayoutViewHitTestTest.PseudoElementAfter* needs this.
       return item.IsGeneratedText();
     case FragmentItem::kLine:
+      DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+      return true;
     case FragmentItem::kInvalid:
       NOTREACHED();
       break;

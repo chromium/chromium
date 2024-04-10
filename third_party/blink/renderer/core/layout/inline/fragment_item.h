@@ -298,7 +298,8 @@ class CORE_EXPORT FragmentItem final {
     if (const PhysicalLineBoxFragment* line_box = LineBoxFragment()) {
       return To<InlineBreakToken>(line_box->GetBreakToken());
     }
-    NOTREACHED();
+    DCHECK_EQ(Type(), kLine);
+    // Nested kLine item doesn't have a line box fragment.
     return nullptr;
   }
 
