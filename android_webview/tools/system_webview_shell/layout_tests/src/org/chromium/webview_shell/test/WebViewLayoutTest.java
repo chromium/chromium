@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -231,25 +232,33 @@ public class WebViewLayoutTest {
         if (!interfacesNotExposedInWebview.isEmpty()) {
             errorMessage.append(
                     String.format(
-                            "\nThe Blink interfaces below are exposed in WebView. "
-                                    + "Remove them from\n%s\n to resolve this error.\n",
+                            """
+
+                            The Blink interfaces below are exposed in WebView. Remove them from
+                            %s
+                             to resolve this error.
+                            """,
                             NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
             interfacesNotExposedInWebview.forEach(
                     illegallyExposedInterface -> {
                         errorMessage.append("\t- " + illegallyExposedInterface + "\n");
                     });
         }
+        String errorTemplate =
+                """
+
+                %d of the properties of the Blink interface "%s"
+                are exposed in WebView. Remove them from the list of properties excluded for the
+                "%s" interface in
+                %s
+                to resolve this error
+                """;
         propertiesNotExposedInWebview.forEach(
                 (webviewInterface, propertiesNotExposed) -> {
                     errorMessage.append(
                             String.format(
-                                    "\n"
-                                            + "%d of the properties of the Blink interface \"%s\"\n"
-                                            + "are exposed in WebView. Remove them from the list of"
-                                            + " properties excluded for the \n"
-                                            + "\"%s\" interface in \n"
-                                            + "%s\n"
-                                            + " to resolve this error\n",
+                                    Locale.ROOT,
+                                    errorTemplate,
                                     propertiesNotExposed.size(),
                                     webviewInterface,
                                     webviewInterface,
@@ -334,26 +343,29 @@ public class WebViewLayoutTest {
         if (!missingInterfaces.isEmpty()) {
             errorMessage.append(
                     String.format(
-                            "\n"
-                                    + "WebView does not expose the Blink interfaces below. Add them"
-                                    + " to\n"
-                                    + "%s\n"
-                                    + "to resolve this error.\n",
+                            """
+
+                            WebView does not expose the Blink interfaces below. Add them to
+                            %s
+                            to resolve this error.
+                            """,
                             NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
             missingInterfaces.forEach(
                     (missingInterface) -> errorMessage.append("\t- " + missingInterface + "\n"));
         }
+        String errorTemplate =
+                """
+
+            At least one of the properties of the Blink interface "%s" is not exposed in WebView.
+            Add them to the list of properties not exposed for the "%s" interface in
+            %s
+            to resolve this error
+            """;
         missingInterfaceProperties.forEach(
                 (blinkInterface, missingProperties) -> {
                     errorMessage.append(
                             String.format(
-                                    "\n"
-                                        + "At least one of the properties of the Blink interface"
-                                        + " \"%s\" is not exposed in WebView.\n"
-                                        + "Add them to the list of properties not exposed for the"
-                                        + " \"%s\" interface in\n"
-                                        + "%s\n"
-                                        + "to resolve this error\n",
+                                    errorTemplate,
                                     blinkInterface,
                                     blinkInterface,
                                     NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
