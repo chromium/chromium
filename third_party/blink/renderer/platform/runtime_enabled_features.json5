@@ -935,11 +935,6 @@
       name: "CSSParserIgnoreCharsetForURLs",
     },
     {
-      // crbug.com/1443291: Phrase Line Breaking
-      name: "CSSPhraseLineBreak",
-      status: "stable",
-    },
-    {
       // Support for the position-fallback-bounds property.
       //
       // This property was part of the CSS Anchor Positioning spec,

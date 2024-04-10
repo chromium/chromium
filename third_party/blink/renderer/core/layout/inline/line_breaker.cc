@@ -3902,7 +3902,6 @@ void LineBreaker::SetCurrentStyleForce(const ComputedStyle& style) {
           break_anywhere_if_overflow_ = false;
           break;
         case EWordBreak::kAutoPhrase:
-          DCHECK(RuntimeEnabledFeatures::CSSPhraseLineBreakEnabled());
           if (UNLIKELY(disable_phrase_)) {
             line_break_type = LineBreakType::kNormal;
           } else {
