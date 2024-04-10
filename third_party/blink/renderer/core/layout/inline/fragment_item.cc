@@ -113,7 +113,7 @@ FragmentItem::FragmentItem(const PhysicalLineBoxFragment& line)
       const_type_(kLine),
       sub_type_(static_cast<unsigned>(line.GetLineBoxType())),
       style_variant_(static_cast<unsigned>(line.GetStyleVariant())),
-      is_hidden_for_paint_(false),
+      is_hidden_for_paint_(line.IsHiddenForPaint()),
       text_direction_(static_cast<unsigned>(line.BaseDirection())),
       ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(false),

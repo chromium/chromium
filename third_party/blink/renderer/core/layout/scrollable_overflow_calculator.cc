@@ -141,6 +141,10 @@ void ScrollableOverflowCalculator::AddItemsInternal(
   }
 
   for (const auto& item : items) {
+    if (item->IsHiddenForPaint()) {
+      continue;
+    }
+
     if (const auto* line_box = item->LineBoxFragment()) {
       has_hanging = line_box->HasHanging();
       line_rect = item->RectInContainerFragment();
@@ -237,6 +241,10 @@ PhysicalRect ScrollableOverflowCalculator::AdjustOverflowForScrollOrigin(
 
 PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
     const PhysicalBoxFragment& child_fragment) {
+  if (child_fragment.IsHiddenForPaint()) {
+    return {};
+  }
+
   // If the fragment is anonymous, just return its scrollable-overflow (don't
   // apply any incorrect transforms, etc).
   if (!child_fragment.IsCSSBox())
@@ -244,13 +252,11 @@ PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
 
   PhysicalRect overflow = {{}, child_fragment.Size()};
 
-  // Collapsed table rows/sections set IsHiddenForPaint flag.
   bool ignore_scrollable_overflow =
       child_fragment.ShouldApplyLayoutContainment() ||
       child_fragment.IsInlineBox() ||
       (child_fragment.ShouldClipOverflowAlongBothAxis() &&
-       !child_fragment.ShouldApplyOverflowClipMargin()) ||
-      child_fragment.IsHiddenForPaint();
+       !child_fragment.ShouldApplyOverflowClipMargin());
 
   if (!ignore_scrollable_overflow) {
     PhysicalRect child_overflow = child_fragment.ScrollableOverflow();
