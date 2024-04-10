@@ -16,6 +16,7 @@ mojom("mojom") {
     "input_method_host.mojom",
     "input_method_user_data.mojom",
     "japanese_settings.mojom",
+    "user_data/japanese_legacy_config.mojom",
   ]
 
   public_deps = [

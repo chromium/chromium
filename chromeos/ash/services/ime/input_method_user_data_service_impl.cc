@@ -6,11 +6,33 @@
 
 #include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
+#include "chromeos/ash/services/ime/public/cpp/shared_lib/proto/fetch_japanese_legacy_config.pb.h"
+#include "chromeos/ash/services/ime/public/cpp/shared_lib/proto/user_data_service.pb.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom.h"
+#include "chromeos/ash/services/ime/public/mojom/user_data/japanese_legacy_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash {
 namespace ime {
+namespace {
+mojom::JapaneseLegacyConfigPtr MakeMojomJapaneseLegacyConfig(
+    chromeos_input::FetchJapaneseLegacyConfigResponse proto_response) {
+  mojom::JapaneseLegacyConfigPtr response = mojom::JapaneseLegacyConfig::New();
+
+  if (proto_response.has_preedit_method()) {
+    if (proto_response.preedit_method() == chromeos_input::PREEDIT_ROMANJI) {
+      response->preedit_method =
+          mojom::JapaneseLegacyConfig::PreeditMethod::kRomaji;
+    }
+    if (proto_response.preedit_method() == chromeos_input::PREEDIT_KANA) {
+      response->preedit_method =
+          mojom::JapaneseLegacyConfig::PreeditMethod::kKana;
+    }
+  }
+  return response;
+}
+
+}  // namespace
 
 InputMethodUserDataServiceImpl::~InputMethodUserDataServiceImpl() = default;
 
@@ -25,9 +47,55 @@ InputMethodUserDataServiceImpl::InputMethodUserDataServiceImpl(
   }
 }
 
+void InputMethodUserDataServiceImpl::FetchJapaneseLegacyConfig(
+    FetchJapaneseLegacyConfigCallback callback) {
+  chromeos_input::UserDataRequest request;
+  chromeos_input::FetchJapaneseLegacyConfigRequest fetch_request;
+  *request.mutable_fetch_japanese_legacy_config() = fetch_request;
+  chromeos_input::UserDataResponse user_data_response =
+      ProcessUserDataRequest(request);
+
+  if (user_data_response.status().success() &&
+      user_data_response.has_fetch_japanese_legacy_config()) {
+    mojom::JapaneseLegacyConfigPtr response_data =
+        MakeMojomJapaneseLegacyConfig(
+            user_data_response.fetch_japanese_legacy_config());
+    mojom::JapaneseLegacyConfigResponsePtr response =
+        mojom::JapaneseLegacyConfigResponse::NewResponse(
+            std::move(response_data));
+    std::move(callback).Run(std::move(response));
+  } else {
+    mojom::JapaneseLegacyConfigResponsePtr response =
+        mojom::JapaneseLegacyConfigResponse::NewErrorReason(
+            user_data_response.status().reason());
+    std::move(callback).Run(std::move(response));
+  }
+}
+
 void InputMethodUserDataServiceImpl::AddReceiver(
     mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver) {
   receiver_set_.Add(this, std::move(receiver));
+}
+
+chromeos_input::UserDataResponse
+InputMethodUserDataServiceImpl::ProcessUserDataRequest(
+    chromeos_input::UserDataRequest request_proto) {
+  std::vector<uint8_t> bytes;
+  bytes.resize(request_proto.ByteSizeLong());
+  request_proto.SerializeToArray(
+      bytes.data(), static_cast<int>(request_proto.ByteSizeLong()));
+  C_SerializedProto request{/* buffer= */ bytes.data(),
+                            /* size= */ bytes.size()};
+
+  // This response needs to be deleted manually to avoid a memory leak.
+  // The buffer has to be made persistent in order to be read by chromium.
+  C_SerializedProto response =
+      shared_library_entry_points_.process_user_data_request(request);
+  chromeos_input::UserDataResponse response_proto;
+  response_proto.ParseFromArray(response.buffer, response.size);
+  shared_library_entry_points_.delete_serialized_proto(response);
+
+  return response_proto;
 }
 
 }  // namespace ime

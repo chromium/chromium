@@ -30,7 +30,6 @@ source_set("ime_shared_library") {
     "//ash/constants",
     "//base",
     "//chromeos/ash/services/ime/public/cpp/shared_lib:interfaces",
-    "//chromeos/ash/services/ime/public/cpp/shared_lib/proto:proto",
   ]
 }
 
@@ -53,6 +52,7 @@ source_set("lib") {
     "//base",
     "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/services/ime/public/cpp/shared_lib:interfaces",
+    "//chromeos/ash/services/ime/public/cpp/shared_lib/proto:proto",
     "//chromeos/ash/services/ime/public/mojom",
   ]
 }
@@ -81,13 +81,18 @@ source_set("services_unittests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/services/ime/public/cpp/shared_lib:interfaces",
+    "//chromeos/ash/services/ime/public/cpp/shared_lib/proto:proto",
     "//chromeos/ash/services/ime/public/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
-  sources = [ "ime_service_unittest.cc" ]
+  sources = [
+    "ime_service_unittest.cc",
+    "input_method_user_data_service_impl_unittest.cc",
+  ]
 }
 
 static_library("test_support") {

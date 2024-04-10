@@ -1,12 +1,18 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 module ash.ime.mojom;
+
+import "chromeos/ash/services/ime/public/mojom/user_data/japanese_legacy_config.mojom";
+
+union JapaneseLegacyConfigResponse {
+  string error_reason;
+  JapaneseLegacyConfig response;
+};
 
 // InputMethodUserDataService is used to manage user data that requires the
 // IME shared library to manage.
 interface InputMethodUserDataService {
-  // TODO(b/329173273): Add functions based on go/cros-inputmethoddata
+  FetchJapaneseLegacyConfig() => (JapaneseLegacyConfigResponse response);
 };
 
