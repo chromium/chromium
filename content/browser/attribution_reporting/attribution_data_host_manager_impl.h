@@ -182,17 +182,21 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
-      attribution_reporting::SourceRegistration) override;
+      attribution_reporting::SourceRegistration,
+      bool was_fetched_via_service_worker) override;
   void TriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration,
-      std::vector<network::TriggerVerification>) override;
+      std::vector<network::TriggerVerification>,
+      bool was_fetched_via_service_worker) override;
   void OsSourceDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
-      std::vector<attribution_reporting::OsRegistrationItem>) override;
+      std::vector<attribution_reporting::OsRegistrationItem>,
+      bool was_fetched_via_service_worker) override;
   void OsTriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
-      std::vector<attribution_reporting::OsRegistrationItem>) override;
+      std::vector<attribution_reporting::OsRegistrationItem>,
+      bool was_fetched_via_service_worker) override;
   void ReportRegistrationHeaderError(
       attribution_reporting::SuitableOrigin reporting_origin,
       const attribution_reporting::RegistrationHeaderError&) override;

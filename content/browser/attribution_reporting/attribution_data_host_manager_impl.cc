@@ -133,8 +133,11 @@ enum class RegistrationMethod {
   kLegacyBrowser = 6,
   kFencedFrameBeacon = 7,
   kFencedFrameAutomaticBeacon = 8,
+  kNavBackgroundBlinkViaSW = 9,
+  kAttributionSrcBlinkViaSW = 10,
+  kLegacyBlinkViaSW = 11,
 
-  kMaxValue = kFencedFrameAutomaticBeacon,
+  kMaxValue = kLegacyBlinkViaSW,
 };
 
 void RecordRegistrationMethod(RegistrationMethod method) {
@@ -445,7 +448,45 @@ class AttributionDataHostManagerImpl::RegistrationContext {
     return suitable_context_.context_origin();
   }
 
-  RegistrationMethod registration_method() const { return method_; }
+  RegistrationMethod GetRegistrationMethod(
+      bool was_fetched_via_service_worker) const {
+    switch (method_) {
+      case RegistrationMethod::kNavBackgroundBlink:
+        return was_fetched_via_service_worker
+                   ? RegistrationMethod::kNavBackgroundBlinkViaSW
+                   : method_;
+      case RegistrationMethod::kAttributionSrcBlink:
+        return was_fetched_via_service_worker
+                   ? RegistrationMethod::kAttributionSrcBlinkViaSW
+                   : method_;
+      case RegistrationMethod::kLegacyBlink:
+        return was_fetched_via_service_worker
+                   ? RegistrationMethod::kLegacyBlinkViaSW
+                   : method_;
+      // Fetched via service worker is not applicable to foreground
+      // registrations.
+      case RegistrationMethod::kNavForeground:
+      // keep alive is not supported in service workers. As such, for browser
+      // registrations `was_fetched_via_serivce_worker` can only be false.
+      // TODO(https://crbug.com/1523862): Once service worker keep alive
+      // requests are supported, handle it here.
+      case RegistrationMethod::kNavBackgroundBrowser:
+      case RegistrationMethod::kAttributionSrcBrowser:
+      case RegistrationMethod::kLegacyBrowser:
+      // TODO(anthonygarant): propagate the information on whether fenced frame
+      // registrations were fetched from a service worker or not.
+      case RegistrationMethod::kFencedFrameBeacon:
+      case RegistrationMethod::kFencedFrameAutomaticBeacon:
+        CHECK(!was_fetched_via_service_worker);
+        return method_;
+      // When the context is created, we don't know if the registration was
+      // processed via a service worker or not.
+      case RegistrationMethod::kNavBackgroundBlinkViaSW:
+      case RegistrationMethod::kAttributionSrcBlinkViaSW:
+      case RegistrationMethod::kLegacyBlinkViaSW:
+        NOTREACHED_NORETURN();
+    }
+  }
 
   RegistrationEligibility registration_eligibility() const {
     return registration_eligibility_;
@@ -1686,7 +1727,8 @@ AttributionDataHostManagerImpl::GetReceiverRegistrationContextForTrigger() {
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
     SuitableOrigin reporting_origin,
-    attribution_reporting::SourceRegistration data) {
+    attribution_reporting::SourceRegistration data,
+    bool was_fetched_via_service_worker) {
   // This is validated by the Mojo typemapping.
   CHECK(reporting_origin.IsValid(), base::NotFatalUntil::M128);
 
@@ -1712,7 +1754,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     return;
   }
 
-  RecordRegistrationMethod(context->registration_method());
+  RecordRegistrationMethod(
+      context->GetRegistrationMethod(was_fetched_via_service_worker));
   attribution_manager_->HandleSource(
       StorableSource(std::move(reporting_origin), std::move(data),
                      /*source_origin=*/context->context_origin(), source_type,
@@ -1723,7 +1766,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
     SuitableOrigin reporting_origin,
     attribution_reporting::TriggerRegistration data,
-    std::vector<network::TriggerVerification> verifications) {
+    std::vector<network::TriggerVerification> verifications,
+    bool was_fetched_via_service_worker) {
   // This is validated by the Mojo typemapping.
   CHECK(reporting_origin.IsValid(), base::NotFatalUntil::M128);
 
@@ -1737,8 +1781,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
                              *context, reporting_origin)) {
     return;
   }
-
-  RecordRegistrationMethod(context->registration_method());
+  RecordRegistrationMethod(
+      context->GetRegistrationMethod(was_fetched_via_service_worker));
   attribution_manager_->HandleTrigger(
       AttributionTrigger(std::move(reporting_origin), std::move(data),
                          /*destination_origin=*/context->context_origin(),
@@ -1749,7 +1793,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
 void AttributionDataHostManagerImpl::OsSourceDataAvailable(
     attribution_reporting::SuitableOrigin reporting_origin,
-    std::vector<attribution_reporting::OsRegistrationItem> registration_items) {
+    std::vector<attribution_reporting::OsRegistrationItem> registration_items,
+    bool was_fetched_via_service_worker) {
   const RegistrationContext* context =
       GetReceiverRegistrationContextForSource();
   if (!context || registration_items.empty()) {
@@ -1761,7 +1806,8 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
     return;
   }
 
-  RecordRegistrationMethod(context->registration_method());
+  RecordRegistrationMethod(
+      context->GetRegistrationMethod(was_fetched_via_service_worker));
   if (context->navigation_id().has_value()) {
     MaybeBufferOsRegistrations(context->navigation_id().value(),
                                std::move(registration_items), *context);
@@ -1774,7 +1820,8 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
 
 void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
     attribution_reporting::SuitableOrigin reporting_origin,
-    std::vector<attribution_reporting::OsRegistrationItem> registration_items) {
+    std::vector<attribution_reporting::OsRegistrationItem> registration_items,
+    bool was_fetched_via_service_worker) {
   const RegistrationContext* context =
       GetReceiverRegistrationContextForTrigger();
   if (!context || registration_items.empty()) {
@@ -1786,7 +1833,8 @@ void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
     return;
   }
 
-  RecordRegistrationMethod(context->registration_method());
+  RecordRegistrationMethod(
+      context->GetRegistrationMethod(was_fetched_via_service_worker));
   SubmitOsRegistrations(std::move(registration_items), *context,
                         RegistrationType::kTrigger);
 }
@@ -1931,7 +1979,8 @@ void AttributionDataHostManagerImpl::HandleParsedWebSource(
                           registrations.is_within_fenced_frame());
   }();
   if (source.has_value()) {
-    RecordRegistrationMethod(registrations.context().registration_method());
+    RecordRegistrationMethod(registrations.context().GetRegistrationMethod(
+        /*was_fetched_via_service_worker=*/false));
     attribution_manager_->HandleSource(std::move(*source),
                                        registrations.render_frame_id());
   } else {
@@ -1965,7 +2014,8 @@ void AttributionDataHostManagerImpl::HandleParsedWebTrigger(
         registrations.is_within_fenced_frame());
   }();
   if (trigger.has_value()) {
-    RecordRegistrationMethod(registrations.context().registration_method());
+    RecordRegistrationMethod(registrations.context().GetRegistrationMethod(
+        /*was_fetched_via_service_worker=*/false));
     attribution_manager_->HandleTrigger(std::move(*trigger),
                                         registrations.render_frame_id());
   } else {
@@ -2065,14 +2115,14 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(
 
     if (registration_items.has_value()) {
       if (registrations->navigation_id().has_value()) {
-        RecordRegistrationMethod(
-            registrations->context().registration_method());
+        RecordRegistrationMethod(registrations->context().GetRegistrationMethod(
+            /*was_fetched_via_service_worker=*/false));
         MaybeBufferOsRegistrations(*registrations->navigation_id(),
                                    std::move(registration_items.value()),
                                    registrations->context());
       } else {
-        RecordRegistrationMethod(
-            registrations->context().registration_method());
+        RecordRegistrationMethod(registrations->context().GetRegistrationMethod(
+            /*was_fetched_via_service_worker=*/false));
         SubmitOsRegistrations(std::move(registration_items.value()),
                               registrations->context(), registration_type);
       }

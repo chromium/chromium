@@ -144,29 +144,31 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
   // mojom::blink::AttributionDataHost:
   void SourceDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
-      attribution_reporting::SourceRegistration data) override {
+      attribution_reporting::SourceRegistration data,
+      bool was_fetched_via_serivce_worker) override {
     source_data_.push_back(std::move(data));
   }
 
   void TriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration data,
-      Vector<network::TriggerVerification> verifications) override {
+      Vector<network::TriggerVerification> verifications,
+      bool was_fetched_via_serivce_worker) override {
     trigger_data_.push_back(std::move(data));
     trigger_verifications_.push_back(std::move(verifications));
   }
 
   void OsSourceDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
-      std::vector<attribution_reporting::OsRegistrationItem> registration_items)
-      override {
+      std::vector<attribution_reporting::OsRegistrationItem> registration_items,
+      bool was_fetched_via_serivce_worker) override {
     os_sources_.emplace_back(std::move(registration_items));
   }
 
   void OsTriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
-      std::vector<attribution_reporting::OsRegistrationItem> registration_items)
-      override {
+      std::vector<attribution_reporting::OsRegistrationItem> registration_items,
+      bool was_fetched_via_serivce_worker) override {
     os_triggers_.emplace_back(std::move(registration_items));
   }
 

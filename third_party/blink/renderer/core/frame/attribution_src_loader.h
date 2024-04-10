@@ -143,7 +143,8 @@ class CORE_EXPORT AttributionSrcLoader
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
       const Vector<network::TriggerVerification>&,
-      const attribution_reporting::RegistrationInfo&);
+      const attribution_reporting::RegistrationInfo&,
+      bool was_fetched_via_service_worker);
 
   const Member<LocalFrame> local_frame_;
 };

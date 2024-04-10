@@ -361,7 +361,8 @@ class AttributionSrcLoader::ResourceClient
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
       const Vector<network::TriggerVerification>&,
-      const attribution_reporting::RegistrationInfo&);
+      const attribution_reporting::RegistrationInfo&,
+      bool was_fetched_via_service_worker);
 
   void Finish();
 
@@ -372,13 +373,15 @@ class AttributionSrcLoader::ResourceClient
   void HandleSourceRegistration(
       const AttributionHeaders&,
       attribution_reporting::SuitableOrigin reporting_origin,
-      const attribution_reporting::RegistrationInfo&);
+      const attribution_reporting::RegistrationInfo&,
+      bool was_fetched_via_service_worker);
 
   void HandleTriggerRegistration(
       const AttributionHeaders&,
       attribution_reporting::SuitableOrigin reporting_origin,
       const Vector<network::TriggerVerification>&,
-      const attribution_reporting::RegistrationInfo&);
+      const attribution_reporting::RegistrationInfo&,
+      bool was_fetched_via_service_worker);
 
   void LogAuditIssueAndMaybeReportHeaderError(
       const AttributionHeaders&,
@@ -789,11 +792,13 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
         &AttributionSrcLoader::RegisterAttributionHeaders,
         WrapPersistentIfNeeded(this), *registration_eligibility, support,
         std::move(*reporting_origin), std::move(headers),
-        response.GetTriggerVerifications(), registration_info.value()));
+        response.GetTriggerVerifications(), registration_info.value(),
+        response.WasFetchedViaServiceWorker()));
   } else {
     RegisterAttributionHeaders(
         *registration_eligibility, support, std::move(*reporting_origin),
-        headers, response.GetTriggerVerifications(), registration_info.value());
+        headers, response.GetTriggerVerifications(), registration_info.value(),
+        response.WasFetchedViaServiceWorker());
   }
 
   return true;
@@ -805,7 +810,8 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
     attribution_reporting::SuitableOrigin reporting_origin,
     const AttributionHeaders& headers,
     const Vector<network::TriggerVerification>& trigger_verifications,
-    const attribution_reporting::RegistrationInfo& registration_info) {
+    const attribution_reporting::RegistrationInfo& registration_info,
+    bool was_fetched_via_service_worker) {
   mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
   local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       &conversion_host);
@@ -822,7 +828,8 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
       this, registration_eligibility, SourceType::kEvent, std::move(data_host),
       support);
   client->HandleResponseHeaders(std::move(reporting_origin), headers,
-                                trigger_verifications, registration_info);
+                                trigger_verifications, registration_info,
+                                was_fetched_via_service_worker);
   client->Finish();
 }
 
@@ -908,26 +915,29 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     return;
   }
 
-  HandleResponseHeaders(std::move(*reporting_origin), headers,
-                        response.GetTriggerVerifications(),
-                        registration_info.value());
+  HandleResponseHeaders(
+      std::move(*reporting_origin), headers, response.GetTriggerVerifications(),
+      registration_info.value(), response.WasFetchedViaServiceWorker());
 }
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     attribution_reporting::SuitableOrigin reporting_origin,
     const AttributionHeaders& headers,
     const Vector<network::TriggerVerification>& trigger_verifications,
-    const attribution_reporting::RegistrationInfo& registration_info) {
+    const attribution_reporting::RegistrationInfo& registration_info,
+    bool was_fetched_via_service_worker) {
   DCHECK_GT(headers.count(), 0);
 
   switch (eligibility_) {
     case RegistrationEligibility::kSource:
       HandleSourceRegistration(headers, std::move(reporting_origin),
-                               registration_info);
+                               registration_info,
+                               was_fetched_via_service_worker);
       break;
     case RegistrationEligibility::kTrigger:
       HandleTriggerRegistration(headers, std::move(reporting_origin),
-                                trigger_verifications, registration_info);
+                                trigger_verifications, registration_info,
+                                was_fetched_via_service_worker);
       break;
     case RegistrationEligibility::kSourceOrTrigger: {
       const bool has_source = headers.source_count() > 0;
@@ -943,13 +953,15 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 
       if (has_source) {
         HandleSourceRegistration(headers, std::move(reporting_origin),
-                                 registration_info);
+                                 registration_info,
+                                 was_fetched_via_service_worker);
         break;
       }
 
       DCHECK(has_trigger);
       HandleTriggerRegistration(headers, std::move(reporting_origin),
-                                trigger_verifications, registration_info);
+                                trigger_verifications, registration_info,
+                                was_fetched_via_service_worker);
       break;
     }
   }
@@ -958,7 +970,8 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     const AttributionHeaders& headers,
     attribution_reporting::SuitableOrigin reporting_origin,
-    const attribution_reporting::RegistrationInfo& registration_info) {
+    const attribution_reporting::RegistrationInfo& registration_info,
+    bool was_fetched_via_service_worker) {
   DCHECK_NE(eligibility_, RegistrationEligibility::kTrigger);
 
   headers.MaybeLogAllTriggerHeadersIgnored(loader_->local_frame_->DomWindow());
@@ -988,7 +1001,8 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
       }
 
       data_host_->SourceDataAvailable(std::move(reporting_origin),
-                                      std::move(*source_data));
+                                      std::move(*source_data),
+                                      was_fetched_via_service_worker);
       ++num_registrations_;
       break;
     }
@@ -1013,8 +1027,10 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
             std::move(reporting_origin));
         return;
       }
+
       data_host_->OsSourceDataAvailable(std::move(reporting_origin),
-                                        std::move(registration_items.value()));
+                                        std::move(registration_items.value()),
+                                        was_fetched_via_service_worker);
       ++num_registrations_;
     }
   }
@@ -1024,7 +1040,8 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     const AttributionHeaders& headers,
     attribution_reporting::SuitableOrigin reporting_origin,
     const Vector<network::TriggerVerification>& trigger_verifications,
-    const attribution_reporting::RegistrationInfo& registration_info) {
+    const attribution_reporting::RegistrationInfo& registration_info,
+    bool was_fetched_via_service_worker) {
   DCHECK_NE(eligibility_, RegistrationEligibility::kSource);
 
   headers.MaybeLogAllSourceHeadersIgnored(loader_->local_frame_->DomWindow());
@@ -1055,9 +1072,9 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
         return;
       }
 
-      data_host_->TriggerDataAvailable(std::move(reporting_origin),
-                                       std::move(*trigger_data),
-                                       std::move(trigger_verifications));
+      data_host_->TriggerDataAvailable(
+          std::move(reporting_origin), std::move(*trigger_data),
+          std::move(trigger_verifications), was_fetched_via_service_worker);
       ++num_registrations_;
       break;
     }
@@ -1083,7 +1100,8 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
         return;
       }
       data_host_->OsTriggerDataAvailable(std::move(reporting_origin),
-                                         std::move(registration_items.value()));
+                                         std::move(registration_items.value()),
+                                         was_fetched_via_service_worker);
       ++num_registrations_;
       break;
     }

@@ -4033,6 +4033,15 @@ Called by update_net_error_codes.py.-->
   <int value="8"
       label="kFencedFrameAutomaticBeacon: Registered from an automatic fenced
              frame beacon"/>
+  <int value="9"
+      label="kNavBackgroundBlinkViaSW: Registered from blink via a background
+             request tied to a navigation via a service worker"/>
+  <int value="10"
+      label="kAttributionSrcBlinkViaSW: Registered from blink via an
+             attributionSrc request via a service worker"/>
+  <int value="11"
+      label="kLegacyBlinkViaSW: Registered from blink via a legacy request
+             via a service worker"/>
 </enum>
 
 <enum name="ConversionStorageCreateReportStatus">

@@ -156,6 +156,8 @@ constexpr int64_t kLastNavigationId(1234);
 constexpr char kDevtoolsRequestId[] = "devtools-request-id-1";
 constexpr BackgroundRegistrationsId kBackgroundId(789);
 
+constexpr bool kViaServiceWorker = false;
+
 // Value used to call `RegisterNavigationDataHost`. It is inconsequential unless
 // kKeepAliveInBrowserMigration is enabled and background registrations are
 // received.
@@ -203,7 +205,8 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
                                  ImpressionOriginIs(page_origin),
                                  ReportingOriginIs(reporting_origin),
                                  SourceIsWithinFencedFrameIs(false)),
-                           kFrameId));
+                           kFrameId))
+      .Times(2);
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -215,11 +218,15 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote->SourceDataAvailable(
+      reporting_origin, source_data, /*was_fetched_via_service_worker=*/true);
+  data_host_remote->SourceDataAvailable(
+      reporting_origin, source_data, /*was_fetched_via_service_worker=*/false);
   data_host_remote.FlushForTesting();
 
-  // kAttributionSrcBlink = 3
+  // kAttributionSrcBlink = 3, kAttributionSrcBlinkViaSW = 10
   histograms.ExpectBucketCount(kRegistrationMethod, 3, 1);
+  histograms.ExpectBucketCount(kRegistrationMethod, 10, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -252,24 +259,27 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger);
 
   SourceRegistration source_data(*DestinationSet::Create({destination_site}));
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(1);
 
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(2);
 
   source_data.destination_set = *DestinationSet::Create(
       {net::SchemefulSite::Deserialize("https://other-trigger.example")});
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(3);
-  data_host_remote->SourceDataAvailable(std::move(reporting_origin),
-                                        std::move(source_data));
+  data_host_remote->SourceDataAvailable(
+      std::move(reporting_origin), std::move(source_data), kViaServiceWorker);
   data_host_remote.FlushForTesting();
 }
 
@@ -312,7 +322,8 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
           AttributionTrigger(reporting_origin, trigger_data, destination_origin,
                              /*verifications=*/{},
                              /*is_within_fenced_frame=*/false),
-          kFrameId));
+          kFrameId))
+      .Times(2);
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -322,12 +333,19 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       RegistrationEligibility::kSourceOrTrigger);
 
-  data_host_remote->TriggerDataAvailable(reporting_origin, trigger_data,
-                                         /*verifications=*/{});
+  data_host_remote->TriggerDataAvailable(
+      reporting_origin, trigger_data,
+      /*verifications=*/{},
+      /*was_fetched_via_service_worker=*/true);
+  data_host_remote->TriggerDataAvailable(
+      reporting_origin, trigger_data,
+      /*verifications=*/{},
+      /*was_fetched_via_service_worker=*/false);
   data_host_remote.FlushForTesting();
 
-  // kAttributionSrcBlink = 3
+  // kAttributionSrcBlink = 3, kAttributionSrcBlinkViaSW = 10
   histograms.ExpectBucketCount(kRegistrationMethod, 3, 1);
+  histograms.ExpectBucketCount(kRegistrationMethod, 10, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -363,13 +381,15 @@ TEST_F(AttributionDataHostManagerImplTest,
   TriggerRegistration trigger_data;
 
   data_host_remote->TriggerDataAvailable(reporting_origin, trigger_data,
-                                         /*verifications=*/{});
+                                         /*verifications=*/{},
+                                         kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(1);
 
   data_host_remote->TriggerDataAvailable(reporting_origin, trigger_data,
-                                         /*verifications=*/{});
+                                         /*verifications=*/{},
+                                         kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(2);
@@ -380,8 +400,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     SourceRegistration source_data(
         *DestinationSet::Create({net::SchemefulSite(destination_origin)}));
 
-    data_host_remote->SourceDataAvailable(reporting_origin,
-                                          std::move(source_data));
+    data_host_remote->SourceDataAvailable(
+        reporting_origin, std::move(source_data), kViaServiceWorker);
     data_host_remote.FlushForTesting();
 
     EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
@@ -390,13 +410,14 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   checkpoint.Call(3);
 
-  data_host_remote->TriggerDataAvailable(std::move(reporting_origin),
-                                         std::move(trigger_data),
-                                         /*verifications=*/{});
+  data_host_remote->TriggerDataAvailable(
+      std::move(reporting_origin), std::move(trigger_data),
+      /*verifications=*/{}, /*was_fetched_via_service_worker=*/true);
   data_host_remote.FlushForTesting();
 
-  // kLegacyBlink = 5
-  histograms.ExpectBucketCount(kRegistrationMethod, 5, 3);
+  // kLegacyBlink = 5, kLegacyBlinkViaSW = 11
+  histograms.ExpectBucketCount(kRegistrationMethod, 5, 2);
+  histograms.ExpectBucketCount(kRegistrationMethod, 11, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -430,25 +451,27 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   SourceRegistration source_data(*DestinationSet::Create({destination_site}));
 
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(1);
 
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(2);
 
-  data_host_remote->TriggerDataAvailable(reporting_origin,
-                                         TriggerRegistration(),
-                                         /*verifications=*/{});
+  data_host_remote->TriggerDataAvailable(
+      reporting_origin, TriggerRegistration(),
+      /*verifications=*/{}, kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(3);
 
-  data_host_remote->SourceDataAvailable(std::move(reporting_origin),
-                                        std::move(source_data));
+  data_host_remote->SourceDataAvailable(
+      std::move(reporting_origin), std::move(source_data), kViaServiceWorker);
   data_host_remote.FlushForTesting();
 }
 
@@ -483,12 +506,14 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   SourceRegistration source_data(*DestinationSet::Create({destination_site}));
 
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(1);
 
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(2);
@@ -496,9 +521,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   {
     mojo::test::BadMessageObserver bad_message_observer;
 
-    data_host_remote->TriggerDataAvailable(reporting_origin,
-                                           TriggerRegistration(),
-                                           /*verifications=*/{});
+    data_host_remote->TriggerDataAvailable(
+        reporting_origin, TriggerRegistration(),
+        /*verifications=*/{}, kViaServiceWorker);
     data_host_remote.FlushForTesting();
 
     EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
@@ -507,8 +532,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   checkpoint.Call(3);
 
-  data_host_remote->SourceDataAvailable(std::move(reporting_origin),
-                                        std::move(source_data));
+  data_host_remote->SourceDataAvailable(
+      std::move(reporting_origin), std::move(source_data), kViaServiceWorker);
   data_host_remote.FlushForTesting();
 }
 
@@ -542,8 +567,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   {
     mojo::test::BadMessageObserver bad_message_observer;
 
-    data_host_remote->SourceDataAvailable(reporting_origin,
-                                          std::move(source_data));
+    data_host_remote->SourceDataAvailable(
+        reporting_origin, std::move(source_data), kViaServiceWorker);
     data_host_remote.FlushForTesting();
 
     EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
@@ -603,7 +628,9 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*last_navigation_id=*/kLastNavigationId),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
 
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote->SourceDataAvailable(
+      reporting_origin, source_data,
+      /*was_fetched_via_service_worker=*/true);
   data_host_remote.FlushForTesting();
 
   checkpoint.Call(1);
@@ -612,15 +639,18 @@ TEST_F(AttributionDataHostManagerImplTest,
   // final navigation site.
   source_data.destination_set = *DestinationSet::Create(
       {net::SchemefulSite::Deserialize("https://trigger2.example")});
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote->SourceDataAvailable(
+      reporting_origin, source_data,
+      /*was_fetched_via_service_worker=*/false);
   data_host_remote.FlushForTesting();
 
   // kRegistered = 0, kProcessed = 3.
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 0, 1);
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 3, 1);
 
-  // kNavBackgroundBlink = 1
-  histograms.ExpectBucketCount(kRegistrationMethod, /*sample=*/1, 2);
+  // kNavBackgroundBlink = 1, kNavBackgroundBlinkViaSW = 9
+  histograms.ExpectBucketCount(kRegistrationMethod, /*sample=*/1, 1);
+  histograms.ExpectBucketCount(kRegistrationMethod, /*sample=*/9, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -719,14 +749,15 @@ TEST_F(AttributionDataHostManagerImplTest,
       *attribution_reporting::AggregationKeys::FromKeys(
           {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}});
   source_data.debug_reporting = true;
-  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
 
   // This should succeed even though the destination site doesn't match the
   // final navigation site.
   source_data.destination_set = *DestinationSet::Create(
       {net::SchemefulSite::Deserialize("https://trigger2.example")});
-  data_host_remote->SourceDataAvailable(reporting_origin,
-                                        std::move(source_data));
+  data_host_remote->SourceDataAvailable(
+      reporting_origin, std::move(source_data), kViaServiceWorker);
 
   data_host_remote.reset();
 
@@ -801,7 +832,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     trigger_data_host_remote->TriggerDataAvailable(
         /*reporting_origin=*/*SuitableOrigin::Deserialize(
             "https://report.test"),
-        TriggerRegistration(), /*verifications=*/{});
+        TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
 
     task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -834,7 +865,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   // delayed.
   data_host_remote2->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
 
   data_host_remote2.FlushForTesting();
 }
@@ -879,7 +910,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   // be delayed.
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
 
   checkpoint.Call(1);
   source_data_host_remote.reset();
@@ -935,7 +966,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     trigger_data_host_remote->TriggerDataAvailable(
         /*reporting_origin=*/*SuitableOrigin::Deserialize(
             "https://report.test"),
-        TriggerRegistration(), /*verifications=*/{});
+        TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
     trigger_data_hosts.emplace_back(std::move(trigger_data_host_remote));
   }
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -988,7 +1019,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/reporting_origin, TriggerRegistration(),
-      /*verifications=*/{});
+      /*verifications=*/{}, kViaServiceWorker);
 
   // 2 - On the main navigation, a source is registered.
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -1049,7 +1080,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
 
   checkpoint.Call(1);
   task_environment_.FastForwardBy(base::Seconds(20));
@@ -1108,7 +1139,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
 
   // The first trigger should be processed immediately as the previous
   // navigation has completed and had no sources registered alongside it.
@@ -1139,7 +1170,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger);
   trigger_data_host_remote_2->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
 
   // The second trigger should be delayed as the source datahost is still
   // connected, it could still receive more sources. The 20s timeouts also isn't
@@ -1172,7 +1203,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger);
   trigger_data_host_remote_3->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
 
   // The third trigger registration should be delayed as the source data host
   // is still connected.
@@ -1229,7 +1260,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 }
 
@@ -1500,15 +1531,19 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // A first source is received through the data host.
   data_host_remote->OsSourceDataAvailable(
-      reporting_origin, {attribution_reporting::OsRegistrationItem{
-                            .url = GURL("https://b.test/x")}});
+      reporting_origin,
+      {attribution_reporting::OsRegistrationItem{.url =
+                                                     GURL("https://b.test/x")}},
+      kViaServiceWorker);
   data_host_remote.FlushForTesting();
   checkpoint.Call(1);
 
   // A second source is received through the data host.
   data_host_remote->OsSourceDataAvailable(
-      reporting_origin, {attribution_reporting::OsRegistrationItem{
-                            .url = GURL("https://b.test/x")}});
+      reporting_origin,
+      {attribution_reporting::OsRegistrationItem{.url =
+                                                     GURL("https://b.test/x")}},
+      kViaServiceWorker);
   data_host_remote.FlushForTesting();
   checkpoint.Call(2);
 
@@ -1887,9 +1922,9 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
       RegistrationEligibility::kSourceOrTrigger);
-  trigger_data_host_remote->TriggerDataAvailable(reporter,
-                                                 TriggerRegistration(),
-                                                 /*verifications=*/{});
+  trigger_data_host_remote->TriggerDataAvailable(
+      reporter, TriggerRegistration(),
+      /*verifications=*/{}, kViaServiceWorker);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, /*headers=*/nullptr, reporter_url,
       network::AttributionReportingRuntimeFeatures());
@@ -1956,7 +1991,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 }
 
@@ -1986,10 +2021,10 @@ TEST_F(AttributionDataHostManagerImplTest, TwoTriggerReceivers) {
   TriggerRegistration trigger_data;
 
   trigger_data_host_remote1->TriggerDataAvailable(
-      reporting_origin, trigger_data, /*verifications=*/{});
-  trigger_data_host_remote2->TriggerDataAvailable(std::move(reporting_origin),
-                                                  std::move(trigger_data),
-                                                  /*verifications=*/{});
+      reporting_origin, trigger_data, /*verifications=*/{}, kViaServiceWorker);
+  trigger_data_host_remote2->TriggerDataAvailable(
+      std::move(reporting_origin), std::move(trigger_data),
+      /*verifications=*/{}, kViaServiceWorker);
 
   trigger_data_host_remote1.FlushForTesting();
   trigger_data_host_remote2.FlushForTesting();
@@ -2030,7 +2065,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 
   // kRegistered = 0, kNavigationFailed = 2.
@@ -2088,7 +2123,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   auto send_trigger = [&](const SuitableOrigin& reporting_origin) {
     trigger_data_host_remote->TriggerDataAvailable(
-        reporting_origin, TriggerRegistration(), /*verifications=*/{});
+        reporting_origin, TriggerRegistration(), /*verifications=*/{},
+        kViaServiceWorker);
   };
 
   send_trigger(reporting_origin1);
@@ -2130,7 +2166,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 
   task_environment_.FastForwardBy(base::Seconds(2));
@@ -2174,7 +2210,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
   data_host_remote.FlushForTesting();
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
@@ -2222,12 +2258,13 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   SourceRegistration source_data(*DestinationSet::Create({destination_site}));
   source_data.source_event_id = 1;
-  data_host_remote1->SourceDataAvailable(reporting_origin, source_data);
+  data_host_remote1->SourceDataAvailable(reporting_origin, source_data,
+                                         kViaServiceWorker);
   data_host_remote1.FlushForTesting();
 
   source_data.source_event_id = 2;
-  data_host_remote2->SourceDataAvailable(std::move(reporting_origin),
-                                         std::move(source_data));
+  data_host_remote2->SourceDataAvailable(
+      std::move(reporting_origin), std::move(source_data), kViaServiceWorker);
   data_host_remote2.FlushForTesting();
 }
 
@@ -2258,8 +2295,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   SourceRegistration source_data(*DestinationSet::Create({destination_site}));
   source_data.source_event_id = 10;
-  data_host_remote->SourceDataAvailable(reporting_origin,
-                                        std::move(source_data));
+  data_host_remote->SourceDataAvailable(
+      reporting_origin, std::move(source_data), kViaServiceWorker);
   data_host_remote.FlushForTesting();
 }
 
@@ -2283,7 +2320,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger);
 
   data_host_remote->TriggerDataAvailable(
-      reporting_origin, TriggerRegistration(), /*verifications=*/{});
+      reporting_origin, TriggerRegistration(), /*verifications=*/{},
+      kViaServiceWorker);
   data_host_remote.FlushForTesting();
 }
 
@@ -2307,7 +2345,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_remote->SourceDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       SourceRegistration(*DestinationSet::Create(
-          {net::SchemefulSite::Deserialize("https://destination.test")})));
+          {net::SchemefulSite::Deserialize("https://destination.test")})),
+      kViaServiceWorker);
   data_host_remote.FlushForTesting();
 }
 
@@ -2499,7 +2538,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   // trigger should be delayed.
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
   // Leave time for the trigger to be processed (if it weren't delayed) to
   // enseure the test past because it is delayed.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -2567,7 +2606,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
 
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -2643,7 +2682,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/reporting_origin, TriggerRegistration(),
-      /*verifications=*/{});
+      /*verifications=*/{}, kViaServiceWorker);
 
   // 2 - A source is registered on the foreground navigation request
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -2724,7 +2763,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
 
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -2812,7 +2851,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   trigger_data_host_remote->TriggerDataAvailable(
       *SuitableOrigin::Create(std::move(reporting_origin)),
-      TriggerRegistration(), /*verifications=*/{});
+      TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 }
 
@@ -2848,7 +2887,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       RegistrationEligibility::kSourceOrTrigger);
 
   trigger_data_host_remote->TriggerDataAvailable(
-      reporting_origin, TriggerRegistration(), /*verifications=*/{});
+      reporting_origin, TriggerRegistration(), /*verifications=*/{},
+      kViaServiceWorker);
   trigger_data_host_remote.FlushForTesting();
 }
 
@@ -2912,11 +2952,14 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
       *SuitableOrigin::Deserialize("https://report.test");
 
   // A call with no items should be ignored.
-  data_host_remote->OsSourceDataAvailable(reporting_origin, {});
+  data_host_remote->OsSourceDataAvailable(reporting_origin, {},
+                                          kViaServiceWorker);
 
   data_host_remote->OsSourceDataAvailable(
-      reporting_origin, {attribution_reporting::OsRegistrationItem{
-                            .url = kRegistrationUrl, .debug_reporting = true}});
+      reporting_origin,
+      {attribution_reporting::OsRegistrationItem{.url = kRegistrationUrl,
+                                                 .debug_reporting = true}},
+      kViaServiceWorker);
   data_host_remote.FlushForTesting();
 }
 
@@ -2950,11 +2993,14 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
       *SuitableOrigin::Deserialize("https://report.test");
 
   // A call with no items should be ignored.
-  data_host_remote->OsTriggerDataAvailable(reporting_origin, {});
+  data_host_remote->OsTriggerDataAvailable(reporting_origin, {},
+                                           kViaServiceWorker);
 
   data_host_remote->OsTriggerDataAvailable(
-      reporting_origin, {attribution_reporting::OsRegistrationItem{
-                            .url = kRegistrationUrl, .debug_reporting = true}});
+      reporting_origin,
+      {attribution_reporting::OsRegistrationItem{.url = kRegistrationUrl,
+                                                 .debug_reporting = true}},
+      kViaServiceWorker);
   data_host_remote.FlushForTesting();
 }
 
@@ -4106,7 +4152,8 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
           /*last_navigation_id=*/kNavigationId),
       RegistrationEligibility::kSourceOrTrigger);
   trigger_data_host_remote->TriggerDataAvailable(
-      reporting_origin, TriggerRegistration(), /*verifications=*/{});
+      reporting_origin, TriggerRegistration(), /*verifications=*/{},
+      kViaServiceWorker);
 
   task_environment_.FastForwardBy(base::TimeDelta());
   checkpoint.Call(1);
@@ -4933,16 +4980,21 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote->SourceDataAvailable(
         reporting_origin,
         SourceRegistration(*DestinationSet::Create(
-            {net::SchemefulSite::Deserialize("https://destination.example")})));
-    data_host_remote->TriggerDataAvailable(reporting_origin,
-                                           TriggerRegistration(),
-                                           /*verifications=*/{});
+            {net::SchemefulSite::Deserialize("https://destination.example")})),
+        kViaServiceWorker);
+    data_host_remote->TriggerDataAvailable(
+        reporting_origin, TriggerRegistration(),
+        /*verifications=*/{}, kViaServiceWorker);
     data_host_remote->OsSourceDataAvailable(
-        reporting_origin, {attribution_reporting::OsRegistrationItem{
-                              .url = GURL("https://a.test/x")}});
+        reporting_origin,
+        {attribution_reporting::OsRegistrationItem{
+            .url = GURL("https://a.test/x")}},
+        kViaServiceWorker);
     data_host_remote->OsTriggerDataAvailable(
-        reporting_origin, {attribution_reporting::OsRegistrationItem{
-                              .url = GURL("https://b.test/x")}});
+        reporting_origin,
+        {attribution_reporting::OsRegistrationItem{
+            .url = GURL("https://b.test/x")}},
+        kViaServiceWorker);
     data_host_remote.FlushForTesting();
   }
 }
