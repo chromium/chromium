@@ -42,26 +42,26 @@ TEST_F(AppInstallNavigationThrottleTest, ExtractQueryParams) {
   EXPECT_EQ(ExtractQueryParams("package_id=garbage"), QueryParams());
 
   EXPECT_EQ(ExtractQueryParams("package_id=web:identifier"),
-            QueryParams(PackageId(PackageType::kWeb, "identifier"),
+            QueryParams(PackageId(AppType::kWeb, "identifier"),
                         AppInstallSurface::kAppInstallUriUnknown));
 
   EXPECT_EQ(ExtractQueryParams("package_id=android:identifier"),
-            QueryParams(PackageId(PackageType::kArc, "identifier"),
+            QueryParams(PackageId(AppType::kArc, "identifier"),
                         AppInstallSurface::kAppInstallUriUnknown));
 
   EXPECT_EQ(ExtractQueryParams("package_id=garbage:identifier"), QueryParams());
 
   EXPECT_EQ(ExtractQueryParams("ignore&package_id=web:identifier"),
-            QueryParams(PackageId(PackageType::kWeb, "identifier"),
+            QueryParams(PackageId(AppType::kWeb, "identifier"),
                         AppInstallSurface::kAppInstallUriUnknown));
 
   EXPECT_EQ(
       ExtractQueryParams("ignore&package_id=web:identifier&ignore=as_well"),
-      QueryParams(PackageId(PackageType::kWeb, "identifier"),
+      QueryParams(PackageId(AppType::kWeb, "identifier"),
                   AppInstallSurface::kAppInstallUriUnknown));
 
   EXPECT_EQ(ExtractQueryParams("package_id=web:first&package_id=web:second"),
-            QueryParams(PackageId(PackageType::kWeb, "second"),
+            QueryParams(PackageId(AppType::kWeb, "second"),
                         AppInstallSurface::kAppInstallUriUnknown));
 
   EXPECT_EQ(
@@ -69,21 +69,21 @@ TEST_F(AppInstallNavigationThrottleTest, ExtractQueryParams) {
       QueryParams(std::nullopt, AppInstallSurface::kAppInstallUriUnknown));
 
   EXPECT_EQ(ExtractQueryParams("package_id=web:https://website.com/"),
-            QueryParams(PackageId(PackageType::kWeb, "https://website.com/"),
+            QueryParams(PackageId(AppType::kWeb, "https://website.com/"),
                         AppInstallSurface::kAppInstallUriUnknown));
 
   EXPECT_EQ(
       ExtractQueryParams(
           "package_id=web:https://website.com/?source=showoff&param2=value"),
       QueryParams(
-          PackageId(PackageType::kWeb, "https://website.com/?source=showoff"),
+          PackageId(AppType::kWeb, "https://website.com/?source=showoff"),
           AppInstallSurface::kAppInstallUriUnknown));
 
   EXPECT_EQ(
       ExtractQueryParams(
           "source=mall&package_id=web%3Ahttps%3A%2F%2Fwebsite.com%2F%"
           "3Fsource%3Dshowoff%26param2%3Dvalue"),
-      QueryParams(PackageId(PackageType::kWeb,
+      QueryParams(PackageId(AppType::kWeb,
                             "https://website.com/?source=showoff&param2=value"),
                   AppInstallSurface::kAppInstallUriMall));
 
@@ -100,32 +100,32 @@ TEST_F(AppInstallNavigationThrottleTest, ExtractQueryParams) {
       QueryParams(std::nullopt, AppInstallSurface::kAppInstallUriShowoff));
 
   EXPECT_EQ(ExtractQueryParams("package_id=web:identifier&source=garbage"),
-            QueryParams(PackageId(PackageType::kWeb, "identifier"),
+            QueryParams(PackageId(AppType::kWeb, "identifier"),
                         AppInstallSurface::kAppInstallUriUnknown));
 
   EXPECT_EQ(ExtractQueryParams("package_id=web:identifier&source=showoff"),
-            QueryParams(PackageId(PackageType::kWeb, "identifier"),
+            QueryParams(PackageId(AppType::kWeb, "identifier"),
                         AppInstallSurface::kAppInstallUriShowoff));
 
   EXPECT_EQ(ExtractQueryParams("package_id=web:identifier&source=mall"),
-            QueryParams(PackageId(PackageType::kWeb, "identifier"),
+            QueryParams(PackageId(AppType::kWeb, "identifier"),
                         AppInstallSurface::kAppInstallUriMall));
 
   EXPECT_EQ(ExtractQueryParams("package_id=web:identifier&source=getit"),
-            QueryParams(PackageId(PackageType::kWeb, "identifier"),
+            QueryParams(PackageId(AppType::kWeb, "identifier"),
                         AppInstallSurface::kAppInstallUriGetit));
 
   EXPECT_EQ(ExtractQueryParams("package_id=web:identifier&source=launcher"),
-            QueryParams(PackageId(PackageType::kWeb, "identifier"),
+            QueryParams(PackageId(AppType::kWeb, "identifier"),
                         AppInstallSurface::kAppInstallUriLauncher));
 
   EXPECT_EQ(ExtractQueryParams("source=mall&package_id=web:identifier"),
-            QueryParams(PackageId(PackageType::kWeb, "identifier"),
+            QueryParams(PackageId(AppType::kWeb, "identifier"),
                         AppInstallSurface::kAppInstallUriMall));
 
   EXPECT_EQ(
       ExtractQueryParams("source=mall&package_id=web:identifier&source=getit"),
-      QueryParams(PackageId(PackageType::kWeb, "identifier"),
+      QueryParams(PackageId(AppType::kWeb, "identifier"),
                   AppInstallSurface::kAppInstallUriGetit));
 }
 

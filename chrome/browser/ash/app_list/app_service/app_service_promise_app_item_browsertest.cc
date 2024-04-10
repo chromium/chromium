@@ -67,7 +67,7 @@
 namespace apps {
 
 const apps::PackageId kTestPackageId =
-    apps::PackageId(apps::PackageType::kArc, "com.test.package");
+    apps::PackageId(apps::AppType::kArc, "com.test.package");
 
 ash::AppListItem* GetAppListItem(const std::string& id) {
   return ash::AppListModelProvider::Get()->model()->FindItem(id);
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
                        CompleteAppInstallationRemovesPromiseAppItem) {
   AppType app_type = AppType::kArc;
   std::string identifier = "test.com.example";
-  PackageId package_id(PackageType::kArc, identifier);
+  PackageId package_id(app_type, identifier);
 
   // Register a promise app in the promise app registry cache.
   apps::PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
@@ -683,8 +683,9 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
                        InstalledAppPinnedWhenPinningPromiseApp) {
+  AppType app_type = AppType::kArc;
   std::string identifier = "test.com.example";
-  PackageId package_id(PackageType::kArc, identifier);
+  PackageId package_id(app_type, identifier);
 
   // Register a promise app in the promise app registry cache.
   apps::PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
@@ -1052,7 +1053,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   const std::string app_name = "TestApp";
   const std::string activity_name = "TestActivity";
   const apps::PackageId package_id =
-      apps::PackageId(apps::PackageType::kArc, package_name);
+      apps::PackageId(apps::AppType::kArc, package_name);
   const std::string app_id =
       ArcAppListPrefs::GetAppId(package_name, activity_name);
 
@@ -1142,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   const std::string app_name = "TestApp";
   const std::string activity_name = "TestActivity";
   const apps::PackageId package_id =
-      apps::PackageId(apps::PackageType::kArc, package_name);
+      apps::PackageId(apps::AppType::kArc, package_name);
 
   // Skip check for official API key.
   app_service_proxy()->PromiseAppService()->SetSkipApiKeyCheckForTesting(true);
@@ -1174,7 +1175,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   const std::string app_name = "TestApp";
   const std::string activity_name = "TestActivity";
   const apps::PackageId package_id =
-      apps::PackageId(apps::PackageType::kArc, package_name);
+      apps::PackageId(apps::AppType::kArc, package_name);
 
   // Skip check for official API key.
   app_service_proxy()->PromiseAppService()->SetSkipApiKeyCheckForTesting(true);
@@ -1213,7 +1214,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   const std::string app_name = "TestApp";
   const std::string activity_name = "TestActivity";
   const apps::PackageId package_id =
-      apps::PackageId(apps::PackageType::kArc, package_name);
+      apps::PackageId(apps::AppType::kArc, package_name);
 
   // Skip check for official API key.
   app_service_proxy()->PromiseAppService()->SetSkipApiKeyCheckForTesting(true);
@@ -1249,7 +1250,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   const std::string app_name = "TestApp";
   const std::string activity_name = "TestActivity";
   const apps::PackageId package_id =
-      apps::PackageId(apps::PackageType::kArc, package_name);
+      apps::PackageId(apps::AppType::kArc, package_name);
 
   // Skip check for official API key.
   app_service_proxy()->PromiseAppService()->SetSkipApiKeyCheckForTesting(true);

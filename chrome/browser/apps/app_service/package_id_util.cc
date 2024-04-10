@@ -40,11 +40,10 @@ std::optional<apps::PackageId> GetPackageIdForApp(
         apk_web_app_service->GetPackageNameForWebApp(
             update.AppId(), /*include_installing_apks=*/true);
     if (package_name.has_value()) {
-      return apps::PackageId(apps::PackageType::kArc, package_name.value());
+      return apps::PackageId(apps::AppType::kArc, package_name.value());
     }
   }
-  return apps::PackageId(ConvertAppTypeToPackageType(update.AppType()).value(),
-                         update.PublisherId());
+  return apps::PackageId(update.AppType(), update.PublisherId());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

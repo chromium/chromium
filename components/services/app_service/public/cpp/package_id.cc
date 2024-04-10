@@ -21,34 +21,34 @@ constexpr char kBorealisPlatformName[] = "steam";
 constexpr char kChromeAppPlatformName[] = "chromeapp";
 constexpr char kWebPlatformName[] = "web";
 
-PackageType PlatformNameToPackageType(std::string_view platform_name) {
+AppType PlatformNameToAppType(std::string_view platform_name) {
   if (platform_name == kArcPlatformName) {
-    return PackageType::kArc;
+    return AppType::kArc;
   }
   if (platform_name == kBorealisPlatformName) {
-    return PackageType::kBorealis;
+    return AppType::kBorealis;
   }
   if (platform_name == kWebPlatformName) {
-    return PackageType::kWeb;
+    return AppType::kWeb;
   }
   if (platform_name == kChromeAppPlatformName) {
-    return PackageType::kChromeApp;
+    return AppType::kChromeApp;
   }
 
-  return PackageType::kUnknown;
+  return AppType::kUnknown;
 }
 
-std::string_view PackageTypeToPlatformName(PackageType package_type) {
-  switch (package_type) {
-    case PackageType::kUnknown:
+std::string_view AppTypeToPlatformName(AppType app_type) {
+  switch (app_type) {
+    case AppType::kUnknown:
       return kUnknownName;
-    case PackageType::kArc:
+    case AppType::kArc:
       return kArcPlatformName;
-    case PackageType::kBorealis:
+    case AppType::kBorealis:
       return kBorealisPlatformName;
-    case PackageType::kChromeApp:
+    case AppType::kChromeApp:
       return kChromeAppPlatformName;
-    case PackageType::kWeb:
+    case AppType::kWeb:
       return kWebPlatformName;
     default:
       NOTREACHED();
@@ -58,23 +58,26 @@ std::string_view PackageTypeToPlatformName(PackageType package_type) {
 
 }  // namespace
 
-PackageId::PackageId(PackageType package_type, std::string_view identifier)
-    : package_type_(package_type), identifier_(identifier) {
+PackageId::PackageId(AppType app_type, std::string_view identifier)
+    : app_type_(app_type), identifier_(identifier) {
+  DCHECK(app_type_ == AppType::kUnknown || app_type_ == AppType::kArc ||
+         app_type_ == AppType::kBorealis || app_type_ == AppType::kChromeApp ||
+         app_type_ == AppType::kWeb);
   DCHECK(!identifier_.empty());
 }
 
-PackageId::PackageId() : PackageId(PackageType::kUnknown, kUnknownName) {}
+PackageId::PackageId() : PackageId(AppType::kUnknown, kUnknownName) {}
 
 PackageId::PackageId(const PackageId&) = default;
 PackageId& PackageId::operator=(const PackageId&) = default;
 
 bool PackageId::operator<(const PackageId& rhs) const {
-  if (this->package_type_ < rhs.package_type_) {
+  if (this->app_type_ < rhs.app_type_) {
     return true;
-  } else if (this->package_type_ > rhs.package_type_) {
+  } else if (this->app_type_ > rhs.app_type_) {
     return false;
   }
-  // If we're here, it's because package_type_ == rhs.package_type_.
+  // If we're here, it's because app_type_ == rhs.app_type_.
   if (this->identifier_ < rhs.identifier_) {
     return true;
   } else {
@@ -83,12 +86,12 @@ bool PackageId::operator<(const PackageId& rhs) const {
 }
 
 bool PackageId::operator==(const PackageId& rhs) const {
-  return this->package_type_ == rhs.package_type_ &&
+  return this->app_type_ == rhs.app_type_ &&
          this->identifier_ == rhs.identifier_;
 }
 
 bool PackageId::operator!=(const PackageId& rhs) const {
-  return this->package_type_ != rhs.package_type_ ||
+  return this->app_type_ != rhs.app_type_ ||
          this->identifier_ != rhs.identifier_;
 }
 
@@ -101,9 +104,8 @@ std::optional<PackageId> PackageId::FromString(
     return std::nullopt;
   }
 
-  PackageType type =
-      PlatformNameToPackageType(package_id_string.substr(0, separator));
-  if (type == PackageType::kUnknown) {
+  AppType type = PlatformNameToAppType(package_id_string.substr(0, separator));
+  if (type == AppType::kUnknown) {
     return std::nullopt;
   }
 
@@ -111,8 +113,7 @@ std::optional<PackageId> PackageId::FromString(
 }
 
 std::string PackageId::ToString() const {
-  return base::StrCat(
-      {PackageTypeToPlatformName(package_type_), ":", identifier_});
+  return base::StrCat({AppTypeToPlatformName(app_type_), ":", identifier_});
 }
 
 std::ostream& operator<<(std::ostream& out, const PackageId& package_id) {

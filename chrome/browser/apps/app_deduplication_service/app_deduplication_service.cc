@@ -290,13 +290,13 @@ void AppDeduplicationService::DeduplicateDataToEntries(
         }
         entry = web_id.value();
       } else {
-        PackageType source = package_id.value().package_type();
+        AppType source = package_id.value().app_type();
         app_id = package_id.value().identifier();
-        if (source != PackageType::kArc && source != PackageType::kWeb) {
+        if (source != AppType::kArc && source != AppType::kWeb) {
           LOG(ERROR) << "Source is an unsupported type.";
           NOTREACHED();
         }
-        entry = Entry(app_id, ConvertPackageTypeToAppType(source).value());
+        entry = Entry(app_id, source);
       }
 
       // Initialize entry status.
