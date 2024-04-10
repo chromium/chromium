@@ -188,6 +188,12 @@ class GPU_EXPORT ClientSharedImage
   static scoped_refptr<ClientSharedImage> ImportUnowned(
       const ExportedSharedImage& exported_shared_image);
 
+  void UpdateDestructionSyncToken(const gpu::SyncToken& sync_token) {
+    destruction_sync_token_ = sync_token;
+  }
+
+  void MarkForDestruction() { marked_for_destruction_ = true; }
+
   // Creates a ClientSharedImage that is not associated with any
   // SharedImageInterface for testing.
   static scoped_refptr<ClientSharedImage> CreateForTesting();
@@ -232,11 +238,14 @@ class GPU_EXPORT ClientSharedImage
   const Mailbox mailbox_;
   const SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
+  SyncToken destruction_sync_token_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
 
   // The texture target returned by `GetTextureTarget()`.
   uint32_t texture_target_ = 0;
+
+  bool marked_for_destruction_ = false;
 };
 
 struct GPU_EXPORT ExportedSharedImage {
