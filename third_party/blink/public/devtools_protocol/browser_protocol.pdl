@@ -475,6 +475,12 @@ experimental domain Animation
       # Animation that was started.
       Animation animation
 
+  # Event for animation that has been updated.
+  event animationUpdated
+    parameters
+      # Animation that was updated.
+      Animation animation
+
 # Audits domain allows investigation of page violations and possible improvements.
 experimental domain Audits
   depends on Network

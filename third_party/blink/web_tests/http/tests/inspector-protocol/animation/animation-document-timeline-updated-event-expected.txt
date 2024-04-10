@@ -1,0 +1,5 @@
+Tests animationUpdated event for time based animations
+Animation created
+Animation started
+Animation updated
+

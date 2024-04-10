@@ -3064,12 +3064,9 @@ void Animation::NotifyProbe() {
   AnimationPlayState old_play_state = reported_play_state_;
   AnimationPlayState new_play_state =
       PendingInternal() ? kPending : CalculateAnimationPlayState();
+  probe::AnimationUpdated(document_, this);
 
   if (old_play_state != new_play_state) {
-    if (!PendingInternal()) {
-      probe::AnimationPlayStateChanged(document_, this, old_play_state,
-                                       new_play_state);
-    }
     reported_play_state_ = new_play_state;
 
     bool was_active = old_play_state == kPending || old_play_state == kRunning;

@@ -54,7 +54,7 @@
     },
     InspectorAnimationAgent: {
       probes: [
-        "AnimationPlayStateChanged",
+        "AnimationUpdated",
         "DidClearDocumentOfWindowObject",
         "DidCreateAnimation",
       ]

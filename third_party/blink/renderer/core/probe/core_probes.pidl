@@ -154,7 +154,7 @@ interface CoreProbes {
   void TopLayerElementsChanged(Document*);
   void PseudoElementDestroyed([Keep] PseudoElement*);
   void DidCreateAnimation(Document*, unsigned);
-  void AnimationPlayStateChanged(Document*, Animation*, Animation::AnimationPlayState old_play_state, Animation::AnimationPlayState new_play_state);
+  void AnimationUpdated(Document*, Animation*);
   void WindowOpen(ExecutionContext*, const KURL& url, const AtomicString& window_name, const WebWindowFeatures& window_features, bool user_gestrue);
   void ConsoleMessageAdded(ExecutionContext*, ConsoleMessage*);
   void InspectorIssueAdded(CoreProbeSink*, protocol::Audits::InspectorIssue*);
