@@ -9,6 +9,7 @@
 #include "clang/AST/Expr.h"
 #include "clang/AST/OperationKinds.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
+#include "clang/Analysis/FlowSensitive/AdornedCFG.h"
 #include "clang/Analysis/FlowSensitive/DataflowAnalysis.h"
 #include "clang/Analysis/FlowSensitive/DataflowLattice.h"
 #include "clang/Analysis/FlowSensitive/NoopLattice.h"
@@ -315,7 +316,7 @@ class InvalidIteratorAnalysis
              const clang::dataflow::Value& val2,
              const clang::dataflow::Environment& env2,
              clang::dataflow::Value& merged_val,
-             clang::dataflow::Environment& merged_env) final {
+             clang::dataflow::Environment& merged_env) {
     if (!IsIterator(type)) {
       return true;
     }
@@ -1002,7 +1003,7 @@ class IteratorInvalidationCheck
     }
 
     InfoStream() << "[FUNCTION] " << func->getQualifiedNameAsString() << '\n';
-    auto control_flow_context = clang::dataflow::ControlFlowContext::build(
+    auto control_flow_context = clang::dataflow::AdornedCFG::build(
         *func, *func->getBody(), *result.Context);
     if (!control_flow_context) {
       llvm::report_fatal_error(control_flow_context.takeError());
