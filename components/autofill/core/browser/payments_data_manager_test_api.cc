@@ -39,6 +39,11 @@ void PaymentsDataManagerTestApi::AddServerCreditCard(
   payments_data_manager_->Refresh();
 }
 
+void PaymentsDataManagerTestApi::AddOfferData(
+    std::unique_ptr<AutofillOfferData> offer_data) {
+  payments_data_manager_->autofill_offer_data_.push_back(std::move(offer_data));
+}
+
 void PaymentsDataManagerTestApi::OnCardArtImagesFetched(
     std::vector<std::unique_ptr<CreditCardArtImage>> images) {
   payments_data_manager_->OnCardArtImagesFetched(std::move(images));

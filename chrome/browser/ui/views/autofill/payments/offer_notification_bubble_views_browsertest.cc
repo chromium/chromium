@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
-
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +36,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   auto offer_data = CreateCardLinkedOfferDataWithDomains(
       {GetUrl("www.example.com", "/"), GetUrl("www.test.com", "/")});
   offer_data->SetEligibleInstrumentIdForTesting({});
-  personal_data()->AddOfferDataForTest(std::move(offer_data));
+  test_api(personal_data()->payments_data_manager())
+      .AddOfferData(std::move(offer_data));
   personal_data()->NotifyPersonalDataObserver();
 
   // Neither icon nor bubble should be visible.
@@ -52,7 +53,8 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        DISABLED_PromoCodeOffer) {
   auto offer_data = CreateGPayPromoCodeOfferDataWithDomains(
       {GetUrl("www.example.com", "/"), GetUrl("www.test.com", "/")});
-  personal_data()->AddOfferDataForTest(std::move(offer_data));
+  test_api(personal_data()->payments_data_manager())
+      .AddOfferData(std::move(offer_data));
   personal_data()->NotifyPersonalDataObserver();
 
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});

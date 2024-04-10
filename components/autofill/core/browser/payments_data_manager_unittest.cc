@@ -223,8 +223,8 @@ class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
   void AddOfferDataForTest(AutofillOfferData offer_data) {
-    personal_data_->AddOfferDataForTest(
-        std::make_unique<AutofillOfferData>(offer_data));
+    test_api(payments_data_manager())
+        .AddOfferData(std::make_unique<AutofillOfferData>(offer_data));
   }
 
   void AddLocalIban(Iban& iban) {

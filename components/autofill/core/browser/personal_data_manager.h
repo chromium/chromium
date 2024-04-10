@@ -267,10 +267,6 @@ class PersonalDataManager : public KeyedService,
   // storage.
   bool IsUsingAccountStorageForServerDataForTest() const;
 
-  // Adds the offer data to local cache for tests. This does not affect data in
-  // the real database.
-  void AddOfferDataForTest(std::unique_ptr<AutofillOfferData> offer_data);
-
   // TODO(b/40100455): Consider moving this to the TestPDM or a TestAPI.
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
 

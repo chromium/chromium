@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
+#include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -62,8 +63,9 @@ class MerchantPromoCodeManagerTest : public testing::Test {
     AutofillOfferData testPromoCodeOfferData =
         test::GetPromoCodeOfferData(GURL(origin));
     testPromoCodeOfferData.SetOfferDetailsUrl(offer_details_url);
-    personal_data_manager_.get()->AddOfferDataForTest(
-        std::make_unique<AutofillOfferData>(testPromoCodeOfferData));
+    test_api(personal_data_manager_->payments_data_manager())
+        .AddOfferData(
+            std::make_unique<AutofillOfferData>(testPromoCodeOfferData));
     return testPromoCodeOfferData.GetPromoCode();
   }
 

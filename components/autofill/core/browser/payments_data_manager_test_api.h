@@ -24,6 +24,10 @@ class PaymentsDataManagerTestApi {
   // PersonalDataManager/PaymentsDataManager may need to directly add cards.
   void AddServerCreditCard(const CreditCard& credit_card);
 
+  // Adds the offer data to local cache. This does not affect data in the
+  // database.
+  void AddOfferData(std::unique_ptr<AutofillOfferData> offer_data);
+
   // Returns the number of credit card benefits.
   size_t GetCreditCardBenefitsCount() {
     return payments_data_manager_->credit_card_benefits_.size();

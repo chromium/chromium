@@ -287,11 +287,6 @@ bool PersonalDataManager::IsUsingAccountStorageForServerDataForTest() const {
   return payments_data_manager_->IsUsingAccountStorageForServerData();
 }
 
-void PersonalDataManager::AddOfferDataForTest(
-    std::unique_ptr<AutofillOfferData> offer_data) {
-  payments_data_manager_->autofill_offer_data_.push_back(std::move(offer_data));
-}
-
 void PersonalDataManager::SetSyncServiceForTest(
     syncer::SyncService* sync_service) {
   // Before the sync service pointer gets changed, remove the observer.

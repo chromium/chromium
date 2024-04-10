@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -9,7 +11,6 @@
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/messages/android/message_enums.h"
@@ -94,7 +96,8 @@ class OfferNotificationControllerAndroidBrowserTest
     auto offer = std::make_unique<AutofillOfferData>(CreateTestCardLinkedOffer(
         merchant_origins, eligible_instrument_ids, offer_reward_amount));
     auto* offer_ptr = offer.get();
-    personal_data_->AddOfferDataForTest(std::move(offer));
+    test_api(personal_data_->payments_data_manager())
+        .AddOfferData(std::move(offer));
     auto card = std::make_unique<CreditCard>();
     card->set_instrument_id(0x4444);
     personal_data_->AddServerCreditCardForTest(std::move(card));
