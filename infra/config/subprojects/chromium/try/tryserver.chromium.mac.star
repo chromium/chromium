@@ -264,6 +264,8 @@ try_.builder(
         ],
     ),
     builderless = True,
+    cores = None,
+    cpu = cpu.ARM64,
     main_list_view = "try",
 )
 
