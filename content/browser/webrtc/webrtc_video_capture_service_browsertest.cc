@@ -110,10 +110,10 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
 
     const SkColor4f kDarkFrameColor = SkColors::kBlack;
     const SkColor4f kLightFrameColor = SkColors::kGray;
-    CreateDummyRgbFrame(ri, sii, kDarkFrameColor,
-                        &dummy_frame_0_mailbox_holder_);
-    CreateDummyRgbFrame(ri, sii, kLightFrameColor,
-                        &dummy_frame_1_mailbox_holder_);
+    CreateDummyRgbFrame(ri, sii, kDarkFrameColor, dummy_frame_0_shared_images_,
+                        dummy_frame_0_sync_token_);
+    CreateDummyRgbFrame(ri, sii, kLightFrameColor, dummy_frame_1_shared_images_,
+                        dummy_frame_1_sync_token_);
   }
 
   void RegisterVirtualDeviceAtVideoSourceProvider(
@@ -124,12 +124,33 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
         ->AddTextureVirtualDevice(info,
                                   virtual_device_.BindNewPipeAndPassReceiver());
 
+    std::vector<gpu::MailboxHolder> dummy_frame_0_mailbox_holders;
+    std::vector<gpu::MailboxHolder> dummy_frame_1_mailbox_holders;
+
+    for (auto& shared_image : dummy_frame_0_shared_images_) {
+      gpu::MailboxHolder holder =
+          shared_image
+              ? gpu::MailboxHolder(shared_image->mailbox(),
+                                   dummy_frame_0_sync_token_, GL_TEXTURE_2D)
+              : gpu::MailboxHolder();
+      dummy_frame_0_mailbox_holders.emplace_back(holder);
+    }
+
+    for (auto& shared_image : dummy_frame_1_shared_images_) {
+      gpu::MailboxHolder holder =
+          shared_image
+              ? gpu::MailboxHolder(shared_image->mailbox(),
+                                   dummy_frame_1_sync_token_, GL_TEXTURE_2D)
+              : gpu::MailboxHolder();
+      dummy_frame_1_mailbox_holders.emplace_back(holder);
+    }
+
     virtual_device_->OnNewMailboxHolderBufferHandle(
         0, media::mojom::MailboxBufferHandleSet::New(
-               std::move(dummy_frame_0_mailbox_holder_)));
+               std::move(dummy_frame_0_mailbox_holders)));
     virtual_device_->OnNewMailboxHolderBufferHandle(
         1, media::mojom::MailboxBufferHandleSet::New(
-               std::move(dummy_frame_1_mailbox_holder_)));
+               std::move(dummy_frame_1_mailbox_holders)));
     frame_being_consumed_[0] = false;
     frame_being_consumed_[1] = false;
   }
@@ -182,10 +203,12 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
   }
 
  private:
-  void CreateDummyRgbFrame(gpu::raster::RasterInterface* ri,
-                           gpu::SharedImageInterface* sii,
-                           SkColor4f frame_color,
-                           std::vector<gpu::MailboxHolder>* target) {
+  void CreateDummyRgbFrame(
+      gpu::raster::RasterInterface* ri,
+      gpu::SharedImageInterface* sii,
+      SkColor4f frame_color,
+      std::vector<scoped_refptr<gpu::ClientSharedImage>>& target,
+      gpu::SyncToken& ri_token) {
     SkBitmap frame_bitmap;
     frame_bitmap.allocPixels(SkImageInfo::Make(
         kDummyFrameCodedSize.width(), kDummyFrameCodedSize.height(),
@@ -196,34 +219,32 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
       // For RGB formats, only the first plane needs to be filled with an
       // actual texture.
       if (i != 0) {
-        target->push_back(gpu::MailboxHolder());
+        target.push_back(nullptr);
         continue;
       }
 
       // This SharedImage is populated via the raster interface below and may
       // be read via the raster interface in normal VideoFrame usage exercised
       // by the tests.
-      gpu::Mailbox mailbox =
+      scoped_refptr<gpu::ClientSharedImage> shared_image =
           sii->CreateSharedImage(
-                 {viz::SinglePlaneFormat::kRGBA_8888, kDummyFrameCodedSize,
-                  gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-                  kOpaque_SkAlphaType,
-                  gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
-                  "TestLabel"},
-                 gpu::kNullSurfaceHandle)
-              ->mailbox();
+              {viz::SinglePlaneFormat::kRGBA_8888, kDummyFrameCodedSize,
+               gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+               kOpaque_SkAlphaType,
+               gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                   gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
+               "TestLabel"},
+              gpu::kNullSurfaceHandle);
 
       gpu::SyncToken sii_token = sii->GenVerifiedSyncToken();
       ri->WaitSyncTokenCHROMIUM(sii_token.GetConstData());
-      ri->WritePixels(mailbox, 0, 0, GL_TEXTURE_2D, frame_bitmap.pixmap());
+      ri->WritePixels(shared_image->mailbox(), 0, 0, GL_TEXTURE_2D,
+                      frame_bitmap.pixmap());
 
-      gpu::SyncToken ri_token;
-      ri->GenSyncTokenCHROMIUM(ri_token.GetData());
-
-      target->emplace_back(mailbox, ri_token, GL_TEXTURE_2D);
+      target.emplace_back(shared_image);
     }
+    ri->GenSyncTokenCHROMIUM(ri_token.GetData());
     ri->ShallowFlushCHROMIUM();
     CHECK_EQ(ri->GetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
@@ -238,8 +259,12 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
   mojo::Remote<video_capture::mojom::TextureVirtualDevice> virtual_device_;
   bool virtual_device_has_frame_access_handler_ = false;
   int dummy_frame_index_ = 0;
-  std::vector<gpu::MailboxHolder> dummy_frame_0_mailbox_holder_;
-  std::vector<gpu::MailboxHolder> dummy_frame_1_mailbox_holder_;
+  std::vector<scoped_refptr<gpu::ClientSharedImage>>
+      dummy_frame_0_shared_images_;
+  std::vector<scoped_refptr<gpu::ClientSharedImage>>
+      dummy_frame_1_shared_images_;
+  gpu::SyncToken dummy_frame_0_sync_token_;
+  gpu::SyncToken dummy_frame_1_sync_token_;
   std::array<bool, 2> frame_being_consumed_;
   base::WeakPtrFactory<TextureDeviceExerciser> weak_factory_{this};
 };
