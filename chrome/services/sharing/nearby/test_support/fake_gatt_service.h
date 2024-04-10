@@ -37,6 +37,10 @@ class FakeGattService : public mojom::GattService {
   void SetCreateCharacteristicResult(bool success);
   int GetNumCharacteristicUuids() { return characteristic_uuids_.size(); }
 
+  void SetOnDestroyedCallback(base::OnceClosure callback) {
+    on_destroyed_callback_ = std::move(callback);
+  }
+
  private:
   void OnLocalCharacteristicReadResponse(
       ValueCallback callback,
@@ -45,6 +49,7 @@ class FakeGattService : public mojom::GattService {
   std::vector<device::BluetoothUUID> characteristic_uuids_;
   mojo::Remote<mojom::GattServiceObserver> observer_remote_;
   bool set_create_characteristic_result_ = false;
+  base::OnceClosure on_destroyed_callback_;
   mojo::Receiver<mojom::GattService> gatt_server_{this};
 };
 
