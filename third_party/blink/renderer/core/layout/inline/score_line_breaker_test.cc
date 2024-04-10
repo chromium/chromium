@@ -134,7 +134,6 @@ TEST_F(ScoreLineBreakerTest, LastLines) {
 }
 
 TEST_F(ScoreLineBreakerTest, BalanceMaxLinesExceeded) {
-  ScopedCSSTextWrapBalanceByScoreForTest balance_by_score(true);
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -367,7 +366,6 @@ INSTANTIATE_TEST_SUITE_P(ScoreLineBreakerTest,
                          testing::ValuesIn(disabled_by_line_breaker_data));
 
 TEST_P(DisabledByLineBreakerTest, Data) {
-  ScopedCSSTextWrapPrettyForTest enable(true);
   const auto& data = GetParam();
   LoadAhem();
   SetBodyInnerHTML(String(R"HTML(
@@ -406,7 +404,6 @@ TEST_P(DisabledByLineBreakerTest, Data) {
 // Test when `InlineLayoutAlgorithm::Layout` runs `LineBreaker` twice for
 // the same line, to retry line breaking due to float placements.
 TEST_F(ScoreLineBreakerTest, FloatRetry) {
-  ScopedCSSTextWrapPrettyForTest enable(true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -469,7 +466,6 @@ TEST_F(ScoreLineBreakerTest, Zoom) {
 }
 
 TEST_F(ScoreLineBreakerTest, UseCountNotCountedForWrap) {
-  ScopedCSSTextWrapPrettyForTest enable(true);
   SetBodyInnerHTML(R"HTML(
     <div>012</div>
   )HTML");
@@ -478,7 +474,6 @@ TEST_F(ScoreLineBreakerTest, UseCountNotCountedForWrap) {
 }
 
 TEST_F(ScoreLineBreakerTest, UseCountNotCountedForBalance) {
-  ScopedCSSTextWrapPrettyForTest enable(true);
   SetBodyInnerHTML(R"HTML(
     <div style="text-wrap: balance">012</div>
   )HTML");

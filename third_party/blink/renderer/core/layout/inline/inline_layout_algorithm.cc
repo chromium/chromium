@@ -149,7 +149,6 @@ class LineBreakStrategy {
 
     // Try `ScoreLineBreaker` first if it's applicable.
     if (use_score_line_break_ && score_line_break_context_->IsActive()) {
-      DCHECK(RuntimeEnabledFeatures::CSSTextWrapBalanceByScoreEnabled());
       DCHECK(score_line_break_context_->GetLineBreakPoints().empty());
       DCHECK_EQ(score_line_break_context_->LineBreakPointsIndex(), 0u);
       LineWidths line_widths;

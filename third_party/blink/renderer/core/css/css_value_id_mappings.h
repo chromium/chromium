@@ -530,7 +530,6 @@ inline TextWrap CssValueIDToPlatformEnum(CSSValueID v) {
     case CSSValueID::kBalance:
       return TextWrap::kBalance;
     case CSSValueID::kPretty:
-      DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
       return TextWrap::kPretty;
     default:
       NOTREACHED();
@@ -548,7 +547,6 @@ inline CSSValueID PlatformEnumToCSSValueID(TextWrap v) {
     case TextWrap::kBalance:
       return CSSValueID::kBalance;
     case TextWrap::kPretty:
-      DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
       return CSSValueID::kPretty;
   }
   NOTREACHED();

@@ -1099,16 +1099,6 @@
       name: "CSSTextSpacingTrim",
       status: "stable",
     },
-    // Use the `ScoreLineBreaker` for `text-wrap: balance`. crbug.com/1451205
-    {
-      name: "CSSTextWrapBalanceByScore",
-      status: "stable",
-    },
-    // `text-wrap: pretty`. crbug.com/1432798
-    {
-      name: "CSSTextWrapPretty",
-      status: "stable",
-    },
     {
       name: "CSSTransitionDiscrete",
       status: "stable",
