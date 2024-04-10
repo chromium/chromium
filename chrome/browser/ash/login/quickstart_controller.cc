@@ -158,6 +158,54 @@ void QuickStartController::DetachFrontend(
   ui_delegates_.RemoveObserver(delegate);
 }
 
+void QuickStartController::MaybeRecordQuickStartScreenOpened(UiState new_ui) {
+  switch (new_ui) {
+    case UiState::CONNECTING_TO_PHONE:
+      if (controller_state_ ==
+          ControllerState::WAITING_TO_RESUME_AFTER_UPDATE) {
+        QuickStartMetrics::RecordScreenOpened(
+            QuickStartMetrics::ScreenName::kQSResumingConnectionAfterUpdate);
+      }
+      return;
+    case UiState::SHOWING_QR:
+      [[fallthrough]];
+    case UiState::SHOWING_PIN:
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone);
+      return;
+    case UiState::CONNECTING_TO_WIFI:
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kQSConnectingToWifi);
+      return;
+    case UiState::WIFI_CREDENTIALS_RECEIVED:
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kQSWifiCredentialsReceived);
+      return;
+    case UiState::CONFIRM_GOOGLE_ACCOUNT:
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kQSSelectGoogleAccount);
+      return;
+    case UiState::SIGNING_IN:
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kQSGettingGoogleAccountInfo);
+      return;
+    case UiState::SETUP_COMPLETE:
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kQSComplete);
+      return;
+    case UiState::CREATING_ACCOUNT:
+      [[fallthrough]];
+    case UiState::FALLBACK_URL_FLOW:
+      [[fallthrough]];
+    case UiState::EXIT_SCREEN:
+      [[fallthrough]];
+    case UiState::SHOWING_BLUETOOTH_DIALOG:
+      [[fallthrough]];
+    default:
+      return;
+  }
+}
+
 void QuickStartController::UpdateUiState(UiState ui_state) {
   QS_LOG(INFO) << "Updating UI state to " << ui_state;
   ui_state_ = ui_state;
@@ -165,6 +213,7 @@ void QuickStartController::UpdateUiState(UiState ui_state) {
   for (auto& delegate : ui_delegates_) {
     delegate.OnUiUpdateRequested(ui_state_.value());
   }
+  MaybeRecordQuickStartScreenOpened(ui_state);
 }
 
 void QuickStartController::ForceEnableQuickStart() {
@@ -286,16 +335,12 @@ void QuickStartController::OnStatusChanged(
   using Step = TargetDeviceBootstrapController::Step;
   using ErrorCode = TargetDeviceBootstrapController::ErrorCode;
 
-  // TODO(b/298042953): Emit ScreenOpened metrics when automatically
-  // resuming after an update.
   switch (status.step) {
     case Step::ADVERTISING_WITH_QR_CODE:
       controller_state_ = ControllerState::ADVERTISING;
       CHECK(absl::holds_alternative<QRCode::PixelData>(status.payload));
       qr_code_data_ = absl::get<QRCode::PixelData>(status.payload);
       UpdateUiState(UiState::SHOWING_QR);
-      QuickStartMetrics::RecordScreenOpened(
-          QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone);
       return;
     case Step::ADVERTISING_WITHOUT_QR_CODE:
       UpdateUiState(UiState::CONNECTING_TO_PHONE);
@@ -305,8 +350,6 @@ void QuickStartController::OnStatusChanged(
       pin_ = *absl::get<PinString>(status.payload);
       CHECK_EQ(pin_.value().length(), 4UL);
       UpdateUiState(UiState::SHOWING_PIN);
-      QuickStartMetrics::RecordScreenOpened(
-          QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone);
       return;
     case Step::CONNECTED:
       controller_state_ = ControllerState::CONNECTED;
@@ -314,8 +357,6 @@ void QuickStartController::OnStatusChanged(
       return;
     case Step::REQUESTING_WIFI_CREDENTIALS:
       UpdateUiState(UiState::CONNECTING_TO_WIFI);
-      QuickStartMetrics::RecordScreenOpened(
-          QuickStartMetrics::ScreenName::kConnectingToWifi);
       return;
     case Step::WIFI_CREDENTIALS_RECEIVED:
       CHECK(absl::holds_alternative<mojom::WifiCredentials>(status.payload));
@@ -352,8 +393,6 @@ void QuickStartController::OnStatusChanged(
                       << controller_state_;
         AbortFlow(AbortFlowReason::ERROR);
       }
-      // TODO(b/298042953): Record Gaia Transfer screen shown once UI is
-      // implemented.
       return;
     case Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
       if (controller_state_ != ControllerState::CONNECTED) {

@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
-      quick_start::QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone, 0);
+      quick_start::QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone, 0);
   test::WaitForWelcomeScreen();
   test::OobeJS().ExpectVisiblePath(kQuickStartButtonPath);
 
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
   EXPECT_EQ(canvas_cell_count * canvas_cell_count, qr_code_size);
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
-      quick_start::QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone, 1);
+      quick_start::QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PinCode) {
@@ -567,24 +567,33 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
-      quick_start::QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone, 0);
+      quick_start::QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone, 0);
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
-      quick_start::QuickStartMetrics::ScreenName::kConnectingToWifi, 0);
+      quick_start::QuickStartMetrics::ScreenName::kQSConnectingToWifi, 0);
+  histogram_tester.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::QuickStartMetrics::ScreenName::kQSWifiCredentialsReceived,
+      0);
 
   EnterQuickStartFlowFromWelcomeScreen();
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
-      quick_start::QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone, 1);
+      quick_start::QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone, 1);
 
   SimulatePhoneConnection();
   SimulateUserVerification();
 
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
-      quick_start::QuickStartMetrics::ScreenName::kConnectingToWifi, 1);
+      quick_start::QuickStartMetrics::ScreenName::kQSConnectingToWifi, 1);
 
   SimulateWiFiTransfer();
+
+  histogram_tester.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::QuickStartMetrics::ScreenName::kQSWifiCredentialsReceived,
+      1);
 
   test::WaitForNetworkSelectionScreen();
   SkipUpdateScreenOnBrandedBuilds();

@@ -28,21 +28,27 @@ class QuickStartMetrics {
     kWelcomeScreen = 2,  // Quick Start entry point 1.
     kNetworkScreen = 3,  // Quick Start entry point 2, or in the middle of Quick
                          // Start when the host device is not connected to wifi.
-    kGaiaScreen = 4,     // Quick Start entry point 3.
-    kSetUpWithAndroidPhone = 5,  // Beginning of Quick Start flow.
-    kConnectingToWifi = 6,       // Transferring wifi with Quick Start.
+    kGaiaScreen = 4,     // Quick Start entry point 4 (See kGaiaInfoScreen for
+                         // entry point 3).
+    kQSSetUpWithAndroidPhone = 5,  // Beginning of Quick Start flow.
+    kQSConnectingToWifi = 6,       // Transferring wifi with Quick Start.
     kCheckingForUpdateAndDeterminingDeviceConfiguration = 7,
     kChooseChromebookSetup = 8,
-    kInstallingLatestUpdate = 9,
-    kResumingConnectionAfterUpdate = 10,
-    kGettingGoogleAccountInfo = 11,
-    kQuickStartComplete = 12,
+    kConsumerUpdate = 9,
+    kQSResumingConnectionAfterUpdate = 10,
+    kQSGettingGoogleAccountInfo = 11,
+    kQSComplete = 12,
     kSetupDevicePIN = 13,          // After Quick Start flow is complete.
     kAskForParentPermission = 14,  // Only for Unicorn accounts.
     kReviewPrivacyAndTerms = 15,   // Only for Unicorn accounts.
-    kUnifiedSetup = 16,  // After Quick Start flow is complete, connect host
-                         // phone to account.
-    kMaxValue = kUnifiedSetup
+    kUnifiedSetup = 16,    // After Quick Start flow is complete, connect host
+                           // phone to account.
+    kGaiaInfoScreen = 17,  // Quick Start entry point 3
+    kQSWifiCredentialsReceived = 18,  // Quick Start UI when wifi credentials
+                                      // transfer succeeds.
+    kQSSelectGoogleAccount = 19,  // Quick Start UI informing user to confirm
+                                  // account on phone.
+    kMaxValue = kQSSelectGoogleAccount
   };
 
   enum class ExitReason {

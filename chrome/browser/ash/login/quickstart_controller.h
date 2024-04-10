@@ -178,6 +178,9 @@ class QuickStartController
   void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
                                properties) override;
 
+  // Records ScreenOpened metric when UiState changes.
+  void MaybeRecordQuickStartScreenOpened(UiState new_ui);
+
   // Updates the UI state and notifies the frontend.
   void UpdateUiState(UiState ui_state);
 
