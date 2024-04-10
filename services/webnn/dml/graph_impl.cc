@@ -4055,7 +4055,8 @@ GraphImpl::AllocateComputeResources(
   DML_BINDING_PROPERTIES execution_binding_properties =
       compiled_operator->GetBindingProperties();
   ComPtr<ID3D12DescriptorHeap> descriptor_heap;
-  RETURN_UNEXPECTED_IF_FAILED(command_recorder->CreateDescriptorHeap(
+  RETURN_UNEXPECTED_IF_FAILED(CreateDescriptorHeap(
+      command_recorder->d3d12_device(),
       execution_binding_properties.RequiredDescriptorCount,
       L"WebNN_Descriptor_Heap_For_Execution", descriptor_heap));
 
@@ -4083,20 +4084,20 @@ GraphImpl::AllocateComputeResources(
       // create a resource to map the heap. CPU writes the input data into this
       // resource which could be bound as graph input for GPU reading during
       // execution.
-      RETURN_UNEXPECTED_IF_FAILED(command_recorder->CreateCustomUploadBuffer(
-          total_byte_length_of_inputs, L"WebNN_Custom_Upload_Buffer_Inputs",
-          input_buffer));
+      RETURN_UNEXPECTED_IF_FAILED(CreateCustomUploadBuffer(
+          command_recorder->d3d12_device(), total_byte_length_of_inputs,
+          L"WebNN_Custom_Upload_Buffer_Inputs", input_buffer));
     } else {
       // Create the upload heap that can be written by CPU and read from GPU,
       // and create a resource to map the heap.
-      RETURN_UNEXPECTED_IF_FAILED(command_recorder->CreateUploadBuffer(
-          total_byte_length_of_inputs, L"WebNN_Upload_Buffer_Inputs",
-          upload_buffer));
+      RETURN_UNEXPECTED_IF_FAILED(CreateUploadBuffer(
+          command_recorder->d3d12_device(), total_byte_length_of_inputs,
+          L"WebNN_Upload_Buffer_Inputs", upload_buffer));
       // Create the default heap that only can be accessed by GPU not provide
       // CPU access, and create a resource to map the heap.
-      RETURN_UNEXPECTED_IF_FAILED(command_recorder->CreateDefaultBuffer(
-          total_byte_length_of_inputs, L"WebNN_Default_Buffer_Inputs",
-          input_buffer));
+      RETURN_UNEXPECTED_IF_FAILED(CreateDefaultBuffer(
+          command_recorder->d3d12_device(), total_byte_length_of_inputs,
+          L"WebNN_Default_Buffer_Inputs", input_buffer));
     }
   }
 
@@ -4121,19 +4122,19 @@ GraphImpl::AllocateComputeResources(
     // create a resource to map the heap. This resource could be bound as graph
     // execution output for GPU writing. And CPU could read the output data from
     // this resource after GPU execution.
-    RETURN_UNEXPECTED_IF_FAILED(command_recorder->CreateCustomReadbackBuffer(
-        total_byte_length_of_outputs, L"WebNN_Custom_Readback_Buffer_Outputs",
-        output_buffer));
+    RETURN_UNEXPECTED_IF_FAILED(CreateCustomReadbackBuffer(
+        command_recorder->d3d12_device(), total_byte_length_of_outputs,
+        L"WebNN_Custom_Readback_Buffer_Outputs", output_buffer));
   } else {
     // Create the output buffer which will be written by GPU.
-    RETURN_UNEXPECTED_IF_FAILED(command_recorder->CreateDefaultBuffer(
-        total_byte_length_of_outputs, L"WebNN_Default_Buffer_Outputs",
-        output_buffer));
+    RETURN_UNEXPECTED_IF_FAILED(CreateDefaultBuffer(
+        command_recorder->d3d12_device(), total_byte_length_of_outputs,
+        L"WebNN_Default_Buffer_Outputs", output_buffer));
 
     // Create the readback buffer which will be read by CPU.
-    RETURN_UNEXPECTED_IF_FAILED(command_recorder->CreateReadbackBuffer(
-        total_byte_length_of_outputs, L"WebNN_ReadBack_Buffer_Outputs",
-        readback_buffer));
+    RETURN_UNEXPECTED_IF_FAILED(CreateReadbackBuffer(
+        command_recorder->d3d12_device(), total_byte_length_of_outputs,
+        L"WebNN_ReadBack_Buffer_Outputs", readback_buffer));
   }
 
   // Create and bind the temporary resource if the operator execution requires.
@@ -4141,9 +4142,9 @@ GraphImpl::AllocateComputeResources(
   uint64_t temporary_buffer_byte_length =
       execution_binding_properties.TemporaryResourceSize;
   if (temporary_buffer_byte_length > 0) {
-    RETURN_UNEXPECTED_IF_FAILED(command_recorder->CreateDefaultBuffer(
-        temporary_buffer_byte_length, L"WebNN_Temporary_Buffer_For_Execution",
-        temporary_buffer));
+    RETURN_UNEXPECTED_IF_FAILED(CreateDefaultBuffer(
+        command_recorder->d3d12_device(), temporary_buffer_byte_length,
+        L"WebNN_Temporary_Buffer_For_Execution", temporary_buffer));
   }
 
   return base::WrapUnique(new ComputeResources(
@@ -4348,8 +4349,8 @@ void GraphImpl::OnCompilationComplete(
       // resource which will be bound as graph input for GPU reading during
       // initialization.
       ComPtr<ID3D12Resource> cpu_buffer;
-      hr = command_recorder->CreateCustomUploadBuffer(
-          total_byte_length_of_constants,
+      hr = CreateCustomUploadBuffer(
+          command_recorder->d3d12_device(), total_byte_length_of_constants,
           L"WebNN_Custom_Upload_Buffer_Constants", cpu_buffer);
       if (FAILED(hr)) {
         HandleGraphCreationFailure(
@@ -4362,9 +4363,9 @@ void GraphImpl::OnCompilationComplete(
       // Create the upload heap that can be written by CPU and read from GPU,
       // and create a resource to map the heap.
       ComPtr<ID3D12Resource> upload_buffer;
-      hr = command_recorder->CreateUploadBuffer(
-          total_byte_length_of_constants, L"WebNN_Upload_Buffer_Constants",
-          upload_buffer);
+      hr = CreateUploadBuffer(command_recorder->d3d12_device(),
+                              total_byte_length_of_constants,
+                              L"WebNN_Upload_Buffer_Constants", upload_buffer);
       if (FAILED(hr)) {
         HandleGraphCreationFailure(
             "Failed to create upload buffer for constants.", hr,
@@ -4374,9 +4375,9 @@ void GraphImpl::OnCompilationComplete(
       // Create the default heap that only can be accessed by GPU not provide
       // CPU access, and create a resource to map the heap.
       ComPtr<ID3D12Resource> default_buffer;
-      hr = command_recorder->CreateDefaultBuffer(
-          total_byte_length_of_constants, L"WebNN_Default_Buffer_Constants",
-          default_buffer);
+      hr = CreateDefaultBuffer(
+          command_recorder->d3d12_device(), total_byte_length_of_constants,
+          L"WebNN_Default_Buffer_Constants", default_buffer);
       if (FAILED(hr)) {
         HandleGraphCreationFailure(
             "Failed to create default input buffer for constants.", hr,
@@ -4424,9 +4425,9 @@ void GraphImpl::OnCompilationComplete(
       execution_binding_properties.PersistentResourceSize;
   if (persistent_buffer_size) {
     ComPtr<ID3D12Resource> persistent_buffer;
-    hr = command_recorder->CreateDefaultBuffer(
-        persistent_buffer_size, L"WebNN_Default_Persistent_Buffer",
-        persistent_buffer);
+    hr = CreateDefaultBuffer(
+        command_recorder->d3d12_device(), persistent_buffer_size,
+        L"WebNN_Default_Persistent_Buffer", persistent_buffer);
     if (FAILED(hr)) {
       HandleGraphCreationFailure(
           "Failed to create the default buffer for persistent resource.", hr,

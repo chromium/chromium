@@ -5,6 +5,7 @@
 #include "services/webnn/dml/utils.h"
 
 #include <string.h>
+
 #include <set>
 
 #include "base/bits.h"
@@ -14,6 +15,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/trace_event/trace_event.h"
 #include "services/webnn/dml/error.h"
 
 namespace webnn::dml {
@@ -66,6 +68,29 @@ bool ValidateAxes(base::span<const uint32_t> axes) {
   }
 
   return true;
+}
+
+D3D12_HEAP_PROPERTIES CreateHeapProperties(D3D12_HEAP_TYPE type) {
+  return {.Type = type,
+          .CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+          .MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+          .CreationNodeMask = 1,
+          .VisibleNodeMask = 1};
+}
+
+D3D12_RESOURCE_DESC CreateResourceDesc(
+    uint64_t size,
+    D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE) {
+  return {.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+          .Alignment = 0,
+          .Width = size,
+          .Height = 1,
+          .DepthOrArraySize = 1,
+          .MipLevels = 1,
+          .Format = DXGI_FORMAT_UNKNOWN,
+          .SampleDesc = {1, 0},
+          .Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+          .Flags = flags};
 }
 
 }  // namespace
@@ -224,6 +249,133 @@ void ReadbackBufferWithBarrier(CommandRecorder* command_recorder,
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
                             const std::string& error_message) {
   return mojom::Error::New(error_code, kBackendName + error_message);
+}
+
+HRESULT CreateDefaultBuffer(ID3D12Device* device,
+                            uint64_t size,
+                            const wchar_t* name_for_debugging,
+                            ComPtr<ID3D12Resource>& resource) {
+  TRACE_EVENT2("gpu", "dml::CreateDefaultBuffer", "size", size, "name",
+               name_for_debugging);
+  auto heap_properties = CreateHeapProperties(D3D12_HEAP_TYPE_DEFAULT);
+  auto resource_desc =
+      CreateResourceDesc(size, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+  RETURN_IF_FAILED(device->CreateCommittedResource(
+      &heap_properties, D3D12_HEAP_FLAG_NONE, &resource_desc,
+      D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nullptr, IID_PPV_ARGS(&resource)));
+  CHECK(resource.Get());
+
+  CHECK_NE(name_for_debugging, nullptr);
+  CHECK_EQ(resource->SetName(name_for_debugging), S_OK);
+  return S_OK;
+}
+
+HRESULT CreateUploadBuffer(ID3D12Device* device,
+                           uint64_t size,
+                           const wchar_t* name_for_debugging,
+                           ComPtr<ID3D12Resource>& resource) {
+  TRACE_EVENT2("gpu", "dml::CreateUploadBuffer", "size", size, "name",
+               name_for_debugging);
+  auto heap_properties = CreateHeapProperties(D3D12_HEAP_TYPE_UPLOAD);
+  auto resource_desc = CreateResourceDesc(size, D3D12_RESOURCE_FLAG_NONE);
+  RETURN_IF_FAILED(device->CreateCommittedResource(
+      &heap_properties, D3D12_HEAP_FLAG_NONE, &resource_desc,
+      D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&resource)));
+  CHECK(resource.Get());
+
+  CHECK_NE(name_for_debugging, nullptr);
+  CHECK_EQ(resource->SetName(name_for_debugging), S_OK);
+  return S_OK;
+}
+
+HRESULT CreateReadbackBuffer(ID3D12Device* device,
+                             uint64_t size,
+                             const wchar_t* name_for_debugging,
+                             ComPtr<ID3D12Resource>& resource) {
+  CHECK(device);
+  TRACE_EVENT2("gpu", "dml::CreateReadbackBuffer", "size", size, "name",
+               name_for_debugging);
+  auto heap_properties = CreateHeapProperties(D3D12_HEAP_TYPE_READBACK);
+  auto resource_desc = CreateResourceDesc(size, D3D12_RESOURCE_FLAG_NONE);
+  RETURN_IF_FAILED(device->CreateCommittedResource(
+      &heap_properties, D3D12_HEAP_FLAG_NONE, &resource_desc,
+      D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&resource)));
+  CHECK(resource.Get());
+
+  CHECK_NE(name_for_debugging, nullptr);
+  CHECK_EQ(resource->SetName(name_for_debugging), S_OK);
+  return S_OK;
+}
+
+HRESULT CreateCustomUploadBuffer(ID3D12Device* device,
+                                 uint64_t size,
+                                 const wchar_t* name_for_debugging,
+                                 ComPtr<ID3D12Resource>& resource) {
+  CHECK(device);
+  TRACE_EVENT2("gpu", "dml::CreateCustomUploadBuffer", "size", size, "name",
+               name_for_debugging);
+  // Create the equivalent custom heap properties regarding to upload heap,
+  // based on the adapter's architectural properties.
+  // https://learn.microsoft.com/en-us/previous-versions/dn788678(v=vs.85)
+  auto heap_properties =
+      device->GetCustomHeapProperties(0, D3D12_HEAP_TYPE_UPLOAD);
+  auto resource_desc =
+      CreateResourceDesc(size, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+  RETURN_IF_FAILED(device->CreateCommittedResource(
+      &heap_properties, D3D12_HEAP_FLAG_NONE, &resource_desc,
+      D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nullptr, IID_PPV_ARGS(&resource)));
+  CHECK(resource.Get());
+
+  CHECK_NE(name_for_debugging, nullptr);
+  CHECK_EQ(resource->SetName(name_for_debugging), S_OK);
+  return S_OK;
+}
+
+HRESULT CreateCustomReadbackBuffer(ID3D12Device* device,
+                                   uint64_t size,
+                                   const wchar_t* name_for_debugging,
+                                   ComPtr<ID3D12Resource>& resource) {
+  CHECK(device);
+  TRACE_EVENT2("gpu", "dml::CreateCustomReadbackBuffer", "size", size, "name",
+               name_for_debugging);
+  // Create the equivalent custom heap properties regarding to readback heap,
+  // based on the adapter's architectural properties.
+  // https://learn.microsoft.com/en-us/previous-versions/dn788678(v=vs.85)
+  auto heap_properties =
+      device->GetCustomHeapProperties(0, D3D12_HEAP_TYPE_READBACK);
+  auto resource_desc =
+      CreateResourceDesc(size, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+  RETURN_IF_FAILED(device->CreateCommittedResource(
+      &heap_properties, D3D12_HEAP_FLAG_NONE, &resource_desc,
+      D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nullptr, IID_PPV_ARGS(&resource)));
+  CHECK(resource.Get());
+
+  CHECK_NE(name_for_debugging, nullptr);
+  CHECK_EQ(resource->SetName(name_for_debugging), S_OK);
+  return S_OK;
+}
+
+HRESULT CreateDescriptorHeap(ID3D12Device* device,
+                             uint32_t num_descriptors,
+                             const wchar_t* name_for_debugging,
+                             ComPtr<ID3D12DescriptorHeap>& descriptor_heap) {
+  CHECK(device);
+  TRACE_EVENT2("gpu", "dml::CreateDescriptorHeap", "num_descriptors",
+               num_descriptors, "name", name_for_debugging);
+  CHECK_GT(num_descriptors, 0u);
+  D3D12_DESCRIPTOR_HEAP_DESC descriptor_heap_desc{
+      .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+      .NumDescriptors = num_descriptors,
+      .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE};
+  RETURN_IF_FAILED(device->CreateDescriptorHeap(
+      &descriptor_heap_desc, IID_PPV_ARGS(&descriptor_heap)));
+  CHECK(descriptor_heap.Get());
+  descriptor_heap_desc = descriptor_heap->GetDesc();
+  CHECK_EQ(descriptor_heap_desc.NumDescriptors, num_descriptors);
+
+  CHECK_NE(name_for_debugging, nullptr);
+  CHECK_EQ(descriptor_heap->SetName(name_for_debugging), S_OK);
+  return S_OK;
 }
 
 }  // namespace webnn::dml

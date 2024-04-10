@@ -63,8 +63,9 @@ std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(
       base::bits::AlignUp(buffer_info->size, kDMLBufferAlignment);
 
   ComPtr<ID3D12Resource> buffer;
-  HRESULT hr = command_recorder_->CreateDefaultBuffer(
-      aligned_buffer_byte_size, L"WebNN_Default_Buffer_External", buffer);
+  HRESULT hr =
+      CreateDefaultBuffer(adapter_->d3d12_device(), aligned_buffer_byte_size,
+                          L"WebNN_Default_Buffer_External", buffer);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to create the default buffer: "
                 << logging::SystemErrorCodeToString(hr);
@@ -92,8 +93,8 @@ void ContextImpl::ReadBufferImpl(
   // TODO(crbug.com/329198124): avoid creating staging buffers on UMA devices.
   const uint64_t src_buffer_size = src_buffer.size();
   ComPtr<ID3D12Resource> download_buffer;
-  hr = command_recorder_->CreateReadbackBuffer(
-      src_buffer_size, L"WebNN_Readback_Buffer", download_buffer);
+  hr = CreateReadbackBuffer(adapter_->d3d12_device(), src_buffer_size,
+                            L"WebNN_Readback_Buffer", download_buffer);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to create the download buffer: "
                 << logging::SystemErrorCodeToString(hr);
@@ -178,8 +179,8 @@ void ContextImpl::WriteBufferImpl(const WebNNBufferImpl& dst_buffer,
 
   // TODO(crbug.com/329198124): avoid creating staging buffers on UMA devices.
   ComPtr<ID3D12Resource> upload_buffer;
-  HRESULT hr = command_recorder_->CreateUploadBuffer(
-      src_buffer.size(), L"WebNN_Upload_Buffer", upload_buffer);
+  HRESULT hr = CreateUploadBuffer(adapter_->d3d12_device(), src_buffer.size(),
+                                  L"WebNN_Upload_Buffer", upload_buffer);
   if (FAILED(hr)) {
     // TODO(crbug.com/41492165): generate error using context.
     DLOG(ERROR) << "Failed to create the upload buffer: "

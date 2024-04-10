@@ -68,6 +68,64 @@ void COMPONENT_EXPORT(WEBNN_SERVICE)
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
                             const std::string& error_message);
 
+// Create a resource with `size` bytes in
+// D3D12_RESOURCE_STATE_UNORDERED_ACCESS state from the default heap of the
+// owned D3D12 device. For this method and the other two, if there are no
+// errors, S_OK is returned and the created resource is returned via
+// `resource`. Otherwise, the corresponding HRESULT error code is returned.
+HRESULT COMPONENT_EXPORT(WEBNN_SERVICE)
+    CreateDefaultBuffer(ID3D12Device* device,
+                        uint64_t size,
+                        const wchar_t* name_for_debugging,
+                        ComPtr<ID3D12Resource>& resource);
+
+// Create a resource with `size` bytes in D3D12_RESOURCE_STATE_GENERIC_READ
+// state from the uploading heap of the owned D3D12 device.
+HRESULT COMPONENT_EXPORT(WEBNN_SERVICE)
+    CreateUploadBuffer(ID3D12Device* device,
+                       uint64_t size,
+                       const wchar_t* name_for_debugging,
+                       ComPtr<ID3D12Resource>& resource);
+
+// Create a resource with `size` bytes in D3D12_RESOURCE_STATE_COPY_DEST state
+// from the reading-back heap of the owned D3D12 device.
+HRESULT COMPONENT_EXPORT(WEBNN_SERVICE)
+    CreateReadbackBuffer(ID3D12Device* device,
+                         uint64_t size,
+                         const wchar_t* name_for_debugging,
+                         ComPtr<ID3D12Resource>& resource);
+
+// Create a resource with `size` bytes in
+// D3D12_RESOURCE_STATE_UNORDERED_ACCESS state and from a custom heap with CPU
+// memory pool (D3D12_MEMORY_POOL_L0) optimized for CPU uploading data to GPU.
+// This type of buffer should only be created for GPU with UMA (Unified Memory
+// Architecture).
+HRESULT COMPONENT_EXPORT(WEBNN_SERVICE)
+    CreateCustomUploadBuffer(ID3D12Device* device,
+                             uint64_t size,
+                             const wchar_t* name_for_debugging,
+                             ComPtr<ID3D12Resource>& resource);
+
+// Create a resource with `size` bytes in
+// D3D12_RESOURCE_STATE_UNORDERED_ACCESS state and from a custom heap with CPU
+// memory pool (D3D12_MEMORY_POOL_L0) optimized for CPU reading data back from
+// GPU. This type of buffer should only be created for GPU with UMA (Unified
+// Memory Architecture).
+HRESULT COMPONENT_EXPORT(WEBNN_SERVICE)
+    CreateCustomReadbackBuffer(ID3D12Device* device,
+                               uint64_t size,
+                               const wchar_t* name_for_debugging,
+                               ComPtr<ID3D12Resource>& resource);
+
+// Create a descriptor heap with D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV type,
+// D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE flag and large enough for the
+// number of descriptors.
+HRESULT COMPONENT_EXPORT(WEBNN_SERVICE)
+    CreateDescriptorHeap(ID3D12Device* device,
+                         uint32_t num_descriptors,
+                         const wchar_t* name_for_debugging,
+                         ComPtr<ID3D12DescriptorHeap>& descriptor_heap);
+
 }  // namespace webnn::dml
 
 #endif  // SERVICES_WEBNN_DML_UTILS_H_
