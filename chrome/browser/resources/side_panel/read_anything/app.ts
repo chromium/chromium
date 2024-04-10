@@ -290,6 +290,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+    // onConnected should always be called first in connectedCallback to ensure
+    // we're not blocking onConnected on anything else during WebUI setup.
+    if (chrome.readingMode) {
+      chrome.readingMode.onConnected();
+    }
 
     // Wait until the side panel is fully rendered before showing the side
     // panel. This follows Side Panel best practices and prevents loading
@@ -299,9 +304,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
     });
 
-    if (chrome.readingMode) {
-      chrome.readingMode.onConnected();
-    }
     this.synth.onvoiceschanged = () => {
       this.getVoices(/*refresh =*/ true);
     };
