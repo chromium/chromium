@@ -270,10 +270,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliationsArePSLTest) {
   RunUntilIdle();
 }
 
-// TODO(b/331409076): Enable this test once filtering is done on the caller
-// side.
-TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
-       DISABLED_GroupedMatchesOnlyTest) {
+TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, GroupedMatchesOnlyTest) {
   backend()->AddLoginAsync(CreateForm(kGroupWebURL, u"username", u"password"),
                            base::DoNothing());
   RunUntilIdle();
@@ -303,36 +300,8 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   RunUntilIdle();
 }
 
-TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, GroupedMatchesClearedTest) {
-  backend()->AddLoginAsync(CreateForm(kGroupWebURL, u"username", u"password"),
-                           base::DoNothing());
-  RunUntilIdle();
-
-  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
-      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
-  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
-
-  GroupedFacets group;
-  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
-  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kGroupWebURL));
-  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
-      .WillOnce(RunOnceCallback<1>(std::vector<GroupedFacets>{group}));
-
-  PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
-  base::MockCallback<LoginsOrErrorReply> result_callback;
-  base::HistogramTester histogram_tester;
-  GetLoginsWithAffiliationsRequestHandler(
-      observed_form, backend(), &match_helper(), result_callback.Get());
-
-  EXPECT_CALL(result_callback, Run(VariantWith<LoginsResult>(IsEmpty())));
-  RunUntilIdle();
-}
-
-// TODO(b/331409076): Enable this test once filtering is done on the caller
-// side.
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
-       DISABLED_GroupedAndAffiliatedMatchesIntersectTest) {
+       GroupedAndAffiliatedMatchesIntersectTest) {
   backend()->AddLoginAsync(
       CreateForm(kAffiliatedAndroidApp, u"username1", u"password"),
       base::DoNothing());

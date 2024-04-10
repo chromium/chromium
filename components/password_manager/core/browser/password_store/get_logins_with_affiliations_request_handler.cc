@@ -300,12 +300,6 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
 
   TrimUsernameOnlyCredentials(final_result);
 
-  // TODO(b/331409076): Remove this filtering and add filtering on the caller
-  // side.
-  std::erase_if(final_result, [](const auto& form) {
-    return form.match_type == PasswordForm::MatchType::kGrouped;
-  });
-
   return final_result;
 }
 

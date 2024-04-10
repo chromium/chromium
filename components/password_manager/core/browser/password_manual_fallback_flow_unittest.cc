@@ -413,10 +413,8 @@ TEST_F(PasswordManualFallbackFlowTest,
   flow().RunFlow(MakeFieldRendererId(), bounds, TextDirection::LEFT_TO_RIGHT);
 }
 
-// Manual fallback should not show grouped passwords from different domains in
-// the "Suggested" section.
-// TODO(b/331409076): test that grouped passwords are shown once they are not
-// filtered by the backend.
+// Manual fallback should show grouped passwords from different domains in the
+// "Suggested" section.
 TEST_F(PasswordManualFallbackFlowTest,
        DifferentDomain_NoGroupedPasswordsShown) {
   // Register `kUrl` domain as weakly affiliated with the
@@ -446,7 +444,10 @@ TEST_F(PasswordManualFallbackFlowTest,
                     &AutofillClient::PopupOpenArgs::trigger_source,
                     AutofillSuggestionTriggerSource::kManualFallbackPasswords),
               Field("suggestions", &AutofillClient::PopupOpenArgs::suggestions,
-                    ElementsAre(EqualsSuggestion(PopupItemId::kPasswordEntry),
+                    ElementsAre(EqualsSuggestion(PopupItemId::kTitle),
+                                EqualsSuggestion(PopupItemId::kPasswordEntry),
+                                EqualsSuggestion(PopupItemId::kTitle),
+                                EqualsSuggestion(PopupItemId::kPasswordEntry),
                                 EqualsSuggestion(PopupItemId::kSeparator),
                                 EqualsSuggestion(
                                     PopupItemId::kAllSavedPasswordsEntry)))),
