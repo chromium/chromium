@@ -14,6 +14,11 @@
 #include "components/sync/test/test_sync_service.h"
 
 namespace syncer {
+namespace {
+
+const char kDefaultPassphrase[] = "TestPassphrase";
+
+}  // namespace
 
 ModelTypeSet UserSelectableTypesToModelTypes(
     UserSelectableTypeSet selected_types) {
@@ -36,12 +41,7 @@ ModelTypeSet UserSelectableOsTypesToModelTypes(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TestSyncUserSettings::TestSyncUserSettings(TestSyncService* service)
-    : service_(service),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      selected_os_types_(UserSelectableOsTypeSet::All()),
-#endif
-      selected_types_(UserSelectableTypeSet::All()) {
-}
+    : service_(service) {}
 
 TestSyncUserSettings::~TestSyncUserSettings() = default;
 
@@ -127,7 +127,7 @@ ModelTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
 
 UserSelectableTypeSet TestSyncUserSettings::GetRegisteredSelectableTypes()
     const {
-  return UserSelectableTypeSet::All();
+  return registered_selectable_types_;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -193,13 +193,15 @@ void TestSyncUserSettings::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
 #endif
 
 bool TestSyncUserSettings::IsCustomPassphraseAllowed() const {
-  return true;
+  return custom_passphrase_allowed_;
 }
 
-void TestSyncUserSettings::SetCustomPassphraseAllowed(bool allowed) {}
+void TestSyncUserSettings::SetCustomPassphraseAllowed(bool allowed) {
+  custom_passphrase_allowed_ = allowed;
+}
 
 bool TestSyncUserSettings::IsEncryptEverythingEnabled() const {
-  return false;
+  return IsExplicitPassphrase(passphrase_type_);
 }
 
 ModelTypeSet TestSyncUserSettings::GetEncryptedDataTypes() const {
@@ -242,24 +244,31 @@ bool TestSyncUserSettings::IsTrustedVaultRecoverabilityDegraded() const {
 }
 
 bool TestSyncUserSettings::IsUsingExplicitPassphrase() const {
-  return using_explicit_passphrase_;
+  return IsExplicitPassphrase(passphrase_type_);
 }
 
 base::Time TestSyncUserSettings::GetExplicitPassphraseTime() const {
-  return base::Time();
+  return explicit_passphrase_time_;
 }
 
 std::optional<PassphraseType> TestSyncUserSettings::GetPassphraseType() const {
-  return IsUsingExplicitPassphrase() ? PassphraseType::kCustomPassphrase
-                                     : PassphraseType::kImplicitPassphrase;
+  return passphrase_type_;
 }
 
 void TestSyncUserSettings::SetEncryptionPassphrase(
-    const std::string& passphrase) {}
+    const std::string& passphrase) {
+  encryption_passphrase_ = passphrase;
+  SetIsUsingExplicitPassphrase(true);
+}
 
 bool TestSyncUserSettings::SetDecryptionPassphrase(
     const std::string& passphrase) {
-  return false;
+  if (passphrase.empty() || passphrase != encryption_passphrase_) {
+    return false;
+  }
+
+  passphrase_required_ = false;
+  return true;
 }
 
 void TestSyncUserSettings::SetExplicitPassphraseDecryptionNigoriKey(
@@ -268,6 +277,12 @@ void TestSyncUserSettings::SetExplicitPassphraseDecryptionNigoriKey(
 std::unique_ptr<Nigori>
 TestSyncUserSettings::GetExplicitPassphraseDecryptionNigoriKey() const {
   return nullptr;
+}
+
+void TestSyncUserSettings::SetRegisteredSelectableTypes(
+    UserSelectableTypeSet types) {
+  registered_selectable_types_ = types;
+  selected_types_ = Intersection(selected_types_, types);
 }
 
 void TestSyncUserSettings::SetInitialSyncFeatureSetupComplete() {
@@ -299,7 +314,11 @@ void TestSyncUserSettings::SetOsTypeIsManaged(UserSelectableOsType type,
 #endif
 
 void TestSyncUserSettings::SetPassphraseRequired(bool required) {
-  passphrase_required_ = required;
+  if (required) {
+    SetRequiredPassphrase(kDefaultPassphrase);
+  } else {
+    passphrase_required_ = false;
+  }
 }
 
 void TestSyncUserSettings::SetPassphraseRequiredForPreferredDataTypes(
@@ -322,7 +341,29 @@ void TestSyncUserSettings::SetTrustedVaultRecoverabilityDegraded(
 }
 
 void TestSyncUserSettings::SetIsUsingExplicitPassphrase(bool enabled) {
-  using_explicit_passphrase_ = enabled;
+  SetPassphraseType(enabled ? PassphraseType::kCustomPassphrase
+                            : PassphraseType::kKeystorePassphrase);
+}
+
+void TestSyncUserSettings::SetPassphraseType(PassphraseType type) {
+  CHECK(custom_passphrase_allowed_ || !IsExplicitPassphrase(type));
+  passphrase_type_ = type;
+}
+
+void TestSyncUserSettings::SetExplicitPassphraseTime(base::Time t) {
+  CHECK(IsUsingExplicitPassphrase());
+  explicit_passphrase_time_ = t;
+}
+
+const std::string& TestSyncUserSettings::GetEncryptionPassphrase() const {
+  return encryption_passphrase_;
+}
+
+void TestSyncUserSettings::SetRequiredPassphrase(
+    const std::string& passphrase) {
+  CHECK(!passphrase.empty());
+  encryption_passphrase_ = passphrase;
+  passphrase_required_ = true;
 }
 
 }  // namespace syncer

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -39,12 +40,23 @@ class TestSyncService : public SyncService {
 
   ~TestSyncService() override;
 
+  // High-level setters that configure common scenarios.
+  void SetSignedInWithoutSyncFeature();
+  void SetSignedInWithoutSyncFeature(const CoreAccountInfo& account_info);
+  void SetSignedInWithSyncFeatureOn();
+  void SetSignedInWithSyncFeatureOn(const CoreAccountInfo& account_info);
+  void SetSignedOut();
+
+  // Mimics the user resetting Sync from the web dashboard. On ChromeOS Ash,
+  // this also flips SetSyncFeatureDisabledViaDashboard().
+  void MimicDashboardClear();
+
+  // Lower-level setters.
   void SetDisableReasons(DisableReasonSet disable_reasons);
   void SetTransportState(TransportState transport_state);
   void SetLocalSyncEnabled(bool local_sync_enabled);
   void SetAccountInfo(const CoreAccountInfo& account_info);
   void SetHasSyncConsent(bool has_consent);
-  void SetSetupInProgress(bool in_progress);
 
   // Setters to mimic common auth error scenarios. Note that these functions
   // may change the transport state, as returned by GetTransportState().
@@ -87,6 +99,11 @@ class TestSyncService : public SyncService {
 
   void FireStateChanged();
   void FireSyncCycleCompleted();
+
+  // Similar to `GetSetupInProgressHandle()` but doesn't require the caller to
+  // handle the lifetime of `SyncSetupInProgressHandle`. It also means that it
+  // cannot be undone.
+  void SetSetupInProgress();
 
   // SyncService implementation.
 #if BUILDFLAG(IS_ANDROID)
@@ -157,14 +174,15 @@ class TestSyncService : public SyncService {
   void Shutdown() override;
 
  private:
-  TestSyncUserSettings user_settings_;
+  void OnSetupInProgressHandleDestroyed();
 
+  TestSyncUserSettings user_settings_;
   DisableReasonSet disable_reasons_;
   TransportState transport_state_ = TransportState::ACTIVE;
   bool local_sync_enabled_ = false;
   CoreAccountInfo account_info_;
   bool has_sync_consent_ = true;
-  bool setup_in_progress_ = false;
+  int outstanding_setup_in_progress_handles_ = 0;
 
   ModelTypeSet failed_data_types_;
 
@@ -189,6 +207,8 @@ class TestSyncService : public SyncService {
 
   // Nullable.
   base::RepeatingCallback<void(syncer::ModelTypeSet)> trigger_refresh_cb_;
+
+  base::WeakPtrFactory<TestSyncService> weak_factory_{this};
 };
 
 }  // namespace syncer

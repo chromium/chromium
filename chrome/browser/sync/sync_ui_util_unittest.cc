@@ -81,14 +81,13 @@ SyncStatusLabels SetUpDistinctCase(
   switch (case_number) {
     case STATUS_CASE_SETUP_IN_PROGRESS: {
       service->SetInitialSyncFeatureSetupComplete(false);
-      service->SetSetupInProgress(true);
+      service->SetSetupInProgress();
       service->SetDetailedSyncStatus(false, syncer::SyncStatus());
       return {SyncStatusMessageType::kPreSynced, IDS_SYNC_SETUP_IN_PROGRESS,
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
     case STATUS_CASE_SETUP_ERROR: {
       service->SetInitialSyncFeatureSetupComplete(false);
-      service->SetSetupInProgress(false);
       service->SetDisableReasons(
           {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
       service->SetDetailedSyncStatus(false, syncer::SyncStatus());
