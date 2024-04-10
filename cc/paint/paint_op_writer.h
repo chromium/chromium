@@ -44,6 +44,7 @@ class DecodedDrawImage;
 class DrawImage;
 class DrawLooper;
 class PaintShader;
+class PathEffect;
 
 class CC_PAINT_EXPORT PaintOpWriter {
   STACK_ALLOCATED();
@@ -155,6 +156,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   static size_t SerializedSize(const ColorFilter* filter);
   static size_t SerializedSize(const DrawLooper* looper);
   static size_t SerializedSize(const PaintFilter* filter);
+  static size_t SerializedSize(const PathEffect* effect);
 
   template <typename T>
   static size_t SerializedSize(const std::optional<T>& o) {
@@ -242,6 +244,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const ColorFilter* filter);
   void Write(const DrawLooper* looper);
   void Write(const PaintFilter* filter, const SkM44& current_ctm);
+  void Write(const PathEffect* effect);
   void Write(const gfx::HDRMetadata& hdr_metadata);
 
   void Write(SkClipOp op) { WriteEnum(op); }

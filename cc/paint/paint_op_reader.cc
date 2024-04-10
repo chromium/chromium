@@ -31,6 +31,7 @@
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_shader.h"
+#include "cc/paint/path_effect.h"
 #include "cc/paint/shader_transfer_cache_entry.h"
 #include "cc/paint/skottie_transfer_cache_entry.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -312,8 +313,7 @@ void PaintOpReader::Read(PaintFlags* flags) {
 
   ReadSimple(&flags->bitfields_uint_);
 
-  ReadFlattenable(&flags->path_effect_, SkPathEffect::Deserialize,
-                  DeserializationError::kSkPathEffectUnflattenFailure);
+  Read(&flags->path_effect_);
   ReadFlattenable(&flags->mask_filter_, SkMaskFilter::Deserialize,
                   DeserializationError::kSkMaskFilterUnflattenFailure);
   Read(&flags->color_filter_);
@@ -979,6 +979,19 @@ void PaintOpReader::Read(sk_sp<ColorFilter>* filter) {
     return;
   }
   *filter = ColorFilter::Deserialize(*this, type);
+}
+
+void PaintOpReader::Read(sk_sp<PathEffect>* effect) {
+  PathEffect::Type type;
+  ReadEnum(&type);
+  if (!valid_) {
+    return;
+  }
+  if (type == PathEffect::Type::kNull) {
+    *effect = nullptr;
+    return;
+  }
+  *effect = PathEffect::Deserialize(*this, type);
 }
 
 void PaintOpReader::Read(sk_sp<PaintFilter>* filter) {

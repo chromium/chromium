@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/skia/include/effects/SkDashPathEffect.h"
 
 static const char defaultFont[] = "10px sans-serif";
 static const char defaultFilter[] = "none";
@@ -224,7 +223,7 @@ ALWAYS_INLINE void CanvasRenderingContext2DState::UpdateLineDash() const {
   } else {
     Vector<float> line_dash(line_dash_.size());
     base::ranges::copy(line_dash_, line_dash.begin());
-    stroke_flags_.setPathEffect(SkDashPathEffect::Make(
+    stroke_flags_.setPathEffect(cc::PathEffect::MakeDash(
         line_dash.data(), line_dash.size(), line_dash_offset_));
   }
   line_dash_dirty_ = false;

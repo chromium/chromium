@@ -77,6 +77,8 @@ cc_component("paint") {
     "paint_worklet_job.cc",
     "paint_worklet_job.h",
     "paint_worklet_layer_painter.h",
+    "path_effect.cc",
+    "path_effect.h",
     "raw_memory_transfer_cache_entry.cc",
     "raw_memory_transfer_cache_entry.h",
     "record_paint_canvas.cc",

@@ -337,6 +337,7 @@ _CONFIG = [
             'cc::CategorizedWorkerPool',
             'cc::ColorFilter',
             'cc::DrawLooper',
+            'cc::PathEffect',
             'cc::InspectablePaintRecorder',
             'cc::InspectableRecordPaintCanvas',
             'cc::PaintCanvas',

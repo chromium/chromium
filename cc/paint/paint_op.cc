@@ -2144,11 +2144,9 @@ int ClipPathOp::CountSlowPaths() const {
 }
 
 int DrawLineOp::CountSlowPaths() const {
-  if (const SkPathEffect* effect = flags.getPathEffect().get()) {
-    SkPathEffect::DashInfo info;
-    SkPathEffect::DashType dashType = effect->asADash(&info);
+  if (const PathEffect* effect = flags.getPathEffect().get()) {
     if (flags.getStrokeCap() != PaintFlags::kRound_Cap &&
-        dashType == SkPathEffect::kDash_DashType && info.fCount == 2) {
+        effect->dash_interval_count() == 2) {
       // The PaintFlags will count this as 1, so uncount that here as
       // this kind of line is special cased and not slow.
       return -1;

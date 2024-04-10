@@ -507,9 +507,7 @@ class PaintOpHelper {
     return "SkMaskFilter";
   }
 
-  static std::string ToString(const SkPathEffect& effect) {
-    return "SkPathEffect";
-  }
+  static std::string ToString(const PathEffect& effect) { return "PathEffect"; }
 
   static std::string ToString(const DrawLooper& looper) { return "DrawLooper"; }
 

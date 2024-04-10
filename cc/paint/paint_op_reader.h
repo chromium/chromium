@@ -35,6 +35,7 @@ struct HDRMetadata;
 namespace cc {
 
 class PaintShader;
+class PathEffect;
 class SkottieWrapper;
 
 // PaintOpReader takes garbage |memory| and clobbers it with successive
@@ -260,6 +261,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void SetInvalid(DeserializationError error);
 
   void Read(sk_sp<ColorFilter>* filter);
+  void Read(sk_sp<PathEffect>* effect);
 
   // The main entry point is Read(sk_sp<PaintFilter>* filter) which calls one of
   // the following functions depending on read type.

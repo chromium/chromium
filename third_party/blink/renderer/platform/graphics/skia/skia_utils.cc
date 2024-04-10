@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/effects/SkCornerPathEffect.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/base/ui_base_features.h"
 
@@ -413,8 +412,7 @@ void DrawPlatformFocusRing(const SkPath& path,
                            float corner_radius) {
   cc::PaintFlags path_flags = PaintFlagsForFocusRing(color, width);
   if (corner_radius) {
-    path_flags.setPathEffect(
-        SkCornerPathEffect::Make(SkFloatToScalar(corner_radius)));
+    path_flags.setPathEffect(cc::PathEffect::MakeCorner(corner_radius));
   }
   canvas->drawPath(path, path_flags);
 }

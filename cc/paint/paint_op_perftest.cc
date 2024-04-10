@@ -19,7 +19,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
-#include "third_party/skia/include/effects/SkDashPathEffect.h"
 
 namespace cc {
 namespace {
@@ -125,7 +124,7 @@ TEST_F(PaintOpPerfTest, ManyFlagsOps) {
 
   PaintFlags flags;
   SkScalar intervals[] = {1.f, 1.f};
-  flags.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
+  flags.setPathEffect(PathEffect::MakeDash(intervals, 2, 0));
   flags.setMaskFilter(SkMaskFilter::MakeBlur(
       SkBlurStyle::kOuter_SkBlurStyle, 4.3));
   flags.setColorFilter(ColorFilter::MakeLuma());

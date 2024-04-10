@@ -57,7 +57,6 @@
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTileMode.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
-#include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
@@ -557,7 +556,7 @@ TEST(PaintOpBufferTest, SlowPaths) {
   line_effect_slow.setStyle(PaintFlags::kStroke_Style);
   line_effect_slow.setStrokeCap(PaintFlags::kRound_Cap);
   SkScalar intervals[] = {1.f, 1.f};
-  line_effect_slow.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
+  line_effect_slow.setPathEffect(PathEffect::MakeDash(intervals, 2, 0));
 
   buffer.push<DrawLineOp>(1.f, 2.f, 3.f, 4.f, line_effect_slow);
   EXPECT_EQ(buffer.num_slow_paths_up_to_min_for_MSAA(), 1);
@@ -1184,7 +1183,7 @@ std::vector<PaintFlags> test_flags = {
       flags.setFilterQuality(PaintFlags::FilterQuality::kHigh);
 
       SkScalar intervals[] = {1.f, 1.f};
-      flags.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
+      flags.setPathEffect(PathEffect::MakeDash(intervals, 2, 0));
       flags.setMaskFilter(SkMaskFilter::MakeBlur(
           SkBlurStyle::kOuter_SkBlurStyle, 4.3f));
       flags.setColorFilter(ColorFilter::MakeBlend({0.4f, 0.3f, 0.2f, 0.1f},

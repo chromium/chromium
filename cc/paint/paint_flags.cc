@@ -13,6 +13,7 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkPathEffect.h"
 #include "third_party/skia/include/core/SkPathUtils.h"
 
 namespace {
@@ -137,15 +138,19 @@ bool PaintFlags::SupportsFoldingAlpha() const {
 
 SkPaint PaintFlags::ToSkPaint() const {
   SkPaint paint;
-  paint.setPathEffect(path_effect_);
-  if (shader_)
+  if (path_effect_) {
+    paint.setPathEffect(path_effect_->GetSkPathEffect());
+  }
+  if (shader_) {
     paint.setShader(shader_->GetSkShader(getFilterQuality()));
+  }
   paint.setMaskFilter(mask_filter_);
   if (color_filter_) {
     paint.setColorFilter(color_filter_->sk_color_filter_);
   }
-  if (image_filter_)
+  if (image_filter_) {
     paint.setImageFilter(image_filter_->cached_sk_filter_);
+  }
   paint.setColor(color_);
   paint.setStrokeWidth(width_);
   paint.setStrokeMiter(miter_limit_);
@@ -192,8 +197,8 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
          getFilterQuality() == other.getFilterQuality() &&
          getDynamicRangeLimit() == other.getDynamicRangeLimit() &&
          isArcClosed() == other.isArcClosed() &&
-         AreSkFlattenablesEqualForTesting(path_effect_,  // IN-TEST
-                                          other.path_effect_) &&
+         AreValuesEqualForTesting(path_effect_,  // IN-TEST
+                                  other.path_effect_) &&
          AreSkFlattenablesEqualForTesting(mask_filter_,  // IN-TEST
                                           other.mask_filter_) &&
          AreValuesEqualForTesting(color_filter_,  // IN-TEST

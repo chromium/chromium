@@ -30,8 +30,6 @@
 
 #include <memory>
 
-#include "third_party/skia/include/effects/SkDashPathEffect.h"
-
 namespace blink {
 
 void StrokeData::SetLineDash(const DashArray& dashes, float dash_offset) {
@@ -47,10 +45,10 @@ void StrokeData::SetLineDash(const DashArray& dashes, float dash_offset) {
   for (wtf_size_t i = 0; i < count; i++)
     intervals[i] = dashes[i % dash_length];
 
-  dash_ = SkDashPathEffect::Make(intervals.get(), count, dash_offset);
+  dash_ = cc::PathEffect::MakeDash(intervals.get(), count, dash_offset);
 }
 
-void StrokeData::SetDashEffect(sk_sp<SkPathEffect> dash_effect) {
+void StrokeData::SetDashEffect(sk_sp<cc::PathEffect> dash_effect) {
   dash_ = std::move(dash_effect);
 }
 

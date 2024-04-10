@@ -11,12 +11,13 @@
 #include "cc/paint/color_filter.h"
 #include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_export.h"
+#include "cc/paint/path_effect.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/core/SkPathEffect.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 
 class SkCanvas;
+class SkPath;
 
 namespace cc {
 class PaintFilter;
@@ -189,10 +190,10 @@ class CC_PAINT_EXPORT PaintFlags {
 
   void setShader(sk_sp<PaintShader> shader);
 
-  ALWAYS_INLINE const sk_sp<SkPathEffect>& getPathEffect() const {
+  ALWAYS_INLINE const sk_sp<PathEffect>& getPathEffect() const {
     return path_effect_;
   }
-  ALWAYS_INLINE void setPathEffect(sk_sp<SkPathEffect> effect) {
+  ALWAYS_INLINE void setPathEffect(sk_sp<PathEffect> effect) {
     path_effect_ = std::move(effect);
   }
   bool getFillPath(const SkPath& src,
@@ -243,7 +244,7 @@ class CC_PAINT_EXPORT PaintFlags {
   friend class PaintOpReader;
   friend class PaintOpWriter;
 
-  sk_sp<SkPathEffect> path_effect_;
+  sk_sp<PathEffect> path_effect_;
   sk_sp<PaintShader> shader_;
   sk_sp<SkMaskFilter> mask_filter_;
   sk_sp<ColorFilter> color_filter_;

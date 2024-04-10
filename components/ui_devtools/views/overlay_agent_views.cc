@@ -13,7 +13,6 @@
 #include "components/ui_devtools/views/view_element.h"
 #include "components/ui_devtools/views/widget_element.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -584,7 +583,7 @@ void OverlayAgentViews::OnPaintLayer(const ui::PaintContext& context) {
   flags.setStyle(cc::PaintFlags::kStroke_Style);
 
   constexpr SkScalar intervals[] = {1.f, 4.f};
-  flags.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
+  flags.setPathEffect(cc::PathEffect::MakeDash(intervals, 2, 0));
 
   if (!render_text_)
     render_text_ = gfx::RenderText::CreateRenderText();
@@ -644,7 +643,7 @@ void OverlayAgentViews::OnPaintLayer(const ui::PaintContext& context) {
                           render_text_.get());
 
       // Draw 4 guide lines along distance lines.
-      flags.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
+      flags.setPathEffect(cc::PathEffect::MakeDash(intervals, 2, 0));
 
       // Bottom horizontal dotted line from left to right.
       canvas->DrawLine(
@@ -671,7 +670,7 @@ void OverlayAgentViews::OnPaintLayer(const ui::PaintContext& context) {
                              render_text_.get());
 
       // Draw 2 guide lines along distance lines.
-      flags.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
+      flags.setPathEffect(cc::PathEffect::MakeDash(intervals, 2, 0));
 
       // Top horizontal dotted line from left to right.
       canvas->DrawLine(
@@ -688,7 +687,7 @@ void OverlayAgentViews::OnPaintLayer(const ui::PaintContext& context) {
                              render_text_.get());
 
       // Draw 1 guide line along distance lines.
-      flags.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
+      flags.setPathEffect(cc::PathEffect::MakeDash(intervals, 2, 0));
 
       // Top horizontal dotted line from left to right.
       canvas->DrawLine(gfx::PointF(0.0f, pinned_rect_f.y()),
@@ -703,7 +702,7 @@ void OverlayAgentViews::OnPaintLayer(const ui::PaintContext& context) {
       DrawR1IntersectsR2(pinned_rect_f, hovered_rect_f, flags, canvas,
                          render_text_.get());
       // Draw 4 guide line along distance lines.
-      flags.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
+      flags.setPathEffect(cc::PathEffect::MakeDash(intervals, 2, 0));
 
       DrawRectGuideLinesOnCanvas(screen_bounds, hovered_rect_f, flags, canvas);
       return;

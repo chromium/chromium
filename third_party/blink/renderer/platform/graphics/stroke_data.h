@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/skia/include/core/SkPathEffect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
@@ -62,7 +61,7 @@ class PLATFORM_EXPORT StrokeData final {
   void SetMiterLimit(float miter_limit) { miter_limit_ = miter_limit; }
 
   void SetLineDash(const DashArray&, float);
-  void SetDashEffect(sk_sp<SkPathEffect> dash_effect);
+  void SetDashEffect(sk_sp<cc::PathEffect> dash_effect);
 
   // Sets everything on the paint except the pattern, gradient and color.
   void SetupPaint(cc::PaintFlags*) const;
@@ -72,7 +71,7 @@ class PLATFORM_EXPORT StrokeData final {
   cc::PaintFlags::Cap line_cap_ = cc::PaintFlags::kDefault_Cap;
   cc::PaintFlags::Join line_join_ = cc::PaintFlags::kDefault_Join;
   float miter_limit_ = 4;
-  sk_sp<SkPathEffect> dash_;
+  sk_sp<cc::PathEffect> dash_;
 };
 
 }  // namespace blink

@@ -19,6 +19,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "cc/paint/paint_shader.h"
+#include "cc/paint/path_effect.h"
 #include "cc/paint/skottie_transfer_cache_entry.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
@@ -162,6 +163,16 @@ size_t PaintOpWriter::SerializedSize(const PaintFilter* filter) {
   return filter->SerializedSize();
 }
 
+// static
+size_t PaintOpWriter::SerializedSize(const PathEffect* effect) {
+  if (!effect) {
+    return SerializedSize(PathEffect::Type::kNull);
+  }
+  base::CheckedNumeric<size_t> size = SerializedSize(effect->type_);
+  size += effect->SerializedDataSize();
+  return size.ValueOrDie();
+}
+
 PaintOpWriter::~PaintOpWriter() = default;
 
 size_t PaintOpWriter::FinishOp(uint8_t type) {
@@ -291,7 +302,7 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
     WriteSimpleMultiple(
         flags.color_, flags.width_, flags.miter_limit_, flags.bitfields_uint_,
         // flags.path_effect_.
-        uint32_t{0}, uint32_t{0},
+        base::checked_cast<uint8_t>(PathEffect::Type::kNull),
         // flags.mask_filter_.
         uint32_t{0}, uint32_t{0},
         // flags.color_filter_.
@@ -310,7 +321,7 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
   Write(flags.miter_limit_);
   WriteSimple(flags.bitfields_uint_);
 
-  WriteFlattenable(flags.path_effect_.get());
+  Write(flags.path_effect_.get());
   WriteFlattenable(flags.mask_filter_.get());
   Write(flags.color_filter_.get());
 
@@ -843,6 +854,15 @@ void PaintOpWriter::Write(const PaintFilter* filter, const SkM44& current_ctm) {
       Write(static_cast<const LightingSpotPaintFilter&>(*filter), current_ctm);
       break;
   }
+}
+
+void PaintOpWriter::Write(const PathEffect* effect) {
+  if (!effect) {
+    WriteEnum(PathEffect::Type::kNull);
+    return;
+  }
+  WriteEnum(effect->type_);
+  effect->SerializeData(*this);
 }
 
 void PaintOpWriter::Write(const ColorFilterPaintFilter& filter,

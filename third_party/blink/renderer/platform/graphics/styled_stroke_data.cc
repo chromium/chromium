@@ -32,7 +32,6 @@
 #include <optional>
 
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
-#include "third_party/skia/include/effects/SkDashPathEffect.h"
 
 namespace blink {
 
@@ -154,7 +153,7 @@ void StyledStrokeData::SetupPaintDashPathEffect(
     cc::PaintFlags* flags,
     const GeometryInfo& info) const {
   if (auto dash = DashEffectFromStrokeStyle(*this, info)) {
-    flags->setPathEffect(SkDashPathEffect::Make(dash->intervals, 2, 0));
+    flags->setPathEffect(cc::PathEffect::MakeDash(dash->intervals, 2, 0));
     flags->setStrokeCap(dash->cap);
   } else {
     flags->setPathEffect(nullptr);
@@ -166,7 +165,7 @@ StrokeData StyledStrokeData::ConvertToStrokeData(
   StrokeData stroke_data;
   stroke_data.SetThickness(thickness_);
   if (auto dash = DashEffectFromStrokeStyle(*this, info)) {
-    stroke_data.SetDashEffect(SkDashPathEffect::Make(dash->intervals, 2, 0));
+    stroke_data.SetDashEffect(cc::PathEffect::MakeDash(dash->intervals, 2, 0));
     stroke_data.SetLineCap(static_cast<LineCap>(dash->cap));
   }
   return stroke_data;

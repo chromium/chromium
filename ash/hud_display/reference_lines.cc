@@ -11,7 +11,6 @@
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"
@@ -198,7 +197,7 @@ void ReferenceLines::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawPath(solid_path, flags);
 
   const SkScalar intervals[] = {5, 3};
-  flags.setPathEffect(SkDashPathEffect::Make(
+  flags.setPathEffect(cc::PathEffect::MakeDash(
       intervals, sizeof(intervals) / sizeof(intervals[0]), /*phase=*/0));
   canvas->DrawPath(dotted_path, flags);
 }
