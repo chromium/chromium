@@ -216,7 +216,9 @@ def AppendEncodeDecodeParams(initial_params, context, kind, bit):
 def DecodeMethod(context, kind, offset, bit):
   def _DecodeMethodName(kind):
     if mojom.IsArrayKind(kind):
-      return _DecodeMethodName(kind.kind) + 's'
+      suffix = 'Nullables' if kind.kind.is_nullable and mojom.IsValueKind(
+          kind.kind) else 's'
+      return _DecodeMethodName(mojom.EnsureUnnullable(kind.kind)) + suffix
     if mojom.IsEnumKind(kind):
       return _DecodeMethodName(mojom.INT32)
     if mojom.IsPendingReceiverKind(kind):

@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.mojo.MojoTestRule;
+import org.chromium.mojo.bindings.test.mojom.nullable_value_types.ExtensibleEnum;
 import org.chromium.mojo.bindings.test.mojom.nullable_value_types.InterfaceV2;
 import org.chromium.mojo.bindings.test.mojom.nullable_value_types.RegularEnum;
 import org.chromium.mojo.bindings.test.mojom.nullable_value_types.StructWithEnums;
@@ -22,6 +23,9 @@ import org.chromium.mojo.bindings.test.mojom.nullable_value_types.StructWithNume
 import org.chromium.mojo.bindings.test.mojom.nullable_value_types.TypemappedEnum;
 import org.chromium.mojo.system.Pair;
 import org.chromium.mojo.system.impl.CoreImpl;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Testing the Java bindings implementation for nullable value types, e.g. `int32?`. Note that the
@@ -286,6 +290,148 @@ public class NullableValueTypesTest {
                         Assert.assertEquals(in.doubleValue, out.doubleValue);
                         mTestRule.quitLoop();
                     });
+            mTestRule.runLoopForever();
+        }
+
+        {
+            // No specific pattern to the tests. We just want a mixture of values and nulls.
+            Boolean[] boolValues = {true, true, true, null, false, false, false};
+            Byte[] uByteValues = {null, (byte) 8, null};
+            Short[] uShortValues = {null, (short) 1, (short) 6, null};
+            Integer[] uIntValues = {null, 3, 2, null};
+            Long[] uLongValues = {null, 6L, 4L, null};
+            Byte[] byteValues = {null, (byte) 3, (byte) 2, null};
+            Short[] shortValues = {null, (short) 3, (short) 2, null};
+            Integer[] intValues = {null, 3, 2, null};
+            Long[] longValues = {null, 3L, 2L, null};
+            Float[] floatValues = {null, 4.0f, 2.0f, null};
+            Double[] doubleValues = {null, 6.0, 4.0, null};
+            @RegularEnum.EnumType Integer[] enumValues = {RegularEnum.THIS_VALUE, null};
+            // Explicitly test defaulting behaviour.
+            @ExtensibleEnum.EnumType
+            Integer[] extensibleEnumValues = {null, 555, ExtensibleEnum.UNKNOWN};
+            Map<Integer, Boolean> boolMap = new HashMap();
+            boolMap.put(0, true);
+            boolMap.put(1, null);
+            boolMap.put(2, false);
+            Map<Integer, Integer> intMap = new HashMap();
+            intMap.put(0, 10);
+            intMap.put(1, null);
+            intMap.put(2, 12);
+
+            remote.methodWithContainers(
+                    boolValues,
+                    uByteValues,
+                    uShortValues,
+                    uIntValues,
+                    uLongValues,
+                    byteValues,
+                    shortValues,
+                    intValues,
+                    longValues,
+                    floatValues,
+                    doubleValues,
+                    enumValues,
+                    extensibleEnumValues,
+                    boolMap,
+                    intMap,
+                    (Boolean[] outBoolValues,
+                            Byte[] outUByteValues,
+                            Short[] outUShortValues,
+                            Integer[] outUIntValues,
+                            Long[] outULongValues,
+                            Byte[] outByteValues,
+                            Short[] outShortValues,
+                            Integer[] outIntValues,
+                            Long[] outLongValues,
+                            Float[] outFloatValues,
+                            Double[] outDoubleValues,
+                            @RegularEnum.EnumType Integer[] outEnumValues,
+                            @ExtensibleEnum.EnumType Integer[] outExtensibleEnumValues,
+                            Map<Integer, Boolean> outBoolMap,
+                            Map<Integer, Integer> outIntMap) -> {
+                        Assert.assertArrayEquals(boolValues, outBoolValues);
+                        Assert.assertArrayEquals(uByteValues, outUByteValues);
+                        Assert.assertArrayEquals(uShortValues, outUShortValues);
+                        Assert.assertArrayEquals(uIntValues, outUIntValues);
+                        Assert.assertArrayEquals(uLongValues, outULongValues);
+                        Assert.assertArrayEquals(byteValues, outByteValues);
+                        Assert.assertArrayEquals(shortValues, outShortValues);
+                        Assert.assertArrayEquals(intValues, outIntValues);
+                        Assert.assertArrayEquals(longValues, outLongValues);
+                        Assert.assertArrayEquals(floatValues, outFloatValues);
+                        Assert.assertArrayEquals(doubleValues, outDoubleValues);
+                        Assert.assertArrayEquals(enumValues, outEnumValues);
+                        Assert.assertArrayEquals(
+                                new Integer[] {
+                                    null, ExtensibleEnum.UNKNOWN, ExtensibleEnum.UNKNOWN
+                                },
+                                outExtensibleEnumValues);
+                        Assert.assertEquals(boolMap, outBoolMap);
+                        Assert.assertEquals(intMap, outIntMap);
+
+                        mTestRule.quitLoop();
+                    });
+            mTestRule.runLoopForever();
+        }
+
+        {
+            // Test bitfields that extend beyond the size of the element.
+            final int testSize = 1000;
+            Integer[] intValues = new Integer[testSize];
+            for (int i = 0; i < intValues.length; ++i) {
+                // Alternate between value and null.
+                intValues[i] = i % 2 == 0 ? i : null;
+            }
+
+            // Also test the case where we pass in empty containers.
+            remote.methodWithContainers(
+                    new Boolean[0],
+                    new Byte[0],
+                    new Short[0],
+                    intValues,
+                    new Long[0],
+                    new Byte[0],
+                    new Short[0],
+                    new Integer[0],
+                    new Long[0],
+                    new Float[0],
+                    new Double[0],
+                    new Integer[0],
+                    new Integer[0],
+                    new HashMap<Integer, Boolean>(),
+                    new HashMap<Integer, Integer>(),
+                    (Boolean[] outBoolValues,
+                            Byte[] outUByteValues,
+                            Short[] outUShortValues,
+                            Integer[] outUIntValues,
+                            Long[] outULongValues,
+                            Byte[] outByteValues,
+                            Short[] outShortValues,
+                            Integer[] outIntValues,
+                            Long[] outLongValues,
+                            Float[] outFloatValues,
+                            Double[] outDoubleValues,
+                            @RegularEnum.EnumType Integer[] outEnumValues,
+                            @ExtensibleEnum.EnumType Integer[] outExtensibleEnumValues,
+                            Map<Integer, Boolean> outBoolMap,
+                            Map<Integer, Integer> outIntMap) -> {
+                        Assert.assertArrayEquals(intValues, outUIntValues);
+
+                        mTestRule.quitLoop();
+                    });
+            mTestRule.runLoopForever();
+        }
+
+        {
+            remote.methodToSendUnknownEnum(
+                    (@ExtensibleEnum.EnumType Integer[] result) -> {
+                        Assert.assertArrayEquals(
+                                new Integer[] {ExtensibleEnum.UNKNOWN, null}, result);
+
+                        mTestRule.quitLoop();
+                    });
+
             mTestRule.runLoopForever();
         }
 

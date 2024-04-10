@@ -12,6 +12,7 @@ import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.SharedBufferHandle;
 import org.chromium.mojo.system.UntypedHandle;
 
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
@@ -194,7 +195,7 @@ public class Decoder {
      * array where elements are pointers.
      */
     public DataHeader readDataHeaderForPointerArray(int expectedLength) {
-        return readDataHeaderForArray(BindingsHelper.POINTER_SIZE, expectedLength);
+        return readDataHeaderForArray(BindingsHelper.POINTER_SIZE, expectedLength, false);
     }
 
     /**
@@ -202,7 +203,7 @@ public class Decoder {
      * array where elements are unions.
      */
     public DataHeader readDataHeaderForUnionArray(int expectedLength) {
-        return readDataHeaderForArray(BindingsHelper.UNION_SIZE, expectedLength);
+        return readDataHeaderForArray(BindingsHelper.UNION_SIZE, expectedLength, false);
     }
 
     /**
@@ -286,7 +287,7 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForBooleanArray(expectedLength);
+        DataHeader si = d.readDataHeaderForBooleanArray(expectedLength, false);
         byte[] bytes = new byte[(si.elementsOrVersion + 7) / BindingsHelper.ALIGNMENT];
         d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
         d.mMessage.getData().get(bytes);
@@ -302,16 +303,63 @@ public class Decoder {
         return result;
     }
 
+    /** Deserializes an array of Booleans at the given offset. */
+    public Boolean[] readBooleanNullables(int offset, int arrayNullability, int expectedLength) {
+        Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+        if (d == null) {
+            return null;
+        }
+        DataHeader si = d.readDataHeaderForBooleanArray(expectedLength, true);
+        d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
+
+        boolean[] hasValueBitfield = readBitfield(1, si.elementsOrVersion, d.mMessage.getData());
+        boolean[] values = readBitfield(1, si.elementsOrVersion, d.mMessage.getData());
+
+        Boolean[] result = new Boolean[si.elementsOrVersion];
+        for (int i = 0; i < si.elementsOrVersion; ++i) {
+            if (hasValueBitfield[i]) {
+                result[i] = values[i];
+            } else {
+                result[i] = null;
+            }
+        }
+        return result;
+    }
+
     /** Deserializes an array of bytes at the given offset. */
     public byte[] readBytes(int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(1, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(1, expectedLength, false);
         byte[] result = new byte[si.elementsOrVersion];
         d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
         d.mMessage.getData().get(result);
+        return result;
+    }
+
+    /** Deserializes an array of Bytes at the given offset. */
+    public Byte[] readByteNullables(int offset, int arrayNullability, int expectedLength) {
+        Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+        if (d == null) {
+            return null;
+        }
+        DataHeader si = d.readDataHeaderForArray(1, expectedLength, true);
+        d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
+
+        boolean[] hasValueBitfield = readBitfield(1, si.elementsOrVersion, d.mMessage.getData());
+        byte[] values = new byte[si.elementsOrVersion];
+        d.mMessage.getData().get(values);
+
+        Byte[] result = new Byte[si.elementsOrVersion];
+        for (int i = 0; i < si.elementsOrVersion; ++i) {
+            if (hasValueBitfield[i]) {
+                result[i] = values[i];
+            } else {
+                result[i] = null;
+            }
+        }
         return result;
     }
 
@@ -321,10 +369,34 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(2, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(2, expectedLength, false);
         short[] result = new short[si.elementsOrVersion];
         d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
         d.mMessage.getData().asShortBuffer().get(result);
+        return result;
+    }
+
+    /** Deserializes an array of Shorts at the given offset. */
+    public Short[] readShortNullables(int offset, int arrayNullability, int expectedLength) {
+        Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+        if (d == null) {
+            return null;
+        }
+        DataHeader si = d.readDataHeaderForArray(2, expectedLength, true);
+        d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
+
+        boolean[] hasValueBitfield = readBitfield(2, si.elementsOrVersion, d.mMessage.getData());
+        short[] values = new short[si.elementsOrVersion];
+        d.mMessage.getData().asShortBuffer().get(values);
+
+        Short[] result = new Short[si.elementsOrVersion];
+        for (int i = 0; i < si.elementsOrVersion; ++i) {
+            if (hasValueBitfield[i]) {
+                result[i] = values[i];
+            } else {
+                result[i] = null;
+            }
+        }
         return result;
     }
 
@@ -334,10 +406,34 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(4, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(4, expectedLength, false);
         int[] result = new int[si.elementsOrVersion];
         d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
         d.mMessage.getData().asIntBuffer().get(result);
+        return result;
+    }
+
+    /** Deserializes an array of Integers at the given offset. */
+    public Integer[] readIntNullables(int offset, int arrayNullability, int expectedLength) {
+        Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+        if (d == null) {
+            return null;
+        }
+        DataHeader si = d.readDataHeaderForArray(4, expectedLength, true);
+        d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
+
+        boolean[] hasValueBitfield = readBitfield(4, si.elementsOrVersion, d.mMessage.getData());
+        int[] values = new int[si.elementsOrVersion];
+        d.mMessage.getData().asIntBuffer().get(values);
+
+        Integer[] result = new Integer[si.elementsOrVersion];
+        for (int i = 0; i < si.elementsOrVersion; ++i) {
+            if (hasValueBitfield[i]) {
+                result[i] = values[i];
+            } else {
+                result[i] = null;
+            }
+        }
         return result;
     }
 
@@ -347,10 +443,34 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(4, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(4, expectedLength, false);
         float[] result = new float[si.elementsOrVersion];
         d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
         d.mMessage.getData().asFloatBuffer().get(result);
+        return result;
+    }
+
+    /** Deserializes an array of Integers at the given offset. */
+    public Float[] readFloatNullables(int offset, int arrayNullability, int expectedLength) {
+        Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+        if (d == null) {
+            return null;
+        }
+        DataHeader si = d.readDataHeaderForArray(4, expectedLength, true);
+        d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
+
+        boolean[] hasValueBitfield = readBitfield(4, si.elementsOrVersion, d.mMessage.getData());
+        float[] values = new float[si.elementsOrVersion];
+        d.mMessage.getData().asFloatBuffer().get(values);
+
+        Float[] result = new Float[si.elementsOrVersion];
+        for (int i = 0; i < si.elementsOrVersion; ++i) {
+            if (hasValueBitfield[i]) {
+                result[i] = values[i];
+            } else {
+                result[i] = null;
+            }
+        }
         return result;
     }
 
@@ -360,10 +480,34 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(8, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(8, expectedLength, false);
         long[] result = new long[si.elementsOrVersion];
         d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
         d.mMessage.getData().asLongBuffer().get(result);
+        return result;
+    }
+
+    /** Deserializes an array of Longs at the given offset. */
+    public Long[] readLongNullables(int offset, int arrayNullability, int expectedLength) {
+        Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+        if (d == null) {
+            return null;
+        }
+        DataHeader si = d.readDataHeaderForArray(8, expectedLength, true);
+        d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
+
+        boolean[] hasValueBitfield = readBitfield(8, si.elementsOrVersion, d.mMessage.getData());
+        long[] values = new long[si.elementsOrVersion];
+        d.mMessage.getData().asLongBuffer().get(values);
+
+        Long[] result = new Long[si.elementsOrVersion];
+        for (int i = 0; i < si.elementsOrVersion; ++i) {
+            if (hasValueBitfield[i]) {
+                result[i] = values[i];
+            } else {
+                result[i] = null;
+            }
+        }
         return result;
     }
 
@@ -373,10 +517,33 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(8, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(8, expectedLength, false);
         double[] result = new double[si.elementsOrVersion];
         d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
         d.mMessage.getData().asDoubleBuffer().get(result);
+        return result;
+    }
+
+    /** Deserializes an array of Doubles at the given offset. */
+    public Double[] readDoubleNullables(int offset, int arrayNullability, int expectedLength) {
+        Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+        if (d == null) {
+            return null;
+        }
+        DataHeader si = d.readDataHeaderForArray(8, expectedLength, true);
+        d.mMessage.getData().position(d.mBaseOffset + DataHeader.HEADER_SIZE);
+
+        boolean[] hasValueBitfield = readBitfield(8, si.elementsOrVersion, d.mMessage.getData());
+        double[] values = new double[si.elementsOrVersion];
+        d.mMessage.getData().asDoubleBuffer().get(values);
+        Double[] result = new Double[si.elementsOrVersion];
+        for (int i = 0; i < si.elementsOrVersion; ++i) {
+            if (hasValueBitfield[i]) {
+                result[i] = values[i];
+            } else {
+                result[i] = null;
+            }
+        }
         return result;
     }
 
@@ -472,7 +639,7 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(4, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(4, expectedLength, false);
         Handle[] result = new Handle[si.elementsOrVersion];
         for (int i = 0; i < result.length; ++i) {
             result[i] =
@@ -490,7 +657,7 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(4, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(4, expectedLength, false);
         UntypedHandle[] result = new UntypedHandle[si.elementsOrVersion];
         for (int i = 0; i < result.length; ++i) {
             result[i] =
@@ -508,7 +675,7 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(4, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(4, expectedLength, false);
         DataPipe.ConsumerHandle[] result = new DataPipe.ConsumerHandle[si.elementsOrVersion];
         for (int i = 0; i < result.length; ++i) {
             result[i] =
@@ -526,7 +693,7 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(4, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(4, expectedLength, false);
         DataPipe.ProducerHandle[] result = new DataPipe.ProducerHandle[si.elementsOrVersion];
         for (int i = 0; i < result.length; ++i) {
             result[i] =
@@ -544,7 +711,7 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(4, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(4, expectedLength, false);
         MessagePipeHandle[] result = new MessagePipeHandle[si.elementsOrVersion];
         for (int i = 0; i < result.length; ++i) {
             result[i] =
@@ -562,7 +729,7 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(4, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(4, expectedLength, false);
         SharedBufferHandle[] result = new SharedBufferHandle[si.elementsOrVersion];
         for (int i = 0; i < result.length; ++i) {
             result[i] =
@@ -581,7 +748,8 @@ public class Decoder {
             return null;
         }
         DataHeader si =
-                d.readDataHeaderForArray(BindingsHelper.SERIALIZED_INTERFACE_SIZE, expectedLength);
+                d.readDataHeaderForArray(
+                        BindingsHelper.SERIALIZED_INTERFACE_SIZE, expectedLength, false);
         S[] result = manager.buildArray(si.elementsOrVersion);
         for (int i = 0; i < result.length; ++i) {
             // This cast is necessary because java 6 doesn't handle wildcard correctly when using
@@ -606,7 +774,7 @@ public class Decoder {
         if (d == null) {
             return null;
         }
-        DataHeader si = d.readDataHeaderForArray(4, expectedLength);
+        DataHeader si = d.readDataHeaderForArray(4, expectedLength, false);
         @SuppressWarnings("unchecked")
         InterfaceRequest<I>[] result = new InterfaceRequest[si.elementsOrVersion];
         for (int i = 0; i < result.length; ++i) {
@@ -642,9 +810,18 @@ public class Decoder {
      * Deserializes a {@link DataHeader} at the given offset and checks if it is correct for an
      * array of booleans.
      */
-    private DataHeader readDataHeaderForBooleanArray(int expectedLength) {
+    private DataHeader readDataHeaderForBooleanArray(
+            long expectedLength, boolean containsHasValueBitfield) {
         DataHeader dataHeader = readDataHeader();
-        if (dataHeader.size < DataHeader.HEADER_SIZE + (dataHeader.elementsOrVersion + 7) / 8) {
+
+        long packedBoolSize = (dataHeader.elementsOrVersion + 7) / 8;
+        long expectedSize = DataHeader.HEADER_SIZE + packedBoolSize;
+        if (containsHasValueBitfield) {
+            long hasValueBitfieldSize = packedBoolSize;
+            expectedSize += hasValueBitfieldSize;
+        }
+
+        if (dataHeader.size < expectedSize) {
             throw new DeserializationException("Array header is incorrect.");
         }
         if (expectedLength != BindingsHelper.UNSPECIFIED_ARRAY_LENGTH
@@ -660,10 +837,18 @@ public class Decoder {
     }
 
     /** Deserializes a {@link DataHeader} of an array at the given offset. */
-    private DataHeader readDataHeaderForArray(long elementSize, int expectedLength) {
+    private DataHeader readDataHeaderForArray(
+            long elementSize, int expectedLength, boolean containsHasValueBitfield) {
         DataHeader dataHeader = readDataHeader();
-        if (dataHeader.size
-                < (DataHeader.HEADER_SIZE + elementSize * dataHeader.elementsOrVersion)) {
+
+        long totalElementsSize = elementSize * dataHeader.elementsOrVersion;
+        long expectedSize = DataHeader.HEADER_SIZE + totalElementsSize;
+        if (containsHasValueBitfield) {
+            expectedSize +=
+                    BindingsHelper.computeBitfieldSize(elementSize, dataHeader.elementsOrVersion);
+        }
+
+        if (dataHeader.size < expectedSize) {
             throw new DeserializationException("Array header is incorrect.");
         }
         if (expectedLength != BindingsHelper.UNSPECIFIED_ARRAY_LENGTH
@@ -676,6 +861,20 @@ public class Decoder {
                             + ".");
         }
         return dataHeader;
+    }
+
+    private static boolean[] readBitfield(int typeSize, int numElements, ByteBuffer buffer) {
+        boolean[] bitfield = new boolean[numElements];
+
+        byte[] b = new byte[BindingsHelper.computeBitfieldSize(typeSize, numElements)];
+        buffer.get(b);
+
+        for (int i = 0; i < numElements; ++i) {
+            int idx = i / 8;
+            int mask = 1 << (i % 8);
+            bitfield[i] = (b[idx] & mask) != 0;
+        }
+        return bitfield;
     }
 
     private void validateBufferSize(int offset, int size) {
