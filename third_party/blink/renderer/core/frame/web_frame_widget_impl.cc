@@ -2853,6 +2853,8 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
       GetPage()->GetPageLifecycleState()->is_in_back_forward_cache) {
     return WebInputEventResult::kNotHandled;
   }
+  // Input events should not be routed to a prerendered page.
+  CHECK(!GetPage()->IsPrerendering());
 
   if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl()) {
     auto result = devtools->HandleInputEvent(input_event);
