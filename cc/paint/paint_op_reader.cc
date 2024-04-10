@@ -150,32 +150,6 @@ uint8_t* PaintOpReader::CopyScratchSpace(size_t bytes) {
   return options_.scratch_buffer.data();
 }
 
-template <typename T>
-void PaintOpReader::ReadFlattenable(
-    sk_sp<T>* val,
-    Factory<T> factory,
-    DeserializationError error_on_factory_failure) {
-  size_t bytes = 0;
-  ReadSize(&bytes);
-  if (remaining_bytes_ < bytes) {
-    SetInvalid(
-        DeserializationError::kInsufficientRemainingBytes_ReadFlattenable);
-    return;
-  }
-
-  if (bytes == 0)
-    return;
-
-  auto* scratch = CopyScratchSpace(bytes);
-  val->reset(factory(scratch, bytes, nullptr).release());
-  if (!val) {
-    SetInvalid(error_on_factory_failure);
-    return;
-  }
-
-  DidRead(bytes);
-}
-
 void PaintOpReader::ReadData(size_t bytes, void* data) {
   AssertFieldAlignment();
   if (bytes == 0)
@@ -314,8 +288,6 @@ void PaintOpReader::Read(PaintFlags* flags) {
   ReadSimple(&flags->bitfields_uint_);
 
   Read(&flags->path_effect_);
-  ReadFlattenable(&flags->mask_filter_, SkMaskFilter::Deserialize,
-                  DeserializationError::kSkMaskFilterUnflattenFailure);
   Read(&flags->color_filter_);
 
   if (enable_security_constraints_) {

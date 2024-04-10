@@ -66,8 +66,7 @@ bool BitmapsEqual(const PaintRecord& record1,
 bool PaintFlagsMayChangeColorOrMovePixelsExceptShader(
     const cc::PaintFlags& flags) {
   return flags.getStyle() != cc::PaintFlags::kFill_Style || flags.getLooper() ||
-         flags.getMaskFilter() || flags.getColorFilter() ||
-         flags.getImageFilter() ||
+         flags.getColorFilter() || flags.getImageFilter() ||
          (flags.getBlendMode() != SkBlendMode::kSrc &&
           flags.getBlendMode() != SkBlendMode::kSrcOver);
 }

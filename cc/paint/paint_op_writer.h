@@ -149,7 +149,6 @@ class CC_PAINT_EXPORT PaintOpWriter {
   static inline size_t SerializedSize(T* p) {
     return SerializedSize(static_cast<const T*>(p));
   }
-  static size_t SerializedSize(const SkFlattenable* flattenable);
   static size_t SerializedSize(const SkColorSpace* color_space);
   static size_t SerializedSize(const gfx::HDRMetadata& hdr_metadata);
   static size_t SerializedSize(const SkGainmapInfo& gainmap_info);
@@ -363,8 +362,6 @@ class CC_PAINT_EXPORT PaintOpWriter {
     memory_ += size;
     AssertFieldAlignment();
   }
-
-  void WriteFlattenable(const SkFlattenable* val);
 
   template <typename Enum>
   void WriteEnum(Enum value) {

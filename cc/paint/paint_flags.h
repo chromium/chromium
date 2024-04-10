@@ -12,7 +12,6 @@
 #include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/path_effect.h"
-#include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 
@@ -172,12 +171,6 @@ class CC_PAINT_EXPORT PaintFlags {
   ALWAYS_INLINE void setColorFilter(sk_sp<ColorFilter> filter) {
     color_filter_ = std::move(filter);
   }
-  ALWAYS_INLINE const sk_sp<SkMaskFilter>& getMaskFilter() const {
-    return mask_filter_;
-  }
-  ALWAYS_INLINE void setMaskFilter(sk_sp<SkMaskFilter> mask) {
-    mask_filter_ = std::move(mask);
-  }
 
   ALWAYS_INLINE const PaintShader* getShader() const { return shader_.get(); }
 
@@ -246,7 +239,6 @@ class CC_PAINT_EXPORT PaintFlags {
 
   sk_sp<PathEffect> path_effect_;
   sk_sp<PaintShader> shader_;
-  sk_sp<SkMaskFilter> mask_filter_;
   sk_sp<ColorFilter> color_filter_;
   sk_sp<DrawLooper> draw_looper_;
   sk_sp<PaintFilter> image_filter_;

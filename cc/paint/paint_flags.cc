@@ -25,14 +25,6 @@ bool AreValuesEqualForTesting(const sk_sp<T>& a, const sk_sp<T>& b) {
   });
 }
 
-bool AreSkFlattenablesEqualForTesting(const sk_sp<SkFlattenable> a,  // IN-TEST
-                                      const sk_sp<SkFlattenable> b) {
-  return base::ValuesEquivalent(
-      a, b, [](const SkFlattenable& x, const SkFlattenable& y) {
-        return x.serialize()->equals(y.serialize().get());
-      });
-}
-
 }  // namespace
 
 namespace cc {
@@ -66,7 +58,6 @@ PaintFlags::~PaintFlags() {
   // Free refcounted objects one by one.
   path_effect_.reset();
   shader_.reset();
-  mask_filter_.reset();
   color_filter_.reset();
   draw_looper_.reset();
   image_filter_.reset();
@@ -144,7 +135,6 @@ SkPaint PaintFlags::ToSkPaint() const {
   if (shader_) {
     paint.setShader(shader_->GetSkShader(getFilterQuality()));
   }
-  paint.setMaskFilter(mask_filter_);
   if (color_filter_) {
     paint.setColorFilter(color_filter_->sk_color_filter_);
   }
@@ -199,8 +189,6 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
          isArcClosed() == other.isArcClosed() &&
          AreValuesEqualForTesting(path_effect_,  // IN-TEST
                                   other.path_effect_) &&
-         AreSkFlattenablesEqualForTesting(mask_filter_,  // IN-TEST
-                                          other.mask_filter_) &&
          AreValuesEqualForTesting(color_filter_,  // IN-TEST
                                   other.color_filter_) &&
          AreValuesEqualForTesting(draw_looper_,  // IN-TEST

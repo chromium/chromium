@@ -100,7 +100,7 @@ TEST(PaintOpHelper, DrawDRRectToString) {
       "filterQuality=kNone_SkFilterQuality, "
       "strokeWidth=0.000, strokeMiter=4.000, strokeCap=kButt_Cap, "
       "strokeJoin=kMiter_Join, colorFilter=(nil), "
-      "maskFilter=(nil), shader=(nil), hasShader=false, shaderIsOpaque=false, "
+      "shader=(nil), hasShader=false, shaderIsOpaque=false, "
       "pathEffect=(nil), imageFilter=(nil), drawLooper=(nil), "
       "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
 }
@@ -114,7 +114,7 @@ TEST(PaintOpHelper, DrawImageToString) {
       "flags=[color=rgba(0, 0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, "
       "isDither=false, filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
-      "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
+      "colorFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
       "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
       "isValid=true, hasDiscardableImages=false])");
@@ -132,7 +132,7 @@ TEST(PaintOpHelper, DrawImageRectToString) {
       "flags=[color=rgba(0, 0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, "
       "isDither=false, filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
-      "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
+      "colorFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
       "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
       "isValid=true, hasDiscardableImages=false])");
@@ -146,7 +146,7 @@ TEST(PaintOpHelper, DrawIRectToString) {
             "blendMode=kSrcOver, isAntiAlias=false, isDither=false, "
             "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
             "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
-            "colorFilter=(nil), maskFilter=(nil), "
+            "colorFilter=(nil), "
             "shader=(nil), hasShader=false, shaderIsOpaque=false, "
             "pathEffect=(nil), imageFilter=(nil), drawLooper=(nil), "
             "supportsFoldingAlpha=true, isValid=true, "
@@ -162,7 +162,7 @@ TEST(PaintOpHelper, DrawLineToString) {
       "0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, isDither=false, "
       "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
-      "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
+      "colorFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
       "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
       "isValid=true, hasDiscardableImages=false])");
@@ -177,7 +177,7 @@ TEST(PaintOpHelper, DrawOvalToString) {
       "0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, isDither=false, "
       "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
-      "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
+      "colorFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
       "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
       "isValid=true, hasDiscardableImages=false])");
@@ -192,7 +192,7 @@ TEST(PaintOpHelper, DrawPathToString) {
             "blendMode=kSrcOver, isAntiAlias=false, isDither=false, "
             "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
             "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
-            "colorFilter=(nil), maskFilter=(nil), "
+            "colorFilter=(nil), "
             "shader=(nil), hasShader=false, shaderIsOpaque=false, "
             "pathEffect=(nil), imageFilter=(nil), drawLooper=(nil), "
             "supportsFoldingAlpha=true, isValid=true, "
@@ -215,7 +215,7 @@ TEST(PaintOpHelper, DrawRectToString) {
       "isDither=false, filterQuality=kNone_SkFilterQuality, "
       "strokeWidth=0.000, strokeMiter=4.000, strokeCap=kButt_Cap, "
       "strokeJoin=kMiter_Join, colorFilter=(nil), "
-      "maskFilter=(nil), shader=(nil), hasShader=false, shaderIsOpaque=false, "
+      "shader=(nil), hasShader=false, shaderIsOpaque=false, "
       "pathEffect=(nil), imageFilter=(nil), drawLooper=(nil), "
       "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
 }
@@ -230,7 +230,7 @@ TEST(PaintOpHelper, DrawRRectToString) {
       "flags=[color=rgba(0, 0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, "
       "isDither=false, filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
-      "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
+      "colorFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
       "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
       "isValid=true, hasDiscardableImages=false])");
@@ -244,7 +244,7 @@ TEST(PaintOpHelper, DrawSlugToString) {
       "DrawSlugOp(flags=[color=rgba(0, 0, 0, 255), blendMode=kSrcOver, "
       "isAntiAlias=false, isDither=false, filterQuality=kNone_SkFilterQuality, "
       "strokeWidth=0.000, strokeMiter=4.000, strokeCap=kButt_Cap, "
-      "strokeJoin=kMiter_Join, colorFilter=(nil), maskFilter=(nil), "
+      "strokeJoin=kMiter_Join, colorFilter=(nil), "
       "shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
       "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
@@ -260,7 +260,7 @@ TEST(PaintOpHelper, DrawTextBlobToString) {
       "0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, isDither=false, "
       "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
-      "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
+      "colorFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
       "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
       "isValid=true, hasDiscardableImages=false])");
@@ -281,7 +281,7 @@ TEST(PaintOpHelper, DrawVerticesToString) {
       "isAntiAlias=false, isDither=false, "
       "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
-      "colorFilter=(nil), maskFilter=(nil), shader=(nil), hasShader=false, "
+      "colorFilter=(nil), shader=(nil), hasShader=false, "
       "shaderIsOpaque=false, pathEffect=(nil), imageFilter=(nil), "
       "drawLooper=(nil), supportsFoldingAlpha=true, isValid=true, "
       "hasDiscardableImages=false])");
@@ -321,7 +321,7 @@ TEST(PaintOpHelper, SaveLayerToString) {
       "filterQuality=kNone_SkFilterQuality, "
       "strokeWidth=0.000, strokeMiter=4.000, strokeCap=kButt_Cap, "
       "strokeJoin=kMiter_Join, colorFilter=(nil), "
-      "maskFilter=(nil), shader=(nil), hasShader=false, shaderIsOpaque=false, "
+      "shader=(nil), hasShader=false, shaderIsOpaque=false, "
       "pathEffect=(nil), imageFilter=(nil), drawLooper=(nil), "
       "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
 }
@@ -340,7 +340,7 @@ TEST(PaintOpHelper, SaveLayerWithFilterToString) {
       "filterQuality=kNone_SkFilterQuality, "
       "strokeWidth=0.000, strokeMiter=4.000, strokeCap=kButt_Cap, "
       "strokeJoin=kMiter_Join, colorFilter=(nil), "
-      "maskFilter=(nil), shader=(nil), hasShader=false, shaderIsOpaque=false, "
+      "shader=(nil), hasShader=false, shaderIsOpaque=false, "
       "pathEffect=(nil), imageFilter=DropShadowPaintFilter(dx=0.000, dy=0.000, "
       "sigma_x=0.000, sigma_y=0.000, color=rgba(0.000000, 0.000000, 0.000000, "
       "0.000000), shadow_mode=kDrawShadowAndForeground, input=(nil), "

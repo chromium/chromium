@@ -68,10 +68,10 @@ bool IsSolidColorPaint(const PaintFlags& flags) {
   // Paint is solid color if the following holds:
   // - Style is fill, and there are no special effects.
   // - Blend mode is either kSrc or kSrcOver.
-  bool is_solid_color =
-      IsSolidColorBlendMode(blendmode) && !flags.HasShader() &&
-      !flags.getLooper() && !flags.getMaskFilter() && !flags.getColorFilter() &&
-      !flags.getImageFilter() && flags.getStyle() == PaintFlags::kFill_Style;
+  bool is_solid_color = IsSolidColorBlendMode(blendmode) &&
+                        !flags.HasShader() && !flags.getLooper() &&
+                        !flags.getColorFilter() && !flags.getImageFilter() &&
+                        flags.getStyle() == PaintFlags::kFill_Style;
 
 #if BUILDFLAG(IS_MAC)
   // Additionally, on Mac, we require that the color is opaque due to

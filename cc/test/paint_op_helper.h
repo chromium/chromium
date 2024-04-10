@@ -503,10 +503,6 @@ class PaintOpHelper {
     return "ColorFilter";
   }
 
-  static std::string ToString(const SkMaskFilter& filter) {
-    return "SkMaskFilter";
-  }
-
   static std::string ToString(const PathEffect& effect) { return "PathEffect"; }
 
   static std::string ToString(const DrawLooper& looper) { return "DrawLooper"; }
@@ -944,7 +940,6 @@ class PaintOpHelper {
     str << ", strokeCap=" << ToString(flags.getStrokeCap());
     str << ", strokeJoin=" << ToString(flags.getStrokeJoin());
     str << ", colorFilter=" << ToString(flags.getColorFilter());
-    str << ", maskFilter=" << ToString(flags.getMaskFilter());
     str << ", shader=" << ToString(flags.getShader());
     str << ", hasShader=" << flags.HasShader();
     str << ", shaderIsOpaque=" << (flags.HasShader() && flags.ShaderIsOpaque());

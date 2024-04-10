@@ -17,7 +17,6 @@
 #include "testing/perf/perf_result_reporter.h"
 #include "third_party/skia/include/core/SkBlurTypes.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 
 namespace cc {
@@ -125,8 +124,6 @@ TEST_F(PaintOpPerfTest, ManyFlagsOps) {
   PaintFlags flags;
   SkScalar intervals[] = {1.f, 1.f};
   flags.setPathEffect(PathEffect::MakeDash(intervals, 2, 0));
-  flags.setMaskFilter(SkMaskFilter::MakeBlur(
-      SkBlurStyle::kOuter_SkBlurStyle, 4.3));
   flags.setColorFilter(ColorFilter::MakeLuma());
 
   DrawLooperBuilder looper_builder;

@@ -28,7 +28,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkFlattenable.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkMatrix.h"
@@ -78,14 +77,6 @@ size_t PaintOpWriter::SerializedSize(const PaintImage& image) {
     image_size += SerializedSizeOfBytes(info.computeMinByteSize());
   }
   return image_size.ValueOrDie();
-}
-
-// static
-size_t PaintOpWriter::SerializedSize(const SkFlattenable* flattenable) {
-  // There is no method to know the serialized size of a flattenable without
-  // serializing it.
-  return SerializedSizeOfBytes(flattenable ? flattenable->serialize()->size()
-                                           : 0u);
 }
 
 // static
@@ -203,27 +194,6 @@ void PaintOpWriter::WriteHeaderForTesting(void* memory,
   WriteHeader(memory, type, serialized_size);
 }
 
-void PaintOpWriter::WriteFlattenable(const SkFlattenable* val) {
-  if (!val) {
-    WriteSize(static_cast<size_t>(0u));
-    return;
-  }
-
-  void* size_memory = SkipSize();
-  if (!valid_) {
-    return;
-  }
-
-  size_t bytes_written = val->serialize(
-      memory_, base::bits::AlignDown(remaining_bytes(), kDefaultAlignment));
-  if (bytes_written == 0u) {
-    valid_ = false;
-    return;
-  }
-  WriteSizeAt(size_memory, bytes_written);
-  DidWrite(bytes_written);
-}
-
 void PaintOpWriter::WriteSize(size_t size) {
   EnsureBytes(SerializedSize<size_t>());
   if (!valid_) {
@@ -294,17 +264,15 @@ void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
 }
 
 void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
-  if (flags.path_effect_ == nullptr && flags.mask_filter_ == nullptr &&
-      flags.color_filter_ == nullptr && flags.draw_looper_ == nullptr &&
-      flags.image_filter_ == nullptr && flags.shader_ == nullptr) {
+  if (flags.path_effect_ == nullptr && flags.color_filter_ == nullptr &&
+      flags.draw_looper_ == nullptr && flags.image_filter_ == nullptr &&
+      flags.shader_ == nullptr) {
     // Fast path for when there is nothing complicated to write.
     // NOTE: size_t is written as two 32-bit zeros (see WriteSize()).
     WriteSimpleMultiple(
         flags.color_, flags.width_, flags.miter_limit_, flags.bitfields_uint_,
         // flags.path_effect_.
         base::checked_cast<uint8_t>(PathEffect::Type::kNull),
-        // flags.mask_filter_.
-        uint32_t{0}, uint32_t{0},
         // flags.color_filter_.
         base::checked_cast<uint8_t>(ColorFilter::Type::kNull),
         // flags.draw_looper_.
@@ -322,7 +290,6 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
   WriteSimple(flags.bitfields_uint_);
 
   Write(flags.path_effect_.get());
-  WriteFlattenable(flags.mask_filter_.get());
   Write(flags.color_filter_.get());
 
   if (enable_security_constraints_) {

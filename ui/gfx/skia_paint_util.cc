@@ -7,7 +7,6 @@
 #include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_image_builder.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
-#include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/gfx/geometry/skia_conversions.h"
