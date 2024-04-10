@@ -20,8 +20,13 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 using testing::_;
 
@@ -31,13 +36,6 @@ class MockReadAnythingCoordinatorObserver
   MOCK_METHOD(void, Activate, (bool active), (override));
   MOCK_METHOD(void, OnActivePageDistillable, (bool distillable), (override));
   MOCK_METHOD(void, OnCoordinatorDestroyed, (), (override));
-};
-
-class MockEmbeddedA11yExtensionLoader : public EmbeddedA11yExtensionLoader {
- public:
-  MockEmbeddedA11yExtensionLoader() : EmbeddedA11yExtensionLoader() {}
-  MOCK_METHOD(void, InstallA11yHelperExtensionForReadingMode, (), (override));
-  MOCK_METHOD(void, RemoveA11yHelperExtensionForReadingMode, (), (override));
 };
 
 class ReadAnythingCoordinatorTest : public TestWithBrowserView {
@@ -53,10 +51,6 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
         SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
     read_anything_coordinator_ =
         ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
-    mock_extension_loader_ =
-        std::make_unique<MockEmbeddedA11yExtensionLoader>();
-    read_anything_coordinator_->extension_loader_ =
-        mock_extension_loader_.get();
 
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
@@ -111,7 +105,6 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
 
   MockReadAnythingCoordinatorObserver coordinator_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<MockEmbeddedA11yExtensionLoader> mock_extension_loader_;
 };
 
 // TODO(crbug.com/1344891): Fix the memory leak on destruction observed on these
@@ -158,19 +151,42 @@ TEST_F(ReadAnythingCoordinatorTest,
   entry->OnEntryHidden();
 }
 
-TEST_F(ReadAnythingCoordinatorTest, EmbeddedA11yExtensionLoaderCalled) {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(ReadAnythingCoordinatorTest,
+       SidePanelShowAndHide_NonLacros_CallEmbeddedA11yExtensionLoader) {
   SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+  EXPECT_FALSE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
+      extension_misc::kReadingModeGDocsHelperExtensionId));
 
-  EXPECT_CALL(*mock_extension_loader_, InstallA11yHelperExtensionForReadingMode)
-      .Times(1);
   entry->OnEntryShown();
+  EXPECT_TRUE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
+      extension_misc::kReadingModeGDocsHelperExtensionId));
 
   // Called once when calling OnEntryHidden and once on destruction.
-  EXPECT_CALL(*mock_extension_loader_, RemoveA11yHelperExtensionForReadingMode)
-      .Times(2);
   entry->OnEntryHidden();
+  EXPECT_FALSE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
+      extension_misc::kReadingModeGDocsHelperExtensionId));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(
+    ReadAnythingCoordinatorTest,
+    SidePanelShowAndHide_Lacros_EmbeddedA11yManagerLacrosUpdateReadingModeState) {
+  SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+  EXPECT_FALSE(
+      EmbeddedA11yManagerLacros::GetInstance()->IsReadingModeEnabled());
+
+  entry->OnEntryShown();
+  EXPECT_TRUE(EmbeddedA11yManagerLacros::GetInstance()->IsReadingModeEnabled());
+
+  entry->OnEntryHidden();
+  EXPECT_FALSE(
+      EmbeddedA11yManagerLacros::GetInstance()->IsReadingModeEnabled());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(ReadAnythingCoordinatorTest,
        OnBrowserSetLastActive_SidePanelIsNotVisible) {

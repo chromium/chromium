@@ -68,12 +68,6 @@ class EmbeddedA11yExtensionLoader : public ProfileObserver,
   // Should be called when the browser starts up.
   void Init();
 
-  // TODO(crbug.com/324143642): Observe the reading mode enabled/disabled state
-  // in this class instead of informing EmbeddedA11yManagerLacros to
-  // enable/disable reading mode.
-  virtual void InstallA11yHelperExtensionForReadingMode();
-  virtual void RemoveA11yHelperExtensionForReadingMode();
-
   // Install an extension.
   // `manifest_name` must live for the duration of the program. (e.g. be
   // statically allocated)
@@ -86,6 +80,9 @@ class EmbeddedA11yExtensionLoader : public ProfileObserver,
   // We can't use extensions::ExtensionHostTestHelper as those require a
   // background page, and these extensions do not have background pages.
   void AddExtensionChangedCallbackForTest(base::RepeatingClosure callback);
+
+  // Check whether an extension is installed or not.
+  bool IsExtensionInstalled(const std::string& extension_id);
 
  private:
   // ProfileObserver:

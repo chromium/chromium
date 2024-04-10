@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
+
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -99,29 +100,7 @@ class EmbeddedA11yExtensionLoaderTest : public InProcessBrowserTest {
   std::unique_ptr<base::RunLoop> waiter_;
 };
 
-// TODO(b/324143642): test with non-Lacros extensions. Currently, the following
-// tests are tested with a Lacros extension embedded_a11y_helper_extension.
-// These tests should be tested with a cross-platform extension once the
-// extension is setup successfully.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       InstallsAndRemovesExtensionForReadingMode) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  const auto& profiles = profile_manager->GetLoadedProfiles();
-  ASSERT_GT(profiles.size(), 0u);
-  Profile* profile = profiles[0];
-
-  auto* embedded_a11y_extension_loader =
-      EmbeddedA11yExtensionLoader::GetInstance();
-  embedded_a11y_extension_loader->InstallA11yHelperExtensionForReadingMode();
-  WaitForExtensionLoaded(profile,
-                         extension_misc::kEmbeddedA11yHelperExtensionId);
-
-  embedded_a11y_extension_loader->RemoveA11yHelperExtensionForReadingMode();
-  WaitForExtensionUnloaded(profile,
-                           extension_misc::kEmbeddedA11yHelperExtensionId);
-}
-
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
                        InstallsRemovesAndReinstallsExtension) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -130,21 +109,22 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
   Profile* profile = profiles[0];
 
   InstallAndWaitForExtensionLoaded(
-      profile, extension_misc::kEmbeddedA11yHelperExtensionId,
-      extension_misc::kEmbeddedA11yHelperExtensionPath,
-      extension_misc::kEmbeddedA11yHelperManifestFilename,
-      /*should_localize=*/true);
+      profile, extension_misc::kReadingModeGDocsHelperExtensionId,
+      extension_misc::kReadingModeGDocsHelperExtensionPath,
+      extension_misc::kReadingModeGDocsHelperManifestFilename,
+      /*should_localize=*/false);
   RemoveAndWaitForExtensionUnloaded(
-      profile, extension_misc::kEmbeddedA11yHelperExtensionId);
+      profile, extension_misc::kReadingModeGDocsHelperExtensionId);
   InstallAndWaitForExtensionLoaded(
-      profile, extension_misc::kEmbeddedA11yHelperExtensionId,
-      extension_misc::kEmbeddedA11yHelperExtensionPath,
-      extension_misc::kEmbeddedA11yHelperManifestFilename,
-      /*should_localize=*/true);
+      profile, extension_misc::kReadingModeGDocsHelperExtensionId,
+      extension_misc::kReadingModeGDocsHelperExtensionPath,
+      extension_misc::kReadingModeGDocsHelperManifestFilename,
+      /*should_localize=*/false);
   RemoveAndWaitForExtensionUnloaded(
-      profile, extension_misc::kEmbeddedA11yHelperExtensionId);
+      profile, extension_misc::kReadingModeGDocsHelperExtensionId);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
                        InstallsOnMultipleProfiles) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -166,47 +146,76 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
   // Install extension for Reading Mode.
   auto* embedded_a11y_extension_loader =
       EmbeddedA11yExtensionLoader::GetInstance();
-  embedded_a11y_extension_loader->InstallA11yHelperExtensionForReadingMode();
+  embedded_a11y_extension_loader->InstallExtensionWithId(
+      extension_misc::kReadingModeGDocsHelperExtensionId,
+      extension_misc::kReadingModeGDocsHelperExtensionPath,
+      extension_misc::kReadingModeGDocsHelperManifestFilename,
+      /*should_localize=*/false);
   for (auto* const profile : profiles) {
     WaitForExtensionLoaded(profile,
-                           extension_misc::kEmbeddedA11yHelperExtensionId);
+                           extension_misc::kReadingModeGDocsHelperExtensionId);
   }
 
   // Remove the extension.
-  embedded_a11y_extension_loader->RemoveA11yHelperExtensionForReadingMode();
+  embedded_a11y_extension_loader->RemoveExtensionWithId(
+      extension_misc::kReadingModeGDocsHelperExtensionId);
   for (auto* const profile : profiles) {
-    WaitForExtensionUnloaded(profile,
-                             extension_misc::kEmbeddedA11yHelperExtensionId);
+    WaitForExtensionUnloaded(
+        profile, extension_misc::kReadingModeGDocsHelperExtensionId);
   }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
                        InstallsOnIncognitoProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Browser* incognito =
-      CreateIncognitoBrowser(profile_manager->GetPrimaryUserProfile());
+      CreateIncognitoBrowser(profile_manager->GetLastUsedProfile());
   content::RunAllTasksUntilIdle();
 
   InstallAndWaitForExtensionLoaded(
-      incognito->profile(), extension_misc::kEmbeddedA11yHelperExtensionId,
-      extension_misc::kEmbeddedA11yHelperExtensionPath,
-      extension_misc::kEmbeddedA11yHelperManifestFilename,
-      /*should_localize=*/true);
+      incognito->profile(), extension_misc::kReadingModeGDocsHelperExtensionId,
+      extension_misc::kReadingModeGDocsHelperExtensionPath,
+      extension_misc::kReadingModeGDocsHelperManifestFilename,
+      /*should_localize=*/false);
   RemoveAndWaitForExtensionUnloaded(
-      incognito->profile(), extension_misc::kEmbeddedA11yHelperExtensionId);
+      incognito->profile(), extension_misc::kReadingModeGDocsHelperExtensionId);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// CreateGuestBrowser() is not supported for ChromeOS out of the box.
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
                        InstallsOnGuestProfile) {
   Browser* guest_browser = CreateGuestBrowser();
   content::RunAllTasksUntilIdle();
 
   InstallAndWaitForExtensionLoaded(
-      guest_browser->profile(), extension_misc::kEmbeddedA11yHelperExtensionId,
+      guest_browser->profile(),
+      extension_misc::kReadingModeGDocsHelperExtensionId,
+      extension_misc::kReadingModeGDocsHelperExtensionPath,
+      extension_misc::kReadingModeGDocsHelperManifestFilename,
+      /*should_localize=*/false);
+  RemoveAndWaitForExtensionUnloaded(
+      guest_browser->profile(),
+      extension_misc::kReadingModeGDocsHelperExtensionId);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
+                       InstallsExtensionOnLacros) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const auto& profiles = profile_manager->GetLoadedProfiles();
+  ASSERT_GT(profiles.size(), 0u);
+  Profile* profile = profiles[0];
+
+  InstallAndWaitForExtensionLoaded(
+      profile, extension_misc::kEmbeddedA11yHelperExtensionId,
       extension_misc::kEmbeddedA11yHelperExtensionPath,
       extension_misc::kEmbeddedA11yHelperManifestFilename,
       /*should_localize=*/true);
   RemoveAndWaitForExtensionUnloaded(
-      guest_browser->profile(), extension_misc::kEmbeddedA11yHelperExtensionId);
+      profile, extension_misc::kEmbeddedA11yHelperExtensionId);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

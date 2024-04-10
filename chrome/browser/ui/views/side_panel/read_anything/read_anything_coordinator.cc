@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/language/core/browser/language_model.h"
@@ -37,6 +39,10 @@
 #include "components/language/core/common/locale_util.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -96,8 +102,7 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     BrowserList::GetInstance()->AddObserver(this);
   }
 
-  extension_loader_ = EmbeddedA11yExtensionLoader::GetInstance();
-  extension_loader_->Init();
+  EmbeddedA11yExtensionLoader::GetInstance()->Init();
 }
 
 void ReadAnythingCoordinator::InitModelWithUserPrefs() {
@@ -152,10 +157,7 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
 }
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() {
-  if (extension_loader_) {
-    extension_loader_->RemoveA11yHelperExtensionForReadingMode();
-    extension_loader_ = nullptr;
-  }
+  RemoveGDocsHelperExtension();
 
   // Inform observers when |this| is destroyed so they can do their own cleanup.
   for (Observer& obs : observers_) {
@@ -263,7 +265,7 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryShown() {
   // TODO(crbug.com/324143642): Handle the installation of a11y helper extension
   // for local side panels.
   if (!features::IsReadAnythingLocalSidePanelEnabled()) {
-    extension_loader_->InstallA11yHelperExtensionForReadingMode();
+    InstallGDocsHelperExtension();
   }
 }
 
@@ -275,7 +277,7 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
   // TODO(crbug.com/324143642): Handle the uninstallation of a11y helper
   // extension for local side panels.
   if (!features::IsReadAnythingLocalSidePanelEnabled()) {
-    extension_loader_->RemoveA11yHelperExtensionForReadingMode();
+    RemoveGDocsHelperExtension();
   }
 }
 
@@ -411,6 +413,27 @@ void ReadAnythingCoordinator::ActivePageDistillable() {
   for (Observer& obs : observers_) {
     obs.OnActivePageDistillable(true);
   }
+}
+
+void ReadAnythingCoordinator::InstallGDocsHelperExtension() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EmbeddedA11yManagerLacros::GetInstance()->SetReadingModeEnabled(true);
+#else
+  EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithId(
+      extension_misc::kReadingModeGDocsHelperExtensionId,
+      extension_misc::kReadingModeGDocsHelperExtensionPath,
+      extension_misc::kReadingModeGDocsHelperManifestFilename,
+      /*should_localize=*/false);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+void ReadAnythingCoordinator::RemoveGDocsHelperExtension() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EmbeddedA11yManagerLacros::GetInstance()->SetReadingModeEnabled(false);
+#else
+  EmbeddedA11yExtensionLoader::GetInstance()->RemoveExtensionWithId(
+      extension_misc::kReadingModeGDocsHelperExtensionId);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ReadAnythingCoordinator::ActivePageNotDistillableForTesting() {
