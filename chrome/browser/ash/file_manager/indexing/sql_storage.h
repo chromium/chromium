@@ -9,6 +9,8 @@
 
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/ash/file_manager/indexing/file_info.h"
+#include "chrome/browser/ash/file_manager/indexing/file_info_table.h"
 #include "chrome/browser/ash/file_manager/indexing/term_table.h"
 #include "chrome/browser/ash/file_manager/indexing/url_table.h"
 #include "sql/database.h"
@@ -67,6 +69,20 @@ class SqlStorage {
   // seen before, this method returns -1.
   int64_t DeleteUrl(const GURL& url);
 
+  // Stores the gile info. The file info is stored using the ID generated from
+  // the file_url. This ID is returned when the `file_info` is stored
+  // successfully. Otherwise this method returns -1.
+  int64_t PutFileInfo(const FileInfo& file_info);
+
+  // Retrieves a FileInfo object for the give URL ID. The method returns false,
+  // if the FileInfo could not be found. Otherwise, it returns true, and
+  // populates the object pointed to by the `file_info`.
+  int64_t GetFileInfo(const GURL& url, FileInfo* file_info);
+
+  // Removes the given file info from the storage. If it was not stored, this
+  // method returns -1. Otherwise, it returns the ID of the `url` parameter.
+  int64_t DeleteFileInfo(const GURL& url);
+
  private:
   // Error callback set on the database.
   void OnErrorCallback(int error, sql::Statement* stmt);
@@ -81,11 +97,14 @@ class SqlStorage {
   // The actual SQL Lite database.
   sql::Database db_;
 
-  // The table that holds mapping from tags to tag IDs.
+  // The table that holds a mapping from tags to tag IDs.
   TermTable term_table_;
 
-  // The table that holds mapping from URLs to URL IDs.
+  // The table that holds a mapping from URLs to URL IDs.
   UrlTable url_table_;
+
+  // The table that holds a mapping from URL IDs to FileInfo objects.
+  FileInfoTable file_info_table_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

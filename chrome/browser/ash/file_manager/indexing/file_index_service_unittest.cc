@@ -42,6 +42,8 @@ class FileIndexServiceTest : public testing::Test {
     index_service_ = std::make_unique<FileIndexService>(&profile_);
   }
 
+  void TearDown() override { index_service_.reset(); }
+
   std::unique_ptr<FileIndexService> index_service_;
   Term pinned_;
   Term downloaded_;

@@ -46,7 +46,7 @@ OpResults InmemoryFileIndex::AugmentFile(const std::vector<Term>& terms,
 
   int64_t url_id = GetOrCreateUrlId(info.file_url);
   DCHECK(url_id >= 0);
-  url_id_to_file_info_.emplace(std::make_pair(url_id, info));
+  PutFileInfo(url_id, info);
 
   std::set<int64_t> term_id_set = ConvertToTermIds(terms);
   AddFileTerms(term_id_set, url_id);
@@ -73,7 +73,7 @@ OpResults InmemoryFileIndex::SetFileTerms(const std::vector<Term>& terms,
   std::set<int64_t> term_id_set = ConvertToTermIds(terms);
   int64_t url_id = GetOrCreateUrlId(info.file_url);
   DCHECK(url_id >= 0);
-  url_id_to_file_info_.emplace(std::make_pair(url_id, info));
+  PutFileInfo(url_id, info);
 
   // If the given url_id already had some terms associated with it, remove terms
   // not specified in terms vector. Say, if url_id had terms {t1, t3, t8}
@@ -194,6 +194,13 @@ int64_t InmemoryFileIndex::GetOrCreateUrlId(const GURL& url) {
   int64_t this_url_id = url_id_++;
   url_to_id_.emplace(std::make_pair(url, this_url_id));
   return this_url_id;
+}
+
+int64_t InmemoryFileIndex::PutFileInfo(int64_t url_id,
+                                       const FileInfo& file_info) {
+  DCHECK(url_id == GetUrlId(file_info.file_url));
+  url_id_to_file_info_.emplace(std::make_pair(url_id, file_info));
+  return url_id;
 }
 
 // Searches the index for file info matching the specified query.

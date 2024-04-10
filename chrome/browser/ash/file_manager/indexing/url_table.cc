@@ -50,14 +50,14 @@ int64_t UrlTable::DeleteUrl(const GURL& url) {
   return DeleteValue(url.spec());
 }
 
-int64_t UrlTable::GetUrlId(const GURL& url) {
+int64_t UrlTable::GetUrlId(const GURL& url) const {
   DCHECK(url.is_valid());
-  return GetValueId(url.spec(), false);
+  return GetValueId(url.spec());
 }
 
 int64_t UrlTable::GetOrCreateUrlId(const GURL& url) {
   DCHECK(url.is_valid());
-  return GetValueId(url.spec(), true);
+  return GetOrCreateValueId(url.spec());
 }
 
 std::unique_ptr<sql::Statement> UrlTable::MakeGetStatement() const {
