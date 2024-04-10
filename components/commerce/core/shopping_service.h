@@ -120,47 +120,6 @@ class WebWrapper;
 enum class SubscriptionType;
 struct CommerceSubscription;
 
-// A struct that keeps track of cached product info related data about a url.
-struct ProductInfoCacheEntry {
- public:
-  ProductInfoCacheEntry();
-  ProductInfoCacheEntry(const ProductInfoCacheEntry&) = delete;
-  ProductInfoCacheEntry& operator=(const ProductInfoCacheEntry&) = delete;
-  ~ProductInfoCacheEntry();
-
-  // The number of pages that have the URL open.
-  size_t pages_with_url_open{0};
-
-  // Whether the fallback local extraction needs to run for page.
-  bool needs_local_extraction_run{false};
-
-  // The time that the local extraction execution started. This is primarily
-  // used for metrics.
-  base::Time local_extraction_execution_start_time;
-
-  std::unique_ptr<base::CancelableOnceClosure> run_local_extraction_task;
-
-  // The product info associated with the URL.
-  std::unique_ptr<ProductInfo> product_info;
-};
-
-// A struct that keeps track of cached price insights info related data about a
-// url.
-struct PriceInsightsInfoCacheEntry {
- public:
-  PriceInsightsInfoCacheEntry();
-  PriceInsightsInfoCacheEntry(const PriceInsightsInfoCacheEntry&) = delete;
-  PriceInsightsInfoCacheEntry& operator=(const PriceInsightsInfoCacheEntry&) =
-      delete;
-  ~PriceInsightsInfoCacheEntry();
-
-  // The number of pages that have the URL open.
-  size_t pages_with_url_open{0};
-
-  // The price insights info associated with the URL.
-  std::unique_ptr<PriceInsightsInfo> info;
-};
-
 // Types of shopping pages from backend.
 enum class ShoppingPageType {
   kUnknown = 0,
@@ -603,9 +562,6 @@ class ShoppingService : public KeyedService,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
-  // Update the cache notifying that a tab is on the specified URL.
-  void UpdateProductInfoCacheForInsertion(const GURL& url);
-
   // Update the data stored in the cache.
   void UpdateProductInfoCache(const GURL& url,
                               bool needs_js,
@@ -613,10 +569,6 @@ class ShoppingService : public KeyedService,
 
   // Get the data stored in the cache or nullptr if none exists.
   const ProductInfo* GetFromProductInfoCache(const GURL& url);
-
-  // Update the cache storing product info for a navigation away from the
-  // provided URL or closing of a tab.
-  void UpdateProductInfoCacheForRemoval(const GURL& url);
 
   // Whether APIs like |GetPriceInsightsInfoForURL| are enabled and allowed to
   // be used.
@@ -636,10 +588,6 @@ class ShoppingService : public KeyedService,
 
   // Handle main frame navigation for the price insights info API.
   void HandleDidNavigatePrimaryMainFrameForPriceInsightsInfo(WebWrapper* web);
-
-  // Update the cache storing price insights info for a navigation away from the
-  // provided URL or closing of a tab.
-  void UpdatePriceInsightsInfoCacheForRemoval(const GURL& url);
 
   void HandleOptGuideShoppingPageTypesResponse(
       const GURL& url,
@@ -732,11 +680,6 @@ class ShoppingService : public KeyedService,
   CommerceInfoCache commerce_info_cache_;
 
   std::unique_ptr<ProductSpecificationsServerProxy> product_specs_server_proxy_;
-
-  // This is a cache that maps URL to a cache entry that may or may not contain
-  // price insights info.
-  std::unordered_map<std::string, std::unique_ptr<PriceInsightsInfoCacheEntry>>
-      price_insights_info_cache_;
 
   std::unique_ptr<BookmarkUpdateManager> bookmark_update_manager_;
 
