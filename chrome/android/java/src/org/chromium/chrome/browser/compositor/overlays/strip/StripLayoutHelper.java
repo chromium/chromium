@@ -2745,7 +2745,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 4. Calculate the realistic tab width.
         mCachedTabWidth = MathUtils.clamp(optimalTabWidth, mMinTabWidth, mMaxTabWidth);
-        mHalfTabWidth = mCachedTabWidth / 2;
+        mHalfTabWidth = (mCachedTabWidth - mTabOverlapWidth) * REORDER_OVERLAP_SWITCH_PERCENTAGE;
 
         // 5. Prepare animations and propagate width to all tabs.
         finishAnimationsAndPushTabUpdates();
@@ -4109,7 +4109,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             int curIndexInStripTab, boolean isInGroup, boolean towardEnd) {
         int curIndexInStripView = findStripViewIndexForStripTab(curIndexInStripTab);
         float dragOutThreshold = mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
-        float dragInThreshold = mHalfTabWidth - mTabOverlapWidth;
+        float dragInThreshold = mHalfTabWidth;
 
         assert curIndexInStripView != TabModel.INVALID_TAB_INDEX;
         if (isInGroup) {
