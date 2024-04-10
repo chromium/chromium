@@ -42,6 +42,7 @@
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"  // nogncheck
 #include "services/video_effects/video_effects_service_impl.h"  // nogncheck
+#include "services/video_effects/viz_gpu_channel_host_provider.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -348,22 +349,6 @@ auto RunVideoCapture(
 }
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-
-class VizGpuChannelHostProvider : public video_effects::GpuChannelHostProvider {
- public:
-  explicit VizGpuChannelHostProvider(std::unique_ptr<viz::Gpu> viz_gpu)
-      : viz_gpu_(std::move(viz_gpu)) {
-    CHECK(viz_gpu_);
-  }
-
-  scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() override {
-    return viz_gpu_->GetGpuChannel();
-  }
-
- private:
-  std::unique_ptr<viz::Gpu> viz_gpu_;
-};
-
 auto RunVideoEffects(
     mojo::PendingReceiver<video_effects::mojom::VideoEffectsService> receiver) {
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
@@ -375,7 +360,8 @@ auto RunVideoEffects(
 
     return std::make_unique<video_effects::VideoEffectsServiceImpl>(
         std::move(receiver),
-        std::make_unique<VizGpuChannelHostProvider>(std::move(viz_gpu)));
+        std::make_unique<video_effects::VizGpuChannelHostProvider>(
+            std::move(viz_gpu)));
   }
 
   return std::unique_ptr<video_effects::VideoEffectsServiceImpl>{};

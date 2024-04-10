@@ -5,6 +5,11 @@
 #ifndef SERVICES_VIDEO_EFFECTS_VIDEO_EFFECTS_PROCESSOR_IMPL_H_
 #define SERVICES_VIDEO_EFFECTS_VIDEO_EFFECTS_PROCESSOR_IMPL_H_
 
+#include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "components/viz/common/gpu/context_lost_observer.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "media/capture/mojom/video_effects_manager.mojom.h"
@@ -13,16 +18,36 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 
 namespace video_effects {
 
-class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor {
+class GpuChannelHostProvider;
+
+class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
+                                  public viz::ContextLostObserver {
  public:
+  // `gpu_channel_host_provider` must outlive this processor.
+  // `on_unrecoverable_error` will be called after an unrecoverable condition
+  // has happened, making this processor defunct. This can happen e.g. when any
+  // of the mojo pipes owned by this processor have been disconnected, or when
+  // the processor was unable to reinitialize GPU resources after context loss.
   explicit VideoEffectsProcessorImpl(
       mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
-      mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver);
+      mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
+      GpuChannelHostProvider& gpu_channel_host_provider,
+      base::OnceClosure on_unrecoverable_error);
 
   ~VideoEffectsProcessorImpl() override;
+
+  // Initializes the post-processor. Initialization errors are not recoverable.
+  // Despite that fact, it is guaranteed that initialization errors won't cause
+  // the `on_unrecoverable_error_` to be invoked - this is done to avoid
+  // possible re-entrancy in the caller (e.g. the caller constructs a processor
+  // with an error callback bound to a member method & attempts to initialize
+  // the processor - if an initialization error were to cause the callback to be
+  // invoked, we would re-enter code inside the caller).
+  bool Initialize();
 
   void PostProcess(media::mojom::VideoBufferHandlePtr input_frame_data,
                    media::mojom::VideoFrameInfoPtr input_frame_info,
@@ -31,8 +56,43 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor {
                    PostProcessCallback callback) override;
 
  private:
+  // viz::ContextLostObserver:
+  void OnContextLost() override;
+
+  // Helper, registered as a disconnect handler for `manager_remote_` and
+  // `processor_receiver_`.
+  void OnMojoDisconnected();
+
+  // Helper, initializes GPU state (context providers and shared image
+  // interface).
+  bool InitializeGpuState();
+
+  bool initialized_ = false;
+
   mojo::Remote<media::mojom::VideoEffectsManager> manager_remote_;
   mojo::Receiver<mojom::VideoEffectsProcessor> processor_receiver_;
+
+  raw_ref<GpuChannelHostProvider> gpu_channel_host_provider_;
+
+  // GPU state. Will be created in `Initialize()`, and should be recreated
+  // on context loss.
+  scoped_refptr<viz::ContextProviderCommandBuffer> webgpu_context_provider_;
+  scoped_refptr<viz::ContextProviderCommandBuffer>
+      raster_interface_context_provider_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+
+  // We'll keep track of how many context losses we've experienced. If this
+  // number is too high, we'll make this processor defunct, assuming that
+  // it is causing some instability with GPU service.
+  int num_context_losses_ = 0;
+
+  // Called when this processor enters a defunct state.
+  base::OnceClosure on_unrecoverable_error_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Must be last:
+  base::WeakPtrFactory<VideoEffectsProcessorImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace video_effects

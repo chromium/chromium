@@ -12,6 +12,16 @@ import "media/mojo/mojom/media_types.mojom";
 // `VideoEffectsProcessor::PostProcess()` failed.
 enum PostProcessError {
   kUnknown = 1,
+  // Returned when a postprocessor is no longer usable for some reason.
+  // This is not a recoverable error and the postprocessor should only return
+  // this temporarily - postprocessor teardown should happen shortly and it
+  // will be disconnected.
+  kUnusable = 2,
+  // Returned when a postprocessor is not yet ready to accept the calls.
+  // This can happen e.g. when it was not yet initialized. This should be
+  // treated like a recoverable error (i.e. the processor should eventually
+  // recover from this state, or become disconnected).
+  kNotReady = 3,
 };
 
 // Returned as the active variant of `PostProcessResult` if the call to

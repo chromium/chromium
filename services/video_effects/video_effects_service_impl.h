@@ -10,6 +10,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,6 +32,9 @@ class GpuChannelHostProvider {
  public:
   virtual ~GpuChannelHostProvider() = default;
 
+  // Return a connected `gpu::GpuChannelHost`. Implementations should expect
+  // this method to be called somewhat frequently when a new Video Effects
+  // Processor is created.
   virtual scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() = 0;
 };
 
@@ -54,6 +59,10 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor) override;
 
  private:
+  // Helper - used to clean up instances of `VideoEffectsProcessor`s that are
+  // no longer functional.
+  void RemoveProcessor(const std::string& id);
+
   // Mapping from the device ID to processor implementation. Device ID is only
   // used to deduplicate processor creation requests.
   base::flat_map<std::string, std::unique_ptr<VideoEffectsProcessorImpl>>
@@ -61,6 +70,11 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
 
   mojo::Receiver<mojom::VideoEffectsService> receiver_;
   std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Must be last:
+  base::WeakPtrFactory<VideoEffectsServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace video_effects

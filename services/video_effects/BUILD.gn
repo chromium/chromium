@@ -9,11 +9,13 @@ source_set("service") {
   public = [
     "video_effects_processor_impl.h",
     "video_effects_service_impl.h",
+    "viz_gpu_channel_host_provider.h",
   ]
 
   sources = [
     "video_effects_processor_impl.cc",
     "video_effects_service_impl.cc",
+    "viz_gpu_channel_host_provider.cc",
   ]
 
   visibility = [
@@ -39,12 +41,15 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "test_gpu_channel_host_provider.cc",
+    "test_gpu_channel_host_provider.h",
     "video_effects_processor_impl_unittest.cc",
     "video_effects_service_impl_unittest.cc",
   ]
 
   deps = [
     "//base/test:test_support",
+    "//gpu/ipc/common:test_support",
     "//media/capture/mojom:video_effects_manager",
     "//services/video_effects:service",
     "//testing/gtest",

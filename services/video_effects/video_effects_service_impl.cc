@@ -8,12 +8,14 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "services/video_effects/video_effects_processor_impl.h"
-#include "services/viz/public/cpp/gpu/gpu.h"
 
 namespace video_effects {
 
@@ -25,21 +27,42 @@ VideoEffectsServiceImpl::VideoEffectsServiceImpl(
   CHECK(gpu_channel_host_provider_);
 }
 
-VideoEffectsServiceImpl::~VideoEffectsServiceImpl() = default;
+VideoEffectsServiceImpl::~VideoEffectsServiceImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void VideoEffectsServiceImpl::CreateEffectsProcessor(
     const std::string& device_id,
-    mojo::PendingRemote<media::mojom::VideoEffectsManager> manager,
-    mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor) {
+    mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
+    mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (processors_.contains(device_id)) {
     return;
   }
 
-  std::unique_ptr<VideoEffectsProcessorImpl> effects_processor =
-      std::make_unique<VideoEffectsProcessorImpl>(std::move(manager),
-                                                  std::move(processor));
+  auto on_unrecoverable_processor_error =
+      base::BindOnce(&VideoEffectsServiceImpl::RemoveProcessor,
+                     weak_ptr_factory_.GetWeakPtr(), device_id);
 
-  processors_.insert(std::make_pair(device_id, std::move(effects_processor)));
+  auto effects_processor = std::make_unique<VideoEffectsProcessorImpl>(
+      std::move(manager_remote), std::move(processor_receiver),
+      *gpu_channel_host_provider_.get(),
+      std::move(on_unrecoverable_processor_error));
+
+  if (!effects_processor->Initialize()) {
+    return;
+  }
+
+  auto [_, inserted] = processors_.insert(
+      std::make_pair(device_id, std::move(effects_processor)));
+  CHECK(inserted);
+}
+
+void VideoEffectsServiceImpl::RemoveProcessor(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  processors_.erase(id);
 }
 
 }  // namespace video_effects

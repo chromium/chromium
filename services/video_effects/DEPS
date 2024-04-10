@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/viz/common/gpu",
+  "+content/public/common",
   "+gpu/command_buffer/common",
   "+gpu/ipc/client",
   "+media/base",
@@ -6,3 +8,13 @@ include_rules = [
   "+services/viz/public/cpp/gpu",
   "+services/video_effects/public/mojom",
 ]
+
+specific_include_rules = {
+  "test_gpu_channel_host_provider\.[cc|h]": [
+    "+gpu/config",
+    "+gpu/ipc/common",
+  ],
+  ".*_unittest\.cc": [
+    "+gpu/ipc/common",
+  ],
+}
