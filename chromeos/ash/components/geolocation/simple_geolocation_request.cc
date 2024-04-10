@@ -503,10 +503,13 @@ void SimpleGeolocationRequest::OnSimpleURLLoaderComplete(
       << "SimpleGeolocationRequest::OnSimpleURLLoaderComplete(): position={"
       << position_.ToString() << "}";
 
-  if (!success) {
+  // Retry on error, except when it's being rate-limited (handled by the
+  // caller).
+  if (!success && response_code != net::HTTP_TOO_MANY_REQUESTS) {
     Retry(server_error);
     return;
   }
+
   const base::TimeDelta elapsed = base::Time::Now() - request_started_at_;
   RecordUmaResponseTime(elapsed, success);
 
