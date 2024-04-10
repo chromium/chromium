@@ -384,4 +384,17 @@ BluetoothLocalGattCharacteristicFloss::GetDescriptors() const {
   return descriptors_;
 }
 
+device::BluetoothGattCharacteristic::NotificationType
+BluetoothLocalGattCharacteristicFloss::CccdNotificationType() {
+  for (auto& descriptor : descriptors_) {
+    if (descriptor->GetUUID() == device::BluetoothGattDescriptor::
+                                     ClientCharacteristicConfigurationUuid()) {
+      return descriptor->CccdNotificationType();
+    }
+  }
+  LOG(WARNING) << __func__ << ": No CCCD found for characteristic with uuid "
+               << GetUUID();
+  return device::BluetoothGattCharacteristic::NotificationType::kNone;
+}
+
 }  // namespace floss

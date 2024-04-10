@@ -75,6 +75,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
   int32_t InstanceId() const { return floss_instance_id_; }
   const std::vector<std::unique_ptr<BluetoothLocalGattDescriptorFloss>>&
   GetDescriptors() const;
+  NotificationType CccdNotificationType();
 
  private:
   friend class BluetoothLocalGattServiceFloss;

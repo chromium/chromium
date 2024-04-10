@@ -1481,12 +1481,14 @@ bool BluetoothAdapterFloss::SendValueChanged(
     return false;
   }
 
+  bool confirm =
+      characteristic->CccdNotificationType() ==
+      device::BluetoothLocalGattCharacteristic::NotificationType::kIndication;
   std::string service_name =
       FlossDBusManager::Get()->GetGattManagerClient()->ServiceName();
   FlossDBusManager::Get()->GetGattManagerClient()->ServerSendNotification(
-      base::DoNothing(), service_name, characteristic->InstanceId(),
-      /*confirm=*/false, value);
-  // TODO(@sarveshkalwit) How to confirm success?
+      base::DoNothing(), service_name, characteristic->InstanceId(), confirm,
+      value);
   return true;
 }
 

@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "device/bluetooth/floss/bluetooth_gatt_characteristic_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 
@@ -291,10 +292,13 @@ GattStatus BluetoothLocalGattDescriptorFloss::HandleCccDescriptor(
 
   auto properties = characteristic_->GetProperties();
   switch (notification_type) {
-    case CCCD_STOP_ALL:
+    case base::to_underlying(
+        device::BluetoothGattCharacteristic::NotificationType::kNone):
+      cccd_type_ = device::BluetoothGattCharacteristic::NotificationType::kNone;
       delegate->OnNotificationsStop(device, characteristic);
       break;
-    case CCCD_START_NOTIFY:
+    case base::to_underlying(
+        device::BluetoothGattCharacteristic::NotificationType::kNotification):
       if (!(properties &
             device::BluetoothGattCharacteristic::PROPERTY_NOTIFY)) {
         LOG(WARNING) << __func__ << ": Parent characteristic (uuid: "
@@ -304,12 +308,12 @@ GattStatus BluetoothLocalGattDescriptorFloss::HandleCccDescriptor(
                      << properties << ")";
         return GattStatus::kCccCfgErr;
       }
-      delegate->OnNotificationsStart(
-          device,
-          device::BluetoothGattCharacteristic::NotificationType::kNotification,
-          characteristic);
+      cccd_type_ =
+          device::BluetoothGattCharacteristic::NotificationType::kNotification;
+      delegate->OnNotificationsStart(device, cccd_type_, characteristic);
       break;
-    case CCCD_START_INDICATE:
+    case base::to_underlying(
+        device::BluetoothGattCharacteristic::NotificationType::kIndication):
       if (!(properties &
             device::BluetoothGattCharacteristic::PROPERTY_INDICATE)) {
         LOG(WARNING) << __func__ << ": Parent characteristic (uuid: "
@@ -319,10 +323,9 @@ GattStatus BluetoothLocalGattDescriptorFloss::HandleCccDescriptor(
                      << properties << ")";
         return GattStatus::kCccCfgErr;
       }
-      delegate->OnNotificationsStart(
-          device,
-          device::BluetoothGattCharacteristic::NotificationType::kIndication,
-          characteristic);
+      cccd_type_ =
+          device::BluetoothGattCharacteristic::NotificationType::kIndication;
+      delegate->OnNotificationsStart(device, cccd_type_, characteristic);
       break;
     default:
       LOG(WARNING) << __func__ << ": Value '" << notification_type

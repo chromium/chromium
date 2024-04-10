@@ -19,10 +19,6 @@
 
 namespace floss {
 
-inline constexpr uint16_t CCCD_STOP_ALL = 0x0000;
-inline constexpr uint16_t CCCD_START_NOTIFY = 0x0001;
-inline constexpr uint16_t CCCD_START_INDICATE = 0x0002;
-
 class BluetoothLocalGattCharacteristicFloss;
 
 // The BluetoothLocalGattDescriptorFloss class implements
@@ -70,6 +66,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattDescriptorFloss
 
   void ResolveInstanceId(const GattCharacteristic& characteristic);
   int32_t InstanceId() const { return floss_instance_id_; }
+  device::BluetoothGattCharacteristic::NotificationType CccdNotificationType() {
+    return cccd_type_;
+  }
 
  private:
   friend class BluetoothLocalGattCharacteristicFloss;
@@ -100,6 +99,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattDescriptorFloss
   // Notify browser clients if there was a change to the CCCD.
   GattStatus HandleCccDescriptor(std::string address,
                                  std::vector<uint8_t>& value);
+
+  // Notification type of the CCCD.
+  device::BluetoothGattCharacteristic::NotificationType cccd_type_;
 
   // Cached instance of the latest pending read/write request, if one exists.
   std::optional<GattRequest> pending_request_;
