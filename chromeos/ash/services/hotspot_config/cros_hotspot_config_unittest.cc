@@ -236,26 +236,26 @@ TEST_F(CrosHotspotConfigTest, GetHotspotInfo) {
             mojom::HotspotAllowStatus::kDisallowedNoMobileData);
   EXPECT_EQ(hotspot_info->allowed_wifi_security_modes.size(), 2u);
   EXPECT_TRUE(hotspot_info->config);
-  EXPECT_EQ(observer()->hotspot_info_changed_count(), 1u);
+  EXPECT_EQ(observer()->hotspot_info_changed_count(), 2u);
 
   AddActiveCellularService();
   base::RunLoop().RunUntilIdle();
   hotspot_info = GetHotspotInfo();
   EXPECT_EQ(hotspot_info->allow_status, mojom::HotspotAllowStatus::kAllowed);
-  EXPECT_EQ(observer()->hotspot_info_changed_count(), 2u);
+  EXPECT_EQ(observer()->hotspot_info_changed_count(), 3u);
 
   SetHotspotStateInShill(shill::kTetheringStateActive);
   EXPECT_EQ(GetHotspotInfo()->state, mojom::HotspotState::kEnabled);
-  EXPECT_EQ(observer()->hotspot_info_changed_count(), 3u);
+  EXPECT_EQ(observer()->hotspot_info_changed_count(), 4u);
 
   SetHotspotStateInShill(shill::kTetheringStateIdle);
   EXPECT_EQ(GetHotspotInfo()->state, mojom::HotspotState::kDisabled);
-  EXPECT_EQ(observer()->hotspot_info_changed_count(), 4u);
+  EXPECT_EQ(observer()->hotspot_info_changed_count(), 5u);
 
   // Simulate user starting tethering
   SetHotspotStateInShill(shill::kTetheringStateStarting);
   EXPECT_EQ(GetHotspotInfo()->state, mojom::HotspotState::kEnabling);
-  EXPECT_EQ(observer()->hotspot_info_changed_count(), 5u);
+  EXPECT_EQ(observer()->hotspot_info_changed_count(), 6u);
 }
 
 TEST_F(CrosHotspotConfigTest, SetHotspotConfig) {

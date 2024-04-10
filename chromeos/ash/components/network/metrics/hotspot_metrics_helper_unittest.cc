@@ -163,18 +163,18 @@ TEST_F(HotspotMetricsHelperTest, HotspotAllowStatusHistogram) {
   SetHotspotAllowStatus(
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoMobileData);
   histogram_tester_.ExpectTotalCount(
-      HotspotMetricsHelper::kHotspotAllowStatusHistogram, 1);
+      HotspotMetricsHelper::kHotspotAllowStatusHistogram, 2);
   histogram_tester_.ExpectBucketCount(
       HotspotMetricsHelper::kHotspotAllowStatusHistogram,
       HotspotMetricsHelper::HotspotMetricsAllowStatus::kDisallowedNoMobileData,
-      1);
+      2);
   histogram_tester_.ExpectTotalCount(
       HotspotMetricsHelper::kHotspotAllowStatusAtLoginHistogram, 0);
 
   task_environment_.FastForwardBy(
       HotspotMetricsHelper::kLogAllowStatusAtLoginTimeout);
   histogram_tester_.ExpectTotalCount(
-      HotspotMetricsHelper::kHotspotAllowStatusHistogram, 1);
+      HotspotMetricsHelper::kHotspotAllowStatusHistogram, 2);
   histogram_tester_.ExpectTotalCount(
       HotspotMetricsHelper::kHotspotAllowStatusAtLoginHistogram, 1);
   histogram_tester_.ExpectBucketCount(
@@ -184,7 +184,7 @@ TEST_F(HotspotMetricsHelperTest, HotspotAllowStatusHistogram) {
 
   SetHotspotAllowStatus(hotspot_config::mojom::HotspotAllowStatus::kAllowed);
   histogram_tester_.ExpectTotalCount(
-      HotspotMetricsHelper::kHotspotAllowStatusHistogram, 2);
+      HotspotMetricsHelper::kHotspotAllowStatusHistogram, 3);
   histogram_tester_.ExpectBucketCount(
       HotspotMetricsHelper::kHotspotAllowStatusHistogram,
       HotspotMetricsHelper::HotspotMetricsAllowStatus::kAllowed, 1);
