@@ -132,6 +132,7 @@ class DownloadBubbleRowView : public views::View,
   void UpdateButtons();
   void UpdateProgressBar();
   void UpdateLabels();
+  void UpdateDeepScanNotice();
   void RecordMetricsOnUpdate();
   void RecordDownloadDisplayed();
 

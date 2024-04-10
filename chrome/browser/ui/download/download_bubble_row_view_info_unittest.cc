@@ -13,10 +13,12 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/vector_icons/vector_icons.h"
@@ -423,6 +425,28 @@ TEST_F(DownloadBubbleRowViewInfoTest, InsecurePrimaryButtonCommand) {
     item().NotifyObserversDownloadUpdated();
     EXPECT_EQ(info().primary_button_command(), DownloadCommands::Command::KEEP);
   }
+}
+
+TEST_F(DownloadBubbleRowViewInfoTest,
+       ShouldShowNoticeForEnhancedProtectionScan) {
+  EXPECT_CALL(item(), GetDangerType())
+      .WillRepeatedly(
+          Return(download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING));
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  EXPECT_TRUE(info().ShouldShowDeepScanNotice());
+}
+
+TEST_F(DownloadBubbleRowViewInfoTest,
+       ShouldShowNoticeForAdvancedProtectionScan) {
+  EXPECT_CALL(item(), GetDangerType())
+      .WillRepeatedly(
+          Return(download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING));
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_FALSE(info().ShouldShowDeepScanNotice());
 }
 
 }  // namespace

@@ -384,3 +384,8 @@ base::WeakPtr<DownloadBubbleUIController>
 DownloadBubbleUIController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
+
+void DownloadBubbleUIController::SetDeepScanNoticeSeen() {
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen, true);
+}

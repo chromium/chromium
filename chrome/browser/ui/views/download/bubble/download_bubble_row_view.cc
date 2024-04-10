@@ -248,6 +248,7 @@ void DownloadBubbleRowView::UpdateRow(bool initial_setup) {
   RecordDownloadDisplayed();
   UpdateLabels();
   UpdateProgressBar();
+  UpdateDeepScanNotice();
   if (!update_status_text_timer_.IsRunning()) {
     update_status_text_timer_.Reset();
   }
@@ -885,6 +886,13 @@ void DownloadBubbleRowView::UpdateLabels() {
   }
 
   secondary_label_->SetEnabledColorId(info_->secondary_text_color());
+}
+
+void DownloadBubbleRowView::UpdateDeepScanNotice() {
+  if (info_->ShouldShowDeepScanNotice()) {
+    deep_scan_notice_->SetVisible(true);
+    bubble_controller_->SetDeepScanNoticeSeen();
+  }
 }
 
 void DownloadBubbleRowView::RecordMetricsOnUpdate() {

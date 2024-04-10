@@ -120,6 +120,8 @@ class DownloadBubbleUIController {
 
   DownloadBubbleUpdateService* update_service() { return update_service_; }
 
+  void SetDeepScanNoticeSeen();
+
   base::WeakPtr<DownloadBubbleUIController> GetWeakPtr();
 
  private:

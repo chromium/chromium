@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/download/download_bubble_info.h"
 #include "chrome/browser/ui/download/download_bubble_info_utils.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -64,6 +65,8 @@ class DownloadBubbleRowViewInfo
   }
   bool has_progress_bar() const { return progress_bar_.is_visible; }
   bool is_progress_bar_looping() const { return progress_bar_.is_looping; }
+
+  bool ShouldShowDeepScanNotice() const;
 
   void SetQuickActionsForTesting(
       const std::vector<DownloadBubbleQuickAction>& actions);
