@@ -1547,11 +1547,18 @@ class SitePerProcessInteractivePDFTest
 
 // This test loads a PDF inside an OOPIF and then verifies that context menu
 // shows up at the correct position.
-// TODO(1423184,327338993): Fix flaky test.
-// defined(ADDRESS_SANITIZER)
+// Flaky on win and linux asan. See https://crbug.com/1423184
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame \
+  DISABLED_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
+#else
+#define MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame \
+  ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
+#endif  // (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) &&
+        // defined(ADDRESS_SANITIZER)
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessInteractivePDFTest,
-    DISABLED_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame) {
+    MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame) {
   // Navigate to a page with an <iframe>.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
