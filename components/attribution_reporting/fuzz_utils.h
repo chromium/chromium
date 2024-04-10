@@ -5,15 +5,25 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_FUZZ_UTILS_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_FUZZ_UTILS_H_
 
-#include "components/attribution_reporting/max_event_level_reports.h"
+#include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace attribution_reporting {
 
-auto AnyMaxEventLevelReports() {
-  return fuzztest::ConstructorOf<MaxEventLevelReports>(
-      fuzztest::InRange(0, static_cast<int>(MaxEventLevelReports::Max())));
-}
+class MaxEventLevelReports;
+
+fuzztest::Domain<mojom::SourceType> AnySourceType();
+
+fuzztest::Domain<MaxEventLevelReports> AnyMaxEventLevelReports();
+
+fuzztest::Domain<FilterData> AnyFilterData();
+
+fuzztest::Domain<FilterConfig> AnyFilterConfig();
+
+fuzztest::Domain<FiltersDisjunction> AnyFiltersDisjunction();
+
+fuzztest::Domain<FilterPair> AnyFilterPair();
 
 }  // namespace attribution_reporting
 

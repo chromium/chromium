@@ -467,7 +467,10 @@ mojom("source_type_mojom") {
 source_set("fuzzer_support") {
   testonly = true
 
-  sources = [ "fuzz_utils.h" ]
+  sources = [
+    "fuzz_utils.cc",
+    "fuzz_utils.h",
+  ]
 
   public_deps = [
     ":attribution_reporting",
@@ -479,6 +482,19 @@ test("privacy_math_fuzztest") {
   sources = [ "privacy_math_fuzztest.cc" ]
 
   fuzztests = [ "PrivacyMathTest.SingleSpecNumStatesMatchesRecursive" ]
+
+  deps = [
+    ":attribution_reporting",
+    ":fuzzer_support",
+    ":test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
+
+test("filters_fuzztest") {
+  sources = [ "filters_fuzztest.cc" ]
+
+  fuzztests = [ "FilterDataTest.Matches" ]
 
   deps = [
     ":attribution_reporting",
