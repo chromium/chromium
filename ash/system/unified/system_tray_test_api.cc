@@ -42,10 +42,6 @@ ash::UnifiedSystemTray* GetTray() {
       ->unified_system_tray();
 }
 
-views::View* GetBubbleView(int view_id) {
-  return GetTray()->bubble()->GetBubbleView()->GetViewByID(view_id);
-}
-
 }  // namespace
 
 namespace ash {
@@ -87,19 +83,20 @@ AccessibilityDetailedView* SystemTrayTestApi::GetAccessibilityDetailedView() {
 bool SystemTrayTestApi::IsBubbleViewVisible(int view_id, bool open_tray) {
   if (open_tray)
     GetTray()->ShowBubble();
-  views::View* view = GetBubbleView(view_id);
+  views::View* view = GetMainBubbleView()->GetViewByID(view_id);
   return view && view->GetVisible();
 }
 
 bool SystemTrayTestApi::IsToggleOn(int view_id) {
-  auto* view = static_cast<TrayToggleButton*>(GetBubbleView(view_id));
+  auto* view =
+      static_cast<TrayToggleButton*>(GetMainBubbleView()->GetViewByID(view_id));
   DCHECK(view);
   return view->GetIsOn();
 }
 
 void SystemTrayTestApi::ScrollToShowView(views::ScrollView* scroll_view,
                                          int view_id) {
-  views::View* view = GetBubbleView(view_id);
+  views::View* view = GetMainBubbleView()->GetViewByID(view_id);
   DCHECK(view && scroll_view->Contains(view));
 
   gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
@@ -113,7 +110,7 @@ void SystemTrayTestApi::ScrollToShowView(views::ScrollView* scroll_view,
 }
 
 void SystemTrayTestApi::ClickBubbleView(int view_id) {
-  views::View* view = GetBubbleView(view_id);
+  views::View* view = GetMainBubbleView()->GetViewByID(view_id);
   if (view && view->GetVisible()) {
     gfx::Point cursor_location = view->GetLocalBounds().CenterPoint();
     views::View::ConvertPointToScreen(view, &cursor_location);
@@ -124,8 +121,12 @@ void SystemTrayTestApi::ClickBubbleView(int view_id) {
   }
 }
 
+views::View* SystemTrayTestApi::GetMainBubbleView() {
+  return GetTray()->bubble()->GetBubbleView();
+}
+
 std::u16string SystemTrayTestApi::GetBubbleViewTooltip(int view_id) {
-  views::View* view = GetBubbleView(view_id);
+  views::View* view = GetMainBubbleView()->GetViewByID(view_id);
   return view ? view->GetTooltipText(gfx::Point()) : std::u16string();
 }
 
@@ -144,7 +145,7 @@ std::u16string SystemTrayTestApi::GetShutdownButtonTooltip() {
 }
 
 std::u16string SystemTrayTestApi::GetBubbleViewText(int view_id) {
-  views::View* view = GetBubbleView(view_id);
+  views::View* view = GetMainBubbleView()->GetViewByID(view_id);
   return view ? static_cast<views::Label*>(view)->GetText() : std::u16string();
 }
 

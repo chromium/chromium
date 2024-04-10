@@ -110,6 +110,7 @@ void EnrollmentDialogView::ShowDialog(const std::string& network_name,
       views::DialogDelegate::GetDialogWidgetInitParams(
           dialog_view, nullptr /* context */, nullptr /* parent */,
           gfx::Rect() /* bounds */);
+  params.name = kWidgetName;
   ash_util::SetupWidgetInitParamsForContainer(
       &params, ash_util::GetSystemModalDialogContainerId());
   views::Widget* widget = new views::Widget;  // Owned by native widget.
@@ -216,13 +217,15 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
   if (!EnrollmentDialogAllowed(profile)) {
     return false;
   }
-  std::string username_hash = ProfileHelper::GetUserIdHashFromProfile(profile);
 
   onc::ONCSource onc_source = onc::ONC_SOURCE_NONE;
   const base::Value::Dict* policy =
       NetworkHandler::Get()
           ->managed_network_configuration_handler()
-          ->FindPolicyByGUID(username_hash, network_id, &onc_source);
+          ->FindPolicyByGuidAndProfile(
+              network_id, network->profile_path(),
+              ManagedNetworkConfigurationHandler::PolicyType::kOriginal,
+              &onc_source, /*userhash=*/nullptr);
 
   if (!policy) {
     return false;
