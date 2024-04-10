@@ -81,6 +81,7 @@ UIColor* GetCheckedTintColor() {
   UILabel* _nameLabel;
   SnippetButtonState _snippetButtonState;
   UIButton* _chevronButton;
+  BOOL _isChevronButtonEnabled;
   UIImageView* _radioButtonImageView;
   // Horizontal separator, shown only if `horizontalSeparatorHidden` is NO.
   UIView* _horizontalSeparator;
@@ -327,10 +328,10 @@ UIColor* GetCheckedTintColor() {
   // To know if the chevron is needed, we need to compare
   // `_snippetLabelExpanded` height and `_snippetLabelOneLine` height. To avoid
   // any issues with float approximations, there is one pixel margin.
-  _chevronButton.enabled = _snippetLabelExpanded.frame.size.height -
-                               _snippetLabelOneLine.frame.size.height >
-                           1.;
-  _chevronButton.alpha = (_chevronButton.enabled) ? 1. : .4;
+  _isChevronButtonEnabled = _snippetLabelExpanded.frame.size.height -
+                                _snippetLabelOneLine.frame.size.height >
+                            1.;
+  _chevronButton.alpha = (_isChevronButtonEnabled) ? 1. : .4;
 }
 
 #pragma mark - Properties
@@ -400,6 +401,9 @@ UIColor* GetCheckedTintColor() {
 
 // Called by the chevron button.
 - (void)chevronToggleAction:(id)sender {
+  if (!_isChevronButtonEnabled) {
+    return;
+  }
   switch (_snippetButtonState) {
     case SnippetButtonState::kExpanded: {
       [self updateCellWithSnippetSate:SnippetButtonState::kOneLine animate:YES];
@@ -510,7 +514,7 @@ UIColor* GetCheckedTintColor() {
 }
 
 - (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {
-  if (!_chevronButton.enabled) {
+  if (!_isChevronButtonEnabled) {
     return [super accessibilityCustomActions];
   }
   NSString* actionName = nil;
