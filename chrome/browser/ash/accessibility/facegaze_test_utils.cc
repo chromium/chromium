@@ -141,14 +141,18 @@ void FaceGazeTestUtils::WaitForMousePosition(const gfx::Point& location) {
   ExecuteAccessibilityCommonScript(script);
 }
 
-void FaceGazeTestUtils::InitializeBufferSizeAndAcceleration(int size) {
+void FaceGazeTestUtils::SetBufferSize(int size) {
   GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSmoothing, size);
-  GetPrefs()->SetBoolean(prefs::kAccessibilityFaceGazeCursorUseAcceleration,
-                         false);
   GetPrefs()->CommitPendingWrite();
 }
 
-void FaceGazeTestUtils::InitializeGesturesToMacros(
+void FaceGazeTestUtils::SetMouseAcceleration(bool use_acceleration) {
+  GetPrefs()->SetBoolean(prefs::kAccessibilityFaceGazeCursorUseAcceleration,
+                         use_acceleration);
+  GetPrefs()->CommitPendingWrite();
+}
+
+void FaceGazeTestUtils::SetGesturesToMacros(
     const base::Value::Dict& gestures_to_macros) {
   GetPrefs()->SetDict(prefs::kAccessibilityFaceGazeGesturesToMacros,
                       gestures_to_macros.Clone());

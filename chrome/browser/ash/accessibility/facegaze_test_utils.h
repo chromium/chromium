@@ -55,10 +55,12 @@ class FaceGazeTestUtils {
   void CreateFaceLandmarker();
   // Waits for the mouse location to propagate to the FaceGaze MouseController.
   void WaitForMousePosition(const gfx::Point& location);
-  // Manually sets the buffer size on the FaceGaze MouseController.
-  void InitializeBufferSizeAndAcceleration(int size);
-  // Initializes the gesture to macro mapping.
-  void InitializeGesturesToMacros(const base::Value::Dict& gestures_to_macros);
+  // Sets the buffer size pref.
+  void SetBufferSize(int size);
+  // Sets the mouse acceleration pref.
+  void SetMouseAcceleration(bool use_acceleration);
+  // Sets the gesture to macro mapping pref.
+  void SetGesturesToMacros(const base::Value::Dict& gestures_to_macros);
   // Forces FaceGaze to process `result`, since tests don't have access to real
   // camera data.
   void ProcessFaceLandmarkerResult(const MockFaceLandmarkerResult& result);
