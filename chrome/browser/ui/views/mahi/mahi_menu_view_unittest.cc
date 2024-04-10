@@ -8,12 +8,13 @@
 #include <string>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
-#include "chrome/browser/ui/views/mahi/mahi_menu_view_ids.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/display/screen.h"
@@ -97,6 +98,10 @@ TEST_F(MahiMenuViewTest, SummaryButtonClicked) {
                                    ->GetBoundsInScreen()
                                    .CenterPoint());
 
+  base::HistogramTester histogram;
+  histogram.ExpectBucketCount(kMahiContextMenuButtonClickHistogram,
+                              MahiMenuButton::kSummaryButton, 0);
+
   // Make sure that clicking the summary button would trigger the function in
   // `MahiWebContentsManager` with the correct parameters.
   base::RunLoop run_loop;
@@ -115,6 +120,9 @@ TEST_F(MahiMenuViewTest, SummaryButtonClicked) {
 
   event_generator->ClickLeftButton();
   run_loop.Run();
+
+  histogram.ExpectBucketCount(kMahiContextMenuButtonClickHistogram,
+                              MahiMenuButton::kSummaryButton, 1);
 }
 
 // TODO(b/330643995): Remove this test after outlines are shown by default.
@@ -146,6 +154,10 @@ TEST_F(MahiMenuViewTest, OutlineButtonClicked) {
                                    ->GetBoundsInScreen()
                                    .CenterPoint());
 
+  base::HistogramTester histogram;
+  histogram.ExpectBucketCount(kMahiContextMenuButtonClickHistogram,
+                              MahiMenuButton::kOutlineButton, 0);
+
   // Make sure that clicking the summary button would trigger the function in
   // `MahiWebContentsManager` with the correct parameters.
   base::RunLoop run_loop;
@@ -164,6 +176,9 @@ TEST_F(MahiMenuViewTest, OutlineButtonClicked) {
 
   event_generator->ClickLeftButton();
   run_loop.Run();
+
+  histogram.ExpectBucketCount(kMahiContextMenuButtonClickHistogram,
+                              MahiMenuButton::kOutlineButton, 1);
 }
 
 TEST_F(MahiMenuViewTest, SubmitQuestionButtonEnabledAfterTextInput) {
@@ -214,6 +229,10 @@ TEST_F(MahiMenuViewTest, QuestionSubmitted) {
           ->GetBoundsInScreen()
           .CenterPoint());
 
+  base::HistogramTester histogram;
+  histogram.ExpectBucketCount(kMahiContextMenuButtonClickHistogram,
+                              MahiMenuButton::kSubmitQuestionButton, 0);
+
   // Make sure that clicking the summary button would trigger the function in
   // `MahiWebContentsManager` with the correct parameters.
   base::RunLoop run_loop;
@@ -232,6 +251,9 @@ TEST_F(MahiMenuViewTest, QuestionSubmitted) {
 
   event_generator->ClickLeftButton();
   run_loop.Run();
+
+  histogram.ExpectBucketCount(kMahiContextMenuButtonClickHistogram,
+                              MahiMenuButton::kSubmitQuestionButton, 1);
 }
 
 TEST_F(MahiMenuViewTest, EmptyQuestionNotSubmitted) {

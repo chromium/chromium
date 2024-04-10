@@ -9,12 +9,13 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
-#include "chrome/browser/ui/views/mahi/mahi_menu_view_ids.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -281,6 +282,17 @@ void MahiMenuView::OnButtonPressed(::mahi::ButtonType button_type) {
   ::mahi::MahiWebContentsManager::Get()->OnContextMenuClicked(
       display.id(), button_type,
       /*question=*/std::u16string());
+  MahiMenuButton histogram_button_type;
+  if (button_type == ::mahi::ButtonType::kSummary) {
+    histogram_button_type = MahiMenuButton::kSummaryButton;
+  } else {
+    // This function only handles clicks of type 'kSummary' and 'kOutline'.
+    // Other click types are not passed here.
+    CHECK(button_type == ::mahi::ButtonType::kOutline);
+    histogram_button_type = MahiMenuButton::kOutlineButton;
+  }
+  base::UmaHistogramEnumeration(kMahiContextMenuButtonClickHistogram,
+                                histogram_button_type);
 }
 
 void MahiMenuView::OnQuestionSubmitted() {
@@ -289,6 +301,8 @@ void MahiMenuView::OnQuestionSubmitted() {
   ::mahi::MahiWebContentsManager::Get()->OnContextMenuClicked(
       display.id(), /*button_type=*/::mahi::ButtonType::kQA,
       textfield_->GetText());
+  base::UmaHistogramEnumeration(kMahiContextMenuButtonClickHistogram,
+                                MahiMenuButton::kSubmitQuestionButton);
 }
 
 std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {

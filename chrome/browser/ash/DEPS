@@ -647,6 +647,6 @@ specific_include_rules = {
   ],
   "mahi_ui_browsertest\.cc": [
     "+chrome/browser/ui/views/mahi/mahi_menu_view.h",
-    "+chrome/browser/ui/views/mahi/mahi_menu_view_ids.h",
+    "+chrome/browser/ui/views/mahi/mahi_menu_constants.h",
   ],
 }

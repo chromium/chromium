@@ -10,11 +10,11 @@ source_set("mahi") {
   sources = [
     "mahi_condensed_menu_view.cc",
     "mahi_condensed_menu_view.h",
+    "mahi_menu_constants.h",
     "mahi_menu_controller.cc",
     "mahi_menu_controller.h",
     "mahi_menu_view.cc",
     "mahi_menu_view.h",
-    "mahi_menu_view_ids.h",
   ]
 
   deps = [

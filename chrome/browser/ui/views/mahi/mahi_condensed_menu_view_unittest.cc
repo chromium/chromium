@@ -7,9 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -49,6 +51,10 @@ TEST_F(MahiCondensedMenuViewTest, NotifiesWebContentsManagerOnClick) {
   auto* condensed_menu_view =
       menu_widget->SetContentsView(std::make_unique<MahiCondensedMenuView>());
 
+  base::HistogramTester histogram;
+  histogram.ExpectBucketCount(kMahiContextMenuButtonClickHistogram,
+                              MahiMenuButton::kCondensedMenuButton, 0);
+
   // TODO(b/324647147): Add separate button type for condensed menu.
   EXPECT_CALL(
       mock_mahi_web_contents_manager,
@@ -64,6 +70,9 @@ TEST_F(MahiCondensedMenuViewTest, NotifiesWebContentsManagerOnClick) {
   event_generator.MoveMouseTo(
       condensed_menu_view->GetBoundsInScreen().CenterPoint());
   event_generator.ClickLeftButton();
+
+  histogram.ExpectBucketCount(kMahiContextMenuButtonClickHistogram,
+                              MahiMenuButton::kCondensedMenuButton, 1);
 }
 
 }  // namespace
