@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/win/conflicts/installed_applications.h"
 #include "chrome/browser/win/conflicts/module_blocklist_cache_updater.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
 #include "chrome/browser/win/conflicts/module_list_component_updater.h"
@@ -100,6 +101,11 @@ class ThirdPartyConflictsManager : public ModuleDatabaseObserver {
 
   // Loads the |module_list_filter_| using the Module List at |path|.
   void LoadModuleList(const base::FilePath& path);
+
+  void SetInstalledApplicationsForTesting(
+      std::unique_ptr<InstalledApplications> installed_applications) {
+    installed_applications_ = std::move(installed_applications);
+  }
 
   // Force the initialization of the IncompatibleApplicationsUpdater and the
   // ModuleBlocklistCacheUpdater instances by triggering an update of the module

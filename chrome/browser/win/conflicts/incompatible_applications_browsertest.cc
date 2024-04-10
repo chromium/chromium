@@ -15,9 +15,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
+#include "chrome/browser/win/conflicts/installed_applications.h"
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/proto/module_list.pb.h"
 #include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
@@ -78,6 +80,20 @@ class IncompatibleApplicationsObserver {
   base::RepeatingClosure run_loop_quit_closure_;
 };
 
+class TestInstalledApplications : public InstalledApplications {
+ public:
+  // For browser_tests, only search in HKCU, because read/write HKLM
+  // may:
+  //  1. get interfered by the test bot.
+  //  2. break sandbox operation and things fail unpredictably.
+  std::vector<std::pair<HKEY, REGSAM>> GenRegistryKeyCombinations()
+      const override {
+    std::vector<std::pair<HKEY, REGSAM>> registry_key_combinations;
+    registry_key_combinations.emplace_back(HKEY_CURRENT_USER, 0);
+    return registry_key_combinations;
+  }
+};
+
 class IncompatibleApplicationsBrowserTest : public InProcessBrowserTest {
  public:
   IncompatibleApplicationsBrowserTest(
@@ -96,8 +112,6 @@ class IncompatibleApplicationsBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
 
-    ASSERT_NO_FATAL_FAILURE(
-        registry_override_manager_.OverrideRegistry(HKEY_LOCAL_MACHINE));
     ASSERT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
 
@@ -208,7 +222,8 @@ IN_PROC_BROWSER_TEST_F(IncompatibleApplicationsBrowserTest,
       FROM_HERE,
       base::BindLambdaForTesting([module_list_path = GetModuleListPath(),
                                   quit_closure = run_loop.QuitClosure()]() {
-        ModuleDatabase* module_database = ModuleDatabase::GetInstance();
+        ModuleDatabase* module_database = ModuleDatabase::GetInstanceForTesting(
+            std::make_unique<TestInstalledApplications>());
 
         // Simulate the download of the module list component.
         module_database->third_party_conflicts_manager()->LoadModuleList(
