@@ -429,6 +429,10 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
+- (BOOL)addTabToGroup:(const TabGroup*)group {
+  NOTREACHED_NORETURN();
+}
+
 #pragma mark - GridToolbarsConfigurationProvider
 
 - (TabGridToolbarsConfiguration*)toolbarsConfiguration {

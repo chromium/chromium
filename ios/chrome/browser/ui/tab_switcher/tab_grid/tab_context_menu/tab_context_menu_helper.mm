@@ -242,29 +242,27 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
       [[ActionFactory alloc] initWithScenario:scenario];
 
   const TabGroup* group = cell.itemIdentifier.tabGroupItem.tabGroup;
+  BOOL incognito = self.incognito;
   CHECK(group);
   __weak __typeof(self) weakSelf = self;
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate
-                      editTabGroup:group
-                         incognito:weakSelf.incognito];
+                  [weakSelf.contextMenuDelegate editTabGroup:group
+                                                   incognito:incognito];
                 }]];
-  // TODO(crbug.com/1501837): Add the blocks to every action in the tab group
-  // context menu.
-  [menuElements
-      addObject:[actionFactory actionToAddNewTabInGroupWithBlock:nil]];
+  [menuElements addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
+                  [weakSelf.contextMenuDelegate addTabToGroup:group
+                                                    incognito:incognito];
+                }]];
   [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate
-                      ungroupTabGroup:group
-                            incognito:weakSelf.incognito];
+                  [weakSelf.contextMenuDelegate ungroupTabGroup:group
+                                                      incognito:incognito];
                 }]];
   [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate
-                      closeTabGroup:group
-                          incognito:weakSelf.incognito];
+                  [weakSelf.contextMenuDelegate closeTabGroup:group
+                                                    incognito:incognito];
                 }]];
 
   return menuElements;

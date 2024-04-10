@@ -884,6 +884,36 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
   [self deleteGroup:group];
 }
 
+- (BOOL)addTabToGroup:(const TabGroup*)group {
+  if (!self.browser || !group) {
+    return NO;
+  }
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (!browserState ||
+      !IsAddNewTabAllowedByPolicy(browserState->GetPrefs(),
+                                  browserState->IsOffTheRecord())) {
+    return NO;
+  }
+
+  WebStateList* webStateList = self.webStateList;
+  if (!webStateList->ContainsGroup(group)) {
+    return NO;
+  }
+
+  web::WebState::CreateParams params(browserState);
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+
+  web::NavigationManager::WebLoadParams loadParams((GURL(kChromeUINewTabURL)));
+  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
+  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
+
+  webStateList->InsertWebState(
+      std::move(webState),
+      WebStateList::InsertionParams::Automatic().InGroup(group).Activate());
+
+  return YES;
+}
+
 - (void)closeAllItems {
   NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }

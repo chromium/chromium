@@ -68,6 +68,9 @@ class WebStateID;
 // Tells the receiver to ungroup the `group`.
 - (void)ungroupTabGroup:(const TabGroup*)group;
 
+// Tells the receiver to add a tab to the `group`. Returns whether it succeed.
+- (BOOL)addTabToGroup:(const TabGroup*)group;
+
 // Tells the receiver to pin or unpin the tab with identifier `itemID`.
 - (void)setPinState:(BOOL)pinState forItemWithID:(web::WebStateID)itemID;
 

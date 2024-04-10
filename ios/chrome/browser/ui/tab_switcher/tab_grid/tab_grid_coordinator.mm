@@ -1421,6 +1421,16 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularTabsMediator ungroupTabGroup:group];
 }
 
+- (void)addTabToGroup:(const TabGroup*)group incognito:(BOOL)incognito {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid));
+  if (incognito) {
+    [self.incognitoTabsMediator addTabToGroup:group];
+    return;
+  }
+
+  [self.regularTabsMediator addTabToGroup:group];
+}
+
 - (void)selectTabs {
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridTabContextMenuSelectTabs"));

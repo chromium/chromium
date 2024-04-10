@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -677,6 +678,45 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
   UIMenu* groups = base::apple::ObjCCast<UIMenu>(groupsElement);
   EXPECT_EQ(1u, groups.children.count);
   EXPECT_NSEQ(@"My group", groups.children[0].title);
+}
+
+// Tests that adding a tab to a group is working.
+TEST_P(BaseGridMediatorTest, AddTabToGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+
+  web_state_list->CreateGroup({1}, {});
+  const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
+
+  EXPECT_EQ(3UL, consumer_.items.size());
+  EXPECT_EQ(3, web_state_list->count());
+  EXPECT_NE(nullptr, group);
+
+  [mediator_ addTabToGroup:group];
+
+  EXPECT_EQ(3UL, consumer_.items.size());
+  EXPECT_EQ(4, web_state_list->count());
+  EXPECT_EQ(2, group->range().count());
+  EXPECT_EQ(group, web_state_list->GetGroupOfWebStateAt(2));
+}
+
+// Tests that ungrouping a group is working.
+TEST_P(BaseGridMediatorTest, UngroupGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+
+  web_state_list->CreateGroup({1}, {});
+  const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
+
+  EXPECT_EQ(3UL, consumer_.items.size());
+  EXPECT_EQ(3, web_state_list->count());
+  EXPECT_EQ(1UL, web_state_list->GetGroups().size());
+  EXPECT_NE(nullptr, group);
+
+  [mediator_ ungroupTabGroup:group];
+
+  EXPECT_EQ(3UL, consumer_.items.size());
+  EXPECT_EQ(3, web_state_list->count());
+  EXPECT_EQ(0UL, web_state_list->GetGroups().size());
+  EXPECT_EQ(nullptr, web_state_list->GetGroupOfWebStateAt(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(
