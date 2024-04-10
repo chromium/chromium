@@ -496,7 +496,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
           .SetController(this)
           .Build());
 
-  auto* send_button = ask_question_container->AddChildView(
+  send_button_ = ask_question_container->AddChildView(
       IconButton::Builder()
           .SetViewId(mahi_constants::ViewId::kAskQuestionSendButton)
           .SetType(IconButton::Type::kSmallFloating)
@@ -509,7 +509,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
           .Build());
 
   question_textfield_->RemoveHoverEffect();
-  InstallTextfieldFocusRing(question_textfield_, send_button);
+  InstallTextfieldFocusRing(question_textfield_, send_button_);
 
   auto footer_row = std::make_unique<views::BoxLayoutView>();
   footer_row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
@@ -596,11 +596,25 @@ bool MahiPanelView::HandleKeyEvent(views::Textfield* textfield,
   return false;
 }
 
+void MahiPanelView::OnAnswerLoaded(const std::u16string& answer) {
+  // Input is re-enabled after backend has finished processing a question.
+  send_button_->SetEnabled(true);
+}
+
 void MahiPanelView::OnContentsRefreshInitiated() {
   auto* mahi_manager = chromeos::MahiManager::Get();
   content_icon_->SetImage(
       ui::ImageModel::FromImageSkia(mahi_manager->GetContentIcon()));
   content_title_->SetText(mahi_manager->GetContentTitle());
+}
+
+void MahiPanelView::OnStateChanged(MahiUiController::State new_state,
+                                   const std::optional<PayloadType>& payload) {
+  // Input is re-enabled after backend returns an error.
+  if (payload.has_value() &&
+      std::holds_alternative<chromeos::MahiResponseStatus>(*payload)) {
+    send_button_->SetEnabled(true);
+  }
 }
 
 void MahiPanelView::OnCloseButtonPressed(const ui::Event& event) {
@@ -621,10 +635,19 @@ void MahiPanelView::OnLearnMoreLinkClicked() {
 }
 
 void MahiPanelView::OnSendButtonPressed() {
+  // We need to check state since this function can also be called by pressing
+  // the `Enter` key while the textfield is focused.
+  if (!send_button_->GetEnabled()) {
+    return;
+  }
+
   // Do not process question if input is invalid.
   if (std::u16string_view trimmed_text = base::TrimWhitespace(
           question_textfield_->GetText(), base::TrimPositions::TRIM_ALL);
       !trimmed_text.empty()) {
+    // Input is disabled while backend is processing a question.
+    send_button_->SetEnabled(false);
+
     ui_controller_->SendQuestion(std::u16string(trimmed_text),
                                  /*current_panel_content=*/true);
     question_textfield_->SetText(std::u16string());

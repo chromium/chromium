@@ -701,6 +701,60 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
   EXPECT_TRUE(question_textfield->GetText().empty());
 }
 
+// Tests that the question textfield does not send requests to the manager while
+// it is waiting to load an answer.
+TEST_F(MahiPanelViewTest, QuestionTextfield_InputDisabledWhileLoadingAnswer) {
+  // Send button is initially enabled.
+  const auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  ASSERT_TRUE(send_button);
+  EXPECT_TRUE(send_button->GetEnabled());
+
+  // Config the mock mahi manager to return an answer asyncly.
+  base::test::TestFuture<void> answer_waiter;
+  EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillOnce(
+          [&answer_waiter](
+              const std::u16string& question, bool current_panel_content,
+              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            ReturnDefaultAnswerAsyncly(answer_waiter,
+                                       MahiResponseStatus::kSuccess,
+                                       std::move(callback));
+          });
+
+  // Set up the textfield to have a valid input.
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+  ASSERT_TRUE(question_textfield);
+  const std::u16string question(u"fake question");
+  question_textfield->SetText(question);
+
+  // After a question is posted and before an answer is loaded, the send button
+  // should be disabled.
+  LeftClickOn(send_button);
+  EXPECT_FALSE(send_button->GetEnabled());
+
+  // Set up the textfield to have a valid input again.
+  question_textfield->SetText(question);
+
+  // Attempt sending a question while loading. It should not be processed either
+  // by attempting to press the send button or by pressing `Enter`.
+  LeftClickOn(send_button);
+  question_textfield->RequestFocus();
+  PressEnter();
+
+  // Wait until an answer is loaded. Send button should be enabled again.
+  ASSERT_TRUE(answer_waiter.Wait());
+  EXPECT_TRUE(send_button->GetEnabled());
+  Mock::VerifyAndClearExpectations(&mock_mahi_manager());
+
+  // Attempting to send now should process the new input.
+  EXPECT_CALL(mock_mahi_manager(), AnswerQuestion);
+  PressEnter();
+  EXPECT_FALSE(send_button->GetEnabled());
+  Mock::VerifyAndClearExpectations(&mock_mahi_manager());
+}
+
 // Tests that the question textfield does not process empty or blank inputs.
 TEST_F(MahiPanelViewTest, QuestionTextfield_EmptyInput) {
   // Question textfield is initially empty.
@@ -1063,6 +1117,7 @@ TEST_F(MahiPanelViewTest, InappropriateQuestionError) {
       panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
   ASSERT_TRUE(send_button);
   LeftClickOn(send_button);
+  EXPECT_FALSE(send_button->GetEnabled());
   Mock::VerifyAndClearExpectations(&mock_mahi_manager());
 
   // After a question is posted and before an answer is loaded:
@@ -1081,6 +1136,7 @@ TEST_F(MahiPanelViewTest, InappropriateQuestionError) {
   // 1. `question_answer_view` shows.
   // 2. `error_image_view` shows.
   // 3. `error_label_view` shows with the expected label.
+  // 4. `send_button` is re-enabled.
 
   ASSERT_TRUE(answer_waiter.WaitAndClear());
   EXPECT_TRUE(question_answer_view->GetVisible());
@@ -1098,6 +1154,8 @@ TEST_F(MahiPanelViewTest, InappropriateQuestionError) {
   EXPECT_EQ(error_label_view->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_ASH_MAHI_RESPONSE_STATUS_INAPPROPRIATE_LABEL_TEXT));
+
+  EXPECT_TRUE(send_button->GetEnabled());
 
   // Config the mock mahi manager to return an answer in success.
   EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
