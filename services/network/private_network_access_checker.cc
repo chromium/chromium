@@ -79,7 +79,8 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
       should_block_local_request_(url_load_options &
                                   mojom::kURLLoadOptionBlockLocalRequest),
       target_address_space_(request.target_ip_address_space),
-      request_initiator_(request.request_initiator) {
+      request_initiator_(request.request_initiator),
+      required_address_space_(request.required_ip_address_space) {
   SetRequestUrl(request.url);
 
   if (!client_security_state_ ||
@@ -243,6 +244,16 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     }
 
     return Result::kBlockedByInconsistentIpAddressSpace;
+  }
+
+  // `required_address_space_` is the IP address space the website claimed the
+  // subresource to be. If it doesn't meet the real situation, then we should
+  // fail the request.
+  if (base::FeatureList::IsEnabled(
+          features::kPrivateNetworkAccessPermissionPrompt) &&
+      required_address_space_ != mojom::IPAddressSpace::kUnknown &&
+      resource_address_space != required_address_space_) {
+    return Result::kBlockedByTargetIpAddressSpace;
   }
 
   if (!IsLessPublicAddressSpace(resource_address_space,

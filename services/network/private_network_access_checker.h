@@ -83,6 +83,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
     return target_address_space_;
   }
 
+  mojom::IPAddressSpace RequiredAddressSpace() const {
+    return required_address_space_;
+  }
+
   // Clears state from all checks this instance has performed, and sets the
   // request URL to `new_url`.
   //
@@ -184,6 +188,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
 
   // The request is from/to a potentially trustworthy and same origin.
   bool is_potentially_trustworthy_same_origin_;
+
+  // IP address space required for permission prompt.
+  mojom::IPAddressSpace required_address_space_;
 };
 
 }  // namespace network
