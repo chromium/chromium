@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -18,14 +19,14 @@ bool HasError(chromeos::MahiResponseStatus status) {
 
 }  // namespace
 
-// MahiUiController::Observer --------------------------------------------------
+// MahiUiController::delegate --------------------------------------------------
 
-MahiUiController::Observer::Observer(MahiUiController* ui_controller) {
+MahiUiController::Delegate::Delegate(MahiUiController* ui_controller) {
   CHECK(ui_controller);
   observation_.Observe(ui_controller);
 }
 
-MahiUiController::Observer::~Observer() = default;
+MahiUiController::Delegate::~Delegate() = default;
 
 // MahiUiController ------------------------------------------------------------
 
@@ -33,36 +34,37 @@ MahiUiController::MahiUiController() = default;
 
 MahiUiController::~MahiUiController() = default;
 
-void MahiUiController::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
+void MahiUiController::AddDelegate(Delegate* delegate) {
+  delegates_.AddObserver(delegate);
 }
 
-void MahiUiController::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
+void MahiUiController::RemoveDelegate(Delegate* delegate) {
+  delegates_.RemoveObserver(delegate);
 }
 
 void MahiUiController::NavigateToSummaryOutlinesSection() {
-  SetStateAndNotify(State::kSummaryAndOutlines,
-                    /*payload=*/std::nullopt);
+  SetVisibilityStateAndNotifyUiUpdate(
+      VisibilityState::kSummaryAndOutlines,
+      MahiUiUpdate(MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated));
 }
 
 void MahiUiController::NotifyRefreshAvailabilityChanged(bool available) {
-  for (auto& observer : observers_) {
-    observer.OnRefreshAvailabilityChanged(available);
-  }
+  NotifyUiUpdate(
+      MahiUiUpdate(MahiUiUpdateType::kRefreshAvailabilityUpdated, available));
 }
 
 void MahiUiController::RefreshContents() {
   NavigateToSummaryOutlinesSection();
-
-  for (auto& observer : observers_) {
-    observer.OnContentsRefreshInitiated();
-  }
+  NotifyUiUpdate(MahiUiUpdate(MahiUiUpdateType::kContentsRefreshInitiated));
 }
 
 void MahiUiController::SendQuestion(const std::u16string& question,
                                     bool current_panel_content) {
-  SetStateAndNotify(State::kQuestionAndAnswer, question);
+  // Display the Q&A section.
+  SetVisibilityStateAndNotifyUiUpdate(
+      VisibilityState::kQuestionAndAnswer,
+      MahiUiUpdate(MahiUiUpdateType::kQuestionPosted, question));
+
   chromeos::MahiManager::Get()->AnswerQuestion(
       question, current_panel_content,
       base::BindOnce(&MahiUiController::OnAnswerLoaded,
@@ -87,22 +89,36 @@ void MahiUiController::HandleErrorStatus(chromeos::MahiResponseStatus status) {
   // The presentation of the inappropriate error during
   // `State::kQuestionAndAnswer` should be embedded into the Q&A view instead
   // of a separate view.
+  const MahiUiUpdate update(MahiUiUpdateType::kErrorReceived, status);
   if (status == chromeos::MahiResponseStatus::kInappropriate &&
-      state_ == State::kQuestionAndAnswer) {
-    SetStateAndNotify(State::kQuestionAndAnswer, status);
+      visibility_state_ == VisibilityState::kQuestionAndAnswer) {
+    NotifyUiUpdate(update);
     return;
   }
 
-  SetStateAndNotify(State::kError, status);
+  // Display the view that presents the error.
+  SetVisibilityStateAndNotifyUiUpdate(VisibilityState::kError, update);
 }
 
-void MahiUiController::SetStateAndNotify(
-    State new_state,
-    const std::optional<Observer::PayloadType>& payload) {
-  state_ = new_state;
+void MahiUiController::NotifyUiUpdate(const MahiUiUpdate& update) {
+  for (auto& delegate : delegates_) {
+    delegate.OnUpdated(update);
+  }
+}
 
-  for (auto& observer : observers_) {
-    observer.OnStateChanged(state_, payload);
+void MahiUiController::SetVisibilityStateAndNotifyUiUpdate(
+    VisibilityState state,
+    const MahiUiUpdate& update) {
+  visibility_state_ = state;
+
+  for (auto& delegate : delegates_) {
+    views::View* const associated_view = delegate.GetView();
+    if (const bool target_visible = delegate.GetViewVisibility(state);
+        target_visible != associated_view->GetVisible()) {
+      associated_view->SetVisible(target_visible);
+    }
+
+    delegate.OnUpdated(update);
   }
 }
 
@@ -119,9 +135,9 @@ void MahiUiController::OnAnswerLoaded(std::optional<std::u16string> answer,
     LOG(ERROR) << "Received an empty Mahi answer";
   }
 
-  for (auto& observer : observers_) {
-    observer.OnAnswerLoaded(answer.value_or(std::u16string()));
-  }
+  const std::u16string answer_after_process = answer.value_or(std::u16string());
+  NotifyUiUpdate(
+      MahiUiUpdate(MahiUiUpdateType::kAnswerLoaded, answer_after_process));
 }
 
 void MahiUiController::OnOutlinesLoaded(
@@ -132,9 +148,7 @@ void MahiUiController::OnOutlinesLoaded(
     return;
   }
 
-  for (auto& observer : observers_) {
-    observer.OnOutlinesLoaded(outlines);
-  }
+  NotifyUiUpdate(MahiUiUpdate(MahiUiUpdateType::kOutlinesLoaded, outlines));
 }
 
 void MahiUiController::OnSummaryLoaded(std::u16string summary_text,
@@ -144,9 +158,7 @@ void MahiUiController::OnSummaryLoaded(std::u16string summary_text,
     return;
   }
 
-  for (auto& observer : observers_) {
-    observer.OnSummaryLoaded(summary_text);
-  }
+  NotifyUiUpdate(MahiUiUpdate(MahiUiUpdateType::kSummaryLoaded, summary_text));
 }
 
 }  // namespace ash

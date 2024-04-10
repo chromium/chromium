@@ -4,7 +4,9 @@
 
 #include "ash/system/mahi/mahi_question_answer_view.h"
 
-#include <variant>
+#include <memory>
+#include <string>
+#include <utility>
 
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -16,6 +18,7 @@
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
+#include "ash/system/mahi/mahi_ui_update.h"
 #include "base/check.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/vector_icons/vector_icons.h"
@@ -197,7 +200,7 @@ DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::ErrorBubble)
 namespace ash {
 
 MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
-    : MahiUiController::Observer(ui_controller) {
+    : MahiUiController::Delegate(ui_controller) {
   SetOrientation(views::LayoutOrientation::kVertical);
   SetInteriorMargin(kQuestionAnswerInteriorMargin);
   SetIgnoreDefaultMainAxisMargins(true);
@@ -210,60 +213,62 @@ MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
 
 MahiQuestionAnswerView::~MahiQuestionAnswerView() = default;
 
-void MahiQuestionAnswerView::OnAnswerLoaded(const std::u16string& answer) {
-  AddChildView(CreateQuestionAnswerRow(answer, /*is_question=*/false));
+views::View* MahiQuestionAnswerView::GetView() {
+  return this;
 }
 
-void MahiQuestionAnswerView::OnContentsRefreshInitiated() {
-  RemoveAllChildViews();
+bool MahiQuestionAnswerView::GetViewVisibility(VisibilityState state) const {
+  switch (state) {
+    case VisibilityState::kQuestionAndAnswer:
+      return true;
+    case VisibilityState::kError:
+    case VisibilityState::kSummaryAndOutlines:
+      return false;
+  }
 }
 
-void MahiQuestionAnswerView::OnStateChanged(
-    MahiUiController::State new_state,
-    const std::optional<PayloadType>& payload) {
-  switch (new_state) {
-    case MahiUiController::State::kError:
-      SetVisible(false);
+void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
+  switch (update.type()) {
+    case MahiUiUpdateType::kAnswerLoaded:
+      AddChildView(
+          CreateQuestionAnswerRow(update.GetAnswer(), /*is_question=*/false));
       return;
-    case MahiUiController::State::kQuestionAndAnswer:
-      SetVisible(true);
-      if (std::holds_alternative<std::u16string>(*payload)) {
-        AddChildView(CreateQuestionAnswerRow(std::get<std::u16string>(*payload),
-                                             /*is_question=*/true));
+    case MahiUiUpdateType::kContentsRefreshInitiated:
+      RemoveAllChildViews();
+      return;
+    case MahiUiUpdateType::kErrorReceived:
+      // Creates `error_bubble_` if having an inappropriate question error.
+      if (update.GetError() == chromeos::MahiResponseStatus::kInappropriate) {
+        if (error_bubble_) {
+          LOG(ERROR) << "Tried to add a new error bubble when there is an "
+                        "existing one.";
+          return;
+        }
+        // Building `ErrorBubble` is synchronous. Therefore, it is safe to pass
+        // the reference to `error_bubble` to the callback.
+        AddChildView(
+            views::Builder<ErrorBubble>()
+                .AfterBuild(base::BindOnce(
+                    [](views::ViewTracker& error_bubble, ErrorBubble* self) {
+                      error_bubble.SetView(self);
+                    },
+                    std::ref(error_bubble_)))
+                .Build());
       }
-      MaybeUpdateErrorBubble(*payload);
       return;
-    case MahiUiController::State::kSummaryAndOutlines:
-      SetVisible(false);
+    case MahiUiUpdateType::kQuestionPosted:
+      AddChildView(CreateQuestionAnswerRow(update.GetQuestion(),
+                                           /*is_question=*/true));
+      // Destroys `error_bubble_` if any when the user posts a new question.
+      if (error_bubble_) {
+        RemoveChildViewT(error_bubble_.view());
+      }
       return;
-  }
-}
-
-void MahiQuestionAnswerView::MaybeUpdateErrorBubble(
-    const PayloadType& payload) {
-  if (std::holds_alternative<std::u16string>(payload) && error_bubble_) {
-    RemoveChildViewT(error_bubble_.view());
-    return;
-  }
-
-  if (std::holds_alternative<chromeos::MahiResponseStatus>(payload)) {
-    CHECK_EQ(std::get<chromeos::MahiResponseStatus>(payload),
-             chromeos::MahiResponseStatus::kInappropriate);
-
-    if (error_bubble_) {
-      LOG(ERROR)
-          << "Tried to add a new error bubble when there is an existing one.";
+    case MahiUiUpdateType::kOutlinesLoaded:
+    case MahiUiUpdateType::kRefreshAvailabilityUpdated:
+    case MahiUiUpdateType::kSummaryLoaded:
+    case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
       return;
-    }
-
-    // Building `ErrorBubble` is synchronous. Therefore, it is safe to pass the
-    // reference to `error_bubble` to the callback.
-    AddChildView(views::Builder<ErrorBubble>()
-                     .AfterBuild(base::BindOnce(
-                         [](views::ViewTracker& error_bubble,
-                            ErrorBubble* self) { error_bubble.SetView(self); },
-                         std::ref(error_bubble_)))
-                     .Build());
   }
 }
 

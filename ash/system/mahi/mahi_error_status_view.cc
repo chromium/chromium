@@ -5,13 +5,12 @@
 #include "ash/system/mahi/mahi_error_status_view.h"
 
 #include <memory>
-#include <string>
-#include <variant>
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_utils.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -54,10 +53,10 @@ constexpr auto kLabelPaddings =
 // ErrorContentsView -----------------------------------------------------------
 
 class ErrorContentsView : public views::FlexLayoutView,
-                          public MahiUiController::Observer {
+                          public MahiUiController::Delegate {
  public:
   explicit ErrorContentsView(MahiUiController* ui_controller)
-      : MahiUiController::Observer(ui_controller) {
+      : MahiUiController::Delegate(ui_controller) {
     // TODO(http://b/319731862): Set the image when the image resource is ready.
     views::Builder<views::FlexLayoutView>(this)
         .SetBorder(views::CreateEmptyBorder(kContentsPaddings))
@@ -91,17 +90,27 @@ class ErrorContentsView : public views::FlexLayoutView,
   ~ErrorContentsView() override = default;
 
  private:
-  // MahiUiController::Observer:
-  void OnStateChanged(MahiUiController::State new_state,
-                      const std::optional<PayloadType>& payload) override {
-    switch (new_state) {
-      case MahiUiController::State::kError:
-        error_status_text_->SetText(
-            l10n_util::GetStringUTF16(mahi_utils::GetErrorStatusViewTextId(
-                std::get<chromeos::MahiResponseStatus>(*payload))));
+  // MahiUiController::Delegate:
+  views::View* GetView() override { return this; }
+
+  bool GetViewVisibility(VisibilityState state) const override {
+    // Always visible because its parent view controls visibility.
+    return true;
+  }
+
+  void OnUpdated(const MahiUiUpdate& update) override {
+    switch (update.type()) {
+      case MahiUiUpdateType::kErrorReceived:
+        error_status_text_->SetText(l10n_util::GetStringUTF16(
+            mahi_utils::GetErrorStatusViewTextId(update.GetError())));
         return;
-      case MahiUiController::State::kQuestionAndAnswer:
-      case MahiUiController::State::kSummaryAndOutlines:
+      case MahiUiUpdateType::kAnswerLoaded:
+      case MahiUiUpdateType::kContentsRefreshInitiated:
+      case MahiUiUpdateType::kOutlinesLoaded:
+      case MahiUiUpdateType::kQuestionPosted:
+      case MahiUiUpdateType::kRefreshAvailabilityUpdated:
+      case MahiUiUpdateType::kSummaryLoaded:
+      case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
         return;
     }
   }
@@ -112,7 +121,7 @@ class ErrorContentsView : public views::FlexLayoutView,
 }  // namespace
 
 MahiErrorStatusView::MahiErrorStatusView(MahiUiController* ui_controller)
-    : MahiUiController::Observer(ui_controller) {
+    : MahiUiController::Delegate(ui_controller) {
   CHECK(chromeos::features::IsMahiEnabled());
 
   views::Builder<views::FlexLayoutView>(this)
@@ -127,17 +136,17 @@ MahiErrorStatusView::MahiErrorStatusView(MahiUiController* ui_controller)
 
 MahiErrorStatusView::~MahiErrorStatusView() = default;
 
-void MahiErrorStatusView::OnStateChanged(
-    MahiUiController::State new_state,
-    const std::optional<PayloadType>& payload) {
-  switch (new_state) {
-    case MahiUiController::State::kError:
-      SetVisible(true);
-      return;
-    case MahiUiController::State::kQuestionAndAnswer:
-    case MahiUiController::State::kSummaryAndOutlines:
-      SetVisible(false);
-      return;
+views::View* MahiErrorStatusView::GetView() {
+  return this;
+}
+
+bool MahiErrorStatusView::GetViewVisibility(VisibilityState state) const {
+  switch (state) {
+    case VisibilityState::kError:
+      return true;
+    case VisibilityState::kQuestionAndAnswer:
+    case VisibilityState::kSummaryAndOutlines:
+      return false;
   }
 }
 

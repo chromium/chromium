@@ -26,13 +26,15 @@ namespace ash {
 
 class IconButton;
 class MahiQuestionAnswerView;
+class MahiUiUpdate;
 class SummaryOutlinesSection;
+enum class VisibilityState;
 
 // The code for Mahi main panel view. This view is placed within
 // `MahiPanelWidget`.
 class ASH_EXPORT MahiPanelView : public views::FlexLayoutView,
                                  public views::TextfieldController,
-                                 public MahiUiController::Observer {
+                                 public MahiUiController::Delegate {
   METADATA_HEADER(MahiPanelView, views::FlexLayoutView)
 
  public:
@@ -46,11 +48,10 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView,
   bool HandleKeyEvent(views::Textfield* textfield,
                       const ui::KeyEvent& key_event) override;
 
-  // MahiUiController::Observer:
-  void OnAnswerLoaded(const std::u16string& answer) override;
-  void OnContentsRefreshInitiated() override;
-  void OnStateChanged(MahiUiController::State new_state,
-                      const std::optional<PayloadType>& payload) override;
+  // MahiUiController::Delegate:
+  views::View* GetView() override;
+  bool GetViewVisibility(VisibilityState state) const override;
+  void OnUpdated(const MahiUiUpdate& update) override;
 
   // Creates the header row, which includes a back button (visible only
   // in the Q&A view), the panel title, an experiment badge and a close button.

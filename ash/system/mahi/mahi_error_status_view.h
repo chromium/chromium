@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_MAHI_MAHI_ERROR_STATUS_VIEW_H_
 #define ASH_SYSTEM_MAHI_MAHI_ERROR_STATUS_VIEW_H_
 
-#include <optional>
-
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -15,7 +13,13 @@ namespace chromeos {
 enum class MahiResponseStatus;
 }  // namespace chromeos
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash {
+
+enum class VisibilityState;
 
 // Presents the current Mahi error if any. It should show when the UI controller
 // is in the error state. NOTE:
@@ -23,7 +27,7 @@ namespace ash {
 // 2. `chromeos::MahiResponseStatus::kLowQuota` is presented in a toast view
 //    instead of this class.
 class MahiErrorStatusView : public views::FlexLayoutView,
-                            public MahiUiController::Observer {
+                            public MahiUiController::Delegate {
   METADATA_HEADER(MahiErrorStatusView, views::View)
 
  public:
@@ -33,9 +37,9 @@ class MahiErrorStatusView : public views::FlexLayoutView,
   ~MahiErrorStatusView() override;
 
  private:
-  // MahiUiController::Observer:
-  void OnStateChanged(MahiUiController::State new_state,
-                      const std::optional<PayloadType>& payload) override;
+  // MahiUiController::Delegate:
+  views::View* GetView() override;
+  bool GetViewVisibility(VisibilityState state) const override;
 };
 
 BEGIN_VIEW_BUILDER(/*no export*/, MahiErrorStatusView, views::FlexLayoutView)

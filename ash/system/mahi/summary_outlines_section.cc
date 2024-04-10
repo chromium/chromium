@@ -62,7 +62,7 @@ std::unique_ptr<views::View> CreateSectionHeader(const gfx::VectorIcon& icon,
 }  // namespace
 
 SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
-    : MahiUiController::Observer(ui_controller), ui_controller_(ui_controller) {
+    : MahiUiController::Delegate(ui_controller), ui_controller_(ui_controller) {
   CHECK(ui_controller_);
 
   SetOrientation(views::BoxLayout::Orientation::kVertical);
@@ -132,11 +132,41 @@ SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
 
 SummaryOutlinesSection::~SummaryOutlinesSection() = default;
 
-void SummaryOutlinesSection::OnContentsRefreshInitiated() {
-  LoadSummaryAndOutlines();
+views::View* SummaryOutlinesSection::GetView() {
+  return this;
 }
 
-void SummaryOutlinesSection::OnOutlinesLoaded(
+bool SummaryOutlinesSection::GetViewVisibility(VisibilityState state) const {
+  switch (state) {
+    case VisibilityState::kError:
+    case VisibilityState::kQuestionAndAnswer:
+      return false;
+    case VisibilityState::kSummaryAndOutlines:
+      return true;
+  }
+}
+
+void SummaryOutlinesSection::OnUpdated(const MahiUiUpdate& update) {
+  switch (update.type()) {
+    case MahiUiUpdateType::kContentsRefreshInitiated:
+      LoadSummaryAndOutlines();
+      return;
+    case MahiUiUpdateType::kOutlinesLoaded:
+      HandleOutlinesLoaded(update.GetOutlines());
+      return;
+    case MahiUiUpdateType::kSummaryLoaded:
+      HandleSummaryLoaded(update.GetSummary());
+      return;
+    case MahiUiUpdateType::kAnswerLoaded:
+    case MahiUiUpdateType::kErrorReceived:
+    case MahiUiUpdateType::kQuestionPosted:
+    case MahiUiUpdateType::kRefreshAvailabilityUpdated:
+    case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
+      return;
+  }
+}
+
+void SummaryOutlinesSection::HandleOutlinesLoaded(
     const std::vector<chromeos::MahiOutline>& outlines) {
   outlines_container_->RemoveAllChildViews();
   for (auto outline : outlines) {
@@ -159,21 +189,7 @@ void SummaryOutlinesSection::OnOutlinesLoaded(
   outlines_container_->SetVisible(false);
 }
 
-void SummaryOutlinesSection::OnStateChanged(
-    MahiUiController::State new_state,
-    const std::optional<PayloadType>& payload) {
-  switch (new_state) {
-    case MahiUiController::State::kError:
-    case MahiUiController::State::kQuestionAndAnswer:
-      SetVisible(false);
-      return;
-    case MahiUiController::State::kSummaryAndOutlines:
-      SetVisible(true);
-      return;
-  }
-}
-
-void SummaryOutlinesSection::OnSummaryLoaded(
+void SummaryOutlinesSection::HandleSummaryLoaded(
     const std::u16string& summary_text) {
   summary_label_->SetVisible(true);
   summary_label_->SetText(summary_text);

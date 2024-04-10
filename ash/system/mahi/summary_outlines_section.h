@@ -26,7 +26,7 @@ namespace ash {
 
 // The view containing the summary and outlines section within the Mahi panel.
 class ASH_EXPORT SummaryOutlinesSection : public views::BoxLayoutView,
-                                          public MahiUiController::Observer {
+                                          public MahiUiController::Delegate {
   METADATA_HEADER(SummaryOutlinesSection, views::BoxLayoutView)
 
  public:
@@ -36,13 +36,14 @@ class ASH_EXPORT SummaryOutlinesSection : public views::BoxLayoutView,
   ~SummaryOutlinesSection() override;
 
  private:
-  // MahiUiController::Observer:
-  void OnContentsRefreshInitiated() override;
-  void OnOutlinesLoaded(
-      const std::vector<chromeos::MahiOutline>& outlines) override;
-  void OnStateChanged(MahiUiController::State new_state,
-                      const std::optional<PayloadType>& payload) override;
-  void OnSummaryLoaded(const std::u16string& summary) override;
+  // MahiUiController::Delegate:
+  views::View* GetView() override;
+  bool GetViewVisibility(VisibilityState state) const override;
+  void OnUpdated(const MahiUiUpdate& update) override;
+
+  void HandleOutlinesLoaded(const std::vector<chromeos::MahiOutline>& outlines);
+
+  void HandleSummaryLoaded(const std::u16string& summary_text);
 
   // Requests summary and outlines data from `MahiManager` for the currently
   // active content and starts playing the loading animations.

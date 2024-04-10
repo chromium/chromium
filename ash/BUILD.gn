@@ -1815,6 +1815,8 @@ component("ash") {
     "system/mahi/mahi_question_answer_view.h",
     "system/mahi/mahi_ui_controller.cc",
     "system/mahi/mahi_ui_controller.h",
+    "system/mahi/mahi_ui_update.cc",
+    "system/mahi/mahi_ui_update.h",
     "system/mahi/mahi_utils.cc",
     "system/mahi/mahi_utils.h",
     "system/mahi/refresh_banner_view.cc",

@@ -4,10 +4,10 @@
 
 #include "ash/system/mahi/mahi_panel_view.h"
 
-#include <algorithm>
 #include <climits>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -21,6 +21,7 @@
 #include "ash/system/mahi/mahi_error_status_view.h"
 #include "ash/system/mahi/mahi_question_answer_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
+#include "ash/system/mahi/mahi_ui_update.h"
 #include "ash/system/mahi/summary_outlines_section.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -204,7 +205,7 @@ std::unique_ptr<IconButton> CreateFeedbackButton(FeedbackType type) {
 
 // A button used to navigate to the summary & outlines section. Only shown when
 // in the Q&A view.
-class BackButton : public IconButton, public MahiUiController::Observer {
+class BackButton : public IconButton, public MahiUiController::Delegate {
   METADATA_HEADER(BackButton, IconButton)
 
  public:
@@ -227,25 +228,24 @@ class BackButton : public IconButton, public MahiUiController::Observer {
             /*accessible_name=*/u"Back to summary",
             /*is_togglable=*/false,
             /*has_border=*/false),
-        MahiUiController::Observer(ui_controller) {}
+        MahiUiController::Delegate(ui_controller) {}
 
   BackButton(const BackButton&) = delete;
   BackButton& operator=(const BackButton&) = delete;
   ~BackButton() override = default;
 
  private:
-  // MahiController::Observer:
-  void OnStateChanged(MahiUiController::State new_state,
-                      const std::optional<PayloadType>& payload) override {
-    switch (new_state) {
-      case MahiUiController::State::kError:
-        break;
-      case MahiUiController::State::kQuestionAndAnswer:
-        SetVisible(true);
-        break;
-      case MahiUiController::State::kSummaryAndOutlines:
-        SetVisible(false);
-        break;
+  // MahiController::Delegate:
+  views::View* GetView() override { return this; }
+
+  bool GetViewVisibility(VisibilityState state) const override {
+    switch (state) {
+      case VisibilityState::kError:
+        return GetVisible();
+      case VisibilityState::kQuestionAndAnswer:
+        return true;
+      case VisibilityState::kSummaryAndOutlines:
+        return false;
     }
   }
 };
@@ -367,7 +367,7 @@ DEFINE_VIEW_BUILDER(/*no export*/, ash::BackButton)
 namespace ash {
 
 MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
-    : MahiUiController::Observer(ui_controller), ui_controller_(ui_controller) {
+    : MahiUiController::Delegate(ui_controller), ui_controller_(ui_controller) {
   CHECK(ui_controller_);
 
   SetOrientation(views::LayoutOrientation::kVertical);
@@ -611,24 +611,38 @@ bool MahiPanelView::HandleKeyEvent(views::Textfield* textfield,
   return false;
 }
 
-void MahiPanelView::OnAnswerLoaded(const std::u16string& answer) {
-  // Input is re-enabled after backend has finished processing a question.
-  send_button_->SetEnabled(true);
+views::View* MahiPanelView::GetView() {
+  return this;
 }
 
-void MahiPanelView::OnContentsRefreshInitiated() {
-  auto* mahi_manager = chromeos::MahiManager::Get();
-  content_icon_->SetImage(
-      ui::ImageModel::FromImageSkia(mahi_manager->GetContentIcon()));
-  content_title_->SetText(mahi_manager->GetContentTitle());
+bool MahiPanelView::GetViewVisibility(VisibilityState state) const {
+  // Do not change visibility for `state`.
+  return GetVisible();
 }
 
-void MahiPanelView::OnStateChanged(MahiUiController::State new_state,
-                                   const std::optional<PayloadType>& payload) {
-  // Input is re-enabled after backend returns an error.
-  if (payload.has_value() &&
-      std::holds_alternative<chromeos::MahiResponseStatus>(*payload)) {
-    send_button_->SetEnabled(true);
+void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
+  switch (update.type()) {
+    case MahiUiUpdateType::kAnswerLoaded:
+      // Input is re-enabled after backend has finished processing a question.
+      send_button_->SetEnabled(true);
+      return;
+    case MahiUiUpdateType::kContentsRefreshInitiated: {
+      auto* const mahi_manager = chromeos::MahiManager::Get();
+      content_icon_->SetImage(
+          ui::ImageModel::FromImageSkia(mahi_manager->GetContentIcon()));
+      content_title_->SetText(mahi_manager->GetContentTitle());
+      return;
+    }
+    case MahiUiUpdateType::kErrorReceived:
+      // Input is re-enabled after backend returns an error.
+      send_button_->SetEnabled(true);
+      return;
+    case MahiUiUpdateType::kOutlinesLoaded:
+    case MahiUiUpdateType::kQuestionPosted:
+    case MahiUiUpdateType::kRefreshAvailabilityUpdated:
+    case MahiUiUpdateType::kSummaryLoaded:
+    case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
+      return;
   }
 }
 

@@ -18,8 +18,11 @@ class Label;
 
 namespace ash {
 
+class MahiUiUpdate;
+enum class VisibilityState;
+
 class ASH_EXPORT RefreshBannerView : public views::FlexLayoutView,
-                                     public MahiUiController::Observer {
+                                     public MahiUiController::Delegate {
   METADATA_HEADER(RefreshBannerView, views::FlexLayoutView)
 
  public:
@@ -36,9 +39,10 @@ class ASH_EXPORT RefreshBannerView : public views::FlexLayoutView,
   // views::FlexLayoutView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
-  // MahiUiController::Observer:
-  void OnContentsRefreshInitiated() override;
-  void OnRefreshAvailabilityChanged(bool available) override;
+  // MahiUiController::Delegate:
+  views::View* GetView() override;
+  bool GetViewVisibility(VisibilityState state) const override;
+  void OnUpdated(const MahiUiUpdate& update) override;
 
   // `ui_controller_` will outlive `this`.
   const raw_ptr<MahiUiController> ui_controller_;

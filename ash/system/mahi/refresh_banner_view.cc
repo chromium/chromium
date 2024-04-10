@@ -84,7 +84,7 @@ SkPath GetClipPath(gfx::Size size) {
 }  // namespace
 
 RefreshBannerView::RefreshBannerView(MahiUiController* ui_controller)
-    : MahiUiController::Observer(ui_controller), ui_controller_(ui_controller) {
+    : MahiUiController::Delegate(ui_controller), ui_controller_(ui_controller) {
   CHECK(ui_controller_);
 
   SetOrientation(views::LayoutOrientation::kHorizontal);
@@ -173,21 +173,19 @@ void RefreshBannerView::Show() {
 }
 
 void RefreshBannerView::Hide() {
-  if (!GetVisible()) {
-    return;
+  if (GetVisible()) {
+    views::AnimationBuilder()
+        .OnEnded(base::BindOnce(
+            [](const base::WeakPtr<views::View>& view) {
+              if (view) {
+                view->SetVisible(false);
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr()))
+        .Once()
+        .SetDuration(kRefreshBannerAnimationDurationMs)
+        .SetOpacity(this, 0.0);
   }
-
-  views::AnimationBuilder()
-      .OnEnded(base::BindOnce(
-          [](base::WeakPtr<views::View> view) {
-            if (view) {
-              view->SetVisible(false);
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()))
-      .Once()
-      .SetDuration(kRefreshBannerAnimationDurationMs)
-      .SetOpacity(this, 0.0);
 }
 
 void RefreshBannerView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -199,15 +197,35 @@ void RefreshBannerView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   }
 }
 
-void RefreshBannerView::OnContentsRefreshInitiated() {
-  Hide();
+views::View* RefreshBannerView::GetView() {
+  return this;
 }
 
-void RefreshBannerView::OnRefreshAvailabilityChanged(bool available) {
-  if (available) {
-    Show();
-  } else {
-    Hide();
+bool RefreshBannerView::GetViewVisibility(VisibilityState state) const {
+  // Do not change visibility because visibility depends on the refresh
+  // availability instead of `state`.
+  return GetVisible();
+}
+
+void RefreshBannerView::OnUpdated(const MahiUiUpdate& update) {
+  switch (update.type()) {
+    case MahiUiUpdateType::kRefreshAvailabilityUpdated:
+      if (update.GetRefreshAvailability()) {
+        Show();
+      } else {
+        Hide();
+      }
+      return;
+    case MahiUiUpdateType::kContentsRefreshInitiated:
+      Hide();
+      return;
+    case MahiUiUpdateType::kErrorReceived:
+    case MahiUiUpdateType::kAnswerLoaded:
+    case MahiUiUpdateType::kOutlinesLoaded:
+    case MahiUiUpdateType::kQuestionPosted:
+    case MahiUiUpdateType::kSummaryLoaded:
+    case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
+      return;
   }
 }
 
