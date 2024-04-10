@@ -63,6 +63,7 @@
   auto viewController = [[OtpInputDialogViewController alloc] init];
   _viewController = viewController;
   _mediator->SetConsumer(_viewController);
+  _viewController.mutator = _mediator->AsMutator();
   [_baseNavigationController pushViewController:viewController animated:YES];
 }
 

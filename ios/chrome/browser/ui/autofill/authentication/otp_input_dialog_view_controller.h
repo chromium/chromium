@@ -8,10 +8,15 @@
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_consumer.h"
 
+@protocol OtpInputDialogMutator;
+
 // Controller for the UI that allows the user to enter an OTP for card
 // verification purposes.
 @interface OtpInputDialogViewController
     : ChromeTableViewController <OtpInputDialogConsumer>
+
+// The delegate for user actions.
+@property(nonatomic, weak) id<OtpInputDialogMutator> mutator;
 
 - (instancetype)init;
 

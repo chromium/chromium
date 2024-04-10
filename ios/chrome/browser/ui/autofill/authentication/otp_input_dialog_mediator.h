@@ -5,13 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_AUTHENTICATION_OTP_INPUT_DIALOG_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_AUTHENTICATION_OTP_INPUT_DIALOG_MEDIATOR_H_
 
-#import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_view.h"
-
 #import <Foundation/Foundation.h>
 
 #import "base/memory/weak_ptr.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_view.h"
+#import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mutator_bridge_target.h"
 
 @protocol OtpInputDialogConsumer;
+@protocol OtpInputDialogMutator;
+
+@class OtpInputDialogMutatorBridge;
 
 namespace autofill {
 class CardUnmaskOtpInputDialogControllerImpl;
@@ -19,7 +22,8 @@ class CardUnmaskOtpInputDialogControllerImpl;
 
 // Bridge class used to connect Autofill OTP input dialog components with the
 // IOS view implementation.
-class OtpInputDialogMediator : public autofill::CardUnmaskOtpInputDialogView {
+class OtpInputDialogMediator : public autofill::CardUnmaskOtpInputDialogView,
+                               public OtpInputDialogMutatorBridgeTarget {
  public:
   explicit OtpInputDialogMediator(
       base::WeakPtr<autofill::CardUnmaskOtpInputDialogControllerImpl>
@@ -35,7 +39,17 @@ class OtpInputDialogMediator : public autofill::CardUnmaskOtpInputDialogView {
                bool user_closed_dialog) override;
   base::WeakPtr<CardUnmaskOtpInputDialogView> GetWeakPtr() override;
 
+  // OtpInputDialogMutatorTarget:
+  void DidTapConfirmButton(const std::u16string& input_value) override;
+  void DidTapCancelButton() override;
+  void OnOtpInputChanges(const std::u16string& input_value) override;
+
   void SetConsumer(id<OtpInputDialogConsumer> consumer);
+
+  // Returns an implementation of the mutator that forwards to this mediator.
+  // We need this bridge since this mediator is C++ whereas the ViewController
+  // expects the Objective-C protocol.
+  id<OtpInputDialogMutator> AsMutator();
 
  private:
   // The model to provide data to be shown in the IOS view implementation.
@@ -43,6 +57,8 @@ class OtpInputDialogMediator : public autofill::CardUnmaskOtpInputDialogView {
       model_controller_;
 
   __weak id<OtpInputDialogConsumer> consumer_;
+
+  OtpInputDialogMutatorBridge* mutator_bridge_;
 
   base::WeakPtrFactory<OtpInputDialogMediator> weak_ptr_factory_{this};
 };

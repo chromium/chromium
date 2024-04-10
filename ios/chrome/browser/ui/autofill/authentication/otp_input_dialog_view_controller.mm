@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_content.h"
+#import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mutator.h"
 #import "ios/chrome/browser/ui/autofill/cells/card_unmask_header_item.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -35,6 +36,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   OtpInputDialogContent* _content;
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   BOOL _contentSet;
+  NSString* _inputValue;
 }
 
 - (instancetype)init {
@@ -70,12 +72,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       DequeueTableViewHeaderFooter<CardUnmaskHeaderView>(self.tableView);
   view.titleLabel.text = _content.windowTitle;
   return view;
-}
-
-#pragma mark - UITextFieldDelegate
-
-- (void)textFieldDidEndEditing:(UITextField*)textField {
-  [self didChangeOtpInputText:textField.text];
 }
 
 #pragma mark - PaymentsSuggestionBottomSheetConsumer
@@ -137,27 +133,34 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [cell setIdentifyingIcon:nil];
   [cell setIcon:TableViewTextEditItemIconTypeEdit];
   cell.textField.placeholder = _content.textFieldPlaceholder;
-  cell.textField.delegate = self;
+  [cell.textField addTarget:self
+                     action:@selector(textFieldDidChange:)
+           forControlEvents:UIControlEventEditingChanged];
   cell.textField.keyboardType = UIKeyboardTypeNumberPad;
   cell.textField.returnKeyType = UIReturnKeyDone;
   cell.textField.textAlignment = NSTextAlignmentLeft;
   return cell;
 }
 
+- (void)textFieldDidChange:(UITextField*)textField {
+  _inputValue = textField.text;
+  [self didChangeOtpInputText];
+}
+
 // Invoked when the confirm button in the navigation bar is tapped by the user.
 // This means a valid OTP value is typed in.
 - (void)didTapConfirmButton {
-  // TODO(crbug.com/324611541): Handle this via a Mutator.
+  [_mutator didTapConfirmButton:_inputValue];
 }
 
 // Invoked when the cancel button in the navigation bar is tapped by the user.
 - (void)didTapCancelButton {
-  // TODO(crbug.com/324611541): Handle this via a Mutator.
+  [_mutator didTapCancelButton];
 }
 
 // Notify the model controller when the OTP input value changes.
-- (void)didChangeOtpInputText:(NSString*)inputValue {
-  // TODO(crbug.com/324611541): Handle this via a Mutator.
+- (void)didChangeOtpInputText {
+  [_mutator onOtpInputChanges:_inputValue];
 }
 
 @end

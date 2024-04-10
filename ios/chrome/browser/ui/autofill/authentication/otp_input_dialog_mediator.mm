@@ -11,11 +11,19 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_consumer.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_content.h"
+#import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mutator.h"
+#import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mutator_bridge.h"
+#import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mutator_bridge_target.h"
 
 OtpInputDialogMediator::OtpInputDialogMediator(
     base::WeakPtr<autofill::CardUnmaskOtpInputDialogControllerImpl>
         model_controller)
-    : model_controller_(model_controller) {}
+    : model_controller_(model_controller) {
+  base::WeakPtr<OtpInputDialogMutatorBridgeTarget>
+      mutator_bridge_target_weak_ptr(weak_ptr_factory_.GetWeakPtr());
+  mutator_bridge_ = [[OtpInputDialogMutatorBridge alloc]
+      initWithTarget:mutator_bridge_target_weak_ptr];
+}
 
 OtpInputDialogMediator::~OtpInputDialogMediator() {
   // If the closure is not initiated from the backend side (via Dismiss()), it
@@ -52,6 +60,27 @@ OtpInputDialogMediator::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void OtpInputDialogMediator::DidTapConfirmButton(
+    const std::u16string& input_value) {
+  if (model_controller_) {
+    model_controller_->OnOkButtonClicked(input_value);
+    [consumer_ showPendingState];
+  }
+}
+
+void OtpInputDialogMediator::DidTapCancelButton() {
+  // TODO(crbug.com/324611313): Handle this via the view presentation delegate
+  // to notify the coordinator.
+}
+
+void OtpInputDialogMediator::OnOtpInputChanges(
+    const std::u16string& input_value) {
+  if (model_controller_) {
+    [consumer_
+        setConfirmButtonEnabled:model_controller_->IsValidOtp(input_value)];
+  }
+}
+
 void OtpInputDialogMediator::SetConsumer(id<OtpInputDialogConsumer> consumer) {
   consumer_ = consumer;
   if (!model_controller_) {
@@ -65,4 +94,8 @@ void OtpInputDialogMediator::SetConsumer(id<OtpInputDialogConsumer> consumer) {
   content.confirmButtonLabel =
       base::SysUTF16ToNSString(model_controller_->GetOkButtonLabel());
   [consumer_ setContent:content];
+}
+
+id<OtpInputDialogMutator> OtpInputDialogMediator::AsMutator() {
+  return mutator_bridge_;
 }
