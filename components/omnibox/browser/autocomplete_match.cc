@@ -52,6 +52,7 @@
 #endif
 
 constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
+constexpr bool kIsAndroid = BUILDFLAG(IS_ANDROID);
 
 namespace {
 
@@ -1379,7 +1380,7 @@ int AutocompleteMatch::GetSortingOrder() const {
     return 0;
   }
 
-  if constexpr (!kIsDesktop) {
+  if constexpr (kIsAndroid) {
     if (IsClipboardType(type)) {
       return 0;
     }
