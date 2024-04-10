@@ -27,11 +27,11 @@ std::string PreloadAppDefinition::GetName() const {
   return app_proto_.name();
 }
 
-AppType PreloadAppDefinition::GetPlatform() const {
+PackageType PreloadAppDefinition::GetPlatform() const {
   if (package_id_.has_value()) {
-    return package_id_->app_type();
+    return package_id_->package_type();
   }
-  return AppType::kUnknown;
+  return PackageType::kUnknown;
 }
 
 bool PreloadAppDefinition::IsDefaultApp() const {
@@ -55,42 +55,42 @@ AppInstallSurface PreloadAppDefinition::GetInstallSurface() const {
 }
 
 std::string PreloadAppDefinition::GetAndroidPackageName() const {
-  DCHECK_EQ(GetPlatform(), AppType::kArc);
+  DCHECK_EQ(GetPlatform(), PackageType::kArc);
   DCHECK(package_id_.has_value());
 
   return package_id_->identifier();
 }
 
 GURL PreloadAppDefinition::GetWebAppManifestUrl() const {
-  DCHECK_EQ(GetPlatform(), AppType::kWeb);
+  DCHECK_EQ(GetPlatform(), PackageType::kWeb);
 
   return GURL(app_proto_.web_extras().manifest_url());
 }
 
 GURL PreloadAppDefinition::GetWebAppOriginalManifestUrl() const {
-  DCHECK_EQ(GetPlatform(), AppType::kWeb);
+  DCHECK_EQ(GetPlatform(), PackageType::kWeb);
 
   return GURL(app_proto_.web_extras().original_manifest_url());
 }
 
 GURL PreloadAppDefinition::GetWebAppManifestId() const {
-  DCHECK_EQ(GetPlatform(), AppType::kWeb);
+  DCHECK_EQ(GetPlatform(), PackageType::kWeb);
   DCHECK(package_id_.has_value());
 
   return GURL(package_id_->identifier());
 }
 
 std::string PreloadAppDefinition::GetWebAppId() const {
-  DCHECK_EQ(GetPlatform(), AppType::kWeb);
+  DCHECK_EQ(GetPlatform(), PackageType::kWeb);
   return web_app::GenerateAppIdFromManifestId(GetWebAppManifestId());
 }
 
 AppInstallData PreloadAppDefinition::ToAppInstallData() const {
   AppInstallData result(package_id_.value());
   result.name = GetName();
-  if (GetPlatform() == AppType::kArc) {
+  if (GetPlatform() == PackageType::kArc) {
     // nothing.
-  } else if (GetPlatform() == AppType::kWeb) {
+  } else if (GetPlatform() == PackageType::kWeb) {
     auto& web_app_data = result.app_type_data.emplace<WebAppInstallData>();
     web_app_data.original_manifest_url = GetWebAppOriginalManifestUrl();
     web_app_data.proxied_manifest_url = GetWebAppManifestUrl();
@@ -108,10 +108,10 @@ std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {
   os << "- OEM: " << app.IsOemApp() << std::endl;
   os << "- Default: " << app.IsDefaultApp() << std::endl;
 
-  if (app.GetPlatform() == AppType::kArc) {
+  if (app.GetPlatform() == PackageType::kArc) {
     os << "- Android Extras:" << std::endl;
     os << "  - Package Name: " << app.GetAndroidPackageName() << std::endl;
-  } else if (app.GetPlatform() == AppType::kWeb) {
+  } else if (app.GetPlatform() == PackageType::kWeb) {
     os << "- Web Extras:" << std::endl;
     os << "  - Manifest URL: " << app.GetWebAppManifestUrl() << std::endl;
     os << "  - Original Manifest URL: " << app.GetWebAppOriginalManifestUrl()

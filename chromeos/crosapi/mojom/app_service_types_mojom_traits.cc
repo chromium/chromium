@@ -316,7 +316,7 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
   // version skew caused the type to be dropped. Reset the value to nullopt, as
   // if it was not set in the first place.
   if (installer_package_id.has_value() &&
-      installer_package_id->app_type() == apps::AppType::kUnknown) {
+      installer_package_id->package_type() == apps::PackageType::kUnknown) {
     installer_package_id = std::nullopt;
   }
 
@@ -1372,24 +1372,14 @@ bool StructTraits<crosapi::mojom::AppShortcutDataView, apps::ShortcutPtr>::Read(
 crosapi::mojom::PackageIdType
 StructTraits<crosapi::mojom::PackageIdDataView, apps::PackageId>::package_type(
     const apps::PackageId& r) {
-  switch (r.app_type()) {
-    case apps::AppType::kArc:
+  switch (r.package_type()) {
+    case apps::PackageType::kArc:
       return crosapi::mojom::PackageIdType::kArc;
-    case apps::AppType::kWeb:
+    case apps::PackageType::kWeb:
       return crosapi::mojom::PackageIdType::kWeb;
-    case apps::AppType::kUnknown:
-    case apps::AppType::kBorealis:
-    case apps::AppType::kBruschetta:
-    case apps::AppType::kBuiltIn:
-    case apps::AppType::kChromeApp:
-    case apps::AppType::kCrostini:
-    case apps::AppType::kExtension:
-    case apps::AppType::kPluginVm:
-    case apps::AppType::kRemote:
-    case apps::AppType::kStandaloneBrowser:
-    case apps::AppType::kStandaloneBrowserChromeApp:
-    case apps::AppType::kStandaloneBrowserExtension:
-    case apps::AppType::kSystemWeb:
+    case apps::PackageType::kUnknown:
+    case apps::PackageType::kBorealis:
+    case apps::PackageType::kChromeApp:
       return crosapi::mojom::PackageIdType::kUnknown;
   }
 }
@@ -1397,25 +1387,25 @@ StructTraits<crosapi::mojom::PackageIdDataView, apps::PackageId>::package_type(
 bool StructTraits<crosapi::mojom::PackageIdDataView, apps::PackageId>::Read(
     crosapi::mojom::PackageIdDataView data,
     apps::PackageId* out) {
-  crosapi::mojom::PackageIdType package_type = data.package_type();
+  crosapi::mojom::PackageIdType mojom_package_type = data.package_type();
 
   std::string identifier;
   if (!data.ReadIdentifier(&identifier) || identifier.empty()) {
     return false;
   }
 
-  apps::AppType app_type = ([&package_type]() {
-    switch (package_type) {
+  apps::PackageType package_type = ([&mojom_package_type]() {
+    switch (mojom_package_type) {
       case crosapi::mojom::PackageIdType::kUnknown:
-        return apps::AppType::kUnknown;
+        return apps::PackageType::kUnknown;
       case crosapi::mojom::PackageIdType::kArc:
-        return apps::AppType::kArc;
+        return apps::PackageType::kArc;
       case crosapi::mojom::PackageIdType::kWeb:
-        return apps::AppType::kWeb;
+        return apps::PackageType::kWeb;
     }
   })();
 
-  *out = apps::PackageId(app_type, identifier);
+  *out = apps::PackageId(package_type, identifier);
 
   return true;
 }

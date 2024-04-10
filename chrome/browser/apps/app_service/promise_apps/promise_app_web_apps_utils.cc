@@ -37,7 +37,8 @@ void MaybeSimulatePromiseAppInstallationEvents(apps::AppServiceProxy* proxy,
   }
 
   // Simulate the promise app installation stages.
-  apps::PackageId package_id(apps::AppType::kWeb, app->publisher_id.value());
+  apps::PackageId package_id(apps::PackageType::kWeb,
+                             app->publisher_id.value());
 
   // Register a promise app.
   apps::PromiseAppPtr promise_app =

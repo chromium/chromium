@@ -21,7 +21,7 @@
 
 namespace apps {
 
-const PackageId kTestPackageId(AppType::kArc, "test.package.name");
+const PackageId kTestPackageId(PackageType::kArc, "test.package.name");
 
 SkColor kRed = SkColorSetRGB(255, 0, 0);
 SkColor kGreen = SkColorSetRGB(0, 255, 0);

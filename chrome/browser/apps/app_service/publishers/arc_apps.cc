@@ -1389,7 +1389,8 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
                                                : InstallSource::kPlayStore);
 
   app->publisher_id = app_info.package_name;
-  app->installer_package_id = PackageId(AppType::kArc, app_info.package_name);
+  app->installer_package_id =
+      PackageId(PackageType::kArc, app_info.package_name);
   app->policy_ids = {app_info.package_name};
 
   if (update_icon) {
@@ -1579,8 +1580,8 @@ void ArcApps::OnGetAppShortcutItems(
 void ArcApps::OnInstallationStarted(const std::string& package_name) {
   if (ash::features::ArePromiseIconsEnabled() &&
       ArcVersionEligibleForPromiseIcons()) {
-    PromiseAppPtr promise_app =
-        AppPublisher::MakePromiseApp(PackageId(AppType::kArc, package_name));
+    PromiseAppPtr promise_app = AppPublisher::MakePromiseApp(
+        PackageId(PackageType::kArc, package_name));
 
     // All ARC installations start as "Pending".
     promise_app->status = PromiseStatus::kPending;
@@ -1591,7 +1592,7 @@ void ArcApps::OnInstallationStarted(const std::string& package_name) {
 void ArcApps::OnInstallationProgressChanged(const std::string& package_name,
                                             float progress) {
   if (ash::features::ArePromiseIconsEnabled()) {
-    PackageId package_id = PackageId(AppType::kArc, package_name);
+    PackageId package_id = PackageId(PackageType::kArc, package_name);
     const PromiseApp* existing_promise_app =
         proxy()->PromiseAppRegistryCache()->GetPromiseApp(package_id);
     if (!existing_promise_app) {
@@ -1617,7 +1618,7 @@ void ArcApps::OnInstallationProgressChanged(const std::string& package_name,
 void ArcApps::OnInstallationActiveChanged(const std::string& package_name,
                                           bool active) {
   if (ash::features::ArePromiseIconsEnabled()) {
-    PackageId package_id(AppType::kArc, package_name);
+    PackageId package_id(PackageType::kArc, package_name);
     if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(package_id)) {
       LOG(ERROR) << "Cannot update installation active status for "
                  << package_name
@@ -1640,7 +1641,7 @@ void ArcApps::OnInstallationFinished(const std::string& package_name,
     }
     // Remove the promise app of any failed installation or non-launchable
     // package.
-    PackageId package_id(AppType::kArc, package_name);
+    PackageId package_id(PackageType::kArc, package_name);
     if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(package_id)) {
       return;
     }

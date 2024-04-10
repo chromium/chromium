@@ -30,7 +30,7 @@ namespace apps {
 
 namespace {
 
-const PackageId kTestPackageId(AppType::kWeb, "https://example.com/");
+const PackageId kTestPackageId(PackageType::kWeb, "https://example.com/");
 
 }  // namespace
 
@@ -66,9 +66,9 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoRequest) {
         body = network::GetUploadData(request);
       }));
 
-  connector_.GetAppInstallInfo(PackageId(AppType::kWeb, "https://example.com/"),
-                               device_info, test_url_loader_factory_,
-                               base::DoNothing());
+  connector_.GetAppInstallInfo(
+      PackageId(PackageType::kWeb, "https://example.com/"), device_info,
+      test_url_loader_factory_, base::DoNothing());
 
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(method_override_header, "GET");
@@ -131,7 +131,7 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoSuccessfulResponse) {
   EXPECT_TRUE(response_future.Get().has_value());
 
   AppInstallData expected_data(
-      PackageId(AppType::kWeb, "https://example.com/"));
+      PackageId(PackageType::kWeb, "https://example.com/"));
   expected_data.name = "Example";
   expected_data.description = "Description.";
   expected_data.icon = AppInstallIcon{

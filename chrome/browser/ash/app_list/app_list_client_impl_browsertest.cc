@@ -112,7 +112,7 @@ using ::testing::NiceMock;
 namespace {
 
 const apps::PackageId kTestPackageId =
-    apps::PackageId(apps::AppType::kArc, "com.test.package");
+    apps::PackageId(apps::PackageType::kArc, "com.test.package");
 
 class TestObserver : public app_list::AppListSyncableService::Observer {
  public:

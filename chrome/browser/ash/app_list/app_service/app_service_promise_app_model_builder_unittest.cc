@@ -80,12 +80,12 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
   void RegisterTestApps() {
     // Register two promise apps in the promise app registry cache.
     apps::PromiseAppPtr promise_app_1 = std::make_unique<apps::PromiseApp>(
-        apps::PackageId(apps::AppType::kArc, "test1"));
+        apps::PackageId(apps::PackageType::kArc, "test1"));
     promise_app_1->should_show = true;
     cache()->OnPromiseApp(std::move(promise_app_1));
 
     apps::PromiseAppPtr promise_app_2 = std::make_unique<apps::PromiseApp>(
-        apps::PackageId(apps::AppType::kArc, "test2"));
+        apps::PackageId(apps::PackageType::kArc, "test2"));
     promise_app_2->should_show = true;
     cache()->OnPromiseApp(std::move(promise_app_2));
   }

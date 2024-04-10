@@ -75,7 +75,7 @@ AppInstallResult InstallWebAppWithBrowserInstallDialog(
 // TODO(b/330414871): AppInstallService shouldn't know about publisher specific
 // logic, remove the generation of app_ids.
 std::string GetAppId(const PackageId& package_id) {
-  CHECK_EQ(package_id.app_type(), AppType::kWeb);
+  CHECK_EQ(package_id.package_type(), PackageType::kWeb);
   // data->package_id.identifier() is the manifest ID for web apps.
   return web_app::GenerateAppIdFromManifestId(GURL(package_id.identifier()));
 }
@@ -127,8 +127,8 @@ void AppInstallServiceAsh::InstallApp(
   }
 
   // TODO(b/303350800): Generalize to work with all app types.
-  CHECK(package_id.app_type() == AppType::kWeb ||
-        package_id.app_type() == AppType::kBorealis);
+  CHECK(package_id.package_type() == PackageType::kWeb ||
+        package_id.package_type() == PackageType::kBorealis);
 
   // Observe for `anchor_window` being destroyed during async work.
   std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker;
@@ -275,8 +275,8 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
                   : AppInstallResult::kAlmanacFetchFailed;
     }
 
-    switch (expected_package_id.app_type()) {
-      case AppType::kWeb:
+    switch (expected_package_id.package_type()) {
+      case PackageType::kWeb:
         if (const auto* web_app_data =
                 absl::get_if<WebAppInstallData>(&data->app_type_data)) {
           if (ash::app_install::AppInstallDialog::IsEnabled()) {
@@ -315,7 +315,7 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
               *profile_, web_app_data->document_url);
         }
         return AppInstallResult::kAppDataCorrupted;
-      case AppType::kBorealis:
+      case PackageType::kBorealis:
         if (!base::FeatureList::IsEnabled(
                 ash::features::kAppInstallServiceUriBorealis)) {
           return AppInstallResult::kAppProviderNotAvailable;
@@ -334,19 +334,9 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
         // website. We don't yet know whether that flow will result in a
         // successfully installed game.
         return AppInstallResult::kUnknown;
-      case AppType::kArc:
-      case AppType::kBruschetta:
-      case AppType::kBuiltIn:
-      case AppType::kChromeApp:
-      case AppType::kCrostini:
-      case AppType::kExtension:
-      case AppType::kPluginVm:
-      case AppType::kRemote:
-      case AppType::kStandaloneBrowser:
-      case AppType::kStandaloneBrowserChromeApp:
-      case AppType::kStandaloneBrowserExtension:
-      case AppType::kSystemWeb:
-      case AppType::kUnknown:
+      case PackageType::kArc:
+      case PackageType::kChromeApp:
+      case PackageType::kUnknown:
         return AppInstallResult::kAppTypeNotSupported;
     }
   }();

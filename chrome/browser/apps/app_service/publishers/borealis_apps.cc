@@ -213,8 +213,8 @@ void BorealisApps::CreateAppOverrides(
     // ID.
     std::optional<int> app_id = borealis::ParseSteamGameId(registration.Exec());
     if (app_id) {
-      app->installer_package_id =
-          PackageId(AppType::kBorealis, base::NumberToString(app_id.value()));
+      app->installer_package_id = PackageId(
+          PackageType::kBorealis, base::NumberToString(app_id.value()));
     }
   }
 }

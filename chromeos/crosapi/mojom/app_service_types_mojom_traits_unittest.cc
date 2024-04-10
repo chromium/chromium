@@ -73,7 +73,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->allow_close = true;
   input->allow_window_mode_selection = true;
   input->installer_package_id =
-      apps::PackageId(apps::AppType::kArc, "com.foo.bar");
+      apps::PackageId(apps::PackageType::kArc, "com.foo.bar");
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -138,7 +138,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   EXPECT_TRUE(output->allow_close.value());
   EXPECT_TRUE(output->allow_window_mode_selection.value());
   EXPECT_EQ(output->installer_package_id,
-            apps::PackageId(apps::AppType::kArc, "com.foo.bar"));
+            apps::PackageId(apps::PackageType::kArc, "com.foo.bar"));
 }
 
 // Test that serialization and deserialization works with optional fields that
@@ -218,7 +218,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripUnknownPackageId) {
   auto input = std::make_unique<apps::App>(apps::AppType::kWeb, "abcdefg");
   // In practice, nobody should ever create an Unknown PackageId like this. The
   // most likely cause of this case is version skew in crosapi.
-  input->installer_package_id = apps::PackageId(apps::AppType::kUnknown, "foo");
+  input->installer_package_id =
+      apps::PackageId(apps::PackageType::kUnknown, "foo");
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -1329,7 +1330,7 @@ TEST(AppServiceTypesMojomTraitsTest, ShortcutRoundTripNoOptional) {
 
 TEST(AppServiceTypesMojomTraitsTest, PackageIdRoundTrip) {
   {
-    auto package_id = apps::PackageId(apps::AppType::kArc, "com.foo.bar");
+    auto package_id = apps::PackageId(apps::PackageType::kArc, "com.foo.bar");
     apps::PackageId output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::PackageId>(
         package_id, output));
@@ -1337,14 +1338,14 @@ TEST(AppServiceTypesMojomTraitsTest, PackageIdRoundTrip) {
   }
   {
     auto package_id =
-        apps::PackageId(apps::AppType::kWeb, "https://www.foo.com/bar");
+        apps::PackageId(apps::PackageType::kWeb, "https://www.foo.com/bar");
     apps::PackageId output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::PackageId>(
         package_id, output));
     EXPECT_EQ(package_id, output);
   }
   {
-    auto package_id = apps::PackageId(apps::AppType::kUnknown, "someapp");
+    auto package_id = apps::PackageId(apps::PackageType::kUnknown, "someapp");
     apps::PackageId output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::PackageId>(
         package_id, output));

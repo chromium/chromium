@@ -18,27 +18,27 @@ namespace apps {
 // globally unique across app platforms, which makes them suitable for
 // identifying apps when communicating with external systems.
 //
-// Package ID is a composite key of "App Type" and a string
+// Package ID is a composite key of "Package Type" and a string
 // "Identifier", which is the platform-specific unique ID for the package.
 // Package IDs have a canonical string format of the form
-// "<app_type_name>:<identifier>".
+// "<package_type_name>:<identifier>".
 //
 // Package IDs only support a subset of app types supported by App Service.
 // Currently, the supported types are:
 //
-// AppType    | Type name   | Identifier value      | Example Package ID string
-// -----------|-------------|-----------------------|--------------------------
-// kArc       | "android"   | package name          | "android:com.foo.bar"
-// kBorealis  | "steam"     | Steam Game ID         | "steam:123456"
-// kChromeApp | "chromeapp" | Extension ID          | "chromeapp:mmfbcljfglbok"
-// kWeb       | "web"       | processed manifest ID | "web:https://app.com/id"
+// PackageType | Type name   | Identifier value      | Example Package ID string
+// ------------|-------------|-----------------------|--------------------------
+// kArc        | "android"   | package name          | "android:com.foo.bar"
+// kBorealis   | "steam"     | Steam Game ID         | "steam:123456"
+// kChromeApp  | "chromeapp" | Extension ID          | "chromeapp:mmfbcljfglbok"
+// kWeb        | "web"       | processed manifest ID | "web:https://app.com/id"
 class COMPONENT_EXPORT(APP_TYPES) PackageId {
  public:
-  // Creates a Package ID from App Type and opaque package identifier.
-  // `app_type` must be a supported type from the table above, and `identifier`
-  // must be a non-empty string.
-  PackageId(AppType app_type, std::string_view identifier);
-  // Creates a PackageId for an unknown app.
+  // Creates a Package ID from PackageType and opaque package identifier.
+  // `package_type` must be a supported type from the table above, and
+  // `identifier` must be a non-empty string.
+  PackageId(PackageType package_type, std::string_view identifier);
+  // Creates a PackageId for an unknown package.
   PackageId();
 
   PackageId(const PackageId&);
@@ -57,9 +57,9 @@ class COMPONENT_EXPORT(APP_TYPES) PackageId {
   // Returns the package ID formatted in canonical string form.
   std::string ToString() const;
 
-  // Returns the app type for the package. The type can be AppType::kUnknown if
-  // the PackageId is for an unknown app.
-  AppType app_type() const { return app_type_; }
+  // Returns the package type for the package. The type can be
+  // PackageType::kUnknown if the PackageId is for an unknown package.
+  PackageType package_type() const { return package_type_; }
 
   // Returns the platform-specific identifier for the package (i.e. manifest ID
   // for web apps, package name for ARC apps). The identifier is guaranteed to
@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(APP_TYPES) PackageId {
   const std::string& identifier() const { return identifier_; }
 
  private:
-  AppType app_type_;
+  PackageType package_type_;
   std::string identifier_;
 };
 

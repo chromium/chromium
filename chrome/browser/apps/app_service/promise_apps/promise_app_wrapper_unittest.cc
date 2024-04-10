@@ -13,7 +13,7 @@ namespace apps {
 using PromiseAppWrapperTest = testing::Test;
 
 TEST_F(PromiseAppWrapperTest, ConversionSuccessful) {
-  PackageId package_id(AppType::kArc, "test.package.name");
+  PackageId package_id(PackageType::kArc, "test.package.name");
   GURL url("http://www.image.com");
 
   proto::PromiseAppResponse response;

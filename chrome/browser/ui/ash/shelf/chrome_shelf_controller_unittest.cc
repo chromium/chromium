@@ -6131,7 +6131,7 @@ class ChromeShelfControllerPromiseAppsTest : public ChromeShelfControllerTest,
 TEST_F(ChromeShelfControllerPromiseAppsTest, PromiseAppUpdatesShelfItem) {
   // Register a promise app.
   const apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, "com.example.test");
+      apps::PackageId(apps::PackageType::kArc, "com.example.test");
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
   promise_app->status = apps::PromiseStatus::kPending;
@@ -6175,7 +6175,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
        PromiseAppUpdatesCorrectShelfItem) {
   // Register the main promise app that we will check the updates for.
   const apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, "main.package.for.test");
+      apps::PackageId(apps::PackageType::kArc, "main.package.for.test");
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
   promise_app->status = apps::PromiseStatus::kPending;
@@ -6185,7 +6185,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
   // Register another promise app that will have a shelf item but which we do
   // not expect updates for.
   const apps::PackageId other_package_id =
-      apps::PackageId(apps::AppType::kArc, "other.package");
+      apps::PackageId(apps::PackageType::kArc, "other.package");
   apps::PromiseAppPtr other_promise_app =
       std::make_unique<apps::PromiseApp>(other_package_id);
   other_promise_app->status = apps::PromiseStatus::kPending;
@@ -6225,7 +6225,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
        ShelfItemFetchesAndAppliesEffectsToIcon) {
   // Register the main promise app that we will check the updates for.
   const apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, "com.example.test");
+      apps::PackageId(apps::PackageType::kArc, "com.example.test");
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
   promise_app->status = apps::PromiseStatus::kPending;
@@ -6262,7 +6262,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, RemoveShelfItem) {
   // Register a promise app.
   apps::AppType app_type = apps::AppType::kArc;
   std::string identifier = "test.com.example";
-  apps::PackageId package_id(app_type, identifier);
+  apps::PackageId package_id(apps::PackageType::kArc, identifier);
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
   promise_app->progress = 0.9;
@@ -6301,7 +6301,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, RemoveShelfItem) {
 TEST_F(ChromeShelfControllerPromiseAppsTest, PinnedPromiseAppShelfItemType) {
   // Register a promise app.
   const apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, "com.example.test");
+      apps::PackageId(apps::PackageType::kArc, "com.example.test");
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
   promise_app->should_show = true;
@@ -6321,7 +6321,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, PinnedPromiseAppShelfItemType) {
 TEST_F(ChromeShelfControllerPromiseAppsTest,
        PromiseAppGetsPinnedByMatchingSyncData) {
   const apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, "com.example.test");
+      apps::PackageId(apps::PackageType::kArc, "com.example.test");
 
   // Add entry in sync data that has a matching PackageId with the promise app.
   SendPinChanges(syncer::SyncChangeList(), true);
@@ -6357,7 +6357,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
 TEST_F(ChromeShelfControllerPromiseAppsTest,
        PromiseAppNotPinnedByMatchingSyncDataIfNotReadyToBeShown) {
   const apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, "com.example.test");
+      apps::PackageId(apps::PackageType::kArc, "com.example.test");
 
   // Add entry in sync data that has a matching PackageId with our promise app.
   SendPinChanges(syncer::SyncChangeList(), true);
@@ -6399,7 +6399,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
 TEST_F(ChromeShelfControllerPromiseAppsTest, SyncDataCreatesCorrectShelfItem) {
   std::string package_name = "com.example.test";
   const apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, package_name);
+      apps::PackageId(apps::PackageType::kArc, package_name);
   std::string app_id = "bijolhehmgkcaahdbconomepmenmeomc";
 
   // Add entry in sync data that has a matching PackageId with our promise app.
@@ -6479,7 +6479,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemCreationUpdatesMetrics) {
       apps::PromiseAppLifecycleEvent::kCreatedInShelf, 0);
 
   const apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, "com.example.test");
+      apps::PackageId(apps::PackageType::kArc, "com.example.test");
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
   promise_app->should_show = true;
