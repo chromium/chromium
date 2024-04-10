@@ -37,6 +37,11 @@ void InlineItemResult::CheckConsistency(bool allow_null_shape_result) const {
   DCHECK(item);
   text_offset.AssertValid();
   DCHECK_GE(text_offset.start, item->StartOffset());
+  // InlineItemResult for kOpenRubyColumn contains multiple InlineItem
+  // instances. text_offset.end and item->EndOffset() are different.
+  if (item->Type() == InlineItem::kOpenRubyColumn) {
+    return;
+  }
   DCHECK_LE(text_offset.end, item->EndOffset());
   if (item->Type() == InlineItem::kText) {
     if (!Length()) {

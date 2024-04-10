@@ -213,7 +213,7 @@ inline bool IsTrailableItemType(InlineItem::InlineItemType type) {
   return type != InlineItem::kAtomicInline &&
          type != InlineItem::kOutOfFlowPositioned &&
          type != InlineItem::kInitialLetterBox &&
-         type != InlineItem::kListMarker;
+         type != InlineItem::kListMarker && type != InlineItem::kOpenRubyColumn;
 }
 
 inline bool CanBreakAfterLast(const InlineItemResults& item_results) {
