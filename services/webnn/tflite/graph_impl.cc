@@ -49,24 +49,31 @@ std::string_view TfLiteStatusToString(TfLiteStatus status) {
 
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
 ScopedTfLiteProfiler::ScopedTfLiteProfiler(::tflite::Interpreter& interpreter)
-    : profiler_(/*max_num_entries=*/1024), interpreter_(interpreter) {
-  interpreter_->SetProfiler(&profiler_);
+    : interpreter_(interpreter) {
+  // `profiler_` must be a `std::unique_ptr` because this object is movable and
+  // `&profiler_` may change after construction.
+  profiler_ = std::make_unique<::tflite::profiling::BufferedProfiler>(
+      /*max_num_entries=*/1024);
+  interpreter_->SetProfiler(profiler_.get());
 }
 
 ScopedTfLiteProfiler::~ScopedTfLiteProfiler() {
-  ::tflite::profiling::ProfileSummarizer profile_summarizer;
-  auto profile_events = profiler_.GetProfileEvents();
-  profile_summarizer.ProcessProfiles(profile_events, *interpreter_);
-  LOG(INFO) << profile_summarizer.GetOutputString();
-  interpreter_->SetProfiler(nullptr);
+  // `profiler_` is nullptr if this object was moved.
+  if (profiler_) {
+    ::tflite::profiling::ProfileSummarizer profile_summarizer;
+    auto profile_events = profiler_->GetProfileEvents();
+    profile_summarizer.ProcessProfiles(profile_events, *interpreter_);
+    LOG(INFO) << profile_summarizer.GetOutputString();
+    interpreter_->SetProfiler(nullptr);
+  }
 }
 
 void ScopedTfLiteProfiler::Start() {
-  profiler_.StartProfiling();
+  profiler_->StartProfiling();
 }
 
 void ScopedTfLiteProfiler::Stop() {
-  profiler_.StopProfiling();
+  profiler_->StopProfiling();
 }
 #else
 ScopedTfLiteProfiler::ScopedTfLiteProfiler(::tflite::Interpreter&) {}
@@ -75,6 +82,12 @@ ScopedTfLiteProfiler::~ScopedTfLiteProfiler() = default;
 void ScopedTfLiteProfiler::Start() {}
 void ScopedTfLiteProfiler::Stop() {}
 #endif
+
+ScopedTfLiteProfiler::ScopedTfLiteProfiler(ScopedTfLiteProfiler&& other) =
+    default;
+
+ScopedTfLiteProfiler& ScopedTfLiteProfiler::operator=(
+    ScopedTfLiteProfiler&& other) = default;
 
 // static
 void GraphImpl::CreateAndBuild(

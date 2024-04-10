@@ -26,12 +26,15 @@ class ScopedTfLiteProfiler {
   explicit ScopedTfLiteProfiler(::tflite::Interpreter& interpreter);
   ~ScopedTfLiteProfiler();
 
+  ScopedTfLiteProfiler(ScopedTfLiteProfiler&& other);
+  ScopedTfLiteProfiler& operator=(ScopedTfLiteProfiler&& other);
+
   void Start();
   void Stop();
 
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
  private:
-  ::tflite::profiling::BufferedProfiler profiler_;
+  std::unique_ptr<::tflite::profiling::BufferedProfiler> profiler_;
   raw_ref<::tflite::Interpreter> interpreter_;
 #endif
 };
