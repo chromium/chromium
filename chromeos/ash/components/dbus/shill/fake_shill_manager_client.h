@@ -148,6 +148,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void SetSimulateCheckTetheringReadinessResult(
       FakeShillSimulatedResult tethering_readiness_result,
       const std::string& readiness_status) override;
+  void SetSimulateCreateP2PGroupResult(
+      FakeShillSimulatedResult operation_result,
+      const std::string& result_code) override;
+  void SetSimulateConnectToP2PGroupResult(
+      FakeShillSimulatedResult operation_result,
+      const std::string& result_code) override;
   base::Value::List GetEnabledServiceList() const override;
   void ClearProfiles() override;
   void SetShouldReturnNullProperties(bool value) override;
@@ -231,6 +237,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   FakeShillSimulatedResult simulate_check_tethering_readiness_result_ =
       FakeShillSimulatedResult::kSuccess;
   std::string simulate_tethering_readiness_status_;
+  FakeShillSimulatedResult simulate_create_p2p_group_result_ =
+      FakeShillSimulatedResult::kSuccess;
+  std::string simulate_create_p2p_group_result_code_;
+  FakeShillSimulatedResult simulate_connect_p2p_group_result_ =
+      FakeShillSimulatedResult::kSuccess;
+  std::string simulate_connect_p2p_group_result_code_;
 
   bool return_null_properties_ = false;
   bool wifi_services_visible_by_default_ = true;

@@ -26,7 +26,7 @@ namespace ash {
 ShillManagerClient::CreateP2PGroupParameter::CreateP2PGroupParameter(
     const std::optional<std::string> ssid,
     const std::optional<std::string> passphrase,
-    const std::optional<int> frequency)
+    const std::optional<uint32_t> frequency)
     : ssid(ssid), passphrase(passphrase), frequency(frequency) {}
 
 ShillManagerClient::CreateP2PGroupParameter::~CreateP2PGroupParameter() =
@@ -35,7 +35,7 @@ ShillManagerClient::CreateP2PGroupParameter::~CreateP2PGroupParameter() =
 ShillManagerClient::ConnectP2PGroupParameter::ConnectP2PGroupParameter(
     const std::string ssid,
     const std::string passphrase,
-    const std::optional<int> frequency)
+    const std::optional<uint32_t> frequency)
     : ssid(ssid), passphrase(passphrase), frequency(frequency) {}
 
 ShillManagerClient::ConnectP2PGroupParameter::~ConnectP2PGroupParameter() =
@@ -268,7 +268,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
 
     if (create_group_argument.frequency.has_value()) {
       properties.Set(shill::kP2PGroupInfoFrequencyProperty,
-                     create_group_argument.frequency.value());
+                     static_cast<int>(create_group_argument.frequency.value()));
     }
 
     ShillClientHelper::AppendServiceProperties(&writer, properties);
@@ -291,8 +291,9 @@ class ShillManagerClientImpl : public ShillManagerClient {
                    connect_group_argument.passphrase);
 
     if (connect_group_argument.frequency.has_value()) {
-      properties.Set(shill::kP2PGroupInfoFrequencyProperty,
-                     connect_group_argument.frequency.value());
+      properties.Set(
+          shill::kP2PGroupInfoFrequencyProperty,
+          static_cast<int>(connect_group_argument.frequency.value()));
     }
 
     ShillClientHelper::AppendServiceProperties(&writer, properties);

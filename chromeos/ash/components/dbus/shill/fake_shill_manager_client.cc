@@ -563,20 +563,100 @@ void FakeShillManagerClient::CreateP2PGroup(
     const CreateP2PGroupParameter& create_group_argument,
     base::OnceCallback<void(base::Value::Dict result)> callback,
     ErrorCallback error_callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(error_callback), "Error", "Fake failure"));
-  return;
+  switch (simulate_create_p2p_group_result_) {
+    case FakeShillSimulatedResult::kSuccess: {
+      auto fake_success_result = base::Value::Dict().Set(
+          shill::kP2PResultCode, simulate_create_p2p_group_result_code_);
+      if (simulate_create_p2p_group_result_code_ !=
+          shill::kCreateP2PGroupResultSuccess) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback),
+                                      std::move(fake_success_result)));
+        return;
+      }
+      const int shill_id = 0;
+      fake_success_result.Set(shill::kP2PDeviceShillID, shill_id);
+      auto group_owner_info = base::Value::List().Append(
+          base::Value::Dict()
+              .Set(shill::kP2PGroupInfoShillIDProperty, shill_id)
+              .Set(shill::kP2PGroupInfoInterfaceProperty, "p2p-wlan-0")
+              .Set(shill::kP2PGroupInfoStateProperty,
+                   shill::kP2PGroupInfoStateActive)
+              .Set(shill::kP2PGroupInfoSSIDProperty,
+                   create_group_argument.ssid ? *create_group_argument.ssid
+                                              : "DIRECT-A0")
+              .Set(shill::kP2PGroupInfoPassphraseProperty,
+                   create_group_argument.passphrase
+                       ? *create_group_argument.passphrase
+                       : "direct-passphrase")
+              .Set(shill::kP2PGroupInfoFrequencyProperty, 1000)
+              .Set(shill::kP2PGroupInfoNetworkIDProperty, 1));
+      SetManagerProperty(shill::kP2PGroupInfosProperty,
+                         base::Value(std::move(group_owner_info)));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), std::move(fake_success_result)));
+      return;
+    }
+    case FakeShillSimulatedResult::kFailure:
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(error_callback), "Error", "Fake failure"));
+      return;
+    case FakeShillSimulatedResult::kTimeout:
+      // No callbacks get executed and the caller should eventually timeout.
+      return;
+  }
 }
 
 void FakeShillManagerClient::ConnectToP2PGroup(
     const ConnectP2PGroupParameter& connect_group_argument,
     base::OnceCallback<void(base::Value::Dict result)> callback,
     ErrorCallback error_callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(error_callback), "Error", "Fake failure"));
-  return;
+  switch (simulate_connect_p2p_group_result_) {
+    case FakeShillSimulatedResult::kSuccess: {
+      auto fake_success_result = base::Value::Dict().Set(
+          shill::kP2PResultCode, simulate_connect_p2p_group_result_code_);
+      if (simulate_connect_p2p_group_result_code_ !=
+          shill::kConnectToP2PGroupResultSuccess) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback),
+                                      std::move(fake_success_result)));
+        return;
+      }
+      const int shill_id = 0;
+      fake_success_result.Set(shill::kP2PDeviceShillID, shill_id);
+      auto group_owner_info = base::Value::List().Append(
+          base::Value::Dict()
+              .Set(shill::kP2PClientInfoShillIDProperty, shill_id)
+              .Set(shill::kP2PClientInfoInterfaceProperty, "p2p-wlan-0")
+              .Set(shill::kP2PClientInfoStateProperty,
+                   shill::kP2PClientInfoStateConnected)
+              .Set(shill::kP2PClientInfoSSIDProperty,
+                   connect_group_argument.ssid)
+              .Set(shill::kP2PClientInfoPassphraseProperty,
+                   connect_group_argument.passphrase)
+              .Set(shill::kP2PClientInfoFrequencyProperty,
+                   connect_group_argument.frequency
+                       ? static_cast<int>(*connect_group_argument.frequency)
+                       : 1000)
+              .Set(shill::kP2PClientInfoNetworkIDProperty, 1));
+      SetManagerProperty(shill::kP2PClientInfosProperty,
+                         base::Value(std::move(group_owner_info)));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), std::move(fake_success_result)));
+      return;
+    }
+    case FakeShillSimulatedResult::kFailure:
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(error_callback), "Error", "Fake failure"));
+      return;
+    case FakeShillSimulatedResult::kTimeout:
+      // No callbacks get executed and the caller should eventually timeout.
+      return;
+  }
 }
 
 void FakeShillManagerClient::DestroyP2PGroup(
@@ -906,6 +986,25 @@ void FakeShillManagerClient::SetSimulateCheckTetheringReadinessResult(
   if (simulate_check_tethering_readiness_result_ ==
       FakeShillSimulatedResult::kSuccess) {
     simulate_tethering_readiness_status_ = readiness_status;
+  }
+}
+
+void FakeShillManagerClient::SetSimulateCreateP2PGroupResult(
+    FakeShillSimulatedResult operation_result,
+    const std::string& result_code) {
+  simulate_create_p2p_group_result_ = operation_result;
+  if (simulate_create_p2p_group_result_ == FakeShillSimulatedResult::kSuccess) {
+    simulate_create_p2p_group_result_code_ = result_code;
+  }
+}
+
+void FakeShillManagerClient::SetSimulateConnectToP2PGroupResult(
+    FakeShillSimulatedResult operation_result,
+    const std::string& result_code) {
+  simulate_connect_p2p_group_result_ = operation_result;
+  if (simulate_connect_p2p_group_result_ ==
+      FakeShillSimulatedResult::kSuccess) {
+    simulate_connect_p2p_group_result_code_ = result_code;
   }
 }
 

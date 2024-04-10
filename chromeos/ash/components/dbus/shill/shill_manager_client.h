@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
   struct CreateP2PGroupParameter {
     CreateP2PGroupParameter(const std::optional<std::string> ssid,
                             const std::optional<std::string> passphrase,
-                            const std::optional<int> frequency);
+                            const std::optional<uint32_t> frequency);
 
     ~CreateP2PGroupParameter();
 
@@ -62,13 +62,13 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     std::optional<std::string> passphrase;
 
     // P2P group's frequency.
-    std::optional<int> frequency;
+    std::optional<uint32_t> frequency;
   };
 
   struct ConnectP2PGroupParameter {
     ConnectP2PGroupParameter(const std::string ssid,
                              const std::string passphrase,
-                             const std::optional<int> frequency);
+                             const std::optional<uint32_t> frequency);
     ~ConnectP2PGroupParameter();
 
     // SSID of the group to join.
@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     std::string passphrase;
 
     // Frequency of the group.
-    std::optional<int> frequency;
+    std::optional<uint32_t> frequency;
   };
 
   // Interface for setting up devices, services, and technologies for testing.
@@ -171,6 +171,18 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     virtual void SetSimulateCheckTetheringReadinessResult(
         FakeShillSimulatedResult check_readiness_result,
         const std::string& readiness_status) = 0;
+
+    // Makes CreateP2PGroup succeed, fail, or timeout and simulate the result
+    // code if it succeeds.
+    virtual void SetSimulateCreateP2PGroupResult(
+        FakeShillSimulatedResult operation_result,
+        const std::string& result_code) = 0;
+
+    // Makes ConnectToP2PGroup succeed, fail, or timeout and simulate the result
+    // code if it succeeds.
+    virtual void SetSimulateConnectToP2PGroupResult(
+        FakeShillSimulatedResult operation_result,
+        const std::string& result_code) = 0;
 
     // Clears profile list.
     virtual void ClearProfiles() = 0;
