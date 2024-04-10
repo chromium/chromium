@@ -322,6 +322,11 @@ class VIEWS_EXPORT WidgetDelegate
   // be cycled through with keyboard focus.
   virtual void GetAccessiblePanes(std::vector<View*>* panes) {}
 
+  // Called when the widget wants to resize itself.
+  // Default origin is the widget origin.
+  // Default size is the ContentsView's PreferredSize.
+  virtual gfx::Rect GetDesiredWidgetBounds();
+
   // Setters for data parameters of the WidgetDelegate. If you use these
   // setters, there is no need to override the corresponding virtual getters.
   void SetAccessibleWindowRole(ax::mojom::Role role);

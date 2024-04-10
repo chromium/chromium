@@ -948,6 +948,20 @@ ax::mojom::Role BubbleDialogDelegate::GetAccessibleWindowRole() {
   return ax::mojom::Role::kAlertDialog;
 }
 
+gfx::Rect BubbleDialogDelegate::GetDesiredWidgetBounds() {
+  gfx::Rect bubble_bounds = GetBubbleBounds();
+
+#if BUILDFLAG(IS_MAC)
+  // GetBubbleBounds() doesn't take the Mac NativeWindow's style mask into
+  // account, so we need to adjust the size.
+  gfx::Size actual_size =
+      GetWindowSizeForClientSize(GetWidget(), bubble_bounds.size());
+  bubble_bounds.set_size(actual_size);
+#endif
+
+  return bubble_bounds;
+}
+
 gfx::Size BubbleDialogDelegateView::GetMinimumSize() const {
   // Note that although BubbleDialogFrameView will never invoke this, a subclass
   // may override CreateNonClientFrameView() to provide a NonClientFrameView
@@ -1010,16 +1024,7 @@ void BubbleDialogDelegate::SetAnchorRect(const gfx::Rect& rect) {
 }
 
 void BubbleDialogDelegate::SizeToContents() {
-  gfx::Rect bubble_bounds = GetBubbleBounds();
-#if BUILDFLAG(IS_MAC)
-  // GetBubbleBounds() doesn't take the Mac NativeWindow's style mask into
-  // account, so we need to adjust the size.
-  gfx::Size actual_size =
-      GetWindowSizeForClientSize(GetWidget(), bubble_bounds.size());
-  bubble_bounds.set_size(actual_size);
-#endif
-
-  GetWidget()->SetBounds(bubble_bounds);
+  GetWidget()->SetBounds(GetDesiredWidgetBounds());
 }
 
 std::u16string BubbleDialogDelegate::GetSubtitle() const {

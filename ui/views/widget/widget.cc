@@ -1142,11 +1142,12 @@ void Widget::OnRootViewLayoutInvalidated() {
   }
 
   // Check if the widget needs to be auto resized based on its content's size.
-  if (is_autosized() && IsNativeWidgetInitialized() && GetContentsView()) {
-    if (gfx::Size frame_size =
-            GetContentsView()->GetPreferredSize(SizeBounds());
-        !frame_size.IsEmpty() && frame_size != GetSize()) {
-      SetSize(frame_size);
+  if (is_autosized() && IsNativeWidgetInitialized() && GetContentsView() &&
+      widget_delegate_) {
+    if (gfx::Rect desired_bounds = widget_delegate_->GetDesiredWidgetBounds();
+        !desired_bounds.IsEmpty() &&
+        desired_bounds != GetWindowBoundsInScreen()) {
+      SetBounds(desired_bounds);
       return;
     }
   }

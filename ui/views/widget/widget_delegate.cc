@@ -506,6 +506,13 @@ void WidgetDelegate::SetContentsViewImpl(std::unique_ptr<View> contents) {
   unowned_contents_view_ = owned_contents_view_.get();
 }
 
+gfx::Rect WidgetDelegate::GetDesiredWidgetBounds() {
+  DCHECK(GetWidget());
+
+  return gfx::Rect(GetWidget()->GetWindowBoundsInScreen().origin(),
+                   GetWidget()->GetContentsView()->GetPreferredSize({}));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WidgetDelegateView:
 
