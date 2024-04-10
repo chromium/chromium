@@ -11,10 +11,11 @@
 #include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
-#include "remoting/base/logging.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/future.h"
 
 namespace {
@@ -127,7 +128,7 @@ void X11CrtcResizer::DisableCrtc(x11::RandR::Crtc crtc) {
 
 void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
                                        x11::RandR::Mode mode,
-                                       const webrtc::DesktopSize& new_size) {
+                                       const gfx::Size& new_size) {
   updated_crtcs_.insert(crtc);
 
   // Find |crtc| in |active_crtcs_| and adjust its mode and size.
@@ -144,7 +145,7 @@ void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
 
 void X11CrtcResizer::UpdateActiveCrtc(x11::RandR::Crtc crtc,
                                       x11::RandR::Mode mode,
-                                      const webrtc::DesktopRect& new_rect) {
+                                      const gfx::Rect& new_rect) {
   updated_crtcs_.insert(crtc);
 
   // Find |crtc| in |active_crtcs_| and adjust its mode and size.
@@ -155,8 +156,8 @@ void X11CrtcResizer::UpdateActiveCrtc(x11::RandR::Crtc crtc,
   DCHECK(iter != active_crtcs_.end());
 
   iter->mode = mode;
-  iter->x = new_rect.left();
-  iter->y = new_rect.top();
+  iter->x = new_rect.x();
+  iter->y = new_rect.y();
   iter->width = new_rect.width();
   iter->height = new_rect.height();
 }
@@ -165,13 +166,13 @@ void X11CrtcResizer::AddActiveCrtc(
     x11::RandR::Crtc crtc,
     x11::RandR::Mode mode,
     const std::vector<x11::RandR::Output>& outputs,
-    const webrtc::DesktopRect& new_rect) {
+    const gfx::Rect& new_rect) {
   // |crtc| is not active so it must not be in |active_crtcs_|.
   DCHECK(base::ranges::find(active_crtcs_, crtc, &CrtcInfo::crtc) ==
          active_crtcs_.end());
 
-  active_crtcs_.emplace_back(crtc, new_rect.left(), new_rect.top(),
-                             new_rect.width(), new_rect.height(), mode,
+  active_crtcs_.emplace_back(crtc, new_rect.x(), new_rect.y(), new_rect.width(),
+                             new_rect.height(), mode,
                              x11::RandR::Rotation::Rotate_0, outputs);
   updated_crtcs_.insert(crtc);
 }
@@ -183,7 +184,7 @@ void X11CrtcResizer::RemoveActiveCrtc(x11::RandR::Crtc crtc) {
 }
 
 void X11CrtcResizer::RelayoutCrtcs(x11::RandR::Crtc crtc_to_resize,
-                                   const webrtc::DesktopSize& new_size) {
+                                   const gfx::Size& new_size) {
   if (LayoutIsVertical()) {
     PackVertically(new_size, crtc_to_resize);
   } else {
@@ -202,14 +203,14 @@ void X11CrtcResizer::DisableChangedCrtcs() {
 }
 
 void X11CrtcResizer::NormalizeCrtcs() {
-  webrtc::DesktopRect bounding_box;
+  gfx::Rect bounding_box;
   for (const auto& crtc : active_crtcs_) {
-    bounding_box.UnionWith(
-        webrtc::DesktopRect::MakeXYWH(crtc.x, crtc.y, crtc.width, crtc.height));
+    bounding_box.Union(gfx::Rect(crtc.x, crtc.y, crtc.width, crtc.height));
   }
   bounding_box_size_ = bounding_box.size();
-  webrtc::DesktopVector adjustment = -bounding_box.top_left();
-  if (adjustment.is_zero()) {
+  gfx::Vector2d adjustment =
+      gfx::Vector2d(-bounding_box.origin().x(), -bounding_box.origin().y());
+  if (adjustment.IsZero()) {
     return;
   }
   for (auto& crtc : active_crtcs_) {
@@ -256,26 +257,27 @@ void X11CrtcResizer::MoveApplicationWindows() {
         continue;
       }
 
-      auto old_rect = webrtc::DesktopRect::MakeXYWH(
-          crtc_info.old_x, crtc_info.old_y, crtc_info.width, crtc_info.height);
-      webrtc::DesktopVector window_top_left(geometry_response->x,
-                                            geometry_response->y);
-      if (!old_rect.Contains(window_top_left)) {
+      auto old_rect = gfx::Rect(crtc_info.old_x, crtc_info.old_y,
+                                crtc_info.width, crtc_info.height);
+      gfx::Vector2d window_top_left(geometry_response->x, geometry_response->y);
+      if (!old_rect.Contains(
+              gfx::Point(window_top_left.x(), window_top_left.y()))) {
         continue;
       }
 
-      webrtc::DesktopVector adjustment(crtc_info.x - crtc_info.old_x,
-                                       crtc_info.y - crtc_info.old_y);
-      window_top_left = window_top_left.add(adjustment);
+      gfx::Vector2d adjustment(crtc_info.x - crtc_info.old_x,
+                               crtc_info.y - crtc_info.old_y);
+      window_top_left = window_top_left + adjustment;
 
-      MoveWindow(window, *attributes_response.reply, window_top_left);
+      MoveWindow(window, *attributes_response.reply,
+                 gfx::Point(window_top_left.x(), window_top_left.y()));
       break;
     }
   }
 }
 
-webrtc::DesktopSize X11CrtcResizer::GetBoundingBox() const {
-  DCHECK(!bounding_box_size_.is_empty());
+gfx::Size X11CrtcResizer::GetBoundingBox() const {
+  DCHECK(!bounding_box_size_.IsEmpty());
   return bounding_box_size_;
 }
 
@@ -307,11 +309,11 @@ void X11CrtcResizer::SetCrtcsForTest(
   }
 }
 
-std::vector<webrtc::DesktopRect> X11CrtcResizer::GetCrtcsForTest() const {
-  std::vector<webrtc::DesktopRect> result;
+std::vector<gfx::Rect> X11CrtcResizer::GetCrtcsForTest() const {
+  std::vector<gfx::Rect> result;
   for (const auto& crtc_info : active_crtcs_) {
-    result.push_back(webrtc::DesktopRect::MakeXYWH(
-        crtc_info.x, crtc_info.y, crtc_info.width, crtc_info.height));
+    result.emplace_back(crtc_info.x, crtc_info.y, crtc_info.width,
+                        crtc_info.height);
   }
   return result;
 }
@@ -353,7 +355,7 @@ bool X11CrtcResizer::LayoutIsVertical() const {
   return right1 > left2 && right2 > left1;
 }
 
-void X11CrtcResizer::PackVertically(const webrtc::DesktopSize& new_size,
+void X11CrtcResizer::PackVertically(const gfx::Size& new_size,
                                     x11::RandR::Crtc resized_crtc) {
   // Before applying the new size, test for any current alignments to
   // decide which alignment should be preserved, if any.
@@ -426,9 +428,9 @@ void X11CrtcResizer::PackVertically(const webrtc::DesktopSize& new_size,
   }
 }
 
-void X11CrtcResizer::PackHorizontally(const webrtc::DesktopSize& new_size,
+void X11CrtcResizer::PackHorizontally(const gfx::Size& new_size,
                                       x11::RandR::Crtc resized_crtc) {
-  webrtc::DesktopSize new_size_transposed(new_size.height(), new_size.width());
+  gfx::Size new_size_transposed(new_size.height(), new_size.width());
   Transpose();
   PackVertically(new_size_transposed, resized_crtc);
   Transpose();
@@ -443,7 +445,7 @@ void X11CrtcResizer::Transpose() {
 
 void X11CrtcResizer::MoveWindow(x11::Window window,
                                 const x11::GetWindowAttributesReply& attributes,
-                                webrtc::DesktopVector top_left) {
+                                gfx::Point top_left) {
   if (!attributes.override_redirect) {
     // Try to locate the original window which was re-parented by the
     // window-manager.

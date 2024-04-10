@@ -11,21 +11,19 @@
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using webrtc::DesktopRect;
 using Crtc = x11::RandR::Crtc;
 using Mode = x11::RandR::Mode;
 
 namespace {
 
-std::string PrettyPrint(const DesktopRect& rect) {
+std::string PrettyPrint(const gfx::Rect& rect) {
   // Example output: 10x20+30-40
   return base::StringPrintf("%" PRId32 "x%" PRId32 "%+" PRId32 "%+" PRId32,
-                            rect.width(), rect.height(), rect.left(),
-                            rect.top());
+                            rect.width(), rect.height(), rect.x(), rect.y());
 }
 
-void ExpectEqual(const DesktopRect& rect1, const DesktopRect& rect2) {
-  if (!rect1.equals(rect2)) {
+void ExpectEqual(const gfx::Rect& rect1, const gfx::Rect& rect2) {
+  if (rect1 != (rect2)) {
     ADD_FAILURE() << "Expected equality of [" << PrettyPrint(rect1) << "] and ["
                   << PrettyPrint(rect2) << "]";
   }
@@ -45,8 +43,8 @@ TEST(X11CrtcResizerTest, ShiftToMakeRoomHorizontally) {
   resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {300, 200});
 
   auto result = resizer.GetCrtcsForTest();
-  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 300, 200));
-  ExpectEqual(result[1], DesktopRect::MakeXYWH(300, 0, 100, 100));
+  ExpectEqual(result[0], gfx::Rect(0, 0, 300, 200));
+  ExpectEqual(result[1], gfx::Rect(300, 0, 100, 100));
 }
 
 TEST(X11CrtcResizerTest, ShiftToMakeRoomVertically) {
@@ -59,8 +57,8 @@ TEST(X11CrtcResizerTest, ShiftToMakeRoomVertically) {
   resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {300, 200});
 
   auto result = resizer.GetCrtcsForTest();
-  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 300, 200));
-  ExpectEqual(result[1], DesktopRect::MakeXYWH(0, 200, 100, 100));
+  ExpectEqual(result[0], gfx::Rect(0, 0, 300, 200));
+  ExpectEqual(result[1], gfx::Rect(0, 200, 100, 100));
 }
 
 TEST(X11CrtcResizerTest, HorizontalLayoutPreferred) {
@@ -76,8 +74,8 @@ TEST(X11CrtcResizerTest, HorizontalLayoutPreferred) {
   auto result = resizer.GetCrtcsForTest();
   // 1st monitor should be moved up to the origin and resized. 2nd monitor
   // should be placed to its right.
-  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 60, 60));
-  ExpectEqual(result[1], DesktopRect::MakeXYWH(60, 0, 50, 50));
+  ExpectEqual(result[0], gfx::Rect(0, 0, 60, 60));
+  ExpectEqual(result[1], gfx::Rect(60, 0, 50, 50));
 }
 
 TEST(X11CrtcResizerTest, RightAlignmentKept) {
@@ -90,8 +88,8 @@ TEST(X11CrtcResizerTest, RightAlignmentKept) {
   resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {200, 200});
 
   auto result = resizer.GetCrtcsForTest();
-  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 200, 200));
-  ExpectEqual(result[1], DesktopRect::MakeXYWH(100, 200, 100, 100));
+  ExpectEqual(result[0], gfx::Rect(0, 0, 200, 200));
+  ExpectEqual(result[1], gfx::Rect(100, 200, 100, 100));
 }
 
 TEST(X11CrtcResizerTest, BottomAlignmentKept) {
@@ -104,8 +102,8 @@ TEST(X11CrtcResizerTest, BottomAlignmentKept) {
   resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {200, 200});
 
   auto result = resizer.GetCrtcsForTest();
-  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 200, 200));
-  ExpectEqual(result[1], DesktopRect::MakeXYWH(200, 100, 100, 100));
+  ExpectEqual(result[0], gfx::Rect(0, 0, 200, 200));
+  ExpectEqual(result[1], gfx::Rect(200, 100, 100, 100));
 }
 
 TEST(X11CrtcResizerTest, MiddleAlignmentKept) {
@@ -119,8 +117,8 @@ TEST(X11CrtcResizerTest, MiddleAlignmentKept) {
   resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {400, 100});
 
   auto result = resizer.GetCrtcsForTest();
-  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 400, 100));
-  ExpectEqual(result[1], DesktopRect::MakeXYWH(150, 100, 100, 100));
+  ExpectEqual(result[0], gfx::Rect(0, 0, 400, 100));
+  ExpectEqual(result[1], gfx::Rect(150, 100, 100, 100));
 }
 
 }  // namespace remoting

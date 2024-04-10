@@ -17,8 +17,8 @@ DisplayLayoutDiff::DisplayLayoutDiff(DisplayLayoutDiff&&) = default;
 DisplayLayoutDiff::~DisplayLayoutDiff() = default;
 
 DisplayLayoutDiff CalculateDisplayLayoutDiff(
-    const std::vector<VideoTrackLayoutWithContext>& current_displays,
-    const protocol::VideoLayout& new_layout) {
+    const std::vector<DesktopLayoutWithContext>& current_displays,
+    const DesktopLayoutSet& new_layout) {
   DisplayLayoutDiff diff;
 
   // A list where the index is the index of |current_displays| and the value
@@ -26,17 +26,16 @@ DisplayLayoutDiff CalculateDisplayLayoutDiff(
   // deletion of displays.
   std::vector<bool> current_display_found(current_displays.size(), false);
 
-  for (const protocol::VideoTrackLayout& track_layout :
-       new_layout.video_track()) {
-    if (!track_layout.has_screen_id()) {
-      diff.new_displays.push_back(track_layout);
+  for (const DesktopLayout& track_layout : new_layout.layouts) {
+    if (!track_layout.screen_id().has_value()) {
+      diff.new_displays.layouts.push_back(track_layout);
       continue;
     }
     auto current_display_it = base::ranges::find(
         current_displays, track_layout.screen_id(),
         [](const auto& display) { return display.layout.screen_id(); });
     if (current_display_it == current_displays.end()) {
-      LOG(ERROR) << "Ignoring unknown screen_id " << track_layout.screen_id();
+      LOG(ERROR) << "Ignoring unknown screen_id " << *track_layout.screen_id();
       continue;
     }
     current_display_found[current_display_it - current_displays.begin()] = true;
@@ -44,14 +43,14 @@ DisplayLayoutDiff CalculateDisplayLayoutDiff(
         track_layout.position_y() != current_display_it->layout.position_y() ||
         track_layout.width() != current_display_it->layout.width() ||
         track_layout.height() != current_display_it->layout.height() ||
-        track_layout.x_dpi() != current_display_it->layout.x_dpi() ||
-        track_layout.y_dpi() != current_display_it->layout.y_dpi()) {
-      VLOG(1) << "Video layout for screen_id " << track_layout.screen_id()
+        track_layout.dpi().x() != current_display_it->layout.dpi().x() ||
+        track_layout.dpi().y() != current_display_it->layout.dpi().y()) {
+      VLOG(1) << "Video layout for screen_id " << *track_layout.screen_id()
               << " has been changed.";
-      diff.updated_displays.push_back(
-          {.layout = track_layout, .context = current_display_it->context});
+      diff.updated_displays.emplace_back(track_layout,
+                                         current_display_it->context);
     } else {
-      VLOG(1) << "Video layout for screen_id " << track_layout.screen_id()
+      VLOG(1) << "Video layout for screen_id " << *track_layout.screen_id()
               << " has not been changed.";
     }
   }

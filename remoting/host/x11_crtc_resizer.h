@@ -9,7 +9,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/x/randr.h"
 
 namespace remoting {
@@ -46,7 +47,7 @@ class X11CrtcResizer {
   // This method calls NormalizeCrtcs() so you don't need to call it manually.
   void UpdateActiveCrtcs(x11::RandR::Crtc crtc,
                          x11::RandR::Mode mode,
-                         const webrtc::DesktopSize& new_size);
+                         const gfx::Size& new_size);
 
   // This operates only on |active_crtcs_| without making any X server calls.
   // It sets the new mode, offsets and width/height for the given CRTC. Unlike
@@ -54,14 +55,14 @@ class X11CrtcResizer {
   // overlaps.
   void UpdateActiveCrtc(x11::RandR::Crtc crtc,
                         x11::RandR::Mode mode,
-                        const webrtc::DesktopRect& new_rect);
+                        const gfx::Rect& new_rect);
 
   // Adds a new CRTC to |active_crtcs_|. This method does not make any X server
   // calls, and it does not change xy-offsets of any existing CRTCs.
   void AddActiveCrtc(x11::RandR::Crtc crtc,
                      x11::RandR::Mode mode,
                      const std::vector<x11::RandR::Output>& outputs,
-                     const webrtc::DesktopRect& new_rect);
+                     const gfx::Rect& new_rect);
 
   // Removes a CRTC from |active_crtcs_|. This method does not make any X server
   // calls.
@@ -89,7 +90,7 @@ class X11CrtcResizer {
   // NormalizeCrtcs() needs to be called first if (Update|Add|Remove)ActiveCrtc
   // has been called (not including UpdateActiveCrtcs which takes a DesktopSize
   // instead of DesktopRect).
-  webrtc::DesktopSize GetBoundingBox() const;
+  gfx::Size GetBoundingBox() const;
 
   // Applies any changed CRTCs back to the X server. This will re-enable any
   // outputs/CRTCs that were disabled.
@@ -101,7 +102,7 @@ class X11CrtcResizer {
   void SetCrtcsForTest(std::vector<x11::RandR::GetCrtcInfoReply> crtcs);
 
   // Returns the stored CRTCs as a list of rectangles.
-  std::vector<webrtc::DesktopRect> GetCrtcsForTest() const;
+  std::vector<gfx::Rect> GetCrtcsForTest() const;
 
  private:
   // Information for an active CRTC, from RRGetCrtcInfo response. When
@@ -153,7 +154,7 @@ class X11CrtcResizer {
   // |new_size| is the new size of |crtc_to_resize|. This method is responsible
   // for setting the new width/height values of the CRTC.
   void RelayoutCrtcs(x11::RandR::Crtc crtc_to_resize,
-                     const webrtc::DesktopSize& new_size);
+                     const gfx::Size& new_size);
 
   // Returns true if the CRTCs appear to be roughly laid out vertically.
   bool LayoutIsVertical() const;
@@ -163,11 +164,10 @@ class X11CrtcResizer {
   // preserved. If they are not all right-aligned, this will position the
   // monitors against the left edge of the desktop.
   // On return, the CRTC being resized will have the new width/height.
-  void PackVertically(const webrtc::DesktopSize& new_size,
-                      x11::RandR::Crtc resized_crtc);
+  void PackVertically(const gfx::Size& new_size, x11::RandR::Crtc resized_crtc);
 
   // Behaves similarly, but stacks the CRTCs horizontally.
-  void PackHorizontally(const webrtc::DesktopSize& new_size,
+  void PackHorizontally(const gfx::Size& new_size,
                         x11::RandR::Crtc resized_crtc);
 
   // Transposes all the CRTCs by swapping x and y coordinates. This allows
@@ -184,7 +184,7 @@ class X11CrtcResizer {
   // |top_left| is the requested top-left corner of the new window position.
   void MoveWindow(x11::Window window,
                   const x11::GetWindowAttributesReply& attributes,
-                  webrtc::DesktopVector top_left);
+                  gfx::Point top_left);
 
   // Helper method to locate an application window which was re-parented by the
   // window-manager. It looks at |window| and its children recursively, in
@@ -212,9 +212,9 @@ class X11CrtcResizer {
   base::flat_set<x11::RandR::Crtc> updated_crtcs_;
 
   // Bounding-box size computed by NormalizeCrtcs().
-  webrtc::DesktopSize bounding_box_size_{};
+  gfx::Size bounding_box_size_;
 
-  x11::Atom wm_state_atom_{};
+  x11::Atom wm_state_atom_;
 };
 
 }  // namespace remoting

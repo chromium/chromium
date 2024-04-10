@@ -8,14 +8,14 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "remoting/proto/control.pb.h"
+#include "remoting/host/desktop_geometry.h"
 
 namespace remoting {
 
 // Struct that allows passing in the display layout with a context, usually a
 // platform-specific representation of the display.
-struct VideoTrackLayoutWithContext {
-  protocol::VideoTrackLayout layout;
+struct DesktopLayoutWithContext {
+  DesktopLayout layout;
   raw_ptr<void> context;
 };
 
@@ -25,16 +25,16 @@ struct DisplayLayoutDiff {
   DisplayLayoutDiff(DisplayLayoutDiff&&);
   ~DisplayLayoutDiff();
 
-  std::vector<protocol::VideoTrackLayout> new_displays;
-  std::vector<VideoTrackLayoutWithContext> updated_displays;
-  std::vector<VideoTrackLayoutWithContext> removed_displays;
+  DesktopLayoutSet new_displays;
+  std::vector<DesktopLayoutWithContext> updated_displays;
+  std::vector<DesktopLayoutWithContext> removed_displays;
 };
 
 // Calculates the difference between the current display layout and the new
 // display layout. Displays are matched using the screen ID.
 DisplayLayoutDiff CalculateDisplayLayoutDiff(
-    const std::vector<VideoTrackLayoutWithContext>& current_displays,
-    const protocol::VideoLayout& new_layout);
+    const std::vector<DesktopLayoutWithContext>& current_displays,
+    const DesktopLayoutSet& new_layout);
 
 }  // namespace remoting
 

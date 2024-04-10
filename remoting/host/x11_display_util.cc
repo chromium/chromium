@@ -7,8 +7,7 @@
 #include <stdint.h>
 
 #include "base/numerics/safe_conversions.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace remoting {
 
@@ -24,24 +23,17 @@ int CalculateDpi(uint16_t length_in_pixels, uint32_t length_in_mm) {
   return base::ClampRound(pixels_per_inch);
 }
 
-webrtc::DesktopVector GetMonitorDpi(const x11::RandR::MonitorInfo& monitor) {
-  return webrtc::DesktopVector(
+gfx::Vector2d GetMonitorDpi(const x11::RandR::MonitorInfo& monitor) {
+  return gfx::Vector2d(
       CalculateDpi(monitor.width, monitor.width_in_millimeters),
       CalculateDpi(monitor.height, monitor.height_in_millimeters));
 }
 
-protocol::VideoTrackLayout ToVideoTrackLayout(
-    const x11::RandR::MonitorInfo& monitor) {
-  protocol::VideoTrackLayout layout;
-  layout.set_screen_id(static_cast<webrtc::ScreenId>(monitor.name));
-  layout.set_position_x(monitor.x);
-  layout.set_position_y(monitor.y);
-  layout.set_width(monitor.width);
-  layout.set_height(monitor.height);
-  webrtc::DesktopVector dpi = GetMonitorDpi(monitor);
-  layout.set_x_dpi(dpi.x());
-  layout.set_y_dpi(dpi.y());
-  return layout;
+DesktopLayout ToVideoTrackLayout(const x11::RandR::MonitorInfo& monitor) {
+  return DesktopLayout(
+      static_cast<DesktopScreenId>(monitor.name),
+      gfx::Rect(monitor.x, monitor.y, monitor.width, monitor.height),
+      GetMonitorDpi(monitor));
 }
 
 }  // namespace remoting

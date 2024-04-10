@@ -22,12 +22,15 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_display_layout_util.h"
+#include "remoting/host/desktop_geometry.h"
 #include "remoting/host/linux/x11_util.h"
 #include "remoting/host/x11_crtc_resizer.h"
 #include "remoting/host/x11_display_util.h"
 #include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
 
@@ -207,9 +210,10 @@ ScreenResolution DesktopResizerX11::GetCurrentResolution(
       if (static_cast<webrtc::ScreenId>(monitor.name) != screen_id) {
         continue;
       }
+      gfx::Vector2d dpi = GetMonitorDpi(monitor);
       return ScreenResolution(
           webrtc::DesktopSize(monitor.width, monitor.height),
-          GetMonitorDpi(monitor));
+          webrtc::DesktopVector(dpi.x(), dpi.y()));
     }
   }
 
@@ -324,7 +328,7 @@ void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
     return;
   }
 
-  std::vector<VideoTrackLayoutWithContext> current_displays;
+  std::vector<DesktopLayoutWithContext> current_displays;
   for (auto& monitor : reply->monitors) {
     // This implementation only supports resizing synthesized Monitors which
     // automatically track their Outputs.
@@ -335,18 +339,30 @@ void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
           {.layout = ToVideoTrackLayout(monitor), .context = &monitor});
     }
   }
+
+  // Convert VideoLayout to DesktopLayoutSet.
+  DesktopLayoutSet desktop_layout;
+  for (const auto& video_track : layout.video_track()) {
+    desktop_layout.layouts.emplace_back(
+        video_track.screen_id(),
+        gfx::Rect(video_track.position_x(), video_track.position_y(),
+                  video_track.width(), video_track.height()),
+        gfx::Vector2d(video_track.x_dpi(), video_track.y_dpi()));
+  }
   // TODO(yuweih): Verify that the layout is valid, e.g. no overlaps or gaps
   // between displays.
-  DisplayLayoutDiff diff = CalculateDisplayLayoutDiff(current_displays, layout);
+  DisplayLayoutDiff diff =
+      CalculateDisplayLayoutDiff(current_displays, desktop_layout);
 
   X11CrtcResizer resizer(resources_.get(), connection_);
   resizer.FetchActiveCrtcs();
 
   // Add displays
-  if (!diff.new_displays.empty()) {
+  const std::vector<DesktopLayout>& new_layouts = diff.new_displays.layouts;
+  if (!new_layouts.empty()) {
     auto outputs = GetDisabledOutputs();
     size_t i = 0u;
-    for (; i < outputs.size() && i < diff.new_displays.size(); i++) {
+    for (; i < outputs.size() && i < new_layouts.size(); i++) {
       auto& output_pair = outputs[i];
       auto output = output_pair.first;
       auto& output_info = output_pair.second;
@@ -361,7 +377,7 @@ void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
         continue;
       }
       auto crtc = output_info.crtcs.front();
-      auto track_layout = diff.new_displays[i];
+      auto track_layout = new_layouts[i];
       // Note that this has a weird behavior in GNOME, such that, if |output| is
       // "disconnected", creating the mode somehow resizes all existing displays
       // to 1024x768. Once the output is successfully enabled, it will remain
@@ -377,14 +393,13 @@ void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
       }
       resizer.AddActiveCrtc(
           crtc, mode, {output},
-          webrtc::DesktopRect::MakeXYWH(
-              track_layout.position_x(), track_layout.position_y(),
-              track_layout.width(), track_layout.height()));
+          gfx::Rect(track_layout.position_x(), track_layout.position_y(),
+                    track_layout.width(), track_layout.height()));
       HOST_LOG << "Added display with crtc: " << base::to_underlying(crtc)
                << ", output: " << base::to_underlying(output);
     }
-    if (i < diff.new_displays.size()) {
-      LOG(WARNING) << "Failed to create " << (diff.new_displays.size() - i)
+    if (i < new_layouts.size()) {
+      LOG(WARNING) << "Failed to create " << (new_layouts.size() - i)
                    << " display(s) due to insufficient resources.";
     }
   }
@@ -409,11 +424,10 @@ void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
     }
     resizer.UpdateActiveCrtc(
         crtc, mode,
-        webrtc::DesktopRect::MakeXYWH(
-            track_layout.position_x(), track_layout.position_y(),
-            track_layout.width(), track_layout.height()));
+        gfx::Rect(track_layout.position_x(), track_layout.position_y(),
+                  track_layout.width(), track_layout.height()));
     HOST_LOG << "Updated display with screen ID: "
-             << updated_display.layout.screen_id();
+             << updated_display.layout.screen_id().value_or(-1);
   }
 
   // Remove displays
@@ -428,7 +442,7 @@ void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
     resizer.RemoveActiveCrtc(crtc);
     DeleteMode(output, GetModeNameForOutput(output));
     HOST_LOG << "Removed display with screen ID: "
-             << removed_display.layout.screen_id();
+             << removed_display.layout.screen_id().value_or(-1);
   }
 
   resizer.NormalizeCrtcs();
@@ -474,7 +488,9 @@ void DesktopResizerX11::SetResolutionForOutput(
   }
 
   // Update |active_crtcs_| with new sizes and offsets.
-  resizer.UpdateActiveCrtcs(crtc, mode, resolution.dimensions());
+  resizer.UpdateActiveCrtcs(crtc, mode,
+                            gfx::Size(resolution.dimensions().width(),
+                                      resolution.dimensions().height()));
   UpdateRootWindow(resizer);
 
   webrtc::DesktopSize size_mm = CalculateSizeInMmForGnome(resolution);

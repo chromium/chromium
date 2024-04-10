@@ -299,6 +299,8 @@ static_library("common") {
     "desktop_display_info_monitor.h",
     "desktop_display_layout_util.cc",
     "desktop_display_layout_util.h",
+    "desktop_geometry.cc",
+    "desktop_geometry.h",
     "desktop_process.cc",
     "desktop_process.h",
     "desktop_resizer.h",
