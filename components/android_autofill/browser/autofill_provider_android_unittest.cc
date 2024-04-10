@@ -554,7 +554,7 @@ TEST_F(AutofillProviderAndroidTest, OnTextFieldDidChange) {
   // Simulate a value change.
   EXPECT_CALL(provider_bridge(),
               OnFormFieldDidChange(EqualsFieldInfo(/*index=*/1)));
-  form.fields[1].value += u"x";
+  form.fields[1].value = form.fields[1].value + u"x";
   android_autofill_manager().SimulateOnTextFieldDidChange(form, form.fields[1]);
   // The `FormDataAndroid` object owned by the provider is also updated.
   ASSERT_TRUE(test_api(autofill_provider()).form());
@@ -578,7 +578,7 @@ TEST_F(AutofillProviderAndroidTest, OnTextFieldDidChangeInUnrelatedForm) {
 
   // Simulate a value change in a different form.
   EXPECT_CALL(provider_bridge(), OnFormFieldDidChange).Times(0);
-  form2.fields[1].value += u"x";
+  form2.fields[1].value = form2.fields[1].value + u"x";
   android_autofill_manager().SimulateOnTextFieldDidChange(form2,
                                                           form2.fields[1]);
 }
