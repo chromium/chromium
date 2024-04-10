@@ -308,11 +308,12 @@ const Element* GetPositionAnchorElement(
 }
 
 // Updates `node`'s associated `PaintLayer` for `position-visibility`. See:
-// https://github.com/w3c/csswg-drafts/issues/7758. The values of `no-overflow`
-// and `anchors-valid` are computed and directly update the `PaintLayer` in this
-// function. The remaining value of `anchors-visible` is computed via an
-// intersection observer set up in this function, and the `PaintLayer` is
-// updated later during the post-layout intersection observer step.
+// https://drafts.csswg.org/css-anchor-position-1/#position-visibility. The
+// values of `no-overflow` and `anchors-valid` are computed and directly update
+// the `PaintLayer` in this function. The remaining value of `anchors-visible`
+// is computed via an intersection observer set up in this function, and the
+// `PaintLayer` is updated later during the post-layout intersection observer
+// step.
 void UpdatePositionVisibilityAfterLayout(
     const OutOfFlowLayoutPart::OffsetInfo& offset_info,
     const BlockNode& node,

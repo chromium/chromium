@@ -190,7 +190,7 @@ const CSSValue* PositionAnchor::CSSValueFromComputedStyleInternal(
   return MakeGarbageCollected<CSSCustomIdentValue>(*style.PositionAnchor());
 }
 
-// https://github.com/w3c/csswg-drafts/issues/7758
+// https://drafts.csswg.org/css-anchor-position-1/#position-visibility
 // position-visibility:
 //   always | [ anchors-valid | anchors-visible ] || no-overflow
 // TODO(crbug.com/332933527): Support anchors-valid. For now,

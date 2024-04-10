@@ -29,7 +29,7 @@ class IntersectionObserverEntry;
 //    updates with `UpdateForCssAnchorVisibility`. This is needed to ensure we
 //    catch CSS visibility changes on anchor elements.
 //
-// [1] Spec: https://github.com/w3c/csswg-drafts/issues/7758
+// [1] Spec: https://drafts.csswg.org/css-anchor-position-1/#position-visibility
 class AnchorPositionVisibilityObserver final
     : public GarbageCollected<AnchorPositionVisibilityObserver> {
  public:

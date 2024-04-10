@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html class="reftest-wait">
+<html class=reftest-wait>
+<meta charset="utf-8">
 <title>CSS Anchor Positioning Test: position-visibility: no-overflow</title>
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7758">
-<link rel="match" href="position-visibility-no-overflow-scroll-ref.html">
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#position-visibility">
+<link rel="match" href="position-visibility-no-overflow-ref.html">
 <style>
   #scroll-container {
     position: relative;
     overflow: hidden scroll;
     width: 400px;
-    height: 150px;
+    height: 100px;
   }
 
   .anchor {
@@ -21,22 +22,25 @@
   .target {
     position: absolute;
     position-visibility: no-overflow;
+    inset-area: block-end;
     width: 100px;
     height: 100px;
+    background: green;
+    top: 0;
+    left: 0;
   }
 </style>
 
 <div id="scroll-container">
+  <!-- #target1 should not be visible because it overflows the containing block. -->
   <div class="anchor" style="anchor-name: --a1;">anchor1</div>
-  <div class="anchor" style="anchor-name: --a2; position: relative; top: 100px">anchor2</div>
-  <div id="target1" class="target" style="position-anchor: --a1; top: anchor(bottom); background: green">target1</div>
-  <div id="target2" class="target" style="position-anchor: --a2; left: anchor(left); bottom: anchor(top); background: red">target2</div>
-  <div style="height: 300px"></div>
+  <div id="target" class="target" style="position-anchor: --a1;">target1</div>
 </div>
+
 <script>
 requestAnimationFrame(() => {
   requestAnimationFrame(() => {
-    document.getElementById('scroll-container').scrollTop = 50;
+    target.style.positionVisibility = 'initial';
     document.documentElement.classList.remove('reftest-wait');
   });
 });

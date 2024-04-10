@@ -959,7 +959,7 @@
     },
     {
       // Support the position-visibility property for anchor positioning.
-      // https://github.com/w3c/csswg-drafts/issues/7758
+      // https://drafts.csswg.org/css-anchor-position-1/#position-visibility
       // TODO(crbug.com/332933527): Support anchors-valid and no-overflow. For
       // now, this only supports always and anchors-visible.
       name: "CSSPositionVisibility",
