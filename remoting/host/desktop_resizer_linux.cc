@@ -9,9 +9,9 @@
 #include "base/notreached.h"
 
 #if defined(REMOTING_USE_X11)
+#include "remoting/host/desktop_resizer_x11.h"
 #include "remoting/host/linux/desktop_resizer_wayland.h"
 #include "remoting/host/linux/wayland_utils.h"
-#include "remoting/host/x11_desktop_resizer.h"
 #endif
 
 namespace remoting {

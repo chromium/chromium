@@ -549,6 +549,8 @@ static_library("common") {
       "desktop_display_info_loader_linux.cc",
       "desktop_display_info_loader_x11.cc",
       "desktop_display_info_loader_x11.h",
+      "desktop_resizer_x11.cc",
+      "desktop_resizer_x11.h",
       "input_injector_constants_linux.h",
       "input_injector_linux.cc",
       "input_injector_x11.cc",

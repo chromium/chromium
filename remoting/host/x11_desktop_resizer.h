@@ -107,28 +107,6 @@ class X11DesktopResizer {
   ScopedGObject<GSettings> registry_;
 };
 
-class DesktopResizerX11 : public DesktopResizer {
- public:
-  DesktopResizerX11();
-  DesktopResizerX11(const DesktopResizerX11&) = delete;
-  DesktopResizerX11& operator=(const DesktopResizerX11&) = delete;
-  ~DesktopResizerX11() override;
-
-  // DesktopResizer interface
-  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override;
-  std::list<ScreenResolution> GetSupportedResolutions(
-      const ScreenResolution& preferred,
-      webrtc::ScreenId screen_id) override;
-  void SetResolution(const ScreenResolution& resolution,
-                     webrtc::ScreenId screen_id) override;
-  void RestoreResolution(const ScreenResolution& original,
-                         webrtc::ScreenId screen_id) override;
-  void SetVideoLayout(const protocol::VideoLayout& layout) override;
-
- private:
-  X11DesktopResizer resizer_;
-};
-
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_X11_DESKTOP_RESIZER_H_
