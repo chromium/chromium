@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/pattern.h"
+#include "third_party/liburlpattern/utils.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
@@ -161,6 +162,88 @@ void ParseSucceeded(const mojom::blink::ManifestPtr& manifest) {
                             !manifest->protocol_handlers.empty());
   base::UmaHistogramBoolean("Manifest.HasProperty.gcm_sender_id",
                             !manifest->gcm_sender_id.empty());
+}
+
+// Returns a liburlpattern::Part list obtained from running
+// liburlpattern::Parse on a UrlPatternInit field. The list will be empty if the
+// field is empty. Returns std::nullopt if the field should be rejected or the
+// parse failed, e.g. if it contains custom (or ill-formed) regex.
+std::optional<std::vector<liburlpattern::Part>> ParsePatternInitField(
+    const std::optional<String>& field,
+    const String default_field_value) {
+  const String value = field.has_value() ? field.value() : default_field_value;
+  StringUTF8Adaptor utf8(value);
+  auto parse_result = liburlpattern::Parse(
+      absl::string_view(utf8.data(), utf8.size()),
+      [](absl::string_view input) { return std::string(input); });
+
+  if (parse_result.ok()) {
+    std::vector<liburlpattern::Part> part_list;
+    for (auto& part : parse_result.value().PartList()) {
+      // We don't allow custom regex for security reasons as this will be
+      // used in the browser process.
+      if (part.type == liburlpattern::PartType::kRegex) {
+        return std::nullopt;
+      }
+
+      part_list.push_back(std::move(part));
+    }
+    return part_list;
+  }
+  return std::nullopt;
+}
+
+String EscapePatternString(String input) {
+  std::string result;
+  result.reserve(input.length());
+  liburlpattern::EscapePatternStringAndAppend(input.Utf8(), result);
+  return String(result);
+}
+
+// Utility function to determine if a pathname is absolute or not. We do some
+// additional checking for escaped or grouped slashes.
+//
+// Note: This is partially copied from
+// third_party/blink/renderer/core/url_pattern/url_pattern.cc
+bool IsAbsolutePathname(String pathname) {
+  if (pathname.empty()) {
+    return false;
+  }
+
+  if (pathname[0] == '/') {
+    return true;
+  }
+
+  if (pathname.length() < 2) {
+    return false;
+  }
+
+  // Patterns treat escaped slashes and slashes within an explicit grouping as
+  // valid leading slashes.  For example, "\/foo" or "{/foo}".  Patterns do
+  // not consider slashes within a custom regexp group as valid for the leading
+  // pathname slash for now.  To support that we would need to be able to
+  // detect things like ":name_123(/foo)" as a valid leading group in a pattern,
+  // but that is considered too complex for now.
+  if ((pathname[0] == '\\' || pathname[0] == '{') && pathname[1] == '/') {
+    return true;
+  }
+
+  return false;
+}
+
+String ResolveRelativePathnamePattern(const KURL& base_url, String pathname) {
+  if (base_url.IsStandard() && !IsAbsolutePathname(pathname)) {
+    String base_path = EscapePatternString(base_url.GetPath());
+    auto slash_index = base_path.ReverseFind('/');
+    if (slash_index != WTF::kNotFound) {
+      // Extract the base_url path up to and including the last slash. Append
+      // the relative pathname to it.
+      base_path.Truncate(slash_index + 1);
+      base_path = base_path + pathname;
+      return base_path;
+    }
+  }
+  return pathname;
 }
 
 }  // anonymous namespace
@@ -310,6 +393,29 @@ void ManifestParser::TakeErrors(
 bool ManifestParser::failed() const {
   return failed_;
 }
+
+ManifestParser::PatternInit::PatternInit(std::optional<String> protocol,
+                                         std::optional<String> username,
+                                         std::optional<String> password,
+                                         std::optional<String> hostname,
+                                         std::optional<String> port,
+                                         std::optional<String> pathname,
+                                         std::optional<String> search,
+                                         std::optional<String> hash,
+                                         KURL base_url)
+    : protocol(std::move(protocol)),
+      username(std::move(username)),
+      password(std::move(password)),
+      hostname(std::move(hostname)),
+      port(std::move(port)),
+      pathname(std::move(pathname)),
+      search(std::move(search)),
+      hash(std::move(hash)),
+      base_url(base_url) {}
+ManifestParser::PatternInit::~PatternInit() = default;
+ManifestParser::PatternInit::PatternInit(PatternInit&&) = default;
+ManifestParser::PatternInit& ManifestParser::PatternInit::operator=(
+    PatternInit&&) = default;
 
 bool ManifestParser::ParseBoolean(const JSONObject* object,
                                   const String& key,
@@ -2316,43 +2422,176 @@ Vector<SafeUrlPattern> ManifestParser::ParseScopePatterns(
   }
 
   for (wtf_size_t i = 0; i < scope_patterns_list->size(); ++i) {
-    SafeUrlPattern url_pattern;
-
     JSONObject* pattern_object = JSONObject::Cast(scope_patterns_list->at(i));
     if (!pattern_object) {
       continue;
     }
 
-    std::optional<String> pathname = ParseStringForMember(
-        pattern_object, "scope_patterns", "pathname", false, Trim(true));
-    if (pathname.has_value()) {
-      StringUTF8Adaptor utf8(pathname.value());
-      auto parse_result = liburlpattern::Parse(
-          absl::string_view(utf8.data(), utf8.size()),
-          [](absl::string_view input) { return std::string(input); });
-
-      if (parse_result.ok()) {
-        std::vector<liburlpattern::Part> part_list;
-        bool is_valid_pattern = true;
-        for (auto& part : parse_result.value().PartList()) {
-          // We don't allow custom regex for security reasons as this will be
-          // used in the browser process.
-          if (part.type == liburlpattern::PartType::kRegex) {
-            is_valid_pattern = false;
-            break;
-          }
-
-          part_list.push_back(std::move(part));
-        }
-        if (is_valid_pattern) {
-          url_pattern.pathname = std::move(part_list);
-          result.push_back(std::move(url_pattern));
-        }
+    std::optional<PatternInit> init = MaybeCreatePatternInit(pattern_object);
+    if (init.has_value()) {
+      auto base_url = init->base_url.IsValid()
+                          ? init->base_url
+                          : manifest_url_;
+      std::optional<SafeUrlPattern> pattern =
+          ParseScopePattern(init.value(), base_url);
+      if (pattern.has_value()) {
+        result.push_back(std::move(pattern.value()));
       }
     }
   }
 
   return result;
+}
+
+std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
+    const PatternInit& init,
+    const KURL& base_url) {
+  auto url_pattern = std::make_optional<SafeUrlPattern>();
+
+  {
+    std::optional<std::vector<liburlpattern::Part>> part_list =
+        ParsePatternInitField(init.protocol, base_url.Protocol());
+    if (!part_list.has_value()) {
+      AddErrorInfo(
+          "property 'protocol in home tab scope pattern could not be parsed or "
+          "contains banned regex.");
+      return std::nullopt;
+    }
+    url_pattern->protocol = std::move(part_list.value());
+  }
+
+  {
+    std::optional<std::vector<liburlpattern::Part>> part_list =
+        ParsePatternInitField(init.username, base_url.User());
+    if (!part_list.has_value()) {
+      AddErrorInfo(
+          "property 'username'in home tab scope pattern could not be parsed or "
+          "contains banned regex.");
+      return std::nullopt;
+    }
+    url_pattern->username = std::move(part_list.value());
+  }
+
+  {
+    std::optional<std::vector<liburlpattern::Part>> part_list =
+        ParsePatternInitField(init.password, base_url.Pass());
+    if (!part_list.has_value()) {
+      AddErrorInfo(
+          "property 'password' in home tab scope pattern could not be parsed "
+          "or contains banned regex.");
+      return std::nullopt;
+    }
+    url_pattern->password = std::move(part_list.value());
+  }
+
+  {
+    std::optional<std::vector<liburlpattern::Part>> part_list =
+        ParsePatternInitField(init.hostname, base_url.Host());
+    if (!part_list.has_value()) {
+      AddErrorInfo(
+          "property 'hostname' in home tab scope pattern could not be parsed "
+          "or contains banned regex.");
+      return std::nullopt;
+    }
+    url_pattern->hostname = std::move(part_list.value());
+  }
+
+  {
+    std::optional<std::vector<liburlpattern::Part>> part_list =
+        ParsePatternInitField(init.port, String::Number(base_url.Port()));
+    if (!part_list.has_value()) {
+      AddErrorInfo(
+          "property 'port'in home tab scope pattern could not be parsed or "
+          "contains banned regex.");
+      return std::nullopt;
+    }
+    url_pattern->port = std::move(part_list.value());
+  }
+
+  {
+    String default_path;
+    if (init.pathname.has_value()) {
+      // A possibly-relative path is given; resolve it against base URL's path.
+      default_path =
+          ResolveRelativePathnamePattern(base_url, init.pathname.value());
+    } else if (!init.protocol && !init.hostname && !init.port) {
+      // No path, protocol, host or port is given; use the base URL's path.
+      default_path = EscapePatternString(base_url.GetPath());
+    }
+    // else: no path, but a protocol, host or port was given, making this
+    // pattern absolute, so treat the path as empty.
+
+    std::optional<std::vector<liburlpattern::Part>> part_list =
+        ParsePatternInitField(std::nullopt, default_path);
+    if (!part_list.has_value()) {
+      AddErrorInfo(
+          "property 'pathname'in home tab scope pattern could not be parsed or "
+          "contains banned regex.");
+      return std::nullopt;
+    }
+    url_pattern->pathname = std::move(part_list.value());
+  }
+
+  {
+    std::optional<std::vector<liburlpattern::Part>> part_list =
+        ParsePatternInitField(init.search, base_url.Query());
+    if (!part_list.has_value()) {
+      AddErrorInfo(
+          "property 'search' in home tab scope pattern could not be parsed "
+          "or contains banned regex.");
+      return std::nullopt;
+    }
+    url_pattern->search = std::move(part_list.value());
+  }
+
+  {
+    std::optional<std::vector<liburlpattern::Part>> part_list =
+        ParsePatternInitField(init.hash, base_url.FragmentIdentifier());
+    if (!part_list.has_value()) {
+      AddErrorInfo(
+          "property 'hash' in home tab scope pattern could not be parsed "
+          "or contains banned regex.");
+      return std::nullopt;
+    }
+    url_pattern->hash = std::move(part_list.value());
+  }
+
+  return url_pattern;
+}
+
+std::optional<ManifestParser::PatternInit>
+ManifestParser::MaybeCreatePatternInit(const JSONObject* pattern_object) {
+  std::optional<String> protocol = ParseStringForMember(
+      pattern_object, "scope_patterns", "protocol", false, Trim(true));
+  std::optional<String> username = ParseStringForMember(
+      pattern_object, "scope_patterns", "username", false, Trim(true));
+  std::optional<String> password = ParseStringForMember(
+      pattern_object, "scope_patterns", "password", false, Trim(true));
+  std::optional<String> hostname = ParseStringForMember(
+      pattern_object, "scope_patterns", "hostname", false, Trim(true));
+  std::optional<String> port = ParseStringForMember(
+      pattern_object, "scope_patterns", "port", false, Trim(true));
+  std::optional<String> pathname = ParseStringForMember(
+      pattern_object, "scope_patterns", "pathname", false, Trim(true));
+  std::optional<String> search = ParseStringForMember(
+      pattern_object, "scope_patterns", "search", false, Trim(true));
+  std::optional<String> hash = ParseStringForMember(
+      pattern_object, "scope_patterns", "hash", false, Trim(true));
+
+  KURL base_url;
+
+  if (pattern_object->Get("baseURL")) {
+    base_url = ParseURL(pattern_object, "baseURL", KURL(),
+                        ParseURLRestrictions::kNoRestrictions);
+    if (!base_url.IsValid()) {
+      return std::nullopt;
+    }
+  }
+
+  return std::make_optional<PatternInit>(
+      std::move(protocol), std::move(username), std::move(password),
+      std::move(hostname), std::move(port), std::move(pathname),
+      std::move(search), std::move(hash), base_url);
 }
 
 String ManifestParser::ParseVersion(const JSONObject* object) {

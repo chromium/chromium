@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string>
 
 #include "base/types/strong_alias.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -70,6 +71,35 @@ class MODULES_EXPORT ManifestParser {
  private:
   // Used to indicate whether to strip whitespace when parsing a string.
   using Trim = base::StrongAlias<class TrimTag, bool>;
+
+  // Partially represents `URLPatternInit` in the URL Pattern spec.
+  // https://urlpattern.spec.whatwg.org/#dictdef-urlpatterninit
+  struct PatternInit {
+    PatternInit(std::optional<String> protocol,
+                std::optional<String> username,
+                std::optional<String> password,
+                std::optional<String> hostname,
+                std::optional<String> port,
+                std::optional<String> pathname,
+                std::optional<String> search,
+                std::optional<String> hash,
+                KURL base_url);
+    ~PatternInit();
+    PatternInit(const PatternInit&) = delete;
+    PatternInit& operator=(const PatternInit&) = delete;
+    PatternInit(PatternInit&&);
+    PatternInit& operator=(PatternInit&&);
+
+    std::optional<String> protocol;
+    std::optional<String> username;
+    std::optional<String> password;
+    std::optional<String> hostname;
+    std::optional<String> port;
+    std::optional<String> pathname;
+    std::optional<String> search;
+    std::optional<String> hash;
+    KURL base_url;
+  };
 
   // Indicate restrictions to be placed on the parsed URL with respect to the
   // document URL or manifest scope.
@@ -548,6 +578,13 @@ class MODULES_EXPORT ManifestParser {
   // Parses the 'scope_patterns' field of the 'tab_strip.home_tab' field
   // of the manifest.
   Vector<SafeUrlPattern> ParseScopePatterns(const JSONObject* object);
+
+  // Helper method to parse individual scope patterns.
+  std::optional<SafeUrlPattern> ParseScopePattern(const PatternInit& init,
+                                                  const KURL& base_url);
+
+  std::optional<PatternInit> MaybeCreatePatternInit(
+      const JSONObject* pattern_object);
 
   String ParseVersion(const JSONObject* object);
 
