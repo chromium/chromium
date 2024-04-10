@@ -4012,6 +4012,7 @@ test("ash_unittests") {
     "system/unified/quick_settings_view_unittest.cc",
     "system/unified/quiet_mode_feature_pod_controller_unittest.cc",
     "system/unified/screen_capture_tray_item_view_unittest.cc",
+    "system/unified/unified_slider_bubble_controller_unittest.cc",
     "system/unified/unified_system_tray_unittest.cc",
     "system/unified/user_chooser_detailed_view_controller_unittest.cc",
     "system/update/update_notification_controller_unittest.cc",

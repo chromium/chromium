@@ -101,6 +101,12 @@ UnifiedSliderBubbleController::~UnifiedSliderBubbleController() {
   autoclose_.Stop();
   slider_controller_.reset();
   if (bubble_widget_) {
+    // Reset `slider_view_`
+    // to prevent dangling pointer caused by view removal.
+    // TODO(b/40280409): We shouldn't need this if child view removal is made
+    // more safe.
+    slider_view_ = nullptr;
+
     bubble_widget_->CloseNow();
   }
 }
@@ -129,6 +135,7 @@ int UnifiedSliderBubbleController::GetBubbleHeight() const {
 
 void UnifiedSliderBubbleController::BubbleViewDestroyed() {
   slider_controller_.reset();
+  slider_view_ = nullptr;
   bubble_view_ = nullptr;
   bubble_widget_ = nullptr;
 }
@@ -278,6 +285,11 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
     CHECK(bubble_view_);
 
     if (slider_type_ != slider_type) {
+      // `RemoveAllChildViews` will cause `slider_view_` to be dangling, so we
+      // need to safely extract it.
+      // TODO(b/40280409): We shouldn't need this if child view removal is made
+      // more safe.
+      slider_view_ = nullptr;
       bubble_view_->RemoveAllChildViews();
 
       slider_type_ = slider_type;
