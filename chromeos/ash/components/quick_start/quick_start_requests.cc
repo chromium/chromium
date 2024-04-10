@@ -31,9 +31,9 @@ constexpr char kDeviceNameKey[] = "deviceName";
 // bootstrapOptions key containing object with phone actions after transfer.
 constexpr char kPostTransferActionKey[] = "PostTransferAction";
 // bootstrapOptions URI key inside the PostTransferAction object.
-constexpr char kURIKey[] = "uri";
+constexpr char kPostTransferActionURIKey[] = "uri";
 // bootstrapOptions PostTransferAction uri value.
-constexpr char kURIValue[] =
+constexpr char kPostTransferActionURIValue[] =
     "intent:#Intent;action=com.google.android.gms.quickstart.LANDING_SCREEN;"
     "package=com.google.android.gms;end";
 
@@ -123,8 +123,11 @@ std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
   message->GetPayload()->Set(kDeviceTypeKey, kDeviceTypeChrome);
   message->GetPayload()->Set(kDeviceNameKey, GetDeviceName());
 
+  // TODO(b/332603236): Remove postTransferAction payload when new device info
+  // exchange is implemented.
   base::Value::Dict post_transfer_action;
-  post_transfer_action.Set(kURIKey, kURIValue);
+  post_transfer_action.Set(kPostTransferActionURIKey,
+                           kPostTransferActionURIValue);
 
   message->GetPayload()->Set(kPostTransferActionKey,
                              std::move(post_transfer_action));
@@ -227,6 +230,14 @@ std::unique_ptr<QuickStartMessage> BuildBootstrapStateCompleteMessage() {
       std::make_unique<QuickStartMessage>(
           QuickStartMessageType::kBootstrapState);
   message->GetPayload()->Set(kBootstrapStateKey, kBootstrapStateComplete);
+
+  // TODO(b/332603236): Remove postTransferAction payload when new device info
+  // exchange is implemented.
+  base::Value::Dict post_transfer_action;
+  post_transfer_action.Set(kPostTransferActionURIKey,
+                           kPostTransferActionURIValue);
+  message->GetPayload()->Set(kPostTransferActionKey,
+                             std::move(post_transfer_action));
   return message;
 }
 
