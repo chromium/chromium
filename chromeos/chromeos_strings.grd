@@ -3624,7 +3624,7 @@
           amethyst
         </message>
         <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_LAPIS_LUZULI" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
-          lapis luzuli
+          lapis lazuli
         </message>
         <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_OBSIDIAN" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
           obsidian
