@@ -170,8 +170,7 @@ class DrmGpuDisplayManagerTest : public testing::Test {
 
   // Note: the first device added will be marked as the primary device.
   scoped_refptr<FakeDrmDevice> AddAndInitializeDrmDeviceWithState(
-      FakeDrmDevice::MockDrmState& drm_state,
-      bool use_atomic = true) {
+      FakeDrmDevice::MockDrmState& drm_state) {
     std::string card_path = base::StringPrintf(kDefaultTestGraphicsCardPattern,
                                                next_drm_device_number_++);
     base::FilePath file_path(card_path);
@@ -181,7 +180,7 @@ class DrmGpuDisplayManagerTest : public testing::Test {
         device_manager_->GetDrmDevices().back().get());
     fake_drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
         kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
-    fake_drm->InitializeState(drm_state, use_atomic);
+    fake_drm->InitializeState(drm_state, /* use_atomic */ true);
     return scoped_refptr<FakeDrmDevice>(fake_drm);
   }
 
