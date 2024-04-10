@@ -129,9 +129,9 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     public void testGlobalInterfaceNoFail() throws Exception {
-        runBlinkLayoutTest(
-                "webexposed/global-interface-listing.html",
-                "webexposed/global-interface-listing-expected.txt",
+        runTest(
+                PATH_BLINK_PREFIX + "webexposed/global-interface-listing.html",
+                PATH_WEBVIEW_PREFIX + "webexposed/global-interface-listing-expected.txt",
                 true);
     }
 
@@ -377,7 +377,7 @@ public class WebViewLayoutTest {
                 errorMessage.append("\t- ").append(missingProperty).append("\n");
             }
         }
-        Assert.assertTrue(errorMessage.toString(), errorMessage.length() == 0);
+        Assert.assertEquals(errorMessage.toString(), 0, errorMessage.length());
     }
 
     @Test
@@ -464,11 +464,6 @@ public class WebViewLayoutTest {
         runTest(PATH_WEBVIEW_PREFIX + fileName, PATH_WEBVIEW_PREFIX + fileNameExpected, false);
     }
 
-    private void runBlinkLayoutTest(
-            final String fileName, final String fileNameExpected, boolean noFail) throws Exception {
-        runTest(PATH_BLINK_PREFIX + fileName, PATH_WEBVIEW_PREFIX + fileNameExpected, noFail);
-    }
-
     private void runTest(final String fileName, final String fileNameExpected, boolean noFail)
             throws FileNotFoundException, IOException, InterruptedException, TimeoutException {
         loadUrlWebViewAsync("file://" + fileName, mTestActivity);
@@ -477,7 +472,7 @@ public class WebViewLayoutTest {
             // this is the rebaseline process
             mTestActivity.waitForFinish(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             String result = mTestActivity.getTestResult();
-            writeFile(fileNameExpected, result, true);
+            writeFile(fileNameExpected, result);
             Log.i(TAG, "file: " + fileNameExpected + " --> rebaselined, length=" + result.length());
         } else {
             String expected = readFile(fileNameExpected);
@@ -497,14 +492,7 @@ public class WebViewLayoutTest {
 
     private void loadUrlWebViewAsync(
             final String fileUrl, final WebViewLayoutTestActivity activity) {
-        InstrumentationRegistry.getInstrumentation()
-                .runOnMainSync(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                activity.loadUrl(fileUrl);
-                            }
-                        });
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> activity.loadUrl(fileUrl));
     }
 
     /** Reads a file and returns it's contents as string. */
@@ -521,6 +509,8 @@ public class WebViewLayoutTest {
     /**
      * Reads the first available file in the 'fallback' list and returns the result. Throws
      * FileNotFoundException if non of the files exist.
+     *
+     * @noinspection SameParameterValue
      */
     private static String readFileWithFallbacks(List<String> fallbackFileNames) throws IOException {
         for (String fileName : fallbackFileNames) {
@@ -534,17 +524,12 @@ public class WebViewLayoutTest {
     }
 
     /**
-     * Writes a file with the given fileName and contents. If overwrite is true overwrites any
-     * exisiting file with the same file name. If the file does not exist any intermediate
-     * required directories are created.
+     * Writes a file with the given fileName and contents. If the file does not exist any
+     * intermediate required directories are created.
      */
-    private static void writeFile(final String fileName, final String contents, boolean overwrite)
+    private static void writeFile(final String fileName, final String contents)
             throws FileNotFoundException, IOException {
         File fileOut = new File(fileName);
-
-        if (fileOut.exists() && !overwrite) {
-            return;
-        }
 
         String absolutePath = fileOut.getAbsolutePath();
         File filePath = new File(absolutePath.substring(0, absolutePath.lastIndexOf("/")));
@@ -561,12 +546,6 @@ public class WebViewLayoutTest {
 
     private HashMap<String, HashSet<String>> buildHashMap(String contents) {
         HashMap<String, HashSet<String>> interfaces = new HashMap<>();
-
-        return buildHashMap(contents, interfaces);
-    }
-
-    private HashMap<String, HashSet<String>> buildHashMap(
-            String contents, HashMap<String, HashSet<String>> interfaces) {
         String[] lineByLine = contents.split("\\n");
 
         HashSet<String> subset = null;
