@@ -14,11 +14,17 @@
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/apps_collections_dismiss_dialog.h"
 #include "ash/app_list/views/apps_grid_context_menu.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
+#include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -132,6 +138,68 @@ TEST_F(AppsCollectionsControllerTest, ShowAppsPageAfterSortingGrid) {
   histograms.ExpectBucketCount(
       "Apps.AppList.AppsCollections.DismissedReason",
       AppsCollectionsController::DismissReason::kSorting, 1);
+}
+
+// Tests that sorting on tablet mode updates apps collections.
+TEST_F(AppsCollectionsControllerTest,
+       AppListSortOnTabletModeUpdatesAppsCollections) {
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 2);
+  helper->ShowAppList();
+  EXPECT_EQ(AppListSortOrder::kCustom, helper->model()->requested_sort_order());
+
+  // Apps collections page is visible.
+  EXPECT_TRUE(helper->GetBubbleAppsCollectionsPage()->GetVisible());
+  EXPECT_FALSE(helper->GetBubbleAppsPage()->GetVisible());
+
+  // Enter tablet mode.
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  auto* apps_grid_view = helper->GetRootPagedAppsGridView();
+  // Get a point in `apps_grid` that doesn't have an item on it.
+  const gfx::Point empty_space =
+      apps_grid_view->GetBoundsInScreen().CenterPoint();
+
+  // Open the menu to test the alphabetical sort option.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  ui::GestureEvent long_press(
+      empty_space.x(), empty_space.y(), 0, base::TimeTicks(),
+      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  generator->Dispatch(&long_press);
+  GetAppListTestHelper()->WaitUntilIdle();
+
+  AppMenuModelAdapter* context_menu =
+      Shell::GetPrimaryRootWindowController()->menu_model_adapter_for_testing();
+  ASSERT_TRUE(context_menu);
+  EXPECT_TRUE(context_menu->IsShowingMenu());
+
+  // Cache the current context menu view.
+  views::MenuItemView* reorder_submenu =
+      context_menu->root_for_testing()->GetSubmenu()->GetMenuItemAt(2);
+  ASSERT_EQ(reorder_submenu->title(), u"Sort by");
+  GetEventGenerator()->GestureTapAt(
+      reorder_submenu->GetBoundsInScreen().CenterPoint());
+
+  // Click on any reorder option and accept the dialog.
+  views::MenuItemView* reorder_option =
+      reorder_submenu->GetSubmenu()->GetMenuItemAt(0);
+  ASSERT_EQ(reorder_option->title(), u"Name");
+  GetEventGenerator()->GestureTapAt(
+      reorder_option->GetBoundsInScreen().CenterPoint());
+  helper->WaitUntilIdle();
+  EXPECT_EQ(AppListSortOrder::kNameAlphabetical,
+            helper->model()->requested_sort_order());
+
+  helper->model()->RequestCommitTemporarySortOrder();
+
+  // Leave tablet mode.
+  TabletModeControllerTestApi().LeaveTabletMode();
+
+  helper->ShowAppList();
+
+  // Apps collections page is visible.
+  EXPECT_FALSE(helper->GetBubbleAppsCollectionsPage()->GetVisible());
+  EXPECT_TRUE(helper->GetBubbleAppsPage()->GetVisible());
 }
 
 // Class for tests of the `AppsCollectionsController` which are

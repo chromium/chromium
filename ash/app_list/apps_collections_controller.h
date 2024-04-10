@@ -44,6 +44,9 @@ class ASH_EXPORT AppsCollectionsController {
   // Signal that the user has dismissed the AppsCollection page.
   void SetAppsCollectionDismissed(DismissReason reason);
 
+  // Signal that the user has reorderes the Apps page.
+  void SetAppsReordered();
+
   void SetClient(AppListClient* client);
 
   // Invoked when the user attempts to sort apps from the AppsCollection page.
@@ -58,6 +61,10 @@ class ASH_EXPORT AppsCollectionsController {
   // A local flag that stores whether the apps collections view was dismissed
   // during this session.
   bool apps_collections_was_dissmissed_ = false;
+
+  // A local flag that stores whether the app list was reordered during this
+  // session.
+  bool app_list_was_reordered_ = false;
 
   // A callback invoked when the nudge on this page is removed/dismissed.
   ReorderCallback reorder_callback_;

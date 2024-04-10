@@ -48,6 +48,10 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
     return false;
   }
 
+  if (app_list_was_reordered_) {
+    return false;
+  }
+
   if (app_list_features::IsForceShowAppsCollectionsEnabled()) {
     return true;
   }
@@ -85,8 +89,16 @@ void AppsCollectionsController::SetAppsCollectionDismissed(
     DismissReason reason) {
   apps_collections_was_dissmissed_ = true;
 
+  if (reason == DismissReason::kSorting) {
+    SetAppsReordered();
+  }
+
   base::UmaHistogramEnumeration("Apps.AppList.AppsCollections.DismissedReason",
                                 reason);
+}
+
+void AppsCollectionsController::SetAppsReordered() {
+  app_list_was_reordered_ = true;
 }
 
 void AppsCollectionsController::SetClient(AppListClient* client) {
