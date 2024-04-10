@@ -29,9 +29,6 @@ _EXCLUSIONS = [
     # Chrome external extensions config file.
     re.compile(r'.*external_extensions\.json'),
 
-    # Exists just to test the compile, not to be run.
-    re.compile(r'.*jni_generator_tests'),
-
     # v8's blobs and icu data get packaged into APKs.
     re.compile(r'.*snapshot_blob.*\.bin'),
     re.compile(r'.*icudtl\.bin'),

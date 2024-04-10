@@ -57,7 +57,7 @@ if (enable_java_templates && is_android) {
     proguard_configs = [ "proguard.flags" ]
   }
 
-  group("jni_generator_tests") {
+  group("jni_zero_tests") {
     testonly = true
     deps = [
       "//third_party/jni_zero/sample:jni_zero_sample_apk_test",
