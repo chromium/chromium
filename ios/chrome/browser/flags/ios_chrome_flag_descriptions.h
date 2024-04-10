@@ -507,6 +507,11 @@ extern const char kIOSPasswordBottomSheetDescription[];
 extern const char kIOSPasswordBottomSheetAutofocusName[];
 extern const char kIOSPasswordBottomSheetAutofocusDescription[];
 
+// Title and description for the flag to allow syncing, managing, and displaying
+// Google Password Manager WebAuthn credential ('passkey') metadata.
+extern const char kSyncWebauthnCredentialsName[];
+extern const char kSyncWebauthnCredentialsDescription[];
+
 // Title and description for the flag to enable filling the username of single
 // username forms in sign-in UFF.
 extern const char kIOSPasswordSignInUffName[];

@@ -1034,6 +1034,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kIOSPasswordBottomSheetAutofocus)},
+    {"sync-webauthn-credentials",
+     flag_descriptions::kSyncWebauthnCredentialsName,
+     flag_descriptions::kSyncWebauthnCredentialsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(syncer::kSyncWebauthnCredentials)},
     {"omnibox-zero-suggest-prefetching",
      flag_descriptions::kOmniboxZeroSuggestPrefetchingName,
      flag_descriptions::kOmniboxZeroSuggestPrefetchingDescription,

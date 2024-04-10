@@ -7830,6 +7830,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "sync-webauthn-credentials",
+    "owners": [ "chrome-webauthn@google.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "sys-ui-holdback-gif-recording",
     "owners": ["newcomer@chromium.org"],
     "expiry_milestone": 130
