@@ -122,6 +122,12 @@ bool DecoderListener::WaitForEvent(Event sought_event, size_t times) {
         times--;
       if (times == 0)
         return true;
+
+      if (received_event == DecoderListener::Event::kFailure) {
+        LOG(ERROR) << "Failed waiting for '" << EventName(sought_event)
+                   << "' event.";
+        return false;
+      }
     }
 
     // Check whether we've exceeded the maximum time we're allowed to wait.

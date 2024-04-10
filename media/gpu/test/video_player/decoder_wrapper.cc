@@ -341,10 +341,14 @@ void DecoderWrapper::OnDecoderInitializedTask(DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
   DCHECK(state_ == DecoderWrapperState::kUninitialized ||
          state_ == DecoderWrapperState::kIdle);
-  ASSERT_TRUE(status.is_ok()) << "Initializing decoder failed";
 
-  state_ = DecoderWrapperState::kIdle;
-  FireEvent(DecoderListener::Event::kInitialized);
+  if (!status.is_ok()) {
+    state_ = DecoderWrapperState::kUninitialized;
+    FireEvent(DecoderListener::Event::kFailure);
+  } else {
+    state_ = DecoderWrapperState::kIdle;
+    FireEvent(DecoderListener::Event::kInitialized);
+  }
 }
 
 void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
