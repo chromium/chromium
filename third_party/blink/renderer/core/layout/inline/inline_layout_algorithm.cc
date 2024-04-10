@@ -1381,12 +1381,14 @@ PositionedFloat InlineLayoutAlgorithm::PositionFloat(
   BfcOffset origin_bfc_offset = {space.GetBfcOffset().line_offset,
                                  origin_bfc_block_offset};
 
+  bool is_hidden_for_paint =
+      GetConstraintSpace().GetLineClampData().ShouldHideForPaint();
   UnpositionedFloat unpositioned_float(
       BlockNode(To<LayoutBox>(floating_object)),
       /* break_token */ nullptr, space.AvailableSize(),
       space.PercentageResolutionSize(),
       space.ReplacedPercentageResolutionSize(), origin_bfc_offset, space,
-      Style());
+      Style(), is_hidden_for_paint);
 
   PositionedFloat positioned_float =
       ::blink::PositionFloat(&unpositioned_float, exclusion_space);

@@ -3151,13 +3151,15 @@ void LineBreaker::HandleFloat(const InlineItem& item,
   }
 
   const LayoutUnit bfc_block_offset = line_opportunity_.bfc_block_offset;
+  bool is_hidden_for_paint =
+      constraint_space_.GetLineClampData().ShouldHideForPaint();
   UnpositionedFloat unpositioned_float(
       BlockNode(To<LayoutBox>(item.GetLayoutObject())), float_break_token,
       constraint_space_.AvailableSize(),
       constraint_space_.PercentageResolutionSize(),
       constraint_space_.ReplacedPercentageResolutionSize(),
       {constraint_space_.GetBfcOffset().line_offset, bfc_block_offset},
-      constraint_space_, node_.Style());
+      constraint_space_, node_.Style(), is_hidden_for_paint);
 
   bool float_after_line =
       ShouldPushFloatAfterLine(&unpositioned_float, line_info);

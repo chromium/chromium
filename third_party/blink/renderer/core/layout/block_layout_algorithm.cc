@@ -1006,24 +1006,22 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
         std::min(container_builder_.Padding().block_end, annotation_overflow);
   }
 
-  // If the current layout is a new formatting context, we need to encapsulate
-  // all of our floats.
-  if (constraint_space.IsNewFormattingContext()) {
-    intrinsic_block_size_ =
-        std::max(intrinsic_block_size_,
-                 GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
-                     EClear::kBoth));
-  }
-
   LayoutUnit block_end_border_padding = BorderScrollbarPadding().block_end;
 
   // If line clamping occurred, the intrinsic block-size comes from the
   // intrinsic block-size at the time of the clamp.
   if (line_clamp_data_.intrinsic_block_size_when_clamped) {
     DCHECK(container_builder_.BfcBlockOffset());
-    intrinsic_block_size_ =
-        *line_clamp_data_.intrinsic_block_size_when_clamped +
-        block_end_border_padding;
+    if (RuntimeEnabledFeatures::CSSLineClampEnabled() &&
+        constraint_space.IsNewFormattingContext()) {
+      intrinsic_block_size_ = std::max(
+          *line_clamp_data_.intrinsic_block_size_when_clamped,
+          GetExclusionSpace().NonHiddenClearanceOffsetIncludingInitialLetter());
+    } else {
+      intrinsic_block_size_ =
+          *line_clamp_data_.intrinsic_block_size_when_clamped;
+    }
+    intrinsic_block_size_ += block_end_border_padding;
     end_margin_strut = MarginStrut();
   } else if (block_end_border_padding ||
              previous_inflow_position->self_collapsing_child_had_clearance ||
@@ -1034,6 +1032,15 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     //  - There was a self-collapsing child affected by clearance.
     //  - We are a new formatting context.
     // Additionally this fragment produces no end margin strut.
+
+    // If the current layout is a new formatting context, we need to encapsulate
+    // all of our floats.
+    if (constraint_space.IsNewFormattingContext()) {
+      intrinsic_block_size_ =
+          std::max(intrinsic_block_size_,
+                   GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
+                       EClear::kBoth));
+    }
 
     if (!container_builder_.BfcBlockOffset()) {
       // If we have collapsed through the block start and all children (if any),
@@ -1421,7 +1428,7 @@ void BlockLayoutAlgorithm::HandleFloat(
   UnpositionedFloat unpositioned_float(
       child, child_break_token, ChildAvailableSize(), child_percentage_size_,
       replaced_child_percentage_size_, origin_bfc_offset, constraint_space,
-      Style());
+      Style(), line_clamp_data_.ShouldHideForPaint());
 
   if (!container_builder_.BfcBlockOffset()) {
     container_builder_.AddAdjoiningObjectTypes(

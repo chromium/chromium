@@ -14,6 +14,7 @@ void ExclusionShapeData::Trace(Visitor* visitor) const {
 
 bool ExclusionArea::operator==(const ExclusionArea& other) const {
   return type == other.type && kind == other.kind && rect == other.rect &&
+         is_hidden_for_paint == other.is_hidden_for_paint &&
          shape_data == other.shape_data;
 }
 
