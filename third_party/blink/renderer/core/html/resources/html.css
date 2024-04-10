@@ -1517,20 +1517,21 @@ dialog:popover-open {
   background-color: transparent;
 }
 
-/* page */
+/* Pagination */
 
-@page {
+@media print {
+  @page {
     /* FIXME: Define the right default values for page properties. */
     size: auto;
 
     padding: 0px;
     border-width: 0px;
-}
+  }
 
-/* Allows thead sections to print at the top of each page. */
-@media print {
-    thead { break-inside:avoid; }
-    tfoot { break-inside:avoid; }
+  /* Allows table headers and footers to print at the top / bottom of each
+     page. */
+  thead { break-inside: avoid; }
+  tfoot { break-inside: avoid; }
 }
 
 /* spelling/grammar error pseudos */
