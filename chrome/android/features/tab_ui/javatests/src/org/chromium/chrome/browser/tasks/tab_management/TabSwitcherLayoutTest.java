@@ -1794,6 +1794,44 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testTabGroupCreation_dismissEmptyTitle() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        // Verify the creation dialog exists.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+
+        // Close the soft keyboard that appears when the dialog is shown.
+        closeSoftKeyboard();
+
+        // Change the title.
+        editGroupCreationDialogTitle(cta, "");
+        // Change the color.
+        String blueColor =
+                cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
+        String notSelectedStringBlue =
+                cta.getString(
+                        R.string
+                                .accessibility_tab_group_color_picker_color_item_not_selected_description,
+                        blueColor);
+        onView(withContentDescription(notSelectedStringBlue)).perform(click());
+
+        // Enact a backpress to dismiss the dialog.
+        Espresso.pressBack();
+        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
+        // Check that the title change has reverted to the default null state.
+        verifyFirstCardTitle("2 tabs");
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testTabGroupCreation_rejectInvalidTitle() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);

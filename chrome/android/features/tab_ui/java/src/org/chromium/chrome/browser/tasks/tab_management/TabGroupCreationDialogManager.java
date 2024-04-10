@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -33,6 +34,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.Objects;
 
 /** Manager of the observers that trigger a modal dialog on new tab group creation. */
 public class TabGroupCreationDialogManager implements Destroyable {
@@ -111,10 +113,11 @@ public class TabGroupCreationDialogManager implements Destroyable {
                                 filter.setTabGroupColor(rootId, currentColorId);
 
                                 // Only save the group title input text if it has been changed from
-                                // the suggested default title.
+                                // the suggested default title and if it is not empty.
                                 String inputGroupTitle = groupTitle.getTrimmedText();
-                                boolean didChangeTitle = !defaultGroupTitle.equals(inputGroupTitle);
-                                if (didChangeTitle) {
+                                boolean didChangeTitle =
+                                        !Objects.equals(defaultGroupTitle, inputGroupTitle);
+                                if (didChangeTitle && !TextUtils.isEmpty(inputGroupTitle)) {
                                     filter.setTabGroupTitle(rootId, groupTitle.getTrimmedText());
                                 }
 
