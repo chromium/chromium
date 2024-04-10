@@ -23,12 +23,12 @@ public class HomeModulesMetricsUtils {
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK = ".Module.Click.";
 
     @VisibleForTesting
-    static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION = ".Module.TopImpression.";
+    static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION = ".Module.TopImpressionV2";
 
-    @VisibleForTesting static final String HISTOGRAM_CONTEXT_MENU_SHOWN = ".ContextMenu.Shown.";
+    @VisibleForTesting static final String HISTOGRAM_CONTEXT_MENU_SHOWN = ".ContextMenu.ShownV2";
 
     @VisibleForTesting
-    static final String HISTOGRAM_CONTEXT_MENU_REMOVE_MODULE = ".ContextMenu.RemoveModule.";
+    static final String HISTOGRAM_CONTEXT_MENU_REMOVE_MODULE = ".ContextMenu.RemoveModuleV2";
 
     @VisibleForTesting
     static final String HISTOGRAM_CONTEXT_MENU_OPEN_CUSTOMIZE_SETTINGS =
@@ -42,7 +42,7 @@ public class HomeModulesMetricsUtils {
             ".Module.FetchDataTimeoutDurationMs.";
 
     @VisibleForTesting
-    static final String HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_TYPE = ".Module.FetchDataTimeoutType.";
+    static final String HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_TYPE = ".Module.FetchDataTimeoutTypeV2";
 
     @VisibleForTesting
     static final String HISTOGRAM_MODULE_FETCH_DATA_FAILED_DURATION_MS =

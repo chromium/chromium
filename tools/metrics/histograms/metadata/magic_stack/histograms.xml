@@ -130,8 +130,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.RemoveModule"
+    name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.RemoveModule."
     enum="ModuleType" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total count that the context menu item to remove a module is
+    clicked. The histogram is logged on a {ModuleDelegateHost} and is logged
+    Android-only.
+
+    Deprecated on 2024-04-10; prefer
+    MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.RemoveModuleV2.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.RemoveModuleV2"
+    enum="ModuleType" expires_after="2024-09-22">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -142,8 +158,23 @@ chromium-metrics-reviews@google.com.
   <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
-<histogram name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.Shown"
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.Shown."
     enum="ModuleType" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total count of times that the context menu of a module is shown
+    on the magic stack of a {ModuleDelegateHost}. The histogram is logged on
+    Android-only.
+
+    Deprecated on 2024-04-10; prefer
+    MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.ShownV2.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.ShownV2"
+    enum="ModuleType" expires_after="2024-09-22">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -227,8 +258,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataTimeoutType"
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataTimeoutType."
     enum="ModuleType" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the types of modules which didn't respond before the timer timeout.
+    The histogram is logged when showing the magic stack on
+    {ModuleDelegateHost}, Android-only.
+
+    Deprecated on 2024-04-10; prefer
+    MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataTimeoutTypeV2.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataTimeoutTypeV2"
+    enum="ModuleType" expires_after="2024-09-22">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -266,8 +313,22 @@ chromium-metrics-reviews@google.com.
   <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
-<histogram name="MagicStack.Clank.{ModuleDelegateHost}.Module.TopImpression"
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.Module.TopImpression."
     enum="ModuleType" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total count of times that a module is shown on the magic stack of
+    a {ModuleDelegateHost}. The histogram is logged on Android-only.
+
+    Deprecated on 2024-04-10; prefer
+    MagicStack.Clank.{ModuleDelegateHost}.Module.TopImpressionV2.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.Module.TopImpressionV2"
+    enum="ModuleType" expires_after="2024-09-22">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
