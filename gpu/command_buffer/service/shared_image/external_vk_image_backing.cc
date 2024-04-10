@@ -226,7 +226,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     }
 
     estimated_size += image->device_size();
-    textures.emplace_back(std::move(image), color_space);
+    textures.emplace_back(std::move(image), format, color_space);
   }
 
   bool use_separate_gl_texture =
@@ -296,7 +296,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
 
   std::vector<TextureHolderVk> textures;
   textures.reserve(1);
-  textures.emplace_back(std::move(image), color_space);
+  textures.emplace_back(std::move(image), format, color_space);
 
   bool use_separate_gl_texture =
       UseSeparateGLTexture(context_state.get(), format);

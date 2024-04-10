@@ -283,7 +283,7 @@ class SkiaVkAHBImageRepresentation : public SkiaVkAndroidImageRepresentation {
     // if the vk_info stays the same on subsequent calls.
     promise_texture_ = GrPromiseImageTexture::Make(GrBackendTextures::MakeVk(
         size().width(), size().height(),
-        CreateGrVkImageInfo(vulkan_image_.get(), color_space())));
+        CreateGrVkImageInfo(vulkan_image_.get(), format(), color_space())));
     DCHECK(promise_texture_);
   }
 };
