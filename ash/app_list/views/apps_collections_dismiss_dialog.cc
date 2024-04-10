@@ -21,6 +21,7 @@
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
@@ -80,6 +81,9 @@ AppsCollectionsDismissDialog::AppsCollectionsDismissDialog(
   // Needs to paint to layer so it's stacked above `this` view.
   title_->SetPaintToLayer();
   title_->layer()->SetFillsBoundsOpaquely(false);
+  // Ignore labels for accessibility - the accessible name is defined for the
+  // whole dialog view.
+  title_->GetViewAccessibility().SetIsIgnored(true);
 
   // Add dialog body.
   auto* body =
@@ -97,6 +101,9 @@ AppsCollectionsDismissDialog::AppsCollectionsDismissDialog(
   // Needs to paint to layer so it's stacked above `this` view.
   body->SetPaintToLayer();
   body->layer()->SetFillsBoundsOpaquely(false);
+  // Ignore labels for accessibility - the accessible name is defined for the
+  // whole dialog view.
+  body->GetViewAccessibility().SetIsIgnored(true);
 
   auto run_callback = [](AppsCollectionsDismissDialog* dialog, bool accept) {
     if (!dialog->confirm_callback_) {
@@ -131,11 +138,18 @@ AppsCollectionsDismissDialog::AppsCollectionsDismissDialog(
       l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_EXIT),
       PillButton::Type::kPrimaryWithoutIcon, nullptr));
+
+  SetAccessibleRole(ax::mojom::Role::kAlertDialog);
+  SetAccessibleName(base::JoinString(
+      {l10n_util::GetStringUTF16(
+           IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_TITLE),
+       l10n_util::GetStringUTF16(
+           IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_SUBTITLE)},
+      u", "));
 }
 
 AppsCollectionsDismissDialog::~AppsCollectionsDismissDialog() {}
 
-// views::View:
 gfx::Size AppsCollectionsDismissDialog::CalculatePreferredSize() const {
   const int default_width = kDialogWidth;
   return gfx::Size(default_width, GetHeightForWidth(default_width));

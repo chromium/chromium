@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_collections_constants.h"
 #include "ash/app_list/app_list_item_util.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_util.h"
@@ -1295,6 +1296,10 @@ void AppListItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
   if (!app_status_description.empty()) {
     descriptions.push_back(app_status_description);
+  }
+
+  if (context_ == Context::kAppsCollection) {
+    descriptions.push_back(GetAppCollectionName(item_weak_->collection_id()));
   }
 
   // Set the concatenated descriptions.

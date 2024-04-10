@@ -6734,6 +6734,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_DISMISS_BUTTON" desc="Label for the Apps Collections Tutorial View nudge button that show on top of the Apps Collections in the Launcher. The tutorial view displays apps categorized in different subsets. Clicking the button will return users to the default launcher with apps displayed in a grid.">
         Exit
       </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_DISMISS_BUTTON_SPOKEN_TEXT" desc="Accessibility text read by chromevox when focusing the Apps Collections Tutorial View nudge button that show on top of the Apps Collections in the Launcher. The tutorial view displays apps categorized in different subsets. Clicking the button will return users to the default launcher with apps displayed in a grid.">
+        Exit tutorial view
+      </message>
       <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_TITLE" desc="Text for the Apps Collections Tutorial View dismiss dialog that shows over the Apps Collections in the Launcher when the user attempts to sort their apps. The dialog serves as confirmation to exit the Apps Collections Tutorial View">
         Exit view?
       </message>
