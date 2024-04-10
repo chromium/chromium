@@ -11,7 +11,13 @@
 namespace {
 
 // Percentage width on iPad for the promo style view controller.
-constexpr CGFloat kPromoStyleContentWidthMultiplier = .8;
+CGFloat PromoStyleContentWidthMultiplier(UITraitCollection* traitCollection) {
+  if (traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+    return .9;
+  }
+  return .8;
+}
+
 // Optimal width for the promo style view controller.
 constexpr CGFloat kPromoStyleContentOptimalWidth = 327;
 
@@ -58,7 +64,8 @@ UILayoutGuide* AddPromoStyleWidthLayoutGuide(UIView* view) {
     [widthLayoutGuide.widthAnchor
         constraintGreaterThanOrEqualToAnchor:view.safeAreaLayoutGuide
                                                  .widthAnchor
-                                  multiplier:kPromoStyleContentWidthMultiplier],
+                                  multiplier:PromoStyleContentWidthMultiplier(
+                                                 view.traitCollection)],
     [widthLayoutGuide.widthAnchor
         constraintLessThanOrEqualToAnchor:view.safeAreaLayoutGuide.widthAnchor
                                  constant:-2 * kPromoStyleDefaultMargin],
@@ -67,7 +74,7 @@ UILayoutGuide* AddPromoStyleWidthLayoutGuide(UIView* view) {
   // close to the optimal width as possible, within the range already activated
   // for "widthLayoutGuide.widthAnchor" previously, with a higher priority.
   // In this case, the content width in iPad and iPhone landscape mode should be
-  // the safe layout width multiplied by kPromoStyleContentWidthMultiplier,
+  // the safe layout width multiplied by PromoStyleContentWidthMultiplier(),
   // while the content width for a iPhone portrait mode should be
   // kPromoStyleContentOptimalWidth.
   NSLayoutConstraint* contentLayoutGuideWidthConstraint =
