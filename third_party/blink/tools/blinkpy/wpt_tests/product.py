@@ -164,6 +164,11 @@ class ChromeAndroidBase(Product):
         self.adb_binary = devil_env.config.FetchPath('adb')  # pylint: disable=undefined-variable;
         self.devices = []
 
+    @functools.cached_property
+    def processes(self) -> int:
+        # TODO(crbug.com/333782826): Ensure the derived parallelism is one.
+        return 1
+
     @contextlib.contextmanager
     def _install_apk(self, device, path):
         """Helper context manager for ensuring a device uninstalls an APK."""

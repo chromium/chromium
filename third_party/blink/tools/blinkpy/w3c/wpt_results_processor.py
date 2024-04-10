@@ -757,8 +757,20 @@ class WPTResultsProcessor:
             return
         if not isinstance(data, str):
             data = json.dumps(data, sort_keys=True)
-        browser_log = self.browser_logs.setdefault(int(process), io.StringIO())
-        browser_log.write(f'{data}\n')
+        # TODO(crbug.com/333782826): Remove after addressing non-integer values
+        # by wptrunner's Android drivers:
+        # https://github.com/web-platform-tests/wpt/blob/073f56c2/tools/wptrunner/wptrunner/browsers/chrome_android.py#L126
+        #
+        # which does not adhere to:
+        # https://firefox-source-docs.mozilla.org/mozbase/mozlog.html
+        #
+        # which says that `process` is a PID.
+        try:
+            browser_log = self.browser_logs.setdefault(int(process),
+                                                       io.StringIO())
+            browser_log.write(f'{data}\n')
+        except ValueError:
+            pass
 
     def _write_text_results(self, result: WPTResult, artifacts: Artifacts):
         """Write actual, expected, and diff text outputs to disk, if possible.
