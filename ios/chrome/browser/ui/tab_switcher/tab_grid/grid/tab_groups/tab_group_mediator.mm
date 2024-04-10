@@ -262,6 +262,36 @@
           beforeWebStateIndex:moveChange.moved_to_index() + 1];
       break;
     }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insertChange =
+          change.As<WebStateListChangeInsert>();
+      if (insertChange.group() != _tabGroup) {
+        break;
+      }
+
+      GridItemIdentifier* newItem =
+          [GridItemIdentifier tabIdentifier:insertChange.inserted_web_state()];
+
+      GridItemIdentifier* nextItemIdentifier;
+      if (insertChange.index() + 1 < _tabGroup->range().range_end()) {
+        nextItemIdentifier =
+            [GridItemIdentifier tabIdentifier:self.webStateList->GetWebStateAt(
+                                                  insertChange.index() + 1)];
+      }
+
+      GridItemIdentifier* selectedItem;
+      if (self.webStateList->GetGroupOfWebStateAt(
+              self.webStateList->active_index()) == _tabGroup) {
+        selectedItem = [GridItemIdentifier
+            tabIdentifier:self.webStateList->GetActiveWebState()];
+      }
+      [self.consumer insertItem:newItem
+                    beforeItemID:nextItemIdentifier
+          selectedItemIdentifier:selectedItem];
+
+      [self addObservationForWebState:insertChange.inserted_web_state()];
+      break;
+    }
     default:
       [super didChangeWebStateList:webStateList change:change status:status];
       break;
