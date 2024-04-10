@@ -67,6 +67,11 @@
 
 namespace commerce {
 
+namespace {
+// The maximum number of recently visited tab URLs to maintain.
+const size_t kRecentTabsMaxSize = 10;
+}  // namespace
+
 const char kImageAvailabilityHistogramName[] =
     "Commerce.ShoppingService.ProductInfo.ImageAvailability";
 const char kProductInfoLocalExtractionTime[] =
@@ -324,6 +329,38 @@ void ShoppingService::ScheduleProductInfoLocalExtraction(WebWrapper* web) {
 
 void ShoppingService::DidFinishLoad(WebWrapper* web) {
   ScheduleProductInfoLocalExtraction(web);
+}
+
+void ShoppingService::OnWebWrapperSwitched(WebWrapper* web) {
+  bool already_exists_in_recents = false;
+  for (auto it = recently_visited_tabs_.begin();
+       it != recently_visited_tabs_.end(); ++it) {
+    if (it->url == web->GetLastCommittedURL()) {
+      recently_visited_tabs_.erase(it);
+
+      // Don't remove the item from the cache here in case it's the only
+      // reference to a particular URL (causing deletion from the cache) since
+      // we're only shifting it to the head of the list.
+      already_exists_in_recents = true;
+      break;
+    }
+  }
+
+  UrlInfo info;
+  info.url = web->GetLastCommittedURL();
+  info.title = web->GetTitle();
+
+  if (!already_exists_in_recents) {
+    commerce_info_cache_.AddRef(info.url);
+  }
+
+  recently_visited_tabs_.insert(recently_visited_tabs_.begin(),
+                                std::move(info));
+
+  if (recently_visited_tabs_.size() > kRecentTabsMaxSize) {
+    commerce_info_cache_.RemoveRef(recently_visited_tabs_.back().url);
+    recently_visited_tabs_.pop_back();
+  }
 }
 
 void ShoppingService::TryRunningLocalExtractionForProductInfo(
@@ -825,6 +862,14 @@ const std::vector<UrlInfo> ShoppingService::GetUrlInfosForActiveWebWrappers() {
     urls.push_back(url);
   }
   return urls;
+}
+
+std::vector<UrlInfo> ShoppingService::GetRecentlyViewedWebWrapperUrls() {
+  std::vector<UrlInfo> info_list;
+  for (auto info : recently_visited_tabs_) {
+    info_list.push_back(info);
+  }
+  return info_list;
 }
 
 void ShoppingService::HandleOptGuideProductInfoResponse(

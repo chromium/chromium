@@ -516,6 +516,10 @@ void ShoppingServiceTestBase::WebWrapperDestroyed(WebWrapper* web) {
   base::RunLoop().RunUntilIdle();
 }
 
+void ShoppingServiceTestBase::OnWebWrapperSwitched(WebWrapper* web) {
+  shopping_service_->OnWebWrapperSwitched(web);
+}
+
 void ShoppingServiceTestBase::MergeProductInfoData(
     ProductInfo* info,
     const base::Value::Dict& on_page_data_map) {

@@ -72,6 +72,14 @@ void CommerceTabHelper::DidFinishLoad(
   shopping_service_->DidFinishLoad(web_wrapper_.get());
 }
 
+void CommerceTabHelper::OnWebContentsFocused(content::RenderWidgetHost* host) {
+  if (!shopping_service_) {
+    return;
+  }
+
+  shopping_service_->OnWebWrapperSwitched(web_wrapper_.get());
+}
+
 void CommerceTabHelper::WebContentsDestroyed() {
   if (shopping_service_)
     shopping_service_->WebWrapperDestroyed(web_wrapper_.get());

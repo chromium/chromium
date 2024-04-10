@@ -66,6 +66,14 @@ void CommerceTabHelper::PageLoaded(
   shopping_service_->DidFinishLoad(web_wrapper_.get());
 }
 
+void CommerceTabHelper::WasShown(web::WebState* web_state) {
+  if (!shopping_service_) {
+    return;
+  }
+
+  shopping_service_->OnWebWrapperSwitched(web_wrapper_.get());
+}
+
 void CommerceTabHelper::WebStateDestroyed(web::WebState* web_state) {
   if (shopping_service_)
     shopping_service_->WebWrapperDestroyed(web_wrapper_.get());

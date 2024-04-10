@@ -221,6 +221,7 @@ class ShoppingServiceTestBase : public testing::Test {
   void DidNavigateAway(WebWrapper* web, const GURL& url);
   void WebWrapperCreated(WebWrapper* web);
   void WebWrapperDestroyed(WebWrapper* web);
+  void OnWebWrapperSwitched(WebWrapper* web);
   static void MergeProductInfoData(ProductInfo* info,
                                    const base::Value::Dict& on_page_data_map);
 

@@ -439,6 +439,11 @@ class ShoppingService : public KeyedService,
   // platforms.
   virtual const std::vector<UrlInfo> GetUrlInfosForActiveWebWrappers();
 
+  // Gets a list of URLs from web wrappers that were recently viewed by the
+  // user (ordered by most recent first). This generally aligns with recently
+  // viewed tabs.
+  virtual std::vector<UrlInfo> GetRecentlyViewedWebWrapperUrls();
+
   // Starts tracking a list of parcels from a given page.
   void StartTrackingParcels(
       const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
@@ -503,6 +508,10 @@ class ShoppingService : public KeyedService,
   // A notification that the provided web wrapper has finished loading its main
   // frame.
   void DidFinishLoad(WebWrapper* web);
+
+  // A notification that the active web wrapper was switched. This signal is
+  // analogous to switching tabs.
+  void OnWebWrapperSwitched(WebWrapper* web);
 
   // Schedule (or reschedule) the on-page local extraction execution. Calling
   // this sequentially for the same web wrapper with the same URL will cancel
@@ -749,6 +758,10 @@ class ShoppingService : public KeyedService,
   std::unique_ptr<commerce::WebExtractor> web_extractor_;
 
   std::unordered_set<WebWrapper*> open_web_wrappers_;
+
+  // A list of UrlInfo ordered by most recently viewed. This is based on
+  // selected tab (not necessarily navigation).
+  std::vector<UrlInfo> recently_visited_tabs_;
 
   // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   //     See ConsentLevel::kSync documentation for details.

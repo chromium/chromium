@@ -433,6 +433,88 @@ TEST_P(ShoppingServiceTest, TestWebWrapperSet) {
   ASSERT_TRUE(shopping_service_->GetUrlInfosForActiveWebWrappers().empty());
 }
 
+// Make sure recent URLs doesn't contain duplicates.
+TEST_P(ShoppingServiceTest, TestRecentUrls_NoDuplicates) {
+  std::string url1 = "http://example.com/foo";
+  MockWebWrapper web1(GURL(url1), false);
+  std::string url2 = "http://example.com/bar";
+  MockWebWrapper web2(GURL(url2), false);
+
+  ASSERT_EQ(0u, shopping_service_->GetRecentlyViewedWebWrapperUrls().size());
+
+  OnWebWrapperSwitched(&web1);
+
+  std::vector<UrlInfo> urls =
+      shopping_service_->GetRecentlyViewedWebWrapperUrls();
+  ASSERT_EQ(1u, urls.size());
+  ASSERT_EQ(urls[0].url, GURL(url1));
+
+  OnWebWrapperSwitched(&web2);
+
+  urls = shopping_service_->GetRecentlyViewedWebWrapperUrls();
+  ASSERT_EQ(2u, urls.size());
+  ASSERT_EQ(urls[0].url, GURL(url2));
+  ASSERT_EQ(urls[1].url, GURL(url1));
+
+  // Adding the first URL again should move that url to the head of the list.
+  // There should still only be one instance.
+  OnWebWrapperSwitched(&web1);
+
+  urls = shopping_service_->GetRecentlyViewedWebWrapperUrls();
+  ASSERT_EQ(2u, urls.size());
+  ASSERT_EQ(urls[0].url, GURL(url1));
+  ASSERT_EQ(urls[1].url, GURL(url2));
+}
+
+// Make sure recent URLs doesn't go over the max size.
+TEST_P(ShoppingServiceTest, TestRecentUrls_MaxCount) {
+  for (int i = 0; i < 20; i++) {
+    MockWebWrapper wrapper = MockWebWrapper(
+        GURL("http://example.com/" + base::NumberToString(i)), false);
+    OnWebWrapperSwitched(&wrapper);
+  }
+
+  std::string url1 = "http://example.com/foo";
+  MockWebWrapper web1(GURL(url1), false);
+  std::string url2 = "http://example.com/bar";
+  MockWebWrapper web2(GURL(url2), false);
+
+  ASSERT_EQ(10u, shopping_service_->GetRecentlyViewedWebWrapperUrls().size());
+}
+
+TEST_P(ShoppingServiceTest, TestRecentUrls_CacheEntriesRetained) {
+  const size_t max_recents = 10;
+  std::vector<std::unique_ptr<MockWebWrapper>> web_wrappers;
+  for (size_t i = 0; i < max_recents; i++) {
+    web_wrappers.push_back(std::make_unique<MockWebWrapper>(
+        GURL("http://example.com/" + base::NumberToString(i)), false));
+    OnWebWrapperSwitched(web_wrappers[i].get());
+  }
+
+  for (const auto& web_wrapper : web_wrappers) {
+    ASSERT_TRUE(GetCache().IsUrlReferenced(web_wrapper->GetLastCommittedURL()));
+  }
+
+  // Add more URLs to push the originals out.
+  for (size_t i = max_recents; i < max_recents * 2; i++) {
+    web_wrappers.push_back(std::make_unique<MockWebWrapper>(
+        GURL("http://example.com/" + base::NumberToString(i)), false));
+    OnWebWrapperSwitched(web_wrappers[i].get());
+  }
+
+  // The first set of web wrapper URLs should no longer be in the cache, but
+  // the second set should.
+  for (size_t i = 0; i < web_wrappers.size(); i++) {
+    if (i < max_recents) {
+      ASSERT_FALSE(
+          GetCache().IsUrlReferenced(web_wrappers[i]->GetLastCommittedURL()));
+    } else {
+      ASSERT_TRUE(
+          GetCache().IsUrlReferenced(web_wrappers[i]->GetLastCommittedURL()));
+    }
+  }
+}
+
 // Test that product info is inserted into the cache without a client
 // necessarily querying for it.
 TEST_P(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
