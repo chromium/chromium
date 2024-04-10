@@ -400,7 +400,7 @@ class Device final : public ui::GbmDevice {
 
     int gbm_flags = 0;
     if ((gbm_flags = GetSupportedGbmFlags(format)) == 0) {
-      LOG(ERROR) << "gbm format not supported: " << format;
+      LOG(ERROR) << "gbm format not supported: " << DrmFormatToString(format);
       return nullptr;
     }
 
