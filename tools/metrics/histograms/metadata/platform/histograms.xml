@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.CrashCollector.AddWeightResult"
     enum="CrosCrashCollectorAddWeightResult" expires_after="2024-09-01">
-  <owner>mutexlox@google.com</owner>
+  <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
     (ChromeOS only) An enum indicating the reasons why adding a weight to crash
@@ -198,7 +198,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.CrOS.CrashSenderRemoveReason"
     enum="CrosCrashSenderRemoveReason" expires_after="2024-09-15">
   <owner>iby@chromium.org</owner>
-  <owner>mutexlox@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
     (Chrome OS only) An enum indicating the reasons for removal of crash reports
@@ -217,7 +216,6 @@ chromium-metrics-reviews@google.com.
 <!-- https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/metrics/OWNERS -->
 
   <owner>iby@chromium.org</owner>
-  <owner>mutexlox@chromium.org</owner>
   <owner>vapier@chromium.org</owner>
   <summary>
     Generic event of interest from Chrome OS. Intended mainly to help assess the
@@ -240,7 +238,6 @@ chromium-metrics-reviews@google.com.
 
   <owner>semenzato@chromium.org</owner>
   <owner>bsimonnet@chromium.org</owner>
-  <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
@@ -481,7 +478,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.ExternalMetrics.SamplesRead" units="count"
     expires_after="2025-01-30">
   <owner>iby@google.com</owner>
-  <owner>mutexlox@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
     On ChromeOS, number of external metrics samples read in from the platform.
@@ -493,7 +489,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Featured.BootAttemptsSinceLastSafeSeed"
     units="number of boot attempts" expires_after="2024-10-06">
-  <owner>mutexlox@google.com</owner>
+  <owner>iby@google.com</owner>
+  <owner>shraash@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Records number of boot attempts on a device since receiving a variations
@@ -1611,7 +1608,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.Segmentation.FeatureLevel" units="level number"
     expires_after="2024-08-09">
   <owner>gwendal@chromium.org</owner>
-  <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
@@ -1624,7 +1620,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.Segmentation.ScopeLevel"
     enum="FeatureManagementScopeLevel" expires_after="2024-08-09">
   <owner>gwendal@chromium.org</owner>
-  <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
@@ -2279,7 +2274,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.UnaggregatedUsageTime" units="seconds"
     expires_after="2024-09-01">
-  <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
@@ -2294,7 +2288,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.UnaggregatedUsageTimeTooBig" units="seconds"
     expires_after="2024-05-31">
-  <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
@@ -2314,7 +2307,6 @@ chromium-metrics-reviews@google.com.
   <owner>semenzato@chromium.org</owner>
   <owner>bsimonnet@chromium.org</owner>
   <owner>iby@chromium.org</owner>
-  <owner>mutexlox@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Count of unclean OS shutdowns during the previous day, or the most recent
@@ -2334,7 +2326,6 @@ chromium-metrics-reviews@google.com.
   <owner>semenzato@chromium.org</owner>
   <owner>bsimonnet@chromium.org</owner>
   <owner>iby@chromium.org</owner>
-  <owner>mutexlox@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Count of crashes (user) during the previous day, or the most recent day the

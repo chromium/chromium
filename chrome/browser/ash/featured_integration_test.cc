@@ -68,7 +68,6 @@ class FeaturedIntegrationTest : public AshIntegrationTest,
         "Verifies features are enabled/disabled as expected and parameters are "
         "unchanged");
     info.set_team_email("chromeos-data-eng@google.com");
-    info.add_contacts("mutexlox@google.com");
     info.add_contacts("jamescook@google.com");  // Ported from Tast to Crosier.
     info.set_buganizer("1096648");
     crosier_util::AddTestInfo(info);
