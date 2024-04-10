@@ -190,8 +190,10 @@ void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
   std::string key = BuildKey(relying_party_requester, relying_party_embedder,
                              identity_provider);
   const auto object = GetGrantedObject(relying_party_requester, key);
-  if (!object)
+  if (!object) {
+    std::move(callback).Run();
     return;
+  }
 
   base::Value::Dict new_object = object->value.Clone();
   base::Value::List* account_ids = new_object.FindList(kAccountIdsKey);
