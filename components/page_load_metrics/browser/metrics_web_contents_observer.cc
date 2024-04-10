@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -534,7 +536,15 @@ void MetricsWebContentsObserver::OnCookiesAccessedImpl(
 
 void MetricsWebContentsObserver::DidActivatePreviewedPage(
     base::TimeTicks activation_time) {
-  primary_page_->DidActivatePreviewedPage(activation_time);
+  if (primary_page_) {
+    primary_page_->DidActivatePreviewedPage(activation_time);
+  } else {
+    // TODO(b:330324142): Speculative fix to avoid crash cases. Need extra
+    // investigation why this happens once we ensure the case.
+    SCOPED_CRASH_KEY_STRING32("b/330324142", "Null",
+                              "MetricsWebContentsObserver::primary_page_");
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 void MetricsWebContentsObserver::OnStorageAccessed(
