@@ -27,14 +27,21 @@ public class SystemStateUtil {
     /** Returns whether Android has multiple user profiles. */
     @CalledByNative
     public static @MultipleUserProfilesState int getMultipleUserProfilesState() {
-        UserManager userManager =
-                (UserManager)
-                        ContextUtils.getApplicationContext().getSystemService(Context.USER_SERVICE);
-        List<UserHandle> userHandles = userManager.getUserProfiles();
-        assert !userHandles.isEmpty();
-        return userHandles.size() > 1
-                ? MultipleUserProfilesState.MULTIPLE_PROFILES
-                : MultipleUserProfilesState.SINGLE_PROFILE;
+        try {
+            UserManager userManager =
+                    (UserManager)
+                            ContextUtils.getApplicationContext()
+                                    .getSystemService(Context.USER_SERVICE);
+            List<UserHandle> userHandles = userManager.getUserProfiles();
+            assert !userHandles.isEmpty();
+            return userHandles.size() > 1
+                    ? MultipleUserProfilesState.MULTIPLE_PROFILES
+                    : MultipleUserProfilesState.SINGLE_PROFILE;
+        } catch (SecurityException e) {
+            // If we don't have the QUERY_USERS permission, then we can't tell how many profiles
+            // there are. See https://crbug.com/332989719 for reference.
+            return MultipleUserProfilesState.UNKNOWN;
+        }
     }
 
     @CalledByNative
