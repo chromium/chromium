@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './object_layer.js';
 import './text_layer.js';
 import './region_selection.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {ObjectLayerElement} from './object_layer.js';
 import type {RegionSelectionElement} from './region_selection.js';
 import {getTemplate} from './selection_overlay.html.js';
 import {DRAG_THRESHOLD, DragFeature, emptyGestureEvent, type GestureEvent, GestureState} from './selection_utils.js';
@@ -17,6 +19,7 @@ export interface SelectionOverlayElement {
     regionSelectionLayer: RegionSelectionElement,
     selectionOverlay: HTMLElement,
     textSelectionLayer: TextLayerElement,
+    objectSelectionLayer: ObjectLayerElement,
   };
 }
 
@@ -109,6 +112,7 @@ export class SelectionOverlayElement extends PolymerElement {
         break;
       case GestureState.STARTING:
         // This gesture was a tap. Let the features respond to a tap.
+        this.$.objectSelectionLayer.handleUpGesture(this.currentGesture);
         break;
       default:  // Other states are invalid and ignored.
         break;

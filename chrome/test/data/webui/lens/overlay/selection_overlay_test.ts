@@ -9,31 +9,34 @@ import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
+import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
+import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
+import {simulateClick, simulateDrag} from '../utils/selection_utils.js';
 import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
-
-interface Point {
-  x: number;
-  y: number;
-}
 
 suite('SelectionOverlay', function() {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let selectionOverlayElement: SelectionOverlayElement;
   let callbackRouterRemote: LensPageRemote;
+  let objects: OverlayObject[];
 
   setup(() => {
+    // Resetting the HTML needs to be the first thing we do in setup to
+    // guarantee that any singleton instances don't change while any UI is still
+    // attached to the DOM.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testBrowserProxy = new TestLensOverlayBrowserProxy();
     callbackRouterRemote =
         testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     selectionOverlayElement = document.createElement('lens-selection-overlay');
     document.body.appendChild(selectionOverlayElement);
     // Since the size of the Selection Overlay is based on the screenshot which
@@ -55,7 +58,7 @@ suite('SelectionOverlay', function() {
     };
   }
 
-  async function addWords() {
+  function addWords() {
     const text = createText([
       createParagraph([
         createLine([
@@ -72,25 +75,12 @@ suite('SelectionOverlay', function() {
     return flushTasks();
   }
 
-  function createPointerEvent(eventType: string, point: Point): PointerEvent {
-    return new PointerEvent(eventType, {
-      pointerId: 1,
-      bubbles: true,
-      button: 0,
-      clientX: point.x,
-      clientY: point.y,
-      isPrimary: true,
-    });
-  }
-
-  function simulateDrag(fromPoint: Point, toPoint: Point): Promise<void> {
-    const pointerDownEvent = createPointerEvent('pointerdown', fromPoint);
-    const pointerMoveEvent = createPointerEvent('pointermove', toPoint);
-    const pointerUpEvent = createPointerEvent('pointerup', toPoint);
-
-    selectionOverlayElement.dispatchEvent(pointerDownEvent);
-    selectionOverlayElement.dispatchEvent(pointerMoveEvent);
-    selectionOverlayElement.dispatchEvent(pointerUpEvent);
+  function addObjects() {
+    objects = [
+      {x: 80, y: 20, width: 25, height: 10},
+      {x: 70, y: 35, width: 20, height: 10},
+    ].map((rect, i) => createObject(i.toString(), normalizedBox(rect)));
+    callbackRouterRemote.objectsReceived(objects);
     return flushTasks();
   }
 
@@ -103,7 +93,7 @@ suite('SelectionOverlay', function() {
         const wordEl = selectionOverlayElement.$.textSelectionLayer
                            .getWordNodesForTesting()[0]!;
         await simulateDrag(
-            {
+            selectionOverlayElement, {
               x: wordEl.getBoundingClientRect().left + 5,
               y: wordEl.getBoundingClientRect().top + 5,
             },
@@ -126,7 +116,7 @@ suite('SelectionOverlay', function() {
           x: wordEl.getBoundingClientRect().left + 5,
           y: wordEl.getBoundingClientRect().top + 5,
         };
-        await simulateDrag({x: 0, y: 0}, dragEnd);
+        await simulateDrag(selectionOverlayElement, {x: 0, y: 0}, dragEnd);
 
         const expectedRect: CenterRotatedBox = {
           box: normalizedBox({
@@ -172,5 +162,51 @@ suite('SelectionOverlay', function() {
             200,
             selectionOverlayElement.$.regionSelectionLayer.$
                 .regionSelectionCanvas.height);
+      });
+
+  test(
+      `verify that only objects respond to taps, even when text overlaps`,
+      async () => {
+        await Promise.all([addWords(), addObjects()]);
+
+        await simulateClick(selectionOverlayElement, {x: 80, y: 20});
+
+        const rect =
+            await testBrowserProxy.handler.whenCalled('issueLensRequest');
+        assertBoxesWithinThreshold(objects[0]!.geometry.boundingBox, rect);
+      });
+
+  test(
+      `verify that dragging performs region search, even when an object
+      overlaps`,
+      async () => {
+        await addObjects();
+
+        // Drag that starts and ends inside the bounding box of an object.
+        const objectEl = selectionOverlayElement.$.objectSelectionLayer
+                             .getObjectNodesForTesting()[1]!;
+        const dragStart = {
+          x: objectEl.getBoundingClientRect().left + 1,
+          y: objectEl.getBoundingClientRect().top + 1,
+        };
+        const dragEnd = {
+          x: objectEl.getBoundingClientRect().right - 1,
+          y: objectEl.getBoundingClientRect().bottom - 1,
+        };
+        await simulateDrag(selectionOverlayElement, dragStart, dragEnd);
+
+        const expectedRect: CenterRotatedBox = {
+          box: normalizedBox({
+            x: (dragStart.x + dragEnd.x) / 2,
+            y: (dragStart.y + dragEnd.y) / 2,
+            width: dragEnd.x - dragStart.x,
+            height: dragEnd.y - dragStart.y,
+          }),
+          rotation: 0,
+          coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+        };
+        const rect =
+            await testBrowserProxy.handler.whenCalled('issueLensRequest');
+        assertDeepEquals(expectedRect, rect);
       });
 });

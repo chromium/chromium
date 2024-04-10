@@ -10,7 +10,9 @@ import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+
+import {simulateDrag} from '../utils/selection_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -19,10 +21,14 @@ suite('ManualRegionSelection', function() {
   let selectionOverlayElement: SelectionOverlayElement;
 
   setup(() => {
+    // Resetting the HTML needs to be the first thing we do in setup to
+    // guarantee that any singleton instances don't change while any UI is still
+    // attached to the DOM.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testBrowserProxy = new TestLensOverlayBrowserProxy();
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     selectionOverlayElement = document.createElement('lens-selection-overlay');
     // Position absolutely so we can handle logic of drag ending off this
     // element.
@@ -34,31 +40,6 @@ suite('ManualRegionSelection', function() {
     document.body.appendChild(selectionOverlayElement);
     return waitAfterNextRender(selectionOverlayElement);
   });
-
-  function createPrimaryClickPointerEvent(
-      eventType: string, point: Point): PointerEvent {
-    return new PointerEvent(eventType, {
-      pointerId: 1,
-      bubbles: true,
-      button: 0,
-      clientX: point.x,
-      clientY: point.y,
-      isPrimary: true,
-    });
-  }
-
-  function doDrag(fromPoint: Point, toPoint: Point): Promise<void> {
-    const pointerDownEvent =
-        createPrimaryClickPointerEvent('pointerdown', fromPoint);
-    const pointerMoveEvent =
-        createPrimaryClickPointerEvent('pointermove', toPoint);
-    const pointerUpEvent = createPrimaryClickPointerEvent('pointerup', toPoint);
-
-    selectionOverlayElement.dispatchEvent(pointerDownEvent);
-    selectionOverlayElement.dispatchEvent(pointerMoveEvent);
-    selectionOverlayElement.dispatchEvent(pointerUpEvent);
-    return flushTasks();
-  }
 
   // Normalizes the given values to the size of selection overlay.
   function normalizedBox(box: RectF): RectF {
@@ -78,7 +59,7 @@ suite('ManualRegionSelection', function() {
     // call that already happened.
     testBrowserProxy.handler.resetResolver('issueLensRequest');
 
-    await doDrag(fromPoint, toPoint);
+    await simulateDrag(selectionOverlayElement, fromPoint, toPoint);
     const rect = await testBrowserProxy.handler.whenCalled('issueLensRequest');
     assertDeepEquals(expectedRect, rect);
   }

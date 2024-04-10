@@ -4,13 +4,14 @@
 
 import 'chrome-untrusted://lens/selection_overlay.js';
 
-import type {Point, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
+import {simulateClick, simulateDrag} from '../utils/selection_utils.js';
 import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
@@ -29,12 +30,16 @@ suite('TextSelection', function() {
   let callbackRouterRemote: LensPageRemote;
 
   setup(async () => {
+    // Resetting the HTML needs to be the first thing we do in setup to
+    // guarantee that any singleton instances don't change while any UI is still
+    // attached to the DOM.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testBrowserProxy = new TestLensOverlayBrowserProxy();
     callbackRouterRemote =
         testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     selectionOverlayElement = document.createElement('lens-selection-overlay');
     document.body.appendChild(selectionOverlayElement);
     // Since the size of the Selection Overlay is based on the screenshot which
@@ -90,37 +95,6 @@ suite('TextSelection', function() {
     return flushTasks();
   }
 
-  function createPointerEvent(eventType: string, point: Point): PointerEvent {
-    return new PointerEvent(eventType, {
-      pointerId: 1,
-      bubbles: true,
-      button: 0,
-      clientX: point.x,
-      clientY: point.y,
-      isPrimary: true,
-    });
-  }
-
-  async function simulateClick(point: Point): Promise<void> {
-    const pointerDownEvent = createPointerEvent('pointerdown', point);
-    const pointerUpEvent = createPointerEvent('pointerup', point);
-
-    selectionOverlayElement.dispatchEvent(pointerDownEvent);
-    selectionOverlayElement.dispatchEvent(pointerUpEvent);
-    return flushTasks();
-  }
-
-  async function simulateDrag(fromPoint: Point, toPoint: Point): Promise<void> {
-    const pointerDownEvent = createPointerEvent('pointerdown', fromPoint);
-    const pointerMoveEvent = createPointerEvent('pointermove', toPoint);
-    const pointerUpEvent = createPointerEvent('pointerup', toPoint);
-
-    selectionOverlayElement.dispatchEvent(pointerDownEvent);
-    selectionOverlayElement.dispatchEvent(pointerMoveEvent);
-    selectionOverlayElement.dispatchEvent(pointerUpEvent);
-    return flushTasks();
-  }
-
   function getRenderedWords(): NodeListOf<Element> {
     return selectionOverlayElement.$.textSelectionLayer
         .getWordNodesForTesting();
@@ -143,6 +117,7 @@ suite('TextSelection', function() {
 
     // Drag from beginning of first word to end of first word.
     await simulateDrag(
+        selectionOverlayElement,
         {x: firstWordBoundingBox.left + 2, y: firstWordBoundingBox.top + 2},
         {x: firstWordBoundingBox.right - 2, y: firstWordBoundingBox.top + 2});
 
@@ -163,7 +138,7 @@ suite('TextSelection', function() {
 
         // Drag from first word onto second word.
         await simulateDrag(
-            {
+            selectionOverlayElement, {
               x: getCenterX(firstWordBoundingBox),
               y: getCenterY(firstWordBoundingBox),
             },
@@ -198,7 +173,7 @@ suite('TextSelection', function() {
 
         // Drag from second word to off line and above third word.
         await simulateDrag(
-            {
+            selectionOverlayElement, {
               x: getCenterX(secondWordBoundingBox),
               y: getCenterY(secondWordBoundingBox),
             },
@@ -237,7 +212,7 @@ suite('TextSelection', function() {
 
         // Drag from first word to the right of last word of paragraph.
         await simulateDrag(
-            {
+            selectionOverlayElement, {
               x: getCenterX(firstParagraphFirstWordBox),
               y: getCenterY(firstParagraphFirstWordBox),
             },
@@ -260,7 +235,7 @@ suite('TextSelection', function() {
     // Drag from last word of first paragraph to second word of second
     // paragraph.
     await simulateDrag(
-        {
+        selectionOverlayElement, {
           x: getCenterX(firstParagraphLastWordBox),
           y: getCenterY(firstParagraphLastWordBox),
         },
@@ -288,7 +263,7 @@ suite('TextSelection', function() {
   });
 
   test('verify that starting a drag off a word does nothing', async () => {
-    await simulateDrag({x: 0, y: 0}, {x: 70, y: 35});
+    await simulateDrag(selectionOverlayElement, {x: 0, y: 0}, {x: 70, y: 35});
 
     const highlightedWords = getHighlightedWords();
 
@@ -302,13 +277,16 @@ suite('TextSelection', function() {
 
     // Highlight some words.
     await simulateDrag(
+        selectionOverlayElement,
         {x: getCenterX(firstWord), y: getCenterY(firstWord)},
         {x: getCenterX(secondWord), y: getCenterY(secondWord)});
     let highlightedWords = getHighlightedWords();
     assertEquals(2, highlightedWords.length);
 
     // Click on a word.
-    await simulateClick({x: getCenterX(firstWord), y: getCenterY(firstWord)});
+    await simulateClick(
+        selectionOverlayElement,
+        {x: getCenterX(firstWord), y: getCenterY(firstWord)});
 
     // Verify words unhighlight.
     highlightedWords = getHighlightedWords();
@@ -322,13 +300,14 @@ suite('TextSelection', function() {
 
     // Highlight some words.
     await simulateDrag(
+        selectionOverlayElement,
         {x: getCenterX(firstWord), y: getCenterY(firstWord)},
         {x: getCenterX(secondWord), y: getCenterY(secondWord)});
     let highlightedWords = getHighlightedWords();
     assertEquals(2, highlightedWords.length);
 
     // Click off a word.
-    await simulateClick({x: 0, y: 0});
+    await simulateClick(selectionOverlayElement, {x: 0, y: 0});
 
     // Verify words unhighlight.
     highlightedWords = getHighlightedWords();

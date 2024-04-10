@@ -16,6 +16,7 @@ build_webui("build_overlay") {
 
   web_component_files = [
     "lens_overlay_app.ts",
+    "object_layer.ts",
     "region_selection.ts",
     "selection_overlay.ts",
     "side_panel/side_panel_app.ts",

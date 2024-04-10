@@ -311,6 +311,11 @@ void LensOverlayController::RemoveGlueForWebView(views::WebView* web_view) {
   }
 }
 
+void LensOverlayController::SendObjects(
+    std::vector<lens::mojom::OverlayObjectPtr> objects) {
+  page_->ObjectsReceived(std::move(objects));
+}
+
 void LensOverlayController::SendText(lens::mojom::TextPtr text) {
   page_->TextReceived(std::move(text));
 }

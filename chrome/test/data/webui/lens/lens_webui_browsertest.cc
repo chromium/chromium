@@ -105,6 +105,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, TextSelection) {
   RunOverlayTest("lens/overlay/text_selection_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, ObjectSelection) {
+  RunOverlayTest("lens/overlay/object_selection_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, SelectionOverlay) {
   RunOverlayTest("lens/overlay/selection_overlay_test.js", "mocha.run()");
 }

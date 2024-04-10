@@ -5,6 +5,7 @@
 module lens.mojom;
 
 import "chrome/browser/lens/core/mojom/geometry.mojom";
+import "chrome/browser/lens/core/mojom/overlay_object.mojom";
 import "chrome/browser/lens/core/mojom/text.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -37,6 +38,9 @@ interface LensPageHandler {
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
 interface LensPage {
+  // Passes objects received from Lens to WebUI for rendering.
+  ObjectsReceived(array<OverlayObject> objects);
+
   // Passes Text received from Lens to WebUI for rendering.
   TextReceived(Text text);
 };
