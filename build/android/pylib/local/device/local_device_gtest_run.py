@@ -764,6 +764,10 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         logging.critical('Logcat saved to %s', logcat_file.Link())
 
   #override
+  def _GetUniqueTestName(self, test):
+    return gtest_test_instance.TestNameWithoutDisabledPrefix(test)
+
+  #override
   def _RunTest(self, device, test):
     # Run the test.
     timeout = (self._test_instance.shard_timeout *
