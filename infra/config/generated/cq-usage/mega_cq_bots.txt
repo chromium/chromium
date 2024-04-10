@@ -112,7 +112,6 @@ chromium/try/linux-v4l2-codec-rel
 chromium/try/linux-wayland-rel
 chromium/try/linux-webkit-asan-rel
 chromium/try/linux-webkit-msan-rel
-chromium/try/linux-x64-cast-dbg
 chromium/try/linux_chromium_archive_rel_ng
 chromium/try/linux_chromium_asan_rel_ng
 chromium/try/linux_chromium_cfi_rel_ng

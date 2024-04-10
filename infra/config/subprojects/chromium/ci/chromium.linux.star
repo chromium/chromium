@@ -73,6 +73,8 @@ ci.builder(
             "minimal_symbols",
         ],
     ),
+    # TODO(crbug.com/332735845): Garden this once stabilized.
+    sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
