@@ -7,6 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/debug/stack_trace.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_policy.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -20,8 +21,7 @@ namespace content {
 std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node) {
-  return std::unique_ptr<BrowserAccessibilityMac>(
-      new BrowserAccessibilityMac(manager, node));
+  return base::WrapUnique(new BrowserAccessibilityMac(manager, node));
 }
 
 BrowserAccessibilityMac::BrowserAccessibilityMac(

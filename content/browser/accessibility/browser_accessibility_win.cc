@@ -4,10 +4,10 @@
 
 #include "content/browser/accessibility/browser_accessibility_win.h"
 
+#include "base/memory/ptr_util.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
-
 #include "ui/base/win/atl_module.h"
 
 namespace content {
@@ -16,8 +16,7 @@ namespace content {
 std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node) {
-  return std::unique_ptr<BrowserAccessibilityWin>(
-      new BrowserAccessibilityWin(manager, node));
+  return base::WrapUnique(new BrowserAccessibilityWin(manager, node));
 }
 
 BrowserAccessibilityWin::BrowserAccessibilityWin(
