@@ -601,6 +601,19 @@ void HTMLSelectElement::RecalcListItems() const {
       continue;
     }
 
+    // Descendants <option>s of a child <datalist> should be included in the
+    // native popup.
+    if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+        IsA<HTMLDataListElement>(*current_html_element)) {
+      for (Node& datalist_descendant :
+           NodeTraversal::DescendantsOf(*current_html_element)) {
+        if (IsA<HTMLOptionElement>(datalist_descendant) ||
+            IsA<HTMLHRElement>(datalist_descendant)) {
+          list_items_.push_back(To<HTMLElement>(datalist_descendant));
+        }
+      }
+    }
+
     // We should ignore nested optgroup elements. The HTML parser flatten
     // them.  However we need to ignore nested optgroups built by DOM APIs.
     // This behavior matches to IE and Firefox.
