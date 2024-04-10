@@ -513,6 +513,7 @@
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "chrome/browser/enterprise/data_controls/reporting_service.h"
 #include "chrome/browser/enterprise/data_controls/rules_service.h"
 #endif
 
@@ -750,6 +751,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #endif
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  data_controls::ReportingServiceFactory::GetInstance();
   data_controls::RulesServiceFactory::GetInstance();
 #endif
   data_sharing::DataSharingServiceFactory::GetInstance();

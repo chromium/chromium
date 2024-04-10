@@ -14,6 +14,8 @@ source_set("data_controls") {
     "data_controls_dialog.h",
     "dlp_reporting_manager.cc",
     "dlp_reporting_manager.h",
+    "reporting_service.cc",
+    "reporting_service.h",
     "rules_service.cc",
     "rules_service.h",
   ]
