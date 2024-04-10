@@ -101,8 +101,9 @@ public final class PrivacySandboxDialogTest {
     }
 
     private void renderViewWithId(int id, String renderId) {
-        onViewWaiting(withId(id));
+        onViewWaiting(withId(id), true);
         onView(withId(id))
+                .inRoot(isDialog())
                 .check(
                         (v, noMatchException) -> {
                             if (noMatchException != null) throw noMatchException;
