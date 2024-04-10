@@ -138,4 +138,4 @@ async function createFileElement(): Promise<FileSuggestionModuleElement|null> {
 }
 
 export const fileSuggestionDescriptor: ModuleDescriptor = new ModuleDescriptor(
-    /*id*/ 'file_suggestion', createFileElement);
+    /*id*/ 'drive', createFileElement);

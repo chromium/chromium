@@ -34,7 +34,7 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
   }
 
   if (drive_module_enabled) {
-    details.emplace_back("file_suggestion", IDS_NTP_MODULES_DRIVE_SENTENCE);
+    details.emplace_back("drive", IDS_NTP_MODULES_DRIVE_SENTENCE);
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpTabResumptionModule)) {
