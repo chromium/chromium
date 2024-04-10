@@ -65,7 +65,9 @@ class PushNotificationClient {
   void loadUrlInNewTab(const GURL& url);
 
   // Loads the feedback view controller once an active browser is ready.
-  void loadFeedback();
+  void loadFeedbackWithPayloadAndClientId(
+      NSDictionary<NSString*, NSString*>* data,
+      PushNotificationClientId clientId);
 
   // Allows tests to set the last used ChromeBrowserState returned in
   // GetLastUsedBrowserState().
@@ -93,6 +95,12 @@ class PushNotificationClient {
   // Stores whether or not the feedback view controller should be shown when a
   // Browser is ready.
   bool feedback_presentation_delayed_ = false;
+
+  // Stores which client sent the delayed feedback request.
+  PushNotificationClientId feedback_presentation_delayed_client_;
+
+  // Stores the feedback payload to be sent with the notification feedback.
+  NSDictionary<NSString*, NSString*>* feedback_data_ = nil;
   // Allows tests to override the last used ChromeBrowserState returned in
   // GetLastUsedBrowserState().
   raw_ptr<ChromeBrowserState> last_used_browser_state_for_testing_ = nullptr;

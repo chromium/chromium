@@ -17,6 +17,10 @@ class ChromiumContentNotificationService final
   GURL GetDestinationUrl(NSDictionary<NSString*, id>* payload) final {
     return GURL::EmptyGURL();
   }
+  NSDictionary<NSString*, NSString*>* GetFeedbackPayload(
+      NSDictionary<NSString*, id>* payload) final {
+    return nil;
+  }
 };
 
 }  // anonymous namespace

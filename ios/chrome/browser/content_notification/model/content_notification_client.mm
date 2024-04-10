@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/content_notification/model/content_notification_client.h"
 
-#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -22,14 +22,16 @@ void ContentNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   NSDictionary<NSString*, id>* payload =
       response.notification.request.content.userInfo;
+  ContentNotificationService* contentNotificationService =
+      ContentNotificationServiceFactory::GetForBrowserState(
+          GetLastUsedBrowserState());
   if ([response.actionIdentifier
           isEqualToString:kContentNotificationFeedbackActionIdentifier]) {
-    loadFeedback();
+    NSDictionary<NSString*, NSString*>* feedbackPayload =
+        contentNotificationService->GetFeedbackPayload(payload);
+    loadFeedbackWithPayloadAndClientId(feedbackPayload,
+                                       PushNotificationClientId::kContent);
   } else {
-    ContentNotificationService* contentNotificationService =
-        ContentNotificationServiceFactory::GetForBrowserState(
-            GetLastUsedBrowserState());
-
     const GURL& url = contentNotificationService->GetDestinationUrl(payload);
     loadUrlInNewTab(url);
   }

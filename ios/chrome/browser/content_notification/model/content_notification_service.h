@@ -19,6 +19,11 @@ class ContentNotificationService : public KeyedService {
   // Returns a destination URL from an unparsed content notification payload.
   virtual GURL GetDestinationUrl(NSDictionary<NSString*, id>* payload) = 0;
 
+  // Returns a payload to be sent for feedback from a content notification
+  // payload.
+  virtual NSDictionary<NSString*, NSString*>* GetFeedbackPayload(
+      NSDictionary<NSString*, id>* payload) = 0;
+
   // KeyedService implementation.
   void Shutdown() override;
 };
