@@ -185,6 +185,13 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
+    builder_config_settings = builder_config.try_settings(
+        # This is a temporary solution to avoid allowing culprit changes to slip through since
+        # retry runs without the patch always fail with connection errors.
+        # See https://crbug.com/40278477.
+        # TODO(b/40278477): Re-enable the exoneration when the issue above is fixed.
+        retry_without_patch = False,
+    ),
     gn_args = gn_args.config(
         configs = [
             "ci/fuchsia-x64-cast-receiver-rel",
