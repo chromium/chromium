@@ -8516,6 +8516,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wallpaper.SeaPen.Template.Settled" enum="SeaPenTemplateId"
+    expires_after="2025-04-10">
+  <owner>thuongphan@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    The template of the Sea Pen image currently set as the active wallpaper.
+    Emitted once for every UMA upload.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Wallpaper.Source2" enum="WallpaperType"
     expires_after="2024-09-01">
   <owner>thuongphan@chromium.org</owner>

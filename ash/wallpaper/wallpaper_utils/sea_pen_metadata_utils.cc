@@ -97,6 +97,21 @@ SeaPenQueryDictToRecentImageInfo(
       GetCreationTimeInfo(*creation_time));
 }
 
+std::optional<int> ExtractTemplateIdFromSeaPenQueryDict(
+    const std::optional<base::Value::Dict> query_dict) {
+  if (!query_dict.has_value()) {
+    DVLOG(2) << __func__ << " query_dict nullopt";
+    return std::nullopt;
+  }
+
+  int template_id;
+  auto* template_id_ptr = query_dict->FindString(kSeaPenTemplateIdKey);
+  if (!template_id_ptr || !base::StringToInt(*template_id_ptr, &template_id)) {
+    return std::nullopt;
+  }
+  return template_id;
+}
+
 }  // namespace
 
 base::Value::Dict SeaPenQueryToDict(
@@ -159,6 +174,15 @@ void DecodeJsonMetadata(
   data_decoder::DataDecoder::ParseJsonIsolated(
       json, base::BindOnce(&AsOptionalDict)
                 .Then(base::BindOnce(&SeaPenQueryDictToRecentImageInfo))
+                .Then(std::move(callback)));
+}
+
+void DecodeJsonMetadataGetTemplateId(
+    const std::string& json,
+    base::OnceCallback<void(std::optional<int>)> callback) {
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      json, base::BindOnce(&AsOptionalDict)
+                .Then(base::BindOnce(&ExtractTemplateIdFromSeaPenQueryDict))
                 .Then(std::move(callback)));
 }
 

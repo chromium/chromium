@@ -274,6 +274,18 @@ void SeaPenWallpaperManager::TouchFile(const AccountId& account_id,
                                 GetFilePathForImageId(account_id, image_id)));
 }
 
+void SeaPenWallpaperManager::GetTemplateIdFromFile(
+    const AccountId& account_id,
+    const uint32_t image_id,
+    GetTemplateIdFromFileCallback callback) {
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GetStringContent,
+                     GetFilePathForImageId(account_id, image_id)),
+      base::BindOnce(&SeaPenWallpaperManager::OnFileReadGetTemplateId,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void SeaPenWallpaperManager::GetImageAndMetadata(
     const AccountId& account_id,
     const uint32_t image_id,
@@ -436,6 +448,20 @@ void SeaPenWallpaperManager::OnFileRead(GetImageAndMetadataCallback callback,
       base::BindOnce(OnDecodeImageData, std::move(callback),
                      ExtractDcDescriptionContents(data)),
       data_decoder::mojom::ImageCodec::kDefault, data);
+}
+
+void SeaPenWallpaperManager::OnFileReadGetTemplateId(
+    GetTemplateIdFromFileCallback callback,
+    const std::string& data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (data.empty()) {
+    LOG(WARNING) << "Unable to read file";
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  DecodeJsonMetadataGetTemplateId(ExtractDcDescriptionContents(data),
+                                  std::move(callback));
 }
 
 }  // namespace ash

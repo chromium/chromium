@@ -67,6 +67,13 @@ ASH_EXPORT void DecodeJsonMetadata(
     base::OnceCallback<
         void(personalization_app::mojom::RecentSeaPenImageInfoPtr)> callback);
 
+// Decodes the SeaPen metadata `json` string and extracts the template id from
+// it. Calls `callback` with nullopt if metadata is invalid or cannot be safely
+// decoded. `json` must not be wrapped in XMP metadata XML tags.
+ASH_EXPORT void DecodeJsonMetadataGetTemplateId(
+    const std::string& json,
+    base::OnceCallback<void(std::optional<int>)> callback);
+
 // Extract the id from a sea pen file name. SeaPen images must be saved to disk
 // as `/path/to/file/{id}.jpg` where id is a positive integer. `file_path` can
 // either include or omit the extension, and can include or omit leading

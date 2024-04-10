@@ -503,6 +503,47 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataOtherAccount) {
   }
 }
 
+TEST_F(SeaPenWallpaperManagerTest, GetTemplateIdFromFileSuccess) {
+  const uint32_t image_id = 88888888;
+
+  {
+    base::test::TestFuture<bool> save_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
+        kAccountId1, {CreateJpgBytes(), image_id}, MakeTemplateQuery(),
+        save_image_future.GetCallback());
+    ASSERT_TRUE(save_image_future.Get());
+  }
+
+  {
+    base::test::TestFuture<std::optional<int>> get_template_id_future;
+    sea_pen_wallpaper_manager()->GetTemplateIdFromFile(
+        kAccountId1, image_id, get_template_id_future.GetCallback());
+    EXPECT_EQ(static_cast<int>(
+                  ash::personalization_app::mojom::SeaPenTemplateId::kFlower),
+              *get_template_id_future.Get());
+  }
+}
+
+TEST_F(SeaPenWallpaperManagerTest, GetTemplateIdFromFileFailure) {
+  const uint32_t image_id = 88888888;
+
+  {
+    base::test::TestFuture<bool> save_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
+        kAccountId1, {CreateJpgBytes(), image_id},
+        personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
+        save_image_future.GetCallback());
+    ASSERT_TRUE(save_image_future.Get());
+  }
+
+  {
+    base::test::TestFuture<std::optional<int>> get_template_id_future;
+    sea_pen_wallpaper_manager()->GetTemplateIdFromFile(
+        kAccountId1, image_id, get_template_id_future.GetCallback());
+    EXPECT_FALSE(get_template_id_future.Get());
+  }
+}
+
 TEST_F(SeaPenWallpaperManagerTest, DeleteNonExistentImage) {
   // File does not exist yet. Deleting it should fail.
   base::test::TestFuture<bool> delete_sea_pen_image_future;

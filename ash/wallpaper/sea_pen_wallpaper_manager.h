@@ -101,6 +101,16 @@ class ASH_EXPORT SeaPenWallpaperManager {
   // back of the automatic deletion queue.
   void TouchFile(const AccountId& account_id, uint32_t image_id);
 
+  using GetTemplateIdFromFileCallback =
+      base::OnceCallback<void(std::optional<int> template_id)>;
+
+  // Retrieves the template id from the Sea Pen image saved on disk at
+  // `image_id`. Calls callback with nullopt if the `image_id` does
+  // not exist, or errors reading the file or decoding the data.
+  void GetTemplateIdFromFile(const AccountId& account_id,
+                             const uint32_t image_id,
+                             GetTemplateIdFromFileCallback callback);
+
   using GetImageAndMetadataCallback = base::OnceCallback<void(
       const gfx::ImageSkia& image,
       personalization_app::mojom::RecentSeaPenImageInfoPtr image_info)>;
@@ -157,6 +167,9 @@ class ASH_EXPORT SeaPenWallpaperManager {
       const gfx::ImageSkia& image_skia);
 
   void OnFileRead(GetImageAndMetadataCallback callback, std::string data);
+
+  void OnFileReadGetTemplateId(GetTemplateIdFromFileCallback callback,
+                               const std::string& data);
 
   std::unique_ptr<SessionDelegate> session_delegate_;
 
