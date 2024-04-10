@@ -149,6 +149,9 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // View containing the title.
   raw_ptr<views::Label> title_label_ = nullptr;
 
+  // Whether a progress bar is present.
+  bool has_progress_bar_{false};
+
   // The title for the modal dialog.
   std::u16string title_;
 

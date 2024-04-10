@@ -60,8 +60,6 @@ constexpr int kVerticalPadding = 8;
 constexpr int kDialogWidth = 448;
 // The margins of the modal dialog.
 constexpr int kDialogMargin = 20;
-// The height of the progress bar on the modal dialog.
-constexpr int kModalProgressBarHeight = 4;
 
 AccountSelectionModalView::AccountSelectionModalView(
     const std::u16string& top_frame_for_display,
@@ -95,13 +93,15 @@ AccountSelectionModalView::~AccountSelectionModalView() = default;
 void AccountSelectionModalView::AddProgressBar() {
   // Change top margin of header to accommodate progress bar.
   CHECK(header_view_);
-  constexpr int kVerifyingTopMargin = 16;
+  constexpr int kVerifyingTopMargin = 13;
   static_cast<views::BoxLayout*>(header_view_->GetLayoutManager())
       ->set_inside_border_insets(gfx::Insets::TLBR(
-          /*top=*/kVerifyingTopMargin, /*left=*/kDialogMargin, /*bottom=*/0,
+          /*top=*/kVerifyingTopMargin, /*left=*/kDialogMargin,
+          /*bottom=*/kVerticalPadding,
           /*right=*/kDialogMargin));
 
   // Add progress bar.
+  constexpr int kModalProgressBarHeight = 3;
   views::ProgressBar* progress_bar =
       AddChildViewAt(std::make_unique<views::ProgressBar>(), 0);
   progress_bar->SetPreferredHeight(kModalProgressBarHeight);
@@ -113,6 +113,8 @@ void AccountSelectionModalView::AddProgressBar() {
   progress_bar->SetPreferredSize(
       gfx::Size(kDialogWidth, kModalProgressBarHeight));
   progress_bar->SizeToPreferredSize();
+
+  has_progress_bar_ = true;
 }
 
 void AccountSelectionModalView::UpdateModalPositionAndTitle() {
@@ -159,10 +161,11 @@ AccountSelectionModalView::CreatePlaceholderAccountRow() {
   placeholder_account_icon->SetBackground(views::CreateRoundedRectBackground(
       gfx::kGoogleGrey200, kModalAvatarSize));
 
+  constexpr int kPlaceholderAccountRowPadding = 16;
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::VH(/*vertical=*/kVerticalSpacing,
+      gfx::Insets::VH(/*vertical=*/kPlaceholderAccountRowPadding,
                       /*horizontal=*/kDialogMargin + kModalHorizontalSpacing),
       /*between_child_spacing=*/kModalHorizontalSpacing));
   row->AddChildView(std::move(placeholder_account_icon));
@@ -622,6 +625,17 @@ std::optional<std::string> AccountSelectionModalView::GetDialogSubtitle()
 }
 
 void AccountSelectionModalView::RemoveNonHeaderChildViews() {
+  // If removing progress bar, adjust the header margins so the rest of the
+  // dialog doesn't get shifted when the progress bar is removed.
+  if (has_progress_bar_) {
+    CHECK(header_view_);
+    static_cast<views::BoxLayout*>(header_view_->GetLayoutManager())
+        ->set_inside_border_insets(gfx::Insets::TLBR(
+            /*top=*/kDialogMargin, /*left=*/kDialogMargin,
+            /*bottom=*/kVerticalPadding, /*right=*/kDialogMargin));
+    has_progress_bar_ = false;
+  }
+
   // Make sure not to keep dangling pointers around first.
   use_other_account_button_ = nullptr;
   back_button_ = nullptr;
