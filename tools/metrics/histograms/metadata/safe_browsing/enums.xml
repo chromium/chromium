@@ -317,6 +317,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Result found in local cache"/>
   <int value="9" label="Service is in backoff mode"/>
   <int value="10" label="OHTTP key fetch failed"/>
+  <int value="11" label="No OHTTP key service"/>
 </enum>
 
 <enum name="SafeBrowsingOhttpFetchKeyTriggerReason">

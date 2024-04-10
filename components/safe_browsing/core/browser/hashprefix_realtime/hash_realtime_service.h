@@ -167,7 +167,9 @@ class HashRealTimeService : public KeyedService {
     // Fetching the OHTTP key needed for the HPRT network request was
     // unsuccessful.
     kOhttpKeyFetchFailed = 10,
-    kMaxValue = kOhttpKeyFetchFailed,
+    // There is no OHTTP key service.
+    kNoOhttpKeyService = 11,
+    kMaxValue = kNoOhttpKeyService,
   };
 
   // The reason why ReportError is called on backoff operator.
