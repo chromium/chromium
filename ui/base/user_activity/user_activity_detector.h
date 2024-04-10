@@ -33,11 +33,6 @@ class COMPONENT_EXPORT(UI_BASE) UserActivityDetector
   // Returns the UserActivityDetector instance.
   static UserActivityDetector* Get();
 
-  // Sets up the observation over the PlatformEventSource. Must be called after
-  // the PlatformEventSource has been created for the main thread shared with
-  // the detector.
-  void InitPlatformEventSourceObservation();
-
   base::TimeTicks last_activity_time() const { return last_activity_time_; }
   std::string last_activity_name() const { return last_activity_name_; }
 
@@ -62,12 +57,19 @@ class COMPONENT_EXPORT(UI_BASE) UserActivityDetector
   void DidProcessEvent(const PlatformEvent& platform_event) override;
   void PlatformEventSourceDestroying() override;
 
+  void ResetStateForTesting();
+  void InitPlatformEventSourceObservationForTesting();
+
  private:
   friend class base::NoDestructor<UserActivityDetector>;
   friend class UserActivityDetectorTest;
 
   UserActivityDetector();
   ~UserActivityDetector() override;
+
+  // Sets up the observation over the PlatformEventSource. The event source
+  // must have been constructed before this is called.
+  void InitPlatformEventSourceObservation();
 
   // Returns |now_for_test_| if set or base::TimeTicks::Now() otherwise.
   base::TimeTicks GetCurrentTime() const;

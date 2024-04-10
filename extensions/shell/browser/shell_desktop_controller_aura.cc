@@ -345,11 +345,9 @@ void ShellDesktopControllerAura::InitWindowManager() {
   cursor_manager_->SetCursor(ui::mojom::CursorType::kPointer);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* user_activity_detector = ui::UserActivityDetector::Get();
-  user_activity_detector->InitPlatformEventSourceObservation();
   user_activity_notifier_ =
       std::make_unique<ui::UserActivityPowerManagerNotifier>(
-          user_activity_detector, /*fingerprint=*/mojo::NullRemote());
+          ui::UserActivityDetector::Get(), /*fingerprint=*/mojo::NullRemote());
 #endif
 }
 

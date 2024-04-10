@@ -52,13 +52,6 @@ UserActivityDetector* UserActivityDetector::Get() {
   return user_activity_detector.get();
 }
 
-void UserActivityDetector::InitPlatformEventSourceObservation() {
-  PlatformEventSource* platform_event_source =
-      PlatformEventSource::GetInstance();
-  CHECK(platform_event_source);
-  platform_event_source->AddPlatformEventObserver(this);
-}
-
 bool UserActivityDetector::HasObserver(
     const UserActivityObserver* observer) const {
   return observers_.HasObserver(observer);
@@ -94,9 +87,30 @@ void UserActivityDetector::PlatformEventSourceDestroying() {
   platform_event_source->RemovePlatformEventObserver(this);
 }
 
-UserActivityDetector::UserActivityDetector() = default;
+void UserActivityDetector::ResetStateForTesting() {
+  last_activity_name_.clear();
+  last_activity_time_ = base::TimeTicks();
+  last_observer_notification_time_ = base::TimeTicks();
+  now_for_test_ = base::TimeTicks();
+  honor_mouse_events_time_ = base::TimeTicks();
+}
+
+void UserActivityDetector::InitPlatformEventSourceObservationForTesting() {
+  InitPlatformEventSourceObservation();
+}
+
+UserActivityDetector::UserActivityDetector() {
+  InitPlatformEventSourceObservation();
+}
 
 UserActivityDetector::~UserActivityDetector() = default;
+
+void UserActivityDetector::InitPlatformEventSourceObservation() {
+  PlatformEventSource* platform_event_source =
+      PlatformEventSource::GetInstance();
+  CHECK(platform_event_source);
+  platform_event_source->AddPlatformEventObserver(this);
+}
 
 base::TimeTicks UserActivityDetector::GetCurrentTime() const {
   return !now_for_test_.is_null() ? now_for_test_ : base::TimeTicks::Now();

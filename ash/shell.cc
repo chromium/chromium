@@ -1497,10 +1497,6 @@ void Shell::Init(
 
   // The order in which event filters are added is significant.
 
-  // ui::UserActivityDetector passes events to observers, so let them get
-  // rewritten first.
-  ui::UserActivityDetector::Get()->InitPlatformEventSourceObservation();
-
   control_v_histogram_recorder_ = std::make_unique<ControlVHistogramRecorder>();
   AddPreTargetHandler(control_v_histogram_recorder_.get(),
                       ui::EventTarget::Priority::kAccessibility);
