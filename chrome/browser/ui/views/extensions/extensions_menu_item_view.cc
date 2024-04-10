@@ -30,7 +30,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -171,15 +170,6 @@ std::u16string GetSitePermissionsButtonAccName(
   return button_text;
 }
 
-const gfx::VectorIcon& GetPinIcon(bool is_pinned) {
-  if (is_pinned) {
-    return features::IsChromeRefresh2023() ? kKeepPinFilledChromeRefreshIcon
-                                           : views::kUnpinIcon;
-  }
-  return features::IsChromeRefresh2023() ? kKeepPinChromeRefreshIcon
-                                         : views::kPinIcon;
-}
-
 views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
     views::Button::PressedCallback callback,
     bool is_enterprise,
@@ -189,6 +179,9 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
   auto button_builder =
       views::Builder<HoverButton>(
           std::make_unique<HoverButton>(std::move(callback), std::u16string()))
+          .SetTitleTextStyle(views::style::STYLE_BODY_5,
+                             ui::kColorDialogBackground,
+                             kColorExtensionsMenuSecondaryText)
           // Align the main and secondary row text by adding the primary
           // action button's icon size as margin.
           .SetProperty(views::kMarginsKey, gfx::Insets::VH(0, icon_size))
@@ -202,22 +195,15 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
     button_builder.SetHorizontalAlignment(gfx::ALIGN_LEFT)
         .SetImageModel(views::Button::ButtonState::STATE_NORMAL,
                        ui::ImageModel::FromVectorIcon(
-                           features::IsChromeRefresh2023()
-                               ? vector_icons::kBusinessChromeRefreshIcon
-                               : vector_icons::kBusinessIcon,
+                           vector_icons::kBusinessChromeRefreshIcon,
                            ui::kColorIcon, small_icon_size));
 
   } else {
     // Add right-aligned arrow icon for non-enterprise extensions when the
     // button is not disabled.
     auto arrow_icon = ui::ImageModel::FromVectorIcon(
-        features::IsChromeRefresh2023()
-            ? vector_icons::kSubmenuArrowChromeRefreshIcon
-            : vector_icons::kSubmenuArrowIcon,
-        ui::kColorIcon,
-        features::IsChromeRefresh2023()
-            ? small_icon_size
-            : gfx::GetDefaultSizeOfVectorIcon(vector_icons::kSubmenuArrowIcon));
+        vector_icons::kSubmenuArrowChromeRefreshIcon, ui::kColorIcon,
+        small_icon_size);
 
     button_builder.SetHorizontalAlignment(gfx::ALIGN_RIGHT)
         .SetImageModel(views::Button::ButtonState::STATE_NORMAL, arrow_icon)
@@ -347,6 +333,9 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                       std::make_unique<ExtensionsMenuButton>(browser_,
                                                              controller_.get()))
                       .CopyAddressTo(&primary_action_button_)
+                      .SetTitleTextStyle(views::style::STYLE_BODY_3_EMPHASIS,
+                                         ui::kColorDialogBackground,
+                                         kColorExtensionsMenuText)
                       .SetProperty(views::kFlexBehaviorKey,
                                    views::FlexSpecification(
                                        views::MinimumFlexSizeRule::kScaleToZero,
@@ -390,15 +379,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                   .CopyAddressTo(&site_permissions_button_)))
       .BuildChildren();
 
-  if (features::IsChromeRefresh2023()) {
-    primary_action_button_->SetTitleTextStyle(
-        views::style::STYLE_BODY_3_EMPHASIS, ui::kColorDialogBackground,
-        kColorExtensionsMenuText);
-    site_permissions_button_->SetTitleTextStyle(
-        views::style::STYLE_BODY_5, ui::kColorDialogBackground,
-        kColorExtensionsMenuSecondaryText);
-  }
-
   SetupContextMenuButton();
 
   // By default, the button's accessible description is set to the button's
@@ -421,11 +401,9 @@ void ExtensionMenuItemView::OnThemeChanged() {
     bool is_pinned = model_ && model_->IsActionPinned(controller_->GetId());
     UpdateContextMenuButton(is_pinned);
   } else {
-    SetButtonIconWithColor(
-        context_menu_button_,
-        features::IsChromeRefresh2023() ? kBrowserToolsChromeRefreshIcon
-                                        : kBrowserToolsIcon,
-        kColorExtensionMenuIcon, kColorExtensionMenuIconDisabled);
+    SetButtonIconWithColor(context_menu_button_, kBrowserToolsChromeRefreshIcon,
+                           kColorExtensionMenuIcon,
+                           kColorExtensionMenuIconDisabled);
     if (pin_button_) {
       views::InkDrop::Get(pin_button_)->SetBaseColorId(kColorExtensionMenuIcon);
       bool is_pinned = model_ && model_->IsActionPinned(controller_->GetId());
@@ -489,8 +467,10 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
   const ui::ColorId disabled_icon_color_id =
       is_pinned ? kColorExtensionMenuPinButtonIconDisabled
                 : kColorExtensionMenuIconDisabled;
-  SetButtonIconWithColor(pin_button_, GetPinIcon(is_pinned), icon_color_id,
-                         disabled_icon_color_id);
+  SetButtonIconWithColor(
+      pin_button_,
+      is_pinned ? kKeepPinFilledChromeRefreshIcon : kKeepPinChromeRefreshIcon,
+      icon_color_id, disabled_icon_color_id);
 }
 
 void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
@@ -500,20 +480,16 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
   auto three_dot_icon = ui::ImageModel::FromVectorIcon(
-      features::IsChromeRefresh2023() ? kBrowserToolsChromeRefreshIcon
-                                      : kBrowserToolsIcon,
-      kColorExtensionMenuIcon, icon_size);
+      kBrowserToolsChromeRefreshIcon, kColorExtensionMenuIcon, icon_size);
 
   // Show a pin button for the context menu normal state icon when the action is
   // pinned in the toolbar. All other states should look, and behave, the same.
   context_menu_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      is_action_pinned
-          ? ui::ImageModel::FromVectorIcon(
-                features::IsChromeRefresh2023() ? kKeepPinChromeRefreshIcon
-                                                : views::kUnpinIcon,
-                kColorExtensionMenuPinButtonIcon, icon_size)
-          : three_dot_icon);
+      is_action_pinned ? ui::ImageModel::FromVectorIcon(
+                             kKeepPinChromeRefreshIcon,
+                             kColorExtensionMenuPinButtonIcon, icon_size)
+                       : three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_HOVERED,
                                       three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_PRESSED,

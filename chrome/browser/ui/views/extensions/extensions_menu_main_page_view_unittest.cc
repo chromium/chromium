@@ -36,7 +36,6 @@
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/vector_icons.h"
@@ -903,10 +902,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensions) {
   auto pin_icon = gfx::Image(gfx::CreateVectorIcon(
       views::kPinIcon,
       color_provider->GetColor(kColorExtensionMenuPinButtonIcon)));
-  auto three_dot_icon = gfx::Image(gfx::CreateVectorIcon(
-      features::IsChromeRefresh2023() ? kBrowserToolsChromeRefreshIcon
-                                      : kBrowserToolsIcon,
-      color_provider->GetColor(kColorExtensionMenuIcon)));
+  auto three_dot_icon = gfx::Image(
+      gfx::CreateVectorIcon(kBrowserToolsChromeRefreshIcon,
+                            color_provider->GetColor(kColorExtensionMenuIcon)));
 
   // Verify context menu button has three dot icon for all button states.
   EXPECT_TRUE(gfx::test::AreImagesEqual(
