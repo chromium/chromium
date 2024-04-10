@@ -5499,6 +5499,10 @@ ChromeContentBrowserClient::CreateTracingDelegate() {
   return std::make_unique<ChromeTracingDelegate>();
 }
 
+bool ChromeContentBrowserClient::IsSystemWideTracingEnabled() {
+  return ChromeTracingDelegate::IsSystemWideTracingEnabled();
+}
+
 bool ChromeContentBrowserClient::IsPluginAllowedToCallRequestOSFileHandle(
     content::BrowserContext* browser_context,
     const GURL& url) {

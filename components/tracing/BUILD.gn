@@ -21,6 +21,10 @@ if (is_android) {
 
 component("startup_tracing") {
   sources = [
+    "common/background_tracing_state_manager.cc",
+    "common/background_tracing_state_manager.h",
+    "common/pref_names.cc",
+    "common/pref_names.h",
     "common/trace_startup_config.cc",
     "common/trace_startup_config.h",
     "common/trace_to_console.cc",
@@ -43,6 +47,7 @@ component("startup_tracing") {
 
   deps = [
     "//base",
+    "//components/prefs",
     "//third_party/perfetto:libperfetto",
   ]
 }
@@ -66,20 +71,14 @@ component("background_tracing_metrics_provider") {
 
 component("background_tracing_utils") {
   sources = [
-    "common/background_tracing_state_manager.cc",
-    "common/background_tracing_state_manager.h",
     "common/background_tracing_utils.cc",
     "common/background_tracing_utils.h",
-    "common/pref_names.cc",
-    "common/pref_names.h",
   ]
 
   defines = [ "IS_BACKGROUND_TRACING_UTILS_IMPL" ]
 
   deps = [
-    ":startup_tracing",
     "//base",
-    "//components/prefs",
     "//content/public/browser",
   ]
 }

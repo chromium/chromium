@@ -4,46 +4,58 @@
 
 #include "components/tracing/common/background_tracing_state_manager.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+
 #include "base/json/values_util.h"
+#include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "components/tracing/common/pref_names.h"
-#include "content/public/browser/background_tracing_config.h"
-#include "content/public/browser/browser_thread.h"
 
+namespace tracing {
 namespace {
 
 constexpr char kTracingStateKey[] = "state";
+constexpr char kTracingEnabledScenariosKey[] = "enabled_scenarios";
+constexpr char kTracingPrivacyFilterKey[] = "privacy_filter";
+
+BackgroundTracingStateManager* g_background_tracing_state_manager = nullptr;
 
 }  // namespace
 
-namespace tracing {
+BackgroundTracingStateManager::BackgroundTracingStateManager(
+    PrefService* local_state)
+    : local_state_(local_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(g_background_tracing_state_manager, nullptr);
+  g_background_tracing_state_manager = this;
 
-BackgroundTracingStateManager::BackgroundTracingStateManager() = default;
-BackgroundTracingStateManager::~BackgroundTracingStateManager() = default;
+  Initialize();
+}
+
+BackgroundTracingStateManager::~BackgroundTracingStateManager() {
+  DCHECK_EQ(g_background_tracing_state_manager, this);
+  g_background_tracing_state_manager = nullptr;
+}
+
+std::unique_ptr<BackgroundTracingStateManager>
+BackgroundTracingStateManager::CreateInstance(PrefService* local_state) {
+  if (local_state == nullptr) {
+    return nullptr;
+  }
+  return base::WrapUnique(new BackgroundTracingStateManager(local_state));
+}
 
 BackgroundTracingStateManager& BackgroundTracingStateManager::GetInstance() {
-  static base::NoDestructor<BackgroundTracingStateManager> instance;
-  return *instance;
+  CHECK_NE(nullptr, g_background_tracing_state_manager);
+  return *g_background_tracing_state_manager;
 }
 
-void BackgroundTracingStateManager::SetPrefServiceForTesting(
-    PrefService* local_state) {
-  if (!local_state_ && local_state)
-    local_state_ = local_state;
-}
-
-void BackgroundTracingStateManager::Initialize(PrefService* local_state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (initialized_)
-    return;
-
-  initialized_ = true;
-
-  if (!local_state_ && local_state)
-    local_state_ = local_state;
-
+void BackgroundTracingStateManager::Initialize() {
   DCHECK(local_state_);
+
   const base::Value::Dict& dict =
       local_state_->GetDict(kBackgroundTracingSessionState);
 
@@ -58,29 +70,49 @@ void BackgroundTracingStateManager::Initialize(PrefService* local_state) {
     }
   }
 
+  auto* scenarios = dict.FindList(kTracingEnabledScenariosKey);
+  if (scenarios) {
+    for (const auto& item : *scenarios) {
+      auto* scenario_hash = item.GetIfString();
+      if (scenario_hash) {
+        enabled_scenarios_.push_back(*scenario_hash);
+      }
+    }
+  }
+
+  std::optional<bool> privacy_filter_enabled =
+      dict.FindBool(kTracingPrivacyFilterKey);
+  if (privacy_filter_enabled) {
+    privacy_filter_enabled_ = *privacy_filter_enabled;
+  }
+
   // Save state to update the current session state, replacing the previous
   // session state.
   SaveState();
 }
 
 void BackgroundTracingStateManager::SaveState() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(initialized_);
-  SaveState(state_);
-}
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(local_state_);
 
-void BackgroundTracingStateManager::SaveState(BackgroundTracingState state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::Value::Dict dict;
-  dict.Set(kTracingStateKey, static_cast<int>(state));
+  dict.Set(kTracingStateKey, static_cast<int>(state_));
+
+  if (!enabled_scenarios_.empty()) {
+    base::Value::List scenarios;
+    for (const auto& scenario_name : enabled_scenarios_) {
+      scenarios.Append(scenario_name);
+    }
+    dict.Set(kTracingEnabledScenariosKey, std::move(scenarios));
+  }
+  dict.Set(kTracingPrivacyFilterKey, privacy_filter_enabled_);
 
   local_state_->SetDict(kBackgroundTracingSessionState, std::move(dict));
   local_state_->CommitPendingWrite();
 }
 
 bool BackgroundTracingStateManager::DidLastSessionEndUnexpectedly() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(initialized_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (last_session_end_state_) {
     case BackgroundTracingState::NOT_ACTIVATED:
     case BackgroundTracingState::RAN_30_SECONDS:
@@ -103,7 +135,7 @@ bool BackgroundTracingStateManager::DidLastSessionEndUnexpectedly() const {
 }
 
 void BackgroundTracingStateManager::OnTracingStarted() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetState(BackgroundTracingState::STARTED);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce([]() {
@@ -114,13 +146,23 @@ void BackgroundTracingStateManager::OnTracingStarted() {
 }
 
 void BackgroundTracingStateManager::OnTracingStopped() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetState(BackgroundTracingState::FINALIZATION_STARTED);
 }
 
+void BackgroundTracingStateManager::UpdateEnabledScenarios(
+    std::vector<std::string> enabled_scenarios) {
+  enabled_scenarios_ = std::move(enabled_scenarios);
+  SaveState();
+}
+
+void BackgroundTracingStateManager::UpdatePrivacyFilter(bool enabled) {
+  privacy_filter_enabled_ = enabled;
+  SaveState();
+}
+
 void BackgroundTracingStateManager::SetState(BackgroundTracingState new_state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(initialized_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == new_state) {
     return;
   }
@@ -134,10 +176,11 @@ void BackgroundTracingStateManager::SetState(BackgroundTracingState new_state) {
 }
 
 void BackgroundTracingStateManager::ResetForTesting() {
-  initialized_ = false;
-  local_state_ = nullptr;
   state_ = BackgroundTracingState::NOT_ACTIVATED;
   last_session_end_state_ = BackgroundTracingState::NOT_ACTIVATED;
+  enabled_scenarios_ = {};
+  privacy_filter_enabled_ = true;
+  Initialize();
 }
 
 }  // namespace tracing

@@ -495,6 +495,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::optional<base::TimeDelta> GetSpareRendererDelayForSiteURL(
       const GURL& site_url) override;
   std::unique_ptr<content::TracingDelegate> CreateTracingDelegate() override;
+  bool IsSystemWideTracingEnabled() override;
   bool IsPluginAllowedToCallRequestOSFileHandle(
       content::BrowserContext* browser_context,
       const GURL& url) override;

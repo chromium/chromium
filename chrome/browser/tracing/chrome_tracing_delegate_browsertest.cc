@@ -85,13 +85,7 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
     PrefService* local_state = g_browser_process->local_state();
     DCHECK(local_state);
     local_state->SetBoolean(metrics::prefs::kMetricsReportingEnabled, true);
-    tracing::BackgroundTracingStateManager::GetInstance()
-        .SetPrefServiceForTesting(local_state);
     content::TracingController::GetInstance();  // Create tracing agents.
-  }
-
-  void TearDownOnMainThread() override {
-    tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
   }
 
   bool StartPreemptiveScenario(
@@ -155,13 +149,18 @@ std::string GetSessionStateJson() {
   return json;
 }
 
+void SetSessionState(base::Value::Dict dict) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->Set(tracing::kBackgroundTracingSessionState,
+                   base::Value(std::move(dict)));
+}
+
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        BackgroundTracingUnexpectedSessionEnd) {
-  std::string state = GetSessionStateJson();
-  EXPECT_EQ(state, "{}");
-
-  tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      tracing::BackgroundTracingState::STARTED);
+  base::Value::Dict dict;
+  dict.Set("state", static_cast<int>(tracing::BackgroundTracingState::STARTED));
+  SetSessionState(std::move(dict));
+  tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
 
   EXPECT_FALSE(StartPreemptiveScenario(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
@@ -169,11 +168,11 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        BackgroundTracingSessionRanLong) {
-  std::string state = GetSessionStateJson();
-  EXPECT_EQ(state, "{}");
-
-  tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      tracing::BackgroundTracingState::RAN_30_SECONDS);
+  base::Value::Dict dict;
+  dict.Set("state",
+           static_cast<int>(tracing::BackgroundTracingState::RAN_30_SECONDS));
+  SetSessionState(std::move(dict));
+  tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
 
   EXPECT_TRUE(StartPreemptiveScenario(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
@@ -181,29 +180,14 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        BackgroundTracingFinalizationStarted) {
-  std::string state = GetSessionStateJson();
-  EXPECT_EQ(state, "{}");
-
-  tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      tracing::BackgroundTracingState::FINALIZATION_STARTED);
+  base::Value::Dict dict;
+  dict.Set("state", static_cast<int>(
+                        tracing::BackgroundTracingState::FINALIZATION_STARTED));
+  SetSessionState(std::move(dict));
+  tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
 
   EXPECT_TRUE(StartPreemptiveScenario(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
-                       BackgroundTracingFinalizationBefore30Seconds) {
-  std::string state = GetSessionStateJson();
-  EXPECT_EQ(state, "{}");
-
-  tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      tracing::BackgroundTracingState::FINALIZATION_STARTED);
-
-  // State does not update from finalization started to ran 30 seconds.
-  tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      tracing::BackgroundTracingState::RAN_30_SECONDS);
-  state = GetSessionStateJson();
-  EXPECT_EQ(state, R"({"state":2})");
 }
 
 // If we need a PII-stripped trace, any existing OTR session should block the
@@ -285,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 1 = STARTED.
-  EXPECT_EQ(GetSessionStateJson(), R"({"state":1})");
+  EXPECT_EQ(GetSessionStateJson(), R"({"privacy_filter":true,"state":1})");
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
@@ -295,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 0 = NOT_ACTIVATED, current session is inactive.
-  EXPECT_EQ(GetSessionStateJson(), R"({"state":0})");
+  EXPECT_EQ(GetSessionStateJson(), R"({"privacy_filter":true,"state":0})");
 }
 
 class ChromeTracingDelegateBrowserTestFromCommandLine
@@ -349,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 1 = STARTED.
-  EXPECT_EQ(GetSessionStateJson(), R"({"state":1})");
+  EXPECT_EQ(GetSessionStateJson(), R"({"privacy_filter":true,"state":1})");
 
   // The scenario should also be "uploaded" (actually written to the output
   // file).
@@ -361,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
                        PRE_IgnoreThrottle) {
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
-  EXPECT_EQ(GetSessionStateJson(), R"({"state":1})");
+  EXPECT_EQ(GetSessionStateJson(), R"({"privacy_filter":true,"state":1})");
 
   // This updates the upload time for the test scenario to the current time,
   // even though the output is actually written to a file.
@@ -369,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
   EXPECT_TRUE(OutputPathExists());
 
   std::string state = GetSessionStateJson();
-  EXPECT_TRUE(base::MatchPattern(state, R"({"state":3})"))
+  EXPECT_TRUE(base::MatchPattern(state, R"({"privacy_filter":true,"state":3})"))
       << "Actual: " << state;
 }
 
@@ -383,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 1 = STARTED.
   std::string state = GetSessionStateJson();
-  EXPECT_TRUE(base::MatchPattern(state, R"({"state":1})"))
+  EXPECT_TRUE(base::MatchPattern(state, R"({"privacy_filter":true,"state":1})"))
       << "Actual: " << state;
 
   // The scenario should also be "uploaded" (actually written to the output

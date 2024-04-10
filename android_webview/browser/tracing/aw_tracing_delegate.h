@@ -10,12 +10,17 @@
 #include "content/public/browser/tracing_delegate.h"
 
 class PrefRegistrySimple;
+namespace tracing {
+class BackgroundTracingStateManager;
+}
 
 namespace android_webview {
 
 class AwTracingDelegate : public content::TracingDelegate {
  public:
   AwTracingDelegate();
+  explicit AwTracingDelegate(
+      std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager);
   ~AwTracingDelegate() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -26,6 +31,8 @@ class AwTracingDelegate : public content::TracingDelegate {
 
  private:
   bool IsAllowedToStartScenario() const;
+
+  std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager_;
 };
 
 }  // namespace android_webview

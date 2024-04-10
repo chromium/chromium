@@ -19,6 +19,10 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #endif
 
+namespace tracing {
+class BackgroundTracingStateManager;
+}
+
 class ChromeTracingDelegate : public content::TracingDelegate,
 #if BUILDFLAG(IS_ANDROID)
                               public TabModelListObserver
@@ -27,6 +31,10 @@ class ChromeTracingDelegate : public content::TracingDelegate,
 #endif
 {
  public:
+  // Whether system-wide performance trace collection using the external system
+  // tracing service is enabled.
+  static bool IsSystemWideTracingEnabled();
+
   ChromeTracingDelegate();
   ~ChromeTracingDelegate() override;
 
@@ -44,7 +52,6 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   bool OnBackgroundTracingIdle(bool requires_anonymized_data) override;
 
   bool ShouldSaveUnuploadedTrace() const override;
-  bool IsSystemWideTracingEnabled() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,
@@ -85,6 +92,8 @@ class ChromeTracingDelegate : public content::TracingDelegate,
                        bool requires_anonymized_data) const;
 
   bool incognito_launched_ = false;
+
+  std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager_;
 };
 
 #endif  // CHROME_BROWSER_TRACING_CHROME_TRACING_DELEGATE_H_

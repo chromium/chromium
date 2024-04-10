@@ -29,12 +29,16 @@ namespace tracing {
 class BackgroundTracingTest : public testing::Test {
  public:
   BackgroundTracingTest() {
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+
     background_tracing_manager_ =
         content::BackgroundTracingManager::CreateInstance();
   }
 
+  void SetUp() override { ASSERT_TRUE(testing_profile_manager_->SetUp()); }
+
   void TearDown() override {
-    tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
     content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
   }
 
@@ -103,10 +107,6 @@ TEST_F(BackgroundTracingTest, MaybeSetupBackgroundTracingFromFieldTrial) {
                                   {{"config", kValidJsonTracingConfig}});
   base::FieldTrialList::CreateFieldTrial(kTrialName, kExperimentName);
 
-  testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-      TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(testing_profile_manager_->SetUp());
-
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromFieldTrial);
   EXPECT_FALSE(tracing::MaybeSetupSystemTracingFromFieldTrial());
@@ -123,10 +123,6 @@ TEST_F(BackgroundTracingTest, MaybeSetupFieldTracingFromFieldTrial) {
   scoped_list.InitAndEnableFeatureWithParameters(tracing::kFieldTracing,
                                                  {{"config", encoded_config}});
 
-  testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-      TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(testing_profile_manager_->SetUp());
-
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromFieldTrial);
   EXPECT_FALSE(tracing::MaybeSetupSystemTracingFromFieldTrial());
@@ -134,10 +130,6 @@ TEST_F(BackgroundTracingTest, MaybeSetupFieldTracingFromFieldTrial) {
 }
 
 TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromProtoConfigFile) {
-  testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-      TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(testing_profile_manager_->SetUp());
-
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("config.pb");
@@ -159,10 +151,6 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromProtoConfigFile) {
 }
 
 TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromJsonConfigFile) {
-  testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-      TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(testing_profile_manager_->SetUp());
-
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("config.json");
@@ -189,10 +177,6 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrialOutputFile) {
   base::AssociateFieldTrialParams(kTrialName, kExperimentName,
                                   {{"config", kValidJsonTracingConfig}});
   base::FieldTrialList::CreateFieldTrial(kTrialName, kExperimentName);
-
-  testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-      TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(testing_profile_manager_->SetUp());
 
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());

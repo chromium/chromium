@@ -76,8 +76,7 @@ class DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest
 // device.
 IN_PROC_BROWSER_TEST_F(DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest,
                        DefaultEnabled) {
-  auto tracing_delegate = std::make_unique<ChromeTracingDelegate>();
-  ASSERT_TRUE(tracing_delegate->IsSystemWideTracingEnabled());
+  ASSERT_TRUE(ChromeTracingDelegate::IsSystemWideTracingEnabled());
 }
 
 class DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest
@@ -98,16 +97,15 @@ class DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest
 IN_PROC_BROWSER_TEST_F(
     DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest,
     PolicyApplied) {
-  auto tracing_delegate = std::make_unique<ChromeTracingDelegate>();
-  ASSERT_FALSE(tracing_delegate->IsSystemWideTracingEnabled());
+  ASSERT_FALSE(ChromeTracingDelegate::IsSystemWideTracingEnabled());
 
   UpdatePolicy(true);
   SyncRefreshDevicePolicy();
-  ASSERT_TRUE(tracing_delegate->IsSystemWideTracingEnabled());
+  ASSERT_TRUE(ChromeTracingDelegate::IsSystemWideTracingEnabled());
 
   UpdatePolicy(false);
   SyncRefreshDevicePolicy();
-  ASSERT_FALSE(tracing_delegate->IsSystemWideTracingEnabled());
+  ASSERT_FALSE(ChromeTracingDelegate::IsSystemWideTracingEnabled());
 }
 
 }  // namespace policy

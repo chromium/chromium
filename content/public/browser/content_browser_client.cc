@@ -832,6 +832,10 @@ std::unique_ptr<TracingDelegate> ContentBrowserClient::CreateTracingDelegate() {
   return nullptr;
 }
 
+bool ContentBrowserClient::IsSystemWideTracingEnabled() {
+  return false;
+}
+
 bool ContentBrowserClient::IsPluginAllowedToCallRequestOSFileHandle(
     BrowserContext* browser_context,
     const GURL& url) {

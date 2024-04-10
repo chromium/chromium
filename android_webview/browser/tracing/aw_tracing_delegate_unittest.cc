@@ -4,6 +4,8 @@
 
 #include "android_webview/browser/tracing/aw_tracing_delegate.h"
 
+#include <memory>
+
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "base/values.h"
@@ -31,21 +33,22 @@ class AwTracingDelegateTest : public testing::Test {
         metrics::prefs::kMetricsReportingEnabled, false);
     pref_service_->SetBoolean(metrics::prefs::kMetricsReportingEnabled, true);
     tracing::RegisterPrefs(pref_service_->registry());
-    tracing::BackgroundTracingStateManager::GetInstance()
-        .SetPrefServiceForTesting(pref_service_.get());
+
+    auto state_manager = tracing::BackgroundTracingStateManager::CreateInstance(
+        pref_service_.get());
+    delegate_ = std::make_unique<android_webview::AwTracingDelegate>(
+        std::move(state_manager));
   }
 
   void TearDown() override {
     delete browser_process_;
-    tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
   }
 
-  android_webview::AwTracingDelegate delegate_;
-
- private:
+ protected:
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<android_webview::AwBrowserProcess> browser_process_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<android_webview::AwTracingDelegate> delegate_;
 };
 
 std::unique_ptr<content::BackgroundTracingConfig> CreateValidConfig() {
@@ -67,20 +70,20 @@ std::unique_ptr<content::BackgroundTracingConfig> CreateValidConfig() {
 }
 
 TEST_F(AwTracingDelegateTest, IsAllowedToBegin) {
-  EXPECT_TRUE(delegate_.OnBackgroundTracingActive(
+  EXPECT_TRUE(delegate_->OnBackgroundTracingActive(
       /*requires_anonymized_data=*/false));
-  EXPECT_TRUE(delegate_.OnBackgroundTracingIdle(
+  EXPECT_TRUE(delegate_->OnBackgroundTracingIdle(
       /*requires_anonymized_data=*/false));
 }
 
 TEST_F(AwTracingDelegateTest, IsAllowedToBeginSessionEndedUnexpectedly) {
-  tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      tracing::BackgroundTracingState::STARTED);
+  base::Value::Dict dict;
+  dict.Set("state", static_cast<int>(tracing::BackgroundTracingState::STARTED));
+  pref_service_->Set(tracing::kBackgroundTracingSessionState,
+                     base::Value(std::move(dict)));
+  tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
 
-  base::Value dict(base::Value::Type::DICT);
-  tracing::BackgroundTracingStateManager::GetInstance().Initialize(nullptr);
-
-  EXPECT_FALSE(delegate_.OnBackgroundTracingActive(
+  EXPECT_FALSE(delegate_->OnBackgroundTracingActive(
       /*requires_anonymized_data=*/false));
 }
 

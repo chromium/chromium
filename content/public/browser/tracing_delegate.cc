@@ -22,8 +22,4 @@ bool TracingDelegate::ShouldSaveUnuploadedTrace() const {
   return false;
 }
 
-bool TracingDelegate::IsSystemWideTracingEnabled() {
-  return false;
-}
-
 }  // namespace content

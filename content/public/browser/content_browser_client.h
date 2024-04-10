@@ -1374,6 +1374,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // It's valid to return nullptr.
   virtual std::unique_ptr<TracingDelegate> CreateTracingDelegate();
 
+  // Whether system-wide performance trace collection using the external system
+  // tracing service is enabled.
+  virtual bool IsSystemWideTracingEnabled();
+
   // Returns true if plugin referred to by the url can use
   // pp::FileIO::RequestOSFileHandle.
   virtual bool IsPluginAllowedToCallRequestOSFileHandle(
