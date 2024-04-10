@@ -7,13 +7,13 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/views/editor_menu/vector_icons/vector_icons.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -107,8 +107,7 @@ void EditorMenuPromoCardView::RequestFocus() {
 
 void EditorMenuPromoCardView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(
-      l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE));
+  node_data->SetName(GetEditorMenuPromoCardTitle());
 }
 
 int EditorMenuPromoCardView::GetHeightForWidth(int width) const {
@@ -198,8 +197,8 @@ void EditorMenuPromoCardView::InitLayout() {
 
 void EditorMenuPromoCardView::AddTitle(views::View* main_view) {
   title_ = main_view->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE),
-      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
+      GetEditorMenuPromoCardTitle(), views::style::CONTEXT_DIALOG_TITLE,
+      views::style::STYLE_HEADLINE_5));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetMultiLine(true);
   title_->SetEnabledColorId(ui::kColorSysOnSurface);
@@ -207,7 +206,7 @@ void EditorMenuPromoCardView::AddTitle(views::View* main_view) {
 
 void EditorMenuPromoCardView::AddDescription(views::View* main_view) {
   description_ = main_view->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_DESC),
+      GetEditorMenuPromoCardDescription(),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_3));
   description_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description_->SetMultiLine(true);
@@ -241,8 +240,7 @@ void EditorMenuPromoCardView::AddButtonBar(views::View* main_view) {
           base::BindRepeating(&EditorMenuPromoCardView::CloseWidgetWithReason,
                               weak_factory_.GetWeakPtr(),
                               views::Widget::ClosedReason::kCloseButtonClicked),
-          l10n_util::GetStringUTF16(
-              IDS_EDITOR_MENU_PROMO_CARD_DISMISS_BUTTON)));
+          GetEditorMenuPromoCardDismissButtonText()));
   dismiss_button_->SetStyle(ui::ButtonStyle::kText);
 
   // Try it button.
@@ -252,7 +250,7 @@ void EditorMenuPromoCardView::AddButtonBar(views::View* main_view) {
               &EditorMenuPromoCardView::CloseWidgetWithReason,
               weak_factory_.GetWeakPtr(),
               views::Widget::ClosedReason::kAcceptButtonClicked),
-          l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON)));
+          GetEditorMenuPromoCardTryItButtonText()));
   try_it_button_->SetStyle(ui::ButtonStyle::kProminent);
 }
 

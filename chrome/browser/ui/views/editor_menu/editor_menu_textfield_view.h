@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
