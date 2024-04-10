@@ -274,7 +274,10 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 #if BUILDFLAG(ENABLE_PDF)
 class ChromeSitePerProcessGuestViewPDFTest : public ChromeSitePerProcessTest {
  public:
-  ChromeSitePerProcessGuestViewPDFTest() : test_guest_view_manager_(nullptr) {}
+  ChromeSitePerProcessGuestViewPDFTest() : test_guest_view_manager_(nullptr) {
+    feature_list()->Reset();
+    feature_list()->InitAndDisableFeature(chrome_pdf::features::kPdfOopif);
+  }
 
   ChromeSitePerProcessGuestViewPDFTest(
       const ChromeSitePerProcessGuestViewPDFTest&) = delete;
