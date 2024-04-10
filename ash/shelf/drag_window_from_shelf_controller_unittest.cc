@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/shelf/drag_window_from_shelf_controller.h"
-#include "base/memory/raw_ptr.h"
 
 #include <tuple>
 
@@ -34,7 +33,9 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -267,6 +268,28 @@ TEST_F(DragWindowFromShelfControllerTest, HideHomeLauncherDuringDraggingTest) {
   EndDrag(shelf_bounds.CenterPoint(),
           /*velocity_y=*/std::nullopt);
   EXPECT_TRUE(home_screen_window->IsVisible());
+}
+
+// Test that the "No recent items" label is not visible (not created) while
+// dragging from shelf. Regression test for http://b/326091611.
+TEST_F(DragWindowFromShelfControllerTest, NoWindowsWidget) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kFasterSplitScreenSetup);
+
+  const gfx::Rect shelf_bounds = GetShelfBounds();
+  auto window = CreateTestWindow();
+  StartDrag(window.get(), shelf_bounds.CenterPoint());
+  Drag(gfx::Point(0, 200), 0.f, 1.f);
+
+  OverviewSession* overview_session =
+      OverviewController::Get()->overview_session();
+  ASSERT_TRUE(overview_session);
+  EXPECT_FALSE(overview_session->grid_list()[0]->no_windows_widget());
+
+  DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
+      window_drag_controller());
+  EndDrag(gfx::Point(200, 200), std::nullopt);
+  EXPECT_FALSE(overview_session->grid_list()[0]->no_windows_widget());
 }
 
 // Test the windows that were hidden before drag started may or may not reshow,

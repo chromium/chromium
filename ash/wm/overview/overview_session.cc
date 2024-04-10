@@ -257,6 +257,12 @@ void OverviewSession::Init(const aura::Window::Windows& windows,
                                    OverviewTransition::kEnter);
   }
 
+  // TODO(http://b/326091611): In the case of dragging a window from the shelf
+  // with one window total, this will create the no windows widget. Then, we
+  // will be notified the drag has started and a drop target will be added,
+  // hiding the no windows widget. This all happens before the frame is
+  // presented so it looks ok from the users perspective, but we should avoid
+  // creating it in the first place.
   const bool is_continuous_enter =
       enter_exit_overview_type_ ==
       OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate;
