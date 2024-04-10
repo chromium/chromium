@@ -52,14 +52,27 @@ const char* kWorkspaceDomainsWithPathDenylist[][2] = {
 };
 
 const char* kWorkspaceAppIdDenylist[] = {
-    extension_misc::kGmailAppId,        extension_misc::kCalendarAppId,
-    extension_misc::kGoogleDocsAppId,   extension_misc::kGoogleSlidesAppId,
-    extension_misc::kGoogleSheetsAppId, extension_misc::kGoogleDriveAppId,
-    extension_misc::kGoogleKeepAppId,   web_app::kGmailAppId,
-    web_app::kGoogleChatAppId,          web_app::kGoogleMeetAppId,
-    web_app::kGoogleDocsAppId,          web_app::kGoogleSlidesAppId,
-    web_app::kGoogleSheetsAppId,        web_app::kGoogleDriveAppId,
-    web_app::kGoogleKeepAppId,          web_app::kGoogleCalendarAppId,
+    extension_misc::kGmailAppId,
+    extension_misc::kCalendarAppId,
+    extension_misc::kGoogleDocsAppId,
+    extension_misc::kGoogleSlidesAppId,
+    extension_misc::kGoogleSheetsAppId,
+    extension_misc::kGoogleDriveAppId,
+    extension_misc::kGoogleKeepAppId,
+    // App ids in demo mode
+    extension_misc::kCalendarDemoAppId,
+    extension_misc::kGoogleDocsDemoAppId,
+    extension_misc::kGoogleSheetsDemoAppId,
+    extension_misc::kGoogleSlidesDemoAppId,
+    web_app::kGmailAppId,
+    web_app::kGoogleChatAppId,
+    web_app::kGoogleMeetAppId,
+    web_app::kGoogleDocsAppId,
+    web_app::kGoogleSlidesAppId,
+    web_app::kGoogleSheetsAppId,
+    web_app::kGoogleDriveAppId,
+    web_app::kGoogleKeepAppId,
+    web_app::kGoogleCalendarAppId,
 };
 
 const char* kNonWorkspaceAppIdDenylist[] = {

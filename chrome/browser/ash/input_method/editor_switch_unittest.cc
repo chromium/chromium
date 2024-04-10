@@ -21,6 +21,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/common/constants.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,6 +64,7 @@ struct EditorSwitchTriggerTestCase {
 
   std::string active_engine_id;
   std::string url;
+  std::string app_id;
   ui::TextInputType input_type;
   ash::AppType app_type;
   bool is_in_tablet_mode;
@@ -83,10 +85,12 @@ using EditorSwitchTriggerTest = TestWithParam<EditorSwitchTriggerTestCase>;
 
 TextFieldContextualInfo CreateFakeTextFieldContextualInfo(
     ash::AppType app_type,
-    std::string_view url) {
+    std::string_view url,
+    std::string_view app_key) {
   auto text_field_contextual_info = TextFieldContextualInfo();
   text_field_contextual_info.app_type = app_type;
   text_field_contextual_info.tab_url = GURL(url);
+  text_field_contextual_info.app_key = app_key;
   return text_field_contextual_info;
 }
 
@@ -241,6 +245,23 @@ INSTANTIATE_TEST_SUITE_P(
          .expected_editor_mode = EditorMode::kBlocked,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
          .expected_blocked_reasons = {EditorBlockedReason::kBlockedByUrl}},
+        {.test_name =
+             "DoNotTriggerFeatureOnDemoWorkspaceAppsForNonGooglerAccount",
+         .additional_enabled_flags = {},
+         .email = "testuser@gmail.com",
+         .active_engine_id = "xkb:us::eng",
+         .url = "",
+         .app_id = extension_misc::kGoogleDocsDemoAppId,
+         .input_type = ui::TEXT_INPUT_TYPE_TEXT,
+         .app_type = AppType::BROWSER,
+         .is_in_tablet_mode = false,
+         .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
+         .user_pref = true,
+         .consent_status = ConsentStatus::kApproved,
+         .num_chars_selected = 0,
+         .expected_editor_mode = EditorMode::kBlocked,
+         .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
+         .expected_blocked_reasons = {EditorBlockedReason::kBlockedByApp}},
         {.test_name = "TriggerFeatureOnWorkspaceForGooglerAccountWithOrcaOnW"
                       "orkspaceFlag",
          .additional_enabled_flags = {features::kOrcaOnWorkspace},
@@ -435,7 +456,8 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
   editor_switch.OnActivateIme(test_case.active_engine_id);
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(test_case.input_type),
-      CreateFakeTextFieldContextualInfo(test_case.app_type, test_case.url));
+      CreateFakeTextFieldContextualInfo(test_case.app_type, test_case.url,
+                                        test_case.app_id));
   editor_switch.OnTextSelectionLengthChanged(test_case.num_chars_selected);
 
   ASSERT_TRUE(editor_switch.IsAllowedForUse());
