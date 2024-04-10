@@ -468,6 +468,11 @@ crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGPUCanvasDisableOneCopyCap
 crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGPUCanvasOneCopyCapture [ Failure ]
 crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGPUCanvasOneCopyCapture_Hidden [ Failure ]
 
+# Graphite was disabled on older NVIDIA drivers, and these tests fail under
+# ganesh.
+crbug.com/332731568 [ win nvidia graphite-disabled ] Pixel_Video_HEVC [ Failure ]
+crbug.com/332731568 [ win nvidia graphite-disabled ] Pixel_WebGPUCanvasOneCopyCapture [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
