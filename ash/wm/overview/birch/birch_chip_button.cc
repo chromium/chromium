@@ -15,6 +15,8 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -39,15 +41,61 @@ constexpr gfx::Insets kInteriorMarginsNoAddon =
 constexpr gfx::Insets kInteriorMarginsWithAddon = gfx::Insets::VH(12, 0);
 
 // The layout parameters of icon.
-constexpr gfx::Size kItemIconSize = gfx::Size(20, 20);
 constexpr gfx::Insets kIconMargins = gfx::Insets::VH(0, 12);
+constexpr int kIconViewSize = 40;
+constexpr int kFaviconSize = 20;
+constexpr int kFaviconCornerRadius = 20;
+constexpr int kIllustrationSize = 40;
+constexpr int kIllustrationCornerRadius = 8;
+constexpr int kWeatherImageSize = 32;
+
+// The colors of icons.
+constexpr ui::ColorId kIconBackgroundColorId =
+    cros_tokens::kCrosSysSystemOnBase;
+constexpr ui::ColorId kWeatherImageBackgroundColorId =
+    cros_tokens::kCrosSysOnSurface;
 
 // The colors and fonts of title and subtitle.
 constexpr int kTitleSpacing = 2;
 constexpr TypographyToken kTitleFont = TypographyToken::kCrosButton1;
 constexpr ui::ColorId kTitleColorId = cros_tokens::kCrosSysOnSurface;
-constexpr TypographyToken kSubtitleFont = TypographyToken::kCrosAnnotation2;
+constexpr TypographyToken kSubtitleFont = TypographyToken::kCrosAnnotation1;
 constexpr ui::ColorId kSubtitleColorId = cros_tokens::kCrosSysOnSurfaceVariant;
+
+void StylizeIconForItemType(views::ImageView* icon, BirchItemType type) {
+  int icon_size;
+  int rounded_corners;
+  ui::ColorId background_color_id;
+
+  switch (type) {
+    case BirchItemType::kWeather:
+      icon_size = kWeatherImageSize;
+      rounded_corners = 0;
+      background_color_id = kWeatherImageBackgroundColorId;
+      break;
+    case BirchItemType::kReleaseNotes:
+      icon_size = kIllustrationSize;
+      rounded_corners = kIllustrationCornerRadius;
+      background_color_id = kIconBackgroundColorId;
+      break;
+    default:
+      icon_size = kFaviconSize;
+      rounded_corners = kFaviconCornerRadius;
+      background_color_id = kIconBackgroundColorId;
+      break;
+  }
+
+  icon->SetImageSize(gfx::Size(icon_size, icon_size));
+  icon->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets((kIconViewSize - icon_size) / 2)));
+  if (rounded_corners) {
+    icon->SetBackground(views::CreateThemedRoundedRectBackground(
+        background_color_id, rounded_corners));
+  } else {
+    icon->SetBackground(
+        views::CreateThemedSolidBackground(background_color_id));
+  }
+}
 
 }  // namespace
 
@@ -94,10 +142,8 @@ BirchChipButton::BirchChipButton()
       .SetAccessibleName(u"Birch Chip")
       .AddChildren(
           // Icon.
-          views::Builder<views::ImageView>()
-              .CopyAddressTo(&icon_)
-              .SetProperty(views::kMarginsKey, kIconMargins)
-              .SetImageSize(kItemIconSize),
+          views::Builder<views::ImageView>().CopyAddressTo(&icon_).SetProperty(
+              views::kMarginsKey, kIconMargins),
           // Title and subtitle.
           views::Builder<views::BoxLayoutView>()
               .CopyAddressTo(&titles_container)
@@ -142,9 +188,11 @@ void BirchChipButton::Init(BirchItem* item) {
     auto* button = SetAddon(std::make_unique<PillButton>(
         base::BindRepeating(&BirchItem::PerformSecondaryAction,
                             base::Unretained(item_)),
-        *item_->secondary_action(), PillButton::Type::kPrimaryWithoutIcon));
+        *item_->secondary_action(), PillButton::Type::kSecondaryWithoutIcon));
     button->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 16));
   }
+
+  StylizeIconForItemType(icon_, item_->GetType());
   item_->LoadIcon(base::BindOnce(&BirchChipButton::SetIconImage,
                                  weak_factory_.GetWeakPtr()));
 }
