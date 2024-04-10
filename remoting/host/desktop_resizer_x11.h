@@ -40,23 +40,23 @@ class ScreenResources {
   std::unique_ptr<x11::RandR::GetScreenResourcesCurrentReply> resources_;
 };
 
-class DesktopResizerX11 : public DesktopResizer {
+// TODO(btriebw): Split this into a different file.
+class X11DesktopResizer {
  public:
-  DesktopResizerX11();
-  DesktopResizerX11(const DesktopResizerX11&) = delete;
-  DesktopResizerX11& operator=(const DesktopResizerX11&) = delete;
-  ~DesktopResizerX11() override;
+  X11DesktopResizer();
+  X11DesktopResizer(const X11DesktopResizer&) = delete;
+  X11DesktopResizer& operator=(const X11DesktopResizer&) = delete;
+  ~X11DesktopResizer();
 
-  // DesktopResizer interface
-  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override;
+  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id);
   std::list<ScreenResolution> GetSupportedResolutions(
       const ScreenResolution& preferred,
-      webrtc::ScreenId screen_id) override;
+      webrtc::ScreenId screen_id);
   void SetResolution(const ScreenResolution& resolution,
-                     webrtc::ScreenId screen_id) override;
+                     webrtc::ScreenId screen_id);
   void RestoreResolution(const ScreenResolution& original,
-                         webrtc::ScreenId screen_id) override;
-  void SetVideoLayout(const protocol::VideoLayout& layout) override;
+                         webrtc::ScreenId screen_id);
+  void SetVideoLayout(const protocol::VideoLayout& layout);
 
  private:
   using OutputInfoList = std::vector<
@@ -70,10 +70,10 @@ class DesktopResizerX11 : public DesktopResizer {
   // size. Returns the new mode ID, or None (0) on failure.
   x11::RandR::Mode UpdateMode(x11::RandR::Output output, int width, int height);
 
-  // Remove the specified mode from the output, and delete it. If the mode is in
-  // use, it is not deleted.
-  // |name| should be set to GetModeNameForOutput(output). The parameter is to
-  // avoid creating the mode name twice.
+  // Remove the specified mode from the output, and delete it. If the mode is
+  // in use, it is not deleted. |name| should be set to
+  // GetModeNameForOutput(output). The parameter is to avoid creating the mode
+  // name twice.
   void DeleteMode(x11::RandR::Output output, const std::string& name);
 
   // Updates the root window using the bounding box of the CRTCs, then
@@ -105,6 +105,28 @@ class DesktopResizerX11 : public DesktopResizer {
 
   // Used to set the text-scaling-factor.
   ScopedGObject<GSettings> registry_;
+};
+
+class DesktopResizerX11 : public DesktopResizer {
+ public:
+  DesktopResizerX11();
+  DesktopResizerX11(const DesktopResizerX11&) = delete;
+  DesktopResizerX11& operator=(const DesktopResizerX11&) = delete;
+  ~DesktopResizerX11() override;
+
+  // DesktopResizer interface
+  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override;
+  std::list<ScreenResolution> GetSupportedResolutions(
+      const ScreenResolution& preferred,
+      webrtc::ScreenId screen_id) override;
+  void SetResolution(const ScreenResolution& resolution,
+                     webrtc::ScreenId screen_id) override;
+  void RestoreResolution(const ScreenResolution& original,
+                         webrtc::ScreenId screen_id) override;
+  void SetVideoLayout(const protocol::VideoLayout& layout) override;
+
+ private:
+  X11DesktopResizer resizer_;
 };
 
 }  // namespace remoting

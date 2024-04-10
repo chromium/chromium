@@ -176,7 +176,7 @@ x11::RandR::GetScreenResourcesCurrentReply* ScreenResources::get() {
   return resources_.get();
 }
 
-DesktopResizerX11::DesktopResizerX11()
+X11DesktopResizer::X11DesktopResizer()
     : connection_(x11::Connection::Get()),
       randr_(&connection_->randr()),
       screen_(&connection_->default_screen()),
@@ -192,9 +192,9 @@ DesktopResizerX11::DesktopResizerX11()
   registry_ = TakeGObject(g_settings_new("org.gnome.desktop.interface"));
 }
 
-DesktopResizerX11::~DesktopResizerX11() = default;
+X11DesktopResizer::~X11DesktopResizer() = default;
 
-ScreenResolution DesktopResizerX11::GetCurrentResolution(
+ScreenResolution X11DesktopResizer::GetCurrentResolution(
     webrtc::ScreenId screen_id) {
   // Process pending events so that the connection setup data is updated
   // with the correct display metrics.
@@ -227,7 +227,7 @@ ScreenResolution DesktopResizerX11::GetCurrentResolution(
   return result;
 }
 
-std::list<ScreenResolution> DesktopResizerX11::GetSupportedResolutions(
+std::list<ScreenResolution> X11DesktopResizer::GetSupportedResolutions(
     const ScreenResolution& preferred,
     webrtc::ScreenId screen_id) {
   std::list<ScreenResolution> result;
@@ -252,7 +252,7 @@ std::list<ScreenResolution> DesktopResizerX11::GetSupportedResolutions(
   return result;
 }
 
-void DesktopResizerX11::SetResolution(const ScreenResolution& resolution,
+void X11DesktopResizer::SetResolution(const ScreenResolution& resolution,
                                       webrtc::ScreenId screen_id) {
   if (!has_randr_ || !is_virtual_session_) {
     return;
@@ -305,12 +305,12 @@ void DesktopResizerX11::SetResolution(const ScreenResolution& resolution,
   LOG(ERROR) << "Monitor " << screen_id << " not found.";
 }
 
-void DesktopResizerX11::RestoreResolution(const ScreenResolution& original,
+void X11DesktopResizer::RestoreResolution(const ScreenResolution& original,
                                           webrtc::ScreenId screen_id) {
   SetResolution(original, screen_id);
 }
 
-void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
+void X11DesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
   if (!has_randr_ || !is_virtual_session_) {
     return;
   }
@@ -449,7 +449,7 @@ void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
   UpdateRootWindow(resizer);
 }
 
-void DesktopResizerX11::SetResolutionForOutput(
+void X11DesktopResizer::SetResolutionForOutput(
     x11::RandR::Output output,
     const ScreenResolution& resolution) {
   // Actually do the resize operation, preserving the current mode name. Note
@@ -507,11 +507,11 @@ void DesktopResizerX11::SetResolutionForOutput(
     // started timer will be cancelled.
     requested_dpi_ = resolution.dpi().x();
     gnome_delay_timer_.Start(FROM_HERE, kGnomeWaitTime, this,
-                             &DesktopResizerX11::RequestGnomeDisplayConfig);
+                             &X11DesktopResizer::RequestGnomeDisplayConfig);
   }
 }
 
-x11::RandR::Mode DesktopResizerX11::UpdateMode(x11::RandR::Output output,
+x11::RandR::Mode X11DesktopResizer::UpdateMode(x11::RandR::Output output,
                                                int width,
                                                int height) {
   std::string mode_name = GetModeNameForOutput(output);
@@ -540,7 +540,7 @@ x11::RandR::Mode DesktopResizerX11::UpdateMode(x11::RandR::Output output,
   return kInvalidMode;
 }
 
-void DesktopResizerX11::DeleteMode(x11::RandR::Output output,
+void X11DesktopResizer::DeleteMode(x11::RandR::Output output,
                                    const std::string& name) {
   x11::RandR::Mode mode_id = resources_.GetIdForMode(name);
   if (mode_id != kInvalidMode) {
@@ -550,7 +550,7 @@ void DesktopResizerX11::DeleteMode(x11::RandR::Output output,
   }
 }
 
-void DesktopResizerX11::UpdateRootWindow(X11CrtcResizer& resizer) {
+void X11DesktopResizer::UpdateRootWindow(X11CrtcResizer& resizer) {
   // Disable any CRTCs that have been changed, so that the root window can be
   // safely resized to the bounding-box of the new CRTCs.
   // This is non-optimal: the only CRTCs that need disabling are those whose
@@ -577,7 +577,7 @@ void DesktopResizerX11::UpdateRootWindow(X11CrtcResizer& resizer) {
   resizer.ApplyActiveCrtcs();
 }
 
-DesktopResizerX11::OutputInfoList DesktopResizerX11::GetDisabledOutputs() {
+X11DesktopResizer::OutputInfoList X11DesktopResizer::GetDisabledOutputs() {
   OutputInfoList disabled_outputs;
   for (x11::RandR::Output output : resources_.get()->outputs) {
     auto reply = randr_
@@ -595,15 +595,15 @@ DesktopResizerX11::OutputInfoList DesktopResizerX11::GetDisabledOutputs() {
   return disabled_outputs;
 }
 
-void DesktopResizerX11::RequestGnomeDisplayConfig() {
+void X11DesktopResizer::RequestGnomeDisplayConfig() {
   // Unretained() is safe because `this` owns gnome_display_config_ which
   // cancels callbacks on destruction.
   gnome_display_config_.GetMonitorsConfig(
-      base::BindOnce(&DesktopResizerX11::OnGnomeDisplayConfigReceived,
+      base::BindOnce(&X11DesktopResizer::OnGnomeDisplayConfigReceived,
                      base::Unretained(this)));
 }
 
-void DesktopResizerX11::OnGnomeDisplayConfigReceived(
+void X11DesktopResizer::OnGnomeDisplayConfigReceived(
     GnomeDisplayConfig config) {
   // Look for an enabled monitor. Disabled monitors have no Mode set - a
   // monitor can become disabled by being added then removed (using the website
@@ -647,6 +647,31 @@ void DesktopResizerX11::OnGnomeDisplayConfigReceived(
     // interval [0.5, 3.0].
     LOG(WARNING) << "Failed to set text-scaling-factor.";
   }
+}
+
+DesktopResizerX11::DesktopResizerX11() = default;
+DesktopResizerX11::~DesktopResizerX11() = default;
+
+// DesktopResizer interface
+ScreenResolution DesktopResizerX11::GetCurrentResolution(
+    webrtc::ScreenId screen_id) {
+  return resizer_.GetCurrentResolution(screen_id);
+}
+std::list<ScreenResolution> DesktopResizerX11::GetSupportedResolutions(
+    const ScreenResolution& preferred,
+    webrtc::ScreenId screen_id) {
+  return resizer_.GetSupportedResolutions(preferred, screen_id);
+}
+void DesktopResizerX11::SetResolution(const ScreenResolution& resolution,
+                                      webrtc::ScreenId screen_id) {
+  resizer_.SetResolution(resolution, screen_id);
+}
+void DesktopResizerX11::RestoreResolution(const ScreenResolution& original,
+                                          webrtc::ScreenId screen_id) {
+  resizer_.SetResolution(original, screen_id);
+}
+void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
+  resizer_.SetVideoLayout(layout);
 }
 
 }  // namespace remoting
