@@ -40,16 +40,6 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
   inline_ruby->AddChild(child, before_child);
 }
 
-void LayoutRubyAsBlock::RemoveChild(LayoutObject* child) {
-  NOT_DESTROYED();
-  if (child->Parent() == this) {
-    DCHECK(DynamicTo<LayoutRuby>(child));
-    LayoutNGBlockFlow::RemoveChild(child);
-    return;
-  }
-  NOTREACHED() << child;
-}
-
 void LayoutRubyAsBlock::StyleDidChange(StyleDifference diff,
                                        const ComputedStyle* old_style) {
   NOT_DESTROYED();
