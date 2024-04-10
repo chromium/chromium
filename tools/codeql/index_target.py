@@ -103,16 +103,23 @@ def index_one_target(target_name,
   print("Generating compilation db.")
   compilation_db = []
 
-  print("Fetching all transitive source dependencies for " + str(target_name))
-  gn_sources_dict = gn_sources_tools.dictionary_of_all_transitive_sources(
-      target_name, out_path, gn_path)
-  initial_compilation_db = get_compilation_db(src_path, out_path)
-  print('Filtering compilation DB to only include matches '
-        'from GN transitive dependencies.')
-  compilation_db = []
-  for entry in initial_compilation_db:
-    if entry['file'] in gn_sources_dict:
-      compilation_db.append(entry)
+  # TODO(flowerhack): For reasons as-yet-undetermined, this filtering logic
+  # leads to a database that is broken in surprising ways for the
+  # //chrome:chrome target.
+  # Temporarily use ONLY the compilation DB to unbreak this.
+  if target_name != "//chrome:chrome":
+    print("Fetching all transitive source dependencies for " + str(target_name))
+    gn_sources_dict = gn_sources_tools.dictionary_of_all_transitive_sources(
+        target_name, out_path, gn_path)
+    initial_compilation_db = get_compilation_db(src_path, out_path)
+    print('Filtering compilation DB to only include matches '
+          'from GN transitive dependencies.')
+    compilation_db = []
+    for entry in initial_compilation_db:
+      if entry['file'] in gn_sources_dict:
+        compilation_db.append(entry)
+  else:
+    compilation_db = get_compilation_db(src_path, out_path)
 
   print("Initializing codeql.")
   codeql_db = ""
