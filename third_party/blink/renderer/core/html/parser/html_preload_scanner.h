@@ -220,7 +220,8 @@ class CORE_EXPORT HTMLPreloadScanner
                      std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
                          script_token_scanner,
                      TakePreloadFn take_preload = TakePreloadFn(),
-                     Vector<ElementLocator> locators = {});
+                     Vector<ElementLocator> locators = {},
+                     bool disable_preload_scanning = false);
   HTMLPreloadScanner(const HTMLPreloadScanner&) = delete;
   HTMLPreloadScanner& operator=(const HTMLPreloadScanner&) = delete;
   ~HTMLPreloadScanner();
@@ -234,6 +235,8 @@ class CORE_EXPORT HTMLPreloadScanner
   void ScanInBackground(const String& source,
                         const KURL& document_base_element_url);
 
+  static bool IsSkipPreloadScanEnabled(const Document* document);
+
  private:
   TokenPreloadScanner scanner_;
   SegmentedString source_;
@@ -241,6 +244,7 @@ class CORE_EXPORT HTMLPreloadScanner
   std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
       script_token_scanner_;
   TakePreloadFn take_preload_;
+  bool skip_preload_scanning_;
 };
 
 }  // namespace blink
