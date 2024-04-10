@@ -56,7 +56,7 @@ class ModelManager final : public ScriptWrappable,
   HeapMojoRemote<mojom::blink::ModelManager>& GetModelManagerRemote();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HeapMojoRemote<mojom::blink::ModelManager> model_manager_remote_{nullptr};
+  HeapMojoRemote<mojom::blink::ModelManager> model_manager_remote_;
 };
 
 }  // namespace blink

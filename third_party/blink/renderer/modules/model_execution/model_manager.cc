@@ -4,9 +4,7 @@
 
 #include "third_party/blink/renderer/modules/model_execution/model_manager.h"
 
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/model_execution/model_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/model_execution/model_manager.mojom-blink.h"
@@ -15,7 +13,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_generic_model_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_model_generic_session_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/model_execution/exception_helpers.h"
 #include "third_party/blink/renderer/modules/model_execution/model_execution_metrics.h"
 #include "third_party/blink/renderer/modules/model_execution/model_generic_session.h"
@@ -44,7 +41,8 @@ V8GenericModelAvailability AvailabilityToV8(
 
 ModelManager::ModelManager(LocalDOMWindow* window)
     : ExecutionContextClient(window),
-      task_runner_(window->GetTaskRunner(TaskType::kInternalDefault)) {}
+      task_runner_(window->GetTaskRunner(TaskType::kInternalDefault)),
+      model_manager_remote_(window) {}
 
 void ModelManager::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
@@ -151,7 +149,8 @@ ScriptPromise<ModelGenericSession> ModelManager::createGenericSession(
   }
 
   ModelGenericSession* generic_session =
-      MakeGarbageCollected<ModelGenericSession>(task_runner_);
+      MakeGarbageCollected<ModelGenericSession>(GetExecutionContext(),
+                                                task_runner_);
   GetModelManagerRemote()->CreateGenericSession(
       generic_session->GetModelSessionReceiver(), std::move(sampling_params),
       WTF::BindOnce(

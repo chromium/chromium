@@ -4,59 +4,62 @@
 
 #include "third_party/blink/renderer/modules/model_execution/model_generic_session.h"
 
-#include "base/functional/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/model_execution/model_session.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/model_execution/model_session.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/modules/model_execution/exception_helpers.h"
 #include "third_party/blink/renderer/modules/model_execution/model_execution_metrics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-// TODO(crbug.com/1520700): update this to different DOMException once the list
-// finalized.
+using mojom::blink::ModelStreamingResponseStatus;
+
+// TODO(crbug.com/1520700): update this to different DOMException once the
+// list finalized.
 const char* ConvertModelStreamingResponseErrorToString(
-    mojom::blink::ModelStreamingResponseStatus error) {
+    ModelStreamingResponseStatus error) {
   switch (error) {
-    case mojom::blink::ModelStreamingResponseStatus::kErrorUnknown:
+    case ModelStreamingResponseStatus::kErrorUnknown:
       return "Unknown error.";
-    case mojom::blink::ModelStreamingResponseStatus::kErrorInvalidRequest:
+    case ModelStreamingResponseStatus::kErrorInvalidRequest:
       return "The request was invalid.";
-    case mojom::blink::ModelStreamingResponseStatus::kErrorRequestThrottled:
+    case ModelStreamingResponseStatus::kErrorRequestThrottled:
       return "The request was throttled.";
-    case mojom::blink::ModelStreamingResponseStatus::kErrorPermissionDenied:
+    case ModelStreamingResponseStatus::kErrorPermissionDenied:
       return "User permission errors such as not signed-in or not allowed to "
              "execute model.";
-    case mojom::blink::ModelStreamingResponseStatus::kErrorGenericFailure:
+    case ModelStreamingResponseStatus::kErrorGenericFailure:
       return "Other generic failures.";
-    case mojom::blink::ModelStreamingResponseStatus::kErrorRetryableError:
+    case ModelStreamingResponseStatus::kErrorRetryableError:
       return "Retryable error occurred in server.";
-    case mojom::blink::ModelStreamingResponseStatus::kErrorNonRetryableError:
+    case ModelStreamingResponseStatus::kErrorNonRetryableError:
       return "Non-retryable error occurred in server.";
-    case mojom::blink::ModelStreamingResponseStatus::kErrorUnsupportedLanguage:
+    case ModelStreamingResponseStatus::kErrorUnsupportedLanguage:
       return "Unsupported.";
-    case mojom::blink::ModelStreamingResponseStatus::kErrorFiltered:
+    case ModelStreamingResponseStatus::kErrorFiltered:
       return "Bad response.";
-    case mojom::blink::ModelStreamingResponseStatus::kErrorDisabled:
+    case ModelStreamingResponseStatus::kErrorDisabled:
       return "Response was disabled.";
-    case mojom::blink::ModelStreamingResponseStatus::kErrorCancelled:
+    case ModelStreamingResponseStatus::kErrorCancelled:
       return "The request was cancelled.";
-    case mojom::blink::ModelStreamingResponseStatus::kOngoing:
-    case mojom::blink::ModelStreamingResponseStatus::kComplete:
+    case ModelStreamingResponseStatus::kOngoing:
+    case ModelStreamingResponseStatus::kComplete:
       NOTREACHED();
       return "";
   }
@@ -71,15 +74,25 @@ class ModelGenericSession::Responder final
  public:
   explicit Responder(ScriptState* script_state)
       : resolver_(MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
-            script_state)) {}
+            script_state)),
+        receiver_(this, ExecutionContext::From(script_state)) {}
   ~Responder() override = default;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(resolver_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(resolver_);
+    visitor->Trace(receiver_);
+  }
 
   ScriptPromise<IDLString> GetPromise() { return resolver_->Promise(); }
 
+  mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
+  BindNewPipeAndPassRemote(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    return receiver_.BindNewPipeAndPassRemote(task_runner);
+  }
+
   // `blink::mojom::blink::ModelStreamingResponder` implementation.
-  void OnResponse(mojom::blink::ModelStreamingResponseStatus status,
+  void OnResponse(ModelStreamingResponseStatus status,
                   const WTF::String& text) override {
     base::UmaHistogramEnumeration(
         ModelExecutionMetrics::GetModelExecutionSessionResponseStatusMetricName(
@@ -87,7 +100,16 @@ class ModelGenericSession::Responder final
         status);
 
     response_callback_count_++;
-    auto record_response_metric = [&]() {
+
+    if (status != ModelStreamingResponseStatus::kOngoing) {
+      // When the status is not kOngoing, the promise should either be resolved
+      // or rejected.
+      if (status == ModelStreamingResponseStatus::kComplete) {
+        resolver_->Resolve(response_);
+      } else {
+        resolver_->Reject(ConvertModelStreamingResponseErrorToString(status));
+      }
+      // Record the per execution metrics and run the complete callback.
       base::UmaHistogramCounts1M(
           ModelExecutionMetrics::GetModelExecutionSessionResponseSizeMetricName(
               ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
@@ -97,25 +119,21 @@ class ModelGenericSession::Responder final
               GetModelExecutionSessionResponseCallbackCountMetricName(
                   ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
           response_callback_count_);
-    };
-    switch (status) {
-      case mojom::blink::ModelStreamingResponseStatus::kOngoing:
-        response_ = text;
-        break;
-      case mojom::blink::ModelStreamingResponseStatus::kComplete:
-        record_response_metric();
-        resolver_->Resolve(response_);
-        break;
-      default:
-        record_response_metric();
-        resolver_->Reject(ConvertModelStreamingResponseErrorToString(status));
+      keep_alive_.Clear();
+      return;
     }
+    // When the status is kOngoing, update the response with the latest value.
+    response_ = text;
   }
 
  private:
   Member<ScriptPromiseResolver<IDLString>> resolver_;
   WTF::String response_;
   int response_callback_count_;
+
+  HeapMojoReceiver<blink::mojom::blink::ModelStreamingResponder, Responder>
+      receiver_;
+  SelfKeepAlive<Responder> keep_alive_;
 };
 
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
@@ -126,12 +144,21 @@ class ModelGenericSession::StreamingResponder final
       public blink::mojom::blink::ModelStreamingResponder {
  public:
   explicit StreamingResponder(ScriptState* script_state)
-      : UnderlyingSourceBase(script_state), script_state_(script_state) {}
+      : UnderlyingSourceBase(script_state),
+        script_state_(script_state),
+        receiver_(this, ExecutionContext::From(script_state)) {}
   ~StreamingResponder() override = default;
 
   void Trace(Visitor* visitor) const override {
     UnderlyingSourceBase::Trace(visitor);
     visitor->Trace(script_state_);
+    visitor->Trace(receiver_);
+  }
+
+  mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
+  BindNewPipeAndPassRemote(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    return receiver_.BindNewPipeAndPassRemote(task_runner);
   }
 
   // `UnderlyingSourceBase` implementation.
@@ -147,7 +174,7 @@ class ModelGenericSession::StreamingResponder final
   }
 
   // `blink::mojom::blink::ModelStreamingResponder` implementation.
-  void OnResponse(mojom::blink::ModelStreamingResponseStatus status,
+  void OnResponse(ModelStreamingResponseStatus status,
                   const WTF::String& text) override {
     base::UmaHistogramEnumeration(
         ModelExecutionMetrics::GetModelExecutionSessionResponseStatusMetricName(
@@ -155,7 +182,18 @@ class ModelGenericSession::StreamingResponder final
         status);
 
     response_callback_count_++;
-    auto record_response_metric = [&]() {
+
+    if (status != ModelStreamingResponseStatus::kOngoing) {
+      // When the status is not kOngoing, the controller of
+      // ReadableStream should be closed.
+      if (status == ModelStreamingResponseStatus::kComplete) {
+        Controller()->Close();
+      } else {
+        Controller()->Error(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotReadableError,
+            ConvertModelStreamingResponseErrorToString(status)));
+      }
+      // Record the per execution metrics and run the complete callback.
       base::UmaHistogramCounts1M(
           ModelExecutionMetrics::GetModelExecutionSessionResponseSizeMetricName(
               ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
@@ -165,40 +203,36 @@ class ModelGenericSession::StreamingResponder final
               GetModelExecutionSessionResponseCallbackCountMetricName(
                   ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
           response_callback_count_);
-    };
-    switch (status) {
-      case mojom::blink::ModelStreamingResponseStatus::kOngoing: {
-        response_size_ = int(text.CharactersSizeInBytes());
-        v8::HandleScope handle_scope(script_state_->GetIsolate());
-        Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
-        break;
-      }
-      case mojom::blink::ModelStreamingResponseStatus::kComplete:
-        record_response_metric();
-        Controller()->Close();
-        break;
-      default:
-        // TODO(crbug.com/1520700): raise the proper exception based on the spec
-        // after the prototype phase.
-        record_response_metric();
-        Controller()->Error(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotReadableError,
-            ConvertModelStreamingResponseErrorToString(status)));
+      keep_alive_.Clear();
+      return;
     }
+    // When the status is kOngoing, update the response size and enqueue the
+    // latest response.
+    response_size_ = int(text.CharactersSizeInBytes());
+    v8::HandleScope handle_scope(script_state_->GetIsolate());
+    Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
   }
 
  private:
   int response_size_;
   int response_callback_count_;
   Member<ScriptState> script_state_;
+  HeapMojoReceiver<blink::mojom::blink::ModelStreamingResponder,
+                   StreamingResponder>
+      receiver_;
+  SelfKeepAlive<StreamingResponder> keep_alive_;
 };
 
 ModelGenericSession::ModelGenericSession(
+    ExecutionContext* context,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : task_runner_(task_runner) {}
+    : ExecutionContextClient(context),
+      task_runner_(task_runner),
+      model_session_remote_(context) {}
 
 void ModelGenericSession::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
   visitor->Trace(model_session_remote_);
 }
 
@@ -226,15 +260,10 @@ ScriptPromise<IDLString> ModelGenericSession::execute(
           ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
       int(input.CharactersSizeInBytes()));
 
-  ModelGenericSession::Responder* responder =
-      MakeGarbageCollected<ModelGenericSession::Responder>(script_state);
-
-  HeapMojoReceiver<blink::mojom::blink::ModelStreamingResponder,
-                   ModelGenericSession::Responder>
-      receiver{responder, nullptr};
-
+  Responder* responder = MakeGarbageCollected<Responder>(script_state);
   model_session_remote_->Execute(
-      input, receiver.BindNewPipeAndPassRemote(task_runner_));
+      input, responder->BindNewPipeAndPassRemote(task_runner_));
+
   return responder->GetPromise();
 }
 
@@ -257,21 +286,16 @@ ReadableStream* ModelGenericSession::executeStreaming(
           ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
       int(input.CharactersSizeInBytes()));
 
-  ModelGenericSession::StreamingResponder* responder =
-      MakeGarbageCollected<ModelGenericSession::StreamingResponder>(
-          script_state);
-
-  HeapMojoReceiver<blink::mojom::blink::ModelStreamingResponder,
-                   ModelGenericSession::StreamingResponder>
-      receiver{responder, nullptr};
+  StreamingResponder* streaming_responder =
+      MakeGarbageCollected<StreamingResponder>(script_state);
 
   model_session_remote_->Execute(
-      input, receiver.BindNewPipeAndPassRemote(task_runner_));
+      input, streaming_responder->BindNewPipeAndPassRemote(task_runner_));
 
   // Set the high water mark to 1 so the backpressure will be applied on every
   // enqueue.
-  return ReadableStream::CreateWithCountQueueingStrategy(script_state,
-                                                         responder, 1);
+  return ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, streaming_responder, 1);
 }
 
 }  // namespace blink
