@@ -94,6 +94,8 @@ source_set("unit_tests") {
     "saved_tab_group_model_unittest.cc",
     "saved_tab_group_proto_conversion_unittest.cc",
     "saved_tab_group_sync_bridge_unittest.cc",
+    "saved_tab_group_test_utils.cc",
+    "saved_tab_group_test_utils.h",
     "saved_tab_group_unittest.cc",
     "tab_group_sync_service_unittest.cc",
   ]

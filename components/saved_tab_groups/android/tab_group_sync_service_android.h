@@ -32,9 +32,12 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                    jint j_group_id);
 
   // TabGroupSyncService::Observer overrides.
-  void OnTabGroupAddedOrUpdated(const SavedTabGroup& group,
-                                TriggerSource source) override;
-  void OnTabGroupRemoved(const tab_groups::TabGroupId& local_id) override;
+  void OnInitialized() override;
+  void OnTabGroupAdded(const SavedTabGroup& group,
+                       TriggerSource source) override;
+  void OnTabGroupUpdated(const SavedTabGroup& group,
+                         TriggerSource source) override;
+  void OnTabGroupRemoved(const LocalTabGroupID& local_id) override;
 
  private:
   // A reference to the Java counterpart of this class.  See

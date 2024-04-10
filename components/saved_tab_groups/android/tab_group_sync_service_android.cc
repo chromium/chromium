@@ -71,14 +71,22 @@ void TabGroupSyncServiceAndroid::RemoveGroup(
   // TODO(b/329124957): Implement.
 }
 
-void TabGroupSyncServiceAndroid::OnTabGroupAddedOrUpdated(
-    const SavedTabGroup& group,
-    TriggerSource source) {
+void TabGroupSyncServiceAndroid::OnInitialized() {
+  // TODO(b/329124957): Implement.
+}
+
+void TabGroupSyncServiceAndroid::OnTabGroupAdded(const SavedTabGroup& group,
+                                                 TriggerSource source) {
+  // TODO(b/329124957): Implement.
+}
+
+void TabGroupSyncServiceAndroid::OnTabGroupUpdated(const SavedTabGroup& group,
+                                                   TriggerSource source) {
   // TODO(b/329124957): Implement.
 }
 
 void TabGroupSyncServiceAndroid::OnTabGroupRemoved(
-    const tab_groups::TabGroupId& local_id) {
+    const LocalTabGroupID& local_id) {
   // TODO(b/329124957): Implement.
 }
 

@@ -16,7 +16,9 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/gfx/range/range.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -44,13 +46,21 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // either the local or remote clients.
   class Observer : public base::CheckedObserver {
    public:
-    // A new tab group was added, or an existing tab group was updated at the
-    // given |source|.
-    virtual void OnTabGroupAddedOrUpdated(const SavedTabGroup& group,
-                                          TriggerSource source) = 0;
+    // The data from sync ModelTypeStore has been loaded to memory.
+    virtual void OnInitialized() = 0;
+
+    // A new tab group was added at the given |source|.
+    virtual void OnTabGroupAdded(const SavedTabGroup& group,
+                                 TriggerSource source) = 0;
+
+    // An existing tab group was updated at the given |source|.
+    // Called whenever there are an update to a tab group, which can be title,
+    // color, position, pinned state, or update to any of its tabs.
+    virtual void OnTabGroupUpdated(const SavedTabGroup& group,
+                                   TriggerSource source) = 0;
 
     // Tab group corresponding to the |local_id| was removed.
-    virtual void OnTabGroupRemoved(const tab_groups::TabGroupId& local_id) = 0;
+    virtual void OnTabGroupRemoved(const LocalTabGroupID& local_id) = 0;
   };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -71,19 +81,39 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // The service will notify the observers accordingly, i.e. notify sync to
   // propagate the changes to server side, and notify any UI observers such
   // as revisit surface to update their UI accordingly.
-  virtual void AddOrUpdateGroup(SavedTabGroup group) = 0;
-  virtual void RemoveGroup(const LocalTabGroupID& local_id) = 0;
 
-  // Get methods.
+  // Mutator methods that result in group metadata mutation.
+  virtual void AddGroup(const SavedTabGroup& group) = 0;
+  virtual void RemoveGroup(const LocalTabGroupID& local_id) = 0;
+  virtual void UpdateVisualData(
+      const LocalTabGroupID local_group_id,
+      const tab_groups::TabGroupVisualData* visual_data) = 0;
+
+  // Mutator methods that result in tab metadata mutation.
+  virtual void AddTab(const LocalTabGroupID& group_id,
+                      const LocalTabID& tab_id,
+                      const std::u16string& title,
+                      GURL url,
+                      std::optional<size_t> position) = 0;
+  virtual void UpdateTab(const LocalTabGroupID& group_id,
+                         const LocalTabID& tab_id,
+                         const std::u16string& title,
+                         GURL url,
+                         std::optional<size_t> position) = 0;
+  virtual void RemoveTab(const LocalTabGroupID& group_id,
+                         const LocalTabID& tab_id) = 0;
+
+  // Accessor methods.
   virtual std::vector<SavedTabGroup> GetAllGroups() = 0;
   virtual std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) = 0;
   virtual std::optional<SavedTabGroup> GetGroup(LocalTabGroupID& local_id) = 0;
 
-  // Book-keeping methods to map the IDs.
-  virtual void SetLocalTabGroupIdForSyncId(const base::Uuid& sync_id,
-                                           LocalTabGroupID& local_id) = 0;
-  virtual base::Uuid GetSyncIdForLocalTabGroupId(LocalTabGroupID& local_id) = 0;
-  virtual base::Uuid GetLocalIdForSyncId(const base::Uuid& sync_id) = 0;
+  // Book-keeping methods to maintain in-memory mapping of sync and local IDs.
+  virtual void UpdateLocalTabGroupId(const base::Uuid& sync_id,
+                                     const LocalTabGroupID& local_id) = 0;
+  virtual void UpdateLocalTabId(const LocalTabGroupID& local_group_id,
+                                const base::Uuid& sync_tab_id,
+                                const LocalTabID& local_tab_id) = 0;
 
   // For connecting to sync engine.
   virtual syncer::ModelTypeSyncBridge* bridge() = 0;

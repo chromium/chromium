@@ -37,15 +37,31 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   TabGroupSyncServiceImpl& operator=(const TabGroupSyncServiceImpl&) = delete;
 
   // TabGroupSyncService implementation.
-  void AddOrUpdateGroup(SavedTabGroup group) override;
+  void AddGroup(const SavedTabGroup& group) override;
   void RemoveGroup(const LocalTabGroupID& local_id) override;
+  void UpdateVisualData(
+      const LocalTabGroupID local_group_id,
+      const tab_groups::TabGroupVisualData* visual_data) override;
+  void AddTab(const LocalTabGroupID& group_id,
+              const LocalTabID& tab_id,
+              const std::u16string& title,
+              GURL url,
+              std::optional<size_t> position) override;
+  void UpdateTab(const LocalTabGroupID& group_id,
+                 const LocalTabID& tab_id,
+                 const std::u16string& title,
+                 GURL url,
+                 std::optional<size_t> position) override;
+  void RemoveTab(const LocalTabGroupID& group_id,
+                 const LocalTabID& tab_id) override;
   std::vector<SavedTabGroup> GetAllGroups() override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) override;
   std::optional<SavedTabGroup> GetGroup(LocalTabGroupID& local_id) override;
-  void SetLocalTabGroupIdForSyncId(const base::Uuid& sync_id,
-                                   LocalTabGroupID& local_id) override;
-  base::Uuid GetSyncIdForLocalTabGroupId(LocalTabGroupID& local_id) override;
-  base::Uuid GetLocalIdForSyncId(const base::Uuid& sync_id) override;
+  void UpdateLocalTabGroupId(const base::Uuid& sync_id,
+                             const LocalTabGroupID& local_id) override;
+  void UpdateLocalTabId(const LocalTabGroupID& local_group_id,
+                        const base::Uuid& sync_tab_id,
+                        const LocalTabID& local_tab_id) override;
   syncer::ModelTypeSyncBridge* bridge() override;
   void AddObserver(TabGroupSyncService::Observer* observer) override;
   void RemoveObserver(TabGroupSyncService::Observer* observer) override;
@@ -56,6 +72,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_guid,
       const std::optional<base::Uuid>& tab_guid) override;
+  void SavedTabGroupRemovedFromSync(
+      const SavedTabGroup* removed_group) override;
+  void SavedTabGroupModelLoaded() override;
 
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
@@ -71,7 +90,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       saved_guid_to_local_group_id_mapping_;
 
   // Obsevers of the model.
-  base::ObserverList<TabGroupSyncService::Observer>::Unchecked observers_;
+  base::ObserverList<TabGroupSyncService::Observer> observers_;
 };
 
 }  // namespace tab_groups
