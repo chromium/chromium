@@ -34,11 +34,6 @@ const char kAutofillEnableCardArtImageDescription[] =
     "When enabled, card product images (instead of network icons) will be "
     "shown in Payments Autofill UI.";
 
-const char kAutofillEnableCardBenefitsName[] = "Enable showing card benefits";
-const char kAutofillEnableCardBenefitsDescription[] =
-    "When enabled, card benefits offered by issuers will be shown in "
-    "Payments Autofill UI.";
-
 const char kAutofillEnableCardBenefitsForAmericanExpressName[] =
     "Enable showing American Express card benefits";
 const char kAutofillEnableCardBenefitsForAmericanExpressDescription[] =

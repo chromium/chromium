@@ -644,11 +644,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "autofill-enable-card-benefits",
-    "owners": [ "alexandertekle@chromium.org", "yishuil@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "autofill-enable-card-benefits-for-american-express",
     "owners": [ "alexandertekle@chromium.org"],
     "expiry_milestone": 130

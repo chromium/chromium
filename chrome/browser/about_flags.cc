@@ -10817,11 +10817,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "Allowed Urls")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"autofill-enable-card-benefits",
-     flag_descriptions::kAutofillEnableCardBenefitsName,
-     flag_descriptions::kAutofillEnableCardBenefitsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefits)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"cloud-gaming-device", flag_descriptions::kCloudGamingDeviceName,
      flag_descriptions::kCloudGamingDeviceDescription, kOsCrOS,
