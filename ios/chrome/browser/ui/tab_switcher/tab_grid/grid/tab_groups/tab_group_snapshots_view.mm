@@ -100,7 +100,11 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
 - (NSMutableArray<UIImage*>*)faviconsFromRange:(NSRange)range {
   NSMutableArray<UIImage*>* faviconsSubArray = [[NSMutableArray alloc] init];
   for (GroupTabInfo* info : [_tabGroupInfos subarrayWithRange:range]) {
-    [faviconsSubArray addObject:info.favicon];
+    if (info.favicon) {
+      [faviconsSubArray addObject:info.favicon];
+    } else {
+      [faviconsSubArray addObject:[[UIImage alloc] init]];
+    }
   }
   return faviconsSubArray;
 }
