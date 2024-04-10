@@ -556,6 +556,12 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
                          l10n_util::GetStringFUTF16(
                              IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK,
                              chrome::kApnSettingsLearnMoreUrl));
+
+  html_source->AddString(
+      "apnSelectionDialogDescriptionWithLink",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_APN_SELECTION_DIALOG_DESCRIPTION_WITH_LINK,
+          chrome::kApnSettingsLearnMoreUrl));
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {

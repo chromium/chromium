@@ -38,6 +38,7 @@ suite('ApnSelectionDialog', () => {
         mojoApi);
     apnSelectionDialog = document.createElement('apn-selection-dialog');
     apnSelectionDialog.guid = 'fake-guid';
+    apnSelectionDialog.shouldOmitLinks = false;
     document.body.appendChild(apnSelectionDialog);
     return waitAfterNextRender(apnSelectionDialog);
   });
@@ -47,25 +48,22 @@ suite('ApnSelectionDialog', () => {
     mojoApi.resetForTest();
   });
 
-  test('Element contains dialog', () => {
+  test('Element contains dialog', async () => {
     const dialog = apnSelectionDialog.shadowRoot.querySelector('cr-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
     const apnSelectionDialogTitle =
         apnSelectionDialog.shadowRoot.querySelector('#apnSelectionDialogTitle');
-    assertTrue(!!apnSelectionDialogTitle);
+    assertTrue(!!apnSelectionDialogTitle, 'Title does not exist');
     assertEquals(
         apnSelectionDialog.i18n('apnSelectionDialogTitle'),
-        apnSelectionDialogTitle.innerText);
+        apnSelectionDialogTitle.innerText, 'Inner text does not match');
 
-    const apnSelectionDialogDescription =
-        apnSelectionDialog.shadowRoot.querySelector(
-            '#apnSelectionDialogDescription');
-    assertTrue(!!apnSelectionDialogDescription);
-    assertEquals(
-        apnSelectionDialog.i18n('apnSelectionDialogDescription'),
-        apnSelectionDialogDescription.innerText);
-    assertEquals('polite', apnSelectionDialogDescription.ariaLive);
+    const getDescriptionWithLink = () =>
+        apnSelectionDialog.shadowRoot.querySelector('localized-link');
+    assertTrue(
+        !!getDescriptionWithLink(),
+        'Description does not contain link when it should');
 
     const apnSelectionActionBtn =
         apnSelectionDialog.shadowRoot.querySelector('#apnSelectionActionBtn');
@@ -79,9 +77,25 @@ suite('ApnSelectionDialog', () => {
     assertTrue(!!apnSelectionCancelBtn);
     assertEquals(
         apnSelectionDialog.i18n('apnDetailDialogCancel'),
-        apnSelectionCancelBtn.innerText);
+        apnSelectionCancelBtn.innerText,
+    );
     assertEquals(
         apnSelectionCancelBtn, apnSelectionDialog.shadowRoot.activeElement);
+
+    apnSelectionDialog.shouldOmitLinks = true;
+    await flushTasks();
+    assertFalse(
+        !!getDescriptionWithLink(),
+        'Description contains link when it should not');
+    const apnSelectionDialogDescription =
+        apnSelectionDialog.shadowRoot.querySelector(
+            '#apnSelectionDialogDescription');
+    assertTrue(!!apnSelectionDialogDescription, 'Description does not show');
+    assertEquals(
+        apnSelectionDialog.i18n('apnSelectionDialogDescription'),
+        apnSelectionDialogDescription.innerText,
+        'Description does not contain expected text');
+    assertEquals('polite', apnSelectionDialogDescription.ariaLive);
   });
 
   test('No apnList', () => {

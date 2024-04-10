@@ -7,6 +7,7 @@
  * Dialog that displays APNs for a user to select to be attempted to be used.
  */
 
+import '//resources/ash/common/cr_elements/localized_link/localized_link.js';
 import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
@@ -50,6 +51,11 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
 
       /** The GUID of the network to select known APNs for. */
       guid: String,
+
+      shouldOmitLinks: {
+        type: Boolean,
+        value: false,
+      },
 
       /** @type {ApnProperties} */
       selectedApn_: {

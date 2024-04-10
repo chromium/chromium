@@ -117,6 +117,7 @@
 
 <template is="dom-if" if="[[shouldShowApnSelectionDialog_]]" restamp>
   <apn-selection-dialog
+      should-omit-links="[[shouldOmitLinks]]"
       guid="[[guid]]"
       apn-list="[[getValidDatabaseApnList_(managedCellularProperties)]]"
       on-close="onApnSelectionDialogClose_">

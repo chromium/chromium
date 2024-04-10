@@ -6147,7 +6147,7 @@
           Create new APN
         </message>
         <message name="IDS_SETTINGS_DISCOVER_MORE_APNS" desc="Title for the button which opens the discover more APNs dialog.">
-          Discover more APNs
+          Show known APNs
         </message>
         <message name="IDS_SETTINGS_APN_DESCRIPTION_NO_LINK" desc="Text describing APN settings menu without a link to more detailed information.">
           Manage network APN settings. APNs establish a connection between a cellular network and the internet.
@@ -6308,20 +6308,23 @@
         <message name="IDS_SETTINGS_APN_DIALOG_DONE" desc="Text used to close the APN dialog in view mode.">
           Done
         </message>
-        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_TITLE" desc="Text used to cancel the APN dialog.">
-          Choose from available APNs
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_TITLE" desc="Title of the choose APN dialog.">
+          Choose an APN
         </message>
-        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_DESCRIPTION" desc="Text used to cancel the APN dialog.">
-          Invalid APNs could cause your mobile connection to be disabled. Only set APNs provided by your mobile provider or administrator.
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_DESCRIPTION" desc="Description text in the choose APN dialog in OOBE and login screen.">
+          Make sure to select APNs provided by your mobile provider or administrator. Selecting an APN will disable any custom APNs. Invalid APNs may disrupt your mobile connection.
         </message>
-        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_BUTTON_USE_APN" desc="Text used to close the APN dialog in view mode.">
-          Use this APN
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_DESCRIPTION_WITH_LINK" desc="Description text in the choose APN dialog with a learn more link in settings.">
+          Make sure to select APNs provided by your mobile provider or administrator. Selecting an APN will disable any custom APNs. Invalid APNs may disrupt your mobile connection. <ph name="LINK_BEGIN">&lt;a href="$1" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
         </message>
-        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_A11Y_USE_APN_ENABLED" desc="A11y announcement when 'Use this APN' button becomes enabled in the APN selection dialog.">
-          Use this APN is now enabled
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_BUTTON_USE_APN" desc="'Confirm' button used to select an APN from the APN discovery dialog.">
+          Confirm
         </message>
-        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_A11Y_USE_APN_DISABLED" desc="A11y announcement when 'Use this APN' button becomes disabled in the APN selection dialog.">
-          Use this APN is now disabled
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_A11Y_USE_APN_ENABLED" desc="A11y announcement when 'Confirm' button becomes enabled in the APN selection dialog.">
+          Confirm button is now enabled
+        </message>
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_A11Y_USE_APN_DISABLED" desc="A11y announcement when 'Confirm' button becomes disabled in the APN selection dialog.">
+          Confirm button is now disabled
         </message>
         <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_LIST_ITEM_SELECTED" desc="A11y text for checkmark in APN selection dialog list item">
           Selected

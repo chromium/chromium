@@ -28,9 +28,16 @@
     [[i18n('apnSelectionDialogTitle')]]
   </div>
   <div slot="body">
-    <div id="apnSelectionDialogDescription" aria-live="polite">
-      [[i18n('apnSelectionDialogDescription')]]
-    </div>
+    <template is="dom-if" if="[[!shouldOmitLinks]]" restamp>
+      <localized-link
+          localized-string="[[i18nAdvanced('apnSelectionDialogDescriptionWithLink')]]">
+      </localized-link>
+    </template>
+    <template is="dom-if" if="[[shouldOmitLinks]]" restamp>
+      <div id="apnSelectionDialogDescription" aria-live="polite">
+        [[i18n('apnSelectionDialogDescription')]]
+      </div>
+    </template>
     <div id="container" class="layout vertical flex" scrollable>
       <iron-list items="[[apnList]]"
           selection-enabled
