@@ -1216,6 +1216,12 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     ScriptState* script_state,
     const CredentialRequestOptions* options,
     ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Context is detached");
+    return ScriptPromise<IDLNullable<Credential>>();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state, exception_state.GetContext());
@@ -1492,6 +1498,12 @@ ScriptPromise<Credential> AuthenticationCredentialsContainer::store(
     ScriptState* script_state,
     Credential* credential,
     ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Context is detached");
+    return ScriptPromise<Credential>();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<Credential>>(script_state);
   auto promise = resolver->Promise();
@@ -1546,6 +1558,12 @@ AuthenticationCredentialsContainer::create(
     ScriptState* script_state,
     const CredentialCreationOptions* options,
     ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Context is detached");
+    return ScriptPromise<IDLNullable<Credential>>();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state);
@@ -1854,6 +1872,13 @@ AuthenticationCredentialsContainer::create(
 ScriptPromise<IDLUndefined>
 AuthenticationCredentialsContainer::preventSilentAccess(
     ScriptState* script_state) {
+  if (!script_state->ContextIsValid()) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           "Context is detached"));
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();

@@ -63,15 +63,18 @@ PublicKeyCredential::PublicKeyCredential(
 ScriptPromise<IDLBoolean>
 PublicKeyCredential::isUserVerifyingPlatformAuthenticatorAvailable(
     ScriptState* script_state) {
+  // Ignore calls if the current realm execution context is no longer valid,
+  // e.g., because the responsible document was detached.
+  if (!script_state->ContextIsValid()) {
+    return ScriptPromise<IDLBoolean>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           "Context is detached"));
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
   auto promise = resolver->Promise();
-
-  // Ignore calls if the current realm execution context is no longer valid,
-  // e.g., because the responsible document was detached.
-  if (!resolver->GetExecutionContext()) {
-    return promise;
-  }
 
   UseCounter::Count(
       resolver->GetExecutionContext(),

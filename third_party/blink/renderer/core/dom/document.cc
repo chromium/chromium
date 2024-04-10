@@ -6985,10 +6985,6 @@ ScriptPromise<IDLBoolean> Document::hasPrivateToken(
     ScriptState* script_state,
     const String& issuer,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
-
   // Private State Tokens state is keyed by issuer and top-frame origins that
   // are both (1) HTTP or HTTPS and (2) potentially trustworthy. Consequently,
   // we can return early if either the issuer or the top-frame origin fails to
@@ -7000,22 +6996,15 @@ ScriptPromise<IDLBoolean> Document::hasPrivateToken(
     exception_state.ThrowTypeError(
         "hasPrivateToken: Private Token issuer origins must be both HTTP(S) "
         "and secure (\"potentially trustworthy\").");
-    resolver->Reject(exception_state);
-    return promise;
+    return ScriptPromise<IDLBoolean>();
   }
 
   scoped_refptr<const SecurityOrigin> top_frame_origin = TopFrameOrigin();
   if (!top_frame_origin) {
-    // Note: One case where there might be no top frame origin is if this
-    // document is destroyed. In this case, this function will return
-    // `undefined`. Still bother adding the exception and rejecting, just in
-    // case there are other situations in which the top frame origin might be
-    // absent.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "hasPrivateToken: Cannot execute in "
                                       "documents lacking top-frame origins.");
-    resolver->Reject(exception_state);
-    return promise;
+    return ScriptPromise<IDLBoolean>();
   }
 
   DCHECK(top_frame_origin->IsPotentiallyTrustworthy());
@@ -7025,8 +7014,7 @@ ScriptPromise<IDLBoolean> Document::hasPrivateToken(
         DOMExceptionCode::kNotAllowedError,
         "hasPrivateToken: Cannot execute in "
         "documents without secure, HTTP(S), top-frame origins.");
-    resolver->Reject(exception_state);
-    return promise;
+    return ScriptPromise<IDLBoolean>();
   }
 
   if (!data_->trust_token_query_answerer_.is_bound()) {
@@ -7037,7 +7025,8 @@ ScriptPromise<IDLBoolean> Document::hasPrivateToken(
         WTF::BindOnce(&Document::TrustTokenQueryAnswererConnectionError,
                       WrapWeakPersistent(this)));
   }
-
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
+      script_state, exception_state.GetContext());
   data_->pending_trust_token_query_resolvers_.insert(resolver);
 
   data_->trust_token_query_answerer_->HasTrustTokens(
@@ -7093,7 +7082,7 @@ ScriptPromise<IDLBoolean> Document::hasPrivateToken(
           },
           WrapWeakPersistent(resolver), WrapWeakPersistent(this)));
 
-  return promise;
+  return resolver->Promise();
 }
 
 ScriptPromise<IDLBoolean> Document::hasRedemptionRecord(

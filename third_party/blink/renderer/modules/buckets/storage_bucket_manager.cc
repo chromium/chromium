@@ -108,7 +108,8 @@ ScriptPromise<StorageBucket> StorageBucketManager::open(
   auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
-  if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
+  if (context->IsContextDestroyed() ||
+      !context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
     exception_state.ThrowSecurityError(
         "Access to Storage Buckets API is denied in this context.");
     return promise;
@@ -146,7 +147,8 @@ ScriptPromise<IDLSequence<IDLString>> StorageBucketManager::keys(
   auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
-  if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
+  if (context->IsContextDestroyed() ||
+      !context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
     exception_state.ThrowSecurityError(
         "Access to Storage Buckets API is denied in this context.");
     return promise;
@@ -167,7 +169,8 @@ ScriptPromise<IDLUndefined> StorageBucketManager::Delete(
   auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
-  if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
+  if (context->IsContextDestroyed() ||
+      !context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
     exception_state.ThrowSecurityError(
         "Access to Storage Buckets API is denied in this context.");
     return promise;
