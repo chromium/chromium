@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 /** Native bridge for facilitated payment APIs, such as PIX. */
@@ -64,11 +65,12 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
      * Initiates the payment flow UI by invoking the payment manager with the action token. The
      * result is received back in the onPurchaseActionResult(boolean) method.
      *
+     * @param primaryAccount User's signed in account.
      * @param actionToken An opaque token used for invoking the purchase action.
      */
     @CalledByNative
-    public void invokePurchaseAction(byte[] actionToken) {
-        mApiClient.invokePurchaseAction(actionToken);
+    public void invokePurchaseAction(CoreAccountInfo primaryAccount, byte[] actionToken) {
+        mApiClient.invokePurchaseAction(primaryAccount, actionToken);
     }
 
     // FacilitatedPaymentsApiClient.Delegate implementation:

@@ -80,7 +80,8 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
                         NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
                         /* renderFrameHost= */ null);
 
-        bridge.invokePurchaseAction(new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
+        bridge.invokePurchaseAction(
+                /* primaryAccount= */ null, new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
 
         verify(mBridgeNatives)
                 .onPurchaseActionResult(
@@ -121,7 +122,8 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
                         /* renderFrameHost= */ null);
         bridge.resetNativePointer();
 
-        bridge.invokePurchaseAction(new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
+        bridge.invokePurchaseAction(
+                /* primaryAccount= */ null, new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
 
         verifyNoInteractions(mBridgeNatives);
     }

@@ -12,6 +12,8 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 
+struct CoreAccountInfo;
+
 namespace payments::facilitated {
 
 // A cross-platform interface for invoking the facilitated payment API. Each
@@ -55,6 +57,7 @@ class FacilitatedPaymentsApiClient {
   // InvokePurchaseAction() call is made at a time, then only the last callback
   // will be invoked.
   virtual void InvokePurchaseAction(
+      CoreAccountInfo primary_account,
       base::span<const uint8_t> action_token,
       base::OnceCallback<void(bool)> callback) = 0;
 };

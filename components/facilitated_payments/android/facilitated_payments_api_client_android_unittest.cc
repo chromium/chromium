@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/android/facilitated_payments_api_client_android.h"
 
 #include <jni.h>
+
 #include <cstdint>
 #include <utility>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/functional/bind.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -64,8 +66,10 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
   FacilitatedPaymentsApiClientAndroid apiClient(main_rfh());
   bool was_callback_invoked = false;
   bool purchase_action_result = false;
+  signin::IdentityTestEnvironment identity_test_environment;
 
   apiClient.InvokePurchaseAction(
+      identity_test_environment.MakeAccountAvailable("test@example.test"),
       std::vector<uint8_t>{'A', 'c', 't', 'i', 'o', 'n'},
       base::BindOnce(&CaptureBoolean, &was_callback_invoked,
                      &purchase_action_result));

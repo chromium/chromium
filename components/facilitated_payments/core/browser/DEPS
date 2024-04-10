@@ -1,6 +1,7 @@
 include_rules = [
   "+components/autofill/core/browser",
   "+components/optimization_guide/core",
+  "+components/signin/public",
   "+services/metrics/public",
   "+services/network/public/cpp",
 ]

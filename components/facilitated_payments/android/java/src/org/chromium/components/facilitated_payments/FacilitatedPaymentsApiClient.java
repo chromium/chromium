@@ -4,6 +4,7 @@
 
 package org.chromium.components.facilitated_payments;
 
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 /**
@@ -142,7 +143,19 @@ public class FacilitatedPaymentsApiClient {
     /**
      * Initiates the payment flow UI. Will invoke a delegate callback with the result.
      *
+     * @param primaryAccount User's signed in account.
      * @param actionToken An opaque token used for invoking the purchase action.
+     */
+    public void invokePurchaseAction(CoreAccountInfo primaryAccount, byte[] actionToken) {
+        mDelegate.onPurchaseActionResult(/* isPurchaseActionSuccessful= */ false);
+    }
+
+    /**
+     * Initiates the payment flow UI. Will invoke a delegate callback with the result.
+     *
+     * @param actionToken An opaque token used for invoking the purchase action.
+     *
+     * @Deprecated TODO(https://crbug.com/329108444): Remove this method.
      */
     public void invokePurchaseAction(byte[] actionToken) {
         mDelegate.onPurchaseActionResult(/* isPurchaseActionSuccessful= */ false);

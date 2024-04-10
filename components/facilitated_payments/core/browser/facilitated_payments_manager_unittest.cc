@@ -15,6 +15,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -49,7 +50,9 @@ class MockFacilitatedPaymentsApiClient : public FacilitatedPaymentsApiClient {
               (override));
   MOCK_METHOD(void,
               InvokePurchaseAction,
-              (base::span<const uint8_t>, base::OnceCallback<void(bool)>),
+              (CoreAccountInfo,
+               base::span<const uint8_t>,
+               base::OnceCallback<void(bool)>),
               (override));
 };
 

@@ -11,6 +11,7 @@
 #include "base/android/jni_array.h"
 #include "base/check.h"
 #include "components/facilitated_payments/android/java/jni_headers/FacilitatedPaymentsApiClientBridge_jni.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace payments::facilitated {
@@ -55,6 +56,7 @@ void FacilitatedPaymentsApiClientAndroid::GetClientToken(
 }
 
 void FacilitatedPaymentsApiClientAndroid::InvokePurchaseAction(
+    CoreAccountInfo primary_account,
     base::span<const uint8_t> action_token,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(!IsAnyCallbackPending());
@@ -62,7 +64,8 @@ void FacilitatedPaymentsApiClientAndroid::InvokePurchaseAction(
   purchase_action_callback_ = std::move(callback);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FacilitatedPaymentsApiClientBridge_invokePurchaseAction(
-      env, java_bridge_, base::android::ToJavaByteArray(env, action_token));
+      env, java_bridge_, ConvertToJavaCoreAccountInfo(env, primary_account),
+      base::android::ToJavaByteArray(env, action_token));
 }
 
 void FacilitatedPaymentsApiClientAndroid::OnIsAvailable(
