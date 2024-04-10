@@ -499,6 +499,7 @@ try_.gpu.optional_tests_builder(
     # default is 6 in _gpu_optional_tests_builder()
     execution_timeout = 5 * time.hour,
     main_list_view = "try",
+    siso_enabled = False,
     tryjob = try_.job(
         location_filters = [
             # Inclusion filters.
