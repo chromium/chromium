@@ -275,6 +275,9 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // to fail.
   bool EngageNamespaceSandboxInternal(bool from_zygote);
 
+  // Reports Landlock status through UMA metrics.
+  void ReportLandlockStatus();
+
   // A file descriptor to /proc. It's dangerous to have it around as it could
   // allow for sandbox bypasses. It needs to be closed before we consider
   // ourselves sandboxed.
