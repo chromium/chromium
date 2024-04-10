@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -1265,48 +1264,57 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS})
-    public void pixAccountAvailable_showOtherFinancialAccountsPreference() throws Exception {
+    public void pixAccountAvailable_showPayWithPixPreference() throws Exception {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        // Verify that the preference for 'Manage other financial accounts' is displayed.
-        onView(withText(R.string.settings_manage_other_financial_accounts))
-                .check(matches(isDisplayed()));
-        // Verify that the second line on the preference has 'Pix' displayed.
-        onView(withText(R.string.settings_manage_other_financial_accounts_pix))
-                .check(matches(isDisplayed()));
+        // Verify that the preference for 'Pay with Pix' is displayed.
+        Preference otherFinancialAccountsPref =
+                getPreferenceScreen(activity)
+                        .findPreference(
+                                AutofillPaymentMethodsFragment.PREF_FINANCIAL_ACCOUNTS_MANAGEMENT);
+        assertThat(otherFinancialAccountsPref.getTitle().toString()).contains("Pix");
+        // Verify that the second line on the preference has 'Pix' in it.
+        assertThat(otherFinancialAccountsPref.getSummary().toString()).contains("Pix");
     }
 
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS})
-    public void pixAccountNotAvailable_doNotshowOtherFinancialAccountsPreference()
-            throws Exception {
-        mSettingsActivityTestRule.startSettingsActivity();
+    public void pixAccountNotAvailable_doNotShowPayWithPixPreference() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         // Verify that the preference for 'Manage other financial accounts' is not displayed.
-        onView(withText(R.string.settings_manage_other_financial_accounts)).check(doesNotExist());
+        Preference otherFinancialAccountsPref =
+                getPreferenceScreen(activity)
+                        .findPreference(
+                                AutofillPaymentMethodsFragment.PREF_FINANCIAL_ACCOUNTS_MANAGEMENT);
+        assertThat(otherFinancialAccountsPref).isNull();
     }
 
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS})
-    public void pixAccountAvailable_expOff_doNotshowOtherFinancialAccountsPreference()
-            throws Exception {
+    public void pixAccountAvailable_expOff_doNotShowPayWithPixPreference() throws Exception {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         // Verify that the preference for 'Manage other financial accounts' is not displayed.
-        onView(withText(R.string.settings_manage_other_financial_accounts)).check(doesNotExist());
+        Preference otherFinancialAccountsPref =
+                getPreferenceScreen(activity)
+                        .findPreference(
+                                AutofillPaymentMethodsFragment.PREF_FINANCIAL_ACCOUNTS_MANAGEMENT);
+        assertThat(otherFinancialAccountsPref).isNull();
     }
 
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS})
-    public void testFinancialAccountsPreferenceClicked_opensFinancialAccountsManagementFragment()
-            throws Exception {
+    public void
+            testOtherFinancialAccountsPreferenceClicked_opensFinancialAccountsManagementFragment()
+                    throws Exception {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         Preference otherFinancialAccountsPref =

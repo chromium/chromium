@@ -30,10 +30,17 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     @VisibleForTesting static final String PREFERENCE_KEY_PIX = "pix";
     @VisibleForTesting static final String PREFERENCE_KEY_PIX_BANK_ACCOUNT = "pix_bank_account:%s";
 
+    static final String TITLE_KEY = "financial_accounts_management_title";
+
     // ChromeBaseSettingsFramgent override.
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.settings_manage_other_financial_accounts);
+        Bundle extras = getArguments();
+        String title = "";
+        if (extras != null) {
+            title = extras.getString(TITLE_KEY, "");
+        }
+        getActivity().setTitle(title);
         setHasOptionsMenu(false);
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
         // Suppresses unwanted animations while Preferences are removed from and re-added to the

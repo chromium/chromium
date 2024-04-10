@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.os.Bundle;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
@@ -122,6 +124,32 @@ public class FinancialAccountsManagementFragmentTest {
                 getPreferenceScreen(activity).findPreference(bankAccountPrefKey);
         assertThat(bankAccountPref.getTitle()).isEqualTo(PIX_BANK_ACCOUNT.getBankName());
         assertThat(bankAccountPref.getSummary()).isEqualTo(expectedPrefSummary);
+    }
+
+    @Test
+    @MediumTest
+    public void testActivityTriggered_noArgs_emptyTitle() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        assertThat(activity.getTitle().toString()).isEmpty();
+    }
+
+    @Test
+    @MediumTest
+    public void testActivityTriggered_titlePresentInArgs_titleSet() {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putString(FinancialAccountsManagementFragment.TITLE_KEY, "Title");
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
+
+        assertThat(activity.getTitle().toString()).isEqualTo("Title");
+    }
+
+    @Test
+    @MediumTest
+    public void testActivityTriggered_titleNotPresentInArgs_emptyTitle() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+
+        assertThat(activity.getTitle().toString()).isEmpty();
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {

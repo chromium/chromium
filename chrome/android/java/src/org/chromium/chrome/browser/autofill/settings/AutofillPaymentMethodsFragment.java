@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -155,6 +156,32 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 });
         getPreferenceScreen().addPreference(autofillSwitch);
 
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS)) {
+            Pair<Integer, String> otherFinancialAccountTypes =
+                    getOtherFinancialAccountsTypes(personalDataManager);
+            if (otherFinancialAccountTypes.first != 0) {
+                Preference otherFinancialAccountsPref = new Preference(getStyledContext());
+                otherFinancialAccountsPref.setKey(PREF_FINANCIAL_ACCOUNTS_MANAGEMENT);
+                otherFinancialAccountsPref.setSingleLineTitle(false);
+                otherFinancialAccountsPref.setTitle(
+                        getResources()
+                                .getString(
+                                        R.string.settings_manage_other_financial_accounts_title,
+                                        otherFinancialAccountTypes.second));
+                otherFinancialAccountsPref.setSummary(
+                        getResources()
+                                .getQuantityString(
+                                        R.plurals
+                                                .settings_manage_other_financial_accounts_description,
+                                        otherFinancialAccountTypes.first,
+                                        otherFinancialAccountTypes.second));
+                getPreferenceScreen().addPreference(otherFinancialAccountsPref);
+                otherFinancialAccountsPref.setOnPreferenceClickListener(
+                        this::showOtherFinancialAccountsFragment);
+            }
+        }
+
         if (isBiometricAvailable()
                 && personalDataManager.isFidoAuthenticationAvailable()
                 && !ChromeFeatureList.isEnabled(
@@ -217,25 +244,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             if (personalDataManager.getCreditCardsForSettings().stream()
                     .anyMatch(card -> !card.getCvc().isEmpty())) {
                 createDeleteSavedCvcsButton();
-            }
-        }
-
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS)) {
-            String otherFinancialAccountsPrefSummaryString =
-                    getOtherFinancialAccountsPrefSummary(personalDataManager);
-            if (!otherFinancialAccountsPrefSummaryString.isEmpty()) {
-                Preference otherFinancialAccountsPref = new Preference(getStyledContext());
-                otherFinancialAccountsPref.setKey(PREF_FINANCIAL_ACCOUNTS_MANAGEMENT);
-                otherFinancialAccountsPref.setSingleLineTitle(false);
-                otherFinancialAccountsPref.setTitle(
-                        R.string.settings_manage_other_financial_accounts);
-                otherFinancialAccountsPref.setWidgetLayoutResource(
-                        R.layout.payment_methods_other_financial_accounts_navigate_next_icon);
-                otherFinancialAccountsPref.setSummary(otherFinancialAccountsPrefSummaryString);
-                getPreferenceScreen().addPreference(otherFinancialAccountsPref);
-                otherFinancialAccountsPref.setOnPreferenceClickListener(
-                        preference -> showOtherFinancialAccountsFragment());
             }
         }
 
@@ -591,17 +599,28 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         dialog.show();
     }
 
-    private String getOtherFinancialAccountsPrefSummary(PersonalDataManager personalDataManager) {
+    /**
+     * Returns a pair of the number of types of financial accounts and the string to be displayed in
+     * the settings page.
+     */
+    private Pair<Integer, String> getOtherFinancialAccountsTypes(
+            PersonalDataManager personalDataManager) {
         return personalDataManager.getMaskedBankAccounts().length == 0
-                ? ""
-                : getResources().getString(R.string.settings_manage_other_financial_accounts_pix);
+                ? new Pair<>(0, "")
+                : new Pair<>(
+                        1,
+                        getResources()
+                                .getString(R.string.settings_manage_other_financial_accounts_pix));
     }
 
     /** Show the page for managing other finiancial accounts. */
-    private boolean showOtherFinancialAccountsFragment() {
+    private boolean showOtherFinancialAccountsFragment(Preference preference) {
+        Bundle args = preference.getExtras();
+        args.putString(
+                FinancialAccountsManagementFragment.TITLE_KEY, preference.getTitle().toString());
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(
-                getActivity(), FinancialAccountsManagementFragment.class);
+                getActivity(), FinancialAccountsManagementFragment.class, args);
         return true;
     }
 
