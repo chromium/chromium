@@ -269,9 +269,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
         implicit_anchor_(implicit_anchor),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        containing_block_rect_(offset_to_padding_box, available_size),
-        inset_area_modified_containing_block_rect_(offset_to_padding_box,
-                                                   available_size) {
+        containing_block_rect_(offset_to_padding_box, available_size) {
     DCHECK(anchor_query_);
   }
 
@@ -291,9 +289,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
         containing_block_(&containing_block),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        containing_block_rect_(offset_to_padding_box, available_size),
-        inset_area_modified_containing_block_rect_(offset_to_padding_box,
-                                                   available_size) {
+        containing_block_rect_(offset_to_padding_box, available_size) {
     DCHECK(anchor_queries_);
     DCHECK(containing_block_);
   }
@@ -312,7 +308,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // (e.g., no target or wrong axis).
   std::optional<LayoutUnit> Evaluate(
       const class AnchorQuery&,
-      const ScopedCSSName* position_anchor) override;
+      const ScopedCSSName* position_anchor,
+      const std::optional<InsetAreaOffsets>&) override;
 
   std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
       const ScopedCSSName* position_anchor,
@@ -337,7 +334,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorValue anchor_value,
       float percentage,
-      const ScopedCSSName* position_anchor) const;
+      const ScopedCSSName* position_anchor,
+      const std::optional<InsetAreaOffsets>&) const;
   std::optional<LayoutUnit> EvaluateAnchorSize(
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorSizeValue anchor_size_value,
@@ -352,13 +350,16 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   bool IsYAxis() const;
   bool IsRightOrBottom() const;
 
-  LayoutUnit AvailableSizeAlongAxis() const {
-    return IsYAxis() ? inset_area_modified_containing_block_rect_.Height()
-                     : inset_area_modified_containing_block_rect_.Width();
+  LayoutUnit AvailableSizeAlongAxis(
+      const PhysicalRect& inset_area_modified_containing_block_rect) const {
+    return IsYAxis() ? inset_area_modified_containing_block_rect.Height()
+                     : inset_area_modified_containing_block_rect.Width();
   }
 
-  void ValidateAppliedInsetAreaOffsets() const;
-  void ApplyInsetAreaOffsets() const;
+  // Returns the containing block, further constrained by the inset-area.
+  // Not to be confused with the inset-modified containing block.
+  PhysicalRect InsetAreaModifiedContainingBlock(
+      const std::optional<InsetAreaOffsets>&) const;
 
   const LayoutObject* query_object_ = nullptr;
   mutable const LogicalAnchorQuery* anchor_query_ = nullptr;
@@ -373,13 +374,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // Either width or height will be used, depending on IsYAxis().
   PhysicalRect containing_block_rect_;
 
-  // containing_block_rect_, further constrained by the current inset-area.
-  mutable PhysicalRect inset_area_modified_containing_block_rect_;
-
-  // The inset-area currently applied to the
-  // inset_area_modified_containing_block_rect_.
-  mutable std::optional<InsetAreaOffsets> applied_inset_area_offsets_;
-
   // A single-value cache. If a call to Get has the same key as the last call,
   // then the cached result it returned. Otherwise, the value is created using
   // CreationFunc, then returned.
@@ -387,10 +381,20 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   class CachedValue {
     STACK_ALLOCATED();
 
+    template <typename T>
+    static bool Equals(const T* a, const T* b) {
+      return base::ValuesEquivalent(a, b);
+    }
+
+    template <typename T>
+    static bool Equals(const T& a, const T& b) {
+      return a == b;
+    }
+
    public:
     template <typename CreationFunc>
     ValueType Get(KeyType key, CreationFunc create) {
-      if (value_.has_value() && base::ValuesEquivalent(key_, key)) {
+      if (value_.has_value() && Equals(key_, key)) {
         DCHECK_EQ(value_.value(), create());
         return value_.value();
       }
@@ -403,6 +407,10 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
     KeyType key_{};
     std::optional<ValueType> value_;
   };
+
+  // Caches most recent result of InsetAreaModifiedContainingBlock.
+  mutable CachedValue<std::optional<InsetAreaOffsets>, PhysicalRect>
+      cached_inset_area_modified_containing_block_;
 
   // Caches most recent result of DefaultAnchor.
   mutable CachedValue<const ScopedCSSName*, const LayoutObject*>

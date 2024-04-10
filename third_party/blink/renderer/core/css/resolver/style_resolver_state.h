@@ -184,6 +184,7 @@ class CORE_EXPORT StyleResolverState {
   void SetWritingMode(WritingMode);
   void SetTextOrientation(ETextOrientation);
   void SetPositionAnchor(ScopedCSSName*);
+  void SetInsetAreaOffsets(const std::optional<InsetAreaOffsets>&);
 
   CSSParserMode GetParserMode() const;
 

@@ -22,7 +22,6 @@ blink_core_sources_css = [
   "abstract_property_set_css_style_declaration.h",
   "active_style_sheets.cc",
   "active_style_sheets.h",
-  "anchor_evaluator.cc",
   "anchor_evaluator.h",
   "anchor_results.cc",
   "anchor_results.h",

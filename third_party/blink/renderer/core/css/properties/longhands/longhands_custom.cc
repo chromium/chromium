@@ -4549,9 +4549,8 @@ void ComputeAnchorEdgeOffsetsForInsetArea(StyleResolverState& state,
                                           blink::InsetArea inset_area) {
   if (AnchorEvaluator* evaluator =
           state.CssToLengthConversionData().GetAnchorEvaluator()) {
-    state.StyleBuilder().SetInsetAreaOffsets(
-        evaluator->ComputeInsetAreaOffsetsForLayout(
-            state.StyleBuilder().PositionAnchor(), inset_area));
+    state.SetInsetAreaOffsets(evaluator->ComputeInsetAreaOffsetsForLayout(
+        state.StyleBuilder().PositionAnchor(), inset_area));
   }
   state.StyleBuilder().SetHasAnchorFunctions();
 }

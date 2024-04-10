@@ -37,7 +37,6 @@ void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value
 {% if property.anchor_mode %}
   AnchorScope anchor_scope(
       AnchorScope::Mode::{{property.anchor_mode.to_enum_value()}},
-      state.StyleBuilder(),
       state.CssToLengthConversionData().GetAnchorEvaluator());
 {% endif %}
 {{(caller(property) ~ '}')}}

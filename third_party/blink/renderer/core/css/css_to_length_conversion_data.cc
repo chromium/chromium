@@ -297,8 +297,11 @@ std::optional<double> CSSToLengthConversionData::ContainerSizes::FindNamedSize(
 CSSToLengthConversionData::AnchorData::AnchorData(
     Element* anchored,
     AnchorEvaluator* evaluator,
-    const ScopedCSSName* position_anchor)
-    : evaluator_(evaluator), position_anchor_(position_anchor) {
+    const ScopedCSSName* position_anchor,
+    const std::optional<InsetAreaOffsets>& inset_area_offsets)
+    : evaluator_(evaluator),
+      position_anchor_(position_anchor),
+      inset_area_offsets_(inset_area_offsets) {
   if (!evaluator_ && anchored) {
     if (OutOfFlowData* out_of_flow_data = anchored->GetOutOfFlowData()) {
       evaluator_ = &out_of_flow_data->GetAnchorResults();

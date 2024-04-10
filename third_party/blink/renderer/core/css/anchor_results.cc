@@ -20,8 +20,9 @@ void AnchorResults::Trace(Visitor* visitor) const {
 
 std::optional<LayoutUnit> AnchorResults::Evaluate(
     const AnchorQuery& query,
-    const ScopedCSSName* position_anchor) {
-  // TODO(crbug.com/333423706): Handle `position_anchor`.
+    const ScopedCSSName* position_anchor,
+    const std::optional<InsetAreaOffsets>& inset_area_results) {
+  // TODO(crbug.com/333423706): Handle `position_anchor`, `inset_area_results`.
   if (GetMode() == AnchorEvaluator::Mode::kNone) {
     return std::nullopt;
   }
@@ -66,10 +67,11 @@ bool AnchorResults::IsAnyResultDifferent(const ComputedStyle& style,
     Mode mode = key->GetMode();
     std::optional<InsetAreaOffsets> inset_area =
         IsBaseMode(mode) ? std::nullopt : style.InsetAreaOffsets();
-    AnchorScope anchor_scope(mode, inset_area, evaluator);
+    AnchorScope anchor_scope(mode, evaluator);
     std::optional<LayoutUnit> new_result =
-        evaluator ? evaluator->Evaluate(key->Query(), position_anchor)
-                  : std::optional<LayoutUnit>();
+        evaluator
+            ? evaluator->Evaluate(key->Query(), position_anchor, inset_area)
+            : std::optional<LayoutUnit>();
     if (new_result != old_result) {
       return true;
     }

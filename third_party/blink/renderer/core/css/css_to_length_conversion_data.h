@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/inset_area.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -252,13 +253,18 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     AnchorData() = default;
     AnchorData(Element* anchored,
                AnchorEvaluator*,
-               const ScopedCSSName* position_anchor);
+               const ScopedCSSName* position_anchor,
+               const std::optional<InsetAreaOffsets>&);
     AnchorEvaluator* GetEvaluator() const { return evaluator_; }
     const ScopedCSSName* GetPositionAnchor() const { return position_anchor_; }
+    const std::optional<InsetAreaOffsets>& GetInsetAreaOffsets() const {
+      return inset_area_offsets_;
+    }
 
    private:
     AnchorEvaluator* evaluator_ = nullptr;
     const ScopedCSSName* position_anchor_ = nullptr;
+    std::optional<InsetAreaOffsets> inset_area_offsets_;
   };
 
   using Flags = uint16_t;
@@ -364,6 +370,9 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   }
   const ScopedCSSName* GetPositionAnchor() const override {
     return anchor_data_.GetPositionAnchor();
+  }
+  std::optional<InsetAreaOffsets> GetInsetAreaOffsets() const override {
+    return anchor_data_.GetInsetAreaOffsets();
   }
 
   // See ContainerSizes::PreCachedCopy.
