@@ -106,6 +106,11 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, WaitForManualWpDisable) {
       "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, WpDisableCompletePage) {
+  RunTest("chromeos/shimless_rma/onboarding_wp_disable_complete_page_test.js",
+          "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash
