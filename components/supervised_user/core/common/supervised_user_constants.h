@@ -123,6 +123,9 @@ extern const char kSupervisedUserTopLevelURLFilteringResultHistogramName[];
 // The URL which the "Managed by your parent" UI links to.
 extern const char kManagedByParentUiMoreInfoUrl[];
 
+// Feedback source name for family member role in Family Link.
+extern const char kFamilyMemberRoleFeedbackTag[];
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

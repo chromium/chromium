@@ -3939,6 +3939,8 @@ static_library("browser") {
       "feedback/system_logs/log_sources/crash_ids_source.h",
       "feedback/system_logs/log_sources/device_event_log_source.cc",
       "feedback/system_logs/log_sources/device_event_log_source.h",
+      "feedback/system_logs/log_sources/family_info_log_source.cc",
+      "feedback/system_logs/log_sources/family_info_log_source.h",
       "feedback/system_logs/log_sources/memory_details_log_source.cc",
       "feedback/system_logs/log_sources/memory_details_log_source.h",
       "feedback/system_logs/log_sources/performance_log_source.cc",

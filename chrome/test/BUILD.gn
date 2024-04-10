@@ -8201,6 +8201,7 @@ test("unit_tests") {
       "../browser/feedback/show_feedback_page_unittest.cc",
       "../browser/feedback/system_logs/log_sources/chrome_internal_log_source_unittest.cc",
       "../browser/feedback/system_logs/log_sources/crash_ids_source_unittest.cc",
+      "../browser/feedback/system_logs/log_sources/family_info_log_source_unittest.cc",
       "../browser/feedback/system_logs/log_sources/performance_log_source_unittest.cc",
       "../browser/feedback/system_logs/log_sources/related_website_sets_source_unittest.cc",
     ]
@@ -8340,6 +8341,7 @@ test("unit_tests") {
       "//components/session_proto_db:session_proto_db",
       "//components/signin/public/base:signin_buildflags",
       "//components/soda:constants",
+      "//components/supervised_user/core/browser:list_family_members_service",
       "//components/sync:test_support",
       "//components/user_education/common",
       "//components/user_education/test",
