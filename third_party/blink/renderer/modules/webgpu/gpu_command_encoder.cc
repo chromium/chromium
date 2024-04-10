@@ -182,7 +182,6 @@ WGPUImageCopyBuffer ValidateAndConvertImageCopyBuffer(
   DCHECK(webgpu_view->buffer());
 
   WGPUImageCopyBuffer dawn_view = {};
-  dawn_view.nextInChain = nullptr;
   dawn_view.buffer = webgpu_view->buffer()->GetHandle();
 
   *error = ValidateTextureDataLayout(webgpu_view, &dawn_view.layout);

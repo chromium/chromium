@@ -751,17 +751,11 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
       WGPUTextureUsage_CopyDst | WGPUTextureUsage_RenderAttachment,
       dst_mailbox);
   WGPUImageCopyTexture source = {
-      .nextInChain = nullptr,
       .texture = texture,
-      .mipLevel = 0,
-      .origin = WGPUOrigin3D{0},
       .aspect = WGPUTextureAspect_All,
   };
   WGPUImageCopyTexture destination = {
-      .nextInChain = nullptr,
       .texture = reservation.texture,
-      .mipLevel = 0,
-      .origin = WGPUOrigin3D{0},
       .aspect = WGPUTextureAspect_All,
   };
   WGPUExtent3D copy_size = {
