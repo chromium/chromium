@@ -40,7 +40,8 @@ constexpr char WriteTraits::kNameString[];
 template <typename Traits>
 bool ReadOrWrite(int fd,
                  const typename Traits::BufferType buffer,
-                 const size_t size) {
+                 const size_t size,
+                 const char* operation_description) {
   if (size > std::numeric_limits<ssize_t>::max()) {
     logging::Error("request size is greater than ssize_t::max");
     return false;
@@ -53,11 +54,13 @@ bool ReadOrWrite(int fd,
     ssize_t transacted_bytes =
         HANDLE_EINTR(Traits::Operate(fd, buffer + offset, bytes_to_transact));
     if (transacted_bytes < 0) {
-      logging::PError("%s failed", Traits::kNameString);
+      logging::PError("%s %s failed", operation_description,
+                      Traits::kNameString);
       return false;
     } else if (transacted_bytes == 0) {
       // A short read from the sender, perhaps the sender process died.
-      logging::Error("%s failed", Traits::kNameString);
+      logging::Error("%s %s failed", operation_description,
+                     Traits::kNameString);
       return false;
     }
 
@@ -118,14 +121,13 @@ bool SeatbeltExecClient::SendPolicy(const mac::SandboxPolicy& policy) {
 bool SeatbeltExecClient::WriteString(const std::string& str) {
   uint64_t str_len = static_cast<uint64_t>(str.size());
   if (!ReadOrWrite<WriteTraits>(pipe_[1], reinterpret_cast<uint8_t*>(&str_len),
-                                sizeof(str_len))) {
-    logging::Error("SeatbeltExecClient: write buffer length failed.");
+                                sizeof(str_len), "buffer length")) {
     return false;
   }
 
-  if (!ReadOrWrite<WriteTraits>(
-          pipe_[1], reinterpret_cast<const uint8_t*>(&str[0]), str_len)) {
-    logging::Error("SeatbeltExecClient: write buffer failed.");
+  if (!ReadOrWrite<WriteTraits>(pipe_[1],
+                                reinterpret_cast<const uint8_t*>(&str[0]),
+                                str_len, "buffer")) {
     return false;
   }
 
@@ -218,16 +220,14 @@ bool SeatbeltExecServer::ApplySandboxProfile(const mac::SandboxPolicy& policy) {
 bool SeatbeltExecServer::ReadString(std::string* str) {
   uint64_t buf_len = 0;
   if (!ReadOrWrite<ReadTraits>(fd_, reinterpret_cast<uint8_t*>(&buf_len),
-                               sizeof(buf_len))) {
-    logging::Error("SeatbeltExecServer: failed to read buffer length.");
+                               sizeof(buf_len), "buffer length")) {
     return false;
   }
 
   str->resize(buf_len);
 
   if (!ReadOrWrite<ReadTraits>(fd_, reinterpret_cast<uint8_t*>(&(*str)[0]),
-                               buf_len)) {
-    logging::Error("SeatbeltExecServer: failed to read buffer.");
+                               buf_len, "buffer")) {
     return false;
   }
 
