@@ -588,6 +588,11 @@ inline constexpr char kUserAgentWasChanged[] = "UserAgentWasChanged";
 inline constexpr char kLastApplicationStorageMetricsLogTime[] =
     "LastApplicationStorageMetricsLogTime";
 
+// Count the number of times the Search Engine Choice Screen was skipped
+// because the application was started via an external Intent.
+inline constexpr char kChoiceScreenSkippedCount[] =
+    "ios.search_engine_choice_screen.skip_count";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_PREFS_PREF_NAMES_H_

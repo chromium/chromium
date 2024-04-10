@@ -786,6 +786,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       break;
     case InitStageFirstRun:
       break;
+    case InitStageChoiceScreen:
+      break;
     case InitStageFinal:
       break;
   }

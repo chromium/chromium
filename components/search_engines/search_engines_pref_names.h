@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_PREF_NAMES_H_
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_PREF_NAMES_H_
 
+#include "build/build_config.h"
+
 namespace prefs {
 
 // The GUID of the locally saved default search provider. Note that this acts
@@ -92,6 +94,13 @@ inline constexpr char kSearchProviderOverridesVersion[] =
 // TODO(b/313067383): Clean up experiment setup.
 inline constexpr char kSearchEnginesStudyGroup[] =
     "search_engines.client_side_study_group";
+
+#if BUILDFLAG(IS_IOS)
+// Number of time the search engine choice screen was skipped because the app
+// was started via an external intent.
+inline constexpr char kDefaultSearchProviderChoiceScreenSkippedCount[] =
+    "default_search_provider.skip_count";
+#endif
 
 }  // namespace prefs
 

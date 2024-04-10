@@ -75,4 +75,12 @@ const base::FeatureParam<bool> kSearchEngineChoiceTriggerSkipFor3p{
     /*name=*/"skip_for_3p",
     /*default_value=*/true};
 
+#if BUILDFLAG(IS_IOS)
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount{
+    &kSearchEngineChoiceTrigger,
+    /*name=*/"maximum_skip_count",
+    /*default_value=*/10};
+#endif
+
 }  // namespace switches

@@ -28,7 +28,8 @@
   [screens addObject:@(kHistorySync)];
 
   if (ShouldDisplaySearchEngineChoiceScreen(
-          *browserState, search_engines::ChoicePromo::kFre)) {
+          *browserState, search_engines::ChoicePromo::kFre,
+          /*app_started_via_external_intent=*/false)) {
     [screens addObject:@(kChoice)];
   }
 

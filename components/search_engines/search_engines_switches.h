@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace switches {
 
@@ -71,6 +72,16 @@ extern const base::FeatureParam<std::string>
 // default search engine is not Google.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const base::FeatureParam<bool> kSearchEngineChoiceTriggerSkipFor3p;
+
+#if BUILDFLAG(IS_IOS)
+// Maximum number of time the search engine choice screen can be skipped
+// because the application is started via an external intent. Once this
+// count is reached, the search engine choice screen is presented on all
+// restart until the user has made a decision.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount;
+#endif
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_

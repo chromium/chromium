@@ -120,6 +120,9 @@
     case InitStageFirstRun:
       [appState queueTransitionToNextInitStage];
       break;
+    case InitStageChoiceScreen:
+      [appState queueTransitionToNextInitStage];
+      break;
     case InitStageFinal:
       break;
   }

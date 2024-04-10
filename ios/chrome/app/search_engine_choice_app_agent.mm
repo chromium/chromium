@@ -21,6 +21,18 @@
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
 
+namespace {
+
+// Enum storing the result of deciding whether the Search Engine Choice
+// Screen should be skipped or not.
+enum class SkipScreenDecision {
+  kUnknown,
+  kPresent,
+  kSkip,
+};
+
+}  // namespace
+
 @interface SearchEngineChoiceAppAgent () <SearchEngineChoiceCoordinatorDelegate>
 @end
 
@@ -31,58 +43,49 @@
   std::unique_ptr<ScopedUIBlocker> _searchEngineChoiceUIBlocker;
   // Scene state ID where the search engine choice dialog is displayed.
   NSString* _searchEngineChoiceSceneStateID;
+  // Store whether the Search Engine Choice Screen should be skipped or not.
+  SkipScreenDecision _skipScreenDecision;
 }
 
 #pragma mark - SceneObservingAppAgent
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  // Ignore SceneState activation if the app is not yet ready.
-  if (self.appState.initStage > InitStageFirstRun) {
-    switch (level) {
-      case SceneActivationLevelForegroundInactive:
-      case SceneActivationLevelBackground:
-        break;
-      case SceneActivationLevelForegroundActive:
-        [self maybeShowChoiceScreen:sceneState];
-        break;
-      case SceneActivationLevelDisconnected:
-      case SceneActivationLevelUnattached:
-        if (_searchEngineChoiceCoordinator &&
-            [_searchEngineChoiceSceneStateID
-                isEqual:sceneState.sceneSessionID]) {
-          [self choiceScreenWillBeDismissed:_searchEngineChoiceCoordinator];
-          // If the scene state where the search engine choice dialog is
-          // removed, is disconned, the search engine choice dialog needs to be
-          // added to the next foreground active scene (if one exists).
-          SceneState* nextActiveSceneState =
-              self.appState.foregroundActiveScene;
-          if (nextActiveSceneState) {
-            [self maybeShowChoiceScreen:nextActiveSceneState];
-          }
-        }
-        break;
-    }
+  [super sceneState:sceneState transitionedToActivationLevel:level];
+  if (self.appState.initStage != InitStageChoiceScreen) {
+    return;
   }
 
-  [super sceneState:sceneState transitionedToActivationLevel:level];
+  switch (level) {
+    case SceneActivationLevelBackground:
+    case SceneActivationLevelForegroundInactive:
+      // Nothing to do as the SceneState is not ready.
+      break;
+
+    case SceneActivationLevelForegroundActive:
+      [self maybeShowChoiceScreen:sceneState];
+      break;
+
+    case SceneActivationLevelDisconnected:
+    case SceneActivationLevelUnattached:
+      [self sceneStateDisconnected:sceneState];
+      break;
+  }
 }
 
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
-  // Instantiate the `SearchEngineChoiceCoordinator` if necessary if any
-  // SceneState reached the `SceneActivationLevelForegroundActive` level
-  // before the app was ready.
-  if (self.appState.initStage > InitStageFirstRun) {
-    for (SceneState* sceneState in self.appState.connectedScenes) {
-      if (sceneState.activationLevel == SceneActivationLevelForegroundActive) {
-        [self maybeShowChoiceScreen:sceneState];
-      }
-    }
-  }
   [super appState:appState didTransitionFromInitStage:previousInitStage];
+  if (appState.initStage != InitStageChoiceScreen) {
+    return;
+  }
+
+  // Try to present the Choice Screen on the first active SceneState.
+  if (SceneState* sceneState = appState.foregroundActiveScene) {
+    [self maybeShowChoiceScreen:sceneState];
+  }
 }
 
 #pragma mark - SearchEngineChoiceCoordinatorDelegate
@@ -90,51 +93,125 @@
 - (void)choiceScreenWillBeDismissed:
     (SearchEngineChoiceCoordinator*)coordinator {
   DCHECK_EQ(_searchEngineChoiceCoordinator, coordinator);
-  DCHECK(_searchEngineChoiceSceneStateID);
-  _searchEngineChoiceUIBlocker.reset();
-  _searchEngineChoiceSceneStateID = nil;
-  [_searchEngineChoiceCoordinator stop];
-  _searchEngineChoiceCoordinator = nil;
+  [self stopPresentingChoiceScreen];
+
+  // Advance to the next stage when the screen is dismissed by the user.
+  if (self.appState.initStage == InitStageChoiceScreen) {
+    [self.appState queueTransitionToNextInitStage];
+  }
 }
 
 #pragma mark - Private
 
+// Returns whether the app was started via an external intent (i.e. any
+// connected scene was given an external intent).
+- (BOOL)startupHadExternalIntent {
+  for (SceneState* sceneState in self.appState.connectedScenes) {
+    if (sceneState.startupHadExternalIntent) {
+      return YES;
+    }
+  }
+
+  return NO;
+}
+
+// Tries to present the choice screen on `sceneState`. If the screen is not
+// presented for any reason, then advance the application init state.
 - (void)maybeShowChoiceScreen:(SceneState*)sceneState {
-  // The application needs to be ready (i.e. the Browser created, ...) before
-  // the choice screen can be presented. Assert this is the case.
-  DCHECK_GT(self.appState.initStage, InitStageFirstRun);
-  // TODO(crbug.com/326035954): Evaluate if this is correct for multiple browser
-  // states.
-  BOOL hasPreRestoreAccountInfo =
-      GetPreRestoreIdentity(GetApplicationContext()->GetLocalState())
-          .has_value();
-  if (hasPreRestoreAccountInfo) {
-    // Do not override the post-restore signin promo. The choice screen should
-    // come after.
-    return;
-  }
+  DCHECK_EQ(self.appState.initStage, InitStageChoiceScreen);
+  DCHECK_EQ(sceneState.activationLevel, SceneActivationLevelForegroundActive);
+
+  // If the Choice Screen is already presented on another SceneState, then
+  // there is nothing to do.
   if (_searchEngineChoiceCoordinator) {
+    DCHECK(_searchEngineChoiceUIBlocker);
+    DCHECK(_searchEngineChoiceSceneStateID);
     return;
   }
-  // Using main browser so that, even in incognito mode, the user is not
-  // re-asked which search engine to use.
-  if (ShouldDisplaySearchEngineChoiceScreen(
-          *sceneState.browserProviderInterface.mainBrowserProvider.browser
-               ->GetBrowserState(),
-          search_engines::ChoicePromo::kDialog)) {
-    DCHECK(!_searchEngineChoiceUIBlocker);
-    DCHECK(!_searchEngineChoiceSceneStateID);
-    _searchEngineChoiceUIBlocker =
-        std::make_unique<ScopedUIBlocker>(sceneState);
-    _searchEngineChoiceSceneStateID = sceneState.sceneSessionID;
-    _searchEngineChoiceCoordinator = [[SearchEngineChoiceCoordinator alloc]
-        initWithBaseViewController:sceneState.browserProviderInterface
-                                       .currentBrowserProvider.viewController
-                           browser:sceneState.browserProviderInterface
-                                       .currentBrowserProvider.browser];
-    _searchEngineChoiceCoordinator.delegate = self;
-    [_searchEngineChoiceCoordinator start];
+
+  DCHECK(!_searchEngineChoiceUIBlocker);
+  DCHECK(!_searchEngineChoiceSceneStateID);
+
+  id<BrowserProvider> browserProvider =
+      sceneState.browserProviderInterface.currentBrowserProvider;
+
+  // If the decision to skip the Search Engine Choice Screen has not been
+  // made yet, evaluate the conditions, and then store the decision result.
+  if (_skipScreenDecision == SkipScreenDecision::kUnknown) {
+    DCHECK(browserProvider.browser);
+    DCHECK(browserProvider.browser->GetBrowserState());
+
+    // If there is no need to present the screen, then transition to the next
+    // application stage (otherwise the transition will happen once the user
+    // has selected a default search engine and completed the workflow). In
+    // that case, the method won't be called again.
+    if (!ShouldDisplaySearchEngineChoiceScreen(
+            *browserProvider.browser->GetBrowserState(),
+            search_engines::ChoicePromo::kDialog,
+            [self startupHadExternalIntent])) {
+      _skipScreenDecision = SkipScreenDecision::kSkip;
+      [self.appState queueTransitionToNextInitStage];
+      return;
+    }
+
+    _skipScreenDecision = SkipScreenDecision::kPresent;
   }
+
+  // This point can be reached multiple time if the decision has been taken
+  // to present the screen, then the SceneState used for presentation is
+  // closed. In that case, the previous decision must have been to present
+  // (otherwise the app would have moved to the next InitStage). Assert it
+  // is the case.
+  DCHECK_EQ(_skipScreenDecision, SkipScreenDecision::kPresent);
+
+  // Present the screen.
+  _searchEngineChoiceSceneStateID = sceneState.sceneSessionID;
+  _searchEngineChoiceUIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+
+  _searchEngineChoiceCoordinator = [[SearchEngineChoiceCoordinator alloc]
+      initWithBaseViewController:browserProvider.viewController
+                         browser:browserProvider.browser];
+  _searchEngineChoiceCoordinator.delegate = self;
+  [_searchEngineChoiceCoordinator start];
+}
+
+// Tries to dismiss the choice screen if presented by `sceneState` as the
+// SceneState will be disconnected or detached soon. If that `sceneState`
+// was presenting the Search Engine Choice Screen, move the presentation
+// to the next active SceneState, if any.
+- (void)sceneStateDisconnected:(SceneState*)sceneState {
+  DCHECK_EQ(self.appState.initStage, InitStageChoiceScreen);
+  if (!_searchEngineChoiceCoordinator) {
+    // Nothing to do if the Search Engine Choice Screen is not presented.
+    return;
+  }
+
+  DCHECK(_searchEngineChoiceUIBlocker);
+  DCHECK(_searchEngineChoiceSceneStateID);
+
+  if (![_searchEngineChoiceSceneStateID isEqual:sceneState.sceneSessionID]) {
+    // Nothing to do if the Search Engine Choice Screen is not presented
+    // by `sceneState`.
+    return;
+  }
+
+  [self stopPresentingChoiceScreen];
+  if (SceneState* nextSceneState = self.appState.foregroundActiveScene) {
+    [self maybeShowChoiceScreen:nextSceneState];
+  }
+}
+
+// Stops presenting the choice screen. Called after it has been dismissed
+// by the user or when programmatically dismissing when a SceneState is
+// detached or disconnected while the screen is presented.
+- (void)stopPresentingChoiceScreen {
+  DCHECK(_searchEngineChoiceSceneStateID);
+  _searchEngineChoiceSceneStateID = nil;
+  _searchEngineChoiceUIBlocker.reset();
+
+  _searchEngineChoiceCoordinator.delegate = nil;
+  [_searchEngineChoiceCoordinator stop];
+  _searchEngineChoiceCoordinator = nil;
 }
 
 @end

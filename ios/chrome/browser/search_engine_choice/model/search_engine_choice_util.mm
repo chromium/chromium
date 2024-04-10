@@ -6,8 +6,10 @@
 
 #import "base/check_deref.h"
 #import "base/command_line.h"
+#import "components/prefs/pref_service.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice_utils.h"
+#import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
@@ -39,8 +41,10 @@ bool IsChoiceEnabled(search_engines::ChoicePromo promo) {
 }
 }  // namespace
 
-bool ShouldDisplaySearchEngineChoiceScreen(ChromeBrowserState& browser_state,
-                                           search_engines::ChoicePromo promo) {
+bool ShouldDisplaySearchEngineChoiceScreen(
+    ChromeBrowserState& browser_state,
+    search_engines::ChoicePromo promo,
+    bool app_started_via_external_intent) {
   if (!IsChoiceEnabled(promo)) {
     // This build is not eligible for the choice screen.
     return false;
@@ -68,6 +72,25 @@ bool ShouldDisplaySearchEngineChoiceScreen(ChromeBrowserState& browser_state,
       search_engines::SearchEngineChoiceScreenConditions::kEligible) {
     condition = search_engine_choice_service->GetDynamicChoiceScreenConditions(
         *template_url_service);
+  }
+
+  // If the app has been started via an external intent, and skip the Dialog
+  // promo up to switches::kSearchEngineChoiceMaximumSkipCount() times.
+  if (app_started_via_external_intent &&
+      promo == search_engines::ChoicePromo::kDialog &&
+      condition ==
+          search_engines::SearchEngineChoiceScreenConditions::kEligible) {
+    PrefService* pref_service = original_browser_state->GetPrefs();
+    const int count = pref_service->GetInteger(
+        prefs::kDefaultSearchProviderChoiceScreenSkippedCount);
+
+    if (count < switches::kSearchEngineChoiceMaximumSkipCount.Get()) {
+      pref_service->SetInteger(
+          prefs::kDefaultSearchProviderChoiceScreenSkippedCount, count + 1);
+
+      condition = search_engines::SearchEngineChoiceScreenConditions::
+          kAppStartedByExternalIntent;
+    }
   }
 
   RecordChoiceScreenProfileInitCondition(condition);

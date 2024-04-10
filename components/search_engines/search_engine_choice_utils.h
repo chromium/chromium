@@ -70,8 +70,11 @@ enum class SearchEngineChoiceScreenConditions {
   kHasRemovedPrepopulatedSearchEngine = 13,
   // The user does not have Google as the default search engine.
   kHasNonGoogleSearchEngine = 14,
+  // The user is eligible, the app could have presented a dialog but the
+  // application was started via an external intent and the dialog skipped.
+  kAppStartedByExternalIntent = 15,
 
-  kMaxValue = kHasNonGoogleSearchEngine,
+  kMaxValue = kAppStartedByExternalIntent,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
