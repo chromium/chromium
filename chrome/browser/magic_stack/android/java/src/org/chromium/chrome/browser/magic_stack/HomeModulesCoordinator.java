@@ -45,13 +45,13 @@ import java.util.Set;
 public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCallback {
     private final ModuleDelegateHost mModuleDelegateHost;
     private HomeModulesMediator mMediator;
-    private final SimpleRecyclerViewAdapter mAdapter;
     private final HomeModulesRecyclerView mRecyclerView;
     private final ModelList mModel;
     private final HomeModulesContextMenuManager mHomeModulesContextMenuManager;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ModuleRegistry mModuleRegistry;
 
+    private SimpleRecyclerViewAdapter mAdapter;
     private CirclePagerIndicatorDecoration mPageIndicatorDecoration;
     private SnapHelper mSnapHelper;
     private boolean mIsSnapHelperAttached;
@@ -101,16 +101,12 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         mProfileSupplier = profileSupplier;
 
         mModel = new ModelList();
-        mAdapter = new SimpleRecyclerViewAdapter(mModel);
-
-        mModuleRegistry.registerAdapter(mAdapter, this::onViewCreated);
         mRecyclerView = parentView.findViewById(R.id.home_modules_recycler_view);
-
-        mRecyclerView.setAdapter(mAdapter);
         LinearLayoutManager linearLayoutManager =
                 new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
+        maybeSetUpAdapter();
         // Add pager indicator.
         setupRecyclerView(activity);
 
@@ -127,6 +123,15 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                 };
 
         mMediator = new HomeModulesMediator(mModel, moduleRegistry);
+    }
+
+    // Creates an Adapter and attaches it to the recyclerview if it hasn't yet.
+    private void maybeSetUpAdapter() {
+        if (mAdapter != null) return;
+
+        mAdapter = new SimpleRecyclerViewAdapter(mModel);
+        mModuleRegistry.registerAdapter(mAdapter, this::onViewCreated);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     private void setupRecyclerView(Activity activity) {
@@ -301,6 +306,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         }
         mHasHomeModulesBeenScrolled = false;
         mMediator.hide();
+
+        destroyAdapter();
     }
 
     // ModuleDelegate implementation.
@@ -471,6 +478,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             return;
         }
 
+        maybeSetUpAdapter();
+
         mRecyclerView.addOnScrollListener(mOnScrollListener);
         mMediator.buildModulesAndShow(
                 moduleList,
@@ -551,6 +560,15 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private void recordMagicStackScroll(boolean hasHomeModulesBeenScrolled) {
         mMediator.recordMagicStackScroll(hasHomeModulesBeenScrolled);
         mRecyclerView.removeOnScrollListener(mOnScrollListener);
+    }
+
+    private void destroyAdapter() {
+        if (mAdapter == null) return;
+
+        // Destroys and unattaches the adapter to allow recycling the views.
+        mRecyclerView.setAdapter(null);
+        mAdapter.destroy();
+        mAdapter = null;
     }
 
     void setMediatorForTesting(HomeModulesMediator mediator) {

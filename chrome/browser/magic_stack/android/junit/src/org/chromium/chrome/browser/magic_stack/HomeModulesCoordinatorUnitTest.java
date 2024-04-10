@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -169,6 +170,20 @@ public class HomeModulesCoordinatorUnitTest {
 
         assertEquals(1, getItemPerScreen(newDisplayStyle));
         assertTrue(mCoordinator.getIsSnapHelperAttachedForTesting());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
+    public void testHide() {
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
+        verify(mRecyclerView).setAdapter(notNull());
+
+        mCoordinator.hide();
+        verify(mRecyclerView).setAdapter(eq(null));
+
+        mCoordinator.show((isVisible) -> {});
+        verify(mRecyclerView, times(2)).setAdapter(notNull());
     }
 
     @Test
