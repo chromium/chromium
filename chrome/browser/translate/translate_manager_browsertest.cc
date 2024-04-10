@@ -1239,10 +1239,12 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBackForwardCacheBrowserTest,
   ResetObserver();
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("b.com")));
   content::RenderFrameHostWrapper rfh_b(current_frame_host());
+  WaitUntilLanguageDetermined(GetChromeTranslateClient());
 
   // A is frozen in the BackForwardCache.
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  ResetObserver();
 
   // 3) Navigate back.
   ASSERT_TRUE(content::HistoryGoBack(web_contents()));
