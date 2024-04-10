@@ -10,11 +10,22 @@
       {
         "id": "Debuggee",
         "type": "object",
-        "description": "Debuggee identifier. Either tabId or extensionId must be specified",
+        "description": "Debuggee identifier. Either tabId, extensionId or targetId must be specified",
         "properties": {
           "tabId": { "type": "integer", "optional": true, "description": "The id of the tab which you intend to debug." },
           "extensionId": { "type": "string", "optional": true, "description": "The id of the extension which you intend to debug. Attaching to an extension background page is only possible when the <code>--silent-debugger-extension-api</code> command-line switch is used." },
           "targetId": { "type": "string", "optional": true, "description": "The opaque id of the debug target." }
+        }
+      },
+      {
+        "id": "DebuggerSession",
+        "type": "object",
+        "description": "Debugger session identifier. One of tabId, extensionId or targetId must be specified. Additionally, an optional sessionId can be provided. If sessionId is specified for arguments sent from $(ref:onEvent), it means the event is coming from a child protocol session within the root debuggee session. If sessionId is specified when passed to $(ref:sendCommand), it targets a child protocol session within the root debuggee session.",
+        "properties": {
+          "tabId": { "type": "integer", "optional": true, "description": "The id of the tab which you intend to debug." },
+          "extensionId": { "type": "string", "optional": true, "description": "The id of the extension which you intend to debug. Attaching to an extension background page is only possible when the <code>--silent-debugger-extension-api</code> command-line switch is used." },
+          "targetId": { "type": "string", "optional": true, "description": "The opaque id of the debug target." },
+          "sessionId": { "type": "string", "optional": true, "description": "The opaque id of the Chrome DevTools Protocol session. Identifies a child session within the root session identified by tabId, extensionId or targetId." }
         }
       },
       {
@@ -96,7 +107,7 @@
         "description": "Sends given command to the debugging target.",
         "parameters": [
           {
-            "$ref": "Debuggee",
+            "$ref": "DebuggerSession",
             "name": "target",
             "description": "Debugging target to which you want to send the command."
           },
@@ -153,9 +164,9 @@
         "description": "Fired whenever debugging target issues instrumentation event.",
         "parameters": [
           {
-            "$ref": "Debuggee",
+            "$ref": "DebuggerSession",
             "name": "source",
-            "description": "The debuggee that generated this event."
+            "description": "The debugger session that generated this event."
           },
           {
             "type": "string",

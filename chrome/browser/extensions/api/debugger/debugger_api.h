@@ -17,6 +17,7 @@
 #include "extensions/browser/extension_function.h"
 
 using extensions::api::debugger::Debuggee;
+using extensions::api::debugger::DebuggerSession;
 
 // Base debugger function.
 
@@ -81,6 +82,8 @@ class DebuggerSendCommandFunction : public DebuggerFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+  DebuggerSession debugger_session_;
 };
 
 // Implements the debugger.getTargets() extension function.

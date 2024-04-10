@@ -973,6 +973,17 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
+                       AutoAttachFlatModePermissions) {
+  GURL url(embedded_test_server()->GetURL(
+      "a.com",
+      "/extensions/api_test/debugger_auto_attach_flat_mode_permissions/"
+      "page.html"));
+  ASSERT_TRUE(RunExtensionTest("debugger_auto_attach_flat_mode_permissions",
+                               {.custom_arg = url.spec().c_str()}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
                        DebuggerCheckInnerUrl) {
   ASSERT_TRUE(RunExtensionTest("debugger_check_inner_url")) << message_;
 }
