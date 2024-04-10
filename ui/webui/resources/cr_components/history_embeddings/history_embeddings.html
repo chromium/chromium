@@ -42,7 +42,7 @@ hr:last-of-type {
 }
 
 cr-url-list-item {
-  padding: 6px 24px;
+  --cr-url-list-item-padding: 6px 24px;
 }
 
 .footer {
@@ -53,6 +53,21 @@ cr-url-list-item {
 
 a {
   color: var(--cr-link-color);
+}
+
+.source-passage {
+  display: flex;
+  font-size: 11px;
+  font-style: italic;
+  line-height: 16px;
+  padding: var(--cr-url-list-item-padding);
+}
+
+.source-passage-line {
+  background: var(--cr-fallback-color-divider);
+  width: 1px;
+  margin-inline-start: 20px;
+  margin-inline-end: 36px;
 }
 </style>
 
@@ -84,6 +99,11 @@ a {
           <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
               on-click="onMoreActionsClick_">
           </cr-icon-button>
+          <div slot="footer" class="source-passage"
+              hidden$="[[!item.sourcePassage]]">
+            <div class="source-passage-line"></div>
+            [[item.sourcePassage]]
+          </div>
         </cr-url-list-item>
         <hr>
       </template>

@@ -38,43 +38,48 @@ export function getHtml(this: CrUrlListItemElement) {
     aria-description="${this.getItemAriaDescription_() || nothing}">
 </button>
 
-<slot name="prefix"></slot>
-<div id="iconContainer">
-  <div class="favicon" ?hidden="${!this.shouldShowFavicon_()}"
-      .style="background-image: ${this.getFavicon_()};">
-  </div>
-  <div class="image-container" ?hidden="${!this.shouldShowUrlImage_()}">
-    <img class="url-image" is="cr-auto-img" auto-src="${this.imageUrls[0]}"
-        draggable="false">
-  </div>
-  <div class="folder-and-count"
-      ?hidden="${!this.shouldShowFolderCount_()}">
-    ${getFolderImagesHtml.bind(this)()}
-    <slot id="folder-icon" name="folder-icon">
-      <div class="folder cr-icon icon-folder-open"
-          ?hidden="${!this.shouldShowFolderIcon_()}"></div>
-    </slot>
-    <div class="count">${this.getDisplayedCount_()}</div>
-  </div>
-</div>
-<slot id="content" name="content" @slotchange="${this.onContentSlotChange_}">
-</slot>
-<div id="metadata" class="metadata">
-  <span class="title">${this.title}</span>
-  <div class="descriptions">
-    <div class="description" ?hidden="${!this.description}">
-      <span class="description-text">${this.description}</span>
-      <span class="description-meta" ?hidden="${!this.descriptionMeta}">
-        &middot; ${this.descriptionMeta}
-      </span>
+<div id="item">
+  <slot name="prefix"></slot>
+  <div id="iconContainer">
+    <div class="favicon" ?hidden="${!this.shouldShowFavicon_()}"
+        .style="background-image: ${this.getFavicon_()};">
     </div>
-    <div id="badgesContainer" class="badges">
-      <slot id="badges" name="badges" @slotchange="${this.onBadgesSlotChange_}">
+    <div class="image-container" ?hidden="${!this.shouldShowUrlImage_()}">
+      <img class="url-image" is="cr-auto-img" auto-src="${this.imageUrls[0]}"
+          draggable="false">
+    </div>
+    <div class="folder-and-count"
+        ?hidden="${!this.shouldShowFolderCount_()}">
+      ${getFolderImagesHtml.bind(this)()}
+      <slot id="folder-icon" name="folder-icon">
+        <div class="folder cr-icon icon-folder-open"
+            ?hidden="${!this.shouldShowFolderIcon_()}"></div>
       </slot>
+      <div class="count">${this.getDisplayedCount_()}</div>
     </div>
   </div>
+  <slot id="content" name="content" @slotchange="${this.onContentSlotChange_}">
+  </slot>
+  <div id="metadata" class="metadata">
+    <span class="title">${this.title}</span>
+    <div class="descriptions">
+      <div class="description" ?hidden="${!this.description}">
+        <span class="description-text">${this.description}</span>
+        <span class="description-meta" ?hidden="${!this.descriptionMeta}">
+          &middot; ${this.descriptionMeta}
+        </span>
+      </div>
+      <div id="badgesContainer" class="badges">
+        <slot id="badges" name="badges"
+            @slotchange="${this.onBadgesSlotChange_}">
+        </slot>
+      </div>
+    </div>
+  </div>
+  <div class="suffix">
+    <slot name="suffix"></slot>
+  </div>
 </div>
-<div class="suffix">
-  <slot name="suffix"></slot>
-</div>`;
+<slot name="footer"></slot>
+`;
 }

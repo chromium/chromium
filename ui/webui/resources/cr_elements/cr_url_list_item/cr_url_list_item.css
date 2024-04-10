@@ -12,6 +12,13 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  box-sizing: border-box;
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+#item {
   --cr-url-list-item-image-container-border_: 2px solid white;
   /* Intentionally 1px higher than the inherited border radius to avoid
    * anti-aliasing issues.
@@ -21,31 +28,30 @@
   box-sizing: border-box;
   cursor: default;
   display: flex;
-  height: 48px;
-  padding: 4px 16px;
-  position: relative;
+  height: var(--cr-url-list-item-height, 48px);
+  padding: var(--cr-url-list-item-padding, 4px 16px);
   width: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
-  :host {
+  #item {
     --cr-url-list-item-image-container-border_: 2px solid black;
   }
 }
 
-:host([size=medium]),
-:host([size=large]) {
+:host([size=compact]) #item {
+  padding: var(--cr-url-list-item-padding, 6px 16px);
+  height: var(--cr-url-list-item-height, 36px);
+}
+
+:host([size=large]) #item {
+  padding: var(--cr-url-list-item-padding, 6px 16px);
+  height: var(--cr-url-list-item-height, 68px);
+}
+
+:host([size=medium]) #item,
+:host([size=large]) #item {
   --cr-url-list-item-image-container-border-radius_: 9px;
-}
-
-:host([size=compact]) {
-  height: 36px;
-  padding: 6px 16px;
-}
-
-:host([size=large]) {
-  height: 68px;
-  padding: 6px 16px;
 }
 
 :host(.hovered),
