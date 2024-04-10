@@ -279,7 +279,6 @@ suite('PrivacyPage', function() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN);
     await flushTasks();
 
-    assertTrue(isChildVisible(page, '#automaticFullscreenBlock'));
     const categorySettingExceptions =
         page.shadowRoot!.querySelector('category-setting-exceptions');
     assertTrue(!!categorySettingExceptions);

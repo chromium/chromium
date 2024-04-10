@@ -1402,7 +1402,7 @@
        </template>
       </template>
       <template is="dom-if" if="[[enableAutomaticFullscreenContentSetting_]]">
-        <template is="dom-if" route-path="/content/automaticFullscreen"
+        <template is="dom-if" route-path="/content/automaticFullScreen"
             no-search>
           <settings-subpage
               page-title="$i18n{siteSettingsCategoryAutomaticFullscreen}"
@@ -1410,9 +1410,6 @@
               search-term="{{searchFilter_}}">
             <div class="content-settings-header secondary">
               $i18n{siteSettingsAutomaticFullscreenDescription}
-            </div>
-            <div id="automaticFullscreenBlock" class="cr-row first secondary">
-              $i18n{siteSettingsAutomaticFullscreenBlock}
             </div>
             <category-setting-exceptions read-only-list
                 category="[[contentSettingsTypesEnum_.AUTOMATIC_FULLSCREEN]]"

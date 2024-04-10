@@ -148,7 +148,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 
   if (loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting')) {
     r.SITE_SETTINGS_AUTOMATIC_FULLSCREEN =
-        r.SITE_SETTINGS.createChild('automaticFullscreen');
+        r.SITE_SETTINGS.createChild('automaticFullScreen');
   }
 }
 

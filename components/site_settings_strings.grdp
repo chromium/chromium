@@ -23,10 +23,10 @@
     automatic downloads
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_AUTOMATIC_FULLSCREEN" desc="The label used for the automatic fullscreen site settings controls.">
-    Automatic fullscreen
+    Automatic full screen
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_AUTOMATIC_FULLSCREEN_MID_SENTENCE" desc="The label used for the automatic fullscreen site settings controls when used mid-sentence.">
-    automatic fullscreen
+    automatic full screen
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_AUTO_PICTURE_IN_PICTURE" desc="The label used for the auto-picture-in-picture site settings controls.">
     Automatic picture-in-picture
