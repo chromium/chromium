@@ -432,8 +432,8 @@ TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
 
   ASSERT_EQ(1u, items.size());
 
-  // The item had a ranking assigned.
-  EXPECT_FLOAT_EQ(items[0].ranking(), 5.f);
+  // The item had a lower priority ranking assigned.
+  EXPECT_FLOAT_EQ(items[0].ranking(), 36.f);
 }
 
 }  // namespace
