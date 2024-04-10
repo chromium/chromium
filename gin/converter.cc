@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "v8/include/v8-array-buffer.h"
@@ -133,8 +135,8 @@ bool Converter<double>::FromV8(Isolate* isolate,
   return true;
 }
 
-Local<Value> Converter<base::StringPiece>::ToV8(Isolate* isolate,
-                                                const base::StringPiece& val) {
+Local<Value> Converter<std::string_view>::ToV8(Isolate* isolate,
+                                               const std::string_view& val) {
   return String::NewFromUtf8(isolate, val.data(),
                              v8::NewStringType::kNormal,
                              static_cast<uint32_t>(val.length()))
@@ -143,7 +145,7 @@ Local<Value> Converter<base::StringPiece>::ToV8(Isolate* isolate,
 
 Local<Value> Converter<std::string>::ToV8(Isolate* isolate,
                                           const std::string& val) {
-  return Converter<base::StringPiece>::ToV8(isolate, val);
+  return Converter<std::string_view>::ToV8(isolate, val);
 }
 
 bool Converter<std::string>::FromV8(Isolate* isolate,
@@ -270,7 +272,7 @@ bool Converter<Local<Value>>::FromV8(Isolate* isolate,
 }
 
 v8::Local<v8::String> StringToSymbol(v8::Isolate* isolate,
-                                      const base::StringPiece& val) {
+                                     const std::string_view& val) {
   return String::NewFromUtf8(isolate, val.data(),
                              v8::NewStringType::kInternalized,
                              static_cast<uint32_t>(val.length()))
@@ -278,7 +280,7 @@ v8::Local<v8::String> StringToSymbol(v8::Isolate* isolate,
 }
 
 v8::Local<v8::String> StringToSymbol(v8::Isolate* isolate,
-                                     const base::StringPiece16& val) {
+                                     const std::u16string_view& val) {
   return String::NewFromTwoByte(isolate,
                                 reinterpret_cast<const uint16_t*>(val.data()),
                                 v8::NewStringType::kInternalized, val.length())

@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -31,7 +32,6 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -459,7 +459,7 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     return;
 
   // Allow the --js-flags switch to override existing flags:
-  std::vector<base::StringPiece> flag_list =
+  std::vector<std::string_view> flag_list =
       base::SplitStringPiece(js_command_line_flags, ",", base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
   for (const auto& flag : flag_list) {

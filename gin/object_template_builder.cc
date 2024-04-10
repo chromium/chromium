@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "gin/interceptor.h"
 #include "gin/per_isolate_data.h"
 #include "gin/public/wrapper_info.h"
@@ -235,7 +237,8 @@ ObjectTemplateBuilder& ObjectTemplateBuilder::AddIndexedPropertyInterceptor() {
 }
 
 ObjectTemplateBuilder& ObjectTemplateBuilder::SetImpl(
-    const base::StringPiece& name, v8::Local<v8::Data> val) {
+    const std::string_view& name,
+    v8::Local<v8::Data> val) {
   template_->Set(StringToSymbol(isolate_, name), val);
   return *this;
 }
@@ -247,7 +250,8 @@ ObjectTemplateBuilder& ObjectTemplateBuilder::SetImpl(v8::Local<v8::Name> name,
 }
 
 ObjectTemplateBuilder& ObjectTemplateBuilder::SetPropertyImpl(
-    const base::StringPiece& name, v8::Local<v8::FunctionTemplate> getter,
+    const std::string_view& name,
+    v8::Local<v8::FunctionTemplate> getter,
     v8::Local<v8::FunctionTemplate> setter) {
   template_->SetAccessorProperty(StringToSymbol(isolate_, name), getter,
                                  setter);
@@ -255,7 +259,7 @@ ObjectTemplateBuilder& ObjectTemplateBuilder::SetPropertyImpl(
 }
 
 ObjectTemplateBuilder& ObjectTemplateBuilder::SetLazyDataPropertyImpl(
-    const base::StringPiece& name,
+    const std::string_view& name,
     v8::AccessorNameGetterCallback callback,
     v8::Local<v8::Value> data) {
   template_->SetLazyDataProperty(StringToSymbol(isolate_, name), callback,

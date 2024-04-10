@@ -4,6 +4,8 @@
 
 #include "gin/data_object_builder.h"
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/functional/bind.h"
@@ -122,9 +124,8 @@ TEST_F(DataObjectBuilderTest, CreatesDataPropertiesForIndices) {
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = context_.Get(isolate);
 
-  v8::Local<v8::Object> object = DataObjectBuilder(isolate)
-                                     .Set(42, base::StringPiece("forty-two"))
-                                     .Build();
+  v8::Local<v8::Object> object =
+      DataObjectBuilder(isolate).Set(42, std::string_view("forty-two")).Build();
   ASSERT_TRUE(object->HasOwnProperty(context, 42).ToChecked());
 
   v8::Local<v8::Value> descriptor_object;
