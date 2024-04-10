@@ -256,6 +256,10 @@ void AddressEditorView::UpdateEditorView() {
   if (all_address_fields_have_been_validated_) {
     ValidateAllFields();
   }
+
+  if (initial_focus_view_) {
+    initial_focus_view_->RequestFocus();
+  }
 }
 
 void AddressEditorView::SaveFieldsToProfile() {

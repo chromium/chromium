@@ -184,4 +184,19 @@ TEST_F(AddressEditorViewTest, InitialFocusViewPointsToCountryCombobox) {
       "Combobox");
 }
 
+TEST_F(AddressEditorViewTest, FocusIsNotLostAfterEditorContentChange) {
+  // The view is temporarily added into a Widget to have a FocusManager.
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  widget->SetContentsView(view_.get());
+  widget->Show();
+  EXPECT_NE(view_->initial_focus_view(), nullptr);
+
+  view_->SelectCountryForTesting(u"Belarus");
+  EXPECT_NE(view_->initial_focus_view(), nullptr);
+  EXPECT_TRUE(view_->initial_focus_view()->HasFocus());
+
+  // The view is managed by the test class, remove it from the widget.
+  widget->GetRootView()->RemoveChildView(view_.get());
+}
+
 }  // namespace autofill
