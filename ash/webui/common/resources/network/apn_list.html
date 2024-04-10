@@ -39,7 +39,7 @@
     margin-inline-end: 18px;
   }
 
-  #zeroStateText {
+  #zeroStateContent {
     border-top: var(--cr-separator-line);
     display: flex;
     margin-inline-end: 40px;
@@ -56,6 +56,7 @@
 <div id="apnDescription" class="property-box" aria-live="assertive">
   <template is="dom-if" if="[[!shouldOmitLinks]]" restamp>
     <localized-link
+        id="descriptionWithLink"
         localized-string="[[i18nAdvanced('apnSettingsDescriptionWithLink')]]">
     </localized-link>
   </template>
@@ -77,11 +78,15 @@
 </div>
 
 <template is="dom-if"
-    if="[[shouldShowZeroStateText_(managedCellularProperties, errorState)]]"
+    if="[[shouldShowZeroStateContent_(managedCellularProperties, errorState)]]"
     restamp>
-  <div id="zeroStateText">
+  <div id="zeroStateContent">
     <span><iron-icon icon="cr:info-outline"></iron-icon></span>
-    <div>[[i18n('apnSettingsZeroStateDescription')]]</div>
+      <localized-link
+          id="apnSettingsZeroStateDescriptionWithAddLink"
+          on-link-clicked="onZeroStateCreateApnLinkClicked_"
+          localized-string="[[i18nAdvanced('apnSettingsZeroStateDescriptionWithAddLink')]]">
+      </localized-link>
   </div>
 </template>
 

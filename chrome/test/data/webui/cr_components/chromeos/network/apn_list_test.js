@@ -118,8 +118,12 @@ suite('ApnListTest', function() {
     id: '10',
   };
 
-  function getZeroStateText() {
-    return apnList.shadowRoot.querySelector('#zeroStateText');
+  function getZeroStateContent() {
+    return apnList.shadowRoot.getElementById('zeroStateContent');
+  }
+
+  function getApnSettingsZeroStateDescriptionWithAddLink() {
+    return getZeroStateContent().querySelector('localized-link');
   }
 
   setup(async function() {
@@ -131,8 +135,12 @@ suite('ApnListTest', function() {
   test('Check if APN description exists', async function() {
     assertTrue(!!apnList);
     const getDescriptionWithLink = () =>
-        apnList.shadowRoot.querySelector('localized-link');
+        apnList.shadowRoot.querySelector('#descriptionWithLink');
     assertTrue(!!getDescriptionWithLink());
+    assertEquals(
+        getDescriptionWithLink().localizedString.toString(),
+        apnList.i18nAdvanced('apnSettingsDescriptionWithLink').toString());
+
     const getDescriptionWithoutLink = () =>
         apnList.shadowRoot.querySelector('#descriptionNoLink');
     assertFalse(!!getDescriptionWithoutLink());
@@ -141,6 +149,9 @@ suite('ApnListTest', function() {
     await flushTasks();
     assertFalse(!!getDescriptionWithLink());
     assertTrue(!!getDescriptionWithoutLink());
+    assertEquals(
+        getDescriptionWithoutLink().innerHTML.trim(),
+        apnList.i18n('apnSettingsDescriptionNoLink').toString());
     assertEquals(
         'assertive',
         apnList.shadowRoot.querySelector('#apnDescription').ariaLive);
@@ -153,16 +164,43 @@ suite('ApnListTest', function() {
     await flushTasks();
     assertEquals(
         apnList.shadowRoot.querySelectorAll('apn-list-item').length, 0);
-    assertTrue(!!getZeroStateText());
+    assertTrue(!!getZeroStateContent(), 'Expected zero state text to show');
+
+    const getApnDetailDialog = () =>
+        apnList.shadowRoot.querySelector('apn-detail-dialog');
+
+    apnList.shouldOmitLinks = false;
+    await flushTasks();
+
+    const localizedLink = getApnSettingsZeroStateDescriptionWithAddLink();
+    assertTrue(!!localizedLink, 'No link is present');
+    const testDetail = {event: {preventDefault: () => {}}};
+    assertFalse(
+        !!getApnDetailDialog(), 'Detail dialog shows when it should not');
+    localizedLink.dispatchEvent(
+        new CustomEvent('link-clicked', {bubbles: false, detail: testDetail}));
+    await flushTasks();
+
+    assertTrue(
+        !!getApnDetailDialog(), 'Detail dialog does not show when it should');
+    assertEquals(
+        ApnDetailDialogMode.CREATE, getApnDetailDialog().mode,
+        'Detail dialog is not in create mode');
   });
 
   test('Error states', async function() {
     apnList.managedCellularProperties = {};
     await flushTasks();
-    assertTrue(!!getZeroStateText());
+    assertTrue(!!getZeroStateContent(), 'No zero state content is present');
+    assertTrue(
+        !!getApnSettingsZeroStateDescriptionWithAddLink(),
+        'No link is present');
+
     assertEquals(
-        apnList.i18n('apnSettingsZeroStateDescription'),
-        getZeroStateText().querySelector('div').innerText);
+        getApnSettingsZeroStateDescriptionWithAddLink()
+            .localizedString.toString(),
+        apnList.i18nAdvanced('apnSettingsZeroStateDescriptionWithAddLink')
+            .toString());
     const getErrorMessage = () =>
         apnList.shadowRoot.querySelector('#errorMessageContainer');
     assertFalse(!!getErrorMessage());
@@ -170,13 +208,13 @@ suite('ApnListTest', function() {
     // Set as non-APN-related error.
     apnList.errorState = 'connect-failed';
     await flushTasks();
-    assertTrue(!!getZeroStateText());
+    assertTrue(!!getZeroStateContent());
     assertFalse(!!getErrorMessage());
 
     // Set as APN-related error.
     apnList.errorState = 'invalid-apn';
     await flushTasks();
-    assertFalse(!!getZeroStateText());
+    assertFalse(!!getZeroStateContent());
     assertTrue(!!getErrorMessage());
     const getErrorMessageText = () =>
         getErrorMessage().querySelector('#errorMessage').innerHTML.trim();
@@ -189,7 +227,7 @@ suite('ApnListTest', function() {
       customApnList: [customApnDefaultEnabled],
     };
     await flushTasks();
-    assertFalse(!!getZeroStateText());
+    assertFalse(!!getZeroStateContent());
     assertTrue(!!getErrorMessage());
     assertEquals(
         apnList.i18n('apnSettingsCustomApnsErrorMessage'),
@@ -200,7 +238,7 @@ suite('ApnListTest', function() {
       customApnList: [customApnDefaultDisabled],
     };
     await flushTasks();
-    assertFalse(!!getZeroStateText());
+    assertFalse(!!getZeroStateContent());
     assertTrue(!!getErrorMessage());
     assertEquals(
         apnList.i18n('apnSettingsDatabaseApnsErrorMessage'),
@@ -214,7 +252,7 @@ suite('ApnListTest', function() {
       },
     };
     await flushTasks();
-    assertFalse(!!getZeroStateText());
+    assertFalse(!!getZeroStateContent());
     assertFalse(!!getErrorMessage());
     const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
     assertEquals(apns.length, 1);
@@ -227,7 +265,7 @@ suite('ApnListTest', function() {
     await flushTasks();
     const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
     assertEquals(apns.length, 0);
-    assertTrue(!!getZeroStateText());
+    assertTrue(!!getZeroStateContent());
   });
 
   test(
@@ -241,7 +279,7 @@ suite('ApnListTest', function() {
         assertTrue(OncMojo.apnMatch(apns[0].apn, customApn1));
         assertTrue(OncMojo.apnMatch(apns[1].apn, customApn2));
         assertFalse(apns[0].isConnected);
-        assertFalse(!!getZeroStateText());
+        assertFalse(!!getZeroStateContent());
       });
 
   test(
@@ -258,7 +296,7 @@ suite('ApnListTest', function() {
         assertEquals(apns.length, 1);
         assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
         assertTrue(apns[0].isConnected);
-        assertFalse(!!getZeroStateText());
+        assertFalse(!!getZeroStateContent());
       });
 
   test(
@@ -278,7 +316,7 @@ suite('ApnListTest', function() {
         assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
         assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
         assertTrue(apns[0].isConnected);
-        assertFalse(!!getZeroStateText());
+        assertFalse(!!getZeroStateContent());
       });
 
   test('Connected APN is inside custom APN list.', async function() {
@@ -296,7 +334,7 @@ suite('ApnListTest', function() {
     assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
     assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
     assertTrue(apns[0].isConnected);
-    assertFalse(!!getZeroStateText());
+    assertFalse(!!getZeroStateContent());
   });
 
   test('Connected APN is the only apn in custom APN list.', async function() {
@@ -309,7 +347,7 @@ suite('ApnListTest', function() {
     assertEquals(apns.length, 1);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
     assertTrue(apns[0].isConnected);
-    assertFalse(!!getZeroStateText());
+    assertFalse(!!getZeroStateContent());
 
     // Simulate the APN no longer being connected.
     apnList.managedCellularProperties = {
@@ -320,7 +358,7 @@ suite('ApnListTest', function() {
     assertEquals(apns.length, 1);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
     assertFalse(apns[0].isConnected);
-    assertFalse(!!getZeroStateText());
+    assertFalse(!!getZeroStateContent());
   });
 
   test(

@@ -105,6 +105,18 @@ export class ApnList extends ApnListBase {
     };
   }
 
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onZeroStateCreateApnLinkClicked_(e) {
+    // A place holder href with the value "#" is used to have a compliant link.
+    // This prevents the browser from navigating the window to "#"
+    e.detail.event.preventDefault();
+    e.stopPropagation();
+    this.openApnDetailDialogInCreateMode();
+  }
+
   openApnDetailDialogInCreateMode() {
     this.showApnDetailDialog_(ApnDetailDialogMode.CREATE, /* apn= */ undefined);
   }
@@ -117,7 +129,7 @@ export class ApnList extends ApnListBase {
    * @return {boolean}
    * @private
    */
-  shouldShowZeroStateText_() {
+  shouldShowZeroStateContent_() {
     if (!this.managedCellularProperties) {
       return true;
     }

@@ -340,6 +340,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"customApnLimitReached", IDS_SETTINGS_CUSTOM_APN_LIMIT_REACHED},
       {"apnSettingsZeroStateDescription",
        IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION},
+      {"apnSettingsZeroStateDescriptionWithAddLink",
+       IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION_WITH_ADD_LINK},
       {"apnSettingsDatabaseApnsErrorMessage",
        IDS_SETTINGS_APN_DATABASE_APNS_ERROR_MESSAGE},
       {"apnSettingsCustomApnsErrorMessage",
