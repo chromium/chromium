@@ -18,6 +18,7 @@ html {
   --separator-gap: 9px;
   --sidebar-width: 256px;
   --cr-toolbar-field-width: 680px;
+  --paper-grey-300: #e0e0e0;
 }
 
 @media (prefers-color-scheme: dark) {

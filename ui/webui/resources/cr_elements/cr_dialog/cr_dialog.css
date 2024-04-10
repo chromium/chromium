@@ -12,7 +12,7 @@
  * #css_wrapper_metadata_end */
 
 dialog {
-  --scroll-border-color: var(--paper-grey-300);
+  --scroll-border-color: var(--google-grey-300);
   --scroll-border: 1px solid var(--scroll-border-color);
   background-color: var(--cr-dialog-background-color, white);
   border: 0;
