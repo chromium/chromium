@@ -10,7 +10,7 @@ import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -32,7 +32,7 @@ suite('ManualRegionSelection', function() {
     selectionOverlayElement.style.top = '50px';
     selectionOverlayElement.style.left = '50px';
     document.body.appendChild(selectionOverlayElement);
-    return flushTasks();
+    return waitAfterNextRender(selectionOverlayElement);
   });
 
   function createPrimaryClickPointerEvent(
@@ -201,7 +201,7 @@ suite('ManualRegionSelection', function() {
 
   test('verify canvas resizes', async () => {
     selectionOverlayElement.$.regionSelectionLayer.setCanvasSizeTo(50, 50);
-    await flushTasks();
+    await waitAfterNextRender(selectionOverlayElement.$.regionSelectionLayer);
     assertEquals(
         50,
         selectionOverlayElement.$.regionSelectionLayer.$.regionSelectionCanvas
@@ -212,7 +212,7 @@ suite('ManualRegionSelection', function() {
             .height);
 
     selectionOverlayElement.$.regionSelectionLayer.setCanvasSizeTo(100, 100);
-    await flushTasks();
+    await waitAfterNextRender(selectionOverlayElement.$.regionSelectionLayer);
     assertEquals(
         100,
         selectionOverlayElement.$.regionSelectionLayer.$.regionSelectionCanvas
