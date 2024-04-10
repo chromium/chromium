@@ -26,9 +26,10 @@ TrayInfoLabel::TrayInfoLabel(int message_id)
 
   TriView* tri_view = TrayPopupUtils::CreateDefaultRowView(
       /*use_wide_layout=*/false);
-  tri_view->SetInsets(gfx::Insets::TLBR(
-      0, kMenuExtraMarginFromLeftEdge + kWideTrayPopupItemMinStartWidth, 0,
-      kTrayPopupPaddingHorizontal));
+  tri_view->SetInsets(gfx::Insets::TLBR(/*top=*/0,
+                                        /*left=*/kTrayPopupPaddingHorizontal,
+                                        /*bottom=*/0,
+                                        /*right=*/kTrayPopupPaddingHorizontal));
   tri_view->SetContainerVisible(TriView::Container::START, false);
   tri_view->SetContainerVisible(TriView::Container::END, false);
   tri_view->AddView(TriView::Container::CENTER, label_);
