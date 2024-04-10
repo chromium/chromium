@@ -2127,6 +2127,7 @@ static_library("ui") {
       "//components/safe_browsing/core/common:safe_browsing_policy_handler",
       "//components/safety_check",
       "//components/saved_tab_groups:core",
+      "//components/search_engines:generate_search_engine_icons",
       "//components/search_provider_logos",
       "//components/services/app_service",
       "//components/supervised_user/core/common",

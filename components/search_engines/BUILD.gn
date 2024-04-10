@@ -115,6 +115,7 @@ static_library("search_engines") {
   if (!is_android) {
     sources += [ "generated_marketing_snippets.cc" ]
     deps += [
+      ":generate_search_engine_icons",
       "//components/resources:components_scaled_resources_grit",
       "//ui/resources",
     ]
@@ -271,4 +272,33 @@ component("search_engines_switches") {
   ]
 
   deps = [ "//base" ]
+}
+
+if (!is_android) {
+  action("generate_search_engine_icons") {
+    script = "//tools/search_engine_choice/generate_search_engine_icons.py"
+
+    inputs = [
+      "//tools/search_engine_choice/generate_search_engine_icons_config.json",
+      "//components/search_engines/prepopulated_engines.json",
+      "//components/search_engines/search_engine_countries-inc.cc",
+      "//tools/json_comment_eater/json_comment_eater.py",
+      "//tools/search_engine_choice/generate_search_engine_icons.py",
+      "//tools/search_engine_choice/search_engine_icons_utils.py",
+    ]
+
+    outputs = [
+      "$target_gen_dir/generated_search_engine_resource_ids-inc.cc",
+      "$root_gen_dir/chrome/browser/ui/webui/search_engine_choice/generated_icon_utils-inc.cc",
+    ]
+
+    args = [
+      rebase_path("//", root_build_dir),
+      rebase_path("$target_gen_dir/generated_search_engine_resource_ids-inc.cc",
+                  root_build_dir),
+      rebase_path(
+          "$target_gen_dir/../../chrome/browser/ui/webui/search_engine_choice/generated_icon_utils-inc.cc",
+          root_build_dir),
+    ]
+  }
 }
