@@ -24,6 +24,7 @@ import {FilterType, NetworkStateProperties, NO_LIMIT} from '//resources/mojo/chr
 import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ActivationCodePageElement} from './activation_code_page.js';
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonBarState, ButtonState} from './cellular_types.js';
 import {getTemplate} from './esim_flow_ui.html.js';
@@ -848,18 +849,29 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
 
   /** SubflowMixin override */
   override maybeFocusPageElement(): boolean {
-    if (this.state_ !== EsimUiState.PROFILE_SELECTION) {
-      return false;
-    }
+    switch (this.state_) {
+      case EsimUiState.ACTIVATION_CODE_ENTRY:
+      case EsimUiState.ACTIVATION_CODE_ENTRY_READY:
+        const activationCodePage =
+            this.shadowRoot!.querySelector<ActivationCodePageElement>(
+                '#activationCodePage');
 
-    const profileDiscoveryPage =
-        this.shadowRoot!.querySelector<ProfileDiscoveryListPageElement>(
-            '#profileDiscoveryPage');
+        if (!activationCodePage) {
+          return false;
+        }
+        return activationCodePage!.attemptToFocusOnPageContent();
+      case EsimUiState.PROFILE_SELECTION:
+        const profileDiscoveryPage =
+            this.shadowRoot!.querySelector<ProfileDiscoveryListPageElement>(
+                '#profileDiscoveryPage');
 
-    if (!profileDiscoveryPage) {
-      return false;
+        if (!profileDiscoveryPage) {
+          return false;
+        }
+        return profileDiscoveryPage.attemptToFocusOnFirstProfile();
+      default:
+        return false;
     }
-    return profileDiscoveryPage!.attemptToFocusOnFirstProfile();
   }
 
   private onForwardNavigationRequested_(): void {
