@@ -29,6 +29,7 @@
 #include "base/base_paths.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -162,6 +163,7 @@
 #include "google_apis/drive/drive_api_parser.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 #include "storage/browser/file_system/copy_or_move_operation_delegate.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -175,6 +177,10 @@
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "url/url_util.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 using ::testing::_;
 
@@ -2665,6 +2671,18 @@ void FileManagerBrowserTestBase::StartTest() {
       ->InstallSystemAppsForTesting();
   const std::string full_test_name = GetFullTestCaseName();
   LOG(INFO) << "FileManagerBrowserTest::StartTest " << full_test_name;
+
+#if BUILDFLAG(ENABLE_PDF)
+  // TODO(crbug.com/326487542): Remove this once the tests pass for OOPIF PDF.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+    static const std::vector<std::string> kSkipTests = {
+        "openQuickViewPdf", "openQuickViewPdfPopup"};
+    if (base::Contains(kSkipTests, full_test_name)) {
+      GTEST_SKIP();
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   static const base::FilePath test_extension_dir = base::FilePath(
       FILE_PATH_LITERAL("ui/file_manager/integration_tests/tsc"));
   LaunchExtension(base::DIR_GEN_TEST_DATA_ROOT, test_extension_dir,
