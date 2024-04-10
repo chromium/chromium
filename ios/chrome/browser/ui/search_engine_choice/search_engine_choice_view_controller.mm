@@ -39,13 +39,15 @@ constexpr CGFloat kLogoTitleMargin = 16.;
 constexpr CGFloat kTitleSubtitleMargin = 8.;
 // Margin between the subtitle and search engine stack view.
 constexpr CGFloat kSubtitleSearchEngineStackMargin = 20.;
-// Margin above the "Set as Default" button.
-constexpr CGFloat kButtonTopMargin = 16.;
+// Margin above and below the button.
+constexpr CGFloat kButtonMargin = 16.;
+// Bottom margin for the "More" pill button.
+constexpr CGFloat kMorePillButtonBottomMargin = 34.;
 // Corner radius for the "More" pill button.
 constexpr CGFloat kMorePillButtonCornerRadius = 25.;
 // Horizontal padding for the "More" pill button.
 constexpr CGFloat kMorePillButtonHorizontalPadding = 15.;
-// Vertical padding for the "More" pill button.
+// Horizontal padding for the "More" pill button.
 constexpr CGFloat kMorePillButtonVerticalPadding = 17.;
 // The margin between the text and the arrow on the "More" pill button.
 constexpr CGFloat kMoreArrowMargin = 4.;
@@ -53,13 +55,6 @@ constexpr CGFloat kMoreArrowMargin = 4.;
 constexpr NSTimeInterval kFloatingSetAsDefaultAnimationDuration = .3;
 // Height of the separator shown in the floating container.
 constexpr CGFloat kFloatingContainerSeparatorHeight = 1.;
-
-// Margin below the "Set as Default" button.
-const CGFloat kButtonBottomMargin =
-    ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ? 16. : 0.;
-// Bottom margin for the "More" pill button.
-const CGFloat kMorePillButtonBottomMargin =
-    ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ? 34. : 0.;
 
 // URL for the "Learn more" link.
 const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
@@ -430,10 +425,10 @@ UIButton* CreateMorePillButton() {
     // _inlineSetAsDefaultButton constraints.
     [_inlineSetAsDefaultButton.topAnchor
         constraintEqualToAnchor:_inlineSetAsDefaultButtonContainer.topAnchor
-                       constant:kButtonTopMargin],
+                       constant:kButtonMargin],
     [_inlineSetAsDefaultButton.bottomAnchor
         constraintEqualToAnchor:_inlineSetAsDefaultButtonContainer.bottomAnchor
-                       constant:-kButtonBottomMargin],
+                       constant:-kButtonMargin],
     [_inlineSetAsDefaultButton.widthAnchor
         constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
     [_inlineSetAsDefaultButton.centerXAnchor
@@ -470,11 +465,11 @@ UIButton* CreateMorePillButton() {
     // _floatingSetAsDefaultButton constraints.
     [_floatingSetAsDefaultButton.topAnchor
         constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer.topAnchor
-                       constant:kButtonTopMargin],
+                       constant:kButtonMargin],
     [_floatingSetAsDefaultButton.bottomAnchor
         constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer
                                     .safeAreaLayoutGuide.bottomAnchor
-                       constant:-kButtonBottomMargin],
+                       constant:-kButtonMargin],
     [_floatingSetAsDefaultButton.widthAnchor
         constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
     [_floatingSetAsDefaultButton.centerXAnchor
