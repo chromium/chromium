@@ -263,6 +263,8 @@ void WebNNGraphImplBackendTest::SetUp() {
       {// DML_BATCHNORMALIZATION_OPERATOR_DESC support for 1~8 dimension counts
        // was introduced in DML_FEATURE_LEVEL_3_1.
        {"BuildSingleOperatorBatchNormalization", DML_FEATURE_LEVEL_3_1},
+       {"FuseStandaloneActivationIntoBatchNormalization",
+        DML_FEATURE_LEVEL_3_1},
        // DML_OPERATOR_SLICE support for dimensions other than 4 or 5 was
        // introduced in DML_FEATURE_LEVEL_3_0.
        {"BuildAndComputeSliceOperator", DML_FEATURE_LEVEL_3_0},
@@ -276,6 +278,7 @@ void WebNNGraphImplBackendTest::SetUp() {
        // DML_FEATURE_LEVEL_4_0.
        {"BuildSingleOperatorGemmOnNpu", DML_FEATURE_LEVEL_4_0},
        {"BuildSingleOperatorGemmOnGpu", DML_FEATURE_LEVEL_4_0},
+       {"FuseStandaloneActivationIntoGemm", DML_FEATURE_LEVEL_4_0},
        // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
        // DML_FEATURE_LEVEL_4_0.
        {"BuildAndComputeMultipleOperatorGemm", DML_FEATURE_LEVEL_4_0},
@@ -570,6 +573,62 @@ struct Activation {
   std::optional<float> softplus_steepness;
 };
 
+void BuildStandaloneActivation(GraphInfoBuilder& builder,
+                               const Activation& activation,
+                               uint64_t input_operand_id,
+                               uint64_t output_operand_id) {
+  switch (activation.kind) {
+    case mojom::Activation::Tag::kElu: {
+      CHECK(activation.elu_alpha.has_value());
+      builder.BuildElu(input_operand_id, output_operand_id,
+                       activation.elu_alpha.value());
+      return;
+    }
+    case mojom::Activation::Tag::kHardSigmoid: {
+      CHECK(activation.hard_sigmoid_alpha.has_value());
+      CHECK(activation.hard_sigmoid_beta.has_value());
+      builder.BuildHardSigmoid(input_operand_id, output_operand_id,
+                               activation.hard_sigmoid_alpha.value(),
+                               activation.hard_sigmoid_beta.value());
+      return;
+    }
+    case mojom::Activation::Tag::kLeakyRelu: {
+      CHECK(activation.leaky_relu_alpha.has_value());
+      builder.BuildLeakyRelu(input_operand_id, output_operand_id,
+                             activation.leaky_relu_alpha.value());
+      return;
+    }
+    case mojom::Activation::Tag::kLinear: {
+      CHECK(activation.linear_alpha.has_value());
+      CHECK(activation.linear_beta.has_value());
+      builder.BuildLinear(input_operand_id, output_operand_id,
+                          activation.linear_alpha.value(),
+                          activation.linear_beta.value());
+      return;
+    }
+    case mojom::Activation::Tag::kRelu:
+      builder.BuildRelu(input_operand_id, output_operand_id);
+      return;
+    case mojom::Activation::Tag::kSigmoid:
+      builder.BuildSigmoid(input_operand_id, output_operand_id);
+      return;
+    case mojom::Activation::Tag::kSoftplus: {
+      CHECK(activation.softplus_steepness.has_value());
+      builder.BuildSoftplus(input_operand_id, output_operand_id,
+                            activation.softplus_steepness.value());
+      return;
+    }
+    case mojom::Activation::Tag::kSoftsign:
+      builder.BuildSoftsign(input_operand_id, output_operand_id);
+      return;
+    case mojom::Activation::Tag::kTanh:
+      builder.BuildTanh(input_operand_id, output_operand_id);
+      return;
+    default:
+      NOTREACHED();
+  }
+}
+
 template <typename T>
 struct BatchNormalizationTester {
   OperandInfo<T> input;
@@ -631,10 +690,191 @@ struct BatchNormalizationTester {
       VerifyIsEqual(std::move(named_outputs["output"]), output);
     }
   }
+
+  void TestFusingStandaloneActivation(const Activation& activation) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t mean_operand_id =
+        builder.BuildInput("mean", mean.dimensions, mean.type);
+    uint64_t variance_operand_id =
+        builder.BuildInput("variance", variance.dimensions, variance.type);
+    uint64_t intermediate_operand_id =
+        builder.BuildIntermediateOperand(output.dimensions, output.type);
+    if (scale.has_value()) {
+      attributes.scale_operand_id =
+          builder.BuildInput("scale", scale->dimensions, scale->type);
+    }
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+
+    builder.BuildBatchNormalization(
+        input_operand_id, mean_operand_id, variance_operand_id,
+        intermediate_operand_id, std::move(attributes));
+
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    BuildStandaloneActivation(builder, activation, intermediate_operand_id,
+                              output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    named_inputs.insert({"mean", VectorToBigBuffer(mean.values)});
+    named_inputs.insert({"variance", VectorToBigBuffer(variance.values)});
+    if (scale.has_value()) {
+      named_inputs.insert({"scale", VectorToBigBuffer(scale->values)});
+    }
+    if (bias.has_value()) {
+      named_inputs.insert({"bias", VectorToBigBuffer(bias->values)});
+    }
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
+  }
 };
 
-// Test building and computing a graph with single operator
-// batchNormalization.
+// Test building and computing a graph of fusing a standalone activation into
+// batchNormalization automatically.
+TEST_F(WebNNGraphImplBackendTest,
+       FuseStandaloneActivationIntoBatchNormalization) {
+  {  // Test batchNormalization with 4-D input, default axis and activation =
+    // linear.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {-8.999950000374997, 1, 10.999950000374997,
+                              -1.2474078892909666, 11, 23.24740788929097}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kLinear,
+                       .linear_alpha = 10,
+                       .linear_beta = 1});
+  }
+  {
+    // Test batchNormalization with 4-D input with activation = hardsigmoid.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {1, 1, 1, 1, 1, 1}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kHardSigmoid,
+                       .hard_sigmoid_alpha = 1,
+                       .hard_sigmoid_beta = 3});
+  }
+  {
+    // Test batchNormalization with 4-D input with activation = relu.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {0, 0, 0.9999950000374997, 0, 1,
+                              2.224740788929097}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kRelu});
+  }
+  {
+    // Test batchNormalization with 4-D input with activation = softplus.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-100, -50, 100, 101, 102, 103}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1, 4}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1, 2}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.epsilon = 0},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {0, 0, 100, 99, 100, 101}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kSoftplus,
+                       .softplus_steepness = 3.0});
+  }
+  {
+    // Test batchNormalization with 1-D input with activation = softsign.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2},
+                  .values = {-1, 1}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {-1, 1}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.axis = 0},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2},
+                   .values = {0, 0.5}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kSoftsign});
+  }
+}
+
+// Test building and computing a graph with single operator batchNormalization.
 TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorBatchNormalization) {
   {
     // Test batchNormalization with 4-D input with default axis.
@@ -994,7 +1234,314 @@ struct Conv2dTester {
         GetFloatOutputData(std::move(named_outputs["output"]), output.type),
         output.values);
   }
+
+  void TestFusingStandaloneActivation(const Activation& activation) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t filter_operand_id =
+        builder.BuildConstant(filter.dimensions, filter.type,
+                              base::as_bytes(base::make_span(filter.values)));
+    uint64_t conv2d_output_operand_id =
+        builder.BuildIntermediateOperand(output.dimensions, output.type);
+
+    std::optional<uint64_t> bias_operand_id;
+    if (attributes.bias.has_value()) {
+      bias_operand_id = builder.BuildConstant(
+          attributes.bias->dimensions, attributes.bias->type,
+          base::as_bytes(base::make_span(attributes.bias->values)));
+    }
+
+    builder.BuildConv2d(type, input_operand_id, filter_operand_id,
+                        conv2d_output_operand_id, std::move(attributes),
+                        bias_operand_id);
+
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    BuildStandaloneActivation(builder, activation, conv2d_output_operand_id,
+                              output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
+  }
 };
+
+// Test building and computing a graph of fusing a standalone activation
+// into conv2d automatically.
+TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
+  // Test conv2d with NCHW layout, float 32 data type, bias and fusing with elu
+  // activation.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d::Kind::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3},
+                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 1, 1},
+                   .values = {1}},
+        .attributes = {.bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {-5}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = {-0.7946096424007316, -0.7853474888890126,
+                              -0.7601703453057089, -0.6917317734107099,
+                              -0.5056964470628461, 0, 1, 2, 3}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kElu, .elu_alpha = 0.8});
+  }
+  // Test conv2d with NCHW layout, float 32 data type, bias and fusing with
+  // leakyRelu activation.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d::Kind::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 4, 4},
+                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+                             15}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = std::vector<float>(9, 1)},
+        .attributes = {.bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {-60}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 2},
+                   .values = {-0.3, -0.12, 21, 30}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kLeakyRelu,
+                       .leaky_relu_alpha = 0.02});
+  }
+  // Test conv2d with NCHW layout, float 32 data type, fusing with bias and
+  // linear activation.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d::Kind::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5},
+                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = std::vector<float>(9, 1)},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {1}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5},
+                   .values = {1.13, 1.22, 1.28, 1.34, 1.25, 1.34, 1.55,
+                              1.64, 1.73, 1.52, 1.64, 2,    2.09, 2.18,
+                              1.82, 1.94, 2.45, 2.54, 2.63, 2.12, 1.73,
+                              2.12, 2.18, 2.24, 1.85}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kLinear,
+                       .linear_alpha = 0.01,
+                       .linear_beta = 1});
+  }
+  // Test conv2d with NHWC layout, float 32 data type, fusing with bias and relu
+  // activation.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d::Kind::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 5, 5, 1},
+                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 3, 3, 1},
+                   .values = std::vector<float>(9, 1)},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .input_layout = mojom::InputOperandLayout::kChannelsLast,
+                       .bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {-100}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 5, 5, 1},
+                   .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
+                              17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kRelu});
+  }
+  // Test conv2d with NHWC layout, float 16 data type, fusing with bias and relu
+  // activation.
+  {
+    Conv2dTester<float16>{
+        .type = mojom::Conv2d::Kind::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 5, 5, 1},
+                  .values = Float16FromFloat32(
+                      {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                       13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})},
+        .filter = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 3, 3, 1},
+                   .values = Float16FromFloat32(std::vector<float>(9, 1))},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .input_layout = mojom::InputOperandLayout::kChannelsLast,
+                       .bias =
+                           OperandInfo<float16>{
+                               .type = mojom::Operand::DataType::kFloat16,
+                               .dimensions = {1},
+                               .values = Float16FromFloat32({-100})}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 5, 5, 1},
+                   .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
+                              17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kRelu});
+  }
+  // Test conv2d with NCHW layout, fusing with hardSigmoid activation.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d::Kind::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5},
+                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = std::vector<float>(9, 1)},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {1}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5},
+                   .values = {0,    0,    0, 0,    0,    0,    0, 0,    0,
+                              0,    0,    0, 0.09, 0.18, 0,    0, 0.45, 0.54,
+                              0.63, 0.12, 0, 0.12, 0.18, 0.24, 0}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kHardSigmoid,
+                       .hard_sigmoid_alpha = 0.01,
+                       .hard_sigmoid_beta = -1});
+  }
+  // Test conv2d with NCHW layout, fusing with sigmoid activation.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d::Kind::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 1, 3, 3},
+                  .values = {0.7529087201709872, 0.7520291960017611,
+                             0.594952773514815, 0.21631854011984264,
+                             0.07589348976741683, 0.15106785419828572,
+                             0.12124850358598671, 0.5364335407319905,
+                             0.5937089927693522, 0.9910031422560608,
+                             0.36309423611370084, 0.9289673923363004,
+                             0.22727376737331384, 0.5414123970044269,
+                             0.0844534212564596, 0.6765284772046276,
+                             0.619325655574763, 0.39292160755260475}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 1, 2, 2},
+                   .values = {0.14543837927656278, 0.9671129790291346,
+                              0.10836050336762582, 0.320230810822804,
+                              0.6952692250382182, 0.5070913293589028,
+                              0.0813970738017622, 0.5303338853508432,
+                              0.30721364807734, 0.4324123448833208,
+                              0.9849002194630809, 0.4281076188358701}},
+        .attributes = {.input_layout =
+                           mojom::InputOperandLayout::kChannelsFirst},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3, 2, 2},
+                   .values = {0.7077627182006836, 0.6772933602333069,
+                              0.5719422101974487, 0.5999819040298462,
+                              0.7236577272415161, 0.7131744623184204,
+                              0.618513286113739,  0.6196115612983704,
+                              0.690409243106842,  0.6519721746444702,
+                              0.6102449893951416, 0.704983651638031,
+                              0.6666978597640991, 0.7382584810256958,
+                              0.6959947943687439, 0.5874307155609131,
+                              0.7647256255149841, 0.6926159262657166,
+                              0.6934033632278442, 0.6633020043373108,
+                              0.7144469618797302, 0.7469926476478577,
+                              0.7747598886489868, 0.7273134589195251}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kSigmoid});
+  }
+  // Test conv2d with NCHW layout, float 32 data type, bias and fusing with
+  // softplus activation.
+  {
+    Conv2dTester<float>{.type = mojom::Conv2d::Kind::kDirect,
+                        .input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {1, 1, 2, 2},
+                                  .values = {5, 6, 7, 8}},
+                        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1, 1, 1, 1},
+                                   .values = {1}},
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1, 1, 2, 2},
+                                   .values = {5, 6, 7, 8}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kSoftplus,
+                       .softplus_steepness = 8.0});
+  }
+  // Test conv2d with NCHW layout, float 32 data type, fusing with softsign
+  // activation.
+  {
+    Conv2dTester<float>{.type = mojom::Conv2d::Kind::kDirect,
+                        .input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {1, 1, 3, 3},
+                                  .values = {-3, -2, -1, -4, 0, 2, 1, 3, 4}},
+                        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1, 1, 2, 2},
+                                   .values = std::vector<float>(4, 1)},
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1, 1, 2, 2},
+                                   .values = {-0.9, -0.5, 0, 0.9}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kSoftsign});
+  }
+  // Test conv2d with NCHW layout, fusing with tanh activation.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d::Kind::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5},
+                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = std::vector<float>(9, 0.05)},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .input_layout =
+                           mojom::InputOperandLayout::kChannelsFirst},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5},
+                   .values = {0.5370495669980353, 0.7818063576087741,
+                              0.874053287886007,  0.9288576214547277,
+                              0.8336546070121552, 0.9288576214547277,
+                              0.9910074536781176, 0.9963341221150144,
+                              0.9985079423323266, 0.9878803970168317,
+                              0.9963341221150144, 0.9998996556706324,
+                              0.9999592018254402, 0.9999834124992523,
+                              0.9993931059399421, 0.9998171682522957,
+                              0.9999988852198828, 0.9999995467640772,
+                              0.9999998157280003, 0.999969775809118,
+                              0.9985079423323266, 0.999969775809118,
+                              0.9999834124992523, 0.9999908965525104,
+                              0.9995503664595334}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kTanh});
+  }
+}
 
 // Test building and computing a graph with single operator conv2d.
 TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
@@ -1657,7 +2204,78 @@ struct ElementWiseBinaryTester {
 
     VerifyIsEqual(std::move(named_outputs["output"]), output);
   }
+
+  void TestFusingStandaloneActivation(const Activation& activation) {
+    // Now only binary add supports fusing standalone activation.
+    CHECK_EQ(kind, mojom::ElementWiseBinary::Kind::kAdd);
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t lhs_operand_id =
+        builder.BuildInput("lhs", lhs.dimensions, lhs.type);
+    uint64_t rhs_operand_id =
+        builder.BuildInput("rhs", rhs.dimensions, rhs.type);
+    uint64_t intermediate_operand_id =
+        builder.BuildIntermediateOperand(output.dimensions, output.type);
+    builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                   lhs_operand_id, rhs_operand_id,
+                                   intermediate_operand_id);
+
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    BuildStandaloneActivation(builder, activation, intermediate_operand_id,
+                              output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"lhs", VectorToBigBuffer(lhs.values)});
+    named_inputs.insert({"rhs", VectorToBigBuffer(rhs.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
+  }
 };
+
+// Test building and computing a graph of fusing a standalone activation
+// into elementwise binary add automatically.
+TEST_F(WebNNGraphImplBackendTest,
+       FuseStandaloneActivationIntoElementWiseBinaryAdd) {
+  // Test add with linear activation.
+  {
+    ElementWiseBinaryTester<float>{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {1, 2, 3, 4, 5, 6}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {0, 5.1, 4, 3, 2, 0}},
+        .kind = mojom::ElementWiseBinary::Kind::kAdd,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {11, 72, 71, 71, 71, 61}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kLinear,
+                       .linear_alpha = 10,
+                       .linear_beta = 1});
+  }
+  // Test add with relu activation.
+  {
+    ElementWiseBinaryTester<float>{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {1, 2, 3, 4, 5, 6}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1},
+                .values = {-6, 5, 4, 3, 2, -7}},
+        .kind = mojom::ElementWiseBinary::Kind::kAdd,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {0, 7, 7, 7, 7, 0}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kRelu});
+  }
+}
 
 // Test building and computing a graph with single operator element-wise
 // binary.
@@ -4795,7 +5413,84 @@ struct GemmTester {
         GetFloatOutputData(std::move(named_outputs["output"]), output.type),
         output.values);
   }
+
+  void TestFusingStandaloneActivation(const Activation& activation) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_a_operand_id =
+        builder.BuildInput("input_a", input_a.dimensions, input_a.type);
+    uint64_t input_b_operand_id =
+        builder.BuildInput("input_b", input_b.dimensions, input_b.type);
+    uint64_t intermediate_operand_id =
+        builder.BuildIntermediateOperand(output.dimensions, output.type);
+    if (input_c.has_value()) {
+      attributes.c_operand_id =
+          builder.BuildInput("input_c", input_c->dimensions, input_c->type);
+    }
+
+    builder.BuildGemm(input_a_operand_id, input_b_operand_id,
+                      intermediate_operand_id, std::move(attributes));
+
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    BuildStandaloneActivation(builder, activation, intermediate_operand_id,
+                              output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input_a", VectorToBigBuffer(input_a.values)});
+    named_inputs.insert({"input_b", VectorToBigBuffer(input_b.values)});
+    if (input_c.has_value()) {
+      named_inputs.insert({"input_c", VectorToBigBuffer(input_c->values)});
+    }
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
+  }
 };
+
+// Test building and computing a graph of fusing a standalone activation
+// into gemm automatically.
+TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoGemm) {
+  // Test gemm without a third input, activation = linear.
+  {
+    GemmTester<float>{.input_a = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 2},
+                                  .values = {1, 2, 3, 4}},
+                      .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 2},
+                                  .values = {1, 2, 3, 4}},
+                      .output = {.type = mojom::Operand::DataType::kFloat32,
+                                 .dimensions = {2, 2},
+                                 .values = {71, 101, 151, 221}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kLinear,
+                       .linear_alpha = 10,
+                       .linear_beta = 1});
+  }
+
+  // Test gemm with a third input, activation = relu.
+  {
+    GemmTester<float>{
+        .input_a = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 2},
+                    .values = {1, 2, 3, -4}},
+        .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {2, 2},
+                    .values = {1, 2, 3, 4}},
+        .input_c =
+            OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 2},
+                               .values = {1, 1, 1, 1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2},
+                   .values = {8, 11, 0, 0}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kRelu});
+  }
+}
 
 #if BUILDFLAG(IS_WIN)
 // Test building and computing a graph with single operator gemm on npu.
@@ -5628,7 +6323,67 @@ struct InstanceNormalizationTester {
       VerifyIsEqual(std::move(named_outputs["output"]), output);
     }
   }
+
+  void TestFusingStandaloneActivation(const Activation& activation) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t intermediate_operand_id =
+        builder.BuildIntermediateOperand(output.dimensions, output.type);
+    if (scale.has_value()) {
+      attributes.scale_operand_id =
+          builder.BuildInput("scale", scale->dimensions, scale->type);
+    }
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+
+    builder.BuildInstanceNormalization(
+        input_operand_id, intermediate_operand_id, std::move(attributes));
+
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    BuildStandaloneActivation(builder, activation, intermediate_operand_id,
+                              output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    if (scale.has_value()) {
+      named_inputs.insert({"scale", VectorToBigBuffer(scale->values)});
+    }
+    if (bias.has_value()) {
+      named_inputs.insert({"bias", VectorToBigBuffer(bias->values)});
+    }
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
+  }
 };
+
+// Test building and computing a graph of fusing a standalone activation into
+// instanceNormalization automatically.
+TEST_F(WebNNGraphImplBackendTest,
+       FuseStandaloneActivationIntoInstanceNormalization) {
+  {
+    // Test instanceNormalization with 4-D input with default scale and bias and
+    // activation = relu.
+    InstanceNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {1, 2, 3, 4, 5, 6}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {0, 0, 1.2247356859083902, 0, 0,
+                              1.2247356859083902}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kRelu});
+  }
+}
 
 // Test building and computing a graph with single operator
 // instanceNormalization.
@@ -5772,7 +6527,67 @@ struct LayerNormalizationTester {
       VerifyIsEqual(std::move(named_outputs["output"]), output);
     }
   }
+
+  void TestFusingStandaloneActivation(const Activation& activation) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t intermediate_operand_id =
+        builder.BuildIntermediateOperand(output.dimensions, output.type);
+    if (scale.has_value()) {
+      attributes.scale_operand_id =
+          builder.BuildInput("scale", scale->dimensions, scale->type);
+    }
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+
+    builder.BuildLayerNormalization(input_operand_id, intermediate_operand_id,
+                                    std::move(attributes));
+
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    BuildStandaloneActivation(builder, activation, intermediate_operand_id,
+                              output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    if (scale.has_value()) {
+      named_inputs.insert({"scale", VectorToBigBuffer(scale->values)});
+    }
+    if (bias.has_value()) {
+      named_inputs.insert({"bias", VectorToBigBuffer(bias->values)});
+    }
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
+  }
 };
+
+// Test building and computing a graph of fusing a standalone activation into
+// layerNormalization automatically.
+TEST_F(WebNNGraphImplBackendTest,
+       FuseStandaloneActivationIntoLayerNormalization) {
+  {
+    // Test layerNormalization with 1-D input with axes = [0] and default scale
+    // and bias and activation = relu.
+    LayerNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {5},
+                  .values = {0, 1, 2, 3, 4}},
+        .attributes = {.axes = {0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {5},
+                   .values = {0, 0, 0, 0.7071050134262237, 1.4142100268524473}}}
+        .TestFusingStandaloneActivation(
+            Activation{.kind = mojom::Activation::Tag::kRelu});
+  }
+}
 
 // Test building and computing a graph with single operator
 // layerNormalization.
@@ -6379,7 +7194,55 @@ struct MatmulTester {
         GetFloatOutputData(std::move(named_outputs["output"]), output.type),
         output.values);
   }
+
+  void TestFusingStandaloneActivation(const Activation& activation) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_a_operand_id =
+        builder.BuildInput("input_a", input_a.dimensions, input_a.type);
+    uint64_t input_b_operand_id =
+        builder.BuildInput("input_b", input_b.dimensions, input_b.type);
+    uint64_t intermediate_operand_id =
+        builder.BuildIntermediateOperand(output.dimensions, output.type);
+
+    builder.BuildMatmul(input_a_operand_id, input_b_operand_id,
+                        intermediate_operand_id);
+
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    BuildStandaloneActivation(builder, activation, intermediate_operand_id,
+                              output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input_a", VectorToBigBuffer(input_a.values)});
+    named_inputs.insert({"input_b", VectorToBigBuffer(input_b.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
+  }
 };
+
+// Test building and computing a graph of fusing a standalone activation
+// into matmul automatically.
+TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoMatmul) {
+  // Test matmul with 2-D * 2-D inputs, activation = linear.
+  GemmTester<float>{.input_a = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 2},
+                                .values = {1, 2, 3, 4}},
+                    .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 2},
+                                .values = {1, 2, 3, 4}},
+                    .output = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 2},
+                               .values = {71, 101, 151, 221}}}
+      .TestFusingStandaloneActivation(
+          Activation{.kind = mojom::Activation::Tag::kLinear,
+                     .linear_alpha = 10,
+                     .linear_beta = 1});
+}
 
 // Test building and computing a graph with single operator matmul.
 TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorMatmul) {
@@ -7614,6 +8477,216 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorWhere) {
                    .dimensions = {2, 3},
                    .values = {6, 6, 5, 7, 6, 0}}}
         .Test();
+  }
+}
+
+// Test building and computing a graph which can't be automatically fused
+// because the output of conv2d is used by two operations or as graph's output.
+TEST_F(WebNNGraphImplBackendTest,
+       MultipleOutputsCanNotFuseStandaloneActivation) {
+  //     [input]
+  //        |
+  //       conv
+  //      /    \
+  //     /      \
+  //   relu1    relu2
+  //     |        |
+  // [output1][output2]
+  {
+    // Build the mojom graph info.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+    uint64_t filter_operand_id = builder.BuildConstant(
+        {1, 3, 3, 1}, mojom::Operand::DataType::kFloat32,
+        base::as_bytes(base::make_span(std::vector<float>(9, 1))));
+    uint64_t conv2d_output_operand_id = builder.BuildIntermediateOperand(
+        {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+
+    Conv2dTester<float>::Conv2dAttributes attributes{
+        .padding = {1, 1, 1, 1},
+        .input_layout = mojom::InputOperandLayout::kChannelsLast,
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1},
+                                   .values = {-100}},
+    };
+
+    std::optional<uint64_t> bias_operand_id;
+    if (attributes.bias.has_value()) {
+      bias_operand_id = builder.BuildConstant(
+          attributes.bias->dimensions, attributes.bias->type,
+          base::as_bytes(base::make_span(attributes.bias->values)));
+    }
+
+    builder.BuildConv2d(mojom::Conv2d::Kind::kDirect, input_operand_id,
+                        filter_operand_id, conv2d_output_operand_id,
+                        std::move(attributes), bias_operand_id);
+
+    uint64_t relu1_output_operand_id = builder.BuildOutput(
+        "output1", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+    builder.BuildRelu(conv2d_output_operand_id, relu1_output_operand_id);
+
+    uint64_t relu2_output_operand_id = builder.BuildOutput(
+        "output2", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+    builder.BuildRelu(conv2d_output_operand_id, relu2_output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+
+    named_inputs.insert(
+        {"input", VectorToBigBuffer(std::vector<float>{
+                      0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                      13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    std::vector<float> expected_output_data{0,  0,  0, 0,  0,  0,  0, 0,  0,
+                                            0,  0,  0, 8,  17, 0,  0, 44, 53,
+                                            62, 11, 0, 11, 17, 23, 0};
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output1"]),
+                           mojom::Operand::DataType::kFloat32),
+        expected_output_data);
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output2"]),
+                           mojom::Operand::DataType::kFloat32),
+        expected_output_data);
+  }
+  //     [input]
+  //        |
+  //       conv
+  //      /    \
+  //     /      \
+  //  reshape   relu
+  //     |        |
+  // [output1][output2]
+  {
+    // Build the mojom graph info.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+    uint64_t filter_operand_id = builder.BuildConstant(
+        {1, 3, 3, 1}, mojom::Operand::DataType::kFloat32,
+        base::as_bytes(base::make_span(std::vector<float>(9, 1))));
+    uint64_t conv2d_output_operand_id = builder.BuildIntermediateOperand(
+        {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+
+    Conv2dTester<float>::Conv2dAttributes attributes{
+        .padding = {1, 1, 1, 1},
+        .input_layout = mojom::InputOperandLayout::kChannelsLast,
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1},
+                                   .values = {-100}},
+    };
+
+    std::optional<uint64_t> bias_operand_id;
+    if (attributes.bias.has_value()) {
+      bias_operand_id = builder.BuildConstant(
+          attributes.bias->dimensions, attributes.bias->type,
+          base::as_bytes(base::make_span(attributes.bias->values)));
+    }
+
+    builder.BuildConv2d(mojom::Conv2d::Kind::kDirect, input_operand_id,
+                        filter_operand_id, conv2d_output_operand_id,
+                        std::move(attributes), bias_operand_id);
+
+    uint64_t reshape_output_operand_id = builder.BuildOutput(
+        "output1", {1, 5, 1, 5}, mojom::Operand::DataType::kFloat32);
+    builder.BuildReshape(conv2d_output_operand_id, reshape_output_operand_id);
+
+    uint64_t relu_output_operand_id = builder.BuildOutput(
+        "output2", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+    builder.BuildRelu(conv2d_output_operand_id, relu_output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+
+    named_inputs.insert(
+        {"input", VectorToBigBuffer(std::vector<float>{
+                      0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                      13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output1"]),
+                           mojom::Operand::DataType::kFloat32),
+        std::vector<float>{-88, -79, -73, -67, -76, -67, -46, -37, -28,
+                           -49, -37, -1,  8,   17,  -19, -7,  44,  53,
+                           62,  11,  -28, 11,  17,  23,  -16});
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output2"]),
+                           mojom::Operand::DataType::kFloat32),
+        std::vector<float>{0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
+                           17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0});
+  }
+  //     [input]
+  //        |
+  //      conv2d
+  //      /    \
+  //     /      \
+  //   relu      \
+  //     |        \
+  // [output1] [output2]
+  {
+    // Build the mojom graph info.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+    uint64_t filter_operand_id = builder.BuildConstant(
+        {1, 3, 3, 1}, mojom::Operand::DataType::kFloat32,
+        base::as_bytes(base::make_span(std::vector<float>(9, 1))));
+    uint64_t conv2d_output_operand_id = builder.BuildIntermediateOperand(
+        {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+
+    Conv2dTester<float>::Conv2dAttributes attributes{
+        .padding = {1, 1, 1, 1},
+        .input_layout = mojom::InputOperandLayout::kChannelsLast,
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1},
+                                   .values = {-100}},
+    };
+
+    std::optional<uint64_t> bias_operand_id;
+    if (attributes.bias.has_value()) {
+      bias_operand_id = builder.BuildConstant(
+          attributes.bias->dimensions, attributes.bias->type,
+          base::as_bytes(base::make_span(attributes.bias->values)));
+    }
+
+    builder.BuildConv2d(mojom::Conv2d::Kind::kDirect, input_operand_id,
+                        filter_operand_id, conv2d_output_operand_id,
+                        std::move(attributes), bias_operand_id);
+    builder.AddOutput("output2", conv2d_output_operand_id);
+
+    uint64_t relu_output_operand_id = builder.BuildOutput(
+        "output1", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+    builder.BuildRelu(conv2d_output_operand_id, relu_output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+
+    named_inputs.insert(
+        {"input", VectorToBigBuffer(std::vector<float>{
+                      0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                      13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output1"]),
+                           mojom::Operand::DataType::kFloat32),
+        std::vector<float>{0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
+                           17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0});
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output2"]),
+                           mojom::Operand::DataType::kFloat32),
+        std::vector<float>{-88, -79, -73, -67, -76, -67, -46, -37, -28,
+                           -49, -37, -1,  8,   17,  -19, -7,  44,  53,
+                           62,  11,  -28, 11,  17,  23,  -16});
   }
 }
 

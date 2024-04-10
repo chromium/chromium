@@ -54,12 +54,16 @@ uint64_t GraphInfoBuilder::BuildConstant(
   return operand_id;
 }
 
+void GraphInfoBuilder::AddOutput(const std::string& name, uint64_t operand_id) {
+  graph_info_->id_to_operand_map[operand_id]->name = name;
+  graph_info_->output_operands.push_back(operand_id);
+}
+
 uint64_t GraphInfoBuilder::BuildOutput(const std::string& name,
                                        const std::vector<uint32_t>& dimensions,
                                        mojom::Operand::DataType type) {
   uint64_t operand_id = BuildOperand(dimensions, type);
-  graph_info_->id_to_operand_map[operand_id]->name = name;
-  graph_info_->output_operands.push_back(operand_id);
+  AddOutput(name, operand_id);
   return operand_id;
 }
 

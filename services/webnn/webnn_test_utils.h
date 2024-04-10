@@ -35,6 +35,8 @@ class GraphInfoBuilder final {
                          mojom::Operand::DataType type,
                          base::span<const uint8_t> values);
 
+  void AddOutput(const std::string& name, uint64_t operand_id);
+
   uint64_t BuildOutput(const std::string& name,
                        const std::vector<uint32_t>& dimensions,
                        mojom::Operand::DataType type);

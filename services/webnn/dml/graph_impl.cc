@@ -12,6 +12,7 @@
 
 #include "base/bits.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -39,7 +40,14 @@
 namespace webnn::dml {
 namespace {
 
+// The feature flag allows us to disable the graph fusion if it causes
+// something wrong.
+BASE_FEATURE(kApplyGraphFusion,
+             "ApplyGraphFusion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 using Microsoft::WRL::ComPtr;
+using mojom::Activation;
 using mojom::ComputeResult;
 using mojom::CreateGraphResult;
 using mojom::Operand;
@@ -486,57 +494,652 @@ struct ActivationOperatorDesc {
 // DML_OPERATOR_ELEMENT_WISE_CLIP will be supported after the DirectML version
 // upper than DML_FEATURE_LEVEL_6_0.
 // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history#dml_feature_level_6_0
-base::expected<ActivationOperatorDesc, mojom::ErrorPtr>
-CreateActivationOperatorDesc(const mojom::ActivationPtr& activation) {
+template <typename Activation>
+ActivationOperatorDesc CreateActivationOperatorDesc(
+    const Activation* activation) {
   CHECK(activation);
   switch (activation->which()) {
-    case mojom::Activation::Tag::kElu:
+    case Activation::Tag::kElu:
       return ActivationOperatorDesc{.desc = DML_ACTIVATION_ELU_OPERATOR_DESC{
                                         .Alpha = activation->get_elu()->alpha}};
-    case mojom::Activation::Tag::kHardSigmoid:
+    case Activation::Tag::kHardSigmoid:
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC{
               .Alpha = activation->get_hard_sigmoid()->alpha,
               .Beta = activation->get_hard_sigmoid()->beta}};
-    case mojom::Activation::Tag::kLeakyRelu:
+    case Activation::Tag::kLeakyRelu:
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC{
               .Alpha = activation->get_leaky_relu()->alpha}};
-    case mojom::Activation::Tag::kLinear:
+    case Activation::Tag::kLinear:
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_LINEAR_OPERATOR_DESC{
               .Alpha = activation->get_linear()->alpha,
               .Beta = activation->get_linear()->beta}};
-    case mojom::Activation::Tag::kRelu:
+    case Activation::Tag::kRelu:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_RELU_OPERATOR_DESC{}};
-    case mojom::Activation::Tag::kSigmoid:
+    case Activation::Tag::kSigmoid:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_SIGMOID_OPERATOR_DESC{}};
-    case mojom::Activation::Tag::kSoftplus:
+    case Activation::Tag::kSoftplus:
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC{
               .Steepness = activation->get_softplus()->steepness}};
-    case mojom::Activation::Tag::kSoftsign:
+    case Activation::Tag::kSoftsign:
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC{}};
-    case mojom::Activation::Tag::kTanh:
+    case Activation::Tag::kTanh:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
     default:
-      return base::unexpected(
-          CreateError(mojom::Error::Code::kNotSupportedError,
-                      "The fused activation type is not supported."));
+      NOTREACHED_NORETURN() << "The fused activation type is not supported.";
   }
 }
 
+std::optional<const Operation*> GetFusibleActivationFromOperation(
+    const std::map<const Operation*, const Operation*>&
+        operation_to_fusible_standalone_activation_map,
+    const Operation* operation) {
+  const auto activation_iterator =
+      operation_to_fusible_standalone_activation_map.find(operation);
+  if (activation_iterator !=
+      operation_to_fusible_standalone_activation_map.end()) {
+    return activation_iterator->second;
+  }
+  return std::optional<const Operation*>();
+}
+
+// According to the DirectML documentations:
+// https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_add1_operator_desc,
+// and
+// https://learn.microsoft.com/en-us/windows/ai/directml/dml-fused-activations,
+// for the element wise binary operation, only `DML_OPERATOR_ELEMENT_WISE_ADD1`
+// supports fused activation when the output data type is FLOAT16 or FLOAT32.
+bool CanElementWiseBinarySupportFusion(
+    const mojom::ElementWiseBinaryPtr& binary,
+    const IdToOperandMap& id_to_operand_map) {
+  const OperandPtr& output_operand =
+      id_to_operand_map.at(binary->output_operand_id);
+  Operand::DataType output_data_type = output_operand->data_type;
+  return binary->kind == mojom::ElementWiseBinary::Kind::kAdd &&
+         (output_data_type == Operand::DataType::kFloat32 ||
+          output_data_type == Operand::DataType::kFloat16);
+}
+
+// Return true if the operation can be fused with any of the following
+// standalone activations operators according to
+// https://learn.microsoft.com/en-us/windows/ai/directml/dml-fused-activations:
+// DML_OPERATOR_BATCH_NORMALIZATION
+// DML_OPERATOR_BATCH_NORMALIZATION_TRAINING
+// DML_OPERATOR_CONVOLUTION
+// DML_OPERATOR_ELEMENT_WISE_ADD1
+// DML_OPERATOR_GEMM
+// DML_OPERATOR_MEAN_VARIANCE_NORMALIZATION
+// DML_OPERATOR_MEAN_VARIANCE_NORMALIZATION1
+//
+//  Conv2d and batch norm may already have fused activations supplied by JS code
+//  because WebNN spec supports fusion for these two operations.
+bool CanFuseStandaloneActivation(const Operation* operation,
+                                 const IdToOperandMap& id_to_operand_map) {
+  switch (operation->which()) {
+    case Operation::Tag::kConv2d:
+      return !operation->get_conv2d()->activation;
+    case Operation::Tag::kBatchNormalization:
+      return !operation->get_batch_normalization()->activation;
+    case Operation::Tag::kElementWiseBinary:
+      return CanElementWiseBinarySupportFusion(
+          operation->get_element_wise_binary(), id_to_operand_map);
+    case Operation::Tag::kGemm:
+    case Operation::Tag::kInstanceNormalization:
+    case Operation::Tag::kLayerNormalization:
+    case Operation::Tag::kMatmul:
+      return true;
+    default:
+      return false;
+  }
+}
+
+// Return a valid output id if the operation is a fusible activation according
+// to
+// https://learn.microsoft.com/en-us/windows/ai/directml/dml-fused-activations.
+// DML_OPERATOR_ELEMENT_WISE_CLIP will be supported after the DirectML version
+// upper than DML_FEATURE_LEVEL_6_0 according to
+// https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history#dml_feature_level_6_0.
+std::optional<uint64_t> GetFusibleActivationOutputId(
+    const Operation* operation) {
+  switch (operation->which()) {
+    case Operation::Tag::kElu:
+      return operation->get_elu()->output_operand_id;
+    case Operation::Tag::kHardSigmoid:
+      return operation->get_hard_sigmoid()->output_operand_id;
+    case Operation::Tag::kLeakyRelu:
+      return operation->get_leaky_relu()->output_operand_id;
+    case Operation::Tag::kLinear:
+      return operation->get_linear()->output_operand_id;
+    case Operation::Tag::kRelu:
+      return operation->get_relu()->output_operand_id;
+    case Operation::Tag::kSigmoid:
+      return operation->get_sigmoid()->output_operand_id;
+    case Operation::Tag::kSoftplus:
+      return operation->get_softplus()->output_operand_id;
+    case Operation::Tag::kSoftsign:
+      return operation->get_softsign()->output_operand_id;
+    case Operation::Tag::kTanh:
+      return operation->get_tanh()->output_operand_id;
+    default:
+      return std::optional<uint64_t>();
+  }
+}
+
+// The struct contains the connectivity information of an operation in
+// `mojom::GraphInfo::operations`. It helps to generate and represent the
+// topological information about how all operations are connected.
+struct OperationConnectivity {
+  // The operation's input ids which are used to identity the input operands in
+  // `mojom::GraphInfo::id_to_operand_map`.
+  std::vector<uint64_t> input_ids;
+  // The operation's output ids which are used to identity the output operands
+  // in `mojom::GraphInfo::id_to_operand_map`.
+  std::vector<uint64_t> output_ids;
+};
+
+OperationConnectivity GetOperationConnectivity(const Operation* operation) {
+  std::vector<uint64_t> input_ids;
+  std::vector<uint64_t> output_ids;
+  switch (operation->which()) {
+    case Operation::Tag::kArgMinMax: {
+      const auto& arg_min_max = operation->get_arg_min_max();
+      input_ids = {arg_min_max->input_operand_id};
+      output_ids = {arg_min_max->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kBatchNormalization: {
+      const auto& batch_norm = operation->get_batch_normalization();
+      input_ids = {batch_norm->input_operand_id, batch_norm->mean_operand_id,
+                   batch_norm->variance_operand_id};
+      auto& scale_operand_id = batch_norm->scale_operand_id;
+      if (scale_operand_id) {
+        input_ids.push_back(scale_operand_id.value());
+      }
+      auto& bias_operand_id = batch_norm->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      output_ids = {batch_norm->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kClamp: {
+      const auto& clamp = operation->get_clamp();
+      input_ids = {clamp->input_operand_id};
+      output_ids = {clamp->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kConcat: {
+      const auto& concat = operation->get_concat();
+      input_ids = {concat->input_operand_ids};
+      output_ids = {concat->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kConv2d: {
+      const auto& conv2d = operation->get_conv2d();
+      input_ids = {conv2d->input_operand_id, conv2d->filter_operand_id};
+      auto& bias_operand_id = conv2d->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      output_ids = {conv2d->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kElementWiseBinary: {
+      const auto& binary = operation->get_element_wise_binary();
+      input_ids = {binary->lhs_operand_id, binary->rhs_operand_id};
+      output_ids = {binary->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kElu: {
+      const auto& elu = operation->get_elu();
+      input_ids = {elu->input_operand_id};
+      output_ids = {elu->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kElementWiseUnary: {
+      const auto& unary = operation->get_element_wise_unary();
+      input_ids = {unary->input_operand_id};
+      output_ids = {unary->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kExpand: {
+      const auto& expand = operation->get_expand();
+      input_ids = {expand->input_operand_id};
+      output_ids = {expand->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kGather: {
+      const auto& gather = operation->get_gather();
+      input_ids = {gather->input_operand_id, gather->indices_operand_id};
+      output_ids = {gather->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kGemm: {
+      const auto& gemm = operation->get_gemm();
+      input_ids = {gemm->a_operand_id, gemm->b_operand_id};
+      auto& c_operand_id = gemm->c_operand_id;
+      if (c_operand_id) {
+        input_ids.push_back(c_operand_id.value());
+      }
+      output_ids = {gemm->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kGru: {
+      const auto& gru = operation->get_gru();
+      input_ids = {gru->input_operand_id, gru->weight_operand_id,
+                   gru->recurrent_weight_operand_id};
+      auto& bias_operand_id = gru->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      auto& recurrent_bias_operand_id = gru->recurrent_bias_operand_id;
+      if (recurrent_bias_operand_id) {
+        input_ids.push_back(recurrent_bias_operand_id.value());
+      }
+      auto& initial_hidden_state_operand_id =
+          gru->initial_hidden_state_operand_id;
+      if (initial_hidden_state_operand_id) {
+        input_ids.push_back(initial_hidden_state_operand_id.value());
+      }
+      output_ids = {gru->output_operand_ids};
+      break;
+    }
+    case Operation::Tag::kGruCell: {
+      const auto& gru_cell = operation->get_gru_cell();
+      input_ids = {gru_cell->input_operand_id, gru_cell->weight_operand_id,
+                   gru_cell->recurrent_weight_operand_id,
+                   gru_cell->hidden_state_operand_id};
+      auto& bias_operand_id = gru_cell->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      auto& recurrent_bias_operand_id = gru_cell->recurrent_bias_operand_id;
+      if (recurrent_bias_operand_id) {
+        input_ids.push_back(recurrent_bias_operand_id.value());
+      }
+      output_ids = {gru_cell->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kHardSigmoid: {
+      const auto& hard_sgmoid = operation->get_hard_sigmoid();
+      input_ids = {hard_sgmoid->input_operand_id};
+      output_ids = {hard_sgmoid->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kHardSwish: {
+      const auto& hard_swish = operation->get_hard_swish();
+      input_ids = {hard_swish->input_operand_id};
+      output_ids = {hard_swish->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kInstanceNormalization: {
+      const auto& instance_norm = operation->get_instance_normalization();
+      input_ids = {instance_norm->input_operand_id};
+      auto& scale_operand_id = instance_norm->scale_operand_id;
+      if (scale_operand_id) {
+        input_ids.push_back(scale_operand_id.value());
+      }
+      auto& bias_operand_id = instance_norm->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      output_ids = {instance_norm->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kLayerNormalization: {
+      const auto& layer_norm = operation->get_layer_normalization();
+      input_ids = {layer_norm->input_operand_id};
+      auto& scale_operand_id = layer_norm->scale_operand_id;
+      if (scale_operand_id) {
+        input_ids.push_back(scale_operand_id.value());
+      }
+      auto& bias_operand_id = layer_norm->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      output_ids = {layer_norm->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kLeakyRelu: {
+      const auto& leaky_relu = operation->get_leaky_relu();
+      input_ids = {leaky_relu->input_operand_id};
+      output_ids = {leaky_relu->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kLinear: {
+      const auto& linear = operation->get_linear();
+      input_ids = {linear->input_operand_id};
+      output_ids = {linear->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kLstm: {
+      const auto& lstm = operation->get_lstm();
+      input_ids = {lstm->input_operand_id, lstm->weight_operand_id,
+                   lstm->recurrent_weight_operand_id};
+      auto& bias_operand_id = lstm->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      auto& recurrent_bias_operand_id = lstm->recurrent_bias_operand_id;
+      if (recurrent_bias_operand_id) {
+        input_ids.push_back(recurrent_bias_operand_id.value());
+      }
+      auto& peephole_weight_operand_id = lstm->peephole_weight_operand_id;
+      if (peephole_weight_operand_id) {
+        input_ids.push_back(peephole_weight_operand_id.value());
+      }
+      auto& initial_hidden_state_operand_id =
+          lstm->initial_hidden_state_operand_id;
+      if (initial_hidden_state_operand_id) {
+        input_ids.push_back(initial_hidden_state_operand_id.value());
+      }
+      auto& initial_cell_state_operand_id = lstm->initial_cell_state_operand_id;
+      if (initial_cell_state_operand_id) {
+        input_ids.push_back(initial_cell_state_operand_id.value());
+      }
+      output_ids = {lstm->output_operand_ids};
+      break;
+    }
+    case Operation::Tag::kLstmCell: {
+      const auto& lstm_cell = operation->get_lstm_cell();
+      input_ids = {lstm_cell->input_operand_id, lstm_cell->weight_operand_id,
+                   lstm_cell->recurrent_weight_operand_id,
+                   lstm_cell->hidden_state_operand_id,
+                   lstm_cell->cell_state_operand_id};
+      auto& bias_operand_id = lstm_cell->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      auto& recurrent_bias_operand_id = lstm_cell->recurrent_bias_operand_id;
+      if (recurrent_bias_operand_id) {
+        input_ids.push_back(recurrent_bias_operand_id.value());
+      }
+      auto& peephole_weight_operand_id = lstm_cell->peephole_weight_operand_id;
+      if (peephole_weight_operand_id) {
+        input_ids.push_back(peephole_weight_operand_id.value());
+      }
+      output_ids = {lstm_cell->output_operand_ids};
+      break;
+    }
+    case Operation::Tag::kMatmul: {
+      const auto& matmul = operation->get_matmul();
+      input_ids = {matmul->a_operand_id, matmul->b_operand_id};
+      output_ids = {matmul->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kPad: {
+      const auto& pad = operation->get_pad();
+      input_ids = {pad->input_operand_id};
+      output_ids = {pad->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kPool2d: {
+      const auto& pool2d = operation->get_pool2d();
+      input_ids = {pool2d->input_operand_id};
+      output_ids = {pool2d->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kPrelu: {
+      const auto& prelu = operation->get_prelu();
+      input_ids = {prelu->input_operand_id, prelu->slope_operand_id};
+      output_ids = {prelu->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kReduce: {
+      const auto& reduce = operation->get_reduce();
+      input_ids = {reduce->input_operand_id};
+      output_ids = {reduce->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kRelu: {
+      const auto& relu = operation->get_relu();
+      input_ids = {relu->input_operand_id};
+      output_ids = {relu->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kResample2d: {
+      const auto& resample2d = operation->get_resample2d();
+      input_ids = {resample2d->input_operand_id};
+      output_ids = {resample2d->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kReshape: {
+      const auto& reshape = operation->get_reshape();
+      input_ids = {reshape->input_operand_id};
+      output_ids = {reshape->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kSigmoid: {
+      const auto& sigmoid = operation->get_sigmoid();
+      input_ids = {sigmoid->input_operand_id};
+      output_ids = {sigmoid->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kSlice: {
+      const auto& slice = operation->get_slice();
+      input_ids = {slice->input_operand_id};
+      output_ids = {slice->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kSoftmax: {
+      const auto& softmax = operation->get_softmax();
+      input_ids = {softmax->input_operand_id};
+      output_ids = {softmax->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kSoftplus: {
+      const auto& softplus = operation->get_softplus();
+      input_ids = {softplus->input_operand_id};
+      output_ids = {softplus->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kSoftsign: {
+      const auto& softsign = operation->get_softsign();
+      input_ids = {softsign->input_operand_id};
+      output_ids = {softsign->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kSplit: {
+      const auto& split = operation->get_split();
+      input_ids = {split->input_operand_id};
+      output_ids = {split->output_operand_ids};
+      break;
+    }
+    case Operation::Tag::kTanh: {
+      const auto& tanh = operation->get_tanh();
+      input_ids = {tanh->input_operand_id};
+      output_ids = {tanh->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kTranspose: {
+      const auto& transpose = operation->get_transpose();
+      input_ids = {transpose->input_operand_id};
+      output_ids = {transpose->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kTriangular: {
+      const auto& triangular = operation->get_triangular();
+      input_ids = {triangular->input_operand_id};
+      output_ids = {triangular->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kWhere: {
+      const auto& where = operation->get_where();
+      input_ids = {where->condition_operand_id, where->true_value_operand_id,
+                   where->false_value_operand_id};
+      output_ids = {where->output_operand_id};
+      break;
+    }
+  }
+
+  return OperationConnectivity{.input_ids = std::move(input_ids),
+                               .output_ids = std::move(output_ids)};
+}
+
+// The struct contains the information of graph fusion. In `CreateAndBuild`
+// method, when going through all operations to add each operation into the
+// final graph, this struct will be used for graph fusion.
+struct GraphFusionInfo {
+  // A map of all standalone activations in `mojom::GraphInfo` which can be
+  // fused into preceding operations.
+  // The key is the preceding operation which can support fusion. The value is
+  // the standalone activation which can be fused into the preceding operation.
+  std::map<const Operation*, const Operation*>
+      operation_to_fusible_standalone_activation_map;
+  // A set of all standalone activations in `mojom::GraphInfo` which can be
+  // fused into preceding operations.
+  std::unordered_set<const Operation*> fusible_standalone_activations_set;
+};
+
+// The method gets the graph fusion information from `mojom::GraphInfo`, based
+// on that the `operations` in `mojom::GraphInfo` have been in topological
+// order which means if operation 'j' depends on 'i', 'i' must appear before
+// 'j'.
+// TODO(issues.chromium.org/41494177): Validate the topological order of
+// operations in `mojom::GraphInfo` on services side.
+GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
+  // If it's disabled, just return empty 'GraphFusionInfo' object which means no
+  // graph fusion will be applied.
+  if (!base::FeatureList::IsEnabled(kApplyGraphFusion)) {
+    return GraphFusionInfo();
+  }
+
+  // A map of all operations in `mojom::GraphInfo`.
+  // The key is the output operand id provided by any operation. The value is a
+  // fusible activation which uses the key as its input.
+  std::map<uint64_t, const Operation*> output_id_to_activation_map;
+
+  // The case we're interested in includes a fusible base operation with exactly
+  // one output edge, followed by a fusible activation operation:
+  //
+  //     [input]
+  //        |
+  //      conv2d (fusible base operation)
+  //        |
+  //       relu  (fusible activation operation)
+  //        |
+  //    [output]
+  //
+  // If the base operation has more than one output edge, because the outputs go
+  // to any other operation or a graph output, then no fusion occurs. For
+  // example, if `relu` was fused into `conv2d`, `elu` would lose the input, so
+  // conv2d should be skipped, and similarly for graph `output2`:
+  //
+  //     [input]
+  //        |
+  //      conv2d (unfusible base operation)
+  //      /    \
+  //   relu    elu
+  //     |      |
+  // [output1][output2]
+  //
+  //     [input]
+  //        |
+  //      conv2d (unfusible base operation)
+  //      /    \
+  //   relu     \
+  //     |       \
+  // [output1] [output2]
+  //
+  // If the base operation is not followed by a fusible activation, skip
+  // it:
+  //
+  //     [input]
+  //        |
+  //      conv2d (unfusible base operation)
+  //        |
+  //      pool2d
+  //        |
+  //     [output]
+  //
+  // Or if the base operation is already fused via WebNN, skip it:
+  //
+  //     [input]
+  //        |
+  // conv2d + relu
+  //        |
+  //       relu
+  //        |
+  //     [output]
+
+  GraphFusionInfo graph_fusion_info;
+  // Based on that all the operand ids are contiguous, it's used to record how
+  // many times each operand id is used as an output edge from one operation.
+  // Notice that the operand id from renderer is increased from 1, so reserve
+  // `operand count + 1` size for the vector.
+  std::vector<uint32_t> node_output_edge_counts(
+      graph_info->id_to_operand_map.size() + 1, 0);
+
+  for (uint64_t graph_output_id : graph_info->output_operands) {
+    ++node_output_edge_counts[graph_output_id];
+  }
+
+  // Iterate from the end of operations instead from the beginning, so we
+  // can easily get the total output edges count of a fusible base operation
+  // before visiting it.
+  for (size_t operation_index = graph_info->operations.size();
+       operation_index-- > 0;) {
+    const auto& operation = graph_info->operations[operation_index];
+    const OperationConnectivity operation_connectivity =
+        GetOperationConnectivity(operation.get());
+
+    for (uint64_t input_id : operation_connectivity.input_ids) {
+      ++node_output_edge_counts[input_id];
+    }
+
+    if (GetFusibleActivationOutputId(operation.get())) {
+      // We found a standalone activation operation that may need to be fused
+      // with a predecessor. So record its input edge to later check
+      // against any fusible base operation's corresponding output edge.
+      CHECK_EQ(operation_connectivity.input_ids.size(), 1U);
+      // We needn't check the result of `try_emplace` here, because if the key
+      // `output_id` is already in container, there must be more than 1 output
+      // edges from a predecessor in which case the fusion must be skipped.
+      output_id_to_activation_map.try_emplace(
+          operation_connectivity.input_ids[0], operation.get());
+    } else if (CanFuseStandaloneActivation(operation.get(),
+                                           graph_info->id_to_operand_map)) {
+      CHECK_EQ(operation_connectivity.output_ids.size(), 1U);
+      uint64_t output_id = operation_connectivity.output_ids[0];
+      // Add this operation to the fusion info if there's exactly one output
+      // edge to a fusible standalone activation.
+      const auto activation_iterator =
+          output_id_to_activation_map.find(output_id);
+      if (node_output_edge_counts[output_id] == 1 &&
+          activation_iterator != output_id_to_activation_map.end()) {
+        const auto* activation = activation_iterator->second;
+        graph_fusion_info.fusible_standalone_activations_set.insert(activation);
+        graph_fusion_info
+            .operation_to_fusible_standalone_activation_map[operation.get()] =
+            activation;
+      }
+    }
+  }
+
+  CHECK_EQ(
+      graph_fusion_info.operation_to_fusible_standalone_activation_map.size(),
+      graph_fusion_info.fusible_standalone_activations_set.size());
+
+  return graph_fusion_info;
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
-    const mojom::BatchNormalizationPtr& batch_normalization,
+    const Operation* operation,
+    const std::map<const Operation*, const Operation*>&
+        operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
+  const auto& batch_normalization = operation->get_batch_normalization();
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, batch_normalization->input_operand_id);
   const TensorDesc& input_tensor_desc = input->GetTensorDesc();
@@ -645,16 +1248,23 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
   std::array<const NodeOutput*, 5> inputs = {input, mean, variance, scale,
                                              bias};
 
+  std::optional<const Operation*> fusible_activation =
+      GetFusibleActivationFromOperation(
+          operation_to_fusible_standalone_activation_map, operation);
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
-  if (batch_normalization->activation) {
-    auto create_activation_result =
-        CreateActivationOperatorDesc(batch_normalization->activation);
-    if (!create_activation_result.has_value()) {
-      return base::unexpected(std::move(create_activation_result.error()));
+  if (fusible_activation || batch_normalization->activation) {
+    CHECK(!(fusible_activation && batch_normalization->activation));
+    if (fusible_activation) {
+      activation_operator_desc =
+          CreateActivationOperatorDesc(fusible_activation.value());
+      output_id =
+          GetFusibleActivationOutputId(fusible_activation.value()).value();
+    } else {
+      activation_operator_desc =
+          CreateActivationOperatorDesc(batch_normalization->activation.get());
     }
 
-    activation_operator_desc = std::move(create_activation_result.value());
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
   }
 
@@ -775,9 +1385,12 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConcat(
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     const IdToOperandMap& id_to_operand_map,
-    const mojom::Conv2dPtr& conv2d,
+    const Operation* operation,
+    const std::map<const Operation*, const Operation*>&
+        operation_to_fusible_standalone_activation_map,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
+  const auto& conv2d = operation->get_conv2d();
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, conv2d->input_operand_id);
   // The input tensor description may be transposed.
@@ -870,16 +1483,23 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_convolution_operator_desc
   std::array<uint32_t, 2> default_out_padding = {0, 0};
 
+  std::optional<const Operation*> fusible_activation =
+      GetFusibleActivationFromOperation(
+          operation_to_fusible_standalone_activation_map, operation);
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
-  if (conv2d->activation) {
-    auto create_activation_result =
-        CreateActivationOperatorDesc(conv2d->activation);
-    if (!create_activation_result.has_value()) {
-      return base::unexpected(std::move(create_activation_result.error()));
+  if (fusible_activation || conv2d->activation) {
+    CHECK(!(fusible_activation && conv2d->activation));
+    if (fusible_activation) {
+      activation_operator_desc =
+          CreateActivationOperatorDesc(fusible_activation.value());
+      output_id =
+          GetFusibleActivationOutputId(fusible_activation.value()).value();
+    } else {
+      activation_operator_desc =
+          CreateActivationOperatorDesc(conv2d->activation.get());
     }
 
-    activation_operator_desc = std::move(create_activation_result.value());
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
   }
 
@@ -912,7 +1532,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
       .OutputPadding = default_out_padding.data(),
       .GroupCount = conv2d->groups,
       .FusedActivation =
-          activation_dml_desc ? &activation_dml_desc.value() : nullptr};
+          activation_dml_desc ? &activation_dml_desc.value() : nullptr,
+  };
 
   const OperatorNode* conv2d_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_CONVOLUTION, &conv2d_operator_desc, inputs);
@@ -951,18 +1572,21 @@ const OperatorNode* CreateBinaryOperator(const TensorDesc& a_tensor,
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
     const IdToOperandMap& id_to_operand_map,
-    const mojom::ElementWiseBinaryPtr& operation,
+    const Operation* operation,
+    const std::map<const Operation*, const Operation*>&
+        operation_to_fusible_standalone_activation_map,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
+  const auto& binary = operation->get_element_wise_binary();
   // The input a and b tensor descriptions may be broadcasted.
   const NodeOutput* input_a =
-      GetNodeOutputForOperand(id_to_node_output_map, operation->lhs_operand_id);
+      GetNodeOutputForOperand(id_to_node_output_map, binary->lhs_operand_id);
   auto input_a_tensor_desc = input_a->GetTensorDesc();
   const NodeOutput* input_b =
-      GetNodeOutputForOperand(id_to_node_output_map, operation->rhs_operand_id);
+      GetNodeOutputForOperand(id_to_node_output_map, binary->rhs_operand_id);
   auto input_b_tensor_desc = input_b->GetTensorDesc();
 
-  uint64_t output_id = operation->output_operand_id;
+  uint64_t output_id = binary->output_operand_id;
   const auto output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
 
@@ -976,11 +1600,36 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
 
   const OperatorNode* binary_node = nullptr;
   std::array<const NodeOutput*, 2> inputs = {input_a, input_b};
-  switch (operation->kind) {
+  switch (binary->kind) {
     case mojom::ElementWiseBinary::Kind::kAdd: {
-      binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_ADD_OPERATOR_DESC>(
-          input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
-          graph_builder, DML_OPERATOR_ELEMENT_WISE_ADD, inputs);
+      std::optional<const Operation*> fusible_activation =
+          GetFusibleActivationFromOperation(
+              operation_to_fusible_standalone_activation_map, operation);
+      if (fusible_activation) {
+        ActivationOperatorDesc activation_operator_desc =
+            CreateActivationOperatorDesc(fusible_activation.value());
+        DML_OPERATOR_DESC activation_dml_desc =
+            activation_operator_desc.GetActivationDmlDesc();
+
+        DML_ELEMENT_WISE_ADD1_OPERATOR_DESC add1_operator_desc{
+            .ATensor = &input_a_tensor_desc.GetDMLTensorDesc(),
+            .BTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
+            .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+            .FusedActivation = &activation_dml_desc,
+        };
+        binary_node = graph_builder.CreateOperatorNode(
+            DML_OPERATOR_ELEMENT_WISE_ADD1, &add1_operator_desc, inputs);
+        output_id =
+            GetFusibleActivationOutputId(fusible_activation.value()).value();
+      }
+      // If no standalone activation need to be fused, prefer
+      // `DML_OPERATOR_ELEMENT_WISE_ADD` which supports more data types than
+      // `DML_OPERATOR_ELEMENT_WISE_ADD1`.
+      else {
+        binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_ADD_OPERATOR_DESC>(
+            input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+            graph_builder, DML_OPERATOR_ELEMENT_WISE_ADD, inputs);
+      }
       break;
     }
     case mojom::ElementWiseBinary::Kind::kDiv: {
@@ -1065,7 +1714,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
   }
   if (!binary_node) {
     std::string error_message =
-        "Failed to create " + OpKindToString(operation->kind) + " operator.";
+        "Failed to create " + OpKindToString(binary->kind) + " operator.";
     return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
                                         std::move(error_message)));
   }
@@ -1939,9 +2588,12 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
 // (GEMM) of the expression alpha * A * B + beta * C.
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
     const IdToOperandMap& id_to_operand_map,
-    const mojom::GemmPtr& gemm,
+    const Operation* operation,
+    const std::map<const Operation*, const Operation*>&
+        operation_to_fusible_standalone_activation_map,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
+  const auto& gemm = operation->get_gemm();
   const NodeOutput* input_a_node_output =
       GetNodeOutputForOperand(id_to_node_output_map, gemm->a_operand_id);
   auto input_a_tensor_desc = input_a_node_output->GetTensorDesc();
@@ -1996,6 +2648,20 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
   expanded_output_tensor_desc.EnsureMinimumRank(
       4, TensorDesc::Alignment::kTrailing);
 
+  std::optional<const Operation*> fusible_activation =
+      GetFusibleActivationFromOperation(
+          operation_to_fusible_standalone_activation_map, operation);
+  std::optional<ActivationOperatorDesc> activation_operator_desc;
+  std::optional<DML_OPERATOR_DESC> activation_dml_desc;
+  if (fusible_activation) {
+    activation_operator_desc =
+        CreateActivationOperatorDesc(fusible_activation.value());
+    activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
+
+    output_id =
+        GetFusibleActivationOutputId(fusible_activation.value()).value();
+  }
+
   DML_GEMM_OPERATOR_DESC gemm_operator_desc{
       .ATensor = &input_a_tensor_desc.GetDMLTensorDesc(),
       .BTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
@@ -2007,7 +2673,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
                                     : DML_MATRIX_TRANSFORM_NONE,
       .Alpha = gemm->alpha,
       .Beta = gemm->beta,
-      .FusedActivation = nullptr,  // Not supported
+      .FusedActivation =
+          activation_dml_desc ? &activation_dml_desc.value() : nullptr,
   };
 
   const OperatorNode* gemm_node = graph_builder.CreateOperatorNode(
@@ -2306,12 +2973,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
   std::vector<ActivationOperatorDesc> activation_operator_descs;
   activation_operator_descs.reserve(activations.size());
   for (const auto& activation : activations) {
-    auto create_activation_result = CreateActivationOperatorDesc(activation);
-    if (!create_activation_result.has_value()) {
-      return base::unexpected(std::move(create_activation_result.error()));
-    }
     activation_operator_descs.push_back(
-        std::move(create_activation_result.value()));
+        CreateActivationOperatorDesc(activation.get()));
   }
   // For bidirectional, activations must be provided f() and g() for forward
   // followed by f() and g() for backwards.
@@ -2468,6 +3131,9 @@ template <typename NormalizationPtr>
 base::expected<void, mojom::ErrorPtr>
 CreateOperatorNodeForMeanVarianceNormalization(
     const NormalizationPtr& normalization,
+    const Operation* operation,
+    const std::map<const Operation*, const Operation*>&
+        operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
@@ -2566,6 +3232,20 @@ CreateOperatorNodeForMeanVarianceNormalization(
                                               scale_bias_broadcast_axes);
   }
 
+  std::optional<const Operation*> fusible_activation =
+      GetFusibleActivationFromOperation(
+          operation_to_fusible_standalone_activation_map, operation);
+  std::optional<ActivationOperatorDesc> activation_operator_desc;
+  std::optional<DML_OPERATOR_DESC> activation_dml_desc;
+  if (fusible_activation) {
+    activation_operator_desc =
+        CreateActivationOperatorDesc(fusible_activation.value());
+    activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
+
+    output_id =
+        GetFusibleActivationOutputId(fusible_activation.value()).value();
+  }
+
   DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC
   normalization_operator_desc{
       .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
@@ -2577,7 +3257,9 @@ CreateOperatorNodeForMeanVarianceNormalization(
       // The layer normalization and instance normalization includes variance.
       .NormalizeVariance = true,
       .Epsilon = normalization->epsilon,
-      .FusedActivation = nullptr};
+      .FusedActivation =
+          activation_dml_desc ? &activation_dml_desc.value() : nullptr,
+  };
 
   const OperatorNode* normalization_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_MEAN_VARIANCE_NORMALIZATION1, &normalization_operator_desc,
@@ -2967,12 +3649,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   std::vector<ActivationOperatorDesc> activation_operator_descs;
   activation_operator_descs.reserve(activations.size());
   for (const auto& activation : activations) {
-    auto create_activation_result = CreateActivationOperatorDesc(activation);
-    if (!create_activation_result.has_value()) {
-      return base::unexpected(std::move(create_activation_result.error()));
-    }
     activation_operator_descs.push_back(
-        std::move(create_activation_result.value()));
+        CreateActivationOperatorDesc(activation.get()));
   }
   // When the recurrent network is bidirectional, dual activations must be
   // provided for the forward and backward directions.
@@ -3053,9 +3731,12 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
 // Using DML_GEMM_OPERATOR_DESC to implement WebNN matmul.
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
     const IdToOperandMap& id_to_operand_map,
-    const mojom::MatmulPtr& matmul,
+    const Operation* operation,
+    const std::map<const Operation*, const Operation*>&
+        operation_to_fusible_standalone_activation_map,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
+  const auto& matmul = operation->get_matmul();
   const NodeOutput* input_a_node_output =
       GetNodeOutputForOperand(id_to_node_output_map, matmul->a_operand_id);
   auto input_a_tensor_desc = input_a_node_output->GetTensorDesc();
@@ -3094,6 +3775,20 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
         4, TensorDesc::Alignment::kTrailing);
   }
 
+  std::optional<const Operation*> fusible_activation =
+      GetFusibleActivationFromOperation(
+          operation_to_fusible_standalone_activation_map, operation);
+  std::optional<ActivationOperatorDesc> activation_operator_desc;
+  std::optional<DML_OPERATOR_DESC> activation_dml_desc;
+  if (fusible_activation) {
+    activation_operator_desc =
+        CreateActivationOperatorDesc(fusible_activation.value());
+    activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
+
+    output_id =
+        GetFusibleActivationOutputId(fusible_activation.value()).value();
+  }
+
   DML_GEMM_OPERATOR_DESC matmul_operator_desc{
       .ATensor = &input_a_tensor_desc.GetDMLTensorDesc(),
       .BTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
@@ -3103,7 +3798,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
       .TransB = DML_MATRIX_TRANSFORM_NONE,
       .Alpha = 1.0f,
       .Beta = 0.0f,
-      .FusedActivation = nullptr,
+      .FusedActivation =
+          activation_dml_desc ? &activation_dml_desc.value() : nullptr,
   };
 
   std::array<const NodeOutput*, 2> inputs{input_a_node_output,
@@ -3890,8 +4586,30 @@ void GraphImpl::CreateAndBuild(
         next_operand_id = std::max(next_operand_id, key_value.first + 1);
       });
 
+  // Fuse the operations in `mojom::GraphInfo` wherever possible to optimize the
+  // graph's compute performance.
+  //
+  // 1. Go through all operations from the last one to the first one, record the
+  // output edges count from each operation.
+  // 2. If the input of a fusible activation (such as relu/sigmoid) is the
+  // output of a base operation that can support fused activation (such as
+  // conv2d/batch_norm), and it has only one output edge to the activation, then
+  // they can be fused.
+  // 3. Go through all operations again to add each operation into the final
+  // graph. If the operation and a following standalone activation should be
+  // fused, we should reset the operation's original output as the activation's
+  // output, and set the activation into the operation. Thus the fused
+  // standalone activations should be skipped later.
+  GraphFusionInfo graph_fusion_info = GetGraphFusionInfo(graph_info);
   // Add operations.
   for (auto& operation : graph_info->operations) {
+    // Skip the standalone activation which should has been fused into a
+    // preceding operation.
+    if (graph_fusion_info.fusible_standalone_activations_set.contains(
+            operation.get())) {
+      continue;
+    }
+
     // For operators that deal with DML API, there is a chance that operator
     // creation will fail. Use `mojom::ErrorPtr` to hold the given error
     // message.
@@ -3905,9 +4623,10 @@ void GraphImpl::CreateAndBuild(
       }
       case mojom::Operation::Tag::kBatchNormalization: {
         create_operator_result = CreateOperatorNodeForBatchNormalization(
-            operation->get_batch_normalization(), graph_info, graph_builder,
-            id_to_node_output_map, constant_id_to_input_index_map,
-            next_operand_id);
+            operation.get(),
+            graph_fusion_info.operation_to_fusible_standalone_activation_map,
+            graph_info, graph_builder, id_to_node_output_map,
+            constant_id_to_input_index_map, next_operand_id);
         break;
       }
       case Operation::Tag::kClamp: {
@@ -3924,13 +4643,15 @@ void GraphImpl::CreateAndBuild(
       }
       case Operation::Tag::kConv2d: {
         create_operator_result = CreateOperatorNodeForConv2d(
-            id_to_operand_map, operation->get_conv2d(), graph_builder,
-            id_to_node_output_map);
+            id_to_operand_map, operation.get(),
+            graph_fusion_info.operation_to_fusible_standalone_activation_map,
+            graph_builder, id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kElementWiseBinary: {
         create_operator_result = CreateOperatorNodeForBinary(
-            id_to_operand_map, operation->get_element_wise_binary(),
+            id_to_operand_map, operation.get(),
+            graph_fusion_info.operation_to_fusible_standalone_activation_map,
             graph_builder, id_to_node_output_map);
         break;
       }
@@ -3959,9 +4680,10 @@ void GraphImpl::CreateAndBuild(
         break;
       }
       case mojom::Operation::Tag::kGemm: {
-        create_operator_result =
-            CreateOperatorNodeForGemm(id_to_operand_map, operation->get_gemm(),
-                                      graph_builder, id_to_node_output_map);
+        create_operator_result = CreateOperatorNodeForGemm(
+            id_to_operand_map, operation.get(),
+            graph_fusion_info.operation_to_fusible_standalone_activation_map,
+            graph_builder, id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kGru: {
@@ -4008,19 +4730,22 @@ void GraphImpl::CreateAndBuild(
             break;
         }
         create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
-            instance_normalization, graph_info, graph_builder,
-            id_to_node_output_map, constant_id_to_input_index_map,
-            next_operand_id, mean_variance_axes, scale_bias_broadcast_axes,
-            Operation::Tag::kInstanceNormalization);
+            instance_normalization, operation.get(),
+            graph_fusion_info.operation_to_fusible_standalone_activation_map,
+            graph_info, graph_builder, id_to_node_output_map,
+            constant_id_to_input_index_map, next_operand_id, mean_variance_axes,
+            scale_bias_broadcast_axes, Operation::Tag::kInstanceNormalization);
         break;
       }
       case Operation::Tag::kLayerNormalization: {
         const auto& layer_normalization = operation->get_layer_normalization();
         const auto axes = layer_normalization->axes;
         create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
-            layer_normalization, graph_info, graph_builder,
-            id_to_node_output_map, constant_id_to_input_index_map,
-            next_operand_id, axes, axes, Operation::Tag::kLayerNormalization);
+            layer_normalization, operation.get(),
+            graph_fusion_info.operation_to_fusible_standalone_activation_map,
+            graph_info, graph_builder, id_to_node_output_map,
+            constant_id_to_input_index_map, next_operand_id, axes, axes,
+            Operation::Tag::kLayerNormalization);
         break;
       }
       case Operation::Tag::kLeakyRelu: {
@@ -4051,8 +4776,9 @@ void GraphImpl::CreateAndBuild(
       }
       case mojom::Operation::Tag::kMatmul: {
         create_operator_result = CreateOperatorNodeForMatmul(
-            id_to_operand_map, operation->get_matmul(), graph_builder,
-            id_to_node_output_map);
+            id_to_operand_map, operation.get(),
+            graph_fusion_info.operation_to_fusible_standalone_activation_map,
+            graph_builder, id_to_node_output_map);
         break;
       }
       case Operation::Tag::kPad: {
