@@ -11,6 +11,7 @@ load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -508,6 +509,16 @@ ci.builder(
         configs = [
             "ci/Win x64 Builder",
             "win_cross",
+        ],
+    ),
+    targets = targets.bundle(
+        # TODO(crbug.com/332248571): Add same targets as Win Tests builders.
+        targets = ["base_unittests"],
+        additional_compile_targets = ["all"],
+        mixins = [
+            "chromium-tester-service-account",
+            "win10",
+            "x86-64",
         ],
     ),
     os = os.LINUX_DEFAULT,
