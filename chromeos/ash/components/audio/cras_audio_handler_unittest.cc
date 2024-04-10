@@ -6072,4 +6072,111 @@ TEST_P(CrasAudioHandlerTest, SimpleUsageAudioDevices) {
   EXPECT_EQ(--previous_output_count, previous_output_devices.size());
 }
 
+// Tests audio selection exception rule #3 metrics are fired that hot plugging
+// an unpreferred device keeps current active device unchanged.
+TEST_P(
+    CrasAudioHandlerTest,
+    AudioSelectionExceptionRule3MetricsFired_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Set up initial audio devices.
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalSpeaker, kInternalMic},
+      /*expected_active_input_node=*/kInternalMic,
+      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/false);
+
+  // Plug a HDMI output device. Expect active device remains unchanged as
+  // internal speaker.
+  AudioNodeList audio_nodes;
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
+
+  AudioNode internal_mic = GenerateAudioNode(kInternalMic);
+  internal_mic.active = true;
+  audio_nodes.push_back(internal_mic);
+
+  AudioNode hdmi_output = GenerateAudioNode(kHDMIOutput);
+  audio_nodes.push_back(hdmi_output);
+  system_monitor_observer_.reset_count();
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_EQ(0, test_observer_->active_output_node_changed_count());
+  AudioDevice active_output;
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kInternalSpeaker->id, active_output.id);
+  EXPECT_EQ(kInternalSpeaker->id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  // Plug a USB output device. Expect active device remains unchanged as
+  // internal speaker.
+  AudioNode usb_output = GenerateAudioNode(kUSBHeadphone1);
+  audio_nodes.push_back(usb_output);
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_EQ(0, test_observer_->active_output_node_changed_count());
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kInternalSpeaker->id, active_output.id);
+  EXPECT_EQ(kInternalSpeaker->id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  // Activate USB output device. Expect active device is the USB output device.
+  // Now USB is the preferred device among USB, internal and HDMI device.
+  AudioDevice usb_output_device(usb_output);
+  cras_audio_handler_->SwitchToDevice(usb_output_device, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
+
+  EXPECT_EQ(1, test_observer_->active_output_node_changed_count());
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kUSBHeadphone1->id, active_output.id);
+  EXPECT_EQ(kUSBHeadphone1->id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  // Unplug HDMI output device.
+  audio_nodes.clear();
+  audio_nodes.push_back(internal_speaker);
+  audio_nodes.push_back(internal_mic);
+  audio_nodes.push_back(usb_output);
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_EQ(2, test_observer_->active_output_node_changed_count());
+
+  // Activate internal speaker. Expect active device is the internal speaker.
+  AudioDevice internal_speaker_device(internal_speaker);
+  cras_audio_handler_->SwitchToDevice(internal_speaker_device, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
+
+  EXPECT_EQ(3, test_observer_->active_output_node_changed_count());
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kInternalSpeaker->id, active_output.id);
+  EXPECT_EQ(kInternalSpeaker->id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  // Plug HDMI output device. Expect active device remains unchanged even though
+  // USB is the preferred device among USB,internal and HDMI device. Expect
+  // exception rule #3 metric is fired.
+  audio_nodes.push_back(hdmi_output);
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_EQ(3, test_observer_->active_output_node_changed_count());
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kInternalSpeaker->id, active_output.id);
+  EXPECT_EQ(kInternalSpeaker->id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule3HotPlugUnpreferredDevice,
+      /*expected_count=*/1);
+}
+
 }  // namespace ash

@@ -89,6 +89,29 @@ chromium-metrics-reviews@google.com.
       label="Output|User overrode|System didn't switch|Non Chrome restarts"/>
 </enum>
 
+<enum name="AudioSelectionExceptionRules">
+  <int value="0" label="Input|Rule#1|Hot plugging privileged devices"/>
+  <int value="1" label="Output|Rule#1|Hot plugging privileged devices"/>
+  <int value="2"
+      label="Input|Rule#2|Unplugging a non active device keeps current active
+             device unchanged"/>
+  <int value="3"
+      label="Output|Rule#2|Unplugging a non active device keeps current
+             active device unchanged"/>
+  <int value="4"
+      label="Input|Rule#3|Hot plugging an unpreferred device keeps current
+             active device unchanged"/>
+  <int value="5"
+      label="Output|Rule#3|Hot plugging an unpreferred device keeps current
+             active device unchanged"/>
+  <int value="6"
+      label="Input|Rule#4|Unplugging a device causes remaining unseen set of
+             devices"/>
+  <int value="7"
+      label="Output|Rule#4|Unplugging a device causes remaining unseen set of
+             devices"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

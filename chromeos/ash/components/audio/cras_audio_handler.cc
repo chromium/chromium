@@ -2851,6 +2851,23 @@ void CrasAudioHandler::HandleHotPlugDeviceWithNotification(
   if (!preferred_device.has_value()) {
     // The device set was not seen. Show notification to let user make decision.
     should_show_notification_ = true;
+    return;
+  }
+
+  // If the preferred device is not the hot plug device and also not the
+  // currently activated device, do not switch but keep the currently active
+  // device activated, according to audio selection exception rule #3, detailed
+  // in go/audio-io.
+  const AudioDevice* current_active_device = GetDeviceFromId(
+      hotplug_device.is_input ? active_input_node_id_ : active_output_node_id_);
+  if (current_active_device && current_active_device->stable_device_id !=
+                                   preferred_device->stable_device_id) {
+    audio_device_metrics_handler_.RecordExceptionRulesMet(
+        hotplug_device.is_input
+            ? AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+                  kInputRule3HotPlugUnpreferredDevice
+            : AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+                  kOutputRule3HotPlugUnpreferredDevice);
   }
 }
 

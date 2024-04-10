@@ -445,4 +445,9 @@ void AudioDeviceMetricsHandler::RecordConsecutiveAudioDevicsChangeTimeElapsed(
   }
 }
 
+void AudioDeviceMetricsHandler::RecordExceptionRulesMet(
+    AudioSelectionExceptionRules rule) {
+  base::UmaHistogramEnumeration(kAudioSelectionExceptionRuleMetrics, rule);
+}
+
 }  // namespace ash

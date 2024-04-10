@@ -255,6 +255,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   static constexpr char kConsecutiveOutputDevicsAdded[] =
       "ChromeOS.AudioSelection.Output.ConsecutiveDevicesChangeTimeElapsed.Add";
 
+  // A histogram metric to record how often the four exception rules are met.
+  // Those rules are detailed in enum AudioSelectionExceptionRules and
+  // go/audio-io.
+  static constexpr char kAudioSelectionExceptionRuleMetrics[] =
+      "ChromeOS.AudioSelection.ExceptionRulesMet";
+
   // A series of audio selection events used to record the audio selection
   // performance. Note that these values are persisted to histograms so existing
   // values should remain unchanged and new values should be added to the end.
@@ -322,6 +328,25 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
     kMaxValue = kUserOverrideSystemNotSwitchOutputNonChromeRestart,
   };
 
+  // A series of audio selection exception rules, detailed in go/audio-io.
+  // Note that these values are persisted to histograms so existing
+  // values should remain unchanged and new values should be added to the end.
+  enum class AudioSelectionExceptionRules {
+    // Hot plugging privileged devices.
+    kInputRule1HotPlugPrivilegedDevice = 0,
+    kOutputRule1HotPlugPrivilegedDevice = 1,
+    // Unplugging a non active device keeps current active device unchanged.
+    kInputRule2UnplugNonActiveDevice = 2,
+    kOutputRule2UnplugNonActiveDevice = 3,
+    // Hot plugging an unpreferred device keeps current active device unchanged.
+    kInputRule3HotPlugUnpreferredDevice = 4,
+    kOutputRule3HotPlugUnpreferredDevice = 5,
+    // Unplugging a device causes remaining unseen set of devices.
+    kInputRule4UnplugDeviceCausesUnseenSet = 6,
+    kOutputRule4UnplugDeviceCausesUnseenSet = 7,
+    kMaxValue = kOutputRule4UnplugDeviceCausesUnseenSet,
+  };
+
   // Record the histogram of system decision of switching or not switching after
   // audio device is added or removed. Only record if there are more than one
   // available devices.
@@ -363,6 +388,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   // including devices added/removed and devices changed.
   void RecordConsecutiveAudioDevicsChangeTimeElapsed(bool is_input,
                                                      bool is_device_added);
+
+  // Records when audio selection exception rules are met.
+  void RecordExceptionRulesMet(AudioSelectionExceptionRules rule);
 
   void set_is_chrome_restarts(bool is_chrome_restarts) {
     is_chrome_restarts_ = is_chrome_restarts;

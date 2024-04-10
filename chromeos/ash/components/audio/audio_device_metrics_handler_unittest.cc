@@ -334,4 +334,36 @@ TEST_F(AudioDeviceMetricsHandlerTest,
   }
 }
 
+// Tests the audio selection exception rules metrics are fired.
+TEST_F(AudioDeviceMetricsHandlerTest, RecordExceptionRulesMet) {
+  for (int ruleInt = static_cast<int>(
+           AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+               kInputRule1HotPlugPrivilegedDevice);
+       ruleInt !=
+       static_cast<int>(
+           AudioDeviceMetricsHandler::AudioSelectionExceptionRules::kMaxValue);
+       ruleInt++) {
+    AudioDeviceMetricsHandler::AudioSelectionExceptionRules rule =
+        static_cast<AudioDeviceMetricsHandler::AudioSelectionExceptionRules>(
+            ruleInt);
+
+    // No histogram is recorded before firing.
+    histogram_tester().ExpectBucketCount(
+        AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+        /*bucket=*/rule,
+        /*count=*/0);
+
+    audio_device_metrics_handler().RecordExceptionRulesMet(rule);
+
+    // Histogram is recorded after firing.
+    histogram_tester().ExpectBucketCount(
+        AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+        /*bucket=*/rule,
+        /*count=*/1);
+    histogram_tester().ExpectTotalCount(
+        AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+        /*count=*/ruleInt + 1);
+  }
+}
+
 }  // namespace ash
