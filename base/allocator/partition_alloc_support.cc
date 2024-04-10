@@ -760,12 +760,11 @@ void UnretainedDanglingRawPtrDetectedCrash(uintptr_t id) {
       "unretained_dangling_ptr_guide.md\n";
   debug::TaskTrace task_trace;
   debug::StackTrace stack_trace;
-  LOG(ERROR) << "Detected dangling raw_ptr in unretained with id="
+  LOG(FATAL) << "Detected dangling raw_ptr in unretained with id="
              << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
              << task_trace << '\n'
              << "Stack trace:\n"
              << stack_trace << unretained_dangling_ptr_footer;
-  ImmediateCrash();
 }
 
 void InstallUnretainedDanglingRawPtrChecks() {
