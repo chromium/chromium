@@ -185,7 +185,7 @@ GURL HashAffiliationFetcher::BuildQueryURL() {
 
 // static
 bool HashAffiliationFetcher::IsFetchPossible() {
-  return google_apis::IsGoogleChromeAPIKeyUsed();
+  return google_apis::HasAPIKeyConfigured();
 }
 
 void HashAffiliationFetcher::FinalizeRequest(
