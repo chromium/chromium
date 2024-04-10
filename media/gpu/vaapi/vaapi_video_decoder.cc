@@ -324,8 +324,8 @@ void VaapiVideoDecoder::OnCdmContextEvent(CdmContext::Event event) {
 void VaapiVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOGF(4) << "Queuing input buffer, id: " << next_buffer_id_ << ", size: "
-            << (buffer->end_of_stream() ? 0 : buffer->data_size());
+  DVLOGF(4) << "Queuing input buffer, id: " << next_buffer_id_
+            << ", size: " << (buffer->end_of_stream() ? 0 : buffer->size());
 
   // If we're in the error state, immediately fail the decode task.
   if (state_ == State::kError) {

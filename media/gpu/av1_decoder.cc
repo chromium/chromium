@@ -194,11 +194,11 @@ void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   stream_id_ = id;
   stream_ = decoder_buffer.data();
-  stream_size_ = decoder_buffer.data_size();
+  stream_size_ = decoder_buffer.size();
   ClearCurrentFrame();
 
   parser_ = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
-      decoder_buffer.data(), decoder_buffer.data_size(), kDefaultOperatingPoint,
+      decoder_buffer.data(), decoder_buffer.size(), kDefaultOperatingPoint,
       buffer_pool_.get(), state_.get()));
   if (!parser_) {
     on_error_ = true;

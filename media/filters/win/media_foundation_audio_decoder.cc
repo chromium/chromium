@@ -118,16 +118,20 @@ bool PopulateInputSample(IMFSample* sample, const DecoderBuffer& input) {
 
   DWORD max_length = 0;
   DWORD current_length = 0;
-  uint8_t* destination = nullptr;
-  hr = buffer->Lock(&destination, &max_length, &current_length);
+  uint8_t* destination_ptr = nullptr;
+  hr = buffer->Lock(&destination_ptr, &max_length, &current_length);
   RETURN_ON_HR_FAILURE(hr, "Failed to lock buffer", false);
+  // SAFETY: IMFMediaBuffer::Lock returns a pointer that points to at least
+  // `max_length` many bytes.
+  // https://learn.microsoft.com/en-us/windows/win32/api/mfobjects/nf-mfobjects-imfmediabuffer-lock
+  auto destination = UNSAFE_BUFFERS(base::span(destination_ptr, max_length));
 
   RETURN_ON_FAILURE(!current_length, "Input length is zero", false);
-  RETURN_ON_FAILURE(input.data_size() <= max_length, "Input length is too long",
+  RETURN_ON_FAILURE(input.size() <= max_length, "Input length is too long",
                     false);
-  memcpy(destination, input.data(), input.data_size());
+  destination.first(input.size()).copy_from(input);
 
-  hr = buffer->SetCurrentLength(input.data_size());
+  hr = buffer->SetCurrentLength(input.size());
   RETURN_ON_HR_FAILURE(hr, "Failed to set buffer length", false);
 
   hr = buffer->Unlock();
@@ -517,9 +521,15 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
       OutputStatus::kFailed);
 
   DWORD current_length = 0;
-  uint8_t* destination = nullptr;
-  RETURN_ON_HR_FAILURE(output_buffer->Lock(&destination, NULL, &current_length),
-                       "Failed to lock output buffer", OutputStatus::kFailed);
+  uint8_t* destination_ptr = nullptr;
+  RETURN_ON_HR_FAILURE(
+      output_buffer->Lock(&destination_ptr, NULL, &current_length),
+      "Failed to lock output buffer", OutputStatus::kFailed);
+  // SAFETY: IMFMediaBuffer::Lock returns a pointer that points to at least
+  // `current_length` many bytes (and up to a larger max, which we discard).
+  // https://learn.microsoft.com/en-us/windows/win32/api/mfobjects/nf-mfobjects-imfmediabuffer-lock
+  auto destination =
+      UNSAFE_BUFFERS(base::span(destination_ptr, current_length));
 
   // Output is always configured to be interleaved float.
   int sample_byte_len = GetBytesPerFrame(config_.codec());
@@ -541,15 +551,18 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
     audio_buffer =
         AudioBuffer::CreateBuffer(kSampleFormatF32, channel_layout_,
                                   channel_count_, sample_rate_, frames, pool_);
-    float* channel_data =
-        reinterpret_cast<float*>(audio_buffer->channel_data()[0]);
-    int8_t* pcm24 = reinterpret_cast<int8_t*>(destination);
+    base::SpanWriter<uint8_t> channel_data = audio_buffer->channel_data();
     for (uint64_t i = 0; i < frames; i++) {
       for (uint64_t ch = 0; ch < channel_count_; ch++) {
-        int32_t pcmi = (*pcm24++ << 8) & 0xff00;
-        pcmi |= (*pcm24++ << 16) & 0xff0000;
-        pcmi |= (*pcm24++ << 24) & 0xff000000;
-        *channel_data++ = SignedInt32SampleTypeTraits::ToFloat(pcmi);
+        auto a = static_cast<int8_t>(destination[0u]);
+        auto b = static_cast<int8_t>(destination[1u]);
+        auto c = static_cast<int8_t>(destination[2u]);
+        int32_t pcmi = (int32_t{a} << 8) & 0xff00;
+        pcmi |= (int32_t{b} << 16) & 0xff0000;
+        pcmi |= (int32_t{c} << 24) & 0xff000000;
+        destination = destination.subspan(3u);
+        CHECK(channel_data.Write(base::byte_span_from_ref(
+            SignedInt32SampleTypeTraits::ToFloat(pcmi))));
       }
     }
   }
@@ -558,7 +571,10 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
   if (CodecSupportsFloatOutput(config_.codec())) {
     audio_buffer = AudioBuffer::CopyFrom(
         kSampleFormatF32, channel_layout_, channel_count_, sample_rate_, frames,
-        &destination, base::TimeDelta(), pool_);
+        // Sample format `kSampleFormatF32` is not planar, so it only reads from
+        // the first pointer in the data array. Thus we give it a pointer to the
+        // `destination_ptr` and it won't go past it.
+        &destination_ptr, base::TimeDelta(), pool_);
   }
 
   RETURN_ON_FAILURE(!!audio_buffer, "Failed to create output buffer",

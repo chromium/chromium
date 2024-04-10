@@ -917,7 +917,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
   PendingDecode& pending_decode = pending_decodes_.front();
   if (!pending_decode.buffer->end_of_stream() &&
       pending_decode.buffer->is_key_frame() &&
-      pending_decode.buffer->data_size() > max_input_size_) {
+      pending_decode.buffer->size() > max_input_size_) {
     // If we we're already using the provided resolution, try to guess something
     // larger based on the actual input size.
     if (decoder_config_.coded_size().width() == last_width_) {
@@ -928,7 +928,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
               ? 2
               : 4;
       const size_t max_pixels =
-          (pending_decode.buffer->data_size() * compression_ratio * 2) / 3;
+          (pending_decode.buffer->size() * compression_ratio * 2) / 3;
       if (max_pixels > 8294400)  // 4K
         decoder_config_.set_coded_size(gfx::Size(7680, 4320));
       else if (max_pixels > 2088960)  // 1080p

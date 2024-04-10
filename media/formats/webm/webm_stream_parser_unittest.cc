@@ -56,8 +56,7 @@ class WebMStreamParserTest : public testing::Test {
     // Note this portion is a simplified version of
     // StreamParserTestBase::AppendAllDataThenParseInPieces(). Consider unifying
     // via inheritance or utility method.
-    EXPECT_TRUE(
-        parser_->AppendToParseBuffer(buffer->data(), buffer->data_size()));
+    EXPECT_TRUE(parser_->AppendToParseBuffer(buffer->data(), buffer->size()));
     bool has_more_data = true;
     size_t iterations = 0;
     while (has_more_data) {
@@ -66,7 +65,7 @@ class WebMStreamParserTest : public testing::Test {
       has_more_data =
           parse_result == StreamParser::ParseStatus::kSuccessHasMoreData;
       iterations++;
-      EXPECT_EQ(iterations < buffer->data_size(), has_more_data);
+      EXPECT_EQ(iterations < buffer->size(), has_more_data);
     }
   }
 

@@ -625,11 +625,10 @@ void WebMClusterParser::Track::ExtractReadyBuffers(
 
 bool WebMClusterParser::Track::AddBuffer(
     scoped_refptr<StreamParserBuffer> buffer) {
-  DVLOG(2) << "AddBuffer() : " << track_num_
-           << " ts " << buffer->timestamp().InSecondsF()
-           << " dur " << buffer->duration().InSecondsF()
-           << " kf " << buffer->is_key_frame()
-           << " size " << buffer->data_size();
+  DVLOG(2) << "AddBuffer() : " << track_num_ << " ts "
+           << buffer->timestamp().InSecondsF() << " dur "
+           << buffer->duration().InSecondsF() << " kf "
+           << buffer->is_key_frame() << " size " << buffer->size();
 
   if (last_added_buffer_missing_duration_) {
     base::TimeDelta derived_duration =
@@ -642,7 +641,7 @@ bool WebMClusterParser::Track::AddBuffer(
              << " dur "
              << last_added_buffer_missing_duration_->duration().InSecondsF()
              << " kf " << last_added_buffer_missing_duration_->is_key_frame()
-             << " size " << last_added_buffer_missing_duration_->data_size();
+             << " size " << last_added_buffer_missing_duration_->size();
     if (!QueueBuffer(std::move(last_added_buffer_missing_duration_)))
       return false;
   }
@@ -677,7 +676,7 @@ void WebMClusterParser::Track::ApplyDurationEstimateIfNeeded() {
            << " dur "
            << last_added_buffer_missing_duration_->duration().InSecondsF()
            << " kf " << last_added_buffer_missing_duration_->is_key_frame()
-           << " size " << last_added_buffer_missing_duration_->data_size();
+           << " size " << last_added_buffer_missing_duration_->size();
 
   // Don't use the applied duration as a future estimation (don't use
   // QueueBuffer() here.)

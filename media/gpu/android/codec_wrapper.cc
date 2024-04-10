@@ -301,13 +301,13 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
     // TODO(crbug.com/813845): Use encryption scheme settings from
     // DecryptConfig.
     result = codec_->QueueSecureInputBuffer(
-        input_buffer, buffer.data(), buffer.data_size(),
-        decrypt_config->key_id(), decrypt_config->iv(),
-        decrypt_config->subsamples(), decrypt_config->encryption_scheme(),
+        input_buffer, buffer.data(), buffer.size(), decrypt_config->key_id(),
+        decrypt_config->iv(), decrypt_config->subsamples(),
+        decrypt_config->encryption_scheme(),
         decrypt_config->encryption_pattern(), buffer.timestamp());
   } else {
     result = codec_->QueueInputBuffer(input_buffer, buffer.data(),
-                                      buffer.data_size(), buffer.timestamp());
+                                      buffer.size(), buffer.timestamp());
   }
 
   switch (result.code()) {

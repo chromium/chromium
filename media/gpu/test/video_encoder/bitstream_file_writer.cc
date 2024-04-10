@@ -163,8 +163,8 @@ void BitstreamFileWriter::WriteBitstreamTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
   const DecoderBuffer& buffer = *bitstream->buffer.get();
   bool success = frame_file_writer_->WriteFrame(
-      static_cast<uint32_t>(buffer.data_size()),
-      static_cast<uint64_t>(frame_index), buffer.data());
+      static_cast<uint32_t>(buffer.size()), static_cast<uint64_t>(frame_index),
+      buffer.data());
 
   base::AutoLock auto_lock(writer_lock_);
   num_errors_ += !success;
