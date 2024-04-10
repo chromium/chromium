@@ -16,6 +16,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//chrome/browser/data_sharing/android:ui_delegate_java",
       "//chrome/browser/profiles/android:java",
       "//components/data_sharing/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

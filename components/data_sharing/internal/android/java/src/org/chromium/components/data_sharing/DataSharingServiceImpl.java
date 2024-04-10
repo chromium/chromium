@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.UserDataHost;
+
 /**
  * Java side of the JNI bridge between DataSharingServiceImpl in Java and C++. All method calls are
  * delegated to the native C++ class.
@@ -15,6 +17,8 @@ import org.jni_zero.NativeMethods;
 @JNINamespace("data_sharing")
 public class DataSharingServiceImpl implements DataSharingService {
     private long mNativePtr;
+
+    private final UserDataHost mUserDataHost = new UserDataHost();
 
     @CalledByNative
     private static DataSharingServiceImpl create(long nativePtr) {
@@ -35,9 +39,15 @@ public class DataSharingServiceImpl implements DataSharingService {
         return DataSharingServiceImplJni.get().getNetworkLoader(mNativePtr);
     }
 
+    @Override
+    public UserDataHost getUserDataHost() {
+        return mUserDataHost;
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
+        mUserDataHost.destroy();
     }
 
     @NativeMethods

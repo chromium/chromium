@@ -11,19 +11,21 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.UserData;
 import org.chromium.chrome.browser.data_sharing.configs.AvatarConfig;
 import org.chromium.chrome.browser.data_sharing.configs.GroupMemberConfig;
 import org.chromium.chrome.browser.data_sharing.configs.MemberPickerConfig;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.List;
 
 /** Implementation of {@link DataSharingUIDelegate}. */
-public class DataSharingUIDelegateImpl implements DataSharingUIDelegate {
+class DataSharingUIDelegateImpl implements DataSharingUIDelegate, UserData {
 
-    private final String mProfileId;
+    private final Profile mProfile;
 
-    public DataSharingUIDelegateImpl(String profileId) {
-        mProfileId = profileId;
+    DataSharingUIDelegateImpl(Profile profile) {
+        mProfile = profile;
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -50,6 +51,11 @@ public class DataSharingServiceFactoryTest {
 
                     @Override
                     public DataSharingNetworkLoader getNetworkLoader() {
+                        return null;
+                    }
+
+                    @Override
+                    public UserDataHost getUserDataHost() {
                         return null;
                     }
                 };

@@ -4,6 +4,8 @@
 
 package org.chromium.components.data_sharing;
 
+import org.chromium.base.UserDataHost;
+
 /**
  * DataSharingService is the core class for managing data sharing. It represents a native
  * DataSharingService object in Java.
@@ -20,4 +22,9 @@ public interface DataSharingService {
 
     /** Returns the network loader for sending out network calls to backend services. */
     DataSharingNetworkLoader getNetworkLoader();
+
+    /**
+     * @return {@link UserDataHost} that manages {@link UserData} objects attached to.
+     */
+    UserDataHost getUserDataHost();
 }
