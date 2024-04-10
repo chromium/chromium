@@ -26,7 +26,15 @@
 namespace ash {
 namespace {
 
-constexpr auto kScrollViewContentsBorderInsets = gfx::Insets::TLBR(0, 0, 8, 0);
+gfx::Insets GetScrollViewContentsBorderInsets(
+    PickerView::PickerLayoutType layout_type) {
+  switch (layout_type) {
+    case PickerView::PickerLayoutType::kResultsBelowSearchField:
+      return gfx::Insets::TLBR(0, 0, 8, 0);
+    case PickerView::PickerLayoutType::kResultsAboveSearchField:
+      return gfx::Insets::TLBR(8, 0, 8, 0);
+  }
+}
 
 gfx::Insets GetPickerScrollBarInsets(PickerView::PickerLayoutType layout_type) {
   switch (layout_type) {
@@ -78,7 +86,7 @@ PickerContentsView::PickerContentsView(
   page_container->SetOrientation(views::LayoutOrientation::kVertical);
   page_container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   page_container->SetBorder(
-      views::CreateEmptyBorder(kScrollViewContentsBorderInsets));
+      views::CreateEmptyBorder(GetScrollViewContentsBorderInsets(layout_type)));
   page_container_ = scroll_view->SetContents(std::move(page_container));
 }
 
