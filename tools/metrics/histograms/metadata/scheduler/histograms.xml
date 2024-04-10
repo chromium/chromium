@@ -48,6 +48,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Scheduling.DBusSchedQoS.PidReusedOnSetProcessState"
+    enum="PidReuseResult" expires_after="2024-09-12">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    Records whether or not a pid is reused between the time a SetProcessState
+    DBus request is dispatched and when the request's result is processed. Pid
+    reuse can race with the DBus request to result in the requested scheduler
+    settings being applied to the wrong process, although this metric cannot
+    differentiate between winning and losing that race. This is emitted every
+    time a new Chrome process is created or changes background state.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.DBusSchedQoS.PidReusedOnSetThreadState"
+    enum="PidReuseResult" expires_after="2024-09-12">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    Records whether or not a pid is reused between the time a SetThreadState
+    DBus request is dispatched and when the request's result is processed. Pid
+    reuse can race with the DBus request to result in the requested scheduler
+    settings being applied to the wrong thread, although this metric cannot
+    differentiate between winning and losing that race. This is emitted every
+    time Chrome creates a thread or changes a thread type.
+  </summary>
+</histogram>
+
 <histogram name="Scheduling.DBusSchedQoS.SetProcessStateLatency"
     units="microseconds" expires_after="2024-09-12">
   <owner>kawasin@google.com</owner>

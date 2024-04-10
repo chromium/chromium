@@ -202,6 +202,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/sb_client/histograms.xml",
   "//tools/metrics/histograms/metadata/scanning/enums.xml",
   "//tools/metrics/histograms/metadata/scanning/histograms.xml",
+  "//tools/metrics/histograms/metadata/scheduler/enums.xml",
   "//tools/metrics/histograms/metadata/scheduler/histograms.xml",
   "//tools/metrics/histograms/metadata/search/histograms.xml",
   "//tools/metrics/histograms/metadata/security/enums.xml",

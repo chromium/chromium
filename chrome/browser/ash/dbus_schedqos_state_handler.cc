@@ -16,11 +16,41 @@
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/ash/system/procfs_util.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "dbus/dbus_result.h"
 #include "third_party/cros_system_api/dbus/resource_manager/dbus-constants.h"
 
 namespace ash {
+
+namespace {
+
+DBusSchedQOSStateHandler::PidReuseResult GetPidReuseResult(bool is_pid_reused,
+                                                           bool success) {
+  if (success) {
+    return is_pid_reused
+               ? DBusSchedQOSStateHandler::PidReuseResult::kPidReuseOnSuccess
+               : DBusSchedQOSStateHandler::PidReuseResult::
+                     kNotPidReuseOnSuccess;
+  }
+  return is_pid_reused
+             ? DBusSchedQOSStateHandler::PidReuseResult::kPidReuseOnFail
+             : DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnFail;
+}
+
+bool IsPidReused(system::ProcStatFile stat_file,
+                 base::ProcessId pid,
+                 bool success) {
+  if (success && !stat_file.IsValid()) {
+    // If the stat file does not exist before sending the request but the
+    // request succeeds, it means the process/thread is dead and it applies
+    // request to another process/thread with the same pid.
+    return true;
+  }
+
+  return (!stat_file.IsPidAlive() && system::ProcStatFile(pid).IsValid());
+}
+}  // namespace
 
 DBusSchedQOSStateHandler::ProcessState::ProcessState(
     base::Process::Priority priority)
@@ -250,16 +280,27 @@ void DBusSchedQOSStateHandler::SetProcessPriorityOnThread(
       process_id, state,
       base::BindOnce(&DBusSchedQOSStateHandler::OnSetProcessPriorityFinish,
                      weak_ptr_factory_.GetWeakPtr(), process_id, priority,
-                     std::move(elapsed_timer)));
+                     std::move(elapsed_timer),
+                     system::ProcStatFile(process_id)));
 }
 
 void DBusSchedQOSStateHandler::OnSetProcessPriorityFinish(
     base::ProcessId process_id,
     base::Process::Priority priority,
     base::ElapsedTimer elapsed_timer,
+    system::ProcStatFile stat_file,
     dbus::DBusResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (result == dbus::DBusResult::kSuccess) {
+
+  const bool success = result == dbus::DBusResult::kSuccess;
+  const bool is_pid_reused =
+      IsPidReused(std::move(stat_file), process_id, success);
+  LOG_IF(ERROR, is_pid_reused) << "PID reuse detected for pid " << process_id;
+  base::UmaHistogramEnumeration(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetProcessState",
+      GetPidReuseResult(is_pid_reused, success));
+
+  if (success) {
     base::UmaHistogramMicrosecondsTimes(
         "Scheduling.DBusSchedQoS.SetProcessStateLatency",
         elapsed_timer.Elapsed());
@@ -321,7 +362,8 @@ void DBusSchedQOSStateHandler::SetThreadTypeOnThread(
       process_id, thread_id, state,
       base::BindOnce(&DBusSchedQOSStateHandler::OnSetThreadTypeFinish,
                      weak_ptr_factory_.GetWeakPtr(), process_id, thread_id,
-                     thread_type, std::move(elapsed_timer)));
+                     thread_type, std::move(elapsed_timer),
+                     system::ProcStatFile(thread_id)));
 }
 
 void DBusSchedQOSStateHandler::OnSetThreadTypeFinish(
@@ -329,8 +371,19 @@ void DBusSchedQOSStateHandler::OnSetThreadTypeFinish(
     base::PlatformThreadId thread_id,
     base::ThreadType thread_type,
     base::ElapsedTimer elapsed_timer,
+    system::ProcStatFile stat_file,
     dbus::DBusResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const bool success = result == dbus::DBusResult::kSuccess;
+  const bool is_pid_reused =
+      IsPidReused(std::move(stat_file), thread_id, success);
+  LOG_IF(ERROR, is_pid_reused)
+      << "PID reuse detected for thread id " << thread_id;
+  base::UmaHistogramEnumeration(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetThreadState",
+      GetPidReuseResult(is_pid_reused, success));
+
   if (result == dbus::DBusResult::kSuccess) {
     base::UmaHistogramMicrosecondsTimes(
         "Scheduling.DBusSchedQoS.SetThreadStateLatency",

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -24,6 +25,14 @@ using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 namespace ash {
+
+namespace {
+
+base::Process LaunchFakeProcess() {
+  return base::LaunchProcess({"sh", "-c", "while true; do sleep 1; done"},
+                             base::LaunchOptions());
+}
+}  // namespace
 
 class DBusSchedQOSStateHandlerTest : public testing::Test {
  protected:
@@ -240,6 +249,89 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityUMA) {
 
   histogram_tester.ExpectBucketCount(
       "Scheduling.DBusSchedQoS.SetProcessStateLatency", 456, 1);
+}
+
+TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityPidReuseDetection) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+
+  process_.InitializePriority();
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetProcessState",
+      DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnSuccess, 1);
+
+  ASSERT_TRUE(process_.SetPriority(base::Process::Priority::kUserBlocking));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetProcessState",
+      DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnSuccess, 2);
+
+  base::Process process2 = LaunchFakeProcess();
+  process2.InitializePriority();
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetProcessState",
+      DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnSuccess, 3);
+
+  ASSERT_TRUE(process2.Terminate(-1, true));
+  ASSERT_TRUE(process2.SetPriority(base::Process::Priority::kUserBlocking));
+  // process2 is terminated before it sends D-Bus request, but D-Bus request
+  // succeeds. It means the PID is reused.
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetProcessState",
+      DBusSchedQOSStateHandler::PidReuseResult::kPidReuseOnSuccess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetProcessState",
+      DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnSuccess, 3);
+
+  base::Process process3 = LaunchFakeProcess();
+  process3.InitializePriority();
+  task_environment_.RunUntilIdle();
+  resourced_client_->DelaySetProcessStateResult(base::Microseconds(100));
+  ASSERT_TRUE(process3.SetPriority(base::Process::Priority::kUserBlocking));
+  task_environment_.RunUntilIdle();
+  // If the process terminates after resourced updates scheduler settings and
+  // before the response arrives to Chrome, the case is not considered as PID
+  // reuse.
+  ASSERT_TRUE(process3.Terminate(-1, true));
+  task_environment_.FastForwardBy(base::Microseconds(100));
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetProcessState",
+      DBusSchedQOSStateHandler::PidReuseResult::kPidReuseOnSuccess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetProcessState",
+      DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnSuccess, 5);
+}
+
+TEST_F(DBusSchedQOSStateHandlerTest,
+       SetProcessPriorityPidReuseDetectionOnFail) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+
+  process_.InitializePriority();
+  task_environment_.RunUntilIdle();
+
+  resourced_client_->SetProcessStateResult(dbus::DBusResult::kErrorFailed);
+
+  ASSERT_TRUE(process_.SetPriority(base::Process::Priority::kUserBlocking));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetProcessState",
+      DBusSchedQOSStateHandler::PidReuseResult::kPidReuseOnFail, 0);
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetProcessState",
+      DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnFail, 1);
+
+  // It is hard to reproduce PID reuse.
 }
 
 TEST_F(DBusSchedQOSStateHandlerTest, GetProcessPriority) {
@@ -526,6 +618,87 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadTypeUMA) {
 
   histogram_tester.ExpectBucketCount(
       "Scheduling.DBusSchedQoS.SetThreadStateLatency", 123, 1);
+}
+
+TEST_F(DBusSchedQOSStateHandlerTest, SetThreadTypePidReuseDetection) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+  // Use a thread in another process because using a thread in this process and
+  // base::PlatformThread::Join() do not guarantee that the thread is
+  // terminated.
+  base::Process process = LaunchFakeProcess();
+  process.InitializePriority();
+  task_environment_.RunUntilIdle();
+
+  base::PlatformThread::SetThreadType(process.Pid(), process.Pid(),
+                                      base::ThreadType::kBackground,
+                                      base::IsViaIPC(false));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetThreadState",
+      DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnSuccess, 2);
+
+  process.Terminate(-1, true);
+  base::PlatformThread::SetThreadType(process.Pid(), process.Pid(),
+                                      base::ThreadType::kDefault,
+                                      base::IsViaIPC(false));
+  // fake thread is terminated before it sends D-Bus request, but D-Bus request
+  // succeeds. It means the PID is reused.
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetThreadState",
+      DBusSchedQOSStateHandler::PidReuseResult::kPidReuseOnSuccess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetThreadState",
+      DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnSuccess, 2);
+
+  base::Process process2 = LaunchFakeProcess();
+  process2.InitializePriority();
+  task_environment_.RunUntilIdle();
+
+  resourced_client_->DelaySetThreadStateResult(base::Microseconds(100));
+  base::PlatformThread::SetThreadType(process2.Pid(), process2.Pid(),
+                                      base::ThreadType::kDefault,
+                                      base::IsViaIPC(false));
+  task_environment_.RunUntilIdle();
+  // If the thread terminates after resourced updates scheduler settings and
+  // before the response arrives to Chrome, the case is not considered as PID
+  // reuse.
+  process2.Terminate(-1, true);
+  task_environment_.FastForwardBy(base::Microseconds(100));
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetThreadState",
+      DBusSchedQOSStateHandler::PidReuseResult::kPidReuseOnSuccess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetThreadState",
+      DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnSuccess, 4);
+}
+
+TEST_F(DBusSchedQOSStateHandlerTest, SetThreadTypePidReuseDetectionOnFail) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+  base::Process process = LaunchFakeProcess();
+  process.InitializePriority();
+  task_environment_.RunUntilIdle();
+
+  resourced_client_->SetThreadStateResult(dbus::DBusResult::kErrorFailed);
+  base::PlatformThread::SetThreadType(process.Pid(), process.Pid(),
+                                      base::ThreadType::kBackground,
+                                      base::IsViaIPC(false));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetThreadState",
+      DBusSchedQOSStateHandler::PidReuseResult::kPidReuseOnFail, 0);
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.PidReusedOnSetThreadState",
+      DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnFail, 1);
+
+  // It is hard to reproduce PID reuse.
 }
 
 }  // namespace ash

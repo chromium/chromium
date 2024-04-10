@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_restrictions.h"
 
 namespace ash {
 namespace system {
@@ -123,6 +124,35 @@ std::optional<int64_t> GetCpuTimeJiffies(const base::FilePath& stat_file) {
     }
   }
   return std::nullopt;
+}
+
+ProcStatFile::ProcStatFile(base::ProcessId process_id) {
+  base::FilePath procfs_stat_path =
+      base::FilePath("/proc")
+          .Append(base::NumberToString(process_id))
+          .Append("stat");
+  // Opening procfs file is not blocking.
+  base::ScopedAllowBlocking allow_blocking;
+  file_ = base::File(procfs_stat_path,
+                     base::File::FLAG_OPEN | base::File::FLAG_READ);
+}
+
+ProcStatFile::~ProcStatFile() {
+  // Closing procfs file is not blocking.
+  base::ScopedAllowBlocking allow_blocking;
+  file_.Close();
+}
+
+bool ProcStatFile::IsValid() const {
+  return file_.IsValid();
+}
+
+bool ProcStatFile::IsPidAlive() {
+  char buf;
+  // Reading procfs is not blocking.
+  base::ScopedAllowBlocking allow_blocking;
+  // If the process/thread dies, read(2)ing stat file fails as ESRCH.
+  return file_.IsValid() && file_.Read(0, &buf, 1) == 1;
 }
 
 }  // namespace system
