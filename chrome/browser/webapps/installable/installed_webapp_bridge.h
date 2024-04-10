@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_BRIDGE_H_
-#define CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_BRIDGE_H_
+#ifndef CHROME_BROWSER_WEBAPPS_INSTALLABLE_INSTALLED_WEBAPP_BRIDGE_H_
+#define CHROME_BROWSER_WEBAPPS_INSTALLABLE_INSTALLED_WEBAPP_BRIDGE_H_
 
 #include "base/functional/callback.h"
-#include "chrome/browser/installable/installed_webapp_provider.h"
+#include "chrome/browser/webapps/installable/installed_webapp_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
@@ -32,4 +32,4 @@ class InstalledWebappBridge {
                                PermissionCallback callback);
 };
 
-#endif  // CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_BRIDGE_H_
+#endif  // CHROME_BROWSER_WEBAPPS_INSTALLABLE_INSTALLED_WEBAPP_BRIDGE_H_

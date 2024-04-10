@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_PROVIDER_H_
-#define CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_PROVIDER_H_
+#ifndef CHROME_BROWSER_WEBAPPS_INSTALLABLE_INSTALLED_WEBAPP_PROVIDER_H_
+#define CHROME_BROWSER_WEBAPPS_INSTALLABLE_INSTALLED_WEBAPP_PROVIDER_H_
 
 #include <memory>
 #include <vector>
@@ -50,4 +50,4 @@ class InstalledWebappProvider : public content_settings::ObservableProvider {
   void Notify(ContentSettingsType content_type);
 };
 
-#endif  // CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_PROVIDER_H_
+#endif  // CHROME_BROWSER_WEBAPPS_INSTALLABLE_INSTALLED_WEBAPP_PROVIDER_H_

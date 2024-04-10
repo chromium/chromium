@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_INSTALLABLE_ML_PROMOTION_BROWSERTEST_BASE_H_
-#define CHROME_BROWSER_INSTALLABLE_ML_PROMOTION_BROWSERTEST_BASE_H_
+#ifndef CHROME_BROWSER_WEBAPPS_INSTALLABLE_ML_PROMOTION_BROWSERTEST_BASE_H_
+#define CHROME_BROWSER_WEBAPPS_INSTALLABLE_ML_PROMOTION_BROWSERTEST_BASE_H_
 
 #include <optional>
 #include <string>
@@ -74,4 +74,4 @@ class MLPromotionBrowserTestBase : public PlatformBrowserTest {
 
 }  // namespace webapps
 
-#endif  // CHROME_BROWSER_INSTALLABLE_ML_PROMOTION_BROWSERTEST_BASE_H_
+#endif  // CHROME_BROWSER_WEBAPPS_INSTALLABLE_ML_PROMOTION_BROWSERTEST_BASE_H_

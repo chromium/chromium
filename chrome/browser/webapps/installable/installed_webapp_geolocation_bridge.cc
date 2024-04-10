@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/installed_webapp_geolocation_bridge.h"
+#include "chrome/browser/webapps/installable/installed_webapp_geolocation_bridge.h"
 
 #include <utility>
 
@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/android/chrome_jni_headers/InstalledWebappGeolocationBridge_jni.h"
-#include "chrome/browser/installable/installed_webapp_geolocation_context.h"
+#include "chrome/browser/webapps/installable/installed_webapp_geolocation_context.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "url/android/gurl_android.h"
 

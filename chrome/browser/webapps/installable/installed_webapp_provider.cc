@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/installed_webapp_provider.h"
+#include "chrome/browser/webapps/installable/installed_webapp_provider.h"
 
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/installable/installed_webapp_bridge.h"
+#include "chrome/browser/webapps/installable/installed_webapp_bridge.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "url/gurl.h"

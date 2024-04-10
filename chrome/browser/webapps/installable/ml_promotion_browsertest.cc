@@ -14,7 +14,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
-#include "chrome/browser/installable/ml_promotion_browsertest_base.h"
+#include "chrome/browser/webapps/installable/ml_promotion_browsertest_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"

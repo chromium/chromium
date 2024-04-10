@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_INSTALLABLE_INSTALLABLE_UTILS_H_
-#define CHROME_BROWSER_INSTALLABLE_INSTALLABLE_UTILS_H_
+#ifndef CHROME_BROWSER_WEBAPPS_INSTALLABLE_INSTALLABLE_UTILS_H_
+#define CHROME_BROWSER_WEBAPPS_INSTALLABLE_INSTALLABLE_UTILS_H_
 
 #include <set>
 
@@ -31,4 +31,4 @@ bool DoesOriginContainAnyInstalledWebApp(
 std::set<GURL> GetOriginsWithInstalledWebApps(
     content::BrowserContext* browser_context);
 
-#endif  // CHROME_BROWSER_INSTALLABLE_INSTALLABLE_UTILS_H_
+#endif  // CHROME_BROWSER_WEBAPPS_INSTALLABLE_INSTALLABLE_UTILS_H_

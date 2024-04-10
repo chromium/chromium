@@ -579,8 +579,8 @@ static_library("test_support") {
     ]
 
     sources += [
-      "../browser/installable/ml_promotion_browsertest_base.cc",
-      "../browser/installable/ml_promotion_browsertest_base.h",
+      "../browser/webapps/installable/ml_promotion_browsertest_base.cc",
+      "../browser/webapps/installable/ml_promotion_browsertest_base.h",
     ]
 
     allow_circular_includes_from = [ ":test_support_ui_android" ]
@@ -630,8 +630,6 @@ static_library("test_support") {
       "../browser/banners/test_app_banner_manager_desktop.h",
       "../browser/download/download_browsertest_utils.cc",
       "../browser/download/download_browsertest_utils.h",
-      "../browser/installable/ml_promotion_browsertest_base.cc",
-      "../browser/installable/ml_promotion_browsertest_base.h",
       "../browser/performance_manager/test_support/fake_frame_throttling_delegate.cc",
       "../browser/performance_manager/test_support/fake_frame_throttling_delegate.h",
       "../browser/performance_manager/test_support/fake_memory_saver_mode_delegate.cc",
@@ -679,6 +677,8 @@ static_library("test_support") {
       "../browser/ui/webui/net_internals/net_internals_ui_browsertest.cc",
       "../browser/ui/webui/net_internals/net_internals_ui_browsertest.h",
       "../browser/ui/webui/test_support/webui_interactive_test_mixin.h",
+      "../browser/webapps/installable/ml_promotion_browsertest_base.cc",
+      "../browser/webapps/installable/ml_promotion_browsertest_base.h",
       "../test/base/browser_with_test_window_test.cc",
       "../test/base/browser_with_test_window_test.h",
       "base/dialog_test_browser_window.cc",
@@ -1320,7 +1320,6 @@ if (is_android) {
       "../browser/engagement/important_sites_util_browsertest.cc",
       "../browser/enterprise/remote_commands/user_remote_commands_service_browsertest.cc",
       "../browser/fast_checkout/fast_checkout_tab_helper_browsertest.cc",
-      "../browser/installable/installable_manager_browsertest.cc",
       "../browser/metrics/metrics_log_browsertest.cc",
       "../browser/metrics/metrics_service_user_demographics_browsertest.cc",
       "../browser/metrics/sampled_out_client_id_saved_browsertest.cc",
@@ -1351,6 +1350,7 @@ if (is_android) {
       "../browser/ui/webui/policy/policy_test_ui_browsertest.cc",
       "../browser/ui/webui/policy/policy_ui_browsertest.cc",
       "../browser/user_agent/android_user_agent_browsertest.cc",
+      "../browser/webapps/installable/installable_manager_browsertest.cc",
       "../browser/webapps/web_contents/web_app_url_loader_browsertest.cc",
       "../renderer/autofill/fake_mojo_password_manager_driver.cc",
       "../renderer/autofill/fake_mojo_password_manager_driver.h",
@@ -2330,8 +2330,6 @@ if (!is_android) {
       "../browser/infobars/infobar_observer.cc",
       "../browser/infobars/infobar_observer.h",
       "../browser/infobars/infobars_browsertest.cc",
-      "../browser/installable/installable_manager_browsertest.cc",
-      "../browser/installable/ml_promotion_browsertest.cc",
       "../browser/interest_group/interest_group_permissions_browsertest.cc",
       "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
       "../browser/k_anonymity_service/k_anonymity_service_client_browsertest.cc",
@@ -2366,6 +2364,8 @@ if (!is_android) {
       "../browser/media/webrtc/sub_capture_browsertest.cc",
       "../browser/media/webrtc/test_stats_dictionary_unittest.cc",
       "../browser/performance_manager/persistence/site_data/site_data_cache_facade_browsertest.cc",
+      "../browser/webapps/installable/installable_manager_browsertest.cc",
+      "../browser/webapps/installable/ml_promotion_browsertest.cc",
 
       # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.
       "../browser/supervised_user/advanced_content_restrictions_interactive_uitest.cc",

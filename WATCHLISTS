@@ -1323,7 +1323,7 @@
     },
     'installable': {
       'filepath': 'chrome/browser/extensions/bookmark_app'\
-                  '|chrome/browser/installable/'
+      '|chrome/browser/webapps/installable/'
                   '|components/webapps/browser/installable/',
     },
     'installer_linux': {

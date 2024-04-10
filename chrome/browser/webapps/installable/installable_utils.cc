@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/installable_utils.h"
+#include "chrome/browser/webapps/installable/installable_utils.h"
 
 #include "build/build_config.h"
 #include "url/gurl.h"

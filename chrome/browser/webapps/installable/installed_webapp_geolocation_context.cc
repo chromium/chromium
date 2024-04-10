@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/installed_webapp_geolocation_context.h"
+#include "chrome/browser/webapps/installable/installed_webapp_geolocation_context.h"
 
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/installable/installed_webapp_geolocation_bridge.h"
+#include "chrome/browser/webapps/installable/installed_webapp_geolocation_bridge.h"
 #include "url/origin.h"
 
 InstalledWebappGeolocationContext::InstalledWebappGeolocationContext() =
