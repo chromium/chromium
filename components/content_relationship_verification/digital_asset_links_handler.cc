@@ -206,8 +206,8 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
 
   base::Value::List* statement_list = result->GetIfList();
   if (!statement_list) {
-    std::move(callback_).Run(RelationshipCheckResult::kFailure);
     AddMessageToConsole(web_contents_.get(), "Statement List is not a list.");
+    std::move(callback_).Run(RelationshipCheckResult::kFailure);
     return;
   }
 
