@@ -291,7 +291,6 @@ crbug.com/1412910 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/cs
 crbug.com/1412910 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 crbug.com/1430357 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
 crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
-crbug.com/1430357 [ Win ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-* [ Failure ]
 crbug.com/40283765 [ Mac ] virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/transition-to-prerender.html [ Failure ]
 
 # View transition SPA failures with MPA serialization.
