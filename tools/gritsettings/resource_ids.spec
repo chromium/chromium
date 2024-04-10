@@ -724,12 +724,12 @@
     "includes": [5260],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/privacy_sandbox/internals/resources.grd": {
-   "META": {"sizes": {"includes": [30],}},
+   "META": {"sizes": {"includes": [25],}},
     "includes": [5280],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/key_value_pair_viewer_shared/resources.grd": {
-   "META": {"sizes": {"includes": [10]}},
-    "includes": [5300],
+   "META": {"sizes": {"includes": [5]}},
+    "includes": [5295],
   },
   # END chrome/ WebUI resources section
 
