@@ -158,7 +158,7 @@ suite('VoiceSelectionMenuElement', () => {
       assertEquals(italianDropdownItems.length, 1);
     });
 
-    suite('with Seanet voices also available', () => {
+    suite('with Natural voices also available', () => {
       setup(() => {
         availableVoices = [
           previewVoice,
@@ -171,7 +171,7 @@ suite('VoiceSelectionMenuElement', () => {
         setAvailableVoices();
       });
 
-      test('it orders Seanet voices first', () => {
+      test('it orders Natural voices first', () => {
         const englishGroup: HTMLElement =
             voiceSelectionMenu.$.voiceSelectionMenu.get()
                 .querySelector<HTMLElement>('div[data-test-id="group-en-US"]')!;
