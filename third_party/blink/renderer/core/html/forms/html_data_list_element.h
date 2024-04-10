@@ -60,6 +60,9 @@ class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
                            HidePopoverTransitionBehavior event_firing,
                            ExceptionState* exception_state) override;
 
+  void ShowPopoverForSelectElement();
+  void HidePopoverForSelectElement();
+
  private:
   void ChildrenChanged(const ChildrenChange&) override;
   void FinishParsingChildren() override;

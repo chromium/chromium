@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] showPopover and hidePopover should work on the select datalist.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'showPopover')"
+[FAIL] showPicker should show the select datalist.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'matches')"
+[FAIL] preventDefault on beforetoggle should prevent the datalist from showing.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'addEventListener')"
+[FAIL] showPopover on a disconnected datalist should throw an exception.
+  assert_throws_dom: function "() => datalist.showPopover()" threw object "TypeError: Cannot read properties of null (reading 'showPopover')" that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
+[FAIL] Disconnecting while internally showing the datalist should not crash or show the popover.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'addEventListener')"
+[FAIL] Disconnecting while internally hiding the datalist should not crash.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'showPopover')"
+Harness: the test ran to completion.
+

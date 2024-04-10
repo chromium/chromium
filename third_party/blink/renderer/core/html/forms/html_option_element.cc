@@ -647,7 +647,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
          mouse_event->button() ==
              static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
       SetSelected(true);
-      select->DisplayedDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
+      select->DisplayedDatalist()->HidePopoverForSelectElement();
       event.SetDefaultHandled();
       return;
     }
@@ -689,7 +689,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
       }
     } else if ((key == " " || key == "Enter") && select) {
       SetSelected(true);
-      select->DisplayedDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
+      select->DisplayedDatalist()->HidePopoverForSelectElement();
       event.SetDefaultHandled();
       return;
     } else if (key == "Tab") {
@@ -702,7 +702,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
         // case, and also handle shift+tab. Handling shift+tab will require us
         // to do something about the modifiers check earlier in this function.
         // https://github.com/openui/open-ui/issues/1016
-        select->DisplayedDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
+        select->DisplayedDatalist()->HidePopoverForSelectElement();
         event.SetDefaultHandled();
         return;
       }

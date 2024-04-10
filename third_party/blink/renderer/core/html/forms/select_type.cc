@@ -226,7 +226,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
           key_event->key() == "ArrowRight" || key_event->key() == "ArrowLeft") {
         // Spacebar already opens the datalist because of the popovertarget
         // association.
-        DisplayedDatalist()->showPopover(ASSERT_NO_EXCEPTION);
+        DisplayedDatalist()->ShowPopoverForSelectElement();
         return true;
       } else if (key_event->key() == "Enter") {
         if (auto* form = select_->Form()) {
@@ -503,7 +503,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
   }
 
   if (IsAppearanceBaseSelect()) {
-    select_->DisplayedDatalist()->showPopover(ASSERT_NO_EXCEPTION);
+    select_->DisplayedDatalist()->ShowPopoverForSelectElement();
     return;
   }
 
@@ -549,7 +549,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
 
 void MenuListSelectType::HidePopup() {
   if (IsAppearanceBaseSelect()) {
-    DisplayedDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
+    DisplayedDatalist()->HidePopoverForSelectElement();
     return;
   }
   if (popup_)

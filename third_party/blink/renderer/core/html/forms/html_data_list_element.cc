@@ -169,4 +169,17 @@ void HTMLDataListElement::HidePopoverInternal(
   }
 }
 
+void HTMLDataListElement::ShowPopoverForSelectElement() {
+  CHECK(ParentSelect());
+  ShowPopoverInternal(/*invoker=*/nullptr, /*exception_state=*/nullptr);
+}
+
+void HTMLDataListElement::HidePopoverForSelectElement() {
+  CHECK(ParentSelect());
+  HidePopoverInternal(
+      HidePopoverFocusBehavior::kFocusPreviousElement,
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+      /*exception_state=*/nullptr);
+}
+
 }  // namespace blink
