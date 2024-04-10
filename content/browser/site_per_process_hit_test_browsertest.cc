@@ -553,9 +553,11 @@ void HitTestNestedFramesHelper(
     base::OnceClosure quit_closure = run_loop.QuitClosure();
     DCHECK(child_node->current_frame_host()
                ->GetRenderWidgetHost()
+               ->GetRenderInputRouter()
                ->input_target_client());
     child_node->current_frame_host()
         ->GetRenderWidgetHost()
+        ->GetRenderInputRouter()
         ->input_target_client()
         ->FrameSinkIdAt(
             point_in_child, 0,
@@ -579,9 +581,11 @@ void HitTestNestedFramesHelper(
     base::OnceClosure quit_closure = run_loop.QuitClosure();
     DCHECK(child_node->current_frame_host()
                ->GetRenderWidgetHost()
+               ->GetRenderInputRouter()
                ->input_target_client());
     child_node->current_frame_host()
         ->GetRenderWidgetHost()
+        ->GetRenderInputRouter()
         ->input_target_client()
         ->FrameSinkIdAt(
             point_in_nested_child_transformed, 0,
@@ -3166,6 +3170,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     // Raise error for call disconnect handler.
     static_cast<RenderWidgetHostImpl*>(
         root->current_frame_host()->GetRenderWidgetHost())
+        ->GetRenderInputRouter()
         ->input_target_client()
         .internal_state()
         ->RaiseError();
@@ -6841,6 +6846,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     viz::FrameSinkId received_frame_sink_id;
     root->current_frame_host()
         ->GetRenderWidgetHost()
+        ->GetRenderInputRouter()
         ->input_target_client()
         ->FrameSinkIdAt(
             point_in_border, 0,
@@ -6859,6 +6865,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     viz::FrameSinkId received_frame_sink_id;
     root->current_frame_host()
         ->GetRenderWidgetHost()
+        ->GetRenderInputRouter()
         ->input_target_client()
         ->FrameSinkIdAt(
             point_in_padding, 0,
@@ -6877,6 +6884,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     viz::FrameSinkId received_frame_sink_id;
     root->current_frame_host()
         ->GetRenderWidgetHost()
+        ->GetRenderInputRouter()
         ->input_target_client()
         ->FrameSinkIdAt(
             point_in_content_box, 0,

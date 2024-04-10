@@ -391,6 +391,16 @@ void WidgetBase::GetWidgetInputHandler(
                                               std::move(host));
 }
 
+void WidgetBase::ShowContextMenu(ui::mojom::blink::MenuSourceType source_type,
+                                 const gfx::Point& location) {
+  client_->ShowContextMenu(source_type, location);
+}
+
+void WidgetBase::BindInputTargetClient(
+    mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> host) {
+  client_->BindInputTargetClient(std::move(host));
+}
+
 void WidgetBase::UpdateVisualProperties(
     const VisualProperties& visual_properties_from_browser) {
   TRACE_EVENT0("renderer", "WidgetBase::UpdateVisualProperties");

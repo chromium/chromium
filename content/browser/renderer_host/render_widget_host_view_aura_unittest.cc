@@ -450,7 +450,7 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   void SetupMockRenderInputRouter() {
     mock_render_input_router_.reset();
     mock_render_input_router_ = std::make_unique<MockRenderInputRouter>(
-        this, this, MakeFlingScheduler(),
+        this, this, MakeFlingScheduler(), this,
         base::SingleThreadTaskRunner::GetCurrentDefault());
     SetupInputRouter();
   }

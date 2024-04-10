@@ -15,6 +15,8 @@ import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "third_party/blink/public/mojom/widget/visual_properties.mojom";
 import "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom";
 import "ui/base/ime/mojom/text_input_state.mojom";
+import "services/viz/public/mojom/hit_test/input_target_client.mojom";
+import "ui/base/mojom/ui_base_types.mojom";
 
 // This interface is bound on the compositor thread.
 interface WidgetCompositor {
@@ -135,4 +137,12 @@ interface RenderInputRouterClient {
   GetWidgetInputHandler(
       pending_receiver<blink.mojom.WidgetInputHandler> request,
       pending_remote<blink.mojom.WidgetInputHandlerHost> host);
+
+  // Sent to inform the renderer to invoke a context menu.
+  // The parameter specifies the location in the render widget's coordinates.
+  ShowContextMenu(
+      ui.mojom.MenuSourceType source_type, gfx.mojom.Point location);
+
+  // Binds an InputTargetClient interface.
+  BindInputTargetClient(pending_receiver<viz.mojom.InputTargetClient> host);
 };

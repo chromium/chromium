@@ -11,8 +11,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/common/input/render_input_router.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/blink/blink_event_util.h"
 
@@ -253,7 +253,8 @@ void RenderWidgetTargeter::QueryClient(
     RenderWidgetHostViewBase* last_request_target,
     const gfx::PointF& last_target_location,
     TargetingRequest request) {
-  auto& target_client = target->host()->input_target_client();
+  auto& target_client =
+      target->GetViewRenderInputRouter()->input_target_client();
   // |target_client| may not be set yet for this |target| on Mac, need to
   // understand why this happens. https://crbug.com/859492.
   // We do not verify hit testing result under this circumstance.
@@ -335,8 +336,9 @@ void RenderWidgetTargeter::FoundFrameSinkId(
 
   request_in_flight_.reset();
   async_hit_test_timeout_.Stop();
-  target->host()->input_target_client().set_disconnect_handler(
-      base::OnceClosure());
+  target->GetViewRenderInputRouter()
+      ->input_target_client()
+      .set_disconnect_handler(base::OnceClosure());
 
   auto* view = delegate_->FindViewFromFrameSinkId(frame_sink_id);
   if (!view) {
@@ -375,8 +377,10 @@ void RenderWidgetTargeter::FoundTarget(
   DCHECK(request);
   // RenderWidgetHostViewMac can be deleted asynchronously, in which case the
   // View will be valid but there will no longer be a RenderWidgetHostImpl.
-  if (!request->GetRootView() || !request->GetRootView()->GetRenderWidgetHost())
+  if (!request->GetRootView() ||
+      !request->GetRootView()->GetViewRenderInputRouter()) {
     return;
+  }
 
   if (request->IsWebInputEventRequest()) {
     delegate_->DispatchEventToTarget(request->GetRootView(), target,
@@ -407,7 +411,7 @@ void RenderWidgetTargeter::AsyncHitTestTimedOut(
     unresponsive_views_.insert(current_request_target.get());
 
     // Reset disconnect handler for view.
-    current_request_target->host()
+    current_request_target->GetViewRenderInputRouter()
         ->input_target_client()
         .set_disconnect_handler(base::OnceClosure());
   }

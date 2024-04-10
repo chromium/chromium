@@ -67,6 +67,7 @@ include_rules = [
     "+services/network/public/cpp",
     "+services/network/public/mojom",
     "+services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h",
+    "+services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h",
     "+skia/ext",
     #TODO(nverne): remove this
     "+third_party/blink/public/web/blink.h",

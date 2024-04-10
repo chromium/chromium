@@ -252,7 +252,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     mojo::Remote<viz::mojom::InputTargetClient> input_target_client;
     input_target_client_root_ = std::make_unique<MockInputTargetClient>(
         input_target_client.BindNewPipeAndPassReceiver());
-    widget_host_root_->SetInputTargetClientForTesting(
+    widget_host_root_->GetRenderInputRouter()->SetInputTargetClientForTesting(
         std::move(input_target_client));
 
     EXPECT_EQ(view_root_.get(),

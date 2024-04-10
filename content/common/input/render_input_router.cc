@@ -16,6 +16,10 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+
+using blink::WebGestureEvent;
+using blink::WebInputEvent;
 
 namespace {
 
@@ -106,10 +110,12 @@ RenderInputRouter::RenderInputRouter(
     InputRouterImplClient* host,
     InputDispositionHandler* handler,
     std::unique_ptr<FlingSchedulerBase> fling_scheduler,
+    RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : fling_scheduler_(std::move(fling_scheduler)),
       input_router_impl_client_(host),
       input_disposition_handler_(handler),
+      delegate_(delegate),
       task_runner_(std::move(task_runner)) {}
 
 void RenderInputRouter::SetupInputRouter(float device_scale_factor) {
@@ -142,6 +148,8 @@ void RenderInputRouter::RendererWidgetCreated(bool for_frame_widget) {
     widget_input_handler_->GetFrameWidgetInputHandler(
         frame_widget_input_handler_.BindNewEndpointAndPassReceiver(
             task_runner_));
+    client_remote_->BindInputTargetClient(
+        input_target_client_.BindNewPipeAndPassReceiver(task_runner_));
   }
 }
 
@@ -157,6 +165,10 @@ void RenderInputRouter::SetDeviceScaleFactor(float device_scale_factor) {
 void RenderInputRouter::ProgressFlingIfNeeded(base::TimeTicks current_time) {
   TRACE_EVENT("toplevel.flow", "RenderInputRouter::ProgressFlingIfNeeded");
   fling_scheduler_->ProgressFlingOnBeginFrameIfneeded(current_time);
+}
+
+void RenderInputRouter::StopFling() {
+  input_router()->StopFling();
 }
 
 blink::mojom::WidgetInputHandler* RenderInputRouter::GetWidgetInputHandler() {
@@ -193,7 +205,8 @@ void RenderInputRouter::OnStartStylusWriting() {
 }
 
 bool RenderInputRouter::IsWheelScrollInProgress() {
-  return input_router_impl_client_->IsWheelScrollInProgress();
+  return is_in_gesture_scroll_[static_cast<int>(
+      blink::WebGestureDevice::kTouchpad)];
 }
 
 bool RenderInputRouter::IsAutoscrollInProgress() {
@@ -268,12 +281,76 @@ void RenderInputRouter::ForwardWheelEventWithLatencyInfo(
                                                               latency_info);
 }
 
+void RenderInputRouter::ShowContextMenuAtPoint(
+    const gfx::Point& point,
+    const ui::MenuSourceType source_type) {
+  if (client_remote_) {
+    client_remote_->ShowContextMenu(source_type, point);
+  }
+}
+
+void RenderInputRouter::SendGestureEventWithLatencyInfo(
+    const GestureEventWithLatencyInfo& gesture_with_latency) {
+  const blink::WebGestureEvent& gesture_event = gesture_with_latency.event;
+  if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
+    DCHECK(
+        !is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
+    is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
+        true;
+  } else if (gesture_event.GetType() ==
+             WebInputEvent::Type::kGestureScrollEnd) {
+    DCHECK(
+        is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
+    is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
+        false;
+    is_in_touchpad_gesture_fling_ = false;
+  } else if (gesture_event.GetType() ==
+             WebInputEvent::Type::kGestureFlingStart) {
+    if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchpad) {
+      // a GSB event is generated from the first wheel event in a sequence after
+      // the event is acked as not consumed by the renderer. Sometimes when the
+      // main thread is busy/slow (e.g ChromeOS debug builds) a GFS arrives
+      // before the first wheel is acked. In these cases no GSB will arrive
+      // before the GFS. With browser side fling the out of order GFS arrival
+      // does not need a DCHECK since the fling controller will process the GFS
+      // and start queuing wheel events which will follow the one currently
+      // awaiting ACK and the renderer receives the events in order.
+
+      is_in_touchpad_gesture_fling_ = true;
+    } else {
+      DCHECK(is_in_gesture_scroll_[static_cast<int>(
+          gesture_event.SourceDevice())]);
+
+      // The FlingController handles GFS with touchscreen source and sends GSU
+      // events with inertial state to the renderer to progress the fling.
+      // is_in_gesture_scroll must stay true till the fling progress is
+      // finished. Then the FlingController will generate and send a GSE which
+      // shows the end of a scroll sequence and resets is_in_gesture_scroll_.
+    }
+  }
+  input_router()->SendGestureEvent(gesture_with_latency);
+}
+
 blink::mojom::FrameWidgetInputHandler*
 RenderInputRouter::GetFrameWidgetInputHandler() {
   if (!frame_widget_input_handler_) {
     return nullptr;
   }
   return frame_widget_input_handler_.get();
+}
+
+void RenderInputRouter::ResetFrameWidgetInputInterfaces() {
+  frame_widget_input_handler_.reset();
+  input_target_client_.reset();
+}
+
+void RenderInputRouter::ResetWidgetInputInterfaces() {
+  widget_input_handler_.reset();
+}
+
+void RenderInputRouter::SetInputTargetClientForTesting(
+    mojo::Remote<viz::mojom::InputTargetClient> input_target_client) {
+  input_target_client_ = std::move(input_target_client);
 }
 
 }  // namespace content

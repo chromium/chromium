@@ -460,7 +460,10 @@ RenderWidgetTargetResult RenderWidgetHostInputEventRouter::FindMouseEventTarget(
     target = root_view;
 
   if (!target && root_view->IsPointerLocked()) {
-    target = root_view->host()->delegate()->GetPointerLockWidget()->GetView();
+    target = static_cast<RenderWidgetHostViewBase*>(
+        root_view->GetViewRenderInputRouter()
+            ->delegate()
+            ->GetPointerLockView());
   }
 
   gfx::PointF transformed_point;
@@ -518,7 +521,10 @@ RenderWidgetHostInputEventRouter::FindMouseWheelEventTarget(
   RenderWidgetHostViewBase* target = nullptr;
   gfx::PointF transformed_point;
   if (root_view->IsPointerLocked()) {
-    target = root_view->host()->delegate()->GetPointerLockWidget()->GetView();
+    target = static_cast<RenderWidgetHostViewBase*>(
+        root_view->GetViewRenderInputRouter()
+            ->delegate()
+            ->GetPointerLockView());
     if (!root_view->TransformPointToCoordSpaceForView(
             event.PositionInWidget(), target, &transformed_point)) {
       return {nullptr, false, std::nullopt, true};
@@ -1361,12 +1367,14 @@ void RenderWidgetHostInputEventRouter::StopFling() {
   if (!bubbling_gesture_scroll_target_)
     return;
 
-  if (!last_fling_start_target_ || !last_fling_start_target_->host())
+  if (!last_fling_start_target_ ||
+      !last_fling_start_target_->GetViewRenderInputRouter()) {
     return;
+  }
 
   // The last_fling_start_target_'s fling controller must stop flinging when its
   // generated GSUs are not consumed by the bubbling target view.
-  last_fling_start_target_->host()->StopFling();
+  last_fling_start_target_->GetViewRenderInputRouter()->StopFling();
   forced_last_fling_start_target_to_stop_flinging_for_test_ = true;
 }
 void RenderWidgetHostInputEventRouter::AddFrameSinkIdOwner(
@@ -1393,17 +1401,17 @@ void RenderWidgetHostInputEventRouter::RemoveFrameSinkIdOwner(
   }
 }
 
-RenderWidgetHostImpl*
-RenderWidgetHostInputEventRouter::GetRenderWidgetHostAtPoint(
+RenderWidgetHostViewInput*
+RenderWidgetHostInputEventRouter::GetRenderWidgetHostViewInputAtPoint(
     RenderWidgetHostViewBase* root_view,
     const gfx::PointF& point,
     gfx::PointF* transformed_point) {
-  if (!root_view)
+  if (!root_view) {
     return nullptr;
-  return RenderWidgetHostImpl::From(FindViewAtLocation(root_view, point,
-                                                       viz::EventSource::MOUSE,
-                                                       transformed_point)
-                                        .view->GetRenderWidgetHost());
+  }
+  return FindViewAtLocation(root_view, point, viz::EventSource::MOUSE,
+                            transformed_point)
+      .view;
 }
 
 void RenderWidgetHostInputEventRouter::GetRenderWidgetHostAtPointAsynchronously(
@@ -1461,9 +1469,7 @@ bool IsPinchCurrentlyAllowedInTarget(RenderWidgetHostViewBase* target) {
       cc::TouchAction::kNone);
   if (target) {
     target_active_touch_action =
-        (static_cast<RenderWidgetHostImpl*>(target->GetRenderWidgetHost()))
-            ->input_router()
-            ->ActiveTouchAction();
+        target->GetViewRenderInputRouter()->input_router()->ActiveTouchAction();
   }
   // This function is called on GesturePinchBegin, by which time there should
   // be an active touch action assessed for the target.
@@ -1496,18 +1502,17 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
       // pinch events to the root. Have the events go to the child whose
       // TouchActionFilter will discard them.
 
-      auto* root_rwhi =
-          static_cast<RenderWidgetHostImpl*>(root_view->GetRenderWidgetHost());
+      auto* rir = root_view->GetViewRenderInputRouter();
 
       // The pinch gesture will be sent to the root view and it may not have a
       // valid touch action yet. In this case, set the touch action to auto.
-      root_rwhi->input_router()->ForceSetTouchActionAuto();
+      rir->input_router()->ForceSetTouchActionAuto();
 
       if (touchscreen_pinch_state_.NeedsWrappingScrollSequence()) {
         // If the root view is not the gesture target, and a scroll gesture has
         // not already started in the root from scroll bubbling, then we need
         // to warp the diverted pinch events in a GestureScrollBegin/End.
-        DCHECK(!root_rwhi->is_in_touchscreen_gesture_scroll());
+        DCHECK(!rir->is_in_touchscreen_gesture_scroll());
         SendGestureScrollBegin(root_view, gesture_event);
       }
 
@@ -1525,9 +1530,8 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
       touchscreen_pinch_state_.DidStopPinch();
 
       if (send_scroll_end) {
-        auto* root_rwhi = static_cast<RenderWidgetHostImpl*>(
-            root_view->GetRenderWidgetHost());
-        DCHECK(root_rwhi->is_in_touchscreen_gesture_scroll());
+        auto* rir = root_view->GetViewRenderInputRouter();
+        DCHECK(rir->is_in_touchscreen_gesture_scroll());
         SendGestureScrollEnd(root_view, gesture_event);
       }
     }
@@ -1643,7 +1647,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
   event.SetPositionInWidget(point_in_target);
 
   if (events_being_flushed_) {
-    touchscreen_gesture_target_->host()
+    touchscreen_gesture_target_->GetViewRenderInputRouter()
         ->input_router()
         ->ForceSetTouchActionAuto();
   }
@@ -1999,10 +2003,9 @@ void RenderWidgetHostInputEventRouter::ShowContextMenuAtPoint(
     const ui::MenuSourceType source_type,
     RenderWidgetHostViewBase* target) {
   DCHECK(IsViewInMap(target));
-  auto* rwhi =
-      static_cast<RenderWidgetHostImpl*>(target->GetRenderWidgetHost());
-  DCHECK(rwhi);
-  rwhi->ShowContextMenuAtPoint(point, source_type);
+  auto* rir = target->GetViewRenderInputRouter();
+  DCHECK(rir);
+  rir->ShowContextMenuAtPoint(point, source_type);
 }
 
 void RenderWidgetHostInputEventRouter::OnAggregatedHitTestRegionListUpdated(
@@ -2052,9 +2055,9 @@ void RenderWidgetHostInputEventRouter::ForwardDelegatedInkPoint(
     const blink::WebPointerProperties& pointer_properties,
     bool hovering) {
   const std::optional<cc::DelegatedInkBrowserMetadata>& metadata =
-      target_view->host()
-          ->render_frame_metadata_provider()
-          ->LastRenderFrameMetadata()
+      target_view->GetViewRenderInputRouter()
+          ->delegate()
+          ->GetLastRenderFrameMetadata()
           .delegated_ink_metadata;
 
   if (IsMoveEvent(input_event.GetTypeAsUiEventType()) && metadata &&

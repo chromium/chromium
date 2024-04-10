@@ -455,10 +455,13 @@ class CORE_EXPORT WebFrameWidgetImpl
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
-
-  // mojom::blink::FrameWidget overrides:
   void ShowContextMenu(ui::mojom::MenuSourceType source_type,
                        const gfx::Point& location) override;
+  void BindInputTargetClient(
+      mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> receiver)
+      override;
+
+  // mojom::blink::FrameWidget overrides:
   void SetViewportIntersection(
       mojom::blink::ViewportIntersectionStatePtr intersection_state,
       const std::optional<VisualProperties>& visual_properties) override;
@@ -487,10 +490,6 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void BindWidgetCompositor(
       mojo::PendingReceiver<mojom::blink::WidgetCompositor> receiver) override;
-
-  void BindInputTargetClient(
-      mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> receiver)
-      override;
 
   // viz::mojom::blink::InputTargetClient:
   void FrameSinkIdAt(const gfx::PointF& point,

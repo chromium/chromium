@@ -16,11 +16,13 @@
 #include "content/common/input/input_disposition_handler.h"
 #include "content/common/input/input_injector.mojom-shared.h"
 #include "content/common/input/input_router_impl.h"
+#include "content/common/input/render_input_router_delegate.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/viz/public/mojom/hit_test/input_target_client.mojom.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
@@ -46,6 +48,7 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
   RenderInputRouter(InputRouterImplClient* host,
                     InputDispositionHandler* handler,
                     std::unique_ptr<FlingSchedulerBase> fling_scheduler,
+                    RenderInputRouterDelegate* delegate,
                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   void SetupInputRouter(float device_scale_factor);
@@ -56,11 +59,14 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
   void RendererWidgetCreated(bool for_frame_widget);
 
   InputRouter* input_router() { return input_router_.get(); }
+  RenderInputRouterDelegate* delegate() { return delegate_; }
 
   void SetForceEnableZoom(bool);
   void SetDeviceScaleFactor(float device_scale_factor);
 
   void ProgressFlingIfNeeded(base::TimeTicks current_time);
+  void StopFling();
+
   blink::mojom::FrameWidgetInputHandler* GetFrameWidgetInputHandler();
 
   // InputRouterImplClient overrides.
@@ -103,6 +109,23 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
       const blink::WebMouseWheelEvent& wheel_event,
       const ui::LatencyInfo& latency_info) override;
 
+  // |point| specifies the location in RenderWidget's coordinates for invoking
+  // the context menu.
+  void ShowContextMenuAtPoint(const gfx::Point& point,
+                              const ui::MenuSourceType source_type);
+
+  void SendGestureEventWithLatencyInfo(
+      const GestureEventWithLatencyInfo& gesture_with_latency);
+
+  // Signals if this host has forwarded a GestureScrollBegin without yet having
+  // forwarded a matching GestureScrollEnd/GestureFlingStart.
+  bool is_in_touchscreen_gesture_scroll() const {
+    return is_in_gesture_scroll_[static_cast<int>(
+        blink::WebGestureDevice::kTouchscreen)];
+  }
+
+  void DidStopFlinging() { is_in_touchpad_gesture_fling_ = false; }
+
   void FlushForTesting() {
     if (widget_input_handler_) {
       return widget_input_handler_.FlushForTesting();
@@ -110,8 +133,15 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
   }
 
   bool GetForceEnableZoom() { return force_enable_zoom_; }
-  void ResetFrameWidgetInputHandler() { frame_widget_input_handler_.reset(); }
-  void ResetWidgetInputHandler() { widget_input_handler_.reset(); }
+  void ResetFrameWidgetInputInterfaces();
+  void ResetWidgetInputInterfaces();
+
+  mojo::Remote<viz::mojom::InputTargetClient>& input_target_client() {
+    return input_target_client_;
+  }
+
+  void SetInputTargetClientForTesting(
+      mojo::Remote<viz::mojom::InputTargetClient> input_target_client);
 
  private:
   friend MockRenderInputRouter;
@@ -121,9 +151,19 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
   std::unique_ptr<FlingSchedulerBase> fling_scheduler_;
   std::unique_ptr<InputRouter> input_router_;
 
+  // TODO(wjmaclean) Remove the code for supporting resending gesture events
+  // when WebView transitions to OOPIF and BrowserPlugin is removed.
+  // http://crbug.com/533069
+  bool is_in_gesture_scroll_[static_cast<int>(
+                                 blink::WebGestureDevice::kMaxValue) +
+                             1] = {false};
+  bool is_in_touchpad_gesture_fling_ = false;
+
   raw_ptr<InputRouterImplClient> input_router_impl_client_;
   raw_ptr<InputDispositionHandler> input_disposition_handler_;
+  raw_ptr<RenderInputRouterDelegate> delegate_;
 
+  mojo::Remote<viz::mojom::InputTargetClient> input_target_client_;
   mojo::Remote<blink::mojom::RenderInputRouterClient> client_remote_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

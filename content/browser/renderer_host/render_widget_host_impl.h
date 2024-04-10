@@ -46,6 +46,7 @@
 #include "content/common/input/input_disposition_handler.h"
 #include "content/common/input/input_router_impl.h"
 #include "content/common/input/render_input_router.h"
+#include "content/common/input/render_input_router_delegate.h"
 #include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_controller.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -57,7 +58,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-forward.h"
-#include "services/viz/public/mojom/hit_test/input_target_client.mojom.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom.h"
@@ -153,7 +153,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       public blink::mojom::FrameWidgetHost,
       public blink::mojom::PopupWidgetHost,
       public blink::mojom::WidgetHost,
-      public blink::mojom::PointerLockContext {
+      public blink::mojom::PointerLockContext,
+      public RenderInputRouterDelegate {
  public:
   // See the constructor for documentations.
   static std::unique_ptr<RenderWidgetHostImpl> Create(
@@ -353,6 +354,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetPopupBounds(const gfx::Rect& bounds,
                       SetPopupBoundsCallback callback) override;
 
+  // RenderInputRouterDelegate implementation.
+  RenderWidgetHostViewInput* GetPointerLockView() override;
+  const cc::RenderFrameMetadata& GetLastRenderFrameMetadata() override;
+
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.
   bool UpdateVisualProperties(bool propagate);
@@ -499,13 +504,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Notifies the RenderWidgetHost that the View was destroyed.
   void ViewDestroyed();
-
-  // Signals if this host has forwarded a GestureScrollBegin without yet having
-  // forwarded a matching GestureScrollEnd/GestureFlingStart.
-  bool is_in_touchscreen_gesture_scroll() const {
-    return is_in_gesture_scroll_[static_cast<int>(
-        blink::WebGestureDevice::kTouchscreen)];
-  }
 
   bool visual_properties_ack_pending_for_testing() {
     return visual_properties_ack_pending_;
@@ -777,13 +775,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Signals that a frame with token |frame_token| was finished processing. If
   // there are any queued messages belonging to it, they will be processed.
   void DidProcessFrame(uint32_t frame_token, base::TimeTicks activation_time);
-
-  mojo::Remote<viz::mojom::InputTargetClient>& input_target_client() {
-    return input_target_client_;
-  }
-
-  void SetInputTargetClientForTesting(
-      mojo::Remote<viz::mojom::InputTargetClient> input_target_client);
 
   // InputRouterImplClient overrides.
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
@@ -1442,14 +1433,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // to ESC being pressed by the user, this will be false.
   bool is_last_unlocked_by_target_ = false;
 
-  // TODO(wjmaclean) Remove the code for supporting resending gesture events
-  // when WebView transitions to OOPIF and BrowserPlugin is removed.
-  // http://crbug.com/533069
-  bool is_in_gesture_scroll_[static_cast<int>(
-                                 blink::WebGestureDevice::kMaxValue) +
-                             1] = {false};
-  bool is_in_touchpad_gesture_fling_ = false;
-
   // TODO(crbug.com/1432355): The gesture controller can cause synchronous
   // destruction of the page (sending a click to the tab close button). Since
   // that'll destroy the RenderWidgetHostImpl, having it own the controller is
@@ -1504,8 +1487,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   base::OnceCallback<void(const viz::FrameSinkId&)> create_frame_sink_callback_;
 
   std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue_;
-
-  mojo::Remote<viz::mojom::InputTargetClient> input_target_client_;
 
   std::optional<uint16_t> screen_orientation_angle_for_testing_;
   std::optional<display::mojom::ScreenOrientation>

@@ -402,9 +402,16 @@ void DropCompletionCallback(WebDragDest* drag_dest,
 - (content::RenderWidgetHostImpl*)
     GetRenderWidgetHostAtPoint:(const gfx::PointF&)viewPoint
                  transformedPt:(gfx::PointF*)transformedPt {
-  return _webContents->GetInputEventRouter()->GetRenderWidgetHostAtPoint(
-      _webContents->GetRenderViewHost()->GetWidget()->GetView(), viewPoint,
-      transformedPt);
+  auto* view =
+      _webContents->GetInputEventRouter()->GetRenderWidgetHostViewInputAtPoint(
+          _webContents->GetRenderViewHost()->GetWidget()->GetView(), viewPoint,
+          transformedPt);
+  if (!view) {
+    return nullptr;
+  }
+  return content::RenderWidgetHostImpl::From(
+      static_cast<content::RenderWidgetHostViewBase*>(view)
+          ->GetRenderWidgetHost());
 }
 
 - (void)initiateDragWithRenderWidgetHost:(content::RenderWidgetHostImpl*)rwhi

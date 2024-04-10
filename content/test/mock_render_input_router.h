@@ -23,6 +23,7 @@ class MockRenderInputRouter : public RenderInputRouter {
       InputRouterImplClient* host,
       InputDispositionHandler* handler,
       std::unique_ptr<FlingSchedulerBase> fling_scheduler,
+      RenderInputRouterDelegate* delegate,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   MockRenderInputRouter(const MockRenderInputRouter&) = delete;

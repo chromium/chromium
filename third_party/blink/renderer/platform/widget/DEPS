@@ -15,4 +15,5 @@ include_rules = [
     "+ui/base/ime/mojom/text_input_state.mojom-blink.h",
     "+ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h",
     "+ui/base/ui_base_types.h",
+    "+ui/base/mojom/ui_base_types.mojom-blink.h",
 ]

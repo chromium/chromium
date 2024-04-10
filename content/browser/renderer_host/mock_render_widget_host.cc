@@ -92,7 +92,7 @@ MockRenderWidgetHost::MockRenderWidgetHost(
 
 void MockRenderWidgetHost::SetupMockRenderInputRouter() {
   mock_render_input_router_ = std::make_unique<MockRenderInputRouter>(
-      this, this, MakeFlingScheduler(),
+      this, this, MakeFlingScheduler(), this,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   SetupInputRouter();
 }

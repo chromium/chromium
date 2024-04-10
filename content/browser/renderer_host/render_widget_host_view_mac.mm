@@ -2029,9 +2029,17 @@ void RenderWidgetHostViewMac::LookUpDictionaryOverlayAtPoint(
   root_point.Scale(GetDeviceScaleFactor());
 
   gfx::PointF transformed_point;
-  RenderWidgetHostImpl* widget_host =
-      host()->delegate()->GetInputEventRouter()->GetRenderWidgetHostAtPoint(
-          this, root_point, &transformed_point);
+  auto* view = host()
+                   ->delegate()
+                   ->GetInputEventRouter()
+                   ->GetRenderWidgetHostViewInputAtPoint(this, root_point,
+                                                         &transformed_point);
+  if (!view) {
+    return;
+  }
+
+  RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
+      static_cast<RenderWidgetHostViewBase*>(view)->GetRenderWidgetHost());
   if (!widget_host)
     return;
 
@@ -2058,9 +2066,17 @@ bool RenderWidgetHostViewMac::SyncGetCharacterIndexAtPoint(
     return true;
 
   gfx::PointF transformed_point;
-  RenderWidgetHostImpl* widget_host =
-      host()->delegate()->GetInputEventRouter()->GetRenderWidgetHostAtPoint(
-          this, root_point, &transformed_point);
+  auto* view = host()
+                   ->delegate()
+                   ->GetInputEventRouter()
+                   ->GetRenderWidgetHostViewInputAtPoint(this, root_point,
+                                                         &transformed_point);
+  if (!view) {
+    return true;
+  }
+
+  RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
+      static_cast<RenderWidgetHostViewBase*>(view)->GetRenderWidgetHost());
   if (!widget_host)
     return true;
 

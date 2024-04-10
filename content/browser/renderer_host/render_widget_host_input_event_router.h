@@ -127,12 +127,12 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   // accessor allows testing for its existence without causing it to be created.
   bool has_touch_emulator() const { return touch_emulator_.get(); }
 
-  // Returns the RenderWidgetHostImpl inside the |root_view| at |point| where
-  // |point| is with respect to |root_view|'s coordinates. If a RWHI is found,
-  // the value of |transformed_point| is the coordinate of the point with
+  // Returns the RenderWidgetHostViewInput inside the |root_view| at |point|
+  // where |point| is with respect to |root_view|'s coordinates. If a RWHI is
+  // found, the value of |transformed_point| is the coordinate of the point with
   // respect to the RWHI's coordinates. If |root_view| is nullptr, this method
   // will return nullptr and will not modify |transformed_point|.
-  RenderWidgetHostImpl* GetRenderWidgetHostAtPoint(
+  RenderWidgetHostViewInput* GetRenderWidgetHostViewInputAtPoint(
       RenderWidgetHostViewBase* root_view,
       const gfx::PointF& point,
       gfx::PointF* transformed_point);
