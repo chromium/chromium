@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 
 #include "base/feature_list.h"
+#include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "third_party/blink/public/common/features.h"
@@ -144,8 +145,8 @@ void CanvasHibernationHandler::SaveForHibernation(
   // the renderer is idle. In other words, a delayed idle task would not execute
   // as long as the renderer is in background, which completely defeats the
   // purpose.
-  GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE,
+  base::PostDelayedMemoryReductionTask(
+      GetMainThreadTaskRunner(), FROM_HERE,
       base::BindOnce(&CanvasHibernationHandler::OnAfterHibernation,
                      weak_ptr_factory_.GetWeakPtr(), epoch_),
       kBeforeCompressionDelay);

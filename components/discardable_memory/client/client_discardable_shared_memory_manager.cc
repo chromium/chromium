@@ -237,8 +237,8 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
   base::AutoLock lock(lock_);
 
   if (!is_purge_scheduled_) {
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
+    base::PostDelayedMemoryReductionTask(
+        task_runner_, FROM_HERE,
         base::BindOnce(&ClientDiscardableSharedMemoryManager::ScheduledPurge,
                        this),
         kScheduledPurgeInterval);
@@ -414,13 +414,18 @@ void ClientDiscardableSharedMemoryManager::BackgroundPurge() {
   PurgeUnlockedMemory(base::TimeDelta());
 }
 
-void ClientDiscardableSharedMemoryManager::ScheduledPurge() {
+void ClientDiscardableSharedMemoryManager::ScheduledPurge(
+    base::MemoryReductionTaskContext task_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // From local testing and UMA, memory usually accumulates slowly in renderers,
   // and can sit idle for hours. We purge only the old memory, as this should
-  // recover the memory without adverse latency effects.
-  PurgeUnlockedMemory(
-      ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge);
+  // recover the memory without adverse latency effects. If |task_type| is
+  // |kProactive|, we instead purge all memory.
+  const base::TimeDelta min_age =
+      task_type == base::MemoryReductionTaskContext::kProactive
+          ? base::TimeDelta::Min()
+          : ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge;
+  PurgeUnlockedMemory(min_age);
 
   bool should_schedule = false;
   {
@@ -430,8 +435,8 @@ void ClientDiscardableSharedMemoryManager::ScheduledPurge() {
   }
 
   if (should_schedule) {
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
+    base::PostDelayedMemoryReductionTask(
+        task_runner_, FROM_HERE,
         base::BindOnce(&ClientDiscardableSharedMemoryManager::ScheduledPurge,
                        this),
         kScheduledPurgeInterval);

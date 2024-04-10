@@ -82,16 +82,20 @@ void FrameEvictionManager::UnlockFrame(FrameEvictionManagerClient* frame) {
   }
 }
 
+void FrameEvictionManager::StartFrameCullingTimer() {
+  // Unretained: `idle_frames_culling_timer_` is a member of `this`, doesn't
+  // outlive it, and cancels the task in its destructor.
+  idle_frame_culling_timer_.Start(
+      FROM_HERE, kPeriodicCullingDelay,
+      base::BindOnce(&FrameEvictionManager::CullOldUnlockedFrames,
+                     base::Unretained(this)));
+}
+
 void FrameEvictionManager::RegisterUnlockedFrame(
     FrameEvictionManagerClient* frame) {
   unlocked_frames_.emplace_front(frame, clock_->NowTicks());
-  if (!idle_frames_culling_timer_.IsRunning()) {
-    // Unretained: `idle_frames_culling_timer_` is a member of `this`, doesn't
-    // outlive it, and cancels the task in its destructor.
-    idle_frames_culling_timer_.Start(
-        FROM_HERE, kPeriodicCullingDelay,
-        base::BindRepeating(&FrameEvictionManager::CullOldUnlockedFrames,
-                            base::Unretained(this)));
+  if (!idle_frame_culling_timer_.IsRunning()) {
+    StartFrameCullingTimer();
   }
 }
 
@@ -158,7 +162,15 @@ void FrameEvictionManager::CullUnlockedFrames(size_t saved_frame_limit) {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void FrameEvictionManager::CullOldUnlockedFrames(
+    base::MemoryReductionTaskContext task_type) {
+  const bool should_cull_all =
+      task_type == base::MemoryReductionTaskContext::kProactive;
+#else
 void FrameEvictionManager::CullOldUnlockedFrames() {
+  const bool should_cull_all = false;
+#endif
   DCHECK(std::is_sorted(
       unlocked_frames_.begin(), unlocked_frames_.end(),
       [](const auto& a, const auto& b) { return a.second >= b.second; }));
@@ -169,7 +181,8 @@ void FrameEvictionManager::CullOldUnlockedFrames() {
 
   auto now = clock_->NowTicks();
   while (!unlocked_frames_.empty() &&
-         now - unlocked_frames_.back().second >= kPeriodicCullingDelay) {
+         (should_cull_all ||
+          now - unlocked_frames_.back().second >= kPeriodicCullingDelay)) {
     size_t old_size = unlocked_frames_.size();
     auto* frame = unlocked_frames_.back().first;
     frame->EvictCurrentFrame();
@@ -183,8 +196,9 @@ void FrameEvictionManager::CullOldUnlockedFrames() {
       break;
   }
 
-  if (unlocked_frames_.empty())
-    idle_frames_culling_timer_.Stop();
+  if (!unlocked_frames_.empty()) {
+    StartFrameCullingTimer();
+  }
 }
 
 void FrameEvictionManager::OnMemoryPressure(
@@ -219,7 +233,7 @@ void FrameEvictionManager::PurgeAllUnlockedFrames() {
 void FrameEvictionManager::SetOverridesForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TickClock* clock) {
-  idle_frames_culling_timer_.SetTaskRunner(task_runner);
+  idle_frame_culling_timer_.SetTaskRunner(task_runner);
   clock_ = clock;
 }
 

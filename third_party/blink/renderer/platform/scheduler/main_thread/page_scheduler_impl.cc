@@ -12,6 +12,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -862,9 +863,9 @@ void PageSchedulerImpl::UpdateFrozenState(PolicyUpdater& policy_updater) {
   if (freeze_time > now) {
     SetPageFrozenImpl(/* frozen=*/false, policy_updater);
     if (!freeze_time.is_max()) {
-      main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
-          FROM_HERE, update_frozen_state_callback_.GetCallback(),
-          freeze_time - now);
+      base::PostDelayedMemoryReductionTask(
+          main_thread_scheduler_->ControlTaskRunner(), FROM_HERE,
+          update_frozen_state_callback_.GetCallback(), freeze_time - now);
     }
   } else {
     SetPageFrozenImpl(/* frozen=*/true, policy_updater);
