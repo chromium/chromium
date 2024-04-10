@@ -65,7 +65,7 @@ class FaceGazeTestSupport {
    * @param {number} x
    * @param {number} y
    */
-  async waitForMouseLocation(x, y) {
+  async waitForCursorLocation(x, y) {
     const desktop = await new Promise(resolve => {
       chrome.automation.getDesktop(d => resolve(d));
     });

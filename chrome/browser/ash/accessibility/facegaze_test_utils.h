@@ -61,14 +61,14 @@ class FaceGazeTestUtils {
   void EnableFaceGaze();
   // Creates and initializes the FaceLandmarker API within the extension.
   void CreateFaceLandmarker();
-  // Waits for the mouse location to propagate to the FaceGaze MouseController.
-  void WaitForMousePosition(const gfx::Point& location);
+  // Waits for the cursor location to propagate to the FaceGaze MouseController.
+  void WaitForCursorPosition(const gfx::Point& location);
   // Sets cursor speed prefs.
   void SetCursorSpeeds(const CursorSpeeds& speeds);
   // Sets the buffer size pref.
   void SetBufferSize(int size);
-  // Sets the mouse acceleration pref.
-  void SetMouseAcceleration(bool use_acceleration);
+  // Sets the cursor acceleration pref.
+  void SetCursorAcceleration(bool use_acceleration);
   // Sets the gesture to macro mapping pref.
   void SetGesturesToMacros(const base::Value::Dict& gestures_to_macros);
   // Sets the gesture confidences mapping pref.
@@ -76,7 +76,7 @@ class FaceGazeTestUtils {
   // Forces FaceGaze to process `result`, since tests don't have access to real
   // camera data.
   void ProcessFaceLandmarkerResult(const MockFaceLandmarkerResult& result);
-  // The MouseController updates the mouse location at a set interval. To
+  // The MouseController updates the cursor location at a set interval. To
   // increase test stability, the interval is canceled in tests, and must be
   // triggered manually using this method.
   void TriggerMouseControllerInterval();

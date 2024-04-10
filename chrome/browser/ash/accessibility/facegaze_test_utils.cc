@@ -139,9 +139,9 @@ void FaceGazeTestUtils::CreateFaceLandmarker() {
   ExecuteAccessibilityCommonScript(script);
 }
 
-void FaceGazeTestUtils::WaitForMousePosition(const gfx::Point& location) {
+void FaceGazeTestUtils::WaitForCursorPosition(const gfx::Point& location) {
   std::string script =
-      base::StringPrintf("faceGazeTestSupport.waitForMouseLocation(%d, %d);",
+      base::StringPrintf("faceGazeTestSupport.waitForCursorLocation(%d, %d);",
                          location.x(), location.y());
   ExecuteAccessibilityCommonScript(script);
 }
@@ -162,7 +162,7 @@ void FaceGazeTestUtils::SetBufferSize(int size) {
   GetPrefs()->CommitPendingWrite();
 }
 
-void FaceGazeTestUtils::SetMouseAcceleration(bool use_acceleration) {
+void FaceGazeTestUtils::SetCursorAcceleration(bool use_acceleration) {
   GetPrefs()->SetBoolean(prefs::kAccessibilityFaceGazeCursorUseAcceleration,
                          use_acceleration);
   GetPrefs()->CommitPendingWrite();
