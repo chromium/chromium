@@ -582,11 +582,8 @@ int TabGroupHeader::GetCollapsedHeaderWidth() const {
 }
 
 bool TabGroupHeader::ShouldShowSyncIcon() const {
-  const bool is_group_saved =
-      saved_tab_group_service_ && saved_tab_group_service_->model() &&
-      saved_tab_group_service_->model()->Contains(group().value());
-  return base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
-         is_group_saved;
+  return saved_tab_group_service_ && saved_tab_group_service_->model() &&
+         saved_tab_group_service_->model()->Contains(group().value());
 }
 
 void TabGroupHeader::RemoveObserverFromWidget(views::Widget* widget) {

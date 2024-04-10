@@ -940,10 +940,8 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     TabGroupModel* group_model = browser->tab_strip_model()->group_model();
     tab_groups::SavedTabGroupKeyedService* const saved_tab_group_keyed_service =
-        base::FeatureList::IsEnabled(features::kTabGroupsSave)
-            ? tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-                  browser->profile())
-            : nullptr;
+        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+            browser->profile());
 
     for (const std::unique_ptr<sessions::SessionTabGroup>& session_tab_group :
          tab_groups) {

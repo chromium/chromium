@@ -200,18 +200,13 @@ void BrowserTabStripModelDelegate::CreateHistoricalGroup(
         BrowserLiveTabContext::FindContextWithGroup(group, browser_->profile()),
         group);
 
-    const bool saved_tab_groups_enabled =
-        base::FeatureList::IsEnabled(features::kTabGroupsSave) ||
-        tab_groups::IsTabGroupsSaveV2Enabled();
-    if (saved_tab_groups_enabled) {
-      tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
-          tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-              browser_->profile());
-      CHECK(saved_tab_group_service);
+    tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+            browser_->profile());
+    CHECK(saved_tab_group_service);
 
-      if (saved_tab_group_service->model()->Contains(group)) {
-        saved_tab_group_service->DisconnectLocalTabGroup(group);
-      }
+    if (saved_tab_group_service->model()->Contains(group)) {
+      saved_tab_group_service->DisconnectLocalTabGroup(group);
     }
   }
 }

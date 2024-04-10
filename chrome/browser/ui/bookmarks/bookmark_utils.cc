@@ -160,8 +160,7 @@ bool IsAppsShortcutEnabled(Profile* profile) {
 }
 
 bool IsSavedTabGroupsEnabled(Profile* profile) {
-  return base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
-         profile->IsRegularProfile();
+  return profile->IsRegularProfile();
 }
 
 bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {

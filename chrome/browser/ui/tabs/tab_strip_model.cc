@@ -2623,10 +2623,6 @@ void TabStripModel::GroupTab(int index, const tab_groups::TabGroupId& group) {
 
 void TabStripModel::DisconnectSavedTabGroups(
     const std::vector<int>& indices) const {
-  if (!base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
-    return;
-  }
-
   tab_groups::SavedTabGroupKeyedService* const keyed_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
   const tab_groups::SavedTabGroupModel* const stg_model =

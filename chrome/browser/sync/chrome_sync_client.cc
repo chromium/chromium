@@ -464,8 +464,7 @@ ChromeSyncClient::CreateModelTypeControllers(
     bool enable_tab_group_sync = false;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-    enable_tab_group_sync =
-        base::FeatureList::IsEnabled(features::kTabGroupsSave);
+    enable_tab_group_sync = true;
 #elif BUILDFLAG(IS_ANDROID)
     enable_tab_group_sync =
         base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid);
@@ -640,9 +639,10 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     case syncer::SAVED_TAB_GROUP: {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-      DCHECK(base::FeatureList::IsEnabled(features::kTabGroupsSave));
-      return tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_)
-          ->bridge()
+      auto* keyed_service =
+          tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
+      CHECK(keyed_service);
+      return keyed_service->bridge()
           ->change_processor()
           ->GetControllerDelegate();
 #elif BUILDFLAG(IS_ANDROID)

@@ -107,6 +107,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
       syncer::AUTOFILL_WALLET_METADATA,
       syncer::THEMES,
       syncer::EXTENSIONS,
+      syncer::SAVED_TAB_GROUP,
       syncer::SEARCH_ENGINES,
       syncer::SESSIONS,
       syncer::APPS,
@@ -117,10 +118,6 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
       syncer::PRIORITY_PREFERENCES,
       syncer::WEB_APPS,
       syncer::NIGORI};
-
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
-    expected_active_data_types.Put(syncer::SAVED_TAB_GROUP);
-  }
 
   if (base::FeatureList::IsEnabled(power_bookmarks::kPowerBookmarkBackend)) {
     expected_active_data_types.Put(syncer::POWER_BOOKMARK);

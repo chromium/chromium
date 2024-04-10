@@ -2008,8 +2008,7 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationTabRestoreTest,
 class TabRestoreSavedGroupsTest : public TabRestoreTest {
  public:
   TabRestoreSavedGroupsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroupsSave, tab_groups::kTabGroupsSaveV2}, {});
+    scoped_feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveV2}, {});
   }
 
   // Adds |how_many| tabs to the given browser, all navigated to the youtube.com

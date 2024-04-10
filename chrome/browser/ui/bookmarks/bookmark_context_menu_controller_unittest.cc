@@ -43,8 +43,7 @@ using content::WebContents;
 class BookmarkContextMenuControllerTest : public testing::Test {
  public:
   BookmarkContextMenuControllerTest() : model_(nullptr) {
-    feature_list_.InitWithFeatures(
-        {features::kTabGroupsSave, tab_groups::kTabGroupsSaveUIUpdate}, {});
+    feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
   }
 
   void SetUp() override {

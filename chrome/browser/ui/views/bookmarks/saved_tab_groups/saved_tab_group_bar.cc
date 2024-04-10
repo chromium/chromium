@@ -199,7 +199,6 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
   // When the #tab-groups-saved feature flag is turned on and profile is
   // regular, `SavedTabGroupBar` is instantiated. If the #tab-groups-saved
   // feature flag is turned off, there is no SavedTabGroupModel.
-  DCHECK(base::FeatureList::IsEnabled(features::kTabGroupsSave));
   DCHECK(browser_->profile()->IsRegularProfile());
   DCHECK(saved_tab_group_model_);
   SetAccessibilityProperties(

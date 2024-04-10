@@ -2822,8 +2822,7 @@ void TabDragController::NotifyEventIfTabAddedToGroup() {
 }
 
 void TabDragController::MaybePauseTrackingSavedTabGroup() {
-  if (!header_drag_ ||
-      !base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+  if (!header_drag_) {
     return;
   }
 
@@ -2847,7 +2846,6 @@ void TabDragController::MaybePauseTrackingSavedTabGroup() {
 
 void TabDragController::MaybeResumeTrackingSavedTabGroup() {
   if (!header_drag_ ||
-      !base::FeatureList::IsEnabled(features::kTabGroupsSave) ||
       !paused_saved_group_id_.has_value()) {
     return;
   }

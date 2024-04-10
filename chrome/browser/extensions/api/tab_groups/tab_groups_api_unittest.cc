@@ -376,8 +376,6 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateError) {
 
 // Test that tabGroups.update() passes on a saved group.
 TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSavedTab) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
 

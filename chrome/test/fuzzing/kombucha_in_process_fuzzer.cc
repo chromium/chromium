@@ -84,8 +84,8 @@ void KombuchaInProcessFuzzer::TearDown() {
 #endif
 
 void KombuchaInProcessFuzzer::SetUp() {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kTabGroupsSave, features::kExtensionsMenuInAppMenu}, {});
+  scoped_feature_list_.InitWithFeatures({features::kExtensionsMenuInAppMenu},
+                                        {});
 
   // Mouse movements require enabling ui_controls manually for tests
   // that live outside the ui_interaction_test directory.

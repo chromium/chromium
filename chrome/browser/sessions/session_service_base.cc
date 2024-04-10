@@ -630,10 +630,8 @@ void SessionServiceBase::BuildCommandsForBrowser(
     TabGroupModel* group_model = tab_strip->group_model();
     const tab_groups::SavedTabGroupKeyedService* const
         saved_tab_group_keyed_service =
-            base::FeatureList::IsEnabled(features::kTabGroupsSave)
-                ? tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-                      browser->profile())
-                : nullptr;
+            tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+                browser->profile());
 
     for (const tab_groups::TabGroupId& group_id :
          group_model->ListTabGroups()) {

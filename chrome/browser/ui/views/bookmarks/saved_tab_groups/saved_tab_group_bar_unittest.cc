@@ -60,11 +60,9 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase,
   SavedTabGroupBarUnitTest()
       : saved_tab_group_model_(std::make_unique<SavedTabGroupModel>()) {
     if (IsV2UIEnabled()) {
-      feature_list_.InitWithFeatures(
-          {features::kTabGroupsSave, tab_groups::kTabGroupsSaveUIUpdate}, {});
+      feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
     } else {
-      feature_list_.InitWithFeatures({features::kTabGroupsSave},
-                                     {tab_groups::kTabGroupsSaveUIUpdate});
+      feature_list_.InitWithFeatures({}, {tab_groups::kTabGroupsSaveUIUpdate});
     }
   }
 

@@ -281,10 +281,6 @@ BASE_FEATURE(kTabGroupsCollapseFreezing,
              "TabGroupsCollapseFreezing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables users to explicitly save and recall tab groups.
-// https://crbug.com/1223929
-BASE_FEATURE(kTabGroupsSave, "TabGroupsSave", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables preview images in tab-hover cards.
 // https://crbug.com/928954
 BASE_FEATURE(kTabHoverCardImages,

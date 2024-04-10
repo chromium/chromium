@@ -63,8 +63,6 @@ namespace {
 class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
  public:
   BookmarkBarViewBaseTest() {
-    feature_list_.InitAndEnableFeature(features::kTabGroupsSave);
-
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         search_engines::SearchEngineChoiceServiceFactory::GetInstance(),

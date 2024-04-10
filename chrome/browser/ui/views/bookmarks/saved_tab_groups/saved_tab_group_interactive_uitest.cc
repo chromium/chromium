@@ -69,10 +69,10 @@ class SavedTabGroupInteractiveTest
   void SetUp() override {
     if (IsV2UIEnabled()) {
       scoped_feature_list_.InitWithFeatures(
-          {features::kTabGroupsSave, tab_groups::kTabGroupsSaveUIUpdate}, {});
+          {tab_groups::kTabGroupsSaveUIUpdate}, {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {features::kTabGroupsSave}, {tab_groups::kTabGroupsSaveUIUpdate});
+          {}, {tab_groups::kTabGroupsSaveUIUpdate});
     }
     InteractiveBrowserTest::SetUp();
   }

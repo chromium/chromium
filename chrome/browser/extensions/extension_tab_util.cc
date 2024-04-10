@@ -1148,11 +1148,6 @@ TabStripModel* ExtensionTabUtil::GetEditableTabStripModel(Browser* browser) {
 // static
 bool ExtensionTabUtil::TabIsInSavedTabGroup(content::WebContents* contents,
                                             TabStripModel* tab_strip_model) {
-  // If the feature is turned off, then the tab is not in a saved group.
-  if (!base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
-    return false;
-  }
-
   // If the tab_strip_model is empty, find the contents in one of the browsers.
   if (!tab_strip_model) {
     CHECK(contents);

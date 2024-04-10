@@ -184,11 +184,6 @@ tab_groups::TabGroupColorId ColorToColorId(api::tab_groups::Color color) {
 
 bool IsGroupSaved(tab_groups::TabGroupId tab_group_id,
                   TabStripModel* tab_strip_model) {
-  // If the feature is turned off, then the tab is not in a saved group.
-  if (!base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
-    return false;
-  }
-
   // If the service failed to start, then there are no saved tab groups.
   tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(

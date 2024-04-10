@@ -229,8 +229,8 @@ class TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2
     : public TabGroupEditorBubbleViewDialogBrowserTest {
  public:
   TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroupsSave, tab_groups::kTabGroupsSaveUIUpdate}, {});
+    scoped_feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate},
+                                          {});
   }
 
  private:

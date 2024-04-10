@@ -26,12 +26,10 @@ namespace {
 constexpr int kHeaderChipVerticalInset = 1;
 constexpr int kTitleAdjustmentForEmptyHeader = 2;
 constexpr int kTitleAdjustmentForNonEmptyHeader = -2;
-// The default size of an empty chip in the tab group header.
-constexpr int kEmptyChipSize = 14;
 // The width of the sync icon when a tab group is saved.
 constexpr int kSyncIconWidth = 16;
-// The size of the empty chips when the #tab-groups-save flag is on.
-constexpr int kSavedEmptyChipSize = 22;
+// The size of the empty chips.
+constexpr int kEmptyChipSize = 22;
 
 constexpr int kChromeRefreshHeaderChipVerticalInset = 2;
 constexpr int kChromeRefreshEmptyChipSize = 20;
@@ -122,9 +120,7 @@ int TabGroupStyle::GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
 }
 
 float TabGroupStyle::GetEmptyChipSize() const {
-  return base::FeatureList::IsEnabled(features::kTabGroupsSave)
-             ? kSavedEmptyChipSize
-             : kEmptyChipSize;
+  return kEmptyChipSize;
 }
 
 float TabGroupStyle::GetSyncIconWidth() const {

@@ -272,8 +272,7 @@ bool BrowserCommandHandler::BrowserSupportsSavedTabGroups() {
 
   // Duplicated from chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc
   // Which cannot be included here
-  return base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
-         browser->profile()->IsRegularProfile();
+  return browser->profile()->IsRegularProfile();
 }
 
 void BrowserCommandHandler::OpenNTPAndStartCustomizeChromeTutorial() {

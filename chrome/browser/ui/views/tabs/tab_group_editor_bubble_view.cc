@@ -266,8 +266,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
 
   views::View* save_group_line_container = nullptr;
 
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
-      browser_->profile()->IsRegularProfile()) {
+  if (browser_->profile()->IsRegularProfile()) {
     save_group_line_container = AddChildView(std::make_unique<views::View>());
 
     // The `save_group_icon_` is put in differently than the rest because it
@@ -369,8 +368,6 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   separator->SetProperty(views::kMarginsKey,
                          gfx::Insets::VH(vertical_spacing, 0));
 
-  // The save_group_line_container is only created if the
-  // feature::kTabGroupsSave is enabled.
   if (save_group_line_container) {
     gfx::Insets save_group_margins = control_insets;
     const int label_height = new_tab_menu_item->GetPreferredSize().height();
@@ -446,10 +443,6 @@ void TabGroupEditorBubbleView::UpdateGroup() {
 }
 
 const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() {
-  if (!base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
-    return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP);
-  }
-
   tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
           browser_->profile());
@@ -516,8 +509,7 @@ void TabGroupEditorBubbleView::NewTabInGroupPressed() {
 }
 
 void TabGroupEditorBubbleView::UngroupPressed() {
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
-      tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
+  if (tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
       save_group_toggle_->GetIsOn()) {
     browser_->tab_group_deletion_dialog_controller()->MaybeShowDialog(
         tab_groups::DeletionDialogController::DialogType::UngroupSingle,
@@ -533,13 +525,12 @@ void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
                                        tab_groups::TabGroupId group) {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_Ungroup"));
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
-    tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
-        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-            browser->profile());
-    CHECK(saved_tab_group_service);
-    saved_tab_group_service->DisconnectLocalTabGroup(group);
-  }
+
+  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser->profile());
+  CHECK(saved_tab_group_service);
+  saved_tab_group_service->DisconnectLocalTabGroup(group);
 
   TabStripModel* const model = browser->tab_strip_model();
   const gfx::Range tab_range =

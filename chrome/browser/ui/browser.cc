@@ -1303,10 +1303,7 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
               ->visual_data();
       const tab_groups::SavedTabGroupKeyedService* const
           saved_tab_group_keyed_service =
-              base::FeatureList::IsEnabled(features::kTabGroupsSave)
-                  ? tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-                        profile_)
-                  : nullptr;
+              tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
       std::optional<std::string> saved_guid;
 
       if (saved_tab_group_keyed_service) {

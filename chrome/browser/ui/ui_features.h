@@ -155,8 +155,6 @@ extern const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount;
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 
-BASE_DECLARE_FEATURE(kTabGroupsSave);
-
 BASE_DECLARE_FEATURE(kTabHoverCardImages);
 
 // These parameters control how long the hover card system waits before

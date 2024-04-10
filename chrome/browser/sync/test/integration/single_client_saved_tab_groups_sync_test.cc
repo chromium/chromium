@@ -25,9 +25,7 @@ namespace {
 
 class SingleClientSavedTabGroupsSyncTest : public SyncTest {
  public:
-  SingleClientSavedTabGroupsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitAndEnableFeature(features::kTabGroupsSave);
-  }
+  SingleClientSavedTabGroupsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientSavedTabGroupsSyncTest() override = default;
   SingleClientSavedTabGroupsSyncTest(
       const SingleClientSavedTabGroupsSyncTest&) = delete;
