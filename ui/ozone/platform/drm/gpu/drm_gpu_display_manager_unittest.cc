@@ -160,6 +160,10 @@ class DrmGpuDisplayManagerTest : public testing::Test {
   void TearDown() override {
     drm_gpu_display_manager_ = nullptr;
     screen_manager_ = nullptr;
+    for (auto& device : device_manager_->GetDrmDevices()) {
+      FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
+      fake_drm->ResetPlaneManagerForTesting();
+    }
     device_manager_ = nullptr;
     next_drm_device_number_ = 0u;
   }
@@ -261,16 +265,7 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxConnectorCount) {
   ASSERT_EQ(drm_gpu_display_manager_->GetDisplays().size(), kMaxDrmConnectors);
 }
 
-// TODO(crbug.com/1431767): Re-enable this test
-#if defined(LEAK_SANITIZER)
-#define MAYBE_FindAndConfigureDisplaysOnSameDrmDevice \
-  DISABLED_FindAndConfigureDisplaysOnSameDrmDevice
-#else
-#define MAYBE_FindAndConfigureDisplaysOnSameDrmDevice \
-  FindAndConfigureDisplaysOnSameDrmDevice
-#endif
-TEST_F(DrmGpuDisplayManagerTest,
-       MAYBE_FindAndConfigureDisplaysOnSameDrmDevice) {
+TEST_F(DrmGpuDisplayManagerTest, FindAndConfigureDisplaysOnSameDrmDevice) {
   // One DRM device.
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
@@ -318,16 +313,8 @@ TEST_F(DrmGpuDisplayManagerTest,
 
 // This case tests scenarios in which a display ID is searched across multiple
 // DRM devices, such as in DisplayLink hubs.
-// TODO(crbug.com/1431767): Re-enable this test
-#if defined(LEAK_SANITIZER)
-#define MAYBE_FindAndConfigureDisplaysAcrossDifferentDrmDevices \
-  DISABLED_FindAndConfigureDisplaysAcrossDifferentDrmDevices
-#else
-#define MAYBE_FindAndConfigureDisplaysAcrossDifferentDrmDevices \
-  FindAndConfigureDisplaysAcrossDifferentDrmDevices
-#endif
 TEST_F(DrmGpuDisplayManagerTest,
-       MAYBE_FindAndConfigureDisplaysAcrossDifferentDrmDevices) {
+       FindAndConfigureDisplaysAcrossDifferentDrmDevices) {
   // Add 3 DRM devices, each with one active display.
   for (size_t i = 0; i < 3; ++i) {
     auto drm_state =
@@ -374,16 +361,8 @@ TEST_F(DrmGpuDisplayManagerTest,
                                  display::ModesetFlag::kCommitModeset}));
 }
 
-// TODO(crbug.com/1431767): Re-enable this test
-#if defined(LEAK_SANITIZER)
-#define MAYBE_OriginsPersistThroughSimilarExtendedModeConfigurations \
-  DISABLED_OriginsPersistThroughSimilarExtendedModeConfigurations
-#else
-#define MAYBE_OriginsPersistThroughSimilarExtendedModeConfigurations \
-  OriginsPersistThroughSimilarExtendedModeConfigurations
-#endif
 TEST_F(DrmGpuDisplayManagerTest,
-       MAYBE_OriginsPersistThroughSimilarExtendedModeConfigurations) {
+       OriginsPersistThroughSimilarExtendedModeConfigurations) {
   // One DRM device.
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
@@ -655,11 +634,6 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
                                 {display::ModesetFlag::kCommitModeset}));
   EXPECT_EQ(primary_display->crtc(), crtc_1);
   EXPECT_EQ(secondary_display->crtc(), crtc_3);
-
-  // DrmDevice seems to leak on successful configure in tests. Manually
-  // checking for mock calls and allowing leak for now.
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(mock_drm));
-  testing::Mock::AllowLeak(mock_drm);
 }
 
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
@@ -986,11 +960,6 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
     EXPECT_TRUE(ConfigureDisplays(display_snapshots,
                                   {display::ModesetFlag::kCommitModeset}));
-
-    // DrmDevice seems to leak on successful configure in tests. Manually
-    // checking for mock calls and allowing leak for now.
-    ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(mock_drm));
-    testing::Mock::AllowLeak(mock_drm);
   }
 
   DrmDisplay* primary_display = FindDisplayByConnectorId(primary_connector_id);
