@@ -89,6 +89,7 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
     manifest->start_url = document_url;
     manifest->scope = document_url.GetWithoutFilename();
     manifest->id = document_url.GetWithoutRef();
+    page_data_->manifest_->fetched = false;
     page_data_->OnManifestFetched(std::move(manifest), /*manifest_url=*/GURL(),
                                   InstallableStatusCode::NO_ERROR_DETECTED);
   }
@@ -174,17 +175,17 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(InstallableEvaluatorCriteriaUnitTest, UnsetManifest) {
   web_contents_tester()->NavigateAndCommit(GURL("https://www.example.com"));
+  SetManifestAsDefault(GURL("https://www.example.com"));
   TestCheckInstallability(
-      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
-      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
+      InstallableStatusCode::NO_MANIFEST, InstallableStatusCode::NO_MANIFEST,
       InstallableStatusCode::MANIFEST_MISSING_NAME_OR_SHORT_NAME);
 
   web_contents_tester()->NavigateAndCommit(
       GURL("https://www.example.com/path/page.html"));
-  TestCheckInstallability(
-      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
-      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR,
-      InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR);
+  SetManifestAsDefault(GURL("https://www.example.com/path/page.html"));
+  TestCheckInstallability(InstallableStatusCode::NO_MANIFEST,
+                          InstallableStatusCode::NO_MANIFEST,
+                          InstallableStatusCode::NO_MANIFEST);
 }
 
 TEST_P(InstallableEvaluatorCriteriaUnitTest, ManifestParsingOrNetworkError) {
@@ -658,6 +659,7 @@ TEST_F(InstallableEvaluatorUnitTest, ValidMetadataRootScopePage) {
   // Test that a root-scoped page, with no manifest and a valid metadata is
   // installable.
   web_contents_tester()->NavigateAndCommit(GURL("https://www.example.com"));
+  SetManifestAsDefault(GURL("https://www.example.com"));
   SetMetadata(GetWebPageMetadata());
   AddFavicon();
 
