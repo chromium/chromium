@@ -80,6 +80,7 @@ public class ContentViewTest {
     @SmallTest
     public void testOnProvideAutofillVirtualStructureForwardsToDelegate() {
         when(mWebContents.getViewAndroidDelegate()).thenReturn(mViewDelegate);
+        when(mViewDelegate.providesAutofillStructure()).thenReturn(true);
         ViewStructure structure = mock(ViewStructure.class);
         mContentView.onProvideAutofillVirtualStructure(
                 structure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
@@ -92,6 +93,7 @@ public class ContentViewTest {
     @SmallTest
     public void testForwardsAutofillDataToDelegate() {
         when(mWebContents.getViewAndroidDelegate()).thenReturn(mViewDelegate);
+        when(mViewDelegate.providesAutofillStructure()).thenReturn(true);
         SparseArray<AutofillValue> values = new SparseArray();
         mContentView.autofill(values);
         verify(mViewDelegate).autofill(values);

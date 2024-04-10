@@ -38,6 +38,7 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 
 import java.util.function.Supplier;
@@ -593,18 +594,22 @@ public class ContentView extends FrameLayout
 
     @Override
     public void autofill(final SparseArray<AutofillValue> values) {
-        if (mWebContents.getViewAndroidDelegate() != null) {
-            mWebContents.getViewAndroidDelegate().autofill(values);
+        ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
+        if (viewDelegate == null || !viewDelegate.providesAutofillStructure()) {
+            super.autofill(values);
+            return;
         }
+        viewDelegate.autofill(values);
     }
 
     @Override
     public void onProvideAutofillVirtualStructure(ViewStructure structure, int flags) {
-        if (mWebContents.getViewAndroidDelegate() != null) {
-            mWebContents
-                    .getViewAndroidDelegate()
-                    .onProvideAutofillVirtualStructure(structure, flags);
+        ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
+        if (viewDelegate == null || !viewDelegate.providesAutofillStructure()) {
+            super.onProvideAutofillVirtualStructure(structure, flags);
+            return;
         }
+        viewDelegate.onProvideAutofillVirtualStructure(structure, flags);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
