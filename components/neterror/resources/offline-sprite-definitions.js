@@ -239,7 +239,7 @@ export const spriteDefinitionByType = {
       RUNNING_1: {x: 96, w: 49, h: 47, xOffset: 0},
       RUNNING_2: {x: 145, w: 49, h: 47, xOffset: 0},
       JUMPING: {x: 47, w: 49, h: 47, xOffset: 0},
-      CRASHED: {x: 194, w: 62, h: 47, xOffset: 0},
+      CRASHED: {x: 194, w: 61, h: 47, xOffset: 0},
       DUCKING_1: {x: 257, w: 55, h: 26, xOffset: 0},
       DUCKING_2: {x: 316, w: 55, h: 26, xOffset: 0},
       COLLISION_BOXES: [
