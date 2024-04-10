@@ -153,10 +153,18 @@ class OzonePlatformCast : public OzonePlatform {
 
     return true;
   }
+
   void InitializeGPU(const InitParams& params) override {
     overlay_manager_ = std::make_unique<OverlayManagerCast>();
     surface_factory_ =
         std::make_unique<SurfaceFactoryCast>(std::move(egl_platform_));
+  }
+
+  void PostCreateMainMessageLoop(base::OnceCallback<void()> shutdown_cb,
+                                 scoped_refptr<base::SingleThreadTaskRunner>
+                                     user_input_task_runner) override {
+    event_factory_ozone_->SetUserInputTaskRunner(
+        std::move(user_input_task_runner));
   }
 
  private:

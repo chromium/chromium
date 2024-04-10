@@ -90,6 +90,10 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gl/gl_switches.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif  // BUILDFLAG(IS_OZONE)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <fontconfig/fontconfig.h>
 #include <signal.h>
@@ -470,6 +474,13 @@ void CastBrowserMainParts::PreCreateMainMessageLoop() {
 void CastBrowserMainParts::PostCreateMainMessageLoop() {
   // Ensure CastMetricsHelper initialized on UI thread.
   metrics::CastMetricsHelper::GetInstance();
+
+#if BUILDFLAG(IS_OZONE)
+  // Pass the UI task runner to the ozone platform.
+  CHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
+  ui::OzonePlatform::GetInstance()->PostCreateMainMessageLoop(
+      base::DoNothing(), base::SingleThreadTaskRunner::GetCurrentDefault());
+#endif  // BUILDFLAG(IS_OZONE)
 }
 
 void CastBrowserMainParts::ToolkitInitialized() {
