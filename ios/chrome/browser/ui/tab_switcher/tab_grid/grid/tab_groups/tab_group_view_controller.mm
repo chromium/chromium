@@ -312,7 +312,6 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 - (UIView*)configuredPrimaryTitle {
   UIView* fullTitleView = [[UIView alloc] initWithFrame:CGRectZero];
   fullTitleView.translatesAutoresizingMaskIntoConstraints = NO;
-  fullTitleView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
   fullTitleView.layer.cornerRadius = kTitleBackgroundCornerRadius;
   fullTitleView.opaque = NO;
 
