@@ -882,6 +882,21 @@ suite('CompletionFragment', function() {
     assertTrue(isChildVisible(fragment, '#privacySandboxRow'));
     assertFalse(isChildVisible(fragment, '#waaRow'));
   });
+
+  test('TrackingProtectionLinkClick', async function() {
+    assertTrue(isChildVisible(fragment, '#trackingProtectionRow'));
+    fragment.shadowRoot!.querySelector<HTMLElement>(
+                            '#trackingProtectionRow')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideEntryExitHistogram');
+    assertEquals(
+        PrivacyGuideInteractions.TRACKING_PROTECTION_COMPLETION_LINK, result);
+    assertEquals(
+        'Settings.PrivacyGuide.CompletionTrackingProtectionClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+  });
 });
 
 suite('CompletionFragmentPrivacySandboxRestricted', function() {
@@ -921,9 +936,10 @@ suite('CompletionFragmentPrivacySandboxRestricted', function() {
 
     setSignInState(false);
     assertFalse(isChildVisible(fragment, '#privacySandboxRow'));
+    assertTrue(isChildVisible(fragment, '#trackingProtectionRow'));
     assertFalse(isChildVisible(fragment, '#waaRow'));
     assertEquals(
-        fragment.i18n('privacyGuideCompletionCardSubHeaderNoLinks'),
+        fragment.i18n('privacyGuideCompletionCardSubHeader'),
         subheader.innerText);
   });
 });
@@ -958,3 +974,49 @@ suite(
         assertTrue(isChildVisible(fragment, '#privacySandboxRow'));
       });
     });
+
+// TODO(https://b/333527273): Remove after TP is launched.
+suite('CompletionFragmentWithoutTrackingProtection', function() {
+  let fragment: PrivacyGuideCompletionFragmentElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: true,
+      isPrivacySandboxRestrictedNoticeEnabled: false,
+      enableTrackingProtectionRolloutUx: false,
+    });
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    fragment = document.createElement('privacy-guide-completion-fragment');
+    document.body.appendChild(fragment);
+
+    return flushTasks();
+  });
+
+  teardown(function() {
+    fragment.remove();
+    // The browser instance is shared among the tests, hence the route needs
+    // to be reset between tests.
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('trackingProtectionLinkHidden', function() {
+    // The link to Tracking Protection should be hidden outside of the
+    // experiment.
+    assertFalse(isChildVisible(fragment, '#trackingProtectionRow'));
+  });
+
+  test('noLinksShown', function() {
+    setSignInState(false);
+    assertFalse(isChildVisible(fragment, '#privacySandboxRow'));
+    assertFalse(isChildVisible(fragment, '#trackingProtectionRow'));
+    assertFalse(isChildVisible(fragment, '#waaRow'));
+    const subheader =
+        fragment.shadowRoot!.querySelector<HTMLElement>('.cr-secondary-text')!;
+    assertEquals(
+        fragment.i18n('privacyGuideCompletionCardSubHeaderNoLinks'),
+        subheader.innerText);
+  });
+});

@@ -32403,6 +32403,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacyGuide.CompletionTrackingProtectionClick">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User clicks on the Tracking Protection link in the completion step of
+    Privacy Guide.
+  </description>
+</action>
+
 <action name="Settings.PrivacyGuide.NextClickCompletion">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>

@@ -164,6 +164,18 @@
   </div>
   <div class="cr-secondary-text">[[subheader_]]</div>
 </div>
+<template is="dom-if" if="[[shouldShowTrackingProtection_]]">
+  <privacy-guide-completion-link-row id="trackingProtectionRow"
+      label="$i18n{privacyGuideCompletionCardTrackingProtectionLabel}"
+      sub-label="$i18n{privacyGuideCompletionCardTrackingProtectionSubLabel}"
+      on-click="onTrackingProtectionClick_">
+  </privacy-guide-completion-link-row>
+  <div aria-disabled="true" role="none">
+    <a id="trackingProtectionLink" href="trackingProtection"
+        target="_blank" tabindex="-1" aria-disabled="true"
+        role="none"></a>
+  </div>
+</template>
 <template is="dom-if" if="[[shouldShowPrivacySandbox_]]">
   <privacy-guide-completion-link-row id="privacySandboxRow"
       label="$i18n{privacyGuideCompletionCardPrivacySandboxLabel}"
@@ -172,12 +184,12 @@
       dark-img-src="./images/privacy_guide/privacy_sandbox_graphic_dark.svg"
       on-click="onPrivacySandboxClick_">
   </privacy-guide-completion-link-row>
+  <div aria-disabled="true" role="none">
+    <a id="privacySandboxLink" href="adPrivacy"
+        target="_blank" tabindex="-1" aria-disabled="true"
+        role="none"></a>
+  </div>
 </template>
-<div aria-disabled="true" role="none">
-  <a id="privacySandboxLink" href="adPrivacy"
-      target="_blank" tabindex="-1" aria-disabled="true"
-      role="none"></a>
-</div>
 <template is="dom-if" if="[[shouldShowWaa_]]">
   <privacy-guide-completion-link-row id="waaRow"
       label="$i18n{privacyGuideCompletionCardWaaLabel}"

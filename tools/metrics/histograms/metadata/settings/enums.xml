@@ -221,6 +221,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="sWAA Completion Link"/>
   <int value="9" label="Privacy Sandbox Completion Link"/>
   <int value="10" label="Search Suggestions Next Button"/>
+  <int value="11" label="Tracking Protection Completion Link"/>
 </enum>
 
 <enum name="SettingsPrivacyGuideSettingsStates">

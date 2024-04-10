@@ -220,8 +220,9 @@ export enum PrivacyGuideInteractions {
   SWAA_COMPLETION_LINK = 8,
   PRIVACY_SANDBOX_COMPLETION_LINK = 9,
   SEARCH_SUGGESTIONS_NEXT_BUTTON = 10,
+  TRACKING_PROTECTION_COMPLETION_LINK = 11,
   // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 11,
+  MAX_VALUE = 12,
 }
 
 /**

@@ -572,14 +572,9 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
 }
 
 class SettingsCookiesPageTest : public SettingsBrowserTest {
- protected:
-  SettingsCookiesPageTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      privacy_sandbox::kPrivacySandboxFirstPartySetsUI};
 };
 
 #if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)) || \
@@ -757,7 +752,18 @@ IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, Integration) {
 }
 #endif
 
-using SettingsPrivacyGuideFragmentsTest = SettingsBrowserTest;
+class SettingsPrivacyGuideFragmentsTest : public SettingsBrowserTest {
+ protected:
+  SettingsPrivacyGuideFragmentsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {content_settings::features::kTrackingProtection3pcd,
+         privacy_sandbox::kTrackingProtectionSettingsLaunch},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, WelcomeFragment) {
   RunTest("settings/privacy_guide_fragments_test.js",
@@ -794,6 +800,12 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
                        CompletionFragmentPrivacySandboxRestricted) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('CompletionFragmentPrivacySandboxRestricted')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
+                       CompletionFragmentWithTrackingProtection) {
+  RunTest("settings/privacy_guide_fragments_test.js",
+          "runMochaSuite('CompletionFragmentWithoutTrackingProtection')");
 }
 
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)

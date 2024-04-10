@@ -64,6 +64,12 @@ export class PrivacyGuideCompletionFragmentElement extends
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
       },
 
+      shouldShowTrackingProtection_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableTrackingProtectionRolloutUx'),
+      },
+
       shouldShowWaa_: {
         type: Boolean,
         value: false,
@@ -72,6 +78,7 @@ export class PrivacyGuideCompletionFragmentElement extends
   }
 
   private shouldShowPrivacySandbox_: boolean;
+  private shouldShowTrackingProtection_: boolean;
   private shouldShowWaa_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -98,7 +105,8 @@ export class PrivacyGuideCompletionFragmentElement extends
   }
 
   private computeIsNoLinkLayout_() {
-    return !this.shouldShowWaa_ && !this.shouldShowPrivacySandbox_;
+    return !this.shouldShowWaa_ && !this.shouldShowPrivacySandbox_ &&
+        !this.shouldShowTrackingProtection_;
   }
 
   private computeSubheader_(): string {
@@ -139,6 +147,20 @@ export class PrivacyGuideCompletionFragmentElement extends
     // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
     this.shadowRoot!.querySelector<HTMLAnchorElement>('#privacySandboxLink')!
         .dispatchEvent(new MouseEvent('click'));
+  }
+
+  private onTrackingProtectionClick_() {
+    this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
+        PrivacyGuideInteractions.TRACKING_PROTECTION_COMPLETION_LINK);
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.CompletionTrackingProtectionClick');
+    // Create a MouseEvent directly to avoid Polymer failing to synthesise a
+    // click event if this function was called in response to a touch event.
+    // See crbug.com/1253883 for details.
+    // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
+    this.shadowRoot!
+        .querySelector<HTMLAnchorElement>(
+            '#trackingProtectionLink')!.dispatchEvent(new MouseEvent('click'));
   }
 
   private onWaaClick_() {
