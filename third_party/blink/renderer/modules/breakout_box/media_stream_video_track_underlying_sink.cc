@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/time/time.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "media/base/video_types.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -48,6 +49,13 @@ BASE_FEATURE(kBreakoutBoxEagerConversion,
 // This feature has no effect if BreakoutBoxEagerConversion is disabled.
 BASE_FEATURE(kBreakoutBoxConversionWithoutSinkSignal,
              "BreakoutBoxConversionWithoutSinkSignal",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If BreakoutBoxWriteVideoFrameCaptureTimestamp is enabled, the timestamp from
+// a blink::VideoFrame written to a MediaStreamVideoTrackUnderlyingSink is also
+// set as the capture timestamp for its underlying media::VideoFrame.
+BASE_FEATURE(kBreakoutBoxWriteVideoFrameCaptureTimestamp,
+             "BreakoutBoxWriteVideoFrameCaptureTimestamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 class TransferringOptimizer : public WritableStreamTransferringOptimizer {
@@ -147,6 +155,13 @@ ScriptPromise<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::write(
     exception_state.ThrowTypeError("Empty video frame.");
     return ScriptPromise<IDLUndefined>();
   }
+
+  if (base::FeatureList::IsEnabled(
+          kBreakoutBoxWriteVideoFrameCaptureTimestamp)) {
+    media_frame->metadata().capture_begin_time =
+        base::TimeTicks() + video_frame->handle()->timestamp();
+  }
+
   // Invalidate the JS |video_frame|. Otherwise, the media frames might not be
   // released, which would leak resources and also cause some MediaStream
   // sources such as cameras to drop frames.

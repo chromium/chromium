@@ -4,8 +4,12 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_sink.h"
 
+#include <cstdint>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
+#include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -66,6 +70,10 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
                                     VideoFrame** video_frame_out = nullptr) {
     const scoped_refptr<media::VideoFrame> media_frame =
         media::VideoFrame::CreateBlackFrame(gfx::Size(100, 50));
+    // Set a nonzero timestamp to make it easier to detect certain errors such
+    // as unit conversions in Web-exposed VideoFrames which use integer
+    // timestamps.
+    media_frame->set_timestamp(base::Seconds(2));
     VideoFrame* video_frame = MakeGarbageCollected<VideoFrame>(
         std::move(media_frame), ExecutionContext::From(script_state));
     if (video_frame_out)
@@ -183,6 +191,35 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, GetGmbManager) {
   EXPECT_EQ(!!underlying_sink->gmb_manager(),
             WebGraphicsContext3DVideoFramePool::
                 IsGpuMemoryBufferReadbackFromTextureEnabled());
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteCaptureTimestamp) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* underlying_sink = CreateUnderlyingSink(script_state);
+  auto* writable_stream = WritableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_sink, 1u);
+  auto track = CreateTrack();
+
+  NonThrowableExceptionState exception_state;
+  auto* writer = writable_stream->getWriter(script_state, exception_state);
+
+  VideoFrame* video_frame = nullptr;
+  auto video_frame_chunk = CreateVideoFrameChunk(script_state, &video_frame);
+  int64_t web_exposed_timestamp = video_frame->timestamp();
+  scoped_refptr<media::VideoFrame> media_frame = video_frame->frame();
+  EXPECT_EQ(media_frame->timestamp().InMicroseconds(), web_exposed_timestamp);
+  EXPECT_FALSE(media_frame->metadata().capture_begin_time.has_value());
+
+  ScriptPromiseTester write_tester(
+      script_state,
+      writer->write(script_state, video_frame_chunk, exception_state));
+  write_tester.WaitUntilSettled();
+  EXPECT_EQ(media_frame->timestamp().InMicroseconds(), web_exposed_timestamp);
+  ASSERT_TRUE(media_frame->metadata().capture_begin_time.has_value());
+  EXPECT_EQ((*media_frame->metadata().capture_begin_time - base::TimeTicks())
+                .InMicroseconds(),
+            web_exposed_timestamp);
 }
 
 }  // namespace blink
