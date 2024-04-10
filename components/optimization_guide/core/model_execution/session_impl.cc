@@ -632,14 +632,9 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   auto redact_result =
       on_device_state_->opts.adapter->Redact(*last_message_, current_response);
   if (redact_result == RedactResult::kReject) {
-    if (on_device_state_->histogram_logger) {
-      on_device_state_->histogram_logger->set_result(
-          ExecuteModelResult::kContainedPII);
-      on_device_state_->histogram_logger.reset();
-    }
     logged_response->set_status(
         proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
-    CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
+    CancelPendingResponse(ExecuteModelResult::kContainedPII,
                           ModelExecutionError::kFiltered);
     return;
   }
@@ -661,7 +656,6 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     }
 
     if (features::GetOnDeviceModelRetractUnsafeContent()) {
-      on_device_state_->current_response.clear();
       CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
                             is_unsupported_language
                                 ? ModelExecutionError::kUnsupportedLanguage
@@ -674,11 +668,6 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   auto output =
       on_device_state_->opts.adapter->ConstructOutputMetadata(current_response);
   if (!output) {
-    if (on_device_state_->histogram_logger) {
-      on_device_state_->histogram_logger->set_result(
-          ExecuteModelResult::kFailedConstructingResponseMessage);
-      on_device_state_->histogram_logger.reset();
-    }
     CancelPendingResponse(
         ExecuteModelResult::kFailedConstructingResponseMessage,
         ModelExecutionError::kGenericFailure);
@@ -688,7 +677,6 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   if (!is_complete &&
       on_device_state_->MutableLoggedResponse()->has_repeats()) {
     if (features::GetOnDeviceModelRetractRepeats()) {
-      on_device_state_->current_response.clear();
       logged_response->set_status(
           proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
       CancelPendingResponse(ExecuteModelResult::kResponseHadRepeats,
