@@ -138,18 +138,9 @@ class IncomingPasswordSharingInvitationInactiveChecker
   }
 };
 
-// TODO(crbug.com/333360693): tests may fail on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SingleClientIncomingPasswordSharingInvitationTest \
-  DISABLED_SingleClientIncomingPasswordSharingInvitationTest
-#else
-#define MAYBE_SingleClientIncomingPasswordSharingInvitationTest \
-  SingleClientIncomingPasswordSharingInvitationTest
-#endif
-class MAYBE_SingleClientIncomingPasswordSharingInvitationTest
-    : public SyncTest {
+class SingleClientIncomingPasswordSharingInvitationTest : public SyncTest {
  public:
-  MAYBE_SingleClientIncomingPasswordSharingInvitationTest()
+  SingleClientIncomingPasswordSharingInvitationTest()
       : SyncTest(SINGLE_CLIENT) {
     override_features_.InitWithFeatures(
         /*enabled_features=*/
@@ -208,7 +199,7 @@ class MAYBE_SingleClientIncomingPasswordSharingInvitationTest
   base::test::ScopedFeatureList override_features_;
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
+IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
                        ShouldStoreIncomingPassword) {
   ASSERT_TRUE(SetupSync());
 
@@ -258,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
             GURL(sender_display_info.profile_image_url()));
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
+IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
                        ShouldIssueTombstoneAfterProcessingInvitation) {
   ASSERT_TRUE(SetupSync());
 
@@ -279,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
 // ChromeOS does not support signing out of a primary account, which these test
 // relies on to initialize Nigori.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
+IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
                        ShouldHandleIncomingInvitationsAtInitialSync) {
   // First, setup sync to initialize Nigori node with a public key to be able to
   // inject invitations.
@@ -308,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
+    SingleClientIncomingPasswordSharingInvitationTest,
     ShouldIgnoreIncomingInvitationIfPasswordExistsAtInitialSync) {
   constexpr char kLocalPasswordValue[] = "local_password";
   base::HistogramTester histogram_tester;
@@ -373,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(
 // TODO(crbug.com/1348950): enable on Android once transport mode for Passwords
 // is supported.
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
+IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
                        ShouldStoreIncomingPasswordIntoAccountDB) {
   // First, setup sync (in transport mode) to initialize Nigori node with a
   // public key to be able to inject invitations.
@@ -406,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
 
 // This test verifies that Incoming Password Sharing Invitation data type is
 // stopped when the Password data type is opted out in the transport mode.
-IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
+IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
                        ShouldStopReceivingPasswordsWhenPasswordsOptedOut) {
   ASSERT_TRUE(SetupSyncTransportWithoutPasswordAccountStorage());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
@@ -438,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
 
 // This test verifies that Incoming Password Sharing Invitation data type is
 // stopped when the Password data type is encountered error.
-IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientIncomingPasswordSharingInvitationTest,
+IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
                        ShouldStopIncomingInvitationsOnPasswordsFailure) {
   ASSERT_TRUE(SetupSync());
 
