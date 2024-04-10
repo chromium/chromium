@@ -49,6 +49,10 @@ class TabRestoreServiceObserver;
 // add an observer.
 class SESSIONS_EXPORT TabRestoreService : public KeyedService {
  public:
+  struct Tab;
+  struct Window;
+  struct Group;
+
   // Interface used to allow the test to provide a custom time.
   class SESSIONS_EXPORT TimeFactory {
    public:
@@ -142,7 +146,7 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     std::optional<tab_groups::TabGroupId> group;
 
     // The saved group id the tab belong to, if any.
-    std::optional<base::Uuid> saved_id = std::nullopt;
+    std::optional<base::Uuid> saved_group_id = std::nullopt;
 
     // The group metadata for the tab, if any.
     std::optional<tab_groups::TabGroupVisualData> group_visual_data;
@@ -161,8 +165,15 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     // Type of window.
     SessionWindow::WindowType type;
 
+    // TODO(crbug.com/333425400): `tabs`, `groups`, and `tab_groups` contain
+    // duplicated data. To prevent duplication of data consider changing `tabs`
+    // to std::vector<std::unique_ptr<Entries>> so all data can be stored
+    // together in one object. This should prevent data duplication.
     // The tabs that comprised the window, in order.
     std::vector<std::unique_ptr<Tab>> tabs;
+
+    // Tab groups in this window including their tabs.
+    std::map<tab_groups::TabGroupId, std::unique_ptr<Group>> groups;
 
     // Tab group data.
     std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData> tab_groups;
@@ -200,7 +211,7 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     tab_groups::TabGroupVisualData visual_data;
 
     // The saved group id of this group, if any.
-    std::optional<base::Uuid> saved_id = std::nullopt;
+    std::optional<base::Uuid> saved_group_id = std::nullopt;
 
     // The ID of the browser to which this group belonged, so it can be restored
     // there.

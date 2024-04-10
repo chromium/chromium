@@ -42,9 +42,7 @@ TabRestoreService::Window::~Window() = default;
 
 size_t TabRestoreService::Window::EstimateMemoryUsage() const {
   using base::trace_event::EstimateMemoryUsage;
-  return
-      EstimateMemoryUsage(tabs) +
-      EstimateMemoryUsage(app_name);
+  return EstimateMemoryUsage(tabs) + EstimateMemoryUsage(app_name);
 }
 
 TabRestoreService::Group::Group() : Entry(GROUP) {}

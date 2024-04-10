@@ -35,6 +35,7 @@
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -210,7 +211,6 @@ void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
   window->user_title = context->GetUserTitle();
   window->extra_data = context->GetExtraDataForWindow();
 
-  base::flat_set<tab_groups::TabGroupId> seen_groups;
   for (int tab_index = 0; tab_index < context->GetTabCount(); ++tab_index) {
     auto tab = std::make_unique<Tab>();
     PopulateTab(tab.get(), tab_index, context,
@@ -219,12 +219,15 @@ void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
       continue;
     }
 
-    if (tab->group.has_value() && !seen_groups.contains(tab->group.value())) {
+    if (tab->group.has_value() &&
+        !window->groups.contains(tab->group.value())) {
       // Add new groups to the mapping if we haven't already.
-      seen_groups.insert(tab->group.value());
-      const tab_groups::TabGroupVisualData* visual_data =
-          context->GetVisualDataForGroup(tab->group.value());
-      window->tab_groups.emplace(tab->group.value(), *visual_data);
+      std::unique_ptr<Group> group =
+          CreateHistoricalGroupImpl(context, tab->group.value());
+      if (!group->tabs.empty()) {
+        window->tab_groups.emplace(tab->group.value(), group->visual_data);
+        window->groups.emplace(tab->group.value(), std::move(group));
+      }
     }
 
     tab->browser_id = context->GetSessionID().id();
@@ -246,14 +249,13 @@ void TabRestoreServiceHelper::BrowserClosed(LiveTabContext* context) {
   closing_contexts_.erase(context);
 }
 
-void TabRestoreServiceHelper::CreateHistoricalGroup(
+std::unique_ptr<TabRestoreService::Group>
+TabRestoreServiceHelper::CreateHistoricalGroupImpl(
     LiveTabContext* context,
     const tab_groups::TabGroupId& id) {
-  closing_groups_.insert(id);
-
   auto group = std::make_unique<Group>();
   group->group_id = id;
-  group->saved_id = context->GetSavedTabGroupIdForGroup(id);
+  group->saved_group_id = context->GetSavedTabGroupIdForGroup(id);
   group->visual_data = *context->GetVisualDataForGroup(id);
   group->browser_id = context->GetSessionID().id();
   group->timestamp = TimeNow();
@@ -270,6 +272,15 @@ void TabRestoreServiceHelper::CreateHistoricalGroup(
     }
   }
 
+  return group;
+}
+
+void TabRestoreServiceHelper::CreateHistoricalGroup(
+    LiveTabContext* context,
+    const tab_groups::TabGroupId& id) {
+  closing_groups_.insert(id);
+
+  auto group = CreateHistoricalGroupImpl(context, id);
   if (!group->tabs.empty()) {
     AddEntry(std::move(group), true, true);
   }
@@ -857,7 +868,9 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
     tab->group = context->GetTabGroupForTab(tab->tabstrip_index);
 
     if (tab->group.has_value()) {
-      tab->saved_id = context->GetSavedTabGroupIdForGroup(tab->group.value());
+      tab->saved_group_id =
+          context->GetSavedTabGroupIdForGroup(tab->group.value());
+
       tab->group_visual_data =
           *context->GetVisualDataForGroup(tab->group.value());
     }

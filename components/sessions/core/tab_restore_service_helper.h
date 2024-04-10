@@ -158,6 +158,12 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
                              WindowOpenDisposition disposition,
                              LiveTab** live_tab);
 
+  // Helper function for CreateHistoricalGroup. Returns a Group populated with
+  // metadta for the tab group `id`.
+  std::unique_ptr<Group> CreateHistoricalGroupImpl(
+      LiveTabContext* context,
+      const tab_groups::TabGroupId& id);
+
   // Returns true if |tab| has at least one navigation and
   // |tab->current_navigation_index| is in bounds.
   static bool ValidateTab(const Tab& tab);
