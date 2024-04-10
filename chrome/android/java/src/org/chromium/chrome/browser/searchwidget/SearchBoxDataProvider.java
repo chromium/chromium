@@ -31,7 +31,6 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
      * @param tab The tab to use.
      */
     public void onNativeLibraryReady(Tab tab) {
-        assert LibraryLoader.getInstance().isInitialized();
         mTab = tab;
     }
 

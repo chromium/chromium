@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog.DefaultSearchEnginePromoDialogObserver;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
@@ -524,40 +523,6 @@ public class SearchActivityTest {
                         any(/* DSE URL */ ),
                         eq(PageClassification.ANDROID_SEARCH_WIDGET_VALUE),
                         any());
-    }
-
-    @Test
-    @SmallTest
-    @DisabledTest(message = "crbug.com/1133547")
-    public void testRealPromoDialogInterruption() throws Exception {
-        // Start the Activity.  It should pause when the promo dialog appears.
-        mTestDelegate.shouldShowRealSearchDialog = true;
-        final SearchActivity searchActivity = startSearchActivity();
-        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
-        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(0);
-        mTestDelegate.onPromoDialogShownCallback.waitForCallback(0);
-        Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
-
-        // Set some text in the search box, then select the first engine to continue startup.
-        setUrlBarText(searchActivity, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-        DefaultSearchEngineDialogHelperUtils.clickOnFirstEngine(
-                mTestDelegate.shownPromoDialog.findViewById(android.R.id.content));
-
-        // Let the initialization finish completely.
-        Assert.assertEquals(
-                1, mTestDelegate.shouldDelayNativeInitializationCallback.getCallCount());
-        Assert.assertEquals(1, mTestDelegate.showSearchEngineDialogIfNeededCallback.getCallCount());
-        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(0);
-
-        mOmnibox.checkSuggestionsShown();
-        mOmnibox.sendKey(KeyEvent.KEYCODE_ENTER);
-
-        waitForChromeTabbedActivityToStart(
-                () -> {
-                    mOmnibox.sendKey(KeyEvent.KEYCODE_ENTER);
-                    return null;
-                },
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
     }
 
     @Test

@@ -539,7 +539,8 @@ public class SearchActivity extends AsyncInitializationActivity
         return true;
     }
 
-    private void finishDeferredInitialization() {
+    @VisibleForTesting
+    void finishDeferredInitialization() {
         assert !mIsActivityUsable
                 : "finishDeferredInitialization() incorrectly called multiple times";
         mIsActivityUsable = true;
@@ -766,7 +767,7 @@ public class SearchActivity extends AsyncInitializationActivity
         return mAnchorView;
     }
 
-    LocationBarCoordinator getLocationBarCoordinatorForTesting() {
+    /* package */ LocationBarCoordinator getLocationBarCoordinatorForTesting() {
         return mLocationBarCoordinator;
     }
 

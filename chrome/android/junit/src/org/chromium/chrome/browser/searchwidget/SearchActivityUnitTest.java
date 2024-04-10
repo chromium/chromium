@@ -11,8 +11,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
@@ -38,21 +40,26 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
@@ -62,7 +69,11 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {SearchActivityUnitTest.ShadowSearchActivityUtils.class})
+        shadows = {
+            SearchActivityUnitTest.ShadowSearchActivityUtils.class,
+            SearchActivityUnitTest.ShadowWebContentsFactory.class,
+            SearchActivityUnitTest.ShadowTabBuilder.class
+        })
 public class SearchActivityUnitTest {
     private static final OmniboxLoadUrlParams LOAD_URL_PARAMS_SIMPLE =
             new OmniboxLoadUrlParams.Builder("https://abc.xyz", PageTransition.TYPED).build();
@@ -99,12 +110,36 @@ public class SearchActivityUnitTest {
         }
     }
 
+    @Implements(WebContentsFactory.class)
+    public static class ShadowWebContentsFactory {
+        static WebContents sMockWebContents;
+
+        @Implementation
+        public static WebContents createWebContents(
+                Profile p, boolean initiallyHidden, boolean initRenderer) {
+            return sMockWebContents;
+        }
+    }
+
+    @Implements(TabBuilder.class)
+    public static class ShadowTabBuilder {
+        static Tab sMockTab;
+
+        @Implementation
+        public Tab build() {
+            return sMockTab;
+        }
+    }
+
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public @Rule JniMocker mJniMocker = new JniMocker();
     private @Mock TestSearchActivityUtils mUtils;
     private @Mock TemplateUrlService mTemplateUrlSvc;
     private @Mock Profile mProfile;
     private @Mock TemplateUrlServiceFactoryJni mTemplateUrlFactoryJni;
+    private @Mock WebContents mWebContents;
+    private @Mock Tab mTab;
+    private @Mock SearchActivity.SearchActivityDelegate mDelegate;
     private @Spy ObservableSupplierImpl<Profile> mProfileSupplier;
 
     private ActivityController<SearchActivity> mController;
@@ -116,7 +151,7 @@ public class SearchActivityUnitTest {
     public void setUp() {
         FirstRunStatus.setFirstRunFlowComplete(true);
         mController = Robolectric.buildActivity(SearchActivity.class);
-        mActivity = mController.get();
+        mActivity = spy(mController.get());
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mShadowActivity = shadowOf(mActivity);
         mDataProvider = mActivity.getSearchBoxDataProviderForTesting();
@@ -128,8 +163,12 @@ public class SearchActivityUnitTest {
         doReturn(mTemplateUrlSvc).when(mTemplateUrlFactoryJni).getTemplateUrlService(any());
 
         mActivity.setProfileSupplierForTesting(mProfileSupplier);
+        SearchActivity.setDelegateForTests(mDelegate);
         mActivity.setActivityUsableForTesting(true);
+
         ShadowSearchActivityUtils.sMockUtils = mUtils;
+        ShadowWebContentsFactory.sMockWebContents = mWebContents;
+        ShadowTabBuilder.sMockTab = mTab;
     }
 
     @After
@@ -473,5 +512,77 @@ public class SearchActivityUnitTest {
         assertEquals(
                 PageClassification.OTHER_ON_CCT_VALUE,
                 mDataProvider.getPageClassification(true, false));
+    }
+
+    @Test
+    public void finishNativeInitialization_stopActivityWhenSearchEnginePromoCanceled() {
+        doNothing().when(mActivity).finishDeferredInitialization();
+
+        mProfileSupplier.set(mProfile);
+        mActivity.finishNativeInitialization();
+
+        ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
+        verify(mDelegate).showSearchEngineDialogIfNeeded(eq(mActivity), captor.capture());
+
+        // Notify Activity that the search engine promo dialog was canceled.
+        captor.getValue().onResult(false);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mActivity, never()).finishDeferredInitialization();
+        assertTrue(mActivity.isFinishing());
+    }
+
+    @Test
+    public void finishNativeInitialization_stopActivityWhenSearchEnginePromoFailed() {
+        doNothing().when(mActivity).finishDeferredInitialization();
+
+        mProfileSupplier.set(mProfile);
+        mActivity.finishNativeInitialization();
+
+        ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
+        verify(mDelegate).showSearchEngineDialogIfNeeded(eq(mActivity), captor.capture());
+
+        // "should never happen".
+        captor.getValue().onResult(null);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mActivity, never()).finishDeferredInitialization();
+        assertTrue(mActivity.isFinishing());
+    }
+
+    @Test
+    public void finishNativeInitialization_resumeActivityAfterSearchEnginePromoCleared() {
+        doNothing().when(mActivity).finishDeferredInitialization();
+
+        mProfileSupplier.set(mProfile);
+        mActivity.finishNativeInitialization();
+
+        ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
+        verify(mDelegate).showSearchEngineDialogIfNeeded(eq(mActivity), captor.capture());
+
+        // Notify Activity that the search engine promo dialog was completed.
+        captor.getValue().onResult(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mActivity).finishDeferredInitialization();
+        assertFalse(mActivity.isFinishing());
+    }
+
+    @Test
+    public void finishNativeInitialization_abortIfActivityTerminated() {
+        doNothing().when(mActivity).finishDeferredInitialization();
+
+        mProfileSupplier.set(mProfile);
+        mActivity.finishNativeInitialization();
+
+        ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
+        verify(mDelegate).showSearchEngineDialogIfNeeded(eq(mActivity), captor.capture());
+
+        // Cancel activity, and notify that the search engine promo dialog was completed.
+        mActivity.finish();
+        captor.getValue().onResult(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mActivity, never()).finishDeferredInitialization();
     }
 }
