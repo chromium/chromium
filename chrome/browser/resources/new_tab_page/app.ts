@@ -233,11 +233,6 @@ export class AppElement extends AppElementBase {
         type: Boolean,
       },
 
-      realboxLensSearchEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxLensSearch'),
-      },
-
       realboxShown_: {
         type: Boolean,
         computed: 'computeRealboxShown_(theme_, showLensUploadDialog_)',
@@ -375,7 +370,6 @@ export class AppElement extends AppElementBase {
   private customizeChromeEnabled_: boolean;
   private logoColor_: string;
   private singleColoredLogo_: boolean;
-  private realboxLensSearchEnabled_: boolean;
   private realboxShown_: boolean;
   private showLensUploadDialog_: boolean = false;
   private logoEnabled_: boolean;

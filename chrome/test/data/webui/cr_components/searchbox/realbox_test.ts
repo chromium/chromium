@@ -106,6 +106,7 @@ suite('NewTabPageRealboxTest', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       realboxSeparator: ' - ',
+      realboxVoiceSearch: true,
     });
   });
 
@@ -169,12 +170,50 @@ suite('NewTabPageRealboxTest', () => {
     assertFalse(await areMatchesShowing());
   });
 
+  test('Voice search button is present by default', async () => {
+    // Arrange.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-realbox');
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    // Assert
+    const voiceSearchButton =
+        realbox.shadowRoot!.querySelector<HTMLElement>('#voiceSearchButton');
+    assertTrue(!!voiceSearchButton);
+  });
+
+  test('Voice search button is not present when not enabled', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({realboxVoiceSearch: false});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-realbox');
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    // Assert
+    const voiceSearchButton =
+        realbox.shadowRoot!.querySelector<HTMLElement>('#voiceSearchButton');
+    assertFalse(!!voiceSearchButton);
+
+    // Restore
+    loadTimeData.overrideValues({realboxVoiceSearch: true});
+  });
+
   test('clicking voice search button send voice search event', async () => {
     // Arrange.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-realbox');
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
     const whenOpenVoiceSearch = eventToPromise('open-voice-search', realbox);
 
     // Act.
-    realbox.$.voiceSearchButton.click();
+    const voiceSearchButton =
+        realbox.shadowRoot!.querySelector<HTMLElement>('#voiceSearchButton');
+    assertTrue(!!voiceSearchButton);
+    voiceSearchButton.click();
 
     // Assert.
     await whenOpenVoiceSearch;
@@ -222,10 +261,14 @@ suite('NewTabPageRealboxTest', () => {
     realbox = document.createElement('cr-realbox');
     realbox.colorSourceIsBaseline = true;
     document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
 
     // Assert.
+    const voiceSearchButton =
+        realbox.shadowRoot!.querySelector<HTMLElement>('#voiceSearchButton');
+    assertTrue(!!voiceSearchButton);
     assertStyle(
-        realbox.$.voiceSearchButton, 'background-image',
+        voiceSearchButton, 'background-image',
         'url("chrome://resources/cr_components/searchbox/icons/mic.svg")');
 
     // Restore.
@@ -239,10 +282,14 @@ suite('NewTabPageRealboxTest', () => {
     realbox = document.createElement('cr-realbox');
     realbox.colorSourceIsBaseline = false;
     document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
 
     // Assert.
+    const voiceSearchButton =
+        realbox.shadowRoot!.querySelector<HTMLElement>('#voiceSearchButton');
+    assertTrue(!!voiceSearchButton);
     assertStyle(
-        realbox.$.voiceSearchButton, '-webkit-mask-image',
+        voiceSearchButton, '-webkit-mask-image',
         'url("chrome://resources/cr_components/searchbox/icons/mic.svg")');
 
     // Restore.

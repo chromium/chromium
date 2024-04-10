@@ -12,7 +12,6 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/omnibox_controller.h"
@@ -415,7 +414,9 @@ searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
 
 // static
 void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
-                                            Profile* profile) {
+                                            Profile* profile,
+                                            bool enable_voice_search,
+                                            bool enable_lens_search) {
   static constexpr webui::LocalizedString kStrings[] = {
       {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
       {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},
@@ -457,9 +458,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
 #endif
           : kSearchIconResourceName);
 
-  source->AddBoolean(
-      "realboxLensSearch",
-      profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled));
+  source->AddBoolean("realboxVoiceSearch", enable_voice_search);
+  source->AddBoolean("realboxLensSearch", enable_lens_search);
   source->AddString("realboxLensVariations", GetBase64UrlVariations(profile));
   source->AddBoolean(
       "realboxLensDirectUpload",

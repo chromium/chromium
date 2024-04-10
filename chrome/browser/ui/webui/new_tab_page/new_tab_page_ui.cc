@@ -638,7 +638,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   webui::SetupChromeRefresh2023(source);
 
-  SearchboxHandler::SetupWebUIDataSource(source, profile);
+  SearchboxHandler::SetupWebUIDataSource(
+      source, profile,
+      /*enable_voice_search=*/true,
+      /*enable_lens_search=*/
+      profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled));
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),

@@ -65,7 +65,8 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       IDR_LENS_UNTRUSTED_LENS_OVERLAY_HTML);
 
   // Add required resources for the searchbox.
-  RealboxHandler::SetupWebUIDataSource(html_source, Profile::FromWebUI(web_ui));
+  SearchboxHandler::SetupWebUIDataSource(html_source,
+                                         Profile::FromWebUI(web_ui));
 
   // Set request filter for loading the screenshot on the page.
   html_source->SetRequestFilter(

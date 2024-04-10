@@ -43,7 +43,6 @@ export interface RealboxElement {
     input: HTMLInputElement,
     inputWrapper: HTMLElement,
     matches: RealboxDropdownElement,
-    voiceSearchButton: HTMLElement,
   };
 }
 
@@ -116,13 +115,6 @@ export class RealboxElement extends RealboxElementBase {
         reflectToAttribute: true,
       },
 
-      /** Whether the Google Lens icon should be visible in the searchbox. */
-      realboxLensSearchEnabled: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxLensSearch'),
-        reflectToAttribute: true,
-      },
-
       realboxChromeRefreshTheming: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('realboxCr23Theming'),
@@ -187,9 +179,14 @@ export class RealboxElement extends RealboxElementBase {
         value: () => loadTimeData.getString('realboxDefaultIcon'),
       },
 
-      /**
-       * Whether the Google Lens icon should be visible in the searchbox.
-       */
+      /** Whether the voice search icon should be visible in the searchbox. */
+      realboxVoiceSearchEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxVoiceSearch'),
+        reflectToAttribute: true,
+      },
+
+      /** Whether the Google Lens icon should be visible in the searchbox. */
       realboxLensSearchEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('realboxLensSearch'),
@@ -242,7 +239,6 @@ export class RealboxElement extends RealboxElementBase {
   hasSecondarySide: boolean;
   isDark: boolean;
   matchSearchbox: boolean;
-  realboxLensSearchEnabled: boolean;
   realboxChromeRefreshTheming: boolean;
   realboxSteadyStateShadow: boolean;
   private inputAriaLive_: string;
@@ -252,6 +248,7 @@ export class RealboxElement extends RealboxElementBase {
   private lastQueriedInput_: string|null;
   private pastedInInput_: boolean;
   private realboxIcon_: string;
+  private realboxVoiceSearchEnabled_: boolean;
   private realboxLensSearchEnabled_: boolean;
   private result_: AutocompleteResult|null;
   private selectedMatch_: AutocompleteMatch|null;

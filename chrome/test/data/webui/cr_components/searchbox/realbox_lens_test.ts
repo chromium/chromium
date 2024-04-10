@@ -59,6 +59,7 @@ suite('Lens search', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
+      realboxLensSearch: true,
       realboxMatchOmniboxTheme: true,
       realboxSeparator: ' - ',
     });
@@ -84,7 +85,7 @@ suite('Lens search', () => {
     document.body.appendChild(realbox);
   });
 
-  test('Lens search button is visible by default', async () => {
+  test('Lens search button is present by default', async () => {
     // Arrange.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-realbox');
@@ -97,11 +98,25 @@ suite('Lens search', () => {
     assertTrue(!!lensButton);
   });
 
+  test('Lens search button is not present when not enabled', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({realboxLensSearch: false});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-realbox');
+    document.body.appendChild(realbox);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+
+    // Assert
+    const lensButton =
+        realbox.shadowRoot!.querySelector<HTMLElement>('#lensSearchButton');
+    assertFalse(!!lensButton);
+
+    // Restore
+    loadTimeData.overrideValues({realboxLensSearch: true});
+  });
+
   test('clicking Lens search button hides matches', async () => {
     // Arrange.
-    loadTimeData.overrideValues({
-      realboxLensSearch: true,
-    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-realbox');
     document.body.appendChild(realbox);
@@ -127,18 +142,10 @@ suite('Lens search', () => {
 
     // Assert.
     assertFalse(areMatchesShowing());
-
-    // Restore.
-    loadTimeData.overrideValues({
-      realboxLensSearch: false,
-    });
   });
 
   test('clicking Lens search button sends Lens search event', async () => {
     // Arrange.
-    loadTimeData.overrideValues({
-      realboxLensSearch: true,
-    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-realbox');
     document.body.appendChild(realbox);
@@ -153,10 +160,5 @@ suite('Lens search', () => {
 
     // Assert.
     await whenOpenLensSearch;
-
-    // Restore.
-    loadTimeData.overrideValues({
-      realboxLensSearch: false,
-    });
   });
 });

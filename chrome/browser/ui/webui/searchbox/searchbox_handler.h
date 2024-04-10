@@ -29,7 +29,9 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                          public AutocompleteController::Observer {
  public:
   static void SetupWebUIDataSource(content::WebUIDataSource* source,
-                                   Profile* profile);
+                                   Profile* profile,
+                                   bool enable_voice_search = false,
+                                   bool enable_lens_search = false);
   static std::string AutocompleteMatchVectorIconToResourceName(
       const gfx::VectorIcon& icon);
   static std::string ActionVectorIconToResourceName(

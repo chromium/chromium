@@ -288,34 +288,41 @@
       on-input="onInputInput_" on-keydown="onInputKeydown_"
       on-keyup="onInputKeyup_" on-mousedown="onInputMouseDown_"
       on-paste="onInputPaste_">
+  </input>
   <cr-realbox-icon id="icon" match="[[selectedMatch_]]"
       default-icon="[[realboxIcon_]]" in-searchbox>
   </cr-realbox-icon>
-  <div class="realbox-icon-button-container voice"
-      hidden="[[!realboxChromeRefreshTheming]]">
-    <button id="voiceSearchButton" class="realbox-icon-button"
-        on-click="onVoiceSearchClick_"
-        title="[[i18n('voiceSearchButtonLabel')]]">
-    </button>
-  </div>
-  <div class="realbox-icon-button-container lens"
-      hidden="[[!realboxChromeRefreshTheming]]">
+  <template is="dom-if" if="[[realboxChromeRefreshTheming]]">
+    <template is="dom-if" if="[[realboxVoiceSearchEnabled_]]">
+      <div class="realbox-icon-button-container voice">
+        <button id="voiceSearchButton" class="realbox-icon-button"
+            on-click="onVoiceSearchClick_"
+            title="[[i18n('voiceSearchButtonLabel')]]">
+        </button>
+      </div>
+    </template>
+    <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
+      <div class="realbox-icon-button-container lens">
+          <button id="lensSearchButton" class="realbox-icon-button"
+              on-click="onLensSearchClick_"
+              title="[[i18n('lensSearchButtonLabel')]]">
+          </button>
+      </div>
+    </template>
+  </template>
+  <template is="dom-if" if="[[!realboxChromeRefreshTheming]]">
+    <template is="dom-if" if="[[realboxVoiceSearchEnabled_]]">
+      <button id="voiceSearchButton" class="realbox-icon-button"
+          on-click="onVoiceSearchClick_"
+          title="[[i18n('voiceSearchButtonLabel')]]">
+      </button>
+    </template>
     <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
       <button id="lensSearchButton" class="realbox-icon-button"
           on-click="onLensSearchClick_"
           title="[[i18n('lensSearchButtonLabel')]]">
       </button>
     </template>
-  </div>
-  <button id="voiceSearchButton" class="realbox-icon-button"
-      on-click="onVoiceSearchClick_" title="[[i18n('voiceSearchButtonLabel')]]"
-      hidden="[[realboxChromeRefreshTheming]]">
-  </button>
-  <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
-    <button id="lensSearchButton" class="realbox-icon-button"
-        on-click="onLensSearchClick_" title="[[i18n('lensSearchButtonLabel')]]"
-        hidden="[[realboxChromeRefreshTheming]]">
-    </button>
   </template>
   <cr-realbox-dropdown id="matches" role="listbox" result="[[result_]]"
       selected-match-index="{{selectedMatchIndex_}}"
