@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -17,6 +19,13 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/service/sync_user_settings.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1029,6 +1038,49 @@ TEST_F(AddressDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
   // range and therefore, the blocking should prevail.
   EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(second_url));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class AddressDataManagerExplicitSigninTest
+    : public base::test::WithFeatureOverride,
+      public AddressDataManagerTest {
+ public:
+  AddressDataManagerExplicitSigninTest()
+      : base::test::WithFeatureOverride(
+            ::switches::kExplicitBrowserSigninUIOnDesktop) {}
+};
+
+TEST_P(AddressDataManagerExplicitSigninTest,
+       IsEligibleForAddressAccountStorageSigninPending) {
+  // Setup account in auth error.
+  CoreAccountInfo account_info =
+      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+  identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account_info.account_id, account_info.email, account_info.gaia,
+      /*hosted_domain=*/"", "Full Name", "Given Name", /*locale=*/"",
+      /*picture_url=*/"");
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  sync_service_.SetTransportState(syncer::SyncService::TransportState::PAUSED);
+
+  // User is still signed in.
+  ASSERT_TRUE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  // Addresses are selected data type, but not active.
+  ASSERT_FALSE(sync_service_.GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+  ASSERT_TRUE(sync_service_.GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kAutofill));
+
+  // Account storage is eligible when explicit signin UI is enabled.
+  EXPECT_EQ(personal_data_->address_data_manager()
+                .IsEligibleForAddressAccountStorage(),
+            ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+                ::switches::ExplicitBrowserSigninPhase::kFull));
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AddressDataManagerExplicitSigninTest);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace
 

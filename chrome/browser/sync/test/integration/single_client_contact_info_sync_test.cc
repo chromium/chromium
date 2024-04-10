@@ -13,6 +13,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -25,6 +26,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/fake_server.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -296,6 +298,54 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+// Account storage is still enabled when the user is in auth error.
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+                       AuthErrorState) {
+  // Setup transport mode.
+  const AutofillProfile kProfile = BuildTestAccountProfile();
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+
+  // Trigger auth error, sync stops.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile(0));
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  ASSERT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(ContactInfoActiveChecker(GetSyncService(0),
+                                       /*expect_active=*/false)
+                  .Wait());
+
+  // Save a profile, it is not uploaded.
+  EXPECT_TRUE(GetPersonalDataManager()
+                  ->address_data_manager()
+                  .IsEligibleForAddressAccountStorage());
+  EXPECT_TRUE(GetPersonalDataManager()->IsAutofillSyncToggleAvailable());
+  GetPersonalDataManager()->AddProfile(kProfile);
+  EXPECT_TRUE(PersonalDataManagerProfileChecker(GetPersonalDataManager(),
+                                                UnorderedElementsAre(kProfile))
+                  .Wait());
+  EXPECT_TRUE(GetFakeServer()
+                  ->GetSyncEntitiesByModelType(syncer::CONTACT_INFO)
+                  .empty());
+
+  // Fix the authentication error, data is uploaded.
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      GoogleServiceAuthError::AuthErrorNone());
+  EXPECT_TRUE(FakeServerSpecificsChecker(
+                  UnorderedElementsAre(
+                      AsContactInfoSpecifics(kProfile).SerializeAsString()))
+                  .Wait());
+}
+
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        PreservesUnsupportedFieldsDataOnCommits) {
   // Create an unsupported field with an unused tag.

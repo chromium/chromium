@@ -15,10 +15,14 @@
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
+#include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/webdata/common/web_data_results.h"
@@ -58,6 +62,7 @@ AddressDataManager::AddressDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
     PrefService* pref_service,
     syncer::SyncService* sync_service,
+    signin::IdentityManager* identity_manager,
     StrikeDatabaseBase* strike_database,
     base::RepeatingClosure notify_pdm_observers,
     const std::string& app_locale)
@@ -72,6 +77,14 @@ AddressDataManager::AddressDataManager(
                             weak_factory_.GetWeakPtr()));
     webdata_service_observer_.Observe(webdata_service_.get());
   }
+
+  if (sync_service_ && identity_manager) {
+    contact_info_precondition_checker_ =
+        std::make_unique<ContactInfoPreconditionChecker>(
+            sync_service_, identity_manager,
+            /*on_precondition_changed=*/base::DoNothing());
+  }
+
   SetPrefService(pref_service);
   SetStrikeDatabase(strike_database);
   // `IsAutofillProfileEnabled()` relies on the `pref_service_`, which is only
@@ -257,10 +270,23 @@ void AddressDataManager::RemoveProfile(const std::string& guid) {
 }
 
 bool AddressDataManager::IsEligibleForAddressAccountStorage() const {
+  if (!sync_service_) {
+    return false;
+  }
+
+  if (::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          ::switches::ExplicitBrowserSigninPhase::kFull)) {
+    return contact_info_precondition_checker_ &&
+           contact_info_precondition_checker_->GetPreconditionState() ==
+               syncer::ModelTypeController::PreconditionState::
+                   kPreconditionsMet &&
+           sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+               syncer::UserSelectableType::kAutofill);
+  }
+
   // The CONTACT_INFO data type is only running for eligible users. See
   // ContactInfoModelTypeController.
-  return sync_service_ &&
-         sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO);
+  return sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO);
 }
 
 void AddressDataManager::MigrateProfileToAccount(

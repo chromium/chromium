@@ -28,10 +28,15 @@
 #include "components/sync/service/sync_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
+namespace signin {
+class IdentityManager;
+}
+
 class PrefService;
 
 namespace autofill {
 
+class ContactInfoPreconditionChecker;
 class PersonalDataManager;
 
 // Intended to contain all address-related logic of the `PersonalDataManager`.
@@ -57,6 +62,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   AddressDataManager(scoped_refptr<AutofillWebDataService> webdata_service,
                      PrefService* pref_service,
                      syncer::SyncService* sync_service,
+                     signin::IdentityManager* identity_manager,
                      StrikeDatabaseBase* strike_database,
                      base::RepeatingClosure notify_pdm_observers,
                      const std::string& app_locale);
@@ -324,6 +330,9 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Logs metrics around the number of stored profiles after the initial load
   // has finished.
   void LogStoredDataMetrics() const;
+
+  std::unique_ptr<ContactInfoPreconditionChecker>
+      contact_info_precondition_checker_;
 
   // A copy of the profiles stored in `AddressAutofillTable`. They come from
   // two sources:

@@ -15,6 +15,7 @@ TestAddressDataManager::TestAddressDataManager(
     : AddressDataManager(/*webdata_service=*/nullptr,
                          /*pref_service=*/nullptr,
                          /*sync_service=*/nullptr,
+                         /*identity_manager=*/nullptr,
                          /*strike_database=*/nullptr,
                          notify_pdm_observers,
                          "en-US") {

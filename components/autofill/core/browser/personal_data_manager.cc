@@ -96,8 +96,8 @@ void PersonalDataManager::Init(
   auto notify_observers = base::BindRepeating(
       &PersonalDataManager::NotifyPersonalDataObserver, base::Unretained(this));
   address_data_manager_ = std::make_unique<AddressDataManager>(
-      profile_database, pref_service, sync_service, strike_database,
-      notify_observers, app_locale_);
+      profile_database, pref_service, sync_service, identity_manager,
+      strike_database, notify_observers, app_locale_);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
@@ -154,9 +154,10 @@ void PersonalDataManager::Shutdown() {
     identity_manager_->RemoveObserver(this);
   identity_manager_ = nullptr;
 
-  // The following members register a sync observer, which needs to be
-  // unregistered before the SyncService's `Shutdown()`.
+  // The following members register observers, which needs to be unregistered
+  // before the dependent service's `Shutdown()`.
   address_data_cleaner_.reset();
+  address_data_manager_.reset();
   contact_info_precondition_checker_.reset();
 }
 
