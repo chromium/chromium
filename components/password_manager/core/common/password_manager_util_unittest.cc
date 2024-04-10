@@ -59,61 +59,64 @@ TEST(PasswordsManagerUtilTest,
 }
 
 // Test that a valid username field is considered as such.
-TEST(PasswordsManagerUtilTest, CanBeConsideredAsSingleUsername_Valid) {
-  EXPECT_TRUE(CanBeConsideredAsSingleUsername(/*value=*/u"test_username",
-                                              /*name=*/u"username",
-                                              /*id=*/u"username1",
-                                              /*label=*/u"username"));
+TEST(PasswordsManagerUtilTest, CanValueBeConsideredAsSingleUsername_Valid) {
+  EXPECT_TRUE(CanValueBeConsideredAsSingleUsername(/*value=*/u"test_username"));
 }
 
 TEST(PasswordsManagerUtilTest,
-     CanBeConsideredAsSingleUsername_ValueHasOtpSize) {
-  EXPECT_FALSE(CanBeConsideredAsSingleUsername(/*value=*/u"t",
-                                               /*name=*/u"username",
-                                               /*id=*/u"username1",
-                                               /*label=*/u"username"));
+     CanValueBeConsideredAsSingleUsername_ValueHasOtpSize) {
+  EXPECT_FALSE(CanValueBeConsideredAsSingleUsername(/*value=*/u"t"));
+}
+
+TEST(PasswordsManagerUtilTest,
+     CanValueBeConsideredAsSingleUsername_ValueEmpty) {
+  EXPECT_FALSE(CanValueBeConsideredAsSingleUsername(/*value=*/u""));
+}
+
+TEST(PasswordsManagerUtilTest,
+     CanValueBeConsideredAsSingleUsername_ValueTooLarge) {
   EXPECT_FALSE(
-      CanBeConsideredAsSingleUsername(/*value=*/std::u16string(101, 't'),
-                                      /*name=*/u"username",
-                                      /*id=*/u"username1",
-                                      /*label=*/u"username"));
+      CanValueBeConsideredAsSingleUsername(/*value=*/std::u16string(101, 't')));
+}
+
+// Test that a valid username field is considered as such.
+TEST(PasswordsManagerUtilTest, CanFieldBeConsideredAsSingleUsername_Valid) {
+  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(/*name=*/u"username",
+                                                   /*id=*/u"username1",
+                                                   /*label=*/u"username"));
 }
 
 // Test that a field with a too short id and name attribute isn't considered as
 // a valid username.
 TEST(PasswordsManagerUtilTest,
-     CanBeConsideredAsSingleUsername_IdAndNameTooShort) {
-  EXPECT_FALSE(CanBeConsideredAsSingleUsername(/*value=*/u"test_username",
-                                               /*name=*/u"u",
-                                               /*id=*/u"u",
-                                               /*label=*/u"username"));
+     CanFieldBeConsideredAsSingleUsername_IdAndNameTooShort) {
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(/*name=*/u"u",
+                                                    /*id=*/u"u",
+                                                    /*label=*/u"username"));
 
   // Verify that the rule only applies if the 2 attributes are too short.
-  EXPECT_TRUE(CanBeConsideredAsSingleUsername(/*value=*/u"test_username",
-                                              /*name=*/u"u",
-                                              /*id=*/u"username1",
-                                              /*label=*/u"username"));
-  EXPECT_TRUE(CanBeConsideredAsSingleUsername(/*value=*/u"test_username",
-                                              /*name=*/u"username",
-                                              /*id=*/u"u",
-                                              /*label=*/u"username"));
+  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(/*name=*/u"u",
+                                                   /*id=*/u"username1",
+                                                   /*label=*/u"username"));
+  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(/*name=*/u"username",
+                                                   /*id=*/u"u",
+                                                   /*label=*/u"username"));
 }
 
 // Test that a field that looks like a search field isn't considered as a valid
 // username.
-TEST(PasswordsManagerUtilTest, CanBeConsideredAsSingleUsername_IsSearchField) {
-  EXPECT_FALSE(CanBeConsideredAsSingleUsername(/*value=*/u"test_username",
-                                               /*name=*/constants::kSearch,
-                                               /*id=*/u"username1",
-                                               /*label=*/u"username"));
-  EXPECT_FALSE(CanBeConsideredAsSingleUsername(/*value=*/u"test_username",
-                                               /*name=*/u"username",
-                                               /*id=*/constants::kSearch,
-                                               /*label=*/u"username"));
-  EXPECT_FALSE(CanBeConsideredAsSingleUsername(/*value=*/u"test_username",
-                                               /*name=*/u"username",
-                                               /*id=*/u"username1",
-                                               /*label=*/constants::kSearch));
+TEST(PasswordsManagerUtilTest,
+     CanFieldBeConsideredAsSingleUsername_IsSearchField) {
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(/*name=*/constants::kSearch,
+                                                    /*id=*/u"username1",
+                                                    /*label=*/u"username"));
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(/*name=*/u"username",
+                                                    /*id=*/constants::kSearch,
+                                                    /*label=*/u"username"));
+  EXPECT_FALSE(
+      CanFieldBeConsideredAsSingleUsername(/*name=*/u"username",
+                                           /*id=*/u"username1",
+                                           /*label=*/constants::kSearch));
 }
 
 // Tests that a field that looks like an OTP is considered as such.

@@ -796,8 +796,10 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
   static base::NoDestructor<WebString> kLabel("label");
   std::u16string label_attribute = element.GetAttribute(*kLabel).Utf16();
 
-  if (!password_manager::util::CanBeConsideredAsSingleUsername(
-          element_value, name_attribute, id_attribute, label_attribute)) {
+  if (!password_manager::util::CanFieldBeConsideredAsSingleUsername(
+          name_attribute, id_attribute, label_attribute) ||
+      !password_manager::util::CanValueBeConsideredAsSingleUsername(
+          element_value)) {
     return;
   }
 

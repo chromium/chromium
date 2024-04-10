@@ -32,17 +32,9 @@ bool IsRendererRecognizedCredentialForm(const autofill::FormData& form) {
       });
 }
 
-bool CanBeConsideredAsSingleUsername(const std::u16string& value,
-                                     const std::u16string& name,
-                                     const std::u16string& id,
-                                     const std::u16string& label) {
-  // Exclude 1-symbol inputs, as they are unlikely to be usernames and likely
-  // to be characters/digits of OTPs.
-  // Exclude too large inputs, as they are usually not usernames.
-  if (value.size() == 1 || value.size() > 100) {
-    return false;
-  }
-
+bool CanFieldBeConsideredAsSingleUsername(const std::u16string& name,
+                                          const std::u16string& id,
+                                          const std::u16string& label) {
   // Do not consider fields with very short names/ids to avoid aggregating
   // multiple unrelated fields on the server. (crbug.com/1209143)
   if (name.length() < kMinInputNameLengthForSingleUsername &&
@@ -57,6 +49,14 @@ bool CanBeConsideredAsSingleUsername(const std::u16string& value,
           std::u16string::npos) &&
          (label.find(password_manager::constants::kSearch) ==
           std::u16string::npos);
+}
+
+bool CanValueBeConsideredAsSingleUsername(const std::u16string& value) {
+  // Do not consider 1-symbol values, as they are unlikely to be usernames and
+  // likely to be characters/digits of OTPs. Exclude too large values, as they
+  // are usually not usernames. Exclude empty values as they don't hold any
+  // information for the username.
+  return value.size() > 1 && value.size() <= 100;
 }
 
 bool IsLikelyOtp(std::u16string_view name,
