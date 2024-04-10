@@ -186,6 +186,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
                          aura::Window* lost_active) override;
 
   // Overridden from ShellSurfaceBase:
+  void OnSurfaceCommit() override;
   gfx::Rect ComputeAdjustedBounds(const gfx::Rect& bounds) const override;
   void SetWidgetBounds(const gfx::Rect& bounds,
                        bool adjusted_by_server) override;
