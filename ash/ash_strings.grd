@@ -6556,8 +6556,29 @@ Here are some things you can try to get started.
         Key Shortcuts
       </message>
 
+      <!-- Shimless RMA Diagnostics App -->
       <message name="IDS_ASH_SHIMLESS_RMA_APP_TITLE" translateable="false" desc="The title of shimless RMA flow SWA. Shimless RMA guides repair technicians through step-by-step repair flow.">
         Shimless RMA
+      </message>
+
+      <message name="IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION" desc="The string prompted to request user permission during install time of the app.">
+        Access the following permissions:
+      </message>
+
+      <message name="IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_CAMERA" desc="The string prompted to request user permission for camera during install time of the app.">
+        Camera
+      </message>
+
+      <message name="IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_MICROPHONE" desc="The string prompted to request user permission for microphone during install time of the app.">
+        Microphone
+      </message>
+
+      <message name="IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_FULLSCREEN" desc="The string prompted to request user permission for fullscreen during install time of the app.">
+        Fullscreen
+      </message>
+
+      <message name="IDS_ASH_SHIMLESS_RMA_APP_ACCESS_PERMISSION_HID_DEVICES" desc="The string prompted to request user permission for HID devices during install time of the app.">
+        HID devices
       </message>
 
       <!-- Firmware Update App -->
