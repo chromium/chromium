@@ -47,6 +47,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -114,6 +115,12 @@ constexpr SkScalar kCutoutConcaveRadius = 12.f;
 // icon. Subtract that padding from the expected space between the two icons.
 // NOTE: Changes to the feedback buttons' size will affect this constant.
 constexpr int kFeedbackButtonSpacing = kFeedbackButtonIconPaddingBetween - 4;
+
+// There's an 8px extra spacing between the scroll view and the input textfield
+// (on top of the default 8px spacing for the whole panel).
+constexpr int kScrollViewAndAskQuestionSpacing = 8;
+
+constexpr int kFooterSpacing = 1;
 
 // Sets focus ring for `question_textfield`. Insets need to be negative so it
 // can exceed the textfield bounds and cover the entire container.
@@ -395,6 +402,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
   // Add a source row containing the content icon and title.
   AddChildView(
       views::Builder<views::BoxLayoutView>()
+          .SetID(mahi_constants::ViewId::kContentMetadataRow)
           .SetBackground(StyleUtil::CreateThemedFullyRoundedRectBackground(
               cros_tokens::kCrosSysSystemOnBase1))
           .SetBorder(views::CreateEmptyBorder(kSourceRowPadding))
@@ -423,6 +431,9 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
       views::Builder<views::View>()
           .SetID(mahi_constants::ViewId::kPanelContentsContainer)
           .SetUseDefaultFillLayout(true)
+          // Extra spacing between the scroll view and the input textfield.
+          .SetBorder(views::CreateEmptyBorder(
+              gfx::Insets::TLBR(0, 0, kScrollViewAndAskQuestionSpacing, 0)))
           .SetProperty(
               views::kFlexBehaviorKey,
               views::FlexSpecification(views::LayoutOrientation::kVertical,
@@ -511,20 +522,24 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
   question_textfield_->RemoveHoverEffect();
   InstallTextfieldFocusRing(question_textfield_, send_button_);
 
-  auto footer_row = std::make_unique<views::BoxLayoutView>();
-  footer_row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-
-  footer_row->AddChildView(
-      std::make_unique<views::Label>(GetMahiPanelDisclaimer()));
-
-  auto learn_more_link = std::make_unique<views::Link>(
-      l10n_util::GetStringUTF16(IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT));
-  learn_more_link->SetCallback(base::BindRepeating(
-      &MahiPanelView::OnLearnMoreLinkClicked, weak_ptr_factory_.GetWeakPtr()));
-  learn_more_link->SetID(mahi_constants::ViewId::kLearnMoreLink);
-  footer_row->AddChildView(std::move(learn_more_link));
-
-  AddChildView(std::move(footer_row));
+  AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+          .SetBetweenChildSpacing(kFooterSpacing)
+          .AddChildren(
+              views::Builder<views::Label>().SetText(GetMahiPanelDisclaimer()),
+              views::Builder<views::Link>()
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT))
+                  .SetCallback(base::BindRepeating(
+                      &MahiPanelView::OnLearnMoreLinkClicked,
+                      weak_ptr_factory_.GetWeakPtr()))
+                  .SetID(mahi_constants::ViewId::kLearnMoreLink)
+                  // TODO(b/333111220): Re-enable the link when there's a
+                  // website available.
+                  .SetVisible(false))
+          .Build());
 
   // Refresh contents after all child views are built.
   ui_controller_->RefreshContents();

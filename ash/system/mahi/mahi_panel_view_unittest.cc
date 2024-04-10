@@ -348,12 +348,18 @@ TEST_F(MahiPanelViewTest, CloseButton) {
 }
 
 TEST_F(MahiPanelViewTest, LearnMoreLink) {
+  auto* learn_more_link =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kLearnMoreLink);
+  // TODO(b/333111220): Remove this when the link is visible by default.
+  learn_more_link->SetVisible(true);
+  // Run layout so the link updates its size and becomes clickable.
+  views::test::RunScheduledLayout(widget());
+
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(mahi_constants::kLearnMorePage),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
-  LeftClickOn(
-      panel_view()->GetViewByID(mahi_constants::ViewId::kLearnMoreLink));
+  LeftClickOn(learn_more_link);
   Mock::VerifyAndClearExpectations(&new_window_delegate());
 }
 

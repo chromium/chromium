@@ -21,6 +21,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
@@ -78,6 +79,43 @@ class MahiPanelViewPixelTest : public AshTestBase {
   raw_ptr<MahiPanelView> panel_view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 };
+
+TEST_F(MahiPanelViewPixelTest, MainPanel) {
+  ON_CALL(mock_mahi_manager(), GetContentTitle)
+      .WillByDefault(testing::Return(u"Test content title"));
+  ON_CALL(mock_mahi_manager(), GetContentIcon)
+      .WillByDefault(testing::Return(
+          gfx::test::CreateImageSkia(/*size=*/128, SK_ColorBLUE)));
+
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault([](chromeos::MahiManager::MahiSummaryCallback callback) {
+        std::move(callback).Run(
+            base::StrCat(std::vector<std::u16string>(30, u"Summary text ")),
+            chromeos::MahiResponseStatus::kSuccess);
+      });
+
+  ui_controller()->RefreshContents();
+  views::test::RunScheduledLayout(widget());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "panel_view", /*revision_number=*/0, panel_view()));
+}
+
+TEST_F(MahiPanelViewPixelTest, ContentMetadataRow) {
+  ON_CALL(mock_mahi_manager(), GetContentTitle)
+      .WillByDefault(testing::Return(base::StrCat(
+          std::vector<std::u16string>(3, u"Long content title "))));
+  ON_CALL(mock_mahi_manager(), GetContentIcon)
+      .WillByDefault(testing::Return(
+          gfx::test::CreateImageSkia(/*size=*/200, SK_ColorRED)));
+
+  ui_controller()->RefreshContents();
+  views::test::RunScheduledLayout(widget());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "content_metadata", /*revision_number=*/0,
+      panel_view()->GetViewByID(mahi_constants::ViewId::kContentMetadataRow)));
+}
 
 TEST_F(MahiPanelViewPixelTest, SummaryView) {
   ON_CALL(mock_mahi_manager(), GetSummary)

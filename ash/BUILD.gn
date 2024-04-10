@@ -4519,6 +4519,7 @@ test("ash_pixeltests") {
     "//ui/chromeos/resources:resources_grit",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/events:test_support",
+    "//ui/gfx:test_support",
     "//ui/message_center",
     "//ui/touch_selection",
     "//ui/views:test_support",

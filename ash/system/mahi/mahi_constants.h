@@ -13,6 +13,7 @@ namespace ash::mahi_constants {
 // The view ids that will be used for all children views within the Mahi panel.
 enum ViewId {
   kCloseButton = 1,
+  kContentMetadataRow,
   kContentTitle,
   kContentIcon,
   kScrollViewContents,
@@ -51,7 +52,7 @@ inline constexpr int kPanelDefaultWidth = 360;
 inline constexpr int kPanelDefaultHeight = 492;
 inline constexpr gfx::Insets kPanelPadding(/*all=*/16);
 
-// TODO(b/319264190): Replace the string here with the correct URL.
+// TODO(b/333111220): Replace the string here with the correct URL.
 inline constexpr char kLearnMorePage[] = "https://google.com";
 
 inline constexpr int kRefreshBannerStackDepth = 25;
