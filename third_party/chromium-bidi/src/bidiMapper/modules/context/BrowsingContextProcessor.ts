@@ -77,6 +77,10 @@ export class BrowsingContextProcessor {
       userContext = params.userContext;
     }
 
+    const existingContexts = this.#browsingContextStorage
+      .getAllContexts()
+      .filter((context) => context.userContext === userContext);
+
     let newWindow = false;
     switch (params.type) {
       case BrowsingContext.CreateType.Tab:
@@ -87,16 +91,10 @@ export class BrowsingContextProcessor {
         break;
     }
 
-    if (userContext !== 'default') {
-      const existingContexts = this.#browsingContextStorage
-        .getAllContexts()
-        .filter((context) => context.userContext === userContext);
-
-      if (!existingContexts.length) {
-        // If there are no contexts in the given user context, we need to set
-        // newWindow to true as newWindow=false will be rejected.
-        newWindow = true;
-      }
+    if (!existingContexts.length) {
+      // If there are no contexts in the given user context, we need to set
+      // newWindow to true as newWindow=false will be rejected.
+      newWindow = true;
     }
 
     let result: Protocol.Target.CreateTargetResponse;
