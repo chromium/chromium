@@ -421,9 +421,12 @@ try_.builder(
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(
         location_filters = [
-            "ui/ozone/platform/wayland/.+",
             "chrome/browser/.+(ui|browser)test.+",
             "chrome/browser/ui/views/.+test.+",
+            "chrome/browser/ui/views/tabs/.+",
+            "third_party/wayland/.+",
+            "third_party/wayland-protocols/.+",
+            "ui/ozone/platform/wayland/.+",
             "ui/views/widget/.+test.+",
         ],
     ),
