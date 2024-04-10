@@ -685,6 +685,11 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
       GetDialogWidget()->Hide();
     }
   }
+
+  // If this happens after ShowVerifyingSheet, notify_delegate_of_dismiss_ may
+  // be false. However, if the user closes the popup, we do want to call
+  // OnDismiss to ensure the request is cancelled, so set it to true here.
+  notify_delegate_of_dismiss_ = true;
   return popup_window_->ShowPopupWindow(url);
 }
 

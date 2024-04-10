@@ -233,7 +233,7 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   gfx::NativeView GetNativeView() override { return gfx::NativeView(); }
 
   content::WebContents* GetWebContents() override { return web_contents_; }
-  const DismissReason& GetDismissReason() { return dismiss_reason_; }
+  std::optional<DismissReason> GetDismissReason() { return dismiss_reason_; }
 
   void SetOnDismissClosure(base::OnceClosure on_dismiss) {
     on_dismiss_ = std::move(on_dismiss);
@@ -241,7 +241,7 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
 
  private:
   raw_ptr<content::WebContents> web_contents_;
-  DismissReason dismiss_reason_;
+  std::optional<DismissReason> dismiss_reason_;
   base::OnceClosure on_dismiss_;
 };
 
@@ -1736,6 +1736,34 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   CreateAndShowPopupWindow(*controller);
   // This should not crash.
   controller->CloseModalDialog();
+}
+
+// Tests that opening a popup after a verifying sheet, then closing the popup,
+// notifies the observer.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ClosePopupAfterVerifyingSheetShouldNotify) {
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts, SignInMode::kExplicit);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+
+  CreateAndShowPopupWindow(*controller);
+  controller->popup_window_->ClosePopupWindow();
+  EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kOther);
 }
 
 // Tests that if the dialog skips requesting permission, the verifying sheet is
