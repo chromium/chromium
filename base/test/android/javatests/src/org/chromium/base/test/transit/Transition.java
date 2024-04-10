@@ -31,7 +31,12 @@ public class Transition {
 
     protected void triggerTransition() {
         if (mTrigger != null) {
-            mTrigger.triggerTransition();
+            try {
+                mTrigger.triggerTransition();
+            } catch (Exception e) {
+                throw TravelException.newTravelException(
+                        "Exception thrown by Transition trigger", e);
+            }
         }
     }
 
@@ -56,12 +61,18 @@ public class Transition {
         return newOptions().withTimeout(timeoutMs).build();
     }
 
+    /** Convenience method equivalent to newOptions().withRetry().build(). */
+    public static TransitionOptions retryOption() {
+        return newOptions().withRetry().build();
+    }
+
     /** Options to configure the Transition. */
     public static class TransitionOptions {
 
         static final TransitionOptions DEFAULT = new TransitionOptions();
         @Nullable List<Condition> mTransitionConditions;
         long mTimeoutMs;
+        int mTries = 1;
 
         private TransitionOptions() {}
 
@@ -88,6 +99,15 @@ public class Transition {
              */
             public Builder withTimeout(long timeoutMs) {
                 mTimeoutMs = timeoutMs;
+                return this;
+            }
+
+            /**
+             * Retry the transition trigger once, if the transition does not finish within the
+             * timeout.
+             */
+            public Builder withRetry() {
+                mTries = 2;
                 return this;
             }
         }

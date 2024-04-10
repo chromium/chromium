@@ -61,6 +61,10 @@ public class ConditionWaiter {
         }
 
         private void startTimer() {
+            if (mTimeStarted > 0) {
+                return;
+            }
+
             mTimeStarted = getNow();
             mTimeUnfulfilled = mTimeStarted;
         }

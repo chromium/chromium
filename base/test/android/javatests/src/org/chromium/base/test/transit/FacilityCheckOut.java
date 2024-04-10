@@ -34,10 +34,36 @@ class FacilityCheckOut extends Transition {
     }
 
     void exitSync() {
+        // TODO(crbug.com/333735412): Unify Trip#travelSyncInternal(), FacilityCheckIn#enterSync()
+        // and FacilityCheckOut#exitSync().
         onBeforeTransition();
-        triggerTransition();
         List<ConditionWait> waits = createWaits();
-        waitUntilExit(waits);
+
+        if (mOptions.mTries == 1) {
+            triggerTransition();
+            Log.i(TAG, "Triggered transition, waiting to exit %s", mFacility);
+            waitUntilExit(waits);
+        } else {
+            for (int tryNumber = 1; tryNumber <= mOptions.mTries; tryNumber++) {
+                try {
+                    triggerTransition();
+                    Log.i(
+                            TAG,
+                            "Triggered transition (try #%d/%d), waiting to exit %s",
+                            tryNumber,
+                            mOptions.mTries,
+                            mFacility);
+                    waitUntilExit(waits);
+                    break;
+                } catch (TravelException e) {
+                    Log.w(TAG, "Try #%d failed", tryNumber, e);
+                    if (tryNumber >= mOptions.mTries) {
+                        throw e;
+                    }
+                }
+            }
+        }
+
         onAfterTransition();
         PublicTransitConfig.maybePauseAfterTransition(mFacility);
     }

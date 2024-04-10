@@ -73,6 +73,8 @@ public class Trip extends Transition {
     }
 
     private void travelSyncInternal() {
+        // TODO(crbug.com/333735412): Unify Trip#travelSyncInternal(), FacilityCheckIn#enterSync()
+        // and FacilityCheckOut#exitSync().
         embark();
         if (mOrigin != null) {
             Log.i(TAG, "Trip %d: Embarked at %s towards %s", mId, mOrigin, mDestination);
@@ -80,10 +82,32 @@ public class Trip extends Transition {
             Log.i(TAG, "Trip %d: Starting at entry point %s", mId, mDestination);
         }
 
-        triggerTransition();
-        Log.i(TAG, "Trip %d: Triggered transition, waiting to arrive at %s", mId, mDestination);
+        if (mOptions.mTries == 1) {
+            triggerTransition();
+            Log.i(TAG, "Trip %d: Triggered transition, waiting to arrive at %s", mId, mDestination);
+            waitUntilArrival();
+        } else {
+            for (int tryNumber = 1; tryNumber <= mOptions.mTries; tryNumber++) {
+                try {
+                    triggerTransition();
+                    Log.i(
+                            TAG,
+                            "Trip %d: Triggered transition (try #%d/%d), waiting to arrive at %s",
+                            mId,
+                            tryNumber,
+                            mOptions.mTries,
+                            mDestination);
+                    waitUntilArrival();
+                    break;
+                } catch (TravelException e) {
+                    Log.w(TAG, "Try #%d failed", tryNumber, e);
+                    if (tryNumber >= mOptions.mTries) {
+                        throw e;
+                    }
+                }
+            }
+        }
 
-        waitUntilArrival();
         Log.i(TAG, "Trip %d: Arrived at %s", mId, mDestination);
 
         PublicTransitConfig.maybePauseAfterTransition(mDestination);
