@@ -32,6 +32,8 @@ namespace {
 using ActionTypeVariant =
     absl::variant<AcceleratorAction, ::ash::mojom::StaticShortcutAction>;
 
+constexpr double kDefaultKeyboardBrightness = 40.0;
+
 // Used to represent a constant version of the mojom::ActionChoice struct.
 struct ActionChoice {
   int id;
@@ -144,6 +146,19 @@ std::vector<T> SanitizeAndSortDeviceList(std::vector<T> devices) {
 }  // namespace
 
 InputDeviceSettingsProvider::InputDeviceSettingsProvider() {
+  if (Shell::HasInstance()) {
+    shell_observation_.Observe(ash::Shell::Get());
+  }
+
+  if (Shell::HasInstance() &&
+      Shell::Get()->keyboard_brightness_control_delegate()) {
+    keyboard_brightness_control_delegate_ =
+        Shell::Get()->keyboard_brightness_control_delegate();
+  } else {
+    LOG(WARNING) << "InputDeviceSettingsProvider: Shell not available, did not "
+                    "save KeyboardBrightnessControlDelegate.";
+  }
+
   auto* controller = InputDeviceSettingsController::Get();
   if (!controller) {
     return;
@@ -252,6 +267,12 @@ void InputDeviceSettingsProvider::OnWidgetDestroyed(views::Widget* widget) {
   InputDeviceSettingsController::Get()->StopObservingButtons();
 }
 
+void InputDeviceSettingsProvider::OnShellDestroying() {
+  // Set `KeyboardBrightnessControlDelegate` to null when shell destroys.
+  keyboard_brightness_control_delegate_ = nullptr;
+  shell_observation_.Reset();
+}
+
 void InputDeviceSettingsProvider::StartObserving(uint32_t device_id) {
   DCHECK(features::IsPeripheralCustomizationEnabled());
   observing_devices_.insert(device_id);
@@ -340,11 +361,19 @@ void InputDeviceSettingsProvider::SetGraphicsTabletSettings(
 
 void InputDeviceSettingsProvider::SetKeyboardBrightness(double percent) {
   DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
-  KeyboardBrightnessControlDelegate* delegate =
-      Shell::Get()->keyboard_brightness_control_delegate();
-  if (delegate) {
-    delegate->HandleSetKeyboardBrightness(percent, /*gradual=*/true);
+  if (!keyboard_brightness_control_delegate_) {
+    LOG(ERROR) << "InputDeviceSettingsProvider: BrightnessControlDelegate not "
+                  "available when setting keyboard brightness";
+    return;
   }
+  keyboard_brightness_control_delegate_->HandleSetKeyboardBrightness(
+      percent, /*gradual=*/true);
+}
+
+void InputDeviceSettingsProvider::OnReceiveKeyboardBrightness(
+    std::optional<double> brightness_percent) {
+  keyboard_brightness_observer_->OnKeyboardBrightnessChanged(
+      brightness_percent.value_or(kDefaultKeyboardBrightness));
 }
 
 void InputDeviceSettingsProvider::ObserveKeyboardSettings(
@@ -414,6 +443,11 @@ void InputDeviceSettingsProvider::ObserveKeyboardBrightness(
   DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
   keyboard_brightness_observer_.reset();
   keyboard_brightness_observer_.Bind(std::move(observer));
+
+  // Get the initial keyboard brightness when first register the observer.
+  keyboard_brightness_control_delegate_->HandleGetKeyboardBrightness(
+      base::BindOnce(&InputDeviceSettingsProvider::OnReceiveKeyboardBrightness,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void InputDeviceSettingsProvider::OnCustomizableMouseButtonPressed(

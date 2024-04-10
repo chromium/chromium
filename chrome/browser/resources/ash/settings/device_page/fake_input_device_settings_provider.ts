@@ -92,7 +92,7 @@ export class FakeInputDeviceSettingsProvider implements
   private keyboardBrightnessObserver: KeyboardBrightnessObserverInterface|null =
       null;
   private observedIds: number[] = [];
-  private keyboardBrightness: number = 40;
+  private keyboardBrightness: number = 40.0;
   private keyboardColorLinkClicks: number = 0;
   private callCounts_ = {
     setGraphicsTabletSettings: 0,

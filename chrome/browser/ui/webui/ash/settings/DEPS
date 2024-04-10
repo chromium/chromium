@@ -30,8 +30,9 @@ specific_include_rules = {
     "+ash/quick_pair",
     "+components/cross_device/logging/logging.h",
   ],
-  'input_device_settings_provider\.cc': [
+  'input_device_settings_provider\.(cc|h)': [
     '+ash/shell.h',
+    '+ash/shell_observer.h',
     '+ash/rgb_keyboard/rgb_keyboard_manager.h'
   ],
   'power_section\.(cc|h)' : [

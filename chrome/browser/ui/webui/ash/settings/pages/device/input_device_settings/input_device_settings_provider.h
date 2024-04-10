@@ -7,7 +7,12 @@
 
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
+#include "ash/system/keyboard_brightness_control_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/browser/web_ui.h"
@@ -24,7 +29,8 @@ class InputDeviceSettingsProvider
     : public mojom::InputDeviceSettingsProvider,
       public InputDeviceSettingsController::Observer,
       public views::WidgetObserver,
-      public chromeos::PowerManagerClient::Observer {
+      public chromeos::PowerManagerClient::Observer,
+      public ash::ShellObserver {
  public:
   InputDeviceSettingsProvider();
   InputDeviceSettingsProvider(const InputDeviceSettingsProvider& other) =
@@ -120,6 +126,9 @@ class InputDeviceSettingsProvider
   void KeyboardBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
 
+  // ash::ShellObserver:
+  void OnShellDestroying() override;
+
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
@@ -130,6 +139,11 @@ class InputDeviceSettingsProvider
   void HasKeyboardBacklight(HasKeyboardBacklightCallback callback) override;
   void IsRgbKeyboardSupported(IsRgbKeyboardSupportedCallback callback) override;
   void RecordKeyboardColorLinkClicked() override;
+
+  void SetKeyboardBrightnessControlDelegateForTesting(
+      raw_ptr<KeyboardBrightnessControlDelegate> delegate) {
+    keyboard_brightness_control_delegate_ = delegate;
+  }
 
  private:
   void NotifyKeyboardsUpdated();
@@ -142,6 +156,8 @@ class InputDeviceSettingsProvider
 
   void OnReceiveHasKeyboardBacklight(HasKeyboardBacklightCallback callback,
                                      std::optional<bool> has_backlight);
+
+  void OnReceiveKeyboardBrightness(std::optional<double> brightness_percent);
 
   // Denotes whether button observing should be paused due to the settings app
   // being out of focus or minimized. Default to true to require a valid widget
@@ -163,7 +179,14 @@ class InputDeviceSettingsProvider
 
   raw_ptr<views::Widget> widget_ = nullptr;
 
+  raw_ptr<KeyboardBrightnessControlDelegate>
+      keyboard_brightness_control_delegate_ = nullptr;
+
   mojo::Receiver<mojom::InputDeviceSettingsProvider> receiver_{this};
+
+  // The observation on `ash::Shell`.
+  base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
+      this};
 
   base::WeakPtrFactory<InputDeviceSettingsProvider> weak_ptr_factory_{this};
 };

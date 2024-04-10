@@ -527,6 +527,8 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
     provider_->SetWidgetForTesting(widget_.get());
     keyboard_brightness_control_delegate_ =
         std::make_unique<FakeKeyboardBrightnessControlDelegate>();
+    provider_->SetKeyboardBrightnessControlDelegateForTesting(
+        keyboard_brightness_control_delegate_.get());
     power_manager_client_ =
         std::make_unique<chromeos::FakePowerManagerClient>();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -1070,8 +1072,19 @@ TEST_F(InputDeviceSettingsProviderTest, ButtonPressObserverTest) {
 
 TEST_F(InputDeviceSettingsProviderTest, KeyboardBrightnessObserverTest) {
   FakeKeyboardBrightnessObserver fake_observer;
+  EXPECT_EQ(0, fake_observer.num_times_called());
+
+  // Set initial brightness to 40.0.
+  double initial_brightness = 40.0;
+  keyboard_brightness_control_delegate_->HandleSetKeyboardBrightness(
+      initial_brightness, /*gradual=*/false);
+
   provider_->ObserveKeyboardBrightness(
       fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // OnKeyboardBrightnessChange is called when observer is registered.
+  EXPECT_EQ(1, fake_observer.num_times_called());
 
   double expected_brightness = 66.6;
 
@@ -1083,7 +1096,7 @@ TEST_F(InputDeviceSettingsProviderTest, KeyboardBrightnessObserverTest) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(expected_brightness, fake_observer.keyboard_brightness());
-  EXPECT_EQ(1, fake_observer.num_times_called());
+  EXPECT_EQ(2, fake_observer.num_times_called());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, SetKeyboardBrightness) {

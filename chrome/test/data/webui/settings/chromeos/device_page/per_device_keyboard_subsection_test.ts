@@ -436,11 +436,11 @@ suite('<settings-per-device-keyboard-subsection>', () => {
 
     // Define initial and test values for keyboard brightness to improve
     // readability.
-    const initialBrightness = 40;
+    const initialBrightness = 40.0;
     const firstAdjustedBrightness = 60.5;
     const secondAdjustedBrightness = 20.5;
 
-    // Verify initial brightness is set correctly.
+    // Verify initial brightness is set correctly when observer is registered.
     assertEquals(initialBrightness, slider.pref!.value);
 
     // Simulate a keyboard brightness change and verify the slider updates
