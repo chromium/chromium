@@ -99,7 +99,6 @@ void SVGUseElement::Trace(Visitor* visitor) const {
   visitor->Trace(target_id_observer_);
   SVGGraphicsElement::Trace(visitor);
   SVGURIReference::Trace(visitor);
-  ResourceClient::Trace(visitor);
 }
 
 #if DCHECK_IS_ON()
@@ -192,14 +191,27 @@ bool SVGUseElement::HaveLoadedRequiredResources() {
   return !document_content_ || !document_content_->IsLoading();
 }
 
+void SVGUseElement::UpdateDocumentContent(
+    SVGResourceDocumentContent* document_content) {
+  if (document_content_ == document_content) {
+    return;
+  }
+  if (document_content_) {
+    document_content_->RemoveObserver(this);
+  }
+  document_content_ = document_content;
+  if (document_content_) {
+    document_content_->AddObserver(this);
+  }
+}
+
 void SVGUseElement::UpdateTargetReference() {
   const String& url_string = HrefString();
   element_url_ = GetDocument().CompleteURL(url_string);
   element_url_is_local_ = url_string.StartsWith('#');
   if (!IsStructurallyExternal() || !GetDocument().IsActive()) {
-    ClearResource();
+    UpdateDocumentContent(nullptr);
     pending_event_.Cancel();
-    document_content_ = nullptr;
     return;
   }
   if (!element_url_.HasFragmentIdentifier() ||
@@ -220,8 +232,9 @@ void SVGUseElement::UpdateTargetReference() {
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kUse;
   FetchParameters params(ResourceRequest(element_url_), options);
-  document_content_ =
-      SVGResourceDocumentContent::Fetch(params, *context_document, this);
+  auto* document_content =
+      SVGResourceDocumentContent::Fetch(params, *context_document);
+  UpdateDocumentContent(document_content);
 }
 
 void SVGUseElement::SvgAttributeChanged(
@@ -616,13 +629,14 @@ void SVGUseElement::QueueOrDispatchPendingEvent(
   }
 }
 
-void SVGUseElement::NotifyFinished(Resource* resource) {
+void SVGUseElement::ResourceNotifyFinished(
+    SVGResourceDocumentContent* document_content) {
+  DCHECK_EQ(document_content_, document_content);
   if (!isConnected())
     return;
   InvalidateShadowTree();
 
-  const bool is_error =
-      resource->ErrorOccurred() || !document_content_->GetDocument();
+  const bool is_error = document_content->ErrorOccurred();
   const AtomicString& event_name =
       is_error ? event_type_names::kError : event_type_names::kLoad;
   DCHECK(!pending_event_.IsActive());
@@ -630,10 +644,6 @@ void SVGUseElement::NotifyFinished(Resource* resource) {
       *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
       WTF::BindOnce(&SVGUseElement::QueueOrDispatchPendingEvent,
                     WrapPersistent(this), event_name));
-}
-
-String SVGUseElement::DebugName() const {
-  return "SVGUseElement";
 }
 
 SVGAnimatedPropertyBase* SVGUseElement::PropertyFromAttribute(
