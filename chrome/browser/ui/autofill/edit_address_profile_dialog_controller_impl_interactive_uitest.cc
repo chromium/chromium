@@ -80,7 +80,7 @@ class EditAddressProfileDialogControllerImplTest
               web_contents());
       ASSERT_THAT(controller, ::testing::NotNull());
       controller->OfferEdit(
-          profile, footer_message,
+          profile, /*title_override=*/u"", footer_message,
           /*is_editing_existing_address*/ original_profile != nullptr,
           is_migration_to_account,
           base::BindOnce(

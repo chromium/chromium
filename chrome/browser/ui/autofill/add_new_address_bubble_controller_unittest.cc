@@ -43,7 +43,10 @@ class MockDelegate : public AddressBubbleControllerDelegate {
               (override));
   MOCK_METHOD(void,
               ShowEditor,
-              (const AutofillProfile&, const std::u16string&, bool),
+              (const AutofillProfile&,
+               const std::u16string&,
+               const std::u16string&,
+               bool),
               (override));
   MOCK_METHOD(void, OnBubbleClosed, (), (override));
 
@@ -77,6 +80,7 @@ class AddNewAddressBubbleControllerTest : public ::testing::Test {
   }
 
  protected:
+  MockDelegate& delegate() { return delegate_; }
   content::WebContents* web_contents() { return web_contents_.get(); }
   TestContentAutofillClient* autofill_client() {
     return autofill_client_injector_[web_contents()];
@@ -99,12 +103,21 @@ TEST_F(AddNewAddressBubbleControllerTest, SavingIntoChrome) {
       ->test_address_data_manager()
       .SetIsEligibleForAddressAccountStorage(false);
 
-  auto controller = CreateController();
+  std::unique_ptr<AddNewAddressBubbleController> controller =
+      CreateController();
 
   EXPECT_EQ(controller->GetBodyText(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_ADD_NEW_ADDRESS_INTO_CHROME_PROMPT_BODY_TEXT));
-  EXPECT_TRUE(controller->GetFooterMessage().empty());
+  EXPECT_CALL(
+      delegate(),
+      ShowEditor(
+          ::testing::Property(&AutofillProfile::source,
+                              AutofillProfile::Source::kLocalOrSyncable),
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_EDITOR_TITLE),
+          std::u16string(),
+          /*is_editing_existing_address=*/false));
+  controller->OnAddButtonClicked();
 }
 
 TEST_F(AddNewAddressBubbleControllerTest, SavingIntoAccount) {
@@ -113,7 +126,8 @@ TEST_F(AddNewAddressBubbleControllerTest, SavingIntoAccount) {
       ->test_address_data_manager()
       .SetIsEligibleForAddressAccountStorage(true);
 
-  auto controller = CreateController();
+  std::unique_ptr<AddNewAddressBubbleController> controller =
+      CreateController();
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
@@ -126,6 +140,16 @@ TEST_F(AddNewAddressBubbleControllerTest, SavingIntoAccount) {
       controller->GetFooterMessage(),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE, email));
+  EXPECT_CALL(
+      delegate(),
+      ShowEditor(
+          ::testing::Property(&AutofillProfile::source,
+                              AutofillProfile::Source::kAccount),
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_EDITOR_TITLE),
+          l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE, email),
+          /*is_editing_existing_address=*/false));
+  controller->OnAddButtonClicked();
 }
 
 }  // namespace autofill

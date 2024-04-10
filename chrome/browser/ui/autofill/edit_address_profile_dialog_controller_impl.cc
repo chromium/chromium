@@ -32,6 +32,7 @@ EditAddressProfileDialogControllerImpl::
 
 void EditAddressProfileDialogControllerImpl::OfferEdit(
     const AutofillProfile& profile,
+    const std::u16string& title_override,
     const std::u16string& footer_message,
     bool is_editing_existing_address,
     bool is_migration_to_account,
@@ -44,6 +45,7 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
     return;
   }
   address_profile_to_edit_ = profile;
+  title_override_ = title_override;
   footer_message_ = footer_message;
   on_user_decision_callback_ = std::move(on_user_decision_callback);
   is_editing_existing_address_ = is_editing_existing_address;
@@ -58,7 +60,9 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
 }
 
 std::u16string EditAddressProfileDialogControllerImpl::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE);
+  return title_override_.empty()
+             ? l10n_util::GetStringUTF16(IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE)
+             : title_override_;
 }
 
 const std::u16string& EditAddressProfileDialogControllerImpl::GetFooterMessage()

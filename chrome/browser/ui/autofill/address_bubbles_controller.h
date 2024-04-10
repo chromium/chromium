@@ -59,6 +59,7 @@ class AddressBubblesController
 
   // AddressBubbleControllerDelegate:
   void ShowEditor(const AutofillProfile& address_profile,
+                  const std::u16string& title_override,
                   const std::u16string& editor_footer_message,
                   bool is_editing_existing_address) override;
   void OnUserDecision(

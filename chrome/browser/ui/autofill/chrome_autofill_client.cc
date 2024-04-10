@@ -834,7 +834,8 @@ void ChromeAutofillClient::ShowEditAddressProfileDialog(
                 base::ASCIIToUTF16(account->email))
           : u"";
   controller->OfferEdit(
-      /*profile=*/profile, footer_message,
+      /*profile=*/profile,
+      /*title_override=*/u"", footer_message,
       /*is_editing_existing_address=*/false,
       /*is_migration_to_account=*/false,
       /*on_user_decision_callback=*/std::move(on_user_decision_callback));

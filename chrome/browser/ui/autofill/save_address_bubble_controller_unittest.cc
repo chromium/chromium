@@ -43,7 +43,10 @@ class MockDelegate : public AddressBubbleControllerDelegate {
               (override));
   MOCK_METHOD(void,
               ShowEditor,
-              (const AutofillProfile&, const std::u16string&, bool),
+              (const AutofillProfile&,
+               const std::u16string&,
+               const std::u16string&,
+               bool),
               (override));
   MOCK_METHOD(void, OnBubbleClosed, (), (override));
 

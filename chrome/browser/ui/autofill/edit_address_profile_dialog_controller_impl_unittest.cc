@@ -14,7 +14,9 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -38,6 +40,7 @@ class EditAddressProfileDialogControllerImplTest
         &EditAddressProfileDialogControllerImplTest::GetAutofillBubbleBase,
         base::Unretained(this)));
     controller()->OfferEdit(profile_,
+                            /*title_override=*/u"",
                             /*footer_message=*/u"",
                             /*is_editing_existing_address*/ false,
                             /*is_migration_to_account=*/false,
@@ -105,6 +108,27 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
 
   controller()->OnDialogClosed(
       AutofillClient::AddressPromptUserDecision::kEditAccepted, profile_);
+}
+
+TEST_F(EditAddressProfileDialogControllerImplTest,
+       WindowTitleOverride_TitleUpdatedWhenParamIsPresent) {
+  controller()->OfferEdit(profile_,
+                          /*title_override=*/u"",
+                          /*footer_message=*/u"",
+                          /*is_editing_existing_address*/ false,
+                          /*is_migration_to_account=*/false,
+                          save_callback_.Get());
+  EXPECT_EQ(controller()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE));
+
+  controller()->OnDialogClosed(
+      AutofillClient::AddressPromptUserDecision::kEditDeclined, std::nullopt);
+  controller()->OfferEdit(profile_, u"Overridden title",
+                          /*footer_message=*/u"",
+                          /*is_editing_existing_address*/ false,
+                          /*is_migration_to_account=*/false,
+                          save_callback_.Get());
+  EXPECT_EQ(controller()->GetWindowTitle(), u"Overridden title");
 }
 
 }  // namespace autofill

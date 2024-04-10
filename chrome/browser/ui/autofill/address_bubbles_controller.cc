@@ -147,14 +147,15 @@ void AddressBubblesController::SetUpAndShowAddNewAddressBubble(
 
 void AddressBubblesController::ShowEditor(
     const AutofillProfile& address_profile,
+    const std::u16string& title_override,
     const std::u16string& editor_footer_message,
     bool is_editing_existing_address) {
   EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferEdit(
-      address_profile, editor_footer_message, is_editing_existing_address,
-      is_migration_to_account_,
+      address_profile, title_override, editor_footer_message,
+      is_editing_existing_address, is_migration_to_account_,
       base::BindOnce(&AddressBubblesController::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr()));
   HideBubble();

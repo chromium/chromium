@@ -84,6 +84,7 @@ void AddNewAddressBubbleController::OnAddButtonClicked() {
                             ? AutofillProfile::Source::kAccount
                             : AutofillProfile::Source::kLocalOrSyncable,
                         country_code_),
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_EDITOR_TITLE),
         GetFooterMessage(),
         /*is_editing_existing_address=*/false);
   }

@@ -35,11 +35,15 @@ class EditAddressProfileDialogControllerImpl
   ~EditAddressProfileDialogControllerImpl() override;
 
   // Sets up the controller and offers to edit the `profile` before saving it.
+  // The dialog title will be set to `title_override` if it's not an empty
+  // string. Otherwise, it will default to "Edit address". The footer will only
+  // be displayed if the `footer_message` is not an empty string.
   // The `on_user_decision_callback` will be called when user closes the dialog.
   // `is_editing_existing_address` is used for adapting the UI, e.g. "Save" or
   // "Update" for the action button. `is_migration_to_account` is used
   // to determine if a subset of editor fields should be made required.
   void OfferEdit(const AutofillProfile& profile,
+                 const std::u16string& title_override,
                  const std::u16string& footer_message,
                  bool is_editing_existing_address,
                  bool is_migration_to_account,
@@ -72,6 +76,9 @@ class EditAddressProfileDialogControllerImpl
 
   // nullptr if no dialog is currently shown.
   raw_ptr<AutofillBubbleBase> dialog_view_ = nullptr;
+
+  // Editor's overridden title, if empty, the default "Edit address" is used.
+  std::u16string title_override_;
 
   // Editor's footnote message.
   std::u16string footer_message_;
