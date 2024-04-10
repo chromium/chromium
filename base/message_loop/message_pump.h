@@ -277,17 +277,13 @@ class BASE_EXPORT MessagePump {
                                          TimeTicks run_time,
                                          TimeTicks latest_time);
 
-  enum class NativeLoopStatus {
-    kOnEntry,
-    kOnExit,
-  };
-  // Requests the pump to handle either the likely imminent creation
-  // (`kOnEntry`) of a native nested loop, or its exiting (`kOnExit`). The pump
-  // should override and return `true` if it supports this call and has
-  // scheduled work in response. The default implementation returns `false` and
-  // does nothing.
+  // Requests the pump to handle either the likely imminent creation (`true`) or
+  // destruction (`false`) of a native nested loop in which application tasks
+  // are desired to be run. The pump should override and return `true` if it
+  // supports this call and has scheduled work in response. The default
+  // implementation returns `false` and does nothing.
   virtual bool HandleNestedNativeLoopWithApplicationTasks(
-      NativeLoopStatus allowed);
+      bool application_tasks_desired);
 };
 
 }  // namespace base

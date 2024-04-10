@@ -53,6 +53,10 @@ BASE_FEATURE(kExplicitHighResolutionTimerWin,
              "ExplicitHighResolutionTimerWin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUIPumpImprovementsWin,
+             "UIPumpImprovementsWin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRunTasksByBatches,
              "RunTasksByBatches",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)

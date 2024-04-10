@@ -703,9 +703,7 @@ void ThreadControllerWithMessagePumpImpl::
     // pump (this will be done anyway when the task exits).
     work_deduplicator_.OnWorkStarted();
   }
-  if (!pump_->HandleNestedNativeLoopWithApplicationTasks(
-          allowed ? MessagePump::NativeLoopStatus::kOnEntry
-                  : MessagePump::NativeLoopStatus::kOnExit)) {
+  if (!pump_->HandleNestedNativeLoopWithApplicationTasks(allowed)) {
     // Pump does not have its own support for native nested loops,
     // ThreadController must handle scheduling for upcoming tasks.
     if (allowed) {

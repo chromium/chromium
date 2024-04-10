@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/observer_list.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/win/message_window.h"
@@ -36,6 +37,8 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   void Run(Delegate* delegate) override;
   void Quit() override;
 
+  static void InitializeFeatures();
+
  protected:
   struct RunState {
     explicit RunState(Delegate* delegate_in) : delegate(delegate_in) {}
@@ -54,11 +57,12 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   // True iff:
   //   * MessagePumpForUI: there's a kMsgDoWork message pending in the Windows
   //     Message queue. i.e. when:
-  //      a. The pump is about to wakeup from idle.
+  //      a. The pump is about to wakeup from idle and kUIPumpImprovementsWin
+  //         is not enabled.
   //      b. The pump is about to enter a nested native loop and a
-  //         ScopedAllowApplicationTasksInNativeNestedLoop was instantiated to
+  //         `ScopedAllowApplicationTasksInNativeNestedLoop` was instantiated to
   //         allow application tasks to execute in that nested loop
-  //         (ScopedAllowApplicationTasksInNativeNestedLoop invokes
+  //         (`ScopedAllowApplicationTasksInNativeNestedLoop` invokes
   //         ScheduleWork()).
   //      c. While in a native (nested) loop : HandleWorkMessage() =>
   //         ProcessPumpReplacementMessage() invokes ScheduleWork() before
@@ -67,16 +71,16 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   //         nested loop. This is different from (b.) because we're not yet
   //         processing an application task at the current run level and
   //         therefore are expected to keep pumping application tasks without
-  //         necessitating a ScopedAllowApplicationTasksInNativeNestedLoop.
+  //         necessitating a `ScopedAllowApplicationTasksInNativeNestedLoop`.
   //
-  //   * MessagePumpforIO: there's a dummy IO completion item with |this| as an
+  //   * MessagePumpforIO: there's a dummy IO completion item with `this` as an
   //     lpCompletionKey in the queue which is about to wakeup
   //     WaitForIOCompletion(). MessagePumpForIO doesn't support nesting so
   //     this is simpler than MessagePumpForUI.
   //
   // Note that this should not be used for memory ordering. It is accessed via
   // `memory_order_relaxed` in all cases.
-  std::atomic_bool work_scheduled_{false};
+  std::atomic_bool native_msg_scheduled_{false};
 
   raw_ptr<RunState> run_state_ = nullptr;
 
@@ -138,6 +142,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   void ScheduleWork() override;
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
+  bool HandleNestedNativeLoopWithApplicationTasks(
+      bool application_tasks_desired) override;
 
   // An observer interface to give the scheduler an opportunity to log
   // information about MSGs before and after they are dispatched.
@@ -173,10 +179,32 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   // redundant timers.
   std::optional<TimeTicks> installed_native_timer_;
 
-  // This will become true when a native loop takes our kMsgHaveWork out of the
-  // system queue. It will be reset to false whenever DoRunLoop regains control.
-  // Used to decide whether ScheduleDelayedWork() should start a native timer.
-  bool in_native_loop_ = false;
+  // This is used to wake up the pump when the UIPumpImprovementsWin experiment
+  // is enabled.
+  WaitableEvent event_{WaitableEvent::ResetPolicy::AUTOMATIC};
+
+  enum class NestedState {
+    // There are no nested message loops running.
+    kNone,
+    // kMsgHaveWork was pumped from a native queue. The state will return to
+    // `kNormal` whenever DoRunLoop() regains control. In this state,
+    // ScheduleDelayedWork() will start a native timer.
+    //
+    // It is reset to `kNone` when DoRunLoop() gets control back after
+    // ProcessNextWindowsMessage() or DoWork().
+    kNestedNativeLoopDetected,
+    // HandleNestedNativeLoopWithApplicationTasks(true) was called (when a
+    // `ScopedAllowApplicationTasksInNativeNestedLoop` is instantiated). When
+    // running with `event_`, switches to pumping `kMsgHaveWork` MSGs when there
+    // are application tasks to be done during native runloops. Is a 'superset'
+    // of `kNestedNativeLoopDetected`, and will also start a native timer when
+    // ScheduleDelayedWork() is called.
+    //
+    // It is reset to `kNone` when:
+    //   - DoRunLoop() gets control back after ProcessNextWindowsMessage().
+    //   - HandleNestedNativeLoopWithApplicationTasks(false) is called.
+    kNestedNativeLoopAnnounced
+  } nested_state_ = NestedState::kNone;
 
   ObserverList<Observer>::Unchecked observers_;
 };

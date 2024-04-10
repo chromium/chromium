@@ -57,6 +57,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kTimerSlackMac);
 // based on explicit DelayPolicy rather than based on a threshold.
 BASE_EXPORT BASE_DECLARE_FEATURE(kExplicitHighResolutionTimerWin);
 
+// Under this feature, the Windows UI pump uses a WaitableEvent to wake itself
+// up when not in a native nested loop. It also uses different control flow,
+// calling Win32 MessagePump functions less often.
+BASE_EXPORT BASE_DECLARE_FEATURE(kUIPumpImprovementsWin);
+
 // Feature to run tasks by batches before pumping out messages.
 BASE_EXPORT BASE_DECLARE_FEATURE(kRunTasksByBatches);
 

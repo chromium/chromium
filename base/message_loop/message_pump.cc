@@ -49,7 +49,7 @@ MessagePump::MessagePump() = default;
 MessagePump::~MessagePump() = default;
 
 bool MessagePump::HandleNestedNativeLoopWithApplicationTasks(
-    NativeLoopStatus allowed) {
+    bool application_tasks_desired) {
   return false;
 }
 
@@ -120,6 +120,7 @@ void MessagePump::InitializeFeatures() {
 #if BUILDFLAG(IS_WIN)
   g_explicit_high_resolution_timer_win =
       FeatureList::IsEnabled(kExplicitHighResolutionTimerWin);
+  MessagePumpWin::InitializeFeatures();
 #endif
 }
 
