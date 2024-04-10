@@ -229,6 +229,7 @@ source_set("browser") {
     "//services/viz/public/cpp/gpu",
     "//services/viz/public/mojom",
     "//services/webnn:webnn_service",
+    "//services/webnn:webnn_switches",
     "//skia",
     "//skia/public/mojom",
     "//storage/browser",

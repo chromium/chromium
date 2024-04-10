@@ -81,6 +81,7 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
+#include "services/webnn/webnn_switches.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -284,6 +285,7 @@ static const char* const kSwitchNames[] = {
     sandbox::policy::switches::kDisableMetalShaderCache,
     switches::kShowMacOverlayBorders,
     switches::kUseHighGPUThreadPriorityForPerfTests,
+    switches::kWebNNCoreMlDumpModel,
 #endif
 #if BUILDFLAG(IS_OZONE)
     switches::kOzonePlatform,

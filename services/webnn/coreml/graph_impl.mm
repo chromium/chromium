@@ -10,8 +10,10 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/barrier_closure.h"
+#include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,6 +25,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/coreml/graph_builder.h"
 #include "services/webnn/error.h"
+#include "services/webnn/webnn_switches.h"
 
 @interface WebNNMLFeatureProvider : NSObject <MLFeatureProvider>
 - (MLFeatureValue*)featureValueForName:(NSString*)featureName;
@@ -404,9 +407,29 @@ GraphImpl::CompilationContext::CompilationContext(
       callback(std::move(callback)) {}
 
 GraphImpl::CompilationContext::~CompilationContext() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNCoreMlDumpModel)) {
+    const auto dump_directory =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kWebNNCoreMlDumpModel);
+    LOG(INFO) << "webnn::coreml Copying model files to " << dump_directory;
+    if (dump_directory.empty()) {
+      LOG(ERROR) << "webnn::coreml Dump directory not specified.";
+    } else {
+      if (!model_file_dir.IsValid() ||
+          !base::CopyDirectory(model_file_dir.GetPath(), dump_directory,
+                               /*recursive=*/true)) {
+        LOG(ERROR) << "webnn::coreml Failed to copy model file directory.";
+      }
+      if (!compiled_model_dir.IsValid() ||
+          !base::CopyDirectory(compiled_model_dir.GetPath(), dump_directory,
+                               /*recursive=*/true)) {
+        LOG(ERROR) << "webnn::coreml Failed to copy compiled model directory.";
+      }
+    }
+  }
   // Though the destructors of ScopedTempDir will delete these directories.
   // Explicitly delete them here to check for success.
-  // TODO(https://crbug.com/1522278): Add debug flag to skip cleanup.
   if (model_file_dir.IsValid()) {
     CHECK(model_file_dir.Delete());
   }

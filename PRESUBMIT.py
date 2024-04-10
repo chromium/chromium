@@ -3336,6 +3336,7 @@ def CheckSpamLogging(input_api, output_api):
             r"^remoting/host/.*",
             r"^sandbox/linux/.*",
             r"^services/webnn/tflite/graph_impl\.cc$",
+            r"^services/webnn/coreml/graph_impl\.mm$",
             r"^storage/browser/file_system/dump_file_system\.cc$",
             r"^tools/",
             r"^ui/base/resource/data_pack\.cc$",
