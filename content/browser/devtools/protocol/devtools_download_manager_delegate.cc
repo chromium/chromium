@@ -55,7 +55,7 @@ DevToolsDownloadManagerDelegate* DevToolsDownloadManagerDelegate::GetInstance(
 
 void DevToolsDownloadManagerDelegate::Shutdown() {
   if (original_download_delegate_)
-    original_download_delegate_->Shutdown();
+    original_download_delegate_.ExtractAsDangling()->Shutdown();
   // Revoke any pending callbacks. download_manager_ et. al. are no longer safe
   // to access after this point.
   download_manager_ = nullptr;
