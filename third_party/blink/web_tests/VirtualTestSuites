@@ -1872,7 +1872,7 @@
       "external/wpt/shared-storage",
       "http/tests/inspector-protocol/shared-storage"
     ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIM118,SharedStorageAPIM124,FencedFramesEnforceFocus",
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIM118,SharedStorageAPIM124,SharedStorageAPIEnableWALForDatabase,FencedFramesEnforceFocus",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 31, 2024"
   },
@@ -1885,7 +1885,7 @@
     "exclusive_tests": [
       "external/wpt/shared-storage-selecturl-limit/"
     ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit:SharedStorageSelectURLBitBudgetPerPageLoad/9,SharedStorageAPIM118,SharedStorageAPIM124",
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit:SharedStorageSelectURLBitBudgetPerPageLoad/9,SharedStorageAPIM118,SharedStorageAPIM124,SharedStorageAPIEnableWALForDatabase",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 31, 2024"
   },
