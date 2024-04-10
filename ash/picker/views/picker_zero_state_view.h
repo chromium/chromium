@@ -25,7 +25,6 @@ class View;
 
 namespace ash {
 
-class PickerCapsNudgeView;
 class PickerClipboardProvider;
 class PickerSearchResult;
 class PickerSectionListView;
@@ -66,19 +65,11 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
     return section_views_;
   }
 
-  PickerCapsNudgeView* CapsNudgeViewForTesting() const {
-    return caps_nudge_view_;
-  }
-
   PickerSectionView* SuggestedSectionForTesting() const {
     return suggested_section_view_;
   }
 
  private:
-  void ClearCapsNudge();
-
-  void DeleteNudge();
-
   // Gets or creates the section to contain `category`.
   PickerSectionView* GetOrCreateSectionView(PickerCategory category);
 
@@ -96,7 +87,6 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   // Used to track the section view for each category type.
   std::map<PickerCategoryType, raw_ptr<PickerSectionView>> section_views_;
 
-  raw_ptr<PickerCapsNudgeView> caps_nudge_view_;
   // The currently pseudo focused view, which responds to user actions that
   // trigger `DoPseudoFocusedAction`.
   raw_ptr<views::View> pseudo_focused_view_ = nullptr;

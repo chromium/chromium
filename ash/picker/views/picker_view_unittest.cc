@@ -169,8 +169,11 @@ TEST_F(PickerViewTest, SizeIsCorrect) {
 }
 
 TEST_F(PickerViewTest, ShowsZeroStateView) {
-  FakePickerViewDelegate delegate;
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kLinks},
+  });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
   EXPECT_THAT(view->search_field_view_for_testing(),

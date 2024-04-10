@@ -10,7 +10,6 @@
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/picker/picker_test_util.h"
-#include "ash/picker/views/picker_caps_nudge_view.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
@@ -90,23 +89,6 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   LeftClickOn(*category_view);
 
   EXPECT_EQ(future.Get(), PickerCategory::kExpressions);
-}
-
-TEST_F(PickerZeroStateViewTest, ClickingOkInCapsNudgeHidesCapsNudge) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
-  widget->SetFullscreen(true);
-  base::test::TestFuture<PickerCategory> future;
-  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kAllCategories, false, kPickerWidth, future.GetRepeatingCallback(),
-      base::DoNothing()));
-  widget->Show();
-
-  auto* caps_nudge_view = view->CapsNudgeViewForTesting();
-  EXPECT_THAT(caps_nudge_view, Property(&views::View::GetVisible, true));
-
-  LeftClickOn(*caps_nudge_view->GetOkButtonForTesting());
-
-  EXPECT_EQ(view->CapsNudgeViewForTesting(), nullptr);
 }
 
 TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
