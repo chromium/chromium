@@ -58,7 +58,7 @@ public class WebViewLayoutTest {
             "webexposed/global-interface-listing-expected.txt";
 
     // Due to the specifics of the rebaselining algorithm in blink the files containing
-    // stable interfaces can dissapear and reappear later. To select the file to compare
+    // stable interfaces can disappear and reappear later. To select the file to compare
     // against a fallback approach is used. The order in the List below is important due
     // to how blink performs baseline optimizations. For more details see
     // third_party/blink/tools/blinkpy/common/checkout/baseline_optimizer.py.
@@ -171,7 +171,7 @@ public class WebViewLayoutTest {
         }
 
         if (newInterfaces.length() > 0) {
-            Log.w(TAG, "Unexpected WebView interfaces found: " + newInterfaces.toString());
+            Log.w(TAG, "Unexpected WebView interfaces found: " + newInterfaces);
         }
     }
 
@@ -465,7 +465,7 @@ public class WebViewLayoutTest {
     }
 
     private void runTest(final String fileName, final String fileNameExpected, boolean noFail)
-            throws FileNotFoundException, IOException, InterruptedException, TimeoutException {
+            throws IOException, InterruptedException, TimeoutException {
         loadUrlWebViewAsync("file://" + fileName, mTestActivity);
 
         if (isRebaseline()) {
@@ -527,8 +527,7 @@ public class WebViewLayoutTest {
      * Writes a file with the given fileName and contents. If the file does not exist any
      * intermediate required directories are created.
      */
-    private static void writeFile(final String fileName, final String contents)
-            throws FileNotFoundException, IOException {
+    private static void writeFile(final String fileName, final String contents) throws IOException {
         File fileOut = new File(fileName);
 
         String absolutePath = fileOut.getAbsolutePath();
