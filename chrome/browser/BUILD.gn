@@ -6834,7 +6834,6 @@ static_library("browser") {
       "//components/payments/content",
       "//components/payments/content:utils",
       "//components/webauthn/content/browser",
-      "//media/cast:net",
     ]
   }
 

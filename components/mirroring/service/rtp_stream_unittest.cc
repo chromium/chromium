@@ -18,7 +18,6 @@
 #include "media/cast/cast_environment.h"
 #include "media/cast/sender/audio_sender.h"
 #include "media/cast/sender/video_sender.h"
-#include "media/cast/test/mock_cast_transport.h"
 #include "media/cast/test/utility/audio_utility.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"

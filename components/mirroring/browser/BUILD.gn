@@ -17,8 +17,6 @@ source_set("browser") {
 
   deps = [
     "//media/capture",
-    "//media/cast:common",
-    "//media/cast:net",
     "//media/mojo/common:common",
     "//media/mojo/mojom:remoting",
     "//mojo/public/cpp/bindings",
@@ -34,8 +32,6 @@ source_set("unittests") {
     "//base",
     "//base/test:test_support",
     "//content/test:test_support",
-    "//media/cast:common",
-    "//media/cast:net",
     "//media/cast:test_support",
     "//media/mojo/mojom:remoting",
     "//mojo/public/cpp/bindings",

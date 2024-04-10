@@ -357,6 +357,7 @@ source_set("unittests") {
       "//chrome/test:test_support",
       "//components/sync_preferences:test_support",
       "//content/test:test_support",
+      "//media/cast:common",
       "//services/preferences/public/cpp",
       "//third_party/openscreen/src/cast/common:public",
     ]

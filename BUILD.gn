@@ -552,8 +552,6 @@ group("gn_all") {
           "//courgette:courgette_fuzz",
           "//courgette:courgette_minimal_tool",
           "//courgette:courgette_unittests",
-          "//media/cast:generate_barcode_video",
-          "//media/cast:generate_timecode_audio",
           "//net:crash_cache",
           "//net:net_watcher",  # TODO(GYP): This should be conditional on
                                 # use_v8_in_net
@@ -612,7 +610,6 @@ group("gn_all") {
     if (is_linux || is_chromeos_lacros) {
       deps += [
         "//gpu/khronos_glcts_support:khronos_glcts_test",
-        "//media/cast:tap_proxy",
         "//skia:filter_fuzz_stub",
         "//skia:image_operations_bench",
         "//ui/snapshot:snapshot_unittests",
@@ -732,7 +729,6 @@ group("gn_all") {
         "//components/constrained_window:unit_tests",
         "//components/metrics:serialization",
         "//components/sessions:unit_tests",
-        "//media/cast:udp_proxy",
         "//storage/browser:dump_file_system",
         "//third_party/angle:libANGLE",
         "//third_party/angle:libEGL",

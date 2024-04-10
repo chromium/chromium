@@ -46,8 +46,10 @@ source_set("openscreen_platform") {
 # Incompatible with `:openscreen_platform`.
 source_set("openscreen_platform_using_net_sockets") {
   testonly = true
-  visibility +=
-      [ "//components/cast_streaming/test:test_sender_using_net_sockets" ]
+  visibility += [
+    "//components/cast_streaming/test:test_sender_using_net_sockets",
+    "//media/cast:media_vpx_quantizer_parser_fuzzer",
+  ]
   if (is_android || is_ios) {
     # Allow broader visibility for platforms with unique generated targets.
     visibility += [ "//components/cast_streaming/browser:*" ]

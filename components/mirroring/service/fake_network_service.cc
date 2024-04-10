@@ -4,13 +4,30 @@
 
 #include "components/mirroring/service/fake_network_service.h"
 
+#include <memory>
+
 #include "base/ranges/algorithm.h"
-#include "media/cast/test/utility/net_utility.h"
+// #include "media/cast/test/utility/net_utility.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/ip_address.h"
+#include "net/base/net_errors.h"
+#include "net/log/net_log_source.h"
+#include "net/socket/udp_server_socket.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 namespace mirroring {
+
+net::IPEndPoint GetFreeLocalPort() {
+  std::unique_ptr<net::UDPServerSocket> receive_socket(
+      new net::UDPServerSocket(nullptr, net::NetLogSource()));
+  receive_socket->AllowAddressReuse();
+  CHECK_EQ(net::OK, receive_socket->Listen(
+                        net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0)));
+  net::IPEndPoint endpoint;
+  CHECK_EQ(net::OK, receive_socket->GetLocalAddress(&endpoint));
+  return endpoint;
+}
 
 MockUdpSocket::MockUdpSocket(
     mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
@@ -22,13 +39,13 @@ MockUdpSocket::~MockUdpSocket() {}
 void MockUdpSocket::Bind(const net::IPEndPoint& local_addr,
                          network::mojom::UDPSocketOptionsPtr options,
                          BindCallback callback) {
-  std::move(callback).Run(net::OK, media::cast::test::GetFreeLocalPort());
+  std::move(callback).Run(net::OK, GetFreeLocalPort());
 }
 
 void MockUdpSocket::Connect(const net::IPEndPoint& remote_addr,
                             network::mojom::UDPSocketOptionsPtr options,
                             ConnectCallback callback) {
-  std::move(callback).Run(net::OK, media::cast::test::GetFreeLocalPort());
+  std::move(callback).Run(net::OK, GetFreeLocalPort());
 }
 
 void MockUdpSocket::ReceiveMore(uint32_t num_additional_datagrams) {

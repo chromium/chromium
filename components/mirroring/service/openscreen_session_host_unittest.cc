@@ -23,7 +23,6 @@
 #include "components/mirroring/service/mirroring_features.h"
 #include "media/base/media_switches.h"
 #include "media/cast/test/utility/default_config.h"
-#include "media/cast/test/utility/net_utility.h"
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -573,8 +572,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  const net::IPEndPoint receiver_endpoint_ =
-      media::cast::test::GetFreeLocalPort();
+  const net::IPEndPoint receiver_endpoint_ = GetFreeLocalPort();
   mojo::Receiver<mojom::ResourceProvider> resource_provider_receiver_{this};
   mojo::Receiver<mojom::SessionObserver> session_observer_receiver_{this};
   mojo::Receiver<mojom::CastMessageChannel> outbound_channel_receiver_{this};

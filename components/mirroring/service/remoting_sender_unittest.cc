@@ -79,8 +79,13 @@ class FakeSender : public media::cast::FrameSender {
   MOCK_METHOD1(SetTargetPlayoutDelay, void(base::TimeDelta));
   MOCK_CONST_METHOD0(GetTargetPlayoutDelay, base::TimeDelta());
   MOCK_CONST_METHOD0(NeedsKeyFrame, bool());
+  MOCK_METHOD1(EnqueueFrame,
+               media::cast::CastStreamingFrameDropReason(
+                   std::unique_ptr<media::cast::SenderEncodedFrame>));
   MOCK_METHOD1(ShouldDropNextFrame,
                media::cast::CastStreamingFrameDropReason(base::TimeDelta));
+  MOCK_CONST_METHOD1(GetRecordedRtpTimestamp,
+                     media::cast::RtpTimeTicks(media::cast::FrameId));
   MOCK_CONST_METHOD0(GetUnacknowledgedFrameCount, int());
   MOCK_METHOD2(GetSuggestedBitrate, int(base::TimeTicks, base::TimeDelta));
   MOCK_CONST_METHOD0(MaxFrameRate, double());
@@ -89,15 +94,6 @@ class FakeSender : public media::cast::FrameSender {
   MOCK_CONST_METHOD0(CurrentRoundTripTime, base::TimeDelta());
   MOCK_CONST_METHOD0(LastSendTime, base::TimeTicks());
   MOCK_CONST_METHOD0(LastAckedFrameId, media::cast::FrameId());
-  MOCK_METHOD1(OnReceivedCastFeedback,
-               void(const media::cast::RtcpCastMessage&));
-  MOCK_METHOD0(OnReceivedPli, void());
-  MOCK_METHOD1(OnMeasuredRoundTripTime, void(base::TimeDelta));
-  MOCK_CONST_METHOD1(GetRecordedRtpTimestamp,
-                     media::cast::RtpTimeTicks(media::cast::FrameId));
-  MOCK_METHOD1(EnqueueFrame,
-               media::cast::CastStreamingFrameDropReason(
-                   std::unique_ptr<media::cast::SenderEncodedFrame>));
 };
 
 class MojoSenderWrapper {

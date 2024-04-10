@@ -6,11 +6,12 @@
 #define COMPONENTS_MIRRORING_SERVICE_FAKE_NETWORK_SERVICE_H_
 
 #include "base/functional/callback.h"
-#include "media/cast/net/cast_transport_defines.h"
+#include "media/cast/common/packet.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "services/network/test/test_udp_socket.h"
@@ -18,6 +19,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mirroring {
+
+// Determine a unused UDP port.
+// Method: Bind a UDP socket on port 0, and then check which port the
+// operating system assigned to it.
+net::IPEndPoint GetFreeLocalPort();
 
 class MockUdpSocket final : public network::TestUDPSocket {
  public:

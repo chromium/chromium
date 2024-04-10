@@ -44,6 +44,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/capture/video_capture_types.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
+#include "media/cast/common/packet.h"
 #include "media/cast/encoding/encoding_support.h"
 #include "media/cast/openscreen/config_conversions.h"
 #include "media/cast/sender/audio_sender.h"

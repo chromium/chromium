@@ -183,7 +183,6 @@ after discussions on the right group.
       <annotation id="extension_manifest_fetcher"/>
       <annotation id="extension_crx_fetcher"/>
       <annotation id="proxy_config_headless"/>
-      <annotation id="cast_udp_transport"/>
       <annotation id="certificate_verifier_url_request"/>
       <annotation id="bidirectional_stream"/>
       <annotation id="proxy_config_system"/>
