@@ -43,11 +43,17 @@ GattService::GattService(
     mojo::PendingReceiver<mojom::GattService> pending_gatt_service_receiver,
     mojo::PendingRemote<mojom::GattServiceObserver> pending_observer_remote,
     const device::BluetoothUUID& service_id,
-    scoped_refptr<device::BluetoothAdapter> adapter)
-    : service_id_(service_id),
+    scoped_refptr<device::BluetoothAdapter> adapter,
+    base::OnceCallback<void(device::BluetoothUUID)> on_gatt_service_invalidated)
+    : on_gatt_service_invalidated_(std::move(on_gatt_service_invalidated)),
+      service_id_(service_id),
       observer_remote_(std::move(pending_observer_remote)),
       adapter_(std::move(adapter)) {
   receiver_.Bind(std::move(pending_gatt_service_receiver));
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&GattService::OnMojoDisconnect, base::Unretained(this)));
+  observer_remote_.set_disconnect_handler(
+      base::BindOnce(&GattService::OnMojoDisconnect, base::Unretained(this)));
 
   // Since a `GattService` corresponding to `service_id` is being created
   // here, one by this `service_id` should not exist yet.
@@ -191,6 +197,23 @@ void GattService::OnLocalCharacteristicReadResponse(
   std::move(callback).Run(
       /*error_code=*/std::nullopt,
       /*data=*/read_result->get_data());
+}
+
+void GattService::OnMojoDisconnect() {
+  device::BluetoothLocalGattService* service =
+      adapter_->GetGattService(service_id_.value());
+  if (!service) {
+    LOG(WARNING) << __func__ << ": local GATT service does not exist.";
+  } else {
+    service->Delete();
+  }
+
+  receiver_.reset();
+
+  // This call needs to be the last in the `OnMojoDisconnect()` logic because
+  // this `GattService` is expected to be destroyed after calling
+  // `on_gatt_service_invalidated_`.
+  std::move(on_gatt_service_invalidated_).Run(service_id_);
 }
 
 }  // namespace bluetooth

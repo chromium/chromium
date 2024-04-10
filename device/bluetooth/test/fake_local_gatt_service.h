@@ -60,7 +60,15 @@ class FakeLocalGattService : public device::BluetoothLocalGattService {
     should_create_local_gatt_characteristic_succeed_ = success;
   }
 
+  bool WasDeleted() { return deleted_; }
+
+  void set_on_deleted_callback(base::OnceClosure callback) {
+    on_deleted_callback_ = std::move(callback);
+  }
+
  private:
+  bool deleted_ = false;
+  base::OnceClosure on_deleted_callback_;
   bool should_create_local_gatt_characteristic_succeed_ = true;
   const std::string service_id_;
   const device::BluetoothUUID service_uuid_;

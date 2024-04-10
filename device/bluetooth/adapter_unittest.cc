@@ -79,7 +79,7 @@ class MockBluetoothAdapterWithAdvertisements
 
 namespace bluetooth {
 
-class AdapterTest : public testing::Test {
+class AdapterTest : public testing::Test, public mojom::GattServiceObserver {
  public:
   AdapterTest() = default;
   ~AdapterTest() override = default;
@@ -136,6 +136,14 @@ class AdapterTest : public testing::Test {
   }
 
  protected:
+  // mojom::GattServiceObserver:
+  void OnLocalCharacteristicRead(
+      bluetooth::mojom::DeviceInfoPtr remote_device,
+      const device::BluetoothUUID& characteristic_uuid,
+      const device::BluetoothUUID& service_uuid,
+      uint32_t offset,
+      OnLocalCharacteristicReadCallback callback) override {}
+
   void RegisterAdvertisement(bool should_succeed,
                              bool use_scan_data,
                              bool connectable) {
@@ -214,6 +222,7 @@ class AdapterTest : public testing::Test {
   std::unique_ptr<NiceMock<device::MockBluetoothDevice>>
       mock_unknown_bluetooth_device_;
   scoped_refptr<NiceMock<device::MockBluetoothSocket>> mock_bluetooth_socket_;
+  mojo::Receiver<mojom::GattServiceObserver> observer_{this};
   std::unique_ptr<Adapter> adapter_;
 
  private:
@@ -495,11 +504,58 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_HalfPaired) {
 }
 
 TEST_F(AdapterTest, CreateLocalGattService) {
-  mojo::PendingRemote<mojom::GattServiceObserver> observer;
+  mojo::PendingRemote<mojom::GattServiceObserver> observer =
+      observer_.BindNewPipeAndPassRemote();
   base::test::TestFuture<mojo::PendingRemote<mojom::GattService>> future;
   adapter_->CreateLocalGattService(bluetooth_service_id_, std::move(observer),
                                    future.GetCallback());
   EXPECT_TRUE(future.Take());
+}
+
+TEST_F(AdapterTest, MemoryCleanUp_ResetGattServiceMojoRemote) {
+  mojo::Remote<mojom::GattService> gatt_service_remote;
+
+  // Create `GattService` and set the Mojo remote
+  {
+    mojo::PendingRemote<mojom::GattServiceObserver> observer =
+        observer_.BindNewPipeAndPassRemote();
+    base::test::TestFuture<mojo::PendingRemote<mojom::GattService>> future;
+    adapter_->CreateLocalGattService(bluetooth_service_id_, std::move(observer),
+                                     future.GetCallback());
+    gatt_service_remote.Bind(future.Take());
+  }
+
+  // Simulate that the GATT service is created successfully, and is never
+  // destroyed during the lifetime of this test.
+  ON_CALL(*mock_bluetooth_adapter_, GetGattService)
+      .WillByDefault(testing::Return(fake_local_gatt_service_.get()));
+
+  {
+    // Delete the GATT service remote, which triggers memory clean up.
+    base::RunLoop run_loop;
+    fake_local_gatt_service_->set_on_deleted_callback(run_loop.QuitClosure());
+    gatt_service_remote.reset();
+    run_loop.Run();
+  }
+
+  // Since the GATT service is deleted, the Adapter no longer returns a
+  // pointer to the GATT service when it is called.
+  ON_CALL(*mock_bluetooth_adapter_, GetGattService)
+      .WillByDefault(testing::Return(nullptr));
+  observer_.reset();
+
+  // Expect a new call to `CreateLocalGattService` to be successful since the
+  // old `GattService` was deleted. The memory cleanup is enforced by a CHECK in
+  // `CreateLocalGattService()` that an existing `GattService` does not already
+  // exist with that UUID.
+  {
+    mojo::PendingRemote<mojom::GattServiceObserver> observer =
+        observer_.BindNewPipeAndPassRemote();
+    base::test::TestFuture<mojo::PendingRemote<mojom::GattService>> future;
+    adapter_->CreateLocalGattService(bluetooth_service_id_, std::move(observer),
+                                     future.GetCallback());
+    EXPECT_TRUE(future.Take());
+  }
 }
 
 #endif

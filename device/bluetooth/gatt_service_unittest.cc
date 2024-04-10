@@ -78,7 +78,9 @@ class GattServiceTest : public testing::Test,
     gatt_service_ = std::make_unique<GattService>(
         std::move(pending_gatt_service_receiver),
         std::move(pending_observer_remote), device::BluetoothUUID(kServiceId),
-        mock_bluetooth_adapter_.get());
+        mock_bluetooth_adapter_.get(),
+        base::BindOnce(&GattServiceTest::OnGattServiceInvalidated,
+                       base::Unretained(this)));
   }
 
   base::WeakPtr<device::BluetoothLocalGattService> CreateLocalGattService(
@@ -115,6 +117,16 @@ class GattServiceTest : public testing::Test,
 
     std::move(callback).Run(std::move(read_result));
     std::move(on_local_characteristic_read_callback_).Run();
+  }
+
+  void OnGattServiceInvalidated(device::BluetoothUUID service_id) {
+    EXPECT_EQ(device::BluetoothUUID(kServiceId), service_id);
+    gatt_service_invalidated_ = true;
+    std::move(on_gatt_service_invalidated_callback_).Run();
+  }
+
+  void SetGattServiceInvalidatedCallback(base::OnceClosure callback) {
+    on_gatt_service_invalidated_callback_ = std::move(callback);
   }
 
   void CallCreateCharacteristic(
@@ -158,10 +170,12 @@ class GattServiceTest : public testing::Test,
   }
 
  protected:
+  bool gatt_service_invalidated_ = false;
   std::optional<device::BluetoothGattService::GattErrorCode>
       local_characteristic_read_error_code_;
   std::optional<std::vector<uint8_t>> local_characteristic_read_value_;
   base::OnceClosure on_local_characteristic_read_callback_;
+  base::OnceClosure on_gatt_service_invalidated_callback_;
   int create_local_gatt_service_calls_ = 0;
   base::test::SingleThreadTaskEnvironment task_environment_;
   mojo::Remote<mojom::GattService> remote_;
@@ -310,6 +324,36 @@ TEST_F(GattServiceTest, OnReadCharacteristic_Failure) {
           }));
 
   run_loop.Run();
+}
+
+TEST_F(GattServiceTest, MojoDisconnect_GattServiceRemote) {
+  // Simulate that the GATT service is created successfully, and thus is always
+  // accessible via `GetGattService()` calls.
+  ON_CALL(*mock_bluetooth_adapter_, GetGattService)
+      .WillByDefault(testing::Return(fake_local_gatt_service_.get()));
+
+  base::RunLoop run_loop;
+  SetGattServiceInvalidatedCallback(run_loop.QuitClosure());
+  remote_.reset();
+  run_loop.Run();
+
+  EXPECT_TRUE(gatt_service_invalidated_);
+  EXPECT_TRUE(fake_local_gatt_service_->WasDeleted());
+}
+
+TEST_F(GattServiceTest, MojoDisconnect_GattServiceObserverRemote) {
+  // Simulate that the GATT service is created successfully, and thus is always
+  // accessible via `GetGattService()` calls.
+  ON_CALL(*mock_bluetooth_adapter_, GetGattService)
+      .WillByDefault(testing::Return(fake_local_gatt_service_.get()));
+
+  base::RunLoop run_loop;
+  SetGattServiceInvalidatedCallback(run_loop.QuitClosure());
+  observer_.reset();
+  run_loop.Run();
+
+  EXPECT_TRUE(gatt_service_invalidated_);
+  EXPECT_TRUE(fake_local_gatt_service_->WasDeleted());
 }
 
 }  // namespace bluetooth

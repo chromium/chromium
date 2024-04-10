@@ -61,7 +61,11 @@ bool FakeLocalGattService::IsRegistered() {
 }
 
 void FakeLocalGattService::Delete() {
-  NOTIMPLEMENTED();
+  deleted_ = true;
+
+  if (on_deleted_callback_) {
+    std::move(on_deleted_callback_).Run();
+  }
 }
 
 device::BluetoothLocalGattCharacteristic*

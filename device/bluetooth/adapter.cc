@@ -300,17 +300,11 @@ void Adapter::CreateLocalGattService(
   mojo::PendingRemote<mojom::GattService> pending_gatt_service_remote =
       pending_gatt_service_receiver.InitWithNewPipeAndPassRemote();
 
-  // TODO(crbug.com/311430390): `gatt_service` can become invalidated if the
-  // consumer of `pending_gatt_service_remote` calls `Stop()` (which will be
-  // added in a follow up CL as part of this work). When that happens,
-  // `Adapter` needs to observe the invalidation event, and clean up the
-  // `gatt_service` from `uuid_to_local_gatt_service_map_`. This TODO tracks
-  // adding an observer interface to `GattService` to notify `Adapter` when it
-  // is invalidated, which then `Adapter` can erase `gatt_service` from
-  // `uuid_to_local_gatt_service_map_`.
-  auto gatt_service =
-      std::make_unique<GattService>(std::move(pending_gatt_service_receiver),
-                                    std::move(observer), service_id, adapter_);
+  auto gatt_service = std::make_unique<GattService>(
+      std::move(pending_gatt_service_receiver), std::move(observer), service_id,
+      adapter_,
+      base::BindOnce(&Adapter::OnGattServiceInvalidated,
+                     base::Unretained(this)));
   uuid_to_local_gatt_service_map_.try_emplace(service_id,
                                               std::move(gatt_service));
   std::move(callback).Run(
@@ -386,6 +380,10 @@ void Adapter::GattServicesDiscovered(device::BluetoothAdapter* adapter,
 void Adapter::AllowConnectionsForUuid(
     const device::BluetoothUUID& service_uuid) {
   allowed_uuids_.emplace(service_uuid);
+}
+
+void Adapter::OnGattServiceInvalidated(device::BluetoothUUID service_id) {
+  uuid_to_local_gatt_service_map_.erase(service_id);
 }
 
 void Adapter::OnDeviceFetchedForInsecureServiceConnection(
