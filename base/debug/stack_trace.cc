@@ -277,10 +277,10 @@ bool StackTrace::WillSymbolizeToStreamForTesting() {
 }
 
 void StackTrace::Print() const {
-  PrintWithPrefix(nullptr);
+  PrintWithPrefix({});
 }
 
-void StackTrace::PrintWithPrefix(const char* prefix_string) const {
+void StackTrace::PrintWithPrefix(cstring_view prefix_string) const {
   if (!count_ || ShouldSuppressOutput()) {
     if (g_stack_trace_message) {
       PrintMessageWithPrefix(prefix_string, *g_stack_trace_message);
@@ -291,17 +291,14 @@ void StackTrace::PrintWithPrefix(const char* prefix_string) const {
 }
 
 void StackTrace::OutputToStream(std::ostream* os) const {
-  OutputToStreamWithPrefix(os, nullptr);
+  OutputToStreamWithPrefix(os, {});
 }
 
 void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
-                                          const char* prefix_string) const {
+                                          cstring_view prefix_string) const {
   if (!count_ || ShouldSuppressOutput()) {
     if (g_stack_trace_message) {
-      if (prefix_string) {
-        (*os) << prefix_string;
-      }
-      (*os) << *g_stack_trace_message;
+      (*os) << prefix_string << *g_stack_trace_message;
     }
     return;
   }
@@ -309,10 +306,10 @@ void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
 }
 
 std::string StackTrace::ToString() const {
-  return ToStringWithPrefix(nullptr);
+  return ToStringWithPrefix({});
 }
 
-std::string StackTrace::ToStringWithPrefix(const char* prefix_string) const {
+std::string StackTrace::ToStringWithPrefix(cstring_view prefix_string) const {
   std::stringstream stream;
 #if !defined(__UCLIBC__) && !defined(_AIX)
   OutputToStreamWithPrefix(&stream, prefix_string);

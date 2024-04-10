@@ -253,7 +253,7 @@ class SymbolContext {
   void OutputTraceToStream(const void* const* trace,
                            size_t count,
                            std::ostream* os,
-                           const char* prefix_string) {
+                           cstring_view prefix_string) {
     AutoLock lock(lock_);
 
     for (size_t i = 0; (i < count) && os->good(); ++i) {
@@ -285,9 +285,7 @@ class SymbolContext {
                                            &line_displacement, &line);
 
       // Output the backtrace line.
-      if (prefix_string)
-        (*os) << prefix_string;
-      (*os) << "\t";
+      (*os) << prefix_string << "\t";
       if (has_symbol) {
         (*os) << symbol->Name << " [0x" << trace[i] << "+"
               << sym_displacement << "]";
@@ -391,28 +389,24 @@ void StackTrace::InitTrace(const CONTEXT* context_record) {
 }
 
 // static
-void StackTrace::PrintMessageWithPrefix(const char* prefix_string,
+void StackTrace::PrintMessageWithPrefix(cstring_view prefix_string,
                                         cstring_view message) {
-  if (prefix_string) {
-    std::cerr << prefix_string;
-  }
-  std::cerr << message;
+  std::cerr << prefix_string << message;
 }
 
-void StackTrace::PrintWithPrefixImpl(const char* prefix_string) const {
+void StackTrace::PrintWithPrefixImpl(cstring_view prefix_string) const {
   OutputToStreamWithPrefixImpl(&std::cerr, prefix_string);
 }
 
-void StackTrace::OutputToStreamWithPrefixImpl(std::ostream* os,
-                                              const char* prefix_string) const {
+void StackTrace::OutputToStreamWithPrefixImpl(
+    std::ostream* os,
+    cstring_view prefix_string) const {
   SymbolContext* context = SymbolContext::GetInstance();
   if (g_init_error != ERROR_SUCCESS) {
     (*os) << "Error initializing symbols (" << g_init_error
           << ").  Dumping unresolved backtrace:\n";
     for (size_t i = 0; (i < count_) && os->good(); ++i) {
-      if (prefix_string)
-        (*os) << prefix_string;
-      (*os) << "\t" << trace_[i] << "\n";
+      (*os) << prefix_string << "\t" << trace_[i] << "\n";
     }
   } else {
     context->OutputTraceToStream(trace_, count_, os, prefix_string);

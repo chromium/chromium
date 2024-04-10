@@ -193,7 +193,7 @@ void OutputFrameId(size_t frame_id, BacktraceOutputHandler* handler) {
 
 void ProcessBacktrace(const void* const* trace,
                       size_t size,
-                      const char* prefix_string,
+                      cstring_view prefix_string,
                       BacktraceOutputHandler* handler) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
@@ -205,8 +205,8 @@ void ProcessBacktrace(const void* const* trace,
 #endif
 
   for (size_t i = 0; i < size; ++i) {
-    if (prefix_string)
-      handler->HandleOutput(prefix_string);
+    if (!prefix_string.empty())
+      handler->HandleOutput(prefix_string.c_str());
 
     OutputFrameId(i, handler);
     handler->HandleOutput(" ");
@@ -245,8 +245,8 @@ void ProcessBacktrace(const void* const* trace,
 #if defined(HAVE_DLADDR)
     Dl_info dl_info;
     for (size_t i = 0; i < size; ++i) {
-      if (prefix_string) {
-        handler->HandleOutput(prefix_string);
+      if (!prefix_string.empty()) {
+        handler->HandleOutput(prefix_string.c_str());
       }
 
       OutputValue(i, handler);
@@ -273,8 +273,8 @@ void ProcessBacktrace(const void* const* trace,
       for (size_t i = 0; i < size; ++i) {
         std::string trace_symbol = trace_symbols.get()[i];
         DemangleSymbols(&trace_symbol);
-        if (prefix_string)
-          handler->HandleOutput(prefix_string);
+        if (!prefix_string.empty())
+          handler->HandleOutput(prefix_string.c_str());
         handler->HandleOutput(trace_symbol.c_str());
         handler->HandleOutput("\n");
       }
@@ -1043,17 +1043,17 @@ size_t CollectStackTrace(const void** trace, size_t count) {
 }
 
 // static
-void StackTrace::PrintMessageWithPrefix(const char* prefix_string,
+void StackTrace::PrintMessageWithPrefix(cstring_view prefix_string,
                                         cstring_view message) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
-  if (prefix_string) {
-    PrintToStderr(prefix_string);
+  if (!prefix_string.empty()) {
+    PrintToStderr(prefix_string.c_str());
   }
   PrintToStderr(message.c_str());
 }
 
-void StackTrace::PrintWithPrefixImpl(const char* prefix_string) const {
+void StackTrace::PrintWithPrefixImpl(cstring_view prefix_string) const {
 // NOTE: This code MUST be async-signal safe (it's used by in-process
 // stack dumping signal handler). NO malloc or stdio is allowed here.
 #if defined(HAVE_BACKTRACE)
@@ -1063,8 +1063,9 @@ void StackTrace::PrintWithPrefixImpl(const char* prefix_string) const {
 }
 
 #if defined(HAVE_BACKTRACE)
-void StackTrace::OutputToStreamWithPrefixImpl(std::ostream* os,
-                                              const char* prefix_string) const {
+void StackTrace::OutputToStreamWithPrefixImpl(
+    std::ostream* os,
+    cstring_view prefix_string) const {
   StreamBacktraceOutputHandler handler(os);
   ProcessBacktrace(trace_, count_, prefix_string, &handler);
 }

@@ -16,11 +16,11 @@ void StackTrace::Print() const {}
 void StackTrace::OutputToStream(std::ostream* os) const {}
 
 std::string StackTrace::ToString() const {
-  return "";
+  return {};
 }
 
-std::string StackTrace::ToStringWithPrefix(const char* prefix_string) const {
-  return "";
+std::string StackTrace::ToStringWithPrefix(cstring_view prefix_string) const {
+  return {};
 }
 
 std::ostream& operator<<(std::ostream& os, const StackTrace& s) {

@@ -16,6 +16,7 @@
 #include "base/process/process_handle.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier.h"
+#include "base/strings/cstring_view.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -133,14 +134,14 @@ TEST_F(StackTraceTest, DebugPrintWithPrefixBacktrace) {
 // Make sure nullptr prefix doesn't crash. Output not examined, much
 // like the DebugPrintBacktrace test above.
 TEST_F(StackTraceTest, DebugPrintWithNullPrefixBacktrace) {
-  StackTrace().PrintWithPrefix(nullptr);
+  StackTrace().PrintWithPrefix({});
 }
 
 // Test OutputToStreamWithPrefix, mainly to make sure it doesn't
 // crash. Any "real" stack trace testing happens above.
 TEST_F(StackTraceTest, DebugOutputToStreamWithPrefix) {
   StackTrace trace;
-  const char* prefix_string = "[test]";
+  cstring_view prefix_string = "[test]";
   std::ostringstream os;
   trace.OutputToStreamWithPrefix(&os, prefix_string);
   std::string backtrace_message = os.str();
@@ -154,8 +155,8 @@ TEST_F(StackTraceTest, DebugOutputToStreamWithPrefix) {
 TEST_F(StackTraceTest, DebugOutputToStreamWithNullPrefix) {
   StackTrace trace;
   std::ostringstream os;
-  trace.OutputToStreamWithPrefix(&os, nullptr);
-  trace.ToStringWithPrefix(nullptr);
+  trace.OutputToStreamWithPrefix(&os, {});
+  trace.ToStringWithPrefix({});
 }
 
 #endif  // !defined(__UCLIBC__) && !defined(_AIX)
