@@ -935,6 +935,32 @@ def main():
     cflags += zstd_cflags
     cxxflags += zstd_cflags
 
+  lit_excludes = []
+  if sys.platform.startswith('linux'):
+    lit_excludes += [
+        # See SANITIZER_OVERRIDE_INTERCEPTORS above: We disable crypt_r()
+        # interception, so its tests can't pass.
+        '^SanitizerCommon-(a|l|m|ub|t)san-x86_64-Linux :: Linux/crypt_r.cpp$',
+        # fstat and sunrpc tests fail due to sysroot/host mismatches
+        # (crbug.com/1459187).
+        '^MemorySanitizer-.* f?stat(at)?(64)?.cpp$',
+        '^.*Sanitizer-.*sunrpc.*cpp$',
+        # sysroot/host glibc version mismatch, crbug.com/1506551
+        '^.*Sanitizer.*mallinfo2.cpp$',
+    ]
+  elif sys.platform == 'darwin':
+    lit_excludes += [
+        # Fails on macOS 14, crbug.com/332589870
+        '^.*Sanitizer.*Darwin/malloc_zone.cpp$',
+        # Fails with a recent ld, crbug.com/332589870
+        '^.*ContinuousSyncMode/darwin-proof-of-concept.c$',
+        '^.*instrprof-darwin-exports.c$',
+    ]
+  test_env = None
+  if lit_excludes:
+    test_env = os.environ.copy()
+    test_env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
+
   if args.bootstrap:
     print('Building bootstrap compiler')
     if os.path.exists(LLVM_BOOTSTRAP_DIR):
@@ -991,7 +1017,7 @@ def main():
                setenv=True)
     RunCommand(['ninja'] + goma_ninja_args, setenv=True)
     if args.run_tests:
-      RunCommand(['ninja', 'check-all'], setenv=True)
+      RunCommand(['ninja', 'check-all'], env=test_env, setenv=True)
     RunCommand(['ninja', 'install'], setenv=True)
 
     if sys.platform == 'win32':
@@ -1500,33 +1526,8 @@ def main():
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'cr-check-all'], setenv=True)
 
   if not args.build_mac_arm and args.run_tests:
-    lit_excludes = []
-    if sys.platform.startswith('linux'):
-      lit_excludes += [
-          # See SANITIZER_OVERRIDE_INTERCEPTORS above: We disable crypt_r()
-          # interception, so its tests can't pass.
-          '^SanitizerCommon-(a|l|m|ub|t)san-x86_64-Linux :: Linux/crypt_r.cpp$',
-          # fstat and sunrpc tests fail due to sysroot/host mismatches
-          # (crbug.com/1459187).
-          '^MemorySanitizer-.* f?stat(at)?(64)?.cpp$',
-          '^.*Sanitizer-.*sunrpc.*cpp$',
-          # sysroot/host glibc version mismatch, crbug.com/1506551
-          '^.*Sanitizer.*mallinfo2.cpp$'
-      ]
-    elif sys.platform == 'darwin':
-      lit_excludes += [
-          # Fails on macOS 14, crbug.com/332589870
-          '^.*Sanitizer.*Darwin/malloc_zone.cpp$',
-          # Fails with a recent ld, crbug.com/332589870
-          '^.*ContinuousSyncMode/darwin-proof-of-concept.c$',
-          '^.*instrprof-darwin-exports.c$',
-      ]
-    env = None
-    if lit_excludes:
-      env = os.environ.copy()
-      env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'check-all'],
-               env=env,
+               env=test_env,
                setenv=True)
   if args.install_dir:
     RunCommand(['ninja', 'install'], setenv=True)
