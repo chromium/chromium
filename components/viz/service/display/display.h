@@ -51,7 +51,6 @@ class SyncPointManager;
 }
 
 namespace viz {
-class AggregatedFrame;
 class DirectRenderer;
 class DisplayClient;
 class DisplayResourceProvider;
@@ -60,6 +59,7 @@ class RendererSettings;
 class SharedBitmapManager;
 class SkiaOutputSurface;
 class SoftwareRenderer;
+class OcclusionCuller;
 
 class VIZ_SERVICE_EXPORT DisplayObserver {
  public:
@@ -201,7 +201,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   void ForceImmediateDrawAndSwapIfPossible();
   void SetNeedsOneBeginFrame();
-  void RemoveOverdrawQuads(AggregatedFrame* frame);
 
   void SetSupportedFrameIntervals(std::vector<base::TimeDelta> intervals);
   void PreserveChildSurfaceControls();
@@ -327,7 +326,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // cleared first.
   raw_ptr<SoftwareRenderer> software_renderer_ = nullptr;
   std::vector<ui::LatencyInfo> stored_latency_info_;
-  std::vector<gfx::Rect> cached_visible_region_;
+  std::unique_ptr<OcclusionCuller> occlusion_culler_;
 
   // |pending_presentation_group_timings_| stores a
   // Display::PresentationGroupTiming for each group currently waiting for

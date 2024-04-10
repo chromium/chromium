@@ -3,38 +3,39 @@
 // found in the LICENSE file.
 
 #include <limits>
+#include <memory>
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
-#include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
-#include "components/viz/service/display/display.h"
-#include "components/viz/service/display/display_scheduler.h"
-#include "components/viz/service/display/output_surface.h"
+#include "components/viz/service/display/occlusion_culler.h"
+#include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
-#include "components/viz/test/fake_skia_output_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 namespace {
 
-static const int kTimeLimitMillis = 3000;
-static const int kWarmupRuns = 5;
-static const int kTimeCheckInterval = 10;
-static const int kHeight = 1000;
-static const int kWidth = 1000;
+constexpr int kTimeLimitMillis = 3000;
+constexpr int kWarmupRuns = 5;
+constexpr int kTimeCheckInterval = 10;
+constexpr int kHeight = 1000;
+constexpr int kWidth = 1000;
+constexpr float kDeviceScaleFactor = 1.0f;
 
 constexpr char kMetricPrefixRemoveOverdrawQuad[] = "RemoveOverdrawQuad.";
 constexpr char kMetricOverlapThroughputRunsPerS[] = "overlap_throughput";
@@ -63,30 +64,14 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
                kTimeCheckInterval),
         task_runner_(base::MakeRefCounted<base::NullTaskRunner>()) {}
 
-  std::unique_ptr<Display> CreateDisplay() {
-    FrameSinkId frame_sink_id(3, 3);
+ protected:
+  // testing::Test:
+  void SetUp() override {
+    DCHECK(!occlusion_culler_);
 
-    auto scheduler = std::make_unique<DisplayScheduler>(
-        &begin_frame_source_, task_runner_.get(), PendingSwapParams(1));
-
-    std::unique_ptr<FakeSkiaOutputSurface> output_surface =
-        FakeSkiaOutputSurface::Create3d();
-
-    auto overlay_processor = std::make_unique<OverlayProcessorStub>();
-    // Normally display will need to take ownership of a
-    // gpu::GpuTaskschedulerhelper in order to keep it alive to share between
-    // the output surface and the overlay processor. In this case the overlay
-    // processor is a stub and the output surface is test only as well, so there
-    // is no need to pass in a real gpu::GpuTaskSchedulerHelper.
-    // TODO(weiliangc): Figure out a better way to set up test without passing
-    // in nullptr.
-    auto display = std::make_unique<Display>(
-        &bitmap_manager_, /*shared_image_manager=*/nullptr,
-        /*sync_point_manager=*/nullptr, RendererSettings(), &debug_settings_,
-        frame_sink_id, nullptr /* gpu::GpuTaskSchedulerHelper */,
-        std::move(output_surface), std::move(overlay_processor),
-        std::move(scheduler), task_runner_.get());
-    return display;
+    overlay_processor_ = std::make_unique<OverlayProcessorStub>();
+    occlusion_culler_ = std::make_unique<OcclusionCuller>(
+        overlay_processor_.get(), RendererSettings::OcclusionCullerSettings());
   }
 
   // Create an arbitrary SharedQuadState for the given |render_pass|.
@@ -134,8 +119,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
         quad->SetNew(shared_quad_state, rect, rect, needs_blending, resource_id,
                      premultiplied_alpha, uv_top_left, uv_bottom_right,
                      background_color, y_flipped, nearest_neighbor,
-                     /*secure_output_only=*/false,
-                     gfx::ProtectedVideoType::kClear);
+                     /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
         j += quad_height;
       }
       j = y_top;
@@ -152,11 +136,10 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
                                      int quad_count) {
     frame_.render_pass_list.push_back(std::make_unique<AggregatedRenderPass>());
     CreateOverlapShareQuadStates(shared_quad_state_count, quad_count);
-    std::unique_ptr<Display> display = CreateDisplay();
 
     timer_.Reset();
     do {
-      display->RemoveOverdrawQuads(&frame_);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -193,10 +176,9 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
                                        int quad_count) {
     frame_.render_pass_list.push_back(std::make_unique<AggregatedRenderPass>());
     CreateIsolatedSharedQuadStates(shared_quad_state_count, quad_count);
-    std::unique_ptr<Display> display = CreateDisplay();
     timer_.Reset();
     do {
-      display->RemoveOverdrawQuads(&frame_);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -242,10 +224,9 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
     frame_.render_pass_list.push_back(std::make_unique<AggregatedRenderPass>());
     CreatePartiallyOverlapSharedQuadStates(shared_quad_state_count,
                                            percentage_overlap, quad_count);
-    std::unique_ptr<Display> display = CreateDisplay();
     timer_.Reset();
     do {
-      display->RemoveOverdrawQuads(&frame_);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -288,11 +269,9 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
                                        int quad_count) {
     frame_.render_pass_list.push_back(std::make_unique<AggregatedRenderPass>());
     CreateAdjacentSharedQuadStates(shared_quad_state_count, quad_count);
-    std::unique_ptr<Display> display = CreateDisplay();
-
     timer_.Reset();
     do {
-      display->RemoveOverdrawQuads(&frame_);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -324,12 +303,11 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
   }
 
  private:
-  DebugRendererSettings debug_settings_;
   AggregatedFrame frame_;
   base::LapTimer timer_;
-  StubBeginFrameSource begin_frame_source_;
+  std::unique_ptr<OverlayProcessorInterface> overlay_processor_;
+  std::unique_ptr<OcclusionCuller> occlusion_culler_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  ServerSharedBitmapManager bitmap_manager_;
 };
 
 TEST_F(RemoveOverdrawQuadPerfTest, IterateOverlapShareQuadStates) {
