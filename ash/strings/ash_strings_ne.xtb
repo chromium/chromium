@@ -112,7 +112,7 @@
 <translation id="1360220746312242196">कुनै पेज खोज्दा खोज पदसँग मिल्दोजुल्दो अघिल्लो परिणाममा जानुहोस्</translation>
 <translation id="1360788414852622716">प्रोफाइल असक्षम पारिँदै छ। यो कार्य गर्न केही बेर लाग्न सक्छ।</translation>
 <translation id="1364382257761975320">तपाईं आफ्नो Chromebook अनलक गर्न चाहनुहुन्छ भने आफ्नो फिंगरप्रिन्ट प्रयोग गर्नुहोस्</translation>
-<translation id="1365866993922957110">स्वतः अपडेट गरियोस्</translation>
+<translation id="1365866993922957110">स्वतः अपडेट गर्नुहोस्</translation>
 <translation id="1372545819342940910">यो डेस्क पछिका लागि सेभ गर्नुहोस्</translation>
 <translation id="1383597849754832576">बोलीसम्बन्धी फाइलहरू डाउनलोड गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
@@ -139,7 +139,7 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">तपाईं "स्पिच-टु-टेक्स्ट" का सहायताले आफ्नो आवाज प्रयोग गरेर टाइप गर्न सक्नुहुन्छ। तपाईं टेक्स्ट फिल्डमा भएका बेला "स्पिच-टु-टेक्स्ट" की थिच्नुहोस् वा स्क्रिनको पुछारमा रहेको माइक्रोफोन जनाउने आइकन चयन गर्नुहोस्। तपाईंको "स्पिच-टु-टेक्स्ट" को भाषा सेट गरी <ph name="LANGUAGE" /> बनाइएको छ। बोलिएको कुरा प्रोसेस गर्नका निम्ति सो अडियो Google मा पठाइन्छ। तपाईं जुनसुकै बेला "सेटिङ &gt; एक्सेसिबिलिटी" मा गई "स्पिच-टु-टेक्स्ट" को भाषा परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> लाई <ph name="SECOND_ITEM_TITLE" /> सँग साटियो</translation>
-<translation id="1500926532737552529">सबै सुझावहरू देखाइयोस्</translation>
+<translation id="1500926532737552529">सबै सुझावहरू देखाउनुहोस्</translation>
 <translation id="1510238584712386396">लन्चर</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। एउटा एपका लागि सूचनाहरू निष्क्रिय छन्}other{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। # एपका लागि सूचनाहरू निष्क्रिय छन्}}</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ | पूरा चार्ज हुन <ph name="TIME" /> लाग्छ</translation>
@@ -155,7 +155,7 @@
 <translation id="1550406609415860283">डिभाइसहरू उपलब्ध छन्</translation>
 <translation id="1550523713251050646">थप विकल्पहरूका लागि क्लिक गर्नुहोस्</translation>
 <translation id="1555130319947370107">निलो</translation>
-<translation id="1557622599341396706">डेस्कको नाम देखाइयोस्</translation>
+<translation id="1557622599341396706">डेस्कको नाम देखाउनुहोस्</translation>
 <translation id="1569384531973824928">तपाईंले यसो गर्नुभयो भने क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइन्छ। तपाईंले वेबपेज रिफ्रेस गर्नु पर्ने वा एप रिस्टार्ट गर्नु पर्ने हुन सक्छ।</translation>
 <translation id="1571697193564730395">Do Not Disturb अन वा अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">म्याग्निफायर अन भएका बेला जुम आउट गर्नुहोस्</translation>
@@ -220,7 +220,7 @@
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> खोल्न चयन गर्नुहोस्।</translation>
 <translation id="1838895407229022812">रात्रि प्रकाश निष्क्रिय छ।</translation>
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
-<translation id="1862077610023398675">सेटिङ लुकाइयोस्</translation>
+<translation id="1862077610023398675">सेटिङ लुकाउनुहोस्</translation>
 <translation id="1862380676329487333">अपडेट गर्नुहोस् अनि साइन आउट गर्नुहोस्</translation>
 <translation id="1864454756846565995">USB-C यन्त्र (पछाडिको पोर्ट)</translation>
 <translation id="1869497990620230175">क्विक फाइलहरू</translation>
@@ -248,7 +248,7 @@
 <translation id="1972950159383891558">नमस्कार, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">पाठ इनपुट</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> मा सामेल हुनुहोस्</translation>
-<translation id="1982717156487272186">अघिल्लो हप्ताका कार्यक्रम देखाइयोस्</translation>
+<translation id="1982717156487272186">अघिल्लो हप्ताका कार्यक्रम देखाउनुहोस्</translation>
 <translation id="1986150224850161328">तपाईंको फोन र Chromebook एउटै नेटवर्कमा कनेक्ट गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्। <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">सामग्री क्याप्चर गर्न मिल्दैन</translation>
 <translation id="1990046457226896323">बोलीसम्बन्धी फाइलहरू डाउनलोड गरिए</translation>
@@ -945,7 +945,7 @@
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + अप एरो</translation>
 <translation id="4762573482154983647">एपहरू लुकाउनुहोस्</translation>
-<translation id="4762802395013012237">५ फिटलाई मिटरमा रूपान्तरण गरियोस्</translation>
+<translation id="4762802395013012237">५ फिटलाई मिटरमा रूपान्तरण गर्नुहोस्</translation>
 <translation id="4763885921995354846">तपाईंले यसो गर्नुभयो भने क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिइन्छ। तपाईंले वेबपेज रिफ्रेस गर्नु पर्ने वा एप रिस्टार्ट गर्नु पर्ने हुन सक्छ।</translation>
 <translation id="4774338217796918551">भोलि <ph name="COME_BACK_TIME" /> बजे फेरि आउनुहोला।</translation>
 <translation id="4776584068981882959">तपाईंको पासवर्ड अझै पनि पुष्टि गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
@@ -996,7 +996,7 @@
 <translation id="493076006037866439">स्क्रिनमा जुम आउट गर्नुहोस्</translation>
 <translation id="4936329710968938986">सबैका लागि, अफ छ</translation>
 <translation id="4937170330762390348">तपाईं "स्पिच-टु-टेक्स्ट" का सहायताले आफ्नो आवाज प्रयोग गरेर टाइप गर्न सक्नुहुन्छ। तपाईं टेक्स्ट फिल्डमा भएका बेला "स्पिच-टु-टेक्स्ट" की थिच्नुहोस् वा स्क्रिनको पुछारमा रहेको माइक्रोफोन जनाउने आइकन चयन गर्नुहोस्। तपाईंको "स्पिच-टु-टेक्स्ट" को भाषा सेट गरी <ph name="LANGUAGE" /> बनाइएको छ। तपाईं "स्पिच-टु-टेक्स्ट" अफलाइन प्रयोग गर्न सक्नुहोस् भन्नाका लागि भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गरिने छन्। तपाईं जुनसुकै बेला "सेटिङ &gt; एक्सेसिबिलिटी" मा गई "स्पिच-टु-टेक्स्ट" को भाषा परिवर्तन गर्न सक्नुहुन्छ।</translation>
-<translation id="4938176435186993759">सबै सिफारिसहरू लुकाइयोस्</translation>
+<translation id="4938176435186993759">सबै सिफारिसहरू लुकाउनुहोस्</translation>
 <translation id="4945196315133970626">सूचनाहरू अफ गर्नुहोस्</translation>
 <translation id="4946376291507881335">फोटो खिच्नुहोस्</translation>
 <translation id="495046168593986294">माथि स्क्रोल गर्नुहोस्</translation>
@@ -1098,7 +1098,7 @@
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5319712128756744240">नयाँ डिभाइस कनेक्ट गर्नुहोस्</translation>
 <translation id="5322611492012084517">तपाईंको फोन भेट्टाउन सकिएन</translation>
-<translation id="5323994101633366939">डेस्कको नाम लुकाइयोस्</translation>
+<translation id="5323994101633366939">डेस्कको नाम लुकाउनुहोस्</translation>
 <translation id="5327248766486351172">नाम</translation>
 <translation id="5329548388331921293">कनेक्ट गरिँदै...</translation>
 <translation id="5331975486040154427">USB-C यन्त्र (पछाडिको पोर्टको बायाँ)</translation>
@@ -1177,7 +1177,7 @@
 <translation id="5620979661744857819">तपाईंले यसो गर्नुभयो भने <ph name="APP_NAME" /> र क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइन्छ। तपाईंले वेबपेज रिफ्रेस गर्नु पर्ने वा एप रिस्टार्ट गर्नु पर्ने हुन सक्छ।</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">तपाईंको पासवर्ड पुष्टि गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="5632485077360054581">यसो गर्ने तरिका देखाइयोस्</translation>
+<translation id="5632485077360054581">यसो गर्ने तरिका देखाउनुहोस्</translation>
 <translation id="5648021990716966815">माइकको ज्याक</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> तपाईंको ध्यानाकर्षण गराउन चाहन्छ।</translation>
 <translation id="5662075790140998213">डेस्क १०</translation>
@@ -1186,7 +1186,7 @@
 <translation id="5673434351075758678">तपाईंका सेटिङहरू सिंक पश्चात् "<ph name="TO_LOCALE" />" बाट "<ph name="FROM_LOCALE" />" मा परिवर्तन भएका छन्।</translation>
 <translation id="5675363643668471212">सेल्फको वस्तु</translation>
 <translation id="5677928146339483299">ब्लक गरिएको छ</translation>
-<translation id="5678564054339031017">आगामी हप्ताका कार्यक्रम देखाइयोस्</translation>
+<translation id="5678564054339031017">आगामी हप्ताका कार्यक्रम देखाउनुहोस्</translation>
 <translation id="5679050765726761783">न्यून पावर भएको एड्याप्टर जोडिएको छ</translation>
 <translation id="5682642926269496722">हालको प्रयोगकर्ताको खातामा Google सहायक उपलब्ध छैन।</translation>
 <translation id="5682844616152977671"><ph name="RELATIVE_DATE" /> <ph name="TIME" /></translation>
@@ -1279,7 +1279,7 @@
 <translation id="602001110135236999">बायाँतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="6020147141355393792">आफ्नो फोनमा भएका सूचना तथा एपहरू हेर्ने सुविधा सेटअप गर्नुहोस्</translation>
 <translation id="6022924867608035986">खोजबाकसको पाठ खाली गर्नुहोस्</translation>
-<translation id="602472752137106327">सबै डेस्कमा भएका विन्डोहरू देखाइयोस्, रेडियो बटन चयन गरियो</translation>
+<translation id="602472752137106327">सबै डेस्कमा भएका विन्डोहरू देखाउनुहोस्, रेडियो बटन चयन गरियो</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> मा कुनै पनि कार्यक्रम छैन। तपाईं ब्राउजरमा Google पात्रो खोल्न चाहनुहुन्छ भने इन्टर की थिच्नुहोस्।</translation>
 <translation id="6030495522958826102">मेनु सारेर स्क्रिनको फेदको बायाँ कुनामा लगियो।</translation>
@@ -1509,8 +1509,8 @@
 <translation id="6917259695595127329">कार्यहरू अपडेट गरिएको पछिल्लो समय: <ph name="TIME" />।</translation>
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="692135145298539227">मेटाइयोस्</translation>
-<translation id="6929081673585394903">सेटिङ देखाइयोस्</translation>
-<translation id="6931576957638141829">यसमा सेभ गरियोस्</translation>
+<translation id="6929081673585394903">सेटिङ देखाउनुहोस्</translation>
+<translation id="6931576957638141829">यसमा सेभ गर्नुहोस्</translation>
 <translation id="6942518653766415536">रेकर्डिङको फर्म्याटसम्बन्धी मेनु</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6945922087561257829">तपाईंको फोनमा मोबाइल नेटवर्क प्रयोग गरिराखिएको छ। तपाईंको फोन र Chromebook एउटै Wi-Fi नेटवर्कमा कनेक्ट गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्। <ph name="LEARN_MORE" /></translation>
@@ -1555,7 +1555,7 @@
 <translation id="7088960765736518739">स्विचमार्फत पहुँच राख्ने सुविधा</translation>
 <translation id="709015856939120012">पेजमा जुम इन गर्नुहोस्</translation>
 <translation id="7098389117866926363">USB-C यन्त्र (पछाडिमा बाँया पोर्ट)</translation>
-<translation id="7100906357717321275">Files एपमा लुकाइएका फाइलहरू देखाइयोस्</translation>
+<translation id="7100906357717321275">Files एपमा लुकाइएका फाइलहरू देखाउनुहोस्</translation>
 <translation id="7108254681523785542">पेस्ट गर्न वस्तु चयन गर्नुहोस्। तपाईं <ph name="SHORTCUT_KEY_NAME" /> + v थिचेर क्लिपबोर्ड हेर्न सक्नुहुन्छ।</translation>
 <translation id="7116969082764510092">डेस्क ११</translation>
 <translation id="7118268675952955085">स्क्रिनसट</translation>
@@ -1769,7 +1769,7 @@
 <translation id="793716872548410480">आफ्नो क्लिपबोर्ड हेर्न <ph name="SHORTCUT_KEY_NAME" /> + V थिच्नुहोस्। तपाईंले कपी गर्नुभएका पछिल्ला ५ वस्तुहरू तपाईंको क्लिपबोर्डमा सुरक्षित गरिन्छन्।</translation>
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7944023924886109030">आजका सबै कार्यक्रमहरू हेर्नुहोस्</translation>
-<translation id="7945357288295809525">एक्सेसिबिलिटी सेटिङ देखाइयोस्, "<ph name="ENABLED_FEATURES" />" अन गरिएको छ।</translation>
+<translation id="7945357288295809525">एक्सेसिबिलिटी सेटिङ देखाउनुहोस्, "<ph name="ENABLED_FEATURES" />" अन गरिएको छ।</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ले <ph name="DEVICE_NAME" /> प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="7951630946012935453">किबोर्डको चमक घटाउनुहोस्</translation>
 <translation id="7963689218131240420">Do Not Disturb अफ छ।</translation>
@@ -1903,7 +1903,7 @@
 <translation id="8511123073331775246">नयाँ डेस्क बनाउनुहोस्</translation>
 <translation id="85123341071060231">तपाईंको Chromebook को ब्लुटुथ अफ छ। Chromebook अनलक गर्न पासवर्ड हाल्नुहोस्।</translation>
 <translation id="8513108775083588393">स्वतः परिक्रमा</translation>
-<translation id="851458219935658693">हालको डेस्कमा भएका विन्डोहरू देखाइयोस्, रेडियो बटन चयन गरियो</translation>
+<translation id="851458219935658693">हालको डेस्कमा भएका विन्डोहरू देखाउनुहोस्, रेडियो बटन चयन गरियो</translation>
 <translation id="8517041960877371778">खुला हुँदा तपाईँको <ph name="DEVICE_TYPE" /> चार्ज नहुन सक्छ।</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> ले माइक इनपुट नियन्त्रण गर्दै छ}other{# वटा एपले माइक इनपुट नियन्त्रण गर्दै छन्}}</translation>
 <translation id="8535393432370007982">रङअनुसार क्रमबद्ध गर्ने कार्य अन्डू गर्नुहोस्</translation>
@@ -1949,7 +1949,7 @@
 <translation id="8717459106217102612">अघिल्लो शब्द वा अक्षर चयन गर्नुहोस्</translation>
 <translation id="8721053961083920564">भोल्युम टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फुल स्क्रिन क्याप्चर</translation>
-<translation id="8725214031272624704">उपलब्ध इनपुट विधिहरूको सूची देखाइयोस्</translation>
+<translation id="8725214031272624704">उपलब्ध इनपुट विधिहरूको सूची देखाउनुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> मा समाप्त हुन्छ</translation>
 <translation id="8734991477317290293">यसले तपाईंका किस्ट्रोकहरू चोर्न खोजिरहेको हुन सक्छ</translation>
@@ -1961,7 +1961,7 @@
 <translation id="875593634123171288">VPN सेटिङहरू देखाउनुहोस्</translation>
 <translation id="8759408218731716181">बहुविध साइन-इन सेटअप गर्न सक्दैन</translation>
 <translation id="8763883995157866248">डिभाइस स्लिप मोडमा राख्नुहोस्</translation>
-<translation id="877404052021108314">९० डिग्री फरेनहाइटलाई सेल्सियसमा रूपान्तरण गरियोस्</translation>
+<translation id="877404052021108314">९० डिग्री फरेनहाइटलाई सेल्सियसमा रूपान्तरण गर्नुहोस्</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, इन्स्टल गरिएको एप, रोक लगाइएको</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> मा जोड्नुहोस्</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>

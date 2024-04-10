@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
-<translation id="1003363546227723021">मेरो स्क्रिन निष्क्रिय अवस्थामा हुँदा फोटो, समय, मौसम र मिडियासम्बन्धी जानकारी देखाइयोस्</translation>
+<translation id="1003363546227723021">मेरो स्क्रिन निष्क्रिय अवस्थामा हुँदा फोटो, समय, मौसम र मिडियासम्बन्धी जानकारी देखाउनुहोस्</translation>
 <translation id="1014750484722996375">डेस्कहरू</translation>
 <translation id="1018219910092211213">DNS समाधान गर्न सकिएन</translation>
 <translation id="1018656279737460067">रद्द गरियो</translation>
@@ -468,7 +468,7 @@
 <translation id="387301095347517405">तपाईंको डिभाइसको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
 <translation id="3877066159641251281">अनुवादित टेक्स्ट सुन्नुहोस्</translation>
 <translation id="3885327323343477505">स्क्रिन सेभर बदल्नुहोस्</translation>
-<translation id="3889914174935857450">मिति रिसेट गरियोस्</translation>
+<translation id="3889914174935857450">मिति रिसेट गर्नुहोस्</translation>
 <translation id="391412459402535266">डिभाइसको परीक्षण गर्न सकिँदैन। परीक्षण गर्न ल्यापटप मोड प्रयोग गर्नुहोस्।</translation>
 <translation id="3916998944874125962">"स्क्रिनसट लिनुहोस्" जनाउने आइकन</translation>
 <translation id="3923184630988645767">डेटा प्रयोग</translation>
@@ -745,7 +745,7 @@
 <translation id="554067135846762198">कोरल र ट्यान</translation>
 <translation id="5543701552415191873">लक गरिएको छ</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5559898619118303662">सूर्यास्तपछि स्वतः अँध्यारो थिम लागू गरियोस्</translation>
+<translation id="5559898619118303662">सूर्यास्तपछि स्वतः अँध्यारो थिम लागू गर्नुहोस्</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> को सेड भएको <ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुनः स्क्यान गर्नुहोस्</translation>
@@ -868,7 +868,7 @@
 <translation id="6283581480003247988">निलो र बैजनी</translation>
 <translation id="6284632978374966585">अँध्यारो थिम अन गर्नुहोस्‌</translation>
 <translation id="628726841779494414">प्रिन्टरसम्बन्धी सेटिङमा गई आफ्ना प्रिन्टरहरू व्यवस्थापन गर्नुहोस्</translation>
-<translation id="6292095526077353682">चार्ज भइरहेका बेला निम्न अवधिका लागि स्क्रिनसेभर देखाइयोस्</translation>
+<translation id="6292095526077353682">चार्ज भइरहेका बेला निम्न अवधिका लागि स्क्रिनसेभर देखाउनुहोस्</translation>
 <translation id="629550705077076970">किबोर्डको ब्याकलाइटको चमक कम गर्नुहोस्</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> परीक्षण रद्द गरिएको छ</translation>
 <translation id="631063167932043783">एक्स्प्लोर एप</translation>
