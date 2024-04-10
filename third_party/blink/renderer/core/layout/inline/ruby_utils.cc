@@ -223,17 +223,18 @@ bool CanApplyStartOverhang(const LineInfo& line_info,
   return true;
 }
 
-LayoutUnit CommitPendingEndOverhang(LineInfo* line_info) {
+LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
+                                    LineInfo* line_info) {
   DCHECK(line_info);
   InlineItemResults* items = line_info->MutableResults();
-  if (items->size() < 2U)
-    return LayoutUnit();
-  const InlineItemResult& text_item = items->back();
-  if (text_item.item->Type() == InlineItem::kControl) {
+  if (items->size() < 1U) {
     return LayoutUnit();
   }
-  DCHECK(text_item.item->Type() == InlineItem::kText);
-  wtf_size_t i = items->size() - 2;
+  if (text_item.Type() == InlineItem::kControl) {
+    return LayoutUnit();
+  }
+  DCHECK_EQ(text_item.Type(), InlineItem::kText);
+  wtf_size_t i = items->size() - 1;
   while ((*items)[i].item->Type() != InlineItem::kAtomicInline) {
     const auto type = (*items)[i].item->Type();
     if (type != InlineItem::kOpenTag && type != InlineItem::kCloseTag) {
@@ -249,15 +250,16 @@ LayoutUnit CommitPendingEndOverhang(LineInfo* line_info) {
   if (atomic_inline_item.pending_end_overhang <= LayoutUnit())
     return LayoutUnit();
   if (atomic_inline_item.item->Style()->FontSize() <
-      text_item.item->Style()->FontSize())
+      text_item.Style()->FontSize()) {
     return LayoutUnit();
+  }
   // Ideally we should refer to inline_size of |text_item| instead of the width
   // of the InlineItem's ShapeResult. However it's impossible to compute
   // inline_size of |text_item| before calling BreakText(), and BreakText()
   // requires precise |position_| which takes |end_overhang| into account.
   LayoutUnit end_overhang =
       std::min(atomic_inline_item.pending_end_overhang,
-               LayoutUnit(text_item.item->TextShapeResult()->Width()));
+               LayoutUnit(text_item.TextShapeResult()->Width()));
   DCHECK_EQ(atomic_inline_item.margins.inline_end, LayoutUnit());
   atomic_inline_item.margins.inline_end = -end_overhang;
   atomic_inline_item.inline_size -= end_overhang;

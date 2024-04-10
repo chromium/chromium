@@ -69,12 +69,13 @@ AnnotationOverhang GetOverhang(const InlineItemResult& item);
 bool CanApplyStartOverhang(const LineInfo& line_info,
                            LayoutUnit& start_overhang);
 
-// This should be called after InlineItemResult for a text is added in
+// This should be called before a text `InlineItem` is added in
 // LineBreaker::HandleText().
 //
 // This function may update a InlineItemResult representing RubyColumn
 // in |line_info|
-LayoutUnit CommitPendingEndOverhang(LineInfo* line_info);
+LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
+                                    LineInfo* line_info);
 
 // Stores ComputeAnnotationOverflow() results.
 //
