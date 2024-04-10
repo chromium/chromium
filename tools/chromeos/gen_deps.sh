@@ -57,7 +57,7 @@ fi
 readonly TARGET=${1}
 if ! [ -d $TARGET ]; then
   if ! [ -f $TARGET ]; then
-    echo "${TARGET} does not exit."
+    echo "${TARGET} does not exist."
   else
     echo "${TARGET} is not a directory."
   fi
@@ -65,15 +65,15 @@ if ! [ -d $TARGET ]; then
 fi
 
 # Directories whose files should be listed separately.
-readonly NO_DIR=("chrome" "chrome/browser" "chrome/common"
-                 "chrome/browser/extensions" "chrome/browser/ui"
-                 "chrome/browser/ui/webui" "chrome/browser/ui/views"
-                 "chrome/browser/web_applications")
+readonly NO_DIR=("chrome" "chrome/browser" "chrome/browser/extensions"
+                 "chrome/browser/ui" "chrome/browser/ui/views"
+                 "chrome/browser/ui/webui" "chrome/browser/web_applications"
+                 "chrome/common")
 
 # Check above directories exist.
 for d in ${NO_DIR[@]}; do
   if [ ! -d $d ]; then
-    echo "Warning: Directory $d does not exit. " \
+    echo "Warning: Directory $d does not exist. " \
       "Please update the directory list NO_DIR in $(basename $0)."
   fi
 done
@@ -106,12 +106,12 @@ for i in "${!dirs[@]}"; do
   fi
 done
 
-# Print dirs and files in DEPS format.
-for d in "${dirs[@]}"; do
-  echo "  \"+$d\","
-done
+# Combine arrays and sort alphabetically.
+files_and_dirs=( "${dirs[@]}" "${files[@]}" )
+sorted=($(printf '%s\n' "${files_and_dirs[@]}" | sort))
 
-for d in "${files[@]}"; do
-  echo "  \"+$d\","
+# Print in DEPS format.
+for i in "${sorted[@]}"; do
+  echo "  \"+$i\","
 done
 
