@@ -6,6 +6,7 @@
 
 #include <linux/magic.h>
 #include <sys/statfs.h>
+
 #include <map>
 #include <set>
 #include <string>
@@ -40,7 +41,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"

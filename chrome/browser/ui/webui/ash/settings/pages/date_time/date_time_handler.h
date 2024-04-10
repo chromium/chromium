@@ -7,9 +7,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace ash::settings {

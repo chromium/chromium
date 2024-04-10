@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 
 namespace ash {

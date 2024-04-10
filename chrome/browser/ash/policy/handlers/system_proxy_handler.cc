@@ -9,8 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 

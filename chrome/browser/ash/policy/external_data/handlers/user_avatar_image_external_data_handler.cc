@@ -8,7 +8,7 @@
 
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/policy_constants.h"
 
 namespace policy {

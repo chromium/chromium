@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/settings/shutdown_policy_forwarder.h"
 
 #include "ash/public/cpp/shutdown_controller.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 
 namespace ash {
 

@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/printing/history/print_job_reporting_service.h"
-
 #include <memory>
 #include <utility>
 
@@ -13,13 +10,15 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/printing/history/print_job_reporting_service.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/client/report_queue.h"

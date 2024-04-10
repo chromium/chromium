@@ -6,9 +6,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ui/webui/ash/login/user_allowlist_check_screen_handler.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 
 namespace ash {
 namespace {

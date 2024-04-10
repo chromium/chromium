@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/metrics/histogram_functions.h"
@@ -11,8 +10,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +20,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/language/core/browser/pref_names.h"

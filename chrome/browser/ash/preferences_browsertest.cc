@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <sys/types.h>
+
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -19,10 +20,10 @@
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/fake_input_device_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"

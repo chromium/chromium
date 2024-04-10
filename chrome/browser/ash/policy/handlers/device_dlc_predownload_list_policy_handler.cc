@@ -18,7 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 
 namespace policy {
 

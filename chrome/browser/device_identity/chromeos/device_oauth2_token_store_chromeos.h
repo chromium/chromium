@@ -8,8 +8,8 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 
 class PrefRegistrySimple;
 class PrefService;

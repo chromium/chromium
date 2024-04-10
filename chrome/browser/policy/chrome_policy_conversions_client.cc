@@ -43,7 +43,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"

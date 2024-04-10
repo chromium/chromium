@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "base/path_service.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 
 namespace extensions {

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/extensions/external_cache_impl.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -20,7 +21,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
@@ -28,6 +28,7 @@
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

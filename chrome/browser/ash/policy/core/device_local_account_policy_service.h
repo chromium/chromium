@@ -18,7 +18,7 @@
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/core/common/schema_registry.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");

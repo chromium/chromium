@@ -6,7 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 
 namespace reporting {

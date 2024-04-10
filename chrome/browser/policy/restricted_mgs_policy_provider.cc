@@ -17,7 +17,7 @@
 #include "components/policy/policy_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -74,11 +74,11 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/extensions/api/file_handlers/non_native_file_system_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
 #include "chrome/browser/extensions/api/media_perception_private/media_perception_api_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

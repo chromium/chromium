@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SETTINGS_CROS_SETTINGS_H_
-#define CHROME_BROWSER_ASH_SETTINGS_CROS_SETTINGS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SETTINGS_CROS_SETTINGS_H_
+#define CHROMEOS_ASH_COMPONENTS_SETTINGS_CROS_SETTINGS_H_
 
 #include <map>
 #include <memory>
@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -27,7 +28,7 @@ static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 namespace ash {
 
 // This class manages per-device/global settings.
-class CrosSettings {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettings {
  public:
   // Returns the global singleton instance.
   // Life time is managed by CrosSettingsHolder or, if it is in tests,
@@ -155,4 +156,4 @@ class CrosSettings {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_SETTINGS_CROS_SETTINGS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SETTINGS_CROS_SETTINGS_H_

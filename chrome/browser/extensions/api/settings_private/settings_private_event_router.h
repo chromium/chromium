@@ -18,7 +18,7 @@
 #include "extensions/browser/event_router.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #endif
 
 namespace content {

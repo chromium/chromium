@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
-
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/notifications/echo_dialog_view.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scoped_wake_lock.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "services/device/public/mojom/wake_lock.mojom-forward.h"

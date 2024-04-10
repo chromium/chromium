@@ -11,8 +11,8 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 namespace policy {

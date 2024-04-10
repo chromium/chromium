@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/policy_constants.h"
 
 namespace policy {

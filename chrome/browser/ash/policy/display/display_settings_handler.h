@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

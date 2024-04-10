@@ -6,13 +6,13 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/settings_user_action_tracker.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/metrics/metrics_service.h"
 

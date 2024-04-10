@@ -23,8 +23,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "ui/wm/core/wm_core_switches.h"
 
 namespace ash {

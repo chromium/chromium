@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/token_encryptor.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

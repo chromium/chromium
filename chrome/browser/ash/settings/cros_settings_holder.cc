@@ -9,10 +9,10 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/supervised_user_cros_settings_provider.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/system_settings_provider.h"
 
 namespace ash {

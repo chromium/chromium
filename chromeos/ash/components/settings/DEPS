@@ -3,7 +3,10 @@ noparent = True
 include_rules = [
   "+ash/constants",
   "+base",
+  "+build/chromeos_buildflags.h",
   "+chromeos/ash/components/login/login_state",
+  "+components/user_manager/user_type.h",
+  "+google_apis/gaia",
   "+third_party/icu",
 ]
 

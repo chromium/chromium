@@ -10,7 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 

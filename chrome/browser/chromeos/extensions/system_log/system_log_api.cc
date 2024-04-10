@@ -13,8 +13,8 @@
 #include "extensions/common/extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
