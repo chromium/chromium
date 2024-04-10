@@ -1076,7 +1076,7 @@ void OnListFamilyMembersResponse(
   // events.
   [GeolocationLogger sharedInstance];
 
-  if (ShouldDisplayPromos()) {
+  if (ShouldPromoManagerDisplayPromos()) {
     [sceneState addAgent:[[PromosManagerSceneAgent alloc]
                              initWithCommandDispatcher:mainCommandDispatcher]];
   }

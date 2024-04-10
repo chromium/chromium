@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator+Testing.h"
 
 #import <Foundation/Foundation.h>
 
@@ -11,7 +10,14 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/app/application_delegate/app_state+Testing.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -19,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator+Testing.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -27,9 +34,11 @@
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -40,10 +49,23 @@ class PromosManagerCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               SyncServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+
     view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:view_controller_];
     TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
+
+    startup_information_ = [[FakeStartupInformation alloc] init];
+    [startup_information_ setIsColdStart:YES];
+    AppState* app_state =
+        [[AppState alloc] initWithStartupInformation:startup_information_];
+
+    scene_state_ =
+        [[FakeSceneState alloc] initWithAppState:app_state
+                                    browserState:browser_state_.get()];
+    scene_state_.scene = static_cast<UIWindowScene*>(
+        [[[UIApplication sharedApplication] connectedScenes] anyObject]);
+    browser_ =
+        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
   }
 
   // Initializes a new `PromosManagerCoordinator` for testing.
@@ -57,6 +79,24 @@ class PromosManagerCoordinatorTest : public PlatformTest {
                                            @protocol(DockingPromoCommands))];
   }
 
+  // Forces the test promo for display.
+  void ForceTestPromo() {
+    [[NSUserDefaults standardUserDefaults]
+        setObject:@"promos_manager::Promo::Test"
+           forKey:@"NextPromoForDisplayOverride"];
+  }
+
+  // Sets up the UI to be ready for promo display.
+  void SetupUIForPromoDisplay() {
+    // App state stage can be moved only one stage at a time.
+    while (browser_.get()->GetSceneState().appState.initStage <
+           InitStageFinal) {
+      [browser_.get()->GetSceneState().appState queueTransitionToNextInitStage];
+    }
+    browser_.get()->GetSceneState().activationLevel =
+        SceneActivationLevelForegroundActive;
+  }
+
  protected:
   IOSChromeScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -66,6 +106,8 @@ class PromosManagerCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_;
+  FakeStartupInformation* startup_information_;
+  FakeSceneState* scene_state_;
 };
 
 }  // namespace
@@ -130,6 +172,51 @@ TEST_F(PromosManagerCoordinatorTest, BanneredViewControllerDismissesViaSwipe) {
   [coordinator_ presentationControllerDidDismiss:nil];
 
   [banneredProvider verify];
+}
+
+// Tests ...
+TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackTest) {
+  // Prepare UI for promo display.
+  SetupUIForPromoDisplay();
+
+  CreatePromosManagerCoordinator();
+  id mockCoordinator = OCMPartialMock(coordinator_);
+
+  // Force test promos so there at least one promo to display.
+  ForceTestPromo();
+
+  // Check that test promo will be displayed.
+  PromoDisplayData promoDisplayData = PromoDisplayData{
+      .promo = promos_manager::Promo::Test, .was_forced = true};
+  OCMExpect([mockCoordinator displayPromo:promoDisplayData]);
+
+  [mockCoordinator displayPromoCallback:true];
+
+  [mockCoordinator verify];
+}
+
+TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackUINotAvailableTest) {
+  // Prepare UI for promo display.
+  SetupUIForPromoDisplay();
+  CreatePromosManagerCoordinator();
+
+  id mockCoordinator = OCMPartialMock(coordinator_);
+
+  // Force test promos so there at least one promo to display.
+  ForceTestPromo();
+
+  // Check that test promo will not be displayed.
+  PromoDisplayData promoDisplayData = PromoDisplayData{
+      .promo = promos_manager::Promo::Test, .was_forced = true};
+  OCMReject([mockCoordinator displayPromo:promoDisplayData]);
+
+  // Set UI not available for promo display before calling
+  // ```displayPromoCallback```
+  browser_.get()->GetSceneState().activationLevel =
+      SceneActivationLevelBackground;
+  [mockCoordinator displayPromoCallback:true];
+
+  [mockCoordinator verify];
 }
 
 // TODO(crbug.com/1370763): Add unit tests for promoWasDisplayed being

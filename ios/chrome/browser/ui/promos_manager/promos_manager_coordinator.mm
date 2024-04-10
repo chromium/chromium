@@ -125,7 +125,7 @@
                                                credentialProviderPromoHandler
                        dockingPromoHandler:
                            (id<DockingPromoCommands>)dockingPromoHandler {
-  DCHECK(ShouldDisplayPromos());
+  DCHECK(ShouldPromoManagerDisplayPromos());
   if (self = [super initWithBaseViewController:viewController
                                        browser:browser]) {
     _credentialProviderPromoCommandHandler = credentialProviderPromoHandler;
@@ -187,6 +187,13 @@
 }
 
 - (void)displayPromoCallback:(BOOL)isFirstShownPromo {
+  // Check if UI is no longer available before proceeding. It is possible that
+  // while tracker is being initialized the UI can change and become not
+  // available.
+  if (!IsUIAvailableForPromo(self.browser->GetSceneState())) {
+    return;
+  }
+
   // If there's already a displayed promo, skip.
   if (_currentPromoData.has_value()) {
     return;
