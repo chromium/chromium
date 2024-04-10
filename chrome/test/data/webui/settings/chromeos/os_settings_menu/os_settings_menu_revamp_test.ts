@@ -1175,6 +1175,24 @@ suite('<os-settings-menu>', () => {
         });
   });
 
+  suite('Personalization menu item', () => {
+    function getPersonalizationMenuItem(): OsSettingsMenuItemElement {
+      const menuItem =
+          queryMenuItemByPath(`/${routesMojom.PERSONALIZATION_SECTION_PATH}`);
+      assertTrue(!!menuItem);
+      return menuItem;
+    }
+
+    test('Description reflects load time string', async () => {
+      await createMenu();
+
+      const menuItem = getPersonalizationMenuItem();
+      assertEquals(
+          settingsMenu.i18n('personalizationMenuItemDescription'),
+          menuItem.sublabel);
+    });
+  });
+
   suite('Privacy menu item', () => {
     test('Privacy menu item description', async () => {
       await createMenu();

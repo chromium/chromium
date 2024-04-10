@@ -5194,6 +5194,7 @@ source_set("unit_tests") {
     "../ui/webui/ash/settings/pages/multidevice/multidevice_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/multidevice/multidevice_section_unittest.cc",
     "../ui/webui/ash/settings/pages/os_settings_section_unittest.cc",
+    "../ui/webui/ash/settings/pages/personalization/personalization_section_unittest.cc",
     "../ui/webui/ash/settings/pages/privacy/app_permission_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/privacy/metrics_consent_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/privacy/privacy_hub_handler_unittest.cc",

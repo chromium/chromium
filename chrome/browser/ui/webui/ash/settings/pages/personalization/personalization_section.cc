@@ -63,16 +63,22 @@ PersonalizationSection::~PersonalizationSection() = default;
 
 void PersonalizationSection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
+  const bool kIsGuest = IsGuestModeActive();
+
   webui::LocalizedString kWallpaperLocalizedStrings[] = {
       {"personalizationPageTitle", isRevampEnabled_
                                        ? IDS_OS_SETTINGS_REVAMP_PERSONALIZATION
                                        : IDS_OS_SETTINGS_PERSONALIZATION},
       {"personalizationMenuItemDescription",
-       IDS_OS_SETTINGS_PERSONALIZATION_MENU_ITEM_DESCRIPTION},
+       kIsGuest
+           ? IDS_OS_SETTINGS_PERSONALIZATION_MENU_ITEM_DESCRIPTION_GUEST_MODE
+           : IDS_OS_SETTINGS_PERSONALIZATION_MENU_ITEM_DESCRIPTION},
       {"personalizationHubTitle", IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB},
       {"personalizationHubSubtitle",
        isRevampEnabled_
-           ? IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB_SUBTITLE
+           ? (kIsGuest
+                  ? IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB_SUBTITLE_GUEST_MODE
+                  : IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB_SUBTITLE)
            : IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE},
   };
 
