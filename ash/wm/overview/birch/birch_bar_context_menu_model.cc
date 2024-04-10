@@ -58,14 +58,12 @@ void BirchBarContextMenuModel::AddBarMenuItems() {
   // Expanded menu also has customizing suggestions options.
   if (type_ == Type::kExpandedBarMenu) {
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
-    AddCheckItem(base::to_underlying(CommandId::kWeatherSuggestions),
-                 u"Weather");
-    AddCheckItem(base::to_underlying(CommandId::kCalendarSuggestions),
-                 u"Google Calendar");
-    AddCheckItem(base::to_underlying(CommandId::kDriveSuggestions),
-                 u"Google Drive");
-    AddCheckItem(base::to_underlying(CommandId::kOtherDeviceSuggestions),
-                 u"Chrome from other devices");
+    AddItem(base::to_underlying(CommandId::kWeatherSuggestions), u"Weather");
+    AddItem(base::to_underlying(CommandId::kCalendarSuggestions),
+            u"Google Calendar");
+    AddItem(base::to_underlying(CommandId::kDriveSuggestions), u"Google Drive");
+    AddItem(base::to_underlying(CommandId::kOtherDeviceSuggestions),
+            u"Chrome from other devices");
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
     AddItemWithIcon(base::to_underlying(CommandId::kReset), u"Reset",
                     CreateIcon(kResetIcon));

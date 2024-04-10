@@ -32,6 +32,12 @@ class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter,
   BirchBarMenuModelAdapter& operator=(const BirchBarMenuModelAdapter&) = delete;
   ~BirchBarMenuModelAdapter() override;
 
+  // If set to true, the menu should be dismissed when a checkbox of suggestion
+  // type is checked/unchecked.
+  void set_close_menu_on_customizing_suggestions(bool close_menu) {
+    close_menu_on_customizing_suggestions_ = close_menu;
+  }
+
   // Checkbox::Delegate:
   void OnButtonSelected(OptionButtonBase* button) override;
   void OnButtonClicked(OptionButtonBase* button) override;
@@ -42,6 +48,9 @@ class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter,
                                       ui::MenuModel* model,
                                       size_t index) override;
   void RecordHistogramOnMenuClosed() override;
+
+ private:
+  bool close_menu_on_customizing_suggestions_ = false;
 };
 
 }  // namespace ash

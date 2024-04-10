@@ -29,7 +29,7 @@ class BirchItem;
 
 // The controller used to manage the birch bar in every `OverviewGrid`. It will
 // fetch data from `BirchModel` and distribute the data to birch bars.
-class BirchBarController : public BirchModel::Observer {
+class ASH_EXPORT BirchBarController : public BirchModel::Observer {
  public:
   explicit BirchBarController(bool from_pine_service);
   BirchBarController(const BirchBarController&) = delete;
@@ -63,6 +63,10 @@ class BirchBarController : public BirchModel::Observer {
 
   // Gets if the user allows the suggestions to show.
   bool GetShowBirchSuggestions() const;
+
+  BirchBarMenuModelAdapter* chip_menu_model_adapter_for_testing() {
+    return chip_menu_model_adapter_.get();
+  }
 
  private:
   friend class BirchBarMenuTest;

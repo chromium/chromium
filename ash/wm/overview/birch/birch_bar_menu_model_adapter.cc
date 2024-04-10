@@ -16,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
@@ -29,18 +30,20 @@ PrefService* GetPrefService() {
 }
 
 // Creates a switch button to control showing/hiding the birch bar.
-std::unique_ptr<Switch> CreateShowSuggestionSwitch(
-    BirchBarMenuModelAdapter* model_adapter) {
-  auto switch_button = std::make_unique<Switch>(base::BindRepeating(
-      [](BirchBarMenuModelAdapter* model_adapter) {
+std::unique_ptr<Switch> CreateShowSuggestionSwitch() {
+  auto switch_button =
+      std::make_unique<Switch>(base::BindRepeating([]() {
         auto* birch_bar_controller = BirchBarController::Get();
         CHECK(birch_bar_controller);
 
+        // Note that the menu should be dismissed before changing the show
+        // suggestions pref which map destroy the chips.
+        views::MenuController::GetActiveInstance()->Cancel(
+            views::MenuController::ExitType::kAll);
+
         birch_bar_controller->SetShowBirchSuggestions(
             /*show=*/!birch_bar_controller->GetShowBirchSuggestions());
-        model_adapter->Cancel();
-      },
-      model_adapter));
+      }));
   switch_button->SetIsOn(BirchBarController::Get()->GetShowBirchSuggestions());
   return switch_button;
 }
@@ -65,12 +68,6 @@ std::string CommandIdToSuggestionPrefName(int command_id) {
   }
   NOTREACHED_NORETURN() << "No matching suggestion type for command Id: "
                         << command_id;
-}
-
-void OnCheckboxPressed(int command_id) {
-  auto* pref_service = GetPrefService();
-  const std::string pref_name = CommandIdToSuggestionPrefName(command_id);
-  pref_service->SetBoolean(pref_name, !pref_service->GetBoolean(pref_name));
 }
 
 }  // namespace
@@ -103,41 +100,64 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
   const int command_id = model->GetCommandIdAt(index);
   const std::u16string label = model->GetLabelAt(index);
 
-  // Add switch button to show suggestions item.
-  if (command_id ==
-      base::to_underlying(
-          BirchBarContextMenuModel::CommandId::kShowSuggestions)) {
-    views::MenuItemView* item_view = menu->AppendMenuItem(command_id, label);
-    auto* switch_button =
-        item_view->AddChildView(CreateShowSuggestionSwitch(this));
-    switch_button->SetAccessibleName(label);
-    return item_view;
-  }
+  switch (command_id) {
+    case base::to_underlying(
+        BirchBarContextMenuModel::CommandId::kShowSuggestions): {
+      views::MenuItemView* item_view = menu->AppendMenuItem(command_id, label);
+      auto* switch_button =
+          item_view->AddChildView(CreateShowSuggestionSwitch());
+      switch_button->SetAccessibleName(label);
+      return item_view;
+    }
+    case base::to_underlying(
+        BirchBarContextMenuModel::CommandId::kWeatherSuggestions):
+    case base::to_underlying(
+        BirchBarContextMenuModel::CommandId::kCalendarSuggestions):
+    case base::to_underlying(
+        BirchBarContextMenuModel::CommandId::kDriveSuggestions):
+    case base::to_underlying(
+        BirchBarContextMenuModel::CommandId::kOtherDeviceSuggestions): {
+      views::MenuItemView* item_view = menu->AppendMenuItem(command_id);
+      // Note that we cannot directly added a checkbox, since `MenuItemView`
+      // will align the newly added children to the right side of its label. We
+      // should add a checkbox with the label text and remove menu's label by
+      // explicitly setting an empty title.
+      item_view->SetTitle(u"");
+      // Since the checkbox is the only child, `MenuItemView` will treat the
+      // current item view as a container and add container margins to the item.
+      // To keep the checkbox preferred height, we should set the vertical
+      // margins to 0.
+      item_view->set_vertical_margin(0);
+      // Creates a checkbox. The argument `button_width` is the minimum width of
+      // the checkbox button. Since we are not going to limit the minimum size,
+      // so it is set to 0.
+      auto* checkbox = item_view->AddChildView(std::make_unique<Checkbox>(
+          /*button_width=*/0,
+          base::BindRepeating(
+              [](int command_id, bool close_menu) {
+                // To avoid UAF, dismiss the menu before changing the pref which
+                // would destroy current chips.
+                if (close_menu) {
+                  views::MenuController::GetActiveInstance()->Cancel(
+                      views::MenuController::ExitType::kAll);
+                }
 
-  // Create customized checkbox item view for check items.
-  if (model->GetTypeAt(index) == ui::SimpleMenuModel::ItemType::TYPE_CHECK) {
-    views::MenuItemView* item_view = menu->AppendMenuItem(command_id);
-    // Note that we cannot directly added a checkbox, since `MenuItemView` will
-    // align the newly added children to the right side of its label. We should
-    // add a checkbox with the label text and remove menu's label by explicitly
-    // setting an empty title.
-    item_view->SetTitle(u"");
-    // Since the checkbox is the only child, `MenuItemView` will treat the
-    // current item view as a container and add container margins to the item.
-    // To keep the checkbox preferred height, we should set the vertical margins
-    // to 0.
-    item_view->set_vertical_margin(0);
-    // Creates a checkbox. The argument `button_width` is the minimum width of
-    // the checkbox button. Since we are not going to limit the minimum size, so
-    // it is set to 0.
-    auto* checkbox = item_view->AddChildView(std::make_unique<Checkbox>(
-        /*button_width=*/0, base::BindRepeating(&OnCheckboxPressed, command_id),
-        model->GetLabelAt(index)));
-    checkbox->SetSelected(GetPrefService()->GetBoolean(
-        CommandIdToSuggestionPrefName(command_id)));
-    checkbox->set_delegate(this);
-    checkbox->SetAccessibleName(label);
-    return item_view;
+                auto* pref_service = GetPrefService();
+                const std::string pref_name =
+                    CommandIdToSuggestionPrefName(command_id);
+                pref_service->SetBoolean(pref_name,
+                                         !pref_service->GetBoolean(pref_name));
+              },
+              command_id, close_menu_on_customizing_suggestions_),
+          model->GetLabelAt(index)));
+      checkbox->SetSelected(GetPrefService()->GetBoolean(
+          CommandIdToSuggestionPrefName(command_id)));
+      checkbox->set_delegate(this);
+      checkbox->SetAccessibleName(label);
+      return item_view;
+    }
+    default:
+      break;
   }
 
   return AppMenuModelAdapter::AppendMenuItem(menu, model, index);
