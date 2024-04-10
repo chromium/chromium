@@ -13,6 +13,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.LayoutRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
@@ -30,12 +32,13 @@ import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.autofill.IbanRecordType;
 
 /**
- * This class creates a view for adding a local IBAN. A local IBAN gets saved to the user's device
- * only.
+ * This class creates a view for adding and editing a local IBAN. A local IBAN gets saved to the
+ * user's device only.
  */
 public class AutofillLocalIbanEditor extends AutofillEditorBase implements ProfileDependentSetting {
     private static Callback<Fragment> sObserverForTest;
 
+    protected Iban mIban;
     protected Button mDoneButton;
     protected EditText mNickname;
     protected TextInputLayout mNicknameLabel;
@@ -52,6 +55,9 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
         // TODO(b/309163678): Disable autofill for the fields.
         View v = super.onCreateView(inflater, container, savedInstanceState);
 
+        PersonalDataManager personalDataManager =
+                PersonalDataManagerFactory.getForProfile(mProfile);
+        mIban = personalDataManager.getIban(mGUID);
         mDoneButton = (Button) v.findViewById(R.id.button_primary);
         mNickname = (EditText) v.findViewById(R.id.iban_nickname_edit);
         mNicknameLabel = (TextInputLayout) v.findViewById(R.id.iban_nickname_label);
@@ -60,6 +66,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
         mNickname.setOnFocusChangeListener(
                 (view, hasFocus) -> mNicknameLabel.setCounterEnabled(hasFocus));
 
+        addIbanDataToEditFields();
         initializeButtons(v);
         if (sObserverForTest != null) {
             sObserverForTest.onResult(this);
@@ -68,15 +75,13 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
     }
 
     @Override
-    protected int getLayoutId() {
+    protected @LayoutRes int getLayoutId() {
         return R.layout.autofill_local_iban_editor;
     }
 
     @Override
-    protected int getTitleResourceId(boolean isNewEntry) {
-        // TODO(b/309163678): Use isNewEntry to decide which title to display
-        // (i.e., autofill_add_local_iban or autofill_edit_local_iban).
-        return R.string.autofill_add_local_iban;
+    protected @StringRes int getTitleResourceId(boolean isNewEntry) {
+        return isNewEntry ? R.string.autofill_add_local_iban : R.string.autofill_edit_local_iban;
     }
 
     @Override
@@ -91,12 +96,17 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
 
     @Override
     protected boolean saveEntry() {
+        // If an existing local IBAN is being edited, its GUID and record type are set here. In the
+        // case of a new IBAN, these values are set right before being written to the autofill
+        // table.
         Iban iban =
                 Iban.create(
-                        /* guid= */ "",
+                        /* guid= */ mGUID,
                         /* label= */ "",
                         /* nickname= */ mNickname.getText().toString().trim(),
-                        /* recordType= */ IbanRecordType.UNKNOWN,
+                        /* recordType= */ mGUID.isEmpty()
+                                ? IbanRecordType.UNKNOWN
+                                : IbanRecordType.LOCAL_IBAN,
                         /* value= */ mValue.getText().toString());
         PersonalDataManager personalDataManager =
                 PersonalDataManagerFactory.getForProfile(mProfile);
@@ -114,12 +124,26 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
     @Override
     protected void initializeButtons(View v) {
         super.initializeButtons(v);
+        mNickname.addTextChangedListener(this);
         mValue.addTextChangedListener(this);
     }
 
     @VisibleForTesting
     public static void setObserverForTest(Callback<Fragment> observerForTest) {
         sObserverForTest = observerForTest;
+    }
+
+    private void addIbanDataToEditFields() {
+        if (mIban == null) {
+            return;
+        }
+
+        if (!mIban.getNickname().isEmpty()) {
+            mNickname.setText(mIban.getNickname());
+        }
+        if (!mIban.getValue().isEmpty()) {
+            mValue.setText(mIban.getValue());
+        }
     }
 
     private void updateSaveButtonEnabled() {

@@ -1053,8 +1053,11 @@
 
   <!-- Autofill IBAN preferences -->
   <if expr="is_android">
-    <message name="IDS_AUTOFILL_ADD_LOCAL_IBAN" desc="Button that allows the user to add a new IBAN that will be saved locally." formatter_data="android_java">
+    <message name="IDS_AUTOFILL_ADD_LOCAL_IBAN" desc="Button in the Payment methods page that allows the user to add a new IBAN that will be saved locally. It is also the title for the local IBAN editor when a user is adding a new IBAN." formatter_data="android_java">
       Add IBAN
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_LOCAL_IBAN" desc="Title for the local IBAN editor when a user is editing an existing IBAN." formatter_data="android_java">
+      Edit IBAN
     </message>
   </if>
 

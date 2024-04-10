@@ -557,7 +557,6 @@ public class PersonalDataManager implements Destroyable {
             }
 
             public Iban build() {
-                assert mValue != null && !mValue.isEmpty() : "IBAN value can't be null or empty.";
                 switch (mRecordType) {
                     case IbanRecordType.UNKNOWN:
                         assert mGuid.isEmpty()
