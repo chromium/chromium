@@ -175,12 +175,6 @@ bool WebViewWebClient::EnableWebInspector(
   return CWVWebView.webInspectorEnabled;
 }
 
-bool WebViewWebClient::IsMixedContentAutoupgradeEnabled(
-    web::BrowserState* browser_state) const {
-  return base::FeatureList::IsEnabled(
-      security_interstitials::features::kMixedContentAutoupgrade);
-}
-
 bool WebViewWebClient::IsInsecureFormWarningEnabled(
     web::BrowserState* browser_state) const {
   // ios/web_view doesn't receive variations seeds at runtime, so this will

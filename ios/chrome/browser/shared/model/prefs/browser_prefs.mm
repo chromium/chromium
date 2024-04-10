@@ -989,6 +989,9 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 03/2024.
   MigrateNSDatePreferenceFromUserDefaults(
       prefs::kLastApplicationStorageMetricsLogTime, prefs, defaults);
+
+  // Added 04/2024.
+  prefs->ClearPref(prefs::kMixedContentAutoupgradeEnabled);
 }
 
 void MigrateObsoleteUserDefault() {

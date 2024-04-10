@@ -180,11 +180,6 @@ class WebClient {
   virtual bool IsPointingToSameDocument(const GURL& url1,
                                         const GURL& url2) const;
 
-  // Returns true if mixed content on HTTPS documents should be upgraded if
-  // possible.
-  virtual bool IsMixedContentAutoupgradeEnabled(
-      web::BrowserState* browser_state) const;
-
   // Returns true if browser lockdown mode is enabled. Default return value is
   // false.
   virtual bool IsBrowserLockdownModeEnabled(web::BrowserState* browser_state);

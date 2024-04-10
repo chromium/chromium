@@ -61,8 +61,6 @@ class ChromeWebClient : public web::WebClient {
       web::WebState* web_state) const override;
   bool IsPointingToSameDocument(const GURL& url1,
                                 const GURL& url2) const override;
-  bool IsMixedContentAutoupgradeEnabled(
-      web::BrowserState* browser_state) const override;
   bool IsBrowserLockdownModeEnabled(web::BrowserState* browser_state) override;
   void SetOSLockdownModeEnabled(web::BrowserState* browser_state,
                                 bool enabled) override;

@@ -676,10 +676,6 @@ const char kMigrateSyncingUserToSignedInDescription[] =
     "Enables the migration of syncing users to the signed-in, non-syncing "
     "state.";
 
-const char kMixedContentAutoupgradeName[] = "Auto-upgrade mixed content";
-const char kMixedContentAutoupgradeDescription[] =
-    "Enables auto-upgrading of mixed content images, audio and video";
-
 const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";

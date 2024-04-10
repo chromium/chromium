@@ -43,8 +43,6 @@ class WebViewWebClient : public web::WebClient {
                         base::OnceCallback<void(NSString*)> callback) override;
   bool EnableLongPressUIContextMenu() const override;
   bool EnableWebInspector(web::BrowserState* browser_state) const override;
-  bool IsMixedContentAutoupgradeEnabled(
-      web::BrowserState* browser_state) const override;
   bool IsInsecureFormWarningEnabled(
       web::BrowserState* browser_state) const override;
 };

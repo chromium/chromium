@@ -523,20 +523,6 @@ bool ChromeWebClient::IsPointingToSameDocument(const GURL& url1,
   return url_to_compare1 == url_to_compare2;
 }
 
-bool ChromeWebClient::IsMixedContentAutoupgradeEnabled(
-    web::BrowserState* browser_state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  if (!chrome_browser_state->GetPrefs()->GetBoolean(
-          prefs::kMixedContentAutoupgradeEnabled) &&
-      chrome_browser_state->GetPrefs()->IsManagedPreference(
-          prefs::kMixedContentAutoupgradeEnabled)) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(
-      security_interstitials::features::kMixedContentAutoupgrade);
-}
-
 bool ChromeWebClient::IsBrowserLockdownModeEnabled(
     web::BrowserState* browser_state) {
   ChromeBrowserState* chrome_browser_state =

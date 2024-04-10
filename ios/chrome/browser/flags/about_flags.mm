@@ -1193,11 +1193,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-follow-ui-update", flag_descriptions::kEnableFollowUIUpdateName,
      flag_descriptions::kEnableFollowUIUpdateDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableFollowUIUpdate)},
-    {"mixed-content-autoupgrade-ios",
-     flag_descriptions::kMixedContentAutoupgradeName,
-     flag_descriptions::kMixedContentAutoupgradeDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         security_interstitials::features::kMixedContentAutoupgrade)},
     {"enable-preferences-account-storage",
      flag_descriptions::kEnablePreferencesAccountStorageName,
      flag_descriptions::kEnablePreferencesAccountStorageDescription,

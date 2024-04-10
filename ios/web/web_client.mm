@@ -114,11 +114,6 @@ bool WebClient::IsPointingToSameDocument(const GURL& url1,
   return url1 == url2;
 }
 
-bool WebClient::IsMixedContentAutoupgradeEnabled(
-    web::BrowserState* browser_state) const {
-  return true;
-}
-
 bool WebClient::IsBrowserLockdownModeEnabled(web::BrowserState* browser_state) {
   return false;
 }

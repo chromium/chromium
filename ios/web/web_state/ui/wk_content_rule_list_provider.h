@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#import "ios/web/web_state/ui/wk_web_view_configuration_provider_observer.h"
 
 @class WKContentRuleList;
 @class WKUserContentController;
@@ -18,7 +17,7 @@ namespace web {
 // rules.
 class WKContentRuleListProvider {
  public:
-  explicit WKContentRuleListProvider(bool mixed_content_autoupgrade_enabled);
+  WKContentRuleListProvider();
   ~WKContentRuleListProvider();
 
   // Sets the WKUserContentController that this provider will install its rules

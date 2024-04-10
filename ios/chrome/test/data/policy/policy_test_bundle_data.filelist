@@ -44,7 +44,6 @@
 //ios/chrome/test/data/policy/pref_mapping/LensCameraAssistedSearchEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/ManagedBookmarks.json
 //ios/chrome/test/data/policy/pref_mapping/MetricsReportingEnabled.json
-//ios/chrome/test/data/policy/pref_mapping/MixedContentAutoupgradeEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NTPContentSuggestionsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NewTabPageLocation.json
 //ios/chrome/test/data/policy/pref_mapping/OptimizationGuideFetchingEnabled.json

@@ -13,8 +13,7 @@
 
 namespace web {
 
-WKContentRuleListProvider::WKContentRuleListProvider(
-    bool mixed_content_autoupgrade_enabled)
+WKContentRuleListProvider::WKContentRuleListProvider()
     : weak_ptr_factory_(this) {
   base::WeakPtr<WKContentRuleListProvider> weak_this =
       weak_ptr_factory_.GetWeakPtr();
@@ -30,21 +29,19 @@ WKContentRuleListProvider::WKContentRuleListProvider(
                           InstallContentRuleLists();
                         }];
 
-  if (mixed_content_autoupgrade_enabled) {
-    // Auto-upgrade mixed content.
-    [WKContentRuleListStore.defaultStore
-        compileContentRuleListForIdentifier:@"mixed-content-autoupgrade"
-                     encodedContentRuleList:
-                         CreateMixedContentAutoUpgradeJsonRuleList()
-                          completionHandler:^(WKContentRuleList* rule_list,
-                                              NSError* error) {
-                            if (!weak_this.get()) {
-                              return;
-                            }
-                            mixed_content_autoupgrade_rule_list_ = rule_list;
-                            InstallContentRuleLists();
-                          }];
-  }
+  // Auto-upgrade mixed content.
+  [WKContentRuleListStore.defaultStore
+      compileContentRuleListForIdentifier:@"mixed-content-autoupgrade"
+                   encodedContentRuleList:
+                       CreateMixedContentAutoUpgradeJsonRuleList()
+                        completionHandler:^(WKContentRuleList* rule_list,
+                                            NSError* error) {
+                          if (!weak_this.get()) {
+                            return;
+                          }
+                          mixed_content_autoupgrade_rule_list_ = rule_list;
+                          InstallContentRuleLists();
+                        }];
 }
 
 WKContentRuleListProvider::~WKContentRuleListProvider() {}
