@@ -26,6 +26,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
@@ -92,7 +93,7 @@ class MockPeerConnectionTracker : public PeerConnectionTracker {
  public:
   MockPeerConnectionTracker()
       : PeerConnectionTracker(
-            mojo::Remote<mojom::blink::PeerConnectionTrackerHost>(),
+            mojo::PendingRemote<mojom::blink::PeerConnectionTrackerHost>(),
             blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
             base::PassKey<MockPeerConnectionTracker>()) {}
 
