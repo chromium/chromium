@@ -47,7 +47,9 @@
               class="sub-label" aria-hidden="true">
             [[getSummarySublabel_(creditCard)]]
             <template is="dom-if" if="[[isCardBenefitsProductUrlAvailable_(creditCard)]]">
-              (<a id="summaryTermsLink" href="[[getCardBenefitsProductUrl_(creditCard)]]"
+              (<a id="summaryTermsLink"
+                  on-click="onSummarySublabelTermsLinkClick_"
+                  href="[[getCardBenefitsProductUrl_(creditCard)]]"
                   target="_blank">$i18n{benefitsTermsTagForCreditCardListEntry}</a>)
             </template>
           </div>

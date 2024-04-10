@@ -6149,6 +6149,16 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="CardBenefits_TermsLinkClicked">
+  <owner>viplavkadam@google.com</owner>
+  <owner>yishuil@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when the user clicks on the card benefits terms hyperlink on the
+    payment methods settings page.
+  </description>
+</action>
+
 <action name="Cast_Sender_CastDeviceSelected">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

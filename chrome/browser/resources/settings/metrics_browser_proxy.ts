@@ -329,6 +329,14 @@ export enum CvcDeletionUserAction {
   DIALOG_CANCELLED = 'BulkCvcDeletionConfirmationDialogCancelled',
 }
 
+/**
+ * This enum contains relevant UserAction log names for card benefits-related
+ * functionality on the payment methods settings page.
+ */
+export enum CardBenefitsUserAction {
+  CARD_BENEFITS_TERMS_LINK_CLICKED = 'CardBenefits_TermsLinkClicked',
+}
+
 export interface MetricsBrowserProxy {
   /**
    * Helper function that calls recordAction with one action from
