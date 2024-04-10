@@ -7,39 +7,54 @@
  * the tutorial.
  */
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LessonData, Screen} from './constants.js';
 import {TutorialLesson} from './tutorial_lesson.js';
 
-export const LessonContainer = Polymer({
-  is: 'lesson-container',
+/** @polymer */
+export class LessonContainer extends PolymerElement {
+  static get is() {
+    return 'lesson-container';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {Array<!LessonData>} */
-    lessonData: {type: Array},
+  static get properties() {
+    return {
+      /** @type {Array<!LessonData>} */
+      lessonData: {type: Array},
 
-    // Observed properties.
-    /** @type {Screen} */
-    activeScreen: {type: String},
+      // Observed properties.
+      /** @type {Screen} */
+      activeScreen: {type: String},
 
-    /** @type {number} */
-    activeLessonId: {type: Number},
-  },
+      /** @type {number} */
+      activeLessonId: {type: Number},
+    };
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.$.lessonTemplate.addEventListener('dom-change', evt => {
       // Executes once all lessons have been added to the dom.
       this.onLessonsLoaded_();
     });
-  },
+  }
+
+  /** @param {string} eventName  */
+  fire(eventName) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true}));
+  }
 
   /** @private */
   onLessonsLoaded_() {
     this.fire('lessons-loaded');
-  },
+  }
 
   /**
    * @param {Screen} activeScreen
@@ -48,7 +63,7 @@ export const LessonContainer = Polymer({
    */
   shouldHideLessonContainer_(activeScreen) {
     return activeScreen !== Screen.LESSON;
-  },
+  }
 
   /** @return {!Array<!TutorialLesson>} */
   getLessonsFromDom() {
@@ -64,5 +79,6 @@ export const LessonContainer = Polymer({
     }
 
     return lessons;
-  },
-});
+  }
+}
+customElements.define(LessonContainer.is, LessonContainer);
