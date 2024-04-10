@@ -34,9 +34,10 @@ namespace {
 // lazily.
 class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
  public:
-  BlinkRootsHandler()
+  explicit BlinkRootsHandler(v8::Isolate* isolate)
       : v8::EmbedderRootsHandler(v8::EmbedderRootsHandler::RootHandling::
-                                     kDontQueryEmbedderForAnyReference) {}
+                                     kDontQueryEmbedderForAnyReference),
+        isolate_(isolate) {}
 
   bool IsRoot(const v8::TracedReference<v8::Value>& handle) final {
     NOTREACHED_NORETURN();
@@ -48,7 +49,7 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
   void ResetRoot(const v8::TracedReference<v8::Value>& handle) final {
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
     const bool success = DOMDataStore::ClearWrapperInAnyWorldIfEqualTo(
-        ToScriptWrappable(traced), traced);
+        ToScriptWrappable(isolate_, traced), traced);
     // Since V8 found a handle, Blink needs to find it as well when trying to
     // remove it. Note that this is even true for the case where a
     // DOMWrapperWorld and DOMDataStore are already unreachable as the internal
@@ -61,8 +62,11 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
   bool TryResetRoot(const v8::TracedReference<v8::Value>& handle) final {
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
     return DOMDataStore::ClearInlineStorageWrapperIfEqualTo(
-        ToScriptWrappable(traced), traced);
+        ToScriptWrappable(isolate_, traced), traced);
   }
+
+ private:
+  v8::Isolate* isolate_;
 };
 
 }  // namespace
@@ -118,7 +122,7 @@ void ThreadState::AttachToIsolate(v8::Isolate* isolate,
   isolate->AttachCppHeap(cpp_heap_.get());
   CHECK_EQ(cpp_heap_.get(), isolate->GetCppHeap());
   isolate_ = isolate;
-  embedder_roots_handler_ = std::make_unique<BlinkRootsHandler>();
+  embedder_roots_handler_ = std::make_unique<BlinkRootsHandler>(isolate);
   isolate_->SetEmbedderRootsHandler(embedder_roots_handler_.get());
 }
 

@@ -16,24 +16,23 @@ namespace bindings {
 template <class V8T, class T>
 class V8InterfaceBridge : public V8InterfaceBridgeBase {
  public:
-  static T* ToWrappable(v8::Isolate* isolate, v8::Local<v8::Value> value) {
+  static inline T* ToWrappable(v8::Isolate* isolate,
+                               v8::Local<v8::Value> value) {
     return HasInstance(isolate, value)
-               ? ToWrappableUnsafe(value.As<v8::Object>())
+               ? ToWrappableUnsafe(isolate, value.As<v8::Object>())
                : nullptr;
   }
 
   // This method will cause a bad cast if called on an object of the wrong type.
   // For use only inside bindings/, and only when the type of the object is
   // absolutely certain.
-  static T* ToWrappableUnsafe(v8::Local<v8::Object> value) {
-    return ToScriptWrappable(value)->ToImpl<T>();
-  }
-  static T* ToWrappableUnsafe(v8::Isolate* isolate,
-                              v8::Local<v8::Object> value) {
+  static inline T* ToWrappableUnsafe(v8::Isolate* isolate,
+                                     v8::Local<v8::Object> value) {
     return ToScriptWrappable(isolate, value)->ToImpl<T>();
   }
 
-  static bool HasInstance(v8::Isolate* isolate, v8::Local<v8::Value> value) {
+  static inline bool HasInstance(v8::Isolate* isolate,
+                                 v8::Local<v8::Value> value) {
     return V8PerIsolateData::From(isolate)->HasInstance(
         V8T::GetWrapperTypeInfo(), value);
   }

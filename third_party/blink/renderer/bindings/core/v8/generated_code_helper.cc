@@ -407,7 +407,7 @@ void PerformAttributeSetCEReactionsReflect(
 
   CEReactionsScope ce_reactions_scope;
 
-  Element* blink_receiver = V8Element::ToWrappableUnsafe(info.This());
+  Element* blink_receiver = V8Element::ToWrappableUnsafe(isolate, info.This());
   auto&& arg_value = NativeValueTraits<IDLType>::NativeValue(isolate, info[0],
                                                              exception_state);
   if (UNLIKELY(exception_state.HadException()))

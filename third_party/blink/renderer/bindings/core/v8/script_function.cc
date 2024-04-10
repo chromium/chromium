@@ -54,7 +54,8 @@ class CORE_EXPORT CallableHolder final : public ScriptWrappable {
     RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(args.GetIsolate(),
                                                  "Blink_CallCallback");
     v8::Local<v8::Object> data = v8::Local<v8::Object>::Cast(args.Data());
-    auto* holder = static_cast<CallableHolder*>(ToScriptWrappable(data));
+    auto* holder = static_cast<CallableHolder*>(
+        ToScriptWrappable(args.GetIsolate(), data));
     ScriptState* script_state =
         ScriptState::From(args.GetIsolate()->GetCurrentContext());
     holder->callable_->CallRaw(script_state, args);

@@ -350,7 +350,7 @@ def make_factory_methods(cg_context):
             # Shortcut to reduce the binary size
             S("blink_value", (_format(
                 "auto&& ${blink_value} = "
-                "{}::ToWrappableUnsafe(${v8_value}.As<v8::Object>());",
+                "{}::ToWrappableUnsafe(${isolate}, ${v8_value}.As<v8::Object>());",
                 v8_bridge_name))))
 
     # 6. If Type(V) is Object and V has an [[ArrayBufferData]] internal slot,

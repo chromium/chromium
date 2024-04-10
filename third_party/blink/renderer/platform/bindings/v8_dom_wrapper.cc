@@ -85,7 +85,8 @@ bool V8DOMWrapper::IsWrapper(v8::Isolate* isolate, v8::Local<v8::Value> value) {
       untrusted_wrapper_type_info, object);
 }
 
-bool V8DOMWrapper::HasInternalFieldsSet(v8::Local<v8::Value> value) {
+bool V8DOMWrapper::HasInternalFieldsSet(v8::Isolate* isolate,
+                                        v8::Local<v8::Value> value) {
   if (value.IsEmpty() || !value->IsObject())
     return false;
 
@@ -96,7 +97,8 @@ bool V8DOMWrapper::HasInternalFieldsSet(v8::Local<v8::Value> value) {
   if (object->InternalFieldCount() < kV8DefaultWrapperInternalFieldCount)
     return false;
 
-  const ScriptWrappable* untrused_wrappable = ToScriptWrappable(object);
+  const ScriptWrappable* untrused_wrappable =
+      ToScriptWrappable(isolate, object);
   const WrapperTypeInfo* untrusted_wrapper_type_info =
       ToWrapperTypeInfo(object);
   return untrused_wrappable && untrusted_wrapper_type_info &&

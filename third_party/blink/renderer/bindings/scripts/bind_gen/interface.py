@@ -515,14 +515,16 @@ def bind_callback_local_vars(code_node, cg_context):
         # DOMWindow class.  Then, we'll have less hacks.
         if (not cg_context.member_like or
                 "CrossOrigin" in cg_context.member_like.extended_attributes):
-            text = ("DOMWindow* ${blink_receiver} = "
-                    "${class_name}::ToWrappableUnsafe(${v8_receiver});")
+            text = (
+                "DOMWindow* ${blink_receiver} = "
+                "${class_name}::ToWrappableUnsafe(${isolate},${v8_receiver});")
         else:
             # ToWrappableUnsafe will always return non-null, so we can use
             # UnsafeTo via a reference to avoid the nullptr check as well.
             text = (
                 "LocalDOMWindow* ${blink_receiver} = &UnsafeTo<LocalDOMWindow>("
-                "*${class_name}::ToWrappableUnsafe(${v8_receiver}));")
+                "*${class_name}::ToWrappableUnsafe(${isolate},${v8_receiver}));"
+            )
     else:
         pattern = (
             "{_1}* ${blink_receiver} = "
@@ -2636,7 +2638,7 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
     body.register_code_symbols([
         S("blink_receiver", (_format(
             "{}* ${blink_receiver} = "
-            "${class_name}::ToWrappableUnsafe(${v8_receiver});",
+            "${class_name}::ToWrappableUnsafe(${isolate}, ${v8_receiver});",
             blink_class_name(cg_context.interface)))),
         S("isolate",
           "v8::Isolate* ${isolate} = ${v8_receiver}->GetIsolate();"),
@@ -3898,17 +3900,19 @@ def make_cross_origin_access_check_callback(cg_context, function_name):
     body = func_def.body
     body.add_template_var("accessing_context", "accessing_context")
     body.add_template_var("accessed_object", "accessed_object")
-    bind_callback_local_vars(body, cg_context)
 
     if cg_context.interface.identifier == "Window":
         blink_class = "DOMWindow"
     else:
         blink_class = blink_class_name(cg_context.interface)
+
     body.extend([
         TextNode(
             _format(
                 "{blink_class}* blink_accessed_object = "
-                "${class_name}::ToWrappableUnsafe(${accessed_object});",
+                "${class_name}::ToWrappableUnsafe("
+                "accessing_context->GetIsolate(),"
+                "${accessed_object});",
                 blink_class=blink_class)),
         TextNode("return BindingSecurity::ShouldAllowAccessTo("
                  "ToLocalDOMWindow(${accessing_context}), "

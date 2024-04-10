@@ -111,7 +111,8 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
   // willReleaseScriptContext callback, so all disposing should happen after
   // it returns.
   GetFrame()->Client()->WillReleaseScriptContext(context, world_->GetWorldId());
-  MainThreadDebugger::Instance(script_state_->GetIsolate())
+  CHECK_EQ(GetIsolate(), script_state_->GetIsolate());
+  MainThreadDebugger::Instance(GetIsolate())
       ->ContextWillBeDestroyed(script_state_);
   if (next_status == Lifecycle::kV8MemoryIsForciblyPurged ||
       next_status == Lifecycle::kGlobalObjectIsDetached) {
@@ -119,8 +120,9 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
     v8::Local<v8::Object> global = context->Global();
     if (!global_proxy_.IsEmpty()) {
       CHECK(global_proxy_ == global);
-      CHECK_EQ(ToScriptWrappable(global),
-               ToScriptWrappable(global->GetPrototype().As<v8::Object>()));
+      CHECK_EQ(ToScriptWrappable(GetIsolate(), global),
+               ToScriptWrappable(GetIsolate(),
+                                 global->GetPrototype().As<v8::Object>()));
     }
     V8DOMWrapper::ClearNativeInfo(GetIsolate(), global);
     script_state_->World().DomDataStore().ClearIfEqualTo(
@@ -510,7 +512,7 @@ static void Getter(v8::Local<v8::Name> property,
   v8::Isolate* isolate = info.GetIsolate();
   AtomicString name = ToCoreAtomicString(isolate, property.As<v8::String>());
   HTMLDocument* html_document =
-      V8HTMLDocument::ToWrappableUnsafe(info.Holder());
+      V8HTMLDocument::ToWrappableUnsafe(isolate, info.Holder());
   DCHECK(html_document);
   v8::Local<v8::Value> namedPropertyValue =
       GetNamedProperty(html_document, name, info.Holder(), isolate);

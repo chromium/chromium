@@ -1074,6 +1074,7 @@ CreateIDLSequenceFromV8ArraySlow(v8::Isolate* isolate,
                                                v8::Local<v8::Value> v8_element,
                                                void* data) {
       CallbackData* callback_data = reinterpret_cast<CallbackData*>(data);
+      v8::Isolate* isolate = callback_data->isolate;
       // 3.4. Initialize Si to the result of converting nextItem to an IDL value
       //   of type T.
       v8::TypecheckWitness& witness = callback_data->witness;
@@ -1084,14 +1085,14 @@ CreateIDLSequenceFromV8ArraySlow(v8::Isolate* isolate,
           NativeValueTraits<
               T>::supports_scriptwrappable_specific_fast_array_iteration) {
         if (witness.Matches(v8_element)) {
-          auto&& value = ToScriptWrappable(v8_element.As<v8::Object>())
+          auto&& value = ToScriptWrappable(isolate, v8_element.As<v8::Object>())
                              ->template ToImpl<T>();
           callback_data->result.push_back(std::move(value));
           return v8::Array::CallbackResult::kContinue;
         }
       }
       auto&& element = NativeValueTraits<T>::NativeValue(
-          callback_data->isolate, v8_element, callback_data->exception_state);
+          isolate, v8_element, callback_data->exception_state);
       if (callback_data->exception_state.HadException()) {
         // It doesn't matter whether we return `kException` or `kBreak` here,
         // as that only affects the return value of `v8_array->Iterate()`,
@@ -1570,7 +1571,8 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T*> {
     const WrapperTypeInfo* wrapper_type_info = T::GetStaticWrapperTypeInfo();
     if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info,
                                                      value)) {
-      return ToScriptWrappable(value.As<v8::Object>())->template ToImpl<T>();
+      return ToScriptWrappable(isolate, value.As<v8::Object>())
+          ->template ToImpl<T>();
     }
 
     bindings::NativeValueTraitsInterfaceNotOfType(wrapper_type_info,
@@ -1583,8 +1585,11 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T*> {
                                  v8::Local<v8::Value> value,
                                  ExceptionState& exception_state) {
     const WrapperTypeInfo* wrapper_type_info = T::GetStaticWrapperTypeInfo();
-    if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info, value))
-      return ToScriptWrappable(value.As<v8::Object>())->template ToImpl<T>();
+    if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info,
+                                                     value)) {
+      return ToScriptWrappable(isolate, value.As<v8::Object>())
+          ->template ToImpl<T>();
+    }
 
     bindings::NativeValueTraitsInterfaceNotOfType(
         wrapper_type_info, argument_index, exception_state);
@@ -1600,8 +1605,11 @@ struct NativeValueTraits<IDLNullable<T>>
                                v8::Local<v8::Value> value,
                                ExceptionState& exception_state) {
     const WrapperTypeInfo* wrapper_type_info = T::GetStaticWrapperTypeInfo();
-    if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info, value))
-      return ToScriptWrappable(value.As<v8::Object>())->template ToImpl<T>();
+    if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info,
+                                                     value)) {
+      return ToScriptWrappable(isolate, value.As<v8::Object>())
+          ->template ToImpl<T>();
+    }
 
     if (value->IsNullOrUndefined())
       return nullptr;
@@ -1616,8 +1624,11 @@ struct NativeValueTraits<IDLNullable<T>>
                                  v8::Local<v8::Value> value,
                                  ExceptionState& exception_state) {
     const WrapperTypeInfo* wrapper_type_info = T::GetStaticWrapperTypeInfo();
-    if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info, value))
-      return ToScriptWrappable(value.As<v8::Object>())->template ToImpl<T>();
+    if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info,
+                                                     value)) {
+      return ToScriptWrappable(isolate, value.As<v8::Object>())
+          ->template ToImpl<T>();
+    }
 
     if (value->IsNullOrUndefined())
       return nullptr;

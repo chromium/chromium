@@ -308,7 +308,8 @@ DOMArrayBuffer* ToDOMArrayBuffer(v8::Isolate* isolate,
     return nullptr;
 
   v8::Local<v8::ArrayBuffer> v8_array_buffer = value.As<v8::ArrayBuffer>();
-  if (ScriptWrappable* array_buffer = ToScriptWrappable(v8_array_buffer)) {
+  if (ScriptWrappable* array_buffer =
+          ToScriptWrappable(isolate, v8_array_buffer)) {
     return array_buffer->ToImpl<DOMArrayBuffer>();
   }
 
@@ -330,7 +331,7 @@ DOMSharedArrayBuffer* ToDOMSharedArrayBuffer(v8::Isolate* isolate,
   v8::Local<v8::SharedArrayBuffer> v8_shared_array_buffer =
       value.As<v8::SharedArrayBuffer>();
   if (ScriptWrappable* shared_array_buffer =
-          ToScriptWrappable(v8_shared_array_buffer)) {
+          ToScriptWrappable(isolate, v8_shared_array_buffer)) {
     return shared_array_buffer->ToImpl<DOMSharedArrayBuffer>();
   }
 
@@ -366,7 +367,7 @@ DOMViewType* ToDOMViewType(v8::Isolate* isolate, v8::Local<v8::Value> value) {
 
   v8::Local<typename Trait::V8ViewType> v8_view =
       value.As<typename Trait::V8ViewType>();
-  if (ScriptWrappable* blink_view = ToScriptWrappable(v8_view)) {
+  if (ScriptWrappable* blink_view = ToScriptWrappable(isolate, v8_view)) {
     return blink_view->ToImpl<DOMViewType>();
   }
 
@@ -398,7 +399,7 @@ DOMArrayBufferView* ToDOMArrayBufferView(v8::Isolate* isolate,
     return nullptr;
 
   v8::Local<v8::ArrayBufferView> v8_view = value.As<v8::ArrayBufferView>();
-  if (ScriptWrappable* blink_view = ToScriptWrappable(v8_view)) {
+  if (ScriptWrappable* blink_view = ToScriptWrappable(isolate, v8_view)) {
     return blink_view->ToImpl<DOMArrayBufferView>();
   }
 

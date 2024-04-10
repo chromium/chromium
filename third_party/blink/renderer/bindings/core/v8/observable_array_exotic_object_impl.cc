@@ -53,7 +53,7 @@ ObservableArrayExoticObjectImpl::ProxyTargetToObservableArrayBaseOrDie(
   // Crash when author script managed to pass something else other than the
   // right proxy target object.
   CHECK(backing_list_wrapper->IsObject());
-  return ToScriptWrappable(backing_list_wrapper.As<v8::Object>())
+  return ToScriptWrappable(isolate, backing_list_wrapper.As<v8::Object>())
       ->ToImpl<bindings::ObservableArrayBase>();
 }
 

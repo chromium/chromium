@@ -88,7 +88,7 @@ v8::EmbedderGraph::Node::Detachedness V8GCController::DetachednessFromWrapper(
     return v8::EmbedderGraph::Node::Detachedness::kUnknown;
   }
   const auto& root_node = OpaqueRootForGC(
-      isolate, V8Node::ToWrappableUnsafe(v8_value.As<v8::Object>()));
+      isolate, V8Node::ToWrappableUnsafe(isolate, v8_value.As<v8::Object>()));
   if (root_node.isConnected() && root_node.GetExecutionContext()) {
     return v8::EmbedderGraph::Node::Detachedness::kAttached;
   }
