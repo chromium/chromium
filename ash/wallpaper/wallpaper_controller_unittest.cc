@@ -2150,7 +2150,7 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaper) {
 }
 
 TEST_P(WallpaperControllerTest,
-       DISABLED_SeaPenWallpaperRemovedAfterSettingAnotherWallpaperType) {
+       SeaPenWallpaperRemovedAfterSettingAnotherWallpaperType) {
   const auto global_sea_pen_dir =
       online_wallpaper_dir_.GetPath().Append("sea_pen").Append(
           kAccountId1.GetAccountIdKey());
@@ -2195,6 +2195,9 @@ TEST_P(WallpaperControllerTest,
     run_loop.Run();
     EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
   }
+
+  // Waits for clean up tasks to finish.
+  RunAllTasksUntilIdle();
 
   // Expects the sea pen wallpaper is removed from the global SeaPen directory.
   ASSERT_FALSE(
