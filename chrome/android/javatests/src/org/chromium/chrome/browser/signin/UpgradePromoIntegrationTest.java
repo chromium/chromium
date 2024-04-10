@@ -157,6 +157,7 @@ public class UpgradePromoIntegrationTest {
     // There is an issue causing {@link Activity.setRequestedOrientation} to throw an exception in
     // Android 8 which was fixed in Android 8.1. See b/70718000 for example.
     @MinAndroidSdkLevel(Build.VERSION_CODES.O_MR1)
+    @DisabledTest(message = "crbug/333608711")
     public void testScreenRotation() {
         launchActivity();
 
