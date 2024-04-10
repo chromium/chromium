@@ -658,9 +658,11 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
     CloseInstallCompleteDialog(GetLocalizedString(string_resource_id_to_find));
   }
 
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
+  ASSERT_TRUE(global_prefs);
   const base::Version pv =
-      base::MakeRefCounted<PersistedData>(
-          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
+      base::MakeRefCounted<PersistedData>(scope, global_prefs->GetPrefService(),
+                                          nullptr)
           ->GetProductVersion(base::WideToASCII(kTestAppID));
 
   base::win::RegKey key;
