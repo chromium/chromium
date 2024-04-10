@@ -12,8 +12,8 @@
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
 #include "components/invalidation/impl/invalidation_prefs.h"
+#include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/invalidation/public/topic_data.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace invalidation {
@@ -93,18 +93,18 @@ bool FCMInvalidationService::HasObserver(
 
 bool FCMInvalidationService::UpdateInterestedTopics(
     InvalidationHandler* handler,
-    const TopicSet& legacy_topic_set) {
+    const TopicSet& topic_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   update_was_requested_ = true;
-  DVLOG(2) << "Subscribing to topics: " << legacy_topic_set.size();
-  std::set<TopicData> topic_set;
-  for (const auto& topic_name : legacy_topic_set) {
-    topic_set.insert(TopicData(topic_name, handler->IsPublicTopic(topic_name)));
+  DVLOG(2) << "Subscribing to topics: " << topic_set.size();
+  TopicMap topic_map;
+  for (const auto& topic_name : topic_set) {
+    topic_map[topic_name] = TopicMetadata(handler->IsPublicTopic(topic_name));
   }
   // TODO(crbug.com/1054404): UpdateRegisteredTopics() should be renamed to
   // clarify that it actually updates whether topics need subscription (aka
   // interested).
-  if (!invalidator_registrar_.UpdateRegisteredTopics(handler, topic_set)) {
+  if (!invalidator_registrar_.UpdateRegisteredTopics(handler, topic_map)) {
     return false;
   }
   DoUpdateSubscribedTopicsIfNeeded();

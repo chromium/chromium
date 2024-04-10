@@ -50,14 +50,18 @@ class InvalidatorRegistrarWithMemoryTest : public testing::Test {
   const Topic kTopicName2 = "topic_2";
   const Topic kTopicName3 = "topic_3";
   const Topic kTopicName4 = "topic_4";
-  const TopicData kTopic1 = {/*name=*/kTopicName1, /*is_public=*/false};
-  const TopicData kTopic2 = {/*name=*/kTopicName2, /*is_public=*/false};
-  const TopicData kTopic3 = {/*name=*/kTopicName3, /*is_public=*/false};
-  const TopicData kTopic4 = {/*name=*/kTopicName4, /*is_public=*/false};
-  const Invalidation kInv1 = Invalidation(kTopic1.name, 1, "1");
-  const Invalidation kInv2 = Invalidation(kTopic2.name, 2, "2");
-  const Invalidation kInv3 = Invalidation(kTopic3.name, 3, "3");
-  const Invalidation kInv4 = Invalidation(kTopic4.name, 4, "4");
+  const std::pair<Topic, TopicMetadata> kTopic1 = {
+      kTopicName1, TopicMetadata{.is_public = false}};
+  const std::pair<Topic, TopicMetadata> kTopic2 = {
+      kTopicName2, TopicMetadata{.is_public = false}};
+  const std::pair<Topic, TopicMetadata> kTopic3 = {
+      kTopicName3, TopicMetadata{.is_public = false}};
+  const std::pair<Topic, TopicMetadata> kTopic4 = {
+      kTopicName4, TopicMetadata{.is_public = false}};
+  const Invalidation kInv1 = Invalidation(kTopicName1, 1, "1");
+  const Invalidation kInv2 = Invalidation(kTopicName2, 2, "2");
+  const Invalidation kInv3 = Invalidation(kTopicName3, 3, "3");
+  const Invalidation kInv4 = Invalidation(kTopicName4, 4, "4");
 };
 
 // Initialize the invalidator, register a handler, register some topics for that
@@ -298,9 +302,12 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, RestoresInterestingTopics) {
       &pref_service, "sender_id");
 
   std::map<std::string, TopicMetadata> expected_subscribed_topics{
-      {"topic_1", TopicMetadata{true}},    {"topic_2", TopicMetadata{true}},
-      {"topic_3", TopicMetadata{false}},   {"topic_4_1", TopicMetadata{false}},
-      {"topic_4_2", TopicMetadata{false}}, {"topic_4_3", TopicMetadata{false}},
+      {"topic_1", TopicMetadata{.is_public = true}},
+      {"topic_2", TopicMetadata{.is_public = true}},
+      {"topic_3", TopicMetadata{.is_public = false}},
+      {"topic_4_1", TopicMetadata{.is_public = false}},
+      {"topic_4_2", TopicMetadata{.is_public = false}},
+      {"topic_4_3", TopicMetadata{.is_public = false}},
   };
 
   EXPECT_EQ(expected_subscribed_topics, invalidator->GetAllSubscribedTopics());
@@ -316,8 +323,10 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, RestoresInterestingTopics) {
 // regardless of browser restart in between.
 TEST_F(InvalidatorRegistrarWithMemoryTest,
        ShouldKeepSubscriptionsAfterRestart) {
-  const TopicData kTopic1(/*name=*/"topic_1", /*is_public=*/true);
-  const TopicData kTopic2(/*name=*/"topic_2", /*is_public=*/true);
+  const std::pair kTopic1 = {std::string("topic_1"),
+                             TopicMetadata{.is_public = true}};
+  const std::pair kTopic2 = {std::string("topic_2"),
+                             TopicMetadata{.is_public = true}};
 
   TestingPrefServiceSimple pref_service;
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
@@ -343,20 +352,15 @@ TEST_F(InvalidatorRegistrarWithMemoryTest,
   // the |handler|.
   ASSERT_THAT(invalidator->GetRegisteredTopics(&handler), IsEmpty());
   ASSERT_THAT(invalidator->GetAllSubscribedTopics(),
-              UnorderedElementsAre(
-                  Pair(kTopic1.name, TopicMetadata{kTopic1.is_public}),
-                  Pair(kTopic2.name, TopicMetadata{kTopic2.is_public})));
+              UnorderedElementsAre(kTopic1, kTopic2));
 
   // Register fo only one topic, but the previous subscriptions to other topics
   // should be kept.
   ASSERT_TRUE(invalidator->UpdateRegisteredTopics(&handler, {kTopic1}));
   EXPECT_THAT(invalidator->GetRegisteredTopics(&handler),
-              UnorderedElementsAre(
-                  Pair(kTopic1.name, TopicMetadata{kTopic1.is_public})));
+              UnorderedElementsAre(kTopic1));
   EXPECT_THAT(invalidator->GetAllSubscribedTopics(),
-              UnorderedElementsAre(
-                  Pair(kTopic1.name, TopicMetadata{kTopic1.is_public}),
-                  Pair(kTopic2.name, TopicMetadata{kTopic2.is_public})));
+              UnorderedElementsAre(kTopic1, kTopic2));
 
   // To unsubscribe from the topics which were added before browser restart, the
   // handler needs to explicitly register this topic, then unregister again.
@@ -364,11 +368,9 @@ TEST_F(InvalidatorRegistrarWithMemoryTest,
       invalidator->UpdateRegisteredTopics(&handler, {kTopic1, kTopic2}));
   ASSERT_TRUE(invalidator->UpdateRegisteredTopics(&handler, {kTopic1}));
   EXPECT_THAT(invalidator->GetRegisteredTopics(&handler),
-              UnorderedElementsAre(
-                  Pair(kTopic1.name, TopicMetadata{kTopic1.is_public})));
+              UnorderedElementsAre(kTopic1));
   EXPECT_THAT(invalidator->GetAllSubscribedTopics(),
-              UnorderedElementsAre(
-                  Pair(kTopic1.name, TopicMetadata{kTopic1.is_public})));
+              UnorderedElementsAre(kTopic1));
 
   invalidator->RemoveObserver(&handler);
 }

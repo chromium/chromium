@@ -32,12 +32,12 @@ bool FakeInvalidationService::HasObserver(
 
 bool FakeInvalidationService::UpdateInterestedTopics(
     InvalidationHandler* handler,
-    const TopicSet& legacy_topic_set) {
-  std::set<TopicData> topic_set;
-  for (const auto& topic_name : legacy_topic_set) {
-    topic_set.insert(TopicData(topic_name, handler->IsPublicTopic(topic_name)));
+    const TopicSet& topic_set) {
+  TopicMap topic_map;
+  for (const auto& topic_name : topic_set) {
+    topic_map[topic_name] = TopicMetadata(handler->IsPublicTopic(topic_name));
   }
-  return invalidator_registrar_->UpdateRegisteredTopics(handler, topic_set);
+  return invalidator_registrar_->UpdateRegisteredTopics(handler, topic_map);
 }
 
 void FakeInvalidationService::RemoveObserver(

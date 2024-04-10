@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/invalidation/public/invalidation.h"
+#include "components/invalidation/public/invalidation_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -46,7 +47,7 @@ std::string DumpRegisteredHandlers(
 }
 
 std::string DumpRegisteredHandlersToTopics(
-    const std::map<InvalidationHandler*, std::set<TopicData>, std::less<>>&
+    const std::map<InvalidationHandler*, TopicMap, std::less<>>&
         registered_handler_to_topics_map) {
   if (registered_handler_to_topics_map.empty()) {
     return "empty";
@@ -112,11 +113,12 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
       if (!handler || !is_public) {
         continue;
       }
-      handler_name_to_subscribed_topics_map_[*handler].insert(
-          TopicData(topic_name, *is_public));
+      handler_name_to_subscribed_topics_map_[*handler][topic_name] =
+          TopicMetadata{.is_public = *is_public};
     } else if (it.second.is_string()) {
-      handler_name_to_subscribed_topics_map_[it.second.GetString()].insert(
-          TopicData(topic_name, false));
+      handler_name_to_subscribed_topics_map_[it.second.GetString()]
+                                            [topic_name] = TopicMetadata{
+                                                .is_public = false};
     }
   }
 }
@@ -168,7 +170,7 @@ void InvalidatorRegistrarWithMemory::RemoveObserver(
 
 bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
     InvalidationHandler* handler,
-    const std::set<TopicData>& topics) {
+    const TopicMap& topics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(handler);
   CHECK(handlers_.HasObserver(handler));
@@ -177,7 +179,7 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
     return false;
   }
 
-  std::set<TopicData> old_topics = registered_handler_to_topics_map_[handler];
+  TopicMap old_topics = registered_handler_to_topics_map_[handler];
   if (topics.empty()) {
     registered_handler_to_topics_map_.erase(handler);
   } else {
@@ -199,16 +201,16 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
   auto& topic_map =
       handler_name_to_subscribed_topics_map_[handler->GetOwnerName()];
 
-  for (const TopicData& topic : old_topics) {
-    pref_data->Remove(topic.name);
+  for (const auto& [topic, meta_data] : old_topics) {
+    pref_data->Remove(topic);
     topic_map.erase(topic);
   }
 
-  for (const auto& topic : topics) {
-    topic_map.insert(topic);
-    pref_data->Set(topic.name, base::Value::Dict()
-                                   .Set(kHandler, handler->GetOwnerName())
-                                   .Set(kIsPublic, topic.is_public));
+  for (const auto& [topic, meta_data] : topics) {
+    topic_map[topic] = meta_data;
+    pref_data->Set(topic, base::Value::Dict()
+                              .Set(kHandler, handler->GetOwnerName())
+                              .Set(kIsPublic, meta_data.is_public));
   }
   return true;
 }
@@ -217,18 +219,17 @@ TopicMap InvalidatorRegistrarWithMemory::GetRegisteredTopics(
     InvalidationHandler* handler) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lookup = registered_handler_to_topics_map_.find(handler);
-  return lookup != registered_handler_to_topics_map_.end()
-             ? ConvertTopicSetToLegacyTopicMap(lookup->second)
-             : TopicMap();
+  return lookup != registered_handler_to_topics_map_.end() ? lookup->second
+                                                           : TopicMap();
 }
 
 TopicMap InvalidatorRegistrarWithMemory::GetAllSubscribedTopics() const {
-  std::set<TopicData> subscribed_topics;
+  TopicMap subscribed_topics;
   for (const auto& handler_to_topic : handler_name_to_subscribed_topics_map_) {
     subscribed_topics.insert(handler_to_topic.second.begin(),
                              handler_to_topic.second.end());
   }
-  return ConvertTopicSetToLegacyTopicMap(subscribed_topics);
+  return subscribed_topics;
 }
 
 void InvalidatorRegistrarWithMemory::DispatchInvalidationToHandlers(
@@ -244,10 +245,10 @@ void InvalidatorRegistrarWithMemory::DispatchInvalidationToHandlers(
   // each of their sets of topics.
   for (const auto& [handler, registered_topics] :
        registered_handler_to_topics_map_) {
-    for (const auto& registered_topic : registered_topics) {
+    for (const auto& [registered_topic, meta_data] : registered_topics) {
       // If the topic of the invalidation matches a registered topic, we send
       // the invalidation to the respective handler.
-      if (invalidation.topic() != registered_topic.name) {
+      if (invalidation.topic() != registered_topic) {
         continue;
       }
       handler->OnIncomingInvalidation(invalidation);
@@ -265,8 +266,8 @@ void InvalidatorRegistrarWithMemory::DispatchSuccessfullySubscribedToHandlers(
 
   for (const auto& [handler, registered_topics] :
        registered_handler_to_topics_map_) {
-    for (const auto& registered_topic : registered_topics) {
-      if (topic != registered_topic.name) {
+    for (const auto& [registered_topic, meta_data] : registered_topics) {
+      if (topic != registered_topic) {
         continue;
       }
       handler->OnSuccessfullySubscribed(topic);
@@ -291,17 +292,17 @@ InvalidatorState InvalidatorRegistrarWithMemory::GetInvalidatorState() const {
 
 bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(
     InvalidationHandler* handler,
-    const std::set<TopicData>& new_topics) const {
+    const TopicMap& new_topics) const {
   for (const auto& [registered_handler, handler_topics] :
        registered_handler_to_topics_map_) {
     if (registered_handler == handler) {
       continue;
     }
 
-    for (const auto& new_topic : new_topics) {
+    for (const auto& [new_topic, meta_data] : new_topics) {
       if (handler_topics.contains(new_topic)) {
-        DVLOG(1) << "Duplicate registration: trying to register "
-                 << new_topic.name << " for " << handler->GetOwnerName()
+        DVLOG(1) << "Duplicate registration: trying to register " << new_topic
+                 << " for " << handler->GetOwnerName()
                  << " when it's already registered for "
                  << registered_handler->GetOwnerName();
         return true;
