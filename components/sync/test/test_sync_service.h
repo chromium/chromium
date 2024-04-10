@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -81,6 +81,7 @@ class TestSyncService : public SyncService {
   void SetPassphrasePlatformClientCallback(
       const base::RepeatingClosure& send_passphrase_to_platform_client_cb);
 
+  // The passed callback (if non-null) will be called on TriggerRefresh().
   void SetTriggerRefreshCallback(
       const base::RepeatingCallback<void(ModelTypeSet)>& trigger_refresh_cb);
 
@@ -186,8 +187,8 @@ class TestSyncService : public SyncService {
   // Nullable.
   base::RepeatingClosure send_passphrase_to_platform_client_cb_;
 
-  base::RepeatingCallback<void(syncer::ModelTypeSet)> trigger_refresh_cb_ =
-      base::DoNothing();
+  // Nullable.
+  base::RepeatingCallback<void(syncer::ModelTypeSet)> trigger_refresh_cb_;
 };
 
 }  // namespace syncer

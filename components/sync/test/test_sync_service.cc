@@ -268,7 +268,9 @@ void TestSyncService::StopAndClear() {}
 void TestSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {}
 
 void TestSyncService::TriggerRefresh(const ModelTypeSet& types) {
-  trigger_refresh_cb_.Run(types);
+  if (trigger_refresh_cb_) {
+    trigger_refresh_cb_.Run(types);
+  }
 }
 
 void TestSyncService::DataTypePreconditionChanged(ModelType type) {}
@@ -401,9 +403,7 @@ void TestSyncService::TriggerLocalDataMigration(ModelTypeSet types) {}
 void TestSyncService::SetTriggerRefreshCallback(
     const base::RepeatingCallback<void(syncer::ModelTypeSet)>&
         trigger_refresh_cb) {
-  if (!trigger_refresh_cb.is_null()) {
-    trigger_refresh_cb_ = trigger_refresh_cb;
-  }
+  trigger_refresh_cb_ = trigger_refresh_cb;
 }
 
 }  // namespace syncer
