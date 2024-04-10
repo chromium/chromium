@@ -33,6 +33,10 @@ BASE_FEATURE(kLauncherImageSearch,
              "LauncherImageSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFeatureManagementLocalImageSearch,
+             "FeatureManagementLocalImageSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLauncherLocalImageSearchConfidence,
              "LauncherLocalImageSearchConfidence",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -91,7 +95,8 @@ bool isLauncherFuzzyMatchForOmniboxEnabled() {
 
 // Only enable image search for ICA supported devices.
 bool IsLauncherImageSearchEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherImageSearch) &&
+  return base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch) &&
+         base::FeatureList::IsEnabled(kLauncherImageSearch) &&
          base::FeatureList::IsEnabled(kICASupportedByHardware);
 }
 

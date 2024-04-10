@@ -5185,6 +5185,15 @@
                         "LauncherSearchControl",
                         "ProductivityLauncherImageSearch"
                     ]
+                },
+                {
+                    "name": "Enabled_ocronly",
+                    "enable_features": [
+                        "LauncherImageSearch",
+                        "LauncherImageSearchOcr",
+                        "LauncherSearchControl",
+                        "ProductivityLauncherImageSearch"
+                    ]
                 }
             ]
         }
