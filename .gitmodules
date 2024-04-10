@@ -669,10 +669,6 @@
 	path = chrome/test/media_router/internal
 	url = https://chrome-internal.googlesource.com/chrome/test/media_router/internal
 	gclient-condition = checkout_src_internal
-[submodule "chrome/test/python_tests"]
-	path = chrome/test/python_tests
-	url = https://chrome-internal.googlesource.com/chrome/test/python_tests
-	gclient-condition = checkout_src_internal
 [submodule "chrome/tools/memory"]
 	path = chrome/tools/memory
 	url = https://chrome-internal.googlesource.com/chrome/tools/memory
