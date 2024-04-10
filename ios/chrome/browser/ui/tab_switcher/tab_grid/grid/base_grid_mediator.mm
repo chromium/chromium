@@ -345,6 +345,56 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
   _scopedWebStateObservation->RemoveObservation(webState);
 }
 
+- (void)insertNewWebStateAtIndex:(int)index withURL:(const GURL&)newTabURL {
+  // The incognito mediator's Browser is briefly set to nil after the last
+  // incognito tab is closed.  This occurs because the incognito BrowserState
+  // needs to be destroyed to correctly clear incognito browsing data.  Don't
+  // attempt to create a new WebState with a nil BrowserState.
+  if (!self.browser) {
+    return;
+  }
+
+  // There are some circumstances where a new tab insertion can be erroniously
+  // triggered while another web state list mutation is happening. To ensure
+  // those bugs don't become crashes, check that the web state list is OK to
+  // mutate.
+  if (self.webStateList->IsMutating()) {
+    // Shouldn't have happened!
+    DCHECK(false) << "Reentrant web state insertion!";
+    return;
+  }
+
+  DCHECK(self.browserState);
+  web::WebState::CreateParams params(self.browserState);
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+
+  web::NavigationManager::WebLoadParams loadParams(newTabURL);
+  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
+  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
+
+  self.webStateList->InsertWebState(
+      std::move(webState),
+      WebStateList::InsertionParams::AtIndex(index).Activate());
+}
+
+- (void)moveItem:(GridItemIdentifier*)item
+    beforeWebStateIndex:(int)nextWebStateIndex {
+  GridItemIdentifier* nextItem = nil;
+  if (self.webStateList->ContainsIndex(nextWebStateIndex)) {
+    const TabGroup* group =
+        self.webStateList->GetGroupOfWebStateAt(nextWebStateIndex);
+    if (group) {
+      nextItem = [GridItemIdentifier groupIdentifier:group
+                                    withWebStateList:self.webStateList];
+    } else {
+      nextItem = [GridItemIdentifier
+          tabIdentifier:self.webStateList->GetWebStateAt(nextWebStateIndex)];
+    }
+  }
+
+  [self.consumer moveItem:item beforeItem:nextItem];
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
@@ -457,6 +507,11 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
       } else if (![self isPinnedWebState:moveChange.moved_to_index()]) {
         // BaseGridMediator handles only non pinned tabs because pinned tabs are
         // handled in PinnedTabsMediator.
+        if (moveChange.old_group() &&
+            moveChange.old_group() == moveChange.new_group()) {
+          [self updateCellGroup:moveChange.new_group()];
+          break;
+        }
         if (moveChange.old_group()) {
           [self updateCellGroup:moveChange.old_group()];
         }
@@ -996,41 +1051,6 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
                                 }));
 }
 
-#pragma mark GridCommands helpers
-
-// Inserts a new WebState at the given WebStateList `index`.
-- (void)insertNewWebStateAtIndex:(int)index withURL:(const GURL&)newTabURL {
-  // The incognito mediator's Browser is briefly set to nil after the last
-  // incognito tab is closed.  This occurs because the incognito BrowserState
-  // needs to be destroyed to correctly clear incognito browsing data.  Don't
-  // attempt to create a new WebState with a nil BrowserState.
-  if (!self.browser) {
-    return;
-  }
-
-  // There are some circumstances where a new tab insertion can be erroniously
-  // triggered while another web state list mutation is happening. To ensure
-  // those bugs don't become crashes, check that the web state list is OK to
-  // mutate.
-  if (self.webStateList->IsMutating()) {
-    // Shouldn't have happened!
-    DCHECK(false) << "Reentrant web state insertion!";
-    return;
-  }
-
-  DCHECK(self.browserState);
-  web::WebState::CreateParams params(self.browserState);
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
-
-  web::NavigationManager::WebLoadParams loadParams(newTabURL);
-  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
-  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
-
-  self.webStateList->InsertWebState(
-      std::move(webState),
-      WebStateList::InsertionParams::AtIndex(index).Activate());
-}
-
 #pragma mark - TabCollectionDragDropHandler
 
 - (NSArray<UIDragItem*>*)allSelectedDragItems {
@@ -1507,25 +1527,6 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
                          withWebStateList:self.webStateList];
   [self.consumer replaceItem:groupIdentifier
          withReplacementItem:groupIdentifier];
-}
-
-// Moves `item` before the WebState at `nextWebStateIndex`.
-- (void)moveItem:(GridItemIdentifier*)item
-    beforeWebStateIndex:(int)nextWebStateIndex {
-  GridItemIdentifier* nextItem = nil;
-  if (self.webStateList->ContainsIndex(nextWebStateIndex)) {
-    const TabGroup* group =
-        self.webStateList->GetGroupOfWebStateAt(nextWebStateIndex);
-    if (group) {
-      nextItem = [GridItemIdentifier groupIdentifier:group
-                                    withWebStateList:self.webStateList];
-    } else {
-      nextItem = [GridItemIdentifier
-          tabIdentifier:self.webStateList->GetWebStateAt(nextWebStateIndex)];
-    }
-  }
-
-  [self.consumer moveItem:item beforeItem:nextItem];
 }
 
 #pragma mark - TabGridPageMutator

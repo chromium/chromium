@@ -6,15 +6,20 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
+#import "ios/chrome/browser/main/model/browser_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_consumer.h"
@@ -132,6 +137,60 @@
   }
 }
 
+// Overrides the parent as there is only tab cells.
+- (void)moveItem:(GridItemIdentifier*)item
+    beforeWebStateIndex:(int)nextWebStateIndex {
+  GridItemIdentifier* nextItem;
+  if (nextWebStateIndex < _tabGroup->range().range_end()) {
+    nextItem = [GridItemIdentifier
+        tabIdentifier:self.webStateList->GetWebStateAt(nextWebStateIndex)];
+  }
+  [self.consumer moveItem:item beforeItem:nextItem];
+}
+
+#pragma mark - TabCollectionDragDropHandler override
+
+// Overrides the parent as the given destination index do not take into account
+// elements outside the group.
+- (void)dropItem:(UIDragItem*)dragItem
+               toIndex:(NSUInteger)destinationIndex
+    fromSameCollection:(BOOL)fromSameCollection {
+  // Tab move operations only originate from Chrome so a local object is used.
+  // Local objects allow synchronous drops, whereas NSItemProvider only allows
+  // asynchronous drops.
+  int destinationWebStateIndex = _tabGroup->range().range_begin();
+  if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
+    TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
+    // Reorder tab within same grid.
+    int sourceIndex =
+        GetWebStateIndex(self.webStateList, WebStateSearchCriteria{
+                                                .identifier = tabInfo.tabID,
+                                            });
+    if (sourceIndex == WebStateList::kInvalidIndex) {
+      base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
+                                    DragItemOrigin::kOtherBrwoser);
+      destinationWebStateIndex += destinationIndex;
+      MoveTabToBrowser(tabInfo.tabID, self.browser, destinationWebStateIndex);
+    } else {
+      base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
+                                    DragItemOrigin::kSameCollection);
+      destinationWebStateIndex += destinationIndex;
+      self.webStateList->MoveWebStateAt(sourceIndex, destinationWebStateIndex);
+    }
+    return;
+  }
+
+  // Handle URLs from within Chrome synchronously using a local object.
+  if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {
+    URLInfo* droppedURL = static_cast<URLInfo*>(dragItem.localObject);
+    destinationWebStateIndex +=
+        WebStateIndexFromGridDropItemIndex(self.webStateList, destinationIndex);
+    [self insertNewWebStateAtIndex:destinationWebStateIndex
+                           withURL:droppedURL.URL];
+    return;
+  }
+}
+
 #pragma mark - WebStateListObserving override
 
 // Overrides the parent observations. The parent treats a group as one cell,
@@ -190,6 +249,17 @@
         _tabGroup.reset();
         [self.tabGroupsHandler hideTabGroup];
       }
+      break;
+    }
+    case WebStateListChange::Type::kMove: {
+      const WebStateListChangeMove& moveChange =
+          change.As<WebStateListChangeMove>();
+      if (moveChange.old_group() != _tabGroup.get()) {
+        break;
+      }
+      [self moveItem:[GridItemIdentifier
+                         tabIdentifier:moveChange.moved_web_state()]
+          beforeWebStateIndex:moveChange.moved_to_index() + 1];
       break;
     }
     default:

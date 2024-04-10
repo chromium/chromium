@@ -3909,6 +3909,16 @@ chromium-metrics-reviews@google.com.
   <summary>Records the origin of dropped items in the tab switcher.</summary>
 </histogram>
 
+<histogram name="IOS.TabSwitcher.Group.DragOrigin"
+    enum="IOSTabSwitcherDragOrigin" expires_after="2025-04-10">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    Records the origin of dropped items in the tab group view. This is recorded
+    when items are drop in the tab group view.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabSwitcher.Idle.IncognitoTabGridPage" enum="Boolean"
     expires_after="2025-01-03">
   <owner>ewannpv@chromium.org</owner>

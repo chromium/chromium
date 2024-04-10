@@ -100,6 +100,13 @@ class WebState;
 - (void)addObservationForWebState:(web::WebState*)webState;
 - (void)removeObservationForWebState:(web::WebState*)webState;
 
+// Inserts a new WebState at the given WebStateList `index`.
+- (void)insertNewWebStateAtIndex:(int)index withURL:(const GURL&)newTabURL;
+
+// Moves `item` before the WebState at `nextWebStateIndex`.
+- (void)moveItem:(GridItemIdentifier*)item
+    beforeWebStateIndex:(int)nextWebStateIndex;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_MEDIATOR_H_

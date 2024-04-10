@@ -18,6 +18,7 @@ extern const char kUmaPinnedViewDragDropTabs[];
 extern const char kUmaTabStripViewDragOrigin[];
 extern const char kUmaGridViewDragOrigin[];
 extern const char kUmaPinnedViewDragOrigin[];
+extern const char kUmaGroupViewDragOrigin[];
 
 #ifdef __cplusplus
 

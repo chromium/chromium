@@ -1653,7 +1653,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
          // devices that don't support multiple windows.
          && ((self.mode == TabGridModeSelection &&
               base::ios::IsMultipleScenesSupported()) ||
-             self.mode == TabGridModeNormal);
+             self.mode == TabGridModeNormal || self.mode == TabGridModeGroup);
 }
 
 // Configures `groupCell`'s identifier and title synchronously, and pass the

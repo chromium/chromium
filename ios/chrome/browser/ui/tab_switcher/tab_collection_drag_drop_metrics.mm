@@ -13,3 +13,5 @@ extern const char kUmaTabStripViewDragOrigin[] = "IOS.TabStrip.DragOrigin";
 extern const char kUmaGridViewDragOrigin[] = "IOS.TabSwitcher.DragOrigin";
 extern const char kUmaPinnedViewDragOrigin[] =
     "IOS.TabSwitcher.PinnedTabs.DragOrigin";
+extern const char kUmaGroupViewDragOrigin[] =
+    "IOS.TabSwitcher.Group.DragOrigin";

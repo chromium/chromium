@@ -82,6 +82,7 @@
   _viewController.mutator = _mediator;
   _viewController.gridViewController.mutator = _mediator;
   _viewController.gridViewController.menuProvider = _tabContextMenuHelper;
+  _viewController.gridViewController.dragDropHandler = _mediator;
 
   _viewController.modalPresentationStyle = UIModalPresentationCustom;
   _transitionDelegate = [[TabGroupTransitionDelegate alloc]
