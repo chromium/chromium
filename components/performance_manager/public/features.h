@@ -96,13 +96,19 @@ BASE_DECLARE_FEATURE(kPrefetchVirtualMemoryPolicy);
 extern const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold;
 
 // Frequency to sample for cpu usage to ensure that the user is experiencing
-// consistent cpu issues before surfacing a notitication
+// consistent cpu issues before surfacing a notification
 extern const base::FeatureParam<base::TimeDelta> kCPUSampleFrequency;
 
 // If the system CPU consistently exceeds these percent thresholds, then
 // the CPU health will be classified as the threshold it is exceeding
 extern const base::FeatureParam<int> kCPUDegradedHealthPercentageThreshold;
 extern const base::FeatureParam<int> kCPUUnhealthyPercentageThreshold;
+
+// Maximum number of tabs to be actionable
+extern const base::FeatureParam<int> kCPUMaxActionableTabs;
+
+// Minimum percentage to improve CPU health for a tab to be actionable
+extern const base::FeatureParam<int> kMinimumActionableTabCPUPercentage;
 
 // This enables the Memory performance interventions within the side panel.
 BASE_DECLARE_FEATURE(kPerformanceMemoryIntervention);

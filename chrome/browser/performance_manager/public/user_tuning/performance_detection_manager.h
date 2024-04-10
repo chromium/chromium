@@ -51,12 +51,12 @@ class PerformanceDetectionManager {
 
   using ResourceTypeSet = base::
       EnumSet<ResourceType, ResourceType::kMinValue, ResourceType::kMaxValue>;
+  using ActionableTabsResult = std::vector<resource_attribution::PageContext>;
 
   class StatusObserver : public base::CheckedObserver {
    public:
     // Called immediately with the current status when AddStatusObserver is
     // called, then again on changes (frequency determined by the backend).
-    // RequestStatus() requests an OOB update with most recent status.
     virtual void OnStatusChanged(ResourceType resource_type,
                                  HealthLevel health_level,
                                  bool actionable) {}
@@ -66,17 +66,16 @@ class PerformanceDetectionManager {
    public:
     // Called immediately with the current status when AddTabListObserver is
     // called, then again on changes (frequency determined by the backend).
-    // RequestTabList() requests an OOB update with most recent status.
-    virtual void OnActionableTabListChanged(
-        ResourceType resource_type,
-        std::vector<resource_attribution::PageContext> tabs) {}
+    virtual void OnActionableTabListChanged(ResourceType resource_type,
+                                            ActionableTabsResult tabs) {}
   };
 
-  void AddStatusObserver(ResourceTypeSet resource_types, StatusObserver* o);
+  void AddStatusObserver(ResourceTypeSet resource_types,
+                         StatusObserver* observer);
   void RemoveStatusObserver(StatusObserver* o);
 
   void AddActionableTabsObserver(ResourceTypeSet resource_types,
-                                 ActionableTabsObserver* o);
+                                 ActionableTabsObserver* new_observer);
   void RemoveActionableTabsObserver(ActionableTabsObserver* o);
 
   // Returns whether a PerformanceDetectionManager was created and installed.
@@ -87,6 +86,11 @@ class PerformanceDetectionManager {
   ~PerformanceDetectionManager();
 
  private:
+  using PageResourceMeasurements =
+      base::flat_map<resource_attribution::PageContext, int>;
+  using ActionableTabResultCallback =
+      base::OnceCallback<void(ActionableTabsResult)>;
+
   friend class ::ChromeBrowserMainExtraPartsPerformanceManager;
   friend class PerformanceDetectionManagerTest;
   FRIEND_TEST_ALL_PREFIXES(PerformanceDetectionManagerTest,
@@ -94,16 +98,14 @@ class PerformanceDetectionManager {
   FRIEND_TEST_ALL_PREFIXES(PerformanceDetectionManagerTest, CpuStatusUpdates);
   FRIEND_TEST_ALL_PREFIXES(PerformanceDetectionManagerTest,
                            HealthyCpuUsageFromProbe);
+  FRIEND_TEST_ALL_PREFIXES(PerformanceDetectionManagerTest,
+                           GetPagesMeetMinimumCpuUsage);
 
   PerformanceDetectionManager();
 
   HealthLevel GetHealthLevelForTesting(ResourceType resource_type);
 
   void ProcessCpuProbeResult(std::optional<system_cpu::CpuSample> cpu_sample);
-
-  // Returns the associated health level for the given cpu utilization
-  // percentage.
-  HealthLevel GetCpuHealthStatus(int cpu_usage_percentage);
 
   // Keeps track of the health level associated with 'cpu_usage_percentage' and
   // updates the CPU health status if we see this health level for a certain
@@ -115,15 +117,63 @@ class PerformanceDetectionManager {
       int system_cpu_usage_percentage,
       const resource_attribution::QueryResultMap& results);
 
+  // Returns the associated health level for the given cpu utilization
+  // percentage.
+  HealthLevel GetCpuHealthStatus(int cpu_usage_percentage);
+
+  // Filter 'page_cpu' for pages that meet the minimum CPU usage to be
+  // actionable and returns the result as a map of page contexts with its
+  // corresponding CPU usage percentage. CPU usage percentages are converted
+  // to range from 0-100%.
+  PageResourceMeasurements GetPagesMeetMinimumCpuUsage(
+      std::map<resource_attribution::ResourceContext, double> page_cpu);
+
+  // Takes in a map of page resource measurements and filters out which page
+  // contexts are actionable. Runs 'on_results_callback' with the vector of
+  // actionable tabs.
+  void GetActionablePages(ResourceType resource_type,
+                          const PageResourceMeasurements& page_measurements,
+                          int overall_resource_usage,
+                          ActionableTabResultCallback on_results_callback);
+
   // Notify all status observers of the current health status for
   // 'resource_type'.
   void NotifyStatusObservers(ResourceType resource_type, bool is_actionable);
+  void NotifyActionableTabObservers(ResourceType resource_type,
+                                    ActionableTabsResult tabs);
+
+  // If the actionable tabs result list changes, then notify all observers that
+  // the list changes otherwise only notify the provided observer. The provided
+  // observer cannot be null.
+  void MaybeNotifyAllActionableObservers(ResourceType resource_type,
+                                         ActionableTabsObserver* new_observer,
+                                         ActionableTabsResult result);
+
+  // Notifies the status and actionable tab list observers if the
+  // resource status changes and/or the actionable tab list changes.
+  void MaybeNotifyStatusAndActionabilityChange(ResourceType resource_type,
+                                               bool did_status_change,
+                                               ActionableTabsResult tabs);
 
   std::map<ResourceType, base::ObserverList<StatusObserver>> status_observers_;
+  std::map<ResourceType, base::ObserverList<ActionableTabsObserver>>
+      actionable_tab_observers_;
+  base::flat_map<ResourceType, std::vector<resource_attribution::PageContext>>
+      actionable_tabs_;
+
+  // Map containing all page contexts and their corresponding resource
+  // measurements that are possibly actionable.
+  base::flat_map<ResourceType, PageResourceMeasurements>
+      possible_actionable_pages_;
+
   // Number of samples in a time window being used to consider the new health
-  // status
+  // status.
   const size_t cpu_health_sample_window_size_;
-  base::circular_deque<HealthLevel> recent_cpu_health_levels_;
+
+  // Recent resource measurements used to determine overall resource health.
+  base::flat_map<ResourceType, base::circular_deque<int>>
+      recent_resource_measurements_;
+
   resource_attribution::ScopedResourceUsageQuery scoped_cpu_query_;
   base::flat_map<ResourceType, HealthLevel> current_health_status_;
   base::RepeatingTimer cpu_probe_timer_;

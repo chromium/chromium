@@ -4,7 +4,9 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 
+#include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/location.h"
@@ -17,6 +19,7 @@
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/resource_attribution/process_context.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "components/system_cpu/cpu_sample.h"
 #include "content/public/browser/web_contents.h"
@@ -63,6 +66,31 @@ class PerformanceDetectionManagerStatusObserver
   std::optional<PerformanceDetectionManager::ResourceType> resource_type_;
   std::optional<PerformanceDetectionManager::HealthLevel> health_level_;
   std::optional<bool> is_actionable_;
+};
+
+class PerformanceDetectionManagerActionableTabObserver
+    : public PerformanceDetectionManager::ActionableTabsObserver {
+ public:
+  void OnActionableTabListChanged(
+      PerformanceDetectionManager::ResourceType resource_type,
+      std::vector<resource_attribution::PageContext> tabs) override {
+    resource_type_ = resource_type;
+    actionable_tabs_ = tabs;
+  }
+
+  std::optional<PerformanceDetectionManager::ResourceType> resource_type() {
+    return resource_type_;
+  }
+
+  std::optional<std::vector<resource_attribution::PageContext>>
+  actionable_tabs() {
+    return actionable_tabs_;
+  }
+
+ private:
+  std::optional<PerformanceDetectionManager::ResourceType> resource_type_;
+  std::optional<std::vector<resource_attribution::PageContext>>
+      actionable_tabs_;
 };
 
 class MockPerformanceDetectionManagerActionableTabsObserver
@@ -184,6 +212,23 @@ TEST_F(PerformanceDetectionManagerTest, UpdatedStatusSentToObservers) {
             PerformanceDetectionManager::HealthLevel::kHealthy);
   EXPECT_FALSE(observer.is_actionable().value());
   manager()->RemoveStatusObserver(&observer);
+}
+
+TEST_F(PerformanceDetectionManagerTest, UpdatedActionableTabsSentToObservers) {
+  CreateManager();
+
+  PerformanceDetectionManagerActionableTabObserver observer;
+  PerformanceDetectionManager::ResourceTypeSet resources;
+  resources.Put(PerformanceDetectionManager::ResourceType::kCpu);
+  manager()->AddActionableTabsObserver(resources, &observer);
+
+  EXPECT_TRUE(observer.resource_type().has_value());
+  EXPECT_TRUE(observer.actionable_tabs().has_value());
+
+  EXPECT_EQ(observer.resource_type().value(),
+            PerformanceDetectionManager::ResourceType::kCpu);
+  EXPECT_TRUE(observer.actionable_tabs().value().empty());
+  manager()->RemoveActionableTabsObserver(&observer);
 }
 
 TEST_F(PerformanceDetectionManagerTest, RecordCpuAndUpdateHealthStatus) {
@@ -350,4 +395,38 @@ TEST_F(PerformanceDetectionManagerTest, HealthyCpuUsageFromProbe) {
             PerformanceDetectionManager::HealthLevel::kHealthy);
   manager()->RemoveStatusObserver(&observer);
 }
+
+TEST_F(PerformanceDetectionManagerTest, GetPagesMeetMinimumCpuUsage) {
+  CreateManager();
+
+  std::map<resource_attribution::ResourceContext, double> page_contexts_cpu;
+
+  const int minimum_percent_cpu_usage =
+      features::kMinimumActionableTabCPUPercentage.Get();
+  const double minimum_decimal_cpu_usage = minimum_percent_cpu_usage / 100.0;
+
+  // Generate a map of page contexts and decimal CPU usage where half the page
+  // contexts are below the minimum cpu usage for a tab to be actionable, and
+  // half above it
+  for (int i = 0; i < 10; i++) {
+    std::unique_ptr<content::WebContents> web_contents =
+        CreateTestWebContents();
+    std::optional<resource_attribution::PageContext> page_context =
+        resource_attribution::PageContext::FromWebContents(web_contents.get());
+    ASSERT_TRUE(page_context.has_value());
+    const double cpu_usage = (i % 2 == 0) ? minimum_decimal_cpu_usage - 0.01
+                                          : minimum_decimal_cpu_usage;
+    page_contexts_cpu[page_context.value()] =
+        cpu_usage * base::SysInfo::NumberOfProcessors();
+  }
+
+  PerformanceDetectionManager::PageResourceMeasurements filtered_measurements =
+      manager()->GetPagesMeetMinimumCpuUsage(page_contexts_cpu);
+  EXPECT_EQ(filtered_measurements.size(), (page_contexts_cpu.size() / 2));
+
+  for (auto& [context, cpu_percentage] : filtered_measurements) {
+    EXPECT_EQ(cpu_percentage, minimum_percent_cpu_usage);
+  }
+}
+
 }  // namespace performance_manager::user_tuning

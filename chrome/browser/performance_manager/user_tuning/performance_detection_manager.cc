@@ -5,12 +5,18 @@
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/observer_list.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -29,11 +35,11 @@ PerformanceDetectionManager* g_performance_detection_manager = nullptr;
 
 void PerformanceDetectionManager::AddStatusObserver(
     ResourceTypeSet resource_types,
-    StatusObserver* o) {
+    StatusObserver* observer) {
   for (auto resource_type : resource_types) {
-    status_observers_[resource_type].AddObserver(o);
-    o->OnStatusChanged(resource_type, current_health_status_[resource_type],
-                       false);
+    status_observers_[resource_type].AddObserver(observer);
+    observer->OnStatusChanged(resource_type,
+                              current_health_status_[resource_type], false);
   }
 }
 
@@ -45,16 +51,26 @@ void PerformanceDetectionManager::RemoveStatusObserver(StatusObserver* o) {
 
 void PerformanceDetectionManager::AddActionableTabsObserver(
     ResourceTypeSet resource_types,
-    ActionableTabsObserver* o) {
-  // TODO(crbug.com/324261765): Implement method
+    ActionableTabsObserver* new_observer) {
   for (auto resource_type : resource_types) {
-    o->OnActionableTabListChanged(resource_type, {});
+    actionable_tab_observers_[resource_type].AddObserver(new_observer);
+    // Need to go through possible_actionable_pages_ again to filter for
+    // actionable tabs because the list of actionable tabs may have changed
+    // since the previous list of actionable tabs was generated
+    GetActionablePages(
+        resource_type, possible_actionable_pages_[resource_type],
+        recent_resource_measurements_[resource_type].back(),
+        base::BindOnce(
+            &PerformanceDetectionManager::MaybeNotifyAllActionableObservers,
+            weak_ptr_factory_.GetWeakPtr(), resource_type, new_observer));
   }
 }
 
 void PerformanceDetectionManager::RemoveActionableTabsObserver(
     ActionableTabsObserver* o) {
-  // TODO(crbug.com/324261765): Implement method
+  for (auto& [resource_type, observer_list] : actionable_tab_observers_) {
+    observer_list.RemoveObserver(o);
+  }
 }
 
 // static
@@ -77,8 +93,6 @@ PerformanceDetectionManager::PerformanceDetectionManager()
     : cpu_health_sample_window_size_(
           performance_manager::features::kCPUTimeOverThreshold.Get() /
           performance_manager::features::kCPUSampleFrequency.Get()),
-      recent_cpu_health_levels_(cpu_health_sample_window_size_,
-                                HealthLevel::kHealthy),
       // scoped_cpu_query_ is initialized to monitor CPU usage. Actual queries
       // are being sent from ProcessCpuProbeResult().
       scoped_cpu_query_(
@@ -95,6 +109,28 @@ PerformanceDetectionManager::PerformanceDetectionManager()
       resource_types, {}, [](ResourceType type) {
         return std::make_pair(type, HealthLevel::kHealthy);
       });
+
+  actionable_tabs_ =
+      base::MakeFlatMap<ResourceType,
+                        std::vector<resource_attribution::PageContext>>(
+          resource_types, {}, [](ResourceType type) {
+            return std::make_pair(
+                type, std::vector<resource_attribution::PageContext>());
+          });
+
+  possible_actionable_pages_ =
+      base::MakeFlatMap<ResourceType, PageResourceMeasurements>(
+          resource_types, {}, [](ResourceType type) {
+            return std::make_pair(type, PageResourceMeasurements());
+          });
+
+  recent_resource_measurements_ =
+      base::MakeFlatMap<ResourceType, base::circular_deque<int>>(
+          resource_types, {},
+          [window_size = cpu_health_sample_window_size_](ResourceType type) {
+            return std::make_pair(type,
+                                  base::circular_deque<int>(window_size, 0));
+          });
 
   std::unique_ptr<system_cpu::CpuProbe> cpu_probe =
       system_cpu::CpuProbe::Create();
@@ -138,36 +174,29 @@ void PerformanceDetectionManager::ProcessCpuProbeResult(
     // we get results from the query to ensure that the recorded CPU and
     // resulting health status stays consistent with tab actionability
   } else if (RecordAndUpdateCpuHealthStatus(total_system_cpu_usage)) {
-    // Notify observers that the health level became healthy
+    // Notify observers that the health level became healthy.
     // We don't need to query for tab data because nothing needs to be
-    // actionable when CPU is healthy
+    // actionable when CPU is healthy.
+    possible_actionable_pages_[ResourceType::kCpu] = {};
     NotifyStatusObservers(ResourceType::kCpu, false);
+    if (!actionable_tabs_[ResourceType::kCpu].empty()) {
+      NotifyActionableTabObservers(ResourceType::kCpu, {});
+    }
   }
-}
-
-PerformanceDetectionManager::HealthLevel
-PerformanceDetectionManager::GetCpuHealthStatus(int cpu_usage_percentage) {
-  if (cpu_usage_percentage >
-      performance_manager::features::kCPUUnhealthyPercentageThreshold.Get()) {
-    return HealthLevel::kUnhealthy;
-  } else if (cpu_usage_percentage >
-             performance_manager::features::
-                 kCPUDegradedHealthPercentageThreshold.Get()) {
-    return HealthLevel::kDegraded;
-  }
-  return HealthLevel::kHealthy;
 }
 
 bool PerformanceDetectionManager::RecordAndUpdateCpuHealthStatus(
     int cpu_usage_percentage) {
-  CHECK_EQ(recent_cpu_health_levels_.size(), cpu_health_sample_window_size_);
+  base::circular_deque<int>& recent_cpu_measurements =
+      recent_resource_measurements_[ResourceType::kCpu];
+  CHECK_EQ(recent_cpu_measurements.size(), cpu_health_sample_window_size_);
 
-  // Remove the oldest health level and add the updated status
-  recent_cpu_health_levels_.pop_front();
-  recent_cpu_health_levels_.push_back(GetCpuHealthStatus(cpu_usage_percentage));
+  // Remove the oldest health measurement and add the updated measurement
+  recent_cpu_measurements.pop_front();
+  recent_cpu_measurements.push_back(cpu_usage_percentage);
 
-  const HealthLevel new_level = *std::min_element(
-      recent_cpu_health_levels_.begin(), recent_cpu_health_levels_.end());
+  const HealthLevel new_level = GetCpuHealthStatus(*std::min_element(
+      recent_cpu_measurements.begin(), recent_cpu_measurements.end()));
   const auto it = current_health_status_.find(ResourceType::kCpu);
   const HealthLevel old_level = it->second;
   it->second = new_level;
@@ -186,15 +215,66 @@ void PerformanceDetectionManager::ProcessQueryResultMap(
     page_cpu_proportion_tracker_.StartFirstInterval(measurement_time, results);
   } else {
     // Determine cpu usage for each page context
-    page_cpu_proportion_tracker_.StartNextInterval(measurement_time, results);
+    std::map<resource_attribution::ResourceContext, double> page_cpu =
+        page_cpu_proportion_tracker_.StartNextInterval(measurement_time,
+                                                       results);
+    possible_actionable_pages_[ResourceType::kCpu] =
+        GetPagesMeetMinimumCpuUsage(page_cpu);
 
-    // Notify observers that the status changes
-    // We use the system cpu if it is available, otherwise we need to sum up the
-    // process cpu to get Chrome usage cpu
-    if (did_status_change) {
-      NotifyStatusObservers(ResourceType::kCpu, false);
+    GetActionablePages(
+        ResourceType::kCpu, possible_actionable_pages_[ResourceType::kCpu],
+        system_cpu_usage_percentage,
+        base::BindOnce(&PerformanceDetectionManager::
+                           MaybeNotifyStatusAndActionabilityChange,
+                       weak_ptr_factory_.GetWeakPtr(), ResourceType::kCpu,
+                       did_status_change));
+  }
+}
+
+PerformanceDetectionManager::HealthLevel
+PerformanceDetectionManager::GetCpuHealthStatus(int cpu_usage_percentage) {
+  if (cpu_usage_percentage >
+      performance_manager::features::kCPUUnhealthyPercentageThreshold.Get()) {
+    return PerformanceDetectionManager::HealthLevel::kUnhealthy;
+  } else if (cpu_usage_percentage >
+             performance_manager::features::
+                 kCPUDegradedHealthPercentageThreshold.Get()) {
+    return PerformanceDetectionManager::HealthLevel::kDegraded;
+  }
+  return PerformanceDetectionManager::HealthLevel::kHealthy;
+}
+
+PerformanceDetectionManager::PageResourceMeasurements
+PerformanceDetectionManager::GetPagesMeetMinimumCpuUsage(
+    std::map<resource_attribution::ResourceContext, double> page_cpu) {
+  std::vector<std::pair<resource_attribution::PageContext, int>> eligible_pages;
+
+  for (auto& it : page_cpu) {
+    const int cpu_usage_percentage =
+        it.second * 100 / base::SysInfo::NumberOfProcessors();
+    if (cpu_usage_percentage >=
+        features::kMinimumActionableTabCPUPercentage.Get()) {
+      resource_attribution::ResourceContext context = it.first;
+      eligible_pages.emplace_back(
+          resource_attribution::AsContext<resource_attribution::PageContext>(
+              context),
+          cpu_usage_percentage);
     }
   }
+
+  return base::MakeFlatMap<resource_attribution::PageContext, int>(
+      eligible_pages);
+}
+
+void PerformanceDetectionManager::GetActionablePages(
+    ResourceType resource_type,
+    const PageResourceMeasurements& page_measurements,
+    int overall_cpu_usage,
+    ActionableTabResultCallback on_results_callback) {
+  std::move(on_results_callback).Run({});
+
+  // TODO(crbug.com/324261765): determine which page contexts are actionable
+  // and run the 'on_results_callback' with the list of actionable pages
 }
 
 void PerformanceDetectionManager::NotifyStatusObservers(
@@ -205,4 +285,39 @@ void PerformanceDetectionManager::NotifyStatusObservers(
                         is_actionable);
   }
 }
+
+void PerformanceDetectionManager::NotifyActionableTabObservers(
+    ResourceType resource_type,
+    std::vector<resource_attribution::PageContext> tabs) {
+  // Record the vector of actionable page contexts that we notify to observers
+  actionable_tabs_[resource_type] = tabs;
+  for (auto& obs : actionable_tab_observers_[resource_type]) {
+    obs.OnActionableTabListChanged(resource_type, tabs);
+  }
+}
+
+void PerformanceDetectionManager::MaybeNotifyAllActionableObservers(
+    ResourceType resource_type,
+    ActionableTabsObserver* new_observer,
+    ActionableTabsResult result) {
+  if (result != actionable_tabs_[resource_type]) {
+    NotifyActionableTabObservers(resource_type, result);
+  } else {
+    new_observer->OnActionableTabListChanged(resource_type, result);
+  }
+}
+
+void PerformanceDetectionManager::MaybeNotifyStatusAndActionabilityChange(
+    ResourceType resource_type,
+    bool did_status_change,
+    ActionableTabsResult measurements) {
+  if (did_status_change) {
+    NotifyStatusObservers(resource_type, !measurements.empty());
+  }
+
+  if (actionable_tabs_[resource_type] != measurements) {
+    NotifyActionableTabObservers(resource_type, measurements);
+  }
+}
+
 }  // namespace performance_manager::user_tuning

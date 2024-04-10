@@ -87,6 +87,12 @@ const base::FeatureParam<int> kCPUDegradedHealthPercentageThreshold{
 const base::FeatureParam<int> kCPUUnhealthyPercentageThreshold{
     &kPerformanceCPUIntervention, "cpu_unhealthy_percent_threshold", 75};
 
+const base::FeatureParam<int> kCPUMaxActionableTabs{
+    &kPerformanceCPUIntervention, "cpu_max_actionable_tabs", 4};
+
+const base::FeatureParam<int> kMinimumActionableTabCPUPercentage{
+    &kPerformanceCPUIntervention, "minimum_actionable_tab_cpu", 10};
+
 BASE_FEATURE(kPerformanceMemoryIntervention,
              "PerformanceMemoryIntervention",
              base::FEATURE_DISABLED_BY_DEFAULT);
