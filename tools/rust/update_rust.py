@@ -10,6 +10,7 @@ version specified in //tools/clang/scripts/update.py.
 '''
 
 import argparse
+import glob
 import os
 import re
 import shutil
@@ -126,8 +127,13 @@ def main():
     # downloading the toolchain if it hasn't changed, it also leads to multiple
     # versions of the same rustlibs. build/rust/std/find_std_rlibs.py chokes in
     # this case.
+    # .*_is_first_class_gcs file is created by first class GCS deps when rust
+    # hooks are migrated to be first class deps. In case we need to go back to
+    # using a hook, this file will indicate that the previous download was
+    # from the first class dep and the dir needs to be cleared.
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
-        if version == GetStampVersion():
+        if version == GetStampVersion() and not glob.glob(
+                os.path.join(RUST_TOOLCHAIN_OUT_DIR, '.*_is_first_class_gcs')):
             return 0
 
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
