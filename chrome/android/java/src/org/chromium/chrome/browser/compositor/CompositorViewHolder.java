@@ -1790,9 +1790,13 @@ public class CompositorViewHolder extends FrameLayout
 
             node.setBoundsInParent(rectToPx(mTouchTarget));
             node.setContentDescription(view.getAccessibilityDescription());
-            node.addAction(AccessibilityNodeInfoCompat.ACTION_CLICK);
+            if (view.hasClickAction()) {
+                node.addAction(AccessibilityNodeInfoCompat.ACTION_CLICK);
+            }
             node.addAction(AccessibilityNodeInfoCompat.ACTION_FOCUS);
-            node.addAction(AccessibilityNodeInfoCompat.ACTION_LONG_CLICK);
+            if (view.hasLongClickAction()) {
+                node.addAction(AccessibilityNodeInfoCompat.ACTION_LONG_CLICK);
+            }
         }
 
         private Rect rectToPx(RectF rect) {

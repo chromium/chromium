@@ -161,6 +161,18 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     @Override
+    public boolean hasClickAction() {
+        // TODO(https://crbug.com/326492955): Implement click to collapse/expand.
+        return false;
+    }
+
+    @Override
+    public boolean hasLongClickAction() {
+        // TODO(https://crbug.com/333777015): Implement long press to drag tab group.
+        return false;
+    }
+
+    @Override
     public void handleClick(long time) {
         // TODO(crbug.com/326492955): Implement click to collapse/expand.
     }
