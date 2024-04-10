@@ -16,6 +16,7 @@
 
 namespace ash {
 
+using CursorSpeeds = FaceGazeTestUtils::CursorSpeeds;
 using MockFaceLandmarkerResult = FaceGazeTestUtils::MockFaceLandmarkerResult;
 
 namespace {
@@ -59,6 +60,11 @@ class Config {
     return *this;
   }
 
+  Config& WithCursorSpeeds(const CursorSpeeds& speeds) {
+    cursor_speeds_ = speeds;
+    return *this;
+  }
+
   double forehead_x() const { return forehead_x_; }
   double forehead_y() const { return forehead_y_; }
   const gfx::Point& mouse_location() const { return mouse_location_; }
@@ -70,6 +76,7 @@ class Config {
   const base::Value::Dict& gesture_confidences() const {
     return gesture_confidences_;
   }
+  const CursorSpeeds& cursor_speeds() const { return cursor_speeds_; }
 
  private:
   double forehead_x_;
@@ -79,6 +86,7 @@ class Config {
   bool use_mouse_acceleration_;
   base::Value::Dict gestures_to_macros_;
   base::Value::Dict gesture_confidences_;
+  CursorSpeeds cursor_speeds_;
 };
 
 }  // namespace
@@ -112,6 +120,7 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
   }
 
   void ConfigureFaceGaze(const Config& config) {
+    utils_->SetCursorSpeeds(config.cursor_speeds());
     utils_->SetBufferSize(config.buffer_size());
     utils_->SetMouseAcceleration(config.use_mouse_acceleration());
     utils_->SetGesturesToMacros(config.gestures_to_macros());
@@ -222,6 +231,34 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
       MockFaceLandmarkerResult().WithGesture("jawOpen", 90));
   ASSERT_EQ(gfx::Point(360, 560),
             display::Screen::GetScreen()->GetCursorScreenPoint());
+}
+
+// TODO(b/309121742): Convert all instances of "mouse" into "cursor".
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
+                       UpdateCursorLocationWithSpeed1) {
+  ConfigureFaceGaze(
+      Config()
+          .WithForeheadLocation(0.1, 0.2)
+          .WithMouseLocation(gfx::Point(600, 400))
+          .WithBufferSize(1)
+          .WithMouseAcceleration(false)
+          .WithGesturesToMacros(
+              base::Value::Dict().Set("jawOpen", /*RESET_CURSOR*/ 37))
+          .WithGestureConfidences(base::Value::Dict().Set("jawOpen", 70))
+          .WithCursorSpeeds({/*up=*/1, /*down=*/1, /*left=*/1, /*right=*/1}));
+
+  // With mouse acceleration off and buffer size 1, one-pixel head movements
+  // correspond to one-pixel changes on screen.
+  double px = 1.0 / 1200;
+  double py = 1.0 / 800;
+  for (int i = 1; i < 10; ++i) {
+    utils()->ProcessFaceLandmarkerResult(
+        MockFaceLandmarkerResult().WithNormalizedForeheadLocation(
+            0.1 + px * i, 0.2 + py * i));
+    utils()->TriggerMouseControllerInterval();
+    ASSERT_EQ(gfx::Point(600 - i, 400 + i),
+              display::Screen::GetScreen()->GetCursorScreenPoint());
+  }
 }
 
 }  // namespace ash

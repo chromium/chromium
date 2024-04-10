@@ -18,6 +18,14 @@ namespace ash {
 // A class that can be used to exercise FaceGaze in browsertests.
 class FaceGazeTestUtils {
  public:
+  // A struct that holds cursor speed values.
+  struct CursorSpeeds {
+    int up;
+    int down;
+    int left;
+    int right;
+  };
+
   // A class that represents a fake FaceLandmarkerResult.
   class MockFaceLandmarkerResult {
    public:
@@ -55,6 +63,8 @@ class FaceGazeTestUtils {
   void CreateFaceLandmarker();
   // Waits for the mouse location to propagate to the FaceGaze MouseController.
   void WaitForMousePosition(const gfx::Point& location);
+  // Sets cursor speed prefs.
+  void SetCursorSpeeds(const CursorSpeeds& speeds);
   // Sets the buffer size pref.
   void SetBufferSize(int size);
   // Sets the mouse acceleration pref.

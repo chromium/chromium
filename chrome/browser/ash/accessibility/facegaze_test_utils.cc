@@ -146,6 +146,17 @@ void FaceGazeTestUtils::WaitForMousePosition(const gfx::Point& location) {
   ExecuteAccessibilityCommonScript(script);
 }
 
+void FaceGazeTestUtils::SetCursorSpeeds(const CursorSpeeds& speeds) {
+  GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSpeedUp, speeds.up);
+  GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSpeedDown,
+                         speeds.down);
+  GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSpeedLeft,
+                         speeds.left);
+  GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSpeedRight,
+                         speeds.right);
+  GetPrefs()->CommitPendingWrite();
+}
+
 void FaceGazeTestUtils::SetBufferSize(int size) {
   GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSmoothing, size);
   GetPrefs()->CommitPendingWrite();
