@@ -25,13 +25,13 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.webview_shell.WebViewLayoutTestActivity;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -509,29 +509,18 @@ public class WebViewLayoutTest {
 
     /** Reads a file and returns it's contents as string. */
     private static String readFile(String fileName) throws IOException {
-        FileInputStream inputStream = new FileInputStream(new File(fileName));
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            try {
-                StringBuilder contents = new StringBuilder();
-                String line;
-
-                while ((line = reader.readLine()) != null) {
-                    contents.append(line);
-                    contents.append("\n");
-                }
-                return contents.toString();
-            } finally {
-                reader.close();
-            }
-        } finally {
-            inputStream.close();
+        StringBuilder sb = new StringBuilder();
+        for (String line : Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8)) {
+            // Test output has newlines at end of every line. This ensures the loaded expectation
+            // file also has these newlines.
+            sb.append(line).append("\n");
         }
+        return sb.toString();
     }
 
     /**
-     * Reads the first available file in the 'fallback' list and returns the result.
-     * Throws FileNotFoundException if non of the files exist.
+     * Reads the first available file in the 'fallback' list and returns the result. Throws
+     * FileNotFoundException if non of the files exist.
      */
     private static String readFileWithFallbacks(List<String> fallbackFileNames) throws IOException {
         for (String fileName : fallbackFileNames) {
@@ -565,12 +554,8 @@ public class WebViewLayoutTest {
                 throw new IOException("failed to create directories: " + filePath);
             }
         }
-
-        FileOutputStream outputStream = new FileOutputStream(fileOut);
-        try {
-            outputStream.write(contents.getBytes());
-        } finally {
-            outputStream.close();
+        try (FileOutputStream outputStream = new FileOutputStream(fileOut)) {
+            outputStream.write(contents.getBytes(StandardCharsets.UTF_8));
         }
     }
 
