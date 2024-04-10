@@ -3784,6 +3784,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Glanceables.Api.Classroom.StudentCoursesCount"
+    units="courses" expires_after="2024-12-31">
+  <owner>amitrokhin@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Recorded whenever glanceables UI fetches data from Google Classroom API. The
+    recorded value indicates the total number of active courses returned for the
+    user. This number serves as a multiplier for futher requests to get course
+    work items and student submissions.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Glanceables.Api.Classroom.StudentDataFetchTime" units="ms"
+    expires_after="2024-12-31">
+  <owner>amitrokhin@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Recorded whenever glanceables UI fetches data from Google Classroom API. The
+    recorded value indicates the time needed to fetch all student data (courses,
+    course work, student submissions).
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.Glanceables.Api.Classroom.StudentSubmissionsPerStudentCourseCount"
     units="student submissions" expires_after="2024-12-31">
@@ -3794,37 +3817,6 @@ chromium-metrics-reviews@google.com.
     recorded value indicates the number of student submissions fetched for a
     course, where the current user is enrolled as a student.
   </summary>
-</histogram>
-
-<histogram name="Ash.Glanceables.Api.Classroom.{Role}CoursesCount"
-    units="courses" expires_after="2024-12-31">
-  <owner>amitrokhin@google.com</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    Recorded whenever glanceables UI fetches data from Google Classroom API. The
-    recorded value indicates the total number of active courses returned for the
-    user. This number serves as a multiplier for futher requests to get course
-    work items and student submissions.
-  </summary>
-  <token key="Role">
-    <variant name="Student"/>
-    <variant name="Teacher"/>
-  </token>
-</histogram>
-
-<histogram name="Ash.Glanceables.Api.Classroom.{Role}DataFetchTime" units="ms"
-    expires_after="2024-12-31">
-  <owner>amitrokhin@google.com</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    Recorded whenever glanceables UI fetches data from Google Classroom API. The
-    recorded value indicates the time needed to fetch all student or teacher
-    data (courses, course work, student submissions).
-  </summary>
-  <token key="Role">
-    <variant name="Student"/>
-    <variant name="Teacher"/>
-  </token>
 </histogram>
 
 <histogram name="Ash.Glanceables.Api.Tasks.ProcessedTasksCount" units="tasks"

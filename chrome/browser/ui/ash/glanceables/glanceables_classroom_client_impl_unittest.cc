@@ -170,8 +170,6 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
-  base::test::ScopedFeatureList feature_list_{
-      features::kGlanceablesV2ClassroomTeacherView};
   net::EmbeddedTestServer test_server_;
   scoped_refptr<network::TestSharedURLLoaderFactory> url_loader_factory_ =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
@@ -191,8 +189,7 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
 TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
   EXPECT_CALL(request_handler(), HandleRequest(Field(&HttpRequest::relative_url,
                                                      HasSubstr("/courses?"))))
-      .WillRepeatedly(Invoke([]() {
-        return TestRequestHandler::CreateSuccessfulResponse(R"(
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "courses": [
                 {
@@ -206,86 +203,57 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
                   "courseState": "???"
                 }
               ]
-            })");
+            })"))));
+
+  base::RunLoop run_loop;
+  client()->FetchStudentCourses(base::BindLambdaForTesting(
+      [&](bool success,
+          const GlanceablesClassroomClientImpl::CourseList& courses) {
+        run_loop.Quit();
+
+        EXPECT_TRUE(success);
+        ASSERT_EQ(courses.size(), 1u);
+
+        EXPECT_EQ(courses.at(0)->id, "course-id-1");
+        EXPECT_EQ(courses.at(0)->name, "Active Course 1");
+
+        histogram_tester()->ExpectTotalCount(
+            "Ash.Glanceables.Api.Classroom.GetCourses.Latency",
+            /*expected_count=*/1);
+        histogram_tester()->ExpectUniqueSample(
+            "Ash.Glanceables.Api.Classroom.GetCourses.Status",
+            ApiErrorCode::HTTP_SUCCESS,
+            /*expected_bucket_count=*/1);
+        histogram_tester()->ExpectUniqueSample(
+            "Ash.Glanceables.Api.Classroom.StudentCoursesCount",
+            /*sample=*/1,
+            /*expected_bucket_count=*/1);
       }));
-
-  struct {
-    base::RepeatingCallback<void(
-        GlanceablesClassroomClientImpl::FetchCoursesCallback)>
-        fetch_method;
-    std::string expected_courses_count_histogram_name;
-  } test_cases[] = {
-      {base::BindRepeating(&GlanceablesClassroomClientImpl::FetchStudentCourses,
-                           base::Unretained(client())),
-       "Ash.Glanceables.Api.Classroom.StudentCoursesCount"},
-      {base::BindRepeating(&GlanceablesClassroomClientImpl::FetchTeacherCourses,
-                           base::Unretained(client())),
-       "Ash.Glanceables.Api.Classroom.TeacherCoursesCount"},
-  };
-
-  for (const auto& test_case : test_cases) {
-    base::HistogramTester histogram_tester;
-    base::RunLoop run_loop;
-    test_case.fetch_method.Run(base::BindLambdaForTesting(
-        [&](bool success,
-            const GlanceablesClassroomClientImpl::CourseList& courses) {
-          run_loop.Quit();
-
-          EXPECT_TRUE(success);
-          ASSERT_EQ(courses.size(), 1u);
-
-          EXPECT_EQ(courses.at(0)->id, "course-id-1");
-          EXPECT_EQ(courses.at(0)->name, "Active Course 1");
-
-          histogram_tester.ExpectTotalCount(
-              "Ash.Glanceables.Api.Classroom.GetCourses.Latency",
-              /*expected_count=*/1);
-          histogram_tester.ExpectUniqueSample(
-              "Ash.Glanceables.Api.Classroom.GetCourses.Status",
-              ApiErrorCode::HTTP_SUCCESS,
-              /*expected_bucket_count=*/1);
-          histogram_tester.ExpectUniqueSample(
-              test_case.expected_courses_count_histogram_name,
-              /*sample=*/1,
-              /*expected_bucket_count=*/1);
-        }));
-    run_loop.Run();
-  }
+  run_loop.Run();
 }
 
 TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesOnHttpError) {
-  EXPECT_CALL(request_handler(), HandleRequest(_)).WillRepeatedly(Invoke([]() {
-    return TestRequestHandler::CreateFailedResponse();
-  }));
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  auto fetch_courses_methods = std::vector<base::RepeatingCallback<void(
-      GlanceablesClassroomClientImpl::FetchCoursesCallback)>>{
-      base::BindRepeating(&GlanceablesClassroomClientImpl::FetchStudentCourses,
-                          base::Unretained(client())),
-      base::BindRepeating(&GlanceablesClassroomClientImpl::FetchTeacherCourses,
-                          base::Unretained(client()))};
+  base::RunLoop run_loop;
+  client()->FetchStudentCourses(base::BindLambdaForTesting(
+      [&](bool success,
+          const GlanceablesClassroomClientImpl::CourseList& courses) {
+        run_loop.Quit();
 
-  for (auto fetch_method : fetch_courses_methods) {
-    base::HistogramTester histogram_tester;
-    base::RunLoop run_loop;
-    fetch_method.Run(base::BindLambdaForTesting(
-        [&](bool success,
-            const GlanceablesClassroomClientImpl::CourseList& courses) {
-          run_loop.Quit();
+        EXPECT_FALSE(success);
+        EXPECT_EQ(0u, courses.size());
 
-          EXPECT_FALSE(success);
-          EXPECT_EQ(0u, courses.size());
-
-          histogram_tester.ExpectTotalCount(
-              "Ash.Glanceables.Api.Classroom.GetCourses.Latency",
-              /*expected_count=*/1);
-          histogram_tester.ExpectUniqueSample(
-              "Ash.Glanceables.Api.Classroom.GetCourses.Status",
-              ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
-              /*expected_bucket_count=*/1);
-        }));
-    run_loop.Run();
-  }
+        histogram_tester()->ExpectTotalCount(
+            "Ash.Glanceables.Api.Classroom.GetCourses.Latency",
+            /*expected_count=*/1);
+        histogram_tester()->ExpectUniqueSample(
+            "Ash.Glanceables.Api.Classroom.GetCourses.Status",
+            ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+            /*expected_bucket_count=*/1);
+      }));
+  run_loop.Run();
 }
 
 TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesMultiplePages) {
@@ -293,76 +261,53 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesMultiplePages) {
               HandleRequest(Field(
                   &HttpRequest::relative_url,
                   AllOf(HasSubstr("/courses?"), Not(HasSubstr("pageToken"))))))
-      .WillRepeatedly(Invoke([]() {
-        return TestRequestHandler::CreateSuccessfulResponse(R"(
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "courses": [
                 {"id": "course-id-from-page-1", "courseState": "ACTIVE"}
               ],
               "nextPageToken": "page-2-token"
-            })");
-      }));
+            })"))));
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
                                   AllOf(HasSubstr("/courses?"),
                                         HasSubstr("pageToken=page-2-token")))))
-      .WillRepeatedly(Invoke([]() {
-        return TestRequestHandler::CreateSuccessfulResponse(R"(
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "courses": [
                 {"id": "course-id-from-page-2", "courseState": "ACTIVE"}
               ],
               "nextPageToken": "page-3-token"
-            })");
-      }));
+            })"))));
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
                                   AllOf(HasSubstr("/courses?"),
                                         HasSubstr("pageToken=page-3-token")))))
-      .WillRepeatedly(Invoke([]() {
-        return TestRequestHandler::CreateSuccessfulResponse(R"(
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "courses": [
                 {"id": "course-id-from-page-3", "courseState": "ACTIVE"}
               ]
-            })");
+            })"))));
+
+  base::RunLoop run_loop;
+  client()->FetchStudentCourses(base::BindLambdaForTesting(
+      [&](bool success,
+          const GlanceablesClassroomClientImpl::CourseList& courses) {
+        run_loop.Quit();
+        EXPECT_TRUE(success);
+        ASSERT_EQ(courses.size(), 3u);
+
+        EXPECT_EQ(courses.at(0)->id, "course-id-from-page-1");
+        EXPECT_EQ(courses.at(1)->id, "course-id-from-page-2");
+        EXPECT_EQ(courses.at(2)->id, "course-id-from-page-3");
+
+        histogram_tester()->ExpectUniqueSample(
+            "Ash.Glanceables.Api.Classroom.StudentCoursesCount",
+            /*sample=*/3,
+            /*expected_bucket_count=*/1);
       }));
-
-  struct {
-    base::RepeatingCallback<void(
-        GlanceablesClassroomClientImpl::FetchCoursesCallback)>
-        fetch_method;
-    std::string expected_courses_count_histogram_name;
-  } test_cases[] = {
-      {base::BindRepeating(&GlanceablesClassroomClientImpl::FetchStudentCourses,
-                           base::Unretained(client())),
-       "Ash.Glanceables.Api.Classroom.StudentCoursesCount"},
-      {base::BindRepeating(&GlanceablesClassroomClientImpl::FetchTeacherCourses,
-                           base::Unretained(client())),
-       "Ash.Glanceables.Api.Classroom.TeacherCoursesCount"},
-  };
-
-  for (const auto& test_case : test_cases) {
-    base::HistogramTester histogram_tester;
-    base::RunLoop run_loop;
-    test_case.fetch_method.Run(base::BindLambdaForTesting(
-        [&](bool success,
-            const GlanceablesClassroomClientImpl::CourseList& courses) {
-          run_loop.Quit();
-          EXPECT_TRUE(success);
-          ASSERT_EQ(courses.size(), 3u);
-
-          EXPECT_EQ(courses.at(0)->id, "course-id-from-page-1");
-          EXPECT_EQ(courses.at(1)->id, "course-id-from-page-2");
-          EXPECT_EQ(courses.at(2)->id, "course-id-from-page-3");
-
-          histogram_tester.ExpectUniqueSample(
-              test_case.expected_courses_count_histogram_name,
-              /*sample=*/3,
-              /*expected_bucket_count=*/1);
-        }));
-    run_loop.Run();
-  }
+  run_loop.Run();
 }
 
 // ----------------------------------------------------------------------------

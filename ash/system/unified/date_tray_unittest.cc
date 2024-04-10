@@ -142,15 +142,9 @@ class DateTrayTest
       public testing::WithParamInterface</*glanceables_v2_enabled=*/bool> {
  public:
   DateTrayTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kGlanceablesV2, AreGlanceablesV2Enabled()},
-         {features::kGlanceablesV2ClassroomTeacherView,
-          AreGlanceablesV2Enabled()}});
+    scoped_feature_list_.InitWithFeatureState(features::kGlanceablesV2,
+                                              AreGlanceablesV2Enabled());
   }
-
-  DateTrayTest(const DateTrayTest&) = delete;
-  DateTrayTest& operator=(const DateTrayTest&) = delete;
-  ~DateTrayTest() override = default;
 
   void SetUp() override {
     // Set time override.

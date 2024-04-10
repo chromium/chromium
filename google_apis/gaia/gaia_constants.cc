@@ -195,13 +195,8 @@ const char kClassroomReadOnlyCoursesOAuth2Scope[] =
     "https://www.googleapis.com/auth/classroom.courses.readonly";
 const char kClassroomReadOnlyCourseWorkSelfOAuth2Scope[] =
     "https://www.googleapis.com/auth/classroom.coursework.me.readonly";
-const char kClassroomReadOnlyCourseWorkStudentsOAuth2Scope[] =
-    "https://www.googleapis.com/auth/classroom.coursework.students.readonly";
 const char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[] =
     "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly";
-const char kClassroomReadOnlyStudentSubmissionsStudentsOAuth2Scope[] =
-    "https://www.googleapis.com/auth/"
-    "classroom.student-submissions.students.readonly";
 
 // OAuth2 scopes for Optimization Guide.
 const char kOptimizationGuideServiceGetHintsOAuth2Scope[] =
