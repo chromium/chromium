@@ -13,6 +13,7 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
@@ -2306,8 +2307,19 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
   }
 #endif
 
-  MLGraphMojo::ValidateAndBuild(std::move(scoped_trace), ml_context_,
-                                named_outputs, resolver);
+  // TODO: crbug.com/325612086 - The WebNN Service supports CPU execution via
+  // TFLite, but that code path is currently only hit when asking a "gpu"
+  // context for the sake of testing. Consider refactoring things to make this
+  // situation a bit more sane.
+  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu ||
+      ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kNpu) {
+    MLGraphMojo::ValidateAndBuild(std::move(scoped_trace), ml_context_,
+                                  named_outputs, resolver);
+    return promise;
+  }
+
+  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                   "Not implemented");
   return promise;
 }
 
