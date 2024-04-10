@@ -122,8 +122,8 @@ class CustomTabBarView : public views::AccessiblePaneView,
 
   bool GetShowTitle() const;
 
-  SkColor title_bar_color_;
-  SkColor background_color_;
+  SkColor title_bar_color_ = SK_ColorTRANSPARENT;
+  SkColor background_color_ = SK_ColorTRANSPARENT;
 
   std::u16string last_title_;
   std::u16string last_location_;
