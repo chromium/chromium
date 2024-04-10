@@ -100,7 +100,7 @@ def GetCurrentCrateIds() -> Set[str]:
     return result
 
 
-@dataclass
+@dataclass(eq=True, order=True)
 class UpdatedCrate:
     old_crate_id: str
     new_crate_id: str
@@ -178,7 +178,8 @@ def DiffCrateIds(old_crate_ids: Set[str],
         if key not in old_dict:
             added_crate_ids.append(new_crate_id)
 
-    return CratesDiff(updates, removed_crate_ids, added_crate_ids)
+    return CratesDiff(sorted(updates), sorted(removed_crate_ids),
+                      sorted(added_crate_ids))
 
 
 def GetEpoch(crate_version: str) -> str:
