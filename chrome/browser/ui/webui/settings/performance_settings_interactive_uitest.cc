@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
-#include "chrome/browser/ui/performance_controls/test_support/webui_interactive_test_mixin.h"
+#include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
