@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -127,6 +128,11 @@ void PasswordCrossDomainConfirmationPopupViewViews::Hide() {
   // TODO(b/333505414): `DoHide()` must be at the end, as it does `delete this`
   // in PopupBaseView, reconsider this behaviour and remove this warning.
   DoHide();
+}
+
+bool PasswordCrossDomainConfirmationPopupViewViews::
+    OverlapsWithPictureInPictureWindow() const {
+  return autofill::BoundsOverlapWithPictureInPictureWindow(GetBoundsInScreen());
 }
 
 void PasswordCrossDomainConfirmationPopupViewViews::Show() {

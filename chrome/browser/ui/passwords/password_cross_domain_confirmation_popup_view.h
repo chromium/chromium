@@ -40,6 +40,9 @@ class PasswordCrossDomainConfirmationPopupView {
   // Hides and destroy (maybe asynchronously) the view. The `WeakPtr` returned
   // from `Show()` gets invalidated.
   virtual void Hide() = 0;
+
+  // Checks if the popup overlaps with the pictur-in-picture popup.
+  virtual bool OverlapsWithPictureInPictureWindow() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORD_CROSS_DOMAIN_CONFIRMATION_POPUP_VIEW_H_

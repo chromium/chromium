@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -52,6 +53,7 @@ class PasswordCrossDomainConfirmationPopupController
 
  private:
   void HideImpl();
+  bool OverlapsWithPictureInPictureWindow() const;
 
   // Handles the confirmation response from the view.
   void OnConfirm();
@@ -64,6 +66,8 @@ class PasswordCrossDomainConfirmationPopupController
   base::OnceClosure confirmation_callback_;
 
   base::WeakPtr<PasswordCrossDomainConfirmationPopupView> view_;
+
+  std::optional<autofill::AutofillPopupHideHelper> popup_hide_helper_;
 
   base::WeakPtrFactory<PasswordCrossDomainConfirmationPopupController>
       weak_ptr_factory_{this};

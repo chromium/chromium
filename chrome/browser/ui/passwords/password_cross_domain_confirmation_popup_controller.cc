@@ -12,10 +12,7 @@
 PasswordCrossDomainConfirmationPopupController::
     PasswordCrossDomainConfirmationPopupController(
         content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
-  // TODO(b/330303918): Use `AutofillPopupHideHelper` to close the popup on
-  // different external events, as it is done in `AutofillPopupControllerImpl`.
-}
+    : content::WebContentsObserver(web_contents) {}
 
 PasswordCrossDomainConfirmationPopupController::
     ~PasswordCrossDomainConfirmationPopupController() {
@@ -28,6 +25,10 @@ void PasswordCrossDomainConfirmationPopupController::Show(
     const GURL& domain,
     const std::u16string& password_origin,
     base::OnceClosure confirmation_callback) {
+  if (!web_contents()) {
+    return;
+  }
+
   HideImpl();
 
   element_bounds_ = element_bounds;
@@ -40,6 +41,18 @@ void PasswordCrossDomainConfirmationPopupController::Show(
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&PasswordCrossDomainConfirmationPopupController::OnCancel,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
+  popup_hide_helper_.emplace(
+      web_contents(), rfh->GetGlobalId(),
+      autofill::AutofillPopupHideHelper::HidingParams{},
+      /*hiding_callback=*/
+      base::BindRepeating(&PasswordCrossDomainConfirmationPopupController::Hide,
+                          base::Unretained(this)),
+      /*pip_detection_callback=*/
+      base::BindRepeating(&PasswordCrossDomainConfirmationPopupController::
+                              OverlapsWithPictureInPictureWindow,
+                          base::Unretained(this)));
 }
 
 void PasswordCrossDomainConfirmationPopupController::Hide(
@@ -47,7 +60,9 @@ void PasswordCrossDomainConfirmationPopupController::Hide(
   HideImpl();
 }
 
-void PasswordCrossDomainConfirmationPopupController::ViewDestroyed() {}
+void PasswordCrossDomainConfirmationPopupController::ViewDestroyed() {
+  HideImpl();
+}
 
 gfx::NativeView PasswordCrossDomainConfirmationPopupController::container_view()
     const {
@@ -75,6 +90,12 @@ void PasswordCrossDomainConfirmationPopupController::HideImpl() {
   if (view_) {
     view_->Hide();
   }
+  popup_hide_helper_.reset();
+}
+
+bool PasswordCrossDomainConfirmationPopupController::
+    OverlapsWithPictureInPictureWindow() const {
+  return view_ && view_->OverlapsWithPictureInPictureWindow();
 }
 
 void PasswordCrossDomainConfirmationPopupController::OnConfirm() {

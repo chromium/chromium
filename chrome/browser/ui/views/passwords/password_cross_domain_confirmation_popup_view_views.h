@@ -35,6 +35,7 @@ class PasswordCrossDomainConfirmationPopupViewViews
 
   // PasswordCrossDomainConfirmationPopupView:
   void Hide() override;
+  bool OverlapsWithPictureInPictureWindow() const override;
 
   void Show();
 
