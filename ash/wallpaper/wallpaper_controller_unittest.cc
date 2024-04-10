@@ -2139,6 +2139,67 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaper) {
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
       *expected_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
       /*max_deviation=*/1));
+
+  // Expects the wallpaper is saved in global dir.
+  base::FilePath saved_wallpaper = online_wallpaper_dir_.GetPath()
+                                       .Append("sea_pen")
+                                       .Append(kAccountId1.GetAccountIdKey())
+                                       .Append(wallpaper_info.location)
+                                       .ReplaceExtension(".jpg");
+  ASSERT_TRUE(base::PathExists(saved_wallpaper));
+}
+
+TEST_P(WallpaperControllerTest,
+       SeaPenWallpaperRemovedAfterSettingAnotherWallpaperType) {
+  const auto global_sea_pen_dir =
+      online_wallpaper_dir_.GetPath().Append("sea_pen").Append(
+          kAccountId1.GetAccountIdKey());
+
+  SimulateUserLogin(kAccountId1);
+
+  WallpaperInfo wallpaper_info;
+  ASSERT_FALSE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+
+  {
+    // Sets a sea pen wallpaper.
+    gfx::ImageSkia expected_image;
+    SetSeaPenWallpaper(&expected_image, SK_ColorGREEN, /*id=*/848u);
+    EXPECT_TRUE(
+        pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+    EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
+    EXPECT_EQ("848", wallpaper_info.location);
+    EXPECT_TRUE(wallpaper_info.user_file_path.empty());
+    // Expects the sea pen wallpaper is saved to the global SeaPen directory.
+    ASSERT_TRUE(
+        base::PathExists(global_sea_pen_dir.Append(wallpaper_info.location)
+                             .ReplaceExtension(".jpg")));
+  }
+
+  {
+    // Sets an online wallpaper.
+    base::RunLoop run_loop;
+    const OnlineWallpaperParams& params = OnlineWallpaperParams(
+        kAccountId1, TestWallpaperControllerClient::kDummyCollectionId,
+        WALLPAPER_LAYOUT_CENTER_CROPPED,
+        /*preview_mode=*/false, /*from_user=*/true,
+        /*daily_refresh_enabled=*/false, kUnitId,
+        /*variants=*/
+        {{kAssetId, GURL(kDummyUrl), backdrop::Image::IMAGE_TYPE_UNKNOWN}});
+    controller_->SetOnlineWallpaper(
+        params, base::BindLambdaForTesting(
+                    [quit = run_loop.QuitClosure()](bool success) {
+                      EXPECT_TRUE(success);
+                      std::move(quit).Run();
+                    }));
+    run_loop.Run();
+    EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+  }
+
+  // Expects the sea pen wallpaper is removed from the global SeaPen directory.
+  ASSERT_FALSE(
+      base::PathExists(global_sea_pen_dir.Append(wallpaper_info.location)
+                           .ReplaceExtension(".jpg")));
 }
 
 TEST_P(WallpaperControllerTest, ShowSeaPenWallpaperOnLogin) {

@@ -3127,11 +3127,19 @@ void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
 void WallpaperControllerImpl::CleanUpBeforeSettingUserWallpaperInfo(
     const AccountId& account_id,
     const WallpaperInfo& info) {
-  if (info.type != WallpaperType::kOnceGooglePhotos &&
+  std::vector<base::FilePath> directories_to_remove;
+  if (account_id.HasAccountIdKey() &&
+      info.type != WallpaperType::kOnceGooglePhotos &&
       info.type != WallpaperType::kDailyGooglePhotos) {
-    sequenced_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
+    directories_to_remove.push_back(
+        GetUserGooglePhotosWallpaperDir(account_id));
   }
+  if (account_id.HasAccountIdKey() && info.type != WallpaperType::kSeaPen) {
+    directories_to_remove.push_back(GetUserSeaPenWallpaperDir(account_id));
+  }
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DeleteWallpaperInList, std::move(directories_to_remove)));
 }
 
 bool WallpaperControllerImpl::IsOobeState() const {
