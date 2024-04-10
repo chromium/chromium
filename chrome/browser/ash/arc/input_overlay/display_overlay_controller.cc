@@ -851,8 +851,6 @@ void DisplayOverlayController::RemoveButtonOptionsMenuWidget() {
 
   button_options_widget_->Close();
   button_options_widget_.reset();
-
-  SetEditingListVisibility(/*visible=*/true);
 }
 
 void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(

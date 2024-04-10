@@ -287,6 +287,8 @@ void ButtonOptionsMenu::OnTrashButtonPressed() {
 void ButtonOptionsMenu::OnDoneButtonPressed() {
   controller_->SaveToProtoFile();
 
+  controller_->SetEditingListVisibility(/*visible=*/true);
+
   // Remove this view at last.
   controller_->RemoveButtonOptionsMenuWidget();
 }
@@ -295,6 +297,10 @@ void ButtonOptionsMenu::OnActionRemoved(const Action& action) {
   if (action_ != &action) {
     return;
   }
+
+  controller_->SetEditingListVisibility(/*visible=*/true);
+
+  // Remove this view at last.
   controller_->RemoveButtonOptionsMenuWidget();
 }
 
