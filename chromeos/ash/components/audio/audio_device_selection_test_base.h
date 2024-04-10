@@ -39,6 +39,10 @@ class AudioDeviceSelectionTestBase : public testing::Test {
     return NewNode(false, type);
   }
 
+  AudioNode NewNodeWithName(bool is_input,
+                            const std::string& type,
+                            const std::string& name);
+
   void Plug(AudioNode node);
   void Unplug(const AudioNode& node);
   void Select(const AudioNode& node);

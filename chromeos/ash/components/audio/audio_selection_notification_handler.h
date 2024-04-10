@@ -38,10 +38,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const std::optional<std::string>& active_output_device_name);
 
  private:
+  // Grant friend access for comprehensive testing of private/protected members.
+  friend class AudioSelectionNotificationHandlerTest;
+
   // Handles when the notification button is clicked.
   void HandleNotificationClicked(bool is_settings_button,
                                  const AudioDeviceList& devices_to_activate,
                                  std::optional<int> button_index);
+
+  // Checks if one audio input device and one audio output device belong to the
+  // same physical audio device.
+  bool AudioNodesBelongToSameSource(const AudioDevice& input_device,
+                                    const AudioDevice& output_device);
 
   base::WeakPtrFactory<AudioSelectionNotificationHandler> weak_ptr_factory_{
       this};

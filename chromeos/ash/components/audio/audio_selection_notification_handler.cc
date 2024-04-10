@@ -26,12 +26,61 @@ constexpr char kAudioSelectionNotificationId[] = "audio_selection_notification";
 constexpr char kAudioSelectionNotifierId[] =
     "ash.audio_selection_notification_handler";
 
+// Separator used to split the audio device name.
+constexpr char kAudioDeviceNameSeparator[] = ":";
+
+// Extracts the audio device source name of an audio device. e.g. the source
+// name for "Razer USB Sound Card: USB Audio:2,0: Mic" would be "Razer USB Sound
+// Card". The source name for "Airpods" would be "Airpods".
+std::string ExtractDeviceSourceName(const AudioDevice& device) {
+  std::vector<std::string> parts =
+      base::SplitString(device.display_name, kAudioDeviceNameSeparator,
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  return parts.front();
+}
+
 }  // namespace
 
 AudioSelectionNotificationHandler::AudioSelectionNotificationHandler() =
     default;
 AudioSelectionNotificationHandler::~AudioSelectionNotificationHandler() =
     default;
+
+bool AudioSelectionNotificationHandler::AudioNodesBelongToSameSource(
+    const AudioDevice& input_device,
+    const AudioDevice& output_device) {
+  CHECK(input_device.is_input);
+  CHECK(!output_device.is_input);
+
+  // Handle internal audio device.
+  if ((input_device.type == AudioDeviceType::kInternalMic ||
+       input_device.type == AudioDeviceType::kFrontMic ||
+       input_device.type == AudioDeviceType::kRearMic) &&
+      output_device.type == AudioDeviceType::kInternalSpeaker) {
+    return true;
+  }
+
+  // Handle special cases where input and output device are the same source but
+  // different device types. kMic and kHeadphone are the types for 3.5mm jack
+  // headphone's input and output. Similarly, kBluetoothNbMic and kBluetooth are
+  // the types for a bluetooth device.
+  if ((input_device.type == AudioDeviceType::kMic &&
+       output_device.type == AudioDeviceType::kHeadphone) ||
+      (input_device.type == AudioDeviceType::kBluetoothNbMic &&
+       output_device.type == AudioDeviceType::kBluetooth)) {
+    return true;
+  }
+
+  // For other devices, different device types indicate different device
+  // sources.
+  if (input_device.type != output_device.type) {
+    return false;
+  }
+
+  // With same device type, checks their device source name.
+  return ExtractDeviceSourceName(input_device)
+             .compare(ExtractDeviceSourceName(output_device)) == 0;
+}
 
 void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
     const AudioDeviceList& hotplug_input_devices,

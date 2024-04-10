@@ -94,13 +94,25 @@ uint64_t AudioDeviceSelectionTestBase::ActiveOutputNodeId() {
   return active_node_observer_->GetActiveOutputNodeId();
 }
 
+AudioNode AudioDeviceSelectionTestBase::NewNodeWithName(
+    bool is_input,
+    const std::string& type,
+    const std::string& name) {
+  ++node_count_;
+  return AudioNode(
+      is_input, /*id=*/node_count_, /*has_v2_stable_device_id=*/true,
+      /*stable_device_id_v1=*/node_count_, /*stable_device_id_v2=*/node_count_,
+      /*device_name=*/name, type, name, /*active=*/false, /*plugged_time=*/0,
+      /*max_supported_channels=*/2, /*audio_effect=*/0,
+      /*number_of_volume_steps=*/0);
+}
+
 AudioNode AudioDeviceSelectionTestBase::NewNode(bool is_input,
                                                 const std::string& type) {
   ++node_count_;
   std::string name =
       base::StringPrintf("%s-%" PRIu64, type.c_str(), node_count_);
-  return AudioNode(is_input, node_count_, true, node_count_, node_count_, name,
-                   type, name, false, 0, 2, 0, 0);
+  return NewNodeWithName(is_input, type, name);
 }
 
 }  // namespace ash
