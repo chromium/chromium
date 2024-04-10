@@ -669,9 +669,7 @@ public class ExternalNavigationHandler {
         // Otherwise, it can be used in chain for fingerprinting multiple app installation
         // status in one shot. In order to prevent this scenario, we notify redirection
         // handler that redirection from the current navigation should stay in this app.
-        if (params.getRedirectHandler().isOnNavigation()
-                && !params.getRedirectHandler()
-                        .getAndClearShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain()) {
+        if (params.getRedirectHandler().isOnNavigation()) {
             params.getRedirectHandler().setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
         }
 
