@@ -336,8 +336,6 @@ class WindowTreeHostWithReleaseTest : public test::AuraTestBase {
  public:
   // AuraTestBase:
   void SetUp() override {
-    // Disable the headless check as the bots run with CHROME_HEADLESS set.
-    NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(false);
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
 #if BUILDFLAG(IS_WIN)
@@ -346,15 +344,14 @@ class WindowTreeHostWithReleaseTest : public test::AuraTestBase {
             {features::kApplyNativeOcclusionToCompositor,
              {{features::kApplyNativeOcclusionToCompositorType.name,
                features::kApplyNativeOcclusionToCompositorTypeRelease}}},
-        },
+            // Disable the headless check as the bots run with CHROME_HEADLESS
+            // set.
+            {features::kAlwaysTrackNativeWindowOcclusionForTest, {}}},
         {});
     AuraTestBase::SetUp();
   }
 
-  void TearDown() override {
-    test::AuraTestBase::TearDown();
-    NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(true);
-  }
+  void TearDown() override { test::AuraTestBase::TearDown(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -483,7 +480,6 @@ class WindowTreeHostWithThrottleTest : public test::AuraTestBase {
   // AuraTestBase:
   void SetUp() override {
     // Disable the headless check as the bots run with CHROME_HEADLESS set.
-    NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(false);
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
 #if BUILDFLAG(IS_WIN)
@@ -492,15 +488,15 @@ class WindowTreeHostWithThrottleTest : public test::AuraTestBase {
             {features::kApplyNativeOcclusionToCompositor,
              {{features::kApplyNativeOcclusionToCompositorType.name,
                features::kApplyNativeOcclusionToCompositorTypeThrottle}}},
+            // Disable the headless check as the bots run with CHROME_HEADLESS
+            // set.
+            {features::kAlwaysTrackNativeWindowOcclusionForTest, {}},
         },
         {});
     AuraTestBase::SetUp();
   }
 
-  void TearDown() override {
-    test::AuraTestBase::TearDown();
-    NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(true);
-  }
+  void TearDown() override { test::AuraTestBase::TearDown(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -604,8 +600,6 @@ class WindowTreeHostWithThrottleAndReleaseTest : public test::AuraTestBase {
  public:
   // AuraTestBase:
   void SetUp() override {
-    // Disable the headless check as the bots run with CHROME_HEADLESS set.
-    NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(false);
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
 #if BUILDFLAG(IS_WIN)
@@ -615,15 +609,15 @@ class WindowTreeHostWithThrottleAndReleaseTest : public test::AuraTestBase {
              {{features::kApplyNativeOcclusionToCompositorType.name,
                features::
                    kApplyNativeOcclusionToCompositorTypeThrottleAndRelease}}},
+            // Disable the headless check as the bots run with CHROME_HEADLESS
+            // set.
+            {features::kAlwaysTrackNativeWindowOcclusionForTest, {}},
         },
         {});
     AuraTestBase::SetUp();
   }
 
-  void TearDown() override {
-    test::AuraTestBase::TearDown();
-    NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(true);
-  }
+  void TearDown() override { test::AuraTestBase::TearDown(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

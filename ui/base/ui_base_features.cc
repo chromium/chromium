@@ -52,6 +52,12 @@ BASE_FEATURE(kApplyNativeOcclusionToCompositor,
 #endif
 );
 
+// If enabled, native window occlusion tracking will always be used, even if
+// CHROME_HEADLESS is set.
+BASE_FEATURE(kAlwaysTrackNativeWindowOcclusionForTest,
+             "AlwaysTrackNativeWindowOcclusionForTest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Field trial param name for `kApplyNativeOcclusionToCompositor`.
 const base::FeatureParam<std::string> kApplyNativeOcclusionToCompositorType{
     &kApplyNativeOcclusionToCompositor, "type",
