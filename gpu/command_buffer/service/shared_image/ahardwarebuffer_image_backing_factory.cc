@@ -867,9 +867,10 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label,
+    bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
   return MakeBacking(mailbox, format, size, color_space, surface_origin,
-                     alpha_type, usage, std::move(debug_label), false,
+                     alpha_type, usage, std::move(debug_label), is_thread_safe,
                      pixel_data);
 }
 

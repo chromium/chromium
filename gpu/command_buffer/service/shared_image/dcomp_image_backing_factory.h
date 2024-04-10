@@ -53,6 +53,7 @@ class GPU_GLES2_EXPORT DCompImageBackingFactory
       SkAlphaType alpha_type,
       uint32_t usage,
       std::string debug_label,
+      bool is_thread_safe,
       base::span<const uint8_t> pixel_data) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,

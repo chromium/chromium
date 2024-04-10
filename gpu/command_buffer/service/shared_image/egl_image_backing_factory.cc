@@ -78,6 +78,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label,
+    bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
   return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
                              alpha_type, usage, std::move(debug_label),

@@ -195,7 +195,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     bool is_thread_safe) {
-  DCHECK(!is_thread_safe);
+  CHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
       context_state_, command_pool_.get(), mailbox, format, size, color_space,
       surface_origin, alpha_type, usage, std::move(debug_label),
@@ -212,7 +212,9 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label,
+    bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
+  CHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
       context_state_, command_pool_.get(), mailbox, format, size, color_space,
       surface_origin, alpha_type, usage, std::move(debug_label),

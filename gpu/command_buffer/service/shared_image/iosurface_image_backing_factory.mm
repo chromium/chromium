@@ -189,7 +189,7 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     bool is_thread_safe) {
-  DCHECK(!is_thread_safe);
+  CHECK(!is_thread_safe);
   return CreateSharedImageInternal(
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, std::move(debug_label), base::span<const uint8_t>());
@@ -205,7 +205,9 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label,
+    bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
+  CHECK(!is_thread_safe);
   return CreateSharedImageInternal(mailbox, format, kNullSurfaceHandle, size,
                                    color_space, surface_origin, alpha_type,
                                    usage, std::move(debug_label), pixel_data);

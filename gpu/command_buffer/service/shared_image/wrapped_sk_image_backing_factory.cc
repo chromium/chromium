@@ -106,15 +106,6 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     bool is_thread_safe) {
-  // Ensure that the backing is treated as thread safe only when DrDc is enabled
-  // for vulkan context.
-  // TODO(vikassoni): Wire |is_thread_safe| flag in remaining
-  // CreateSharedImage() factory methods also. Without this flag, backing will
-  // always be considered as thread safe when DrDc is enabled for vulkan mode
-  // even though it might be used on a single thread (RenderPass for example).
-  // That should be fine for now since we do not have/use any locks in backing.
-  DCHECK(!is_thread_safe ||
-         (context_state_->GrContextIsVulkan() && is_drdc_enabled_));
   if (use_graphite_) {
     auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
         base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
@@ -130,9 +121,7 @@ WrappedSkImageBackingFactory::CreateSharedImage(
   auto backing = std::make_unique<WrappedSkImageBacking>(
       base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, debug_label,
-      context_state_,
-      /*is_thread_safe=*/is_thread_safe &&
-          context_state_->GrContextIsVulkan() && is_drdc_enabled_);
+      context_state_, is_thread_safe);
   if (!backing->Initialize(debug_label)) {
     return nullptr;
   }
@@ -149,6 +138,7 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label,
+    bool is_thread_safe,
     base::span<const uint8_t> data) {
   if (use_graphite_) {
     auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
@@ -165,9 +155,7 @@ WrappedSkImageBackingFactory::CreateSharedImage(
   auto backing = std::make_unique<WrappedSkImageBacking>(
       base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, debug_label,
-      context_state_,
-      /*is_thread_safe=*/context_state_->GrContextIsVulkan() &&
-          is_drdc_enabled_);
+      context_state_, is_thread_safe);
   if (!backing->InitializeWithData(debug_label, data)) {
     return nullptr;
   }

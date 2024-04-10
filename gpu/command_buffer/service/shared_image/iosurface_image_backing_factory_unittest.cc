@@ -986,7 +986,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", initial_data);
+      "TestLabel", /*is_thread_safe=*/false, initial_data);
   ::testing::Mock::VerifyAndClearExpectations(&progress_reporter_);
   if (!should_succeed) {
     EXPECT_FALSE(backing);
@@ -1064,7 +1064,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataImage) {
   std::vector<uint8_t> initial_data(256 * 256 * 4);
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", initial_data);
+      "TestLabel", /*is_thread_safe=*/false, initial_data);
   if (!should_succeed) {
     EXPECT_FALSE(backing);
     return;
@@ -1128,11 +1128,11 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataWrongSize) {
   std::vector<uint8_t> initial_data_large(256 * 512 * 4);
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", initial_data_small);
+      "TestLabel", /*is_thread_safe=*/false, initial_data_small);
   EXPECT_FALSE(backing);
   backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", initial_data_large);
+      "TestLabel", /*is_thread_safe=*/false, initial_data_large);
   EXPECT_FALSE(backing);
 }
 
@@ -1166,7 +1166,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest,
   std::vector<uint8_t> initial_data(256 * 256 * 4);
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", initial_data);
+      "TestLabel", /*is_thread_safe=*/false, initial_data);
   EXPECT_FALSE(backing);
 }
 

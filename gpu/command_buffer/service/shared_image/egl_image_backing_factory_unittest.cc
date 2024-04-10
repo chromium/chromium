@@ -447,7 +447,7 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
-      /* is_thread_safe=*/true);
+      /*is_thread_safe=*/true);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -536,7 +536,8 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
 
     auto backing = backing_factory_->CreateSharedImage(
         mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, usage, "Dawn_SampledTexture", pixel_data);
+        kPremul_SkAlphaType, usage, "Dawn_SampledTexture",
+        /*is_thread_safe=*/true, pixel_data);
     ASSERT_NE(backing, nullptr);
 
     std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -687,7 +688,7 @@ CreateAndValidateSharedImageRepresentations::
         viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size_, format));
     backing_ = backing_factory->CreateSharedImage(
         mailbox_, format, size_, color_space, surface_origin, alpha_type, usage,
-        "TestLabel", initial_data);
+        "TestLabel", /*is_thread_safe=*/true, initial_data);
   } else {
     backing_ = backing_factory->CreateSharedImage(
         mailbox_, format, surface_handle, size_, color_space, surface_origin,

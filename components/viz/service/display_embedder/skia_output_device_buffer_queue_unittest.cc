@@ -182,6 +182,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       SkAlphaType alpha_type,
       uint32_t usage,
       std::string debug_label,
+      bool is_thread_safe,
       base::span<const uint8_t> pixel_data) override {
     auto result = std::make_unique<gpu::TestImageBacking>(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,

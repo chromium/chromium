@@ -579,9 +579,9 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  auto backing = factory->CreateSharedImage(mailbox, format, size, color_space,
-                                            surface_origin, alpha_type, usage,
-                                            std::move(debug_label), data);
+  auto backing = factory->CreateSharedImage(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label), IsSharedBetweenThreads(usage), data);
   if (backing) {
     DVLOG(1) << "CreateSharedImagePixels[" << backing->GetName()
              << "] with pixels size=" << size.ToString()
