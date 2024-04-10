@@ -174,7 +174,12 @@ def __rewrite_rewrapper(ctx, cmd, use_large = False):
     if not rwcfg:
         fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
     if use_large:
-        if "platform" in rwcfg:
+        platform = rwcfg.get("platform", {})
+        if platform.get("OSFamily") == "Windows":
+            # Since there is no large Windows workers, it needs to run locally.
+            ctx.actions.fix(args = args)
+            return
+        if platform:
             action_key = None
             for key in rwcfg["platform"]:
                 if key.startswith("label:action_"):
