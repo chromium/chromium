@@ -877,7 +877,7 @@ const base::FeatureParam<std::string> kDeprecateUnloadAllowlist{
 // against MojoJS bindings being enabled via a data-only attack.
 BASE_FEATURE(kEnableMojoJSProtectedMemory,
              "EnableMojoJSProtectedMemory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable reporting the modal dialog start time as an alternative end time for
 // duration measurement in performance event timing.
