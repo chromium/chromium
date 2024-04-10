@@ -802,6 +802,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.EstablishGpuChannelSyncRetry" enum="BooleanSuccess"
+    expires_after="2024-10-03">
+  <owner>fangzhoug@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records the result of retrying EstableGpuChannelSync in Chrome OS. Logged
+    every time when a EstableGpuChannel fails on Chrome OS.
+  </summary>
+</histogram>
+
 <histogram name="GPU.EstablishGpuChannelSyncTime" units="ms"
     expires_after="2024-09-01">
   <owner>cduvall@chromium.org</owner>

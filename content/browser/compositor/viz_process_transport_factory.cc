@@ -12,7 +12,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
@@ -483,12 +485,18 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
   DCHECK(!is_gpu_compositing_disabled_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Chrome OS can't fallback to software compositing so retry up to 4 more
-  // times to initialize the GPU channel.
-  constexpr int kNumRetriesEstablishChannel = 4;
-  for (int i = 0; i < kNumRetriesEstablishChannel && !gpu_channel_host; i++) {
-    gpu_channel_host =
-        gpu_channel_establish_factory_->EstablishGpuChannelSync();
+  if (!gpu_channel_host) {
+    // Chrome OS can't fallback to software compositing so retry up to 10
+    // seconds to initialize the GPU channel.
+    constexpr auto kRetryTimeout = base::Seconds(10);
+    base::TimeTicks begin = base::TimeTicks::Now();
+    while (base::TimeTicks::Now() - begin < kRetryTimeout &&
+           !gpu_channel_host) {
+      gpu_channel_host =
+          gpu_channel_establish_factory_->EstablishGpuChannelSync();
+    }
+    UMA_HISTOGRAM_BOOLEAN("GPU.EstablishGpuChannelSyncRetry",
+                          !!gpu_channel_host);
   }
 #endif
 
