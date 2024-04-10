@@ -443,14 +443,8 @@ bool HasMachineLevelPolicies() {
       startFetchingRestrictionCapabilityWithCallback:base::BindOnce(^(
                                                          bool capability) {
         // The capability value is ignored.
-        [weakSelf clearCapabilitiesFetcher];
         [weakSelf continueSignin];
       })];
-}
-
-- (void)clearCapabilitiesFetcher {
-  [_capabilitiesFetcher shutdown];
-  _capabilitiesFetcher = nil;
 }
 
 - (void)completeSignInWithSuccess:(BOOL)success {
