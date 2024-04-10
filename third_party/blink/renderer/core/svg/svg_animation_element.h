@@ -90,10 +90,7 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
-  virtual void UpdateAnimationMode();
-  void SetAnimationMode(AnimationMode animation_mode) {
-    animation_mode_ = animation_mode;
-  }
+  virtual AnimationMode CalculateAnimationMode();
   AnimationMode GetAnimationMode() const { return animation_mode_; }
   void SetCalcMode(CalcMode calc_mode) {
     use_paced_key_times_ = false;
@@ -162,6 +159,9 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   unsigned CalculateKeyTimesIndex(float percent) const;
 
   void SetCalcMode(const AtomicString&);
+  void SetAnimationMode(AnimationMode animation_mode) {
+    animation_mode_ = animation_mode;
+  }
 
   enum class AnimationValidity : unsigned char {
     kUnknown,

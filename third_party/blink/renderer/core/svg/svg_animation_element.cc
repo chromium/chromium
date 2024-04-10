@@ -178,7 +178,6 @@ void SVGAnimationElement::ParseAttribute(
       ReportAttributeParsingError(SVGParseStatus::kParsingFailed, name,
                                   params.new_value);
     }
-    UpdateAnimationMode();
     AnimationAttributeChanged();
     return;
   }
@@ -222,7 +221,6 @@ void SVGAnimationElement::ParseAttribute(
 
   if (name == svg_names::kFromAttr || name == svg_names::kToAttr ||
       name == svg_names::kByAttr) {
-    UpdateAnimationMode();
     AnimationAttributeChanged();
     return;
   }
@@ -301,16 +299,18 @@ void SVGAnimationElement::endElementAt(float offset) {
                            SMILTimeOrigin::kScript);
 }
 
-void SVGAnimationElement::UpdateAnimationMode() {
+AnimationMode SVGAnimationElement::CalculateAnimationMode() {
   // http://www.w3.org/TR/2001/REC-smil-animation-20010904/#AnimFuncValues
-  if (hasAttribute(svg_names::kValuesAttr))
-    SetAnimationMode(kValuesAnimation);
-  else if (!ToValue().empty())
-    SetAnimationMode(FromValue().empty() ? kToAnimation : kFromToAnimation);
-  else if (!ByValue().empty())
-    SetAnimationMode(FromValue().empty() ? kByAnimation : kFromByAnimation);
-  else
-    SetAnimationMode(kNoAnimation);
+  if (hasAttribute(svg_names::kValuesAttr)) {
+    return kValuesAnimation;
+  }
+  if (!ToValue().empty()) {
+    return FromValue().empty() ? kToAnimation : kFromToAnimation;
+  }
+  if (!ByValue().empty()) {
+    return FromValue().empty() ? kByAnimation : kFromByAnimation;
+  }
+  return kNoAnimation;
 }
 
 void SVGAnimationElement::SetCalcMode(const AtomicString& calc_mode) {
@@ -587,7 +587,8 @@ bool SVGAnimationElement::CheckAnimationParameters() {
   if (!IsValid() || !HasValidTarget())
     return false;
 
-  AnimationMode animation_mode = GetAnimationMode();
+  const AnimationMode animation_mode = CalculateAnimationMode();
+  SetAnimationMode(animation_mode);
   if (animation_mode == kNoAnimation)
     return false;
 

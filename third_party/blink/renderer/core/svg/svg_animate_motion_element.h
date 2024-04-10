@@ -33,7 +33,7 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   explicit SVGAnimateMotionElement(Document&);
   ~SVGAnimateMotionElement() override;
 
-  void UpdateAnimationPath();
+  void ChildMPathChanged();
 
  private:
   bool HasValidAnimation() const override;
@@ -60,7 +60,8 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   enum RotateMode { kRotateAngle, kRotateAuto, kRotateAutoReverse };
   RotateMode GetRotateMode() const;
 
-  void UpdateAnimationMode() override;
+  AnimationMode CalculateAnimationMode() override;
+  void UpdateAnimationPath();
 
   // Note: we do not support percentage values for to/from coords as the spec
   // implies we should (opera doesn't either)

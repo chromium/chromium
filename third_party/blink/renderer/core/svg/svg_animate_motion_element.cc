@@ -85,12 +85,16 @@ void SVGAnimateMotionElement::DidChangeAnimationTarget() {
   SVGAnimationElement::DidChangeAnimationTarget();
 }
 
+void SVGAnimateMotionElement::ChildMPathChanged() {
+  AnimationAttributeChanged();
+}
+
 void SVGAnimateMotionElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == svg_names::kPathAttr) {
     path_ = Path();
     BuildPathFromString(params.new_value, path_);
-    UpdateAnimationPath();
+    AnimationAttributeChanged();
     return;
   }
 
@@ -111,21 +115,17 @@ SVGAnimateMotionElement::RotateMode SVGAnimateMotionElement::GetRotateMode()
 
 void SVGAnimateMotionElement::UpdateAnimationPath() {
   animation_path_ = Path();
-  bool found_m_path = false;
 
   for (SVGMPathElement* mpath = Traversal<SVGMPathElement>::FirstChild(*this);
        mpath; mpath = Traversal<SVGMPathElement>::NextSibling(*mpath)) {
     if (SVGPathElement* path_element = mpath->PathElement()) {
       animation_path_ = path_element->AttributePath();
-      found_m_path = true;
-      break;
+      return;
     }
   }
 
-  if (!found_m_path && FastHasAttribute(svg_names::kPathAttr))
+  if (FastHasAttribute(svg_names::kPathAttr))
     animation_path_ = path_;
-
-  UpdateAnimationMode();
 }
 
 template <typename CharType>
@@ -276,11 +276,13 @@ float SVGAnimateMotionElement::CalculateDistance(const String& from_string,
   return (to - from).Length();
 }
 
-void SVGAnimateMotionElement::UpdateAnimationMode() {
-  if (!animation_path_.IsEmpty())
-    SetAnimationMode(kPathAnimation);
-  else
-    SVGAnimationElement::UpdateAnimationMode();
+AnimationMode SVGAnimateMotionElement::CalculateAnimationMode() {
+  UpdateAnimationPath();
+
+  if (!animation_path_.IsEmpty()) {
+    return kPathAnimation;
+  }
+  return SVGAnimationElement::CalculateAnimationMode();
 }
 
 }  // namespace blink

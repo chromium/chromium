@@ -25,13 +25,12 @@
 namespace blink {
 
 SVGSetElement::SVGSetElement(Document& document)
-    : SVGAnimateElement(svg_names::kSetTag, document) {
-  SetAnimationMode(kToAnimation);
-}
+    : SVGAnimateElement(svg_names::kSetTag, document) {}
 
-void SVGSetElement::UpdateAnimationMode() {
-  // No-op, as <set> has a constant animation mode of ToAnimation.
+AnimationMode SVGSetElement::CalculateAnimationMode() {
+  // <set> has a constant animation mode of ToAnimation.
   // See: http://www.w3.org/TR/SVG/single-page.html#animate-SetElement
+  return kToAnimation;
 }
 
 }  // namespace blink
