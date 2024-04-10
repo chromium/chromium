@@ -5,7 +5,7 @@
 import 'chrome://history/strings.m.js';
 import 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 
-import type {HistoryEmbeddingsFilterChips} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
+import type {HistoryEmbeddingsFilterChips, Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -16,9 +16,9 @@ suite('cr-history-embeddings-filter-chips', () => {
 
   setup(() => {
     loadTimeData.overrideValues({
-      historyEmbeddingsSuggestion1: 'suggestion 1',
-      historyEmbeddingsSuggestion2: 'suggestion 2',
-      historyEmbeddingsSuggestion3: 'suggestion 3',
+      historyEmbeddingsSuggestion1: 'yesterday',
+      historyEmbeddingsSuggestion2: 'last 7 days',
+      historyEmbeddingsSuggestion3: 'last 30 days',
     });
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -54,29 +54,9 @@ suite('cr-history-embeddings-filter-chips', () => {
     assertFalse(notifyEvent.detail.value);
   });
 
-  test('UpdatesSuggestionsOnBinding', () => {
-    function getSelectedChips() {
-      return element.shadowRoot!.querySelectorAll(
-          '#suggestions cr-chip[selected]');
-    }
-    assertEquals(0, getSelectedChips().length);
-
-    ['suggestion 1', 'suggestion 2', 'suggestion 3'].forEach(suggestion => {
-      // Update the search query binding with each suggestion's text should
-      // mark that suggestion as selected.
-      element.selectedSuggestion = suggestion;
-      const selectedChips = getSelectedChips();
-      assertEquals(1, selectedChips.length);
-      assertEquals(suggestion, selectedChips[0]!.textContent!.trim());
-    });
-
-    element.selectedSuggestion = undefined;
-    assertEquals(0, getSelectedChips().length);
-  });
-
   test('SelectingSuggestionsDispatchesEvents', async () => {
     async function clickChipAndGetSelectedSuggestion(chip: HTMLElement):
-        Promise<string> {
+        Promise<Suggestion> {
       const eventPromise =
           eventToPromise('selected-suggestion-changed', element);
       chip.click();
@@ -84,29 +64,39 @@ suite('cr-history-embeddings-filter-chips', () => {
       return event.detail.value;
     }
 
+    function assertDaysFromToday(days: number, date: Date) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const dateDiff = today.getTime() - date.getTime();
+      assertEquals(days, Math.round(dateDiff / 1000 / 60 / 60 / 24));
+    }
+
     const suggestions = element.shadowRoot!.querySelectorAll<HTMLElement>(
         '#suggestions cr-chip');
-    assertEquals(
-        'suggestion 1',
-        await clickChipAndGetSelectedSuggestion(suggestions[0]!));
-    assertEquals(
-        'suggestion 2',
-        await clickChipAndGetSelectedSuggestion(suggestions[1]!));
-    assertEquals(
-        'suggestion 3',
-        await clickChipAndGetSelectedSuggestion(suggestions[2]!));
+    const yesterday = await clickChipAndGetSelectedSuggestion(suggestions[0]!);
+    assertEquals('yesterday', yesterday.label);
+    assertDaysFromToday(1, yesterday.timeRangeStart);
+    const last7Days = await clickChipAndGetSelectedSuggestion(suggestions[1]!);
+    assertEquals('last 7 days', last7Days.label);
+    assertDaysFromToday(7, last7Days.timeRangeStart);
+    const last30Days = await clickChipAndGetSelectedSuggestion(suggestions[2]!);
+    assertEquals('last 30 days', last30Days.label);
+    assertDaysFromToday(30, last30Days.timeRangeStart);
   });
 
   test('UnselectingSuggestionsDispatchesEvent', async () => {
-    element.selectedSuggestion = 'suggestion 1';
-    const selectedChip = element.shadowRoot!.querySelector<HTMLElement>(
-        '#suggestions cr-chip[selected]');
-    assertTrue(!!selectedChip);
-    assertEquals('suggestion 1', selectedChip.textContent!.trim());
+    const firstChip =
+        element.shadowRoot!.querySelector<HTMLElement>('#suggestions cr-chip')!;
+    const selectPromise =
+        eventToPromise('selected-suggestion-changed', element);
+    firstChip.click();
+    const selectEvent = await selectPromise;
+    assertEquals('yesterday', selectEvent.detail.value.label);
 
-    const eventPromise = eventToPromise('selected-suggestion-changed', element);
-    selectedChip.click();
-    const event = await eventPromise;
-    assertEquals(undefined, event.detail.value);
+    const unselectPromise =
+        eventToPromise('selected-suggestion-changed', element);
+    firstChip.click();
+    const unselectEvent = await unselectPromise;
+    assertEquals(undefined, unselectEvent.detail.value);
   });
 });

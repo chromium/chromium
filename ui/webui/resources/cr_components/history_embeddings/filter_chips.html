@@ -18,6 +18,10 @@ hr {
   display: flex;
   gap: 8px;
 }
+
+.suggestion-label {
+  text-transform: lowercase;
+}
 </style>
 
 <cr-chip id="byGroupChip" selected$="[[showResultsByGroup]]"
@@ -34,7 +38,7 @@ hr {
   <template is="dom-repeat" items="[[suggestions_]]">
     <cr-chip on-click="onSuggestionClick_"
         selected$="[[isSuggestionSelected_(item, selectedSuggestion)]]">
-      [[item]]
+      <span class="suggestion-label">[[item.label]]</span>
     </cr-chip>
   </template>
 </div>

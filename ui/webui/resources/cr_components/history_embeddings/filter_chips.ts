@@ -15,6 +15,38 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 
 import {getTemplate} from './filter_chips.html.js';
 
+export interface Suggestion {
+  label: string;
+  timeRangeStart: Date;
+}
+
+function generateSuggestions(): Suggestion[] {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(0, 0, 0, 0);
+  const last7Days = new Date();
+  last7Days.setDate(last7Days.getDate() - 7);
+  last7Days.setHours(0, 0, 0, 0);
+  const last30Days = new Date();
+  last30Days.setDate(last30Days.getDate() - 30);
+  last30Days.setHours(0, 0, 0, 0);
+
+  return [
+    {
+      label: loadTimeData.getString('historyEmbeddingsSuggestion1'),
+      timeRangeStart: yesterday,
+    },
+    {
+      label: loadTimeData.getString('historyEmbeddingsSuggestion2'),
+      timeRangeStart: last7Days,
+    },
+    {
+      label: loadTimeData.getString('historyEmbeddingsSuggestion3'),
+      timeRangeStart: last30Days,
+    },
+  ];
+}
+
 export interface HistoryEmbeddingsFilterChips {
   $: {
     byGroupChip: HTMLElement,
@@ -43,29 +75,21 @@ export class HistoryEmbeddingsFilterChips extends PolymerElement {
       },
       suggestions_: {
         type: Array,
-        value: () => {
-          return [
-            loadTimeData.getString('historyEmbeddingsSuggestion1')
-                .toLowerCase(),
-            loadTimeData.getString('historyEmbeddingsSuggestion2')
-                .toLowerCase(),
-            loadTimeData.getString('historyEmbeddingsSuggestion3')
-                .toLowerCase(),
-          ];
-        },
+        value: () => generateSuggestions(),
       },
     };
   }
 
-  selectedSuggestion?: string;
+  selectedSuggestion?: Suggestion;
   showResultsByGroup: boolean;
-  private suggestions_: string[];
+  private suggestions_: Suggestion[];
+  timeRangeStart?: Date;
 
   private getByGroupIcon_(): string {
     return this.showResultsByGroup ? 'cr:check' : 'history-embeddings:by-group';
   }
 
-  private isSuggestionSelected_(suggestion: string): boolean {
+  private isSuggestionSelected_(suggestion: Suggestion): boolean {
     return this.selectedSuggestion === suggestion;
   }
 
@@ -73,7 +97,7 @@ export class HistoryEmbeddingsFilterChips extends PolymerElement {
     this.showResultsByGroup = !this.showResultsByGroup;
   }
 
-  private onSuggestionClick_(e: DomRepeatEvent<string>) {
+  private onSuggestionClick_(e: DomRepeatEvent<Suggestion>) {
     const clickedSuggestion = e.model.item;
     if (this.isSuggestionSelected_(clickedSuggestion)) {
       this.selectedSuggestion = undefined;

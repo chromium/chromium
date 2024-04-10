@@ -19,6 +19,7 @@ import './shared_style.css.js';
 import './side_bar.js';
 import './strings.m.js';
 
+import type {Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
@@ -268,6 +269,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private toolbarShadow_: boolean;
   private historyClustersViewStartTime_: Date|null = null;
   private scrollTarget_: HTMLElement;
+  private timeRangeStart_?: Date;
 
   constructor() {
     super();
@@ -656,6 +658,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
     return this.queryState_.searchTerm.split(' ')
                .filter(part => part.length > 0)
                .length > 1;
+  }
+
+  private onSelectedSuggestionChanged_(e: CustomEvent<{value: Suggestion}>) {
+    this.timeRangeStart_ = e.detail.value?.timeRangeStart;
   }
 }
 

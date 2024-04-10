@@ -136,12 +136,14 @@
                 <cr-history-embeddings-filter-chips
                     show-results-by-group="[[
                         getShowResultsByGroup_(selectedPage_)]]"
-                    on-show-results-by-group-changed="onShowResultsByGroupChanged_">
+                    on-show-results-by-group-changed="onShowResultsByGroupChanged_"
+                    on-selected-suggestion-changed="onSelectedSuggestionChanged_">
                 </cr-history-embeddings-filter-chips>
                 <template is="dom-if" restamp
                     if="[[shouldShowHistoryEmbeddings_(queryState_.searchTerm)]]">
                   <cr-history-embeddings
-                      search-query="[[queryState_.searchTerm]]">
+                      search-query="[[queryState_.searchTerm]]"
+                      time-range-start="[[timeRangeStart_]]">
                   </cr-history-embeddings>
                 </template>
               </div>
