@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/win/midl.gni")
 import("//chrome/process_version_rc_template.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 midl("elevation_service_idl") {
@@ -156,4 +157,15 @@ test("elevation_service_unittests") {
     ":elevation_service",
     ":elevation_service_unittests_files",
   ]
+}
+
+fuzzer_test("caller_validation_fuzzer") {
+  deps = [
+    ":lib",
+    "//base",
+  ]
+
+  dict = "fuzz.dict"
+
+  sources = [ "caller_validation_fuzzer.cc" ]
 }
