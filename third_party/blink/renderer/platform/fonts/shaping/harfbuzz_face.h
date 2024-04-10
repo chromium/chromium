@@ -36,6 +36,8 @@
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
@@ -50,7 +52,8 @@ struct HarfBuzzFontData;
 
 // |HarfBuzzFace| is a thread specific data associated to |FontPlatformData|,
 // hold by |HarfBuzzFontCache|.
-class HarfBuzzFace final : public GarbageCollected<HarfBuzzFace> {
+class PLATFORM_EXPORT HarfBuzzFace final
+    : public GarbageCollected<HarfBuzzFace> {
  public:
   HarfBuzzFace(const FontPlatformData* platform_data, uint64_t);
   HarfBuzzFace(const HarfBuzzFace&) = delete;
@@ -79,11 +82,23 @@ class HarfBuzzFace final : public GarbageCollected<HarfBuzzFace> {
   unsigned UnitsPerEmFromHeadTable();
   Glyph HbGlyphForCharacter(UChar32 character);
 
+  hb_codepoint_t HarfBuzzGetGlyphForTesting(UChar32 character,
+                                            UChar32 variation_selector);
+
   bool ShouldSubpixelPosition();
 
   const OpenTypeVerticalData& VerticalData() const;
 
   static void Init();
+
+  static bool GetIgnoreVariationSelectors() {
+    return ignore_variation_selectors_;
+  }
+
+  static void SetIgnoreVariationSelectors(bool value) {
+    DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled() || value);
+    ignore_variation_selectors_ = value;
+  }
 
  private:
 
@@ -91,7 +106,11 @@ class HarfBuzzFace final : public GarbageCollected<HarfBuzzFace> {
 
   Member<const FontPlatformData> platform_data_;
   Member<HarfBuzzFontData> harfbuzz_font_data_;
+  static bool ignore_variation_selectors_;
 };
+
+inline constexpr hb_codepoint_t kUnmatchedVSGlyphId =
+    static_cast<hb_codepoint_t>(-1);
 
 }  // namespace blink
 

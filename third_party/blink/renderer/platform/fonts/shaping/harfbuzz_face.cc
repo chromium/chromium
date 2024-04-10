@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
 #include "third_party/blink/renderer/platform/resolution_units.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -73,6 +74,8 @@ void HarfBuzzFace::Trace(Visitor* visitor) const {
   visitor->Trace(platform_data_);
   visitor->Trace(harfbuzz_font_data_);
 }
+
+bool HarfBuzzFace::ignore_variation_selectors_ = false;
 
 static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
                                   void* font_data,
@@ -100,8 +103,38 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
     unicode = kSpaceCharacter;
   }
 
-  hb_bool_t hb_has_glyph = hb_font_get_glyph(
+  // Variation sequences are a special case because we want to distinguish
+  // between the cases when we found a glyph for the whole variation sequence in
+  // cmap format 14 subtable and when we found only a base character of the
+  // variation sequence. In the latter case we set the glyph value to
+  // `kUnmatchedVSGlyphId`.
+  bool consider_variation_selector =
+      RuntimeEnabledFeatures::FontVariationSequencesEnabled() &&
+      !HarfBuzzFace::GetIgnoreVariationSelectors() &&
+      Character::IsVariationSequence(unicode, variation_selector);
+
+  if (consider_variation_selector) {
+    hb_bool_t hb_has_vs_glyph = hb_font_get_variation_glyph(
+        hb_font_get_parent(hb_font), unicode, variation_selector, glyph);
+    if (hb_has_vs_glyph) {
+      // Found a glyph for variation sequence, no need to look for a base
+      // character, can just return.
+      return true;
+    }
+    // Unable to find a glyph for variation sequence, now we need to look for a
+    // glyph for the base character from variation sequence.
+    variation_selector = 0;
+  }
+
+  hb_bool_t hb_has_base_glyph = hb_font_get_glyph(
       hb_font_get_parent(hb_font), unicode, variation_selector, glyph);
+
+  if (consider_variation_selector && hb_has_base_glyph) {
+    // Unable to find a glyph for variation sequence, but found a glyph for
+    // the base character from variation sequence ignoring variation selector.
+    *glyph = kUnmatchedVSGlyphId;
+  }
+
 // MacOS CoreText API synthesizes GlyphID for several unicode codepoints,
 // for example, hyphens and separators for some fonts. HarfBuzz does not
 // synthesize such glyphs, and as it's not found from the last resort font, we
@@ -111,7 +144,7 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
 // For performance reasons, we limit this fallback lookup to the specific
 // missing glyphs for hyphens and only to Mac OS, where we're facing this issue.
 #if BUILDFLAG(IS_APPLE)
-  if (!hb_has_glyph) {
+  if (!hb_has_base_glyph) {
     SkTypeface* typeface = hb_font_data->font_.getTypeface();
     if (!typeface) {
       return false;
@@ -123,7 +156,7 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
     }
   }
 #endif
-  return hb_has_glyph;
+  return hb_has_base_glyph;
 }
 
 static hb_bool_t HarfBuzzGetNominalGlyph(hb_font_t* hb_font,
@@ -290,6 +323,17 @@ Glyph HarfBuzzFace::HbGlyphForCharacter(UChar32 character) {
   hb_codepoint_t glyph = 0;
   HarfBuzzGetNominalGlyph(harfbuzz_font_data_->unscaled_font_.get(),
                           harfbuzz_font_data_, character, &glyph, nullptr);
+  return glyph;
+}
+
+hb_codepoint_t HarfBuzzFace::HarfBuzzGetGlyphForTesting(
+    UChar32 character,
+    UChar32 variation_selector) {
+  DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled());
+  hb_codepoint_t glyph = 0;
+  HarfBuzzGetGlyph(harfbuzz_font_data_->unscaled_font_.get(),
+                   harfbuzz_font_data_, character, variation_selector, &glyph,
+                   nullptr);
   return glyph;
 }
 
