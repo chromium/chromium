@@ -1243,7 +1243,7 @@ deps = {
   },
 
   'src/third_party/fp16/src':
-    Var('chromium_git') + '/external/github.com/Maratyszcza/FP16.git' + '@' + '0a92994d729ff76a58f692d3028ca1b64b145d91',
+    Var('chromium_git') + '/external/github.com/Maratyszcza/FP16.git' + '@' + '581ac1c79dd9d9f6f4e8b2934e7a55c7becf0799',
 
   'src/third_party/gemmlowp/src':
     Var('chromium_git') + '/external/github.com/google/gemmlowp.git' + '@' + '13d57703abca3005d97b19df1f2db731607a7dc2',
