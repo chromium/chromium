@@ -948,6 +948,10 @@ extern const char kTabGridNewTransitionsDescription[];
 extern const char kTabGroupsInGridName[];
 extern const char kTabGroupsInGridDescription[];
 
+// Title and description for the tab groups on iPad feature.
+extern const char kTabGroupsIPadName[];
+extern const char kTabGroupsIPadDescription[];
+
 // Title and description for the flag to determine tab inactivity in the
 // TabGrid.
 extern const char kTabInactivityThresholdName[];

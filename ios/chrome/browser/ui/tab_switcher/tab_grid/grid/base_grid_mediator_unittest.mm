@@ -493,7 +493,7 @@ TEST_P(BaseGridMediatorTest, NoToolbarUpdateNotSelected) {
 // should be presented, the others would be disabled.
 TEST_P(BaseGridMediatorTest, NTPSelectedWithoutGroup) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kTabGroupsInGrid);
+  scoped_feature_list.InitWithFeatures({kTabGroupsInGrid, kTabGroupsIPad}, {});
 
   ASSERT_EQ(3UL, consumer_.items.size());
   browser_->GetWebStateList()->InsertWebState(
@@ -551,7 +551,7 @@ TEST_P(BaseGridMediatorTest, NTPSelectedWithoutGroup) {
 // Tests selecting a tab with one existing group.
 TEST_P(BaseGridMediatorTest, SelectedTabWithGroup) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kTabGroupsInGrid);
+  scoped_feature_list.InitWithFeatures({kTabGroupsInGrid, kTabGroupsIPad}, {});
 
   EXPECT_EQ(3UL, consumer_.items.size());
 
@@ -615,7 +615,7 @@ TEST_P(BaseGridMediatorTest, SelectedTabWithGroup) {
 // Tests selecting a tab and a group with one existing group.
 TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kTabGroupsInGrid);
+  scoped_feature_list.InitWithFeatures({kTabGroupsInGrid, kTabGroupsIPad}, {});
 
   EXPECT_EQ(3UL, consumer_.items.size());
 

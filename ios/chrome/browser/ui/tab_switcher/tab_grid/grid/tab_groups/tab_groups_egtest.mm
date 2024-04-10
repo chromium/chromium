@@ -24,6 +24,7 @@
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kTabGroupsInGrid);
+  config.features_enabled.push_back(kTabGroupsIPad);
   return config;
 }
 

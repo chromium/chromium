@@ -36,7 +36,7 @@ class TabGroupCoordinatorFakeWebStateListDelegate
 class TabGroupCoordinatorTest : public PlatformTest {
  protected:
   TabGroupCoordinatorTest() {
-    feature_list_.InitWithFeatures({kTabGroupsInGrid}, {});
+    feature_list_.InitWithFeatures({kTabGroupsInGrid, kTabGroupsIPad}, {});
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(
         browser_state_.get(),

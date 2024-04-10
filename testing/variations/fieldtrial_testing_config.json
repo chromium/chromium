@@ -9826,6 +9826,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "TabGroupsIPad",
                         "TabGroupsInGrid"
                     ]
                 }

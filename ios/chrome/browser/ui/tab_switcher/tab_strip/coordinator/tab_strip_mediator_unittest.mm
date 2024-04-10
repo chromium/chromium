@@ -243,7 +243,7 @@
 class TabStripMediatorTest : public PlatformTest {
  public:
   TabStripMediatorTest() {
-    feature_list_.InitWithFeatures({kTabGroupsInGrid}, {});
+    feature_list_.InitWithFeatures({kTabGroupsInGrid, kTabGroupsIPad}, {});
     TestChromeBrowserState::Builder browser_state_builder;
     browser_state_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),

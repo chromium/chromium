@@ -1374,7 +1374,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)editTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to edit a tab group outside the Tab Groups "
          "experiment.";
 
@@ -1398,7 +1398,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)closeTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to close a tab group outside the Tab Groups "
          "experiment.";
   if (incognito) {
@@ -1410,7 +1410,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)ungroupTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to ungroup a tab group outside the Tab Groups "
          "experiment.";
   if (incognito) {

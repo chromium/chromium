@@ -394,7 +394,7 @@ TEST_F(ActionFactoryTest, SelectTabsAction) {
 // Tests that the add to new group action has the right title and image when in
 // a submenu.
 TEST_F(ActionFactoryTest, AddTabsToNewGroupInSubmenuAction) {
-  feature_list_.InitAndEnableFeature(kTabGroupsInGrid);
+  feature_list_.InitWithFeatures({kTabGroupsInGrid, kTabGroupsIPad}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -415,7 +415,7 @@ TEST_F(ActionFactoryTest, AddTabsToNewGroupInSubmenuAction) {
 // Tests that the add to new group action has the right title and image when
 // *not* in a submenu.
 TEST_F(ActionFactoryTest, AddTabsToNewGroupOutOfMenuAction) {
-  feature_list_.InitAndEnableFeature(kTabGroupsInGrid);
+  feature_list_.InitWithFeatures({kTabGroupsInGrid, kTabGroupsIPad}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -436,7 +436,7 @@ TEST_F(ActionFactoryTest, AddTabsToNewGroupOutOfMenuAction) {
 // Tests the different sub elements of the menu when adding to a group with
 // different groups available.
 TEST_F(ActionFactoryTest, AddTabsToGroupSeveralGroups) {
-  feature_list_.InitAndEnableFeature(kTabGroupsInGrid);
+  feature_list_.InitWithFeatures({kTabGroupsInGrid, kTabGroupsIPad}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -484,7 +484,7 @@ TEST_F(ActionFactoryTest, AddTabsToGroupSeveralGroups) {
 // Tests the different sub elements of the menu when adding to a group with no
 // group available.
 TEST_F(ActionFactoryTest, AddTabsToGroupNoGroups) {
-  feature_list_.InitAndEnableFeature(kTabGroupsInGrid);
+  feature_list_.InitWithFeatures({kTabGroupsInGrid, kTabGroupsIPad}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 

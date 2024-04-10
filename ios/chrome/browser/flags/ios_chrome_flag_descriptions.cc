@@ -1075,6 +1075,11 @@ const char kTabGroupsInGridName[] = "Enable Tab Groups in grid";
 const char kTabGroupsInGridDescription[] =
     "When enabled, tab groups can be created from the grid.";
 
+const char kTabGroupsIPadName[] = "Enable Tab Groups on iPad";
+const char kTabGroupsIPadDescription[] =
+    "When enabled, if tab-groups-in-grid is enabled, tab group can be created "
+    "on iPad.";
+
 const char kTabInactivityThresholdName[] = "Change Tab inactivity threshold";
 const char kTabInactivityThresholdDescription[] =
     "When enabled, the tabs older than the threshold are considered inactive "
