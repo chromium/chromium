@@ -494,12 +494,15 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
         // has text after |start_offset_|.
         DCHECK_GE(static_cast<unsigned>(next_break), start_offset_);
         next_break = break_iterator->following(next_break - start_offset_);
-        if (next_break >= 0) {
-          next_break = next_break + start_offset_;
-          if (UNLIKELY(disable_soft_hyphen_) && next_break > 0 &&
-              UNLIKELY(str[next_break - 1] == kSoftHyphenCharacter)) {
-            continue;
-          }
+        if (UNLIKELY(next_break < 0)) {
+          DCHECK_EQ(next_break, icu::BreakIterator::DONE);
+          next_break = len;
+          break;
+        }
+        next_break = next_break + start_offset_;
+        if (UNLIKELY(disable_soft_hyphen_) && next_break > 0 &&
+            UNLIKELY(str[next_break - 1] == kSoftHyphenCharacter)) {
+          continue;
         }
         break;
       }
