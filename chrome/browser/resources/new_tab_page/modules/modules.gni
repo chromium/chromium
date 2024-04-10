@@ -8,6 +8,7 @@ import("./feed/feed.gni")
 import("./history_clusters/history_clusters.gni")
 import("./photos/photos.gni")
 import("./recipes/recipes.gni")
+import("./v2/calendar/calendar.gni")
 import("./v2/file_suggestion/file_suggestion.gni")
 import("./v2/history_clusters/history_clusters.gni")
 import("./v2/tab_resumption/tab_resumption.gni")
@@ -41,10 +42,10 @@ modules_web_component_files =
       "modules/module_wrapper.ts",
       "modules/v2/module_header.ts",
       "modules/v2/modules.ts",
-    ] + cart_web_component_files + drive_web_component_files +
-    file_suggestion_v2_web_component_files + feed_web_component_files +
-    photos_web_component_files + recipes_web_component_files +
-    history_clusters_web_component_files +
+    ] + calendar_v2_web_component_files + cart_web_component_files +
+    drive_web_component_files + feed_web_component_files +
+    file_suggestion_v2_web_component_files + photos_web_component_files +
+    recipes_web_component_files + history_clusters_web_component_files +
     history_clusters_v2_web_component_files +
     tab_resumption_v2_web_component_files
 

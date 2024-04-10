@@ -258,7 +258,7 @@ BASE_FEATURE(kNtpOneGoogleBar,
 
 // If enabled, outlook calendar module will be shown.
 BASE_FEATURE(kNtpOutlookCalendarModule,
-             "NtpCalendarModule",
+             "NtpOutlookCalendarModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, Google Photos module will be shown.

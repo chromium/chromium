@@ -126,6 +126,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, PhotosModule) {
 }
 #endif  // !defined(OFFICIAL_BUILD)
 
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarModule) {
+  RunTest("new_tab_page/modules/v2/calendar/module_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DriveModule) {
   RunTest("new_tab_page/modules/drive/module_test.js", "mocha.run()");
 }

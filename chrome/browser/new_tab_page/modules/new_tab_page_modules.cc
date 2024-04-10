@@ -28,8 +28,13 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
     bool drive_module_enabled) {
   std::vector<std::pair<const std::string, int>> details;
 
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpCalendarModule)) {
+    details.emplace_back("google_calendar",
+                         IDS_NTP_MODULES_GOOGLE_CALENDAR_TITLE);
+  }
+
   if (drive_module_enabled) {
-    details.emplace_back("drive", IDS_NTP_MODULES_DRIVE_SENTENCE);
+    details.emplace_back("file_suggestion", IDS_NTP_MODULES_DRIVE_SENTENCE);
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpTabResumptionModule)) {
