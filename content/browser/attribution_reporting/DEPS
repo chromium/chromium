@@ -2,10 +2,3 @@ include_rules = [
   "+components/aggregation_service",
   "+components/cbor"
 ]
-
-specific_include_rules = {
-  "attribution_interop_runner.cc": [
-    "+services/network/test/test_url_loader_factory.h",
-    "+services/network/test/test_utils.h",
-  ]
-}

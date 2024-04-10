@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_interop_runner.h"
+#include "content/browser/attribution_reporting/interop/runner.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -53,7 +53,7 @@
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_interop_parser.h"
+#include "content/browser/attribution_reporting/interop/parser.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -440,7 +440,7 @@ RunAttributionInteropSimulation(AttributionInteropRun run,
 
   static_cast<AggregationServiceImpl*>(
       storage_partition->GetAggregationService())
-      ->SetPublicKeysForTesting(
+      ->SetPublicKeysForTesting( // IN-TEST
           GetAggregationServiceProcessingUrl(url::Origin::Create(
               GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
                        .Get()))),

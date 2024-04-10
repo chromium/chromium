@@ -85,7 +85,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
 }
 
 executable("attribution_reporting_interop") {
-  sources = [ "interop_main.cc" ]
+  sources = [ "interop/interop_main.cc" ]
   deps = [
     "//base",
     "//content/public/browser",
@@ -95,7 +95,7 @@ executable("attribution_reporting_interop") {
 }
 
 fuzzer_test("attribution_interop_fuzzer") {
-  sources = [ "fuzzers/attribution_interop_fuzzer.cc" ]
+  sources = [ "interop/fuzzer.cc" ]
 
   deps = [
     "//base",
