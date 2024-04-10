@@ -102,7 +102,7 @@ constexpr char16_t kPhoneName[] = u"pixel 7";
 TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMPasskeysOnly) {
   AuthenticatorRequestDialogModel dialog_model(/*render_frame_host=*/nullptr);
   dialog_model.paired_phone_names = {base::UTF16ToUTF8(kPhoneName)};
-  dialog_model.priority_phone_index = 0;
+  dialog_model.priority_phone_name = dialog_model.paired_phone_names.at(0);
   dialog_model.mechanisms.emplace_back(
       Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),
       kPasskeyName1, kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());
@@ -124,7 +124,7 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMPasskeysOnly) {
 TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMAndLocalPasskeys) {
   AuthenticatorRequestDialogModel dialog_model(/*render_frame_host=*/nullptr);
   dialog_model.paired_phone_names = {base::UTF16ToUTF8(kPhoneName)};
-  dialog_model.priority_phone_index = 0;
+  dialog_model.priority_phone_name = dialog_model.paired_phone_names.at(0);
   dialog_model.mechanisms.emplace_back(
       Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),
       kPasskeyName1, kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());

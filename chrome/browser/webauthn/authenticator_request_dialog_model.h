@@ -428,11 +428,6 @@ struct AuthenticatorRequestDialogModel {
   // Similar to above, but for bubbles.
   bool should_bubble_be_closed() const;
 
-  // Returns the name of the "priority" paired phone. This is the phone from
-  // sync if there are a priori discovered GPM passkeys, or the first phone on
-  // the list otherwise.
-  std::optional<std::u16string> GetPriorityPhoneName() const;
-
   const std::optional<content::GlobalRenderFrameHostId> frame_host_id;
   device::FidoRequestType request_type = device::FidoRequestType::kGetAssertion;
   device::ResidentKeyRequirement resident_key_requirement =
@@ -466,9 +461,10 @@ struct AuthenticatorRequestDialogModel {
   std::optional<int> pin_attempts;
   std::optional<int> uv_attempts;
   device::pin::PINEntryError pin_error = device::pin::PINEntryError::kNoError;
-  std::optional<size_t> priority_phone_index;
   // A sorted, unique list of the names of paired phones.
   std::vector<std::string> paired_phone_names;
+  // The name of the priority phone, if any.
+  std::optional<std::string> priority_phone_name;
 
   // cable_ui_type contains the type of UI to display for a caBLE transaction.
   std::optional<CableUIType> cable_ui_type;
@@ -796,6 +792,10 @@ class AuthenticatorRequestDialogController
   // user-visible mechanisms and use the callbacks therein.
   void ContactPhoneForTesting(const std::string& name);
 
+  // Sets `priority_phone_index_` and updates the name of the priority phone in
+  // `model_` accordingly.
+  void SetPriorityPhoneIndex(std::optional<size_t> index);
+
   // StartTransportFlowForTesting moves the UI to focus on the given transport.
   // UI should use |mechanisms()| to enumerate the user-visible mechanisms and
   // use the callbacks therein.
@@ -1038,6 +1038,9 @@ class AuthenticatorRequestDialogController
   // paired_phones_ contains details of caBLEv2-paired phones from both Sync and
   // QR-based pairing. The entries are sorted by name.
   std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones_;
+
+  // The index, into `paired_phones_`, for the top-priority phone.
+  std::optional<size_t> priority_phone_index_;
 
   // paired_phones_contacted_ is the same length as |paired_phones_| and
   // contains true whenever the corresponding phone as already been contacted.

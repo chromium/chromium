@@ -247,10 +247,10 @@ const gfx::VectorIcon& GetCredentialIcon(device::AuthenticatorType type) {
 
 std::u16string GetMechanismDescription(
     device::AuthenticatorType type,
-    const std::optional<std::u16string>& priority_phone_name) {
+    const std::optional<std::string>& priority_phone_name) {
   if (type == device::AuthenticatorType::kPhone) {
     return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
-                                      *priority_phone_name);
+                                      base::UTF8ToUTF16(*priority_phone_name));
   }
   int message;
   switch (type) {
@@ -496,14 +496,6 @@ bool AuthenticatorRequestDialogModel::should_dialog_be_closed() const {
 
 bool AuthenticatorRequestDialogModel::should_bubble_be_closed() const {
   return step_ui_type(step_) != StepUIType::BUBBLE;
-}
-
-std::optional<std::u16string>
-AuthenticatorRequestDialogModel::GetPriorityPhoneName() const {
-  if (!priority_phone_index) {
-    return std::nullopt;
-  }
-  return base::UTF8ToUTF16(paired_phone_names.at(*priority_phone_index));
 }
 
 #define AUTHENTICATOR_REQUEST_EVENT_0(name)      \
@@ -1499,7 +1491,7 @@ void AuthenticatorRequestDialogController::OnAccountPreselected(
         break;
 
       case AccountState::kRecoverable:
-        if (model_->priority_phone_index) {
+        if (priority_phone_index_) {
           SetCurrentStep(Step::kTrustThisComputer);
         } else {
           SetCurrentStep(Step::kRecoverSecurityDomain);
@@ -1514,7 +1506,7 @@ void AuthenticatorRequestDialogController::OnAccountPreselected(
 
       case AccountState::kNone:
       case AccountState::kIrrecoverable:
-        if (model_->priority_phone_index) {
+        if (priority_phone_index_) {
           ContactPriorityPhone();
         } else {
           NOTIMPLEMENTED();
@@ -1524,13 +1516,13 @@ void AuthenticatorRequestDialogController::OnAccountPreselected(
       case AccountState::kEmpty:
         if (transport_availability_.request_type ==
             device::FidoRequestType::kMakeCredential) {
-          if (model_->priority_phone_index) {
+          if (priority_phone_index_) {
             SetCurrentStep(Step::kTrustThisComputer);
           } else {
             SetCurrentStep(Step::kRecoverSecurityDomain);
           }
         } else {
-          if (model_->priority_phone_index) {
+          if (priority_phone_index_) {
             ContactPriorityPhone();
           } else {
             // TODO(enclave): the security domain is empty but there were
@@ -1558,7 +1550,7 @@ void AuthenticatorRequestDialogController::SetSelectedAuthenticatorForTesting(
 }
 
 void AuthenticatorRequestDialogController::ContactPriorityPhone() {
-  ContactPhone(paired_phones_[*model_->priority_phone_index]->name);
+  ContactPhone(paired_phones_[*priority_phone_index_]->name);
 }
 
 void AuthenticatorRequestDialogController::ContactPhoneForTesting(
@@ -1567,6 +1559,16 @@ void AuthenticatorRequestDialogController::ContactPhoneForTesting(
   // screen right away.
   model_->ble_adapter_is_powered = true;
   ContactPhone(name);
+}
+
+void AuthenticatorRequestDialogController::SetPriorityPhoneIndex(
+    std::optional<size_t> index) {
+  if (index) {
+    model_->priority_phone_name = paired_phones_.at(*index)->name;
+  } else {
+    model_->priority_phone_name.reset();
+  }
+  priority_phone_index_ = index;
 }
 
 void AuthenticatorRequestDialogController::StartTransportFlowForTesting(
@@ -2205,11 +2207,9 @@ void AuthenticatorRequestDialogController::SortRecognizedCredentials() {
 void AuthenticatorRequestDialogController::PopulateMechanisms() {
   const bool is_get_assertion = transport_availability_.request_type ==
                                 device::FidoRequestType::kGetAssertion;
-  model_->priority_phone_index = GetIndexOfMostRecentlyUsedPhoneFromSync();
-  std::optional<std::u16string> priority_phone_name =
-      model_->GetPriorityPhoneName();
+  SetPriorityPhoneIndex(GetIndexOfMostRecentlyUsedPhoneFromSync());
   bool list_phone_passkeys =
-      is_get_assertion && model_->priority_phone_index &&
+      is_get_assertion && priority_phone_index_ &&
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
   bool specific_phones_listed = false;
   bool specific_local_passkeys_listed = false;
@@ -2238,7 +2238,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
               &AuthenticatorRequestDialogController::OnAccountPreselected,
               base::Unretained(this), cred.cred_id));
       mechanism.description =
-          GetMechanismDescription(cred.source, priority_phone_name);
+          GetMechanismDescription(cred.source, model_->priority_phone_name);
     }
   }
 
@@ -2380,7 +2380,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         paired_phones_.size() == 1 && !use_conditional_mediation_ &&
         transport_availability_.is_only_hybrid_or_internal;
     if (skip_to_phone_confirmation) {
-      model_->priority_phone_index = 0;
+      SetPriorityPhoneIndex(0);
       pending_step_ = Step::kPhoneConfirmationSheet;
     }
   }

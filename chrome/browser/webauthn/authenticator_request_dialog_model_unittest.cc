@@ -1554,6 +1554,33 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
   }
 }
 
+TEST_F(AuthenticatorRequestDialogControllerTest, CrBug333592767) {
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
+
+  auto phone1 = std::make_unique<device::cablev2::Pairing>();
+  phone1->name = "test";
+  phone1->from_sync_deviceinfo = true;
+  phone1->last_updated = base::Time::FromTimeT(1);
+  auto phone2 = std::make_unique<device::cablev2::Pairing>(*phone1);
+  phone2->last_updated = base::Time::FromTimeT(2);
+
+  std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
+  phones.emplace_back(std::move(phone1));
+  phones.emplace_back(std::move(phone2));
+
+  controller.set_cable_transport_info(/*extension_is_v2=*/false,
+                                      std::move(phones), base::DoNothing(),
+                                      std::nullopt);
+  TransportAvailabilityInfo transports_info;
+  transports_info.request_type = RequestType::kMakeCredential;
+  transports_info.make_credential_attachment =
+      device::AuthenticatorAttachment::kAny;
+  transports_info.available_transports = kAllTransportsWithoutCable;
+  controller.StartFlow(std::move(transports_info),
+                       /*is_conditional_mediation=*/false);
+}
+
 TEST_F(AuthenticatorRequestDialogControllerTest, AwaitingAcknowledgement) {
   const struct {
     void (AuthenticatorRequestDialogController::*event)();
@@ -2206,7 +2233,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ContactPriorityPhone_NoSync) {
   controller.StartFlow(std::move(transports_info),
                        /*is_conditional_mediation=*/false);
   EXPECT_EQ(model.step(), Step::kPhoneConfirmationSheet);
-  EXPECT_EQ(model.GetPriorityPhoneName(), u"Phone from QR");
+  EXPECT_EQ(model.priority_phone_name, "Phone from QR");
   model.ContactPriorityPhone();
   EXPECT_EQ(model.step(), Step::kCableActivate);
   EXPECT_EQ(model.selected_phone_name, "Phone from QR");
@@ -2240,7 +2267,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   controller.StartFlow(std::move(transports_info),
                        /*is_conditional_mediation=*/false);
   EXPECT_EQ(model.step(), Step::kPhoneConfirmationSheet);
-  EXPECT_EQ(model.GetPriorityPhoneName(), u"Phone from sync");
+  EXPECT_EQ(model.priority_phone_name, "Phone from sync");
   model.ContactPriorityPhone();
   EXPECT_EQ(model.step(), Step::kCableActivate);
   EXPECT_EQ(model.selected_phone_name, "Phone from sync");

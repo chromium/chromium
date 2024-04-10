@@ -1547,11 +1547,11 @@ AuthenticatorMultiSourcePickerSheetModel::
     return;
   }
 
-  std::optional<std::u16string> phone_name =
-      dialog_model->GetPriorityPhoneName();
+  const std::optional<std::string>& phone_name =
+      dialog_model->priority_phone_name;
   if (phone_name) {
-    primary_passkeys_label_ =
-        l10n_util::GetStringFUTF16(IDS_WEBAUTHN_FROM_PHONE_LABEL, *phone_name);
+    primary_passkeys_label_ = l10n_util::GetStringFUTF16(
+        IDS_WEBAUTHN_FROM_PHONE_LABEL, base::UTF8ToUTF16(*phone_name));
   }
   for (size_t i = 0; i < dialog_model->mechanisms.size(); ++i) {
     const AuthenticatorRequestDialogModel::Mechanism& mech =
