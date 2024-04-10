@@ -9,6 +9,7 @@
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,8 +26,13 @@ base::FilePath TestSeaPenWallpaperManagerSessionDelegate::GetStorageDirectory(
   if (!scoped_temp_dir_.IsValid()) {
     EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
   }
+  // Public account and guest users do not have an account id key.
+  const std::string account_identifier = account_id.HasAccountIdKey()
+                                             ? account_id.GetAccountIdKey()
+                                             : account_id.GetUserEmail();
+  EXPECT_NE(std::string(), account_identifier);
   return scoped_temp_dir_.GetPath()
-      .Append(account_id.GetAccountIdKey())
+      .Append(account_identifier)
       .Append("wallpaper")
       .Append(wallpaper_constants::kSeaPenWallpaperDirName);
 }

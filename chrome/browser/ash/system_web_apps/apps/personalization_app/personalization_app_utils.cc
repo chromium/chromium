@@ -7,10 +7,12 @@
 #include <memory>
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_ambient_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_keyboard_backlight_provider_impl.h"
@@ -106,6 +108,13 @@ bool IsEligibleForSeaPen(Profile* profile) {
     return true;
   }
 
+  if (features::IsSeaPenDemoModeEnabled() &&
+      DemoSession::IsDeviceInDemoMode()) {
+    DVLOG(1) << __func__ << " demo mode";
+    const auto* user = GetUser(profile);
+    return user && user->GetType() == user_manager::UserType::kPublicAccount;
+  }
+
   // Do not show for managed profiles.
   if (profile->GetProfilePolicyConnector()->IsManaged()) {
     DVLOG(1) << __func__ << " managed profile";
@@ -123,6 +132,10 @@ bool IsEligibleForSeaPen(Profile* profile) {
     case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
     case user_manager::UserType::kChild:
+    // Demo mode retail devices are type kPublicAccount and may have been
+    // handled earlier in this function. But not all kPublicAccount users are in
+    // demo mode. Public ChromeOS devices at libraries etc often use
+    // kPublicAccount type.
     case user_manager::UserType::kPublicAccount:
     case user_manager::UserType::kGuest:
       return false;

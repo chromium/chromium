@@ -13,6 +13,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
@@ -2387,6 +2388,20 @@ void WallpaperControllerImpl::OnSeaPenWallpaperDecoded(
     wallpaper_metrics_manager_->LogWallpaperResult(
         WallpaperType::kSeaPen, SetWallpaperResult::kDecodingError);
     std::move(callback).Run(false);
+    return;
+  }
+
+  if (IsEphemeralUser(account_id)) {
+    DCHECK(features::IsSeaPenDemoModeEnabled());
+    // Demo mode users are eligible for SeaPen but should not save the wallpaper
+    // image. Set a fake file path to use for the in memory wallpaper cache.
+    const auto cache_file_path =
+        base::FilePath("in_memory_cache")
+            .Append(wallpaper_constants::kSeaPenWallpaperDirName)
+            .Append(base::NumberToString(sea_pen_image_id))
+            .AddExtension(".jpg");
+    OnSeaPenWallpaperSavedToPublic(account_id, image_skia, sea_pen_image_id,
+                                   std::move(callback), cache_file_path);
     return;
   }
 

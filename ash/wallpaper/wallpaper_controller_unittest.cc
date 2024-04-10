@@ -58,6 +58,7 @@
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -85,6 +86,7 @@
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_names.h"
@@ -854,7 +856,10 @@ class WallpaperControllerTestBase : public AshTestBase {
     RunAllTasksUntilIdle();
   }
 
-  void SetSeaPenWallpaper(gfx::ImageSkia* image, SkColor color, uint32_t id) {
+  void SetSeaPenWallpaper(const AccountId& account_id,
+                          SkColor color,
+                          uint32_t id,
+                          gfx::ImageSkia* image) {
     TestWallpaperControllerObserver observer(controller_);
     std::string jpg_bytes = CreateEncodedImageForTesting(
         {1, 1}, color, data_decoder::mojom::ImageCodec::kDefault, image);
@@ -863,13 +868,13 @@ class WallpaperControllerTestBase : public AshTestBase {
     base::test::TestFuture<bool> save_sea_pen_image_future;
     auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
     sea_pen_wallpaper_manager->SaveSeaPenImage(
-        kAccountId1, {std::move(jpg_bytes), id},
+        account_id, {std::move(jpg_bytes), id},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("search_query"),
         save_sea_pen_image_future.GetCallback());
     ASSERT_TRUE(save_sea_pen_image_future.Get());
 
     base::test::TestFuture<bool> set_wallpaper_future;
-    controller_->SetSeaPenWallpaper(kAccountId1, id,
+    controller_->SetSeaPenWallpaper(account_id, id,
                                     set_wallpaper_future.GetCallback());
 
     EXPECT_TRUE(set_wallpaper_future.Take());
@@ -949,6 +954,7 @@ class WallpaperControllerTest
     }
     enabled_features.push_back(features::kSeaPen);
     enabled_features.push_back(features::kFeatureManagementSeaPen);
+    enabled_features.push_back(features::kSeaPenDemoMode);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -2127,7 +2133,7 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaper) {
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
 
   gfx::ImageSkia expected_image;
-  SetSeaPenWallpaper(&expected_image, SK_ColorGREEN, /*id=*/777u);
+  SetSeaPenWallpaper(kAccountId1, SK_ColorGREEN, /*id=*/777u, &expected_image);
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
@@ -2140,13 +2146,24 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaper) {
       *expected_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
       /*max_deviation=*/1));
 
-  // Expects the wallpaper is saved in global dir.
-  base::FilePath saved_wallpaper = online_wallpaper_dir_.GetPath()
-                                       .Append("sea_pen")
-                                       .Append(kAccountId1.GetAccountIdKey())
-                                       .Append(wallpaper_info.location)
-                                       .ReplaceExtension(".jpg");
-  ASSERT_TRUE(base::PathExists(saved_wallpaper));
+  base::FileEnumerator file_enumerator(online_wallpaper_dir_.GetPath(),
+                                       /*recursive=*/true,
+                                       base::FileEnumerator::FileType::FILES);
+
+  std::vector<base::FilePath> wallpaper_files;
+  for (auto path = file_enumerator.Next(); !path.empty();
+       path = file_enumerator.Next()) {
+    wallpaper_files.push_back(path);
+  }
+
+  // One SeaPen image file saved to global wallpaper directory for account.
+  EXPECT_EQ(std::vector<base::FilePath>(
+                {base::FilePath(online_wallpaper_dir_.GetPath())
+                     .Append(wallpaper_constants::kSeaPenWallpaperDirName)
+                     .Append(kAccountId1.GetAccountIdKey())
+                     .Append("777")
+                     .AddExtension(".jpg")}),
+            wallpaper_files);
 }
 
 TEST_P(WallpaperControllerTest,
@@ -2164,7 +2181,8 @@ TEST_P(WallpaperControllerTest,
   {
     // Sets a sea pen wallpaper.
     gfx::ImageSkia expected_image;
-    SetSeaPenWallpaper(&expected_image, SK_ColorGREEN, /*id=*/848u);
+    SetSeaPenWallpaper(kAccountId1, SK_ColorGREEN, /*id=*/848u,
+                       &expected_image);
     EXPECT_TRUE(
         pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
     EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
@@ -2213,7 +2231,7 @@ TEST_P(WallpaperControllerTest, ShowSeaPenWallpaperOnLogin) {
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
 
   gfx::ImageSkia expected_image;
-  SetSeaPenWallpaper(&expected_image, SK_ColorBLUE, 888u);
+  SetSeaPenWallpaper(kAccountId1, SK_ColorBLUE, 888u, &expected_image);
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
@@ -2329,8 +2347,9 @@ TEST_P(WallpaperControllerTest, SeaPenMigrateFiles) {
   constexpr std::array<uint32_t, 2> kImageIds = {888, 999};
 
   const auto global_sea_pen_dir =
-      online_wallpaper_dir_.GetPath().Append("sea_pen").Append(
-          kAccountId1.GetAccountIdKey());
+      online_wallpaper_dir_.GetPath()
+          .Append(wallpaper_constants::kSeaPenWallpaperDirName)
+          .Append(kAccountId1.GetAccountIdKey());
   ASSERT_TRUE(base::CreateDirectory(global_sea_pen_dir));
 
   {
@@ -2419,6 +2438,40 @@ TEST_P(WallpaperControllerTest, SeaPenMigrateFiles) {
         global_sea_pen_dir.Append(base::NumberToString(kImageIds.back()))
             .AddExtension(".jpg")));
   }
+}
+
+TEST_P(WallpaperControllerTest, SetSeaPenWallpaperForPublicAccount) {
+  ClearLogin();
+
+  const AccountId account_id = AccountId::FromUserEmail("public_session");
+  SimulateUserLogin(account_id, user_manager::UserType::kPublicAccount);
+
+  gfx::ImageSkia expected_image;
+  SetSeaPenWallpaper(account_id, SK_ColorBLUE, 12345u, &expected_image);
+
+  WallpaperInfo wallpaper_info;
+  ASSERT_TRUE(pref_manager_->GetUserWallpaperInfo(account_id, &wallpaper_info));
+  EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
+  EXPECT_EQ("12345", wallpaper_info.location);
+
+  // Use `AreBitmapsClose` because jpg encoding/decoding can alter the color
+  // channels +- 1.
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      *expected_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
+      /*max_deviation=*/1));
+
+  base::FileEnumerator file_enumerator(online_wallpaper_dir_.GetPath(),
+                                       /*recursive=*/true,
+                                       base::FileEnumerator::FileType::FILES);
+
+  std::vector<base::FilePath> wallpaper_files;
+  for (auto path = file_enumerator.Next(); !path.empty();
+       path = file_enumerator.Next()) {
+    wallpaper_files.push_back(path);
+  }
+
+  // No wallpaper files saved to global wallpaper directory for public account.
+  EXPECT_TRUE(wallpaper_files.empty());
 }
 
 TEST_P(WallpaperControllerTest, SetDefaultWallpaperForRegularAccount) {

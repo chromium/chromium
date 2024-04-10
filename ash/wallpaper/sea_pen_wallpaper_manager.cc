@@ -235,7 +235,6 @@ void SeaPenWallpaperManager::SaveSeaPenImage(
     const SeaPenImage& sea_pen_image,
     const personalization_app::mojom::SeaPenQueryPtr& query,
     SaveSeaPenImageCallback callback) {
-  CHECK(account_id.HasAccountIdKey());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   image_util::DecodeImageData(
       base::BindOnce(&SeaPenWallpaperManager::OnSeaPenImageDecoded,

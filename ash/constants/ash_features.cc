@@ -2575,6 +2575,11 @@ BASE_FEATURE(kSeaPenTextInput,
              "SeaPenTextInput",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables sea pen feature for ChromeOS demo mode.
+BASE_FEATURE(kSeaPenDemoMode,
+             "SeaPenDemoMode",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the system tray to show more information in larger screen.
 BASE_FEATURE(kSeamlessRefreshRateSwitching,
              "SeamlessRefreshRateSwitching",
@@ -4345,14 +4350,17 @@ bool IsScalableIphClientConfigEnabled() {
   return base::FeatureList::IsEnabled(kScalableIphClientConfig);
 }
 
+bool IsSeaPenDemoModeEnabled() {
+  return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenDemoMode);
+}
+
 bool IsSeaPenEnabled() {
   return base::FeatureList::IsEnabled(kSeaPen) &&
          base::FeatureList::IsEnabled(kFeatureManagementSeaPen);
 }
 
 bool IsSeaPenTextInputEnabled() {
-  return base::FeatureList::IsEnabled(kSeaPen) &&
-         base::FeatureList::IsEnabled(kSeaPenTextInput);
+  return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenTextInput);
 }
 
 bool IsSeparateNetworkIconsEnabled() {
