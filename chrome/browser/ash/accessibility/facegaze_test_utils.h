@@ -34,7 +34,7 @@ class FaceGazeTestUtils {
     }
 
     MockFaceLandmarkerResult& WithGesture(const std::string& gesture,
-                                          double confidence);
+                                          int confidence);
     const base::Value::List& recognized_gestures() const {
       return recognized_gestures_;
     }
@@ -61,6 +61,8 @@ class FaceGazeTestUtils {
   void SetMouseAcceleration(bool use_acceleration);
   // Sets the gesture to macro mapping pref.
   void SetGesturesToMacros(const base::Value::Dict& gestures_to_macros);
+  // Sets the gesture confidences mapping pref.
+  void SetGestureConfidences(const base::Value::Dict& gesture_confidences);
   // Forces FaceGaze to process `result`, since tests don't have access to real
   // camera data.
   void ProcessFaceLandmarkerResult(const MockFaceLandmarkerResult& result);

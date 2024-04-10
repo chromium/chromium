@@ -14,6 +14,10 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 
+namespace ash {
+
+using MockFaceLandmarkerResult = FaceGazeTestUtils::MockFaceLandmarkerResult;
+
 namespace {
 
 // A class that helps initialize FaceGaze with a configuration.
@@ -50,6 +54,11 @@ class Config {
     return *this;
   }
 
+  Config& WithGestureConfidences(const base::Value::Dict& gesture_confidences) {
+    gesture_confidences_ = gesture_confidences.Clone();
+    return *this;
+  }
+
   double forehead_x() const { return forehead_x_; }
   double forehead_y() const { return forehead_y_; }
   const gfx::Point& mouse_location() const { return mouse_location_; }
@@ -57,6 +66,9 @@ class Config {
   bool use_mouse_acceleration() const { return use_mouse_acceleration_; }
   const base::Value::Dict& gestures_to_macros() const {
     return gestures_to_macros_;
+  }
+  const base::Value::Dict& gesture_confidences() const {
+    return gesture_confidences_;
   }
 
  private:
@@ -66,11 +78,10 @@ class Config {
   int buffer_size_;
   bool use_mouse_acceleration_;
   base::Value::Dict gestures_to_macros_;
+  base::Value::Dict gesture_confidences_;
 };
 
 }  // namespace
-
-namespace ash {
 
 class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
  public:
@@ -104,6 +115,7 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
     utils_->SetBufferSize(config.buffer_size());
     utils_->SetMouseAcceleration(config.use_mouse_acceleration());
     utils_->SetGesturesToMacros(config.gestures_to_macros());
+    utils_->SetGestureConfidences(config.gesture_confidences());
     SetMouseSourceDeviceId(1);
     // By default the mouse is placed at the center of the screen. To initialize
     // FaceGaze, move the mouse somewhere, then move it to the location
@@ -117,9 +129,8 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
     // initially, and upcoming forehead locations will be computed relative to
     // this.
     utils_->ProcessFaceLandmarkerResult(
-        FaceGazeTestUtils::MockFaceLandmarkerResult()
-            .WithNormalizedForeheadLocation(config.forehead_x(),
-                                            config.forehead_y()));
+        MockFaceLandmarkerResult().WithNormalizedForeheadLocation(
+            config.forehead_x(), config.forehead_y()));
     utils_->TriggerMouseControllerInterval();
     ASSERT_EQ(config.mouse_location(),
               display::Screen::GetScreen()->GetCursorScreenPoint());
@@ -142,45 +153,74 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateMouseLocation) {
-  ConfigureFaceGaze(Config()
-                        .WithForeheadLocation(0.1, 0.2)
-                        .WithMouseLocation(gfx::Point(600, 400))
-                        .WithBufferSize(1)
-                        .WithMouseAcceleration(false)
-                        .WithGesturesToMacros(base::Value::Dict().Set(
-                            "jawOpen", /*RESET_CURSOR*/ 37)));
+  ConfigureFaceGaze(
+      Config()
+          .WithForeheadLocation(0.1, 0.2)
+          .WithMouseLocation(gfx::Point(600, 400))
+          .WithBufferSize(1)
+          .WithMouseAcceleration(false)
+          .WithGesturesToMacros(
+              base::Value::Dict().Set("jawOpen", /*RESET_CURSOR*/ 37))
+          .WithGestureConfidences(base::Value::Dict().Set("jawOpen", 70)));
 
   // Move mouse using forehead.
   utils()->ProcessFaceLandmarkerResult(
-      FaceGazeTestUtils::MockFaceLandmarkerResult()
-          .WithNormalizedForeheadLocation(0.11, 0.21));
+      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(0.11, 0.21));
   utils()->TriggerMouseControllerInterval();
   ASSERT_EQ(gfx::Point(360, 560),
             display::Screen::GetScreen()->GetCursorScreenPoint());
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
-  ConfigureFaceGaze(Config()
-                        .WithForeheadLocation(0.1, 0.2)
-                        .WithMouseLocation(gfx::Point(600, 400))
-                        .WithBufferSize(1)
-                        .WithMouseAcceleration(false)
-                        .WithGesturesToMacros(base::Value::Dict().Set(
-                            "jawOpen", /*RESET_CURSOR*/ 37)));
+  ConfigureFaceGaze(
+      Config()
+          .WithForeheadLocation(0.1, 0.2)
+          .WithMouseLocation(gfx::Point(600, 400))
+          .WithBufferSize(1)
+          .WithMouseAcceleration(false)
+          .WithGesturesToMacros(
+              base::Value::Dict().Set("jawOpen", /*RESET_CURSOR*/ 37))
+          .WithGestureConfidences(base::Value::Dict().Set("jawOpen", 70)));
 
   // Move mouse.
   utils()->ProcessFaceLandmarkerResult(
-      FaceGazeTestUtils::MockFaceLandmarkerResult()
-          .WithNormalizedForeheadLocation(0.11, 0.21));
+      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(0.11, 0.21));
   utils()->TriggerMouseControllerInterval();
   ASSERT_EQ(gfx::Point(360, 560),
             display::Screen::GetScreen()->GetCursorScreenPoint());
 
   // Reset the mouse to the center of the screen using a gesture.
   utils()->ProcessFaceLandmarkerResult(
-      FaceGazeTestUtils::MockFaceLandmarkerResult().WithGesture("jawOpen",
-                                                                0.9));
+      MockFaceLandmarkerResult().WithGesture("jawOpen", 90));
   ASSERT_EQ(gfx::Point(600, 400),
+            display::Screen::GetScreen()->GetCursorScreenPoint());
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
+                       IgnoreGesturesWithLowConfidence) {
+  ConfigureFaceGaze(
+      Config()
+          .WithForeheadLocation(0.1, 0.2)
+          .WithMouseLocation(gfx::Point(600, 400))
+          .WithBufferSize(1)
+          .WithMouseAcceleration(false)
+          .WithGesturesToMacros(
+              base::Value::Dict().Set("jawOpen", /*RESET_CURSOR*/ 37))
+          .WithGestureConfidences(base::Value::Dict().Set("jawOpen", 100)));
+
+  // Move mouse.
+  utils()->ProcessFaceLandmarkerResult(
+      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(0.11, 0.21));
+  utils()->TriggerMouseControllerInterval();
+  ASSERT_EQ(gfx::Point(360, 560),
+            display::Screen::GetScreen()->GetCursorScreenPoint());
+
+  // Attempt to reset the mouse to the center of the screen using a gesture.
+  // This gesture will be ignored because the gesture doesn't have high enough
+  // confidence.
+  utils()->ProcessFaceLandmarkerResult(
+      MockFaceLandmarkerResult().WithGesture("jawOpen", 90));
+  ASSERT_EQ(gfx::Point(360, 560),
             display::Screen::GetScreen()->GetCursorScreenPoint());
 }
 

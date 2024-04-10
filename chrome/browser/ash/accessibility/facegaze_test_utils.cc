@@ -55,10 +55,15 @@ FaceGazeTestUtils::MockFaceLandmarkerResult::WithNormalizedForeheadLocation(
 FaceGazeTestUtils::MockFaceLandmarkerResult&
 FaceGazeTestUtils::MockFaceLandmarkerResult::WithGesture(
     const std::string& gesture,
-    double confidence) {
-  recognized_gestures_.Append(base::Value::Dict()
-                                  .Set("categoryName", gesture)
-                                  .Set("score", confidence));
+    int confidence) {
+  // For readability and consistency with the gesture confidence pref, this
+  // method accepts confidence values [0, 100]. However, the FaceLandmarker
+  // receives confidence scores as values [0, 1], so we need to convert the
+  // confidence to a decimal before processing it.
+  recognized_gestures_.Append(
+      base::Value::Dict()
+          .Set("categoryName", gesture)
+          .Set("score", static_cast<double>(confidence) / 100.0));
   return *this;
 }
 
@@ -156,6 +161,13 @@ void FaceGazeTestUtils::SetGesturesToMacros(
     const base::Value::Dict& gestures_to_macros) {
   GetPrefs()->SetDict(prefs::kAccessibilityFaceGazeGesturesToMacros,
                       gestures_to_macros.Clone());
+  GetPrefs()->CommitPendingWrite();
+}
+
+void FaceGazeTestUtils::SetGestureConfidences(
+    const base::Value::Dict& gesture_confidences) {
+  GetPrefs()->SetDict(prefs::kAccessibilityFaceGazeGesturesToConfidence,
+                      gesture_confidences.Clone());
   GetPrefs()->CommitPendingWrite();
 }
 
