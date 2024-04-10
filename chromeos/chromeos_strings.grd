@@ -6462,6 +6462,9 @@
         <message name="IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_JOYSTICK_CONTAINER_A11Y_TPL" desc="List item button a11y label for editing list when including more than one edit label. Spoken by screen readers when list item button gets focus but not visually rendered." translateable="false">
           Selected joystick keys are <ph name="KEYS">$1<ex>w, a, s, d</ex></ph>. Tap on the button to edit the control
         </message>
+        <message name="IDS_INPUT_OVERLAY_SHORTCUT_MENU_A11Y_LABEL" desc="A11y label for delete-edit shortcut menu. Spoken by screen readers when the edit and delete menu gets focus but not visually rendered.">
+          Edit and delete menu
+        </message>
         <message name="IDS_INPUT_OVERLAY_SHORTCUT_EDIT_A11Y_LABEL_TEMPLATE" desc="Edit button a11y label for delete-edit shortcut menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
           Edit <ph name="ACTION_NAME">$1<ex>Button w</ex></ph>
         </message>

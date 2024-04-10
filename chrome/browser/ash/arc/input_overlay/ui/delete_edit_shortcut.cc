@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -50,7 +51,20 @@ DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
   set_internal_name(kDeleteEditShortcut);
   set_parent_window(anchor_view->GetWidget()->GetNativeWindow());
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  SetAccessibleWindowRole(ax::mojom::Role::kMenu);
+  SetEnableArrowKeyTraversal(true);
+
+  // BubbleDialogDelegate::GetAccessibleWindowRole() is a final method which
+  // can't override. If the window role is `kWindow`, it will force set it to
+  // alert dialog and reads all the tooltips inside.
+  // SetAccessibleWindowRole(kDialog) can prevent it.
+  // SetAccessibleWindowRole(ax::mojom::Role::kMenu) results in screenreader to
+  // announce the menu having only one item.
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
+
+  // Set root view to menu.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
+  SetAccessibleTitle(
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_SHORTCUT_MENU_A11Y_LABEL));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -64,12 +78,15 @@ DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
                           base::Unretained(this)),
       ash::IconButton::Type::kMedium, &kGameControlsEditPenIcon, u"",
       /*is_togglable=*/false, /*has_border=*/false));
+  edit_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 
   delete_button_ = AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&DeleteEditShortcut::OnDeleteButtonPressed,
                           base::Unretained(this)),
       ash::IconButton::Type::kMedium, &kGameControlsDeleteIcon, u"",
       /*is_togglable=*/false, /*has_border=*/false));
+  delete_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
+
   UpdateTooltipText(anchor_view);
 }
 
