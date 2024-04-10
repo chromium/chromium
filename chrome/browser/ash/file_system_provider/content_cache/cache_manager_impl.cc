@@ -7,8 +7,12 @@
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 
 namespace ash::file_system_provider {
@@ -22,6 +26,16 @@ base::File::Error CreateProviderDirectory(const base::FilePath& path) {
   }
 
   return base::File::FILE_OK;
+}
+
+OptionalContextDatabase InitializeContextDatabase(
+    const base::FilePath& db_path) {
+  std::unique_ptr<ContextDatabase> context_db =
+      std::make_unique<ContextDatabase>(db_path);
+  if (context_db->Initialize()) {
+    return context_db;
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -52,14 +66,14 @@ void CacheManagerImpl::InitializeForProvider(
   }
 
   if (in_memory_only_) {
-    OnInitializeForProvider(std::move(callback), cache_directory_path,
-                            base::File::FILE_OK);
+    OnProviderDirectoryCreationComplete(
+        std::move(callback), cache_directory_path, base::File::FILE_OK);
     return;
   }
 
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&CreateProviderDirectory, cache_directory_path),
-      base::BindOnce(&CacheManagerImpl::OnInitializeForProvider,
+      base::BindOnce(&CacheManagerImpl::OnProviderDirectoryCreationComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      cache_directory_path));
 }
@@ -126,24 +140,57 @@ void CacheManagerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void CacheManagerImpl::OnInitializeForProvider(
+void CacheManagerImpl::OnProviderDirectoryCreationComplete(
     FileErrorOrContentCacheCallback callback,
     base::FilePath cache_directory_path,
     base::File::Error result) {
-  const base::FilePath base64_encoded_provider_folder_name =
-      cache_directory_path.BaseName();
   if (result != base::File::FILE_OK) {
-    std::move(callback).Run(base::unexpected(result));
-  } else {
-    initialized_providers_.emplace(base64_encoded_provider_folder_name);
-    std::move(callback).Run(ContentCacheImpl::Create(cache_directory_path));
+    OnProviderInitializationComplete(cache_directory_path.BaseName(),
+                                     std::move(callback),
+                                     base::unexpected(result));
+    return;
   }
 
-  // Notify all observers.
-  for (auto& observer : observers_) {
-    observer.OnProviderInitializationComplete(
-        base64_encoded_provider_folder_name, result);
+  // Initialize the database task runner, the `ContextDatabase` will be created
+  // on this task runner and bound to the task runner on return.
+  scoped_refptr<base::SequencedTaskRunner> db_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  db_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&InitializeContextDatabase,
+                     (in_memory_only_)
+                         ? base::FilePath()
+                         : cache_directory_path.Append("context.db")),
+      base::BindOnce(&CacheManagerImpl::OnProviderContextDatabaseSetup,
+                     weak_ptr_factory_.GetWeakPtr(), cache_directory_path,
+                     std::move(callback), db_task_runner));
+}
+
+void CacheManagerImpl::OnProviderContextDatabaseSetup(
+    const base::FilePath& cache_directory_path,
+    FileErrorOrContentCacheCallback callback,
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner,
+    OptionalContextDatabase optional_context_db) {
+  const base::FilePath base64_encoded_provider_folder_name =
+      cache_directory_path.BaseName();
+
+  if (!optional_context_db.has_value()) {
+    OnProviderInitializationComplete(
+        base64_encoded_provider_folder_name, std::move(callback),
+        base::unexpected(base::File::FILE_ERROR_FAILED));
+    return;
   }
+
+  // Bind the `ContextDatabase` to the database task runner to ensure
+  // sequenced access via the `ContentCache` instance.
+  BoundContextDatabase context_db(db_task_runner,
+                                  std::move(optional_context_db.value()));
+  initialized_providers_.emplace(base64_encoded_provider_folder_name);
+  OnProviderInitializationComplete(
+      base64_encoded_provider_folder_name, std::move(callback),
+      ContentCacheImpl::Create(cache_directory_path, std::move(context_db)));
 }
 
 void CacheManagerImpl::OnUninitializeForProvider(
@@ -177,6 +224,20 @@ const base::FilePath CacheManagerImpl::GetCacheDirectoryPath(
           base64_encoded_provider_folder_name));
 
   return cache_directory_path;
+}
+
+void CacheManagerImpl::OnProviderInitializationComplete(
+    const base::FilePath& base64_encoded_provider_folder_name,
+    FileErrorOrContentCacheCallback callback,
+    FileErrorOrContentCache error_or_content_cache) {
+  base::File::Error result =
+      error_or_content_cache.error_or(base::File::FILE_OK);
+  std::move(callback).Run(std::move(error_or_content_cache));
+
+  for (Observer& observer : observers_) {
+    observer.OnProviderInitializationComplete(
+        base64_encoded_provider_folder_name, result);
+  }
 }
 
 }  // namespace ash::file_system_provider

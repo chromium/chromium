@@ -9,6 +9,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_file_context.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "net/base/io_buffer.h"
 
@@ -53,17 +54,22 @@ FileErrorOrBytesRead ReadBytesBlocking(const base::FilePath& path,
 
 }  // namespace
 
-ContentCacheImpl::ContentCacheImpl(const base::FilePath& root_dir)
+ContentCacheImpl::ContentCacheImpl(const base::FilePath& root_dir,
+                                   BoundContextDatabase context_db)
     : root_dir_(root_dir),
       io_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+      context_db_(std::move(context_db)) {}
 
-ContentCacheImpl::~ContentCacheImpl() = default;
+ContentCacheImpl::~ContentCacheImpl() {
+  context_db_.Reset();
+}
 
 std::unique_ptr<ContentCache> ContentCacheImpl::Create(
-    const base::FilePath& root_dir) {
-  return std::make_unique<ContentCacheImpl>(root_dir);
+    const base::FilePath& root_dir,
+    BoundContextDatabase context_db) {
+  return std::make_unique<ContentCacheImpl>(root_dir, std::move(context_db));
 }
 
 bool ContentCacheImpl::StartReadBytes(

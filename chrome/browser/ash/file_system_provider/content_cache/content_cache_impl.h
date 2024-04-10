@@ -8,8 +8,10 @@
 #include "base/files/file_error_or.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
 #include "chrome/browser/ash/file_system_provider/opened_cloud_file.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 
@@ -19,7 +21,8 @@ namespace ash::file_system_provider {
 // of orchestration between the LRU cache and the disk persistence layer.
 class ContentCacheImpl : public ContentCache {
  public:
-  explicit ContentCacheImpl(const base::FilePath& root_dir);
+  ContentCacheImpl(const base::FilePath& root_dir,
+                   BoundContextDatabase context_db);
 
   ContentCacheImpl(const ContentCacheImpl&) = delete;
   ContentCacheImpl& operator=(const ContentCacheImpl&) = delete;
@@ -27,7 +30,8 @@ class ContentCacheImpl : public ContentCache {
   ~ContentCacheImpl() override;
 
   // Creates a `ContentCache` with the concrete implementation.
-  static std::unique_ptr<ContentCache> Create(const base::FilePath& root_dir);
+  static std::unique_ptr<ContentCache> Create(const base::FilePath& root_dir,
+                                              BoundContextDatabase context_db);
 
   bool StartReadBytes(
       const OpenedCloudFile& file,
@@ -64,6 +68,8 @@ class ContentCacheImpl : public ContentCache {
   ContentLRUCache lru_cache_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+  BoundContextDatabase context_db_;
+
   base::WeakPtrFactory<ContentCacheImpl> weak_ptr_factory_{this};
 };
 

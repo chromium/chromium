@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
 
 namespace ash::file_system_provider {
 
@@ -50,11 +51,12 @@ class CacheManagerImpl : public CacheManager {
   void RemoveObserver(Observer* observer) override;
 
  private:
-  // Responds to the FSP with the a `ContentCache` instance if directory
-  // creation was successful (or `in_memory_only` is true).
-  void OnInitializeForProvider(FileErrorOrContentCacheCallback callback,
-                               base::FilePath cache_directory_path,
-                               base::File::Error result);
+  // Attempt to initialize the context database if the directory creation was
+  // successful of the in_memory_only boolean is true.
+  void OnProviderDirectoryCreationComplete(
+      FileErrorOrContentCacheCallback callback,
+      base::FilePath cache_directory_path,
+      base::File::Error result);
 
   // Called once the deletion of the cache directory has been attempted.
   void OnUninitializeForProvider(
@@ -63,6 +65,21 @@ class CacheManagerImpl : public CacheManager {
 
   const base::FilePath GetCacheDirectoryPath(
       const ProvidedFileSystemInfo& file_system_info);
+
+  // Called when the `ContextDatabase` has been setup: either a new database has
+  // been created OR the old database has been connected to.
+  void OnProviderContextDatabaseSetup(
+      const base::FilePath& cache_directory_path,
+      FileErrorOrContentCacheCallback callback,
+      scoped_refptr<base::SequencedTaskRunner> db_task_runner,
+      OptionalContextDatabase optional_context_db);
+
+  // When the initialization has finished, invoke the callback and notify the
+  // observers.
+  void OnProviderInitializationComplete(
+      const base::FilePath& base64_encoded_provider_folder_name,
+      FileErrorOrContentCacheCallback callback,
+      FileErrorOrContentCache error_or_content_cache);
 
   const base::FilePath root_content_cache_directory_;
   bool in_memory_only_ = false;

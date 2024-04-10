@@ -9,6 +9,7 @@
 #include "base/rand_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
 #include "chrome/browser/ash/file_system_provider/opened_cloud_file.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "net/base/io_buffer.h"
@@ -31,8 +32,23 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-    content_cache_ = std::make_unique<ContentCacheImpl>(temp_dir_.GetPath());
+    // Initialize a `ContextDatabase` in memory on a blocking task runner.
+    std::unique_ptr<ContextDatabase> context_db =
+        std::make_unique<ContextDatabase>(base::FilePath());
+    BoundContextDatabase db(
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+        std::move(context_db));
+    TestFuture<bool> future;
+    db.AsyncCall(&ContextDatabase::Initialize).Then(future.GetCallback());
+    EXPECT_TRUE(future.Get());
+
+    content_cache_ =
+        std::make_unique<ContentCacheImpl>(temp_dir_.GetPath(), std::move(db));
   }
+
+  void TearDown() override { content_cache_.reset(); }
 
   scoped_refptr<net::IOBufferWithSize> InitializeBufferWithRandBytes(int size) {
     scoped_refptr<net::IOBufferWithSize> buffer =
