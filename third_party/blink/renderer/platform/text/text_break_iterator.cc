@@ -323,19 +323,21 @@ struct LazyLineBreakIterator::Context {
     bool is_space = false;
   };
 
-  Context(const CharacterType* str, int len, unsigned start_offset, int index) {
-    CHECK_GE(index, 0);
-    DCHECK_GE(static_cast<unsigned>(index), start_offset);
+  Context(const CharacterType* str,
+          unsigned len,
+          unsigned start_offset,
+          unsigned index) {
+    DCHECK_GE(index, start_offset);
     CHECK_LE(index, len);
-    if (static_cast<unsigned>(index) > start_offset) {
+    if (index > start_offset) {
       last = ContextChar(str[index - 1]);
-      if (static_cast<unsigned>(index) > start_offset + 1) {
+      if (index > start_offset + 1) {
         last_last_ch = str[index - 2];
       }
     }
   }
 
-  bool Fetch(const CharacterType* str, int len, int index) {
+  bool Fetch(const CharacterType* str, unsigned len, unsigned index) {
     if (UNLIKELY(index >= len)) {
       return false;
     }
@@ -343,7 +345,7 @@ struct LazyLineBreakIterator::Context {
     return true;
   }
 
-  void Advance(int& index) {
+  void Advance(unsigned& index) {
     ++index;
     last_last_ch = last.ch;
     last = current;
@@ -384,7 +386,7 @@ struct LazyLineBreakIterator::Context {
           ch <= kAsciiLineBreakTableLastChar) {
         const unsigned char* table_row =
             kAsciiLineBreakTable[last_ch - kAsciiLineBreakTableFirstChar];
-        int ch_index = ch - kAsciiLineBreakTableFirstChar;
+        const unsigned ch_index = ch - kAsciiLineBreakTableFirstChar;
         return table_row[ch_index / 8] & (1 << (ch_index % 8));
       }
 
@@ -418,18 +420,18 @@ struct LazyLineBreakIterator::Context {
 template <typename CharacterType,
           LineBreakType line_break_type,
           BreakSpaceType break_space>
-inline int LazyLineBreakIterator::NextBreakablePosition(
-    int pos,
+inline unsigned LazyLineBreakIterator::NextBreakablePosition(
+    unsigned pos,
     const CharacterType* str,
-    int len) const {
+    unsigned len) const {
   Context<CharacterType> context(str, len, start_offset_, pos);
-  int next_break = -1;
+  unsigned next_break = 0;
   ULineBreak last_line_break;
   if constexpr (line_break_type == LineBreakType::kBreakAll) {
     last_line_break =
         LineBreakPropertyValue(context.last_last_ch, context.last.ch);
   }
-  for (int i = pos; context.Fetch(str, len, i); context.Advance(i)) {
+  for (unsigned i = pos; context.Fetch(str, len, i); context.Advance(i)) {
     switch (break_space) {
       case BreakSpaceType::kAfterSpaceRun:
         if (context.current.is_space) {
@@ -479,9 +481,9 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
         !NeedsLineBreakIterator(context.last.ch)) {
       continue;
     }
-    if (next_break < i) {
+    if (next_break < i || !next_break) {
       // Don't break if positioned at start of primary context.
-      if (UNLIKELY(static_cast<unsigned>(i) <= start_offset_)) {
+      if (UNLIKELY(i <= start_offset_)) {
         continue;
       }
       TextBreakIterator* break_iterator = GetIterator();
@@ -492,14 +494,15 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
       for (;;) {
         // Adjust the offset by |start_offset_| because |break_iterator|
         // has text after |start_offset_|.
-        DCHECK_GE(static_cast<unsigned>(next_break), start_offset_);
-        next_break = break_iterator->following(next_break - start_offset_);
-        if (UNLIKELY(next_break < 0)) {
-          DCHECK_EQ(next_break, icu::BreakIterator::DONE);
+        DCHECK_GE(next_break, start_offset_);
+        const int32_t following = break_iterator->following(
+            static_cast<int32_t>(next_break - start_offset_));
+        if (UNLIKELY(following < 0)) {
+          DCHECK_EQ(following, icu::BreakIterator::DONE);
           next_break = len;
           break;
         }
-        next_break = next_break + start_offset_;
+        next_break = following + start_offset_;
         if (UNLIKELY(disable_soft_hyphen_) && next_break > 0 &&
             UNLIKELY(str[next_break - 1] == kSoftHyphenCharacter)) {
           continue;
@@ -516,10 +519,10 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
 }
 
 template <typename CharacterType, LineBreakType lineBreakType>
-inline int LazyLineBreakIterator::NextBreakablePosition(
-    int pos,
+inline unsigned LazyLineBreakIterator::NextBreakablePosition(
+    unsigned pos,
     const CharacterType* str,
-    int len) const {
+    unsigned len) const {
   switch (break_space_) {
     case BreakSpaceType::kAfterSpaceRun:
       return NextBreakablePosition<CharacterType, lineBreakType,
@@ -536,8 +539,9 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
 }
 
 template <LineBreakType lineBreakType>
-inline int LazyLineBreakIterator::NextBreakablePosition(int pos,
-                                                        int len) const {
+inline unsigned LazyLineBreakIterator::NextBreakablePosition(
+    unsigned pos,
+    unsigned len) const {
   if (UNLIKELY(string_.IsNull()))
     return 0;
   if (string_.Is8Bit()) {
@@ -548,18 +552,21 @@ inline int LazyLineBreakIterator::NextBreakablePosition(int pos,
       pos, string_.Characters16(), len);
 }
 
-int LazyLineBreakIterator::NextBreakablePositionBreakCharacter(int pos) const {
+unsigned LazyLineBreakIterator::NextBreakablePositionBreakCharacter(
+    unsigned pos) const {
   DCHECK_LE(start_offset_, string_.length());
   NonSharedCharacterBreakIterator iterator(StringView(string_, start_offset_));
-  DCHECK_GE(pos, 0);
-  DCHECK_GE(static_cast<unsigned>(pos), start_offset_);
+  DCHECK_GE(pos, start_offset_);
   pos -= start_offset_;
-  int next = iterator.Following(std::max(pos - 1, 0));
+  // `- 1` because the `Following()` returns the next opportunity after the
+  // given `offset`.
+  int32_t next =
+      iterator.Following(static_cast<int32_t>(pos > 0 ? pos - 1 : 0));
   return next != kTextBreakDone ? next + start_offset_ : string_.length();
 }
 
-int LazyLineBreakIterator::NextBreakablePosition(int pos,
-                                                 int len) const {
+unsigned LazyLineBreakIterator::NextBreakablePosition(unsigned pos,
+                                                      unsigned len) const {
   switch (break_type_) {
     case LineBreakType::kNormal:
     case LineBreakType::kPhrase:
@@ -577,18 +584,14 @@ int LazyLineBreakIterator::NextBreakablePosition(int pos,
 
 unsigned LazyLineBreakIterator::NextBreakOpportunity(unsigned offset) const {
   DCHECK_LE(offset, string_.length());
-  int next_break = NextBreakablePosition(offset, string_.length());
-  DCHECK_GE(next_break, 0);
-  return next_break;
+  return NextBreakablePosition(offset, string_.length());
 }
 
 unsigned LazyLineBreakIterator::NextBreakOpportunity(unsigned offset,
                                                      unsigned len) const {
-  DCHECK_LE(offset, string_.length());
+  DCHECK_LE(offset, len);
   DCHECK_LE(len, string_.length());
-  int next_break = NextBreakablePosition(offset, len);
-  DCHECK_GE(next_break, 0);
-  return next_break;
+  return NextBreakablePosition(offset, len);
 }
 
 unsigned LazyLineBreakIterator::PreviousBreakOpportunity(unsigned offset,
@@ -597,10 +600,10 @@ unsigned LazyLineBreakIterator::PreviousBreakOpportunity(unsigned offset,
   // +2 to ensure at least one code point is included.
   unsigned end = std::min(pos + 2, string_.length());
   while (pos > min) {
-    int next_break = NextBreakablePosition(pos, end);
-    DCHECK_GE(next_break, 0);
-    if (static_cast<unsigned>(next_break) == pos)
+    unsigned next_break = NextBreakablePosition(pos, end);
+    if (next_break == pos) {
       return next_break;
+    }
 
     // There's no break opportunities at |pos| or after.
     end = pos;

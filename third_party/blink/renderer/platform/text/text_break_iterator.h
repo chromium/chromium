@@ -190,14 +190,14 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   bool IsSoftHyphenEnabled() const { return !disable_soft_hyphen_; }
   void EnableSoftHyphen(bool value) { disable_soft_hyphen_ = !value; }
 
-  inline bool IsBreakable(int pos) const {
+  inline bool IsBreakable(unsigned pos) const {
     // No need to scan the entire string for the next breakable position when
     // all we need to determine is whether the current position is breakable.
     // Limit length to pos + 1.
     // TODO(layout-dev): We should probably try to break out an actual
     // IsBreakable method from NextBreakablePosition and get rid of this hack.
-    int len = std::min(pos + 1, static_cast<int>(string_.length()));
-    int next_breakable = NextBreakablePosition(pos, len);
+    const unsigned len = std::min(pos + 1, string_.length());
+    unsigned next_breakable = NextBreakablePosition(pos, len);
     return pos == next_breakable;
   }
 
@@ -248,13 +248,17 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   }
 
   template <typename CharacterType, LineBreakType, BreakSpaceType>
-  int NextBreakablePosition(int pos, const CharacterType* str, int len) const;
+  unsigned NextBreakablePosition(unsigned pos,
+                                 const CharacterType* str,
+                                 unsigned len) const;
   template <typename CharacterType, LineBreakType>
-  int NextBreakablePosition(int pos, const CharacterType* str, int len) const;
+  unsigned NextBreakablePosition(unsigned pos,
+                                 const CharacterType* str,
+                                 unsigned len) const;
   template <LineBreakType>
-  int NextBreakablePosition(int pos, int len) const;
-  int NextBreakablePositionBreakCharacter(int pos) const;
-  int NextBreakablePosition(int pos, int len) const;
+  unsigned NextBreakablePosition(unsigned pos, unsigned len) const;
+  unsigned NextBreakablePositionBreakCharacter(unsigned pos) const;
+  unsigned NextBreakablePosition(unsigned pos, unsigned len) const;
 
   String string_;
   const LayoutLocale* locale_ = nullptr;
