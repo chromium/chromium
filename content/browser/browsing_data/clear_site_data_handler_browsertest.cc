@@ -94,11 +94,22 @@ enum class SetStorageKey { kYes, kNo };
 // ClearSiteData.
 class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
  public:
+  // TODO(crbug.com/328043119): Remove code associated with
+  // kAncestorChainBitEnabledInPartitionedCookies after it's enabled by default.
+  TestBrowsingDataRemoverDelegate() {
+    feature_list_.InitAndEnableFeature(
+        net::features::kAncestorChainBitEnabledInPartitionedCookies);
+  }
   // Sets a test expectation that a Clear-Site-Data header call from |origin|
   // (under |top_level_site|) instructing to delete |cookies|, |storage|, and
   // |cache|, will schedule the corresponding BrowsingDataRemover deletion
   // tasks. If |set_storage_key|=kYes (the default) then a storage key will be
   // set on the filter builder.
+  //
+  // `cookie_partition_key_third_party` is true when cookie partition key is
+  // expected to be third party due to the expected ancestor chain bit value
+  // indicating cross-site even if the `top_level_site` and origin are
+  // same-site.
   void ExpectClearSiteDataCall(
       const StoragePartitionConfig& storage_partition_config,
       const url::Origin& origin,
@@ -106,6 +117,7 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
       bool cookies,
       bool storage,
       bool cache,
+      bool cookie_partition_key_third_party = false,
       SetStorageKey set_storage_key = SetStorageKey::kYes) {
     const uint64_t kOriginTypeMask =
         BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
@@ -116,9 +128,10 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
           BrowsingDataRemover::DATA_TYPE_COOKIES |
           BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS;
       net::CookiePartitionKey::AncestorChainBit ancestor_chain_bit =
-          (net::SchemefulSite(origin) == top_level_site
-               ? net::CookiePartitionKey::AncestorChainBit::kSameSite
-               : net::CookiePartitionKey::AncestorChainBit::kCrossSite);
+          cookie_partition_key_third_party ||
+                  (net::SchemefulSite(origin) != top_level_site)
+              ? net::CookiePartitionKey::AncestorChainBit::kCrossSite
+              : net::CookiePartitionKey::AncestorChainBit::kSameSite;
       BrowsingDataFilterBuilderImpl filter_builder(
           BrowsingDataFilterBuilder::Mode::kDelete);
       filter_builder.AddRegisterableDomain(origin.host());
@@ -161,9 +174,15 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
   // A shortcut for the above method, but with only cookies deleted, and
   // |origin|'s site is used as |top_level_site| if omitted. This is useful for
   // most tests that use |kClearCookiesHeader|.
+  //
+  // `cookie_partition_key_third_party` is true when cookie partition key is
+  // expected to be third party due to the expected ancestor chain bit value
+  // indicating cross-site even if the `top_level_site` and origin are
+  // same-site.
   void ExpectClearSiteDataCookiesCall(
       const StoragePartitionConfig& storage_partition_config,
       const url::Origin& origin,
+      bool cookie_partition_key_third_party = false,
       base::optional_ref<const net::SchemefulSite> top_level_site =
           base::optional_ref<const net::SchemefulSite>()) {
     ExpectClearSiteDataCall(storage_partition_config, origin,
@@ -172,8 +191,11 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
                                 : net::SchemefulSite(origin),
                             /*cookies=*/true,
                             /*storage=*/false,
-                            /*cache=*/false);
+                            /*cache=*/false, cookie_partition_key_third_party);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
@@ -428,7 +450,8 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
 
       if (mask & (1 << i))
         delegate()->ExpectClearSiteDataCookiesCall(
-            storage_partition_config(), url::Origin::Create(urls[i]));
+            storage_partition_config(), url::Origin::Create(urls[i]),
+            /*cookie_partition_key_third_party=*/i != 0);
     }
 
     // Set up redirects between urls 0 --> 1 --> 2.
@@ -479,6 +502,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
       if (mask & (1 << i))
         delegate()->ExpectClearSiteDataCookiesCall(
             storage_partition_config(), url::Origin::Create(urls[i]),
+            /*cookie_partition_key_third_party=*/true,
             net::SchemefulSite(page_with_image));
     }
 
@@ -629,18 +653,18 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, ServiceWorker) {
   // but not by the "/resource_from_sw" fetch. |origin3| and |origin4| prove
   // that the number of calls is dependent on the number of network responses,
   // i.e. that it isn't always 1 as in the case of |origin1| and |origin2|.
-  delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
-                                             url::Origin::Create(origin1),
-                                             net::SchemefulSite(url));
-  delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
-                                             url::Origin::Create(origin4),
-                                             net::SchemefulSite(url));
-  delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
-                                             url::Origin::Create(origin2),
-                                             net::SchemefulSite(url));
-  delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
-                                             url::Origin::Create(origin4),
-                                             net::SchemefulSite(url));
+  delegate()->ExpectClearSiteDataCookiesCall(
+      storage_partition_config(), url::Origin::Create(origin1),
+      /*cookie_partition_key_third_party=*/false, net::SchemefulSite(url));
+  delegate()->ExpectClearSiteDataCookiesCall(
+      storage_partition_config(), url::Origin::Create(origin4),
+      /*cookie_partition_key_third_party=*/false, net::SchemefulSite(url));
+  delegate()->ExpectClearSiteDataCookiesCall(
+      storage_partition_config(), url::Origin::Create(origin2),
+      /*cookie_partition_key_third_party=*/true, net::SchemefulSite(url));
+  delegate()->ExpectClearSiteDataCookiesCall(
+      storage_partition_config(), url::Origin::Create(origin4),
+      /*cookie_partition_key_third_party=*/false, net::SchemefulSite(url));
 
   url = https_server()->GetURL("origin1.com", "/anything-in-workers-scope");
   AddQuery(&url, "origin1", origin1.spec());
@@ -710,9 +734,9 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, MAYBE_Credentials) {
     AddQuery(&page, "html", content);
 
     if (test_case.should_run)
-      delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
-                                                 url::Origin::Create(resource),
-                                                 net::SchemefulSite(page));
+      delegate()->ExpectClearSiteDataCookiesCall(
+          storage_partition_config(), url::Origin::Create(resource),
+          /*cookie_partition_key_third_party=*/false, net::SchemefulSite(page));
 
     EXPECT_TRUE(NavigateToURL(shell(), page));
     WaitForTitle(shell(), "done");
@@ -975,7 +999,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
   delegate()->ExpectClearSiteDataCall(
       storage_partition_config(), url::Origin::Create(url),
-      net::SchemefulSite(url), false, true, false, SetStorageKey::kNo);
+      net::SchemefulSite(url), false, true, false, false, SetStorageKey::kNo);
   SetClearSiteDataHeader("\"storage\"");
   EXPECT_FALSE(RunScriptAndGetBool("installServiceWorker()"));
   delegate()->VerifyAndClearExpectations();
@@ -1003,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   // Update the service worker and send C-S-D during update.
   delegate()->ExpectClearSiteDataCall(
       storage_partition_config(), url::Origin::Create(url),
-      net::SchemefulSite(url), false, true, false, SetStorageKey::kNo);
+      net::SchemefulSite(url), false, true, false, false, SetStorageKey::kNo);
 
   base::RunLoop loop;
   auto* remover = browser_context()->GetBrowsingDataRemover();

@@ -1843,8 +1843,12 @@ TEST_F(CookieStoreManagerTest, UnTrustworthyOrigin) {
 // cookies with third-party cookie blocking on.
 TEST_F(CookieStoreManagerTest, PartitionedWorker_FirstPartyPartition) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({net::features::kThirdPartyStoragePartitioning},
-                                {});
+  // TODO(crbug.com/328043119): Remove code associated with
+  // kAncestorChainBitEnabledInPartitionedCookies after it's enabled by default.
+  feature_list.InitWithFeatures(
+      {net::features::kThirdPartyStoragePartitioning,
+       net::features::kAncestorChainBitEnabledInPartitionedCookies},
+      {});
 
   // Register 1P worker.
   int64_t first_party_registration_id =
@@ -1879,7 +1883,9 @@ TEST_F(CookieStoreManagerTest, PartitionedWorker_FirstPartyPartition) {
           /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
           net::COOKIE_PRIORITY_DEFAULT,
-          net::CookiePartitionKey::FromURLForTesting(GURL(kExampleScope)))));
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL(kExampleScope),
+              net::CookiePartitionKey::AncestorChainBit::kSameSite))));
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1u, worker_test_helper_->changes().size());

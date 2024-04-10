@@ -821,6 +821,11 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_UnsupportedMultipleVaryHeader) {
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_DevToolsAttached) {
+  // TODO(crbug.com/328043119): Remove code associated with
+  // kAncestorChainBitEnabledInPartitionedCookies after it's enabled by default.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {net::features::kAncestorChainBitEnabledInPartitionedCookies}, {});
   ResourceRequest request = CreateRequest("/cacheable?max-age=120");
   request.devtools_request_id = "fake-id";
   StoreResponseToMemoryCache(request);
@@ -851,8 +856,10 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_DevToolsAttached) {
   }
   ASSERT_TRUE(has_expected_header);
 
-  EXPECT_EQ(net::CookiePartitionKey::FromURLForTesting(request.url),
-            devtools_observer.response_cookie_partition_key());
+  EXPECT_EQ(
+      net::CookiePartitionKey::FromURLForTesting(
+          request.url, net::CookiePartitionKey::AncestorChainBit::kCrossSite),
+      devtools_observer.response_cookie_partition_key());
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_ClientSecurityStateProvided) {
