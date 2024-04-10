@@ -543,6 +543,8 @@ source_set("browser_sources") {
     "//services/media_session/public/cpp",
     "//services/media_session/public/mojom",
     "//services/network/public/mojom",
+    "//services/on_device_model/public/cpp",
+    "//services/on_device_model/public/mojom",
     "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
     "//services/service_manager/public/cpp",
     "//services/tracing/public/cpp",
@@ -702,6 +704,8 @@ source_set("browser_sources") {
   if (is_chromeos_ash) {
     sources += [
       "chromeos/delegate_to_browser_gpu_service_accelerator_factory.h",
+      "on_device_model_service_instance.cc",
+      "on_device_model_service_instance.h",
       "tts_controller_delegate.cc",
       "tts_controller_delegate.h",
     ]

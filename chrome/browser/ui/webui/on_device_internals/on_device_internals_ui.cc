@@ -19,6 +19,10 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/public/browser/on_device_model_service_instance.h"
+#endif
+
 namespace {
 
 on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
@@ -75,6 +79,11 @@ void OnDeviceInternalsUI::LoadModel(
 
 on_device_model::mojom::OnDeviceModelService&
 OnDeviceInternalsUI::GetService() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const auto& remote = content::GetRemoteOnDeviceModelService();
+  CHECK(remote);
+  return *remote;
+#else
   if (!service_) {
     content::ServiceProcessHost::Launch<
         on_device_model::mojom::OnDeviceModelService>(
@@ -85,6 +94,7 @@ OnDeviceInternalsUI::GetService() {
     service_.reset_on_disconnect();
   }
   return *service_.get();
+#endif
 }
 
 void OnDeviceInternalsUI::GetEstimatedPerformanceClass(

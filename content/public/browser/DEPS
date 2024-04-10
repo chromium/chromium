@@ -17,6 +17,7 @@ include_rules = [
   "+services/media_session/public",
   "+services/metrics/public/cpp",
   "+services/network/public/cpp",
+  "+services/on_device_model/public",
   "+services/resource_coordinator/public",
   "+services/tracing/public/mojom",
   "+services/video_capture/public/mojom",
