@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.blink builder group."""
 
-load("//lib/builders.star", "os", "reclient", "siso")
+load("//lib/builders.star", "cpu", "os", "reclient", "siso")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/branches.star", "branches")
 load("//lib/try.star", "try_")
@@ -283,6 +283,8 @@ blink_mac_builder(
             "minimal_symbols",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
 )
 
 blink_mac_builder(
