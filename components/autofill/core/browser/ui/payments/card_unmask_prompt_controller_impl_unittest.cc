@@ -81,9 +81,15 @@ class TestCardUnmaskPromptView : public CardUnmaskPromptView {
 
 class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
  public:
-  explicit TestCardUnmaskPromptController(
-      TestingPrefServiceSimple* pref_service)
-      : CardUnmaskPromptControllerImpl(pref_service) {}
+  TestCardUnmaskPromptController(
+      TestingPrefServiceSimple* pref_service,
+      const CreditCard& card,
+      const CardUnmaskPromptOptions& card_unmask_prompt_options,
+      base::WeakPtr<CardUnmaskDelegate> delegate)
+      : CardUnmaskPromptControllerImpl(pref_service,
+                                       card,
+                                       card_unmask_prompt_options,
+                                       delegate) {}
 
   TestCardUnmaskPromptController(const TestCardUnmaskPromptController&) =
       delete;
@@ -121,8 +127,6 @@ class CardUnmaskPromptControllerImplGenericTest : public testing::Test {
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
-    controller_ =
-        std::make_unique<TestCardUnmaskPromptController>(pref_service_.get());
     delegate_ = std::make_unique<TestCardUnmaskDelegate>();
   }
 
@@ -137,12 +141,12 @@ class CardUnmaskPromptControllerImplGenericTest : public testing::Test {
     CardUnmaskPromptOptions card_unmask_prompt_options =
         CardUnmaskPromptOptions(challenge_option,
                                 AutofillClient::UnmaskCardReason::kAutofill);
-
-    controller_->ShowPrompt(
-        base::BindOnce(&CardUnmaskPromptControllerImplGenericTest::
-                           CreateCardUnmaskPromptView,
-                       base::Unretained(this)),
-        card_, card_unmask_prompt_options, delegate_->GetWeakPtr());
+    controller_ = std::make_unique<TestCardUnmaskPromptController>(
+        pref_service_.get(), card_, card_unmask_prompt_options,
+        delegate_->GetWeakPtr());
+    controller_->ShowPrompt(base::BindOnce(
+        &CardUnmaskPromptControllerImplGenericTest::CreateCardUnmaskPromptView,
+        base::Unretained(this)));
   }
 
   void DismissPrompt() {

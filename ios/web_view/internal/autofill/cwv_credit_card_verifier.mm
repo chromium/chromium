@@ -108,14 +108,14 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
   if (self) {
     _creditCard = [[CWVCreditCard alloc] initWithCreditCard:creditCard];
     _unmaskingController =
-        std::make_unique<autofill::CardUnmaskPromptControllerImpl>(prefs);
+        std::make_unique<autofill::CardUnmaskPromptControllerImpl>(
+            prefs, creditCard,
+            autofill::CardUnmaskPromptOptions(std::nullopt, reason), delegate);
     __weak CWVCreditCardVerifier* weakSelf = self;
     _unmaskingController->ShowPrompt(
         base::BindOnce(^autofill::CardUnmaskPromptView*() {
           return [weakSelf createUnmaskingView];
-        }),
-        creditCard, autofill::CardUnmaskPromptOptions(std::nullopt, reason),
-        delegate);
+        }));
   }
   return self;
 }

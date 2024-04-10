@@ -83,6 +83,10 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
+  raw_ptr<ChromeBrowserState> browser_state_;
+
+  std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
+
   // The unique_ptr reference is only temporarily valid until the corresponding
   // coordinator takes the ownership of the model controller from this class.
   // The WeakPtr reference should be used to invoke the model controller from
@@ -91,8 +95,6 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       progress_dialog_controller_;
   base::WeakPtr<AutofillProgressDialogControllerImpl>
       progress_dialog_controller_weak_;
-
-  CardUnmaskPromptControllerImpl unmask_controller_;
 
   std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
       otp_input_dialog_controller_;

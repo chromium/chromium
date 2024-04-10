@@ -37,7 +37,7 @@ IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
               client->GetIdentityManager(),
               client->GetPersonalDataManager(),
               browser_state->IsOffTheRecord())),
-      unmask_controller_(browser_state->GetPrefs()) {}
+      browser_state_(browser_state) {}
 
 IOSChromePaymentsAutofillClient::~IOSChromePaymentsAutofillClient() = default;
 
@@ -106,17 +106,20 @@ void IOSChromePaymentsAutofillClient::ShowUnmaskPrompt(
     const CreditCard& card,
     const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
-  unmask_controller_.ShowPrompt(
+  unmask_controller_ = std::make_unique<CardUnmaskPromptControllerImpl>(
+      browser_state_->GetPrefs(), card, card_unmask_prompt_options, delegate);
+  unmask_controller_->ShowPrompt(
       base::BindOnce(&CreateCardUnmaskPromptViewBridge,
-                     base::Unretained(&unmask_controller_),
+                     base::Unretained(unmask_controller_.get()),
                      base::Unretained(client_->base_view_controller()),
-                     base::Unretained(client_->GetPersonalDataManager())),
-      card, card_unmask_prompt_options, delegate);
+                     base::Unretained(client_->GetPersonalDataManager())));
 }
 
 void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(
     AutofillClient::PaymentsRpcResult result) {
-  unmask_controller_.OnVerificationResult(result);
+  if (unmask_controller_) {
+    unmask_controller_->OnVerificationResult(result);
+  }
 }
 
 }  // namespace autofill::payments

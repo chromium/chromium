@@ -94,9 +94,12 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   }
 
   std::unique_ptr<CardUnmaskPromptControllerImpl>
-  SetCardUnmaskControllerForTesting(
+  ExtractCardUnmaskControllerForTesting() {
+    return std::move(unmask_controller_);
+  }
+  void SetCardUnmaskControllerForTesting(
       std::unique_ptr<CardUnmaskPromptControllerImpl> test_controller) {
-    return std::exchange(unmask_controller_, std::move(test_controller));
+    unmask_controller_ = std::move(test_controller);
   }
 
  private:

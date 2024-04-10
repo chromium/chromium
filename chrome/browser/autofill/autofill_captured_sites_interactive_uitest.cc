@@ -240,9 +240,7 @@ class AutofillCapturedSitesInteractiveTest
       test_delegate()->SetExpectations({ObservedUiEvents::kFormDataFilled,
                                         ObservedUiEvents::kSuggestionsHidden},
                                        kAutofillWaitForFillInterval);
-      TestCardUnmaskPromptWaiter test_card_unmask_prompt_waiter(
-          web_contents,
-          user_prefs::UserPrefs::Get(web_contents->GetBrowserContext()));
+      TestCardUnmaskPromptWaiter test_card_unmask_prompt_waiter(web_contents);
       SendKeyToPopup(frame, ui::DomKey::ENTER);
 
       if (should_cvc_dialog_pop_up) {
@@ -444,9 +442,7 @@ class AutofillCapturedSitesInteractiveTest
             FieldTypeGroup::kCreditCard;
     bool should_cvc_dialog_pop_up = is_credit_card_field && cvc;
 
-    TestCardUnmaskPromptWaiter test_card_unmask_prompt_waiter(
-        web_contents,
-        user_prefs::UserPrefs::Get(web_contents->GetBrowserContext()));
+    TestCardUnmaskPromptWaiter test_card_unmask_prompt_waiter(web_contents);
 
     // Use AutofillFlow library to trigger the autofill behavior. Try both ways.
     testing::AssertionResult autofill_assertion_by_arrow =

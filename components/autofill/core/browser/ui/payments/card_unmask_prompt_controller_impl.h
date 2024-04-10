@@ -26,7 +26,11 @@ class CardUnmaskPromptView;
 // This class is owned by `ChromeAutofillClient`.
 class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
  public:
-  explicit CardUnmaskPromptControllerImpl(PrefService* pref_service);
+  CardUnmaskPromptControllerImpl(
+      PrefService* pref_service,
+      const CreditCard& card,
+      const CardUnmaskPromptOptions& card_unmask_prompt_options,
+      base::WeakPtr<CardUnmaskDelegate> delegate);
 
   CardUnmaskPromptControllerImpl(const CardUnmaskPromptControllerImpl&) =
       delete;
@@ -43,11 +47,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   // Functions called by ChromeAutofillClient.
   // It is guaranteed that |view_factory| is called before this function
   // returns, i.e., the callback will not outlive the stack frame of ShowPrompt.
-  virtual void ShowPrompt(
-      CardUnmaskPromptViewFactory view_factory,
-      const CreditCard& card,
-      const CardUnmaskPromptOptions& card_unmask_prompt_options,
-      base::WeakPtr<CardUnmaskDelegate> delegate);
+  virtual void ShowPrompt(CardUnmaskPromptViewFactory view_factory);
   // The CVC the user entered went through validation.
   void OnVerificationResult(AutofillClient::PaymentsRpcResult result);
 
@@ -91,6 +91,15 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   int GetCvcTooltipResourceId() override;
 #endif
 
+  PrefService* pref_service_for_testing() const { return pref_service_; }
+  CreditCard card_for_testing() const { return card_; }
+  CardUnmaskPromptOptions card_unmask_prompt_options_for_testing() const {
+    return card_unmask_prompt_options_;
+  }
+  base::WeakPtr<CardUnmaskDelegate> delegate_for_testing() const {
+    return delegate_;
+  }
+
  protected:
   // Exposed for testing.
   CardUnmaskPromptView* view() { return card_unmask_view_; }
@@ -103,11 +112,11 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   void LogOnCloseEvents();
   AutofillMetrics::UnmaskPromptEvent GetCloseReasonEvent();
 
-  CardUnmaskPromptOptions card_unmask_prompt_options_;
-  const raw_ptr<PrefService, DanglingUntriaged> pref_service_;
-  bool new_card_link_clicked_ = false;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   CreditCard card_;
+  CardUnmaskPromptOptions card_unmask_prompt_options_;
   base::WeakPtr<CardUnmaskDelegate> delegate_;
+  bool new_card_link_clicked_ = false;
   raw_ptr<CardUnmaskPromptView> card_unmask_view_ = nullptr;
 
   AutofillClient::PaymentsRpcResult unmasking_result_ =

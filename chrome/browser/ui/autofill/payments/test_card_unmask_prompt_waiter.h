@@ -27,8 +27,7 @@ class TestCardUnmaskPromptControllerImpl;
 //   test_card_unmask_prompt_waiter.EnterAndAcceptCvcDialog(cvc);
 class TestCardUnmaskPromptWaiter {
  public:
-  explicit TestCardUnmaskPromptWaiter(content::WebContents* web_contents,
-                                      PrefService* pref_service);
+  explicit TestCardUnmaskPromptWaiter(content::WebContents* web_contents);
   ~TestCardUnmaskPromptWaiter();
 
   // Blocks until the prompt is shown.

@@ -68,9 +68,15 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
  public:
   TestCardUnmaskPromptController(
       content::WebContents* contents,
-      scoped_refptr<content::MessageLoopRunner> runner)
+      scoped_refptr<content::MessageLoopRunner> runner,
+      const CreditCard& card,
+      const CardUnmaskPromptOptions& card_unmask_prompt_options,
+      base::WeakPtr<CardUnmaskDelegate> delegate)
       : CardUnmaskPromptControllerImpl(
-            user_prefs::UserPrefs::Get(contents->GetBrowserContext())),
+            user_prefs::UserPrefs::Get(contents->GetBrowserContext()),
+            card,
+            card_unmask_prompt_options,
+            delegate),
         runner_(runner) {}
   TestCardUnmaskPromptController(const TestCardUnmaskPromptController&) =
       delete;
@@ -158,8 +164,7 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void SetUpOnMainThread() override {
     runner_ = new content::MessageLoopRunner;
-    controller_ =
-        std::make_unique<TestCardUnmaskPromptController>(contents(), runner_);
+
     delegate_ = std::make_unique<TestCardUnmaskDelegate>();
   }
 
@@ -177,16 +182,17 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
         CardUnmaskPromptOptions(
             /*challenge_option=*/
             std::nullopt, AutofillClient::UnmaskCardReason::kAutofill);
-    controller()->ShowPrompt(base::BindOnce(&CreateCardUnmaskPromptView,
-                                            base::Unretained(controller()),
-                                            base::Unretained(contents())),
-                             card, card_unmask_prompt_options,
-                             delegate()->GetWeakPtr());
+    controller_ = std::make_unique<TestCardUnmaskPromptController>(
+        contents(), runner_, card, card_unmask_prompt_options,
+        delegate_->GetWeakPtr());
+    controller_->ShowPrompt(base::BindOnce(&CreateCardUnmaskPromptView,
+                                           base::Unretained(controller()),
+                                           base::Unretained(contents())));
     // Setting error expectations and confirming the dialogs for some test
     // cases.
     if (name == kExpiryValidPermanentError ||
         name == kExpiryValidTemporaryError) {
-      controller()->set_expected_verification_failure(
+      controller_->set_expected_verification_failure(
           /*allow_retry*/ name == kExpiryValidTemporaryError);
       CardUnmaskPromptViewTester::For(controller()->view())
           ->EnterCVCAndAccept(u"123");

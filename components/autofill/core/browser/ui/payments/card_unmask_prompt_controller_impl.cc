@@ -49,8 +49,14 @@ bool VirtualCardFeatureEnabled() {
 }  // namespace
 
 CardUnmaskPromptControllerImpl::CardUnmaskPromptControllerImpl(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {}
+    PrefService* pref_service,
+    const CreditCard& card,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
+    base::WeakPtr<CardUnmaskDelegate> delegate)
+    : pref_service_(pref_service),
+      card_(card),
+      card_unmask_prompt_options_(card_unmask_prompt_options),
+      delegate_(delegate) {}
 
 CardUnmaskPromptControllerImpl::~CardUnmaskPromptControllerImpl() {
   if (card_unmask_view_)
@@ -58,19 +64,12 @@ CardUnmaskPromptControllerImpl::~CardUnmaskPromptControllerImpl() {
 }
 
 void CardUnmaskPromptControllerImpl::ShowPrompt(
-    CardUnmaskPromptViewFactory card_unmask_view_factory,
-    const CreditCard& card,
-    const CardUnmaskPromptOptions& card_unmask_prompt_options,
-    base::WeakPtr<CardUnmaskDelegate> delegate) {
+    CardUnmaskPromptViewFactory card_unmask_view_factory) {
   if (card_unmask_view_)
     card_unmask_view_->ControllerGone();
 
   new_card_link_clicked_ = false;
   shown_timestamp_ = AutofillClock::Now();
-  pending_details_ = CardUnmaskDelegate::UserProvidedUnmaskDetails();
-  card_unmask_prompt_options_ = card_unmask_prompt_options;
-  card_ = card;
-  delegate_ = delegate;
   card_unmask_view_ = std::move(card_unmask_view_factory).Run();
   card_unmask_view_->Show();
   unmasking_result_ = AutofillClient::PaymentsRpcResult::kNone;

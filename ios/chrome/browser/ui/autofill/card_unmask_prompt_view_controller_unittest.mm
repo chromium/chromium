@@ -39,9 +39,15 @@ using ::testing::Return;
 class MockCardUnmaskPromptController
     : public autofill::CardUnmaskPromptControllerImpl {
  public:
-  explicit MockCardUnmaskPromptController(
-      TestingPrefServiceSimple* pref_service)
-      : CardUnmaskPromptControllerImpl(pref_service) {}
+  MockCardUnmaskPromptController(
+      TestingPrefServiceSimple* pref_service,
+      const autofill::CreditCard& card,
+      const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
+      base::WeakPtr<autofill::CardUnmaskDelegate> delegate)
+      : CardUnmaskPromptControllerImpl(pref_service,
+                                       card,
+                                       card_unmask_prompt_options,
+                                       delegate) {}
 
   MockCardUnmaskPromptController(const MockCardUnmaskPromptController&) =
       delete;
@@ -117,7 +123,8 @@ class CardUnmaskPromptViewControllerTest
 
     card_unmask_prompt_controller_ =
         std::make_unique<NiceMock<MockCardUnmaskPromptController>>(
-            pref_service_.get());
+            pref_service_.get(), card_, challenge_option_,
+            /*delegate=*/nullptr);
     ON_CALL(*card_unmask_prompt_controller_, GetCreditCard)
         .WillByDefault(testing::ReturnRef(card_));
 
@@ -348,6 +355,7 @@ class CardUnmaskPromptViewControllerTest
       card_unmask_prompt_bridge_;
   std::unique_ptr<NiceMock<MockCardUnmaskPromptController>>
       card_unmask_prompt_controller_;
+  autofill::CardUnmaskPromptOptions challenge_option_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
   ScopedKeyWindow scoped_window_;
