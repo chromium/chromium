@@ -181,6 +181,13 @@ actions. If you would like to use `reclient` with RBE, you'll first need to:
 Next, you'll have to specify your `rbe_instance` in your `.gclient`
 configuration to use the correct one for Chromium contributors:
 
+*** note
+**Warning:** If you are a Google employee, do not follow the instructions below.
+See
+[go/chrome-linux-build#setup-remote-execution](https://goto.google.com/chrome-linux-build#setup-remote-execution)
+instead.
+***
+
 ```
 solutions = [
   {
