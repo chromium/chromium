@@ -127,7 +127,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
 
 // Tests that all but one of the NTP tabs are removed after the app goes from a
 // foreground to a background state.
-TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTP) {
+TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTPs) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::test::FeatureRef> enabled_features;
   enabled_features.push_back(kRemoveExcessNTPs);
@@ -135,26 +135,38 @@ TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTP) {
   scoped_feature_list.InitWithFeatures(enabled_features, {});
 
   InsertNewWebState(0, GURL(kChromeUINewTabURL));
-  InsertNewWebState(1, GURL(kURL));
-  InsertNewWebState(2, GURL(kChromeUINewTabURL));
+  InsertNewWebState(1, GURL(kChromeUINewTabURL));
+  InsertNewWebState(2, GURL(kURL));
   InsertNewWebState(3, GURL(kChromeUINewTabURL));
 
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  histogram_tester_->ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);
+
+  // Transition to the background, triggering the NTP clean up.
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelBackground];
+
+  // Expect 2 calls to IOS.NTP.ExcessRemovedTabCount. One for the regular
+  // browser, one for the incognito browser.
+  histogram_tester_->ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 2);
+  // Regular browser got 2 NTP removed.
+  histogram_tester_->ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 2, 1);
+  // Incognito browser got no NTP removed.
+  histogram_tester_->ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 0, 1);
   WebStateList* web_state_list =
       scene_state_.browserProviderInterface.mainBrowserProvider.browser
           ->GetWebStateList();
   ASSERT_EQ(2, web_state_list->count());
   // NTP at index 3 should be the one saved, so the remaining WebState with an
-  // NTP should be at index 1.
+  // NTP should now be at index 1.
+  EXPECT_EQ(web_state_list->GetWebStateAt(0)->GetVisibleURL(), kURL);
   EXPECT_TRUE(IsUrlNtp(web_state_list->GetWebStateAt(1)->GetVisibleURL()));
 }
 
-// Tests that only the NTP tab with navigation history is the only NTP tab that
-// is kept after moving to the background state.
-TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPTabs) {
+// Tests that the NTP tab with navigation history is the only NTP tab that is
+// kept after moving to the background state.
+TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPs) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::test::FeatureRef> enabled_features;
   enabled_features.push_back(kRemoveExcessNTPs);
@@ -168,19 +180,32 @@ TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPTabs) {
 
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  histogram_tester_->ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);
+
+  // Transition to the background, triggering the NTP clean up.
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelBackground];
+
+  // Expect 2 calls to IOS.NTP.ExcessRemovedTabCount. One for the regular
+  // browser, one for the incognito browser.
+  histogram_tester_->ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 2);
+  // Regular browser got 2 NTP removed.
+  histogram_tester_->ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 2, 1);
+  // Incognito browser got no NTP removed.
+  histogram_tester_->ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 0, 1);
   WebStateList* web_state_list =
       scene_state_.browserProviderInterface.mainBrowserProvider.browser
           ->GetWebStateList();
   ASSERT_EQ(2, web_state_list->count());
+  EXPECT_EQ(web_state_list->GetWebStateAt(0)->GetVisibleURL(), kURL);
   EXPECT_TRUE(IsUrlNtp(web_state_list->GetWebStateAt(1)->GetVisibleURL()));
+  EXPECT_GT(web_state_list->GetWebStateAt(1)->GetNavigationItemCount(), 1);
 }
 
-// Tests that, starting with an active WebState with no navigation history and a
-// WebState with navigation history showing the NTP, the latter WebState becomes
-// the active WebState after a background.
-TEST_F(StartSurfaceSceneAgentTest, KeepNTPAsActiveTab) {
+// Tests that, starting with a WebState with navigation history showing the NTP
+// and an active WebState with no navigation history, the former WebState is
+// kept and becomes the active WebState after backgrounding.
+TEST_F(StartSurfaceSceneAgentTest, KeepAndActivateNonEmptyNTP) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::test::FeatureRef> enabled_features;
   enabled_features.push_back(kRemoveExcessNTPs);
@@ -195,12 +220,25 @@ TEST_F(StartSurfaceSceneAgentTest, KeepNTPAsActiveTab) {
   web_state_list->ActivateWebStateAt(2);
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  histogram_tester_->ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);
+
+  // Transition to the background, triggering the NTP clean up.
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelBackground];
+
+  // Expect 2 calls to IOS.NTP.ExcessRemovedTabCount. One for the regular
+  // browser, one for the incognito browser.
+  histogram_tester_->ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 2);
+  // Regular browser got 1 NTP removed.
+  histogram_tester_->ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 1, 1);
+  // Incognito browser got no NTP removed.
+  histogram_tester_->ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 0, 1);
   ASSERT_EQ(2, web_state_list->count());
   EXPECT_TRUE(IsUrlNtp(web_state_list->GetWebStateAt(0)->GetVisibleURL()));
+  EXPECT_GT(web_state_list->GetWebStateAt(0)->GetNavigationItemCount(), 1);
   EXPECT_EQ(web_state_list->GetActiveWebState(),
             web_state_list->GetWebStateAt(0));
+  EXPECT_EQ(web_state_list->GetWebStateAt(1)->GetVisibleURL(), kURL);
 }
 
 // Tests that IOS.StartSurfaceShown is correctly logged for a valid warm start
