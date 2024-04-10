@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/start_surface/start_surface_scene_agent.h"
+
+#import "base/containers/contains.h"
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -17,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
@@ -28,8 +31,20 @@
 #import "url/gurl.h"
 
 namespace {
+
 // Name of histogram to record the number of excess NTP tabs that are removed.
 const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
+
+// Whether `web_state` shows the NTP.
+bool IsNTP(web::WebState* web_state) {
+  return IsUrlNtp(web_state->GetVisibleURL());
+}
+
+// Whether `web_state` shows the NTP and never had a navigation.
+bool IsEmptyNTP(web::WebState* web_state) {
+  return IsNTP(web_state) && web_state->GetNavigationItemCount() <= 1;
+}
+
 }  // namespace
 
 @interface StartSurfaceSceneAgent () <AppStateObserver>
@@ -173,68 +188,67 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   insertion_agent->InsertWebState(web_load_params, tab_insertion_params);
 }
 
-// Removes duplicate NTP tabs in `browser`'s WebStateList.
+// Removes empty NTP tabs (i.e. NTPs with no further navigation) in `browser`'s
+// WebStateList.
+//
+// NTPs with navigations are all preserved. If there are none, an empty NTP is
+// preserved and not removed.
 - (void)removeExcessNTPsInBrowser:(Browser*)browser {
   WebStateList* webStateList = browser->GetWebStateList();
-  web::WebState* activeWebState =
-      browser->GetWebStateList()->GetActiveWebState();
-  int activeWebStateIndex = webStateList->GetIndexOfWebState(activeWebState);
-  NSMutableArray<NSNumber*>* emptyNtpIndices = [[NSMutableArray alloc] init];
-  web::WebState* lastNtpWebStatesWithNavHistory = nullptr;
-  BOOL keepOneNTP = YES;
-  BOOL activeWebStateIsEmptyNTP = NO;
+
+  // Find all empty NTPs, i.e. NTPs with no navigation. Also keep track of the
+  // last NTP with a navigation, if any, and whether the active tab is amongst
+  // the candidates for removal.
+  std::vector<int> indicesToRemove;
+  web::WebState* lastNTPWithNavigation = nullptr;
   for (int i = 0; i < webStateList->count(); i++) {
     web::WebState* webState = webStateList->GetWebStateAt(i);
-    if (IsUrlNtp(webState->GetVisibleURL())) {
-      // Check if there is navigation history for this WebState that is showing
-      // the NTP. If there is, then set `keepOneNTP` to NO, indicating that all
-      // WebStates in NTPs with no navigation history will get removed.
-      if (webState->GetNavigationItemCount() == 1) {
-        // Keep track if active WebState is showing an NTP and has no navigation
-        // history since it may get removed if `keepOneNTP` is NO.
-        if (i == activeWebStateIndex) {
-          activeWebStateIsEmptyNTP = YES;
-        }
-        // Insert at the front so that iterating through the array will remove
-        // WebStates in descending index order, preventing WebState indices from
-        // changing during removal.
-        [emptyNtpIndices insertObject:@(i) atIndex:0];
-      } else {
-        keepOneNTP = NO;
-        lastNtpWebStatesWithNavHistory = webState;
-      }
+    if (IsEmptyNTP(webState)) {
+      indicesToRemove.push_back(i);
+    } else if (IsNTP(webState)) {
+      lastNTPWithNavigation = webState;
     }
   }
-  if (keepOneNTP) {
-    // If the current active tab may be removed because it is showing the NTP
-    // and has no navigation history, then save that tab. Otherwise, keep the
-    // first index to save the most recently created tab.
-    NSNumber* tabIndexToSave = [emptyNtpIndices firstObject];
-    if (activeWebStateIsEmptyNTP &&
-        [[emptyNtpIndices lastObject] intValue] != activeWebStateIndex) {
-      tabIndexToSave = @(activeWebStateIndex);
+
+  // Find whether the active tab is currently scheduled to be removed.
+  const int activeWebStateIndex =
+      webStateList->GetIndexOfWebState(webStateList->GetActiveWebState());
+  bool activeWebStateRemoved =
+      base::Contains(indicesToRemove, activeWebStateIndex);
+
+  // If there are only empty NTPs, preserve one NTP by removing
+  // it from the list of indices to close.
+  if (!lastNTPWithNavigation && !indicesToRemove.empty()) {
+    // Preserve the last empty NTP (i.e. the most recent)…
+    auto indexToPreserveIter = indicesToRemove.end() - 1;
+    // … or preserve the active tab, if it was in the list of empty NTPs.
+    if (activeWebStateRemoved) {
+      indexToPreserveIter =
+          std::find(indicesToRemove.begin(), indicesToRemove.end(),
+                    activeWebStateIndex);
+      CHECK(indexToPreserveIter != indicesToRemove.end());
     }
-    [emptyNtpIndices removeObject:tabIndexToSave];
+    // Update `activeWebStateRemoved` if the active tab ends up preserved.
+    if (*indexToPreserveIter == activeWebStateIndex) {
+      activeWebStateRemoved = NO;
+    }
+    indicesToRemove.erase(indexToPreserveIter);
   }
-  UMA_HISTOGRAM_COUNTS_100(kExcessNTPTabsRemoved, [emptyNtpIndices count]);
-  // Removal starts from higher indices to ensure tab indices stay fixed
-  // throughout removal process.
-  for (NSNumber* index in emptyNtpIndices) {
-    web::WebState* webState =
-        browser->GetWebStateList()->GetWebStateAt([index intValue]);
-    DCHECK(IsUrlNtp(webState->GetVisibleURL()));
-    webStateList->CloseWebStateAt([index intValue],
-                                  WebStateList::CLOSE_NO_FLAGS);
-  }
-  // If the active WebState was removed because it was showing the NTP and had
-  // no navigation history, switch to another NTP. This only is needed if there
-  // were tabs showing the NTP that had navigation histories. Otherwise, code
-  // above already saves the current active WebState right before empty NTPs are
-  // removed.
-  if (activeWebStateIsEmptyNTP && !keepOneNTP) {
-    DCHECK(lastNtpWebStatesWithNavHistory);
-    int newActiveIndex =
-        webStateList->GetIndexOfWebState(lastNtpWebStatesWithNavHistory);
+
+  // Close the excessive NTPs.
+  UMA_HISTOGRAM_COUNTS_100(kExcessNTPTabsRemoved, indicesToRemove.size());
+  const WebStateList::ScopedBatchOperation batch =
+      webStateList->StartBatchOperation();
+  webStateList->CloseWebStatesAtIndices(
+      WebStateList::CLOSE_NO_FLAGS,
+      RemovingIndexes(std::move(indicesToRemove)));
+
+  // If the active WebState was removed because it was empty,
+  // switch to another NTP: the most recent NTP with navigation. It exists,
+  // otherwise the active WebState would have been kept.
+  if (activeWebStateRemoved) {
+    DCHECK(lastNTPWithNavigation);
+    int newActiveIndex = webStateList->GetIndexOfWebState(lastNTPWithNavigation);
     webStateList->ActivateWebStateAt(newActiveIndex);
   }
 }
