@@ -59,8 +59,9 @@ uint32_t GetOffsetInUTF16(const std::u16string& utf16_string,
                           uint32_t utf8_offset) {
   DCHECK_LT(utf8_offset, utf16_string.size());
   base::i18n::UTF16CharIterator char_iterator(utf16_string);
-  for (size_t i = 0; i < utf8_offset; ++i)
+  for (size_t i = 0; i < utf8_offset; ++i) {
     char_iterator.Advance();
+  }
   return char_iterator.array_pos();
 }
 
@@ -256,8 +257,9 @@ class InputMethodAshTest : public ui::ImeKeyEventDispatcher,
   }
 
   void TearDown() override {
-    if (input_method_ash_.get())
+    if (input_method_ash_.get()) {
       input_method_ash_->SetFocusedTextInputClient(nullptr);
+    }
     input_method_ash_.reset();
     IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
     IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
@@ -272,8 +274,9 @@ class InputMethodAshTest : public ui::ImeKeyEventDispatcher,
   ui::EventDispatchDetails DispatchKeyEventPostIME(
       ui::KeyEvent* event) override {
     dispatched_key_event_ = *event;
-    if (stop_propagation_post_ime_)
+    if (stop_propagation_post_ime_) {
       event->StopPropagation();
+    }
     return ui::EventDispatchDetails();
   }
 

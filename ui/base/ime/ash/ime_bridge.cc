@@ -18,8 +18,9 @@ TextInputTarget* IMEBridge::GetInputContextHandler() const {
 
 void IMEBridge::SetInputContextHandler(TextInputTarget* handler) {
   input_context_handler_ = handler;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnInputContextHandlerChanged();
+  }
 }
 
 void IMEBridge::SetCurrentEngineHandler(TextInputMethod* handler) {

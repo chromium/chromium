@@ -36,7 +36,7 @@ constexpr const char* kAltGrLayoutIds[] = {
     "us(intl)",
 };
 
-} // namespace
+}  // namespace
 
 ImeKeyboard::ImeKeyboard() = default;
 ImeKeyboard::~ImeKeyboard() = default;
@@ -61,8 +61,9 @@ bool ImeKeyboard::SetCurrentKeyboardLayoutByNameImpl(
   if (last_layout_ == layout_name) {
     return false;
   }
-  for (ImeKeyboard::Observer& observer : observers_)
+  for (ImeKeyboard::Observer& observer : observers_) {
     observer.OnLayoutChanging(layout_name);
+  }
   last_layout_ = layout_name;
   return true;
 }
@@ -72,8 +73,9 @@ void ImeKeyboard::SetCapsLockEnabled(bool enable_caps_lock) {
   caps_lock_is_enabled_ = enable_caps_lock;
   if (old_state != enable_caps_lock) {
     base::RecordAction(base::UserMetricsAction("CapsLock_Toggled"));
-    for (ImeKeyboard::Observer& observer : observers_)
+    for (ImeKeyboard::Observer& observer : observers_) {
       observer.OnCapsLockChanged(enable_caps_lock);
+    }
   }
 }
 

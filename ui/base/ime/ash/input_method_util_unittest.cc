@@ -378,8 +378,9 @@ TEST_F(InputMethodUtilTest, TestInputMethodIDMigration) {
       {"unknown", "unknown"},
   };
   std::vector<std::string> input_method_ids;
-  for (const auto& migration_case : migration_cases)
+  for (const auto& migration_case : migration_cases) {
     input_method_ids.emplace_back(migration_case[0]);
+  }
   // Duplicated hangul_2set.
   input_method_ids.emplace_back("ime:ko:hangul_2set");
 

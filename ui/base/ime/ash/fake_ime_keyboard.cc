@@ -11,8 +11,7 @@ namespace input_method {
 
 FakeImeKeyboard::FakeImeKeyboard()
     : set_current_keyboard_layout_by_name_count_(0),
-      auto_repeat_is_enabled_(false) {
-}
+      auto_repeat_is_enabled_(false) {}
 
 FakeImeKeyboard::~FakeImeKeyboard() = default;
 

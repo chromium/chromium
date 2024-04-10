@@ -153,8 +153,9 @@ void MockIMEInputContextHandler::ConfirmComposition(bool reset_engine) {
   // TODO(b/134473433) Modify this function so that the selection is unchanged.
   NOTIMPLEMENTED_LOG_ONCE();
 
-  if (!HasCompositionText())
+  if (!HasCompositionText()) {
     return;
+  }
 
   CommitText(
       last_update_composition_arg_.composition_text.text,

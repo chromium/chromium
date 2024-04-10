@@ -5,11 +5,10 @@
 #ifndef UI_BASE_IME_ASH_FAKE_IME_KEYBOARD_H_
 #define UI_BASE_IME_ASH_FAKE_IME_KEYBOARD_H_
 
-#include "ui/base/ime/ash/ime_keyboard.h"
-
 #include <string>
 
 #include "base/component_export.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
 
 namespace ash {
 namespace input_method {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
+
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 
 namespace ash {

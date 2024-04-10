@@ -14,8 +14,7 @@ namespace input_method {
 
 namespace {
 
-class ImeKeyboardTest : public testing::Test,
-                        public ImeKeyboard::Observer {
+class ImeKeyboardTest : public testing::Test, public ImeKeyboard::Observer {
  public:
   void SetUp() override {
     ime_keyboard_ = std::make_unique<FakeImeKeyboard>();
@@ -26,9 +25,7 @@ class ImeKeyboardTest : public testing::Test,
     ime_keyboard_->RemoveObserver(this);
     ime_keyboard_.reset();
   }
-  void OnCapsLockChanged(bool enabled) override {
-    caps_changed_ = true;
-  }
+  void OnCapsLockChanged(bool enabled) override { caps_changed_ = true; }
   void OnLayoutChanging(const std::string& layout_name) override {
     layout_changed_ = true;
   }

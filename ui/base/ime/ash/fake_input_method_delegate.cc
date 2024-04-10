@@ -16,8 +16,9 @@ std::string FakeInputMethodDelegate::GetHardwareKeyboardLayouts() const {
 
 std::u16string FakeInputMethodDelegate::GetLocalizedString(
     int resource_id) const {
-  if (!get_localized_string_callback_.is_null())
+  if (!get_localized_string_callback_.is_null()) {
     return get_localized_string_callback_.Run(resource_id);
+  }
   return std::u16string();
 }
 

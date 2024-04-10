@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/services/ime/input_method_user_data_service_impl.h"
+
 #include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom.h"

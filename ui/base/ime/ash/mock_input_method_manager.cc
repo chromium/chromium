@@ -228,10 +228,11 @@ void MockInputMethodManager::OverrideKeyboardKeyset(ImeKeyset keyset) {}
 
 void MockInputMethodManager::SetImeMenuFeatureEnabled(ImeMenuFeature feature,
                                                       bool enabled) {
-  if (enabled)
+  if (enabled) {
     features_enabled_state_ |= feature;
-  else
+  } else {
     features_enabled_state_ &= ~feature;
+  }
 }
 
 bool MockInputMethodManager::GetImeMenuFeatureEnabled(

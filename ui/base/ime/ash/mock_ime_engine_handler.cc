@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/base/ime/ash/mock_ime_engine_handler.h"
+
 #include "ui/base/ime/text_input_flags.h"
 
 namespace ash {
@@ -19,21 +20,21 @@ MockIMEEngineHandler::~MockIMEEngineHandler() = default;
 
 void MockIMEEngineHandler::Focus(const InputContext& input_context) {
   last_text_input_context_ = input_context;
-  if (last_text_input_context_.type != ui::TEXT_INPUT_TYPE_NONE)
+  if (last_text_input_context_.type != ui::TEXT_INPUT_TYPE_NONE) {
     ++focus_in_call_count_;
+  }
 }
 
 void MockIMEEngineHandler::Blur() {
-  if (last_text_input_context_.type != ui::TEXT_INPUT_TYPE_NONE)
+  if (last_text_input_context_.type != ui::TEXT_INPUT_TYPE_NONE) {
     ++focus_out_call_count_;
+  }
   last_text_input_context_.type = ui::TEXT_INPUT_TYPE_NONE;
 }
 
-void MockIMEEngineHandler::Enable(const std::string& component_id) {
-}
+void MockIMEEngineHandler::Enable(const std::string& component_id) {}
 
-void MockIMEEngineHandler::Disable() {
-}
+void MockIMEEngineHandler::Disable() {}
 
 void MockIMEEngineHandler::Reset() {
   ++reset_call_count_;
@@ -46,8 +47,7 @@ void MockIMEEngineHandler::ProcessKeyEvent(const ui::KeyEvent& key_event,
   last_passed_callback_ = std::move(callback);
 }
 
-void MockIMEEngineHandler::SetCaretBounds(
-    const gfx::Rect& caret_bounds) {}
+void MockIMEEngineHandler::SetCaretBounds(const gfx::Rect& caret_bounds) {}
 
 ui::VirtualKeyboardController*
 MockIMEEngineHandler::GetVirtualKeyboardController() const {
