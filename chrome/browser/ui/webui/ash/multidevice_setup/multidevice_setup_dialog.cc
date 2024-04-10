@@ -28,7 +28,6 @@
 #include "chrome/grit/multidevice_setup_resources_map.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/url_provider.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -121,7 +120,6 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
 
   AddLocalizedStrings(source);
   source->UseStringsJs();
-  source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
 
   webui::SetupWebUIDataSource(
       source,
