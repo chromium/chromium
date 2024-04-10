@@ -44,6 +44,7 @@ class DownloadBubbleUIController;
 class DownloadBubbleRowView : public views::View,
                               public views::ContextMenuController,
                               public views::FocusChangeListener,
+                              public views::ViewTargeterDelegate,
                               public DownloadBubbleRowViewInfoObserver {
   METADATA_HEADER(DownloadBubbleRowView, views::View)
 
@@ -104,6 +105,9 @@ class DownloadBubbleRowView : public views::View,
       DownloadCommands::Command command);
   void SetInputProtectorForTesting(
       std::unique_ptr<views::InputEventActivationProtector> input_protector);
+
+  // views::ViewTargeterDelegate
+  View* TargetForRect(View* root, const gfx::Rect& rect) override;
 
  protected:
   // Overrides ui::LayerDelegate:
@@ -227,6 +231,8 @@ class DownloadBubbleRowView : public views::View,
   raw_ptr<views::Button> transparent_button_ = nullptr;
 
   raw_ptr<views::InkDropContainerView> inkdrop_container_;
+
+  raw_ptr<views::View> deep_scan_notice_;
 
   // Drag and drop:
   // Whether we are dragging the download bubble row.
