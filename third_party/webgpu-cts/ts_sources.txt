@@ -609,6 +609,7 @@ src/webgpu/shader/execution/expression/call/builtin/textureLoad.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureNumLayers.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureNumLevels.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureNumSamples.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSample.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleBias.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleCompare.spec.ts
@@ -761,6 +762,7 @@ src/webgpu/shader/validation/expression/call/builtin/firstTrailingBit.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/floor.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/fract.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/frexp.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/insertBits.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/inverseSqrt.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/length.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/log.spec.ts
