@@ -5185,11 +5185,6 @@
     "expiry_milestone": 128
   },
   {
-      "name": "iph-ios-promo-manager-widget-promo",
-      "owners": [ "noemies@chromium.org", "tmartino@chromium.org", "bling-transactions@google.com", "bling-flags@google.com" ],
-      "expiry_milestone": 122
-  },
-  {
       "name": "iph-price-notifications-while-browsing",
       "owners": [ "danieltwhite@chromium.org", "ajuma@chromium.org" ],
       "expiry_milestone": 118

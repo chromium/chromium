@@ -1361,12 +1361,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"top-toolbar-theme-color", flag_descriptions::kThemeColorInTopToolbarName,
      flag_descriptions::kThemeColorInTopToolbarDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kThemeColorInTopToolbar)},
-    {"iph-ios-promo-manager-widget-promo",
-     flag_descriptions::kIPHiOSPromoPasswordManagerWidgetName,
-     flag_descriptions::kIPHiOSPromoPasswordManagerWidgetDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature)},
     {"autofill-enable-virtual-cards",
      flag_descriptions::kAutofillEnableVirtualCardsName,
      flag_descriptions::kAutofillEnableVirtualCardsDescription,

@@ -627,12 +627,6 @@ const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
 const char kIPHForSafariSwitcherDescription[] =
     "Enables displaying IPH for users who are considered Safari Switcher";
 
-const char kIPHiOSPromoPasswordManagerWidgetName[] =
-    "Password Manager widget promo IPH";
-const char kIPHiOSPromoPasswordManagerWidgetDescription[] =
-    "Enables displaying the Password Manager widget promo IPH when users "
-    "navigate to the Password Manager";
-
 const char kIPHiOSPullToRefreshFeatureName[] = "IPH for Pull Down To Refresh";
 const char kIPHiOSPullToRefreshFeatureDescription[] =
     "Enables displaying the gesture IPH instructing users to pull down to "

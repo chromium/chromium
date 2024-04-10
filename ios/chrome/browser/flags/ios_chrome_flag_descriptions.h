@@ -548,11 +548,6 @@ extern const char kIOSTipsNotificationsDescription[];
 extern const char kIPHForSafariSwitcherName[];
 extern const char kIPHForSafariSwitcherDescription[];
 
-// Title and description for the flag to enable the Password Manager widget
-// promo IPH.
-extern const char kIPHiOSPromoPasswordManagerWidgetName[];
-extern const char kIPHiOSPromoPasswordManagerWidgetDescription[];
-
 // Title and description for the flag to enable the pull-to-refreh IPH.
 extern const char kIPHiOSPullToRefreshFeatureName[];
 extern const char kIPHiOSPullToRefreshFeatureDescription[];

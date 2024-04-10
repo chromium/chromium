@@ -222,19 +222,6 @@ class FeatureEngagementTest : public PlatformTest {
     return params;
   }
 
-  std::map<std::string, std::string> PasswordManagerWidgetPromoParams() {
-    std::map<std::string, std::string> params;
-    params["availability"] = "any";
-    params["session_rate"] = "any";
-    params["event_trigger"] = "name:password_manager_widget_promo_trigger;"
-                              "comparator:<2;window:360;storage:360";
-    params["event_used"] = "name:password_manager_widget_promo_used;comparator:"
-                           "==0;window:360;storage:360";
-    params["event_1"] = "name:password_manager_widget_promo_closed;comparator:="
-                        "=0;window:360;storage:360";
-    return params;
-  }
-
   base::RepeatingCallback<void(bool)> BoolArgumentQuitClosure() {
     return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
   }
@@ -949,9 +936,8 @@ TEST_F(FeatureEngagementTest,
 // after being triggered three times.
 TEST_F(FeatureEngagementTest, TestPasswordManagerPromoIPHReachedTriggerLimit) {
   feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature,
-        PasswordManagerWidgetPromoParams()}});
+  list.InitWithExistingFeatures(
+      {feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature});
 
   std::unique_ptr<feature_engagement::Tracker> tracker =
       feature_engagement::CreateTestTracker();
@@ -974,9 +960,8 @@ TEST_F(FeatureEngagementTest, TestPasswordManagerPromoIPHReachedTriggerLimit) {
 // after the widget was used at least once.
 TEST_F(FeatureEngagementTest, TestPasswordManagerPromoIPHReachedUsedLimit) {
   feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature,
-        PasswordManagerWidgetPromoParams()}});
+  list.InitWithExistingFeatures(
+      {feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature});
 
   std::unique_ptr<feature_engagement::Tracker> tracker =
       feature_engagement::CreateTestTracker();
@@ -1001,9 +986,8 @@ TEST_F(FeatureEngagementTest, TestPasswordManagerPromoIPHReachedUsedLimit) {
 // after the promo was closed by the user.
 TEST_F(FeatureEngagementTest, TestPasswordManagerPromoIPHWasClosed) {
   feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature,
-        PasswordManagerWidgetPromoParams()}});
+  list.InitWithExistingFeatures(
+      {feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature});
 
   std::unique_ptr<feature_engagement::Tracker> tracker =
       feature_engagement::CreateTestTracker();
