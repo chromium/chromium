@@ -269,33 +269,33 @@ template("create_signed_bundle") {
       deps = []
     }
 
-    code_signing_script = "//build/config/ios/codesign.py"
-    code_signing_sources = [ _bundle_binary_path ]
+    post_processing_script = "//build/config/ios/codesign.py"
+    post_processing_sources = [ _bundle_binary_path ]
     if (_enable_entitlements) {
       if (defined(invoker.entitlements_target)) {
         deps += [ invoker.entitlements_target ]
       }
-      code_signing_sources += [ _entitlements_path ]
+      post_processing_sources += [ _entitlements_path ]
     }
-    code_signing_outputs = [ "$bundle_executable_dir/$_output_name" ]
+    post_processing_outputs = [ "$bundle_executable_dir/$_output_name" ]
     if (_enable_code_signing) {
-      code_signing_outputs +=
+      post_processing_outputs +=
           [ "$bundle_contents_dir/_CodeSignature/CodeResources" ]
     }
     if (ios_code_signing_identity != "" && target_environment == "device" &&
         _enable_embedded_mobileprovision) {
-      code_signing_outputs +=
+      post_processing_outputs +=
           [ "$bundle_contents_dir/embedded.mobileprovision" ]
     }
     if (_bundle_extension == ".framework") {
       if (target_environment == "catalyst") {
-        code_signing_outputs += [
+        post_processing_outputs += [
           "$bundle_root_dir/Versions/Current",
           "$bundle_root_dir/$_output_name",
         ]
 
         if (defined(invoker.has_public_headers) && invoker.has_public_headers) {
-          code_signing_outputs += [
+          post_processing_outputs += [
             "$bundle_root_dir/Headers",
             "$bundle_root_dir/Modules",
           ]
@@ -307,32 +307,32 @@ template("create_signed_bundle") {
 
     if (defined(invoker.extra_system_frameworks)) {
       foreach(_framework, invoker.extra_system_frameworks) {
-        code_signing_outputs += [ "$bundle_contents_dir/Frameworks/" +
-                                  get_path_info(_framework, "file") ]
+        post_processing_outputs += [ "$bundle_contents_dir/Frameworks/" +
+                                     get_path_info(_framework, "file") ]
       }
     }
 
-    code_signing_args = [
+    post_processing_args = [
       "code-sign-bundle",
       "-t=" + ios_sdk_name,
       "-i=" + ios_code_signing_identity,
       "-b=" + rebase_path(_bundle_binary_path, root_build_dir),
     ]
     foreach(mobileprovision, ios_mobileprovision_files) {
-      code_signing_args +=
+      post_processing_args +=
           [ "-m=" + rebase_path(mobileprovision, root_build_dir) ]
     }
-    code_signing_sources += ios_mobileprovision_files
+    post_processing_sources += ios_mobileprovision_files
     if (_enable_entitlements) {
-      code_signing_args +=
+      post_processing_args +=
           [ "-e=" + rebase_path(_entitlements_path, root_build_dir) ]
     }
     if (!_enable_embedded_mobileprovision) {
-      code_signing_args += [ "--disable-embedded-mobileprovision" ]
+      post_processing_args += [ "--disable-embedded-mobileprovision" ]
     }
-    code_signing_args += [ rebase_path(bundle_root_dir, root_build_dir) ]
+    post_processing_args += [ rebase_path(bundle_root_dir, root_build_dir) ]
     if (!_enable_code_signing) {
-      code_signing_args += [ "--disable-code-signature" ]
+      post_processing_args += [ "--disable-code-signature" ]
     }
     if (defined(invoker.extra_system_frameworks)) {
       # All framework in extra_system_frameworks are expected to be system
@@ -345,7 +345,7 @@ template("create_signed_bundle") {
         } else {
           _framework_path = _framework
         }
-        code_signing_args += [ "-F=$_framework_path" ]
+        post_processing_args += [ "-F=$_framework_path" ]
       }
     }
     if (defined(invoker.partial_info_plist)) {
@@ -356,19 +356,19 @@ template("create_signed_bundle") {
 
       _plist_compiler_path = "//build/apple/plist_util.py"
 
-      code_signing_sources += _partial_info_plists
-      code_signing_sources += [ _plist_compiler_path ]
+      post_processing_sources += _partial_info_plists
+      post_processing_sources += [ _plist_compiler_path ]
       if (target_environment != "catalyst" ||
           _bundle_extension != ".framework") {
-        code_signing_outputs += [ "$bundle_contents_dir/Info.plist" ]
+        post_processing_outputs += [ "$bundle_contents_dir/Info.plist" ]
       } else {
-        code_signing_outputs += [ "$bundle_resources_dir/Info.plist" ]
+        post_processing_outputs += [ "$bundle_resources_dir/Info.plist" ]
       }
 
-      code_signing_args +=
+      post_processing_args +=
           [ "-P=" + rebase_path(_plist_compiler_path, root_build_dir) ]
       foreach(_partial_info_plist, _partial_info_plists) {
-        code_signing_args +=
+        post_processing_args +=
             [ "-p=" + rebase_path(_partial_info_plist, root_build_dir) ]
       }
     }
