@@ -238,7 +238,7 @@ OnDeviceModelServiceController::CreateSession(
   opts.model_versions.CopyFrom(model_versions_.value());
   opts.adapter = std::move(adapter);
   opts.controller = weak_ptr_factory_.GetWeakPtr();
-  opts.safety_config = safety_config;
+  opts.safety_cfg = SafetyConfig(safety_config);
 
   return std::make_unique<SessionImpl>(
       feature, std::move(opts), std::move(execute_remote_fn),

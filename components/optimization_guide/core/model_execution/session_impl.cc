@@ -402,10 +402,7 @@ void SessionImpl::ExecuteModel(
   options->max_output_tokens = features::GetOnDeviceModelMaxTokensForOutput();
   options->top_k = sampling_params_.top_k;
   options->temperature = sampling_params_.temperature;
-  if (on_device_state_->opts.safety_config) {
-    options->safety_interval =
-        features::GetOnDeviceModelTextSafetyTokenInterval();
-  }
+  options->safety_interval = on_device_state_->opts.safety_cfg.TokenInterval();
 
   RunNextRequestSafetyCheckOrBeginExecution(std::move(options), 0);
 }
@@ -413,17 +410,14 @@ void SessionImpl::ExecuteModel(
 void SessionImpl::RunNextRequestSafetyCheckOrBeginExecution(
     on_device_model::mojom::InputOptionsPtr options,
     int request_check_idx) {
-  if (!on_device_state_->opts.safety_config ||
-      on_device_state_->opts.safety_config->request_check_size() <=
-          request_check_idx) {
+  if (on_device_state_->opts.safety_cfg.NumRequestChecks() <=
+      request_check_idx) {
     // All check have passed.
     BeginRequestExecution(std::move(options));
     return;
   }
-  auto check_input = CreateSubstitutions(
-      *last_message_,
-      on_device_state_->opts.safety_config->request_check(request_check_idx)
-          .input_template());
+  auto check_input = on_device_state_->opts.safety_cfg.GetRequestCheckInput(
+      request_check_idx, *last_message_);
   if (!check_input) {
     // This is mostly likely means a malformed safety config.
     DestroyOnDeviceStateAndFallbackToRemote(
@@ -447,12 +441,8 @@ void SessionImpl::OnRequestSafetyResult(
     proto::InternalOnDeviceModelExecutionInfo check_log,
     on_device_model::mojom::SafetyInfoPtr safety_info) {
   // Evaluate the check.
-  const auto& check = on_device_state_->opts.safety_config->request_check(request_check_idx);
-  const auto& thresholds = check.safety_category_thresholds().empty()
-                               ? on_device_state_->opts.safety_config->safety_category_thresholds()
-                               : check.safety_category_thresholds();
-  bool is_unsafe = IsTextInUnsupportedOrUndeterminedLanguage(safety_info) ||
-                   HasUnsafeScores(thresholds, safety_info);
+  bool is_unsafe = on_device_state_->opts.safety_cfg.IsRequestUnsafe(
+      request_check_idx, safety_info);
 
   // Log the check execution.
   auto* response_log =
@@ -529,7 +519,8 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
 
   // Only proceed to send the response if we are not evaluating text safety or
   // if there are text safety scores to evaluate.
-  if (!on_device_state_->opts.safety_config || chunk_provided_safety_info) {
+  if (!on_device_state_->opts.safety_cfg.IsMissingSafetyInfo(
+          chunk_provided_safety_info)) {
     SendResponse(ResponseType::kPartial);
   }
 }
@@ -550,7 +541,8 @@ void SessionImpl::OnComplete(
         ->OnResponseCompleted();
   }
 
-  if (on_device_state_->opts.safety_config && !summary->safety_info) {
+  if (on_device_state_->opts.safety_cfg.IsMissingSafetyInfo(
+          !!summary->safety_info)) {
     on_device_state_->receiver.ReportBadMessage(
         "Missing required safety scores on complete");
     CancelPendingResponse(
@@ -654,9 +646,11 @@ void SessionImpl::SendResponse(ResponseType response_type) {
 
   const bool is_complete = response_type != ResponseType::kPartial;
   const bool is_unsupported_language =
-      IsTextInUnsupportedOrUndeterminedLanguage(
-          on_device_state_->current_safety_info);
-  const bool is_unsafe = IsUnsafeText(on_device_state_->current_safety_info);
+      on_device_state_->opts.safety_cfg
+          .IsTextInUnsupportedOrUndeterminedLanguage(
+              on_device_state_->current_safety_info);
+  const bool is_unsafe = on_device_state_->opts.safety_cfg.IsUnsafeText(
+      on_device_state_->current_safety_info);
   if (is_unsafe || is_complete) {
     on_device_state_->AddTextSafetyExecutionLogging(is_unsafe);
   }
@@ -873,27 +867,42 @@ void SessionImpl::OnTextSafetyRemoteResponse(
   SendSuccessCompletionCallback(success_response_metadata);
 }
 
-bool SessionImpl::IsTextInUnsupportedOrUndeterminedLanguage(
+SafetyConfig::SafetyConfig() = default;
+SafetyConfig::SafetyConfig(
+    std::optional<proto::FeatureTextSafetyConfiguration> proto)
+    : proto_(proto) {}
+SafetyConfig::SafetyConfig(SafetyConfig&&) = default;
+SafetyConfig::~SafetyConfig() = default;
+SafetyConfig& SafetyConfig::operator=(SafetyConfig&&) = default;
+
+bool SafetyConfig::IsMissingSafetyInfo(bool has_safety_info) const {
+  return proto_ && !has_safety_info;
+}
+
+std::optional<uint32_t> SafetyConfig::TokenInterval() const {
+  if (!proto_) return std::nullopt;
+  return features::GetOnDeviceModelTextSafetyTokenInterval();
+}
+
+bool SafetyConfig::IsTextInUnsupportedOrUndeterminedLanguage(
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
-  if (!on_device_state_->opts.safety_config) {
+  if (!proto_) {
     // No safety config, so no language requirements.
     return false;
   }
 
-  CHECK(on_device_state_->opts.safety_config);
-  if (on_device_state_->opts.safety_config->allowed_languages().empty()) {
+  if (proto_->allowed_languages().empty()) {
     // No language requirements.
     return false;
   }
 
-  CHECK(safety_info);
   if (!safety_info->language) {
     // No language detection available, but language detection is required.
     // Treat as an unsupported language.
     return true;
   }
 
-  if (!base::Contains(on_device_state_->opts.safety_config->allowed_languages(),
+  if (!base::Contains(proto_->allowed_languages(),
                       safety_info->language->code)) {
     // Unsupported language.
     return true;
@@ -909,17 +918,36 @@ bool SessionImpl::IsTextInUnsupportedOrUndeterminedLanguage(
   return false;
 }
 
-bool SessionImpl::IsUnsafeText(
+bool SafetyConfig::IsUnsafeText(
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
-  if (!on_device_state_->opts.safety_config) {
+  if (!proto_) {
     // If no safety config and we are allowed here, that means we don't care
     // about the safety scores so just mark the content as safe.
     return false;
   }
+  return HasUnsafeScores(proto_->safety_category_thresholds(), safety_info);
+}
 
-  return HasUnsafeScores(
-      on_device_state_->opts.safety_config->safety_category_thresholds(),
-      safety_info);
+int SafetyConfig::NumRequestChecks() const {
+  return proto_ ? proto_->request_check_size() : 0;
+}
+
+std::optional<SubstitutionResult> SafetyConfig::GetRequestCheckInput(
+      int check_idx,
+      const google::protobuf::MessageLite& message) const {
+  return CreateSubstitutions(message,
+                             proto_->request_check(check_idx).input_template());
+}
+
+bool SafetyConfig::IsRequestUnsafe(
+    int check_idx,
+    const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
+  const auto& check = proto_->request_check(check_idx);
+  const auto& thresholds = check.safety_category_thresholds().empty()
+                               ? proto_->safety_category_thresholds()
+                               : check.safety_category_thresholds();
+  return IsTextInUnsupportedOrUndeterminedLanguage(safety_info) ||
+         HasUnsafeScores(thresholds, safety_info);
 }
 
 SessionImpl::OnDeviceState::OnDeviceState(OnDeviceOptions&& options,

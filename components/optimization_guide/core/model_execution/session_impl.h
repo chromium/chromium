@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
@@ -32,6 +33,46 @@ using ExecuteRemoteFn = base::RepeatingCallback<void(
     const google::protobuf::MessageLite&,
     std::unique_ptr<proto::LogAiDataRequest>,
     OptimizationGuideModelExecutionResultCallback)>;
+
+class SafetyConfig final {
+ public:
+  SafetyConfig();
+  explicit SafetyConfig(std::optional<proto::FeatureTextSafetyConfiguration>);
+  SafetyConfig(SafetyConfig&&);
+  SafetyConfig& operator=(SafetyConfig&&);
+  ~SafetyConfig();
+
+  bool IsMissingSafetyInfo(bool has_safety_info) const;
+  std::optional<uint32_t> TokenInterval() const;
+
+  // Whether the text is in a language not supported by the safety classifier,
+  // or the language could not be detected despite the classifier requiring one
+  // or more specific languages.
+  bool IsTextInUnsupportedOrUndeterminedLanguage(
+    const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
+
+  // Whether scores indicate the output text is unsafe.
+  bool IsUnsafeText(
+    const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
+
+  // The number of request safety checks to perform.
+  int NumRequestChecks() const;
+
+  // Constructs input for a request safety check.
+  // check_idx must be < NumRequestChecks().
+  std::optional<SubstitutionResult> GetRequestCheckInput(
+      int check_idx,
+      const google::protobuf::MessageLite& request_metadata) const;
+
+  // Evaluates scores for a request safety check.
+  // check_idx must be < NumRequestChecks().
+  bool IsRequestUnsafe(
+      int check_idx,
+      const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
+
+ private:
+  std::optional<proto::FeatureTextSafetyConfiguration> proto_;
+};
 
 // Session implementation that uses either the on device model or the server
 // model.
@@ -59,7 +100,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     proto::OnDeviceModelVersions model_versions;
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
     base::WeakPtr<OnDeviceModelServiceController> controller;
-    std::optional<proto::FeatureTextSafetyConfiguration> safety_config;
+    SafetyConfig safety_cfg;
 
     // Returns true if the on-device model may be used.
     bool ShouldUse() const;
@@ -281,16 +322,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // is a bit tricky since we don't know the type of MessageLite.
   std::unique_ptr<google::protobuf::MessageLite> MergeContext(
       const google::protobuf::MessageLite& request);
-
-  // Whether the text is in a language not supported by the safety classifier,
-  // or the language could not be detected despite the classifier requiring one
-  // or more specific languages.
-  bool IsTextInUnsupportedOrUndeterminedLanguage(
-      const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
-
-  // Whether the text is unsafe.
-  bool IsUnsafeText(
-      const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
 
   // Sends the partial response callback.
   void SendPartialResponseCallback(const proto::Any& success_response_metadata);
