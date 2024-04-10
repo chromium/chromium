@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/i18n/time_formatting.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -673,7 +674,7 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
 std::string GetRequiredString(const base::Value::Dict* dict, const char* key) {
   const base::Value* v = dict->Find(key);
   if (!v) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN() << "Required key missing: " << key;
+    NOTREACHED(base::NotFatalUntil::M127) << "Required key missing: " << key;
     return std::string();
   }
   if (!v->is_string()) {
