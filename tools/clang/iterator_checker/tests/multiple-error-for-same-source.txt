@@ -1,0 +1,5 @@
+multiple-error-for-same-source.cpp:11:7: error: [iterator-checker] Potentially invalid iterator used.
+  if (it->begin() == v.begin()) {
+      ^
+multiple-error-for-same-source.cpp:11:7: error: [iterator-checker] Potentially invalid iterator comparison.
+2 errors generated.

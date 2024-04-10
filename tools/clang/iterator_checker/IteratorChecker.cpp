@@ -672,10 +672,7 @@ class InvalidIteratorAnalysis
       DebugStream() << DebugString(env, *lhs_it) << '\n';
       DebugStream() << DebugString(env, *rhs_it) << '\n';
       if (GetContainerValue(env, *lhs_it) != GetContainerValue(env, *rhs_it)) {
-        diagnostic_.Report(
-            expr.getSourceRange().getBegin(),
-            diagnostic_.getCustomDiagID(clang::DiagnosticsEngine::Level::Error,
-                                        kInvalidIteratorComparison));
+        Report(kInvalidIteratorComparison, expr);
       }
       const auto& formula = ForceBoolValue(env, expr);
       auto& arena = env.arena();
@@ -803,10 +800,7 @@ class InvalidIteratorAnalysis
       return;
     }
 
-    diagnostic_.Report(
-        expr->getSourceRange().getBegin(),
-        diagnostic_.getCustomDiagID(clang::DiagnosticsEngine::Level::Error,
-                                    kInvalidIteratorUsage));
+    Report(kInvalidIteratorUsage, *expr);
   }
 
   // This invalidates all the iterators previously created by this container in
@@ -962,6 +956,21 @@ class InvalidIteratorAnalysis
     return res;
   }
 
+  template <size_t N>
+  void Report(const char (&error_message)[N], const clang::Expr& expr) {
+    clang::SourceLocation location = expr.getSourceRange().getBegin();
+
+    // Avoid the same error to be reported twice:
+    if (reported_source_locations_.count({location, error_message})) {
+      return;
+    }
+    reported_source_locations_.insert({location, error_message});
+
+    diagnostic_.Report(
+        location, diagnostic_.getCustomDiagID(
+                      clang::DiagnosticsEngine::Level::Error, error_message));
+  }
+
   // The diagnostic engine that will issue potential errors.
   clang::DiagnosticsEngine& diagnostic_;
 
@@ -976,6 +985,11 @@ class InvalidIteratorAnalysis
   // case this is needed.
   llvm::DenseMap<clang::dataflow::StorageLocation*, clang::dataflow::Value*>
       iterator_to_container_;
+
+  // The set of reported errors' location. This is used to avoid submitting
+  // twice the same error during Clang DataFlowAnalysis iterations.
+  llvm::DenseSet<std::pair<clang::SourceLocation, clang::StringRef>>
+      reported_source_locations_;
 };
 
 class IteratorInvalidationCheck
