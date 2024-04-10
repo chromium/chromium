@@ -16,7 +16,6 @@ namespace syncer {
 class DataTypeEncryptionHandler;
 class DataTypeManager;
 class DataTypeManagerObserver;
-class ModelTypeConfigurer;
 class SyncEngine;
 class SyncInvalidationsService;
 
@@ -29,7 +28,6 @@ class SyncApiComponentFactory {
   virtual std::unique_ptr<DataTypeManager> CreateDataTypeManager(
       const ModelTypeController::TypeMap* controllers,
       const DataTypeEncryptionHandler* encryption_handler,
-      ModelTypeConfigurer* configurer,
       DataTypeManagerObserver* observer) = 0;
 
   // Creating this in the factory helps us mock it out in testing.

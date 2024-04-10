@@ -170,8 +170,6 @@ void ModelLoadManager::LoadDesiredTypes() {
     auto dtc_iter = controllers_->find(type);
     DCHECK(dtc_iter != controllers_->end());
     ModelTypeController* dtc = dtc_iter->second.get();
-    auto model_load_callback = base::BindRepeating(
-        &ModelLoadManager::ModelLoadCallback, weak_ptr_factory_.GetWeakPtr());
     if (dtc->state() == ModelTypeController::NOT_RUNNING) {
       LoadModelsForType(dtc);
     } else if (dtc->state() == ModelTypeController::STOPPING) {

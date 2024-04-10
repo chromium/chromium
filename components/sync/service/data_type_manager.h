@@ -18,6 +18,7 @@
 namespace syncer {
 
 struct ConfigureContext;
+class ModelTypeConfigurer;
 
 // This interface is for managing the start up and shut down life cycle
 // of many different syncable data types.
@@ -46,18 +47,24 @@ class DataTypeManager {
 
   virtual ~DataTypeManager() = default;
 
-  // Convert a ConfigureStatus to string for debug purposes.
+  // Converts a ConfigureStatus to string for debug purposes.
   static std::string ConfigureStatusToString(ConfigureStatus status);
 
-  // Begins asynchronous configuration of data types.  Any currently
-  // running data types that are not in the preferred_types set will be
-  // stopped.  Any stopped data types that are in the preferred_types
-  // set will be started.  All other data types are left in their
-  // current state.
+  // Sets or clears the configurer (aka the SyncEngine) to use for
+  // connecting/disconnecting and configuring the data types. Must only be
+  // called while the state is STOPPED.
+  virtual void SetConfigurer(ModelTypeConfigurer* configurer) = 0;
+
+  // Begins asynchronous configuration of data types. Any currently running data
+  // types that are not in the `preferred_types` set will be stopped. Any
+  // stopped data types that are in the `preferred_types` set will be started.
+  // All other data types are left in their current state.
   //
-  // Note that you may call Configure() while configuration is in
-  // progress.  Configuration will be complete only when the
-  // preferred_types supplied in the last call to Configure is achieved.
+  // Note that you may call Configure() while configuration is in progress.
+  // Configuration will be complete only when the `preferred_types` supplied in
+  // the last call to Configure() are achieved.
+  //
+  // SetConfigurer() must be called before this (with a non-null configurer).
   virtual void Configure(ModelTypeSet preferred_types,
                          const ConfigureContext& context) = 0;
 

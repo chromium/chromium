@@ -39,10 +39,9 @@ std::unique_ptr<DataTypeManager>
 FakeSyncApiComponentFactory::CreateDataTypeManager(
     const ModelTypeController::TypeMap* controllers,
     const DataTypeEncryptionHandler* encryption_handler,
-    ModelTypeConfigurer* configurer,
     DataTypeManagerObserver* observer) {
   auto data_type_manager = std::make_unique<TestDataTypeManagerImpl>(
-      controllers, encryption_handler, configurer, observer);
+      controllers, encryption_handler, observer);
   last_created_data_type_manager_ = data_type_manager->AsWeakPtr();
   return data_type_manager;
 }

@@ -93,7 +93,6 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
   std::unique_ptr<syncer::DataTypeManager> CreateDataTypeManager(
       const syncer::ModelTypeController::TypeMap* controllers,
       const syncer::DataTypeEncryptionHandler* encryption_handler,
-      syncer::ModelTypeConfigurer* configurer,
       syncer::DataTypeManagerObserver* observer) override;
   std::unique_ptr<syncer::SyncEngine> CreateSyncEngine(
       const std::string& name,

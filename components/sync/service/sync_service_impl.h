@@ -345,8 +345,8 @@ class SyncServiceImpl : public SyncService,
   // should be kept or not.
   // If the engine is still allowed to run (per IsEngineAllowedToRun()), it will
   // soon start up again (possibly in transport-only mode).
-  void ResetEngine(ShutdownReason shutdown_reason,
-                   ResetEngineReason reset_reason);
+  std::unique_ptr<SyncEngine> ResetEngine(ShutdownReason shutdown_reason,
+                                          ResetEngineReason reset_reason);
 
   // Helper for OnUnrecoverableError.
   void OnUnrecoverableErrorImpl(const base::Location& from_here,
@@ -534,9 +534,6 @@ class SyncServiceImpl : public SyncService,
   // android.
   std::unique_ptr<SyncServiceAndroidBridge> sync_service_android_;
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  // This weak factory invalidates its issued pointers when Sync is disabled.
-  base::WeakPtrFactory<SyncServiceImpl> sync_enabled_weak_factory_{this};
 
   base::WeakPtrFactory<SyncServiceImpl> weak_factory_{this};
 };

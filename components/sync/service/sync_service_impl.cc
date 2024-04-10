@@ -289,6 +289,12 @@ void SyncServiceImpl::Initialize() {
 
   sync_prefs_observation_.Observe(&sync_prefs_);
 
+  // TODO(crbug.com/40901755): Ideally the DataTypeManager would get injected,
+  // instead of being constructed via the factory.
+  data_type_manager_ =
+      sync_client_->GetSyncApiComponentFactory()->CreateDataTypeManager(
+          &model_type_controllers_, &crypto_, this);
+
   if (!IsLocalSyncEnabled()) {
     auth_manager_->RegisterForAuthNotifications();
 
@@ -629,10 +635,15 @@ void SyncServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NotifyShutdown();
-  ResetEngine(ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA,
-              ResetEngineReason::kShutdown);
 
-  DCHECK(!data_type_manager_);
+  // Ensure the DataTypeManager is destroyed before the engine, since it has a
+  // pointer to the engine.
+  std::unique_ptr<SyncEngine> engine =
+      ResetEngine(ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA,
+                  ResetEngineReason::kShutdown);
+  data_type_manager_.reset();
+  engine.reset();
+
   model_type_controllers_.clear();
 
   crypto_.StopObservingTrustedVaultClient();
@@ -654,23 +665,28 @@ void SyncServiceImpl::RecordReasonIfWaitingForUpdates(
   GetDownloadStatusForImpl(type, histogram_name);
 }
 
-void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
-                                  ResetEngineReason reset_reason) {
+std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
+    ShutdownReason shutdown_reason,
+    ResetEngineReason reset_reason) {
+  CHECK(data_type_manager_);
+
   if (!engine_) {
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
     // happens, the Directory needs to be cleaned up here.
     if (shutdown_reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
       sync_client_->GetSyncApiComponentFactory()->ClearAllTransportData();
     }
-    // Call controller's Stop() to inform them to clear the metadata.
     if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
+      // Call controller's Stop() to inform them to clear the metadata.
+      // TODO(crbug.com/40901755): Plumb this through DataTypeManager instead of
+      // calling the controllers directly.
       SyncStopMetadataFate fate =
           ShutdownReasonToSyncStopMetadataFate(shutdown_reason);
       for (auto& [type, controller] : model_type_controllers_) {
         controller->Stop(fate, base::DoNothing());
       }
     }
-    return;
+    return nullptr;
   }
 
   base::UmaHistogramEnumeration("Sync.ResetEngineReason", reset_reason);
@@ -696,17 +712,12 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
 
   // Stop all data type controllers, if needed. Note that until Stop completes,
   // it is possible in theory to have a ChangeProcessor apply a change from a
-  // native model. In that case, it will get applied to the sync database (which
-  // doesn't get destroyed until we destroy the engine below) as an unsynced
-  // change. That will be persisted, and committed on restart.
-  if (data_type_manager_) {
-    if (data_type_manager_->state() != DataTypeManager::STOPPED) {
-      if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
-        data_type_manager_->Stop(
-            ShutdownReasonToSyncStopMetadataFate(shutdown_reason));
-      }
-    }
-    data_type_manager_.reset();
+  // native model. In that case, it will get applied to the local storage as an
+  // unsynced change. That will be persisted, and committed on restart.
+  if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
+    data_type_manager_->Stop(
+        ShutdownReasonToSyncStopMetadataFate(shutdown_reason));
+    data_type_manager_->SetConfigurer(nullptr);
   }
 
   // Shutdown the migrator before the engine to ensure it doesn't pull a null
@@ -714,9 +725,7 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
   migrator_.reset();
 
   engine_->Shutdown(shutdown_reason);
-  engine_.reset();
-
-  sync_enabled_weak_factory_.InvalidateWeakPtrs();
+  std::unique_ptr<SyncEngine> engine_to_be_destroyed = std::move(engine_);
 
   // Clear various state.
   crypto_.Reset();
@@ -746,6 +755,8 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
       // no point in starting up again.
       break;
   }
+
+  return engine_to_be_destroyed;
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -979,15 +990,13 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
     engine_->RequestBufferedProtocolEventsAndEnableForwarding();
   }
 
+  data_type_manager_->SetConfigurer(engine_.get());
+
+  crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
+
   sync_prefs_.MaybeMigratePrefsForSyncToSigninPart2(
       signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia),
       user_settings_->IsUsingExplicitPassphrase());
-
-  data_type_manager_ =
-      sync_client_->GetSyncApiComponentFactory()->CreateDataTypeManager(
-          &model_type_controllers_, &crypto_, engine_.get(), this);
-
-  crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
 
   if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
     // Datatype downloads on restart are generally due to newly supported
@@ -1034,7 +1043,6 @@ void SyncServiceImpl::OnMigrationNeededForTypes(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(engine_);
   DCHECK(engine_->IsInitialized());
-  DCHECK(data_type_manager_);
 
   // Migrator must be valid, because we don't sync until it is created and this
   // callback originates from a sync cycle.
@@ -1355,7 +1363,7 @@ bool SyncServiceImpl::RequiresClientUpgrade() const {
 
 bool SyncServiceImpl::CanConfigureDataTypes(
     bool bypass_setup_in_progress_check) const {
-  return data_type_manager_ &&
+  return engine_ && engine_->IsInitialized() &&
          (bypass_setup_in_progress_check || !IsSetupInProgress());
 }
 
@@ -1459,12 +1467,12 @@ ModelTypeSet SyncServiceImpl::GetPreferredDataTypes() const {
 ModelTypeSet SyncServiceImpl::GetActiveDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!data_type_manager_) {
+  if (!engine_ || !engine_->IsInitialized() || !data_type_manager_) {
     return ModelTypeSet();
   }
 
   // Persistent auth errors lead to PAUSED, which implies
-  // data_type_manager_==null above.
+  // engine_==null above.
   CHECK(!GetAuthError().IsPersistentError());
 
   return data_type_manager_->GetActiveDataTypes();
@@ -1476,7 +1484,6 @@ ModelTypeSet SyncServiceImpl::GetTypesWithPendingDownloadForInitialSync()
 
   if (GetTransportState() == TransportState::INITIALIZING &&
       engine_->GetBirthday().empty()) {
-    CHECK(!data_type_manager_);
     // The engine is initializing for the very first sync (usually after
     // sign-in). In this case all types are reported as pending download,
     // optimistically assuming datatype preconditions will be met.
@@ -2025,14 +2032,13 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
     return ModelTypeDownloadStatus::kError;
   }
 
-  if (!data_type_manager_) {
+  if (!engine_ || !engine_->IsInitialized()) {
     DVLOG(1) << "Waiting for the sync engine to be fully initialized";
     LogWaitingForUpdatesReasonIfNeeded(
         DownloadStatusWaitingForUpdatesReason::kSyncEngineNotInitialized, type,
         waiting_for_updates_histogram_name);
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
-  CHECK(engine_);
 
   if (data_type_manager_->GetDataTypesWithPermanentErrors().Has(type)) {
     DVLOG(1) << "Permanent error for " << ModelTypeToDebugString(type);
@@ -2246,19 +2252,24 @@ void SyncServiceImpl::OverrideNetworkForTest(
   // recreate the engine, so that it uses the correct (overridden) callback.
   // This is a horrible hack; the proper fix would be to inject the
   // callback in the ctor instead of adding it retroactively.
+  // Note that ResetEngine() can't be used here, because it would caues the
+  // engine to immediately restart.
   // TODO(crbug.com/949504): Clean this up and inject required upon
   // construction.
   bool restart = false;
   if (engine_) {
-    // Use BROWSER_SHUTDOWN_AND_KEEP_DATA to prevent the engine from immediately
-    // restarting.
-    ResetEngine(ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA,
-                ResetEngineReason::kShutdown);
-    // The startup logic and DCHECKs require that datatypes start stopped.
-    // Since ResetEngine() doesn't do this, it is necessary to stop them here.
-    for (const auto& [type, controller] : model_type_controllers_) {
-      controller->Stop(SyncStopMetadataFate::KEEP_METADATA, base::DoNothing());
-    }
+    engine_->StopSyncingForShutdown();
+
+    data_type_manager_->Stop(SyncStopMetadataFate::KEEP_METADATA);
+    data_type_manager_->SetConfigurer(nullptr);
+
+    migrator_.reset();
+
+    engine_->Shutdown(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+    engine_.reset();
+
+    auth_manager_->ConnectionClosed();
+
     restart = true;
   }
   DCHECK(!engine_);

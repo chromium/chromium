@@ -15,6 +15,7 @@ class DataTypeManagerMock : public DataTypeManager {
  public:
   DataTypeManagerMock();
   ~DataTypeManagerMock() override;
+  MOCK_METHOD(void, SetConfigurer, (ModelTypeConfigurer*), (override));
   MOCK_METHOD(void,
               Configure,
               (ModelTypeSet, const ConfigureContext&),

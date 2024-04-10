@@ -1832,8 +1832,6 @@ TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
   SignInWithSyncConsent();
   InitializeService();
 
-  ASSERT_THAT(data_type_manager(), IsNull());
-
   bool met_configuring_data_type_manager = false;
   testing::NiceMock<MockSyncServiceObserver> mock_sync_service_observer;
   ON_CALL(mock_sync_service_observer, OnStateChanged)
@@ -1841,9 +1839,6 @@ TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
                                 SyncService* service) {
         EXPECT_NE(service->GetDownloadStatusFor(syncer::BOOKMARKS),
                   SyncService::ModelTypeDownloadStatus::kError);
-        if (!data_type_manager()) {
-          return;
-        }
         if (data_type_manager()->state() ==
             DataTypeManager::State::CONFIGURING) {
           met_configuring_data_type_manager = true;

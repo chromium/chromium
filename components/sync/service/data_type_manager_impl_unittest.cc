@@ -197,7 +197,8 @@ class SyncDataTypeManagerImplTest : public testing::Test {
 
   void RecreateDataTypeManager() {
     dtm_ = std::make_unique<DataTypeManagerImpl>(
-        &controllers_, &encryption_handler_, &configurer_, &observer_);
+        &controllers_, &encryption_handler_, &observer_);
+    dtm_->SetConfigurer(&configurer_);
   }
 
   void SetConfigureStartExpectation(

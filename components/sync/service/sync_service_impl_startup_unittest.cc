@@ -193,8 +193,7 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
             sync_service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             sync_service()->GetTransportState());
-  EXPECT_EQ(nullptr, data_type_manager());
-  EXPECT_FALSE(engine());
+  EXPECT_EQ(nullptr, engine());
 
   // Preferences should be back to defaults.
   EXPECT_EQ(base::Time(), sync_service()->GetLastSyncedTimeForDebugging());
@@ -515,8 +514,7 @@ TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
                 {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
             sync_service()->GetDisableReasons());
   // Service should not be started by Initialize() since it's managed.
-  EXPECT_EQ(nullptr, data_type_manager());
-  EXPECT_FALSE(engine());
+  EXPECT_EQ(nullptr, engine());
 }
 
 TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
@@ -682,8 +680,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   EXPECT_EQ(SyncService::TransportState::CONFIGURING,
             sync_service()->GetTransportState());
   EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
-  EXPECT_NE(nullptr, data_type_manager());
-  EXPECT_TRUE(engine());
+  EXPECT_NE(nullptr, engine());
 
   // Finally, once the DataTypeManager says it's done with configuration, Sync
   // is actually fully up and running.
@@ -712,8 +709,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   ASSERT_TRUE(sync_service()->CanSyncFeatureStart());
   EXPECT_EQ(SyncService::TransportState::START_DEFERRED,
             sync_service()->GetTransportState());
-  EXPECT_EQ(nullptr, data_type_manager());
-  EXPECT_FALSE(engine());
+  EXPECT_EQ(nullptr, engine());
 
   // Cause the deferred startup timer to expire.
   FastForwardUntilNoTasksRemain();
@@ -721,8 +717,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // The Sync service should start initializing the engine.
   EXPECT_EQ(SyncService::TransportState::INITIALIZING,
             sync_service()->GetTransportState());
-  EXPECT_EQ(nullptr, data_type_manager());
-  EXPECT_TRUE(engine());
+  EXPECT_NE(nullptr, engine());
 
   // Allow engine initialization to finish.
   engine()->TriggerInitializationCompletion(/*success=*/true);
@@ -731,7 +726,6 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // already done.
   EXPECT_EQ(SyncService::TransportState::CONFIGURING,
             sync_service()->GetTransportState());
-  ASSERT_NE(nullptr, data_type_manager());
   EXPECT_EQ(DataTypeManager::CONFIGURING, data_type_manager()->state());
   EXPECT_TRUE(engine());
 
@@ -741,7 +735,6 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // Sync is fully up and running.
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
-  ASSERT_NE(nullptr, data_type_manager());
   EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   EXPECT_TRUE(engine());
 }

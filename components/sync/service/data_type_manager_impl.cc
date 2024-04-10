@@ -103,14 +103,11 @@ base::queue<ModelTypeSet> PrioritizeTypes(const ModelTypeSet& types) {
 DataTypeManagerImpl::DataTypeManagerImpl(
     const ModelTypeController::TypeMap* controllers,
     const DataTypeEncryptionHandler* encryption_handler,
-    ModelTypeConfigurer* configurer,
     DataTypeManagerObserver* observer)
-    : configurer_(configurer),
-      controllers_(controllers),
-      model_load_manager_(controllers, this),
+    : controllers_(controllers),
       observer_(observer),
-      encryption_handler_(encryption_handler) {
-  DCHECK(configurer_);
+      encryption_handler_(encryption_handler),
+      model_load_manager_(controllers, this) {
   DCHECK(observer_);
 
   // This class does not really handle NIGORI (whose controller lives on a
@@ -142,8 +139,35 @@ DataTypeManagerImpl::DataTypeManagerImpl(
 
 DataTypeManagerImpl::~DataTypeManagerImpl() = default;
 
+void DataTypeManagerImpl::SetConfigurer(ModelTypeConfigurer* configurer) {
+  CHECK_EQ(state_, STOPPED);
+
+  CHECK(!weak_ptr_factory_.HasWeakPtrs());
+  CHECK(configured_proxy_types_.empty());
+  CHECK(!needs_reconfigure_);
+  CHECK(configuration_types_queue_.empty());
+
+  configurer_ = configurer;
+
+  // Prevent some state (which can otherwise survive stop->start cycles) from
+  // carrying over in case sync starts up again.
+  last_requested_context_ = ConfigureContext();
+  downloaded_types_ = ControlTypes();
+  force_redownload_types_.Clear();
+
+  // TODO(crbug.com/40901755): Verify whether it's actually necessary/desired to
+  // fully reset the `data_type_status_table_` here. It makes sense for some
+  // types of errors (like crypto errors), but maybe not for others (like
+  // datatype errors). If we do want to reset it here, maybe the status table
+  // should move to SyncEngine, so that the lifetimes match up.
+  ResetDataTypeErrors();
+}
+
 void DataTypeManagerImpl::Configure(ModelTypeSet preferred_types,
                                     const ConfigureContext& context) {
+  // SetConfigurer() must have been called first.
+  CHECK(configurer_);
+
   preferred_types.PutAll(ControlTypes());
 
   ModelTypeSet allowed_types = ControlTypes();
@@ -427,6 +451,8 @@ void DataTypeManagerImpl::Restart() {
 }
 
 void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
+  CHECK(configurer_);
+
   // If a reconfigure was requested while the data types were loading, process
   // it now.
   if (needs_reconfigure_) {
@@ -640,8 +666,15 @@ DataTypeManagerImpl::PrepareConfigureParams() {
 
 void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
                                                    const SyncError& error) {
-  // No-op if the type is not connected.
-  configurer_->DisconnectDataType(type);
+  // OnSingleDataTypeWillStop() may get called even if the configurer was never
+  // set, if a Stop() happens while the SyncEngine was initializing.
+  // TODO(crbug.com/40913300, crbug.com/40901755): And in the future, also to
+  // clear metadata while already stopped.
+  if (configurer_) {
+    // No-op if the type is not connected.
+    configurer_->DisconnectDataType(type);
+  }
+
   configured_proxy_types_.Remove(type);
 
   // Reconfigure only if the data type is stopped with an error.
@@ -665,6 +698,8 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
 }
 
 void DataTypeManagerImpl::Stop(SyncStopMetadataFate metadata_fate) {
+  // TODO(crbug.com/40913300, crbug.com/40901755): Even if already stopped,
+  // metadata may still need to be cleared.
   if (state_ == STOPPED) {
     return;
   }
@@ -674,6 +709,8 @@ void DataTypeManagerImpl::Stop(SyncStopMetadataFate metadata_fate) {
   state_ = STOPPING;
 
   // Invalidate weak pointers to drop configuration callbacks.
+  // TODO(crbug.com/40901755): Move this below MLM::Stop() which may schedule
+  // tasks (via OnSingleDataTypeWillStop()).
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Stop all data types.
@@ -685,6 +722,10 @@ void DataTypeManagerImpl::Stop(SyncStopMetadataFate metadata_fate) {
   // TODO(mastiz): Reconsider waiting in STOPPING state until all datatypes have
   // stopped.
   state_ = STOPPED;
+
+  // If any configuration was still ongoing or pending, it's obsolete now.
+  configuration_types_queue_ = base::queue<ModelTypeSet>();
+  needs_reconfigure_ = false;
 
   if (need_to_notify) {
     NotifyDone(ABORTED);

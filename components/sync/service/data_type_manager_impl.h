@@ -27,7 +27,6 @@ class DataTypeManagerImpl : public DataTypeManager,
  public:
   DataTypeManagerImpl(const ModelTypeController::TypeMap* controllers,
                       const DataTypeEncryptionHandler* encryption_handler,
-                      ModelTypeConfigurer* configurer,
                       DataTypeManagerObserver* observer);
 
   DataTypeManagerImpl(const DataTypeManagerImpl&) = delete;
@@ -36,6 +35,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   ~DataTypeManagerImpl() override;
 
   // DataTypeManager interface.
+  void SetConfigurer(ModelTypeConfigurer* configurer) override;
   void Configure(ModelTypeSet preferred_types,
                  const ConfigureContext& context) override;
   void DataTypePreconditionChanged(ModelType type) override;
@@ -126,25 +126,26 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   ModelTypeSet GetEnabledTypes() const;
 
-  const raw_ptr<ModelTypeConfigurer> configurer_;
-
   // Map of all data type controllers that are available for sync.
   // This list is determined at startup by various command line flags.
   const raw_ptr<const ModelTypeController::TypeMap> controllers_;
 
+  // DataTypeManager must have only one observer -- the SyncServiceImpl that
+  // created it and manages its lifetime.
+  const raw_ptr<DataTypeManagerObserver> observer_;
+
+  // The encryption handler lets the DataTypeManager know the state of sync
+  // datatype encryption.
+  const raw_ptr<const DataTypeEncryptionHandler> encryption_handler_;
+
+  // The manager that loads the local models of the data types.
+  ModelLoadManager model_load_manager_;
+
+  raw_ptr<ModelTypeConfigurer> configurer_ = nullptr;
+
   State state_ = DataTypeManager::STOPPED;
 
-  // The set of types whose initial download of sync data has completed.
-  // Note: This class mostly doesn't handle control types (i.e. NIGORI) -
-  // `controllers_` doesn't contain an entry for NIGORI, and by the time this
-  // class gets instantiated, NIGORI is already up and running. It still has to
-  // be maintained as part of `downloaded_types_`, however, since in some edge
-  // cases (notably PurgeForMigration()), this class might have to trigger a
-  // re-download of NIGORI data.
-  // TODO(crbug.com/1422901): Consider removing this; see bug for details.
-  ModelTypeSet downloaded_types_ = ControlTypes();
-
-  // Types that requested in current configuration cycle.
+  // Types that were requested in the current configuration cycle.
   ModelTypeSet preferred_types_;
 
   // Context information (e.g. the reason) for the last reconfigure attempt.
@@ -157,23 +158,26 @@ class DataTypeManagerImpl : public DataTypeManager,
   // connected/activated.
   ModelTypeSet configured_proxy_types_;
 
+  // The set of types whose initial download of sync data has completed.
+  // Note: This class mostly doesn't handle control types (i.e. NIGORI) -
+  // `controllers_` doesn't contain an entry for NIGORI. It still has to be
+  // maintained as part of `downloaded_types_`, however, since in some edge
+  // cases (notably PurgeForMigration()), this class might have to trigger a
+  // re-download of NIGORI data.
+  // TODO(crbug.com/40897183): Consider removing this; see bug for details.
+  ModelTypeSet downloaded_types_ = ControlTypes();
+
   // A set of types that should be redownloaded even if initial sync is
-  // completed for them.
+  // completed for them. Set when a type's precondition status changes from
+  // not-met to met.
   ModelTypeSet force_redownload_types_;
 
-  // Whether an attempt to reconfigure was made while we were busy configuring.
+  // Whether a (re)configure was requested while a configuration was ongoing.
   // The `preferred_types_` will reflect the newest set of requested types.
   bool needs_reconfigure_ = false;
 
   // The last time Restart() was called.
   base::Time last_restart_time_;
-
-  // The manager that loads the local models of the data types.
-  ModelLoadManager model_load_manager_;
-
-  // DataTypeManager must have only one observer -- the SyncServiceImpl that
-  // created it and manages its lifetime.
-  const raw_ptr<DataTypeManagerObserver> observer_;
 
   // For querying failed data types (having unrecoverable error) when
   // configuring backend.
@@ -181,10 +185,6 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // Types waiting to be configured, prioritized (highest priority first).
   base::queue<ModelTypeSet> configuration_types_queue_;
-
-  // The encryption handler lets the DataTypeManager know the state of sync
-  // datatype encryption.
-  const raw_ptr<const DataTypeEncryptionHandler> encryption_handler_;
 
   base::WeakPtrFactory<DataTypeManagerImpl> weak_ptr_factory_{this};
 };

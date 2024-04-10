@@ -583,10 +583,9 @@ std::unique_ptr<DataTypeManager>
 SyncApiComponentFactoryImpl::CreateDataTypeManager(
     const ModelTypeController::TypeMap* controllers,
     const syncer::DataTypeEncryptionHandler* encryption_handler,
-    syncer::ModelTypeConfigurer* configurer,
     DataTypeManagerObserver* observer) {
   return std::make_unique<DataTypeManagerImpl>(controllers, encryption_handler,
-                                               configurer, observer);
+                                               observer);
 }
 
 std::unique_ptr<syncer::SyncEngine>
