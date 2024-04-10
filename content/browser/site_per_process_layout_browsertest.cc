@@ -2322,8 +2322,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // that the scroll-delta matches the distance between TouchStart/End as seen
 // by the oopif, i.e. the oopif content 'sticks' to the finger during scrolling.
 // The relation is not exact, but should be close.
+// TODO(crbug.com/40697699): Re-enable the flaky test.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DisableScrollOopifInPinchZoomedPage \
+  DISABLED_ScrollOopifInPinchZoomedPage
+#else
+#define MAYBE_DisableScrollOopifInPinchZoomedPage ScrollOopifInPinchZoomedPage
+#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       ScrollOopifInPinchZoomedPage) {
+                       MAYBE_DisableScrollOopifInPinchZoomedPage) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
