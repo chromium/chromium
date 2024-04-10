@@ -32,6 +32,7 @@
 #include "services/media_session/public/mojom/media_controller.mojom-test-utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -423,9 +424,11 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     fake_manager_ = std::make_unique<FakeMediaControllerManager>();
     system_monitor_.AddDevicesChangedObserver(&system_monitor_observer_);
     video_capture_manager_ = std::make_unique<FakeVideoCaptureManager>();
+    message_center::MessageCenter::Initialize();
   }
 
   void TearDown() override {
+    message_center::MessageCenter::Shutdown();
     system_monitor_.RemoveDevicesChangedObserver(&system_monitor_observer_);
     cras_audio_handler_->RemoveAudioObserver(test_observer_.get());
     test_observer_.reset();
@@ -686,6 +689,12 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     EXPECT_EQ(0, test_observer_->active_input_node_changed_count());
     EXPECT_EQ(0, test_observer_->active_output_node_changed_count());
     system_monitor_observer_.reset_count();
+  }
+
+  // Get the count of audio selection notification.
+  size_t GetNotificationCount() {
+    auto* message_center = message_center::MessageCenter::Get();
+    return message_center->NotificationCount();
   }
 
  protected:
@@ -1160,6 +1169,9 @@ TEST_P(CrasAudioHandlerTest,
       /*expected_has_alternative_input=*/std::nullopt,
       /*expected_has_alternative_output=*/false);
 
+  // Expect that there is no notification when initializing the audio nodes.
+  EXPECT_EQ(0u, GetNotificationCount());
+
   // Connect to HDMI output.
   AudioNodeList audio_nodes;
   AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
@@ -1189,6 +1201,9 @@ TEST_P(CrasAudioHandlerTest,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
   EXPECT_TRUE(cras_audio_handler_->has_alternative_output());
   system_monitor_observer_.reset_count();
+
+  // Verify notification shows up for unseen new connected HDMI device.
+  EXPECT_EQ(1u, GetNotificationCount());
 
   // Disconnect hdmi headset.
   audio_nodes.clear();
@@ -1330,6 +1345,9 @@ TEST_P(CrasAudioHandlerTest,
       /*expected_has_alternative_input=*/std::nullopt,
       /*expected_has_alternative_output=*/false);
 
+  // Expect that there is no notification when initializing the audio nodes.
+  EXPECT_EQ(0u, GetNotificationCount());
+
   // Plug in usb headphone
   AudioNodeList audio_nodes;
   AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
@@ -1359,6 +1377,9 @@ TEST_P(CrasAudioHandlerTest,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
   EXPECT_TRUE(cras_audio_handler_->has_alternative_output());
   system_monitor_observer_.reset_count();
+
+  // Verify notification shows up for unseen new connected USB headphone device.
+  EXPECT_EQ(1u, GetNotificationCount());
 
   // Unplug usb headphone.
   audio_nodes.clear();
@@ -1457,6 +1478,9 @@ TEST_P(CrasAudioHandlerTest,
       /*expected_has_alternative_input=*/std::nullopt,
       /*expected_has_alternative_output=*/true);
 
+  // Expect that there is no notification when initializing the audio nodes.
+  EXPECT_EQ(0u, GetNotificationCount());
+
   // Plug in another usb headphone.
   AudioNodeList audio_nodes;
   audio_nodes.push_back(GenerateAudioNode(kInternalSpeaker));
@@ -1485,6 +1509,9 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_EQ(kUSBHeadphone1->id,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
   EXPECT_TRUE(cras_audio_handler_->has_alternative_output());
+
+  // Verify notification shows up for unseen new connected USB headphone device.
+  EXPECT_EQ(1u, GetNotificationCount());
 
   // Unplug the 2nd usb headphone.
   audio_nodes.clear();
@@ -1836,6 +1863,9 @@ TEST_P(CrasAudioHandlerTest, PlugUSBMic_AudioSelectionImprovementFlagOn) {
       /*expected_has_alternative_input=*/false,
       /*expected_has_alternative_output=*/std::nullopt);
 
+  // Expect that there is no notification when initializing the audio nodes.
+  EXPECT_EQ(0u, GetNotificationCount());
+
   // Plug the USB Mic.
   AudioNodeList audio_nodes;
   AudioNode internal_mic(GenerateAudioNode(kInternalMic));
@@ -1856,6 +1886,9 @@ TEST_P(CrasAudioHandlerTest, PlugUSBMic_AudioSelectionImprovementFlagOn) {
   EXPECT_EQ(0, test_observer_->active_input_node_changed_count());
   EXPECT_NE(kUSBMicId1, cras_audio_handler_->GetPrimaryActiveInputNode());
   EXPECT_TRUE(cras_audio_handler_->has_alternative_input());
+
+  // Verify notification shows up for unseen new connected USB mic device.
+  EXPECT_EQ(1u, GetNotificationCount());
 }
 
 TEST_P(CrasAudioHandlerTest, UnplugUSBMic) {
@@ -1974,6 +2007,9 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_EQ(kInternalSpeaker->id,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
 
+  // Expect that there is no notification when initializing the audio nodes.
+  EXPECT_EQ(0u, GetNotificationCount());
+
   // Plug the USB Mic.
   AudioNodeList audio_nodes;
   AudioNode internal_speaker_node = GenerateAudioNode(kInternalSpeaker);
@@ -1999,6 +2035,9 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_EQ(0, test_observer_->active_input_node_changed_count());
   EXPECT_NE(kUSBMic1->id, cras_audio_handler_->GetPrimaryActiveInputNode());
   EXPECT_TRUE(cras_audio_handler_->has_alternative_input());
+
+  // Verify notification shows up for unseen new connected USB mic device.
+  EXPECT_EQ(1u, GetNotificationCount());
 
   // Verify the active output device is not changed.
   EXPECT_EQ(1, test_observer_->active_output_node_changed_count());

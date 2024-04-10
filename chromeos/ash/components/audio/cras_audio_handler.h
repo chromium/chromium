@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/audio/audio_device_metrics_handler.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
 #include "chromeos/ash/components/audio/audio_pref_observer.h"
+#include "chromeos/ash/components/audio/audio_selection_notification_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
@@ -963,6 +964,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Handles firing of audio selection related metrics.
   AudioDeviceMetricsHandler audio_device_metrics_handler_;
 
+  // Handles creation and display of audio selection notification.
+  AudioSelectionNotificationHandler audio_selection_notification_handler_;
+
   // Audio data and state.
   AudioDeviceMap audio_devices_;
 
@@ -1033,6 +1037,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // by real interaction with Pref service.
   std::map<std::string, std::string> output_device_pref_set_map_;
   std::map<std::string, std::string> input_device_pref_set_map_;
+
+  // Indicates whether the audio selection notification should be displayed.
+  bool should_show_notification_ = false;
 
   // Task runner of browser main thread. All member variables should be accessed
   // on this thread.

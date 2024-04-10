@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -2233,6 +2234,25 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   // decision, set this flag to false.
   audio_device_metrics_handler_.set_is_chrome_restarts(false);
 
+  if (features::IsAudioSelectionImprovementEnabled() &&
+      should_show_notification_) {
+    const AudioDevice* active_input_device =
+        GetDeviceFromId(active_input_node_id_);
+    const AudioDevice* active_output_device =
+        GetDeviceFromId(active_output_node_id_);
+    audio_selection_notification_handler_.ShowAudioSelectionNotification(
+        hotplug_input_devices, hotplug_output_devices,
+        active_input_device
+            ? std::make_optional(active_input_device->display_name)
+            : std::nullopt,
+        active_output_device
+            ? std::make_optional(active_output_device->display_name)
+            : std::nullopt);
+
+    // Reset show notification flag.
+    should_show_notification_ = false;
+  }
+
   // content::MediaStreamManager listens to
   // base::SystemMonitor::DevicesChangedObserver for audio devices,
   // and updates EnumerateDevices when OnDevicesChanged is called.
@@ -2821,7 +2841,10 @@ void CrasAudioHandler::HandleHotPlugDeviceWithNotification(
   // Otherwise sync the device preference set map.
   SyncDevicePrefSetMap(hotplug_device.is_input);
 
-  // TODO(zhangwenyu): Show notification if device set is not seen before.
+  if (!preferred_device.has_value()) {
+    // The device set was not seen. Show notification to let user make decision.
+    should_show_notification_ = true;
+  }
 }
 
 ScopedCrasAudioHandlerForTesting::ScopedCrasAudioHandlerForTesting() {

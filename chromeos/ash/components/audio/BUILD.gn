@@ -11,6 +11,7 @@ component("audio") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_AUDIO_IMPL" ]
   deps = [
     "//ash/constants",
+    "//ash/strings",
     "//base",
     "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/components/dbus/audio",
@@ -19,7 +20,9 @@ component("audio") {
     "//media/base:video_facing",
     "//mojo/public/cpp/bindings",
     "//services/media_session/public/mojom",
+    "//ui/base",
     "//ui/events/devices",
+    "//ui/message_center",
   ]
   sources = [
     "audio_device.cc",
@@ -36,6 +39,8 @@ component("audio") {
     "audio_devices_pref_handler_stub.cc",
     "audio_devices_pref_handler_stub.h",
     "audio_pref_observer.h",
+    "audio_selection_notification_handler.cc",
+    "audio_selection_notification_handler.h",
     "cras_audio_handler.cc",
     "cras_audio_handler.h",
     "cros_audio_config.cc",
@@ -78,6 +83,7 @@ source_set("unit_tests") {
     "//services/media_session/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/message_center",
   ]
   sources = [
     "audio_device_encoding_unittest.cc",
@@ -88,6 +94,7 @@ source_set("unit_tests") {
     "audio_device_selection_test_base.h",
     "audio_device_selection_unittest.cc",
     "audio_devices_pref_handler_impl_unittest.cc",
+    "audio_selection_notification_handler_unittest.cc",
     "cras_audio_handler_unittest.cc",
     "cros_audio_config_impl_unittest.cc",
   ]
