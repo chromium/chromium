@@ -14,6 +14,24 @@ _SRC_PATH = os.path.normpath(
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'node'))
 import node
 
+"""
+ Instructions to run this script locally.
+ 1) Create a package.json file in the same folder with the following contents.
+
+{
+  "dependencies": {
+    "jscodeshift": "^0.15.1"
+  }
+}
+
+ 2) Run 'npm install' in the same folder.
+
+ 3) Invoke the script from the root directory of the repository. For example
+
+    python3 ui/webui/resources/tools/codemods/lit_migration.py \
+        --file ui/webui/resources/cr_components/most_visited/most_visited.ts
+"""
+
 
 def main(argv):
   parser = argparse.ArgumentParser()
