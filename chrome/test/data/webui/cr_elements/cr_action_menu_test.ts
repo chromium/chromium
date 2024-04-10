@@ -478,13 +478,14 @@ suite('CrActionMenu', function() {
     items[0]!.textContent = 'this is a long string to make menu wide';
   }
 
-  // <if expr="is_win">
+  // <if expr="is_win or is_macosx">
   // TODO(dpapad): Figure out why it fails on windows only and re-enable.
+  // TODO(crbug.com/329266310): Flakes on MacOS.
   test.skip(
       '[auto-reposition] enables repositioning if content changes',
       autoRepositionTest);
   // </if>
-  // <if expr="not is_win">
+  // <if expr="not is_win and not is_macosx">
   test(
       '[auto-reposition] enables repositioning if content changes',
       autoRepositionTest);
