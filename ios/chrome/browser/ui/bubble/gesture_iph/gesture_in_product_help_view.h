@@ -15,8 +15,6 @@ class TimeDelta;
 
 @protocol GestureInProductHelpViewDelegate;
 
-typedef NS_ENUM(NSInteger, BubbleArrowDirection);
-
 /// A view to instruct users about possible gestural actions. The view will
 /// contain a bubble view, a gesture indicator ellipsis indicating user's finger
 /// movement, and a dismiss button.
@@ -30,15 +28,14 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 /// `CGSizeZero` as it is used to compute the initial bubble size, and
 /// preferably, should NOT include safe area inset of the bubble arrow
 /// direction.
-/// - `direction` also indicates which side of the view the user could perform
-/// the swipe action on. Note that the swipe movement would be toward the
-/// opposite direction.
+/// - `direction` indicates which side of the view the user could perform
+/// the swipe action on.
 /// `voiceOverAnnouncement` provides a message specifically for voice-over
 /// users. This message is both shown visually in a bubble and read aloud. If
 /// value is `nil`, the `text` will be used for voice-over users.
 - (instancetype)initWithText:(NSString*)text
           bubbleBoundingSize:(CGSize)bubbleBoundingSize
-              arrowDirection:(BubbleArrowDirection)direction
+              swipeDirection:(UISwipeGestureRecognizerDirection)direction
        voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
     NS_DESIGNATED_INITIALIZER;
 
@@ -46,7 +43,7 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 /// message for voice-over users.
 - (instancetype)initWithText:(NSString*)text
           bubbleBoundingSize:(CGSize)bubbleBoundingSize
-              arrowDirection:(BubbleArrowDirection)direction;
+              swipeDirection:(UISwipeGestureRecognizerDirection)direction;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;

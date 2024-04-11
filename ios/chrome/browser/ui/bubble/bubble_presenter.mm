@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/bubble/bubble_constants.h"
@@ -600,7 +601,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   NSString* text = l10n_util::GetNSString(IDS_IOS_PULL_TO_REFRESH_IPH);
   self.pullToRefreshGestureIPH =
       [self presentGestureInProductHelpForFeature:pullToRefreshFeature
-                                        direction:BubbleArrowDirectionUp
+                                   swipeDirection:
+                                       UISwipeGestureRecognizerDirectionDown
                                              text:text];
   [self.pullToRefreshGestureIPH startAnimation];
 }
@@ -635,10 +637,12 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                   : IDS_IOS_BACK_FORWARD_SWIPE_IPH_FORWARD_ONLY;
   }
 
+  UISwipeGestureRecognizerDirection direction =
+      back ^ UseRTLLayout() ? UISwipeGestureRecognizerDirectionRight
+                            : UISwipeGestureRecognizerDirectionLeft;
   self.swipeBackForwardGestureIPH = [self
       presentGestureInProductHelpForFeature:backForwardSwipeFeature
-                                  direction:back ? BubbleArrowDirectionLeading
-                                                 : BubbleArrowDirectionTrailing
+                             swipeDirection:direction
                                        text:l10n_util::GetNSString(textId)];
   self.swipeBackForwardGestureIPH.edgeSwipe = YES;
   if (back && forward) {
@@ -851,7 +855,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 // allows the caller to make modifications to the view before animating.
 - (GestureInProductHelpView*)
     presentGestureInProductHelpForFeature:(const base::Feature&)feature
-                                direction:(BubbleArrowDirection)direction
+                           swipeDirection:
+                               (UISwipeGestureRecognizerDirection)direction
                                      text:(NSString*)text {
   DCHECK(self.engagementTracker);
   NamedGuide* contentAreaGuide =
@@ -864,40 +869,46 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   UILayoutGuide* safeAreaGuide =
       self.rootViewController.view.safeAreaLayoutGuide;
   [self.rootViewController.view addLayoutGuide:boundingSizeGuide];
+
+  BOOL isDirectionLeading = direction == UseRTLLayout()
+                                ? UISwipeGestureRecognizerDirectionRight
+                                : UISwipeGestureRecognizerDirectionLeft;
   switch (direction) {
-    case BubbleArrowDirectionUp:
-      AddSameConstraintsToSides(boundingSizeGuide, contentAreaGuide,
-                                LayoutSides::kLeading | LayoutSides::kTrailing |
-                                    LayoutSides::kBottom);
-      AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
-                                LayoutSides::kTop);
-      break;
-    case BubbleArrowDirectionDown:
+    case UISwipeGestureRecognizerDirectionUp:
       AddSameConstraintsToSides(
           boundingSizeGuide, contentAreaGuide,
           LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
       AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
                                 LayoutSides::kBottom);
       break;
-    case BubbleArrowDirectionLeading:
-      AddSameConstraintsToSides(
-          boundingSizeGuide, contentAreaGuide,
-          LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kTrailing);
+    case UISwipeGestureRecognizerDirectionDown:
+      AddSameConstraintsToSides(boundingSizeGuide, contentAreaGuide,
+                                LayoutSides::kLeading | LayoutSides::kTrailing |
+                                    LayoutSides::kBottom);
       AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
-                                LayoutSides::kLeading);
+                                LayoutSides::kTop);
       break;
-    case BubbleArrowDirectionTrailing:
-      AddSameConstraintsToSides(
-          boundingSizeGuide, contentAreaGuide,
-          LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kLeading);
-      AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
-                                LayoutSides::kTrailing);
+    case UISwipeGestureRecognizerDirectionLeft:
+    case UISwipeGestureRecognizerDirectionRight:
+      if (isDirectionLeading) {
+        AddSameConstraintsToSides(
+            boundingSizeGuide, contentAreaGuide,
+            LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kLeading);
+        AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
+                                  LayoutSides::kTrailing);
+      } else {
+        AddSameConstraintsToSides(
+            boundingSizeGuide, contentAreaGuide,
+            LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kTrailing);
+        AddSameConstraintsToSides(boundingSizeGuide, safeAreaGuide,
+                                  LayoutSides::kLeading);
+      }
       break;
   }
   GestureInProductHelpView* gestureIPHView = [[GestureInProductHelpView alloc]
             initWithText:text
       bubbleBoundingSize:boundingSizeGuide.layoutFrame.size
-          arrowDirection:direction];
+          swipeDirection:direction];
   [gestureIPHView setTranslatesAutoresizingMaskIntoConstraints:NO];
   if (CanGestureInProductHelpViewFitInGuide(gestureIPHView,
                                             boundingSizeGuide) &&
