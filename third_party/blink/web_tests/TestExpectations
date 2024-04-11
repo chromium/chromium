@@ -7321,3 +7321,6 @@ crbug.com/333638402 [ Linux ] external/wpt/css/css-color/parsing/color-valid-lab
 
 # Gardener 2024-04-11
 crbug.com/333739617 [ Mac ] fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Timeout ]
+
+# Test requires rebaseline after rolling V8.
+crbug.com/333182464 external/wpt/streams/readable-streams/global-expected.txt [ Failure Pass ]
