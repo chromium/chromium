@@ -105,6 +105,10 @@ AX_BASE_EXPORT bool IsUseAXPositionForDocumentMarkersEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseMoveNotCopyInAXTreeCombiner);
 AX_BASE_EXPORT bool IsUseMoveNotCopyInAXTreeCombinerEnabled();
 
+// Performs a move over a copy of merge tree update.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseMoveNotCopyInMergeTreeUpdate);
+AX_BASE_EXPORT bool IsUseMoveNotCopyInMergeTreeUpdateEnabled();
+
 #if BUILDFLAG(IS_WIN)
 // Use Chrome-specific accessibility COM API.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kIChromeAccessible);

@@ -965,6 +965,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "UseMoveNotCopyInAXTreeCombiner",
                 "Enables moves instead of copies of snapshot tree data when combining updates."),
+        Flag.baseFeature(
+                "UseMoveNotCopyInMergeTreeUpdate",
+                "Enables moves instead of copies of snapshot tree data when merging udpates."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

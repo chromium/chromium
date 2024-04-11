@@ -1974,6 +1974,18 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Performance.MergeAXTreeUpdates"
+    units="microseconds" expires_after="2025-02-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent in ui::MergeAXTreeUpdates.
+
+    The primary use is to measure the impact of https://crrev.com/c/5413915,
+    which updates the function to eliminate potential copies.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Performance.ProcessDeferredAccessibilityEvents2"
     units="microseconds" expires_after="2025-02-28">
   <owner>mschillaci@google.com</owner>

@@ -120,6 +120,14 @@ bool IsUseMoveNotCopyInAXTreeCombinerEnabled() {
       ::features::kUseMoveNotCopyInAXTreeCombiner);
 }
 
+BASE_FEATURE(kUseMoveNotCopyInMergeTreeUpdate,
+             "UseMoveNotCopyInMergeTreeUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsUseMoveNotCopyInMergeTreeUpdateEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kUseMoveNotCopyInMergeTreeUpdate);
+}
+
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kIChromeAccessible,
              "IChromeAccessible",
