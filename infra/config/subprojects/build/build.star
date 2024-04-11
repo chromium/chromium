@@ -435,6 +435,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "mac",
         short_name = "siso",
     ),
+    siso_experiments = ["no-fallback"],
 )
 
 cq_build_perf_builder(
