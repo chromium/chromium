@@ -56,6 +56,7 @@
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -94,7 +95,7 @@ AttributionReport IrreleventAggregatableReport() {
   return ReportBuilder(AttributionInfoBuilder().Build(),
                        SourceBuilder().BuildStored())
       .SetAggregatableHistogramContributions(
-          {AggregatableHistogramContribution(1, 2)})
+          {blink::mojom::AggregatableReportHistogramContribution(1, 2)})
       .BuildAggregatableAttribution();
 }
 
@@ -1109,8 +1110,9 @@ IN_PROC_BROWSER_TEST_F(
 
   const base::Time now = base::Time::Now();
 
-  std::vector<AggregatableHistogramContribution> contributions{
-      AggregatableHistogramContribution(1, 2)};
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions{
+          blink::mojom::AggregatableReportHistogramContribution(1, 2)};
 
   manager()->NotifyReportSent(
       ReportBuilder(AttributionInfoBuilder().Build(),
@@ -1303,7 +1305,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                         SourceBuilder().BuildStored())
               .SetReportId(AttributionReport::Id(5))
               .SetAggregatableHistogramContributions(
-                  {AggregatableHistogramContribution(1, 2)})
+                  {blink::mojom::AggregatableReportHistogramContribution(1, 2)})
               .BuildAggregatableAttribution()}))
       .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 
@@ -1438,7 +1440,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       ReportBuilder(AttributionInfoBuilder().Build(),
                     SourceBuilder().BuildStored())
           .SetReportTime(now + base::Hours(2))
-          //.SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/true,
       SendResult(SendResult::Status::kTransientFailure,

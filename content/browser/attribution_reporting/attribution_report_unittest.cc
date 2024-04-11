@@ -26,6 +26,7 @@
 #include "net/http/http_request_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -232,7 +233,8 @@ TEST(AttributionReportTest, ReportBody_Aggregatable) {
       ReportBuilder(AttributionInfoBuilder().Build(),
                     SourceBuilder().BuildStored())
           .SetAggregatableHistogramContributions(
-              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+              {blink::mojom::AggregatableReportHistogramContribution(
+                  /*bucket=*/1, /*value=*/2)})
           .BuildAggregatableAttribution();
 
   EXPECT_THAT(report.ReportBody(), IsJson(expected));
@@ -356,7 +358,8 @@ TEST(AttributionReportTest, ReportBody_AggregatableAttributionReport) {
                   kExclude)
           .SetTriggerContextId("123")
           .SetAggregatableHistogramContributions(
-              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+              {blink::mojom::AggregatableReportHistogramContribution(
+                  /*bucket=*/1, /*value=*/2)})
           .BuildAggregatableAttribution();
 
   auto& data =

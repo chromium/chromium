@@ -57,7 +57,6 @@
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
-#include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -86,6 +85,7 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -2959,8 +2959,8 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       return AggregatableResult::kInternalError;
   }
 
-  std::vector<AggregatableHistogramContribution> contributions =
-      CreateAggregatableHistogram(
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions = CreateAggregatableHistogram(
           source.filter_data(), source_type, source.source_time(),
           /*trigger_time=*/attribution_info.time, source.aggregation_keys(),
           trigger_registration.aggregatable_trigger_data,

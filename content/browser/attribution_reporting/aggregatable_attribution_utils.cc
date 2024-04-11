@@ -29,7 +29,6 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "net/base/schemeful_site.h"
@@ -53,7 +52,8 @@ std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
 
 }  // namespace
 
-std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
+std::vector<blink::mojom::AggregatableReportHistogramContribution>
+CreateAggregatableHistogram(
     const attribution_reporting::FilterData& source_filter_data,
     attribution_reporting::mojom::SourceType source_type,
     const base::Time& source_time,
@@ -87,7 +87,8 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     }
   }
 
-  std::vector<AggregatableHistogramContribution> contributions;
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions;
   for (const auto& aggregatable_value : aggregatable_values) {
     if (source_filter_data.Matches(source_type, source_time, trigger_time,
                                    aggregatable_value.filters())) {
@@ -99,7 +100,8 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
           continue;
         }
 
-        contributions.emplace_back(key, value->second);
+        contributions.emplace_back(key,
+                                   base::checked_cast<int32_t>(value->second));
       }
       break;
     }
@@ -133,10 +135,10 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
     const AttributionReport& report) {
   base::Time source_time;
   std::optional<uint64_t> source_debug_key;
-  std::vector<blink::mojom::AggregatableReportHistogramContribution>
-      contributions;
   const AttributionReport::CommonAggregatableData* common_aggregatable_data =
       nullptr;
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions;
 
   absl::visit(
       base::Overloaded{
@@ -145,14 +147,7 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
             source_time = data.source.source_time();
             source_debug_key = data.source.debug_key();
             common_aggregatable_data = &data.common_data;
-            base::ranges::transform(
-                data.contributions, std::back_inserter(contributions),
-                [](const auto& contribution) {
-                  return blink::mojom::AggregatableReportHistogramContribution(
-                      /*bucket=*/contribution.key(),
-                      /*value=*/base::checked_cast<int32_t>(
-                          contribution.value()));
-                });
+            contributions = data.contributions;
           },
           [&](const AttributionReport::NullAggregatableData& data) {
             source_time = data.fake_source_time;

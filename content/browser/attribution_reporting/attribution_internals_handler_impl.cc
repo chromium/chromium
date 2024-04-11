@@ -22,6 +22,7 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -167,8 +168,8 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
                 [](const auto& contribution) {
                   return ai_mojom::AggregatableHistogramContribution::New(
                       attribution_reporting::HexEncodeAggregationKey(
-                          contribution.key()),
-                      contribution.value());
+                          contribution.bucket),
+                      base::checked_cast<uint32_t>(contribution.value));
                 });
 
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(

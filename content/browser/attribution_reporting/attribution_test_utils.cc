@@ -453,7 +453,8 @@ ReportBuilder& ReportBuilder::SetReportId(AttributionReport::Id id) {
 }
 
 ReportBuilder& ReportBuilder::SetAggregatableHistogramContributions(
-    std::vector<AggregatableHistogramContribution> contributions) {
+    std::vector<blink::mojom::AggregatableReportHistogramContribution>
+        contributions) {
   DCHECK(!contributions.empty());
   contributions_ = std::move(contributions);
   return *this;
@@ -705,9 +706,9 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
 
 std::ostream& operator<<(
     std::ostream& out,
-    const AggregatableHistogramContribution& contribution) {
-  return out << "{key=" << contribution.key()
-             << ",value=" << contribution.value() << "}";
+    const blink::mojom::AggregatableReportHistogramContribution& contribution) {
+  return out << "{bucket=" << contribution.bucket
+             << ",value=" << contribution.value << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -849,10 +850,11 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
               std::move(aggregatable_values), FilterPair())});
 }
 
-std::vector<AggregatableHistogramContribution>
+std::vector<blink::mojom::AggregatableReportHistogramContribution>
 DefaultAggregatableHistogramContributions(
-    const std::vector<uint32_t>& histogram_values) {
-  std::vector<AggregatableHistogramContribution> contributions;
+    const std::vector<int32_t>& histogram_values) {
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions;
   for (size_t i = 0; i < histogram_values.size(); ++i) {
     contributions.emplace_back(absl::MakeUint128(i, i), histogram_values[i]);
   }

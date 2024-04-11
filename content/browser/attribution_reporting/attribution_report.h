@@ -19,12 +19,12 @@
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 class GURL;
 
@@ -106,7 +106,8 @@ class CONTENT_EXPORT AttributionReport {
   struct CONTENT_EXPORT AggregatableAttributionData {
     AggregatableAttributionData(
         CommonAggregatableData,
-        std::vector<AggregatableHistogramContribution> contributions,
+        std::vector<blink::mojom::AggregatableReportHistogramContribution>
+            contributions,
         StoredSource);
     AggregatableAttributionData(const AggregatableAttributionData&);
     AggregatableAttributionData& operator=(const AggregatableAttributionData&);
@@ -119,8 +120,8 @@ class CONTENT_EXPORT AttributionReport {
 
     CommonAggregatableData common_data;
 
-    // The historgram contributions.
-    std::vector<AggregatableHistogramContribution> contributions;
+    std::vector<blink::mojom::AggregatableReportHistogramContribution>
+        contributions;
 
     StoredSource source;
 
