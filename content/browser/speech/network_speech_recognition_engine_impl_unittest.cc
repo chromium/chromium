@@ -584,9 +584,9 @@ void NetworkSpeechRecognitionEngineImplTest::ProvideMockProtoResultDownstream(
 
   std::string response_string = SerializeProtobufResponse(result);
   response_buffer_.append(response_string);
-  uint32_t written = 0;
+  size_t written = 0;
   while (written < response_string.size()) {
-    uint32_t write_bytes = response_string.size() - written;
+    size_t write_bytes = response_string.size() - written;
     MojoResult mojo_result = downstream_data_pipe_->WriteData(
         response_string.data() + written, &write_bytes,
         MOJO_WRITE_DATA_FLAG_NONE);
@@ -738,7 +738,7 @@ std::string NetworkSpeechRecognitionEngineImplTest::ConsumeChunkedUploadData() {
     base::RunLoop().RunUntilIdle();
 
     const void* data;
-    uint32_t num_bytes;
+    size_t num_bytes;
     MojoResult mojo_result = upstream_data_pipe_->BeginReadData(
         &data, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
     if (mojo_result == MOJO_RESULT_OK) {

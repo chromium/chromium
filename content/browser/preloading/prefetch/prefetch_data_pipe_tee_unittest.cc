@@ -53,7 +53,7 @@ class DataPipeReader {
  private:
   void OnDataAvailable(MojoResult result) {
     DCHECK_LT(data_.size(), size_);
-    uint32_t size = size_ - data_.size();
+    size_t size = size_ - data_.size();
     std::vector<char> buffer(size, 0);
     MojoResult read_result = consumer_handle_->ReadData(
         buffer.data(), &size, MOJO_READ_DATA_FLAG_NONE);
@@ -70,7 +70,7 @@ class DataPipeReader {
 
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
 
-  uint32_t size_;
+  size_t size_;
   std::string data_;
   base::RepeatingClosure on_read_done_;
 };

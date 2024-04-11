@@ -86,7 +86,7 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory {
   void SimulateReceiveData(const std::string& data,
                            bool expected_successful = true) {
     ASSERT_TRUE(producer_handle_);
-    uint32_t bytes_written = data.size();
+    size_t bytes_written = data.size();
     auto write_result = producer_handle_->WriteData(
         data.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
     if (expected_successful) {

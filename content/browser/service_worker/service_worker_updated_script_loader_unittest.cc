@@ -408,7 +408,7 @@ TEST_P(ServiceWorkerUpdatedScriptLoaderTest, ClientConsumeNetworkLater) {
   // Keep writing body until ServiceWorkerUpdatedScriptLoader's client producer
   // data pipe becomes full.
   while (true) {
-    uint32_t bytes_written = kNetworkBlock.size();
+    size_t bytes_written = kNetworkBlock.size();
     MojoResult result = network_producer_->WriteData(
         kNetworkBlock.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_NONE);
     if (result != MOJO_RESULT_OK) {

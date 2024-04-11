@@ -62,8 +62,8 @@ constexpr char kLocalhostAddress[] = "127.0.0.1";
 class ReadWriteWaiter {
  public:
   ReadWriteWaiter(
-      uint32_t required_receive_bytes,
-      uint32_t required_send_bytes,
+      size_t required_receive_bytes,
+      size_t required_send_bytes,
       mojo::Remote<network::mojom::TCPServerSocket>& tcp_server_socket)
       : required_receive_bytes_(required_receive_bytes),
         required_send_bytes_(required_send_bytes) {
@@ -126,7 +126,7 @@ class ReadWriteWaiter {
       DCHECK(receive_stream_.is_valid());
       DCHECK_LT(bytes_received_, required_receive_bytes_);
       const void* buffer = nullptr;
-      uint32_t num_bytes = 0;
+      size_t num_bytes = 0;
       MojoResult mojo_result = receive_stream_->BeginReadData(
           &buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
       if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
@@ -163,8 +163,7 @@ class ReadWriteWaiter {
       DCHECK(send_stream_.is_valid());
       DCHECK_LT(bytes_sent_, required_send_bytes_);
       void* buffer = nullptr;
-      uint32_t num_bytes =
-          static_cast<uint32_t>(required_send_bytes_ - bytes_sent_);
+      size_t num_bytes = required_send_bytes_ - bytes_sent_;
       MojoResult mojo_result = send_stream_->BeginWriteData(
           &buffer, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
       if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
@@ -198,16 +197,16 @@ class ReadWriteWaiter {
     }
   }
 
-  const uint32_t required_receive_bytes_;
-  const uint32_t required_send_bytes_;
+  const size_t required_receive_bytes_;
+  const size_t required_send_bytes_;
   base::RunLoop run_loop_;
   mojo::Remote<network::mojom::TCPConnectedSocket> accepted_socket_;
   mojo::ScopedDataPipeConsumerHandle receive_stream_;
   mojo::ScopedDataPipeProducerHandle send_stream_;
   std::unique_ptr<mojo::SimpleWatcher> read_watcher_;
   std::unique_ptr<mojo::SimpleWatcher> write_watcher_;
-  uint32_t bytes_received_ = 0;
-  uint32_t bytes_sent_ = 0;
+  size_t bytes_received_ = 0;
+  size_t bytes_sent_ = 0;
 };
 
 }  // anonymous namespace

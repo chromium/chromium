@@ -1038,7 +1038,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     ASSERT_TRUE(producer_handle_for_gurl_.count(request->request.url));
     ASSERT_TRUE(producer_handle_for_gurl_[request->request.url]);
 
-    uint32_t bytes_written = body.size();
+    size_t bytes_written = body.size();
     EXPECT_EQ(
         producer_handle_for_gurl_[request->request.url]->WriteData(
             body.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE),

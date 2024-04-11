@@ -594,7 +594,7 @@ void ServiceWorkerNewScriptLoader::WriteData(
     uint32_t bytes_available) {
   // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
   // next time.
-  uint32_t bytes_written = std::min<uint32_t>(kReadBufferSize, bytes_available);
+  size_t bytes_written = std::min<size_t>(kReadBufferSize, bytes_available);
 
   auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
       pending_buffer ? pending_buffer->buffer() : nullptr,
@@ -637,7 +637,7 @@ void ServiceWorkerNewScriptLoader::WriteData(
   // A null buffer and zero |bytes_written| are passed when this is the end of
   // the body.
   net::Error error = cache_writer_->MaybeWriteData(
-      buffer.get(), base::strict_cast<size_t>(bytes_written),
+      buffer.get(), bytes_written,
       base::BindOnce(&ServiceWorkerNewScriptLoader::OnWriteDataComplete,
                      weak_factory_.GetWeakPtr(), pending_buffer,
                      bytes_written));
@@ -652,7 +652,7 @@ void ServiceWorkerNewScriptLoader::WriteData(
 
 void ServiceWorkerNewScriptLoader::OnWriteDataComplete(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
-    uint32_t bytes_written,
+    size_t bytes_written,
     net::Error error) {
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
                          "ServiceWorkerNewScriptLoader::OnWriteDataComplete",

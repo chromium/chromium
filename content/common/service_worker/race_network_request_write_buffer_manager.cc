@@ -80,7 +80,7 @@ void RaceNetworkRequestWriteBufferManager::CancelWatching() {
 
 MojoResult RaceNetworkRequestWriteBufferManager::BeginWriteData() {
   void* buffer;
-  uint32_t num_write_bytes;
+  size_t num_write_bytes;
   MojoResult result = producer_->BeginWriteData(&buffer, &num_write_bytes,
                                                 MOJO_WRITE_DATA_FLAG_NONE);
   buffer_ = base::make_span(static_cast<char*>(buffer), num_write_bytes);
@@ -106,7 +106,7 @@ std::tuple<MojoResult, size_t> RaceNetworkRequestWriteBufferManager::WriteData(
   auto buffer = read_buffer.size() > data_pipe_buffer_size_
                     ? read_buffer.subspan(0, data_pipe_buffer_size_)
                     : read_buffer;
-  uint32_t num_bytes = buffer.size();
+  size_t num_bytes = buffer.size();
   MojoResult result = producer_->WriteData(buffer.data(), &num_bytes,
                                            MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
   num_bytes_written_ += num_bytes;

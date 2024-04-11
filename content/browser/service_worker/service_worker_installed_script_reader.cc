@@ -39,7 +39,7 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
   void OnWritable(MojoResult) {
     // It isn't necessary to handle MojoResult here since WriteDataRaw()
     // returns an equivalent error.
-    uint32_t size = meta_data_->size() - bytes_sent_;
+    size_t size = meta_data_->size() - bytes_sent_;
     TRACE_EVENT2(
         "ServiceWorker",
         "ServiceWorkerInstalledScriptReader::MetaDataSender::OnWritable",

@@ -10268,7 +10268,7 @@ bool NavigationRequest::IsDeferred() {
 }
 
 void NavigationRequest::OnResponseBodyReady(MojoResult) {
-  uint32_t num_bytes = 0;
+  size_t num_bytes = 0;
   MojoResult result =
       response_body().ReadData(nullptr, &num_bytes, MOJO_READ_DATA_FLAG_QUERY);
   CHECK_EQ(result, MOJO_RESULT_OK);

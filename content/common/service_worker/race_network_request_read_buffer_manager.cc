@@ -44,7 +44,7 @@ void RaceNetworkRequestReadBufferManager::CancelWatching() {
 std::pair<MojoResult, base::span<const char>>
 RaceNetworkRequestReadBufferManager::ReadData() {
   CHECK_EQ(BytesRemaining(), 0u);
-  uint32_t num_bytes = 0;
+  size_t num_bytes = 0;
   MojoResult result;
   bool is_query_data_size_mode = base::GetFieldTrialParamByFeatureAsBool(
       features::kServiceWorkerAutoPreload, "query_data_size", false);

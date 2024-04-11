@@ -1159,7 +1159,7 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
     CHECK_EQ(
         mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
         MOJO_RESULT_OK);
-    uint32_t bytes_written = content.size();
+    size_t bytes_written = content.size();
     CHECK_EQ(MOJO_RESULT_OK,
              producer_handle->WriteData(content.data(), &bytes_written,
                                         MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
@@ -1542,7 +1542,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
     CHECK_EQ(
         mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
         MOJO_RESULT_OK);
-    uint32_t bytes_written = content.size();
+    size_t bytes_written = content.size();
     CHECK_EQ(MOJO_RESULT_OK,
              producer_handle->WriteData(content.data(), &bytes_written,
                                         MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
@@ -1616,7 +1616,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
     CHECK_EQ(
         mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
         MOJO_RESULT_OK);
-    uint32_t bytes_written = content.size();
+    size_t bytes_written = content.size();
     CHECK_EQ(MOJO_RESULT_OK,
              producer_handle->WriteData(content.data(), &bytes_written,
                                         MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));

@@ -32,7 +32,7 @@
 namespace content {
 
 // We chose this size because the AppCache uses this.
-const uint32_t ServiceWorkerUpdatedScriptLoader::kReadBufferSize = 32768;
+const size_t ServiceWorkerUpdatedScriptLoader::kReadBufferSize = 32768;
 
 // This is for debugging https://crbug.com/959627.
 // The purpose is to see where the IOBuffer comes from by checking |__vfptr|.
@@ -277,8 +277,8 @@ void ServiceWorkerUpdatedScriptLoader::OnClientWritable(MojoResult) {
 
   // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
   // next time.
-  uint32_t bytes_newly_sent =
-      std::min<uint32_t>(kReadBufferSize, data_length_ - bytes_sent_to_client_);
+  size_t bytes_newly_sent =
+      std::min<size_t>(kReadBufferSize, data_length_ - bytes_sent_to_client_);
 
   MojoResult result =
       client_producer_->WriteData(data_to_send_->data() + bytes_sent_to_client_,
@@ -395,7 +395,7 @@ void ServiceWorkerUpdatedScriptLoader::WriteData(
     uint32_t bytes_available) {
   // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
   // next time.
-  uint32_t bytes_written = std::min<uint32_t>(kReadBufferSize, bytes_available);
+  size_t bytes_written = std::min<size_t>(kReadBufferSize, bytes_available);
 
   auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
       pending_buffer ? pending_buffer->buffer() : nullptr,
@@ -431,7 +431,7 @@ void ServiceWorkerUpdatedScriptLoader::WriteData(
   // A null buffer and zero |bytes_written| are passed when this is the end of
   // the body.
   net::Error error = cache_writer_->MaybeWriteData(
-      buffer.get(), base::strict_cast<size_t>(bytes_written),
+      buffer.get(), bytes_written,
       base::BindOnce(&ServiceWorkerUpdatedScriptLoader::OnWriteDataComplete,
                      weak_factory_.GetWeakPtr(), pending_buffer,
                      bytes_written));
@@ -446,7 +446,7 @@ void ServiceWorkerUpdatedScriptLoader::WriteData(
 
 void ServiceWorkerUpdatedScriptLoader::OnWriteDataComplete(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
-    uint32_t bytes_written,
+    size_t bytes_written,
     net::Error error) {
   CHECK_NE(net::ERR_IO_PENDING, error);
   if (error != net::OK) {
@@ -473,7 +473,7 @@ void ServiceWorkerUpdatedScriptLoader::OnWriteDataComplete(
   }
 
   CHECK(pending_buffer);
-  pending_buffer->CompleteRead(bytes_written);
+  pending_buffer->CompleteRead(base::checked_cast<uint32_t>(bytes_written));
   // Get the consumer handle from a previous read operation if we have one.
   network_consumer_ = pending_buffer->ReleaseHandle();
   network_watcher_.ArmOrNotify();

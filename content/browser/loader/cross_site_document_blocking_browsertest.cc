@@ -205,7 +205,7 @@ class RequestInterceptor {
  private:
   void ReadBody(base::OnceClosure completion_callback) {
     char buffer[128];
-    uint32_t num_bytes = sizeof(buffer);
+    size_t num_bytes = sizeof(buffer);
     MojoResult result = test_client_.response_body().ReadData(
         buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
 
@@ -317,7 +317,7 @@ class RequestInterceptor {
       original_client_->OnReceiveResponse(
           std::move(response_head), std::move(consumer_handle), std::nullopt);
 
-      uint32_t num_bytes = response_body.size();
+      size_t num_bytes = response_body.size();
       EXPECT_EQ(MOJO_RESULT_OK,
                 producer_handle->WriteData(response_body.data(), &num_bytes,
                                            MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));

@@ -478,7 +478,7 @@ TEST_F(SpeechRecognizerImplTest, StopWithData) {
       base::RunLoop().RunUntilIdle();
 
       const void* buffer;
-      uint32_t num_bytes;
+      size_t num_bytes;
       MojoResult result = consumer_handle->BeginReadData(
           &buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_OK) {

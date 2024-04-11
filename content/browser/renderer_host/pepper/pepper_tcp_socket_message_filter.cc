@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -518,7 +519,7 @@ int32_t PepperTCPSocketMessageFilter::OnMsgRead(
   }
 
   pending_read_context_ = context->MakeReplyMessageContext();
-  pending_read_size_ = static_cast<uint32_t>(bytes_to_read);
+  pending_read_size_ = base::checked_cast<size_t>(bytes_to_read);
   TryRead();
   return PP_OK_COMPLETIONPENDING;
 }
@@ -752,7 +753,7 @@ void PepperTCPSocketMessageFilter::TryRead() {
 
     DCHECK(read_watcher_);
     const void* buffer = nullptr;
-    uint32_t num_bytes = 0;
+    size_t num_bytes = 0;
     int mojo_result = receive_stream_->BeginReadData(&buffer, &num_bytes,
                                                      MOJO_READ_DATA_FLAG_NONE);
     if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
@@ -771,7 +772,7 @@ void PepperTCPSocketMessageFilter::TryRead() {
     // This is guaranteed by Mojo.
     DCHECK_GT(num_bytes, 0u);
 
-    uint32_t bytes_to_copy = std::min(num_bytes, pending_read_size_);
+    size_t bytes_to_copy = std::min(num_bytes, pending_read_size_);
     SendReadReply(PP_OK, std::string(reinterpret_cast<const char*>(buffer),
                                      bytes_to_copy));
     receive_stream_->EndReadData(bytes_to_copy);
@@ -810,7 +811,7 @@ void PepperTCPSocketMessageFilter::TryWrite() {
 
     DCHECK(write_watcher_);
 
-    uint32_t num_bytes =
+    size_t num_bytes =
         pending_write_data_.size() - pending_write_bytes_written_;
     DCHECK_GT(num_bytes, 0u);
     int mojo_result = send_stream_->WriteData(

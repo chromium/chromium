@@ -498,7 +498,7 @@ void URLLoaderInterceptor::WriteResponse(
       CreateDataPipe(&options, producer_handle, consumer_handle);
   CHECK_EQ(result, MOJO_RESULT_OK);
 
-  uint32_t bytes_written = body.size();
+  size_t bytes_written = body.size();
   result = producer_handle->WriteData(body.data(), &bytes_written,
                                       MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
   CHECK_EQ(result, MOJO_RESULT_OK);

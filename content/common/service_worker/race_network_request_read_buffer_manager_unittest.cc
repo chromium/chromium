@@ -25,7 +25,7 @@ TEST(RaceNetworkRequestReadBufferManagerTest, ReadData) {
             MOJO_RESULT_OK);
 
   const char expected_data[] = "abcde";
-  uint32_t num_bytes = sizeof(expected_data);
+  size_t num_bytes = sizeof(expected_data);
   base::test::SingleThreadTaskEnvironment task_environment;
   base::RunLoop run_loop;
 

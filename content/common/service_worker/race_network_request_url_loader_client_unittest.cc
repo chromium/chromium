@@ -128,7 +128,7 @@ class ResponseBodyDataPipeReader {
       return;
     }
     const void* buffer;
-    uint32_t num_bytes = 0;
+    size_t num_bytes = 0;
     MojoResult result = body_->BeginReadData(&buffer, &num_bytes,
                                              MOJO_BEGIN_READ_DATA_FLAG_NONE);
     switch (result) {
@@ -180,7 +180,7 @@ class ResponseBodyDataPipeReader {
   std::unique_ptr<mojo::SimpleWatcher> body_watcher_;
   mojo::ScopedDataPipeConsumerHandle body_;
   std::string chunk_;
-  uint32_t num_bytes_;
+  size_t num_bytes_;
   State state_ = State::kWaiting;
 };
 
@@ -225,7 +225,7 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClientTest
   // calls |client_|'s OnReceiveResponse(), which will trigger the relay of data
   // chunks in ServiceWorkerRaceNetworkRequestURLLoaderClient.
   void WriteData(const std::string& expected_body) {
-    uint32_t num_bytes = expected_body.size();
+    size_t num_bytes = expected_body.size();
     MojoResult result = producer_->WriteData(expected_body.data(), &num_bytes,
                                              MOJO_WRITE_DATA_FLAG_NONE);
     ASSERT_EQ(result, MOJO_RESULT_OK);
@@ -302,7 +302,7 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest, Basic) {
          const network::mojom::URLResponseHeadPtr& response_head,
          mojo::ScopedDataPipeConsumerHandle body) {
         const void* buffer;
-        uint32_t num_bytes = 0;
+        size_t num_bytes = 0;
         MojoResult result = body->BeginReadData(&buffer, &num_bytes,
                                                 MOJO_BEGIN_READ_DATA_FLAG_NONE);
         ASSERT_EQ(result, MOJO_RESULT_OK);

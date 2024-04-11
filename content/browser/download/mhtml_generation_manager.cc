@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -489,14 +490,15 @@ void MHTMLGenerationManager::Job::WriteMHTMLToDisk(
   DCHECK_NE(result, MOJO_RESULT_FAILED_PRECONDITION);
   // Begin consumer data pipe handle read and file write loop.
   char buffer[1024];
-  uint32_t num_bytes = sizeof(buffer);
+  size_t num_bytes = sizeof(buffer);
   while (result == MOJO_RESULT_OK && state.readable()) {
     result = mhtml_data_consumer_->ReadData(&buffer, &num_bytes,
                                             MOJO_READ_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_OK) {
       if (secure_hash_)
         secure_hash_->Update(&buffer, num_bytes);
-      if (browser_file_.WriteAtCurrentPos(buffer, num_bytes) < 0) {
+      if (browser_file_.WriteAtCurrentPos(
+              buffer, base::checked_cast<int>(num_bytes)) < 0) {
         DLOG(ERROR) << "Error writing to file handle.";
         OnWriteComplete(std::move(callback),
                         mojom::MhtmlSaveStatus::kFileWritingError);

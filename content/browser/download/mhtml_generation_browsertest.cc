@@ -144,7 +144,7 @@ class MockWriterBase : public mojom::MhtmlFileWriter {
   void WriteDataToProducerPipe(
       mojo::ScopedDataPipeProducerHandle producer_pipe) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    uint32_t size = strlen(kTestData);
+    size_t size = strlen(kTestData);
     producer_pipe->WriteData(kTestData, &size, MOJO_WRITE_DATA_FLAG_NONE);
     producer_pipe.reset();
   }

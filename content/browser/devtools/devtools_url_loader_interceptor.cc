@@ -1371,7 +1371,7 @@ void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
            MOJO_RESULT_OK);
 
   if (body) {
-    uint32_t num_bytes = body_size;
+    size_t num_bytes = body_size;
     MojoResult res = producer_handle->WriteData(
         body->front() + offset, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
     DCHECK_EQ(0u, res);

@@ -351,7 +351,7 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
 
   bool pending_accept_;
 
-  uint32_t pending_read_size_;
+  size_t pending_read_size_;
   ppapi::host::ReplyMessageContext pending_read_context_;
   // This is set to an error other than PP_OK_COMPLETIONPENDING when a read
   // error is received through the SocketObserver interface. If the

@@ -122,7 +122,7 @@ class DelayedBlob : public storage::FakeBlob {
 
     // This should always succeed immediately because we size the pipe to
     // hold the entire blob for tiny data lengths.
-    uint32_t num_bytes = data_.length();
+    size_t num_bytes = data_.length();
     producer_handle_->WriteData(data_.data(), &num_bytes,
                                 MOJO_WRITE_DATA_FLAG_NONE);
     ASSERT_EQ(data_.length(), num_bytes);

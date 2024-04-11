@@ -435,7 +435,7 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest,
     mojo::ScopedDataPipeConsumerHandle body;
     ASSERT_EQ(mojo::CreateDataPipe(response_body.size(), producer_handle, body),
               MOJO_RESULT_OK);
-    uint32_t bytes_written = response_body.size();
+    size_t bytes_written = response_body.size();
     ASSERT_EQ(MOJO_RESULT_OK,
               producer_handle->WriteData(response_body.data(), &bytes_written,
                                          MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));

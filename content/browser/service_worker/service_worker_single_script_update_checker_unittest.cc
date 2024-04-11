@@ -804,7 +804,7 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
     mojo::ScopedDataPipeProducerHandle producer;
     EXPECT_EQ(MOJO_RESULT_OK,
               mojo::CreateDataPipe(&options, producer, consumer));
-    uint32_t bytes_written = body_from_net.size();
+    size_t bytes_written = body_from_net.size();
     EXPECT_EQ(MOJO_RESULT_OK,
               producer->WriteData(body_from_net.data(), &bytes_written,
                                   MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));

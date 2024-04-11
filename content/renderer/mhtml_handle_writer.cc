@@ -144,7 +144,7 @@ void MHTMLProducerHandleWriter::TryWritingContents(
 
     // If there is no more data in this block, continue to next block or
     // finish.
-    uint32_t num_bytes = data.size() - write_position_;
+    size_t num_bytes = data.size() - write_position_;
     if (num_bytes == 0) {
       write_position_ = 0;
       if (++current_block_ >= mhtml_contents_.size()) {

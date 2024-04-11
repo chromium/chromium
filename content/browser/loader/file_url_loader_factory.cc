@@ -669,10 +669,10 @@ class FileURLLoader : public network::mojom::URLLoader {
       // Write any data we read for MIME sniffing, constraining by range where
       // applicable. This will always fit in the pipe (see DCHECK above, and
       // assertions near network::features::GetDataPipeDefaultAllocationSize()).
-      uint32_t write_size = std::min(
-          static_cast<uint32_t>(initial_read_size - first_byte_to_send),
-          static_cast<uint32_t>(total_bytes_to_send));
-      const uint32_t expected_write_size = write_size;
+      size_t write_size = std::min(
+          base::checked_cast<size_t>(initial_read_size - first_byte_to_send),
+          base::checked_cast<size_t>(total_bytes_to_send));
+      const size_t expected_write_size = write_size;
       MojoResult result =
           producer_handle->WriteData(&initial_read_buffer[first_byte_to_send],
                                      &write_size, MOJO_WRITE_DATA_FLAG_NONE);

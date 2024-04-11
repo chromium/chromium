@@ -36,7 +36,7 @@ bool AbortOnEndInterceptor(URLLoaderInterceptor::RequestParams* params) {
   response->headers->GetMimeType(&response->mime_type);
 
   std::string body = "some data\r\n";
-  uint32_t bytes_written = body.size();
+  size_t bytes_written = body.size();
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   CHECK_EQ(mojo::CreateDataPipe(body.size(), producer_handle, consumer_handle),

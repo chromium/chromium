@@ -77,7 +77,7 @@ void DevToolsStreamPipe::OnPipeSignalled(
   }
   while (!read_requests_.empty()) {
     const void* pipe_bytes = nullptr;
-    uint32_t bytes_available = 0;
+    size_t bytes_available = 0;
     MojoResult res = pipe_->BeginReadData(&pipe_bytes, &bytes_available,
                                           MOJO_READ_DATA_FLAG_NONE);
     if (res == MOJO_RESULT_FAILED_PRECONDITION) {
@@ -87,9 +87,8 @@ void DevToolsStreamPipe::OnPipeSignalled(
     }
     DCHECK_EQ(MOJO_RESULT_OK, res);
     auto& request = read_requests_.front();
-    const uint32_t bytes_to_read =
-        std::min(bytes_available,
-                 request.max_size - static_cast<uint32_t>(buffer_.size()));
+    const size_t bytes_to_read =
+        std::min(bytes_available, size_t{request.max_size} - buffer_.size());
     // Dispatch available bytes (but no more than requested), when there are
     // multiple requests pending. If we just have a single read request, it's
     // more efficient (and easier for client) to only dispatch when enough bytes

@@ -1330,7 +1330,7 @@ class NavigationRequestResponseBodyTest : public NavigationRequestTest {
 TEST_F(NavigationRequestResponseBodyTest, Received) {
   auto navigation = CreateNavigationSimulator();
   std::string response = "response-body-content";
-  uint32_t write_size = response.size();
+  size_t write_size = response.size();
   ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(write_size, producer_handle_,
                                                  consumer_handle_));
   navigation->SetResponseBody(std::move(consumer_handle_));
@@ -1372,7 +1372,7 @@ TEST_F(NavigationRequestResponseBodyTest, PartiallyReceived) {
   EXPECT_EQ(std::string(), response_body());
 
   std::string response = "response-body-content";
-  uint32_t write_size = response.size();
+  size_t write_size = response.size();
   ASSERT_EQ(MOJO_RESULT_OK,
             producer_handle_->WriteData(response.c_str(), &write_size,
                                         MOJO_WRITE_DATA_FLAG_NONE));

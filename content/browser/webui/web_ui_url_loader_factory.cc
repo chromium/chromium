@@ -101,7 +101,7 @@ void ReadData(
   }
 
   uint32_t output_offset = 0;
-  uint32_t output_size = base::checked_cast<uint32_t>(bytes->size());
+  size_t output_size = bytes->size();
   if (requested_range) {
     if (!requested_range->ComputeBounds(output_size)) {
       CallOnError(std::move(client_remote),
@@ -128,7 +128,7 @@ void ReadData(
   CHECK_EQ(create_result, MOJO_RESULT_OK);
 
   void* buffer = nullptr;
-  uint32_t num_bytes = output_size;
+  size_t num_bytes = output_size;
   MojoResult result = pipe_producer_handle->BeginWriteData(
       &buffer, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
   CHECK_EQ(result, MOJO_RESULT_OK);

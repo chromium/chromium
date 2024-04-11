@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -718,7 +719,7 @@ class ServiceWorkerCacheWriter::DataPipeReader {
             ReadCallback callback) {
     DCHECK(buffer);
     buffer_ = std::move(buffer);
-    num_bytes_to_read_ = num_bytes;
+    num_bytes_to_read_ = base::checked_cast<size_t>(num_bytes);
     callback_ = std::move(callback);
 
     if (!data_.is_valid()) {
@@ -750,7 +751,7 @@ class ServiceWorkerCacheWriter::DataPipeReader {
       // TODO(https://crbug.com/1055677): notify of errors.
       num_bytes_to_read_ = 0;
     }
-    owner_->AsyncDoLoop(num_bytes_to_read_);
+    owner_->AsyncDoLoop(base::checked_cast<int>(num_bytes_to_read_));
   }
 
   void OnReadDataPrepared(mojo::ScopedDataPipeConsumerHandle data) {
@@ -776,7 +777,7 @@ class ServiceWorkerCacheWriter::DataPipeReader {
 
   // Parameters set on Read().
   scoped_refptr<net::IOBuffer> buffer_;
-  uint32_t num_bytes_to_read_ = 0;
+  size_t num_bytes_to_read_ = 0;
   ReadCallback callback_;
 
   // |reader_| is safe to be kept as a rawptr because |owner_| owns |this| and

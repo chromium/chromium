@@ -864,7 +864,7 @@ void ServiceWorkerUpdateCheckTestUtils::
     // Create a data pipe which has the new block sent from the network.
     ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, *out_body_handle,
                                                    network_consumer));
-    uint32_t written_size = diff_data_block.size();
+    size_t written_size = diff_data_block.size();
     ASSERT_EQ(MOJO_RESULT_OK,
               (*out_body_handle)
                   ->WriteData(diff_data_block.c_str(), &written_size,
@@ -957,7 +957,7 @@ void ReadDataPipeInternal(mojo::DataPipeConsumerHandle handle,
                           std::string* result,
                           base::OnceClosure quit_closure) {
   while (true) {
-    uint32_t num_bytes;
+    size_t num_bytes;
     const void* buffer = nullptr;
     MojoResult rv =
         handle.BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);

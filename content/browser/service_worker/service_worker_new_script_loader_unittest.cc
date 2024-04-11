@@ -120,7 +120,7 @@ class MockNetwork {
       return true;
     }
 
-    uint32_t bytes_written = response.body.size();
+    size_t bytes_written = response.body.size();
     mojo::ScopedDataPipeConsumerHandle consumer;
     mojo::ScopedDataPipeProducerHandle producer;
     CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
@@ -459,9 +459,9 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Success_ClientConsumeBodyLater) {
   // Keep writing body until ServiceWorkerNewScriptLoader's client producer
   // data pipe becomes full.
   mojo::ScopedDataPipeProducerHandle body_producer = loader_factory.TakeBody();
-  uint32_t total_bytes_written = 0;
+  size_t total_bytes_written = 0;
   while (true) {
-    uint32_t bytes_written = ServiceWorkerNewScriptLoader::kReadBufferSize;
+    size_t bytes_written = ServiceWorkerNewScriptLoader::kReadBufferSize;
     MojoResult result = body_producer->WriteData(kBody.data(), &bytes_written,
                                                  MOJO_WRITE_DATA_FLAG_NONE);
     if (result != MOJO_RESULT_OK) {
