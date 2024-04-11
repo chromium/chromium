@@ -270,14 +270,14 @@ HostCache::Entry::Entry(int error,
 }
 
 HostCache::Entry::Entry(
-    std::set<std::unique_ptr<HostResolverInternalResult>> results,
+    const std::set<std::unique_ptr<HostResolverInternalResult>>& results,
     base::Time now,
     base::TimeTicks now_ticks,
     Source empty_source) {
-  std::unique_ptr<HostResolverInternalResult> data_result;
-  std::unique_ptr<HostResolverInternalResult> metadata_result;
-  std::unique_ptr<HostResolverInternalResult> error_result;
-  std::vector<std::unique_ptr<HostResolverInternalResult>> alias_results;
+  const HostResolverInternalResult* data_result = nullptr;
+  const HostResolverInternalResult* metadata_result = nullptr;
+  const HostResolverInternalResult* error_result = nullptr;
+  std::vector<const HostResolverInternalResult*> alias_results;
 
   std::optional<base::TimeDelta> smallest_ttl =
       TtlFromInternalResults(results, now, now_ticks);
@@ -304,18 +304,18 @@ HostCache::Entry::Entry(
     switch (result->type()) {
       case HostResolverInternalResult::Type::kData:
         DCHECK(!data_result);  // Expect at most one data result.
-        data_result = std::move(results.extract(result).value());
+        data_result = result.get();
         break;
       case HostResolverInternalResult::Type::kMetadata:
         DCHECK(!metadata_result);  // Expect at most one metadata result.
-        metadata_result = std::move(results.extract(result).value());
+        metadata_result = result.get();
         break;
       case HostResolverInternalResult::Type::kError:
         DCHECK(!error_result);  // Expect at most one error result.
-        error_result = std::move(results.extract(result).value());
+        error_result = result.get();
         break;
       case HostResolverInternalResult::Type::kAlias:
-        alias_results.push_back(std::move(results.extract(result).value()));
+        alias_results.emplace_back(result.get());
         break;
     }
 
@@ -362,7 +362,7 @@ HostCache::Entry::Entry(
     hostnames_ = data_result->AsData().hosts();
     canonical_names_ = {data_result->domain_name()};
 
-    for (const auto& alias_result : alias_results) {
+    for (const auto* alias_result : alias_results) {
       aliases_.insert(alias_result->domain_name());
       aliases_.insert(alias_result->AsAlias().alias_target());
     }

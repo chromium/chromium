@@ -741,7 +741,9 @@ void HostResolverManager::Job::OnDnsTaskComplete(base::TimeTicks start_time,
                    secure ? TaskType::SECURE_DNS : TaskType::DNS);
 }
 
-void HostResolverManager::Job::OnIntermediateTransactionsComplete() {
+void HostResolverManager::Job::OnIntermediateTransactionsComplete(
+    std::optional<HostResolverDnsTask::SingleTransactionResults>
+        single_transaction_results) {
   if (dispatched_) {
     DCHECK_GE(num_occupied_job_slots_,
               dns_task_->num_transactions_in_progress());
@@ -770,6 +772,10 @@ void HostResolverManager::Job::OnIntermediateTransactionsComplete() {
   } else if (dns_task_->num_additional_transactions_needed() >= 1) {
     dns_task_->StartNextTransaction();
   }
+
+  // TODO(crbug.com/41493696): Use `single_transaction_results` for the
+  // ServiceEndpointRequest API. Be sure to handle the case where `this` was
+  // deleted while processing the intermediate results.
 }
 
 void HostResolverManager::Job::AddTransactionTimeQueued(

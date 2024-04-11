@@ -217,7 +217,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
                          bool allow_fallback,
                          HostCache::Entry results,
                          bool secure) override;
-  void OnIntermediateTransactionsComplete() override;
+  void OnIntermediateTransactionsComplete(
+      std::optional<HostResolverDnsTask::SingleTransactionResults>
+          single_transaction_results) override;
   void AddTransactionTimeQueued(base::TimeDelta time_queued) override;
 
   void StartMdnsTask();

@@ -160,7 +160,7 @@ class NET_EXPORT HostCache {
     // results extracted from a single DnsTransaction. `empty_source` is Source
     // to assume if `results` is empty of any results from which Source can be
     // read.
-    Entry(std::set<std::unique_ptr<HostResolverInternalResult>> results,
+    Entry(const std::set<std::unique_ptr<HostResolverInternalResult>>& results,
           base::Time now,
           base::TimeTicks now_ticks,
           Source empty_source = SOURCE_UNKNOWN);

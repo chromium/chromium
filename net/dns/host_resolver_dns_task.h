@@ -43,6 +43,24 @@ class DnsResponse;
 class NET_EXPORT_PRIVATE HostResolverDnsTask
     : public base::SupportsWeakPtr<HostResolverDnsTask> {
  public:
+  using Results = std::set<std::unique_ptr<HostResolverInternalResult>>;
+
+  // Represents a single transaction results.
+  struct SingleTransactionResults {
+    SingleTransactionResults(DnsQueryType query_type, Results results);
+    ~SingleTransactionResults();
+
+    SingleTransactionResults(SingleTransactionResults&&);
+    SingleTransactionResults& operator=(SingleTransactionResults&&);
+
+    SingleTransactionResults(const SingleTransactionResults&) = delete;
+    SingleTransactionResults& operator=(const SingleTransactionResults&) =
+        delete;
+
+    DnsQueryType query_type;
+    Results results;
+  };
+
   class Delegate {
    public:
     virtual void OnDnsTaskComplete(base::TimeTicks start_time,
@@ -50,10 +68,13 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask
                                    HostCache::Entry results,
                                    bool secure) = 0;
 
-    // Called when one or more transactions complete or get cancelled, but only
-    // if more transactions are needed. If no more transactions are needed,
-    // expect `OnDnsTaskComplete()` to be called instead.
-    virtual void OnIntermediateTransactionsComplete() = 0;
+    // Called when one transaction completes successfully, or one more
+    // transactions get cancelled, but only if more transactions are
+    // needed. If no more transactions are needed, expect `OnDnsTaskComplete()`
+    // to be called instead. `single_transaction_results` is passed only when
+    // one transaction completes successfully.
+    virtual void OnIntermediateTransactionsComplete(
+        std::optional<SingleTransactionResults> single_transaction_results) = 0;
 
     virtual RequestPriority priority() const = 0;
 
@@ -94,8 +115,6 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask
   void StartNextTransaction();
 
  private:
-  using Results = std::set<std::unique_ptr<HostResolverInternalResult>>;
-
   enum class TransactionErrorBehavior {
     // Errors lead to task fallback (immediately unless another pending/started
     // transaction has the `kFatalOrEmpty` behavior).
@@ -164,7 +183,8 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask
   void HandleTransactionResults(TransactionInfo transaction_info,
                                 Results transaction_results);
 
-  void OnTransactionsFinished();
+  void OnTransactionsFinished(
+      std::optional<SingleTransactionResults> single_transaction_results);
 
   void OnSortComplete(base::TimeTicks sort_start_time,
                       HostCache::Entry results,
