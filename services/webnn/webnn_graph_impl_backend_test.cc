@@ -346,6 +346,12 @@ void WebNNGraphImplBackendTest::SetUp() {
   static auto kSupportedTests = base::MakeFixedFlatSet<std::string_view>({
       "BuildAndComputeSingleOperatorElementWiseBinary",
       "BuildAndComputeSingleOperatorCast",
+      "BuildAndComputeSingleOperatorConcat",
+      "BuildAndComputeConcatWithConstants",
+      "BuildAndComputeSingleOperatorClamp",
+      "BuildAndComputeSingleOperatorRelu",
+      "BuildAndComputeSingleOperatorTranspose",
+      "BuildAndComputeGraphWithTwoTranspose",
   });
   if (!kSupportedTests.contains(current_test_name)) {
     GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
