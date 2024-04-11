@@ -14,13 +14,13 @@ namespace {
 
 static constexpr char kItemsCreateTableSql[] =
     // clang-format off
-    "CREATE TABLE items ("
+    "CREATE TABLE IF NOT EXISTS items ("
         "id INTEGER NOT NULL UNIQUE, "
-        "atime INTEGER NOT NULL, "
+        "fsp_path TEXT NOT NULL, "
         "version_tag TEXT NOT NULL, "
-        "disk_path TEXT NOT NULL, "
-        "fsp_path TEXT NOT NULL, PRIMARY "
-        "KEY(id AUTOINCREMENT))";
+        "accessed_time INTEGER NOT NULL, "
+        "UNIQUE(fsp_path, version_tag) ON CONFLICT REPLACE, "
+        "PRIMARY KEY(id AUTOINCREMENT))";
 // clang-format on
 
 }  // namespace
@@ -42,6 +42,13 @@ bool ContextDatabase::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   db_.set_histogram_tag("FSPContextDatabase");
 
+  // TODO(b/332636364): Once the logic for the database has landed, let's stop
+  // removing the database on every `Initialize` call.
+  if (!Raze()) {
+    LOG(ERROR) << "Failed to remove old database";
+    return false;
+  }
+
   DCHECK(!db_.is_open()) << "Database is already open";
 
   if (db_path_.empty() && !db_.OpenInMemory()) {
@@ -59,7 +66,7 @@ bool ContextDatabase::Initialize() {
     return false;
   }
 
-  if (!db_.DoesTableExist("items") && !db_.Execute(kItemsCreateTableSql)) {
+  if (!db_.Execute(kItemsCreateTableSql)) {
     LOG(ERROR) << "Can't setup items table";
     Raze();
     return false;
