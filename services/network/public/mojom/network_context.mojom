@@ -601,6 +601,15 @@ struct NetworkContextParams {
 
   // Enables Device Bound Session Credential for this network context.
   bool device_bound_sessions_enabled = false;
+
+  // Represents a net::handles::NetworkHandle.
+  // If != net::handles::kInvalidNetworkHandle (== -1), then the NetworkContext
+  // built out of this will own a URLRequestContext bound to that network (refer
+  // to net::UrlRequestContextBuilder::bindToNetwork documentation). This
+  // effectively means that URLLoaderFactories, returned by the NetworkContext
+  // created out of this, will perform all network request using only
+  // |bound_network|.
+  int64 bound_network = -1;
 };
 
 struct NetworkConditions {

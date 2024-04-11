@@ -685,7 +685,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
           url_loader_factory_for_cert_net_fetcher,
       scoped_refptr<SessionCleanupCookieStore>,
       OnURLRequestContextBuilderConfiguredCallback
-          on_url_request_context_builder_configured);
+          on_url_request_context_builder_configured,
+      net::handles::NetworkHandle bound_network);
   scoped_refptr<SessionCleanupCookieStore> MakeSessionCleanupCookieStore()
       const;
 

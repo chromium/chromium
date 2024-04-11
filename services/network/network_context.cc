@@ -643,7 +643,8 @@ NetworkContext::NetworkContext(
   url_request_context_owner_ = MakeURLRequestContext(
       std::move(url_loader_factory_for_cert_net_fetcher),
       session_cleanup_cookie_store,
-      std::move(on_url_request_context_builder_configured));
+      std::move(on_url_request_context_builder_configured),
+      params_->bound_network);
   url_request_context_ = url_request_context_owner_.url_request_context.get();
 
   cookie_manager_ = std::make_unique<CookieManager>(
@@ -2309,10 +2310,16 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         url_loader_factory_for_cert_net_fetcher,
     scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
     OnURLRequestContextBuilderConfiguredCallback
-        on_url_request_context_builder_configured) {
+        on_url_request_context_builder_configured,
+    net::handles::NetworkHandle bound_network) {
   URLRequestContextBuilderMojo builder;
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
+
+  bool is_network_bound = bound_network != net::handles::kInvalidNetworkHandle;
+  if (is_network_bound) {
+    builder.BindToNetwork(bound_network);
+  }
 
   std::unique_ptr<net::CertVerifier> cert_verifier;
   if (g_cert_verifier_for_testing) {
@@ -2402,10 +2409,15 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (network_service_) {
     net_log = network_service_->net_log();
     builder.set_net_log(net_log);
-    builder.set_host_resolver_manager(
-        network_service_->host_resolver_manager());
-    builder.set_host_resolver_factory(
-        network_service_->host_resolver_factory());
+    if (!is_network_bound) {
+      // Network bound URLRequestContexts build and configure their own special
+      // HostResolverManager and HostResolver. So, don't inject the
+      // NetworkService one even if NetworkService is enabled.
+      builder.set_host_resolver_manager(
+          network_service_->host_resolver_manager());
+      builder.set_host_resolver_factory(
+          network_service_->host_resolver_factory());
+    }
     builder.SetHttpAuthHandlerFactory(
         network_service_->CreateHttpAuthHandlerFactory(this));
     builder.set_network_quality_estimator(
@@ -2487,6 +2499,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       cache_params.type =
           net::URLRequestContextBuilder::HttpCacheParams::IN_MEMORY;
     } else {
+      // Network-bound NetworkContexts should not persist state on disk.
+      CHECK(!is_network_bound);
       cache_params.path = params_->file_paths->http_cache_directory->path();
       cache_params.type = network_session_configurator::ChooseCacheType();
       if (params_->http_cache_file_operations_factory) {
@@ -2532,6 +2546,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
                           &network::mojom::NetworkContextFilePaths::
                               http_server_properties_file_name,
                           http_server_properties_file_name)) {
+    // Network-bound NetworkContexts should not persist state on disk.
+    CHECK(!is_network_bound);
     scoped_refptr<JsonPrefStore> json_pref_store(new JsonPrefStore(
         http_server_properties_file_name, nullptr,
         base::ThreadPool::CreateSequencedTaskRunner(
@@ -2559,6 +2575,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
                           &network::mojom::NetworkContextFilePaths::
                               transport_security_persister_file_name,
                           transport_security_persister_file_name)) {
+    // Network-bound NetworkContexts should not persist state on disk.
+    CHECK(!is_network_bound);
     builder.set_transport_security_persister_file_path(
         transport_security_persister_file_name);
   }
@@ -2589,6 +2607,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
                               reporting_and_nel_store_database_name,
                           reporting_and_nel_store_database_name) &&
       (reporting_enabled || nel_enabled)) {
+    // Network-bound NetworkContexts should not persist state on disk.
+    CHECK(!is_network_bound);
     scoped_refptr<base::SequencedTaskRunner> client_task_runner =
         base::SingleThreadTaskRunner::GetCurrentDefault();
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =

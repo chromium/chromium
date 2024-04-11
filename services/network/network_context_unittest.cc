@@ -65,6 +65,7 @@
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
@@ -172,6 +173,10 @@
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "services/network/public/mojom/p2p_trusted.mojom.h"
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace network {
 
@@ -711,6 +716,44 @@ TEST_F(NetworkContextTest, EnableBrotli) {
     EXPECT_EQ(enable_brotli,
               network_context->url_request_context()->enable_brotli());
   }
+}
+
+TEST_F(NetworkContextTest, BoundNetwork) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_MARSHMALLOW) {
+    GTEST_SKIP()
+        << "bound_network is supported starting from Android Marshmallow";
+  }
+
+  // The actual network handle doesn't really matter, this test just wants to
+  // confirm that it is correctly passed down to the owned URLRequestContext.
+  constexpr net::handles::NetworkHandle network = 2;
+  auto scoped_mock_network_change_notifier =
+      std::make_unique<net::test::ScopedMockNetworkChangeNotifier>();
+  auto* mock_ncn =
+      scoped_mock_network_change_notifier->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->bound_network = network;
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  EXPECT_EQ(network_context->url_request_context()->bound_network(), network);
+  EXPECT_EQ(network_context->url_request_context()
+                ->host_resolver()
+                ->GetTargetNetworkForTesting(),
+            network);
+  EXPECT_EQ(network_context->url_request_context()
+                ->host_resolver()
+                ->GetManagerForTesting()
+                ->target_network_for_testing(),
+            network);
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "bound_network is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(NetworkContextTest, UnhandedProtocols) {
