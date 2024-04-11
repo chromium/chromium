@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -379,7 +380,8 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, UnpinnedPageActionTriggers) {
   std::unique_ptr<ExtensionActionTestHelper> test_helper =
       ExtensionActionTestHelper::Create(browser());
   RunScheduledLayouts();
-  EXPECT_EQ(0, test_helper->VisibleBrowserActions());
+  EXPECT_FALSE(test_helper->GetExtensionsContainer()->IsActionVisibleOnToolbar(
+      extension->id()));
 
   const int tab_id = NavigateToTestURLAndReturnTabId();
   SetActionVisibleOnTab(profile(), *extension, tab_id);

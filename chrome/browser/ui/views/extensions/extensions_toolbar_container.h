@@ -120,7 +120,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // Updates the controls visibility.
   void UpdateControlsVisibility();
 
-  const ToolbarIcons& icons_for_testing() const { return icons_; }
   ToolbarActionViewController* popup_owner_for_testing() {
     return popup_owner_;
   }

@@ -42,11 +42,6 @@ class ExtensionActionTestHelper {
   // Returns the number of browser action buttons in the window toolbar.
   virtual int NumberOfBrowserActions() = 0;
 
-  // Returns the number of browser action currently visible. Note that a correct
-  // result may require a UI layout. Ensure the UI layout is up-to-date (e.g. by
-  // calling InProcessBrowserTest::RunScheduledLayouts()) for a browser test.
-  virtual int VisibleBrowserActions() = 0;
-
   // Returns true if there is an action for the given `id`.
   virtual bool HasAction(const extensions::ExtensionId& id) = 0;
 

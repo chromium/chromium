@@ -138,15 +138,6 @@ int ExtensionsMenuTestUtil::NumberOfBrowserActions() {
   return extensions_container_->GetNumberOfActionsForTesting();
 }
 
-int ExtensionsMenuTestUtil::VisibleBrowserActions() {
-  int visible_icons = 0;
-  for (const auto& id_and_view : extensions_container_->icons_for_testing()) {
-    if (id_and_view.second->GetVisible())
-      ++visible_icons;
-  }
-  return visible_icons;
-}
-
 bool ExtensionsMenuTestUtil::HasAction(const extensions::ExtensionId& id) {
   return GetMenuItemViewForId(id) != nullptr;
 }

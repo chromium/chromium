@@ -29,7 +29,6 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
 
   // ExtensionActionTestHelper:
   int NumberOfBrowserActions() override;
-  int VisibleBrowserActions() override;
   bool HasAction(const extensions::ExtensionId& id) override;
   void InspectPopup(const extensions::ExtensionId& id) override;
   bool HasIcon(const extensions::ExtensionId& id) override;
