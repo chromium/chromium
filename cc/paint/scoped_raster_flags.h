@@ -80,7 +80,7 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
 
   // RAW_PTR_EXCLUSION: Performance: visible in sampling profiler and stack
   // scoped.
-  RAW_PTR_EXCLUSION const PaintFlags* original_flags_;
+  RAW_PTR_EXCLUSION const PaintFlags* original_flags_ = nullptr;
   std::optional<PaintFlags> modified_flags_;
   std::optional<DecodeStashingImageProvider> decode_stashing_image_provider_;
   bool decode_failed_ = false;

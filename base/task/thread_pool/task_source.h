@@ -155,7 +155,7 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
    private:
     friend class TaskSource;
 
-    TaskSource* task_source_;
+    TaskSource* task_source_ = nullptr;
   };
 
   // |traits| is metadata that applies to all Tasks in the TaskSource.

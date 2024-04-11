@@ -238,7 +238,7 @@ class BASE_EXPORT ThreadGroup {
 
     // RAW_PTR_EXCLUSION: Performance: visible in sampling profiler and stack
     // scoped, also a back-pointer to the owning object.
-    RAW_PTR_EXCLUSION ThreadGroup* outer_;
+    RAW_PTR_EXCLUSION ThreadGroup* outer_ = nullptr;
 
    protected:
     // Performs BaseScopedCommandsExecutor-related tasks, must be called in this

@@ -38,7 +38,7 @@ class CC_PAINT_EXPORT DecodeStashingImageProvider : public ImageProvider {
  private:
   // RAW_PTR_EXCLUSION: Performance: visible in sampling profiler and stack
   // scoped.
-  RAW_PTR_EXCLUSION ImageProvider* source_provider_;
+  RAW_PTR_EXCLUSION ImageProvider* source_provider_ = nullptr;
   absl::InlinedVector<ScopedResult, 1> decoded_images_;
 };
 
