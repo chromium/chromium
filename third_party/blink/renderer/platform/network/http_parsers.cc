@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -370,8 +371,6 @@ bool ParseRefreshTime(const String& source, base::TimeDelta& delay) {
   for (unsigned i = 0; i < source.length(); ++i) {
     UChar ch = source[i];
     if (ch == kFullstopCharacter) {
-      // TODO(tkent): According to the HTML specification, we should support
-      // only integers. However we support fractional numbers.
       if (++full_stop_count == 2)
         number_end = i;
     } else if (!IsASCIIDigit(ch)) {
@@ -380,6 +379,9 @@ bool ParseRefreshTime(const String& source, base::TimeDelta& delay) {
   }
   bool ok;
   double time = source.Left(number_end).ToDouble(&ok);
+  if (RuntimeEnabledFeatures::MetaRefreshNoFractionalEnabled()) {
+    time = floor(time);
+  }
   if (!ok)
     return false;
   delay = base::Seconds(time);

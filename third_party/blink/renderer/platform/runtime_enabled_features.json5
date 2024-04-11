@@ -2448,6 +2448,13 @@
       name: "MessagePortCloseEvent",
       status: "test",
     },
+    // This is a killswitch for <meta http-equiv="refresh"> no
+    // longer accepting fractions, landed around M125.
+    // It can be removed in M127 if there are no problems.
+    {
+      name: "MetaRefreshNoFractional",
+      status: "stable",
+    },
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
     {

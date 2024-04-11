@@ -297,11 +297,11 @@ TEST(HTTPParsersTest, ParseHTTPRefresh) {
 
   EXPECT_TRUE(
       ParseHTTPRefresh("1.5; url=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(base::Seconds(1.5), delay);
+  EXPECT_EQ(base::Seconds(1), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(
       ParseHTTPRefresh("1.5.9; url=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(base::Seconds(1.5), delay);
+  EXPECT_EQ(base::Seconds(1), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(
       ParseHTTPRefresh("7..; url=dest", IsASCIISpace<UChar>, delay, url));
