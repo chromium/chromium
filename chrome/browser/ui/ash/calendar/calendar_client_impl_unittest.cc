@@ -72,6 +72,21 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarPref) {
   EXPECT_TRUE(client.IsDisabledByAdmin());
 }
 
+TEST_F(CalendarClientImplTest,
+       IsDisabledByAdmin_NoCalendarInContextualGoogleIntegrationsPref) {
+  auto prefs = GetDefaultPrefs();
+  base::Value::List enabled_integrations;
+  enabled_integrations.Append(prefs::kGoogleClassroomIntegrationName);
+  enabled_integrations.Append(prefs::kGoogleTasksIntegrationName);
+  prefs->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
+                 std::move(enabled_integrations));
+
+  auto* const profile = CreateTestingProfile(std::move(prefs));
+
+  const auto client = CalendarClientImpl(profile);
+  EXPECT_TRUE(client.IsDisabledByAdmin());
+}
+
 TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarApp) {
   auto* const profile = CreateTestingProfile(GetDefaultPrefs());
 
