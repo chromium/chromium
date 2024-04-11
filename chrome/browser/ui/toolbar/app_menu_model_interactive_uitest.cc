@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -109,13 +110,14 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
-  RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
-                  PressButton(kToolbarAppMenuButtonElementId),
-                  SelectMenuItem(AppMenuModel::kMoreToolsMenuItem),
-                  SelectMenuItem(ToolsMenuModel::kPerformanceMenuItem),
-                  WaitForWebContentsNavigation(
-                      kPrimaryTabPageElementId,
-                      GURL(chrome::kChromeUIPerformanceSettingsURL)));
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      SelectMenuItem(AppMenuModel::kMoreToolsMenuItem),
+      SelectMenuItem(ToolsMenuModel::kPerformanceMenuItem),
+      WaitForWebContentsNavigation(
+          kPrimaryTabPageElementId,
+          GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage))));
 }
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoMenuItem) {

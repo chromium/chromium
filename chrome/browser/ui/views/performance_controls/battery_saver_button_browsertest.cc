@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
+
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/test/bind.h"
 #include "base/test/power_monitor_test_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
-#include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/webui_url_constants.h"
@@ -114,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, PromoCustomActionClicked) {
   PressButton(custom_action_button);
   navigation_observer.Wait();
 
-  GURL expected_url(chrome::kChromeUIPerformanceSettingsURL);
+  GURL expected_url(chrome::GetSettingsUrl(chrome::kPerformanceSubPage));
   EXPECT_EQ(expected_url, navigation_observer.last_navigation_url());
 }
 

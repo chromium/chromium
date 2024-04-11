@@ -14,6 +14,7 @@
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -473,8 +474,9 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       Check(base::BindLambdaForTesting(
           [&]() { return browser()->tab_strip_model()->GetTabCount() == 3; })),
       InstrumentTab(kPerformanceSettingsTab, 2),
-      WaitForWebContentsReady(kPerformanceSettingsTab,
-                              GURL(chrome::kChromeUIPerformanceSettingsURL)));
+      WaitForWebContentsReady(
+          kPerformanceSettingsTab,
+          GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage))));
 }
 
 // Memory Saver Dialog bubble's cancel button's state should be preserved
