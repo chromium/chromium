@@ -47,7 +47,8 @@ public class PreloadFragment extends PrivacyGuideBasePage
     }
 
     private void initialRadioButtonConfig() {
-        @PreloadPagesState int preloadPagesState = PreloadPagesSettingsBridge.getState();
+        @PreloadPagesState
+        int preloadPagesState = PreloadPagesSettingsBridge.getState(getProfile());
         switch (preloadPagesState) {
             case (PreloadPagesState.STANDARD_PRELOADING):
                 mStandardPreloading.setChecked(true);
@@ -74,9 +75,10 @@ public class PreloadFragment extends PrivacyGuideBasePage
     @Override
     public void onCheckedChanged(RadioGroup radioGroup, int clickedButtonId) {
         if (clickedButtonId == R.id.standard_option) {
-            PreloadPagesSettingsBridge.setState(PreloadPagesState.STANDARD_PRELOADING);
+            PreloadPagesSettingsBridge.setState(
+                    getProfile(), PreloadPagesState.STANDARD_PRELOADING);
         } else if (clickedButtonId == R.id.disabled_option) {
-            PreloadPagesSettingsBridge.setState(PreloadPagesState.NO_PRELOADING);
+            PreloadPagesSettingsBridge.setState(getProfile(), PreloadPagesState.NO_PRELOADING);
         } else {
             assert false : "Unknown clickedButtonId " + clickedButtonId;
         }

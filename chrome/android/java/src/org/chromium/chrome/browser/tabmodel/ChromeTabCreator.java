@@ -182,15 +182,16 @@ public class ChromeTabCreator extends TabCreator {
         // Skip preconnecting an empty URL.
         if (url.isEmpty()) return;
 
+        Profile profile = getProfile();
         // Only preconnect if we are allowed to trigger preloading.
-        if (PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING) return;
+        if (PreloadPagesSettingsBridge.getState(profile) == PreloadPagesState.NO_PRELOADING) return;
 
-        WarmupManager.getInstance()
-                .maybePreconnectUrlAndSubResources(getProfile(), url.getScheme());
+        WarmupManager.getInstance().maybePreconnectUrlAndSubResources(profile, url.getScheme());
     }
 
     /**
      * Creates a new tab and posts to UI.
+     *
      * @param loadUrlParams parameters of the url load.
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.

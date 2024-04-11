@@ -501,9 +501,11 @@ class LocationBarMediator
         }
 
         if (mNativeInitialized
+                && mProfileSupplier.hasValue()
                 && !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_INSTANT)
                 && DeviceClassManager.enablePrerendering()
-                && PreloadPagesSettingsBridge.getState() != PreloadPagesState.NO_PRELOADING
+                && PreloadPagesSettingsBridge.getState(mProfileSupplier.get())
+                        != PreloadPagesState.NO_PRELOADING
                 && mLocationBarDataProvider.hasTab()) {
             mOmniboxPrerender.prerenderMaybe(
                     userText,

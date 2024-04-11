@@ -36,6 +36,8 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -563,8 +565,11 @@ public class CustomTabsConnectionTest {
         int state =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            @PreloadPagesState int oldState = PreloadPagesSettingsBridge.getState();
-                            PreloadPagesSettingsBridge.setState(PreloadPagesState.NO_PRELOADING);
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
+                            @PreloadPagesState
+                            int oldState = PreloadPagesSettingsBridge.getState(profile);
+                            PreloadPagesSettingsBridge.setState(
+                                    profile, PreloadPagesState.NO_PRELOADING);
                             return oldState;
                         });
 
@@ -573,7 +578,10 @@ public class CustomTabsConnectionTest {
                     mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(URL), null, null));
             TestThreadUtils.runOnUiThreadBlocking(this::assertSpareWebContentsNotNullAndDestroy);
         } finally {
-            TestThreadUtils.runOnUiThreadBlocking(() -> PreloadPagesSettingsBridge.setState(state));
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            PreloadPagesSettingsBridge.setState(
+                                    ProfileManager.getLastUsedRegularProfile(), state));
         }
     }
 

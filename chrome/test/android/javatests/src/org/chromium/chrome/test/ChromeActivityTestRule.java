@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -251,16 +252,14 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     public void setNetworkPredictionEnabled(final boolean enabled) {
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                if (enabled) {
-                                    PreloadPagesSettingsBridge.setState(
-                                            PreloadPagesState.STANDARD_PRELOADING);
-                                } else {
-                                    PreloadPagesSettingsBridge.setState(
-                                            PreloadPagesState.NO_PRELOADING);
-                                }
+                        () -> {
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
+                            if (enabled) {
+                                PreloadPagesSettingsBridge.setState(
+                                        profile, PreloadPagesState.STANDARD_PRELOADING);
+                            } else {
+                                PreloadPagesSettingsBridge.setState(
+                                        profile, PreloadPagesState.NO_PRELOADING);
                             }
                         });
     }

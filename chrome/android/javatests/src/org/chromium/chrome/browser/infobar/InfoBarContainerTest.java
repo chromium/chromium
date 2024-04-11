@@ -34,6 +34,7 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -46,7 +47,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -204,14 +204,15 @@ public class InfoBarContainerTest {
 
     // Define function to pass parameter to Runnable to be used in testInfoBarExpirationNoPrerender.
     private Runnable setNetworkPredictionOptions(final boolean networkPredictionEnabled) {
-        return new Runnable() {
-            @Override
-            public void run() {
-                if (networkPredictionEnabled) {
-                    PreloadPagesSettingsBridge.setState(PreloadPagesState.STANDARD_PRELOADING);
-                } else {
-                    PreloadPagesSettingsBridge.setState(PreloadPagesState.NO_PRELOADING);
-                }
+        return () -> {
+            if (networkPredictionEnabled) {
+                PreloadPagesSettingsBridge.setState(
+                        ProfileManager.getLastUsedRegularProfile(),
+                        PreloadPagesState.STANDARD_PRELOADING);
+            } else {
+                PreloadPagesSettingsBridge.setState(
+                        ProfileManager.getLastUsedRegularProfile(),
+                        PreloadPagesState.NO_PRELOADING);
             }
         };
     }
@@ -227,13 +228,10 @@ public class InfoBarContainerTest {
         // Save prediction preference.
         boolean networkPredictionEnabled =
                 TestThreadUtils.runOnUiThreadBlocking(
-                        new Callable<Boolean>() {
-                            @Override
-                            public Boolean call() {
-                                return PreloadPagesSettingsBridge.getState()
-                                        != PreloadPagesState.NO_PRELOADING;
-                            }
-                        });
+                        () ->
+                                PreloadPagesSettingsBridge.getState(
+                                                ProfileManager.getLastUsedRegularProfile())
+                                        != PreloadPagesState.NO_PRELOADING);
         try {
             TestThreadUtils.runOnUiThreadBlocking(setNetworkPredictionOptions(false));
             testInfoBarExpiration();

@@ -6,11 +6,15 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -31,6 +35,7 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridgeJni;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
@@ -45,6 +50,7 @@ public class PreloadFragmentTest {
 
     @Mock private PreloadPagesSettingsBridge.Natives mNativeMock;
     @Mock private OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier;
+    @Mock private Profile mProfile;
 
     private FragmentScenario mScenario;
     private RadioButtonWithDescriptionAndAuxButton mStandardPreloadingButton;
@@ -65,10 +71,24 @@ public class PreloadFragmentTest {
     }
 
     private void initFragmentWithPreloadState(@PreloadPagesState int state) {
-        when(mNativeMock.getState()).thenReturn(state);
+        when(mNativeMock.getState(eq(mProfile))).thenReturn(state);
         mScenario =
                 FragmentScenario.launchInContainer(
-                        PreloadFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+                        PreloadFragment.class,
+                        Bundle.EMPTY,
+                        R.style.Theme_MaterialComponents,
+                        new FragmentFactory() {
+                            @NonNull
+                            @Override
+                            public Fragment instantiate(
+                                    @NonNull ClassLoader classLoader, @NonNull String className) {
+                                Fragment fragment = super.instantiate(classLoader, className);
+                                if (fragment instanceof PreloadFragment) {
+                                    ((PreloadFragment) fragment).setProfile(mProfile);
+                                }
+                                return fragment;
+                            }
+                        });
         mScenario.onFragment(
                 fragment -> {
                     mStandardPreloadingButton =
@@ -101,13 +121,13 @@ public class PreloadFragmentTest {
     public void testSelectStandard() {
         initFragmentWithPreloadState(PreloadPagesState.NO_PRELOADING);
         mStandardPreloadingButton.performClick();
-        verify(mNativeMock).setState(PreloadPagesState.STANDARD_PRELOADING);
+        verify(mNativeMock).setState(mProfile, PreloadPagesState.STANDARD_PRELOADING);
     }
 
     @Test
     public void testSelectDisabled() {
         initFragmentWithPreloadState(PreloadPagesState.STANDARD_PRELOADING);
         mDisabledPreloadingButton.performClick();
-        verify(mNativeMock).setState(PreloadPagesState.NO_PRELOADING);
+        verify(mNativeMock).setState(mProfile, PreloadPagesState.NO_PRELOADING);
     }
 }

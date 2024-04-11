@@ -344,13 +344,17 @@ public class LocationBarMediatorTest {
         verify(mPrerenderJni)
                 .initializeForProfile(123L, omniboxPrerenderCaptor.getValue(), profile);
 
-        doReturn(PreloadPagesState.NO_PRELOADING).when(mPreloadPagesSettingsJni).getState();
+        doReturn(PreloadPagesState.NO_PRELOADING)
+                .when(mPreloadPagesSettingsJni)
+                .getState(eq(profile));
         mMediator.onSuggestionsChanged("text", true);
         verify(mPrerenderJni, never())
                 .prerenderMaybe(
                         anyLong(), any(), anyString(), anyString(), anyLong(), any(), any());
 
-        doReturn(PreloadPagesState.STANDARD_PRELOADING).when(mPreloadPagesSettingsJni).getState();
+        doReturn(PreloadPagesState.STANDARD_PRELOADING)
+                .when(mPreloadPagesSettingsJni)
+                .getState(eq(profile));
         GURL url = JUnitTestGURLs.RED_1;
         mMediator.setUrl(url, null);
         doReturn(true).when(mLocationBarDataProvider).hasTab();

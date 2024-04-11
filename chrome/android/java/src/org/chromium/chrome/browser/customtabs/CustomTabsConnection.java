@@ -1790,12 +1790,12 @@ public class CustomTabsConnection {
         if (!DeviceClassManager.enablePrerendering()) {
             return false;
         }
-        if (UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                        .getInteger(COOKIE_CONTROLS_MODE)
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        if (UserPrefs.get(profile).getInteger(COOKIE_CONTROLS_MODE)
                 == CookieControlsMode.BLOCK_THIRD_PARTY) {
             return false;
         }
-        if (PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING) {
+        if (PreloadPagesSettingsBridge.getState(profile) == PreloadPagesState.NO_PRELOADING) {
             return false;
         }
         return true;

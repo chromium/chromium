@@ -256,7 +256,10 @@ public class PrivacyGuideFragmentTest {
     }
 
     private void setPreloadStatePG3(@PreloadPagesState int preloadPagesState) {
-        runOnUiThreadBlocking(() -> PreloadPagesSettingsBridge.setState(preloadPagesState));
+        runOnUiThreadBlocking(
+                () ->
+                        PreloadPagesSettingsBridge.setState(
+                                ProfileManager.getLastUsedRegularProfile(), preloadPagesState));
     }
 
     private void executeWhileCapturingIntents(Runnable func) {

@@ -120,10 +120,10 @@ class ContextualSearchPolicy {
 
     /**
      * @return whether or not the Contextual Search Result should be preloaded before the user
-     *         explicitly interacts with the feature.
+     *     explicitly interacts with the feature.
      */
     boolean shouldPrefetchSearchResult() {
-        if (PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING) {
+        if (PreloadPagesSettingsBridge.getState(mProfile) == PreloadPagesState.NO_PRELOADING) {
             return false;
         }
 

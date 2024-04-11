@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -30,8 +31,8 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
     /**
      * @return A summary that describes the current Preload Pages state.
      */
-    public static String getPreloadPagesSummaryString(Context context) {
-        @PreloadPagesState int preloadPagesState = PreloadPagesSettingsBridge.getState();
+    public static String getPreloadPagesSummaryString(Context context, Profile profile) {
+        @PreloadPagesState int preloadPagesState = PreloadPagesSettingsBridge.getState(profile);
         if (preloadPagesState == PreloadPagesState.EXTENDED_PRELOADING) {
             return context.getString(R.string.preload_pages_extended_preloading_title);
         }
@@ -50,7 +51,7 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
         ManagedPreferenceDelegate managedPreferenceDelegate = createManagedPreferenceDelegate();
 
         mPreloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
-        mPreloadPagesPreference.init(PreloadPagesSettingsBridge.getState());
+        mPreloadPagesPreference.init(PreloadPagesSettingsBridge.getState(getProfile()));
         mPreloadPagesPreference.setPreloadPagesStateDetailsRequestedListener(this);
         mPreloadPagesPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
         mPreloadPagesPreference.setOnPreferenceChangeListener(this);
@@ -91,7 +92,7 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
                 String key = preference.getKey();
                 assert PREF_MANAGED_DISCLAIMER_TEXT.equals(key) || PREF_PRELOAD_PAGES.equals(key)
                         : "Wrong preference key: " + key;
-                return PreloadPagesSettingsBridge.isNetworkPredictionManaged();
+                return PreloadPagesSettingsBridge.isNetworkPredictionManaged(getProfile());
             }
         };
     }
@@ -101,11 +102,11 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
         String key = preference.getKey();
         assert PREF_PRELOAD_PAGES.equals(key) : "Unexpected preference key.";
         @PreloadPagesState int newState = (int) newValue;
-        @PreloadPagesState int currentState = PreloadPagesSettingsBridge.getState();
+        @PreloadPagesState int currentState = PreloadPagesSettingsBridge.getState(getProfile());
         if (newState == currentState) {
             return true;
         }
-        PreloadPagesSettingsBridge.setState(newState);
+        PreloadPagesSettingsBridge.setState(getProfile(), newState);
         return true;
     }
 }

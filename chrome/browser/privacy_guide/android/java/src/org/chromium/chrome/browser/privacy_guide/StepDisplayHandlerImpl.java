@@ -45,7 +45,8 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
 
     @Override
     public boolean shouldDisplayPreload() {
-        return PreloadPagesSettingsBridge.getState() == PreloadPagesState.STANDARD_PRELOADING
-                || PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING;
+        return PreloadPagesSettingsBridge.getState(mProfile)
+                        == PreloadPagesState.STANDARD_PRELOADING
+                || PreloadPagesSettingsBridge.getState(mProfile) == PreloadPagesState.NO_PRELOADING;
     }
 }

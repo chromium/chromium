@@ -311,7 +311,8 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         Preference preloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
         if (preloadPagesPreference != null) {
             preloadPagesPreference.setSummary(
-                    PreloadPagesSettingsFragment.getPreloadPagesSummaryString(getContext()));
+                    PreloadPagesSettingsFragment.getPreloadPagesSummaryString(
+                            getContext(), getProfile()));
         }
 
         Preference secureDnsPref = findPreference(PREF_SECURE_DNS);

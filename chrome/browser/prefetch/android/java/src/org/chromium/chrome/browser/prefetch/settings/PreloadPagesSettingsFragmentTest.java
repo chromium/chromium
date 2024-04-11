@@ -24,6 +24,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -82,7 +83,10 @@ public class PreloadPagesSettingsFragmentTest {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    @PreloadPagesState int currentState = PreloadPagesSettingsBridge.getState();
+                    @PreloadPagesState
+                    int currentState =
+                            PreloadPagesSettingsBridge.getState(
+                                    ProfileManager.getLastUsedRegularProfile());
                     boolean extended_preloading_checked =
                             currentState == PreloadPagesState.EXTENDED_PRELOADING;
                     boolean standard_preloading_checked =
@@ -127,7 +131,8 @@ public class PreloadPagesSettingsFragmentTest {
                     Assert.assertEquals(
                             ASSERT_PRELOAD_PAGES_STATE_NATIVE,
                             PreloadPagesState.EXTENDED_PRELOADING,
-                            PreloadPagesSettingsBridge.getState());
+                            PreloadPagesSettingsBridge.getState(
+                                    ProfileManager.getLastUsedRegularProfile()));
 
                     // Click the Standard Preloading button.
                     getStandardPreloadingButton().onClick(null);
@@ -144,7 +149,8 @@ public class PreloadPagesSettingsFragmentTest {
                     Assert.assertEquals(
                             ASSERT_PRELOAD_PAGES_STATE_NATIVE,
                             PreloadPagesState.STANDARD_PRELOADING,
-                            PreloadPagesSettingsBridge.getState());
+                            PreloadPagesSettingsBridge.getState(
+                                    ProfileManager.getLastUsedRegularProfile()));
 
                     // Click the No Preloading button.
                     getNoPreloadingButton().onClick(null);
@@ -161,7 +167,8 @@ public class PreloadPagesSettingsFragmentTest {
                     Assert.assertEquals(
                             ASSERT_PRELOAD_PAGES_STATE_NATIVE,
                             PreloadPagesState.NO_PRELOADING,
-                            PreloadPagesSettingsBridge.getState());
+                            PreloadPagesSettingsBridge.getState(
+                                    ProfileManager.getLastUsedRegularProfile()));
                 });
     }
 
@@ -213,7 +220,9 @@ public class PreloadPagesSettingsFragmentTest {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertTrue(PreloadPagesSettingsBridge.isNetworkPredictionManaged());
+                    Assert.assertTrue(
+                            PreloadPagesSettingsBridge.isNetworkPredictionManaged(
+                                    ProfileManager.getLastUsedRegularProfile()));
                     Assert.assertTrue(mManagedDisclaimerText.isVisible());
                     Assert.assertFalse(getExtendedPreloadingButton().isEnabled());
                     Assert.assertFalse(getStandardPreloadingButton().isEnabled());
