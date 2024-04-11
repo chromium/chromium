@@ -766,6 +766,8 @@ def main(argv):
       # Do not warn about finalize() methods. Android still intends to support
       # them.
       '-Xlint:-removal',
+      # https://crbug.com/1441023
+      '-J-XX:+PerfDisableSharedMem',
   ]
 
   if options.enable_errorprone:
