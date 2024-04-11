@@ -47,9 +47,11 @@
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
@@ -769,22 +771,28 @@ class PineAppIconTest : public PineTest {
 // Tests that `PineAppImageView` properly updates the displayed image when the
 // app with the given ID is installed.
 TEST_F(PineAppIconTest, UpdateAfterSessionStarted) {
+  // The intended icon for our test app. It should not be shown until the app is
+  // "updated".
+  gfx::ImageSkia test_icon =
+      CreateSolidColorTestImage(gfx::Size(1, 1), SK_ColorRED);
   const std::string test_id = "TEST_ID";
 
   auto data = std::make_unique<PineContentsData>();
   data->apps_infos.emplace_back(test_id, "TEST_TITLE");
   StartPineOverviewSession(std::move(data));
 
-  // The image should be empty before installation.
+  // The image view should show the default app icon before installation.
   const PineAppImageView* image_view = views::AsViewClass<PineAppImageView>(
       GetContentsView()->GetViewByID(pine::kItemImageViewID));
   ASSERT_TRUE(image_view);
-  EXPECT_TRUE(image_view->GetImage().isNull());
+  EXPECT_FALSE(image_view->GetImage().isNull());
+  EXPECT_FALSE(gfx::test::AreImagesClose(gfx::Image(image_view->GetImage()),
+                                         gfx::Image(test_icon),
+                                         /*max_deviation=*/0));
 
   // Update the test delegate to return a valid icon the next time one is
   // requested.
-  GetTestSavedDeskDelegate()->set_default_app_icon(
-      CreateSolidColorTestImage(gfx::Size(1, 1), SK_ColorRED));
+  GetTestSavedDeskDelegate()->set_default_app_icon(test_icon);
 
   // Using the existing app ID, mark the app as ready, so `app_image_view` will
   // update with the new image.
@@ -796,8 +804,11 @@ TEST_F(PineAppIconTest, UpdateAfterSessionStarted) {
                                    apps::AppType::kWeb,
                                    /*should_notify_initialized=*/false);
 
-  // The image should now be valid.
+  // The image view should now show our test image.
   EXPECT_FALSE(image_view->GetImage().isNull());
+  EXPECT_TRUE(gfx::test::AreImagesClose(gfx::Image(image_view->GetImage()),
+                                        gfx::Image(test_icon),
+                                        /*max_deviation=*/0));
 }
 
 }  // namespace ash

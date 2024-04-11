@@ -5,10 +5,12 @@
 #include "ash/wm/window_restore/pine_app_image_view.h"
 
 #include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
 
 namespace ash {
@@ -58,6 +60,11 @@ PineAppImageView::PineAppImageView(const std::string& app_id, const Type type)
   SetImageSize(GetImageSizeForType(type_));
   SetPreferredSize(GetPreferredSizeForType(type_));
 
+  // Set a default image that may be replaced when the app icon is fetched
+  // and/or the app is installed.
+  SetImage(ui::ImageModel::FromVectorIcon(kDefaultAppIcon,
+                                          cros_tokens::kCrosSysPrimary));
+
   if (type_ == Type::kItem) {
     SetBackground(views::CreateThemedRoundedRectBackground(
         pine::kIconBackgroundColorId, kItemIconBackgroundRounding));
@@ -102,8 +109,10 @@ void PineAppImageView::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void PineAppImageView::GetIconCallback(const gfx::ImageSkia& icon) {
-  // TODO(hewer): Add a default app icon if `icon` is null.
-  SetImage(ui::ImageModel::FromImageSkia(icon));
+  // We don't want to replace the default icon if `icon` is null.
+  if (!icon.isNull()) {
+    SetImage(ui::ImageModel::FromImageSkia(icon));
+  }
 }
 
 BEGIN_METADATA(PineAppImageView)
