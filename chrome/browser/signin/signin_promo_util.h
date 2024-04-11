@@ -5,13 +5,23 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_PROMO_UTIL_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_PROMO_UTIL_H_
 
+#include "components/signin/public/base/consent_level.h"
 class Profile;
 
 namespace signin {
 
-// Returns true if the sign in promo should be visible.
+// Enumeration of sign in promo types for the autofill bubble.
+enum class SignInAutofillBubblePromoType { Passwords, Addresses, Payments };
+
+// Returns true if the sync/sign in promo should be visible.
 // |profile| is the profile of the tab the promo would be shown on.
-bool ShouldShowPromo(Profile* profile);
+// |promo_type| specifies whether the promo would be for sync or sign in.
+bool ShouldShowPromo(Profile& profile, ConsentLevel promo_type);
+
+// Whether we should show the sign in promo after data of the type
+// |signin_promo_type| was saved.
+bool ShouldShowSignInPromo(Profile& profile,
+                           SignInAutofillBubblePromoType signin_promo_type);
 
 }  // namespace signin
 

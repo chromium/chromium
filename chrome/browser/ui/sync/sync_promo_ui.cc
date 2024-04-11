@@ -7,11 +7,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/sync/service/sync_prefs.h"
 
 bool SyncPromoUI::ShouldShowSyncPromo(Profile* profile) {
   // Don't show sync promo if the sign in promo should not be shown.
-  if (!signin::ShouldShowPromo(profile)) {
+  if (!signin::ShouldShowPromo(*profile, signin::ConsentLevel::kSync)) {
     return false;
   }
 
