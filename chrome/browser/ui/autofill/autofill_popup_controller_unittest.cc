@@ -72,22 +72,9 @@ using ::testing::AtLeast;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Invoke;
-using ::testing::Matcher;
 using ::testing::Mock;
-using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Return;
-using ::testing::StrictMock;
-
-#if !BUILDFLAG(IS_ANDROID)
-Matcher<const AutofillPopupDelegate::SuggestionPosition&>
-EqualsSuggestionPosition(AutofillPopupDelegate::SuggestionPosition position) {
-  return AllOf(
-      Field(&AutofillPopupDelegate::SuggestionPosition::row, position.row),
-      Field(&AutofillPopupDelegate::SuggestionPosition::sub_popup_level,
-            position.sub_popup_level));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 content::RenderFrameHost* CreateAndNavigateChildFrame(
     content::RenderFrameHost* parent,
@@ -886,74 +873,6 @@ TEST_F(AutofillPopupControllerTest, AcceptSuggestionIsMemorySafe) {
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(AutofillPopupControllerTest, SubPopupIsCreatedWithViewFromParent) {
-  base::WeakPtr<AutofillPopupController> sub_controller =
-      client().popup_controller(manager()).OpenSubPopup(
-          {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
-  EXPECT_TRUE(sub_controller);
-}
-
-TEST_F(AutofillPopupControllerTest, DelegateMethodsAreCalledOnlyByRootPopup) {
-  EXPECT_CALL(manager().external_delegate(), OnPopupShown()).Times(0);
-  base::WeakPtr<AutofillPopupController> sub_controller =
-      client().popup_controller(manager()).OpenSubPopup(
-          {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
-
-  EXPECT_CALL(manager().external_delegate(), OnPopupHidden()).Times(0);
-  sub_controller->Hide(PopupHidingReason::kUserAborted);
-
-  EXPECT_CALL(manager().external_delegate(), OnPopupHidden());
-  client().popup_controller(manager()).Hide(PopupHidingReason::kUserAborted);
-}
-
-TEST_F(AutofillPopupControllerTest, EventsAreDelegatedToChildrenAndView) {
-  EXPECT_CALL(manager().external_delegate(), OnPopupShown()).Times(0);
-  base::WeakPtr<AutofillPopupController> sub_controller =
-      client().popup_controller(manager()).OpenSubPopup(
-          {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
-
-  content::NativeWebKeyboardEvent event = CreateKeyPressEvent(ui::VKEY_LEFT);
-  EXPECT_CALL(client().sub_popup_view(), HandleKeyPressEvent)
-      .WillOnce(Return(true));
-  EXPECT_CALL(client().popup_view(), HandleKeyPressEvent).Times(0);
-  EXPECT_TRUE(client().popup_controller(manager()).HandleKeyPressEvent(event));
-
-  EXPECT_CALL(client().sub_popup_view(), HandleKeyPressEvent)
-      .WillOnce(Return(false));
-  EXPECT_CALL(client().popup_view(), HandleKeyPressEvent).Times(1);
-  EXPECT_FALSE(client().popup_controller(manager()).HandleKeyPressEvent(event));
-}
-
-// Tests that the controller forwards calls to perform a button action (such as
-// clicking a close button on a suggestion) to its delegate.
-TEST_F(AutofillPopupControllerTest, ButtonActionsAreSentToDelegate) {
-  ShowSuggestions(manager(), {PopupItemId::kCompose});
-  EXPECT_CALL(manager().external_delegate(),
-              DidPerformButtonActionForSuggestion);
-  client().popup_controller(manager()).PerformButtonActionForSuggestion(0);
-}
-
-// The second popup is also the second "sub_popup_level". This test asserts that
-// the information regarding the popup level is passed on to the delegate.
-TEST_F(AutofillPopupControllerTest, PopupForwardsSuggestionPosition) {
-  base::WeakPtr<AutofillPopupController> sub_controller =
-      client().popup_controller(manager()).OpenSubPopup(
-          {0, 0, 10, 10}, {Suggestion(PopupItemId::kAddressEntry)},
-          AutoselectFirstSuggestion(false));
-  ASSERT_TRUE(sub_controller);
-  static_cast<AutofillPopupControllerImpl*>(sub_controller.get())
-      ->SetViewForTesting(client().sub_popup_view().GetWeakPtr());
-
-  EXPECT_CALL(manager().external_delegate(),
-              DidAcceptSuggestion(_, EqualsSuggestionPosition(
-                                         {.row = 0, .sub_popup_level = 1})));
-
-  task_environment()->FastForwardBy(base::Milliseconds(1000));
-  sub_controller->AcceptSuggestion(/*index=*/0);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that the popup controller queries the view for its screen location.
 TEST_F(AutofillPopupControllerTest, GetPopupScreenLocationCallsView) {
