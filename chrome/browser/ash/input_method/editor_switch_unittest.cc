@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/input_method/editor_identity_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -63,6 +64,7 @@ struct EditorSwitchTriggerTestCase {
   std::string email;
 
   std::string active_engine_id;
+  std::string locale;
   std::string url;
   std::string app_id;
   ui::TextInputType input_type;
@@ -183,6 +185,7 @@ INSTANTIATE_TEST_SUITE_P(
             .additional_enabled_flags = {},
             .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
+            .locale = "en-us",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
             .app_type = AppType::BROWSER,
@@ -201,6 +204,7 @@ INSTANTIATE_TEST_SUITE_P(
             .additional_enabled_flags = {},
             .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
+            .locale = "en-us",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_PASSWORD,
             .app_type = AppType::BROWSER,
@@ -218,6 +222,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = "https://mail.google.com/mail",
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::BROWSER,
@@ -234,6 +239,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@google.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = "https://mail.google.com/mail",
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::BROWSER,
@@ -250,6 +256,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = "",
          .app_id = extension_misc::kGoogleDocsDemoAppId,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -267,6 +274,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {features::kOrcaOnWorkspace},
          .email = "testuser@google.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = "https://mail.google.com/mail",
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::BROWSER,
@@ -282,6 +290,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
          .active_engine_id = "nacl_mozc_jp",
+         .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::BROWSER,
@@ -298,6 +307,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::ARC_APP,
@@ -313,6 +323,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::BROWSER,
@@ -328,6 +339,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::BROWSER,
@@ -344,6 +356,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::BROWSER,
@@ -360,6 +373,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::BROWSER,
@@ -377,6 +391,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::BROWSER,
@@ -392,6 +407,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::BROWSER,
@@ -407,6 +423,7 @@ INSTANTIATE_TEST_SUITE_P(
          .additional_enabled_flags = {},
          .email = "testuser@gmail.com",
          .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
          .app_type = AppType::BROWSER,
@@ -416,6 +433,57 @@ INSTANTIATE_TEST_SUITE_P(
          .consent_status = ConsentStatus::kApproved,
          .num_chars_selected = 100,
          .expected_editor_mode = EditorMode::kRewrite,
+         .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
+         .expected_blocked_reasons = {}},
+        {.test_name = "TriggersRewriteModeWhenOrcaRestrictedInEnglishLocalesFla"
+                      "gIsSetAsDefault",
+         .additional_enabled_flags = {},
+         .email = "testuser@gmail.com",
+         .active_engine_id = "xkb:us::eng",
+         .locale = "fr",
+         .url = kAllowedTestUrl,
+         .input_type = ui::TEXT_INPUT_TYPE_TEXT,
+         .app_type = AppType::BROWSER,
+         .is_in_tablet_mode = false,
+         .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
+         .user_pref = true,
+         .consent_status = ConsentStatus::kApproved,
+         .num_chars_selected = 100,
+         .expected_editor_mode = EditorMode::kRewrite,
+         .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
+         .expected_blocked_reasons = {}},
+        {.test_name = "DoNotTriggerFeatureInEnUsLocaleWhenOrcaOnlyInEnglishLoca"
+                      "lesFlagIsEnabled",
+         .additional_enabled_flags = {features::kOrcaOnlyInEnglishLocales},
+         .email = "testuser@gmail.com",
+         .active_engine_id = "xkb:us::eng",
+         .locale = "en-us",
+         .url = kAllowedTestUrl,
+         .input_type = ui::TEXT_INPUT_TYPE_TEXT,
+         .app_type = AppType::BROWSER,
+         .is_in_tablet_mode = false,
+         .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
+         .user_pref = true,
+         .consent_status = ConsentStatus::kApproved,
+         .num_chars_selected = 100,
+         .expected_editor_mode = EditorMode::kRewrite,
+         .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
+         .expected_blocked_reasons = {}},
+        {.test_name = "DoNotTriggerFeatureInFrenchLocaleWhenOrcaOnlyInEnglishLo"
+                      "calesFlagIsEnabled",
+         .additional_enabled_flags = {features::kOrcaOnlyInEnglishLocales},
+         .email = "testuser@gmail.com",
+         .active_engine_id = "xkb:us::eng",
+         .locale = "fr",
+         .url = kAllowedTestUrl,
+         .input_type = ui::TEXT_INPUT_TYPE_TEXT,
+         .app_type = AppType::BROWSER,
+         .is_in_tablet_mode = false,
+         .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
+         .user_pref = true,
+         .consent_status = ConsentStatus::kApproved,
+         .num_chars_selected = 100,
+         .expected_editor_mode = EditorMode::kBlocked,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
          .expected_blocked_reasons = {}},
     }),
@@ -437,6 +505,8 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/base_enabled_features,
       /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities});
+  ScopedBrowserLocale browser_locale(test_case.locale);
+
   std::unique_ptr<TestingProfile> profile =
       CreateTestingProfile(test_case.email);
   FakeEditorSwitchDelegate delegate;

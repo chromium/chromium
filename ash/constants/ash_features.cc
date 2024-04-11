@@ -2196,6 +2196,11 @@ BASE_FEATURE(kOrcaOnWorkspace,
              "OrcaOnWorkspace",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Orca will only be available in English locales.
+BASE_FEATURE(kOrcaOnlyInEnglishLocales,
+             "OrcaOnlyInEnglishLocales",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Orca on Demo mode.
 BASE_FEATURE(kOrcaSupportDemoMode,
              "OrcaSupportDemoMode",

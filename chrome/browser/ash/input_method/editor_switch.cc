@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -21,6 +22,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/manta/manta_service.h"
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -240,6 +242,12 @@ bool IsAllowedForUseInNonDemoMode(Profile* profile,
   return false;
 }
 
+bool IsSystemInEnglishLanguage() {
+  return g_browser_process != nullptr &&
+         language::ExtractBaseLanguage(
+             g_browser_process->GetApplicationLocale()) == "en";
+}
+
 EditorSwitch::EditorSwitch(Delegate* delegate,
                            Profile* profile,
                            std::string_view country_code)
@@ -367,7 +375,9 @@ bool EditorSwitch::CanBeTriggered() const {
          !net::NetworkChangeNotifier::IsOffline() && !tablet_mode_enabled_ &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
-         text_length_ <= kTextLengthMaxLimit;
+         text_length_ <= kTextLengthMaxLimit &&
+         (!base::FeatureList::IsEnabled(features::kOrcaOnlyInEnglishLocales) ||
+          IsSystemInEnglishLanguage());
 }
 
 EditorMode EditorSwitch::GetEditorMode() const {
