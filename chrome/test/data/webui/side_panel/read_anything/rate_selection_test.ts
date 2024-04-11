@@ -10,7 +10,7 @@ import {RATE_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {getItemsInMenu, stubAnimationFrame, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -51,19 +51,20 @@ suite('RateSelection', () => {
     });
   });
 
-  suite('on menu button click', () => {
+  test('menu button opens menu', () => {
+    stubAnimationFrame();
+
+    rateButton.click();
+    flush();
+
+    assertTrue(toolbar.$.rateMenu.get().open);
+  });
+
+  suite('dropdown menu', () => {
     let options: HTMLButtonElement[];
 
     setup(() => {
-      rateButton.click();
-      flush();
-      options = Array.from(
-          toolbar.$.rateMenu.get().querySelectorAll<HTMLButtonElement>(
-              '.dropdown-item'));
-    });
-
-    test('opens menu', () => {
-      assertTrue(toolbar.$.rateMenu.get().open);
+      options = getItemsInMenu(toolbar.$.rateMenu);
     });
 
     test('has multiple options', () => {
@@ -80,7 +81,7 @@ suite('RateSelection', () => {
       });
     });
 
-    suite(', then option click', () => {
+    suite('on option click', () => {
       let menuOption: HTMLButtonElement;
       let rateValue: number;
 

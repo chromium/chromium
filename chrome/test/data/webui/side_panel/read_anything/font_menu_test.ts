@@ -11,7 +11,7 @@ import {FONT_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {getItemsInMenu, stubAnimationFrame, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -63,17 +63,15 @@ suite('FontMenu', () => {
     function updateFonts(supportedFonts: string[]): void {
       chrome.readingMode.supportedFonts = supportedFonts;
       toolbar.updateFonts();
-      // We need an extra call to fontMenu.get here just to ensure the
-      // menu has rendered before we query the dropdown item elements.
-      toolbar.$.fontMenu.get();
-      flush();
-      fontMenuOptions = Array.from(
-          toolbar.$.fontMenu.get().querySelectorAll<HTMLButtonElement>(
-              '.dropdown-item'));
+      fontMenuOptions = getItemsInMenu(toolbar.$.fontMenu);
     }
 
     test('is dropdown menu', () => {
+      stubAnimationFrame();
+
       menuButton!.click();
+      flush();
+
       assertTrue(toolbar.$.fontMenu.get().open);
     });
 

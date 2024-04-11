@@ -582,22 +582,24 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     target.className += activeClass;
     this.closeMenus_();
 
-    const minY = target.getBoundingClientRect().bottom;
-    if (fullScreen) {
-      menuToOpen.showAt(target, {
-        minY: minY,
-        left: 0,
-        anchorAlignmentY: AnchorAlignment.AFTER_END,
-        noOffset: true,
-      });
-    } else {
-      menuToOpen.showAt(target, {
-        minY: minY,
-        anchorAlignmentX: AnchorAlignment.AFTER_START,
-        anchorAlignmentY: AnchorAlignment.AFTER_END,
-        noOffset: true,
-      });
-    }
+    requestAnimationFrame(() => {
+      const minY = target.getBoundingClientRect().bottom;
+      if (fullScreen) {
+        menuToOpen.showAt(target, {
+          minY: minY,
+          left: 0,
+          anchorAlignmentY: AnchorAlignment.AFTER_END,
+          noOffset: true,
+        });
+      } else {
+        menuToOpen.showAt(target, {
+          minY: minY,
+          anchorAlignmentX: AnchorAlignment.AFTER_START,
+          anchorAlignmentY: AnchorAlignment.AFTER_END,
+          noOffset: true,
+        });
+      }
+    });
   }
 
   private onHighlightClick_() {

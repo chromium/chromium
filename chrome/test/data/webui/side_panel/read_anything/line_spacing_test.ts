@@ -11,7 +11,7 @@ import {LINE_SPACING_EVENT} from 'chrome-untrusted://read-anything-side-panel.to
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {getItemsInMenu, stubAnimationFrame, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -34,13 +34,16 @@ suite('LineSpacing', () => {
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
     flush();
-    const menuButton =
-        toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#line-spacing');
-    menuButton!.click();
-    flush();
   });
 
   test('is dropdown menu', () => {
+    stubAnimationFrame();
+    const menuButton =
+        toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#line-spacing');
+
+    menuButton!.click();
+    flush();
+
     assertTrue(toolbar.$.lineSpacingMenu.get().open);
   });
 
@@ -48,9 +51,7 @@ suite('LineSpacing', () => {
     let lineSpacingMenuOptions: HTMLButtonElement[];
 
     setup(() => {
-      lineSpacingMenuOptions = Array.from(
-          toolbar.$.lineSpacingMenu.get().querySelectorAll<HTMLButtonElement>(
-              '.dropdown-item'));
+      lineSpacingMenuOptions = getItemsInMenu(toolbar.$.lineSpacingMenu);
     });
 
     test('has 3 options', () => {

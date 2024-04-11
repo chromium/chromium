@@ -10,7 +10,7 @@ import {FONT_SIZE_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-c
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {stubAnimationFrame, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 
 suite('FontSize', () => {
@@ -46,13 +46,16 @@ suite('FontSize', () => {
     });
 
     test('is dropdown menu', () => {
+      stubAnimationFrame();
+
       menuButton!.click();
+      flush();
+
       assertTrue(toolbar.$.fontSizeMenu.get().open);
     });
 
     test('increase clicked increases container font size', () => {
       const startingFontSize = chrome.readingMode.fontSize;
-      menuButton!.click();
 
       toolbar.$.fontSizeMenu.get()
           .querySelector<CrIconButtonElement>('#font-size-increase')!.click();
@@ -63,7 +66,6 @@ suite('FontSize', () => {
 
     test('decrease clicked decreases container font size', () => {
       const startingFontSize = chrome.readingMode.fontSize;
-      menuButton!.click();
 
       toolbar.$.fontSizeMenu.get()
           .querySelector<CrIconButtonElement>('#font-size-decrease')!.click();
@@ -74,7 +76,6 @@ suite('FontSize', () => {
 
     test('reset clicked returns font size to starting size', () => {
       const startingFontSize = chrome.readingMode.fontSize;
-      menuButton!.click();
 
       toolbar.$.fontSizeMenu.get()
           .querySelector<CrIconButtonElement>('#font-size-increase')!.click();
