@@ -303,7 +303,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedInvalidFeed1) {
       "element 'desc_0' not found", "This feed contains no entries.", "Error");
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedInvalidFeed2) {
+// TODO(https://crbug.com/331144174): Test is flaky across multiple builders.
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
+                       DISABLED_RSSParseFeedInvalidFeed2) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
