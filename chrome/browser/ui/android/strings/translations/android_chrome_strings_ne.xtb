@@ -27,7 +27,7 @@
 <translation id="1113597929977215864">सरलीकृत दृश्य देखाउनुहोस्</translation>
 <translation id="1126809382673880764">तपाईंलाई जोखिमपूर्ण वेबसाइट, डाउनलोड वा एक्स्टेन्सनहरूविरुद्ध सुरक्षा प्रदान गर्दैन। उपलब्ध भएसम्म तपाईं अझै पनि Gmail र खोज जस्ता Google का अन्य सेवाहरूमा सुरक्षित ब्राउजिङको सुरक्षा प्राप्त गर्नु हुने छ।</translation>
 <translation id="1129510026454351943">विवरणहरू: <ph name="ERROR_DESCRIPTION" /></translation>
-<translation id="1142732900304639782">यी साइटहरू अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>
+<translation id="1142732900304639782">यी साइटहरू अनुवाद गर्ने प्रस्ताव नगर्नुहोस्</translation>
 <translation id="1145536944570833626">विद्यमान डेटा मेट्नुहोस्।</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="115483310321669804">पासवर्ड <ph name="PASSWORD" /> प्रयोग गर्नुहोस्</translation>
@@ -381,7 +381,7 @@
 <translation id="3016635187733453316">यो डिभाइस इन्टरनेटमा जोडिएको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="3026955690410463085">लिंक समावेश गर्नुहोस्</translation>
 <translation id="3027644380269727216">तपाईंले कुनै साइटमा गरेका गतिविधिका आधारमा। यो सेटिङ अन छ।</translation>
-<translation id="3029276696788198026">कुनै पनि पेज प्रिलोड नगरियोस्</translation>
+<translation id="3029276696788198026">कुनै पनि पेज प्रिलोड नगर्नुहोस्</translation>
 <translation id="3029704984691124060">पासफ्रेजहरू मेल खाँदैनन्</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />मद्दत प्राप्त गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ</translation>
@@ -850,7 +850,7 @@
 <translation id="557018954714092179">नयाँ फोल्डर बनाउनुहोस्</translation>
 <translation id="5578795271662203820">यस छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="5581519193887989363">तपाईं जुनसुकै बेला <ph name="BEGIN_LINK1" />सेटिङहरू<ph name="END_LINK1" /> मा गई सिंक गर्ने कुरा छनौट गर्न सक्नुहुन्छ।</translation>
-<translation id="5590372121997663538">यो कम्प्युटर याद राखियोस्</translation>
+<translation id="5590372121997663538">यो कम्प्युटर याद राख्नुहोस्</translation>
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="5599455543593328020">इन्कोग्निटो मोड</translation>
 <translation id="5605283439565877834">Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू इन्क्रिप्ट गरिने छैनन्। Chrome को ब्राउजिङ हिस्ट्री सिंक गरिने छैन।
@@ -1326,7 +1326,7 @@
 <translation id="784934925303690534">समयको दायरा</translation>
 <translation id="7851858861565204677">अन्य डिभाइसहरू</translation>
 <translation id="7853202427316060426">गतिविधि</translation>
-<translation id="7859988229622350291">कहिल्यै अनुवाद नगरियोस्</translation>
+<translation id="7859988229622350291">कहिल्यै अनुवाद नगर्नुहोस्</translation>
 <translation id="7864208933699511058">तपाईंले ब्राउज गर्दै गर्दा तपाईंलाई देखाइने कुनै विज्ञापन पर्सनलाइज गरिन्छ कि गरिँदैन भन्ने कुरा यो सेटिङ, <ph name="BEGIN_LINK_1" />साइटले सिफारिस गरेका विज्ञापनहरू<ph name="END_LINK_1" />, तपाईंले तय गर्नुभएको <ph name="BEGIN_LINK_2" />कुकीसम्बन्धी सेटिङ<ph name="END_LINK_2" /> र तपाईंले हेरिरहनुभएको साइटले विज्ञापन पर्सनलाइज गर्छ कि गर्दैन भन्ने कुरामा भर पर्छ।</translation>
 <translation id="7866213166286285359">पेजहरू यहाँ अनुवाद गर्नुहोस्</translation>
 <translation id="78707286264420418">तपाईंको डिभाइसमा कनेक्ट गर्नका निम्ति <ph name="PRODUCT_NAME" /> लाई नजिकैका डिभाइसहरू खोज्ने अनुमति दिनु पर्ने हुन्छ</translation>
@@ -1431,7 +1431,7 @@
 <translation id="8310344678080805313">मानक ट्याबहरू</translation>
 <translation id="831192587911042850">यसले तपाईंले फलो गरिरहेका वेबसाइटहरूको सूचीमा हालको वेबसाइट थप्छ।</translation>
 <translation id="8333340769932050274">तपाईं आफूले साइटहरूसँग सेयर गर्न नचाहेका विषयहरू ब्लक गर्न सक्नुहुन्छ। Chrome ले पनि तपाईंका ४ हप्ताभन्दा पुराना विषयहरू स्वतः मेटाउँछ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="834313815369870491">निम्न साइटहरूको पाठ कहिल्यै अनुवाद नगरियोस्</translation>
+<translation id="834313815369870491">निम्न साइटहरूको पाठ कहिल्यै अनुवाद नगर्नुहोस्</translation>
 <translation id="8348430946834215779">सम्भव भएसम्म HTTPS प्रयोग गर्नुहोस् र HTTPS नचल्ने साइट लोड गर्नुअघि चेतावनी प्राप्त गर्नुहोस्</translation>
 <translation id="8354977102499939946">आफ्नो आवाज प्रयोग गरी छिटोछरितो रूपमा खोज्नुहोस्। यो सर्टकट परिवर्तन गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> वटा डाउनलोड रिस्टोर गरिए</translation>
@@ -1504,7 +1504,7 @@
 <translation id="8676789164135894283">साइन इन गर्न कार्यको पुष्टिसम्बन्धी सूचना</translation>
 <translation id="8683039184091909753">फोटो</translation>
 <translation id="869891660844655955">समाप्ति मिति</translation>
-<translation id="8699120352855309748">यी भाषाहरू अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>
+<translation id="8699120352855309748">यी भाषाहरू अनुवाद गर्ने प्रस्ताव नगर्नुहोस्</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8723453889042591629">यो पेज तुरुन्तै अनुवाद गर्नुहोस्। यो सर्टकट परिवर्तन गर्न टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
@@ -1616,6 +1616,6 @@
 <translation id="983192555821071799">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="987264212798334818">सामान्य</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> वटा ट्याब</translation>
-<translation id="993520549480398880">यो कारबाट बुकमार्क, हिस्ट्री र अन्य जानकारी पनि हटाइयोस्</translation>
+<translation id="993520549480398880">यो कारबाट बुकमार्क, हिस्ट्री र अन्य जानकारी पनि हटाउनुहोस्</translation>
 <translation id="996149300115483134">फिड कार्ड मेनु बन्द गरियो</translation>
 </translationbundle>
