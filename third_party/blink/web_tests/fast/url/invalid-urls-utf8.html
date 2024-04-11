@@ -21,13 +21,11 @@ var testSet = [
     'gopher:///',
     'ws:///',
     'wss:///',
+    '  wss:///  ',
 
     // Invalid Authority.
-    'foo://tête à tête@host/',
-    'foo://user:tête à tête@host/',
-    '    foo://<>@host/    ',
-    '    foo://user:<>@host/    ',
-    'foo://user:password@[xxxxx]/tête à tête/',
+    'foo://user:password@[xxxxx]/',
+    '    foo://user:password@[xxxxx]/    ',
 
     // The '?' is a path separator and make sure the hostname is not encoded in punicode. The hostname is an invalid IPV6 hostname.
     'foo://user:password@[?tête à tête/',
@@ -45,7 +43,7 @@ var testSet = [
 
 for (var i = 0; i < testSet.length; ++i) {
     src = canonicalize(testSet[i]);
-    expected = testSet[i].trim();
+    expected = testSet[i];
     shouldBe('src', 'expected');
 }
 

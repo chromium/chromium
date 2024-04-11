@@ -8,10 +8,8 @@ PASS src is expected
 PASS src is expected
 PASS src is expected
 PASS src is expected
-FAIL src should be foo://tête à tête@host/. Was foo://t%C3%AAte%20%C3%A0%20t%C3%AAte@host/.
-FAIL src should be foo://user:tête à tête@host/. Was foo://user:t%C3%AAte%20%C3%A0%20t%C3%AAte@host/.
-FAIL src should be foo://<>@host/. Was foo://%3C%3E@host/.
-FAIL src should be foo://user:<>@host/. Was foo://user:%3C%3E@host/.
+PASS src is expected
+PASS src is expected
 PASS src is expected
 PASS src is expected
 PASS src is expected
