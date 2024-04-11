@@ -732,8 +732,15 @@ struct Employee {
 
 *** note
 **NOTE:** Mojo object or handle types added with a `MinVersion` **MUST** be
-optional (nullable) or primitive. See [Primitive Types](#Primitive-Types) for
-details on nullable values.
+optional (nullable). On the other hand, primitive numeric types added with a
+`MinVersion` are allowed to be either nullable or non-nullable.
+
+See [Primitive Types](#Primitive-Types) for details on nullable values.
+
+See
+[Ensuring Backward Compatible Behavior](#Ensuring-Backward-Compatible-Behavior)
+for more details on choosing between nullable and non-nullable primitive numeric
+types.
 ***
 
 By default, fields belong to version 0. New fields must be appended to the
@@ -781,6 +788,15 @@ struct Employee {
 };
 ```
 
+**Conversion between Different Versions**
+
+When a struct of version X is passed to a destination using version Y:
+
+* If X is older than Y, then all fields newer than version X are populated
+    automatically: `null` for nullable types, and `0`/`false` for primitive
+    numeric types.
+* If X is newer than Y, then all fields newer than version Y are truncated.
+
 ### Versioned Interfaces
 
 There are two dimensions on which an interface can be extended
@@ -805,12 +821,16 @@ interface HumanResourceDatabase {
 };
 ```
 
-Similar to [versioned structs](#Versioned-Structs), when you pass the parameter
-list of a request or response method to a destination using an older version of
-an interface, unrecognized fields are silently discarded.
+When you pass the parameter list of a request or response method to a
+destination using a different version of an interface, the conversion rules of
+[versioned structs](#Versioned-Structs) also apply. Unrecognized fields from
+a newer version are silently discarded; missing fields from an older version are
+populated automatically with `null`/`0`/`false`.
 
-    Please note that adding a response to a message which did not previously
-    expect a response is a not a backwards-compatible change.
+*** note
+**NOTE:** Adding a response to a message which did not previously expect a
+response is a not a backwards-compatible change.
+***
 
 **Appending New Methods**
 :   Similarly, you can reorder methods with explicit ordinal values as long as
@@ -903,6 +923,79 @@ struct OldStruct {
 [Stable, RenamedFrom="asdf.mojom.OldStruct"]
 struct NewStruct {
 };
+```
+
+### Ensuring Backward Compatible Behavior
+
+In addition to following versioning rules to ensure an interface is
+syntactically backward compatible, it is important to also ensure it is
+semantically backward compatible. When a client uses version X of a mojom
+definition to communicate with a service using a different version Y:
+
+* If X is newer than Y, the client will receive downgraded service as if it
+    initiates the communication with version Y. If silently downgraded service
+    is not desirable or not achievable (e.g., calling a method that doesn't
+    exist at the service side), the client is responsible for querying service
+    side version and act accordingly.
+* If X is older than Y, the service is responsible for behaving in the same way
+    as an older service running version X, or report an error if the interface
+    itself supports such error reporting.
+
+**Choosing between Nullable and Non-nullable Primitive Numeric Types**
+
+Primitive numeric types are allowed to be either nullable or non-nullable when
+extending structs or method parameter lists. There are several tradeoffs to
+consider when choosing between the two:
+
+* Nullable numeric primitives: they can offer more semantic safety for new
+    fields because it is more obvious that such fields are optional, and whether
+    their values are set.
+* Non-nullable numeric primitives: The caveat is that they can be used only if
+    auto-populated `0`/`false` doesn't break backward compatibility. (See
+    example below.) When they are used properly, however, there are some
+    benefits: they are slightly more efficient (although that is usually
+    negligible). And they can avoid additional null checks if value `0`/`false`
+    already represents the invalid state.
+
+If the consequences of auto-populated `0`/`false` have not been thoroughly and
+carefully considered, prefer nullable numeric primitives.
+
+Consider an example where a non-nullable numeric primitive breaks backward
+compatibility:
+
+``` cpp
+// WRONG:
+// Supports a third operand with non-nullable int32 in version 1.
+Multiply(int32 operand1, int32 operand2, [MinVersion=1] int32 operand3)
+    => (int64 result);
+```
+
+In this case, it is wrong to use non-nullable `int32` for `operand3`, because
+when a client using version 0 calls a service implementing version 1, `operand3`
+is automatically populated with value `0`, the `result` will always be 0!
+
+Consider an example where a non-nullable numeric primitive results in more
+intuitive code:
+
+``` cpp
+// Awesome encoding is only available from version >= 1.
+CompressFile(string filename, [MinVersion=1] bool uses_awesome_encoding);
+```
+
+In the example above, using non-nullable `bool` for `uses_awesome_encoding`
+makes sense. Because when a client uses version 0 definition to call
+`CompressFile()` with a service implementing version 1, `uses_awesome_encoding`
+is automatically populated with `false`, which matches the version 0 behavior
+naturally and preserves backward compatibility.
+
+As a comparison, if `uses_awesome_encoding` is defined as `bool?`, it is mapped
+to `std::optional<bool>`. The service needs to add additional null checks:
+
+``` cpp
+// Verbose and less intuitive code:
+if (uses_awesome_encoding.value_or(false)) { ... }
+// or:
+if (uses_awesome_encoding && *uses_awesome_encoding) { ... }
 ```
 
 ## Component targets
