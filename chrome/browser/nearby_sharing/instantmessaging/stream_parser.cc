@@ -4,8 +4,9 @@
 
 #include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
 
+#include <string_view>
+
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
 #include "third_party/protobuf/src/google/protobuf/wire_format_lite.h"
@@ -34,7 +35,7 @@ StreamParser::~StreamParser() = default;
 
 std::vector<
     chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
-StreamParser::Append(base::StringPiece data) {
+StreamParser::Append(std::string_view data) {
   if (!unparsed_data_buffer_) {
     unparsed_data_buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();
     unparsed_data_buffer_->SetCapacity(data.size() + kReadBufferSpareCapacity);

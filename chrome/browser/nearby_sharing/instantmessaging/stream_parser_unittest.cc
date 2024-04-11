@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -164,7 +165,7 @@ TEST_F(StreamParserTest, TagFailure) {
   EXPECT_EQ(0u, responses.size());
 
   char bytes[2] = {0x0f, 0x00};
-  auto bytes_string = base::StringPiece(bytes);
+  auto bytes_string = std::string_view(bytes);
   EXPECT_EQ(1u, bytes_string.length());
   responses = GetStreamParser().Append(bytes);
   EXPECT_EQ(0u, responses.size());
