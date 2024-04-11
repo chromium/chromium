@@ -352,7 +352,6 @@ class AutofillPopupControllerForPopupTest : public AutofillPopupControllerImpl {
   using AutofillPopupControllerImpl::element_bounds;
   using AutofillPopupControllerImpl::FireControlsChangedEvent;
   using AutofillPopupControllerImpl::GetLineCount;
-  using AutofillPopupControllerImpl::GetRootAXPlatformNodeForWebContents;
   using AutofillPopupControllerImpl::GetSuggestionAt;
   using AutofillPopupControllerImpl::GetSuggestionLabelsAt;
   using AutofillPopupControllerImpl::GetSuggestionMainTextAt;
@@ -361,10 +360,6 @@ class AutofillPopupControllerForPopupTest : public AutofillPopupControllerImpl {
   using AutofillPopupControllerImpl::RemoveSuggestion;
   using AutofillPopupControllerImpl::SelectSuggestion;
   MOCK_METHOD(void, Hide, (PopupHidingReason reason), (override));
-  MOCK_METHOD(ui::AXPlatformNode*,
-              GetRootAXPlatformNodeForWebContents,
-              (),
-              (override));
 
   void DoHide(PopupHidingReason reason = PopupHidingReason::kTabGone) {
     AutofillPopupControllerImpl::Hide(reason);
