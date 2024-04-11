@@ -946,8 +946,10 @@ void ChromeAutofillClient::ShowAutofillPopup(
     autofill_field_promo_controller_manual_fallback_->Hide();
   }
 
-  // When testing, try to keep popup open when the reason to hide is from an
-  // external browser frame resize that is extraneous to our testing goals.
+  // When testing, try to keep popup open when the reason to hide is one of:
+  // - An external browser frame resize that is extraneous to our testing goals.
+  // - Too many fields get focus one after another (for example, multiple
+  // password fields being autofilled by default on Desktop).
   if (keep_popup_open_for_testing_ && popup_controller_.get()) {
     popup_controller_->KeepPopupOpenForTesting();
   }

@@ -364,8 +364,12 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
   }
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
-      reason == PopupHidingReason::kWidgetChanged) {
-    return;  // Don't close the popup because the browser window is resized.
+      (reason == PopupHidingReason::kWidgetChanged ||
+       reason == PopupHidingReason::kEndEditing)) {
+    return;  // Don't close the popup because the browser window is resized or
+             // because too many fields get focus one after each other (this can
+             // happen on Desktop, if multiple password forms are present, and
+             // they are all autofilled by default).
   }
 
   if (delegate_ && IsRootPopup()) {
