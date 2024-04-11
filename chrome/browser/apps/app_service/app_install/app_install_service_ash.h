@@ -92,21 +92,21 @@ class AppInstallServiceAsh : public AppInstallService {
       PackageId expected_package_id,
       std::optional<gfx::NativeWindow> anchor_window,
       std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
-      base::OnceClosure callback,
+      base::OnceCallback<void(AppInstallResult)> callback,
       std::optional<AppInstallData> data);
   void InstallIfDialogAccepted(
       AppInstallSurface surface,
       PackageId expected_package_id,
       AppInstallData data,
       base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
-      base::OnceClosure callback,
+      base::OnceCallback<void(AppInstallResult)> callback,
       bool dialog_accepted);
   void ProcessInstallResult(
       AppInstallSurface surface,
       PackageId expected_package_id,
       AppInstallData data,
       base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
-      base::OnceClosure callback,
+      base::OnceCallback<void(AppInstallResult)> callback,
       bool install_success);
 
   raw_ref<Profile> profile_;

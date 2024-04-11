@@ -228,10 +228,7 @@ ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
   }
 
   QueryParams query_params = ExtractQueryParams(url.query_piece());
-  // TODO(b/303350800): Generalize to work with all app types.
-  if (!query_params.package_id.has_value() ||
-      (query_params.package_id->package_type() != PackageType::kWeb &&
-       query_params.package_id->package_type() != PackageType::kBorealis)) {
+  if (!query_params.package_id.has_value()) {
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
   }
 

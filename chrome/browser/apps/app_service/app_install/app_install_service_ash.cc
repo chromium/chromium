@@ -70,13 +70,16 @@ AppInstallResult InstallWebAppWithBrowserInstallDialog(
   return AppInstallResult::kUnknown;
 }
 
-void RecordInstallResult(AppInstallSurface surface, AppInstallResult result) {
+void RecordInstallResult(base::OnceClosure callback,
+                         AppInstallSurface surface,
+                         AppInstallResult result) {
   base::UmaHistogramEnumeration("Apps.AppInstallService.AppInstallResult",
                                 result);
   base::UmaHistogramEnumeration(
       base::StrCat({"Apps.AppInstallService.AppInstallResult.",
                     base::ToString(surface)}),
       result);
+  std::move(callback).Run();
 }
 
 }  // namespace
@@ -104,28 +107,61 @@ void AppInstallServiceAsh::InstallApp(
     std::move(InstallAppCallbackForTesting()).Run(package_id);
   }
 
+  base::OnceCallback<void(AppInstallResult)> result_callback =
+      base::BindOnce(&RecordInstallResult, std::move(callback), surface);
+
   if (!CanUserInstall()) {
-    RecordInstallResult(surface, AppInstallResult::kUserTypeNotPermitted);
-    std::move(callback).Run();
+    std::move(result_callback).Run(AppInstallResult::kUserTypeNotPermitted);
     return;
   }
 
-  // TODO(b/303350800): Generalize to work with all app types.
-  CHECK(package_id.package_type() == PackageType::kWeb ||
-        package_id.package_type() == PackageType::kBorealis);
+  switch (package_id.package_type()) {
+    case PackageType::kWeb: {
+      // Observe for `anchor_window` being destroyed during async work.
+      std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker;
+      if (anchor_window) {
+        anchor_window_tracker =
+            views::NativeWindowTracker::Create(*anchor_window);
+      }
 
-  // Observe for `anchor_window` being destroyed during async work.
-  std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker;
-  if (anchor_window) {
-    anchor_window_tracker = views::NativeWindowTracker::Create(*anchor_window);
+      FetchAppInstallData(
+          package_id,
+          base::BindOnce(&AppInstallServiceAsh::ShowDialogAndInstall,
+                         weak_ptr_factory_.GetWeakPtr(), surface, package_id,
+                         anchor_window, std::move(anchor_window_tracker),
+                         std::move(result_callback)));
+      return;
+    }
+    case PackageType::kBorealis: {
+      if (!base::FeatureList::IsEnabled(
+              ash::features::kAppInstallServiceUriBorealis)) {
+        std::move(result_callback)
+            .Run(AppInstallResult::kAppProviderNotAvailable);
+        return;
+      }
+
+      // Parse the Steam Game ID from the PackageId.
+      uint64_t steam_game_id;
+      if (!base::StringToUint64(package_id.identifier(), &steam_game_id)) {
+        std::move(result_callback).Run(AppInstallResult::kAppDataCorrupted);
+        return;
+      }
+
+      borealis::UserRequestedSteamGameInstall(&*profile_, steam_game_id);
+
+      // We've now launched the Borealis installer or the Steam Store
+      // website. We don't yet know whether that flow will result in a
+      // successfully installed game.
+      std::move(result_callback).Run(AppInstallResult::kUnknown);
+      return;
+    }
+    case PackageType::kArc:
+    case PackageType::kChromeApp:
+    case PackageType::kUnknown:
+      // TODO(b/303350800): Generalize to work with all app types.
+      std::move(result_callback).Run(AppInstallResult::kAppTypeNotSupported);
+      return;
   }
-
-  FetchAppInstallData(
-      package_id,
-      base::BindOnce(&AppInstallServiceAsh::ShowDialogAndInstall,
-                     weak_ptr_factory_.GetWeakPtr(), surface, package_id,
-                     anchor_window, std::move(anchor_window_tracker),
-                     std::move(callback)));
 }
 
 void AppInstallServiceAsh::InstallAppHeadless(
@@ -214,94 +250,67 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
     PackageId expected_package_id,
     std::optional<gfx::NativeWindow> anchor_window,
     std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
-    base::OnceClosure callback,
+    base::OnceCallback<void(AppInstallResult)> callback,
     std::optional<AppInstallData> data) {
-  std::optional<AppInstallResult> result =
-      [&]() -> std::optional<AppInstallResult> {
-    gfx::NativeWindow parent =
-        anchor_window.has_value() &&
-                !anchor_window_tracker->WasNativeWindowDestroyed()
-            ? anchor_window.value()
-            : nullptr;
+  gfx::NativeWindow parent =
+      anchor_window.has_value() &&
+              !anchor_window_tracker->WasNativeWindowDestroyed()
+          ? anchor_window.value()
+          : nullptr;
 
-    if (!data || data->package_id != expected_package_id) {
-      if (ash::app_install::AppInstallDialog::IsEnabled()) {
-        ash::app_install::AppInstallDialog::CreateDialog()->ShowNoAppError(
-            parent, base::BindOnce(&AppInstallServiceAsh::InstallApp,
-                                   weak_ptr_factory_.GetWeakPtr(), surface,
-                                   expected_package_id, anchor_window,
-                                   base::DoNothing()));
-      }
-      return data ? AppInstallResult::kAppDataCorrupted
-                  : AppInstallResult::kAlmanacFetchFailed;
+  if (!data || data->package_id != expected_package_id) {
+    if (ash::app_install::AppInstallDialog::IsEnabled()) {
+      ash::app_install::AppInstallDialog::CreateDialog()->ShowNoAppError(
+          parent, base::BindOnce(&AppInstallServiceAsh::InstallApp,
+                                 weak_ptr_factory_.GetWeakPtr(), surface,
+                                 expected_package_id, anchor_window,
+                                 base::DoNothing()));
     }
-
-    switch (expected_package_id.package_type()) {
-      case PackageType::kWeb:
-        if (const auto* web_app_data =
-                absl::get_if<WebAppInstallData>(&data->app_type_data)) {
-          if (ash::app_install::AppInstallDialog::IsEnabled()) {
-            std::vector<ash::app_install::mojom::ScreenshotPtr> screenshots;
-            for (auto& screenshot : data->screenshots) {
-              auto dialog_screenshot =
-                  ash::app_install::mojom::Screenshot::New();
-              dialog_screenshot->url = screenshot.url;
-              dialog_screenshot->size = gfx::Size(screenshot.width_in_pixels,
-                                                  screenshot.height_in_pixels);
-              screenshots.push_back(std::move(dialog_screenshot));
-            }
-
-            base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
-                ash::app_install::AppInstallDialog::CreateDialog();
-            dialog->ShowApp(
-                &*profile_, parent, expected_package_id, data->name,
-                web_app_data->document_url, data->description,
-                data->icon ? data->icon->url : GURL::EmptyGURL(),
-                data->icon ? data->icon->width_in_pixels : 0,
-                data->icon ? data->icon->is_masking_allowed : false,
-                std::move(screenshots),
-                base::BindOnce(&AppInstallServiceAsh::InstallIfDialogAccepted,
-                               weak_ptr_factory_.GetWeakPtr(), surface,
-                               expected_package_id, std::move(data).value(),
-                               dialog, std::move(callback)));
-            return std::nullopt;
-          }
-          // TODO(b/303350800): Delegate to a generic AppPublisher method
-          // instead of harboring app type specific logic here.
-          return InstallWebAppWithBrowserInstallDialog(
-              *profile_, web_app_data->document_url);
-        }
-        return AppInstallResult::kAppDataCorrupted;
-      case PackageType::kBorealis:
-        if (!base::FeatureList::IsEnabled(
-                ash::features::kAppInstallServiceUriBorealis)) {
-          return AppInstallResult::kAppProviderNotAvailable;
-        }
-
-        // Parse the Steam Game ID from the PackageId.
-        uint64_t steam_game_id;
-        if (!base::StringToUint64(expected_package_id.identifier(),
-                                  &steam_game_id)) {
-          return AppInstallResult::kAppDataCorrupted;
-        }
-
-        borealis::UserRequestedSteamGameInstall(&*profile_, steam_game_id);
-
-        // We've now launched the Borealis installer or the Steam Store
-        // website. We don't yet know whether that flow will result in a
-        // successfully installed game.
-        return AppInstallResult::kUnknown;
-      case PackageType::kArc:
-      case PackageType::kChromeApp:
-      case PackageType::kUnknown:
-        return AppInstallResult::kAppTypeNotSupported;
-    }
-  }();
-
-  if (result.has_value()) {
-    RecordInstallResult(surface, result.value());
-    std::move(callback).Run();
+    std::move(callback).Run(data ? AppInstallResult::kAppDataCorrupted
+                                 : AppInstallResult::kAlmanacFetchFailed);
+    return;
   }
+
+  // The install dialog is only used for web apps currently.
+  CHECK_EQ(expected_package_id.package_type(), PackageType::kWeb);
+  const auto* web_app_data =
+      absl::get_if<WebAppInstallData>(&data->app_type_data);
+  if (!web_app_data) {
+    std::move(callback).Run(AppInstallResult::kAppDataCorrupted);
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kCrosWebAppInstallDialog) &&
+      !ash::app_install::AppInstallPageHandler::GetAutoAcceptForTesting()) {
+    // TODO(b/303350800): Delegate to a generic AppPublisher method
+    // instead of harboring app type specific logic here.
+    std::move(callback).Run(InstallWebAppWithBrowserInstallDialog(
+        *profile_, web_app_data->document_url));
+    return;
+  }
+
+  std::vector<ash::app_install::mojom::ScreenshotPtr> screenshots;
+  for (auto& screenshot : data->screenshots) {
+    auto dialog_screenshot = ash::app_install::mojom::Screenshot::New();
+    dialog_screenshot->url = screenshot.url;
+    dialog_screenshot->size =
+        gfx::Size(screenshot.width_in_pixels, screenshot.height_in_pixels);
+    screenshots.push_back(std::move(dialog_screenshot));
+  }
+
+  base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
+      ash::app_install::AppInstallDialog::CreateDialog();
+  dialog->ShowApp(&*profile_, parent, expected_package_id, data->name,
+                  web_app_data->document_url, data->description,
+                  data->icon ? data->icon->url : GURL::EmptyGURL(),
+                  data->icon ? data->icon->width_in_pixels : 0,
+                  data->icon ? data->icon->is_masking_allowed : false,
+                  std::move(screenshots),
+                  base::BindOnce(&AppInstallServiceAsh::InstallIfDialogAccepted,
+                                 weak_ptr_factory_.GetWeakPtr(), surface,
+                                 expected_package_id, std::move(data).value(),
+                                 dialog, std::move(callback)));
 }
 
 void AppInstallServiceAsh::InstallIfDialogAccepted(
@@ -309,11 +318,10 @@ void AppInstallServiceAsh::InstallIfDialogAccepted(
     PackageId expected_package_id,
     AppInstallData data,
     base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
-    base::OnceClosure callback,
+    base::OnceCallback<void(AppInstallResult)> callback,
     bool dialog_accepted) {
   if (!dialog_accepted) {
-    RecordInstallResult(surface, AppInstallResult::kInstallDialogNotAccepted);
-    std::move(callback).Run();
+    std::move(callback).Run(AppInstallResult::kInstallDialogNotAccepted);
     return;
   }
   web_app_installer_.InstallApp(
@@ -328,20 +336,21 @@ void AppInstallServiceAsh::ProcessInstallResult(
     PackageId expected_package_id,
     AppInstallData data,
     base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
-    base::OnceClosure callback,
+    base::OnceCallback<void(AppInstallResult)> callback,
     bool install_success) {
-  RecordInstallResult(surface, install_success
-                                   ? AppInstallResult::kSuccess
-                                   : AppInstallResult::kAppTypeInstallFailed);
   if (!dialog) {
-    std::move(callback).Run();
+    std::move(callback).Run(install_success
+                                ? AppInstallResult::kSuccess
+                                : AppInstallResult::kAppTypeInstallFailed);
     return;
   }
+
   if (install_success) {
     dialog->SetInstallSucceeded();
-    std::move(callback).Run();
+    std::move(callback).Run(AppInstallResult::kSuccess);
     return;
   }
+
   dialog->SetInstallFailed(base::BindOnce(
       &AppInstallServiceAsh::InstallIfDialogAccepted,
       weak_ptr_factory_.GetWeakPtr(), surface, expected_package_id,
