@@ -678,6 +678,13 @@ const base::FeatureParam<int>
     kAutofillEnableCacheForRegexMatchingCacheSizeParam{
         &kAutofillEnableCacheForRegexMatching, "cache_size", 300};
 
+// When enabled, various deduplication related metrics are logged on startup
+// and on import.
+// TODO(b/325452461): Remove once rolled out.
+BASE_FEATURE(kAutofillLogDeduplicationMetrics,
+             "AutofillLogDeduplicationMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls the whether the Chrome may provide a virtual view structure for
 // Android Autofill.

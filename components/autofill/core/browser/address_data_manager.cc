@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/country_data.h"
+#include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
@@ -730,6 +731,10 @@ void AddressDataManager::LogStoredDataMetrics() const {
   const std::vector<AutofillProfile*> profiles = GetProfiles();
   autofill_metrics::LogStoredProfileMetrics(profiles);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profiles);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLogDeduplicationMetrics)) {
+    autofill_metrics::LogDeduplicationStartupMetrics(profiles, app_locale_);
+  }
   autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
                                                    app_locale_);
 }
