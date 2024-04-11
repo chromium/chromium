@@ -248,8 +248,9 @@ def try_builder(
             predicate = resultdb.test_result_predicate(
                 # Only match the telemetry_gpu_integration_test target and its
                 # Fuchsia and Android variants that have a suffix added to the
-                # end. Those are caught with [^/]*.
-                test_id_regexp = "ninja://chrome/test:telemetry_gpu_integration_test[^/]*/.+",
+                # end. Those are caught with [^/]*. The Fuchsia version is in
+                # //content/test since Fuchsia cannot depend on //chrome.
+                test_id_regexp = "ninja://(chrome|content)/test:telemetry_gpu_integration_test[^/]*/.+",
             ),
         ),
         resultdb.export_test_results(
