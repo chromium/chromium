@@ -327,7 +327,11 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
                 if (site.getLocalStorageInfo() == null
                         || !site.getLocalStorageInfo().isDomainImportant()) {
                     mNumSitesClearing++;
-                    site.clearAllStoredData(ProfileManager.getLastUsedRegularProfile(), this);
+                    var siteSettingsDelegate =
+                            new ChromeSiteSettingsDelegate(
+                                    getApplicationContext(),
+                                    ProfileManager.getLastUsedRegularProfile());
+                    site.clearAllStoredData(siteSettingsDelegate, this);
                 } else {
                     siteStorageLeft += site.getTotalUsage();
                 }

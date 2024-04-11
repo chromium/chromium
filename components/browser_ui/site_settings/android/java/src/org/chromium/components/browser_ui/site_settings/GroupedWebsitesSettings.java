@@ -142,9 +142,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                                     DeleteBrowsingDataAction.MAX_VALUE);
 
                             SiteDataCleaner.clearData(
-                                    getSiteSettingsDelegate().getBrowserContextHandle(),
-                                    mSiteGroup,
-                                    mDataClearedCallback);
+                                    getSiteSettingsDelegate(), mSiteGroup, mDataClearedCallback);
                         }
                     };
             ClearWebsiteStorageDialog dialogFragment =
@@ -183,10 +181,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                 DeleteBrowsingDataAction.SITES_SETTINGS_PAGE,
                 DeleteBrowsingDataAction.MAX_VALUE);
 
-        SiteDataCleaner.clearData(
-                getSiteSettingsDelegate().getBrowserContextHandle(),
-                mSiteGroup,
-                mDataClearedCallback);
+        SiteDataCleaner.clearData(getSiteSettingsDelegate(), mSiteGroup, mDataClearedCallback);
     }
 
     private void setUpClearDataPreference() {

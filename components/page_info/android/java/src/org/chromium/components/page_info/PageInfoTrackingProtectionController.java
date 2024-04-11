@@ -172,7 +172,7 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
                 DeleteBrowsingDataAction.MAX_VALUE);
 
         SiteDataCleaner.clearData(
-                mMainController.getBrowserContext(), mWebsite, mMainController::exitSubpage);
+                getDelegate().getSiteSettingsDelegate(), mWebsite, mMainController::exitSubpage);
     }
 
     @Override

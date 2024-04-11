@@ -168,7 +168,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                 DeleteBrowsingDataAction.MAX_VALUE);
 
         SiteDataCleaner.clearData(
-                mMainController.getBrowserContext(), mWebsite, mMainController::exitSubpage);
+                getDelegate().getSiteSettingsDelegate(), mWebsite, mMainController::exitSubpage);
     }
 
     @Override

@@ -140,16 +140,12 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
             SiteDataCleaner.resetPermissions(
                     mSiteSettingsDelegate.getBrowserContextHandle(), (Website) mSiteEntry);
             SiteDataCleaner.clearData(
-                    mSiteSettingsDelegate.getBrowserContextHandle(),
-                    (Website) mSiteEntry,
-                    mOnDeleteCallback);
+                    mSiteSettingsDelegate, (Website) mSiteEntry, mOnDeleteCallback);
         } else {
             SiteDataCleaner.resetPermissions(
                     mSiteSettingsDelegate.getBrowserContextHandle(), (WebsiteGroup) mSiteEntry);
             SiteDataCleaner.clearData(
-                    mSiteSettingsDelegate.getBrowserContextHandle(),
-                    (WebsiteGroup) mSiteEntry,
-                    mOnDeleteCallback);
+                    mSiteSettingsDelegate, (WebsiteGroup) mSiteEntry, mOnDeleteCallback);
         }
     }
 

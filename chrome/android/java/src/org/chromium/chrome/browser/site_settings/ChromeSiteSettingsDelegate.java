@@ -362,15 +362,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void getBrowsingDataModel(Callback<BrowsingDataModel> callback) {
-        if (mBrowsingDataModel == null) {
-            BrowsingDataBridge.buildBrowsingDataModelFromDisk(
-                    mProfile,
-                    model -> {
-                        mBrowsingDataModel = model;
-                        callback.onResult(mBrowsingDataModel);
-                    });
-        } else {
-            callback.onResult(mBrowsingDataModel);
-        }
+        BrowsingDataBridge.buildBrowsingDataModelFromDisk(
+                mProfile,
+                model -> {
+                    mBrowsingDataModel = model;
+                    callback.onResult(mBrowsingDataModel);
+                });
     }
 }

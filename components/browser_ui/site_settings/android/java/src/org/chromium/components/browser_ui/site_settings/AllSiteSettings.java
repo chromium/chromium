@@ -199,7 +199,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             preference
                     .site()
                     .clearAllStoredData(
-                            getSiteSettingsDelegate().getBrowserContextHandle(),
+                            getSiteSettingsDelegate(),
                             () -> {
                                 if (--numLeft[0] <= 0) getInfoForOrigins();
                             });

@@ -17,23 +17,33 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SiteDataCleaner {
     /**
      * Clears the data of the specified site.
+     *
      * @param finishCallback is called when finished.
      */
     public static void clearData(
-            BrowserContextHandle browserContextHandle, Website site, Runnable finishCallback) {
+            SiteSettingsDelegate siteSettingsDelegate, Website site, Runnable finishCallback) {
         String origin = site.getAddress().getOrigin();
-        WebsitePreferenceBridgeJni.get().clearCookieData(browserContextHandle, origin);
+        var browserContextHandle = siteSettingsDelegate.getBrowserContextHandle();
+
+        if (!siteSettingsDelegate.isBrowsingDataModelFeatureEnabled()) {
+            WebsitePreferenceBridgeJni.get().clearCookieData(browserContextHandle, origin);
+            WebsitePreferenceBridgeJni.get().clearMediaLicenses(browserContextHandle, origin);
+        }
+
         WebsitePreferenceBridgeJni.get().clearBannerData(browserContextHandle, origin);
-        WebsitePreferenceBridgeJni.get().clearMediaLicenses(browserContextHandle, origin);
-        site.clearAllStoredData(browserContextHandle, finishCallback::run);
+        site.clearAllStoredData(siteSettingsDelegate, finishCallback::run);
     }
 
     /**
      * Clears the data for each of the sites in a given group.
+     *
      * @param finishCallback is called when the entire operation is finished.
      */
     public static void clearData(
-            BrowserContextHandle contextHandle, WebsiteGroup group, Runnable finishCallback) {
+            SiteSettingsDelegate siteSettingsDelegate,
+            WebsiteGroup group,
+            Runnable finishCallback) {
+
         final AtomicInteger callbacksReceived = new AtomicInteger(0);
         List<Website> sites = group.getWebsites();
         final int websitesCount = sites.size();
@@ -44,7 +54,7 @@ public class SiteDataCleaner {
                     }
                 };
         for (Website site : sites) {
-            clearData(contextHandle, site, singleWebsiteCallback);
+            clearData(siteSettingsDelegate, site, singleWebsiteCallback);
         }
     }
 

@@ -417,27 +417,46 @@ public final class Website implements WebsiteEntry {
     }
 
     public void clearAllStoredData(
-            BrowserContextHandle browserContextHandle, final StoredDataClearedCallback callback) {
-        // Wait for callbacks from each mStorageInfo and mSharedDictionaryInfo
-        // and a callback from mLocalStorageInfo.
-        int[] storageInfoCallbacksLeft = {mStorageInfo.size() + mSharedDictionaryInfo.size() + 1};
-        StorageInfoClearedCallback clearedCallback =
-                () -> {
-                    if (--storageInfoCallbacksLeft[0] == 0) callback.onStoredDataCleared();
-                };
-        if (mLocalStorageInfo != null) {
-            mLocalStorageInfo.clear(browserContextHandle, clearedCallback);
-            mLocalStorageInfo = null;
-        } else {
-            clearedCallback.onStorageInfoCleared();
-        }
-        for (StorageInfo info : mStorageInfo) info.clear(browserContextHandle, clearedCallback);
-        mStorageInfo.clear();
+            SiteSettingsDelegate siteSettingsDelegate, final StoredDataClearedCallback callback) {
+        var browserContextHandle = siteSettingsDelegate.getBrowserContextHandle();
 
-        for (SharedDictionaryInfo info : mSharedDictionaryInfo) {
-            info.clear(browserContextHandle, clearedCallback);
+        if (siteSettingsDelegate.isBrowsingDataModelFeatureEnabled()) {
+            siteSettingsDelegate.getBrowsingDataModel(
+                    (model) -> {
+                        String host = getAddress().getHost();
+                        model.removeBrowsingData(
+                                host,
+                                () -> {
+                                    callback.onStoredDataCleared();
+                                    mStorageInfo.clear();
+                                });
+                    });
+        } else {
+            // Here we need to delete localstorage e cookie info.
+
+            // Wait for callbacks from each mStorageInfo and mSharedDictionaryInfo
+            // and a callback from mLocalStorageInfo.
+            int[] storageInfoCallbacksLeft = {
+                mStorageInfo.size() + mSharedDictionaryInfo.size() + 1
+            };
+            StorageInfoClearedCallback clearedCallback =
+                    () -> {
+                        if (--storageInfoCallbacksLeft[0] == 0) callback.onStoredDataCleared();
+                    };
+            if (mLocalStorageInfo != null) {
+                mLocalStorageInfo.clear(browserContextHandle, clearedCallback);
+                mLocalStorageInfo = null;
+            } else {
+                clearedCallback.onStorageInfoCleared();
+            }
+            for (StorageInfo info : mStorageInfo) info.clear(browserContextHandle, clearedCallback);
+            mStorageInfo.clear();
+
+            for (SharedDictionaryInfo info : mSharedDictionaryInfo) {
+                info.clear(browserContextHandle, clearedCallback);
+            }
+            mSharedDictionaryInfo.clear();
         }
-        mSharedDictionaryInfo.clear();
     }
 
     /** An interface to implement to get a callback when storage info has been cleared. */

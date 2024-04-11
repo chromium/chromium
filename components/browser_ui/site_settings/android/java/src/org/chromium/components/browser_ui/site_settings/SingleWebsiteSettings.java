@@ -353,9 +353,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                     DeleteBrowsingDataAction.MAX_VALUE);
 
                             SiteDataCleaner.clearData(
-                                    getSiteSettingsDelegate().getBrowserContextHandle(),
-                                    mSite,
-                                    mDataClearedCallback);
+                                    getSiteSettingsDelegate(), mSite, mDataClearedCallback);
                         }
                     };
             ClearWebsiteStorageDialog dialogFragment =
@@ -1351,8 +1349,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
         SiteDataCleaner.resetPermissions(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSite);
-        SiteDataCleaner.clearData(
-                getSiteSettingsDelegate().getBrowserContextHandle(), mSite, mDataClearedCallback);
+        SiteDataCleaner.clearData(getSiteSettingsDelegate(), mSite, mDataClearedCallback);
 
         RecordHistogram.recordEnumeratedHistogram(
                 "Privacy.DeleteBrowsingData.Action",
