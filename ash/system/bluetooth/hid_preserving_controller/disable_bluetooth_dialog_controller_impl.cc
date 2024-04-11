@@ -17,6 +17,7 @@
 #include "ui/views/controls/bulleted_label_list/bulleted_label_list_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -81,15 +82,16 @@ void DisableBluetoothDialogControllerImpl::ShowDialog(
                         weak_ptr_factory_.GetWeakPtr()))
                     .Build();
 
-  // TODO(b/330161794): Fix bulleted list text color to match mocks.
-  std::unique_ptr<views::BulletedLabelListView> list_view =
-      std::make_unique<views::BulletedLabelListView>();
-
+  std::vector<std::u16string> labels;
   int count = std::min((int)devices.size(), 3);
-  // Intentionally limit the number of devices shown in the UI.
   for (int i = 0; i < count; i++) {
-    list_view->AddLabel(base::UTF8ToUTF16(devices[i]));
+    labels.push_back(base::UTF8ToUTF16(devices[i]));
   }
+
+  // Create the BulletedLabelListView with the generated labels.
+  std::unique_ptr<views::BulletedLabelListView> list_view =
+      std::make_unique<views::BulletedLabelListView>(
+          labels, views::style::TextStyle::STYLE_SECONDARY);
 
   dialog->SetModalType(ui::MODAL_TYPE_SYSTEM);
   dialog->SetShowCloseButton(false);

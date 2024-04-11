@@ -61,7 +61,9 @@ BulletedLabelListView::BulletedLabelListView()
     : BulletedLabelListView(std::vector<std::u16string>()) {}
 
 BulletedLabelListView::BulletedLabelListView(
-    const std::vector<std::u16string>& texts) {
+    const std::vector<std::u16string>& texts,
+    style::TextStyle label_text_style)
+    : label_text_style_(label_text_style) {
   const int width = LayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
   SetLayoutManager(std::make_unique<views::TableLayout>())
@@ -88,6 +90,7 @@ void BulletedLabelListView::AddLabel(const std::u16string& text) {
   auto* label = AddChildView(std::make_unique<views::Label>(text));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetTextStyle(label_text_style_);
 }
 
 BEGIN_METADATA(BulletedLabelListView)

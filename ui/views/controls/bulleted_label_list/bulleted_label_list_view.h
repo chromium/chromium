@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
-
 
 namespace views {
 
@@ -18,12 +18,17 @@ class VIEWS_EXPORT BulletedLabelListView : public View {
 
  public:
   BulletedLabelListView();
-  explicit BulletedLabelListView(const std::vector<std::u16string>& texts);
+  explicit BulletedLabelListView(
+      const std::vector<std::u16string>& texts,
+      style::TextStyle label_text_style = style::TextStyle::STYLE_PRIMARY);
   BulletedLabelListView(const BulletedLabelListView&) = delete;
   BulletedLabelListView& operator=(const BulletedLabelListView&) = delete;
   ~BulletedLabelListView() override;
 
   void AddLabel(const std::u16string& text);
+
+ private:
+  style::TextStyle label_text_style_;
 };
 
 }  // namespace views
