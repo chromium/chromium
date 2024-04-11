@@ -18592,21 +18592,6 @@
             ]
         }
     ],
-    "SyncShowIdentityErrorsForSignedInUsers": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncShowIdentityErrorsForSignedInUsers"
-                    ]
-                }
-            ]
-        }
-    ],
     "SysUiHoldbackStudy": [
         {
             "platforms": [
