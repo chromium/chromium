@@ -1959,6 +1959,10 @@ void CaptureModeController::BeginVideoRecording(
       capture_params.window, capture_params.bounds,
       base::BindOnce(&CaptureModeController::InterruptVideoRecording,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  if (on_video_recording_started_callback_for_test_) {
+    std::move(on_video_recording_started_callback_for_test_).Run();
+  }
 }
 
 void CaptureModeController::InterruptVideoRecording() {

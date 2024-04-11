@@ -116,6 +116,12 @@ bool CaptureModeTestApi::IsInCountDownAnimation() const {
              ->IsInCountDownAnimation();
 }
 
+void CaptureModeTestApi::SetOnVideoRecordingStartedCallback(
+    base::OnceClosure callback) {
+  controller_->on_video_recording_started_callback_for_test_ =
+      std::move(callback);
+}
+
 void CaptureModeTestApi::StopVideoRecording() {
   DCHECK(controller_->is_recording_in_progress());
   controller_->EndVideoRecording(EndRecordingReason::kStopRecordingButton);

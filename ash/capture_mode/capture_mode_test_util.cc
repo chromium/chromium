@@ -98,11 +98,9 @@ void WaitForRecordingToStart() {
   auto* controller = CaptureModeController::Get();
   if (controller->is_recording_in_progress())
     return;
-  auto* test_delegate =
-      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
-  ASSERT_TRUE(test_delegate);
   base::RunLoop run_loop;
-  test_delegate->set_on_recording_started_callback(run_loop.QuitClosure());
+  ash::CaptureModeTestApi().SetOnVideoRecordingStartedCallback(
+      run_loop.QuitClosure());
   run_loop.Run();
   ASSERT_TRUE(controller->is_recording_in_progress());
 }

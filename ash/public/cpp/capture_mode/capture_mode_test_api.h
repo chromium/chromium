@@ -84,6 +84,9 @@ class ASH_EXPORT CaptureModeTestApi {
   // Returns true if the 3-second countdown animation is in progress.
   bool IsInCountDownAnimation() const;
 
+  // Sets a callback that will be triggered once the video recording is started.
+  void SetOnVideoRecordingStartedCallback(base::OnceClosure callback);
+
   // Stops the video recording. Can only be called if a video recording was
   // in progress.
   void StopVideoRecording();

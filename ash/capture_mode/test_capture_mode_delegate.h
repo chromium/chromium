@@ -43,9 +43,6 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void set_on_session_state_changed_callback(base::OnceClosure callback) {
     on_session_state_changed_callback_ = std::move(callback);
   }
-  void set_on_recording_started_callback(base::OnceClosure callback) {
-    on_recording_started_callback_ = std::move(callback);
-  }
   void set_is_allowed_by_dlp(bool value) { is_allowed_by_dlp_ = value; }
   void set_is_allowed_by_policy(bool value) { is_allowed_by_policy_ = value; }
   void set_should_save_after_dlp_check(bool value) {
@@ -146,7 +143,6 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   std::unique_ptr<FakeVideoSourceProvider> video_source_provider_;
   base::ScopedTempDir fake_downloads_dir_;
   base::OnceClosure on_session_state_changed_callback_;
-  base::OnceClosure on_recording_started_callback_;
   bool is_session_active_ = false;
   bool is_allowed_by_dlp_ = true;
   bool is_allowed_by_policy_ = true;
