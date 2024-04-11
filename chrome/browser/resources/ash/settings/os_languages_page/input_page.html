@@ -129,15 +129,13 @@
   }
 </style>
 
-<template is="dom-if" if="[[shouldShowLanguagePacksNotice_]]">
-  <div class="settings-box first">
-    <localized-link id="languagePacksNotice"
-        class="cr-secondary-text"
-        localized-string="$i18n{languagePacksNotice}"
-        on-link-clicked="onLanguagePackNoticeLinkClick_">
-    </localized-link>
-  </div>
-</template>
+<div class="settings-box first">
+  <localized-link id="languagePacksNotice"
+      class="cr-secondary-text"
+      localized-string="$i18n{languagePacksNotice}"
+      on-link-clicked="onLanguagePackNoticeLinkClick_">
+  </localized-link>
+</div>
 <settings-toggle-button
     class="first" id="showImeMenu"
     pref="{{prefs.settings.language.ime_menu_activated}}"

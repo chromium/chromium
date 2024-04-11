@@ -122,19 +122,10 @@ suite('<os-settings-input-page>', () => {
   });
 
   suite('language pack notice', () => {
-    test('is shown when needed', async () => {
-      loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
+    test('is shown', async () => {
       await createInputPage();
 
       assertTrue(isVisible(
-          inputPage.shadowRoot!.querySelector('#languagePacksNotice')));
-    });
-
-    test('is hidden when needed', async () => {
-      loadTimeData.overrideValues({languagePacksHandwritingEnabled: false});
-      await createInputPage();
-
-      assertFalse(isVisible(
           inputPage.shadowRoot!.querySelector('#languagePacksNotice')));
     });
   });
@@ -639,10 +630,6 @@ suite('<os-settings-input-page>', () => {
     });
 
     test('when clicking on "learn more" about language packs', async () => {
-      inputPage.set('shouldShowLanguagePacksNotice_', true);
-      loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
-      flush();
-
       const languagePacksNotice =
           inputPage.shadowRoot!.querySelector('#languagePacksNotice');
       assertTrue(!!languagePacksNotice);

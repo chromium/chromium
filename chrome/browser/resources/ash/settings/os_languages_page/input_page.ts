@@ -97,13 +97,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         },
       },
 
-      shouldShowLanguagePacksNotice_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('languagePacksHandwritingEnabled');
-        },
-      },
-
       /**
        * Whether the shortcut reminder for the last used IME is currently
        * showing.
@@ -180,7 +173,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   // loadTimeData flags.
   private onDeviceGrammarCheckEnabled_: boolean;
   private languageSettingsJapaneseEnabled_: boolean;
-  private shouldShowLanguagePacksNotice_: boolean;
   private languagePacksInSettingsEnabled_ =
       loadTimeData.getBoolean('languagePacksInSettingsEnabled');
   private readonly allowEmojiSuggestion_: boolean =
