@@ -20,7 +20,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 
@@ -38,6 +38,8 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
                   l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON))
               .SetStyle(button_style))
       .BuildChildren();
+
+  SetProperty(views::kElementIdentifierKey, kPromoSignInButton);
 }
 
 BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
@@ -82,10 +84,15 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
                            IDS_PROFILES_DICE_SIGNIN_BUTTON))
                        .SetStyle(ui::ButtonStyle::kProminent))
       .BuildChildren();
+
+  SetProperty(views::kElementIdentifierKey, kPromoSignInButton);
 }
 
 BubbleSignInPromoSignInButtonView::
     ~BubbleSignInPromoSignInButtonView() = default;
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BubbleSignInPromoSignInButtonView,
+                                      kPromoSignInButton);
 
 BEGIN_METADATA(BubbleSignInPromoSignInButtonView)
 END_METADATA

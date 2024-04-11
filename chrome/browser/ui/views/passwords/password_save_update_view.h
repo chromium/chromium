@@ -30,6 +30,8 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
                                public views::WidgetObserver,
                                public views::AnimatingLayoutManager::Observer {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordBubble);
+
   PasswordSaveUpdateView(content::WebContents* web_contents,
                          views::View* anchor_view,
                          DisplayReason reason);
@@ -60,6 +62,12 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   // PasswordBubbleViewBase
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
+
+  // If the sign in promo should be shown, it will remove the current contents
+  // of the bubble and replace them with the sign in promo. Returns true if the
+  // bubble is not replaced with the promo, and therefore closed. Returns false
+  // if it is replaced, which will cause the bubble to stay open.
+  bool CloseOrReplaceWithPromo();
 
   // PasswordBubbleViewBase:
   views::View* GetInitiallyFocusedView() override;

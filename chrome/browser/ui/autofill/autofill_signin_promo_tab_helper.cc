@@ -68,6 +68,11 @@ void AutofillSigninPromoTabHelper::InitializeDataMoveAfterSignIn(
   state_->access_point_ = access_point;
   state_->time_limit_ = time_limit;
   state_->initialization_time_ = base::Time::Now();
+  state_->is_initialized_ = true;
+}
+
+bool AutofillSigninPromoTabHelper::IsInitializedForTesting() const {
+  return state_->is_initialized_;
 }
 
 void AutofillSigninPromoTabHelper::OnPrimaryAccountChanged(

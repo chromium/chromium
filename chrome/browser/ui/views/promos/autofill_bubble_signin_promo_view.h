@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_PROMOS_AUTOFILL_BUBBLE_SIGNIN_PROMO_VIEW_H_
 
 #include <memory>
+
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_signin_promo_controller.h"
 #include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
 #include "ui/views/controls/button/button.h"
@@ -27,10 +29,9 @@ class AutofillBubbleSignInPromoView : public views::View {
   METADATA_HEADER(AutofillBubbleSignInPromoView, views::View)
 
  public:
-  enum class PromoType { Password, Address, Payments };
-
-  explicit AutofillBubbleSignInPromoView(content::WebContents* web_contents,
-                                         PromoType promo_type);
+  explicit AutofillBubbleSignInPromoView(
+      content::WebContents* web_contents,
+      signin::SignInAutofillBubblePromoType promo_type);
   AutofillBubbleSignInPromoView(const AutofillBubbleSignInPromoView&) = delete;
   AutofillBubbleSignInPromoView& operator=(
       const AutofillBubbleSignInPromoView&) = delete;
@@ -42,7 +43,7 @@ class AutofillBubbleSignInPromoView : public views::View {
   class DiceSigninPromoDelegate;
 
   autofill::AutofillBubbleSignInPromoController controller_;
-  const PromoType promo_type_;
+  const signin::SignInAutofillBubblePromoType promo_type_;
   std::unique_ptr<DiceSigninPromoDelegate> dice_sign_in_promo_delegate_;
 };
 

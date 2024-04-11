@@ -10906,6 +10906,10 @@ if (!is_android && !is_chromeos_device) {
       ]
     }
 
+    if (enable_dice_support) {
+      sources += [ "../browser/ui/views/promos/autofill_bubble_signin_promo_interactive_uitest.cc" ]
+    }
+
     configs += [ "//build/config:precompiled_headers" ]
     if ((is_linux || is_chromeos) && !is_component_build) {
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]

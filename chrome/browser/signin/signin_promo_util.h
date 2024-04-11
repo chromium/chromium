@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_PROMO_UTIL_H_
 
 #include "components/signin/public/base/consent_level.h"
+
 class Profile;
 
 namespace signin {

@@ -25,6 +25,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/autofill/autofill_signin_promo_tab_helper.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -764,6 +765,8 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
         ->NotifyEvent("passwords_account_storage_used");
   }
 
+  // TODO(crbug/333709971): Decide whether the post save compromised bubble or
+  // the sign in promo bubble should be shown.
   post_save_compromised_helper_ =
       std::make_unique<password_manager::PostSaveCompromisedHelper>(
           passwords_data_.form_manager()->GetInsecureCredentials(), username);
@@ -780,7 +783,11 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
   // The icon is to be updated after the bubble (either "Save password" or "Sign
   // in to Chrome") is closed.
   bubble_status_ = BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
-  if (Browser* browser = chrome::FindBrowserWithTab(web_contents())) {
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  // Do not trigger the IPH if the sign in promo will be shown.
+  if (browser && !signin::ShouldShowSignInPromo(
+                     *browser->profile(),
+                     signin::SignInAutofillBubblePromoType::Passwords)) {
     if (browser->window()->MaybeShowFeaturePromo(
             feature_engagement::
                 kIPHPasswordsManagementBubbleAfterSaveFeature)) {

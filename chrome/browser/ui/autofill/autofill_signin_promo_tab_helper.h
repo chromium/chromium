@@ -41,6 +41,9 @@ class AutofillSigninPromoTabHelper
       signin_metrics::AccessPoint access_point,
       base::TimeDelta time_limit = base::Minutes(50));
 
+  // Returns true if the helper has been initialized for testing.
+  bool IsInitializedForTesting() const;
+
   // Overrides signin::IdentityManager::Observer functions.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
@@ -67,6 +70,7 @@ class AutofillSigninPromoTabHelper
         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
     base::Time initialization_time_;
     base::TimeDelta time_limit_;
+    bool is_initialized_ = false;
   };
 
   std::unique_ptr<ResetableState> state_;

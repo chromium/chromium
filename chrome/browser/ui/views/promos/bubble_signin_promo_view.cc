@@ -26,6 +26,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/widget/widget.h"
 
 BubbleSignInPromoView::BubbleSignInPromoView(
     Profile* profile,
@@ -133,6 +134,7 @@ BubbleSignInPromoView::~BubbleSignInPromoView() = default;
 void BubbleSignInPromoView::SignIn() {
   std::optional<AccountInfo> account = signin_button_view_->account();
   delegate_->OnSignIn(account.value_or(AccountInfo()));
+  GetWidget()->Close();
 }
 
 BEGIN_METADATA(BubbleSignInPromoView)

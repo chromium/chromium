@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/password_manager/core/browser/form_saver.h"
+#include "components/password_manager/core/browser/form_saver_impl.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -246,6 +248,14 @@ void ManagePasswordsTest::ConfigurePasswordSync(
   }
 }
 
+void ManagePasswordsTest::SetupSaveToAccountStore() {
+  ON_CALL(*client_.GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore())
+      .WillByDefault(testing::Return(
+          password_manager::PasswordForm::Store::kAccountStore));
+}
+
 std::unique_ptr<base::HistogramSamples> ManagePasswordsTest::GetSamples(
     const char* histogram) {
   // Ensure that everything has been properly recorded before pulling samples.
@@ -258,7 +268,9 @@ ManagePasswordsUIController* ManagePasswordsTest::GetController() {
       browser()->tab_strip_model()->GetActiveWebContents());
 }
 
-std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager() {
+std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager(
+    password_manager::PasswordStoreInterface* profile_store,
+    password_manager::PasswordStoreInterface* account_store) {
   autofill::FormData observed_form;
   observed_form.url = password_form_.url;
   autofill::FormFieldData field;
@@ -267,12 +279,21 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager() {
   field.form_control_type = autofill::FormControlType::kInputPassword;
   observed_form.fields.push_back(field);
 
+  std::unique_ptr<password_manager::FormSaver> form_saver;
+  if (profile_store) {
+    form_saver =
+        std::make_unique<password_manager::FormSaverImpl>(profile_store);
+  } else {
+    form_saver = std::make_unique<password_manager::StubFormSaver>();
+  }
+
   auto form_manager = std::make_unique<PasswordFormManager>(
       &client_, driver_.AsWeakPtr(), observed_form, &fetcher_,
       std::make_unique<password_manager::PasswordSaveManagerImpl>(
-          /*profile_form_saver=*/std::make_unique<
-              password_manager::StubFormSaver>(),
-          /*account_form_saver=*/nullptr),
+          /*profile_form_saver=*/std::move(form_saver),
+          /*account_form_saver=*/account_store
+              ? std::make_unique<password_manager::FormSaverImpl>(account_store)
+              : nullptr),
       /*metrics_recorder=*/nullptr);
 
   insecure_credential_ = password_form_;

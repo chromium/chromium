@@ -58,7 +58,7 @@ void AutofillBubbleSignInPromoView::DiceSigninPromoDelegate::OnSignIn(
 
 AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
     content::WebContents* web_contents,
-    PromoType promo_type)
+    signin::SignInAutofillBubblePromoType promo_type)
     // TODO(crbug.com/319411728): Make this dependant on type (for now only
     // password).
     : controller_(PasswordsModelDelegateFromWebContents(web_contents)),
@@ -75,9 +75,9 @@ AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
   int message_resource_id = 0;
   switch (promo_type_) {
     // TODO(crbug.com/319411728): Add the correct strings per type.
-    case PromoType::Payments:
-    case PromoType::Address:
-    case PromoType::Password:
+    case signin::SignInAutofillBubblePromoType::Payments:
+    case signin::SignInAutofillBubblePromoType::Addresses:
+    case signin::SignInAutofillBubblePromoType::Passwords:
       message_resource_id = IDS_PASSWORD_MANAGER_DICE_PROMO_SIGNIN_MESSAGE;
   }
   AddChildView(new BubbleSignInPromoView(
