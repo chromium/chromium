@@ -473,7 +473,9 @@ TEST_F(ActionFactoryTest, AddTabsToGroupSeveralGroups) {
   NSMutableSet* titles = [NSMutableSet set];
   for (UIMenuElement* group in submenu.children) {
     [titles addObject:group.title];
-    EXPECT_EQ(nil, group.image);
+    // The image should be colorful circle but it is hard to test. Just check
+    // non-nil.
+    EXPECT_NE(nil, group.image);
   }
 
   EXPECT_EQ(2u, titles.count);

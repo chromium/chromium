@@ -380,10 +380,12 @@
                                                    block:addTabToNewGroupBlock];
   }
 
-  UIImage* image = DefaultSymbolWithPointSize(kMoveTabToGroupActionSymbol,
-                                              kSymbolActionPointSize);
-
   NSMutableArray<UIMenuElement*>* groupsMenu = [[NSMutableArray alloc] init];
+
+  UIImage* circleImage =
+      DefaultSymbolWithPointSize(kCircleFillSymbol, kSymbolActionPointSize);
+  circleImage =
+      [circleImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
 
   for (const TabGroup* group : groups) {
     NSString* title = group->GetTitle();
@@ -395,7 +397,7 @@
 
     UIAction* groupAction =
         [self actionWithTitle:title
-                        image:nil
+                        image:[circleImage imageWithTintColor:group->GetColor()]
                          type:MenuActionType::AddTabToExistingGroup
                         block:groupBlock];
     [groupsMenu addObject:groupAction];
@@ -417,6 +419,9 @@
                                             block:addTabToNewGroupBlock],
     menu
   ];
+
+  UIImage* image = DefaultSymbolWithPointSize(kMoveTabToGroupActionSymbol,
+                                              kSymbolActionPointSize);
 
   return [UIMenu
       menuWithTitle:l10n_util::GetPluralNSStringF(
