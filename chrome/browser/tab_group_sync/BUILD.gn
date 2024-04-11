@@ -17,9 +17,54 @@ if (is_android) {
       "//base:base_java",
       "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tab_group:java",
+      "//chrome/browser/tab_group_sync:java",
+      "//chrome/browser/tabmodel:java",
       "//components/saved_tab_groups:java",
+      "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
+    ]
+  }
+
+  android_library("java") {
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationObserver.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationTracker.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tabmodel:java",
+      "//components/saved_tab_groups:java",
+      "//content/public/android:content_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:url_java",
+    ]
+  }
+
+  robolectric_library("junit") {
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationObserverUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationTrackerUnitTest.java",
+    ]
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//base:base_junit_test_support",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tab_group_sync:java",
+      "//chrome/browser/tabmodel:java",
+      "//components/saved_tab_groups:java",
+      "//content/public/android:content_java",
+      "//third_party/android_deps:robolectric_all_java",
+      "//third_party/junit:junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java",
+      "//url:url_java",
     ]
   }
 
