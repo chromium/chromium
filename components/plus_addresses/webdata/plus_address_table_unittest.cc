@@ -4,6 +4,8 @@
 
 #include "components/plus_addresses/webdata/plus_address_table.h"
 
+#include <optional>
+
 #include "base/files/scoped_temp_dir.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -47,6 +49,16 @@ TEST_F(PlusAddressTableTest, GetPlusProfiles) {
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile2));
   EXPECT_THAT(table_.GetPlusProfiles(),
               testing::UnorderedElementsAre(profile1, profile2));
+}
+
+TEST_F(PlusAddressTableTest, GetPlusProfileForId) {
+  const PlusProfile profile1 = test::CreatePlusProfile();
+  const PlusProfile profile2 = test::CreatePlusProfile2();
+  ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile1));
+  ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile2));
+  EXPECT_EQ(table_.GetPlusProfileForId(profile1.profile_id), profile1);
+  EXPECT_EQ(table_.GetPlusProfileForId(profile2.profile_id), profile2);
+  EXPECT_EQ(table_.GetPlusProfileForId("invalid_id"), std::nullopt);
 }
 
 TEST_F(PlusAddressTableTest, AddOrUpdatePlusProfile) {

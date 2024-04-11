@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_TABLE_H_
 #define COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_TABLE_H_
 
+#include <optional>
 #include <vector>
 
 #include "components/plus_addresses/plus_address_types.h"
@@ -57,6 +58,11 @@ class PlusAddressTable : public WebDatabaseTable,
 
   // Returns all stored PlusProfiles - or an empty vector if reading fails.
   std::vector<PlusProfile> GetPlusProfiles() const;
+
+  // Returns the profile with the given `profile_id` or std::nullopt if it
+  // doesn't exist.
+  std::optional<PlusProfile> GetPlusProfileForId(
+      const std::string& profile_id) const;
 
   // Adds `profile` to the database, if a profile with the same `profile_id`
   // doesn't already exist. Otherwise, updates the existing `profile`.

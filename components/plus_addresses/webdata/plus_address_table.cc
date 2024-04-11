@@ -4,6 +4,7 @@
 
 #include "components/plus_addresses/webdata/plus_address_table.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/check_op.h"
@@ -137,6 +138,24 @@ std::vector<PlusProfile> PlusAddressTable::GetPlusProfiles() const {
     });
   }
   return result;
+}
+
+std::optional<PlusProfile> PlusAddressTable::GetPlusProfileForId(
+    const std::string& profile_id) const {
+  sql::Statement query(db_->GetUniqueStatement(
+      base::StringPrintf("SELECT %s, %s, %s FROM %s WHERE %s=?", kProfileId,
+                         kFacet, kPlusAddress, kPlusAddressTable, kProfileId)
+          .c_str()));
+  query.BindString(0, profile_id);
+  if (!query.Step()) {
+    return std::nullopt;
+  }
+  return PlusProfile{
+      .profile_id = query.ColumnString(0),
+      .facet = query.ColumnString(1),
+      .plus_address = query.ColumnString(2),
+      .is_confirmed = true,
+  };
 }
 
 bool PlusAddressTable::AddOrUpdatePlusProfile(const PlusProfile& profile) {
