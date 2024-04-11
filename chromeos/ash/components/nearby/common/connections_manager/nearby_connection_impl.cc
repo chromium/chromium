@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection_impl.h"
 
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "crypto/random.h"

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_IMPL_H_
-#define CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_NEARBY_CONNECTION_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_NEARBY_CONNECTION_IMPL_H_
 
 #include <queue>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/sequence_checker.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection.h"
+#include "base/sequence_checker.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 class NearbyConnectionsManager;
@@ -47,4 +47,4 @@ class NearbyConnectionImpl : public NearbyConnection {
   std::queue<std::vector<uint8_t>> reads_;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_NEARBY_CONNECTION_IMPL_H_

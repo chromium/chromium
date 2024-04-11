@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/nearby_file_handler.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_file_handler.h"
 
 #include "base/files/file_util.h"
 #include "base/task/sequenced_task_runner.h"

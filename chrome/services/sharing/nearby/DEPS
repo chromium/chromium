@@ -5,6 +5,7 @@
 include_rules = [
   "+chrome/browser/nearby_sharing/logging",
   "+components/cross_device/logging",
+  "+components/cross_device/nearby/nearby_features.h",
   "+third_party/nearby",
 ]
 

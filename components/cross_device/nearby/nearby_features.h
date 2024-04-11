@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_SHARING_NEARBY_COMMON_NEARBY_FEATURES_H_
-#define CHROME_SERVICES_SHARING_NEARBY_COMMON_NEARBY_FEATURES_H_
+#ifndef COMPONENTS_CROSS_DEVICE_NEARBY_NEARBY_FEATURES_H_
+#define COMPONENTS_CROSS_DEVICE_NEARBY_NEARBY_FEATURES_H_
 
 #include "base/feature_list.h"
 
@@ -17,7 +17,9 @@ bool IsNearbyBleV2Enabled();
 bool IsNearbyBleV2ExtendedAdvertisingEnabled();
 bool IsNearbyBluetoothClassicAdvertisingEnabled();
 bool IsNearbyBluetoothClassicScanningEnabled();
+BASE_DECLARE_FEATURE(kNearbySharingWebRtc);
+BASE_DECLARE_FEATURE(kNearbySharingWifiLan);
 
 }  // namespace features
 
-#endif  // CHROME_SERVICES_SHARING_NEARBY_COMMON_NEARBY_FEATURES_H_
+#endif  // COMPONENTS_CROSS_DEVICE_NEARBY_NEARBY_FEATURES_H_

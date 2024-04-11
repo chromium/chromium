@@ -4,10 +4,10 @@ include_rules = [
 ]
 specific_include_rules = {
   "nearby_connections_manager_impl.cc": [
-    "+chrome/services/sharing/nearby/common/nearby_features.h",
+    "+components/cross_device/nearby/nearby_features.h",
   ],
   "nearby_connections_manager_impl_unittest.cc": [
-    "+chrome/services/sharing/nearby/common/nearby_features.h",
+    "+components/cross_device/nearby/nearby_features.h",
   ],
   "nearby_sharing_service_impl_unittest.cc": [
     "+chrome/services/sharing/nearby/decoder/advertisement_decoder.h",

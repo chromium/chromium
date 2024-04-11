@@ -7,9 +7,9 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/services/sharing/nearby/common/nearby_features.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_server_socket.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_socket.h"
+#include "components/cross_device/nearby/nearby_features.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace nearby {

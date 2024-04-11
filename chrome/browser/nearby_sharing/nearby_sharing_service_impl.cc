@@ -114,6 +114,11 @@ constexpr base::TimeDelta kClearNearbyProcessUnexpectedShutdownCountDelay =
 // nearby_share_prefs).
 constexpr base::TimeDelta kNearbyVisibilityReminderTimerDelay = base::Days(180);
 
+// Whether or not WifiLan is supported for advertising or discovery. Support as
+// a bandwidth upgrade medium is behind a feature flag.
+constexpr bool kIsWifiLanAdvertisingSupported = false;
+constexpr bool kIsWifiLanDiscoverySupported = false;
+
 std::string ReceiveSurfaceStateToString(
     NearbySharingService::ReceiveSurfaceState state) {
   switch (state) {

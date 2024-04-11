@@ -32,16 +32,6 @@ BASE_FEATURE(kNearbySharingSelfShare,
              "NearbySharingSelfShare",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables use of WebRTC in Nearby Share.
-BASE_FEATURE(kNearbySharingWebRtc,
-             "NearbySharingWebRtc",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables use of WifiLan in Nearby Share.
-BASE_FEATURE(kNearbySharingWifiLan,
-             "NearbySharingWifiLan",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables contact restriction when not in high-visibility mode.
 BASE_FEATURE(kNearbySharingRestrictToContacts,
              "NearbySharingRestrictToContacts",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/sharing/nearby/common/nearby_features.h"
+#include "components/cross_device/nearby/nearby_features.h"
 
 #include "base/feature_list.h"
 
@@ -31,6 +31,16 @@ BASE_FEATURE(kEnableNearbyBluetoothClassicAdvertising,
 // implementation of Nearby Connections, for incremental testing purposes.
 BASE_FEATURE(kEnableNearbyBluetoothClassicScanning,
              "EnableNearbyBluetoothClassicScanning",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables use of WebRTC in Nearby Connections for Nearby Share.
+BASE_FEATURE(kNearbySharingWebRtc,
+             "NearbySharingWebRtc",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables use of WifiLan in Nearby Share.
+BASE_FEATURE(kNearbySharingWifiLan,
+             "NearbySharingWifiLan",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNearbyBleV2Enabled() {

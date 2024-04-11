@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/services/sharing/nearby/common/nearby_features.h"
+#include "components/cross_device/nearby/nearby_features.h"
 
 namespace nearby {
 namespace chrome {

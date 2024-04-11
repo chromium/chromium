@@ -16,6 +16,7 @@ include_rules = [
   '+chromeos/ash/components/network/network_configuration_handler.h',
   '+chromeos/ash/components/network/network_profile_handler.h',
   '+chromeos/ash/components/nearby/presence/conversions/proto_conversions.h',
+  '+components/cross_device/nearby/nearby_features.h',
   '+components/onc/onc_constants.h',
   '+components/onc/onc_pref_names.h',
   '+components/prefs/testing_pref_service.h',

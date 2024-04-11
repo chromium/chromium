@@ -10,8 +10,12 @@ source_set("connections_manager") {
   sources = [
     "nearby_connection.cc",
     "nearby_connection.h",
+    "nearby_connection_impl.cc",
+    "nearby_connection_impl.h",
     "nearby_connections_manager.cc",
     "nearby_connections_manager.h",
+    "nearby_file_handler.cc",
+    "nearby_file_handler.h",
   ]
 
   deps = [
