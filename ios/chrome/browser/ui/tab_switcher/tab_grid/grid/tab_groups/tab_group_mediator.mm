@@ -208,14 +208,8 @@
   web::WebState* detachedWebState = detachChange.detached_web_state();
   GridItemIdentifier* identifierToRemove =
       [GridItemIdentifier tabIdentifier:detachedWebState];
-  GridItemIdentifier* selectedIdentifier;
-  if (self.webStateList->GetGroupOfWebStateAt(webStateList->active_index()) ==
-      _tabGroup.get()) {
-    selectedIdentifier =
-        [GridItemIdentifier tabIdentifier:webStateList->GetActiveWebState()];
-  }
   [self.consumer removeItemWithIdentifier:identifierToRemove
-                   selectedItemIdentifier:selectedIdentifier];
+                   selectedItemIdentifier:[self activeIdentifier]];
   [self removeObservationForWebState:detachedWebState];
 }
 
@@ -257,9 +251,15 @@
       if (moveChange.old_group() != _tabGroup.get()) {
         break;
       }
-      [self moveItem:[GridItemIdentifier
-                         tabIdentifier:moveChange.moved_web_state()]
-          beforeWebStateIndex:moveChange.moved_to_index() + 1];
+      GridItemIdentifier* item =
+          [GridItemIdentifier tabIdentifier:moveChange.moved_web_state()];
+      if (moveChange.new_group() == _tabGroup.get()) {
+        [self moveItem:item
+            beforeWebStateIndex:moveChange.moved_to_index() + 1];
+      } else {
+        [self.consumer removeItemWithIdentifier:item
+                         selectedItemIdentifier:[self activeIdentifier]];
+      }
       break;
     }
     default:
