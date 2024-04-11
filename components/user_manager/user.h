@@ -103,9 +103,6 @@ class USER_MANAGER_EXPORT User {
   // UserType::kRegular and UserType::kChild.
   bool HasGaiaAccount() const;
 
-  // Returns true if it's Active Directory user.
-  bool IsActiveDirectoryUser() const;
-
   // Returns true if user is child.
   bool IsChild() const;
 

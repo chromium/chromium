@@ -72,13 +72,11 @@ SmbShareDialogUI::SmbShareDialogUI(content::WebUI* web_ui)
 
   AddSmbSharesStrings(source);
 
+  // TODO(b/263367348): Remove this "isActiveDirectoryUser" attribute, along
+  // with all it's usages. AD managed users are no longer supported on ChromeOS.
+  source->AddBoolean("isActiveDirectoryUser", false);
+
   Profile* const profile = Profile::FromWebUI(web_ui);
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
-
-  source->AddBoolean("isActiveDirectoryUser",
-                     user && user->IsActiveDirectoryUser());
-
   const smb_client::SmbService* const smb_service =
       smb_client::SmbServiceFactory::Get(profile);
   bool is_kerberos_enabled =

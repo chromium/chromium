@@ -547,13 +547,11 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE_V2,
                                  user->GetGivenName()));
 
-  // Toggles the Chrome OS Account Manager submenu in the People section.
+  // Toggles the ChromeOS Account Manager submenu in the People section.
   html_source->AddBoolean("isAccountManagerEnabled",
                           account_manager_facade_ != nullptr);
-  html_source->AddBoolean(
-      "isDeviceAccountManaged",
-      user->IsActiveDirectoryUser() ||
-          profile()->GetProfilePolicyConnector()->IsManaged());
+  html_source->AddBoolean("isDeviceAccountManaged",
+                          profile()->GetProfilePolicyConnector()->IsManaged());
 
   html_source->AddBoolean(
       "secondaryGoogleAccountSigninAllowed",

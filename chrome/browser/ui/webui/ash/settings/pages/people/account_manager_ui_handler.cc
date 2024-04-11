@@ -290,25 +290,7 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
       profile_->IsChild(), &gaia_device_account);
 
   AccountBuilder device_account;
-  if (user->IsActiveDirectoryUser()) {
-    device_account.SetId(user->GetAccountId().GetObjGuid())
-        .SetAccountType(
-            static_cast<int>(account_manager::AccountType::kActiveDirectory))
-        .SetEmail(user->GetDisplayEmail())
-        .SetFullName(base::UTF16ToUTF8(user->GetDisplayName()))
-        .SetIsSignedIn(true)
-        .SetUnmigrated(false);
-    if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
-      device_account.SetIsAvailableInArc(true);
-    }
-    gfx::ImageSkia default_icon =
-        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_LOGIN_DEFAULT_USER);
-    device_account.SetPic(webui::GetBitmapDataUrl(
-        default_icon.GetRepresentation(1.0f).GetBitmap()));
-  } else {
-    device_account.PopulateFrom(std::move(gaia_device_account));
-  }
+  device_account.PopulateFrom(std::move(gaia_device_account));
 
   if (!device_account.IsEmpty()) {
     device_account.SetIsDeviceAccount(true);
@@ -319,11 +301,6 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
       // Replace space with the non-breaking space.
       base::ReplaceSubstringsAfterOffset(&organization, 0, " ", "&nbsp;");
       device_account.SetOrganization(organization).SetIsManaged(true);
-    } else if (user->IsActiveDirectoryUser()) {
-      device_account
-          .SetOrganization(chrome::enterprise_util::GetDomainFromEmail(
-              user->GetDisplayEmail()))
-          .SetIsManaged(true);
     } else if (profile_->GetProfilePolicyConnector()->IsManaged()) {
       device_account
           .SetOrganization(chrome::enterprise_util::GetDomainFromEmail(

@@ -887,8 +887,9 @@ void UserManagerBase::NotifyUserNotAllowed(const std::string& user_email) {
 
 bool UserManagerBase::CanUserBeRemoved(const User* user) const {
   // Only regular users are allowed to be manually removed.
-  if (!user || !(user->HasGaiaAccount() || user->IsActiveDirectoryUser()))
+  if (!user || !user->HasGaiaAccount()) {
     return false;
+  }
 
   // Sanity check: we must not remove single user unless it's an enterprise
   // device. This check may seem redundant at a first sight because
@@ -1271,7 +1272,7 @@ User* UserManagerBase::RemoveRegularOrSupervisedUserFromList(
       user = *it;
       it = users_.erase(it);
     } else {
-      if ((*it)->HasGaiaAccount() || (*it)->IsActiveDirectoryUser()) {
+      if ((*it)->HasGaiaAccount()) {
         const std::string user_email = (*it)->GetAccountId().GetUserEmail();
         prefs_users_update->Append(user_email);
       }

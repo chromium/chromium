@@ -307,17 +307,16 @@ bool IsArcAllowedForUser(const user_manager::User* user) {
 
   // ARC is only supported for the following cases:
   // - Users have Gaia accounts;
-  // - Active directory users;
   // - ARC kiosk session;
   // - Public Session users;
   //   kUserTypeArcKioskApp check is compatible with IsArcKioskMode()
   //   above because ARC kiosk user is always the primary/active user of a
   //   user session. The same for kPublicAccount.
-  if (!user->HasGaiaAccount() && !user->IsActiveDirectoryUser() &&
+  if (!user->HasGaiaAccount() &&
       user->GetType() != user_manager::UserType::kArcKioskApp &&
       user->GetType() != user_manager::UserType::kPublicAccount) {
-    VLOG(1) << "Users without GAIA or AD accounts, or not ARC kiosk apps are "
-               "not supported in ARC.";
+    VLOG(1) << "Users without GAIA account, or not ARC kiosk apps are not "
+               "supported in ARC.";
     return false;
   }
 

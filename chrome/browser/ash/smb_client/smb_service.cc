@@ -125,12 +125,6 @@ SmbService::SmbService(Profile* profile,
     return;
   }
 
-  if (user->IsActiveDirectoryUser()) {
-    const std::string& account_id_guid = user->GetAccountId().GetObjGuid();
-    SetupKerberos(account_id_guid);
-    return;
-  }
-
   KerberosCredentialsManager* credentials_manager =
       KerberosCredentialsManagerFactory::GetExisting(profile);
   if (credentials_manager) {
@@ -384,12 +378,7 @@ void SmbService::MountInternal(
     smbfs_options.password_salt = info.password_salt();
   }
   if (info.use_kerberos()) {
-    if (user->IsActiveDirectoryUser()) {
-      smbfs_options.kerberos_options =
-          std::make_optional<SmbFsShare::KerberosOptions>(
-              SmbFsShare::KerberosOptions::Source::kActiveDirectory,
-              user->GetAccountId().GetObjGuid());
-    } else if (kerberos_credentials_updater_) {
+    if (kerberos_credentials_updater_) {
       smbfs_options.kerberos_options =
           std::make_optional<SmbFsShare::KerberosOptions>(
               SmbFsShare::KerberosOptions::Source::kKerberos,

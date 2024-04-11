@@ -264,8 +264,10 @@ void MainSection::AddChromeOSUserStrings(
   std::string primary_user_email = primary_user->GetDisplayEmail();
 
   html_source->AddString("primaryUserEmail", primary_user_email);
-  html_source->AddBoolean("isActiveDirectoryUser",
-                          user && user->IsActiveDirectoryUser());
+
+  // TODO(b/263367348): Remove this "isActiveDirectoryUser" attribute, along
+  // with all it's usages. AD managed users are no longer supported on ChromeOS.
+  html_source->AddBoolean("isActiveDirectoryUser", false);
   html_source->AddBoolean(
       "isSecondaryUser",
       user && user->GetAccountId() != primary_user->GetAccountId());

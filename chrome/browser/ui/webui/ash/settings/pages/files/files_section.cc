@@ -276,8 +276,10 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile());
-  html_source->AddBoolean("isActiveDirectoryUser",
-                          user && user->IsActiveDirectoryUser());
+
+  // TODO(b/263367348): Remove this "isActiveDirectoryUser" attribute, along
+  // with all it's usages. AD managed users are no longer supported on ChromeOS.
+  html_source->AddBoolean("isActiveDirectoryUser", false);
 
   if (user && user->GetAccountId().is_valid()) {
     html_source->AddString(

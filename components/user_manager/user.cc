@@ -130,10 +130,6 @@ bool User::HasGaiaAccount() const {
   return TypeHasGaiaAccount(GetType());
 }
 
-bool User::IsActiveDirectoryUser() const {
-  return false;
-}
-
 bool User::IsChild() const {
   return GetType() == UserType::kChild;
 }
