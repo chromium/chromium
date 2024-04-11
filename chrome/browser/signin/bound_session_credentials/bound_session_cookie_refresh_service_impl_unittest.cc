@@ -821,7 +821,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
       CreateTestRegistrationFetcherParams(kSecondPath));
   ASSERT_TRUE(registration_fetcher());
   EXPECT_EQ(
-      registration_fetcher()->params().RegistrationEndpoint().path_piece(),
+      registration_fetcher()->params().registration_endpoint().path_piece(),
       kFirstPath);
 
   // Verify that a request can complete normally.

@@ -16,14 +16,14 @@
 class BoundSessionRegistrationFetcherParam {
  public:
   BoundSessionRegistrationFetcherParam(
-      BoundSessionRegistrationFetcherParam&& other);
+      BoundSessionRegistrationFetcherParam&& other) noexcept;
   BoundSessionRegistrationFetcherParam& operator=(
       BoundSessionRegistrationFetcherParam&& other) noexcept;
 
   BoundSessionRegistrationFetcherParam(
       const BoundSessionRegistrationFetcherParam& other) = delete;
   BoundSessionRegistrationFetcherParam& operator=(
-      const BoundSessionRegistrationFetcherParam&) = delete;
+      const BoundSessionRegistrationFetcherParam& other) = delete;
   ~BoundSessionRegistrationFetcherParam();
 
   // Will return a valid instance or return std::nullopt;
@@ -38,10 +38,14 @@ class BoundSessionRegistrationFetcherParam {
           supported_algos,
       std::string challenge);
 
-  const GURL& RegistrationEndpoint() const;
+  const GURL& registration_endpoint() const { return registration_endpoint_; }
+
   base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-  SupportedAlgos() const;
-  const std::string& Challenge() const;
+  supported_algos() const {
+    return supported_algos_;
+  }
+
+  const std::string& challenge() const { return challenge_; }
 
  private:
   BoundSessionRegistrationFetcherParam(

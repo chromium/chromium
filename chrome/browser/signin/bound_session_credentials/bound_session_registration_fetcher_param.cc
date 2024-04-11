@@ -31,7 +31,7 @@ std::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
 }  // namespace
 
 BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
-    BoundSessionRegistrationFetcherParam&& other) = default;
+    BoundSessionRegistrationFetcherParam&& other) noexcept = default;
 
 BoundSessionRegistrationFetcherParam&
 BoundSessionRegistrationFetcherParam::operator=(
@@ -48,6 +48,7 @@ BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
       supported_algos_(std::move(supported_algos)),
       challenge_(std::move(challenge)) {}
 
+// static
 std::optional<BoundSessionRegistrationFetcherParam>
 BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
     const GURL& request_url,
@@ -113,6 +114,7 @@ BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
   }
 }
 
+// static
 BoundSessionRegistrationFetcherParam
 BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
     GURL registration_endpoint,
@@ -121,17 +123,4 @@ BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
   return BoundSessionRegistrationFetcherParam(std::move(registration_endpoint),
                                               std::move(supported_algos),
                                               std::move(challenge));
-}
-
-const GURL& BoundSessionRegistrationFetcherParam::RegistrationEndpoint() const {
-  return registration_endpoint_;
-}
-
-base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-BoundSessionRegistrationFetcherParam::SupportedAlgos() const {
-  return supported_algos_;
-}
-
-const std::string& BoundSessionRegistrationFetcherParam::Challenge() const {
-  return challenge_;
 }
