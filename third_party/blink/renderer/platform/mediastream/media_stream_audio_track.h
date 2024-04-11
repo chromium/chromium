@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_deliverer.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
@@ -77,6 +78,8 @@ class PLATFORM_EXPORT MediaStreamAudioTrack : public MediaStreamTrackPlatform {
   void SetEnabled(bool enabled) override;
   void SetContentHint(
       WebMediaStreamTrack::ContentHintType content_hint) override;
+  void TransferAudioFrameStatsTo(
+      MediaStreamTrackPlatform::AudioFrameStats& destination) override;
 
   // Returns the maximum number of channels preferred by any sink connected to
   // this track.
@@ -114,6 +117,10 @@ class PLATFORM_EXPORT MediaStreamAudioTrack : public MediaStreamTrackPlatform {
     return MediaStreamTrackPlatform::StreamType::kAudio;
   }
 
+  void UpdateFrameStats(const media::AudioBus& audio_bus,
+                        base::TimeTicks reference_time,
+                        const media::AudioGlitchInfo& glitch_info);
+
  private:
   // In debug builds, check that all methods that could cause object graph
   // or data flow changes are being called on the main thread.
@@ -134,6 +141,16 @@ class PLATFORM_EXPORT MediaStreamAudioTrack : public MediaStreamTrackPlatform {
   // Set to true once at first audio callback after calling Start().
   // Only used for logging purposes.
   bool received_audio_callback_ = false;
+
+  base::Lock mainthread_frame_stats_lock_;
+
+  // The latest frame stats that can be observed on the main thread.
+  AudioFrameStats mainthread_frame_stats_
+      GUARDED_BY(mainthread_frame_stats_lock_);
+
+  // Frame stats that have not yet been added into mainthread_frame_stats_. This
+  // is only used on the audio thread.
+  AudioFrameStats pending_frame_stats_;
 
   // Provides weak pointers that are valid until Stop() is called.
   base::WeakPtrFactory<MediaStreamAudioTrack> weak_factory_{this};

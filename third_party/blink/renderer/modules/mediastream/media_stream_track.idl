@@ -55,7 +55,7 @@ enum MediaStreamTrackState {
     MediaTrackConstraints getConstraints();
     MediaTrackSettings getSettings();
     // https://w3c.github.io/mediacapture-extensions/#mediastreamtrack-statistics
-    [SameObject, Measure] readonly attribute MediaStreamTrackVideoStats? stats;
+    [SameObject, Measure] readonly attribute (MediaStreamTrackVideoStats or MediaStreamTrackAudioStats)? stats;
     // https://w3c.github.io/mediacapture-handle/identity/
     [RuntimeEnabled=CaptureHandle, MeasureAs=CaptureHandle] CaptureHandle? getCaptureHandle();
 

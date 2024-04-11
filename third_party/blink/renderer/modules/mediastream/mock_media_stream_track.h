@@ -111,7 +111,9 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
 
   MOCK_METHOD1(stopTrack, void(ExecutionContext*));
   MOCK_METHOD1(clone, MediaStreamTrack*(ExecutionContext*));
-  MOCK_METHOD0(stats, MediaStreamTrackVideoStats*());
+  MOCK_METHOD0(
+      stats,
+      V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats*());
   MOCK_METHOD2(applyConstraintsScriptState,
                ScriptPromise<IDLUndefined>(ScriptState*,
                                            const MediaTrackConstraints*));

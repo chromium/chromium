@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_mediastreamtrackaudiostats_mediastreamtrackvideostats.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -51,6 +52,8 @@
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_audio_stats.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_video_stats.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
@@ -681,11 +684,16 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
   return settings;
 }
 
-MediaStreamTrackVideoStats* MediaStreamTrackImpl::stats() {
+V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats*
+MediaStreamTrackImpl::stats() {
   switch (component_->GetSourceType()) {
     case MediaStreamSource::kTypeAudio:
-      // `MediaStreamTrack.stats` is not supported for audio tracks.
-      return nullptr;
+      if (!stats_) {
+        stats_ = MakeGarbageCollected<
+            V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats>(
+            MakeGarbageCollected<MediaStreamTrackAudioStats>(this));
+      }
+      return stats_.Get();
     case MediaStreamSource::kTypeVideo: {
       std::optional<const MediaStreamDevice> source_device = device();
       if (!source_device.has_value() ||
@@ -704,10 +712,12 @@ MediaStreamTrackVideoStats* MediaStreamTrackImpl::stats() {
         // is no need to drop it.
         return nullptr;
       }
-      if (!video_stats_) {
-        video_stats_ = MakeGarbageCollected<MediaStreamTrackVideoStats>(this);
+      if (!stats_) {
+        stats_ = MakeGarbageCollected<
+            V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats>(
+            MakeGarbageCollected<MediaStreamTrackVideoStats>(this));
       }
-      return video_stats_.Get();
+      return stats_.Get();
     }
   }
 }
@@ -716,6 +726,12 @@ MediaStreamTrackPlatform::VideoFrameStats
 MediaStreamTrackImpl::GetVideoFrameStats() const {
   CHECK_EQ(component_->GetSourceType(), MediaStreamSource::kTypeVideo);
   return component_->GetPlatformTrack()->GetVideoFrameStats();
+}
+
+void MediaStreamTrackImpl::TransferAudioFrameStatsTo(
+    MediaStreamTrackPlatform::AudioFrameStats& destination) {
+  CHECK_EQ(component_->GetSourceType(), MediaStreamSource::kTypeAudio);
+  component_->GetPlatformTrack()->TransferAudioFrameStatsTo(destination);
 }
 
 CaptureHandle* MediaStreamTrackImpl::getCaptureHandle() const {
@@ -1062,7 +1078,7 @@ void MediaStreamTrackImpl::Trace(Visitor* visitor) const {
   visitor->Trace(image_capture_);
   visitor->Trace(execution_context_);
   visitor->Trace(observers_);
-  visitor->Trace(video_stats_);
+  visitor->Trace(stats_);
   EventTarget::Trace(visitor);
   MediaStreamTrack::Trace(visitor);
 }

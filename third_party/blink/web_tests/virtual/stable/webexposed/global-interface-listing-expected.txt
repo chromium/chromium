@@ -5501,6 +5501,19 @@ interface MediaStreamTrack : EventTarget
     setter onended
     setter onmute
     setter onunmute
+interface MediaStreamTrackAudioStats
+    attribute @@toStringTag
+    getter averageLatency
+    getter deliveredFrames
+    getter deliveredFramesDuration
+    getter latency
+    getter maximumLatency
+    getter minimumLatency
+    getter totalFrames
+    getter totalFramesDuration
+    method constructor
+    method resetLatency
+    method toJSON
 interface MediaStreamTrackEvent : Event
     attribute @@toStringTag
     getter track

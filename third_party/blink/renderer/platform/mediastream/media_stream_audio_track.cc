@@ -9,8 +9,11 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -175,6 +178,7 @@ void MediaStreamAudioTrack::OnData(const media::AudioBus& audio_bus,
   const bool deliver_data = is_enabled_.load(std::memory_order_relaxed);
 
   if (deliver_data) {
+    UpdateFrameStats(audio_bus, reference_time, glitch_info);
     deliverer_.OnData(audio_bus, reference_time, glitch_info);
   } else {
     // The W3C spec requires silent audio to flow while a track is disabled.
@@ -185,6 +189,26 @@ void MediaStreamAudioTrack::OnData(const media::AudioBus& audio_bus,
       silent_bus_->Zero();
     }
     deliverer_.OnData(*silent_bus_, reference_time, {});
+  }
+}
+
+void MediaStreamAudioTrack::TransferAudioFrameStatsTo(
+    MediaStreamTrackPlatform::AudioFrameStats& destination) {
+  base::AutoLock auto_lock(mainthread_frame_stats_lock_);
+  destination.Absorb(mainthread_frame_stats_);
+}
+
+void MediaStreamAudioTrack::UpdateFrameStats(
+    const media::AudioBus& audio_bus,
+    base::TimeTicks reference_time,
+    const media::AudioGlitchInfo& glitch_info) {
+  pending_frame_stats_.Update(GetOutputFormat(), reference_time, glitch_info);
+
+  // If the main thread does not already hold the lock, take it and transfer
+  // the latest stats to the main thread.
+  if (mainthread_frame_stats_lock_.Try()) {
+    mainthread_frame_stats_.Absorb(pending_frame_stats_);
+    mainthread_frame_stats_lock_.Release();
   }
 }
 

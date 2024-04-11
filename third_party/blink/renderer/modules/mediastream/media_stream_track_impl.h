@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track_video_stats.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -91,7 +90,8 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   MediaTrackCapabilities* getCapabilities() const override;
   MediaTrackConstraints* getConstraints() const override;
   MediaTrackSettings* getSettings() const override;
-  MediaStreamTrackVideoStats* stats() override;
+  V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats* stats()
+      override;
   CaptureHandle* getCaptureHandle() const override;
   ScriptPromise<IDLUndefined> applyConstraints(
       ScriptState*,
@@ -146,6 +146,9 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
       base::TimeDelta platform_buffer_duration) override;
 
   MediaStreamTrackPlatform::VideoFrameStats GetVideoFrameStats() const;
+
+  void TransferAudioFrameStatsTo(
+      MediaStreamTrackPlatform::AudioFrameStats& destination);
 
   ImageCapture* GetImageCapture() override { return image_capture_.Get(); }
 
@@ -224,7 +227,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   bool muted_ = false;
   MediaConstraints constraints_;
   std::optional<bool> suppress_local_audio_playback_setting_;
-  Member<MediaStreamTrackVideoStats> video_stats_;
+  Member<V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats> stats_;
 };
 
 }  // namespace blink

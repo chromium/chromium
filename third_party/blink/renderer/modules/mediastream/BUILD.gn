@@ -64,6 +64,8 @@ blink_modules_sources("mediastream") {
     "media_stream_set.h",
     "media_stream_track.cc",
     "media_stream_track.h",
+    "media_stream_track_audio_stats.cc",
+    "media_stream_track_audio_stats.h",
     "media_stream_track_content_hint.h",
     "media_stream_track_event.cc",
     "media_stream_track_event.h",

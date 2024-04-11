@@ -39,9 +39,9 @@ class MediaConstraints;
 class MediaTrackCapabilities;
 class MediaTrackConstraints;
 class MediaStream;
-class MediaStreamTrackVideoStats;
 class MediaTrackSettings;
 class ScriptState;
+class V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats;
 
 String ContentHintToString(
     const WebMediaStreamTrack::ContentHintType& content_hint);
@@ -105,7 +105,8 @@ class MODULES_EXPORT MediaStreamTrack
   virtual MediaTrackCapabilities* getCapabilities() const = 0;
   virtual MediaTrackConstraints* getConstraints() const = 0;
   virtual MediaTrackSettings* getSettings() const = 0;
-  virtual MediaStreamTrackVideoStats* stats() = 0;
+  virtual V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats*
+  stats() = 0;
   virtual CaptureHandle* getCaptureHandle() const = 0;
   virtual ScriptPromise<IDLUndefined> applyConstraints(
       ScriptState*,

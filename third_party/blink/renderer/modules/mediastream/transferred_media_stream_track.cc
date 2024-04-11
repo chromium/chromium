@@ -173,7 +173,8 @@ MediaTrackSettings* TransferredMediaStreamTrack::getSettings() const {
   return MediaTrackSettings::Create();
 }
 
-MediaStreamTrackVideoStats* TransferredMediaStreamTrack::stats() {
+V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats*
+TransferredMediaStreamTrack::stats() {
   if (track_) {
     return track_->stats();
   }
