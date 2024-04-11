@@ -1996,8 +1996,9 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
 
 // Tests that a main frame hosting pdf does not get skipped because of history
 // manipulation intervention if there was a user gesture.
+// TODO(crbug.com/333829580): Final navigation is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
-                       PDFDoNotSkipOnBackForwardDueToUserGesture) {
+                       DISABLED_PDFDoNotSkipOnBackForwardDueToUserGesture) {
   GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
 
