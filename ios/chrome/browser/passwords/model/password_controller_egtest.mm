@@ -196,8 +196,8 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that update password prompt is shown on submitting the new password
-// for an already stored login in local store.
-- (void)testUpdateLocalPasswordPromptOnFormSubmission {
+// while signed in, for an already stored credential in local store.
+- (void)testUpdateLocalPasswordPromptOnFormSubmissionWhileSignedIn {
   // Load the page the first time an store credentials locally.
   [self loadLoginPage];
   [PasswordManagerAppInterface storeCredentialWithUsername:@"Eguser"
@@ -205,14 +205,13 @@ BOOL WaitForKeyboardToAppear() {
   int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
   GREYAssertEqual(1, credentialsCount, @"Wrong number of initial credentials.");
 
-  // Sign in with identity.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  // Sign in with identity where the credential still lives in the local store.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   // Load the page again and have a new password value to save.
   [self loadLoginPage];
-  // Simulate user interacting with fields.
+  // Emulate user interacting with fields.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -321,8 +320,7 @@ BOOL WaitForKeyboardToAppear() {
 #endif
 - (void)MAYBE_testPasswordGeneration {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Signup form."];
@@ -356,10 +354,9 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that password generation is offered for signed in not syncing users.
-- (void)testPasswordGenerationForSignedInNotSyncingAccount {
+- (void)testPasswordGenerationForSignedInAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Signup form."];
@@ -392,10 +389,9 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that password generation is not offered for signed in not syncing users
 // with passwords toggle disabled.
-- (void)testPasswordGenerationForSignedInNotSyncingWithPasswordsDisabled {
+- (void)testPasswordGenerationWhileSignedInWithPasswordsDisabled {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   // Disable Passwords toggle in account settings.
   [ChromeEarlGreyUI openSettingsMenu];
@@ -429,14 +425,13 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that password generation is not offered for signed in not syncing users
 // with an encryption error; missing passphrase.
-- (void)testPasswordGenerationForSignedInNotSyncingWithError {
+- (void)testPasswordGenerationWhileSignedInWithError {
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
 
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   // Verify encryption error is showing in in account settings.
   [ChromeEarlGreyUI openSettingsMenu];
