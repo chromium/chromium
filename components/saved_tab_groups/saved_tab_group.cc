@@ -306,7 +306,11 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroup::MergeGroup(
   if (ShouldMergeGroup(sync_specific)) {
     SetTitle(base::UTF8ToUTF16(sync_specific.group().title()));
     SetColor(SyncColorToTabGroupColor(sync_specific.group().color()));
-    SetPosition(sync_specific.group().position());
+    if (IsTabGroupsSaveUIUpdateEnabled()) {
+      SetPosition(sync_specific.group().pinned_position());
+    } else {
+      SetPosition(sync_specific.group().position());
+    }
     SetUpdateTimeWindowsEpochMicros(base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(sync_specific.update_time_windows_epoch_micros())));
   }
@@ -323,10 +327,14 @@ SavedTabGroup SavedTabGroup::FromSpecifics(
   // In v1 we always set tab group position even if the proto is not set, which
   // gives a default position of 0. In v2 we leave the position unset if the
   // proto is not set for unpinned tab groups.
-  const std::optional<size_t> position =
-      !IsTabGroupsSaveUIUpdateEnabled() || specific.group().has_position()
-          ? std::optional<size_t>(specific.group().position())
-          : std::nullopt;
+  std::optional<size_t> position;
+  if (IsTabGroupsSaveUIUpdateEnabled()) {
+    position = specific.group().has_pinned_position()
+                   ? std::optional<size_t>(specific.group().pinned_position())
+                   : std::nullopt;
+  } else {
+    position = std::optional<size_t>(specific.group().position());
+  }
 
   const base::Uuid guid = base::Uuid::ParseLowercase(specific.guid());
   const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -357,8 +365,13 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroup::ToSpecifics()
   sync_pb::SavedTabGroup* pb_group = pb_specific->mutable_group();
   pb_group->set_color(TabGroupColorToSyncColor(color()));
   pb_group->set_title(base::UTF16ToUTF8(title()));
+
   if (position().has_value()) {
-    pb_group->set_position(position().value());
+    if (IsTabGroupsSaveUIUpdateEnabled()) {
+      pb_group->set_pinned_position(position().value());
+    } else {
+      pb_group->set_position(position().value());
+    }
   }
   // Note: When adding a new syncable field, also update IsSyncEquivalent().
 

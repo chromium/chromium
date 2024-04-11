@@ -11954,6 +11954,7 @@ if (!is_android) {
       "//components/reading_list/core",
       "//components/reading_list/core:test_support",
       "//components/reading_list/features:flags",
+      "//components/saved_tab_groups:core",
       "//components/send_tab_to_self",
       "//components/spellcheck/common",
       "//components/sync",

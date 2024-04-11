@@ -1150,6 +1150,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroup& proto) {
   VISIT(position);
   VISIT(title);
   VISIT_ENUM(color);
+  VISIT(pinned_position);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroupTab& proto) {

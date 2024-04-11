@@ -36,7 +36,9 @@ message SavedTabGroup {
   }
 
   // The position of the SavedTabGroup in any visual display. This also
-  // represents the index in the SavedTabGroupModel of the group.
+  // represents the index in the SavedTabGroupModel of the group. This field
+  // will be deprecated and replaced by the pinned_position field in tab group
+  // V2.
   optional int64 position = 1;
 
   // The displayed title of the group, shown on the tab group and the saved tab
@@ -45,6 +47,10 @@ message SavedTabGroup {
 
   // The color of the group, mapped to tab_groups::TabGroupColorId.
   optional SavedTabGroupColor color = 3;
+
+  // Position of the pinned tab group in bookmark bar on Desktop. This will
+  // replace the position field in Tab Group V2.
+  optional int64 pinned_position = 4;
 }
 
 // Sync protocol datatype extension for saved tab group tabs. SavedTabGroupTab

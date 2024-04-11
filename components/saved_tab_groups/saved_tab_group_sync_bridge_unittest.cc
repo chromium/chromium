@@ -59,6 +59,9 @@ bool AreGroupSpecificsEqual(const sync_pb::SavedTabGroupSpecifics& sp1,
     return false;
   if (sp1.group().position() != sp2.group().position())
     return false;
+  if (sp1.group().pinned_position() != sp2.group().pinned_position()) {
+    return false;
+  }
   if (sp1.creation_time_windows_epoch_micros() !=
       sp2.creation_time_windows_epoch_micros()) {
     return false;
