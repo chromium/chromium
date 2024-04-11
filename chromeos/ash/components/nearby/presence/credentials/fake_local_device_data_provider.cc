@@ -26,8 +26,7 @@ std::string FakeLocalDeviceDataProvider::GetDeviceId() {
   return device_id_;
 }
 
-::nearby::internal::DeviceIdentityMetaData
-FakeLocalDeviceDataProvider::GetDeviceMetadata() {
+::nearby::internal::Metadata FakeLocalDeviceDataProvider::GetDeviceMetadata() {
   return metadata_;
 }
 
@@ -59,7 +58,7 @@ void FakeLocalDeviceDataProvider::SetDeviceId(std::string device_id) {
 }
 
 void FakeLocalDeviceDataProvider::SetDeviceMetadata(
-    ::nearby::internal::DeviceIdentityMetaData metadata) {
+    ::nearby::internal::Metadata metadata) {
   metadata_ = metadata;
 }
 

@@ -1000,9 +1000,8 @@ source_set("presence_internal") {
   ]
   sources = [
     "src/presence/implementation/action_factory.cc",
-    "src/presence/implementation/advertisement_decoder_impl.cc",
+    "src/presence/implementation/advertisement_decoder.cc",
     "src/presence/implementation/advertisement_factory.cc",
-    "src/presence/implementation/advertisement_filter.cc",
     "src/presence/implementation/base_broadcast_request.cc",
     "src/presence/implementation/broadcast_manager.cc",
     "src/presence/implementation/connection_authenticator_impl.cc",
@@ -1014,9 +1013,7 @@ source_set("presence_internal") {
   public = [
     "src/presence/implementation/action_factory.h",
     "src/presence/implementation/advertisement_decoder.h",
-    "src/presence/implementation/advertisement_decoder_impl.h",
     "src/presence/implementation/advertisement_factory.h",
-    "src/presence/implementation/advertisement_filter.h",
     "src/presence/implementation/base_broadcast_request.h",
     "src/presence/implementation/broadcast_manager.h",
     "src/presence/implementation/connection_authenticator.h",

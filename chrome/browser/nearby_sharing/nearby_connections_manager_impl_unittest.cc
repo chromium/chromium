@@ -40,9 +40,10 @@ const char kAuthenticationToken[] = "authentication_token";
 const char kRawAuthenticationToken[] = {0x00, 0x05, 0x04, 0x03, 0x02};
 const char kBytePayload[] = {0x08, 0x09, 0x06, 0x04, 0x0f};
 const char kBytePayload2[] = {0x0a, 0x0b, 0x0c, 0x0d, 0x0e};
+const char kAccountName[] = "criscros@gmail.com";
+const char kUserName[] = "CrisCrOS";
 const char kDeviceName[] = "Cris Cros's Pixel";
-const uint8_t kDeviceId[] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
-                             0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+const char kDeviceProfileUrl[] = "cris_cros_url";
 const int64_t kPayloadId = 689777;
 const int64_t kPayloadId2 = 777689;
 const int64_t kPayloadId3 = 986777;
@@ -131,24 +132,26 @@ ash::nearby::presence::mojom::PresenceDeviceType DeviceTypeToMojom(
 }
 
 ash::nearby::presence::mojom::MetadataPtr MetadataToMojom(
-    ::nearby::internal::DeviceIdentityMetaData metadata) {
+    ::nearby::internal::Metadata metadata) {
   return ash::nearby::presence::mojom::Metadata::New(
-      DeviceTypeToMojom(metadata.device_type()), metadata.device_name(),
+      DeviceTypeToMojom(metadata.device_type()), metadata.account_name(),
+      metadata.device_name(), metadata.user_name(),
+      metadata.device_profile_url(),
       std::vector<uint8_t>(metadata.bluetooth_mac_address().begin(),
-                           metadata.bluetooth_mac_address().end()),
-      std::vector<uint8_t>(metadata.device_id().begin(),
-                           metadata.device_id().end()));
+                           metadata.bluetooth_mac_address().end()));
 }
 
 nearby::presence::PresenceDevice CreatePresenceDevice() {
-  nearby::internal::DeviceIdentityMetaData metadata;
+  nearby::internal::Metadata metadata;
   metadata.set_device_type(nearby::internal::DeviceType::DEVICE_TYPE_PHONE);
+  metadata.set_account_name(kAccountName);
+  metadata.set_user_name(kUserName);
   metadata.set_device_name(kDeviceName);
+  metadata.set_device_profile_url(kDeviceProfileUrl);
   metadata.set_bluetooth_mac_address((char*)kBluetoothMacAddress);
-  metadata.set_device_id((char*)kDeviceId);
 
   nearby::presence::PresenceDevice presence_device(kRemoteEndpointId);
-  presence_device.SetDeviceIdentityMetaData(metadata);
+  presence_device.SetMetadata(metadata);
   presence_device.AddAction(static_cast<uint32_t>(
       nearby::presence::ActionBit::kPresenceManagerAction));
 
@@ -164,8 +167,7 @@ ash::nearby::presence::mojom::PresenceDevicePtr BuildPresenceMojomDevice(
 
   return ash::nearby::presence::mojom::PresenceDevice::New(
       device.GetEndpointId(), std::move(actions),
-      /*stable_device_id=*/std::nullopt,
-      MetadataToMojom(device.GetDeviceIdentityMetadata()),
+      /*stable_device_id=*/std::nullopt, MetadataToMojom(device.GetMetadata()),
       /*decrypt_shared_credential=*/nullptr);
 }
 

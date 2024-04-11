@@ -45,25 +45,26 @@ namespace {
   }
 }
 
-::nearby::internal::DeviceIdentityMetaData ConvertMetadataFromMojom(
+::nearby::internal::Metadata ConvertMetadataFromMojom(
     ash::nearby::presence::mojom::Metadata* metadata) {
-  ::nearby::internal::DeviceIdentityMetaData proto;
+  ::nearby::internal::Metadata proto;
 
   proto.set_device_type(ConvertMojomDeviceType(metadata->device_type));
+  proto.set_account_name(metadata->account_name);
+  proto.set_user_name(metadata->user_name);
   proto.set_device_name(metadata->device_name);
+  proto.set_user_name(metadata->user_name);
+  proto.set_device_profile_url(metadata->device_profile_url);
   proto.set_bluetooth_mac_address(
       std::string(metadata->bluetooth_mac_address.begin(),
                   metadata->bluetooth_mac_address.end()));
-  proto.set_device_id(
-      std::string(metadata->device_id.begin(), metadata->device_id.end()));
   return proto;
 }
 
 ::nearby::presence::PresenceDevice BuildPresenceDevice(
     ash::nearby::presence::mojom::PresenceDevicePtr device) {
   ::nearby::presence::PresenceDevice presence_device(device->endpoint_id);
-  presence_device.SetDeviceIdentityMetaData(
-      ConvertMetadataFromMojom(device->metadata.get()));
+  presence_device.SetMetadata(ConvertMetadataFromMojom(device->metadata.get()));
   for (auto action : device->actions) {
     presence_device.AddAction(static_cast<uint32_t>(action));
   }

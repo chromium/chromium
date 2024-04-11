@@ -55,27 +55,27 @@ mojom::PresenceDeviceType DeviceTypeToMojom(
   }
 }
 
-::nearby::internal::DeviceIdentityMetaData MetadataFromMojom(
-    mojom::Metadata* metadata) {
-  ::nearby::internal::DeviceIdentityMetaData proto;
+::nearby::internal::Metadata MetadataFromMojom(mojom::Metadata* metadata) {
+  ::nearby::internal::Metadata proto;
   proto.set_device_type(DeviceTypeFromMojom(metadata->device_type));
+  proto.set_account_name(metadata->account_name);
+  proto.set_user_name(metadata->user_name);
   proto.set_device_name(metadata->device_name);
+  proto.set_user_name(metadata->user_name);
+  proto.set_device_profile_url(metadata->device_profile_url);
   proto.set_bluetooth_mac_address(
       std::string(metadata->bluetooth_mac_address.begin(),
                   metadata->bluetooth_mac_address.end()));
-  proto.set_device_id(
-      std::string(metadata->device_id.begin(), metadata->device_id.end()));
   return proto;
 }
 
-mojom::MetadataPtr MetadataToMojom(
-    ::nearby::internal::DeviceIdentityMetaData metadata) {
+mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata) {
   return mojom::Metadata::New(
-      DeviceTypeToMojom(metadata.device_type()), metadata.device_name(),
+      DeviceTypeToMojom(metadata.device_type()), metadata.account_name(),
+      metadata.device_name(), metadata.user_name(),
+      metadata.device_profile_url(),
       std::vector<uint8_t>(metadata.bluetooth_mac_address().begin(),
-                           metadata.bluetooth_mac_address().end()),
-      std::vector<uint8_t>(metadata.device_id().begin(),
-                           metadata.device_id().end()));
+                           metadata.bluetooth_mac_address().end()));
 }
 
 mojom::IdentityType ConvertIdentityTypeToMojom(
@@ -292,8 +292,7 @@ mojom::PresenceDevicePtr BuildPresenceMojomDevice(
   // TODO(b/276642472): Properly plumb type and stable_device_id.
   return mojom::PresenceDevice::New(
       device.GetEndpointId(), std::move(actions),
-      /*stable_device_id=*/std::nullopt,
-      MetadataToMojom(device.GetDeviceIdentityMetadata()),
+      /*stable_device_id=*/std::nullopt, MetadataToMojom(device.GetMetadata()),
       device.GetDecryptSharedCredential()
           ? SharedCredentialToMojom(device.GetDecryptSharedCredential().value())
           : nullptr);

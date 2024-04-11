@@ -10,9 +10,11 @@
 
 namespace {
 
+const std::string kUserEmail = "testtester@gmail.com";
 const std::string kDeviceName = "Test's Chromebook";
+const std::string kUserName = "Test Tester";
+const std::string kProfileUrl = "https://example.com";
 const std::string kMacAddress = "1A:2B:3C:4D:5E:6F";
-const std::string kDeviceId = "DeviceId";
 const std::string kDusi = "11";
 const std::string AdvertisementSigningKeyCertificateAlias =
     "NearbySharingYWJjZGVmZ2hpamtsbW5vcA";
@@ -81,15 +83,19 @@ namespace ash::nearby::presence::proto {
 class ProtoConversionsTest : public testing::Test {};
 
 TEST_F(ProtoConversionsTest, BuildMetadata) {
-  ::nearby::internal::DeviceIdentityMetaData metadata = BuildMetadata(
+  ::nearby::internal::Metadata metadata = BuildMetadata(
       /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_LAPTOP,
+      /*account_name=*/kUserEmail,
       /*device_name=*/kDeviceName,
-      /*mac_address=*/kMacAddress,
-      /*device_id=*/kDeviceId);
+      /*user_name=*/kUserName,
+      /*profile_url=*/kProfileUrl,
+      /*mac_address=*/kMacAddress);
 
+  EXPECT_EQ(kUserEmail, metadata.account_name());
   EXPECT_EQ(kDeviceName, metadata.device_name());
+  EXPECT_EQ(kUserName, metadata.user_name());
+  EXPECT_EQ(kProfileUrl, metadata.device_profile_url());
   EXPECT_EQ(kMacAddress, metadata.bluetooth_mac_address());
-  EXPECT_EQ(kDeviceId, metadata.device_id());
 }
 
 TEST_F(ProtoConversionsTest, DeviceTypeToMojo) {
@@ -111,18 +117,21 @@ TEST_F(ProtoConversionsTest, PublicCredentialTypeToMojom) {
 }
 
 TEST_F(ProtoConversionsTest, MetadataToMojom) {
-  ::nearby::internal::DeviceIdentityMetaData metadata = BuildMetadata(
+  ::nearby::internal::Metadata metadata = BuildMetadata(
       /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_LAPTOP,
+      /*account_name=*/kUserEmail,
       /*device_name=*/kDeviceName,
-      /*mac_address=*/kMacAddress,
-      /*device_id=*/kDeviceId);
+      /*user_name=*/kUserName,
+      /*profile_url=*/kProfileUrl,
+      /*mac_address=*/kMacAddress);
   mojom::MetadataPtr mojo = MetadataToMojom(metadata);
 
+  EXPECT_EQ(kUserEmail, mojo->account_name);
   EXPECT_EQ(kDeviceName, mojo->device_name);
+  EXPECT_EQ(kUserName, mojo->user_name);
+  EXPECT_EQ(kProfileUrl, mojo->device_profile_url);
   EXPECT_EQ(kMacAddress, std::string(mojo->bluetooth_mac_address.begin(),
                                      mojo->bluetooth_mac_address.end()));
-  EXPECT_EQ(kDeviceId,
-            std::string(mojo->device_id.begin(), mojo->device_id.end()));
 }
 
 TEST_F(ProtoConversionsTest, IdentityTypeFromMojom) {

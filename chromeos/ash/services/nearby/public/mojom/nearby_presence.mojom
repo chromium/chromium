@@ -80,14 +80,18 @@ enum PublicCredentialType {
 // The metadata of a device. This struct should always match
 // //third_party/nearby/src/internal/proto/metadata.proto.
 struct Metadata {
+  // The type of the device.
   PresenceDeviceType device_type;
+  // The account name of the account who owns the device.
+  string account_name;
+  // The name of the local device to be returned through credentials.
   string device_name;
+  // The name of the user who owns the device.
+  string user_name;
+  // The profile url of the device.
+  string device_profile_url;
+  // The Bluetooth MAC address of the device.
   array<uint8> bluetooth_mac_address;
-
-  // Maps to the DeviceIdentityMetaData proto message's `device_id` field.
-  // device_id type `bytes` and represents a 128-bit integer. Thus this byte
-  // (8-bits) array field should always be of length 16.
-  array<uint8> device_id;
 };
 
 // A mojo conversion of the CredentialType enum, which is defined in

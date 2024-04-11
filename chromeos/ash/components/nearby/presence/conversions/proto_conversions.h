@@ -17,18 +17,19 @@
 
 namespace ash::nearby::presence::proto {
 
-::nearby::internal::DeviceIdentityMetaData BuildMetadata(
+::nearby::internal::Metadata BuildMetadata(
     ::nearby::internal::DeviceType device_type,
+    const std::string& account_name,
     const std::string& device_name,
-    const std::string& mac_address,
-    const std::string& device_id);
+    const std::string& user_name,
+    const std::string& profile_url,
+    const std::string& mac_address);
 
 mojom::PresenceDeviceType DeviceTypeToMojom(
     ::nearby::internal::DeviceType device_type);
 mojom::PublicCredentialType PublicCredentialTypeToMojom(
     ::nearby::presence::PublicCredentialType public_credential_type);
-mojom::MetadataPtr MetadataToMojom(
-    ::nearby::internal::DeviceIdentityMetaData metadata);
+mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata);
 mojom::PrivateKeyPtr PrivateKeyToMojom(
     ::nearby::internal::LocalCredential::PrivateKey private_key);
 

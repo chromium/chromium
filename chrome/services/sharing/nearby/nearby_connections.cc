@@ -602,9 +602,8 @@ void NearbyConnections::RequestConnectionV3(
   } else {
     std::unique_ptr<presence::PresenceDevice> presence_device =
         std::make_unique<presence::PresenceDevice>(endpoint_id);
-    presence_device->SetDeviceIdentityMetaData(
-        ash::nearby::presence::MetadataFromMojom(
-            remote_device->metadata.get()));
+    presence_device->SetMetadata(ash::nearby::presence::MetadataFromMojom(
+        remote_device->metadata.get()));
     endpoint_id_to_presence_device_map.insert_or_assign(
         endpoint_id, std::move(presence_device));
   }

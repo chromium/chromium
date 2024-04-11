@@ -26,15 +26,15 @@
 
 namespace ash::nearby::presence {
 
-const char kDeviceName[] = "DeviceName";
+const char kAccountName[] = "Pepper@gmail.com";
+const char kDeviceName[] = "Pepper's Request";
+const char kDeviceProfileUrl[] = "some_url";
 const char kEndpointId[] = "00000001";
 const char kStableDeviceId[] = "00000002";
+const char kUserName[] = "Pepper";
 const char kMalformedTypeId[] = "not_nearby_presence";
 const char kMalformedClientId[] = "not_nearby";
 const std::vector<uint8_t> kMacAddress = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
-const std::vector<uint8_t> kDeviceId = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab,
-                                        0xcd, 0xef, 0x01, 0x23, 0x45, 0x67,
-                                        0x89, 0xab, 0xcd, 0xef};
 const mojom::ActionType kAction1 = mojom::ActionType::kInstantTetheringAction;
 const mojom::ActionType kAction2 = mojom::ActionType::kActiveUnlockAction;
 const mojom::ActionType kAction3 = mojom::ActionType::kPhoneHubAction;
@@ -153,7 +153,8 @@ class NearbyPresenceServiceImplTest : public testing::Test {
           mojom::PresenceDevice::New(
               kEndpointId, actions, kStableDeviceId,
               mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
-                                   kDeviceName, kMacAddress, kDeviceId),
+                                   kAccountName, kDeviceName, kUserName,
+                                   kDeviceProfileUrl, kMacAddress),
               /*decrypt_shared_credential=*/nullptr));
       run_loop.Run();
     }
@@ -261,8 +262,9 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceChanged(
         mojom::PresenceDevice::New(
             kEndpointId, actions, kStableDeviceId,
-            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone, kDeviceName,
-                                 kMacAddress, kDeviceId),
+            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
+                                 kAccountName, kDeviceName, kUserName,
+                                 kDeviceProfileUrl, kMacAddress),
             /*decrypt_shared_credential=*/nullptr));
     run_loop.Run();
   }
@@ -297,8 +299,9 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceLost(
         mojom::PresenceDevice::New(
             kEndpointId, actions, kStableDeviceId,
-            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone, kDeviceName,
-                                 kMacAddress, kDeviceId),
+            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
+                                 kAccountName, kDeviceName, kUserName,
+                                 kDeviceProfileUrl, kMacAddress),
             /*decrypt_shared_credential=*/nullptr));
     run_loop.Run();
   }
@@ -335,8 +338,9 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceFound(
         mojom::PresenceDevice::New(
             kEndpointId, actions, kStableDeviceId,
-            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone, kDeviceName,
-                                 kMacAddress, kDeviceId),
+            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
+                                 kAccountName, kDeviceName, kUserName,
+                                 kDeviceProfileUrl, kMacAddress),
             /*decrypt_shared_credential=*/nullptr));
 
     // Allow the ScanObserver function to finish before checking EXPECTs.
