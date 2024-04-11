@@ -6,37 +6,13 @@
       "mac",
       "linux"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "certificates.ca_platform_integration_enabled": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "note": "true value.",
-        "policies": {
-          "CAPlatformIntegrationEnabled": true
-        },
-        "prefs": {
-          "certificates.ca_platform_integration_enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "note": "false value.",
-        "policies": {
-          "CAPlatformIntegrationEnabled": false
-        },
-        "prefs": {
-          "certificates.ca_platform_integration_enabled": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "certificates.ca_platform_integration_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

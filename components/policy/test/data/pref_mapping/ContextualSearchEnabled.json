@@ -3,6 +3,35 @@
     "os": [
       "android"
     ],
-    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "search.contextual_search_enabled": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "policies": {
+          "ContextualSearchEnabled": true
+        },
+        "prefs": {
+          "search.contextual_search_enabled": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "policies": {
+          "ContextualSearchEnabled": false
+        },
+        "prefs": {
+          "search.contextual_search_enabled": {
+            "value": "false"
+          }
+        }
+      }
+    ]
   }
 ]

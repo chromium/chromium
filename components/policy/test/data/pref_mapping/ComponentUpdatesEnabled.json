@@ -9,18 +9,14 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ComponentUpdatesEnabled": true
-        },
-        "prefs": {
-          "component_updates.component_updates_enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "component_updates.component_updates_enabled",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

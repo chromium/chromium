@@ -8,35 +8,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "net.compression_dictionary_transport_enabled": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "CompressionDictionaryTransportEnabled": false
-        },
-        "prefs": {
-          "net.compression_dictionary_transport_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "CompressionDictionaryTransportEnabled": true
-        },
-        "prefs": {
-          "net.compression_dictionary_transport_enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "net.compression_dictionary_transport_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

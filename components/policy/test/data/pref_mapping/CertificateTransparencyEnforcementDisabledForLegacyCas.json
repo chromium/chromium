@@ -9,30 +9,14 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "certificate_transparency.excluded_legacy_spkis": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "CertificateTransparencyEnforcementDisabledForLegacyCas": [
-            "sha256/AAAAAAAAAAAAAAAAAAAAAA=="
-          ]
-        },
-        "prefs": {
-          "certificate_transparency.excluded_legacy_spkis": {
-            "value": [
-              "sha256/AAAAAAAAAAAAAAAAAAAAAA=="
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "certificate_transparency.excluded_legacy_spkis",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "sha256/AAAAAAAAAAAAAAAAAAAAAA=="
+        ]
+      ]
+    }
   }
 ]

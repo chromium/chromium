@@ -3,17 +3,14 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ClientCertificateManagementAllowed": 2
-        },
-        "prefs": {
-          "client_certificate_management_allowed": {
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "client_certificate_management_allowed",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
   }
 ]

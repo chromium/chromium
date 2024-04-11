@@ -6,37 +6,19 @@
       "mac",
       "linux"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "certificates.ca_distrusted_certificates": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "One value.",
-        "policies": {
-          "CADistrustedCertificates": [ "cert1" ]
-        },
-        "prefs": {
-          "certificates.ca_distrusted_certificates": {
-            "value": [ "cert1" ]
-          }
-        }
-      },
-      {
-        "note": "Multiple values.",
-        "policies": {
-          "CADistrustedCertificates": [ "cert1", "cert2", "cert3" ]
-        },
-        "prefs": {
-          "certificates.ca_distrusted_certificates": {
-            "value": [ "cert1", "cert2", "cert3" ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "certificates.ca_distrusted_certificates",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "cert1"
+        ],
+        [
+          "cert1",
+          "cert2",
+          "cert3"
+        ]
+      ]
+    }
   }
 ]

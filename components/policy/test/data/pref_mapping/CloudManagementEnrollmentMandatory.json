@@ -6,18 +6,14 @@
       "mac",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "CloudManagementEnrollmentMandatory": true
-        },
-        "prefs": {
-          "policy.cloud_management_enrollment_mandatory": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.cloud_management_enrollment_mandatory",
+      "pref_location": "local_state",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

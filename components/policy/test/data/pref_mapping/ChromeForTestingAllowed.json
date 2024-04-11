@@ -5,18 +5,14 @@
       "mac",
       "win"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ChromeForTestingAllowed": true
-        },
-        "prefs": {
-          "chrome_for_testing.allowed": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "chrome_for_testing.allowed",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

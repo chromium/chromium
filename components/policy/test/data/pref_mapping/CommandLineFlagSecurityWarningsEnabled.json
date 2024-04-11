@@ -6,18 +6,14 @@
       "mac",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "CommandLineFlagSecurityWarningsEnabled": true
-        },
-        "prefs": {
-          "browser.command_line_flag_security_warnings_enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser.command_line_flag_security_warnings_enabled",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

@@ -1,6 +1,5 @@
 [
   {
-    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "os": [
       "win",
       "linux",
@@ -10,21 +9,14 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "CookiesBlockedForUrls": [
-            "[*.]google.com"
-          ]
-        },
-        "prefs": {
-          "profile.managed_cookies_blocked_for_urls": {
-            "value": [
-              "[*.]google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_cookies_blocked_for_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "[*.]google.com"
+        ]
+      ]
+    }
   }
 ]

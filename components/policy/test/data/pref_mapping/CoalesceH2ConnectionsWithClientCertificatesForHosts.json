@@ -9,22 +9,15 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "CoalesceH2ConnectionsWithClientCertificatesForHosts": [
-            "example.com"
-          ]
-        },
-        "prefs": {
-          "ssl.client_certs.h2_coalescing_hosts": {
-            "location": "local_state",
-            "value": [
-              "example.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ssl.client_certs.h2_coalescing_hosts",
+      "pref_location": "local_state",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "example.com"
+        ]
+      ]
+    }
   }
 ]

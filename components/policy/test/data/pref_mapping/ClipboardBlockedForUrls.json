@@ -8,21 +8,14 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ClipboardBlockedForUrls": [
-            "[*.]google.com"
-          ]
-        },
-        "prefs": {
-          "profile.managed_clipboard_blocked_for_urls": {
-            "value": [
-              "[*.]google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_clipboard_blocked_for_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "[*.]google.com"
+        ]
+      ]
+    }
   }
 ]
