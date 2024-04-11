@@ -17,8 +17,35 @@
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 
 namespace apps {
+
+using AppInstallServiceAshBrowserTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
+                       InstallArcAppOpensPlayStore) {
+  base::HistogramTester histogram_tester;
+
+  content::TestNavigationObserver navigation_observer(
+      GURL("https://play.google.com/store/apps/details?id=com.android.chrome"));
+  navigation_observer.StartWatchingNewWebContents();
+
+  AppServiceProxyFactory::GetForProfile(browser()->profile())
+      ->AppInstallService()
+      .InstallApp(AppInstallSurface::kAppInstallUriUnknown,
+                  PackageId(PackageType::kArc, "com.android.chrome"),
+                  /*anchor_window=*/std::nullopt, base::DoNothing());
+
+  navigation_observer.Wait();
+
+  AppInstallResult expected_result = AppInstallResult::kUnknown;
+  histogram_tester.ExpectUniqueSample("Apps.AppInstallService.AppInstallResult",
+                                      expected_result, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Apps.AppInstallService.AppInstallResult.AppInstallUriUnknown",
+      expected_result, 1);
+}
 
 class AppInstallServiceAshGuestBrowserTest
     : public InProcessBrowserTest,

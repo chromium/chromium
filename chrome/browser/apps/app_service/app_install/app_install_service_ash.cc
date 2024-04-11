@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_almanac_connector.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/borealis/borealis_game_install_flow.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -116,6 +117,16 @@ void AppInstallServiceAsh::InstallApp(
   }
 
   switch (package_id.package_type()) {
+    case PackageType::kArc: {
+      constexpr char kPlayStoreAppDetailsPage[] =
+          "https://play.google.com/store/apps/details";
+      GURL url = net::AppendOrReplaceQueryParameter(
+          GURL(kPlayStoreAppDetailsPage), "id", package_id.identifier());
+      MaybeLaunchPreferredAppForUrl(&*profile_, url,
+                                    LaunchSource::kFromInstaller);
+      std::move(result_callback).Run(AppInstallResult::kUnknown);
+      return;
+    }
     case PackageType::kWeb: {
       // Observe for `anchor_window` being destroyed during async work.
       std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker;
@@ -155,7 +166,6 @@ void AppInstallServiceAsh::InstallApp(
       std::move(result_callback).Run(AppInstallResult::kUnknown);
       return;
     }
-    case PackageType::kArc:
     case PackageType::kChromeApp:
     case PackageType::kUnknown:
       // TODO(b/303350800): Generalize to work with all app types.
