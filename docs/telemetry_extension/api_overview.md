@@ -276,7 +276,7 @@ extension-event based interface in M119. The interface is described in
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that entered this state  |
-| has_passed | boolean | Whether the routine finished successfully |
+| hasPassed | boolean | Whether the routine finished successfully |
 | detail | RoutineFinishedDetailUnion | Extra details about a finished routine |
 
 ### ExceptionInfo
@@ -295,6 +295,12 @@ extension-event based interface in M119. The interface is described in
 ### MemtesterResult
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
+| passedItems | Array<MemtesterTestItemEnum\> | Passed test items |
+| failedItems | Array<MemtesterTestItemEnum\> | Failed test items |
+
+### LegacyMemtesterResult
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
 | passed_items | Array<MemtesterTestItemEnum\> | Passed test items |
 | failed_items | Array<MemtesterTestItemEnum\> | Failed test items |
 
@@ -310,7 +316,7 @@ extension-event based interface in M119. The interface is described in
 | uuid | string | UUID of the routine that entered this state  |
 | has_passed | boolean | Whether the routine finished successfully |
 | bytesTested | number | Number of bytes tested in the memory routine |
-| result | MemtesterResult | Contains the memtester test results |
+| result | LegacyMemtesterResult | Contains the memtester test results |
 
 ### CreateMemoryRoutineArguments
 | Property Name | Type | Description |
@@ -327,9 +333,9 @@ extension-event based interface in M119. The interface is described in
 ### FanRoutineFinishedDetail
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
-| passed_fan_ids | Array<number\> | The ids of fans that can be controlled |
-| failed_fan_ids | Array<number\> | The ids of fans that cannot be controlled |
-| fan_count_status | HardwarePresenceStatus | Whether the number of fan probed is matched |
+| passedFanIds | Array<number\> | The ids of fans that can be controlled |
+| failedFanIds | Array<number\> | The ids of fans that cannot be controlled |
+| fanCountStatus | HardwarePresenceStatus | Whether the number of fan probed is matched |
 
 ### LegacyFanRoutineFinishedInfo
 | Property Name | Type | Description |
@@ -356,11 +362,17 @@ extension-event based interface in M119. The interface is described in
 | uuid | string | UUID of the routine that entered this state  |
 | has_passed | boolean | Whether the routine finished successfully |
 
-### CreateVolumeButtonRoutineArguments
+### LegacyCreateVolumeButtonRoutineArguments
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | button_type | VolumeButtonType | The volume button to be tested |
 | timeout_seconds | number | Length of time to listen to the volume button events. The value should be positive and less or equal to 600 seconds |
+
+### CreateVolumeButtonRoutineArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| buttonType | VolumeButtonType | The volume button to be tested |
+| timeoutSeconds | number | Length of time to listen to the volume button events. The value should be positive and less or equal to 600 seconds |
 
 ### CreateRoutineArgumentsUnion
 This is a union type. Exactly one field is set.
@@ -401,10 +413,10 @@ This is a union type. Exactly one field is set.
 | cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 | Stops executing the routine identified by `UUID` and removes all related resources from the system. |
 | createMemoryRoutine | (args: CreateMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 | (Deprecated in M125, use `createRoutine` with `memory` arg) Create a memory routine. |
 | createFanRoutine | (args: CreateFanRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 | (Deprecated in M125, use `createRoutine` with `fan` arg) Create a fan routine. |
-| createVolumeButtonRoutine | (args: CreateVolumeButtonRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 | (Deprecated in M125, use `createRoutine` with `volumeButton` arg) Create a volume button routine. |
+| createVolumeButtonRoutine | (args: LegacyCreateVolumeButtonRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 | (Deprecated in M125, use `createRoutine` with `volumeButton` arg) Create a volume button routine. |
 | isMemoryRoutineArgumentSupported | (args: CreateMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 | (Deprecated in M125, use `isRoutineArgumentSupported` with `memory` arg) Checks whether a certain `CreateMemoryRoutineArguments` is supported on the platform. |
 | isFanRoutineArgumentSupported | (args: CreateFanRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 | (Deprecated in M125, use `isRoutineArgumentSupported` with `fan` arg) Checks whether a certain `CreateFanRoutineArguments` is supported on the platform. |
-| isVolumeButtonRoutineArgumentSupported | (args: CreateVolumeButtonRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 | (Deprecated in M125, use `isRoutineArgumentSupported` with `volumeButton` arg) Checks whether a certain `CreateVolumeButtonRoutineArguments` is supported on the platform. |
+| isVolumeButtonRoutineArgumentSupported | (args: LegacyCreateVolumeButtonRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 | (Deprecated in M125, use `isRoutineArgumentSupported` with `volumeButton` arg) Checks whether a certain `LegacyCreateVolumeButtonRoutineArguments` is supported on the platform. |
 
 ## Events
 

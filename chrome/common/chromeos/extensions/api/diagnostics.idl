@@ -272,6 +272,11 @@ namespace os.diagnostics {
   };
 
   dictionary MemtesterResult {
+    MemtesterTestItemEnum[] passedItems;
+    MemtesterTestItemEnum[] failedItems;
+  };
+
+  dictionary LegacyMemtesterResult {
     MemtesterTestItemEnum[] passed_items;
     MemtesterTestItemEnum[] failed_items;
   };
@@ -289,7 +294,7 @@ namespace os.diagnostics {
     // Number of bytes tested in the memory routine.
     double? bytesTested;
     // Contains the memtester test results.
-    MemtesterResult? result;
+    LegacyMemtesterResult? result;
   };
 
   dictionary CreateMemoryRoutineArguments {
@@ -312,6 +317,14 @@ namespace os.diagnostics {
 
   dictionary CreateVolumeButtonRoutineArguments {
     // The volume button to be tested.
+    VolumeButtonType buttonType;
+    // Length of time to listen to the volume button events. The value should be
+    // positive and less or equal to 600 seconds.
+    long timeoutSeconds;
+  };
+
+  dictionary LegacyCreateVolumeButtonRoutineArguments {
+    // The volume button to be tested.
     VolumeButtonType button_type;
     // Length of time to listen to the volume button events. The value should be
     // positive and less or equal to 600 seconds.
@@ -329,11 +342,11 @@ namespace os.diagnostics {
 
   dictionary FanRoutineFinishedDetail {
     // The ids of fans that can be controlled.
-    long[]? passed_fan_ids;
+    long[]? passedFanIds;
     // The ids of fans that cannot be controlled.
-    long[]? failed_fan_ids;
+    long[]? failedFanIds;
     // Whether the number of fan probed is matched.
-    HardwarePresenceStatus? fan_count_status;
+    HardwarePresenceStatus? fanCountStatus;
   };
 
   dictionary LegacyFanRoutineFinishedInfo {
@@ -365,7 +378,7 @@ namespace os.diagnostics {
 
   dictionary RoutineFinishedInfo {
     DOMString? uuid;
-    boolean? has_passed;
+    boolean? hasPassed;
     RoutineFinishedDetailUnion? detail;
   };
 
@@ -542,14 +555,14 @@ namespace os.diagnostics {
 
     // Deprecated. Use `createRoutine` instead.
     static void createVolumeButtonRoutine(
-        CreateVolumeButtonRoutineArguments args,
+        LegacyCreateVolumeButtonRoutineArguments args,
         CreateRoutineCallback callback);
 
     // Deprecated. Use `isRoutineArgumentSupported` instead.
-    // Checks whether a certain `CreateVolumeButtonRoutineArguments` is
+    // Checks whether a certain `LegacyCreateVolumeButtonRoutineArguments` is
     // supported on the platform.
     static void isVolumeButtonRoutineArgumentSupported(
-        CreateVolumeButtonRoutineArguments args,
+        LegacyCreateVolumeButtonRoutineArguments args,
         RoutineSupportStatusInfoCallback callback);
 
     // Deprecated. Use `createRoutine` instead.

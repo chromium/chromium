@@ -475,16 +475,16 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
       async function canObserveOnRoutineFinishedWithMemoryDetail() {
         chrome.os.diagnostics.onRoutineFinished.addListener((event) => {
           chrome.test.assertEq(event, {
-            "has_passed": true,
+            "hasPassed": true,
             "detail": {
               "memory": {
                 "bytesTested": 500,
                 "result": {
-                  "failed_items": [
+                  "failedItems": [
                     "compare_and",
                     "compare_sub"
                   ],
-                  "passed_items": [
+                  "passedItems": [
                     "compare_div",
                     "compare_mul"
                   ]
@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
         chrome.os.diagnostics.onRoutineFinished.addListener(
           (event) => {
             chrome.test.assertEq(event, {
-              "has_passed": true,
+              "hasPassed": true,
               "uuid":"%s"
             });
 
@@ -588,12 +588,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
           chrome.test.assertEq(event, {
             "detail": {
               "fan": {
-                "passed_fan_ids": [0],
-                "failed_fan_ids": [1],
-                "fan_count_status": "matched"
+                "passedFanIds": [0],
+                "failedFanIds": [1],
+                "fanCountStatus": "matched"
               }
             },
-            "has_passed": true,
+            "hasPassed": true,
             "uuid":"%s"
           });
 

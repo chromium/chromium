@@ -99,7 +99,11 @@ cx_diag::LegacyMemoryRoutineFinishedInfo UncheckedConvertPtr(
   cx_diag::MemoryRoutineFinishedDetail detail =
       UncheckedConvertPtr(std::move(input));
   result.bytes_tested = std::move(detail.bytes_tested);
-  result.result = std::move(detail.result);
+  if (detail.result) {
+    result.result = cx_diag::LegacyMemtesterResult();
+    result.result->passed_items = std::move(detail.result->passed_items);
+    result.result->failed_items = std::move(detail.result->failed_items);
+  }
   return result;
 }
 
