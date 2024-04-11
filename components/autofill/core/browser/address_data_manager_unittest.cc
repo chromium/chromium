@@ -24,6 +24,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,13 +60,13 @@ class AddressDataManagerTest : public PersonalDataManagerTestBase,
     personal_data_.reset();
   }
 
-  void ResetPersonalDataManager() {
+  void ResetPersonalDataManager(bool use_sync_transport_mode = false) {
     if (personal_data_) {
       personal_data_->Shutdown();
     }
     personal_data_ = std::make_unique<PersonalDataManager>("EN", "US");
     PersonalDataManagerTestBase::ResetPersonalDataManager(
-        /*use_sync_transport_mode=*/false, personal_data_.get());
+        use_sync_transport_mode, personal_data_.get());
   }
 
   void AddProfileToPersonalDataManager(const AutofillProfile& profile) {
@@ -1080,6 +1081,30 @@ TEST_P(AddressDataManagerExplicitSigninTest,
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AddressDataManagerExplicitSigninTest);
+
+TEST_F(AddressDataManagerTest, AutofillSyncToggleAvailableInTransportMode) {
+  ResetPersonalDataManager(
+      /*use_sync_transport_mode=*/true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{syncer::
+                                kSyncEnableContactInfoDataTypeInTransportMode,
+                            ::switches::kExplicitBrowserSigninUIOnDesktop},
+      /*disabled_features=*/{});
+  const CoreAccountInfo& account = sync_service_.GetAccountInfo();
+  identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account.account_id, account.email, account.gaia,
+      /*hosted_domain=*/"", "Full Name", "Given Name",
+      personal_data_->app_locale(), /*picture_url=*/"");
+
+  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, true);
+  EXPECT_TRUE(
+      personal_data_->address_data_manager().IsAutofillSyncToggleAvailable());
+
+  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, false);
+  EXPECT_FALSE(
+      personal_data_->address_data_manager().IsAutofillSyncToggleAvailable());
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace

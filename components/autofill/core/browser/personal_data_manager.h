@@ -41,7 +41,6 @@
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/signatures.h"
@@ -418,11 +417,6 @@ class PersonalDataManager : public KeyedService,
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled);
   bool IsPaymentMethodsMandatoryReauthEnabled();
 
-  // Defines whether the Sync toggle on the Autofill Settings page is visible.
-  // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
-  // page for non-syncing users.
-  bool IsAutofillSyncToggleAvailable() const;
-
   // Used to automatically import addresses without a prompt. Should only be
   // set to true in tests.
   void set_auto_accept_address_imports_for_testing(bool auto_accept) {
@@ -503,9 +497,6 @@ class PersonalDataManager : public KeyedService,
 
   // The identity manager that this instance uses. Must outlive this instance.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
-
-  std::unique_ptr<ContactInfoPreconditionChecker>
-      contact_info_precondition_checker_;
 
   // The sync service this instances uses. Must outlive this instance.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;

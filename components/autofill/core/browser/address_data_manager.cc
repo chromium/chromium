@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -543,6 +544,22 @@ bool AddressDataManager::IsAutofillUserSelectableTypeEnabled() const {
   return sync_service_ != nullptr &&
          sync_service_->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kAutofill);
+}
+
+bool AddressDataManager::IsAutofillSyncToggleAvailable() const {
+  return sync_service_ && !sync_service_->GetAccountInfo().IsEmpty() &&
+         !sync_service_->HasSyncConsent() &&
+         !sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
+             syncer::UserSelectableType::kAutofill) &&
+         contact_info_precondition_checker_ &&
+         contact_info_precondition_checker_->GetPreconditionState() ==
+             syncer::ModelTypeController::PreconditionState::
+                 kPreconditionsMet &&
+         base::FeatureList::IsEnabled(
+             syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
+         ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+             ::switches::ExplicitBrowserSigninPhase::kFull) &&
+         pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
 }
 
 void AddressDataManager::SetAutofillSelectableTypeEnabled(bool enabled) {

@@ -326,7 +326,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
   EXPECT_TRUE(GetPersonalDataManager()
                   ->address_data_manager()
                   .IsEligibleForAddressAccountStorage());
-  EXPECT_TRUE(GetPersonalDataManager()->IsAutofillSyncToggleAvailable());
+  EXPECT_TRUE(GetPersonalDataManager()
+                  ->address_data_manager()
+                  .IsAutofillSyncToggleAvailable());
   GetPersonalDataManager()->AddProfile(kProfile);
   EXPECT_TRUE(PersonalDataManagerProfileChecker(GetPersonalDataManager(),
                                                 UnorderedElementsAre(kProfile))

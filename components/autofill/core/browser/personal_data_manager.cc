@@ -42,7 +42,6 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
-#include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -52,12 +51,9 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -158,7 +154,6 @@ void PersonalDataManager::Shutdown() {
   // before the dependent service's `Shutdown()`.
   address_data_cleaner_.reset();
   address_data_manager_.reset();
-  contact_info_precondition_checker_.reset();
 }
 
 void PersonalDataManager::OnHistoryDeletions(
@@ -453,21 +448,6 @@ bool PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
   return payments_data_manager_->IsPaymentMethodsMandatoryReauthEnabled();
 }
 
-bool PersonalDataManager::IsAutofillSyncToggleAvailable() const {
-  return sync_service_ && !sync_service_->GetAccountInfo().IsEmpty() &&
-         !sync_service_->HasSyncConsent() &&
-         !sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
-             syncer::UserSelectableType::kAutofill) &&
-         contact_info_precondition_checker_->GetPreconditionState() ==
-             syncer::ModelTypeController::PreconditionState::
-                 kPreconditionsMet &&
-         base::FeatureList::IsEnabled(
-             syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
-         ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-             ::switches::ExplicitBrowserSigninPhase::kFull) &&
-         pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
-}
-
 void PersonalDataManager::SetCreditCards(
     std::vector<CreditCard>* credit_cards) {
   payments_data_manager_->SetCreditCards(credit_cards);
@@ -482,12 +462,6 @@ void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
   // called a single time during construction).
   if (sync_service_) {
     sync_service_->AddObserver(this);
-    if (identity_manager_) {
-      contact_info_precondition_checker_ =
-          std::make_unique<ContactInfoPreconditionChecker>(
-              sync_service, identity_manager_,
-              /*on_precondition_changed=*/base::DoNothing());
-    }
   }
 
   // TODO(crbug.com/1497734): This call is believed no longer necessary here for

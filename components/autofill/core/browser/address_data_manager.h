@@ -236,6 +236,11 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns true if `syncer::UserSelectableType::kAutofill` is enabled.
   bool IsAutofillUserSelectableTypeEnabled() const;
 
+  // Defines whether the Sync toggle on the Autofill Settings page is visible.
+  // TODO(crbug.com/1502843): Remove when toggle becomes available on the Sync
+  // page for non-syncing users.
+  bool IsAutofillSyncToggleAvailable() const;
+
   // Sets the Sync UserSelectableType::kAutofill toggle value.
   // TODO(crbug.com/1502843): Used for the toggle on the Autofill Settings page
   // only. It controls syncing of autofill data stored in user accounts for

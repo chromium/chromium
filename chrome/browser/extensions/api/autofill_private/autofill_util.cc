@@ -267,7 +267,7 @@ std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
       personal_data.address_data_manager()
           .IsAutofillUserSelectableTypeEnabled();
   api_account.is_autofill_sync_toggle_available =
-      personal_data.IsAutofillSyncToggleAvailable();
+      personal_data.address_data_manager().IsAutofillSyncToggleAvailable();
   return std::move(api_account);
 }
 

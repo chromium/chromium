@@ -1304,7 +1304,8 @@ class DiceExplicitSigninBrowserTest : public InProcessBrowserTest {
     return {.autofill_sync_toggle_available =
                 autofill::PersonalDataManagerFactory::GetForProfile(
                     browser()->profile())
-                    ->IsAutofillSyncToggleAvailable(),
+                    ->address_data_manager()
+                    .IsAutofillSyncToggleAvailable(),
             .user_selectable_type_set = settings->GetSelectedTypes()};
   }
 

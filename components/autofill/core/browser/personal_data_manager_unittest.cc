@@ -4,69 +4,37 @@
 
 #include "components/autofill/core/browser/personal_data_manager.h"
 
-#include <stddef.h>
-
-#include <list>
-#include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/gmock_callback_support.h"
-#include "base/test/gtest_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "base/time/time.h"
-#include "base/uuid.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
-#include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_switches.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/account_managed_status_finder.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/base/user_selectable_type.h"
-#include "components/sync/test/test_sync_service.h"
-#include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
-class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
+class PersonalDataManagerTest : public PersonalDataManagerTestBase,
+                                public testing::Test {
  protected:
-  PersonalDataManagerHelper() = default;
+  PersonalDataManagerTest() = default;
 
-  virtual ~PersonalDataManagerHelper() {
+  ~PersonalDataManagerTest() override {
     if (personal_data_)
       personal_data_->Shutdown();
     personal_data_.reset();
   }
+
+  void SetUp() override {
+    SetUpTest();
+    ResetPersonalDataManager();
+  }
+  void TearDown() override { TearDownTest(); }
 
   void ResetPersonalDataManager(bool use_sync_transport_mode = false) {
     if (personal_data_)
@@ -83,28 +51,6 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
   std::unique_ptr<PersonalDataManager> personal_data_;
-};
-
-class PersonalDataManagerTest : public PersonalDataManagerHelper,
-                                public testing::Test {
- protected:
-  void SetUp() override {
-    SetUpTest();
-    ResetPersonalDataManager();
-  }
-  void TearDown() override { TearDownTest(); }
-};
-
-class PersonalDataManagerSyncTransportModeTest
-    : public PersonalDataManagerHelper,
-      public testing::Test {
- protected:
-  void SetUp() override {
-    SetUpTest();
-    ResetPersonalDataManager(
-        /*use_sync_transport_mode=*/true);
-  }
-  void TearDown() override { TearDownTest(); }
 };
 
 TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {
@@ -175,32 +121,6 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromVariations) {
   actual_country_code = personal_data_->GetDefaultCountryCodeForNewAddress();
   EXPECT_EQ(expected_country_code, actual_country_code);
 }
-
-// Sync Transport mode is only for Win, Mac, and Linux.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-TEST_F(PersonalDataManagerSyncTransportModeTest,
-       AutofillSyncToggleAvailableInTransportMode) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{syncer::
-                                kSyncEnableContactInfoDataTypeInTransportMode,
-                            ::switches::kExplicitBrowserSigninUIOnDesktop},
-      /*disabled_features=*/{});
-  const CoreAccountInfo& account = sync_service_.GetAccountInfo();
-  identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
-      /*hosted_domain=*/"", "Full Name", "Given Name",
-      personal_data_->app_locale(), /*picture_url=*/"");
-
-  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, true);
-  EXPECT_TRUE(personal_data_->IsAutofillSyncToggleAvailable());
-
-  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, false);
-  EXPECT_FALSE(personal_data_->IsAutofillSyncToggleAvailable());
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {
   // Make the IdentityManager return a non-empty AccountInfo when
