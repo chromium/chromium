@@ -431,8 +431,8 @@ static bool NeedsScrollOrScrollTranslation(
   if (!box.GetScrollableArea())
     return false;
 
-  gfx::PointF scroll_position = box.GetScrollableArea()->ScrollPosition();
-  return !scroll_position.IsOrigin() ||
+  ScrollOffset scroll_offset = box.GetScrollableArea()->GetScrollOffset();
+  return !scroll_offset.IsZero() ||
          box.NeedsScrollNode(direct_compositing_reasons);
 }
 

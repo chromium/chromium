@@ -505,23 +505,4 @@ TEST_P(PrePaintTreeWalkTest, InlineOutlineWithContinuationPaintInvalidation) {
   UpdateAllLifecyclePhasesForTest();
 }
 
-TEST_P(PrePaintTreeWalkTest, ScrollTranslationNodeForNonZeroScrollPosition) {
-  SetBodyInnerHTML(R"HTML(
-    <div id="div" style="overflow:hidden;max-width:5ch;direction:rtl">
-      loremipsumdolorsitamet
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  auto* object =
-      GetDocument().getElementById(AtomicString("div"))->GetLayoutObject();
-  ASSERT_EQ(
-      ScrollOffset(),
-      To<LayoutBoxModelObject>(object)->GetScrollableArea()->GetScrollOffset());
-  ASSERT_NE(
-      gfx::PointF(),
-      To<LayoutBoxModelObject>(object)->GetScrollableArea()->ScrollPosition());
-  EXPECT_TRUE(object->FirstFragment().PaintProperties()->ScrollTranslation());
-}
-
 }  // namespace blink
