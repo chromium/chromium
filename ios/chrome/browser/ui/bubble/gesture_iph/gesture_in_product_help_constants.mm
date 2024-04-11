@@ -17,3 +17,8 @@ NSString* const kGestureInProductHelpViewDismissButtonAXId =
 
 base::TimeDelta const kGestureInProductHelpViewAppearDuration =
     base::Milliseconds(250);
+
+base::TimeDelta const kDurationBetweenBidirectionalCycles =
+    base::Milliseconds(250);
+
+CGFloat const kGestureIndicatorRadius = 33.0f;

@@ -23,4 +23,12 @@ extern NSString* const kGestureInProductHelpViewDismissButtonAXId;
 // Time for the view to fade in/out from the screen.
 extern const base::TimeDelta kGestureInProductHelpViewAppearDuration;
 
+// Time after a cycle completes and before the next cycle in the opposite
+// direction begins; only used for bidirectional in-product help gesture views.
+extern const base::TimeDelta kDurationBetweenBidirectionalCycles;
+
+// The radius of the gesture indicator when it's animating the user's finger
+// movement.
+extern const CGFloat kGestureIndicatorRadius;
+
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_GESTURE_IPH_GESTURE_IN_PRODUCT_HELP_CONSTANTS_H_

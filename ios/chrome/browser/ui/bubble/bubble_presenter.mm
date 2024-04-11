@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view.h"
 #import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view_delegate.h"
+#import "ios/chrome/browser/ui/bubble/gesture_iph/toolbar_swipe_gesture_in_product_help_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -106,6 +107,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 @property(nonatomic, strong) GestureInProductHelpView* pullToRefreshGestureIPH;
 @property(nonatomic, strong)
     GestureInProductHelpView* swipeBackForwardGestureIPH;
+@property(nonatomic, strong)
+    ToolbarSwipeGestureInProductHelpView* toolbarSwipeGestureIPH;
 @property(nonatomic, assign) WebStateList* webStateList;
 @property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
 @property(nonatomic, assign) HostContentSettingsMap* settingsMap;
@@ -464,8 +467,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   // Do not present the new tab IPH on NTP.
   web::WebState* currentWebState = self.webStateList->GetActiveWebState();
-  if (!currentWebState ||
-      currentWebState->GetVisibleURL() == kChromeUINewTabURL) {
+  if (!currentWebState || IsUrlNtp(currentWebState->GetVisibleURL())) {
     return;
   }
 
@@ -622,7 +624,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
 
   web::WebState* currentWebState = self.webStateList->GetActiveWebState();
-  if (currentWebState->GetVisibleURL() == kChromeUINewTabURL) {
+  if (IsUrlNtp(currentWebState->GetVisibleURL())) {
     return;
   }
 
@@ -652,6 +654,79 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [self.swipeBackForwardGestureIPH startAnimation];
 }
 
+- (void)presentToolbarSwipeGestureInProductHelp {
+  // Inapplicable on iPad.
+  if (ui::GetDeviceFormFactor() !=
+          ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE ||
+      UIAccessibilityIsVoiceOverRunning() ||
+      (![self canPresentBubbleWithCheckTabScrolledToTop:NO])) {
+    return;
+  }
+  const base::Feature& feature =
+      feature_engagement::kIPHiOSSwipeToolbarToChangeTabFeature;
+  BOOL userEligible = IsFirstRunRecent(base::Days(60)) &&
+                      self.engagementTracker->WouldTriggerHelpUI(feature);
+  if (!userEligible) {
+    return;
+  }
+  web::WebState* currentWebState = self.webStateList->GetActiveWebState();
+  if (IsUrlNtp(currentWebState->GetVisibleURL())) {
+    return;
+  }
+  // Setup view constraints.
+  NamedGuide* contentAreaGuide =
+      [NamedGuide guideWithName:kContentAreaGuide
+                           view:self.rootViewController.view];
+  if (!contentAreaGuide) {
+    return;
+  }
+  UILayoutGuide* guide = [[UILayoutGuide alloc] init];
+  [self.rootViewController.view addLayoutGuide:guide];
+  AddSameConstraintsToSides(
+      guide, contentAreaGuide,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  NSLayoutConstraint* topConstraintForBottomEdgeSwipe = [guide.topAnchor
+      constraintEqualToAnchor:self.rootViewController.view.topAnchor];
+  NSLayoutConstraint* topConstraintForTopEdgeSwipe =
+      [guide.topAnchor constraintEqualToAnchor:contentAreaGuide.topAnchor];
+  NSLayoutConstraint* initialTopConstraint =
+      self.rootViewController.traitCollection.verticalSizeClass ==
+              UIUserInterfaceSizeClassRegular
+          ? topConstraintForBottomEdgeSwipe
+          : topConstraintForTopEdgeSwipe;
+  initialTopConstraint.active = YES;
+
+  // Check index to determine which directions are supported.
+  int activeIndex = self.webStateList->active_index();
+  // Configure IPH view.
+  ToolbarSwipeGestureInProductHelpView* toolbarSwipeGestureIPH =
+      [[ToolbarSwipeGestureInProductHelpView alloc]
+          initWithBubbleBoundingSize:guide.layoutFrame.size
+                           canGoBack:activeIndex > 0
+                             forward:activeIndex <
+                                     self.webStateList->count() - 1];
+  [toolbarSwipeGestureIPH setTranslatesAutoresizingMaskIntoConstraints:NO];
+  if (!CanGestureInProductHelpViewFitInGuide(toolbarSwipeGestureIPH, guide) ||
+      !self.engagementTracker->ShouldTriggerHelpUI(feature)) {
+    return;
+  }
+  toolbarSwipeGestureIPH.topConstraintForBottomEdgeSwipe =
+      topConstraintForBottomEdgeSwipe;
+  toolbarSwipeGestureIPH.topConstraintForTopEdgeSwipe =
+      topConstraintForTopEdgeSwipe;
+  [self.rootViewController.view addSubview:toolbarSwipeGestureIPH];
+  AddSameConstraints(toolbarSwipeGestureIPH, guide);
+
+  [toolbarSwipeGestureIPH startAnimation];
+  self.toolbarSwipeGestureIPH = toolbarSwipeGestureIPH;
+}
+
+- (void)handleToolbarSwipeGesture {
+  [self.toolbarSwipeGestureIPH
+      dismissWithReason:IPHDismissalReasonType::
+                            kSwipedAsInstructedByGestureIPH];
+}
+
 #pragma mark - GestureInProductHelpViewDelegate
 
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view
@@ -663,6 +738,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                 withSnooze:snoozeAction];
   } else if (view == self.swipeBackForwardGestureIPH) {
     [self featureDismissed:feature_engagement::kIPHiOSSwipeBackForwardFeature
+                withSnooze:snoozeAction];
+  } else if (view == self.toolbarSwipeGestureIPH) {
+    [self featureDismissed:feature_engagement::
+                               kIPHiOSSwipeToolbarToChangeTabFeature
                 withSnooze:snoozeAction];
   } else {
     NOTREACHED();
@@ -676,6 +755,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   } else if (view == self.swipeBackForwardGestureIPH) {
     [self.delegate bubblePresenter:self
         didPerformSwipeToNavigateInDirection:direction];
+  } else if (view == self.toolbarSwipeGestureIPH) {
+    // Do nothing. Swipe happens outside of the view.
   } else {
     NOTREACHED();
   }
@@ -745,6 +826,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     (IPHDismissalReasonType)reason {
   [self.pullToRefreshGestureIPH dismissWithReason:reason];
   [self.swipeBackForwardGestureIPH dismissWithReason:reason];
+  [self.toolbarSwipeGestureIPH dismissWithReason:reason];
 }
 
 #pragma mark - Private Utils

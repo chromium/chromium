@@ -6,9 +6,12 @@ source_set("gesture_iph") {
   sources = [
     "gesture_in_product_help_gesture_recognizer.h",
     "gesture_in_product_help_gesture_recognizer.mm",
+    "gesture_in_product_help_view+subclassing.h",
     "gesture_in_product_help_view.h",
     "gesture_in_product_help_view.mm",
     "gesture_in_product_help_view_delegate.h",
+    "toolbar_swipe_gesture_in_product_help_view.h",
+    "toolbar_swipe_gesture_in_product_help_view.mm",
   ]
   deps = [
     ":constants",

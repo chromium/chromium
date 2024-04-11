@@ -49,9 +49,18 @@
 // should be shown, then it initializes `backForwardSwipeGestureIPH` and
 // presents a GestureInProductHelpView, otherwise it sets
 // `backForwardSwipeGestureIPH` to `nil` and no gestural tip is shown.
-// TODO(crbug.com/1467873): Rewrite comment; the displayed IPH might NOT be a
-// GestureInProductHelpView.
 - (void)presentBackForwardSwipeGestureInProductHelp;
+
+// Optionally presents a full screen IPH associated with the swipe to navigate
+// back/forward feature. If the feature engagement tracker determines this tip
+// should be shown, then it initializes `toolbarSwipeGestureIPH` and
+// presents a GestureInProductHelpView, otherwise it sets
+// `toolbarSwipeGestureIPH` to `nil` and no gestural tip is shown.
+- (void)presentToolbarSwipeGestureInProductHelp;
+
+// Should be invoked when the user has performed a swipe on the toolbar to
+// switch tabs. Remove `toolbarSwipeGestureIPH` if visible.
+- (void)handleToolbarSwipeGesture;
 
 @end
 
