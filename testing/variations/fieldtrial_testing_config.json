@@ -19526,6 +19526,21 @@
             ]
         }
     ],
+    "UIPumpImprovementsWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UIPumpImprovementsWin"
+                    ]
+                }
+            ]
+        }
+    ],
     "UMA-NonUniformity-Trial-1-Percent": [
         {
             "platforms": [
