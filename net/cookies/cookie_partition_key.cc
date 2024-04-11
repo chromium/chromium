@@ -138,13 +138,11 @@ std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
     return std::nullopt;
   }
 
-  AncestorChainBit ancestor_chain_bit = [&]() -> AncestorChainBit {
-    if (nonce || site_for_cookies.IsNull()) {
-      return AncestorChainBit::kCrossSite;
-    }
-    return BoolToAncestorChainBit(
-        !site_for_cookies.IsFirstParty(request_site.GetURL()));
-  }();
+  const auto ancestor_chain_bit =
+      (nonce || site_for_cookies.IsNull())
+          ? AncestorChainBit::kCrossSite
+          : BoolToAncestorChainBit(
+                !site_for_cookies.IsFirstParty(request_site.GetURL()));
 
   return CookiePartitionKey(*partition_key_site, nonce, ancestor_chain_bit);
 }
