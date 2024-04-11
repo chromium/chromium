@@ -207,6 +207,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     // width of a group changing without a tab moving. This means a rebuild won't
                     // occur, and we'll need to manually update the bottom indicator here.
                     if (!mInReorderMode) {
+                        finishAnimations();
                         buildBottomIndicator();
                         mRenderHost.requestRender();
                     }
@@ -225,7 +226,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     // Removing the tab at the end of a group through the GTS will result in the
                     // width of a group changing without a tab moving. This means a rebuild won't
                     // occur, and we'll need to manually update the bottom indicator here.
-                    if (!mInReorderMode) {
+                    if (!mInReorderMode
+                            || mTabGroupModelFilter.getTabGroupCount()
+                                    != mStripGroupTitles.length) {
+                        finishAnimations();
                         buildBottomIndicator();
                         mRenderHost.requestRender();
                     }
@@ -275,6 +279,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     mLayerTitleCache.getUpdatedGroupTitle(
                             rootId, groupTitle.getTitle(), mIncognito);
                     mRenderHost.requestRender();
+                }
+
+                @Override
+                public void didChangeGroupRootId(int oldRootId, int newRootId) {
+                    StripLayoutGroupTitle groupTitle = findGroupTitle(oldRootId);
+                    if (groupTitle != null) groupTitle.updateRootId(newRootId);
                 }
             };
 
