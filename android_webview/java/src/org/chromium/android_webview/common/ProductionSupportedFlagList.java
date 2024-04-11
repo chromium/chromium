@@ -660,6 +660,10 @@ public final class ProductionSupportedFlagList {
                         + " change."),
         Flag.baseFeature("MojoIpcz"),
         Flag.baseFeature(
+                "FixDataPipeTrapBug",
+                "Used to disable a specific bug fix for a long-standing bug that may"
+                        + " have affected performance. Brief experiment for data collection"),
+        Flag.baseFeature(
                 TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
                 "When enabled, WebView exports trace events to the Android Perfetto service."
                         + " This works only for Android Q+."),

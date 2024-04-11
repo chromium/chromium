@@ -7867,6 +7867,25 @@
             ]
         }
     ],
+    "FixDataPipeTrapBug": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "FixDataPipeTrapBug"
+                    ]
+                }
+            ]
+        }
+    ],
     "FixInputQueueingBug": [
         {
             "platforms": [

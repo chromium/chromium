@@ -2375,7 +2375,10 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(StressTestRacyTrapsClient, DataPipeTest, h) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
-TEST_F(DataPipeTest, StressTestRacyTraps) {
+// Temporarily disabled during experimentation with suppression of this fix for
+// metrics collection only. Re-enable once the experiment is done.
+// See https://crbug.com/41494387.
+TEST_F(DataPipeTest, DISABLED_StressTestRacyTraps) {
   // Regression test for https://crbug.com/1468933. This bug was caused by a
   // race between trap arming and internal data pipe flushes which could result
   // in a data pipe trap appearing to be armed (and thus never re-arming) while
