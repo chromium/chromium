@@ -25,6 +25,7 @@
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/check.h"
@@ -33,6 +34,7 @@
 #include "chromeos/ui/frame/frame_header.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/types/event_type.h"
@@ -42,6 +44,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
 
@@ -286,6 +289,9 @@ bool GameDashboardContext::ToggleToolbar() {
         game_window_, "GameDashboardToolbar", std::move(view));
     DCHECK_EQ(game_window_,
               wm::GetTransientParent(toolbar_widget_->GetNativeWindow()));
+    toolbar_widget_->widget_delegate()->SetAccessibleTitle(
+        l10n_util::GetStringUTF16(
+            IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE));
     MaybeUpdateToolbarWidgetBounds();
 
     toolbar_widget_->ShowInactive();
