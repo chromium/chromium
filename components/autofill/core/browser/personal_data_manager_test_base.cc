@@ -102,25 +102,7 @@ void PersonalDataManagerTestBase::ResetPersonalDataManager(
       /*history_service=*/nullptr, &sync_service_, strike_database_.get(),
       /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr);
   personal_data->AddObserver(&personal_data_observer_);
-  personal_data->OnStateChanged(&sync_service_);
   std::move(waiter).Wait();
-}
-
-[[nodiscard]] bool PersonalDataManagerTestBase::TurnOnSyncFeature(
-    PersonalDataManager* personal_data) {
-  sync_service_.SetHasSyncConsent(true);
-  if (!sync_service_.IsSyncFeatureEnabled()) {
-    return false;
-  }
-  personal_data->OnStateChanged(&sync_service_);
-
-  return personal_data->payments_data_manager()
-      .IsSyncFeatureEnabledForPaymentsServerMetrics();
-}
-
-void PersonalDataManagerTestBase::SetServerCards(
-    std::vector<CreditCard> server_cards) {
-  test::SetServerCreditCards(account_autofill_table_, server_cards);
 }
 
 }  // namespace autofill

@@ -63,8 +63,7 @@ class SaveUpdateAddressProfilePromptControllerTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    sync_service_ = std::make_unique<syncer::TestSyncService>();
-    test_personal_data_.SetSyncServiceForTest(sync_service_.get());
+    test_personal_data_.SetSyncServiceForTest(&sync_service_);
 
     profile_ = test::GetFullProfile();
     original_profile_ = test::GetFullProfile();
@@ -98,8 +97,8 @@ class SaveUpdateAddressProfilePromptControllerTest
   std::string GetLocale() { return "en-US"; }
 
   signin::IdentityTestEnvironment identity_test_env_;
+  syncer::TestSyncService sync_service_;
   autofill::TestPersonalDataManager test_personal_data_;
-  std::unique_ptr<syncer::TestSyncService> sync_service_;
   raw_ptr<MockSaveUpdateAddressProfilePromptView> prompt_view_ = nullptr;
   AutofillProfile profile_{
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
@@ -275,7 +274,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ReturnsCorrectStringsToDisplayWhenMigrateLocalAddress) {
-  sync_service_->GetUserSettings()->SetSelectedTypes(
+  sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPasswords});
   SigninUser();
@@ -306,7 +305,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ReturnsCorrectStringsToDisplayWhenMigrateSyncAddress) {
-  sync_service_->GetUserSettings()->SetSelectedTypes(
+  sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kAutofill});
   SigninUser();

@@ -132,7 +132,13 @@ class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
   bool TurnOnSyncFeature() {
-    return PersonalDataManagerTestBase::TurnOnSyncFeature(personal_data_.get());
+    sync_service_.SetHasSyncConsent(true);
+    if (!sync_service_.IsSyncFeatureEnabled()) {
+      return false;
+    }
+    payments_data_manager().OnStateChanged(&sync_service_);
+    return payments_data_manager()
+        .IsSyncFeatureEnabledForPaymentsServerMetrics();
   }
 
   // Adds three local cards to the |personal_data_|. The three cards are
@@ -1490,7 +1496,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, SwitchServerStorages) {
 
   // Switch to persistent storage.
   sync_service_.SetHasSyncConsent(true);
-  personal_data_->OnStateChanged(&sync_service_);
+  payments_data_manager().OnStateChanged(&sync_service_);
   PersonalDataChangedWaiter(*personal_data_).Wait();
 
   EXPECT_EQ(0U, personal_data_->GetServerCreditCards().size());
@@ -1511,7 +1517,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, SwitchServerStorages) {
   // Switch back to the account storage, and verify that we are back to the
   // original card.
   sync_service_.SetHasSyncConsent(false);
-  personal_data_->OnStateChanged(&sync_service_);
+  payments_data_manager().OnStateChanged(&sync_service_);
   PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ASSERT_EQ(1U, personal_data_->GetServerCreditCards().size());

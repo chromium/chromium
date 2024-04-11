@@ -292,6 +292,9 @@ PaymentsDataManager::PaymentsDataManager(
       }
     }
   }
+  if (sync_service_) {
+    sync_observer_.Observe(sync_service_);
+  }
 }
 
 PaymentsDataManager::~PaymentsDataManager() {
@@ -447,6 +450,19 @@ bool PaymentsDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics() const {
   // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   return sync_service_ && sync_service_->IsSyncFeatureEnabled();
+}
+
+void PaymentsDataManager::OnStateChanged(syncer::SyncService* sync_service) {
+  DCHECK_EQ(sync_service_, sync_service);
+
+  // Use the ephemeral account storage when the user didn't enable the sync
+  // feature explicitly. `sync_service` is nullptr-checked because this
+  // method can also be used (apart from the Sync service observer's calls) in
+  // SetSyncService() where setting a nullptr is possible.
+  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
+  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
+  database_helper_->SetUseAccountStorageForServerData(
+      sync_service && !sync_service->IsSyncFeatureEnabled());
 }
 
 void PaymentsDataManager::Refresh() {
@@ -1601,10 +1617,6 @@ scoped_refptr<AutofillWebDataService> PaymentsDataManager::GetLocalDatabase() {
 scoped_refptr<AutofillWebDataService> PaymentsDataManager::GetServerDatabase() {
   return database_helper_->GetServerDatabase();
 }
-void PaymentsDataManager::SetUseAccountStorageForServerData(
-    bool use_account_storage) {
-  database_helper_->SetUseAccountStorageForServerData(use_account_storage);
-}
 bool PaymentsDataManager::IsUsingAccountStorageForServerData() {
   return database_helper_->IsUsingAccountStorageForServerData();
 }
@@ -1802,6 +1814,15 @@ void PaymentsDataManager::LogServerCardLinkClicked() const {
 void PaymentsDataManager::LogServerIbanLinkClicked() const {
   autofill_metrics::LogServerIbanLinkClicked(
       GetPaymentsSigninStateForMetrics());
+}
+
+void PaymentsDataManager::SetSyncServiceForTest(
+    syncer::SyncService* sync_service) {
+  sync_service_ = sync_service;
+  sync_observer_.Reset();
+  if (sync_service_) {
+    sync_observer_.Observe(sync_service_);
+  }
 }
 
 void PaymentsDataManager::AddMaskedBankAccountForTest(

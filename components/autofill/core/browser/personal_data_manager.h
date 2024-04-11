@@ -51,7 +51,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/service/sync_service_observer.h"
 
 class Profile;
 class PrefService;
@@ -115,7 +114,6 @@ class PersonalDataManagerObserver;
 // incorrectly get rejected by the PDM.
 class PersonalDataManager : public KeyedService,
                             public history::HistoryServiceObserver,
-                            public syncer::SyncServiceObserver,
                             public signin::IdentityManager::Observer {
  public:
   using ProfileOrder = AddressDataManager::ProfileOrder;
@@ -171,9 +169,6 @@ class PersonalDataManager : public KeyedService,
   // history::HistoryServiceObserver
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
-
-  // SyncServiceObserver:
-  void OnStateChanged(syncer::SyncService* sync) override;
 
   // signin::IdentityManager::Observer:
   void OnAccountsCookieDeletedByUserAction() override;

@@ -29,6 +29,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -49,7 +50,8 @@ class TestPersonalDataManager;
 
 class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
                             public WebDataServiceConsumer,
-                            public AccountInfoGetter {
+                            public AccountInfoGetter,
+                            public syncer::SyncServiceObserver {
  public:
   PaymentsDataManager(
       scoped_refptr<AutofillWebDataService> profile_database,
@@ -77,6 +79,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // AccountInfoGetter:
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
+
+  // SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync) override;
 
   // Reloads all payments data from the database.
   void Refresh();
@@ -377,7 +382,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // TODO(b/322170538): Remove.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
   scoped_refptr<AutofillWebDataService> GetServerDatabase();
-  void SetUseAccountStorageForServerData(bool use_account_storage);
   bool IsUsingAccountStorageForServerData();
 
   // Cancels any pending queries to the server web database.
@@ -391,9 +395,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // about the current sync state.
   void LogServerIbanLinkClicked() const;
 
-  void SetSyncServiceForTest(syncer::SyncService* sync_service) {
-    sync_service_ = sync_service;
-  }
+  void SetSyncServiceForTest(syncer::SyncService* sync_service);
   void SetSyncingForTest(bool is_syncing_for_test) {
     is_syncing_for_test_ = is_syncing_for_test;
   }
@@ -564,6 +566,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // The sync service this instance uses. Must outlive this instance.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_observer_{this};
 
   // The identity manager that this instance uses. Must outlive this instance.
   const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;

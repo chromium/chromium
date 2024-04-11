@@ -37,10 +37,6 @@ class PersonalDataManagerTestBase {
   void ResetPersonalDataManager(bool use_sync_transport_mode,
                                 PersonalDataManager* personal_data);
 
-  [[nodiscard]] bool TurnOnSyncFeature(PersonalDataManager* personal_data);
-
-  void SetServerCards(std::vector<CreditCard> server_cards);
-
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PrefService> prefs_;
   network::TestURLLoaderFactory test_url_loader_factory_;

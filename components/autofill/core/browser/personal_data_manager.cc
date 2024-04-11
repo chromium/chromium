@@ -138,8 +138,6 @@ void PersonalDataManager::Init(
 PersonalDataManager::~PersonalDataManager() = default;
 
 void PersonalDataManager::Shutdown() {
-  if (sync_service_)
-    sync_service_->RemoveObserver(this);
   sync_service_ = nullptr;
 
   if (history_service_)
@@ -154,6 +152,7 @@ void PersonalDataManager::Shutdown() {
   // before the dependent service's `Shutdown()`.
   address_data_cleaner_.reset();
   address_data_manager_.reset();
+  payments_data_manager_.reset();
 }
 
 void PersonalDataManager::OnHistoryDeletions(
@@ -163,19 +162,6 @@ void PersonalDataManager::OnHistoryDeletions(
     AutofillCrowdsourcingManager::ClearUploadHistory(pref_service_);
   }
   address_data_manager_->OnHistoryDeletions(deletion_info);
-}
-
-void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
-  DCHECK_EQ(sync_service_, sync_service);
-
-  // Use the ephemeral account storage when the user didn't enable the sync
-  // feature explicitly. `sync_service` is nullptr-checked because this
-  // method can also be used (apart from the Sync service observer's calls) in
-  // SetSyncService() where setting a nullptr is possible.
-  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
-  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
-  payments_data_manager_->SetUseAccountStorageForServerData(
-      sync_service && !sync_service->IsSyncFeatureEnabled());
 }
 
 void PersonalDataManager::OnAccountsCookieDeletedByUserAction() {
@@ -272,11 +258,7 @@ bool PersonalDataManager::IsUsingAccountStorageForServerDataForTest() const {
 
 void PersonalDataManager::SetSyncServiceForTest(
     syncer::SyncService* sync_service) {
-  // Before the sync service pointer gets changed, remove the observer.
-  if (sync_service_) {
-    sync_service_->RemoveObserver(this);
-    sync_service_ = nullptr;
-  }
+  sync_service_ = nullptr;
   address_data_manager_->SetSyncServiceForTest(sync_service);   // IN-TEST
   payments_data_manager_->SetSyncServiceForTest(sync_service);  // IN-TEST
   SetSyncService(sync_service);
@@ -447,14 +429,11 @@ void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
   // `address_data_manager_` and `payments_data_manager_` were already
   // initialised with the correct `sync_service` (`SetSyncService()` is only
   // called a single time during construction).
-  if (sync_service_) {
-    sync_service_->AddObserver(this);
-  }
 
   // TODO(crbug.com/1497734): This call is believed no longer necessary here for
   // production (as we no longer re-mask cards in this method), but tests may
   // depend on it still. Investigate and remove if possible.
-  OnStateChanged(sync_service_);
+  payments_data_manager_->OnStateChanged(sync_service_);
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {

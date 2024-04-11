@@ -246,9 +246,6 @@ TEST_F(AddressDataManagerTest, GetProfiles_Order) {
 // Test that profiles are not shown if |kAutofillProfileEnabled| is set to
 // |false|.
 TEST_F(AddressDataManagerTest, GetProfilesToSuggest_ProfileAutofillDisabled) {
-  const std::string kServerAddressId("server_address1");
-  ASSERT_TRUE(TurnOnSyncFeature(personal_data_.get()));
-
   // Add two different profiles, a local and a server one.
   AutofillProfile local_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -272,9 +269,6 @@ TEST_F(AddressDataManagerTest, GetProfilesToSuggest_ProfileAutofillDisabled) {
 // |kAutofillProfileEnabled| is set to |false|.
 TEST_F(AddressDataManagerTest,
        GetProfilesToSuggest_NoProfilesLoadedIfDisabled) {
-  const std::string kServerAddressId("server_address1");
-  ASSERT_TRUE(TurnOnSyncFeature(personal_data_.get()));
-
   // Add two different profiles, a local and a server one.
   AutofillProfile local_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
