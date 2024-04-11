@@ -3690,6 +3690,65 @@ TEST_F(SnapGroupTest,
       SnapGroupController::Get()->AreWindowsInSnapGroup(w0.get(), w1.get()));
 }
 
+// Test: Dragging an `OverviewGroupItem` between desk containers (both
+// containing `OverviewGroupItem`)
+//  - Verify that an `OverviewGroupItem` can be dragged from one desk container
+//  to another when both containers already have `OverviewGroupItem` present.
+//  - Ensure no crashes occur during the process.
+//  - Confirm that the OverviewGroupItem is reparented to the new desk
+//  container.
+// See http://b/333613078 for more details about the crash.
+TEST_F(SnapGroupTest, DragOverviewGroupItemToAnotherDeskWithSnapGroup) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow(gfx::Rect(0, 0, 300, 300)));
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindow(gfx::Rect(500, 20, 200, 200)));
+  SnapTwoTestWindows(w0.get(), w1.get());
+  ASSERT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+
+  ActivateDesk(desk1);
+  std::unique_ptr<aura::Window> w2(CreateAppWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> w3(
+      CreateAppWindow(gfx::Rect(200, 20, 100, 200)));
+  SnapTwoTestWindows(w2.get(), w3.get());
+  ASSERT_EQ(desks_util::GetDeskForContext(w2.get()), desk1);
+  ASSERT_EQ(desks_util::GetDeskForContext(w3.get()), desk1);
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+  const auto& mini_views = desks_bar_view->mini_views();
+  ASSERT_EQ(mini_views.size(), 2u);
+
+  // Test that both windows contained in the overview group item will be moved
+  // to the `desk0` and no crash on activating `desk0`.
+  DragGroupItemToPoint(
+      overview_controller->overview_session()->GetOverviewItemForWindow(
+          w3.get()),
+      mini_views[0]->GetBoundsInScreen().CenterPoint(), GetEventGenerator(),
+      /*by_touch_gestures=*/false,
+      /*drop=*/true);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_EQ(desks_util::GetDeskForContext(w2.get()), desk0);
+  EXPECT_EQ(desks_util::GetDeskForContext(w3.get()), desk0);
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w0.get(), w1.get()));
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w2.get(), w3.get()));
+  ActivateDesk(desk0);
+}
+
 // Tests that the hit area of the snap group divider can be outside of its
 // bounds with the extra insets whose value is `kSplitViewDividerExtraInset`.
 TEST_F(SnapGroupTest, SnapGroupDividerEnlargedHitArea) {
