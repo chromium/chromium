@@ -153,6 +153,16 @@ chromium-metrics-reviews@google.com.
   <summary>The status of the push notifications client for Content.</summary>
 </histogram>
 
+<histogram name="ContentNotifications.OpenURLAction.HasURL" enum="Boolean"
+    expires_after="2024-10-10">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    After a notification interaction, if the URL has successfully been parsed or
+    if it has failed.
+  </summary>
+</histogram>
+
 <histogram name="ContentNotifications.Promo.Prompt.Action"
     enum="ContentNotificationPromptAction" expires_after="2024-06-20">
   <owner>tinazwang@chromium.org</owner>

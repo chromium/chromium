@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/content_notification/model/content_notification_client.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
@@ -33,6 +34,13 @@ void ContentNotificationClient::HandleNotificationInteraction(
                                        PushNotificationClientId::kContent);
   } else {
     const GURL& url = contentNotificationService->GetDestinationUrl(payload);
+    if (url.is_empty()) {
+      base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
+                                false);
+      loadUrlInNewTab(GURL("chrome://newtab"));
+    }
+    base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
+                              true);
     loadUrlInNewTab(url);
   }
 }
