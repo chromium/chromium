@@ -38,8 +38,6 @@
 
   #content {
     border-radius: var(--cr-card-border-radius);
-    display: flex;
-    flex: none;
     margin: 6px auto;
     min-height: 103px;
     width: var(--downloads-card-width);
@@ -48,6 +46,11 @@
 
   #content.is-active {
     box-shadow: var(--cr-card-shadow);
+  }
+
+  #main-content {
+    display: flex;
+    flex: none;
   }
 
   @media (prefers-color-scheme: light) {
@@ -104,6 +107,11 @@
     #content:not(.is-active) :-webkit-any(#name, #tag) {
       color: var(--google-grey-500);
     }
+  }
+
+  .item-tray {
+    flex: none;
+    width: var(--downloads-card-width);
   }
 
   .icon-wrapper {
@@ -310,169 +318,153 @@
 <div id="content" on-dragstart="onDragStart_"
     class$="[[computeClass_(isActive_, isDangerous_, showProgress_)]]"
     focus-row-container>
-  <div id="file-icon-wrapper" class="icon-wrapper" role="img"
-      aria-label="[[iconAriaLabel_]]"
-      aria-hidden="[[computeIconAriaHidden_(iconAriaLabel_)]]">
-    <img class="icon" id="file-icon" alt="" hidden="[[!useFileIcon_]]"
-        icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
-        useFileIcon_, improvedDownloadWarningsUx_,
-        displayType_)]]">
-    <iron-icon class="icon" hidden="[[useFileIcon_]]"
-        icon$="[[computeIcon_(isDangerous_, data.dangerType, useFileIcon_,
-            improvedDownloadWarningsUx_, displayType_)]]"
-        icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
-            useFileIcon_, improvedDownloadWarningsUx_,
-            displayType_)]]"></iron-icon>
-  </div>
-
-  <div id="details">
-    <div id="title-area" role="gridcell"><!--
-      Can't have any line breaks.
-      --><a is="action-link" id="file-link" href="[[data.url.url]]"
-          on-click="onFileLinkClick_" focus-row-control
-          focus-type="fileLink"
-          hidden="[[!shouldLinkFilename_]]">[[data.fileName]]</a><!--
-      Before #name.
-      --><span id="name"
-          hidden="[[shouldLinkFilename_]]">[[data.fileName]]</span>
-      <span id="tag">[[computeTag_(data.state,
-                                   data.lastReasonText,
-                                   data.fileExternallyRemoved)]]</span>
+  <div id="main-content">
+    <div id="file-icon-wrapper" class="icon-wrapper" role="img"
+        aria-label="[[iconAriaLabel_]]"
+        aria-hidden="[[computeIconAriaHidden_(iconAriaLabel_)]]">
+      <img class="icon" id="file-icon" alt="" hidden="[[!useFileIcon_]]"
+          icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
+          useFileIcon_, improvedDownloadWarningsUx_,
+          displayType_)]]">
+      <iron-icon class="icon" hidden="[[useFileIcon_]]"
+          icon$="[[computeIcon_(isDangerous_, data.dangerType, useFileIcon_,
+              improvedDownloadWarningsUx_, displayType_)]]"
+          icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
+              useFileIcon_, improvedDownloadWarningsUx_,
+              displayType_)]]"></iron-icon>
     </div>
 
-    <div role="gridcell">
-      <a id="url" target="_blank" on-click="onUrlClick_" focus-row-control
-          focus-type="url">[[getDisplayUrlStr_(data.displayUrl)]]</a>
-    </div>
+    <div id="details">
+      <div id="title-area" role="gridcell"><!--
+        Can't have any line breaks.
+        --><a is="action-link" id="file-link" href="[[data.url.url]]"
+            on-click="onFileLinkClick_" focus-row-control
+            focus-type="fileLink"
+            hidden="[[!shouldLinkFilename_]]">[[data.fileName]]</a><!--
+        Before #name.
+        --><span id="name"
+            hidden="[[shouldLinkFilename_]]">[[data.fileName]]</span>
+        <span id="tag">[[computeTag_(data.state,
+                                    data.lastReasonText,
+                                    data.fileExternallyRemoved)]]</span>
+      </div>
 
-    <div class="description" role="gridcell"
-        description-color$="[[iconAndDescriptionColor_(displayType_,
-            improvedDownloadWarningsUx_)]]"
-        hidden$="[[!computeDescriptionVisible_(data.*, displayType_,
-            improvedDownloadWarningsUx_)]]">
-      [[computeDescription_(
-          data.state,
-          data.dangerType,
-          data.fileName,
-          data.progressStatusText,
-          displayType_,
-          improvedDownloadWarningsUx_)]]
-    </div>
-
-    <div class="description" role="gridcell"
-        hidden="[[!computeSecondLineVisible_(data.state)]]">
-      $i18n{asyncScanningDownloadDescSecond}
-    </div>
-
-    <template is="dom-if" if="[[showProgress_]]">
       <div role="gridcell">
-        <paper-progress id="progress"
-            indeterminate="[[isIndeterminate_(data.percent)]]"
-            value="[[data.percent]]">
-        </paper-progress>
+        <a id="url" target="_blank" on-click="onUrlClick_" focus-row-control
+            focus-type="url">[[getDisplayUrlStr_(data.displayUrl)]]</a>
       </div>
-    </template>
 
-    <!-- Show most of the safe control buttons in the old UX only. -->
-    <template is="dom-if" if="[[!improvedDownloadWarningsUx_]]">
-      <div id="safe" class="controls" hidden="[[isDangerous_]]">
-        <span role="gridcell" hidden="[[!hasShowInFolderLink_]]">
-          <a is="action-link" id="show" on-click="onShowClick_"
-              focus-row-control
-              focus-type="show"
-              title="[[data.filePath]]">
-            [[data.showInFolderText]]
-          </a>
-        </span>
-        <template is="dom-if" if="[[data.retry]]">
-          <span role="gridcell">
-            <cr-button class="action-button" on-click="onRetryClick_"
-                focus-row-control focus-type="retry">
-              $i18n{controlRetry}
-            </cr-button>
-          </span>
-        </template>
-        <template is="dom-if" if="[[pauseOrResumeText_]]">
-          <span role="gridcell">
-            <cr-button on-click="onPauseOrResumeClick_" id="pauseOrResume"
-                focus-row-control focus-type="pauseOrResume">
-              [[pauseOrResumeText_]]
-            </cr-button>
-          </span>
-        </template>
-        <template is="dom-if" if="[[showDeepScan_]]" restamp>
-          <span role="gridcell">
-            <cr-button on-click="onDeepScanClick_" id="deepScan"
-                      class="action-button" focus-row-control focus-type="open">
-              [[computeDeepScanControlText_(data.state)]]
-            </cr-button>
-          </span>
-          <span role="gridcell">
-            <cr-button on-click="onBypassDeepScanClick_" id="bypassDeepScan"
-                      focus-row-control focus-type="open">
-              $i18n{controlBypassDeepScan}
-            </cr-button>
-          </span>
-        </template>
-        <template is="dom-if" if="[[showCancel_]]">
-          <span role="gridcell">
-            <cr-button on-click="onCancelClick_" focus-row-control
-                focus-type="cancel">
-              $i18n{controlCancel}
-            </cr-button>
-          </span>
-        </template>
-        <template is="dom-if" if="[[showOpenAnyway_]]">
-          <span role="gridcell">
-            <cr-button on-click="onOpenAnywayClick_" id="openAnyway"
-                focus-row-control focus-type="open">
-              $i18n{controlOpenAnyway}
-            </cr-button>
-          </span>
-        </template>
+      <div class="description" role="gridcell"
+          description-color$="[[iconAndDescriptionColor_(displayType_,
+              improvedDownloadWarningsUx_)]]"
+          hidden$="[[!computeDescriptionVisible_(data.*, displayType_,
+              improvedDownloadWarningsUx_)]]">
+        [[computeDescription_(
+            data.state,
+            data.dangerType,
+            data.fileName,
+            data.progressStatusText,
+            displayType_,
+            improvedDownloadWarningsUx_)]]
       </div>
-    </template>
-    <!-- Only this button should appear for improvedDownloadWarningsUx. -->
-    <template is="dom-if" if="[[improvedDownloadWarningsUx_]]">
-      <div id="safe" class="controls" hidden="[[isDangerous_]]">
-        <template is="dom-if" if="[[showDeepScan_]]" restamp>
-          <span role="gridcell">
-            <cr-button on-click="onDeepScanClick_" id="deepScan"
-                      class="action-button" focus-row-control focus-type="open">
-              [[computeDeepScanControlText_(data.state)]]
-            </cr-button>
-          </span>
-        </template>
+
+      <div class="description" role="gridcell"
+          hidden="[[!computeSecondLineVisible_(data.state)]]">
+        $i18n{asyncScanningDownloadDescSecond}
       </div>
-    </template>
-    <div id="controlled-by" hidden="[[isDangerous_]]"><!--
-      Text populated dynamically.
-    --></div>
 
-    <!-- Show the dangerous control buttons in the old UX only. -->
-    <template is="dom-if"
-        if="[[computeShowButtonsForDangerous_(isDangerous_, improvedDownloadWarningsUx_)]]">
-      <div id="dangerous" class="controls">
-        <!-- Files that enterprise policies allow to be reviewed. -->
-        <template is="dom-if" if="[[isReviewable_]]">
-          <span role="gridcell">
-            <cr-button on-click="onDiscardDangerousClick_"
-                class="action-button" focus-row-control
-                focus-type="discard">
-              $i18n{dangerDiscard}
-            </cr-button>
-          </span>
-          <span role="gridcell">
-            <cr-button on-click="onReviewDangerousClick_" focus-row-control
-                focus-type="save">
-              $i18n{dangerReview}
-            </cr-button>
-          </span>
-        </template>
+      <template is="dom-if" if="[[showProgress_]]">
+        <div role="gridcell">
+          <paper-progress id="progress"
+              indeterminate="[[isIndeterminate_(data.percent)]]"
+              value="[[data.percent]]">
+          </paper-progress>
+        </div>
+      </template>
 
-        <template is="dom-if" if="[[!isReviewable_]]">
-          <!-- Dangerous file types (e.g. .exe, .jar). -->
-          <template is="dom-if" if="[[!isMalware_]]">
+      <!-- Show most of the safe control buttons in the old UX only. -->
+      <template is="dom-if" if="[[!improvedDownloadWarningsUx_]]">
+        <div id="safe" class="controls" hidden="[[isDangerous_]]">
+          <span role="gridcell" hidden="[[!hasShowInFolderLink_]]">
+            <a is="action-link" id="show" on-click="onShowClick_"
+                focus-row-control
+                focus-type="show"
+                title="[[data.filePath]]">
+              [[data.showInFolderText]]
+            </a>
+          </span>
+          <template is="dom-if" if="[[data.retry]]">
+            <span role="gridcell">
+              <cr-button class="action-button" on-click="onRetryClick_"
+                  focus-row-control focus-type="retry">
+                $i18n{controlRetry}
+              </cr-button>
+            </span>
+          </template>
+          <template is="dom-if" if="[[pauseOrResumeText_]]">
+            <span role="gridcell">
+              <cr-button on-click="onPauseOrResumeClick_" id="pauseOrResume"
+                  focus-row-control focus-type="pauseOrResume">
+                [[pauseOrResumeText_]]
+              </cr-button>
+            </span>
+          </template>
+          <template is="dom-if" if="[[showDeepScan_]]" restamp>
+            <span role="gridcell">
+              <cr-button on-click="onDeepScanClick_" id="deepScan" 
+                  class="action-button" focus-row-control focus-type="open">
+                [[computeDeepScanControlText_(data.state)]]
+              </cr-button>
+            </span>
+            <span role="gridcell">
+              <cr-button on-click="onBypassDeepScanClick_" id="bypassDeepScan"
+                        focus-row-control focus-type="open">
+                $i18n{controlBypassDeepScan}
+              </cr-button>
+            </span>
+          </template>
+          <template is="dom-if" if="[[showCancel_]]">
+            <span role="gridcell">
+              <cr-button on-click="onCancelClick_" focus-row-control
+                  focus-type="cancel">
+                $i18n{controlCancel}
+              </cr-button>
+            </span>
+          </template>
+          <template is="dom-if" if="[[showOpenAnyway_]]">
+            <span role="gridcell">
+              <cr-button on-click="onOpenAnywayClick_" id="openAnyway"
+                  focus-row-control focus-type="open">
+                $i18n{controlOpenAnyway}
+              </cr-button>
+            </span>
+          </template>
+        </div>
+      </template>
+      <!-- Only this button should appear for improvedDownloadWarningsUx. -->
+      <template is="dom-if" if="[[improvedDownloadWarningsUx_]]">
+        <div id="safe" class="controls" hidden="[[isDangerous_]]">
+          <template is="dom-if" if="[[showDeepScan_]]" restamp>
+            <span role="gridcell">
+              <cr-button on-click="onDeepScanClick_" id="deepScan" 
+                  class="action-button" focus-row-control focus-type="open">
+                [[computeDeepScanControlText_(data.state)]]
+              </cr-button>
+            </span>
+          </template>
+        </div>
+      </template>
+      <div id="controlled-by" hidden="[[isDangerous_]]"><!--
+        Text populated dynamically.
+      --></div>
+
+      <!-- Show the dangerous control buttons in the old UX only. -->
+      <template is="dom-if"
+          if="[[computeShowButtonsForDangerous_(isDangerous_, 
+              improvedDownloadWarningsUx_)]]">
+        <div id="dangerous" class="controls">
+          <!-- Files that enterprise policies allow to be reviewed. -->
+          <template is="dom-if" if="[[isReviewable_]]">
             <span role="gridcell">
               <cr-button on-click="onDiscardDangerousClick_"
                   class="action-button" focus-row-control
@@ -481,109 +473,143 @@
               </cr-button>
             </span>
             <span role="gridcell">
-              <cr-button on-click="onSaveDangerousClick_" focus-row-control
+              <cr-button on-click="onReviewDangerousClick_" focus-row-control
                   focus-type="save">
-                $i18n{dangerSave}
+                $i18n{dangerReview}
               </cr-button>
             </span>
           </template>
 
-          <!-- Things that safe browsing has determined to be dangerous. -->
-          <template is="dom-if" if="[[isMalware_]]">
-            <span role="gridcell">
-              <cr-button on-click="onDiscardDangerousClick_"
-                  class="action-button"
-                  focus-row-control focus-type="discard">
-                $i18n{controlRemoveFromList}
-              </cr-button>
-            </span>
-            <span role="gridcell">
-              <cr-button on-click="onSaveDangerousClick_" focus-row-control
-                  focus-type="save">
-                $i18n{dangerRestore}
-              </cr-button>
-            </span>
+          <template is="dom-if" if="[[!isReviewable_]]">
+            <!-- Dangerous file types (e.g. .exe, .jar). -->
+            <template is="dom-if" if="[[!isMalware_]]">
+              <span role="gridcell">
+                <cr-button on-click="onDiscardDangerousClick_"
+                    class="action-button" focus-row-control
+                    focus-type="discard">
+                  $i18n{dangerDiscard}
+                </cr-button>
+              </span>
+              <span role="gridcell">
+                <cr-button on-click="onSaveDangerousClick_" focus-row-control
+                    focus-type="save">
+                  $i18n{dangerSave}
+                </cr-button>
+              </span>
+            </template>
+
+            <!-- Things that safe browsing has determined to be dangerous. -->
+            <template is="dom-if" if="[[isMalware_]]">
+              <span role="gridcell">
+                <cr-button on-click="onDiscardDangerousClick_"
+                    class="action-button"
+                    focus-row-control focus-type="discard">
+                  $i18n{controlRemoveFromList}
+                </cr-button>
+              </span>
+              <span role="gridcell">
+                <cr-button on-click="onSaveDangerousClick_" focus-row-control
+                    focus-type="save">
+                  $i18n{dangerRestore}
+                </cr-button>
+              </span>
+            </template>
           </template>
-        </template>
+        </div>
+      </template>
+    </div>
+    <div class="more-options">
+      <!-- Only show the "x" button in the old UX. -->
+      <template is="dom-if" if="[[!improvedDownloadWarningsUx_]]">
+        <div role="gridcell">
+          <cr-icon-button class="icon-clear"
+              style$="[[computeRemoveStyle_(isDangerous_, showCancel_)]]"
+              id="remove-old" title="$i18n{controlRemoveFromList}"
+              aria-label$="[[controlRemoveFromListAriaLabel_]]"
+              on-click="onRemoveClick_" focus-row-control focus-type="remove">
+          </cr-icon-button>
+        </div>
+      </template>
+      <!-- In improvedDownloadWarnings, show a menu with all the actions. -->
+      <template is="dom-if" if="[[improvedDownloadWarningsUx_]]">
+        <div role="gridcell">
+          <cr-icon-button id="more-actions" iron-icon="cr:more-vert"
+              class="dropdown-trigger" title="$i18n{moreActions}"
+              on-click="onMoreActionsClick_" aria-haspopup="menu">
+          </cr-icon-button>
+        </div>
+        <cr-action-menu id="more-actions-menu"
+            role-description="$i18n{actionMenuDescription}">
+          <button class="dropdown-item" on-click="onShowClick_"
+              hidden="[[!hasShowInFolderLink_]]" id="show-in-folder">
+            [[data.showInFolderText]]
+          </button>
+          <button class="dropdown-item" on-click="onPauseOrResumeClick_"
+              hidden="[[!pauseOrResumeText_]]" id="pause-or-resume">
+            [[pauseOrResumeText_]]
+          </button>
+          <button class="dropdown-item" on-click="onRemoveClick_"
+              hidden="[[!computeShowRemove_(isDangerous_, showCancel_)]]"
+              id="remove">
+            $i18n{controlDeleteFromHistory}
+          </button>
+          <button class="dropdown-item" on-click="onDiscardDangerousClick_"
+              hidden="[[!computeShowControlsForDangerous_(isDangerous_,
+                      isReviewable_)]]"
+              id="discard-dangerous">
+            $i18n{controlDeleteFromHistory}
+          </button>
+          <button class="dropdown-item" on-click="onRetryClick_"
+              hidden="[[!data.retry]]" id="retry">
+            $i18n{controlRetry}
+          </button>
+          <button class="dropdown-item" on-click="onDeepScanClick_"
+              hidden="[[!showDeepScan_]]" id="deep-scan">
+            $i18n{controlDeepScan}
+          </button>
+          <button class="dropdown-item" on-click="onBypassDeepScanClick_"
+              hidden="[[!showDeepScan_]]" id="bypass-deep-scan">
+            [[computeSaveDangerousLabel_(displayType_)]]
+          </button>
+          <button class="dropdown-item" on-click="onCancelClick_"
+              hidden="[[!showCancel_]]" id="cancel">
+            $i18n{controlCancel}
+          </button>
+          <button class="dropdown-item" on-click="onOpenAnywayClick_"
+              hidden="[[!showOpenAnyway_]]" id="open-anyway">
+            $i18n{controlOpenAnyway}
+          </button>
+          <button class="dropdown-item" on-click="onDiscardDangerousClick_"
+              hidden="[[!isReviewable_]]" id="reviewable-discard-dangerous">
+            $i18n{dangerDiscard}
+          </button>
+          <button class="dropdown-item" on-click="onReviewDangerousClick_"
+              hidden="[[!isReviewable_]]" id="review-dangerous">
+            $i18n{dangerReview}
+          </button>
+          <!-- TODO(crbug.com/1465966): Learn more for dangerous downloads goes
+          here. -->
+          <button class="dropdown-item" on-click="onSaveDangerousClick_"
+              hidden="[[!computeShowControlsForDangerous_(isDangerous_,
+                      isReviewable_)]]"
+              id="save-dangerous">
+            [[computeSaveDangerousLabel_(displayType_)]]
+          </button>
+        </cr-action-menu>
+      </template>
+      <div id="incognito" title="$i18n{inIncognito}" hidden="[[!data.otr]]">
       </div>
-    </template>
+    </div>
   </div>
-  <div class="more-options">
-    <!-- Only show the "x" button in the old UX. -->
-    <template is="dom-if" if="[[!improvedDownloadWarningsUx_]]">
-      <div role="gridcell">
-        <cr-icon-button class="icon-clear"
-            style$="[[computeRemoveStyle_(isDangerous_, showCancel_)]]"
-            id="remove-old" title="$i18n{controlRemoveFromList}"
-            aria-label$="[[controlRemoveFromListAriaLabel_]]"
-            on-click="onRemoveClick_" focus-row-control focus-type="remove">
-        </cr-icon-button>
-      </div>
-    </template>
-    <!-- In improvedDownloadWarnings, show a menu with all the actions. -->
-    <template is="dom-if" if="[[improvedDownloadWarningsUx_]]">
-      <div role="gridcell">
-        <cr-icon-button id="more-actions" iron-icon="cr:more-vert"
-            class="dropdown-trigger" title="$i18n{moreActions}"
-            on-click="onMoreActionsClick_" aria-haspopup="menu">
-        </cr-icon-button>
-      </div>
-      <cr-action-menu id="more-actions-menu"
-          role-description="$i18n{actionMenuDescription}">
-        <button class="dropdown-item" on-click="onShowClick_"
-            hidden="[[!hasShowInFolderLink_]]" id="show-in-folder">
-          [[data.showInFolderText]]
-        </button>
-        <button class="dropdown-item" on-click="onPauseOrResumeClick_"
-            hidden="[[!pauseOrResumeText_]]" id="pause-or-resume">
-          [[pauseOrResumeText_]]
-        </button>
-        <button class="dropdown-item" on-click="onRemoveClick_"
-            hidden="[[!computeShowRemove_(isDangerous_, showCancel_)]]"
-            id="remove">
-          $i18n{controlDeleteFromHistory}
-        </button>
-        <button class="dropdown-item" on-click="onDiscardDangerousClick_"
-            hidden="[[!computeShowControlsForDangerous_(isDangerous_, isReviewable_)]]"
-            id="discard-dangerous">
-          $i18n{controlDeleteFromHistory}
-        </button>
-        <button class="dropdown-item" on-click="onRetryClick_"
-            hidden="[[!data.retry]]" id="retry">
-          $i18n{controlRetry}
-        </button>
-        <button class="dropdown-item" on-click="onDeepScanClick_"
-            hidden="[[!showDeepScan_]]" id="deep-scan">
-          $i18n{controlDeepScan}
-        </button>
-        <button class="dropdown-item" on-click="onBypassDeepScanClick_"
-            hidden="[[!showDeepScan_]]" id="bypass-deep-scan">
-          [[computeSaveDangerousLabel_(displayType_)]]
-        </button>
-        <button class="dropdown-item" on-click="onCancelClick_"
-            hidden="[[!showCancel_]]" id="cancel">
-          $i18n{controlCancel}
-        </button>
-        <button class="dropdown-item" on-click="onOpenAnywayClick_"
-            hidden="[[!showOpenAnyway_]]" id="open-anyway">
-          $i18n{controlOpenAnyway}
-        </button>
-        <button class="dropdown-item" on-click="onDiscardDangerousClick_"
-            hidden="[[!isReviewable_]]" id="reviewable-discard-dangerous">
-          $i18n{dangerDiscard}
-        </button>
-        <button class="dropdown-item" on-click="onReviewDangerousClick_"
-            hidden="[[!isReviewable_]]" id="review-dangerous">
-          $i18n{dangerReview}
-        </button>
-        <!-- TODO(crbug.com/1465966): Learn more for dangerous downloads goes here. -->
-        <button class="dropdown-item" on-click="onSaveDangerousClick_"
-            hidden="[[!computeShowControlsForDangerous_(isDangerous_, isReviewable_)]]"
-            id="save-dangerous">
-          [[computeSaveDangerousLabel_(displayType_)]]
-        </button>
-      </cr-action-menu>
-    </template>
-    <div id="incognito" title="$i18n{inIncognito}" hidden="[[!data.otr]]"></div>
-  </div>
+  <template is="dom-if" if="[[showEsbPromotion]]">
+    <!-- TODO(crbug.com/333734490): Replace icon with branded gshield icon. -->
+    <cr-link-row
+        id="esb-download-row-promo"
+        start-icon="downloads:dangerous"
+        external
+        on-click="onEsbPromotionClick_"
+        button-aria-description="$i18n{esbDownloadRowPromoA11y}"
+        label="$i18n{esbDownloadRowPromoString}">
+    </cr-link-row>
+  </template>
 </div>

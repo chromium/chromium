@@ -348,4 +348,57 @@ suite('manager tests', function() {
         flush();
         assertFalse(isVisible(dialog));
       });
+
+  test(
+      'shouldShowEsbPromotion returns true on first dangerous download',
+      async () => {
+        document.body.removeChild(manager);
+        loadTimeData.overrideValues({esbDownloadRowPromo: true});
+        testBrowserProxy.handler.setEligbleForEsbPromo(true);
+        manager = document.createElement('downloads-manager');
+        document.body.appendChild(manager);
+        const dangerousDownload = createDownload({
+          dangerType: DangerType.kDangerousFile,
+          state: State.kDangerous,
+          isDangerous: true,
+        });
+        callbackRouterRemote.insertItems(0, [dangerousDownload]);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+
+        const item = manager.shadowRoot!.querySelector('downloads-item');
+        assertTrue(!!item);
+        assertTrue(item.showEsbPromotion);
+      });
+
+  test(
+      'shouldShowEsbPromotion returns true on most recent dangerous download',
+      async () => {
+        document.body.removeChild(manager);
+        loadTimeData.overrideValues({esbDownloadRowPromo: true});
+        testBrowserProxy.handler.setEligbleForEsbPromo(true);
+        manager = document.createElement('downloads-manager');
+        document.body.appendChild(manager);
+        const dangerousDownload = createDownload({
+          dangerType: DangerType.kDangerousFile,
+          state: State.kDangerous,
+          isDangerous: true,
+          id: 'dangerousdownload1',
+        });
+        const dangerousDownloadTwo = createDownload({
+          dangerType: DangerType.kDangerousFile,
+          state: State.kDangerous,
+          isDangerous: true,
+          url: stringToMojoUrl('http://evil.com'),
+          id: 'dangerousdownload2',
+        });
+        callbackRouterRemote.insertItems(
+            0, [dangerousDownload, dangerousDownloadTwo]);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        const itemList = manager.shadowRoot!.querySelectorAll('downloads-item');
+        assertEquals(itemList.length, 2);
+        assertTrue(itemList[0]!.showEsbPromotion);
+        assertFalse(itemList[1]!.showEsbPromotion);
+      });
 });

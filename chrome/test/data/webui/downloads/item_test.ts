@@ -631,4 +631,44 @@ suite('item tests', function() {
     assertTrue(toastManager.slottedHidden);
     assertFalse(item.getMoreActionsMenu().open);
   });
+
+  test('ESBDownloadRowPromoShownAndClicked', async () => {
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.showEsbPromotion = true;
+    item.set('data', createDownload({
+               dangerType: DangerType.kDangerousFile,
+               fileExternallyRemoved: false,
+               hideDate: true,
+               state: State.kDangerous,
+               isDangerous: true,
+               url: stringToMojoUrl('http://evil.com'),
+             }));
+    flush();
+    const esbPromo =
+        item.shadowRoot!.querySelector<HTMLElement>('#esb-download-row-promo');
+    assertTrue(!!esbPromo);
+    assertTrue(isVisible(esbPromo));
+    esbPromo.click();
+    await testDownloadsProxy.handler.whenCalled('openEsbSettings');
+  });
+
+  test('ESBDownloadRowPromoNotShown', () => {
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.showEsbPromotion = false;
+    item.set('data', createDownload({
+               dangerType: DangerType.kDangerousFile,
+               fileExternallyRemoved: false,
+               hideDate: true,
+               state: State.kDangerous,
+               isDangerous: true,
+               url: stringToMojoUrl('http://evil.com'),
+             }));
+    flush();
+    const esbPromo = item.shadowRoot!.querySelector('#esb-download-row-promo');
+    assertFalse(isVisible(esbPromo));
+  });
 });

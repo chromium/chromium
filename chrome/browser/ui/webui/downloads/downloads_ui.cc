@@ -165,6 +165,10 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"warningBypassDialogLearnMoreLink",
        IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_LEARN_MORE_LINK},
       {"warningBypassDialogCancel", IDS_CANCEL},
+
+      // ESB Download Row Promo
+      {"esbDownloadRowPromoString", IDS_DOWNLOAD_ROW_ESB_PROMOTION},
+      {"esbDownloadRowPromoA11y", IDS_DOWNLOAD_ROW_ESB_PROMO_A11Y},
   };
   source->AddLocalizedStrings(kStrings);
 
@@ -224,6 +228,11 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY_STILL_ON_DEVICE);
   source->AddLocalizedString("toastDeletedFromHistory",
                              IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY);
+
+  // Download Row ESB Promo:
+  source->AddBoolean(
+      "esbDownloadRowPromo",
+      base::FeatureList::IsEnabled(safe_browsing::kEsbDownloadRowPromo));
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in downloads/downloads.html

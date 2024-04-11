@@ -93,6 +93,21 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         value: '',
       },
 
+      firstDangerousItemId_: {
+        type: String,
+        value: '',
+      },
+
+      isEligibleForEsbPromo_: {
+        type: Boolean,
+        value: false,
+      },
+
+      esbDownloadRowPromo_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('esbDownloadRowPromo'),
+      },
+
       lastFocused_: Object,
 
       listBlurred_: Boolean,
@@ -109,6 +124,9 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private inSearchMode_: boolean;
   private spinnerActive_: boolean;
   private bypassDialogItemId_: string;
+  private firstDangerousItemId_: string;
+  private esbDownloadRowPromo_: boolean;
+  private isEligibleForEsbPromo_: boolean;
 
   private announcerDebouncer_: Debouncer|null = null;
   private mojoHandler_: PageHandlerInterface;
@@ -168,6 +186,10 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     const toastManager = getToastManager();
     toastManager.shadowRoot!.querySelector<HTMLElement>('#toast')!.onclick =
         e => this.onToastClicked_(e);
+
+    this.mojoHandler_!.isEligibleForEsbPromo().then((result) => {
+      this.isEligibleForEsbPromo_ = result.result;
+    });
   }
 
   override disconnectedCallback() {
@@ -186,6 +208,20 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
       assert(!!this.mojoHandler_);
       this.mojoHandler_.recordOpenBypassWarningPrompt(this.bypassDialogItemId_);
     }
+  }
+
+  // Evaluates user eligbility for an esb promotion on the most recent dangerous
+  // download. It does this by traversing the array of downloads and the first
+  // dangerous download it comes across will have the promotion (guarantees the
+  // most recent download will have the promo)
+  private shouldShowEsbPromotion_(item: MojomData): boolean {
+    if (!this.isEligibleForEsbPromo_ || !this.esbDownloadRowPromo_) {
+      return false;
+    }
+    if (!this.firstDangerousItemId_ && item.isDangerous) {
+      this.firstDangerousItemId_ = item.id;
+    }
+    return this.firstDangerousItemId_ === item.id;
   }
 
   private shouldShowBypassWarningDialog_(): boolean {
