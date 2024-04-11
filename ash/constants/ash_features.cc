@@ -3662,9 +3662,14 @@ bool IsGlanceablesTimeManagementClassroomStudentViewEnabled() {
 }
 
 bool IsGlanceablesTimeManagementTasksViewEnabled() {
-  // Allow users to force-enable/disable the feature via the key even if the
-  // `kSysUiShouldHoldbackTaskManagement` is applied to their device. This will
-  // allow developers to escape the holdback.
+  const bool device_enrolled_in_holdback =
+      !base::FeatureList::IsEnabled(
+          kFeatureManagementShouldExcludeFromSysUiHoldback) &&
+      base::FeatureList::IsEnabled(kSysUiShouldHoldbackTaskManagement);
+  if (device_enrolled_in_holdback) {
+    return false;
+  }
+
   const auto* const command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kGlanceablesKeySwitch)) {
     // Force-enable or -disable based on hash correctness.
@@ -3673,12 +3678,7 @@ bool IsGlanceablesTimeManagementTasksViewEnabled() {
            switches::kGlanceablesKeyExpectedHash;
   }
 
-  const bool device_enrolled_in_holdback =
-      !base::FeatureList::IsEnabled(
-          kFeatureManagementShouldExcludeFromSysUiHoldback) &&
-      base::FeatureList::IsEnabled(kSysUiShouldHoldbackTaskManagement);
-  return !device_enrolled_in_holdback &&
-         base::FeatureList::IsEnabled(kGlanceablesTimeManagementTasksView);
+  return base::FeatureList::IsEnabled(kGlanceablesTimeManagementTasksView);
 }
 
 bool AreAnyGlanceablesTimeManagementViewsEnabled() {
