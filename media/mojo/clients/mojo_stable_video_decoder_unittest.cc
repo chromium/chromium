@@ -566,4 +566,34 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   EXPECT_EQ(decoder_buffer_to_send->side_data()->secure_handle, kSecureHandle);
 }
 
+TEST_F(MojoStableVideoDecoderTest, Reset) {
+  const VideoDecoderConfig config = CreateValidSupportedVideoDecoderConfig();
+  std::unique_ptr<TestEndpoints> endpoints =
+      CreateAndInitializeMojoStableVideoDecoder(config);
+  ASSERT_TRUE(endpoints);
+
+  // First, we'll call MojoStableVideoDecoder::Reset() and store the Reset()
+  // reply callback as seen by the service to call it later.
+  StrictMock<base::MockOnceCallback<void()>> reset_cb_to_send;
+  stable::mojom::StableVideoDecoder::ResetCallback received_reset_cb;
+  EXPECT_CALL(*endpoints->service(), Reset(_))
+      .WillOnce([&](stable::mojom::StableVideoDecoder::ResetCallback callback) {
+        received_reset_cb = std::move(callback);
+      });
+  media_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&MojoStableVideoDecoder::Reset,
+                                base::Unretained(endpoints->client()),
+                                reset_cb_to_send.Get()));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(endpoints->service()));
+
+  // Now we can pretend that the service replies to the Reset() reply callback
+  // which should get propagated all the way to the |reset_cb_to_send|.
+  EXPECT_CALL(reset_cb_to_send, Run()).WillOnce([&]() {
+    EXPECT_TRUE(media_task_runner_->RunsTasksInCurrentSequence());
+  });
+  std::move(received_reset_cb).Run();
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace media

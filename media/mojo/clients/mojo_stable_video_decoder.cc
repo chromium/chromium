@@ -59,8 +59,8 @@ void MojoStableVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
 void MojoStableVideoDecoder::Reset(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/327268445): finish implementing Reset().
-  NOTIMPLEMENTED();
+  CHECK(!!oop_video_decoder_);
+  oop_video_decoder_->Reset(std::move(closure));
 }
 
 bool MojoStableVideoDecoder::NeedsBitstreamConversion() const {
