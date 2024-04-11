@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/command_source.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -35,7 +36,8 @@ std::vector<std::string> CommandSource::GetNextData() {
   // TODO(b/326440932): if there are CHANGE watchdogs, trigger them here.
 
   last_output_ = output;
-  return {output};
+  return {base::TimeFormatAsIso8601(base::Time::NowFromSystemTime()) + " " +
+          output};
 }
 
 }  // namespace ash::cfm
