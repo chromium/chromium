@@ -94,14 +94,16 @@ bool ReadAsInt(base::PickleIterator* iter, T* target_value) {
 bool DeserializeSection1(base::PickleIterator* iter,
                          FormFieldData* field_data) {
   std::string form_control_type;
+  std::u16string value;
   bool success = iter->ReadString16(&field_data->label) &&
                  iter->ReadString16(&field_data->name) &&
-                 iter->ReadString16(&field_data->value) &&
+                 iter->ReadString16(&value) &&
                  iter->ReadString(&form_control_type) &&
                  iter->ReadString(&field_data->autocomplete_attribute) &&
                  iter->ReadUInt64(&field_data->max_length) &&
                  iter->ReadBool(&field_data->is_autofilled);
   if (success) {
+    field_data->value = std::move(value);
     // Form control types are serialized as strings for legacy reasons.
     // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
     // (de)serialize form control types? Remove it or migrate it to the enum

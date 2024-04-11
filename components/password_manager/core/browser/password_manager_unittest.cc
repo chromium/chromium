@@ -317,7 +317,7 @@ void SanitizeFormData(FormData* form) {
   form->main_frame_origin = url::Origin();
   for (FormFieldData& field : form->fields) {
     field.label.clear();
-    field.value.clear();
+    field.value = u"";
     field.autocomplete_attribute.clear();
     field.options.clear();
     field.placeholder.clear();
@@ -1340,7 +1340,7 @@ TEST_P(PasswordManagerTest, DoNotSaveWhenUserDeletesPassword) {
   // The user deletes the password, no manuall fallback should be shown.
   PasswordForm empty_password_form(form);
   empty_password_form.password_value.clear();
-  empty_password_form.form_data.fields[1].value.clear();
+  empty_password_form.form_data.fields[1].value = u"";
   EXPECT_CALL(client_, ShowManualFallbackForSaving).Times(0);
   EXPECT_CALL(client_, HideManualFallbackForSaving);
   manager()->OnInformAboutUserInput(&driver_, empty_password_form.form_data);
@@ -2886,7 +2886,7 @@ TEST_P(PasswordManagerTest, ClearedFieldsSuccessCriteria) {
   PasswordForm form(MakeFormWithOnlyNewPasswordField());
   form.username_element.clear();
   form.username_value.clear();
-  form.form_data.fields[0].value.clear();
+  form.form_data.fields[0].value = u"";
   std::vector<FormData> observed = {form.form_data};
 
   // Emulate page load.
@@ -2899,7 +2899,7 @@ TEST_P(PasswordManagerTest, ClearedFieldsSuccessCriteria) {
   OnPasswordFormSubmitted(form.form_data);
 
   // JavaScript cleared field values.
-  observed[0].fields[1].value.clear();
+  observed[0].fields[1].value = u"";
 
   // Check success of the submission.
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
@@ -2919,7 +2919,7 @@ TEST_P(PasswordManagerTest, NotSavingSyncPasswordHash_NoUsername) {
   std::vector<FormData> observed;
   FormData form_data(MakeSimpleGAIAFormData());
   // Simulate that no username is found.
-  form_data.fields[0].value.clear();
+  form_data.fields[0].value = u"";
   observed.push_back(form_data);
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
@@ -5282,9 +5282,9 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
 
     manager()->OnInformAboutUserInput(&driver_, form_data);
 
-    form_data.fields[0].value.clear();
+    form_data.fields[0].value = u"";
     if (new_password_field_was_cleared)
-      form_data.fields[1].value.clear();
+      form_data.fields[1].value = u"";
 
     std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
     if (new_password_field_was_cleared) {

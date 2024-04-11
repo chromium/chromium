@@ -30,7 +30,7 @@ void SanitizeFormData(FormData* form) {
   form->main_frame_origin = url::Origin();
   for (FormFieldData& field : form->fields) {
     field.label.clear();
-    field.value.clear();
+    field.value = u"";
     field.autocomplete_attribute.clear();
     field.options.clear();
     field.placeholder.clear();

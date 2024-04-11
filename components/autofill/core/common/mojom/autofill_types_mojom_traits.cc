@@ -175,8 +175,11 @@ bool StructTraits<
     return false;
   if (!data.ReadNameAttribute(&out->name_attribute))
     return false;
-  if (!data.ReadValue(&out->value))
+  std::u16string value;
+  if (!data.ReadValue(&value)) {
     return false;
+  }
+  out->value = std::move(value);
   if (!data.ReadSelectedText(&out->selected_text)) {
     return false;
   }

@@ -601,7 +601,7 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
 
     renderer_form->fields.push_back(browser_field);
     if (!IsSafeToFill(renderer_form->fields.back())) {
-      renderer_form->fields.back().value.clear();
+      renderer_form->fields.back().value = u"";
     } else {
       result.safe_fields.insert(browser_field.global_id());
     }

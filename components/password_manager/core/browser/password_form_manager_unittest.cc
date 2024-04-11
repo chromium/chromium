@@ -2006,7 +2006,8 @@ TEST_P(PasswordFormManagerTest, UserEventsForGeneration) {
     CreateFormManager(observed_form_);
     form_manager_->PresaveGeneratedPassword(submitted_form.form_data,
                                             submitted_form.password_value);
-    form_data.fields[kPasswordFieldIndex].value += u"1";
+    form_data.fields[kPasswordFieldIndex].value =
+        form_data.fields[kPasswordFieldIndex].value + u"1";
     submitted_form.password_value = form_data.fields[kPasswordFieldIndex].value;
     form_manager_->PresaveGeneratedPassword(submitted_form.form_data,
                                             submitted_form.password_value);
@@ -2021,7 +2022,8 @@ TEST_P(PasswordFormManagerTest, UserEventsForGeneration) {
     CreateFormManager(observed_form_);
     form_manager_->PresaveGeneratedPassword(submitted_form.form_data,
                                             submitted_form.password_value);
-    form_data.fields[kPasswordFieldIndex].value += u"2";
+    form_data.fields[kPasswordFieldIndex].value =
+        form_data.fields[kPasswordFieldIndex].value + u"2";
     submitted_form.password_value = form_data.fields[kPasswordFieldIndex].value;
     form_manager_->PresaveGeneratedPassword(submitted_form.form_data,
                                             submitted_form.password_value);

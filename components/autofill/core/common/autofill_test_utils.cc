@@ -106,7 +106,7 @@ FormData CreateFormDataForFrame(FormData form, LocalFrameToken frame_token) {
 
 FormData WithoutValues(FormData form) {
   for (FormFieldData& field : form.fields) {
-    field.value.clear();
+    field.value = u"";
   }
   return form;
 }

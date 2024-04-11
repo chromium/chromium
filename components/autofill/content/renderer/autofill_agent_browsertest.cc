@@ -663,7 +663,7 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   ASSERT_FALSE(field.IsNull());
 
   std::u16string prior_value = form.fields[0].value;
-  form.fields[0].value += u"AUTOFILLED";
+  form.fields[0].value = form.fields[0].value + u"AUTOFILLED";
   form.fields[0].is_autofilled = true;
 
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);

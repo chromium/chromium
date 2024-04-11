@@ -1193,7 +1193,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.value = ASCIIToUTF16(placeholder_lastname);
     } else {
       expected.label.clear();
-      expected.value.clear();
+      expected.value = u"";
     }
     expected.is_autofilled = false;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
@@ -1209,7 +1209,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.value = ASCIIToUTF16(placeholder_email);
     } else {
       expected.label.clear();
-      expected.value.clear();
+      expected.value = u"";
     }
     expected.is_autofilled = false;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
@@ -1880,12 +1880,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     expected.id_attribute = u"firstname";
     expected.name = expected.id_attribute;
-    expected.value.clear();
+    expected.value = u"";
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
 
     expected.id_attribute = u"lastname";
     expected.name = expected.id_attribute;
-    expected.value.clear();
+    expected.value = u"";
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
 
     expected.id_attribute = u"noAC";
@@ -1906,7 +1906,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     expected.max_length = 0;
     expected.id_attribute = u"month";
     expected.name = expected.id_attribute;
-    expected.value.clear();
+    expected.value = u"";
     expected.label.clear();
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[4]);
 
@@ -1920,7 +1920,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     expected.id_attribute = u"textarea";
     expected.max_length = FormFieldData::kDefaultMaxLength;
     expected.name = expected.id_attribute;
-    expected.value.clear();
+    expected.value = u"";
     expected.label.clear();
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[6]);
 
@@ -2096,14 +2096,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     expected.id_attribute = u"firstname";
     expected.name = expected.id_attribute;
-    expected.value.clear();
+    expected.value = u"";
     expected.form_control_type = FormControlType::kInputText;
     expected.max_length = FormFieldData::kDefaultMaxLength;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
 
     expected.id_attribute = u"lastname";
     expected.name = expected.id_attribute;
-    expected.value.clear();
+    expected.value = u"";
     expected.form_control_type = FormControlType::kInputText;
     expected.max_length = FormFieldData::kDefaultMaxLength;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
@@ -2378,7 +2378,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
   expected.id_attribute = u"element";
   expected.name = expected.id_attribute;
 
-  expected.value.clear();
+  expected.value = u"";
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result1);
 
   FormFieldData result2;
@@ -2528,7 +2528,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
   FormFieldData result3;
   WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    {ExtractOption::kOptions}, &result3);
-  expected.value.clear();
+  expected.value = u"";
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result3);
 
   ASSERT_EQ(2U, result3.options.size());

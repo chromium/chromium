@@ -1544,10 +1544,10 @@ TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
       WithValues(GetMockedForm("child2"), Profile(2))};
   // Clear sensitive fields: the credit card number (field index 2) and CVC
   // (field index 5) in the two main-origin forms.
-  expectation[0].fields[2].value.clear();
-  expectation[0].fields[5].value.clear();
-  expectation[1].fields[2].value.clear();
-  expectation[1].fields[5].value.clear();
+  expectation[0].fields[2].value = u"";
+  expectation[0].fields[5].value = u"";
+  expectation[1].fields[2].value = u"";
+  expectation[1].fields[5].value = u"";
   EXPECT_THAT(GetRendererFormsOfBrowserForm("main", Origin(kIframeUrl),
                                             FieldTypeMap("main")),
               UnorderedArrayEquals(expectation));
