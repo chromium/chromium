@@ -110,16 +110,6 @@ bool VideoDecodeAccelerator::SupportsSharedImagePictureBuffers() const {
   return false;
 }
 
-VideoDecodeAccelerator::TextureAllocationMode
-VideoDecodeAccelerator::GetSharedImageTextureAllocationMode() const {
-#if BUILDFLAG(IS_APPLE)
-  return VideoDecodeAccelerator::TextureAllocationMode::
-      kDoNotAllocateGLTextures;
-#else
-  return VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures;
-#endif
-}
-
 VideoDecodeAccelerator::SupportedProfile::SupportedProfile()
     : profile(media::VIDEO_CODEC_PROFILE_UNKNOWN), encrypted_only(false) {}
 

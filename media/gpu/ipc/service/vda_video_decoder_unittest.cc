@@ -98,6 +98,14 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
     // In either case, vda_->Destroy() should be called once.
     EXPECT_CALL(*vda_, Destroy());
 
+#if BUILDFLAG(IS_APPLE)
+    constexpr auto texture_allocation_mode =
+        VideoDecodeAccelerator::TextureAllocationMode::kDoNotAllocateGLTextures;
+#else
+    constexpr auto texture_allocation_mode =
+        VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures;
+#endif
+
     auto* vdavd = new VdaVideoDecoder(
         parent_task_runner, gpu_task_runner, media_log_.Clone(),
         gfx::ColorSpace(),
@@ -108,7 +116,8 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
         base::BindRepeating(&VdaVideoDecoderTest::CreateAndInitializeVda,
                             base::Unretained(this)),
         GetCapabilities(),
-        VideoDecodeAccelerator::Config::OutputMode::kAllocate);
+        VideoDecodeAccelerator::Config::OutputMode::kAllocate,
+        texture_allocation_mode);
     vdavd_ = std::make_unique<AsyncDestroyVideoDecoder<VdaVideoDecoder>>(
         base::WrapUnique(vdavd));
     client_ = vdavd;

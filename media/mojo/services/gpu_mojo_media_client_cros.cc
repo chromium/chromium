@@ -105,7 +105,8 @@ class GpuMojoMediaClientCrOS final : public GpuMojoMediaClient {
             traits.task_runner, gpu_task_runner_, traits.media_log->Clone(),
             *traits.target_color_space, gpu_preferences_, gpu_workarounds_,
             traits.get_command_buffer_stub_cb,
-            VideoDecodeAccelerator::Config::OutputMode::kAllocate);
+            VideoDecodeAccelerator::Config::OutputMode::kAllocate,
+            VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures);
       }
       default: {
         return nullptr;

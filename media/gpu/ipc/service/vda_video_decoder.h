@@ -72,7 +72,8 @@ class VdaVideoDecoder : public VideoDecoder,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       GetStubCB get_stub_cb,
-      VideoDecodeAccelerator::Config::OutputMode output_mode);
+      VideoDecodeAccelerator::Config::OutputMode output_mode,
+      VideoDecodeAccelerator::TextureAllocationMode texture_allocation_mode);
 
   VdaVideoDecoder(const VdaVideoDecoder&) = delete;
   VdaVideoDecoder& operator=(const VdaVideoDecoder&) = delete;
@@ -120,15 +121,17 @@ class VdaVideoDecoder : public VideoDecoder,
   //     imported into the VDA by calling ImportBufferForPicture(). In this
   //     case, the VdaVideoDecoder will output GpuMemoryBuffer-backed
   //     VideoFrames.
-  VdaVideoDecoder(scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
-                  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-                  std::unique_ptr<MediaLog> media_log,
-                  const gfx::ColorSpace& target_color_space,
-                  CreatePictureBufferManagerCB create_picture_buffer_manager_cb,
-                  CreateCommandBufferHelperCB create_command_buffer_helper_cb,
-                  CreateAndInitializeVdaCB create_and_initialize_vda_cb,
-                  const VideoDecodeAccelerator::Capabilities& vda_capabilities,
-                  VideoDecodeAccelerator::Config::OutputMode output_mode);
+  VdaVideoDecoder(
+      scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+      std::unique_ptr<MediaLog> media_log,
+      const gfx::ColorSpace& target_color_space,
+      CreatePictureBufferManagerCB create_picture_buffer_manager_cb,
+      CreateCommandBufferHelperCB create_command_buffer_helper_cb,
+      CreateAndInitializeVdaCB create_and_initialize_vda_cb,
+      const VideoDecodeAccelerator::Capabilities& vda_capabilities,
+      VideoDecodeAccelerator::Config::OutputMode output_mode,
+      VideoDecodeAccelerator::TextureAllocationMode texture_allocation_mode);
 
   // media::VideoDecodeAccelerator::Client implementation.
   void NotifyInitializationComplete(DecoderStatus status) override;
@@ -185,6 +188,7 @@ class VdaVideoDecoder : public VideoDecoder,
   CreateAndInitializeVdaCB create_and_initialize_vda_cb_;
   const VideoDecodeAccelerator::Capabilities vda_capabilities_;
   const VideoDecodeAccelerator::Config::OutputMode output_mode_;
+  const VideoDecodeAccelerator::TextureAllocationMode texture_allocation_mode_;
 
   //
   // Parent thread state.

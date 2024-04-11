@@ -422,10 +422,6 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     kAllocateGLTextures
   };
 
-  // Returns an enum used to allocate GL textures for shared images.
-  // May be called on any thread at any time.
-  TextureAllocationMode GetSharedImageTextureAllocationMode() const;
-
  protected:
   // Do not delete directly; use Destroy() or own it with a scoped_ptr, which
   // will Destroy() it properly by default.
