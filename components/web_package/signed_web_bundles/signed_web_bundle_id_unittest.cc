@@ -146,23 +146,9 @@ TEST(SignedWebBundleIdTest, CreateForDevelopment) {
   EXPECT_EQ(id.id(), kDevelopmentSignedWebBundleId);
 }
 
-TEST(SignedWebBundleIdTest, CreateRandomForDevelopmentDefaultGenerator) {
+TEST(SignedWebBundleIdTest, CreateRandomForDevelopment) {
   auto id = SignedWebBundleId::CreateRandomForDevelopment();
   EXPECT_EQ(id.type(), SignedWebBundleId::Type::kDevelopment);
-}
-
-TEST(SignedWebBundleIdTest, CreateRandomForDevelopmentCustomGenerator) {
-  auto custom_callback =
-      base::BindLambdaForTesting([](base::span<uint8_t> buffer) -> void {
-        DCHECK_EQ(buffer.size(), kDevelopmentBytes.size());
-        base::ranges::copy(kDevelopmentBytes, buffer.begin());
-      });
-
-  SignedWebBundleId id =
-      SignedWebBundleId::CreateRandomForDevelopment(custom_callback);
-
-  EXPECT_EQ(id.type(), SignedWebBundleId::Type::kDevelopment);
-  EXPECT_EQ(id.id(), kDevelopmentSignedWebBundleId);
 }
 
 }  // namespace web_package

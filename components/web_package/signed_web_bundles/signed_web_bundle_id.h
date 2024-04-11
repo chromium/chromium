@@ -57,9 +57,7 @@ class SignedWebBundleId {
   static SignedWebBundleId CreateForDevelopment(
       base::span<const uint8_t, kDecodedIdLength - kTypeSuffixLength> data);
 
-  static SignedWebBundleId CreateRandomForDevelopment(
-      base::RepeatingCallback<void(base::span<uint8_t>)> random_generator =
-          GetDefaultRandomGenerator());
+  static SignedWebBundleId CreateRandomForDevelopment();
 
   SignedWebBundleId(const SignedWebBundleId& other);
   SignedWebBundleId& operator=(const SignedWebBundleId& other);
@@ -70,32 +68,16 @@ class SignedWebBundleId {
 
   const std::string& id() const { return encoded_id_; }
 
-  bool operator<(const SignedWebBundleId& other) const {
-    return decoded_id_ < other.decoded_id_;
-  }
-
-  bool operator==(const SignedWebBundleId& other) const {
-    return decoded_id_ == other.decoded_id_;
-  }
-
-  bool operator!=(const SignedWebBundleId& other) const {
-    return !(*this == other);
-  }
+  auto operator<=>(const SignedWebBundleId&) const = default;
 
   friend std::ostream& operator<<(std::ostream& os,
                                   const SignedWebBundleId& id);
 
  private:
-  SignedWebBundleId(Type type,
-                    base::StringPiece encoded_id,
-                    base::span<const uint8_t, kDecodedIdLength> decoded_id);
+  SignedWebBundleId(Type type, base::StringPiece encoded_id);
 
   Type type_;
   std::string encoded_id_;
-  std::array<uint8_t, kDecodedIdLength> decoded_id_;
-
-  static base::RepeatingCallback<void(base::span<uint8_t>)>
-  GetDefaultRandomGenerator();
 };
 
 }  // namespace web_package
