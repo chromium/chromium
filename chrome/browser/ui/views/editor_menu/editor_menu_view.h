@@ -92,6 +92,8 @@ class EditorMenuView : public PreTargetHandlerView {
 
   raw_ptr<EditorMenuTextfieldView> textfield_ = nullptr;
 
+  bool queued_announcement_ = false;
+
   base::WeakPtrFactory<EditorMenuView> weak_factory_{this};
 };
 

@@ -51,6 +51,8 @@ namespace chromeos::editor_menu {
 namespace {
 
 constexpr char kWidgetName[] = "EditorMenuViewWidget";
+constexpr char16_t kCardShownAnnouncement[] =
+    u"Help Me Write, press tab to focus the Help Me Write card.";
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 14);
 
@@ -159,6 +161,11 @@ void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
                                                bool visible) {
   CHECK(delegate_);
   delegate_->OnEditorMenuVisibilityChanged(visible);
+
+  if (visible && !queued_announcement_) {
+    GetViewAccessibility().AnnounceAlert(kCardShownAnnouncement);
+    queued_announcement_ = true;
+  }
 }
 
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {

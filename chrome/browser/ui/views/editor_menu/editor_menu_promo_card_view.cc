@@ -42,6 +42,8 @@ namespace chromeos::editor_menu {
 namespace {
 
 constexpr char kWidgetName[] = "EditorMenuPromoCardViewWidget";
+constexpr char16_t kCardShownAnnouncement[] =
+    u"Help Me Write, press tab to focus the Help Me Write card.";
 
 constexpr int kPromoCardIconSizeDip = 20;
 
@@ -158,6 +160,14 @@ bool EditorMenuPromoCardView::AcceleratorPressed(
   CHECK(GetWidget());
   GetWidget()->Close();
   return true;
+}
+
+void EditorMenuPromoCardView::OnWidgetVisibilityChanged(views::Widget* widget,
+                                                        bool visible) {
+  if (visible && !queued_announcement_) {
+    GetViewAccessibility().AnnounceAlert(kCardShownAnnouncement);
+    queued_announcement_ = true;
+  }
 }
 
 void EditorMenuPromoCardView::UpdateBounds(

@@ -51,6 +51,7 @@ class EditorMenuPromoCardView : public views::View,
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
 
@@ -73,6 +74,8 @@ class EditorMenuPromoCardView : public views::View,
   raw_ptr<views::Label> description_ = nullptr;
   raw_ptr<views::MdTextButton> dismiss_button_ = nullptr;
   raw_ptr<views::MdTextButton> try_it_button_ = nullptr;
+
+  bool queued_announcement_ = false;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
