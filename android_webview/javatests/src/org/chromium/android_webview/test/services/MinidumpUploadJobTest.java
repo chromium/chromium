@@ -29,6 +29,7 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.version_info.Channel;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.minidump_uploader.CrashTestRule;
@@ -54,11 +55,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Instrumentation tests for WebView's implementation of MinidumpUploaderDelegate, and the
  * interoperability of WebView's minidump-copying and minidump-uploading logic.
  *
- * These tests loads native library and mark the process as a browser process, it's safer to
- * leave them unbatched to avoid possible state leaking between tests.
+ * <p>These tests load the native library and mark the process as a browser process, so it's safer
+ * to leave them unbatched to avoid possible state leaking between tests.
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
+@DoNotBatch(reason = "These tests load the native library so batching might leak state")
 public class MinidumpUploadJobTest {
     @Rule
     public CrashTestRule mTestRule =
@@ -185,61 +187,73 @@ public class MinidumpUploadJobTest {
         Assert.assertEquals(0, webviewTmpDir.listFiles().length);
     }
 
-    /** Ensure that crash files are sampled-out for STABLE channel. */
-    @Test
-    @MediumTest
-    public void testSampledOutCrashesForStableChannel() throws IOException {
-        // samplingPercentage >= CRASH_DUMP_PERCENTAGE_FOR_STABLE so crashes are never sampled-in.
-        testSampleCrashesByChannel(Channel.STABLE, 1, false);
+    private void helperCrashSamplingForStable(@Channel int channel) throws IOException {
+        // When samplePercentage is < CRASH_DUMP_PERCENTAGE_FOR_STABLE, crashes are sampled-in.
+        testSampleCrashesByChannel(
+                channel, /* samplePercentage= */ 0, /* expectedSamplingVerdict= */ true);
+
+        // When samplePercentage is >= CRASH_DUMP_PERCENTAGE_FOR_STABLE, crashes are sampled-out.
+        testSampleCrashesByChannel(
+                channel, /* samplePercentage= */ 1, /* expectedSamplingVerdict= */ false);
+        testSampleCrashesByChannel(
+                channel, /* samplePercentage= */ 99, /* expectedSamplingVerdict= */ false);
     }
 
-    /** Ensure that crash files are sampled-in for STABLE channel. */
+    /** Verify sampling behavior for the STABLE channel. */
     @Test
     @MediumTest
-    public void testSampledInCrashesForStableChannel() throws IOException {
-        // samplingPercentage < CRASH_DUMP_PERCENTAGE_FOR_STABLE so crashes are always sampled-in.
-        testSampleCrashesByChannel(Channel.STABLE, 0, true);
+    public void testCrashSamplingStableChannel() throws IOException {
+        helperCrashSamplingForStable(Channel.STABLE);
     }
 
-    /** Ensure that crash files are sampled-out for STABLE channel. */
+    /** DEFAULT channel should behave the same as STABLE channel. */
     @Test
     @MediumTest
-    public void testSampledOutCrashesForDefaultChannel() throws IOException {
-        // samplingPercentage >= CRASH_DUMP_PERCENTAGE_FOR_STABLE so crashes are never sampled-in.
-        testSampleCrashesByChannel(Channel.DEFAULT, 1, false);
+    public void testCrashSamplingDefaultChannel() throws IOException {
+        helperCrashSamplingForStable(Channel.DEFAULT);
     }
 
-    /** Ensure that crash files are sampled-in for STABLE channel. */
+    /** UNKNOWN channel should behave the same as STABLE channel. */
     @Test
     @MediumTest
-    public void testSampledInCrashesForDefaultChannel() throws IOException {
-        // samplingPercentage < CRASH_DUMP_PERCENTAGE_FOR_STABLE so crashes are always sampled-in.
-        testSampleCrashesByChannel(Channel.DEFAULT, 0, true);
+    public void testCrashSamplingUnknownChannel() throws IOException {
+        helperCrashSamplingForStable(Channel.UNKNOWN);
     }
 
-    /** Ensure that crash files are sampled-out for UNKNOWN channel. */
     @Test
     @MediumTest
-    public void testSampledOutCrashesForUnknownChannel() throws IOException {
-        testSampleCrashesByChannel(Channel.UNKNOWN, 1, false);
+    public void testCrashSamplingBetaChannel() throws IOException {
+        // Crashes on Beta channel are sampled-in regardless of samplePercentage.
+        testSampleCrashesByChannel(
+                Channel.BETA, /* samplePercentage= */ 0, /* expectedSamplingVerdict= */ true);
+        testSampleCrashesByChannel(
+                Channel.BETA, /* samplePercentage= */ 1, /* expectedSamplingVerdict= */ true);
+        testSampleCrashesByChannel(
+                Channel.BETA, /* samplePercentage= */ 99, /* expectedSamplingVerdict= */ true);
     }
 
-    /** Ensure that crash files are sampled-in for BETA channel. */
     @Test
     @MediumTest
-    public void testSampledInCrashesForBetaChannel() throws IOException {
-        // samplingPercentage >= CRASH_DUMP_PERCENTAGE_FOR_STABLE so crashes should never be
-        // sampled-in.
-        testSampleCrashesByChannel(Channel.BETA, 1, true);
+    public void testCrashSamplingDevChannel() throws IOException {
+        // Crashes on Dev channel are sampled-in regardless of samplePercentage.
+        testSampleCrashesByChannel(
+                Channel.DEV, /* samplePercentage= */ 0, /* expectedSamplingVerdict= */ true);
+        testSampleCrashesByChannel(
+                Channel.DEV, /* samplePercentage= */ 1, /* expectedSamplingVerdict= */ true);
+        testSampleCrashesByChannel(
+                Channel.DEV, /* samplePercentage= */ 99, /* expectedSamplingVerdict= */ true);
     }
 
-    /** Ensure that crash files are sampled-in for CANARY channel. */
     @Test
     @MediumTest
-    public void testSampledInCrashesForCanaryChannel() throws IOException {
-        // samplingPercentage >= CRASH_DUMP_PERCENTAGE_FOR_STABLE so crashes should never be
-        // sampled-in.
-        testSampleCrashesByChannel(Channel.CANARY, 1, true);
+    public void testCrashSamplingCanaryChannel() throws IOException {
+        // Crashes on Canary channel are sampled-in regardless of samplePercentage.
+        testSampleCrashesByChannel(
+                Channel.CANARY, /* samplePercentage= */ 0, /* expectedSamplingVerdict= */ true);
+        testSampleCrashesByChannel(
+                Channel.CANARY, /* samplePercentage= */ 1, /* expectedSamplingVerdict= */ true);
+        testSampleCrashesByChannel(
+                Channel.CANARY, /* samplePercentage= */ 99, /* expectedSamplingVerdict= */ true);
     }
 
     /**
@@ -248,12 +262,14 @@ public class MinidumpUploadJobTest {
      */
     private static class TestCrashSamplingMinidumpUploaderDelegate
             extends AwMinidumpUploaderDelegate {
-        private final boolean mIsSampled;
+        private final boolean mExpectedSamplingVerdict;
+        private final int mSamplePercentage;
 
         TestCrashSamplingMinidumpUploaderDelegate(
-                SamplingDelegate samplingDelegate, boolean isSampled) {
+                SamplingDelegate samplingDelegate, boolean expectedSamplingVerdict) {
             super(samplingDelegate);
-            mIsSampled = isSampled;
+            mExpectedSamplingVerdict = expectedSamplingVerdict;
+            mSamplePercentage = samplingDelegate.getRandomSample();
         }
 
         @Override
@@ -273,19 +289,25 @@ public class MinidumpUploadJobTest {
                 public boolean isClientInSampleForCrashes() {
                     // Ensure that we use the real implementation of isClientInSampleForCrashes.
                     boolean isSampled = realPermissionManager.isClientInSampleForCrashes();
-                    Assert.assertEquals(mIsSampled, isSampled);
+                    Assert.assertEquals(
+                            "Wrong sampling verdict when the samplePercentage is "
+                                    + mSamplePercentage,
+                            mExpectedSamplingVerdict,
+                            isSampled);
                     return isSampled;
                 }
             };
         }
     }
 
-    private void testSampleCrashesByChannel(int channel, int samplePercentage, boolean isSampled)
+    private void testSampleCrashesByChannel(
+            @Channel int channel, int samplePercentage, boolean expectedSamplingVerdict)
             throws IOException {
         PlatformServiceBridge.injectInstance(new TestPlatformServiceBridge(/* enabled= */ true));
         MinidumpUploaderDelegate delegate =
                 new TestCrashSamplingMinidumpUploaderDelegate(
-                        new TestSamplingDelegate(channel, samplePercentage), isSampled);
+                        new TestSamplingDelegate(channel, samplePercentage),
+                        expectedSamplingVerdict);
         MinidumpUploadJob minidumpUploadJob = new TestMinidumpUploadJobImpl(delegate);
 
         File firstFile = createMinidumpFileInCrashDir("1_abc.dmp0.try0");
@@ -293,11 +315,15 @@ public class MinidumpUploadJobTest {
         File expectedFirstFile =
                 new File(
                         mTestRule.getCrashDir(),
-                        firstFile.getName().replace(".dmp", isSampled ? ".up" : ".skipped"));
+                        firstFile
+                                .getName()
+                                .replace(".dmp", expectedSamplingVerdict ? ".up" : ".skipped"));
         File expectedSecondFile =
                 new File(
                         mTestRule.getCrashDir(),
-                        secondFile.getName().replace(".dmp", isSampled ? ".up" : ".skipped"));
+                        secondFile
+                                .getName()
+                                .replace(".dmp", expectedSamplingVerdict ? ".up" : ".skipped"));
 
         uploadMinidumpsSync(minidumpUploadJob, /* expectReschedule= */ false);
 
