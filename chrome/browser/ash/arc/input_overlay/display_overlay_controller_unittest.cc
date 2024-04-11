@@ -223,12 +223,19 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestFocusCycler) {
   auto* editing_list = GetEditingList();
   auto* editing_list_widget = editing_list->GetWidget();
   auto* input_mapping_widget = input_mapping_view_->GetWidget();
+
+  // Editing list should be activated after the Game Dashboard (GD) main menu
+  // closed. This is to simulate the reality since there is no GD main menu in
+  // the test.
+  editing_list_widget->Activate();
+
   CheckAccessibilityTree(
       std::vector<views::Widget*>{editing_list_widget, input_mapping_widget});
 
   // Case 1: in edit mode default view. The tab focus will cycle between the
   // editing list and input mapping. Press key tab to the last element of the
   // editing list.
+  DCHECK(editing_list_widget->IsActive());
   PressTabKeyToFirstOrLastElement(editing_list, /*reverse=*/false);
   auto* list_focus_manager = editing_list->GetFocusManager();
   EXPECT_TRUE(list_focus_manager->GetFocusedView());

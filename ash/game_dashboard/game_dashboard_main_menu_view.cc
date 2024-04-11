@@ -524,12 +524,6 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
 
   void EnableEditMode() {
     auto* game_window = GetGameWindow();
-
-    // Close the main menu after `GetGameWindow()` because `GetGameWindow()`
-    // still needs to get values from the main menu.
-    main_menu_->context_->CloseMainMenu(
-        GameDashboardMainMenuToggleMethod::kActivateNewFeature);
-
     const auto flags = game_dashboard_utils::GetGameControlsFlag(game_window);
     CHECK(flags);
     game_window->SetProperty(
@@ -541,6 +535,11 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
         game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty));
     RecordGameDashboardFunctionTriggered(
         GameDashboardFunction::kGameControlsSetupOrEdit);
+
+    // Always close the main menu in the end in case of the race condition that
+    // this instance is destroyed before the following calls.
+    main_menu_->context_->CloseMainMenu(
+        GameDashboardMainMenuToggleMethod::kActivateNewFeature);
   }
 
   aura::Window* GetGameWindow() { return main_menu_->context_->game_window(); }
@@ -744,8 +743,6 @@ void GameDashboardMainMenuView::OnRecordGameTilePressed() {
     CaptureModeController::Get()->EndVideoRecording(
         EndRecordingReason::kGameDashboardStopRecordingButton);
   } else {
-    context_->CloseMainMenu(
-        GameDashboardMainMenuToggleMethod::kActivateNewFeature);
     // Post a task to start a capture session, after the main menu widget
     // closes. When the main menu opens, `GameDashboardContext` registers
     // `GameDashboardMainMenuCursorHandler` as a pretarget handler to always
@@ -765,17 +762,25 @@ void GameDashboardMainMenuView::OnRecordGameTilePressed() {
                          }
                        },
                        context_->GetWeakPtr()));
+
+    // Always close the main menu in the end in case of the race condition that
+    // this instance is destroyed before the following calls.
+    context_->CloseMainMenu(
+        GameDashboardMainMenuToggleMethod::kActivateNewFeature);
   }
 }
 
 void GameDashboardMainMenuView::OnScreenshotTilePressed() {
-  context_->CloseMainMenu(
-      GameDashboardMainMenuToggleMethod::kActivateNewFeature);
   auto* game_window = context_->game_window();
   CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(game_window);
 
   RecordGameDashboardScreenshotTakeSource(context_->app_id(),
                                           GameDashboardMenu::kMainMenu);
+
+  // Always close the main menu in the end in case of the race condition that
+  // this instance is destroyed before the following calls.
+  context_->CloseMainMenu(
+      GameDashboardMainMenuToggleMethod::kActivateNewFeature);
 }
 
 void GameDashboardMainMenuView::OnSettingsBackButtonPressed() {
@@ -821,10 +826,13 @@ void GameDashboardMainMenuView::UpdateGameControlsTile() {
 }
 
 void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
-  context_->CloseMainMenu(
-      GameDashboardMainMenuToggleMethod::kActivateNewFeature);
   GameDashboardController::Get()->ShowResizeToggleMenu(context_->game_window());
   RecordGameDashboardFunctionTriggered(GameDashboardFunction::kScreenSize);
+
+  // Always close the main menu in the end in case of the race condition that
+  // this instance is destroyed before the following calls.
+  context_->CloseMainMenu(
+      GameDashboardMainMenuToggleMethod::kActivateNewFeature);
 }
 
 void GameDashboardMainMenuView::OnFeedbackButtonPressed() {

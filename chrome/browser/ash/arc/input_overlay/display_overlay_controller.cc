@@ -1293,7 +1293,8 @@ void DisplayOverlayController::AddEditingListWidget() {
   widget_observations_.AddObservation(editing_list_widget_.get());
   editing_list_widget_->SetContentsView(std::make_unique<EditingList>(this));
 
-  editing_list_widget_->Show();
+  // Avoid active conflict with the game dashboard main menu.
+  editing_list_widget_->ShowInactive();
   UpdateEditingListWidgetBounds();
   editing_list_widget_->widget_delegate()->SetAccessibleTitle(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDITING_LIST_A11Y_LABEL));
