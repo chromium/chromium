@@ -30,7 +30,6 @@
 namespace base {
 
 namespace {
-NSString* const kThreadPriorityForTestKey = @"CrThreadPriorityForTestKey";
 NSString* const kRealtimePeriodNsKey = @"CrRealtimePeriodNsKey";
 }  // namespace
 
@@ -95,7 +94,7 @@ BASE_FEATURE(kOptimizedRealtimeThreadingMac,
 );
 
 const Feature kUserInteractiveCompositingMac{"UserInteractiveCompositingMac",
-                                             FEATURE_DISABLED_BY_DEFAULT};
+                                             FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 
@@ -300,71 +299,68 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
   // TODO(https://crbug.com/1280764): Remove this check. kCompositing is the
   // default on Mac, so this check is counter intuitive.
   if ([[NSThread currentThread] isMainThread] &&
-      thread_type >= ThreadType::kCompositing) {
+      thread_type >= ThreadType::kCompositing &&
+      !g_user_interactive_compositing.load(std::memory_order_relaxed)) {
     DCHECK(thread_type == ThreadType::kDefault ||
            thread_type == ThreadType::kCompositing);
     return;
   }
 
-  ThreadPriorityForTest priority = ThreadPriorityForTest::kNormal;
   switch (thread_type) {
     case ThreadType::kBackground:
-      priority = ThreadPriorityForTest::kBackground;
       pthread_set_qos_class_self_np(QOS_CLASS_BACKGROUND, 0);
       break;
     case ThreadType::kUtility:
-      priority = ThreadPriorityForTest::kUtility;
       pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
       break;
     case ThreadType::kResourceEfficient:
-      priority = ThreadPriorityForTest::kUtility;
       pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
       break;
     case ThreadType::kDefault:
-      priority = ThreadPriorityForTest::kNormal;
       pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
       break;
     case ThreadType::kCompositing:
       if (g_user_interactive_compositing.load(std::memory_order_relaxed)) {
-        priority = ThreadPriorityForTest::kDisplay;
         pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
       } else {
-        priority = ThreadPriorityForTest::kNormal;
         pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
       }
       break;
     case ThreadType::kDisplayCritical: {
-      priority = ThreadPriorityForTest::kDisplay;
       pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
       break;
     }
     case ThreadType::kRealtimeAudio:
-      priority = ThreadPriorityForTest::kRealtimeAudio;
       SetPriorityRealtimeAudio(GetCurrentThreadRealtimePeriod());
       DCHECK_EQ([NSThread.currentThread threadPriority], 1.0);
       break;
   }
-
-  NSThread.currentThread.threadDictionary[kThreadPriorityForTestKey] =
-      @(static_cast<int>(priority));
 }
 
 }  // namespace internal
 
 // static
 ThreadPriorityForTest PlatformThreadBase::GetCurrentThreadPriorityForTest() {
-  NSNumber* priority = base::apple::ObjCCast<NSNumber>(
-      NSThread.currentThread.threadDictionary[kThreadPriorityForTestKey]);
-
-  if (!priority) {
-    return ThreadPriorityForTest::kNormal;
+  if ([NSThread.currentThread threadPriority] == 1.0) {
+    // Set to 1 for a non-fixed thread.)
+    return ThreadPriorityForTest::kRealtimeAudio;
   }
 
-  ThreadPriorityForTest thread_priority =
-      static_cast<ThreadPriorityForTest>(priority.intValue);
-  DCHECK_GE(thread_priority, ThreadPriorityForTest::kBackground);
-  DCHECK_LE(thread_priority, ThreadPriorityForTest::kMaxValue);
-  return thread_priority;
+  qos_class_t qos_class;
+  int relative_priority;
+  pthread_get_qos_class_np(pthread_self(), &qos_class, &relative_priority);
+  switch (qos_class) {
+    case QOS_CLASS_BACKGROUND:
+      return ThreadPriorityForTest::kBackground;
+    case QOS_CLASS_UTILITY:
+      return ThreadPriorityForTest::kUtility;
+    case QOS_CLASS_USER_INITIATED:
+      return ThreadPriorityForTest::kNormal;
+    case QOS_CLASS_USER_INTERACTIVE:
+      return ThreadPriorityForTest::kDisplay;
+    default:
+      return ThreadPriorityForTest::kNormal;
+  }
 }
 
 size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {

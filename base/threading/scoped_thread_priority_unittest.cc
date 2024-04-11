@@ -35,6 +35,7 @@ class ScopedThreadPriorityTest : public testing::Test {
  protected:
   void SetUp() override {
     // Ensures the default thread priority is set.
+    PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
     ASSERT_EQ(ThreadPriorityForTest::kNormal,
               PlatformThread::GetCurrentThreadPriorityForTest());
   }

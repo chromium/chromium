@@ -509,7 +509,8 @@ TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
   TestPriorityResultingFromThreadType(ThreadType::kDefault,
                                       ThreadPriorityForTest::kNormal);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_APPLE)
   TestPriorityResultingFromThreadType(ThreadType::kCompositing,
                                       ThreadPriorityForTest::kDisplay);
   TestPriorityResultingFromThreadType(ThreadType::kCompositing,
@@ -518,7 +519,7 @@ TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
   TestPriorityResultingFromThreadType(ThreadType::kCompositing,
                                       MessagePumpType::IO,
                                       ThreadPriorityForTest::kDisplay);
-#else  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
+#else  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
   TestPriorityResultingFromThreadType(ThreadType::kCompositing,
                                       ThreadPriorityForTest::kNormal);
   TestPriorityResultingFromThreadType(ThreadType::kCompositing,
