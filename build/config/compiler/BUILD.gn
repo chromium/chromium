@@ -723,6 +723,19 @@ config("compiler") {
   # example by disabling the optimize configuration.
   # TODO(pcc): Make this conditional on is_official_build rather than on gn
   # flags for specific features.
+  #
+  # High-end Android: While Full LTO provides a small performance improvement
+  # (according to Speedometer), it also results in an unacceptable increase in
+  # build time. Thin LTO appears to provide the best build time-optimization
+  # tradeoff. As of April 2024, Full LTO:
+  #   - Increases build time by ~1:30 hours, to ~2:40 hours (from ~1:10 hours
+  #     with Thin LTO) on Chromium builders.
+  #   - Increases Speedometer 2.1 score by 1.1% [0].
+  #   - Increases Speedometer 3.0 score by 1.2% [1].
+  # ... over Thin LTO.
+  #
+  # [0]: https://pinpoint-dot-chromeperf.appspot.com/job/15efb0313e0000
+  # [1]: https://pinpoint-dot-chromeperf.appspot.com/job/157f0b42be0000
   if (!is_debug && use_thin_lto && is_a_target_toolchain) {
     assert(use_lld, "LTO is only supported with lld")
 
