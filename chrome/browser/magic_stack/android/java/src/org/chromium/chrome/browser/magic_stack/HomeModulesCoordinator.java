@@ -339,8 +339,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     @Override
     public void onModuleClicked(@ModuleType int moduleType, int modulePosition) {
         int hostSurface = mModuleDelegateHost.getHostSurfaceType();
-        HomeModulesMetricsUtils.recordModuleClickedPosition(
-                hostSurface, moduleType, modulePosition);
+        HomeModulesMetricsUtils.recordModuleClicked(hostSurface, moduleType, modulePosition);
     }
 
     @Override

@@ -20,7 +20,10 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 /** The utility class for magic stack. */
 public class HomeModulesMetricsUtils {
     @VisibleForTesting static final String HISTOGRAM_OS_PREFIX = "MagicStack.Clank.";
-    @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK = ".Module.Click.";
+    @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK = ".Module.Click";
+
+    @VisibleForTesting
+    static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK_WITH_POSITION = ".Module.Click.";
 
     @VisibleForTesting
     static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION = ".Module.TopImpressionV2";
@@ -290,9 +293,14 @@ public class HomeModulesMetricsUtils {
      * @param moduleType The type of module.
      * @param modulePosition The position of the module which got clicked.
      */
-    public static void recordModuleClickedPosition(
+    public static void recordModuleClicked(
             @HostSurface int hostSurface, @ModuleType int moduleType, int modulePosition) {
-        recordUma(hostSurface, HISTOGRAM_MAGIC_STACK_MODULE_CLICK, moduleType, modulePosition);
+        recordUma(hostSurface, moduleType, HISTOGRAM_MAGIC_STACK_MODULE_CLICK);
+        recordUma(
+                hostSurface,
+                HISTOGRAM_MAGIC_STACK_MODULE_CLICK_WITH_POSITION,
+                moduleType,
+                modulePosition);
     }
 
     /**

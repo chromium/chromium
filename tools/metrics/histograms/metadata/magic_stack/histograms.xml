@@ -200,6 +200,18 @@ chromium-metrics-reviews@google.com.
   <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.Module.Click"
+    enum="ModuleType" expires_after="2024-09-22">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total count of clicks on different modules of the magic stack on
+    the {ModuleDelegateHost}. The histogram is logged every time when a module
+    is clicked, Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.Module.Click.{ModuleType}.{ModulePosition}"
     units="count" expires_after="2024-09-22">

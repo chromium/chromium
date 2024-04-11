@@ -168,16 +168,20 @@ public class HomeModulesMetricsUtilsUnitTest {
 
     @Test
     @SmallTest
-    public void testRecordModuleClickedPosition() {
+    public void testRecordModuleClicked() {
         @HostSurface int hostSurface = HostSurface.START_SURFACE;
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
-        int modulePosition = 0;
+        int modulePosition = 2;
 
-        String histogramName = "MagicStack.Clank.StartSurface.Module.Click.SingleTab.0";
+        String histogramName = "MagicStack.Clank.StartSurface.Module.Click";
+        String histogramNameWithPosition = "MagicStack.Clank.StartSurface.Module.Click.SingleTab.2";
 
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, 1);
-        HomeModulesMetricsUtils.recordModuleClickedPosition(
-                hostSurface, moduleType, modulePosition);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(histogramName, moduleType)
+                        .expectIntRecords(histogramNameWithPosition, 1)
+                        .build();
+        HomeModulesMetricsUtils.recordModuleClicked(hostSurface, moduleType, modulePosition);
         histogramWatcher.assertExpected();
     }
 
