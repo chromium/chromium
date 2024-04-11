@@ -64,6 +64,7 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
   SMILAnimationValue CreateAnimationValue() const final;
   void ClearAnimationValue() final;
 
+  AnimationMode CalculateAnimationMode() override;
   bool CalculateToAtEndOfDurationValue(
       const String& to_at_end_of_duration_string) final;
   bool CalculateFromAndToValues(const String& from_string,
