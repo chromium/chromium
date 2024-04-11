@@ -1041,6 +1041,17 @@ HttpHandler::HttpHandler(
                      WrapToCommand("SetPermission",
                                    base::BindRepeating(&ExecuteSetPermission))),
 
+      // Extensions for Device Posture API:
+      // https://w3c.github.io/device-posture/#automation
+      CommandMapping(
+          kPost, "session/:sessionId/deviceposture",
+          WrapToCommand("SetDevicePosture",
+                        base::BindRepeating(&ExecuteSetDevicePosture))),
+      CommandMapping(
+          kDelete, "session/:sessionId/deviceposture",
+          WrapToCommand("ClearDevicePosture",
+                        base::BindRepeating(&ExecuteClearDevicePosture))),
+
       //
       // Non-standard extension commands
       //

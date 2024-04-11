@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script>
+const postures = [];
+
+function addDevicePostureEventListener() {
+  navigator.devicePosture.addEventListener("change", () => {
+    postures.push(navigator.devicePosture.type);
+  });
+}
+</script>

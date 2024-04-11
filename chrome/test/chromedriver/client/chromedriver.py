@@ -599,6 +599,12 @@ class ChromeDriver(object):
   def FullScreenWindow(self):
     return self.ExecuteCommand(Command.FULLSCREEN_WINDOW)
 
+  def SetDevicePosture(self, posture):
+    return self.ExecuteCommand(Command.SET_DEVICE_POSTURE, {'posture': posture})
+
+  def ClearDevicePosture(self):
+    return self.ExecuteCommand(Command.CLEAR_DEVICE_POSTURE)
+
   def TakeScreenshot(self):
     return self.ExecuteCommand(Command.SCREENSHOT)
 

@@ -4859,6 +4859,60 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         "This sensor type is not being overridden with a virtual sensor",
         self._driver.UpdateVirtualSensor, 'ambient-light', {'illuminance': 42})
 
+  def testSetDevicePosture(self):
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/device_posture_test.html'))
+    self._driver.ExecuteScript('addDevicePostureEventListener()')
+    original_posture = self._driver.ExecuteScript(
+        'return navigator.devicePosture.type')
+    posture = 'folded' if original_posture == 'continuous' else 'continuous'
+    self._driver.SetDevicePosture(posture)
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return postures.length === 1')))
+    self.assertNotEqual(original_posture,
+                        self._driver.ExecuteScript('return postures.at(-1)'))
+    self._driver.SetDevicePosture(original_posture)
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return postures.length === 2')))
+    self.assertEqual(original_posture,
+                     self._driver.ExecuteScript('return postures.at(-1)'))
+
+  def testSetDevicePostureInvalidArgument(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "Invalid posture type",
+        self._driver.SetDevicePosture, 'invalid-posture')
+
+  def testClearDevicePosture(self):
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/device_posture_test.html'))
+    self._driver.ExecuteScript('addDevicePostureEventListener()')
+    original_posture = self._driver.ExecuteScript(
+        'return navigator.devicePosture.type')
+    posture = 'folded' if original_posture == 'continuous' else 'continuous'
+    self._driver.SetDevicePosture(posture)
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return postures.length === 1')))
+    self.assertNotEqual(original_posture,
+                        self._driver.ExecuteScript('return postures.at(-1)'))
+    self._driver.ClearDevicePosture()
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return postures.length === 2')))
+    self.assertEqual(original_posture,
+                     self._driver.ExecuteScript('return postures.at(-1)'))
+
+  def testClearDevicePostureWithoutSetDevicePosture(self):
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/device_posture_test.html'))
+    self._driver.ExecuteScript('addDevicePostureEventListener()')
+    self._driver.ClearDevicePosture()
+    self.assertFalse(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return postures.length === 1')))
 
 # Tests in the following class are expected to be moved to ChromeDriverTest
 # class when we no longer support the legacy mode.

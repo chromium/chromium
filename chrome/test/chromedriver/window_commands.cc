@@ -2897,3 +2897,26 @@ Status ExecuteSetPermission(Session* session,
   auto dict = std::make_unique<base::Value::Dict>(descriptor->Clone());
   return session->chrome->SetPermission(std::move(dict), valid_state, web_view);
 }
+
+Status ExecuteSetDevicePosture(Session* session,
+                               WebView* web_view,
+                               const base::Value::Dict& params,
+                               std::unique_ptr<base::Value>* value,
+                               Timeout* timeout) {
+  const std::string* posture = params.FindString("posture");
+  if (!posture) {
+    return Status(kInvalidArgument, "'posture' must be a string");
+  }
+  base::Value::Dict args;
+  args.Set("posture", base::Value::Dict().Set("type", *posture));
+  return web_view->SendCommand("Emulation.setDevicePostureOverride", args);
+}
+
+Status ExecuteClearDevicePosture(Session* session,
+                                 WebView* web_view,
+                                 const base::Value::Dict& params,
+                                 std::unique_ptr<base::Value>* value,
+                                 Timeout* timeout) {
+  return web_view->SendCommand("Emulation.clearDevicePostureOverride",
+                               base::Value::Dict());
+}
