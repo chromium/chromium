@@ -226,9 +226,6 @@ struct EnrollmentConfig {
   // match.
   std::string management_domain;
 
-  // The realm the device is joined to (if managed by AD).
-  std::string management_realm;
-
   // Is a license packaged with device or not.
   bool is_license_packaged_with_device = false;
 
@@ -244,10 +241,6 @@ struct EnrollmentConfig {
   // The authentication mechanism to use.
   // TODO(drcrash): Change to best available once ZTE is everywhere.
   AuthMechanism auth_mechanism = AUTH_MECHANISM_INTERACTIVE;
-
-  // The path for the device policy blob data for the offline demo mode. This
-  // should be empty and never used for other modes.
-  base::FilePath offline_policy_path;
 
   // User's email which can be passed from the Gaia screen in the enrollment
   // nudge flow.
