@@ -2373,7 +2373,7 @@ bool AXTree::CreateNewChildVector(
                         ? child->parent()->data().ToString(/*verbose*/ false)
                         : "-")
                 << "\n* child = " << *child;
-          RecordError(*update_state, error.str(), /* fatal */ false);
+          RecordError(*update_state, error.str(), /* fatal */ true);
           // --- End temporary change ---
         }
         success = false;
