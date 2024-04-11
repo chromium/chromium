@@ -13,7 +13,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "base/message_loop/message_pump.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
@@ -528,17 +528,20 @@ bool ThreadControllerWithMessagePumpImpl::RunsTasksByBatches() const {
 
 bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   struct OnIdle {
+    STACK_ALLOCATED();
+
+   public:
     OnIdle(const TickClock* time_source, RunLevelTracker& run_level_tracker_ref)
         : lazy_now(time_source), run_level_tracker(run_level_tracker_ref) {}
 
     // Very last step before going idle, must be fast as this is hidden from the
     // DoIdleWork trace event below.
-    ~OnIdle() { run_level_tracker->OnIdle(lazy_now); }
+    ~OnIdle() { run_level_tracker.OnIdle(lazy_now); }
 
     LazyNow lazy_now;
 
    private:
-    const raw_ref<RunLevelTracker> run_level_tracker;
+    RunLevelTracker& run_level_tracker;
   };
   std::optional<OnIdle> on_idle;
 

@@ -12,6 +12,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/stack_allocated.h"
 #include "base/sequence_token.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/task_traits.h"
@@ -125,6 +126,8 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   // lifetime of the Transaction. No Transaction must be held when ~TaskSource()
   // is called.
   class BASE_EXPORT Transaction {
+    STACK_ALLOCATED();
+
    public:
     Transaction(Transaction&& other);
     Transaction(const Transaction&) = delete;
@@ -149,7 +152,7 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
    private:
     friend class TaskSource;
 
-    raw_ptr<TaskSource, LeakedDanglingUntriaged> task_source_;
+    TaskSource* task_source_;
   };
 
   // |traits| is metadata that applies to all Tasks in the TaskSource.
@@ -345,6 +348,8 @@ class BASE_EXPORT RegisteredTaskSource {
 // A pair of Transaction and RegisteredTaskSource. Useful to carry a
 // RegisteredTaskSource with an associated Transaction.
 struct BASE_EXPORT RegisteredTaskSourceAndTransaction {
+  STACK_ALLOCATED();
+
  public:
   RegisteredTaskSourceAndTransaction(RegisteredTaskSource task_source_in,
                                      TaskSource::Transaction transaction_in);
@@ -365,6 +370,8 @@ struct BASE_EXPORT RegisteredTaskSourceAndTransaction {
 };
 
 struct BASE_EXPORT TaskSourceAndTransaction {
+  STACK_ALLOCATED();
+
  public:
   TaskSourceAndTransaction(scoped_refptr<TaskSource> task_source_in,
                            TaskSource::Transaction transaction_in);
