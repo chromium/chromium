@@ -216,7 +216,6 @@ source_set("eg2_tests") {
   sources = [ "tab_groups_egtest.mm" ]
   deps = [
     ":tab_groups_constant",
-    "//base/test:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",

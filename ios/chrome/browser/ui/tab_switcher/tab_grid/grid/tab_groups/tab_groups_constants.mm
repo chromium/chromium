@@ -4,14 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
 
-NSString* const kCreateTabGroupViewIdentifier =
-    @"kCreateTabGroupViewIdentifier";
-NSString* const kCreateTabGroupTextFieldIdentifier =
-    @"kCreateTabGroupTextFieldIdentifier";
-NSString* const kCreateTabGroupCreateButtonIdentifier =
-    @"kCreateTabGroupCreateButtonIdentifier";
-NSString* const kCreateTabGroupCancelButtonIdentifier =
-    @"kCreateTabGroupCancelButtonIdentifier";
+NSString* const kCreateTabGroupIdentifier = @"CreateTabGroupIdentifier";
 
 const CGFloat kTabGroupPresentationDuration = 0.3;
 const CGFloat kTabGroupDismissalDuration = 0.25;

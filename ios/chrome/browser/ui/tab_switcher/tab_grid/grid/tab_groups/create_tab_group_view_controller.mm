@@ -101,7 +101,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.accessibilityIdentifier = kCreateTabGroupViewIdentifier;
+  self.view.accessibilityIdentifier = kCreateTabGroupIdentifier;
 
   __weak CreateTabGroupViewController* weakSelf = self;
   auto selectedDefaultButtonTest =
@@ -153,8 +153,6 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   tabGroupTextField.translatesAutoresizingMaskIntoConstraints = NO;
   tabGroupTextField.autocorrectionType = UITextAutocorrectionTypeNo;
   tabGroupTextField.spellCheckingType = UITextSpellCheckingTypeNo;
-  tabGroupTextField.accessibilityIdentifier =
-      kCreateTabGroupTextFieldIdentifier;
   tabGroupTextField.text = _title;
 
   [tabGroupTextField addTarget:self
@@ -247,7 +245,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   buttonConfiguration.attributedTitle = attributedString;
 
   cancelButton.configuration = buttonConfiguration;
-  cancelButton.accessibilityIdentifier = kCreateTabGroupCancelButtonIdentifier;
+
   [cancelButton addTarget:self
                    action:@selector(cancelButtonTapped)
          forControlEvents:UIControlEventTouchUpInside];
@@ -294,8 +292,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   buttonConfiguration.attributedTitle = attributedString;
 
   creationButton.configuration = buttonConfiguration;
-  creationButton.accessibilityIdentifier =
-      kCreateTabGroupCreateButtonIdentifier;
+
   [creationButton addTarget:self
                      action:@selector(creationButtonTapped)
            forControlEvents:UIControlEventTouchUpInside];
