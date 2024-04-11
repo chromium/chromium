@@ -553,6 +553,12 @@ BASE_FEATURE(kIPHiOSPromoGenericDefaultBrowserFeature,
 BASE_FEATURE(kIPHiOSOverflowMenuCustomizationFeature,
              "IPH_iOSOverflowMenuCustomization",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPageInfoRevampFeature,
+             "IPH_iOSPageInfoRevamp",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSInlineEnhancedSafeBrowsingPromoFeature,
+             "IPH_iOSInlineEnhancedSafeBrowsingPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

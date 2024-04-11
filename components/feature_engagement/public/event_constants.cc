@@ -134,6 +134,10 @@ const char kAllTabsPromoConditionsMet[] = "all_tabs_promo_conditions_met";
 const char kMadeForIOSPromoConditionsMet[] =
     "made_for_ios_promo_conditions_met";
 const char kStaySafePromoConditionsMet[] = "stay_safe_promo_conditions_met";
+const char kEnhancedSafeBrowsingPromoCriterionMet[] =
+    "enhanced_safe_browsing_promo_criterion_met";
+const char kInlineEnhancedSafeBrowsingPromoClosed[] =
+    "inline_enhanced_safe_browsing_promo_closed";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -232,6 +232,8 @@ chromium-metrics-reviews@google.com.
       summary="Showing the Docking Promo (Remind Me Later version) on iOS"/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
       summary="history item on the overflow menu on iOS"/>
+  <variant name="IPH_iOSInlineEnhancedSafeBrowsingPromoFeature"
+      summary="Showing the Enhanced Safe Browsing Promo on iOS"/>
   <variant name="IPH_iOSNewTabToolbarItemFeature"
       summary="the new tab tool bar item (bottom on iPhone, top on iPad)"/>
   <variant name="IPH_iOSOmniboxPositionFeature"

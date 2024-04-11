@@ -260,6 +260,13 @@ extern const char kMadeForIOSPromoConditionsMet[];
 // browser promo.
 extern const char kStaySafePromoConditionsMet[];
 
+// The user has met a condition that makes the Enhanced Safe Browsing
+// inline promos eligible to be displayed.
+extern const char kEnhancedSafeBrowsingPromoCriterionMet[];
+
+// The user taps the 'x' button on the Enhanced Safe Browsing inline promo.
+extern const char kInlineEnhancedSafeBrowsingPromoClosed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

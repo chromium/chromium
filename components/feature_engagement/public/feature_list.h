@@ -261,6 +261,9 @@ DEFINE_VARIATION_PARAM(kIPHiOSPromoGenericDefaultBrowserFeature,
                        "IPH_iOSPromoGenericDefaultBrowser");
 DEFINE_VARIATION_PARAM(kIPHiOSOverflowMenuCustomizationFeature,
                        "IPH_iOSOverflowMenuCustomization");
+DEFINE_VARIATION_PARAM(kIPHiOSPageInfoRevampFeature, "IPH_iOSPageInfoRevamp");
+DEFINE_VARIATION_PARAM(kIPHiOSInlineEnhancedSafeBrowsingPromoFeature,
+                       "IPH_iOSInlineEnhancedSafeBrowsingPromo");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

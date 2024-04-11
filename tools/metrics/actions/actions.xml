@@ -42212,6 +42212,8 @@ should be able to be added at any place in this file.
       label="For iOSDockingPromoRemindMeLater feature"/>
   <suffix name="iOSHistoryOnOverflowMenuFeature"
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
+  <suffix name="iOSInlineEnhancedSafeBrowsingPromoFeature"
+      label="For Enhanced Safe Browsing Promo feature"/>
   <suffix name="iOSNewTabToolbarItemFeature"
       label="For iOSNewTabToolbarItemFeature feature"/>
   <suffix name="iOSOmniboxPositionFeature"
