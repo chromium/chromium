@@ -594,12 +594,6 @@ void BoxLayout::UpdateFlexLayout(const NormalizedSizeBounds& bounds,
       if (!collapse_margins_spacing_) {
         data.total_size.Enlarge(child_margins.main_trailing(), 0);
       }
-    } else if (!collapse_margins_spacing_) {
-      // TODO(weidongliu): see crbugs.com/1514004#c4. If a view with a 0
-      // preferred size has a margin, it will be considered for main_leading but
-      // not for main_trailing.
-      data.total_size.set_main(data.total_size.main() +
-                               child_margins.main_leading());
     }
 
     int cross_size = box_child.preferred_size.cross();
