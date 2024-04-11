@@ -6802,9 +6802,6 @@ crbug.com/1518453 inspector-protocol/input/dispatchTouchEvent.js [ Failure Pass 
 # May fail due to test framework issue. Disabling while this is being resolved.
 crbug.com/1367312 [ Win ] fast/dom/timer-throttling-hidden-page.html [ Failure Pass ]
 
-# Gardener: 2024-01-23
-crbug.com/1521090 [ Mac12 ] virtual/static-routing-api/http/tests/inspector-protocol/service-worker/tentative/static-router/receive-router-rules-on-update.js [ Failure Pass ]
-
 ### sheriff 2023-01-24
 crbug.com/1521311 http/tests/devtools/service-workers/sw-navigate-useragent.js [ Failure Pass ]
 

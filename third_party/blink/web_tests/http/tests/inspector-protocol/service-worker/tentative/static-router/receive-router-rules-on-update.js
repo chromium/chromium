@@ -1,7 +1,6 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  var {page, session, dp} = await testRunner.startURL(
-      'resources/service-worker-with-static-router.html',
-      'Tests receiving static router rules from the service worker.');
+  const {dp, page} = await testRunner.startBlank(
+    'Tests receiving static router rules from the service worker.');
 
   async function waitForServiceWorkerActivation() {
     let versions = [];
@@ -13,9 +12,12 @@
   }
 
   await dp.Runtime.enable();
-  await dp.ServiceWorker.enable();
 
-  const versions = await waitForServiceWorkerActivation();
+  const versionsPromise = waitForServiceWorkerActivation();
+  await dp.ServiceWorker.enable();
+  await page.navigate('resources/service-worker-with-static-router.html');
+
+  const versions = await versionsPromise;
   testRunner.log(versions[0].routerRules);
   testRunner.completeTest();
 });
