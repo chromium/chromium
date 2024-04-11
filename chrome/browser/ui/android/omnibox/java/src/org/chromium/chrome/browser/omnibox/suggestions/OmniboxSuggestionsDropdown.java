@@ -236,8 +236,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mSelectionController = new RecyclerViewSelectionController(mLayoutScrollListener);
         addOnChildAttachStateChangeListener(mSelectionController);
 
-        boolean shouldShowModernizeVisualUpdate =
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
         final Resources resources = context.getResources();
         int paddingBottom =
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_bottom);
@@ -246,17 +244,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         ViewCompat.setPaddingRelative(this, 0, paddingTop, 0, paddingBottom);
 
         mStandardBgColor =
-                shouldShowModernizeVisualUpdate
-                        ? ChromeColors.getSurfaceColor(
-                                context, R.dimen.omnibox_suggestion_dropdown_bg_elevation)
-                        : ChromeColors.getDefaultThemeColor(context, false);
+                ChromeColors.getSurfaceColor(
+                        context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
         int incognitoBgColorRes = R.color.omnibox_dropdown_bg_incognito;
-        mIncognitoBgColor =
-                shouldShowModernizeVisualUpdate
-                        ? context.getColor(incognitoBgColorRes)
-                        : ChromeColors.getDefaultThemeColor(context, true);
+        mIncognitoBgColor = context.getColor(incognitoBgColorRes);
         if (!mForcePhoneStyleOmnibox
-                && OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && context.getResources().getConfiguration().screenWidthDp
                         >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP) {
@@ -579,18 +571,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     private void adjustHorizontalPosition() {
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
-            // Set our left edge using translation x. This avoids needing to relayout (like setting
-            // a left margin would) and is less risky than calling View#setLeft(), which is intended
-            // for use by the layout system.
-            setTranslationX(mOmniboxAlignment.left);
-        } else {
-            setPadding(
-                    mOmniboxAlignment.paddingLeft,
-                    getPaddingTop(),
-                    mOmniboxAlignment.paddingRight,
-                    getPaddingBottom());
-        }
+        // Set our left edge using translation x. This avoids needing to relayout (like setting
+        // a left margin would) and is less risky than calling View#setLeft(), which is intended
+        // for use by the layout system.
+        setTranslationX(mOmniboxAlignment.left);
     }
 
     private void setRoundBottomCorners(boolean roundBottomCorners) {
