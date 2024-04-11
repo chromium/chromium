@@ -14,7 +14,7 @@
 namespace TemplateURLStarterPackData {
 
 // Update this whenever a change is made to any starter pack data.
-const int kCurrentDataVersion = 8;
+const int kCurrentDataVersion = 9;
 
 // Only update this if there's an incompatible change that requires force
 // updating the user's starter pack data. This will overwrite any of the

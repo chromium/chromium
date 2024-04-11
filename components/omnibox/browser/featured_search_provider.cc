@@ -121,11 +121,20 @@ void FeaturedSearchProvider::AddStarterPackMatch(
           template_url.short_name());
       match.relevance += 10;
     } else {
-      match.description = l10n_util::GetStringFUTF16(
-          IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT, template_url.keyword(),
-          template_url.short_name());
+      std::u16string short_name = template_url.short_name();
+      if (template_url.short_name() == u"Tabs") {
+        // Very special request from UX to sentence-case "Tabs" -> "tabs" only
+        // in this context. It needs to stay capitalized elsewhere since it's
+        // treated like a proper engine name.
+        match.description = short_name = u"tabs";
+      }
+      match.description =
+          l10n_util::GetStringFUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT,
+                                     template_url.keyword(), short_name);
     }
-    match.description_class.emplace_back(0, ACMatchClassification::NONE);
+    match.description_class = {
+        {0, ACMatchClassification::NONE},
+        {template_url.keyword().size(), ACMatchClassification::DIM}};
     match.contents.clear();
     match.contents_class = {{}};
     match.allowed_to_be_default_match = false;
