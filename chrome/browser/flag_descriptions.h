@@ -1127,12 +1127,6 @@ extern const char kContextualPageActionsShareModelDescription[];
 extern const char kGpuRasterizationName[];
 extern const char kGpuRasterizationDescription[];
 
-extern const char kHandwritingLegacyRecognitionName[];
-extern const char kHandwritingLegacyRecognitionDescription[];
-
-extern const char kHandwritingLibraryDlcName[];
-extern const char kHandwritingLibraryDlcDescription[];
-
 extern const char kHardwareMediaKeyHandling[];
 extern const char kHardwareMediaKeyHandlingDescription[];
 

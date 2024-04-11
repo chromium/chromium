@@ -188,21 +188,6 @@ bool IsOndeviceHandwritingEnabledViaCommandLine() {
              ::switches::kOndeviceHandwritingSwitch) == "use_rootfs";
 }
 
-bool IsHandwritingLegacyRecognitionEnabled() {
-  // Disable handwriting DLC flags if device does not have on-device handwriting
-  // (see b/316981973).
-  return IsOndeviceHandwritingEnabledViaCommandLine() &&
-         base::FeatureList::IsEnabled(
-             ash::features::kHandwritingLegacyRecognition);
-}
-
-bool IsHandwritingLibraryDlcEnabled() {
-  // Disable handwriting DLC flags if device does not have on-device handwriting
-  // (see b/316981973).
-  return IsOndeviceHandwritingEnabledViaCommandLine() &&
-         base::FeatureList::IsEnabled(ash::features::kHandwritingLibraryDlc);
-}
-
 }  // namespace
 
 namespace extensions {
@@ -524,8 +509,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag("autocorrect", config.auto_correct));
   features.Append(GenerateFeatureFlag("spellcheck", config.spell_check));
   features.Append(GenerateFeatureFlag("handwriting", config.handwriting));
-  features.Append(GenerateFeatureFlag("handwritinglegacyrecognition",
-                                      IsHandwritingLegacyRecognitionEnabled()));
   features.Append(GenerateFeatureFlag(
       "hindiinscriptlayout",
       base::FeatureList::IsEnabled(ash::features::kHindiInscriptLayout)));
@@ -548,8 +531,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "autocorrectparamstuning",
       base::FeatureList::IsEnabled(ash::features::kAutocorrectParamsTuning)));
-  features.Append(GenerateFeatureFlag("handwritinglibrarydlc",
-                                      IsHandwritingLibraryDlcEnabled()));
   features.Append(
       GenerateFeatureFlag("jelly", chromeos::features::IsJellyEnabled()));
   features.Append(GenerateFeatureFlag(

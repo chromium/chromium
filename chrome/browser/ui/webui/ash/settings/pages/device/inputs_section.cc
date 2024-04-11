@@ -479,8 +479,10 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "onDeviceGrammarCheckEnabled",
       base::FeatureList::IsEnabled(features::kOnDeviceGrammarCheck));
-  html_source->AddBoolean("languagePacksHandwritingEnabled",
-                          features::IsLanguagePacksEnabled());
+
+  // TODO: b/332967598 - Remove obsolete pre-LanguagePacks code in Settings.
+  html_source->AddBoolean("languagePacksHandwritingEnabled", true);
+
   html_source->AddBoolean(
       "systemJapanesePhysicalTyping",
       base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping));

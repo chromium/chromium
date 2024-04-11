@@ -4754,16 +4754,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "handwriting-legacy-recognition",
-    "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
-    "name": "handwriting-library-dlc",
-    "owners": [ "shend@google.com", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "happiness-tracking-surveys-for-desktop-demo",
     "owners": [ "//chrome/browser/ui/hats/OWNERS" ],
     // A debugging and demo flag to allow UI/dev/testing team to always show the UI
