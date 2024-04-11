@@ -311,13 +311,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // pop-up window has already been closed.
   bool is_modal_closed_but_accounts_fetch_pending_{false};
 
-  // If IDP sign-in pop-up window is closed through means other than
-  // IdentityProvider.close() such as the user closing the pop-up window or
-  // window.close(), we should destroy the widget and reject the
-  // navigator.credentials.get promise. This boolean tracks whether
-  // IdentityProvider.close() was called.
-  bool should_destroy_dialog_widget_{true};
-
   // Whether the associated WebContents is visible or not.
   bool is_web_contents_visible_;
 

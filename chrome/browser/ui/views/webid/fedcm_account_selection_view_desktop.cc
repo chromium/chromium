@@ -54,7 +54,6 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   notify_delegate_of_dismiss_ = false;
   is_modal_closed_but_accounts_fetch_pending_ = false;
-  should_destroy_dialog_widget_ = false;
   Close();
 
   // We use this boolean to record metrics in Close(), reset it after Close().
@@ -714,7 +713,7 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     // TODO(crbug.com/1479978): Verify if the current behaviour is what we want
     // for AuthZ/error.
     if (IsIdpSigninPopupOpen()) {
-      should_destroy_dialog_widget_ = false;
+      notify_delegate_of_dismiss_ = false;
       is_modal_closed_but_accounts_fetch_pending_ = true;
       idp_close_popup_time_ = base::TimeTicks::Now();
       popup_window_state_ =
@@ -732,7 +731,7 @@ void FedCmAccountSelectionView::CloseModalDialog() {
 }
 
 void FedCmAccountSelectionView::OnPopupWindowDestroyed() {
-  if (!should_destroy_dialog_widget_) {
+  if (!notify_delegate_of_dismiss_) {
     return;
   }
 
