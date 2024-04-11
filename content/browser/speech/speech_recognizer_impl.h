@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/speech/endpointer/endpointer.h"
+#include "content/browser/speech/endpointer/endpointer.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognizer.h"
 #include "content/common/content_export.h"
@@ -172,7 +172,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
 
   raw_ptr<media::AudioSystem, DanglingUntriaged> audio_system_;
   std::unique_ptr<SpeechRecognitionEngine> recognition_engine_;
-  speech::Endpointer endpointer_;
+  Endpointer endpointer_;
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;
   int num_samples_recorded_;
   float audio_level_;

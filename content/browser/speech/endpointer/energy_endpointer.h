@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,17 +34,18 @@
 // accept. The false accepts can be ignored by setting
 // ep_contamination_rejection_period.
 
-#ifndef COMPONENTS_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_H_
-#define COMPONENTS_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_H_
+#ifndef CONTENT_BROWSER_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_H_
+#define CONTENT_BROWSER_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_H_
 
 #include <stdint.h>
 
 #include <memory>
 #include <vector>
 
-#include "components/speech/endpointer/energy_endpointer_params.h"
+#include "content/browser/speech/endpointer/energy_endpointer_params.h"
+#include "content/common/content_export.h"
 
-namespace speech {
+namespace content {
 
 // Endpointer status codes
 enum EpStatus {
@@ -55,7 +56,7 @@ enum EpStatus {
   EP_POST_SPEECH,
 };
 
-class EnergyEndpointer {
+class CONTENT_EXPORT EnergyEndpointer {
  public:
   // The default construction MUST be followed by Init(), before any
   // other use can be made of the instance.
@@ -93,7 +94,9 @@ class EnergyEndpointer {
   // corresponding to the most recently computed frame.
   EpStatus Status(int64_t* status_time_us) const;
 
-  bool estimating_environment() const { return estimating_environment_; }
+  bool estimating_environment() const {
+    return estimating_environment_;
+  }
 
   // Returns estimated noise level in dB.
   float GetNoiseLevelDb() const;
@@ -113,7 +116,7 @@ class EnergyEndpointer {
   // the 'time' (in seconds).
   int TimeToFrame(float time) const;
 
-  EpStatus status_;               // The current state of this instance.
+  EpStatus status_;  // The current state of this instance.
   float offset_confirm_dur_sec_;  // max on time allowed to confirm POST_SPEECH
   int64_t
       endpointer_time_us_;  // Time of the most recently received audio frame.
@@ -122,7 +125,7 @@ class EnergyEndpointer {
   int64_t
       frame_counter_;     // Number of frames seen. Used for initial adaptation.
   float max_window_dur_;  // Largest search window size (seconds)
-  float sample_rate_;     // Sampling rate.
+  float sample_rate_;  // Sampling rate.
 
   // Ring buffers to hold the speech activity history.
   std::unique_ptr<HistoryRing> history_;
@@ -154,6 +157,6 @@ class EnergyEndpointer {
   int64_t user_input_start_time_us_;
 };
 
-}  // namespace speech
+}  // namespace content
 
-#endif  // COMPONENTS_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_H_
+#endif  // CONTENT_BROWSER_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_H_

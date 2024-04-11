@@ -1,10 +1,10 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/speech/endpointer/energy_endpointer_params.h"
+#include "content/browser/speech/endpointer/energy_endpointer_params.h"
 
-namespace speech {
+namespace content {
 
 EnergyEndpointerParams::EnergyEndpointerParams() {
   SetDefaults();
@@ -50,4 +50,4 @@ void EnergyEndpointerParams::operator=(const EnergyEndpointerParams& source) {
   contamination_rejection_period_ = source.contamination_rejection_period();
 }
 
-}  //  namespace speech
+}  //  namespace content

@@ -1,26 +1,25 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "components/speech/endpointer/endpointer.h"
 
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
 #include "components/speech/audio_buffer.h"
+#include "content/browser/speech/endpointer/endpointer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-const int kFrameRate = 50;     // 20 ms long frames for AMR encoding.
+const int kFrameRate = 50;  // 20 ms long frames for AMR encoding.
 const int kSampleRate = 8000;  // 8 k samples per second for AMR encoding.
 
 // At 8 sample per second a 20 ms frame is 160 samples, which corrsponds
 // to the AMR codec.
 const int kFrameSize = kSampleRate / kFrameRate;  // 160 samples.
 static_assert(kFrameSize == 160, "invalid frame size");
-}  // namespace
+}
 
-namespace speech {
+namespace content {
 
 class FrameProcessor {
  public:
@@ -52,7 +51,7 @@ void RunEndpointerEventsTest(FrameProcessor* processor) {
     // Create random samples.
     for (int i = 0; i < kFrameSize; ++i) {
       float randNum = static_cast<float>(rand() - (RAND_MAX / 2)) /
-                      static_cast<float>(RAND_MAX);
+          static_cast<float>(RAND_MAX);
       samples[i] = static_cast<int16_t>(gain * randNum);
     }
 
@@ -60,15 +59,12 @@ void RunEndpointerEventsTest(FrameProcessor* processor) {
     time += static_cast<int64_t>(kFrameSize * (1e6 / kSampleRate));
 
     // Log the status.
-    if (20 == frame_count) {
+    if (20 == frame_count)
       EXPECT_EQ(EP_PRE_SPEECH, ep_status);
-    }
-    if (70 == frame_count) {
+    if (70 == frame_count)
       EXPECT_EQ(EP_SPEECH_PRESENT, ep_status);
-    }
-    if (120 == frame_count) {
+    if (120 == frame_count)
       EXPECT_EQ(EP_PRE_SPEECH, ep_status);
-    }
   }
 }
 
@@ -158,4 +154,4 @@ TEST(EndpointerTest, TestEmbeddedEndpointerEvents) {
   endpointer.EndSession();
 }
 
-}  // namespace speech
+}  // namespace content

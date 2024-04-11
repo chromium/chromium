@@ -1,14 +1,16 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_PARAMS_H_
-#define COMPONENTS_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_PARAMS_H_
+#ifndef CONTENT_BROWSER_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_PARAMS_H_
+#define CONTENT_BROWSER_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_PARAMS_H_
 
-namespace speech {
+#include "content/common/content_export.h"
+
+namespace content {
 
 // Input parameters for the EnergyEndpointer class.
-class EnergyEndpointerParams {
+class CONTENT_EXPORT EnergyEndpointerParams {
  public:
   EnergyEndpointerParams();
 
@@ -18,7 +20,9 @@ class EnergyEndpointerParams {
 
   // Accessors and mutators
   float frame_period() const { return frame_period_; }
-  void set_frame_period(float frame_period) { frame_period_ = frame_period; }
+  void set_frame_period(float frame_period) {
+    frame_period_ = frame_period;
+  }
 
   float frame_duration() const { return frame_duration_; }
   void set_frame_duration(float frame_duration) {
@@ -100,16 +104,16 @@ class EnergyEndpointerParams {
   }
 
  private:
-  float frame_period_;            // Frame period
-  float frame_duration_;          // Window size
-  float onset_window_;            // Interval scanned for onset activity
-  float speech_on_window_;        // Inverval scanned for ongoing speech
-  float offset_window_;           // Interval scanned for offset evidence
-  float offset_confirm_dur_;      // Silence duration required to confirm offset
-  float decision_threshold_;      // Initial rms detection threshold
+  float frame_period_;  // Frame period
+  float frame_duration_;  // Window size
+  float onset_window_;  // Interval scanned for onset activity
+  float speech_on_window_;  // Inverval scanned for ongoing speech
+  float offset_window_;  // Interval scanned for offset evidence
+  float offset_confirm_dur_;  // Silence duration required to confirm offset
+  float decision_threshold_;  // Initial rms detection threshold
   float min_decision_threshold_;  // Minimum rms detection threshold
-  float fast_update_dur_;         // Period for initial estimation of levels.
-  float sample_rate_;             // Expected sample rate.
+  float fast_update_dur_;  // Period for initial estimation of levels.
+  float sample_rate_;  // Expected sample rate.
 
   // Time to add on either side of endpoint threshold crossings
   float endpoint_margin_;
@@ -128,6 +132,6 @@ class EnergyEndpointerParams {
   float contamination_rejection_period_;
 };
 
-}  //  namespace speech
+}  //  namespace content
 
-#endif  // COMPONENTS_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_PARAMS_H_
+#endif  // CONTENT_BROWSER_SPEECH_ENDPOINTER_ENERGY_ENDPOINTER_PARAMS_H_

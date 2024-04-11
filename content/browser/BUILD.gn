@@ -3267,6 +3267,12 @@ source_set("browser") {
       "service_worker/service_worker_usb_delegate_observer.h",
 
       # Most speech code is non-Android.
+      "speech/endpointer/endpointer.cc",
+      "speech/endpointer/endpointer.h",
+      "speech/endpointer/energy_endpointer.cc",
+      "speech/endpointer/energy_endpointer.h",
+      "speech/endpointer/energy_endpointer_params.cc",
+      "speech/endpointer/energy_endpointer_params.h",
       "speech/network_speech_recognition_engine_impl.cc",
       "speech/network_speech_recognition_engine_impl.h",
       "speech/speech_recognition_engine.cc",
