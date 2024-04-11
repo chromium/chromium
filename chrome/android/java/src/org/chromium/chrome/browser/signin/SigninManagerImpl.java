@@ -737,6 +737,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     public void isAccountManaged(
             @NonNull CoreAccountInfo account, final Callback<Boolean> callback) {
         assert account != null;
+        if (account == null) throw new RuntimeException("Null account");
+        if (callback == null) throw new RuntimeException("Null callback");
         SigninManagerImplJni.get().isAccountManaged(mNativeSigninManagerAndroid, account, callback);
     }
 
