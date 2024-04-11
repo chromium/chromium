@@ -286,7 +286,14 @@ class SearchEngineChoiceUIPixelTest
   base::CallbackListSubscription create_services_subscription_;
 };
 
-IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest, InvokeUi_default) {
+// TODO(crbug.com/333787236): flaky on Window with SkiaGraphite
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+
+IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
