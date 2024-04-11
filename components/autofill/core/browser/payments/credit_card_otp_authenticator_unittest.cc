@@ -138,8 +138,8 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
 
   std::unique_ptr<TestAuthenticationRequester> requester_;
   base::test::TaskEnvironment task_environment_;
-  TestAutofillClient autofill_client_;
   TestPersonalDataManager personal_data_manager_;
+  TestAutofillClient autofill_client_;
   raw_ptr<payments::TestPaymentsNetworkInterface> payments_network_interface_;
   std::unique_ptr<CreditCardOtpAuthenticator> authenticator_;
   CreditCard card_;

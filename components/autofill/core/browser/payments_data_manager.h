@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -47,7 +48,8 @@ class PersonalDataManager;
 class TestPersonalDataManager;
 
 class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
-                            public WebDataServiceConsumer {
+                            public WebDataServiceConsumer,
+                            public AccountInfoGetter {
  public:
   PaymentsDataManager(
       scoped_refptr<AutofillWebDataService> profile_database,
@@ -71,6 +73,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle h,
       std::unique_ptr<WDTypedResult> result) override;
+
+  // AccountInfoGetter:
+  CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
+  bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
 
   // Reloads all payments data from the database.
   void Refresh();

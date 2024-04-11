@@ -46,7 +46,7 @@ AutofillPaymentMethodsDelegate::AutofillPaymentMethodsDelegate(Profile* profile)
       std::make_unique<payments::PaymentsNetworkInterface>(
           profile->GetURLLoaderFactory(),
           IdentityManagerFactory::GetForProfile(profile),
-          personal_data_manager_);
+          &personal_data_manager_->payments_data_manager());
   virtual_card_enrollment_manager_ =
       std::make_unique<VirtualCardEnrollmentManager>(
           personal_data_manager_, payments_network_interface_.get());

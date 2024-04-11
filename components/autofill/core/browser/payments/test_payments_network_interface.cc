@@ -29,9 +29,12 @@ TestPaymentsNetworkInterface::TestPaymentsNetworkInterface(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_,
     signin::IdentityManager* identity_manager,
     PersonalDataManager* personal_data_manager)
-    : PaymentsNetworkInterface(url_loader_factory_,
-                     identity_manager,
-                     personal_data_manager) {
+    : PaymentsNetworkInterface(
+          url_loader_factory_,
+          identity_manager,
+          personal_data_manager
+              ? &personal_data_manager->payments_data_manager()
+              : nullptr) {
   // Default value should be CVC.
   unmask_details_.unmask_auth_method = AutofillClient::UnmaskAuthMethod::kCvc;
 }

@@ -178,19 +178,6 @@ void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
       sync_service && !sync_service->IsSyncFeatureEnabled());
 }
 
-CoreAccountInfo PersonalDataManager::GetAccountInfoForPaymentsServer() const {
-  // Return the account of the active signed-in user irrespective of whether
-  // they enabled sync or not.
-  return identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kSignin);
-}
-
-bool PersonalDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics() const {
-  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
-  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
-  return sync_service_ && sync_service_->IsSyncFeatureEnabled();
-}
-
 void PersonalDataManager::OnAccountsCookieDeletedByUserAction() {
   // Clear all the Sync Transport feature opt-ins.
   prefs::ClearSyncTransportOptIns(pref_service_);

@@ -46,7 +46,8 @@ class PaymentsDataCleanerTest : public PersonalDataManagerTestBase,
  protected:
   void SetServerCards(const std::vector<CreditCard>& server_cards) {
     test::SetServerCreditCards(
-        personal_data_->IsSyncFeatureEnabledForPaymentsServerMetrics()
+        personal_data_->payments_data_manager()
+                .IsSyncFeatureEnabledForPaymentsServerMetrics()
             ? profile_autofill_table_.get()
             : account_autofill_table_.get(),
         server_cards);

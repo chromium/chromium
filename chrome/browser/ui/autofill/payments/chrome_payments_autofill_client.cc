@@ -183,7 +183,8 @@ ChromePaymentsAutofillClient::GetPaymentsNetworkInterface() {
     payments_network_interface_ = std::make_unique<PaymentsNetworkInterface>(
         Profile::FromBrowserContext(web_contents()->GetBrowserContext())
             ->GetURLLoaderFactory(),
-        client_->GetIdentityManager(), client_->GetPersonalDataManager(),
+        client_->GetIdentityManager(),
+        &client_->GetPersonalDataManager()->payments_data_manager(),
         Profile::FromBrowserContext(web_contents()->GetBrowserContext())
             ->IsOffTheRecord());
   }

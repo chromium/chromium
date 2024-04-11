@@ -53,6 +53,8 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
   bool IsPaymentCvcStorageEnabled() override;
+  bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
+  CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
 
   // Clears |local_credit_cards_| and |server_credit_cards_|.
   void ClearCreditCards();
@@ -80,6 +82,10 @@ class TestPaymentsDataManager : public PaymentsDataManager {
     local_ibans_.push_back(std::move(iban));
   }
 
+  void SetAccountInfoForPayments(const CoreAccountInfo& account_info) {
+    account_info_ = account_info;
+  }
+
  private:
   void RemoveCardWithoutNotification(const CreditCard& card);
 
@@ -88,6 +94,7 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   std::optional<bool> payments_wallet_sync_transport_enabled_;
   std::optional<bool> payment_methods_mandatory_reauth_enabled_;
   std::optional<bool> payments_cvc_storage_enabled_;
+  CoreAccountInfo account_info_;
 };
 
 }  // namespace autofill

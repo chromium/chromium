@@ -122,24 +122,6 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromVariations) {
   EXPECT_EQ(expected_country_code, actual_country_code);
 }
 
-TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {
-  // Make the IdentityManager return a non-empty AccountInfo when
-  // GetPrimaryAccountInfo() is called.
-  std::string sync_account_email =
-      identity_test_env_.identity_manager()
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-          .email;
-  ASSERT_FALSE(sync_account_email.empty());
-
-  // Make the sync service returns consistent AccountInfo when GetAccountInfo()
-  // is called.
-  ASSERT_EQ(sync_service_.GetAccountInfo().email, sync_account_email);
-
-  // The Active Sync AccountInfo should be returned.
-  EXPECT_EQ(sync_account_email,
-            personal_data_->GetAccountInfoForPaymentsServer().email);
-}
-
 TEST_F(PersonalDataManagerTest, OnAccountsCookieDeletedByUserAction) {
   // Set up some sync transport opt-ins in the prefs.
   ::autofill::prefs::SetUserOptedInWalletSyncTransport(

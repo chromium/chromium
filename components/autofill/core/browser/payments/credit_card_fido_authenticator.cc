@@ -555,7 +555,8 @@ CreditCardFidoAuthenticator::ParseCreationOptions(
 
   const CoreAccountInfo account_info =
       autofill_client_->GetPersonalDataManager()
-          ->GetAccountInfoForPaymentsServer();
+          ->payments_data_manager()
+          .GetAccountInfoForPaymentsServer();
   options->user.id =
       std::vector<uint8_t>(account_info.gaia.begin(), account_info.gaia.end());
   options->user.name = account_info.email;

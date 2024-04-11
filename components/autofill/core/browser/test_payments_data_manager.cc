@@ -247,6 +247,16 @@ bool TestPaymentsDataManager::IsPaymentCvcStorageEnabled() {
   return PaymentsDataManager::IsPaymentCvcStorageEnabled();
 }
 
+bool TestPaymentsDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics()
+    const {
+  return false;
+}
+
+CoreAccountInfo TestPaymentsDataManager::GetAccountInfoForPaymentsServer()
+    const {
+  return account_info_;
+}
+
 void TestPaymentsDataManager::ClearCreditCards() {
   local_credit_cards_.clear();
   server_credit_cards_.clear();

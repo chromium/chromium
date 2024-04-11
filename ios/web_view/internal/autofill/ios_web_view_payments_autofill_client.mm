@@ -23,7 +23,7 @@ IOSWebViewPaymentsAutofillClient::IOSWebViewPaymentsAutofillClient(
               base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                   browser_state->GetURLLoaderFactory()),
               client->GetIdentityManager(),
-              client->GetPersonalDataManager(),
+              &client->GetPersonalDataManager()->payments_data_manager(),
               browser_state->IsOffTheRecord())) {}
 
 IOSWebViewPaymentsAutofillClient::~IOSWebViewPaymentsAutofillClient() = default;

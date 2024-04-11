@@ -410,7 +410,9 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
 #endif  // BUILDFLAG(IS_IOS)
   return ::autofill::IsCreditCardUploadEnabled(
       client_->GetSyncService(),
-      personal_data_manager_->GetAccountInfoForPaymentsServer().email,
+      personal_data_manager_->payments_data_manager()
+          .GetAccountInfoForPaymentsServer()
+          .email,
       personal_data_manager_->GetCountryCodeForExperimentGroup(),
       personal_data_manager_->payments_data_manager()
           .GetPaymentsSigninStateForMetrics(),

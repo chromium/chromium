@@ -436,6 +436,19 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
   notify_pdm_observers_.Run();
 }
 
+CoreAccountInfo PaymentsDataManager::GetAccountInfoForPaymentsServer() const {
+  // Return the account of the active signed-in user irrespective of whether
+  // they enabled sync or not.
+  return identity_manager_->GetPrimaryAccountInfo(
+      signin::ConsentLevel::kSignin);
+}
+
+bool PaymentsDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics() const {
+  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
+  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
+  return sync_service_ && sync_service_->IsSyncFeatureEnabled();
+}
+
 void PaymentsDataManager::Refresh() {
   LoadCreditCards();
   LoadCreditCardCloudTokenData();

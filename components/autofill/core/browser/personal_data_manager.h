@@ -35,7 +35,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -117,8 +116,7 @@ class PersonalDataManagerObserver;
 class PersonalDataManager : public KeyedService,
                             public history::HistoryServiceObserver,
                             public syncer::SyncServiceObserver,
-                            public signin::IdentityManager::Observer,
-                            public AccountInfoGetter {
+                            public signin::IdentityManager::Observer {
  public:
   using ProfileOrder = AddressDataManager::ProfileOrder;
 
@@ -176,10 +174,6 @@ class PersonalDataManager : public KeyedService,
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
-
-  // AccountInfoGetter:
-  CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
-  bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
 
   // signin::IdentityManager::Observer:
   void OnAccountsCookieDeletedByUserAction() override;

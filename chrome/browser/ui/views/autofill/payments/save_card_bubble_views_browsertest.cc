@@ -370,7 +370,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
         IdentityManagerFactory::GetForProfile(GetProfile(0));
     CoreAccountInfo core_info =
         PersonalDataManagerFactory::GetForProfile(GetProfile(0))
-            ->GetAccountInfoForPaymentsServer();
+            ->payments_data_manager()
+            .GetAccountInfoForPaymentsServer();
 
     AccountInfo account_info;
     account_info.account_id = core_info.account_id;

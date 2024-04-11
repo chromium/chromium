@@ -35,7 +35,7 @@ IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
               base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                   browser_state->GetURLLoaderFactory()),
               client->GetIdentityManager(),
-              client->GetPersonalDataManager(),
+              &client->GetPersonalDataManager()->payments_data_manager(),
               browser_state->IsOffTheRecord())),
       browser_state_(browser_state) {}
 

@@ -21,9 +21,10 @@ TestPaymentRequestDelegate::TestPaymentRequestDelegate(
       test_shared_loader_factory_(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory_)),
-      payments_network_interface_(test_shared_loader_factory_,
-                                  /*identity_manager=*/nullptr,
-                                  personal_data_manager),
+      payments_network_interface_(
+          test_shared_loader_factory_,
+          /*identity_manager=*/nullptr,
+          &personal_data_manager->payments_data_manager()),
       full_card_request_(&autofill_client_,
                          &payments_network_interface_,
                          personal_data_manager) {}

@@ -46,16 +46,6 @@ bool TestPersonalDataManager::IsDataLoaded() const {
   return true;
 }
 
-bool TestPersonalDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics()
-    const {
-  return false;
-}
-
-CoreAccountInfo TestPersonalDataManager::GetAccountInfoForPaymentsServer()
-    const {
-  return account_info_;
-}
-
 void TestPersonalDataManager::SetPrefService(PrefService* pref_service) {
   pref_service_ = pref_service;
   test_address_data_manager().SetPrefService(pref_service);

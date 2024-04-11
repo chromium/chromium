@@ -114,7 +114,8 @@ void PersonalDataManagerTestBase::ResetPersonalDataManager(
   }
   personal_data->OnStateChanged(&sync_service_);
 
-  return personal_data->IsSyncFeatureEnabledForPaymentsServerMetrics();
+  return personal_data->payments_data_manager()
+      .IsSyncFeatureEnabledForPaymentsServerMetrics();
 }
 
 void PersonalDataManagerTestBase::SetServerCards(

@@ -214,7 +214,9 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
   if (!is_test_mode &&
       !IsCreditCardUploadEnabled(
           sync_service,
-          personal_data_manager->GetAccountInfoForPaymentsServer().email,
+          personal_data_manager->payments_data_manager()
+              .GetAccountInfoForPaymentsServer()
+              .email,
           personal_data_manager->GetCountryCodeForExperimentGroup(),
           personal_data_manager->payments_data_manager()
               .GetPaymentsSigninStateForMetrics(),

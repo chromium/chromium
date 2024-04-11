@@ -207,7 +207,8 @@ class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
   PaymentsAutofillTable* GetServerDataTable() {
-    return personal_data_->IsSyncFeatureEnabledForPaymentsServerMetrics()
+    return payments_data_manager()
+                   .IsSyncFeatureEnabledForPaymentsServerMetrics()
                ? profile_autofill_table_.get()
                : account_autofill_table_.get();
   }
@@ -2963,6 +2964,24 @@ TEST_F(PaymentsDataManagerTest, SaveCardLocallyIfNewWithExistingCard) {
   }
 
   EXPECT_THAT(saved_credit_cards, testing::ElementsAre(credit_card));
+}
+
+TEST_F(PaymentsDataManagerTest, GetAccountInfoForPaymentsServer) {
+  // Make the IdentityManager return a non-empty AccountInfo when
+  // GetPrimaryAccountInfo() is called.
+  std::string sync_account_email =
+      identity_test_env_.identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .email;
+  ASSERT_FALSE(sync_account_email.empty());
+
+  // Make the sync service returns consistent AccountInfo when GetAccountInfo()
+  // is called.
+  ASSERT_EQ(sync_service_.GetAccountInfo().email, sync_account_email);
+
+  // The Active Sync AccountInfo should be returned.
+  EXPECT_EQ(sync_account_email,
+            payments_data_manager().GetAccountInfoForPaymentsServer().email);
 }
 
 }  // namespace autofill

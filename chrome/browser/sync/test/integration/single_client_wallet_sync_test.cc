@@ -944,9 +944,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
 
-  // PersonalDataManager should use (ephemeral) account storage.
+  // PaymentsDataManager should use (ephemeral) account storage.
   EXPECT_FALSE(GetPersonalDataManager(0)
-                   ->IsSyncFeatureEnabledForPaymentsServerMetrics());
+                   ->payments_data_manager()
+                   .IsSyncFeatureEnabledForPaymentsServerMetrics());
   EXPECT_TRUE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
@@ -984,9 +985,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
 
-  // PersonalDataManager should have switched to persistent storage.
+  // PaymentsDataManager should have switched to persistent storage.
   EXPECT_TRUE(GetPersonalDataManager(0)
-                  ->IsSyncFeatureEnabledForPaymentsServerMetrics());
+                  ->payments_data_manager()
+                  .IsSyncFeatureEnabledForPaymentsServerMetrics());
   EXPECT_FALSE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
@@ -1018,9 +1020,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
 
-  // PersonalDataManager should use (ephemeral) account storage.
+  // PaymentsDataManager should use (ephemeral) account storage.
   EXPECT_FALSE(GetPersonalDataManager(0)
-                   ->IsSyncFeatureEnabledForPaymentsServerMetrics());
+                   ->payments_data_manager()
+                   .IsSyncFeatureEnabledForPaymentsServerMetrics());
   EXPECT_TRUE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
@@ -1069,9 +1072,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
 
-  // PersonalDataManager should have switched to persistent storage.
+  // PaymentsDataManager should have switched to persistent storage.
   EXPECT_TRUE(GetPersonalDataManager(0)
-                  ->IsSyncFeatureEnabledForPaymentsServerMetrics());
+                  ->payments_data_manager()
+                  .IsSyncFeatureEnabledForPaymentsServerMetrics());
   EXPECT_FALSE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 

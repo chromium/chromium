@@ -42,7 +42,7 @@ void PaymentsNetworkInterfaceTestBase::SetUpTest() {
   test_shared_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
-  test_personal_data_.SetAccountInfoForPayments(
+  test_personal_data_.test_payments_data_manager().SetAccountInfoForPayments(
       identity_test_env_.MakePrimaryAccountAvailable(
           "example@gmail.com", signin::ConsentLevel::kSync));
 }

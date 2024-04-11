@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/autofill/core/browser/test_payments_data_manager.h"
-#include "components/signin/public/identity_manager/account_info.h"
 
 namespace autofill {
 
@@ -67,8 +66,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   // or to make things easier in general to toggle.
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
   bool IsDataLoaded() const override;
-  bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
-  CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
 
   // Unique to TestPersonalDataManager:
   void SetPrefService(PrefService* pref_service);
@@ -131,17 +128,12 @@ class TestPersonalDataManager : public PersonalDataManager {
     payments_data_manager_->payments_customer_data_ = std::move(customer_data);
   }
 
-  void SetAccountInfoForPayments(const CoreAccountInfo& account_info) {
-    account_info_ = account_info;
-  }
-
   void ClearCreditCardArtImages() {
     payments_data_manager_->credit_card_art_images_.clear();
   }
 
  private:
   std::string default_country_code_;
-  CoreAccountInfo account_info_;
 };
 
 }  // namespace autofill

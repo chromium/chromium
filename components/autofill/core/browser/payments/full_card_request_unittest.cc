@@ -143,10 +143,10 @@ class FullCardRequestTest : public testing::Test {
     personal_data_.SetSyncServiceForTest(&sync_service_);
     payments_network_interface_ = std::make_unique<PaymentsNetworkInterface>(
         test_shared_loader_factory_, autofill_client_.GetIdentityManager(),
-        &personal_data_);
+        &personal_data_.payments_data_manager());
     request_ = std::make_unique<FullCardRequest>(
         &autofill_client_, payments_network_interface_.get(), &personal_data_);
-    personal_data_.SetAccountInfoForPayments(
+    personal_data_.test_payments_data_manager().SetAccountInfoForPayments(
         autofill_client_.GetIdentityManager()->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSync));
     // Silence the warning from PaymentsNetworkInterface about matching sync and

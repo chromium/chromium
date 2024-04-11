@@ -178,7 +178,8 @@ AccountInfo IbanBubbleControllerImpl::GetAccountInfo() {
   }
 
   return identity_manager->FindExtendedAccountInfo(
-      personal_data_manager->GetAccountInfoForPaymentsServer());
+      personal_data_manager->payments_data_manager()
+          .GetAccountInfoForPaymentsServer());
 }
 
 const Iban& IbanBubbleControllerImpl::GetIban() const {

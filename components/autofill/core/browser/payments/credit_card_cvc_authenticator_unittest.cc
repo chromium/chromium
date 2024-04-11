@@ -83,14 +83,12 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
     autofill_driver_ = std::make_unique<testing::NiceMock<TestAutofillDriver>>(
         &autofill_client_);
 
-    payments::TestPaymentsNetworkInterface* payments_network_interface =
-        new payments::TestPaymentsNetworkInterface(
-            autofill_client_.GetURLLoaderFactory(),
-            autofill_client_.GetIdentityManager(), &personal_data_manager_);
     autofill_client_.GetPaymentsAutofillClient()
         ->set_test_payments_network_interface(
-            std::unique_ptr<payments::TestPaymentsNetworkInterface>(
-                payments_network_interface));
+            std::make_unique<payments::TestPaymentsNetworkInterface>(
+                autofill_client_.GetURLLoaderFactory(),
+                autofill_client_.GetIdentityManager(),
+                &personal_data_manager_));
     cvc_authenticator_ =
         std::make_unique<CreditCardCvcAuthenticator>(&autofill_client_);
   }
@@ -148,9 +146,9 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
+  TestPersonalDataManager personal_data_manager_;
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
-  TestPersonalDataManager personal_data_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
 };

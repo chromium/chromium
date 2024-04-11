@@ -400,7 +400,9 @@ void LocalCardMigrationManager::ShowMainMigrationDialog() {
   // Pops up a larger, modal dialog showing the local cards to be uploaded.
   client_->GetPaymentsAutofillClient()->ConfirmMigrateLocalCardToCloud(
       legal_message_lines_,
-      personal_data_manager_->GetAccountInfoForPaymentsServer().email,
+      personal_data_manager_->payments_data_manager()
+          .GetAccountInfoForPaymentsServer()
+          .email,
       migratable_credit_cards_,
       base::BindOnce(
           &LocalCardMigrationManager::OnUserAcceptedMainMigrationDialog,
