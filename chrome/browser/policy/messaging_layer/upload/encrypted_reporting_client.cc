@@ -651,9 +651,7 @@ void EncryptedReportingClient::OnReportUploadCompleted(
     std::move(callback).Run(base::unexpected(
         Status(error::DATA_LOSS,
                base::StrCat(
-                   {"Response code: ", base::NumberToString(response_code), " ",
-                    ::net::GetHttpReasonPhrase(
-                        static_cast<::net::HttpStatusCode>(response_code))}))));
+                   {"Response code: ", base::NumberToString(response_code)}))));
     return;
   }
   if (!response.has_value()) {
