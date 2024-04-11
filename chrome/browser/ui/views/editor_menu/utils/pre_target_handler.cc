@@ -237,7 +237,7 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
 
       // Focus |view_| if compatible key-event should transfer the selection to
       // it from within the menu.
-      if (view_should_gain_focus) {
+      if (view_should_gain_focus && card_type_ != CardType::kEditorMenu) {
         // Track currently focused view to restore back to later and send focus
         // to |view_|.
         external_focus_tracker_->SetFocusManager(focus_manager);
@@ -246,12 +246,6 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
 
         active_menu = views::MenuController::GetActiveInstance();
 
-        // When the Editor Menu requests focus, the context menu will
-        // eventually be dismissed. In this case, we skip reopening sub-mdenu.
-        if (card_type_ == CardType::kEditorMenu) {
-          return;
-        }
-
         // Reopen the sub-menu owned by |parent| to clear the currently selected
         // boundary menu-item.
         if (parent && active_menu) {
@@ -259,6 +253,13 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
         }
       }
 
+      return;
+    }
+    case ui::VKEY_TAB: {
+      if (card_type_ == CardType::kEditorMenu && !view_has_pane_focus) {
+        view_.view()->RequestFocus();
+        key_event->StopPropagation();
+      }
       return;
     }
     case ui::VKEY_RETURN: {
