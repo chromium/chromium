@@ -229,7 +229,6 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
   void ResetBackend() {
     auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
-    delegate_ = delegate.get();
 
     auto connection =
         std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
@@ -342,12 +341,10 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
  private:
   base::ScopedTempDir temp_dir_;
   const base::FilePath file_path_;
-  raw_ptr<testing::NiceMock<MockDelegate>, DanglingUntriaged> delegate_ =
-      nullptr;
-  raw_ptr<testing::NiceMock<MockTrustedVaultConnection>, DanglingUntriaged>
-      connection_ = nullptr;
   base::SimpleTestClock clock_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
+  raw_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection_ = nullptr;
+
   std::unique_ptr<FakeRecoveryKeyProvider> recovery_key_provider_holder_;
   raw_ptr<testing::NiceMock<MockRecoveryKeyStoreConnection>>
       recovery_key_store_connection_ = nullptr;
