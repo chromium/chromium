@@ -31,7 +31,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
   ~BrowserServiceLacros() override;
 
   // crosapi::mojom::BrowserService:
-  void REMOVED_0(REMOVED_0Callback callback) override;
+  void REMOVED_0() override;
   void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override;
   void REMOVED_7(bool should_trigger_session_restore,
                  base::OnceClosure callback) override;

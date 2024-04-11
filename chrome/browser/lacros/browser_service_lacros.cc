@@ -195,7 +195,7 @@ BrowserServiceLacros::~BrowserServiceLacros() {
   BrowserList::RemoveObserver(this);
 }
 
-void BrowserServiceLacros::REMOVED_0(REMOVED_0Callback callback) {
+void BrowserServiceLacros::REMOVED_0() {
   NOTIMPLEMENTED();
 }
 

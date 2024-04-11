@@ -1807,7 +1807,7 @@ struct OpenUrlParams {
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
 interface BrowserService {
   // Removed method. No longer used.
-  REMOVED_0@0() => (pending_receiver<Crosapi> receiver);
+  REMOVED_0@0();
   REMOVED_2@2(BrowserInitParams params);
 
   // Opens a new window in the browser with the profile that matches
