@@ -293,8 +293,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // is restored, and Canvas2D method calls will function normally once more.
   // Throws InvalidStateError if a matching call to beginWebGPUAccess was not
   // performed.
-  // TODO(crbug.com/1517367): document the expected behavior if WebGPU continues
-  // to access the GPUTexture after endWebGPUAccess is called.
+  // Generates a GPUValidationError if the GPUTexture is used after
+  // endWebGPUAccess is called.
   void endWebGPUAccess(ExceptionState& exception_state);
 
   // Returns the format of the GPUTexture that beginWebGPUAccess will return.

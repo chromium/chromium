@@ -203,3 +203,40 @@ function test_endWebGPUAccess_context_lost(device, canvas) {
     assert_unreached('endWebGPUAccess should be safe when context is lost.');
   }
 }
+
+/**
+ * endWebGPUAccess() should cause the GPUTexture returned by beginWebGPUAccess()
+ * to enter a destroyed state.
+ */
+function test_endWebGPUAccess_destroys_texture(device, canvas) {
+  // Briefly begin a WebGPU access session.
+  const ctx = canvas.getContext('2d');
+  const tex = ctx.beginWebGPUAccess({device: device});
+  ctx.endWebGPUAccess();
+
+  // Make a buffer which will allow us to copy one pixel to or from the texture.
+  const buf = device.createBuffer({usage: GPUBufferUsage.COPY_SRC |
+                                          GPUBufferUsage.COPY_DST,
+                                    size: 4});
+
+  // `tex` should be in a destroyed state. Unfortunately, there isn't a
+  // foolproof way to test for this state in WebGPU. The best we can do is try
+  // to use the texture in various ways and check for GPUValidationErrors.
+  // So we verify that we are not able to read-from or write-to the texture.
+  device.pushErrorScope('validation');
+  const texToBufEncoder = device.createCommandEncoder();
+  texToBufEncoder.copyTextureToBuffer({texture: tex}, {buffer: buf}, [1, 1]);
+  device.queue.submit([texToBufEncoder.finish()]);
+
+  device.pushErrorScope('validation');
+  const bufToTexEncoder = device.createCommandEncoder();
+  bufToTexEncoder.copyBufferToTexture({buffer: buf}, {texture: tex}, [1, 1]);
+  device.queue.submit([bufToTexEncoder.finish()]);
+
+  return device.popErrorScope().then((writeError) => {
+    return device.popErrorScope().then((readError) => {
+      assert_true(readError instanceof GPUValidationError);
+      assert_true(writeError instanceof GPUValidationError);
+    });
+  });
+}

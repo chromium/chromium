@@ -3522,6 +3522,10 @@ void BaseRenderingContext2D::endWebGPUAccess(ExceptionState& exception_state) {
                                       "Unable to replace canvas image.");
   }
 
+  // Destroy the WebGPU texture to prevent it from being used after
+  // endWebGPUAccess.
+  webgpu_access_texture_->destroy();
+
   // We are finished with the WebGPU texture and its associated device.
   webgpu_access_texture_ = nullptr;
 }
