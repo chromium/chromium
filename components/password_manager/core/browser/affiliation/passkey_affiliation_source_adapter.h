@@ -34,7 +34,7 @@ class PasskeyAffiliationSourceAdapter
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
 
-  const raw_ptr<webauthn::PasskeyModel> passkey_model_;
+  raw_ptr<webauthn::PasskeyModel> passkey_model_ = nullptr;
   raw_ptr<AffiliationSource::Observer> observer_ = nullptr;
 
   // Observer to `passkey_model_`.

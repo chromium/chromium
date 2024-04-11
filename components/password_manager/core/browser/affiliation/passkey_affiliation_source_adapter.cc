@@ -33,9 +33,17 @@ std::optional<FacetURI> FacetURIFromPasskey(
 
 PasskeyAffiliationSourceAdapter::PasskeyAffiliationSourceAdapter(
     webauthn::PasskeyModel* passkey_model)
-    : passkey_model_(passkey_model) {}
+    : passkey_model_(passkey_model) {
+  // Immediate observation of the passkeys model is essential to signal the
+  // source adapter upon model destruction. This prevents dangling pointers by
+  // automatically removing observation and resetting the model pointer.
+  passkey_model_observation_.Observe(passkey_model_);
+}
 
-PasskeyAffiliationSourceAdapter::~PasskeyAffiliationSourceAdapter() = default;
+PasskeyAffiliationSourceAdapter::~PasskeyAffiliationSourceAdapter() {
+  passkey_model_observation_.Reset();
+  passkey_model_ = nullptr;
+}
 
 void PasskeyAffiliationSourceAdapter::GetFacets(
     AffiliationSource::ResultCallback response_callback) {
@@ -55,12 +63,16 @@ void PasskeyAffiliationSourceAdapter::GetFacets(
 void PasskeyAffiliationSourceAdapter::StartObserving(
     AffiliationSource::Observer* observer) {
   CHECK(!observer_);
+  // Note that the data layer is already being observed. Only setting up the
+  // correct affiliation source observer is necessary.
   observer_ = observer;
-  passkey_model_observation_.Observe(passkey_model_);
 }
 
 void PasskeyAffiliationSourceAdapter::OnPasskeysChanged(
     const std::vector<webauthn::PasskeyModelChange>& changes) {
+  if (!observer_) {
+    return;
+  }
   std::vector<FacetURI> facets_added;
   std::vector<FacetURI> facets_removed;
 
@@ -85,6 +97,7 @@ void PasskeyAffiliationSourceAdapter::OnPasskeysChanged(
 
 void PasskeyAffiliationSourceAdapter::OnPasskeyModelShuttingDown() {
   passkey_model_observation_.Reset();
+  passkey_model_ = nullptr;
 }
 
 }  // namespace password_manager
