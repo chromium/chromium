@@ -17,7 +17,7 @@ namespace ash {
 class GameDashboardTestBase : public AshTestBase {
  public:
   // The bounds for the screen that will contain app windows.
-  static constexpr gfx::Rect kScreenBounds = gfx::Rect(10, 10, 1000, 750);
+  static constexpr gfx::Rect kScreenBounds = gfx::Rect(10, 10, 2000, 1500);
 
   GameDashboardTestBase();
   GameDashboardTestBase(const GameDashboardTestBase&) = delete;

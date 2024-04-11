@@ -677,7 +677,9 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
       /*thickness=*/1, kBubbleCornerRadius,
       cros_tokens::kCrosSysSystemHighlight1));
   set_corner_radius(kBubbleCornerRadius);
-  set_close_on_deactivate(true);
+  // Closing on deactivation is manually handled by the `GameDashboardContext`
+  // in order to support tabbing between sibling widgets.
+  set_close_on_deactivate(false);
   set_internal_name("GameDashboardMainMenuView");
   set_margins(gfx::Insets());
   set_parent_window(

@@ -28,6 +28,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
@@ -37,6 +38,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -115,6 +117,7 @@ GameDashboardContext::GameDashboardContext(aura::Window* game_window)
 }
 
 GameDashboardContext::~GameDashboardContext() {
+  MaybeRemovePreTargetHandler();
   window_state_observation_.Reset();
   game_dashboard_button_->RemoveObserver(this);
   if (main_menu_widget_) {
@@ -171,6 +174,10 @@ void GameDashboardContext::Initialize() {
   if (!IsArcWindow(game_window_)) {
     MaybeShowWelcomeDialog();
   }
+  // The pretarget handler must be added when the context is initialized, since
+  // `OnWindowActivated()` is called before the context was created and
+  // initialized.
+  MaybeAddPreTargetHandler();
 }
 
 void GameDashboardContext::MaybeStackAboveWidget(views::Widget* widget) {
@@ -393,6 +400,60 @@ void GameDashboardContext::SetGameDashboardButtonVisibility(bool visible) {
   }
 }
 
+void GameDashboardContext::MaybeAddPreTargetHandler() {
+  if (!game_window_->Contains(
+          wm::GetTransientRoot(window_util::GetActiveWindow()))) {
+    // Don't add a pretarget handler to any window whose transient root is not
+    // active.
+    return;
+  }
+
+  if (!added_to_pre_target_handler_) {
+    added_to_pre_target_handler_ = true;
+    // The pretarget handler must be added to the Shell in order to be
+    // properly notified of all events interacting with different widgets
+    // within the game window.
+    Shell::Get()->AddPreTargetHandler(this);
+  }
+}
+
+void GameDashboardContext::MaybeRemovePreTargetHandler() {
+  if (added_to_pre_target_handler_) {
+    added_to_pre_target_handler_ = false;
+    Shell::Get()->RemovePreTargetHandler(this);
+  }
+}
+
+void GameDashboardContext::OnEvent(ui::Event* event) {
+  // Close the main menu if the user clicks outside of both the main menu
+  // widget and the Game Dashboard button.
+  if (main_menu_widget_) {
+    switch (event->type()) {
+      case ui::ET_TOUCH_PRESSED:
+      case ui::ET_MOUSE_PRESSED: {
+        // TODO(b/328852471): Update logic to compare event target with native
+        // window.
+        const ui::LocatedEvent* located_event = event->AsLocatedEvent();
+        const auto event_location =
+            located_event->target()->GetScreenLocation(*located_event);
+        if (!game_dashboard_button_->GetBoundsInScreen().Contains(
+                event_location) &&
+            !main_menu_widget_->GetWindowBoundsInScreen().Contains(
+                event_location)) {
+          // Touch/Mouse event occurred outside both the main menu widget and
+          // the Game Dashboard button bounds. Ignore the bounds of the Game
+          // Dashboard button since it will already toggle the main menu when
+          // pressed.
+          CloseMainMenu(GameDashboardMainMenuToggleMethod::kOthers);
+        }
+      } break;
+      default:
+        break;
+    }
+  }
+  ui::EventHandler::OnEvent(event);
+}
+
 void GameDashboardContext::OnViewPreferredSizeChanged(
     views::View* observed_view) {
   CHECK_EQ(game_dashboard_button_, observed_view);
@@ -478,9 +539,10 @@ void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
                           weak_ptr_factory_.GetWeakPtr()));
   DCHECK(!game_dashboard_button_);
   game_dashboard_button_ = game_dashboard_button.get();
+  // Allow the Game Dashboard button to be activatable so that it can be
+  // focusable during tab navigation.
   game_dashboard_button_widget_ = CreateTransientChildWidget(
-      game_window_, "GameDashboardButton", std::move(game_dashboard_button),
-      views::Widget::InitParams::Activatable::kNo);
+      game_window_, "GameDashboardButton", std::move(game_dashboard_button));
   // Add observer after `game_dashboard_button_widget_` is created because the
   // observation is to update `game_dashboard_button_widget_` bounds.
   game_dashboard_button_->AddObserver(this);

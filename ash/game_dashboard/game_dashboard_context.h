@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/events/event_handler.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -35,7 +36,8 @@ class GameDashboardToolbarView;
 
 // This class manages Game Dashboard related UI for a given `aura::Window`, and
 // its instance is managed by the `GameDashboardController`.
-class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
+class ASH_EXPORT GameDashboardContext : public ui::EventHandler,
+                                        public views::ViewObserver,
                                         public views::WidgetObserver,
                                         public WindowStateObserver {
  public:
@@ -138,6 +140,17 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
 
   // Controls the Game Dashboard Button visibility.
   void SetGameDashboardButtonVisibility(bool visible);
+
+  // Conditionally, adds this context to the pre-target handler if it hasn't
+  // already been added.
+  void MaybeAddPreTargetHandler();
+
+  // Conditionally, removes this context from the pre-target handler if it
+  // hasn't already been removed.
+  void MaybeRemovePreTargetHandler();
+
+  // ui::EventHandler:
+  void OnEvent(ui::Event* event) override;
 
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
@@ -272,6 +285,11 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // false if the recording starts from the toolbar. It is null if the recording
   // is started from somewhere else.
   std::optional<bool> recording_from_main_menu_;
+
+  // Indicates whether this context has been added as a Shell's pre-target
+  // handler. This param ensures this context isn't added as a pre-target
+  // handler multiple times.
+  bool added_to_pre_target_handler_ = false;
 
   base::ScopedObservation<WindowState, WindowStateObserver>
       window_state_observation_{this};

@@ -413,8 +413,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     auto* game_dashboard_button_widget =
         test_api_->GetGameDashboardButton()->GetWidget();
     CHECK(game_dashboard_button_widget);
-    ASSERT_FALSE(game_dashboard_button_widget->CanActivate());
-    ASSERT_FALSE(game_dashboard_button_widget->IsActive());
+    ASSERT_TRUE(game_dashboard_button_widget->CanActivate());
 
     // Using `prefs::kGameDashboardShowWelcomeDialog`, verify whether the
     // welcome dialog should be shown.
@@ -581,15 +580,34 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     VerifyGameDashboardButtonState(test_api_.get(), is_recording);
   }
 
+  // Moves the cursor inside the window frame header, half way between the left
+  // edge of the window and `GameDashboardMainMenuButton`. Returns the new mouse
+  // location.
+  gfx::Point MoveCursorToEmptySpaceInFrameHeader(
+      GameDashboardContextTestApi* test_api) {
+    const auto window_bounds =
+        test_api->context()->game_window()->GetBoundsInScreen();
+    const auto gd_button_bounds_x =
+        test_api->GetGameDashboardButton()->GetBoundsInScreen().x();
+    gfx::Point new_mouse_location =
+        gfx::Point((window_bounds.x() + gd_button_bounds_x) / 2,
+                   window_bounds.y() + frame_header_height_ / 2);
+    GetEventGenerator()->MoveMouseTo(new_mouse_location);
+    return new_mouse_location;
+  }
+
   // Starts recording `recording_window_test_api`'s window, and verifies its
   // record game buttons are enabled and toggled on, while the record game
   // buttons in `other_window_test_api` are disabled and toggled off.
   void RecordGameAndVerifyButtons(
       GameDashboardContextTestApi* recording_window_test_api,
       GameDashboardContextTestApi* other_window_test_api) {
+    auto* event_generator = GetEventGenerator();
+
     // Verify the initial state of the record buttons.
     for (auto* test_api : {recording_window_test_api, other_window_test_api}) {
-      wm::ActivateWindow(test_api->context()->game_window());
+      MoveCursorToEmptySpaceInFrameHeader(test_api);
+      event_generator->ClickLeftButton();
 
       test_api->OpenTheMainMenu();
       const auto* record_game_tile = test_api->GetMainMenuRecordGameTile();
@@ -621,7 +639,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     auto* recording_window =
         recording_window_test_api->context()->game_window();
     ASSERT_TRUE(recording_window);
-    wm::ActivateWindow(recording_window);
+    MoveCursorToEmptySpaceInFrameHeader(recording_window_test_api);
+    event_generator->ClickLeftButton();
 
     // Start recording recording_window.
     recording_window_test_api->OpenTheMainMenu();
@@ -654,8 +673,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
         /*enabled=*/true, /*toggled=*/true);
 
     // Retrieve the record game buttons for the `other_window`.
-    auto* other_window = other_window_test_api->context()->game_window();
-    wm::ActivateWindow(other_window);
+    MoveCursorToEmptySpaceInFrameHeader(other_window_test_api);
+    event_generator->ClickLeftButton();
     other_window_test_api->OpenTheMainMenu();
 
     // Retrieve the record game buttons for the `other_window` and verify
@@ -665,15 +684,13 @@ class GameDashboardContextTest : public GameDashboardTestBase {
                            /*enabled=*/false, /*toggled=*/false);
 
     // Stop the video recording session.
-    wm::ActivateWindow(recording_window);
+    MoveCursorToEmptySpaceInFrameHeader(recording_window_test_api);
+    event_generator->ClickLeftButton();
     recording_window_test_api->OpenTheMainMenu();
     LeftClickOn(recording_window_test_api->GetMainMenuRecordGameTile());
     EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
     WaitForCaptureFileToBeSaved();
 
-    // TODO(b/286889161): Update the record game button pointers after the bug
-    // has been addressed. The main menu will no longer remain open, which makes
-    // button pointers invalid.
     // Verify all the record game buttons for the `recording_window` are enabled
     // and toggled off.
     VerifyRecordGameStatus(
@@ -682,7 +699,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
         /*enabled=*/true, /*toggled=*/false);
 
     // Verify all the `other_window` buttons are enabled and toggled off.
-    wm::ActivateWindow(other_window);
+    MoveCursorToEmptySpaceInFrameHeader(other_window_test_api);
+    event_generator->ClickLeftButton();
     other_window_test_api->OpenTheMainMenu();
     VerifyRecordGameStatus(other_window_test_api->GetMainMenuRecordGameTile(),
                            other_window_test_api->GetToolbarRecordGameButton(),
@@ -705,7 +723,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
     // Open the main menu of the recording window to close the toolbar and then
     // the main menu.
-    wm::ActivateWindow(recording_window);
+    MoveCursorToEmptySpaceInFrameHeader(recording_window_test_api);
+    event_generator->ClickLeftButton();
     recording_window_test_api->OpenTheMainMenu();
     recording_window_test_api->CloseTheToolbar();
     recording_window_test_api->CloseTheMainMenu();
@@ -1216,10 +1235,13 @@ TEST_F(GameDashboardContextTest, SelectScreenSizeButton) {
 TEST_F(GameDashboardContextTest, TwoGameWindowsRecordingState) {
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
-  // Create a GFN game window.
+
+  // Create a GFN game window that doesn't overlap with the ARC game window.
+  // This allows the test to interact with both windows without having to
+  // artificially activate it.
   auto gfn_game_window =
       CreateAppWindow(extension_misc::kGeForceNowAppId, AppType::NON_APP,
-                      gfx::Rect(50, 50, 400, 200));
+                      gfx::Rect(950, 550, 400, 200));
   auto* gfn_game_context =
       GameDashboardController::Get()->GetGameDashboardContext(
           gfn_game_window.get());
@@ -1374,15 +1396,8 @@ TEST_F(GameDashboardContextTest, MainMenuCursorHandlerEventLocation) {
   ASSERT_TRUE(test_api_->GetMainMenuCursorHandler());
   ASSERT_TRUE(cursor_manager->IsCursorVisible());
 
-  // Move the cursor inside the window frame header, half way between the left
-  // edge of the window and `GameDashboardMainMenuButton`.
-  const auto window_bounds = game_window_->GetBoundsInScreen();
-  const auto gd_button_bounds_x =
-      test_api_->GetGameDashboardButton()->GetBoundsInScreen().x();
   gfx::Point new_mouse_location =
-      gfx::Point((window_bounds.x() + gd_button_bounds_x) / 2,
-                 window_bounds.y() + frame_header_height_ / 2);
-  event_generator->MoveMouseTo(new_mouse_location);
+      MoveCursorToEmptySpaceInFrameHeader(test_api_.get());
 
   // Verify the mouse event was not consumed by
   // `GameDashboardMainMenuCursorHandler`.
@@ -1391,8 +1406,8 @@ TEST_F(GameDashboardContextTest, MainMenuCursorHandlerEventLocation) {
   ASSERT_FALSE(last_mouse_event->handled());
   ASSERT_FALSE(last_mouse_event->stopped_propagation());
 
-  // Move the mouse to the enter of the window, and below the main menu.
-  new_mouse_location.set_x(window_bounds.CenterPoint().x());
+  // Move the mouse to the center of the window, and below the main menu.
+  new_mouse_location.set_x(game_window_->GetBoundsInScreen().CenterPoint().x());
   const auto main_menu_bounds =
       test_api_->GetMainMenuView()->GetBoundsInScreen();
   new_mouse_location.set_y(main_menu_bounds.y() + main_menu_bounds.height() +
@@ -1537,6 +1552,7 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_MouseOver) {
   ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
 
   // Move mouse to top edge of window.
+  app_bounds = game_window_->GetBoundsInScreen();
   event_generator->MoveMouseTo(app_bounds.top_center());
   base::OneShotTimer& top_edge_hover_timer =
       test_api_->GetRevealControllerTopEdgeHoverTimer();
@@ -1590,35 +1606,34 @@ TEST_F(GameDashboardContextTest, OverviewModeWithTwoWindows) {
       GameDashboardController::Get()->GetGameDashboardContext(
           gfn_game_window.get()),
       GetEventGenerator());
-  // Toggle the main menu to change the focus from the window to the toolbar
-  // widget.
-  gfn_window_test_api.OpenTheMainMenu();
-  gfn_window_test_api.CloseTheMainMenu();
-  ASSERT_FALSE(gfn_game_window->HasFocus());
-  ASSERT_TRUE(gfn_window_test_api.GetToolbarWidget()->IsActive());
+  ASSERT_TRUE(gfn_window_test_api.GetToolbarWidget());
 
-  // Create an ARC game window and display the toolbar.
+  // Create an ARC game window with the toolbar displayed.
   CreateGameWindow(/*is_arc_window=*/true);
   auto* arc_game_window = game_window_.get();
   auto arc_window_test_api = GameDashboardContextTestApi(
       GameDashboardController::Get()->GetGameDashboardContext(arc_game_window),
       GetEventGenerator());
+  ASSERT_TRUE(arc_window_test_api.GetToolbarWidget());
   ASSERT_FALSE(gfn_game_window->HasFocus());
   ASSERT_TRUE(arc_game_window->HasFocus());
-  // Toggle the main menu to change the focus from the window to the toolbar
-  // widget.
-  arc_window_test_api.OpenTheMainMenu();
-  arc_window_test_api.CloseTheMainMenu();
+  // In the toolbar, click the gamepad button and press tab so the gamepad
+  // button gains focus.
+  const auto* arc_gamepad_button =
+      arc_window_test_api.GetToolbarGamepadButton();
+  ASSERT_TRUE(arc_gamepad_button);
+  LeftClickOn(arc_gamepad_button);
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_TAB);
   ASSERT_FALSE(arc_game_window->HasFocus());
-  ASSERT_TRUE(arc_window_test_api.GetToolbarWidget()->IsActive());
+  ASSERT_TRUE(arc_gamepad_button->HasFocus());
 
   // Enter and exit overview mode and verify the ARC game window's toolbar
-  // maintains its status as the active widget.
+  // maintains focus.
   EnterOverview();
   ExitOverview();
   ASSERT_FALSE(gfn_game_window->HasFocus());
   ASSERT_FALSE(arc_game_window->HasFocus());
-  ASSERT_TRUE(arc_window_test_api.GetToolbarWidget()->IsActive());
+  ASSERT_TRUE(arc_gamepad_button->HasFocus());
 }
 
 // -----------------------------------------------------------------------------

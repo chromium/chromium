@@ -14,6 +14,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
+#include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_metrics.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -32,6 +33,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
+#include "ui/wm/core/window_util.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
@@ -80,11 +83,13 @@ GameDashboardController::GameDashboardController(
   env_observation_.Observe(aura::Env::GetInstance());
   CaptureModeController::Get()->AddObserver(this);
   Shell::Get()->overview_controller()->AddObserver(this);
+  Shell::Get()->activation_client()->AddObserver(this);
 }
 
 GameDashboardController::~GameDashboardController() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+  Shell::Get()->activation_client()->RemoveObserver(this);
   Shell::Get()->overview_controller()->RemoveObserver(this);
   CaptureModeController::Get()->RemoveObserver(this);
 }
@@ -96,7 +101,6 @@ std::string GameDashboardController::GetArcAppName(
 
 GameDashboardContext* GameDashboardController::GetGameDashboardContext(
     aura::Window* window) const {
-  DCHECK(window);
   auto it = game_window_contexts_.find(window);
   return it != game_window_contexts_.end() ? it->second.get() : nullptr;
 }
@@ -254,6 +258,32 @@ void GameDashboardController::OnOverviewModeEnded() {
   // Make the Game Dashboard button visible.
   MaybeEnableFeatures(/*enable=*/true,
                       GameDashboardMainMenuToggleMethod::kOverview);
+}
+
+void GameDashboardController::OnWindowActivated(
+    wm::ActivationChangeObserver::ActivationReason reason,
+    aura::Window* gained_active,
+    aura::Window* lost_active) {
+  GameDashboardContext* lost_active_context =
+      GetGameDashboardContext(wm::GetTransientRoot(lost_active));
+  GameDashboardContext* gained_active_context =
+      GetGameDashboardContext(wm::GetTransientRoot(gained_active));
+  if (lost_active_context == gained_active_context) {
+    // Ignore if the activation is moving within the same game window.
+    return;
+  }
+
+  // If `lost_active_context` and `gained_active_context` both exist, the
+  // activated widget is moving between Game Dashboard windows. If only
+  // `gained_active_context` exists, activation is moving from a non-game window
+  // to a Game Dashboard window. If only `lost_active_context` exists,
+  // activation is moving from a Game Dashboard window into a non-game window.
+  if (gained_active_context) {
+    gained_active_context->MaybeAddPreTargetHandler();
+  }
+  if (lost_active_context) {
+    lost_active_context->MaybeRemovePreTargetHandler();
+  }
 }
 
 void GameDashboardController::GetWindowGameState(aura::Window* window) {

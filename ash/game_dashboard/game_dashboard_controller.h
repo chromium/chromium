@@ -21,6 +21,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 class PrefRegistrySimple;
 
@@ -40,7 +41,8 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
                                            public aura::WindowObserver,
                                            public CaptureModeObserver,
                                            public display::DisplayObserver,
-                                           public OverviewObserver {
+                                           public OverviewObserver,
+                                           public wm::ActivationChangeObserver {
  public:
   explicit GameDashboardController(
       std::unique_ptr<GameDashboardDelegate> delegate);
@@ -114,6 +116,11 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
   void OnOverviewModeEnded() override;
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
  private:
   friend class GameDashboardControllerTest;
