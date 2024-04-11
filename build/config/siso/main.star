@@ -35,10 +35,13 @@ def __use_large_b289968566(ctx, step_config):
         # target_os = "chromeos"
         # use_cups = true
         # use_remoteexec = true
+        "./lacros_clang_x64/obj/chrome/browser/browser/chrome_browser_interface_binders.o",
         "./lacros_clang_x64/obj/chrome/browser/browser/chrome_content_browser_client.o",
         "./lacros_clang_x64/obj/content/browser/browser/browser_interface_binders.o",
+        "./lacros_clang_x64/obj/third_party/blink/public/mojom/mojom_platform/speech_recognition_grammar.mojom.o",
         "./obj/chrome/browser/ash/ash/autotest_private_api.o",
         "./obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
+        "./obj/chrome/browser/ash/ash/user_session_manager.o",
         "./obj/chrome/browser/ash/ash/webui_login_view.o",
         "./obj/chrome/browser/ash/system_web_apps/apps/browser_tests/media_app_integration_browsertest.o",
         "./obj/chrome/browser/ash/system_web_apps/browser_tests/system_web_app_manager_browsertest.o",
@@ -46,6 +49,7 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/chrome/browser/browser/browser_prefs.o",
         "./obj/chrome/browser/browser/chrome_browser_interface_binders.o",
         "./obj/chrome/browser/browser/chrome_content_browser_client.o",
+        "./obj/chrome/browser/browser/render_view_context_menu.o",
         "./obj/chrome/browser/ui/ash/holding_space/browser_tests/holding_space_ui_browsertest.o",
         "./obj/chrome/test/browser_tests/app_list_client_impl_browsertest.o",
         "./obj/chrome/test/browser_tests/browser_non_client_frame_view_chromeos_browsertest.o",
