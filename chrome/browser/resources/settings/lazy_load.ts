@@ -147,7 +147,7 @@ export {SettingsCheckboxElement} from './controls/settings_checkbox.js';
 export {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_proxy.js';
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
 // <if expr="_google_chrome">
-export {SettingsGetMostChromePageElement} from './get_most_chrome_page/get_most_chrome_page.js';
+export {GetTheMostOutOfChromeUserAction, SettingsGetMostChromePageElement} from './get_most_chrome_page/get_most_chrome_page.js';
 // </if>
 // <if expr="_google_chrome and is_win">
 export {IncompatibleApplicationItemElement} from './incompatible_applications_page/incompatible_application_item.js';

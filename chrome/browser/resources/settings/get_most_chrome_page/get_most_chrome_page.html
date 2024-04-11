@@ -1,6 +1,6 @@
 <style include="cr-shared-style settings-shared">
 </style>
-<cr-expand-button class="cr-row hr" expanded="{{expandedFirst_}}">
+<cr-expand-button class="cr-row hr" id="first" expanded="{{expandedFirst_}}">
   <div>$i18n{getTheMostOutOfChromeBetterForYou}</div>
 </cr-expand-button>
 <iron-collapse opened="[[expandedFirst_]]">
@@ -8,7 +8,7 @@
     <div class="cr-padded-text">&nbsp;</div>
   </div>
 </iron-collapse>
-<cr-expand-button class="cr-row hr" expanded="{{expandedSecond_}}">
+<cr-expand-button class="cr-row hr" id="second" expanded="{{expandedSecond_}}">
   <div>$i18n{getTheMostOutOfChromeYourDataInChrome}</div>
 </cr-expand-button>
 <iron-collapse opened="[[expandedSecond_]]">
@@ -16,7 +16,7 @@
     <div class="cr-padded-text">&nbsp;</div>
   </div>
 </iron-collapse>
-<cr-expand-button class="cr-row hr" expanded="{{expandedThird_}}">
+<cr-expand-button class="cr-row hr" id="third" expanded="{{expandedThird_}}">
   <div>$i18n{getTheMostOutOfChromeBeyondCookies}</div>
 </cr-expand-button>
 <iron-collapse opened="[[expandedThird_]]">

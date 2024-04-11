@@ -32206,6 +32206,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.GetTheMostOutOfChrome.FirstSectionExpanded">
+  <owner>jochen@chromium.org</owner>
+  <owner>dwarren@google.com</owner>
+  <description>
+    Recorded when the user expands the &quot;Better for you&quot; section of the
+    &quot;Get the most out of Chrome&quot; settings page.
+  </description>
+</action>
+
+<action name="Settings.GetTheMostOutOfChrome.SecondSectionExpanded">
+  <owner>jochen@chromium.org</owner>
+  <owner>dwarren@google.com</owner>
+  <description>
+    Recorded when the user expands the &quot;Your data in Chrome&quot; section
+    of the &quot;Get the most out of Chrome&quot; settings page.
+  </description>
+</action>
+
+<action name="Settings.GetTheMostOutOfChrome.ThirdSectionExpanded">
+  <owner>jochen@chromium.org</owner>
+  <owner>dwarren@google.com</owner>
+  <description>
+    Recorded when the user expands the &quot;Beyond cookies&quot; section of the
+    &quot;Get the most out of Chrome&quot; settings page.
+  </description>
+</action>
+
 <action name="Settings.GoogleServices">
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
