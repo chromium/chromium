@@ -104,8 +104,9 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         }
         mDialog = new ComponentDialog(mContext, styles[buttonIndex][dialogIndex]);
         mDialog.setOnCancelListener(
-                dialogInterface ->
-                        dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
+                dialogInterface -> {
+                    dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                });
 
         // Cancel on touch outside should be disabled by default. The ModelChangeProcessor wouldn't
         // notify change if the property is not set during initialization.

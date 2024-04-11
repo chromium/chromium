@@ -509,7 +509,7 @@ public class ChromeTabModalPresenterTest {
     @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testDismiss_DismissalCause_BackPressed() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", mTestObserver);
-        mExpectedDismissalCause = DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE;
+        mExpectedDismissalCause = DialogDismissalCause.NAVIGATE_BACK;
 
         showDialog(mManager, dialog1, ModalDialogType.TAB);
 

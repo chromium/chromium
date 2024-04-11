@@ -152,7 +152,7 @@ public class TabModalLifetimeHandler
     /** Handle a back press event. */
     public boolean onBackPressed() {
         if (!shouldInterceptBackPress()) return false;
-        mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK);
         return true;
     }
 
@@ -160,7 +160,7 @@ public class TabModalLifetimeHandler
     public @BackPressResult int handleBackPress() {
         int result = shouldInterceptBackPress() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
         if (result == BackPressResult.SUCCESS) {
-            mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+            mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK);
         }
         return result;
     }

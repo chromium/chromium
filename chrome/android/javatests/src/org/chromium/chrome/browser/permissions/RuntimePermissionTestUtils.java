@@ -27,6 +27,7 @@ import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -220,11 +221,15 @@ public class RuntimePermissionTestUtils {
                     ((TextView) dialogText).getText(),
                     activity.getResources().getString(missingPermissionPromptTextId, appName));
 
+            int dialogType = activity.getModalDialogManager().getCurrentType();
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         manager.getCurrentPresenterForTest()
                                 .dismissCurrentDialog(
-                                        DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                                        dialogType == ModalDialogType.APP
+                                                ? DialogDismissalCause
+                                                        .NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                                                : DialogDismissalCause.NAVIGATE_BACK);
                     });
         }
 

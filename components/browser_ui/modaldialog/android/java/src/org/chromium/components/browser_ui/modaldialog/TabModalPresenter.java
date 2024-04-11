@@ -66,8 +66,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                 if (model.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE)) {
                     mDialogContainer.setOnClickListener(
                             (v) -> {
-                                dismissCurrentDialog(
-                                        DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                                dismissCurrentDialog(DialogDismissalCause.TOUCH_OUTSIDE);
                             });
                 } else {
                     mDialogContainer.setOnClickListener(null);

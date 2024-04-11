@@ -25,6 +25,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 /** Test suite for permissions automatic embargo logic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -67,6 +68,7 @@ public class AutomaticEmbargoTest {
                 mPermissionRule.runJavaScriptCodeInCurrentTab(javascript);
             }
             PermissionTestRule.waitForDialog(mPermissionRule.getActivity());
+            int dialogType = mPermissionRule.getActivity().getModalDialogManager().getCurrentType();
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mPermissionRule
@@ -74,7 +76,10 @@ public class AutomaticEmbargoTest {
                                 .getModalDialogManager()
                                 .getCurrentPresenterForTest()
                                 .dismissCurrentDialog(
-                                        DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                                        dialogType == ModalDialogType.APP
+                                                ? DialogDismissalCause
+                                                        .NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                                                : DialogDismissalCause.NAVIGATE_BACK);
                     });
             InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         }

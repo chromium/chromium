@@ -395,12 +395,19 @@ public class ModalDialogManager {
      * Dismiss the specified dialog. If the dialog is not currently showing, it will be removed from
      * the pending dialog list. If the dialog is currently being dismissed this function does
      * nothing.
+     *
      * @param model The dialog model to be dismissed or removed from pending list.
      * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialog is
-     *                       dismissed.
+     *     dismissed.
      */
     public void dismissDialog(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         if (model == null) return;
+        if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
+            assert mCurrentType == ModalDialogType.APP;
+        } else if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK
+                || dismissalCause == DialogDismissalCause.TOUCH_OUTSIDE) {
+            assert mCurrentType == ModalDialogType.TAB;
+        }
         if (mCurrentPresenter == null || model != mCurrentPresenter.getDialogModel()) {
             if (mPendingDialogContainer.remove(model)) {
                 model.get(ModalDialogProperties.CONTROLLER).onDismiss(model, dismissalCause);

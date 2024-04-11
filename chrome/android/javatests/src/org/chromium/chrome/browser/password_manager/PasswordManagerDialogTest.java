@@ -127,7 +127,7 @@ public class PasswordManagerDialogTest {
     @SmallTest
     public void testDismissedCallbackBackButton() {
         pressBack();
-        verify(mOnClick).onResult(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        verify(mOnClick).onResult(DialogDismissalCause.NAVIGATE_BACK);
     }
 
     @Test
