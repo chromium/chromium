@@ -2289,6 +2289,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Video.InputFrameTimestampMonotonicallyIncreasing"
+    enum="BooleanYesNo" expires_after="2025-01-16">
+  <owner>perkj@chromium.org</owner>
+  <owner>video-performance-team@google.com</owner>
+  <summary>
+    Indicates &quot;yes&quot; if all incoming webrtc::VideoFrame::timestamp_us()
+    were monotonically increasing, &quot;no&quot; otherwise. Logged at the end
+    of an encoding session.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Video.InputHeightInPixels" units="pixels"
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
