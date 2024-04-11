@@ -15,6 +15,7 @@
 #include <queue>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -448,7 +449,7 @@ void WebTestResultPrinter::PrintEncodedBinaryData(
   *output_ << "Content-Transfer-Encoding: base64\n";
 
   std::string data_base64 = base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(&data[0]), data.size()));
+      std::string_view(reinterpret_cast<const char*>(&data[0]), data.size()));
 
   *output_ << "Content-Length: " << data_base64.length() << "\n";
   output_->write(data_base64.c_str(), data_base64.length());

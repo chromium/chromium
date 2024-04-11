@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"

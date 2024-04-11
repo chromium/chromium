@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "content/common/content_export.h"
@@ -340,7 +341,7 @@ class ChildProcessSecurityPolicy {
   // Note that wildcards can only be added using this version of
   // AddFutureIsolatedOrigins(); they cannot be specified in a url::Origin().
   virtual void AddFutureIsolatedOrigins(
-      base::StringPiece origins_to_add,
+      std::string_view origins_to_add,
       IsolatedOriginSource source,
       BrowserContext* browser_context = nullptr) = 0;
 

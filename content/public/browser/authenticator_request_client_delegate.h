@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -369,7 +370,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   void BluetoothAdapterPowerChanged(bool is_powered_on) override;
   void FidoAuthenticatorAdded(
       const device::FidoAuthenticator& authenticator) override;
-  void FidoAuthenticatorRemoved(base::StringPiece device_id) override;
+  void FidoAuthenticatorRemoved(std::string_view device_id) override;
   bool SupportsPIN() const override;
   void CollectPIN(
       CollectPINOptions options,

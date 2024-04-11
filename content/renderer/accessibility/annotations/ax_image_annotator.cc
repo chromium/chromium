@@ -5,6 +5,7 @@
 #include "content/renderer/accessibility/annotations/ax_image_annotator.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -58,7 +59,7 @@ namespace {
 
 int GetMessageIdForIconEnum(const std::string& icon_type) {
   static constexpr auto kIconTypeToMessageIdMap =
-      base::MakeFixedFlatMap<base::StringPiece, int>({
+      base::MakeFixedFlatMap<std::string_view, int>({
           {"ICON_PLUS", IDS_AX_IMAGE_ANNOTATION_ICON_PLUS},
           {"ICON_ARROW_BACKWARD", IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_BACKWARD},
           {"ICON_ARROW_FORWARD", IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_FORWARD},

@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -401,7 +402,7 @@ v8::Local<v8::String> AuctionV8Helper::CreateStringFromLiteral(
 }
 
 v8::MaybeLocal<v8::String> AuctionV8Helper::CreateUtf8String(
-    base::StringPiece utf8_string) {
+    std::string_view utf8_string) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::IsStringUTF8(utf8_string))
     return v8::MaybeLocal<v8::String>();
@@ -412,7 +413,7 @@ v8::MaybeLocal<v8::String> AuctionV8Helper::CreateUtf8String(
 
 v8::MaybeLocal<v8::Value> AuctionV8Helper::CreateValueFromJson(
     v8::Local<v8::Context> context,
-    base::StringPiece utf8_json) {
+    std::string_view utf8_json) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::String> v8_string;
   if (!CreateUtf8String(utf8_json).ToLocal(&v8_string))
@@ -420,7 +421,7 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::CreateValueFromJson(
   return v8::JSON::Parse(context, v8_string);
 }
 
-bool AuctionV8Helper::AppendUtf8StringValue(base::StringPiece utf8_string,
+bool AuctionV8Helper::AppendUtf8StringValue(std::string_view utf8_string,
                                             v8::LocalVector<v8::Value>* args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::String> value;
@@ -431,7 +432,7 @@ bool AuctionV8Helper::AppendUtf8StringValue(base::StringPiece utf8_string,
 }
 
 bool AuctionV8Helper::AppendJsonValue(v8::Local<v8::Context> context,
-                                      base::StringPiece utf8_json,
+                                      std::string_view utf8_json,
                                       v8::LocalVector<v8::Value>* args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::Value> value;
@@ -441,7 +442,7 @@ bool AuctionV8Helper::AppendJsonValue(v8::Local<v8::Context> context,
   return true;
 }
 
-bool AuctionV8Helper::InsertValue(base::StringPiece key,
+bool AuctionV8Helper::InsertValue(std::string_view key,
                                   v8::Local<v8::Value> value,
                                   v8::Local<v8::Object> object) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -454,8 +455,8 @@ bool AuctionV8Helper::InsertValue(base::StringPiece key,
 }
 
 bool AuctionV8Helper::InsertJsonValue(v8::Local<v8::Context> context,
-                                      base::StringPiece key,
-                                      base::StringPiece utf8_json,
+                                      std::string_view key,
+                                      std::string_view utf8_json,
                                       v8::Local<v8::Object> object) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::Value> v8_value;
@@ -653,7 +654,7 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::CallFunction(
     v8::Local<v8::Context> context,
     const DebugId* debug_id,
     const std::string& script_name,
-    base::StringPiece function_name,
+    std::string_view function_name,
     base::span<v8::Local<v8::Value>> args,
     TimeLimit* script_timeout,
     std::vector<std::string>& error_out) {

@@ -5,6 +5,7 @@
 #include "content/public/browser/content_browser_client.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -13,7 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
@@ -186,13 +186,13 @@ bool ContentBrowserClient::DoesWebUIUrlRequireProcessLock(const GURL& url) {
 }
 
 bool ContentBrowserClient::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
-    base::StringPiece scheme,
+    std::string_view scheme,
     bool is_embedded_origin_secure) {
   return false;
 }
 
 bool ContentBrowserClient::ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
-    base::StringPiece scheme,
+    std::string_view scheme,
     bool is_embedded_origin_secure) {
   return false;
 }
@@ -1188,7 +1188,7 @@ bool ContentBrowserClient::ShowPaymentHandlerWindow(
   return false;
 }
 
-bool ContentBrowserClient::CreateThreadPool(base::StringPiece name) {
+bool ContentBrowserClient::CreateThreadPool(std::string_view name) {
   base::ThreadPoolInstance::Create(name);
   return true;
 }

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "base/template_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/strong_alias.h"
@@ -256,18 +256,18 @@ void NavigateToURLBlockUntilNavigationsComplete(
 // necessary, a user activation can be triggered right before calling this
 // method, e.g. by calling |ExecJs(frame_tree_node, "")|.
 bool NavigateIframeToURL(WebContents* web_contents,
-                         base::StringPiece iframe_id,
+                         std::string_view iframe_id,
                          const GURL& url);
 
 // Similar to |NavigateIframeToURL()| but returns as soon as the navigation is
 // initiated.
 bool BeginNavigateIframeToURL(WebContents* web_contents,
-                              base::StringPiece iframe_id,
+                              std::string_view iframe_id,
                               const GURL& url);
 
 // Generate a URL for a file path including a query string.
 GURL GetFileUrlWithQuery(const base::FilePath& path,
-                         base::StringPiece query_string);
+                         std::string_view query_string);
 
 // Checks whether the page type of the last committed navigation entry matches
 // |page_type|.
@@ -359,12 +359,12 @@ void SimulateMouseClickAt(WebContents* web_contents,
 // friendly by taking zooming into account.
 gfx::PointF GetCenterCoordinatesOfElementWithId(
     const ToRenderFrameHost& adapter,
-    base::StringPiece id);
+    std::string_view id);
 
 // Retrieves the center coordinates of the element with id |id| and simulates a
 // mouse click there using SimulateMouseClickAt().
 void SimulateMouseClickOrTapElementWithId(content::WebContents* web_contents,
-                                          base::StringPiece id);
+                                          std::string_view id);
 
 // Simulates asynchronously a mouse enter/move/leave event. The mouse event is
 // routed through RenderWidgetHostInputEventRouter and thus can target OOPIFs.
@@ -622,12 +622,12 @@ RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents);
 // - EvalJs (if you want to retrieve a value)
 // - DOMMessageQueue (to manually wait for domAutomationController.send(...))
 void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
-                        base::StringPiece script);
+                        std::string_view script);
 
 // Same as `content::ExecuteScriptAsync()`, but doesn't send a user gesture to
 // the renderer.
 void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
-                                          base::StringPiece script);
+                                          std::string_view script);
 
 // JsLiteralHelper is a helper class that determines what types are legal to
 // pass to StringifyJsLiteral. Legal types include int, string, StringPiece,
@@ -705,7 +705,7 @@ base::Value ListValueOf(Args&&... args) {
 // This becomes "window.location.reload(true);" -- because bool values are
 // supported by base::Value. Numbers, lists, and dicts also work.
 template <typename... Args>
-std::string JsReplace(base::StringPiece script_template, Args&&... args) {
+std::string JsReplace(std::string_view script_template, Args&&... args) {
   base::Value::List values =
       ListValueOf(std::forward<Args>(args)...).TakeList();
   std::vector<std::string> replacements(values.size());
@@ -744,7 +744,7 @@ struct EvalJsResult {
 
   // Creates an EvalJs result. If |error| is non-empty, |value| will be
   // ignored.
-  EvalJsResult(base::Value value, base::StringPiece error);
+  EvalJsResult(base::Value value, std::string_view error);
 
   // Copy ctor.
   EvalJsResult(const EvalJsResult& value);
@@ -906,7 +906,7 @@ enum EvalJsOptions {
 // It is guaranteed that EvalJs works even when the target frame is frozen.
 [[nodiscard]] EvalJsResult EvalJs(
     const ToRenderFrameHost& execution_target,
-    base::StringPiece script,
+    std::string_view script,
     int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
     int32_t world_id = ISOLATED_WORLD_ID_GLOBAL,
     base::OnceClosure after_script_invoke = base::DoNothing());
@@ -918,8 +918,8 @@ enum EvalJsOptions {
 // processed by the browser.
 [[nodiscard]] EvalJsResult EvalJsAfterLifecycleUpdate(
     const ToRenderFrameHost& execution_target,
-    base::StringPiece raf_script,
-    base::StringPiece script,
+    std::string_view raf_script,
+    std::string_view script,
     int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
     int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
@@ -933,7 +933,7 @@ enum EvalJsOptions {
 // until it resolves (by default).
 [[nodiscard]] ::testing::AssertionResult ExecJs(
     const ToRenderFrameHost& execution_target,
-    base::StringPiece script,
+    std::string_view script,
     int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
     int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
@@ -952,7 +952,7 @@ RenderFrameHost* FrameMatchingPredicate(
     base::RepeatingCallback<bool(RenderFrameHost*)> predicate);
 
 // Predicates for use with FrameMatchingPredicate[OrNullPtr]().
-bool FrameMatchesName(base::StringPiece name, RenderFrameHost* frame);
+bool FrameMatchesName(std::string_view name, RenderFrameHost* frame);
 bool FrameIsChildOfMainFrame(RenderFrameHost* frame);
 bool FrameHasSourceUrl(const GURL& url, RenderFrameHost* frame);
 
@@ -1077,7 +1077,7 @@ void WaitForAccessibilityTreeToChange(WebContents* web_contents);
 // WaitForAccessibilityTreeToChange, above, and then checks again.
 // Keeps looping until the text is found (or the test times out).
 void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
-                                                   base::StringPiece name);
+                                                   std::string_view name);
 
 // Get a snapshot of a web page's accessibility tree.
 ui::AXTreeUpdate GetAccessibilityTreeSnapshot(WebContents* web_contents);
@@ -1249,7 +1249,7 @@ class RenderProcessHostKillWaiter {
   // |uma_name| is the name of the histogram from which the |bad_message_reason|
   // can be extracted.
   RenderProcessHostKillWaiter(RenderProcessHost* render_process_host,
-                              base::StringPiece uma_name);
+                              std::string_view uma_name);
 
   RenderProcessHostKillWaiter(const RenderProcessHostKillWaiter&) = delete;
   RenderProcessHostKillWaiter& operator=(const RenderProcessHostKillWaiter&) =

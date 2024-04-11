@@ -4,13 +4,13 @@
 
 #include "content/public/test/test_web_ui.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -90,7 +90,7 @@ void TestWebUI::AddMessageHandler(
   handlers_.push_back(std::move(handler));
 }
 
-void TestWebUI::RegisterMessageCallback(base::StringPiece message,
+void TestWebUI::RegisterMessageCallback(std::string_view message,
                                         MessageCallback callback) {
   message_callbacks_[static_cast<std::string>(message)].push_back(
       std::move(callback));
@@ -113,13 +113,13 @@ bool TestWebUI::CanCallJavascript() {
   return true;
 }
 
-void TestWebUI::CallJavascriptFunctionUnsafe(base::StringPiece function_name) {
+void TestWebUI::CallJavascriptFunctionUnsafe(std::string_view function_name) {
   call_data_.push_back(base::WrapUnique(new CallData(function_name)));
   OnJavascriptCall(*call_data_.back());
 }
 
 void TestWebUI::CallJavascriptFunctionUnsafe(
-    base::StringPiece function_name,
+    std::string_view function_name,
     base::span<const base::ValueView> args) {
   call_data_.push_back(base::WrapUnique(new CallData(function_name)));
   for (const auto& arg : args) {
@@ -138,7 +138,7 @@ TestWebUI::GetHandlersForTesting() {
   return &handlers_;
 }
 
-TestWebUI::CallData::CallData(base::StringPiece function_name)
+TestWebUI::CallData::CallData(std::string_view function_name)
     : function_name_(function_name.data(), function_name.size()) {}
 
 TestWebUI::CallData::~CallData() {

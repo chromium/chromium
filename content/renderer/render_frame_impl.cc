@@ -40,7 +40,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1448,7 +1447,7 @@ bool RenderFrameImpl::UniqueNameFrameAdapter::IsMainFrame() const {
 }
 
 bool RenderFrameImpl::UniqueNameFrameAdapter::IsCandidateUnique(
-    base::StringPiece name) const {
+    std::string_view name) const {
   // This method is currently O(N), where N = number of frames in the tree.
   DCHECK(!name.empty());
 
@@ -1484,7 +1483,7 @@ int RenderFrameImpl::UniqueNameFrameAdapter::GetChildCount() const {
 std::vector<std::string>
 RenderFrameImpl::UniqueNameFrameAdapter::CollectAncestorNames(
     BeginPoint begin_point,
-    bool (*should_stop)(base::StringPiece)) const {
+    bool (*should_stop)(std::string_view)) const {
   std::vector<std::string> result;
   for (blink::WebFrame* frame = begin_point == BeginPoint::kParentFrame
                                     ? GetWebFrame()->Parent()

@@ -6,6 +6,7 @@
 #define CONTENT_SHELL_COMMON_SHELL_CONTENT_CLIENT_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "content/public/common/content_client.h"
@@ -19,7 +20,7 @@ class ShellContentClient : public ContentClient {
   ~ShellContentClient() override;
 
   std::u16string GetLocalizedString(int message_id) override;
-  base::StringPiece GetDataResource(
+  std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;

@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_TEST_WEB_UI_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -53,22 +54,22 @@ class TestWebUI : public WebUI {
   const std::vector<std::string>& GetRequestableSchemes() override;
   void AddRequestableScheme(const char* scheme) override;
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
-  void RegisterMessageCallback(base::StringPiece message,
+  void RegisterMessageCallback(std::string_view message,
                                MessageCallback callback) override;
   void ProcessWebUIMessage(const GURL& source_url,
                            const std::string& message,
                            base::Value::List args) override;
   bool CanCallJavascript() override;
-  void CallJavascriptFunctionUnsafe(base::StringPiece function_name) override;
+  void CallJavascriptFunctionUnsafe(std::string_view function_name) override;
   void CallJavascriptFunctionUnsafe(
-      base::StringPiece function_name,
+      std::string_view function_name,
       base::span<const base::ValueView> args) override;
   std::vector<std::unique_ptr<WebUIMessageHandler>>* GetHandlersForTesting()
       override;
 
   class CallData {
    public:
-    explicit CallData(base::StringPiece function_name);
+    explicit CallData(std::string_view function_name);
     ~CallData();
 
     void AppendArgument(base::Value arg);

@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -310,7 +311,7 @@ bool VerifySellerCurrency(
     std::optional<blink::AdCurrency> expected_seller_currency,
     std::optional<blink::AdCurrency> component_expect_bid_currency,
     const GURL& script_url,
-    base::StringPiece bid_label,
+    std::string_view bid_label,
     std::vector<std::string>& errors_out) {
   if (!blink::VerifyAdCurrencyCode(expected_seller_currency,
                                    provided_currency)) {

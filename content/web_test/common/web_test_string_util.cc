@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/containers/heap_array.h"
 #include "base/lazy_instance.h"
 #include "base/rand_util.h"
@@ -17,8 +19,8 @@ namespace web_test_string_util {
 
 namespace {
 
-constexpr base::StringPiece kWebTestsPattern = "/web_tests/";
-constexpr base::StringPiece kFileURLPattern = "file://";
+constexpr std::string_view kWebTestsPattern = "/web_tests/";
+constexpr std::string_view kFileURLPattern = "file://";
 const char* kFileTestPrefix = "(file test):";
 const char* kPolicyDownload = "download";
 const char* kPolicyCurrentTab = "current tab";
@@ -37,7 +39,7 @@ std::string NormalizeWebTestURLForTextOutput(const std::string& url) {
   if (base::StartsWith(url, kFileURLPattern)) {
     // Adjust the file URL by removing the part depending on the testing
     // environment.
-    size_t pos = base::StringPiece(url).find(kWebTestsPattern);
+    size_t pos = std::string_view(url).find(kWebTestsPattern);
     if (pos != std::string::npos)
       result.replace(0, pos + kWebTestsPattern.size(), kFileTestPrefix);
   }

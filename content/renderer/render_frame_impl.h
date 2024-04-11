@@ -1234,12 +1234,12 @@ class CONTENT_EXPORT RenderFrameImpl
 
     // FrameAdapter overrides:
     bool IsMainFrame() const override;
-    bool IsCandidateUnique(base::StringPiece name) const override;
+    bool IsCandidateUnique(std::string_view name) const override;
     int GetSiblingCount() const override;
     int GetChildCount() const override;
     std::vector<std::string> CollectAncestorNames(
         BeginPoint begin_point,
-        bool (*should_stop)(base::StringPiece)) const override;
+        bool (*should_stop)(std::string_view)) const override;
     std::vector<int> GetFramePosition(BeginPoint begin_point) const override;
 
    private:

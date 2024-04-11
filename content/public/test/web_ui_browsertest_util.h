@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "content/public/browser/web_ui_controller.h"
@@ -46,7 +47,7 @@ GURL GetChromeUntrustedUIURL(const std::string& host_and_path);
 
 class TestWebUIConfig : public content::WebUIConfig {
  public:
-  explicit TestWebUIConfig(base::StringPiece host);
+  explicit TestWebUIConfig(std::string_view host);
 
   ~TestWebUIConfig() override = default;
 

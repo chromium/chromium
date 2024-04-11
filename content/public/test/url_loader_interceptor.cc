@@ -5,6 +5,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/unique_ptr_adapters.h"
@@ -467,8 +468,8 @@ URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
 }
 
 void URLLoaderInterceptor::WriteResponse(
-    base::StringPiece headers,
-    base::StringPiece body,
+    std::string_view headers,
+    std::string_view body,
     network::mojom::URLLoaderClient* client,
     std::optional<net::SSLInfo> ssl_info,
     std::optional<GURL> url) {

@@ -7,11 +7,11 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -167,7 +167,7 @@ class CONTENT_EXPORT ContentClient {
                                             const std::u16string& replacement);
 
   // Return the contents of a resource in a StringPiece given the resource id.
-  virtual base::StringPiece GetDataResource(
+  virtual std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor);
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "base/trace_event/trace_event_impl.h"

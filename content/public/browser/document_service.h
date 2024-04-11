@@ -6,12 +6,12 @@
 #define CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_H_
 
 #include <cstdint>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "content/public/browser/document_service_internal.h"
 #include "content/public/browser/render_frame_host.h"
@@ -128,7 +128,7 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
   //
   // Prefer over `mojo::ReportBadMessage()`, since using this method avoids the
   // need to run any pending reply callbacks with placeholder arguments.
-  NOT_TAIL_CALLED void ReportBadMessageAndDeleteThis(base::StringPiece error) {
+  NOT_TAIL_CALLED void ReportBadMessageAndDeleteThis(std::string_view error) {
     receiver_.ReportBadMessage(error);
     delete this;
   }
@@ -136,7 +136,7 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
   // Resets the `mojo::Receiver` with a `reason` and `description` and deletes
   // `this`.
   void ResetWithReasonAndDeleteThis(uint32_t reason,
-                                    base::StringPiece description) {
+                                    std::string_view description) {
     receiver_.ResetWithReason(reason, description);
     delete this;
   }

@@ -5,6 +5,7 @@
 #include "content/public/browser/gpu_utils.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -42,7 +43,7 @@ void KillGpuProcessImpl(content::GpuProcessHost* host) {
 }
 
 bool GetUintFromSwitch(const base::CommandLine* command_line,
-                       const base::StringPiece& switch_string,
+                       const std::string_view& switch_string,
                        uint32_t* value) {
   std::string switch_value(command_line->GetSwitchValueASCII(switch_string));
   return base::StringToUint(switch_value, value);

@@ -7,6 +7,7 @@
 #include <cmath>
 #include <initializer_list>
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/strings/strcat.h"
@@ -100,7 +101,7 @@ class WebIDLCompatTest : public testing::Test {
   }
 
   bool GetSequence(DictConverter* converter,
-                   base::StringPiece field,
+                   std::string_view field,
                    v8::LocalVector<v8::Value>& out) {
     out.clear();  // For tests that re-use `out`.
     bool got_it = false;

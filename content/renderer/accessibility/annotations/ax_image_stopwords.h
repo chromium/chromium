@@ -5,9 +5,10 @@
 #ifndef CONTENT_RENDERER_ACCESSIBILITY_ANNOTATIONS_AX_IMAGE_STOPWORDS_H_
 #define CONTENT_RENDERER_ACCESSIBILITY_ANNOTATIONS_AX_IMAGE_STOPWORDS_H_
 
+#include <string_view>
+
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -62,7 +63,7 @@ class CONTENT_EXPORT AXImageStopwords {
   AXImageStopwords();
   ~AXImageStopwords();
 
-  base::flat_set<base::StringPiece> stopword_set_;
+  base::flat_set<std::string_view> stopword_set_;
 };
 
 }  // namespace content

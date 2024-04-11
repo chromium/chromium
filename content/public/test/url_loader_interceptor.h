@@ -9,11 +9,11 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -120,8 +120,8 @@ class URLLoaderInterceptor {
   // Helper methods for use when intercepting.
   // Writes the given response body, header, and SSL Info to `client`.
   // If `url` is present, also computes the ParsedHeaders for the response.
-  static void WriteResponse(base::StringPiece headers,
-                            base::StringPiece body,
+  static void WriteResponse(std::string_view headers,
+                            std::string_view body,
                             network::mojom::URLLoaderClient* client,
                             std::optional<net::SSLInfo> ssl_info = std::nullopt,
                             std::optional<GURL> url = std::nullopt);

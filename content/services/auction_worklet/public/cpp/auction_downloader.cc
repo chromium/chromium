@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -68,14 +69,14 @@ const char kWebAssemblyMime[] = "application/wasm";
 // Returns the MIME type string to send for the Accept header for `mime_type`.
 // These are the official IANA MIME type strings, though other MIME type strings
 // are allows in the response.
-base::StringPiece MimeTypeToString(AuctionDownloader::MimeType mime_type) {
+std::string_view MimeTypeToString(AuctionDownloader::MimeType mime_type) {
   switch (mime_type) {
     case AuctionDownloader::MimeType::kJavascript:
-      return base::StringPiece("application/javascript");
+      return std::string_view("application/javascript");
     case AuctionDownloader::MimeType::kJson:
-      return base::StringPiece("application/json");
+      return std::string_view("application/json");
     case AuctionDownloader::MimeType::kWebAssembly:
-      return base::StringPiece(kWebAssemblyMime);
+      return std::string_view(kWebAssemblyMime);
   }
 }
 
@@ -107,7 +108,7 @@ bool MimeTypeIsConsistent(
 
 // Checks if `charset` is a valid charset, in lowercase ASCII. Takes `body` as
 // well, to ensure it uses the specified charset.
-bool IsAllowedCharset(base::StringPiece charset, const std::string& body) {
+bool IsAllowedCharset(std::string_view charset, const std::string& body) {
   if (charset == "utf-8" || charset.empty()) {
     return base::IsStringUTF8(body);
   } else if (charset == "us-ascii") {

@@ -4,6 +4,8 @@
 
 #include "content/web_test/browser/devtools_protocol_test_bindings.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -175,7 +177,7 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
   if (log_enabled_) {
     NOTREACHED_NORETURN() << "Unexpected messages dispatched by the browser";
   }
-  base::StringPiece str_message(reinterpret_cast<const char*>(message.data()),
+  std::string_view str_message(reinterpret_cast<const char*>(message.data()),
                                 message.size());
   WebTestControlHost::Get()->PrintMessageToStderr(
       "Protocol message: " + std::string(str_message) + "\n");

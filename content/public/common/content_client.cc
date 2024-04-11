@@ -4,10 +4,11 @@
 
 #include "content/public/common/content_client.h"
 
+#include <string_view>
+
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -108,10 +109,10 @@ std::u16string ContentClient::GetLocalizedString(
   return std::u16string();
 }
 
-base::StringPiece ContentClient::GetDataResource(
+std::string_view ContentClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {
-  return base::StringPiece();
+  return std::string_view();
 }
 
 base::RefCountedMemory* ContentClient::GetDataResourceBytes(int resource_id) {

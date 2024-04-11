@@ -4,10 +4,11 @@
 
 #include "content/web_test/renderer/test_websocket_handshake_throttle_provider.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -29,13 +30,13 @@ base::TimeDelta ExtractDelayFromUrl(const GURL& url) {
   url::Component query = url.parsed_for_possibly_invalid_spec().query;
   url::Component key;
   url::Component value;
-  base::StringPiece spec = url.possibly_invalid_spec();
+  std::string_view spec = url.possibly_invalid_spec();
   while (url::ExtractQueryKeyValue(spec, &query, &key, &value)) {
-    base::StringPiece key_piece = spec.substr(key.begin, key.len);
+    std::string_view key_piece = spec.substr(key.begin, key.len);
     if (key_piece != "content-shell-websocket-delay-ms")
       continue;
 
-    base::StringPiece value_piece = spec.substr(value.begin, value.len);
+    std::string_view value_piece = spec.substr(value.begin, value.len);
     int value_int;
     if (!base::StringToInt(value_piece, &value_int) || value_int < 0)
       return base::TimeDelta();

@@ -7,8 +7,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 
@@ -31,7 +31,7 @@ class WebUI;
 // all existing WebUI pages use this.
 class CONTENT_EXPORT WebUIConfig {
  public:
-  explicit WebUIConfig(base::StringPiece scheme, base::StringPiece host);
+  explicit WebUIConfig(std::string_view scheme, std::string_view host);
   virtual ~WebUIConfig();
   WebUIConfig(const WebUIConfig&) = delete;
   WebUIConfig& operator=(const WebUIConfig&) = delete;
@@ -76,7 +76,7 @@ class CONTENT_EXPORT WebUIConfig {
 template <typename T>
 class CONTENT_EXPORT DefaultWebUIConfig : public WebUIConfig {
  public:
-  explicit DefaultWebUIConfig(base::StringPiece scheme, base::StringPiece host)
+  explicit DefaultWebUIConfig(std::string_view scheme, std::string_view host)
       : WebUIConfig(scheme, host) {}
   ~DefaultWebUIConfig() override = default;
 

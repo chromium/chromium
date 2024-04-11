@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -20,7 +21,6 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -160,7 +160,7 @@ void BlinkPlatformImpl::RecordAction(const blink::UserMetricsAction& name) {
 WebData BlinkPlatformImpl::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {
-  base::StringPiece resource =
+  std::string_view resource =
       GetContentClient()->GetDataResource(resource_id, scale_factor);
   return WebData(resource.data(), resource.size());
 }

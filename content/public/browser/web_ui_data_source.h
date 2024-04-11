@@ -9,11 +9,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
@@ -49,15 +49,15 @@ class WebUIDataSource {
                                     const base::Value::Dict& update);
 
   // Adds a string keyed to its name to our dictionary.
-  virtual void AddString(base::StringPiece name,
+  virtual void AddString(std::string_view name,
                          const std::u16string& value) = 0;
 
   // Adds a string keyed to its name to our dictionary.
-  virtual void AddString(base::StringPiece name, const std::string& value) = 0;
+  virtual void AddString(std::string_view name, const std::string& value) = 0;
 
   // Adds a localized string with resource |ids| keyed to its name to our
   // dictionary.
-  virtual void AddLocalizedString(base::StringPiece name, int ids) = 0;
+  virtual void AddLocalizedString(std::string_view name, int ids) = 0;
 
   // Calls AddLocalizedString() in a for-loop for |strings|. Reduces code size
   // vs. reimplementing the same for-loop.
@@ -69,22 +69,22 @@ class WebUIDataSource {
       const base::Value::Dict& localized_strings) = 0;
 
   // Adds a boolean keyed to its name to our dictionary.
-  virtual void AddBoolean(base::StringPiece name, bool value) = 0;
+  virtual void AddBoolean(std::string_view name, bool value) = 0;
 
   // Adds a signed 32-bit integer keyed to its name to our dictionary. Larger
   // integers may not be exactly representable in JavaScript. See
   // MAX_SAFE_INTEGER in /v8/src/globals.h.
-  virtual void AddInteger(base::StringPiece name, int32_t value) = 0;
+  virtual void AddInteger(std::string_view name, int32_t value) = 0;
 
   // Adds a double keyed to its name  to our dictionary.
-  virtual void AddDouble(base::StringPiece name, double value) = 0;
+  virtual void AddDouble(std::string_view name, double value) = 0;
 
   // Call this to enable a virtual "strings.js" (or "strings.m.js" for modules)
   // URL that provides translations and dynamic data when requested.
   virtual void UseStringsJs() = 0;
 
   // Adds a mapping between a path name and a resource to return.
-  virtual void AddResourcePath(base::StringPiece path, int resource_id) = 0;
+  virtual void AddResourcePath(std::string_view path, int resource_id) = 0;
 
   // Calls AddResourcePath() in a for-loop for |paths|. Reduces code size vs.
   // reimplementing the same for-loop.
@@ -148,7 +148,7 @@ class WebUIDataSource {
   virtual std::string GetSource() = 0;
 
   // Set supported scheme if not one of the default supported schemes.
-  virtual void SetSupportedScheme(base::StringPiece scheme) = 0;
+  virtual void SetSupportedScheme(std::string_view scheme) = 0;
 };
 
 }  // namespace content

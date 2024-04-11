@@ -10,7 +10,6 @@
 #include <optional>
 #include <set>
 
-#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "ui/base/page_transition_types.h"
@@ -41,9 +41,9 @@ class CONTENT_EXPORT WebUI {
   // Returns JavaScript code that, when executed, calls the function specified
   // by |function_name| with the arguments specified in |arg_list|.
   static std::u16string GetJavascriptCall(
-      base::StringPiece function_name,
+      std::string_view function_name,
       base::span<const base::ValueView> arg_list);
-  static std::u16string GetJavascriptCall(base::StringPiece function_name,
+  static std::u16string GetJavascriptCall(std::string_view function_name,
                                           const base::Value::List& arg_list);
 
   virtual ~WebUI() {}
@@ -88,12 +88,12 @@ class CONTENT_EXPORT WebUI {
   // the call has no effect.
   using MessageCallback =
       base::RepeatingCallback<void(const base::Value::List&)>;
-  virtual void RegisterMessageCallback(base::StringPiece message,
+  virtual void RegisterMessageCallback(std::string_view message,
                                        MessageCallback callback) = 0;
 
   template <typename... Args>
   void RegisterHandlerCallback(
-      base::StringPiece message,
+      std::string_view message,
       base::RepeatingCallback<void(Args...)> callback) {
     RegisterMessageCallback(
         message, base::BindRepeating(
@@ -121,15 +121,14 @@ class CONTENT_EXPORT WebUI {
   //
   // All function names in WebUI must consist of only ASCII characters.
   // There are variants for calls with more arguments.
-  virtual void CallJavascriptFunctionUnsafe(
-      base::StringPiece function_name) = 0;
+  virtual void CallJavascriptFunctionUnsafe(std::string_view function_name) = 0;
 
   virtual void CallJavascriptFunctionUnsafe(
-      base::StringPiece function_name,
+      std::string_view function_name,
       base::span<const base::ValueView> args) = 0;
 
   template <typename... Args>
-  void CallJavascriptFunctionUnsafe(base::StringPiece function_name,
+  void CallJavascriptFunctionUnsafe(std::string_view function_name,
                                     const base::ValueView arg1,
                                     const Args&... arg) {
     base::ValueView args[] = {arg1, arg...};
@@ -155,7 +154,7 @@ class CONTENT_EXPORT WebUI {
   template <size_t... Is, typename... Args>
   struct Call<std::index_sequence<Is...>, Args...> {
     static void Impl(base::RepeatingCallback<void(Args...)> callback,
-                     base::StringPiece message,
+                     std::string_view message,
                      const base::Value::List& list) {
       CHECK_EQ(list.size(), sizeof...(Args)) << message;
       callback.Run(GetValue<Args>(list[Is])...);

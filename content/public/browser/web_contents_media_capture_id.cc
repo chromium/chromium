@@ -4,10 +4,10 @@
 
 #include "content/public/browser/web_contents_media_capture_id.h"
 
+#include <string_view>
 #include <tuple>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace {
@@ -29,12 +29,12 @@ bool ExtractTabCaptureTarget(const std::string& device_id_param,
   if (sep_pos == std::string::npos)
     return false;
 
-  const base::StringPiece component1(device_id.data(), sep_pos);
+  const std::string_view component1(device_id.data(), sep_pos);
   size_t end_pos = device_id.find('?');
   if (end_pos == std::string::npos)
     end_pos = device_id.length();
-  const base::StringPiece component2(device_id.data() + sep_pos + 1,
-                                     end_pos - sep_pos - 1);
+  const std::string_view component2(device_id.data() + sep_pos + 1,
+                                    end_pos - sep_pos - 1);
 
   return (base::StringToInt(component1, render_process_id) &&
           base::StringToInt(component2, main_render_frame_id));
@@ -57,8 +57,8 @@ bool ExtractOptions(const std::string& device_id,
     option_pos_end = device_id.find(kOptionSeparator, option_pos + 1);
     if (option_pos_end == std::string::npos)
       option_pos_end = device_id.length();
-    const base::StringPiece component(device_id.data() + option_pos + 1,
-                                      option_pos_end - option_pos - 1);
+    const std::string_view component(device_id.data() + option_pos + 1,
+                                     option_pos_end - option_pos - 1);
 
     if (component.compare(kDisableLocalEchoFlag) == 0)
       *disable_local_echo = true;

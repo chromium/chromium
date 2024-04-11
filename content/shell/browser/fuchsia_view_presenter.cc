@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/strings/string_piece.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 
 namespace content {

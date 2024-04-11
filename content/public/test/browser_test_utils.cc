@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <set>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -27,7 +28,6 @@
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -351,7 +351,7 @@ CrossSiteRedirectResponseHandler(const net::EmbeddedTestServer* test_server,
 
   // Replace the host of the URL with the one passed in the URL.
   GURL::Replacements replace_host;
-  replace_host.SetHostStr(base::StringPiece(params).substr(0, slash));
+  replace_host.SetHostStr(std::string_view(params).substr(0, slash));
   GURL redirect_server =
       test_server->base_url().ReplaceComponents(replace_host);
 
@@ -653,7 +653,7 @@ bool BeginNavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
 }
 
 bool NavigateIframeToURL(WebContents* web_contents,
-                         base::StringPiece iframe_id,
+                         std::string_view iframe_id,
                          const GURL& url) {
   TestNavigationObserver load_observer(web_contents);
   bool result = BeginNavigateIframeToURL(web_contents, iframe_id, url);
@@ -662,7 +662,7 @@ bool NavigateIframeToURL(WebContents* web_contents,
 }
 
 bool BeginNavigateIframeToURL(WebContents* web_contents,
-                              base::StringPiece iframe_id,
+                              std::string_view iframe_id,
                               const GURL& url) {
   std::string script =
       base::StrCat({"setTimeout(\"var iframes = document.getElementById('",
@@ -707,7 +707,7 @@ void NavigateToURLBlockUntilNavigationsComplete(
 }
 
 GURL GetFileUrlWithQuery(const base::FilePath& path,
-                         base::StringPiece query_string) {
+                         std::string_view query_string) {
   GURL url = net::FilePathToFileURL(path);
   if (!query_string.empty()) {
     GURL::Replacements replacements;
@@ -970,7 +970,7 @@ void SimulateMouseClickAt(WebContents* web_contents,
 
 gfx::PointF GetCenterCoordinatesOfElementWithId(
     const ToRenderFrameHost& adapter,
-    base::StringPiece id) {
+    std::string_view id) {
   float x =
       EvalJs(adapter, JsReplace("const bounds = "
                                 "document.getElementById($1)."
@@ -989,7 +989,7 @@ gfx::PointF GetCenterCoordinatesOfElementWithId(
 }
 
 void SimulateMouseClickOrTapElementWithId(content::WebContents* web_contents,
-                                          base::StringPiece id) {
+                                          std::string_view id) {
   gfx::Point point = gfx::ToFlooredPoint(
       GetCenterCoordinatesOfElementWithId(web_contents, id));
 
@@ -1427,7 +1427,7 @@ RenderFrameHost* ConvertToRenderFrameHost(RenderFrameHost* render_frame_host) {
 }
 
 void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
-                        base::StringPiece script) {
+                        std::string_view script) {
   // Prerendering pages will never have user gesture.
   if (adapter.render_frame_host()->GetLifecycleState() ==
       RenderFrameHost::LifecycleState::kPrerendering) {
@@ -1439,13 +1439,13 @@ void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
 }
 
 void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
-                                          base::StringPiece script) {
+                                          std::string_view script) {
   adapter.render_frame_host()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(script), base::NullCallback());
 }
 
 // EvalJsResult methods.
-EvalJsResult::EvalJsResult(base::Value value, base::StringPiece error)
+EvalJsResult::EvalJsResult(base::Value value, std::string_view error)
     : value(error.empty() ? std::move(value) : base::Value()), error(error) {}
 
 EvalJsResult::EvalJsResult(const EvalJsResult& other)
@@ -1519,9 +1519,9 @@ namespace {
 //
 // TODO(nick): Elide snippets to 80 chars, since it is common for sources to not
 // include newlines.
-std::string AnnotateAndAdjustJsStackTraces(base::StringPiece js_error,
+std::string AnnotateAndAdjustJsStackTraces(std::string_view js_error,
                                            std::string source_name,
-                                           base::StringPiece source,
+                                           std::string_view source,
                                            int column_adjustment_for_line_one) {
   // Escape wildcards in |source_name| for use in MatchPattern.
   base::ReplaceChars(source_name, "\\", "\\\\", &source_name);
@@ -1529,7 +1529,7 @@ std::string AnnotateAndAdjustJsStackTraces(base::StringPiece js_error,
   base::ReplaceChars(source_name, "?", "\\?", &source_name);
 
   // This vector maps line numbers to the corresponding text in |source|.
-  const std::vector<base::StringPiece> source_lines = base::SplitStringPiece(
+  const std::vector<std::string_view> source_lines = base::SplitStringPiece(
       source, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // |source_frame_pattern| should match any line that looks like a stack frame
@@ -1540,19 +1540,19 @@ std::string AnnotateAndAdjustJsStackTraces(base::StringPiece js_error,
   // This is the amount of indentation that is applied to the lines of inserted
   // annotations.
   const std::string indent(8, ' ');
-  const base::StringPiece elision_mark = "";
+  const std::string_view elision_mark = "";
 
   // Loop over each line of |js_error|, and append each to |annotated_error| --
   // possibly rewriting to include extra context.
   std::ostringstream annotated_error;
-  for (const base::StringPiece& error_line : base::SplitStringPiece(
+  for (const std::string_view& error_line : base::SplitStringPiece(
            js_error, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL)) {
     // Does this look like a stack frame whose URL source matches |source_name|?
     if (base::MatchPattern(error_line, source_frame_pattern)) {
       // When a match occurs, annotate the stack trace with the corresponding
       // line from |source|, along with a ^^^ underneath, indicating the column
       // position.
-      std::vector<base::StringPiece> error_line_parts = base::SplitStringPiece(
+      std::vector<std::string_view> error_line_parts = base::SplitStringPiece(
           error_line, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
       CHECK_GE(error_line_parts.size(), 2u);
 
@@ -1680,8 +1680,8 @@ class ExecuteJavaScriptForTestsWaiter : public WebContentsObserver {
 
 EvalJsResult EvalJsRunner(
     const ToRenderFrameHost& execution_target,
-    base::StringPiece script,
-    base::StringPiece source_url,
+    std::string_view script,
+    std::string_view source_url,
     int options,
     int32_t world_id,
     base::OnceClosure after_script_invoke = base::DoNothing()) {
@@ -1732,7 +1732,7 @@ EvalJsResult EvalJsRunner(
 }  // namespace
 
 ::testing::AssertionResult ExecJs(const ToRenderFrameHost& execution_target,
-                                  base::StringPiece script,
+                                  std::string_view script,
                                   int options,
                                   int32_t world_id) {
   // TODO(nick): Do we care enough about folks shooting themselves in the foot
@@ -1748,7 +1748,7 @@ EvalJsResult EvalJsRunner(
 }
 
 EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
-                    base::StringPiece script,
+                    std::string_view script,
                     int options,
                     int32_t world_id,
                     base::OnceClosure after_script_invoke) {
@@ -1771,8 +1771,8 @@ EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
 
 EvalJsResult EvalJsAfterLifecycleUpdate(
     const ToRenderFrameHost& execution_target,
-    base::StringPiece raf_script,
-    base::StringPiece script,
+    std::string_view raf_script,
+    std::string_view script,
     int options,
     int32_t world_id) {
   TRACE_EVENT2("test", "EvalJsAfterLifecycleUpdate", "raf_script", raf_script,
@@ -1840,7 +1840,7 @@ RenderFrameHost* FrameMatchingPredicate(
   return rfh;
 }
 
-bool FrameMatchesName(base::StringPiece name, RenderFrameHost* frame) {
+bool FrameMatchesName(std::string_view name, RenderFrameHost* frame) {
   return frame->GetFrameName() == name;
 }
 
@@ -2102,7 +2102,7 @@ ui::AXNodeData GetFocusedAccessibilityNodeInfo(WebContents* web_contents) {
 }
 
 bool AccessibilityTreeContainsNodeWithName(BrowserAccessibility* node,
-                                           base::StringPiece name) {
+                                           std::string_view name) {
   // If an image annotation is set, it plays the same role as a name, so it
   // makes sense to check both in the same test helper.
   if (node->GetStringAttribute(ax::mojom::StringAttribute::kName) == name ||
@@ -2123,7 +2123,7 @@ void WaitForAccessibilityTreeToChange(WebContents* web_contents) {
 }
 
 void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
-                                                   base::StringPiece name) {
+                                                   std::string_view name) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
@@ -2424,7 +2424,7 @@ void RenderProcessHostWatcher::RenderProcessHostDestroyed(
 
 RenderProcessHostKillWaiter::RenderProcessHostKillWaiter(
     RenderProcessHost* render_process_host,
-    base::StringPiece uma_name)
+    std::string_view uma_name)
     : exit_watcher_(render_process_host,
                     RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT),
       uma_name_(uma_name) {}
@@ -3567,7 +3567,7 @@ DevToolsInspectorLogWatcher::~DevToolsInspectorLogWatcher() {
 void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
     DevToolsAgentHost* host,
     base::span<const uint8_t> message) {
-  base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
+  std::string_view message_str(reinterpret_cast<const char*>(message.data()),
                                 message.size());
   auto parsed_message =
       std::move(base::JSONReader::Read(message_str)->GetDict());

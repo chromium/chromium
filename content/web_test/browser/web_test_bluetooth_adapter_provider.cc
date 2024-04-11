@@ -34,7 +34,6 @@
 
 namespace {
 
-using ::base::StringPiece;
 using ::base::test::RunOnceCallback;
 using ::device::BluetoothAdapter;
 using ::device::BluetoothDevice;

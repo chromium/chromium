@@ -12,13 +12,13 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
@@ -461,7 +461,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // matching_scheme_cookies_allowed_schemes, but maybe we should remove that
   // anyway.
   virtual bool ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
-      base::StringPiece scheme,
+      std::string_view scheme,
       bool is_embedded_origin_secure);
 
   // Similar to the above. Returns whether SameSite cookie restrictions should
@@ -472,7 +472,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // be different, as SameSite restrictions and third-party cookie blocking are
   // related but have different semantics.
   virtual bool ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
-      base::StringPiece scheme,
+      std::string_view scheme,
       bool is_embedded_origin_secure);
 
   // Gets a user friendly display name for a given |site_url| to be used in the
@@ -2164,7 +2164,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // ThreadPoolInstance was created.
   // Note: the embedder should *not* start the ThreadPoolInstance for
   // BrowserMainLoop, BrowserMainLoop itself is responsible for that.
-  virtual bool CreateThreadPool(base::StringPiece name);
+  virtual bool CreateThreadPool(std::string_view name);
 
   // Returns true if the tab security level is acceptable to allow WebAuthn
   // requests, false otherwise. This is not attached to

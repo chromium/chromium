@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 
 namespace content {

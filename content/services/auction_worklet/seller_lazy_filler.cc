@@ -110,7 +110,7 @@ bool CreatePerBuyerCurrenciesObject(
 
 bool InsertPrioritySignals(
     AuctionV8Helper* v8_helper,
-    base::StringPiece key,
+    std::string_view key,
     const base::flat_map<std::string, double>& priority_signals,
     v8::Local<v8::Object> object) {
   v8::Isolate* isolate = v8_helper->isolate();

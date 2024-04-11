@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -18,7 +19,6 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -227,32 +227,32 @@ class CONTENT_EXPORT AuctionV8Helper
 
   // Attempts to create a v8::String from a UTF-8 string. Returns empty string
   // if input is not UTF-8.
-  v8::MaybeLocal<v8::String> CreateUtf8String(base::StringPiece utf8_string);
+  v8::MaybeLocal<v8::String> CreateUtf8String(std::string_view utf8_string);
 
   // The passed in JSON must be a valid UTF-8 JSON string.
   v8::MaybeLocal<v8::Value> CreateValueFromJson(v8::Local<v8::Context> context,
-                                                base::StringPiece utf8_json);
+                                                std::string_view utf8_json);
 
   // Convenience wrappers around the above Create* methods. Attempt to create
   // the corresponding value type and append it to the passed in argument
   // vector. Useful for assembling arguments to a Javascript function. Return
   // false on failure.
-  [[nodiscard]] bool AppendUtf8StringValue(base::StringPiece utf8_string,
+  [[nodiscard]] bool AppendUtf8StringValue(std::string_view utf8_string,
                                            v8::LocalVector<v8::Value>* args);
   [[nodiscard]] bool AppendJsonValue(v8::Local<v8::Context> context,
-                                     base::StringPiece utf8_json,
+                                     std::string_view utf8_json,
                                      v8::LocalVector<v8::Value>* args);
 
   // Convenience wrapper that adds the specified value into the provided Object.
-  [[nodiscard]] bool InsertValue(base::StringPiece key,
+  [[nodiscard]] bool InsertValue(std::string_view key,
                                  v8::Local<v8::Value> value,
                                  v8::Local<v8::Object> object);
 
   // Convenience wrapper that creates an Object by parsing `utf8_json` as JSON
   // and then inserts it into the provided Object.
   [[nodiscard]] bool InsertJsonValue(v8::Local<v8::Context> context,
-                                     base::StringPiece key,
-                                     base::StringPiece utf8_json,
+                                     std::string_view key,
+                                     std::string_view utf8_json,
                                      v8::Local<v8::Object> object);
 
   enum class ExtractJsonResult { kSuccess, kFailure, kTimeout };
@@ -361,7 +361,7 @@ class CONTENT_EXPORT AuctionV8Helper
   v8::MaybeLocal<v8::Value> CallFunction(v8::Local<v8::Context> context,
                                          const DebugId* debug_id,
                                          const std::string& script_name,
-                                         base::StringPiece function_name,
+                                         std::string_view function_name,
                                          base::span<v8::Local<v8::Value>> args,
                                          TimeLimit* script_timeout,
                                          std::vector<std::string>& error_out);

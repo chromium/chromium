@@ -10,6 +10,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -261,7 +262,7 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
       return v8::Number::New(isolate, value);
     }
 
-    v8::Local<v8::Value> operator()(base::StringPiece value) {
+    v8::Local<v8::Value> operator()(std::string_view value) {
       return v8::String::NewFromUtf8(isolate, value.data(),
                                      v8::NewStringType::kNormal, value.length())
           .ToLocalChecked();

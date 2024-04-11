@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -351,7 +352,7 @@ std::optional<gfx::Vector2dF> ToVector(const std::string& direction,
   return std::nullopt;
 }
 
-int ToKeyModifiers(const base::StringPiece& key) {
+int ToKeyModifiers(const std::string_view& key) {
   if (key == "Alt")
     return blink::WebInputEvent::kAltKey;
   if (key == "Control")
@@ -370,7 +371,7 @@ int ToKeyModifiers(const base::StringPiece& key) {
   return 0;
 }
 
-int ToButtonModifiers(const base::StringPiece& button) {
+int ToButtonModifiers(const std::string_view& button) {
   if (button == "Left")
     return blink::WebMouseEvent::kLeftButtonDown;
   if (button == "Middle")
@@ -850,9 +851,9 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
     return false;
   gfx::Vector2dF fling_velocity(0, 0);
   int modifiers = 0;
-  std::vector<base::StringPiece> key_list = base::SplitStringPiece(
+  std::vector<std::string_view> key_list = base::SplitStringPiece(
       keys_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const base::StringPiece& key : key_list) {
+  for (const std::string_view& key : key_list) {
     int key_modifier = ToKeyModifiers(key);
     if (key_modifier == 0) {
       return false;
@@ -938,9 +939,9 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
   gfx::Vector2dF distances(pixels_to_scroll_x, pixels_to_scroll_y);
   gfx::Vector2dF fling_velocity(0, 0);
   int modifiers = 0;
-  std::vector<base::StringPiece> key_list = base::SplitStringPiece(
+  std::vector<std::string_view> key_list = base::SplitStringPiece(
       keys_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const base::StringPiece& key : key_list) {
+  for (const std::string_view& key : key_list) {
     int key_modifier = ToKeyModifiers(key);
     if (key_modifier == 0) {
       return false;
@@ -948,9 +949,9 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
     modifiers |= key_modifier;
   }
 
-  std::vector<base::StringPiece> button_list = base::SplitStringPiece(
+  std::vector<std::string_view> button_list = base::SplitStringPiece(
       buttons_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const base::StringPiece& button : button_list) {
+  for (const std::string_view& button : button_list) {
     int button_modifier = ToButtonModifiers(button);
     if (button_modifier == 0) {
       return false;

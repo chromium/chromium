@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"

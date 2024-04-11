@@ -28,7 +28,7 @@ void LazyFiller::SetResult(const v8::PropertyCallbackInfo<v8::Value>& info,
 }
 
 bool LazyFiller::DefineLazyAttribute(v8::Local<v8::Object> object,
-                                     base::StringPiece name,
+                                     std::string_view name,
                                      v8::AccessorNameGetterCallback getter) {
   v8::Isolate* isolate = v8_helper_->isolate();
 
@@ -44,7 +44,7 @@ bool LazyFiller::DefineLazyAttribute(v8::Local<v8::Object> object,
 bool LazyFiller::DefineLazyAttributeWithMetadata(
     v8::Local<v8::Object> object,
     v8::Local<v8::Value> metadata,
-    base::StringPiece name,
+    std::string_view name,
     v8::AccessorNameGetterCallback getter,
     v8::Local<v8::ObjectTemplate>& lazy_filler_template) {
   v8::Isolate* isolate = v8_helper_->isolate();

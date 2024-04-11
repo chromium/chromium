@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -411,7 +412,7 @@ bool RenderThreadImpl::HistogramCustomizer::IsAlexaTop10NonGoogleSite(
     return true;
 
   if (!sanitized_host.empty()) {
-    std::vector<base::StringPiece> host_tokens = base::SplitStringPiece(
+    std::vector<std::string_view> host_tokens = base::SplitStringPiece(
         sanitized_host, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
     if (host_tokens.size() >= 2) {

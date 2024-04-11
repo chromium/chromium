@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_process_info.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"

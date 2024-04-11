@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -521,7 +522,7 @@ bool ShouldAllowSystemTracingConsumer() {
 void CreateChildThreadPool(const std::string& process_type) {
   // Thread pool should only be initialized once.
   DCHECK(!base::ThreadPoolInstance::Get());
-  base::StringPiece thread_pool_name;
+  std::string_view thread_pool_name;
   if (process_type == switches::kGpuProcess)
     thread_pool_name = "GPU";
   else if (process_type == switches::kRendererProcess)

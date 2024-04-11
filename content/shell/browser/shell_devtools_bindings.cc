@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -117,7 +117,7 @@ class ShellDevToolsBindings::NetworkResourceLoader
     response_headers_ = response_head.headers;
   }
 
-  void OnDataReceived(base::StringPiece chunk,
+  void OnDataReceived(std::string_view chunk,
                       base::OnceClosure resume) override {
     base::Value chunkValue;
 
@@ -401,8 +401,8 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
 void ShellDevToolsBindings::DispatchProtocolMessage(
     DevToolsAgentHost* agent_host,
     base::span<const uint8_t> message) {
-  base::StringPiece str_message(reinterpret_cast<const char*>(message.data()),
-                                message.size());
+  std::string_view str_message(reinterpret_cast<const char*>(message.data()),
+                               message.size());
   if (str_message.length() < kShellMaxMessageChunkSize) {
     CallClientFunction("DevToolsAPI", "dispatchMessage",
                        base::Value(std::string(str_message)));
@@ -410,7 +410,7 @@ void ShellDevToolsBindings::DispatchProtocolMessage(
     size_t total_size = str_message.length();
     for (size_t pos = 0; pos < str_message.length();
          pos += kShellMaxMessageChunkSize) {
-      base::StringPiece str_message_chunk =
+      std::string_view str_message_chunk =
           str_message.substr(pos, kShellMaxMessageChunkSize);
 
       CallClientFunction(

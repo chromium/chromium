@@ -5,6 +5,7 @@
 #include "content/renderer/accessibility/annotations/ax_image_stopwords.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -12,7 +13,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
@@ -507,7 +507,7 @@ AXImageStopwords::AXImageStopwords() {
   // because it avoids ever needing to copy any of the strings; each StringPiece
   // is just a pointer into kImageStopwordsUtf8 and flat_set acts like a set but
   // basically just does a binary search.
-  std::vector<base::StringPiece> stopwords =
+  std::vector<std::string_view> stopwords =
       base::SplitStringPiece(kImageStopwordsUtf8, "\n", base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
 

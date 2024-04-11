@@ -4,6 +4,8 @@
 
 #include "content/test/test_content_client.h"
 
+#include <string_view>
+
 #include "ui/base/resource/resource_bundle.h"
 
 namespace content {
@@ -12,7 +14,7 @@ TestContentClient::TestContentClient() = default;
 
 TestContentClient::~TestContentClient() = default;
 
-base::StringPiece TestContentClient::GetDataResource(
+std::string_view TestContentClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(

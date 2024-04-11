@@ -43,7 +43,7 @@ namespace {
 
 #if BUILDFLAG(IS_WIN)
 
-std::wstring ToNativeString(base::StringPiece string) {
+std::wstring ToNativeString(std::string_view string) {
   return base::ASCIIToWide(string);
 }
 

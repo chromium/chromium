@@ -4,11 +4,11 @@
 
 #include "content/public/browser/authenticator_request_client_delegate.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/webauth/authenticator_environment.h"
@@ -215,7 +215,7 @@ void AuthenticatorRequestClientDelegate::FidoAuthenticatorAdded(
     const device::FidoAuthenticator& authenticator) {}
 
 void AuthenticatorRequestClientDelegate::FidoAuthenticatorRemoved(
-    base::StringPiece device_id) {}
+    std::string_view device_id) {}
 
 bool AuthenticatorRequestClientDelegate::SupportsPIN() const {
   return false;

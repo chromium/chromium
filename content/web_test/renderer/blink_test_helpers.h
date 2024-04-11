@@ -5,7 +5,8 @@
 #ifndef CONTENT_WEB_TEST_RENDERER_BLINK_TEST_HELPERS_H_
 #define CONTENT_WEB_TEST_RENDERER_BLINK_TEST_HELPERS_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "third_party/blink/public/platform/web_url.h"
 
 namespace blink {
@@ -32,13 +33,13 @@ void ExportWebTestSpecificPreferences(const TestPreferences& from,
 //    to a temporary file under the web_tests directory.
 // 3. If the URL starts with file:///gen/, then return a file URL to the file
 //    under the gen/ directory of the build out.
-blink::WebURL RewriteWebTestsURL(base::StringPiece utf8_url, bool is_wpt_mode);
+blink::WebURL RewriteWebTestsURL(std::string_view utf8_url, bool is_wpt_mode);
 
 // Applies the rewrite rules except 1 of RewriteWebTestsURL().
-blink::WebURL RewriteFileURLToLocalResource(base::StringPiece resource);
+blink::WebURL RewriteFileURLToLocalResource(std::string_view resource);
 
 // Returns true if |test_url| points to a web platform test (WPT).
-bool IsWebPlatformTest(base::StringPiece test_url);
+bool IsWebPlatformTest(std::string_view test_url);
 
 }  // namespace content
 

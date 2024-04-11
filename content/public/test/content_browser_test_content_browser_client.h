@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_TEST_CONTENT_BROWSER_TEST_CONTENT_BROWSER_CLIENT_H_
 #define CONTENT_PUBLIC_TEST_CONTENT_BROWSER_TEST_CONTENT_BROWSER_CLIENT_H_
 
+#include <string_view>
+
 #include "content/shell/browser/shell_content_browser_client.h"
 
 namespace content {
@@ -19,7 +21,7 @@ class ContentBrowserTestContentBrowserClient
   ContentBrowserTestContentBrowserClient();
   ~ContentBrowserTestContentBrowserClient() override;
 
-  bool CreateThreadPool(base::StringPiece name) override;
+  bool CreateThreadPool(std::string_view name) override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
 };

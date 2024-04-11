@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
