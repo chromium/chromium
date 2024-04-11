@@ -488,12 +488,12 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             @ContentSettingsType.EnumType int contentSettingsType,
             @ContentSettingValues @Nullable Integer value) {
         return ContentSettingsResources.getContentSettingsIcon(
-                getContext(), contentSettingsType, value, getSiteSettingsDelegate());
+                getContext(), contentSettingsType, value);
     }
 
     /**
-     * Updates the permissions displayed in the UI by fetching them from mSite.
-     * Must only be called once mSite is set.
+     * Updates the permissions displayed in the UI by fetching them from mSite. Must only be called
+     * once mSite is set.
      */
     private void displaySitePermissions() {
         if (getPreferenceScreen() != null) {
@@ -869,8 +869,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                         getContentSettingsIcon(
                                 info.getContentSettingType(), info.getContentSetting()));
                 preference.setTitle(
-                        ContentSettingsResources.getTitle(
-                                info.getContentSettingType(), getSiteSettingsDelegate()));
+                        ContentSettingsResources.getTitle(info.getContentSettingType()));
                 var pattern = WebsiteAddress.create(info.getPrimaryPattern());
                 preference.setSummary(
                         getEmbeddedPermissionSummary(pattern.getHost(), info.getContentSetting()));
@@ -1093,8 +1092,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             Preference preference, @ContentSettingValues @Nullable Integer value) {
         @ContentSettingsType.EnumType
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
-        int titleResourceId =
-                ContentSettingsResources.getTitle(contentType, getSiteSettingsDelegate());
+        int titleResourceId = ContentSettingsResources.getTitle(contentType);
 
         if (titleResourceId != 0) {
             preference.setTitle(titleResourceId);

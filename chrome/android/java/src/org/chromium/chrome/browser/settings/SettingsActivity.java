@@ -582,7 +582,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             sandboxFragment.setCookieSettingsIntentHelper(
                     (Context context) -> {
                         SiteSettingsHelper.showCategorySettings(
-                                context, mProfile, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+                                context, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
                     });
         }
         if (fragment instanceof SafeBrowsingSettingsFragmentBase) {

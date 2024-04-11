@@ -214,7 +214,6 @@ public class DesktopSiteSettingsIPHController {
                                 () -> {
                                     SiteSettingsHelper.showCategorySettings(
                                             mContext,
-                                            profile,
                                             SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })

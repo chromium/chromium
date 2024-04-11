@@ -96,18 +96,10 @@ public class ContentSettingsResources {
         }
     }
 
-    /**
-     * Returns the ResourceItem for a ContentSettingsType.
-     * @param delegate A site settings delegate to check feature states. Only needs to be passed
-     *                 to access Cookie icon, title or summary.
-     */
-    private static ResourceItem getResourceItem(int contentType, SiteSettingsDelegate delegate) {
+    /** Returns the ResourceItem for a ContentSettingsType. */
+    private static ResourceItem getResourceItem(int contentType) {
         switch (contentType) {
             case ContentSettingsType.ADS:
-                if (delegate == null) {
-                    return new ResourceItem(
-                            0, 0, ContentSettingValues.ALLOW, ContentSettingValues.BLOCK, 0, 0, 0);
-                }
                 return new ResourceItem(
                         R.drawable.web_asset,
                         R.string.site_settings_page_intrusive_ads_label,
@@ -208,10 +200,6 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_clipboard_a11y);
 
             case ContentSettingsType.COOKIES:
-                if (delegate == null) {
-                    return new ResourceItem(
-                            0, 0, ContentSettingValues.ALLOW, ContentSettingValues.BLOCK, 0, 0, 0);
-                }
                 return new ResourceItem(
                         R.drawable.gm_database_24,
                         R.string.site_data_page_title,
@@ -432,8 +420,8 @@ public class ContentSettingsResources {
     }
 
     /** Returns the resource id of the 24dp icon for a content type. */
-    public static int getIcon(int contentType, SiteSettingsDelegate delegate) {
-        return getResourceItem(contentType, delegate).getIcon();
+    public static int getIcon(int contentType) {
+        return getResourceItem(contentType).getIcon();
     }
 
     /**
@@ -449,10 +437,8 @@ public class ContentSettingsResources {
     public static Drawable getContentSettingsIcon(
             Context context,
             @ContentSettingsType.EnumType int contentSettingsType,
-            @ContentSettingValues @Nullable Integer value,
-            SiteSettingsDelegate delegate) {
-        Drawable icon =
-                SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType, delegate));
+            @ContentSettingValues @Nullable Integer value) {
+        Drawable icon = SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType));
         if (value != null && value == ContentSettingValues.BLOCK) {
             return getBlockedSquareIcon(context.getResources(), icon);
         }
@@ -479,8 +465,7 @@ public class ContentSettingsResources {
                 isIncognito
                         ? R.color.default_icon_color_blue_light
                         : R.color.default_icon_color_accent1_tint_list;
-        Drawable icon =
-                SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType, null), color);
+        Drawable icon = SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType), color);
         if (value != null && value == ContentSettingValues.BLOCK) {
             return getBlockedSquareIcon(context.getResources(), icon);
         }
@@ -552,42 +537,40 @@ public class ContentSettingsResources {
     }
 
     /**
-     * Returns the resource id of the title (short version), shown on the Site Settings page
-     * and in the global toggle at the top of a Website Settings page for a category.
+     * Returns the resource id of the title (short version), shown on the Site Settings page and in
+     * the global toggle at the top of a Website Settings page for a category.
      */
-    public static int getTitleForCategory(
-            @SiteSettingsCategory.Type int type, SiteSettingsDelegate delegate) {
+    public static int getTitleForCategory(@SiteSettingsCategory.Type int type) {
         if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
             return R.string.third_party_cookies_page_title;
         }
-        return getTitle(SiteSettingsCategory.contentSettingsType(type), delegate);
+        return getTitle(SiteSettingsCategory.contentSettingsType(type));
     }
 
     /**
      * Returns the resource id of the title (short version), shown on the Site Settings page and in
      * the global toggle at the top of a Website Settings page for a content type.
      */
-    public static int getTitle(
-            @ContentSettingsType.EnumType int contentType, SiteSettingsDelegate delegate) {
-        return getResourceItem(contentType, delegate).getTitle();
+    public static int getTitle(@ContentSettingsType.EnumType int contentType) {
+        return getResourceItem(contentType).getTitle();
     }
 
     /**
-     * Returns which ContentSetting the global default is set to, when enabled.
-     * Either Ask/Allow. Not required unless this entry describes a settings
-     * that appears on the Site Settings page and has a global toggle.
+     * Returns which ContentSetting the global default is set to, when enabled. Either Ask/Allow.
+     * Not required unless this entry describes a settings that appears on the Site Settings page
+     * and has a global toggle.
      */
     public static @ContentSettingValues @Nullable Integer getDefaultEnabledValue(int contentType) {
-        return getResourceItem(contentType, null).getDefaultEnabledValue();
+        return getResourceItem(contentType).getDefaultEnabledValue();
     }
 
     /**
-     * Returns which ContentSetting the global default is set to, when disabled.
-     * Usually Block. Not required unless this entry describes a settings
-     * that appears on the Site Settings page and has a global toggle.
+     * Returns which ContentSetting the global default is set to, when disabled. Usually Block. Not
+     * required unless this entry describes a settings that appears on the Site Settings page and
+     * has a global toggle.
      */
     public static @ContentSettingValues @Nullable Integer getDefaultDisabledValue(int contentType) {
-        return getResourceItem(contentType, null).getDefaultDisabledValue();
+        return getResourceItem(contentType).getDefaultDisabledValue();
     }
 
     /**
@@ -635,13 +618,13 @@ public class ContentSettingsResources {
     }
 
     /** Returns the summary (resource id) to show when the content type is enabled. */
-    public static int getEnabledSummary(int contentType, SiteSettingsDelegate delegate) {
-        return getResourceItem(contentType, delegate).getEnabledSummary();
+    public static int getEnabledSummary(int contentType) {
+        return getResourceItem(contentType).getEnabledSummary();
     }
 
     /** Returns the summary (resource id) to show when the content type is disabled. */
-    public static int getDisabledSummary(int contentType, SiteSettingsDelegate delegate) {
-        return getResourceItem(contentType, delegate).getDisabledSummary();
+    public static int getDisabledSummary(int contentType) {
+        return getResourceItem(contentType).getDisabledSummary();
     }
 
     /**
@@ -650,12 +633,13 @@ public class ContentSettingsResources {
      *
      * <p>Returns `0` in case no a11y override is configured.
      */
-    public static int getSummaryOverrideForScreenReader(
-            int contentType, SiteSettingsDelegate delegate) {
-        return getResourceItem(contentType, delegate).getSummaryOverrideForScreenReader();
+    public static int getSummaryOverrideForScreenReader(int contentType) {
+        return getResourceItem(contentType).getSummaryOverrideForScreenReader();
     }
 
-    /** Returns the summary for Geolocation content settings when it is set to 'Allow' (by policy). */
+    /**
+     * Returns the summary for Geolocation content settings when it is set to 'Allow' (by policy).
+     */
     public static int getGeolocationAllowedSummary() {
         return R.string.website_settings_category_allowed;
     }
