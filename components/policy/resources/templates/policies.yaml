@@ -1252,6 +1252,8 @@ policies:
   1251: GenAILocalFoundationalModelSettings
   1252: DeviceExtensionsSystemLogEnabled
   1253: ChromeDataRegionSetting
+  1254: ContextualGoogleIntegrationsEnabled
+  1255: ContextualGoogleIntegrationsConfiguration
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -2648,6 +2648,8 @@ source_set("ash") {
     "policy/handlers/bluetooth_policy_handler.h",
     "policy/handlers/configuration_policy_handler_ash.cc",
     "policy/handlers/configuration_policy_handler_ash.h",
+    "policy/handlers/contextual_google_integrations_policies_handler.cc",
+    "policy/handlers/contextual_google_integrations_policies_handler.h",
     "policy/handlers/device_dlc_predownload_list_policy_handler.cc",
     "policy/handlers/device_dlc_predownload_list_policy_handler.h",
     "policy/handlers/device_dock_mac_address_source_handler.cc",

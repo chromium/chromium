@@ -1,0 +1,68 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "default",
+        "policies": {},
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "default_value": [
+              "GoogleCalendar",
+              "GoogleClassroom",
+              "GoogleTasks"
+            ]
+          }
+        }
+      },
+      {
+        "note": "invalid type",
+        "policies": {
+          "ContextualGoogleIntegrationsEnabled": 123
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "default_value": [
+              "GoogleCalendar",
+              "GoogleClassroom",
+              "GoogleTasks"
+            ]
+          }
+        }
+      },
+      {
+        "note": "false",
+        "policies": {
+          "ContextualGoogleIntegrationsEnabled": false
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": []
+          }
+        }
+      },
+      {
+        "note": "true",
+        "policies": {
+          "ContextualGoogleIntegrationsEnabled": true,
+          "ContextualGoogleIntegrationsConfiguration": [
+            "GoogleCalendar",
+            "GoogleClassroom",
+            "GoogleTasks"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "GoogleCalendar",
+              "GoogleClassroom",
+              "GoogleTasks"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]
