@@ -12,14 +12,6 @@ namespace blink {
 
 namespace {
 
-DropShadowPaintFilter::ShadowMode PickShadowMode(int shadow_index) {
-  // If this is the first shadow to be painted, also include the foreground.
-  if (shadow_index == 0) {
-    return DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground;
-  }
-  return DropShadowPaintFilter::ShadowMode::kDrawShadowOnly;
-}
-
 sk_sp<PaintFilter> MakeOneTextShadowFilter(
     const ShadowData& shadow,
     const Color& current_color,
@@ -44,8 +36,9 @@ sk_sp<PaintFilter> MakeTextShadowFilter(const TextPaintStyle& text_style) {
   DCHECK(text_style.shadow);
   const auto& shadow_list = text_style.shadow->Shadows();
   if (shadow_list.size() == 1) {
-    return MakeOneTextShadowFilter(shadow_list[0], text_style.current_color,
-                                   text_style.color_scheme, PickShadowMode(0));
+    return MakeOneTextShadowFilter(
+        shadow_list[0], text_style.current_color, text_style.color_scheme,
+        DropShadowPaintFilter::ShadowMode::kDrawShadowOnly);
   }
   auto shadow_filters =
       std::make_unique<sk_sp<PaintFilter>[]>(shadow_list.size());
@@ -53,7 +46,7 @@ sk_sp<PaintFilter> MakeTextShadowFilter(const TextPaintStyle& text_style) {
   for (const ShadowData& shadow : shadow_list) {
     if (sk_sp<PaintFilter> shadow_filter = MakeOneTextShadowFilter(
             shadow, text_style.current_color, text_style.color_scheme,
-            PickShadowMode(count))) {
+            DropShadowPaintFilter::ShadowMode::kDrawShadowOnly)) {
       shadow_filters[count++] = std::move(shadow_filter);
     }
   }
