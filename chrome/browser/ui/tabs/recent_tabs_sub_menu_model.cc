@@ -323,17 +323,14 @@ void RecentTabsSubMenuModel::Build() {
   // recently closed tabs and tabs from other devices respectively.
   // |local_window_items_| contains the local recently closed windows.
   InsertItemWithStringIdAt(0, IDC_SHOW_HISTORY, IDS_HISTORY_SHOW_HISTORY);
-  if (features::IsChromeRefresh2023()) {
-    SetCommandIcon(this, IDC_SHOW_HISTORY,
-                   vector_icons::kHistoryChromeRefreshIcon);
-  }
+  SetCommandIcon(this, IDC_SHOW_HISTORY,
+                 vector_icons::kHistoryChromeRefreshIcon);
+
   if (features::IsSidePanelPinningEnabled()) {
     InsertItemWithStringIdAt(1, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
                              IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
-    if (features::IsChromeRefresh2023()) {
-      SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-                     vector_icons::kHistoryChromeRefreshIcon);
-    }
+    SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+                   vector_icons::kHistoryChromeRefreshIcon);
   }
   AddSeparator(ui::NORMAL_SEPARATOR);
   history_separator_index_ = GetItemCount() - 1;
@@ -354,19 +351,15 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
   if (!service || service->entries().empty()) {
     // This is to show a disabled restore tab entry with the accelerator to
     // teach users about this command.
-    InsertItemWithStringIdAt(
-        ++last_local_model_index_, kDisabledRecentlyClosedHeaderCommandId,
-        features::IsChromeRefresh2023() ? IDS_RECENT_TABS
-                                        : IDS_RECENTLY_CLOSED);
+    InsertItemWithStringIdAt(++last_local_model_index_,
+                             kDisabledRecentlyClosedHeaderCommandId,
+                             IDS_RECENT_TABS);
   } else {
     recently_closed_title_index_ = ++last_local_model_index_;
     InsertTitleWithStringIdAt(recently_closed_title_index_.value(),
                               features::IsChromeRefresh2023()
                                   ? IDS_RECENT_TABS
                                   : IDS_RECENTLY_CLOSED);
-    if (!features::IsChromeRefresh2023()) {
-      SetIcon(last_local_model_index_, CreateFavicon(kTabIcon));
-    }
 
     int added_count = 0;
     for (const auto& entry : service->entries()) {
@@ -403,20 +396,14 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
 void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
   // All other devices' items (device headers or tabs) use AddItem*() to append
   // a menu item, because they take always place in the end of menu.
-
-  if (features::IsChromeRefresh2023()) {
-    AddSeparator(ui::NORMAL_SEPARATOR);
-    AddTitleWithStringId(IDS_YOUR_DEVICES);
-  }
+  AddSeparator(ui::NORMAL_SEPARATOR);
+  AddTitleWithStringId(IDS_YOUR_DEVICES);
 
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
   if (!open_tabs || !open_tabs->GetAllForeignSessions(&sessions)) {
-    if (!features::IsChromeRefresh2023()) {
-      AddSeparator(ui::NORMAL_SEPARATOR);
-    }
-    if (open_tabs || !features::IsChromeRefresh2023()) {
+    if (open_tabs) {
       AddItemWithStringId(IDC_RECENT_TABS_NO_DEVICE_TABS,
                           IDS_RECENT_TABS_NO_DEVICE_TABS);
     } else {
@@ -432,7 +419,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
   // Sort sessions from most recent to least recent.
   std::sort(sessions.begin(), sessions.end(), SortSessionsByRecency);
 
-  const size_t kMaxSessionsToShow = features::IsChromeRefresh2023() ? 8 : 3;
+  const size_t kMaxSessionsToShow = 8;
   size_t num_sessions_added = 0;
   for (size_t i = 0;
        i < sessions.size() && num_sessions_added < kMaxSessionsToShow; ++i) {
@@ -448,30 +435,15 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
 
     // Add the header for the device session.
     DCHECK(!session->GetSessionName().empty());
-    if (features::IsChromeRefresh2023()) {
-      std::unique_ptr<ui::SimpleMenuModel> device_menu_model =
-          CreateOtherDeviceSubMenu(session, tabs_in_session);
-      const int command_id = GetAndIncrementNextMenuID();
-      AddSubMenu(command_id, base::UTF8ToUTF16(session->GetSessionName()),
-                 device_menu_model.get());
-      AddDeviceFavicon(this, GetItemCount() - 1,
-                       session->GetDeviceFormFactor());
-      device_sub_menu_items_.emplace(
-          command_id, SubMenuItem(command_id, std::move(device_menu_model)));
-    } else {
-      AddSeparator(ui::NORMAL_SEPARATOR);
-      AddTitle(base::UTF8ToUTF16(session->GetSessionName()));
-      AddDeviceFavicon(this, GetItemCount() - 1,
-                       session->GetDeviceFormFactor());
+    std::unique_ptr<ui::SimpleMenuModel> device_menu_model =
+        CreateOtherDeviceSubMenu(session, tabs_in_session);
+    const int command_id = GetAndIncrementNextMenuID();
+    AddSubMenu(command_id, base::UTF8ToUTF16(session->GetSessionName()),
+               device_menu_model.get());
+    AddDeviceFavicon(this, GetItemCount() - 1, session->GetDeviceFormFactor());
+    device_sub_menu_items_.emplace(
+        command_id, SubMenuItem(command_id, std::move(device_menu_model)));
 
-      // Build tab menu items from sorted session tabs.
-      const size_t kMaxTabsPerSessionToShow = 4;
-      for (size_t k = 0;
-           k < std::min(tabs_in_session.size(), kMaxTabsPerSessionToShow);
-           ++k) {
-        BuildOtherDevicesTabItem(this, session_tag, *tabs_in_session[k]);
-      }  // for all tabs in one session
-    }
     ++num_sessions_added;
   }  // for all sessions
 
@@ -595,9 +567,7 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
       restore_all_command_id, IDS_RESTORE_WINDOW,
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon));
   local_window_items_.emplace(restore_all_command_id, window.id);
-  if (features::IsChromeRefresh2023()) {
-    window_model->AddSeparator(ui::NORMAL_SEPARATOR);
-  }
+  window_model->AddSeparator(ui::NORMAL_SEPARATOR);
 
   std::optional<tab_groups::TabGroupId> last_group;
   tab_groups::TabGroupVisualData current_group_visual_data;
