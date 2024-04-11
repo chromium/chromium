@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -51,13 +50,6 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class SearchWidgetProviderTest {
-    private static class TestSearchDelegate extends SearchActivityDelegate {
-        @Override
-        public boolean isActivityDisabledForTests() {
-            return true;
-        }
-    }
-
     private static final class TestDelegate
             extends SearchWidgetProvider.SearchWidgetProviderDelegate {
         public static final int[] ALL_IDS = {11684, 20170525};
@@ -105,7 +97,6 @@ public class SearchWidgetProviderTest {
     @Before
     public void setUp() {
         ChromeApplicationTestUtils.setUp(ApplicationProvider.getApplicationContext());
-        SearchActivity.setDelegateForTests(new TestSearchDelegate());
 
         mContext = new TestContext();
         mDelegate = new TestDelegate(mContext);

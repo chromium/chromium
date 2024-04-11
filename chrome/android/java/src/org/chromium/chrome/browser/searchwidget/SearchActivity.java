@@ -131,11 +131,6 @@ public class SearchActivity extends AsyncInitializationActivity
 
         /** Called when {@link SearchActivity#finishDeferredInitialization} is done. */
         void onFinishDeferredInitialization() {}
-
-        /** Returning true causes the Activity to finish itself immediately when starting up. */
-        boolean isActivityDisabledForTests() {
-            return false;
-        }
     }
 
     private static final Object DELEGATE_LOCK = new Object();
@@ -175,12 +170,6 @@ public class SearchActivity extends AsyncInitializationActivity
     public SearchActivity() {
         mUmaActivityObserver = new UmaActivityObserver(this);
         mLocationBarUiOverrides.setForcedPhoneStyleOmnibox();
-    }
-
-    @Override
-    protected boolean isStartedUpCorrectly(Intent intent) {
-        if (getActivityDelegate().isActivityDisabledForTests()) return false;
-        return super.isStartedUpCorrectly(intent);
     }
 
     @Override
