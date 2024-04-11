@@ -168,7 +168,109 @@ class DeviceFailure(Exception):
     pass
 
 
-class Driver(object):
+class TestURIMapper:
+
+    def __init__(self, port):
+        self.WPT_DIRS = port.WPT_DIRS
+        self._port = port
+
+    # The *_HOST_AND_PORTS tuples are (hostname, insecure_port, secure_port),
+    # i.e. the information needed to create HTTP and HTTPS URLs.
+    # TODO(burnik): Read from config or args.
+    HTTP_DIR = 'http/tests/'
+    HTTP_LOCAL_DIR = 'http/tests/local/'
+    HTTP_HOST_AND_PORTS = ('127.0.0.1', 8000, 8443)
+    WPT_HOST_AND_PORTS = ('web-platform.test', 8001, 8444)
+    WPT_H2_PORT = 9000
+
+    def is_http_test(self, test_name):
+        return (test_name.startswith(self.HTTP_DIR)
+                and not test_name.startswith(self.HTTP_LOCAL_DIR))
+
+    def test_to_uri(self, test_name):
+        """Convert a test name to a URI.
+
+        Tests which have an 'https' directory in their paths or '.https.' or
+        '.serviceworker.' in their name will be loaded over HTTPS; all other
+        tests over HTTP. Example paths loaded over HTTPS:
+        http/tests/security/mixedContent/https/test1.html
+        http/tests/security/mixedContent/test1.https.html
+        external/wpt/encoding/idlharness.any.serviceworker.html
+        """
+        using_wptserve = self._port.should_use_wptserve(test_name)
+
+        if not self.is_http_test(test_name) and not using_wptserve:
+            return path.abspath_to_uri(self._port.host.platform,
+                                       self._port.abspath_for_test(test_name))
+
+        if using_wptserve:
+            for wpt_path, url_prefix in self.WPT_DIRS.items():
+                # The keys of WPT_DIRS do not have trailing slashes.
+                wpt_path += '/'
+                if test_name.startswith(wpt_path):
+                    test_dir_prefix = wpt_path
+                    test_url_prefix = url_prefix
+                    break
+            else:
+                # We really shouldn't reach here, but in case we do, fail gracefully.
+                _log.error('Unrecognized WPT test name: %s', test_name)
+                test_dir_prefix = 'external/wpt/'
+                test_url_prefix = '/'
+            hostname, insecure_port, secure_port = self.WPT_HOST_AND_PORTS
+            if '.www.' in test_name:
+                hostname = "www.%s" % hostname
+            if '.h2.' in test_name:
+                secure_port = self.WPT_H2_PORT
+        else:
+            test_dir_prefix = self.HTTP_DIR
+            test_url_prefix = '/'
+            hostname, insecure_port, secure_port = self.HTTP_HOST_AND_PORTS
+
+        relative_path = test_name[len(test_dir_prefix):]
+
+        if ('/https/' in test_name or '.https.' in test_name
+                or '.h2.' in test_name or '.serviceworker.' in test_name
+                or '.serviceworker-module.' in test_name):
+            return 'https://%s:%d%s%s' % (hostname, secure_port,
+                                          test_url_prefix, relative_path)
+        return 'http://%s:%d%s%s' % (hostname, insecure_port, test_url_prefix,
+                                     relative_path)
+
+    def _get_uri_prefixes(self, hostname, insecure_port, secure_port):
+        """Returns the HTTP and HTTPS URI prefix for a hostname."""
+        return [
+            'http://%s:%d/' % (hostname, insecure_port),
+            'https://%s:%d/' % (hostname, secure_port)
+        ]
+
+    def uri_to_test(self, uri):
+        """Return the base web test name for a given URI.
+
+        This returns the test name for a given URI, e.g., if you passed in
+        "file:///src/web_tests/fast/html/keygen.html" it would return
+        "fast/html/keygen.html".
+        """
+
+        if uri.startswith('file:///'):
+            prefix = path.abspath_to_uri(self._port.host.platform,
+                                         self._port.web_tests_dir())
+            if not prefix.endswith('/'):
+                prefix += '/'
+            return uri[len(prefix):]
+
+        for prefix in self._get_uri_prefixes(*self.HTTP_HOST_AND_PORTS):
+            if uri.startswith(prefix):
+                return self.HTTP_DIR + uri[len(prefix):]
+        for prefix in self._get_uri_prefixes(*self.WPT_HOST_AND_PORTS):
+            if uri.startswith(prefix):
+                url_path = '/' + uri[len(prefix):]
+                for wpt_path, url_prefix in self.WPT_DIRS.items():
+                    if url_path.startswith(url_prefix):
+                        return wpt_path + '/' + url_path[len(url_prefix):]
+        raise NotImplementedError('unknown url type: %s' % uri)
+
+
+class Driver(TestURIMapper):
     """object for running test(s) using content_shell or other driver."""
 
     def __init__(self, port, worker_number, no_timeout=False):
@@ -180,8 +282,7 @@ class Driver(object):
         port - reference back to the port object.
         worker_number - identifier for a particular worker/driver instance
         """
-        self.WPT_DIRS = port.WPT_DIRS
-        self._port = port
+        super().__init__(port)
         self._worker_number = worker_number
         self._no_timeout = no_timeout
 
@@ -352,101 +453,6 @@ class Driver(object):
         return self._port._get_crash_log(self._crashed_process_name,
                                          self._crashed_pid, stdout, stderr,
                                          newer_than)
-
-    # The *_HOST_AND_PORTS tuples are (hostname, insecure_port, secure_port),
-    # i.e. the information needed to create HTTP and HTTPS URLs.
-    # TODO(burnik): Read from config or args.
-    HTTP_DIR = 'http/tests/'
-    HTTP_LOCAL_DIR = 'http/tests/local/'
-    HTTP_HOST_AND_PORTS = ('127.0.0.1', 8000, 8443)
-    WPT_HOST_AND_PORTS = ('web-platform.test', 8001, 8444)
-    WPT_H2_PORT = 9000
-
-    def is_http_test(self, test_name):
-        return (test_name.startswith(self.HTTP_DIR)
-                and not test_name.startswith(self.HTTP_LOCAL_DIR))
-
-    def test_to_uri(self, test_name):
-        """Convert a test name to a URI.
-
-        Tests which have an 'https' directory in their paths or '.https.' or
-        '.serviceworker.' in their name will be loaded over HTTPS; all other
-        tests over HTTP. Example paths loaded over HTTPS:
-        http/tests/security/mixedContent/https/test1.html
-        http/tests/security/mixedContent/test1.https.html
-        external/wpt/encoding/idlharness.any.serviceworker.html
-        """
-        using_wptserve = self._port.should_use_wptserve(test_name)
-
-        if not self.is_http_test(test_name) and not using_wptserve:
-            return path.abspath_to_uri(self._port.host.platform,
-                                       self._port.abspath_for_test(test_name))
-
-        if using_wptserve:
-            for wpt_path, url_prefix in self.WPT_DIRS.items():
-                # The keys of WPT_DIRS do not have trailing slashes.
-                wpt_path += '/'
-                if test_name.startswith(wpt_path):
-                    test_dir_prefix = wpt_path
-                    test_url_prefix = url_prefix
-                    break
-            else:
-                # We really shouldn't reach here, but in case we do, fail gracefully.
-                _log.error('Unrecognized WPT test name: %s', test_name)
-                test_dir_prefix = 'external/wpt/'
-                test_url_prefix = '/'
-            hostname, insecure_port, secure_port = self.WPT_HOST_AND_PORTS
-            if '.www.' in test_name:
-                hostname = "www.%s" % hostname
-            if '.h2.' in test_name:
-                secure_port = self.WPT_H2_PORT
-        else:
-            test_dir_prefix = self.HTTP_DIR
-            test_url_prefix = '/'
-            hostname, insecure_port, secure_port = self.HTTP_HOST_AND_PORTS
-
-        relative_path = test_name[len(test_dir_prefix):]
-
-        if ('/https/' in test_name or '.https.' in test_name
-                or '.h2.' in test_name or '.serviceworker.' in test_name
-                or '.serviceworker-module.' in test_name):
-            return 'https://%s:%d%s%s' % (hostname, secure_port,
-                                          test_url_prefix, relative_path)
-        return 'http://%s:%d%s%s' % (hostname, insecure_port, test_url_prefix,
-                                     relative_path)
-
-    def _get_uri_prefixes(self, hostname, insecure_port, secure_port):
-        """Returns the HTTP and HTTPS URI prefix for a hostname."""
-        return [
-            'http://%s:%d/' % (hostname, insecure_port),
-            'https://%s:%d/' % (hostname, secure_port)
-        ]
-
-    def uri_to_test(self, uri):
-        """Return the base web test name for a given URI.
-
-        This returns the test name for a given URI, e.g., if you passed in
-        "file:///src/web_tests/fast/html/keygen.html" it would return
-        "fast/html/keygen.html".
-        """
-
-        if uri.startswith('file:///'):
-            prefix = path.abspath_to_uri(self._port.host.platform,
-                                         self._port.web_tests_dir())
-            if not prefix.endswith('/'):
-                prefix += '/'
-            return uri[len(prefix):]
-
-        for prefix in self._get_uri_prefixes(*self.HTTP_HOST_AND_PORTS):
-            if uri.startswith(prefix):
-                return self.HTTP_DIR + uri[len(prefix):]
-        for prefix in self._get_uri_prefixes(*self.WPT_HOST_AND_PORTS):
-            if uri.startswith(prefix):
-                url_path = '/' + uri[len(prefix):]
-                for wpt_path, url_prefix in self.WPT_DIRS.items():
-                    if url_path.startswith(url_prefix):
-                        return wpt_path + '/' + url_path[len(url_prefix):]
-        raise NotImplementedError('unknown url type: %s' % uri)
 
     def has_crashed(self):
         if self._server_process is None:
