@@ -492,7 +492,7 @@ void TaskTracker::RunTask(Task task,
     ScopedSetSequenceLocalStorageMapForCurrentThread
         scoped_set_sequence_local_storage_map_for_current_thread(
             environment.sequence_local_storage
-                ? environment.sequence_local_storage.get()
+                ? environment.sequence_local_storage
                 : &local_storage_map.value());
 
     // Set up TaskRunner CurrentDefaultHandle as expected for the scope of the
@@ -505,12 +505,12 @@ void TaskTracker::RunTask(Task task,
       DCHECK_EQ(TaskSourceExecutionMode::kSequenced,
                 task_source->execution_mode());
       sequenced_task_runner_current_default_handle.emplace(
-          environment.sequenced_task_runner.get());
+          environment.sequenced_task_runner);
     } else if (environment.single_thread_task_runner) {
       DCHECK_EQ(TaskSourceExecutionMode::kSingleThread,
                 task_source->execution_mode());
       single_thread_task_runner_current_default_handle.emplace(
-          environment.single_thread_task_runner.get());
+          environment.single_thread_task_runner);
     } else {
       DCHECK_NE(TaskSourceExecutionMode::kSequenced,
                 task_source->execution_mode());

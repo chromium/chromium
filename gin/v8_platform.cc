@@ -13,7 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/nonscannable_memory.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_job.h"
@@ -138,6 +138,8 @@ base::TaskPriority ToBaseTaskPriority(v8::TaskPriority priority) {
 }
 
 class JobDelegateImpl : public v8::JobDelegate {
+  STACK_ALLOCATED();
+
  public:
   explicit JobDelegateImpl(base::JobDelegate* delegate) : delegate_(delegate) {}
   JobDelegateImpl() = default;
@@ -154,7 +156,7 @@ class JobDelegateImpl : public v8::JobDelegate {
   bool IsJoiningThread() const override { return delegate_->IsJoiningThread(); }
 
  private:
-  raw_ptr<base::JobDelegate> delegate_;
+  base::JobDelegate* delegate_ = nullptr;
 };
 
 class JobHandleImpl : public v8::JobHandle {

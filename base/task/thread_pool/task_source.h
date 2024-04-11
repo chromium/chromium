@@ -35,6 +35,9 @@ enum class TaskSourceExecutionMode {
 };
 
 struct BASE_EXPORT ExecutionEnvironment {
+  STACK_ALLOCATED();
+
+ public:
   ExecutionEnvironment(SequenceToken token) : token(token) {}
 
   ExecutionEnvironment(SequenceToken token,
@@ -53,9 +56,9 @@ struct BASE_EXPORT ExecutionEnvironment {
   ~ExecutionEnvironment();
 
   const SequenceToken token;
-  const raw_ptr<SequenceLocalStorageMap> sequence_local_storage;
-  const raw_ptr<SingleThreadTaskRunner> single_thread_task_runner;
-  const raw_ptr<SequencedTaskRunner> sequenced_task_runner;
+  SequenceLocalStorageMap* const sequence_local_storage = nullptr;
+  SingleThreadTaskRunner* const single_thread_task_runner = nullptr;
+  SequencedTaskRunner* const sequenced_task_runner = nullptr;
 };
 
 // A TaskSource is a virtual class that provides a series of Tasks that must be

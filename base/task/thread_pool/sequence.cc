@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/stack_allocated.h"
 #include "base/task/task_features.h"
 #include "base/time/time.h"
 
@@ -22,19 +23,19 @@ namespace {
 // Asserts that a lock is acquired and annotates the scope such that
 // base/thread_annotations.h can recognize that the lock is acquired.
 class SCOPED_LOCKABLE AnnotateLockAcquired {
+  STACK_ALLOCATED();
+
  public:
   explicit AnnotateLockAcquired(const CheckedLock& lock)
       EXCLUSIVE_LOCK_FUNCTION(lock)
       : acquired_lock_(lock) {
-    acquired_lock_->AssertAcquired();
+    acquired_lock_.AssertAcquired();
   }
 
-  ~AnnotateLockAcquired() UNLOCK_FUNCTION() {
-    acquired_lock_->AssertAcquired();
-  }
+  ~AnnotateLockAcquired() UNLOCK_FUNCTION() { acquired_lock_.AssertAcquired(); }
 
  private:
-  const raw_ref<const CheckedLock> acquired_lock_;
+  const CheckedLock& acquired_lock_;
 };
 
 void MaybeMakeCriticalClosure(TaskShutdownBehavior shutdown_behavior,
