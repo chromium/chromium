@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+import("//testing/test.gni")
+
+source_set("fend_core") {
+  sources = [
+    "fend_core.cc",
+    "fend_core.h",
+  ]
+  deps = [
+    ":fend_core_ffi_glue",
+    "//base",
+  ]
+}
+
+rust_static_library("fend_core_ffi_glue") {
+  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+  crate_root = "fend_core_ffi_glue.rs"
+  sources = [ "fend_core_ffi_glue.rs" ]
+  cxx_bindings = [ "fend_core_ffi_glue.rs" ]
+  visibility = [ ":fend_core" ]
+  deps = [ "//third_party/rust/fend_core/v1:lib" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fend_core_unittest.cc" ]
+  deps = [
+    ":fend_core",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

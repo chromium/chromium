@@ -1,0 +1,7 @@
+include_rules = [
+  # For string conversion to rust string.
+  '+base/strings/string_piece_rust.h',
+  # For unit tests.
+  '+testing/gtest/include/gtest/gtest.h',
+  '+testing/gmock/include/gmock/gmock.h',
+]

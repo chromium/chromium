@@ -7084,6 +7084,7 @@ test("unit_tests") {
     "//third_party/metrics_proto",
     "//third_party/microsoft_webauthn",
     "//third_party/re2",
+    "//third_party/rust/fend_core/v1/wrapper:unit_tests",
     "//third_party/webrtc_overrides:webrtc_component",
     "//third_party/widevine/cdm:headers",
     "//third_party/zlib/google:compression_utils",
