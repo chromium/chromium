@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -34,6 +35,29 @@
 namespace views {
 
 namespace {
+
+// Class that ensures that dialogs are logically "parented" to their parent for
+// various purposes, including testing, theming, and Tutorials.
+class DialogWidget : public Widget {
+ public:
+  DialogWidget() = default;
+  ~DialogWidget() override = default;
+
+  // Widget:
+  Widget* GetPrimaryWindowWidget() override {
+    // Dialogs are usually parented to another window, so that window should be
+    // the primary window. Only fall back to default Widget behavior if there is
+    // no parent.
+    return parent() ? parent()->GetPrimaryWindowWidget()
+                    : Widget::GetPrimaryWindowWidget();
+  }
+
+  // TODO(dfried): Possibly also fix the following (possibly in Widget) so they
+  // don't have to be overridden in bubble_dialog_delegate_view.cc:
+  //  - GetCustomTheme()
+  //  - GetNativeTheme()
+  //  - GetColorProvider()
+};
 
 bool HasCallback(
     const absl::variant<base::OnceClosure, base::RepeatingCallback<bool()>>&
@@ -61,7 +85,7 @@ DialogDelegate::DialogDelegate() {
 Widget* DialogDelegate::CreateDialogWidget(WidgetDelegate* delegate,
                                            gfx::NativeWindow context,
                                            gfx::NativeView parent) {
-  views::Widget* widget = new views::Widget;
+  views::Widget* widget = new DialogWidget;
   views::Widget::InitParams params =
       GetDialogWidgetInitParams(delegate, context, parent, gfx::Rect());
   widget->Init(std::move(params));
