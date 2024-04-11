@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -17,12 +13,12 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/constants.h"
 #else
@@ -107,6 +103,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, NewWebContents) {
 
   chrome::NewTab(browser());
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  // Wait for ChromeVox to attach to the new tab if needed.
+  if (!web_contents->GetAccessibilityMode().has_mode(
+          ui::AXMode::kScreenReader)) {
+    content::AccessibilityNotificationWaiter waiter(web_contents);
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kLabelImages));
 
@@ -179,51 +181,48 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,
       prefs::kAccessibilityImageLabelsEnabled, false);
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, EnabledOnStartup) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
-#endif
-
-  // Make a testing profile so we can mimic prefs set before startup.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  std::unique_ptr<Profile> other_profile;
-  {
-    base::FilePath path =
-        profile_manager->user_data_dir().AppendASCII("test_profile");
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    if (!base::PathExists(path)) {
-      ASSERT_TRUE(base::CreateDirectory(path));
-    }
-    other_profile =
-        Profile::CreateProfile(path, nullptr, Profile::CREATE_MODE_SYNCHRONOUS);
-  }
-  Profile* other_profile_ptr = other_profile.get();
-  profile_manager->RegisterTestingProfile(std::move(other_profile), true);
-
+// Turning on the preference while a screenreader is present should enable the
+// feature for existing tabs.
+IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,
+                       PRE_EnabledByPreference) {
   EnableScreenReader(true);
 
-  // Verify clean state.
-  Browser* other_profile_browser = CreateBrowser(other_profile_ptr);
-  content::WebContents* web_contents =
-      other_profile_browser->tab_strip_model()->GetActiveWebContents();
-  ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
-  EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kLabelImages));
+  // The preference is not yet set, so the feature is off.
+  auto* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(
+      web_contents->GetAccessibilityMode().has_mode(ui::AXMode::kLabelImages));
 
-  // Simulate the pref being set prior to startup.
-  other_profile_ptr->GetPrefs()->SetBoolean(
+  browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, true);
 
-  // Now, simulate the initialization path which ordinarily gets called by
-  // ProfileManager on startup/profile creation.
-  AccessibilityLabelsService* a11y_labels_service =
-      AccessibilityLabelsServiceFactory::GetForProfile(other_profile_ptr);
-  a11y_labels_service->Init();
+  // Now the feature is on.
+  EXPECT_TRUE(
+      web_contents->GetAccessibilityMode().has_mode(ui::AXMode::kLabelImages));
+}
 
-  // Verify that tabs now get the mode. Open a new tab to avoid races for
-  // setting modes.
-  AddBlankTabAndShow(other_profile_browser);
-  web_contents =
-      other_profile_browser->tab_strip_model()->GetActiveWebContents();
-  ax_mode = web_contents->GetAccessibilityMode();
-  EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kLabelImages));
+// When the preference is present at startup, the feature should become enabled
+// when a screenreader is discovered.
+IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, EnabledByPreference) {
+  // The preference was set for the profile by PRE_EnabledByPreference.
+  ASSERT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityImageLabelsEnabled));
+
+  auto* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // If the test is run without --force-renderer-accessibility, then no screen
+  // reader should have been detected yet, and the feature should be off.
+  if (!content::BrowserAccessibilityState::GetInstance()
+           ->GetAccessibilityMode()
+           .has_mode(ui::AXMode::kScreenReader)) {
+    EXPECT_FALSE(web_contents->GetAccessibilityMode().has_mode(
+        ui::AXMode::kLabelImages));
+
+    EnableScreenReader(true);
+  }
+
+  // Now the feature is on.
+  EXPECT_TRUE(
+      web_contents->GetAccessibilityMode().has_mode(ui::AXMode::kLabelImages));
 }
