@@ -374,8 +374,9 @@
       </message>
 
       <!-- Mahi -->
+      <!-- TODO(b/331127382): Finalize Mahi strings and mark them translateable. -->
       <message name="IDS_MAHI_EXPERIMENT_BADGE_ACCESSIBLE_NAME" desc="Accessible name of the badge to indicate that it is an experimental feature." translateable="false">
-        Experimental feature
+        AI-powered experimental feature
       </message>
       <message name="IDS_MAHI_FEEDBACK_PLACEHOLDER" desc="Placeholder text displayed in the feedback text box">
         Feedback for mahi feature
@@ -387,7 +388,7 @@
         Summarize
       </message>
       <message name="IDS_MAHI_MENU_INPUT_TEXTHOLDER" desc="The textholder for the input textfield inside the Mahi menu" translateable="false">
-        Ask question
+        Ask question, e.g. "What is this page about?"
       </message>
       <message name="IDS_MAHI_MENU_TITLE_SHORT" desc="A short version of the title text of the Mahi menu" translateable="false">
         Mahi Menu
