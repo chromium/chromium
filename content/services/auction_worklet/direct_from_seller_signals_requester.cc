@@ -243,6 +243,7 @@ DirectFromSellerSignalsRequester::LoadSignals(
             &url_loader_factory, signals_url,
             AuctionDownloader::DownloadMode::kActualDownload,
             AuctionDownloader::MimeType::kJson,
+            /*post_body=*/std::nullopt,
             base::BindOnce(
                 &DirectFromSellerSignalsRequester::OnSignalsDownloaded,
                 base::Unretained(this), signals_url, base::TimeTicks::Now()),

@@ -162,6 +162,7 @@ AuctionDownloader::AuctionDownloader(
     const GURL& source_url,
     DownloadMode download_mode,
     MimeType mime_type,
+    std::optional<std::string> post_body,
     AuctionDownloaderCallback auction_downloader_callback,
     std::unique_ptr<NetworkEventsDelegate> network_events_delegate)
     : source_url_(source_url),
@@ -180,12 +181,20 @@ AuctionDownloader::AuctionDownloader(
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       MimeTypeToString(mime_type_));
 
+  if (post_body.has_value()) {
+    resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  }
+
   if (network_events_delegate_ != nullptr) {
     network_events_delegate_->OnNetworkSendRequest(*resource_request);
   }
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
+
+  if (post_body.has_value()) {
+    simple_url_loader_->AttachStringForUpload(std::move(post_body.value()));
+  }
 
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
       "devtools.timeline", "ResourceSendRequest", TRACE_EVENT_SCOPE_THREAD,

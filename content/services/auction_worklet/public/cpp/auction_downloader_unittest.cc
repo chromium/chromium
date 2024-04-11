@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/base/net_errors.h"
@@ -84,7 +85,8 @@ class AuctionDownloaderTest
     raw_ref<network::URLLoaderCompletionStatus> completetion_status_ref_;
   };
 
-  std::unique_ptr<std::string> RunRequest() {
+  std::unique_ptr<std::string> RunRequest(
+      std::optional<std::string> post_body = std::nullopt) {
     DCHECK(!run_loop_);
 
     // reset values
@@ -99,13 +101,16 @@ class AuctionDownloaderTest
         observed_completion_status_, observed_response_url_,
         observed_request_id_, observed_request_url_, observed_response_head_);
 
-    url_loader_factory_.SetInterceptor(
-        base::BindRepeating([](const network::ResourceRequest& request) {
+    url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+        [this](const network::ResourceRequest& request) {
           EXPECT_TRUE(request.devtools_request_id);
+          observed_request_post_body_ = request.request_body;
+          observed_request_method_ = request.method;
         }));
 
     AuctionDownloader downloader(
         &url_loader_factory_, url_, download_mode(), mime_type_,
+        std::move(post_body),
         base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                        base::Unretained(this)),
         std::move(test_network_events_delegate));
@@ -159,6 +164,8 @@ class AuctionDownloaderTest
 
   std::optional<GURL> observed_request_url_;
   std::optional<std::string> observed_request_id_;
+  scoped_refptr<network::ResourceRequestBody> observed_request_post_body_;
+  std::optional<std::string> observed_request_method_;
   std::optional<GURL> observed_response_url_;
   std::optional<network::mojom::URLResponseHeadPtr> observed_response_head_;
   network::URLLoaderCompletionStatus observed_completion_status_;
@@ -364,6 +371,24 @@ TEST_P(AuctionDownloaderTest, Success) {
               kAsciiResponseBody);
   std::unique_ptr<std::string> body = RunRequest();
   ASSERT_TRUE(body);
+  EXPECT_EQ(EmptyIfSimulated(kAsciiResponseBody), *body);
+}
+
+TEST_P(AuctionDownloaderTest, SuccessWithPostBody) {
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody);
+  const std::string kPostBody = "TEST BODY";
+  std::unique_ptr<std::string> body = RunRequest(kPostBody);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(observed_request_post_body_);
+  ASSERT_EQ(1u, observed_request_post_body_->elements()->size());
+  const network::DataElement& elem =
+      observed_request_post_body_->elements()->at(0);
+  ASSERT_EQ(network::DataElement::Tag::kBytes, elem.type());
+  const network::DataElementBytes& byte_elem =
+      elem.As<network::DataElementBytes>();
+  EXPECT_EQ(kPostBody, byte_elem.AsStringPiece());
+  EXPECT_EQ(observed_request_method_, "POST");
   EXPECT_EQ(EmptyIfSimulated(kAsciiResponseBody), *body);
 }
 

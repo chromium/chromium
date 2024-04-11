@@ -105,6 +105,7 @@ WorkletLoaderBase::WorkletLoaderBase(
   auction_downloader_ = std::make_unique<AuctionDownloader>(
       url_loader_factory, source_url,
       AuctionDownloader::DownloadMode::kActualDownload, mime_type,
+      /*post_body=*/std::nullopt,
       base::BindOnce(&WorkletLoaderBase::OnDownloadComplete,
                      base::Unretained(this)),
       /*network_events_delegate=*/std::move(network_events_delegate));

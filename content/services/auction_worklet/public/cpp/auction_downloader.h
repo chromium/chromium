@@ -80,6 +80,7 @@ class CONTENT_EXPORT AuctionDownloader {
       const GURL& source_url,
       DownloadMode download_mode,
       MimeType mime_type,
+      std::optional<std::string> post_body,
       AuctionDownloaderCallback auction_downloader_callback,
       std::unique_ptr<NetworkEventsDelegate> network_events_delegate);
   explicit AuctionDownloader(const AuctionDownloader&) = delete;
