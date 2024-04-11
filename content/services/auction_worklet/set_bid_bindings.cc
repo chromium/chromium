@@ -525,12 +525,23 @@ SetBidBindings::SemanticCheckBid(
 
   std::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors;
   const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
-  if (idl.target_num_ad_components.has_value() &&
-      idl.target_num_ad_components.value() > kMaxAdAuctionAdComponents) {
-    return base::unexpected(IdlConvert::Status::MakeErrorMessage(
-        base::StringPrintf("%sbid targetNumAdComponents larger than "
-                           "component ad limit of %zu.",
-                           error_prefix.c_str(), kMaxAdAuctionAdComponents)));
+  if (idl.target_num_ad_components.has_value()) {
+    if (*idl.target_num_ad_components > kMaxAdAuctionAdComponents) {
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(
+          base::StringPrintf("%sbid targetNumAdComponents larger than "
+                             "component ad limit of %zu.",
+                             error_prefix.c_str(), kMaxAdAuctionAdComponents)));
+    }
+    if (*idl.target_num_ad_components == 0) {
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(base::StrCat(
+          {error_prefix, "targetNumAdComponents must be positive."})));
+    }
+
+    if (idl.num_mandatory_ad_components > *idl.target_num_ad_components) {
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(base::StrCat(
+          {error_prefix,
+           "numMandatoryAdComponents cannot exceed targetNumAdComponents."})));
+    }
   }
 
   if (idl.ad_components.has_value()) {
@@ -595,17 +606,6 @@ SetBidBindings::SemanticCheckBid(
       return base::unexpected(IdlConvert::Status::MakeErrorMessage(base::StrCat(
           {error_prefix,
            "adComponents list smaller than targetNumAdComponents."})));
-    }
-
-    if (*idl.target_num_ad_components == 0) {
-      return base::unexpected(IdlConvert::Status::MakeErrorMessage(base::StrCat(
-          {error_prefix, "targetNumAdComponents must be positive."})));
-    }
-
-    if (idl.num_mandatory_ad_components > *idl.target_num_ad_components) {
-      return base::unexpected(IdlConvert::Status::MakeErrorMessage(base::StrCat(
-          {error_prefix,
-           "numMandatoryAdComponents cannot exceed targetNumAdComponents."})));
     }
 
     // Must have some component ads since their number is >=
