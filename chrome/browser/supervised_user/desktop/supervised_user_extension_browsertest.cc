@@ -62,9 +62,11 @@ class SupervisionExtensionTestBase
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (ApplyParentalControlsOnExtensions()) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       enabled_features.push_back(
           supervised_user::
               kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       if (GetExtensionManagementSwitch() ==
           ExtensionManagementSwitch::kManagedByExtensions) {
         // Managed by preference `SkipParentApprovalToInstallExtensions` (new
@@ -78,9 +80,15 @@ class SupervisionExtensionTestBase
                 kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
       }
     } else {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       disabled_features.push_back(
           supervised_user::
               kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#else
+    // For ChromeOS, the parental controls should always apply to extensions
+    // and this case should not be reached. See the instantiation of the test suite.
+    NOTREACHED_NORETURN();
+#endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -247,8 +255,13 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisionRemovalExtensionTest,
     testing::Combine(
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
         testing::Values(ExtensionsParentalControlState::kDisabled,
                         ExtensionsParentalControlState::kEnabled),
+#else
+        // Extensions parental controls always enabled on ChromeOS.
+        testing::Values(ExtensionsParentalControlState::kEnabled),
+#endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
         testing::Values(ExtensionManagementSwitch::kManagedByExtensions,
                         ExtensionManagementSwitch::kManagedByPermissions),
         testing::Values(base::BindRepeating([]() {
@@ -359,8 +372,14 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ParentApprovalHandlingByExtensionSwitchTest,
     testing::Combine(
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
         testing::Values(ExtensionsParentalControlState::kDisabled,
                         ExtensionsParentalControlState::kEnabled),
+#else
+        // Extensions parental controls always enabled on ChromeOS.
+        testing::Values(ExtensionsParentalControlState::kEnabled),
+#endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
         testing::Values(ExtensionManagementSwitch::kManagedByExtensions,
                         ExtensionManagementSwitch::kManagedByPermissions),
         testing::Values(base::BindRepeating([]() {

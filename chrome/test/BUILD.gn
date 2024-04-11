@@ -5469,13 +5469,18 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
 
-        # Extension approvals tests for Desktop platforms only.
+        # Extension approvals tests for Windows/Linux/Mac platforms only.
         # ChromeOS has a different platform-specific approval flow.
-        "../browser/supervised_user/linux_mac_windows/supervised_user_extension_browsertest.cc",
         "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc",
         "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
         "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc",
       ]
+      deps += [ "../browser/enterprise/connectors/test:test_support" ]
+    }
+
+    # Extension approvals tests for Desktop (including ChromeOS) platforms.
+    if (enable_extensions) {
+      sources += [ "../browser/supervised_user/desktop/supervised_user_extension_browsertest.cc" ]
       deps += [ "../browser/enterprise/connectors/test:test_support" ]
     }
 
