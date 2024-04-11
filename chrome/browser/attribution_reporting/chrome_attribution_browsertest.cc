@@ -247,8 +247,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionAttestationsBrowserTest,
           proto, base::Version("1.2.3")));
 }
 
+// TODO(crbug.com/327794975) Test is flaky on various platforms.
 IN_PROC_BROWSER_TEST_F(ChromeAttributionAttestationsBrowserTest,
-                       AttribtionUponAttestationsLoading) {
+                       DISABLED_AttribtionUponAttestationsLoading) {
   PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
       ->SetAllPrivacySandboxAllowedForTesting();
 
