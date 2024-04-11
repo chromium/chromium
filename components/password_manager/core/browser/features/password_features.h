@@ -154,10 +154,6 @@ BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 // we don't need additional signals.
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 
-// Enables suggesting username in the save/update prompt in the case of
-// autocomplete="username".
-BASE_DECLARE_FEATURE(kUsernameFirstFlowHonorAutocomplete);
-
 // Enables storing more possible username values in the LRU cache. Part of the
 // `kUsernameFirstFlowWithIntermediateValues` feature.
 BASE_DECLARE_FEATURE(kUsernameFirstFlowStoreSeveralValues);

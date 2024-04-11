@@ -168,10 +168,6 @@ BASE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing,
              "UsernameFirstFlowFallbackCrowdsourcing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUsernameFirstFlowHonorAutocomplete,
-             "UsernameFirstFlowHonorAutocomplete",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUsernameFirstFlowStoreSeveralValues,
              "UsernameFirstFlowStoreSeveralValues",
              base::FEATURE_ENABLED_BY_DEFAULT);

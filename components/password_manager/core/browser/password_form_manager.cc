@@ -186,9 +186,7 @@ GivePriorityToUsernameFoundOutsideOfForm(
             PasswordFormHadMatchingUsername(true)};
   }
   if (candidate_username.autocomplete_attribute_has_username &&
-      !candidate_username.HasServerPrediction() &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUsernameFirstFlowHonorAutocomplete)) {
+      !candidate_username.HasServerPrediction()) {
     return {UsernameFoundOutsideOfFormType::kUsernameAutocomplete,
             PasswordFormHadMatchingUsername(false)};
   }

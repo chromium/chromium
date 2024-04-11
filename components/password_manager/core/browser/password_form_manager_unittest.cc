@@ -3598,9 +3598,6 @@ TEST_P(PasswordFormManagerTest, PossibleUsernamesPrioritizeServerPrediction) {
 // Tests that boolean representing autocomplete = "username" is taken into
 // consideration when offering username in prompt in username first flow.
 TEST_P(PasswordFormManagerTest, PossibleUsernameFromAutocomplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUsernameFirstFlowHonorAutocomplete);
 
   // A single password form is loaded on the page.
   FormData submitted_form = observed_form_only_password_fields_;

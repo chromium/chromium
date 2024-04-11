@@ -4655,8 +4655,7 @@ TEST_P(PasswordManagerTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/
       {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues,
-       password_manager::features::kUsernameFirstFlowHonorAutocomplete},
+       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
       /*disabled_features_*/ {});
   // Simulate the user typed a previously not saved username in the username
   // form.
