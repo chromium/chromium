@@ -249,7 +249,7 @@ TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
         cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kPortraitRelight));
-    EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
+    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundReplace));
   }
 

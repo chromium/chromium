@@ -2912,7 +2912,7 @@ BASE_FEATURE(kFeatureManagementVideoConference,
 // Controls whether the vc background replace is enabled.
 BASE_FEATURE(kVcBackgroundReplace,
              "VCBackgroundReplace",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the DLC downloading UI for video conferencing tiles is
 // enabled.
