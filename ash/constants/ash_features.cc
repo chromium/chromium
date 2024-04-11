@@ -290,7 +290,7 @@ BASE_FEATURE(kBluetoothFixA2dpPacketSize,
 // Enables or disables the Bluetooth Disconnect Warning feature.
 BASE_FEATURE(kBluetoothDisconnectWarning,
              "BluetoothDisconnectWarning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the Bluetooth Quality Report feature.
 BASE_FEATURE(kBluetoothQualityReport,
