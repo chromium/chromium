@@ -23,7 +23,6 @@ import android.view.View;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -39,7 +38,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -47,13 +45,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
@@ -262,47 +257,6 @@ public class SearchActivityTest {
                         mOnSuggestionsReceivedListener.onSuggestionsReceived(
                                 buildDummyAutocompleteResult(), "inline text", true));
         mOmnibox.checkSuggestionsShown();
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testBackPressFinishActivity() throws Exception {
-        SearchActivity searchActivity = startSearchActivity();
-
-        // Wait for the Activity to fully load.
-        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
-        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(0);
-        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(0);
-
-        // Type in anything.  It should force the suggestions to appear.
-        mOmnibox.requestFocus();
-        searchActivity.handleBackKeyPressed();
-
-        ApplicationTestUtils.waitForActivityState(
-                "Back press should finish the activity", searchActivity, Stage.DESTROYED);
-    }
-
-    /**
-     * Same with {@link #testBackPressFinishActivity()}, but with predictive back gesture enabled.
-     */
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testBackPressFinishActivity_BackRefactored() throws Exception {
-        SearchActivity searchActivity = startSearchActivity();
-
-        // Wait for the Activity to fully load.
-        mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
-        mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(0);
-        mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(0);
-
-        // Type in anything.  It should force the suggestions to appear.
-        mOmnibox.requestFocus();
-        searchActivity.getOnBackPressedDispatcher().onBackPressed();
-
-        ApplicationTestUtils.waitForActivityState(
-                "Back press should finish the activity", searchActivity, Stage.DESTROYED);
     }
 
     @Test

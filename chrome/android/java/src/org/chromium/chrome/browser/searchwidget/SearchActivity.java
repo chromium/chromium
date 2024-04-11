@@ -11,7 +11,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -153,11 +152,6 @@ public class SearchActivity extends AsyncInitializationActivity
     /** Notified about events happening for the SearchActivity. */
     private static SearchActivityDelegate sDelegate;
 
-    /** Main content view. */
-    private ViewGroup mContentView;
-
-    private View mAnchorView;
-
     // Incoming intent request type. See {@link SearchActivityUtils#IntentOrigin}.
     @IntentOrigin Integer mIntentOrigin;
     // Incoming intent search type. See {@link SearchActivityUtils#SearchType}.
@@ -169,10 +163,9 @@ public class SearchActivity extends AsyncInitializationActivity
     /** Input submitted before before the native library was loaded. */
     private OmniboxLoadUrlParams mQueuedParams;
 
-    /** The View that represents the search box. */
+    private LocationBarCoordinator mLocationBarCoordinator;
     private SearchActivityLocationBarLayout mSearchBox;
-
-    LocationBarCoordinator mLocationBarCoordinator;
+    private View mAnchorView;
 
     private SnackbarManager mSnackbarManager;
     private Tab mTab;
@@ -240,14 +233,14 @@ public class SearchActivity extends AsyncInitializationActivity
         mInsetObserverViewSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mInsetObserverViewSupplier.set(new InsetObserver(rootView, true));
 
-        mContentView = createContentView();
-        setContentView(mContentView);
+        var contentView = createContentView();
+        setContentView(contentView);
 
         // Build the search box.
         mSearchBox =
                 (SearchActivityLocationBarLayout)
-                        mContentView.findViewById(R.id.search_location_bar);
-        mAnchorView = mContentView.findViewById(R.id.toolbar);
+                        contentView.findViewById(R.id.search_location_bar);
+        mAnchorView = contentView.findViewById(R.id.toolbar);
 
         // Create status bar color controller and assign to search activity.
         if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
@@ -692,20 +685,11 @@ public class SearchActivity extends AsyncInitializationActivity
                 .recordLocaleBasedSearchMetrics(true, params.url, params.transitionType);
     }
 
-    private ViewGroup createContentView() {
-        assert mContentView == null;
-
-        ViewGroup contentView =
-                (ViewGroup)
-                        LayoutInflater.from(this).inflate(R.layout.search_activity, null, false);
-        contentView.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        cancelSearch();
-                    }
-                });
-
+    @VisibleForTesting
+    /* package */ ViewGroup createContentView() {
+        var contentView =
+                (ViewGroup) getLayoutInflater().inflate(R.layout.search_activity, null, false);
+        contentView.setOnClickListener(v -> cancelSearch());
         return contentView;
     }
 

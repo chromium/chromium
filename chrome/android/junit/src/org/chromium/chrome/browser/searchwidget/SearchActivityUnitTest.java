@@ -585,4 +585,39 @@ public class SearchActivityUnitTest {
 
         verify(mActivity, never()).finishDeferredInitialization();
     }
+
+    @Test
+    public void cancelSearch_onBackKeyPressed() {
+        mActivity.handleNewIntent(new Intent());
+
+        assertFalse(mActivity.isFinishing());
+        assertFalse(mActivity.isActivityFinishingOrDestroyed());
+        mActivity.handleBackKeyPressed();
+        assertTrue(mActivity.isActivityFinishingOrDestroyed());
+        assertTrue(mActivity.isFinishing());
+    }
+
+    @Test
+    public void cancelSearch_onBackGesture() {
+        // Same as above, but with predictive back gesture enabled.
+        mActivity.handleNewIntent(new Intent());
+
+        assertFalse(mActivity.isFinishing());
+        assertFalse(mActivity.isActivityFinishingOrDestroyed());
+        mActivity.getOnBackPressedDispatcher().onBackPressed();
+        assertTrue(mActivity.isActivityFinishingOrDestroyed());
+        assertTrue(mActivity.isFinishing());
+    }
+
+    @Test
+    public void cancelSearch_onTapOutside() {
+        mActivity.handleNewIntent(new Intent());
+
+        assertFalse(mActivity.isFinishing());
+        assertFalse(mActivity.isActivityFinishingOrDestroyed());
+        var view = mActivity.createContentView();
+        view.performClick();
+        assertTrue(mActivity.isActivityFinishingOrDestroyed());
+        assertTrue(mActivity.isFinishing());
+    }
 }
