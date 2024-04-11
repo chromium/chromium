@@ -143,9 +143,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kDownloadManagerSaveToDriveSettings,
     prefs::kIosSaveToDriveDownloadManagerPolicySettings,
     base::Value::Type::INTEGER },
-  { policy::key::kProductSpecificationsEnabled,
-    commerce::kProductSpecificationsEnabledPrefName,
-    base::Value::Type::BOOLEAN},
 };
 // clang-format on
 

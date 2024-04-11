@@ -14,11 +14,6 @@ inline constexpr char kCommerceDailyMetricsLastUpdateTime[] =
 inline constexpr char kShoppingListBookmarkLastUpdateTime[] =
     "shopping_list_bookmark_last_update_time";
 
-// This preference is used to enable or disable the product specifications
-// feature for enterprise policies.
-inline constexpr char kProductSpecificationsEnabledPrefName[] =
-    "product_specifications_enabled";
-
 // This setting is primarily for enabling or disabling the shopping list feature
 // in enterprise settings.
 inline constexpr char kShoppingListEnabledPrefName[] = "shopping_list_enabled";

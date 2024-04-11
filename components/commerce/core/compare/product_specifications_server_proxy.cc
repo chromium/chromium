@@ -73,12 +73,7 @@ constexpr net::NetworkTrafficAnnotationTag kShoppingListTrafficAnnotation =
             "feature based on things like country, locale, and whether the "
             "user is signed in. The request is only made after the user "
             "chooses to engage with the feature."
-          chrome_policy {
-            ProductSpecificationsEnabled {
-              policy_options {mode: MANDATORY}
-              ProductSpecificationsEnabled: false
-            }
-          }
+          chrome_policy {}
         })");
 
 }  // namespace

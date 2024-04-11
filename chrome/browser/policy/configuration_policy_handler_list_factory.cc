@@ -2159,12 +2159,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     client_certificates::prefs::kProvisionManagedClientCertificateForUserPrefs,
     base::Value::Type::INTEGER },
 #endif  //
-
-#if !BUILDFLAG(IS_FUCHSIA)
-  { key::kProductSpecificationsEnabled,
-    commerce::kProductSpecificationsEnabledPrefName,
-    base::Value::Type::BOOLEAN},
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 };
 // clang-format on
 

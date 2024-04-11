@@ -59,7 +59,6 @@
 //ios/chrome/test/data/policy/pref_mapping/PopupsAllowedForUrls.json
 //ios/chrome/test/data/policy/pref_mapping/PopupsBlockedForUrls.json
 //ios/chrome/test/data/policy/pref_mapping/PrintingEnabled.json
-//ios/chrome/test/data/policy/pref_mapping/ProductSpecificationsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/RestrictAccountsToPatterns.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingProtectionLevel.json
