@@ -30,6 +30,7 @@ import contextlib
 import json
 import logging
 import optparse
+import posixpath
 import re
 import traceback
 from typing import List, Optional
@@ -326,6 +327,12 @@ def check_virtual_test_suites(host, options):
     virtual_suites = port.virtual_test_suites()
     virtual_suites.sort(key=lambda s: s.full_prefix)
 
+    wpt_tests = set()
+    for wpt_dir in port.WPT_DIRS:
+        wpt_tests.update(
+            posixpath.join(wpt_dir, url)
+            for url in port.wpt_manifest(wpt_dir).all_urls())
+
     failures = []
     for suite in virtual_suites:
         suite_comps = suite.full_prefix.split(port.TEST_PATH_SEPARATOR)
@@ -353,7 +360,9 @@ def check_virtual_test_suites(host, options):
                 continue
             base_comps = base.split(port.TEST_PATH_SEPARATOR)
             absolute_base = port.abspath_for_test(base)
-            if fs.isfile(absolute_base):
+            # Also, allow any WPT URLs that are valid generated tests but
+            # aren't test files (e.g., `.any.js` and variants).
+            if fs.isfile(absolute_base) or base in wpt_tests:
                 del base_comps[-1]
             elif not fs.isdir(absolute_base):
                 failure = 'Base "{}" in virtual suite "{}" must refer to a real file or directory'.format(
@@ -380,7 +389,8 @@ def check_virtual_test_suites(host, options):
                 failures.append(failure)
 
         for exclusive_test in suite.exclusive_tests:
-            if not fs.exists(port.abspath_for_test(exclusive_test)):
+            if not fs.exists(port.abspath_for_test(
+                    exclusive_test)) and base not in wpt_tests:
                 failure = 'Exclusive_tests entry "{}" in virtual suite "{}" must refer to a real file or directory'.format(
                     exclusive_test, prefix)
                 failures.append(failure)

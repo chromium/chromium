@@ -30,7 +30,7 @@ import json
 import optparse
 import textwrap
 import unittest
-from unittest import mock
+from unittest.mock import patch
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host_mock import MockHost
@@ -469,10 +469,20 @@ class CheckVirtualSuiteTest(unittest.TestCase):
         self.host = MockHost()
         self.options = optparse.Values({
             'platform': 'test',
-            'debug_rwt_logging': False
+            'debug_rwt_logging': False,
+            # Assume the manifest is already up-to-date.
+            'manifest_update': False,
         })
         self.port = self.host.port_factory.get('test', options=self.options)
         self.host.port_factory.get = lambda options=None: self.port
+
+        fs = self.host.filesystem
+        manifest_path = fs.join(self.port.web_tests_dir(), 'external', 'wpt',
+                                'MANIFEST.json')
+        fs.write_text_file(manifest_path, json.dumps({}))
+        manifest_path = fs.join(self.port.web_tests_dir(), 'wpt_internal',
+                                'MANIFEST.json')
+        fs.write_text_file(manifest_path, json.dumps({}))
 
     def test_check_virtual_test_suites_readme(self):
         self.port.virtual_test_suites = lambda: [
@@ -493,6 +503,46 @@ class CheckVirtualSuiteTest(unittest.TestCase):
         res = lint_test_expectations.check_virtual_test_suites(
             self.host, self.options)
         self.assertFalse(res)
+
+    def test_check_virtual_test_suites_generated(self):
+        fs = self.host.filesystem
+        # Satisfy the README check, which is out of scope for this test.
+        fs.write_text_file(
+            fs.join(self.port.web_tests_dir(), 'virtual', 'wpt-generated',
+                    'README.md'), '')
+        manifest = {
+            'items': {
+                'testharness': {
+                    'test.any.js': [
+                        'df2f8b048c370d3ab009946d73d7de6f8a412471',
+                        ['test.any.html?a', {}],
+                        ['test.any.worker.html?a', {}],
+                        ['test.any.html?b', {}],
+                        ['test.any.worker.html?b', {}],
+                    ],
+                },
+            },
+        }
+        manifest_path = fs.join(self.port.web_tests_dir(), 'external', 'wpt',
+                                'MANIFEST.json')
+        fs.write_text_file(manifest_path, json.dumps(manifest))
+
+        suites = [
+            VirtualTestSuite(prefix='wpt-generated',
+                             platforms=['Linux', 'Mac', 'Win'],
+                             bases=[
+                                 'external/wpt/test.any.html?a',
+                                 'external/wpt/test.any.worker.html?b'
+                             ],
+                             exclusive_tests='ALL',
+                             args=['--arg']),
+        ]
+        with patch.object(self.port,
+                          'virtual_test_suites',
+                          return_value=suites):
+            self.assertEqual(
+                lint_test_expectations.check_virtual_test_suites(
+                    self.host, self.options), [])
 
     def test_check_virtual_test_suites_redundant(self):
         self.port.virtual_test_suites = lambda: [
