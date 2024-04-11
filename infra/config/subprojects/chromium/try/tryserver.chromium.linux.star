@@ -393,6 +393,9 @@ try_.orchestrator_builder(
     name = "linux-full-remote-rel",
     description_html = "Experimental " + linkify_builder("try", "linux-rel", "chromium") + " builder with more kinds of remote actions. e.g. remote linking",
     mirrors = builder_config.copy_from("linux-rel"),
+    builder_config_settings = builder_config.try_settings(
+        is_compile_only = True,
+    ),
     gn_args = "try/linux-rel",
     compilator = "linux-full-remote-rel-compilator",
     contact_team_email = "chrome-build-team@google.com",
