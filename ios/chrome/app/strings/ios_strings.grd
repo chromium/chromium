@@ -2332,11 +2332,14 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_TITLE" desc="Title for the cell to open 'Google Activity Controls' dialog.">
         Google Activity Controls
       </message>
-      <message name="IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE" desc="This is the title of a setting that helps users find the settings to control how Chrome history can be used to personalize other Google services. It appears in Chrome’s Advanced Sync settings and is before the “Control how your synced history can be used to personalize other Google services” string. You may shorten the string to “Personalize services” or just “Personalize” in order to help your language fit in the small character limit. [CHAR_LIMIT=30]">
-        Personalize Google Services
+      <message name="IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE" desc="This is the title of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. It appears in Chrome’s Advanced Sync settings and is before the “Control how browsing history is used with your other data across Google services” string. [CHAR_LIMIT=30]">
+        Personalization
       </message>
-      <message name="IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION" desc="This is the subtitle of a setting that helps users find the settings to control how Chrome history can be used to personalize other Google services. This subtitle appears in Chrome’s Advanced Sync settings, after the “Personalize Google services” string.">
-        Control how your synced browsing history can be used to personalize other Google services
+      <message name="IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE_EEA" desc="This is the title of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. It appears in Chrome’s Advanced Sync settings and is before the “Control how browsing history is used with your other data across Google services” string. “Linking” refers to the ability to link Google services; this verb should align with the verb for the branded term “linked Google services” in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=517bace2. [CHAR_LIMIT=30]">
+        Personalization &amp; linking
+      </message>
+      <message name="IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION" desc="This is the subtitle of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. This subtitle appears in Chrome’s Advanced Sync settings, after the “Personalization &amp; linking” or “Personalization” string.">
+        Control how browsing history is used with your other data across Google services
       </message>
       <message name="IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE" desc="Title for the view in the Settings for enabling/disabling Sync. [iOS only]">
         Manage Sync

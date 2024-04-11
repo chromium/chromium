@@ -706,11 +706,11 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_PASSWORD_SHARING_FETCHING_RECIPIENTS_ERROR" desc="Description on the alert view explaining an error in the password sharing flow. [iOS only]">
         Your password wasn't shared. Check your internet connection and make sure you're signed in to Chromium. Then, try again.
       </message>
-      <message name="IDS_IOS_PERSONALIZE_GOOGLE_SERVICES_HEADER" desc="This is the body text of a setting that helps users find the settings to control how Chrome history can be used to personalize other Google services. This text appears in Chrome’s Advanced Sync settings, on the subpage that links out to Web &amp; App Activity and Linked Google services.">
-        To get the most personalized experience, include Chromium in <ph name="FEATURE_NAME_1">$1<ex>Web &amp; App Activity</ex></ph> and <ph name="FEATURE_NAME_2">$2<ex>Linked Google services</ex></ph>
+      <message name="IDS_IOS_PERSONALIZE_GOOGLE_SERVICES_HEADER" desc="This is the body text of a settings page that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. This text appears in Chrome’s Advanced Sync settings, on the subpage that links out to Web &amp; App Activity and Linked Google services.">
+        To get personalization and other features, include Chromium in <ph name="FEATURE_NAME_1">$1<ex>Web &amp; App Activity</ex></ph> and <ph name="FEATURE_NAME_2">$2<ex>Linked Google services</ex></ph>
       </message>
-      <message name="IDS_IOS_PERSONALIZE_GOOGLE_SERVICES_LINKED_SERVICES_DESCRIPTION" desc="This is the subtitle of a setting that links to “Linked Google services” in the Google Account’s Data &amp; privacy settings. This subtitle appears on a subpage from Chrome’s Advanced Sync settings, and is after the “Linked Google services” string. The pronoun “them” refers to Chrome and other Google services.">
-        Link Chromium and other Google services if you want them to personalize your experience using data from one another
+      <message name="IDS_IOS_PERSONALIZE_GOOGLE_SERVICES_LINKED_SERVICES_DESCRIPTION" desc="This is the subtitle of a setting that links to “Linked Google services” in the Google Account’s Data &amp; privacy settings. This subtitle appears on a subpage from Chrome’s Advanced Sync settings, and is after the “Linked Google services” string.">
+        Link Chromium and other Google services for personalization and other purposes
       </message>
       <message name="IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_PROMO_TITLE" desc="The text of the title for the post restore default browser promo.">
         Make Chromium Your Default Browser?

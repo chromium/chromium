@@ -417,18 +417,20 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         [[TableViewImageItem alloc]
             initWithType:PersonalizeGoogleServicesItemType];
     if (self.isEEAAccount) {
+      personalizeGoogleServicesItem.title = GetNSString(
+          IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE_EEA);
       personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
           initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
                             kChevronForwardSymbol)];
     } else {
+      personalizeGoogleServicesItem.title =
+          GetNSString(IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE);
       personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
           initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
                             kExternalLinkSymbol)];
     }
     personalizeGoogleServicesItem.accessoryView.tintColor =
         [UIColor colorNamed:kTextQuaternaryColor];
-    personalizeGoogleServicesItem.title =
-        GetNSString(IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE);
     personalizeGoogleServicesItem.detailText = GetNSString(
         IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION);
     personalizeGoogleServicesItem.accessibilityIdentifier =
