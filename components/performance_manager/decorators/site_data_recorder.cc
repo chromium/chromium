@@ -187,6 +187,12 @@ void SiteDataNodeData::OnMainFrameUrlChanged(const GURL& url,
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
 
+  if (!data_cache_) {
+    // There is no SiteDataCache if this PageNode is in a browser context that
+    // doesn't enable keyed services (such as the system profile).
+    return;
+  }
+
   writer_ = data_cache_->GetWriterForOrigin(origin);
   reader_ = data_cache_->GetReaderForOrigin(origin);
 
@@ -412,9 +418,14 @@ void SiteDataRecorder::SetPageNodeDataCache(const PageNode* page_node) {
   DCHECK(page_node_impl);
   DCHECK(!SiteDataNodeData::Get(page_node_impl));
   auto* data = SiteDataNodeData::GetOrCreate(page_node_impl);
-  data->set_data_cache(
-      SiteDataCacheFactory::GetInstance()->GetDataCacheForBrowserContext(
-          page_node->GetBrowserContextID()));
+  // If this PageNode is in a browser context that doesn't enable keyed services
+  // (such as the system profile), it will have no SiteDataCache.
+  if (auto* factory = SiteDataCacheFactory::GetInstance()) {
+    if (auto* data_cache = factory->GetDataCacheForBrowserContext(
+            page_node->GetBrowserContextID())) {
+      data->set_data_cache(data_cache);
+    }
+  }
 }
 
 // static

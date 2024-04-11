@@ -148,8 +148,10 @@ class SiteDataRecorderTest : public PerformanceManagerTestHarness {
 
     auto browser_context_id = GetBrowserContext()->UniqueId();
     RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-      SiteDataCacheFactory::GetInstance()->SetCacheForTesting(
-          browser_context_id, std::make_unique<MockDataCache>());
+      auto* factory = SiteDataCacheFactory::GetInstance();
+      ASSERT_TRUE(factory);
+      factory->SetCacheForTesting(browser_context_id,
+                                  std::make_unique<MockDataCache>());
     }));
 
     SetContents(CreateTestWebContents());

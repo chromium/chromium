@@ -222,9 +222,10 @@ TEST_F(SiteDataCacheImplTest, ClearAllSiteData) {
 
 TEST_F(SiteDataCacheImplTest, InspectorWorks) {
   // Make sure the inspector interface was registered at construction.
+  auto* factory = SiteDataCacheFactory::GetInstance();
+  ASSERT_TRUE(factory);
   SiteDataCacheInspector* inspector =
-      SiteDataCacheFactory::GetInstance()->GetInspectorForBrowserContext(
-          browser_context_.UniqueId());
+      factory->GetInspectorForBrowserContext(browser_context_.UniqueId());
   EXPECT_NE(nullptr, inspector);
   EXPECT_EQ(data_cache_.get(), inspector);
 
@@ -257,9 +258,8 @@ TEST_F(SiteDataCacheImplTest, InspectorWorks) {
   // Make sure the interface is unregistered from the browser context on
   // destruction.
   data_cache_.reset();
-  EXPECT_EQ(nullptr,
-            SiteDataCacheFactory::GetInstance()->GetInspectorForBrowserContext(
-                browser_context_.UniqueId()));
+  EXPECT_EQ(nullptr, factory->GetInspectorForBrowserContext(
+                         browser_context_.UniqueId()));
 }
 
 // TODO(https://crbug.com/1231933): Turn this into a death test to verify that

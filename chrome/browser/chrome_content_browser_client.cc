@@ -1789,15 +1789,9 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
 std::unique_ptr<content::WebContentsViewDelegate>
 ChromeContentBrowserClient::GetWebContentsViewDelegate(
     content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  // Do not track web contents performance for profiles that have Keyed Services
-  // disabled.
-  if (!AreKeyedServicesDisabledForProfileByDefault(profile)) {
-    if (auto* registry =
-            performance_manager::PerformanceManagerRegistry::GetInstance()) {
-      registry->MaybeCreatePageNodeForWebContents(web_contents);
-    }
+  if (auto* registry =
+          performance_manager::PerformanceManagerRegistry::GetInstance()) {
+    registry->MaybeCreatePageNodeForWebContents(web_contents);
   }
   return CreateWebContentsViewDelegate(web_contents);
 }

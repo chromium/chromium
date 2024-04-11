@@ -83,10 +83,12 @@ class ClearSiteDataOnProfileDestroyed final : public ProfileObserver {
   // Calls ClearAllSiteData() for `profile`. This is called when `profile` still
   // exists, but it's too late to prevent its destruction.
   void OnProfileWillBeDestroyed(Profile* profile) final {
-    SiteDataCacheFacadeFactory::GetInstance()
-        ->GetProfileFacadeForTesting(profile)
-        ->ClearAllSiteDataForTesting();
     profile_observation_.Reset();
+    auto* facade_factory = SiteDataCacheFacadeFactory::GetInstance();
+    ASSERT_TRUE(facade_factory);
+    auto* profile_facade = facade_factory->GetProfileFacadeForTesting(profile);
+    ASSERT_TRUE(profile_facade);
+    profile_facade->ClearAllSiteDataForTesting();
   }
 
  private:
@@ -170,9 +172,10 @@ class SiteDataCacheFacadeBrowserTest
       // Remember to quit the RunLoop on early return.
       base::ScopedClosureRunner quit_on_exit(std::move(quit_closure));
 
+      auto* factory = SiteDataCacheFactory::GetInstance();
+      ASSERT_TRUE(factory);
       SiteDataCacheInspector* inspector =
-          SiteDataCacheFactory::GetInstance()->GetInspectorForBrowserContext(
-              browser_context_id);
+          factory->GetInspectorForBrowserContext(browser_context_id);
       ASSERT_TRUE(inspector);
       SiteDataCache* cache = inspector->GetDataCache();
       ASSERT_TRUE(cache);

@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -30,9 +31,12 @@ SiteDataCacheImpl::SiteDataCacheImpl(const std::string& browser_context_id,
   data_store_ = std::make_unique<LevelDBSiteDataStore>(
       browser_context_path.AppendASCII(kDataStoreDBName));
 
-  // Register the debug interface against the browser context.
-  SiteDataCacheFactory::GetInstance()->SetDataCacheInspectorForBrowserContext(
-      this, browser_context_id_);
+  // Register the debug interface against the browser context. The factory
+  // should always exist by the time this is called, since it is created once
+  // there's a browser context with keyed services enabled.
+  auto* factory = SiteDataCacheFactory::GetInstance();
+  CHECK(factory);
+  factory->SetDataCacheInspectorForBrowserContext(this, browser_context_id_);
 }
 
 SiteDataCacheImpl::SiteDataCacheImpl(const std::string& browser_context_id)
