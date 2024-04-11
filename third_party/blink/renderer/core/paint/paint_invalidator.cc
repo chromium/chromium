@@ -275,7 +275,10 @@ bool PaintInvalidator::InvalidatePaint(
   if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
       object.ShouldCheckLayoutForPaintInvalidation() &&
       (IsLayoutPaintInvalidationReason(reason) ||
-       reason == PaintInvalidationReason::kJustCreated)) {
+       reason == PaintInvalidationReason::kJustCreated ||
+       // We don't invalidate paint of visibility:hidden objects, but observe
+       // intersection for them.
+       object.StyleRef().Visibility() != EVisibility::kVisible)) {
     object.GetFrameView()->SetIntersectionObservationState(
         LocalFrameView::kDesired);
   }
