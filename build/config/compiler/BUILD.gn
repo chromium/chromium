@@ -756,6 +756,16 @@ config("compiler") {
     # binary size than the default setting of 100.
     # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
     # should be able to better manage binary size increases on its own.
+    #
+    # For high-end Android, 30 seems to be the right trade-off between performance
+    # and binary size, at least based on Speedometer. For example, increasing
+    # `import_instr_limit`to 50 improves Speedometer 2.1 score by 0.7% [0], while
+    # Speedometer 3.0 score remains roughly the same (-0.1%) [1]. The binary size
+    # increases by about 2MB [2] (or 1.1%: the arm64 native code size in M124 is
+    # 178MB).
+    # [0]: https://pinpoint-dot-chromeperf.appspot.com/job/16984a18be0000
+    # [1]: https://pinpoint-dot-chromeperf.appspot.com/job/11984a18be0000
+    # [2]: https://ci.chromium.org/ui/p/chromium/builders/try/android-binary-size/1848442
     import_instr_limit = 30
 
     if (is_win) {
