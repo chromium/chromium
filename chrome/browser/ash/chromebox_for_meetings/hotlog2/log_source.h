@@ -7,27 +7,24 @@
 
 #include <base/memory/weak_ptr.h>
 
+#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/local_data_source.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 
 namespace ash::cfm {
 
 // This class tracks data from a single log file.
-class LogSource : public mojom::DataSource {
+class LogSource : public LocalDataSource {
  public:
-  LogSource(std::string source_name);
+  LogSource(const std::string& source_name, base::TimeDelta poll_rate);
   LogSource(const LogSource&) = delete;
   LogSource& operator=(const LogSource&) = delete;
   ~LogSource() override;
 
- protected:
-  // mojom::DataSource implementation
-  void Fetch(FetchCallback callback) override;
-  void AddWatchDog(mojom::DataFilterPtr filter,
-                   mojo::PendingRemote<mojom::DataWatchDog> watch_dog,
-                   AddWatchDogCallback callback) override;
-  void Flush() override;
-
  private:
+  // LocalDataSource:
+  const std::string& GetDisplayName() override;
+  std::vector<std::string> GetNextData() override;
+
   std::string filepath_;
 
   // Must be the last class member.

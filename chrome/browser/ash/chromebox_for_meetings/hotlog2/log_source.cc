@@ -6,26 +6,18 @@
 
 namespace ash::cfm {
 
-LogSource::LogSource(std::string filepath) : filepath_(filepath) {}
+LogSource::LogSource(const std::string& filepath, base::TimeDelta poll_rate)
+    : LocalDataSource(poll_rate), filepath_(filepath) {}
 
 inline LogSource::~LogSource() = default;
 
-void LogSource::Fetch(FetchCallback callback) {
-  // TODO: (b/326440931)
-  (void)callback;
+const std::string& LogSource::GetDisplayName() {
+  return filepath_;
 }
 
-void LogSource::AddWatchDog(mojom::DataFilterPtr filter,
-                            mojo::PendingRemote<mojom::DataWatchDog> watch_dog,
-                            AddWatchDogCallback callback) {
-  // TODO: (b/326440932)
-  (void)watch_dog;
-  (void)callback;
-}
-
-void LogSource::Flush() {
+std::vector<std::string> LogSource::GetNextData() {
   // TODO: (b/326440931)
-  return;
+  return {};
 }
 
 }  // namespace ash::cfm
