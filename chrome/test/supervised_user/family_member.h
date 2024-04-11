@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -44,6 +45,9 @@ class FamilyMember {
   signin::IdentityManager* identity_manager() const {
     return IdentityManagerFactory::GetForProfile(browser()->profile());
   }
+
+  SupervisedUserService* supervised_user_service() const;
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() const {
     return browser()
         ->profile()

@@ -115,11 +115,7 @@ message DefineChromeTestStateRequest {
   }
 }
 
-message DefineChromeTestStateResponse {}
-
 message ResetChromeTestStateRequest {
   // Identifies subject of this request.
   optional string child_id = 1;
 }
-
-message ResetChromeTestStateResponse {}
