@@ -7,7 +7,7 @@ desc: |-
   this API without a prior user gesture, as described in
   <ph name="AUTOMATIC_FULLSCREEN_HELP_URL">https://chromestatus.com/feature/6218822004768768</ph>.
 
-  This policy supercedes users' personal settings and blocks matching origins
+  This policy supersedes users' personal settings and blocks matching origins
   from calling the API without a prior user gesture.
 
   For detailed information on valid url patterns, please see
