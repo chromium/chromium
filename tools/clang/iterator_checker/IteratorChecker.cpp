@@ -285,8 +285,6 @@ const clang::dataflow::Formula& ForceBoolValue(
 // deductions:
 // - The `transfer` function updates an environment after executing one more
 //   instructions.
-// - The `merge` function merge together the environments from two code
-//   diverging code paths. For instance the `if` and `for` loop.
 class InvalidIteratorAnalysis
     : public clang::dataflow::DataflowAnalysis<InvalidIteratorAnalysis,
                                                clang::dataflow::NoopLattice> {
@@ -307,34 +305,6 @@ class InvalidIteratorAnalysis
     if (auto cfg_stmt = elt.getAs<clang::CFGStmt>()) {
       Transfer(*cfg_stmt->getStmt(), env);
     }
-  }
-
-  // Used by DataflowAnalysis template.
-  bool merge(clang::QualType type,
-             const clang::dataflow::Value& val1,
-             const clang::dataflow::Environment& env1,
-             const clang::dataflow::Value& val2,
-             const clang::dataflow::Environment& env2,
-             clang::dataflow::Value& merged_val,
-             clang::dataflow::Environment& merged_env) {
-    if (!IsIterator(type)) {
-      return true;
-    }
-
-    auto* container1 = GetContainerValue(env1, val1);
-    auto* container2 = GetContainerValue(env2, val2);
-    DebugStream() << "HERE: " << DebugString(env1, val1);
-    DebugStream() << "HERE: " << DebugString(env2, val2);
-    if (container1 != container2) {
-      // See tests/iterator-with-multiple-container.cpp
-      // TODO(https://crbug.com/1455371) Ban iterator associated with multiple
-      // containers.
-      UnsetContainerValue(merged_env, merged_val);
-      return true;
-    }
-
-    SetContainerValue(merged_env, merged_val, *container1);
-    return true;
   }
 
   llvm::StringMap<clang::QualType> GetSyntheticFields(clang::QualType Type) {
@@ -924,13 +894,6 @@ class InvalidIteratorAnalysis
     auto& record = clang::cast<clang::dataflow::RecordValue>(iterator);
     auto& storage = record.getLoc();
     iterator_to_container_[&storage] = &container;
-  }
-
-  void UnsetContainerValue(const clang::dataflow::Environment& env,
-                           const clang::dataflow::Value& iterator) {
-    auto& record = clang::cast<clang::dataflow::RecordValue>(iterator);
-    auto& storage = record.getLoc();
-    iterator_to_container_.erase(&storage);
   }
 
   // Returns whether the currently handled value is an iterator.
