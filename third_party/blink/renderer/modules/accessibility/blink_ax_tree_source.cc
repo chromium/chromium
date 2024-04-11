@@ -270,16 +270,18 @@ AXObject* BlinkAXTreeSource::ChildAt(AXObject* node, size_t index) const {
   // The child may be invalid due to issues in blink accessibility code.
   CHECK(child);
   if (child->IsDetached()) {
-    NOTREACHED() << "Should not try to serialize an invalid child:"
-                 << "\nParent: " << node->ToString(true).Utf8()
-                 << "\nChild: " << child->ToString(true).Utf8();
+    NOTREACHED(base::NotFatalUntil::M127)
+        << "Should not try to serialize an invalid child:" << "\nParent: "
+        << node->ToString(true).Utf8()
+        << "\nChild: " << child->ToString(true).Utf8();
     return nullptr;
   }
 
   if (!child->AccessibilityIsIncludedInTree()) {
-    NOTREACHED() << "Should not receive unincluded child."
-                 << "\nChild: " << child->ToString(true).Utf8()
-                 << "\nParent: " << node->ToString(true).Utf8();
+    NOTREACHED(base::NotFatalUntil::M127)
+        << "Should not receive unincluded child."
+        << "\nChild: " << child->ToString(true).Utf8()
+        << "\nParent: " << node->ToString(true).Utf8();
     return nullptr;
   }
 

@@ -511,7 +511,7 @@ bool RenderWidgetHostViewBase::RequestRepaintForTesting() {
 void RenderWidgetHostViewBase::ProcessAckedTouchEvent(
     const TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
 }
 
 // Send system cursor size to the renderer via UpdateScreenInfo().

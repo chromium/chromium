@@ -701,9 +701,10 @@ void PushMessagingManager::DidGetSubscription(
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
     case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
     case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted: {
-      NOTREACHED() << "Got unexpected error code: "
-                   << static_cast<uint32_t>(service_worker_status) << " "
-                   << blink::ServiceWorkerStatusToString(service_worker_status);
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "Got unexpected error code: "
+          << static_cast<uint32_t>(service_worker_status) << " "
+          << blink::ServiceWorkerStatusToString(service_worker_status);
       get_status = blink::mojom::PushGetRegistrationStatus::STORAGE_ERROR;
       break;
     }

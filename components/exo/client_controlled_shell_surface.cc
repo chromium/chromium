@@ -187,9 +187,9 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
           case ui::SHOW_STATE_FULLSCREEN:
           case ui::SHOW_STATE_INACTIVE:
           case ui::SHOW_STATE_END:
-            NOTREACHED() << " unknown state :"
-                         << window->GetProperty(
-                                aura::client::kRestoreShowStateKey);
+            DUMP_WILL_BE_NOTREACHED_NORETURN()
+                << " unknown state :"
+                << window->GetProperty(aura::client::kRestoreShowStateKey);
             return false;
         }
         break;

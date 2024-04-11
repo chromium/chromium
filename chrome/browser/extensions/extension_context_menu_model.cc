@@ -155,7 +155,7 @@ ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(
     case ExtensionContextMenuModel::PAGE_ACCESS_SUBMENU:
     case ExtensionContextMenuModel::PAGE_ACCESS_ALL_EXTENSIONS_GRANTED:
     case ExtensionContextMenuModel::PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       break;
     case ExtensionContextMenuModel::VIEW_WEB_PERMISSIONS:
       return ContextMenuAction::kViewWebPermissions;

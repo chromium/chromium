@@ -280,7 +280,7 @@ void IdleSpellCheckController::Invoke(IdleDeadline* deadline) {
     static auto* state_data = base::debug::AllocateCrashKeyString(
         "spellchecker-state-on-invocation", base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(state_data, GetStateAsString());
-    NOTREACHED() << GetStateAsString();
+    DUMP_WILL_BE_NOTREACHED_NORETURN() << GetStateAsString();
     Deactivate();
   }
 }
