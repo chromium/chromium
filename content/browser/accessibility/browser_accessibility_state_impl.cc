@@ -28,6 +28,7 @@
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_mode_histogram_logger.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/base_event_utils.h"

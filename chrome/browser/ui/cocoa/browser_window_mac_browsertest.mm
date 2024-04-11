@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/browser_window.h"
 
-#include <memory>
-
 #import <Cocoa/Cocoa.h>
+
+#include <memory>
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -16,6 +16,7 @@
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "ui/accessibility/accessibility_switches.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/test/ns_ax_tree_validator.h"
 

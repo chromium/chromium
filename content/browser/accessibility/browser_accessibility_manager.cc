@@ -34,7 +34,7 @@
 #if defined(AX_FAIL_FAST_BUILD)
 #include "base/command_line.h"
 #include "content/public/browser/ax_inspect_factory.h"
-#include "content/public/common/content_switches.h"
+#include "ui/accessibility/accessibility_switches.h"
 #endif
 
 namespace content {

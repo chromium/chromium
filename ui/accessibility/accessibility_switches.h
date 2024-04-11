@@ -47,6 +47,10 @@ AX_BASE_EXPORT extern const char kDisableAXMenuList[];
 // content/test/data/accessibility/, overwriting existing file content.
 AX_BASE_EXPORT extern const char kGenerateAccessibilityTestExpectations[];
 
+AX_BASE_EXPORT extern const char kDisableRendererAccessibility[];
+
+AX_BASE_EXPORT extern const char kForceRendererAccessibility[];
+
 }  // namespace switches
 
 #endif  // UI_ACCESSIBILITY_ACCESSIBILITY_SWITCHES_H_
