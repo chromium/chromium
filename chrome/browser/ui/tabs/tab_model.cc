@@ -86,10 +86,8 @@ std::unique_ptr<content::WebContents> TabModel::RemoveContents() {
 }
 
 void TabModel::SetContents(std::unique_ptr<content::WebContents> contents) {
-  // TODO(https://crbug.com/331022416): Enable these checks once
-  // CacheWebContents feature is deleted.
-  // CHECK(!contents_);
-  // CHECK(contents);
+  CHECK(!contents_);
+  CHECK(contents);
   contents_ = std::move(contents);
   for (auto& obs : observers_) {
     obs.DidAddContents(this, contents_.get());
