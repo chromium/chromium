@@ -314,6 +314,14 @@ Field **NetworkConfigurations** is an array of
       update frequency, and may be used as a hint for apps to conserve data.
       When not specified, the system will set this to the detected value.
 
+* **TrafficCounterResetTime**
+    * (optional, defaults to "0") - **double**
+    * A UTC timestamp, in milliseconds, representing when
+      the traffic counters for a Service were last reset.
+      The timestamp's value equals the number of milli-
+      seconds since the Windows epoch (1601-01-01
+      00:00:00 UTC).
+
 * **NameServersConfigType**
     * (optional if **Remove** is *false*, otherwise ignored. Defaults to *DHCP*
     if **IPAddressConfigType** is specified) - **string**

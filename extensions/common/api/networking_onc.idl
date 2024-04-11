@@ -731,6 +731,8 @@ namespace networking.onc {
     // 'None' conflicts with extension code generation so we must use a string
     // for 'Source' instead of a SourceType enum.
     DOMString? Source;
+    // When traffic counters were last reset.
+    double? TrafficCounterResetTime;
     // The network type.
     NetworkType Type;
     // For VPN networks, the network VPN properties.
@@ -777,6 +779,8 @@ namespace networking.onc {
     IPConfigProperties? SavedIPConfig;
     // See $(ref:NetworkProperties.Source).
     DOMString? Source;
+    // See $(ref:NetworkProperties.TrafficCounterResetTime).
+    double? TrafficCounterResetTime;
     // See $(ref:NetworkProperties.Type).
     NetworkType Type;
     // See $(ref:NetworkProperties.VPN).

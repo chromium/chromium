@@ -1110,6 +1110,7 @@ TEST_F(NetworkingPrivateApiTest, GetCellularProperties) {
           .Set("Name", "cellular")
           .Set("NameServersConfigType", "DHCP")
           .Set("Source", "User")
+          .Set("TrafficCounterResetTime", 0.0)
           .Set("Type", "Cellular");
 
   EXPECT_EQ(base::Value(std::move(expected_result)), *result);
@@ -1166,6 +1167,7 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
           .Set("Name", "cellular")
           .Set("NameServersConfigType", "DHCP")
           .Set("Source", "User")
+          .Set("TrafficCounterResetTime", 0.0)
           .Set("Type", "Cellular");
 
   EXPECT_EQ(base::Value(std::move(expected_result)), *result);

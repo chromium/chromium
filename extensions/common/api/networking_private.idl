@@ -730,6 +730,7 @@ namespace networkingPrivate {
     // for 'Source' instead of a SourceType enum.
     DOMString? Source;
     TetherProperties? Tether;
+    double? TrafficCounterResetTime;
     NetworkType Type;
     VPNProperties? VPN;
     WiFiProperties? WiFi;
@@ -756,6 +757,7 @@ namespace networkingPrivate {
     // See $(ref:NetworkProperties.Source).
     DOMString? Source;
     TetherProperties? Tether;
+    double? TrafficCounterResetTime;
     NetworkType Type;
     ManagedVPNProperties? VPN;
     ManagedWiFiProperties? WiFi;

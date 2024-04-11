@@ -521,8 +521,10 @@ base::Value::Dict* FakeShillServiceClient::SetServiceProperties(
     properties->Set(shill::kConnectableProperty, true);
 
   // Cellular is always metered.
-  if (type == shill::kTypeCellular)
+  if (type == shill::kTypeCellular) {
     properties->Set(shill::kMeteredProperty, true);
+    properties->Set(shill::kTrafficCounterResetTimeProperty, 0.0);
+  }
 
   return properties;
 }

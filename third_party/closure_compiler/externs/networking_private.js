@@ -881,6 +881,7 @@ chrome.networkingPrivate.NetworkConfigProperties;
  *   SavedIPConfig: (!chrome.networkingPrivate.IPConfigProperties|undefined),
  *   Source: (string|undefined),
  *   Tether: (!chrome.networkingPrivate.TetherProperties|undefined),
+ *   TrafficCounterResetTime: (number|undefined),
  *   Type: !chrome.networkingPrivate.NetworkType,
  *   VPN: (!chrome.networkingPrivate.VPNProperties|undefined),
  *   WiFi: (!chrome.networkingPrivate.WiFiProperties|undefined)
@@ -909,6 +910,7 @@ chrome.networkingPrivate.NetworkProperties;
  *   SavedIPConfig: (!chrome.networkingPrivate.IPConfigProperties|undefined),
  *   Source: (string|undefined),
  *   Tether: (!chrome.networkingPrivate.TetherProperties|undefined),
+ *   TrafficCounterResetTime: (number|undefined),
  *   Type: !chrome.networkingPrivate.NetworkType,
  *   VPN: (!chrome.networkingPrivate.ManagedVPNProperties|undefined),
  *   WiFi: (!chrome.networkingPrivate.ManagedWiFiProperties|undefined)

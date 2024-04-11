@@ -694,6 +694,7 @@ declare global {
         SavedIPConfig?: IPConfigProperties;
         Source?: string;
         Tether?: TetherProperties;
+        TrafficCounterResetTime?: number;
         Type: NetworkType;
         VPN?: VPNProperties;
         WiFi?: WiFiProperties;
@@ -719,6 +720,7 @@ declare global {
         SavedIPConfig?: IPConfigProperties;
         Source?: string;
         Tether?: TetherProperties;
+        TrafficCounterResetTime?: number;
         Type: NetworkType;
         VPN?: ManagedVPNProperties;
         WiFi?: ManagedWiFiProperties;

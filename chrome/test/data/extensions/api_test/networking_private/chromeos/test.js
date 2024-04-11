@@ -624,6 +624,7 @@ var availableTests = [
           GUID: kCellularGuid,
           IPAddressConfigType: chrome.networkingPrivate.IPConfigType.DHCP,
           Metered: true,
+          TrafficCounterResetTime: 0.0,
           Name: 'cellular1',
           NameServersConfigType: chrome.networkingPrivate.IPConfigType.DHCP,
           Source: 'User',
