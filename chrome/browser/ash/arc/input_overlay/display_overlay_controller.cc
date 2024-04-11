@@ -35,9 +35,11 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -45,6 +47,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
 
@@ -831,6 +834,8 @@ void DisplayOverlayController::AddButtonOptionsMenuWidget(Action* action) {
   button_options_widget_->SetContentsView(
       std::make_unique<ButtonOptionsMenu>(this, action));
   UpdateButtonOptionsMenuWidgetBounds();
+  button_options_widget_->widget_delegate()->SetAccessibleTitle(
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_BUTTON_OPTIONS_A11Y_LABEL));
 
   // Always hide editing list when button options menu shows up.
   SetEditingListVisibility(/*visible=*/false);
@@ -1290,6 +1295,8 @@ void DisplayOverlayController::AddEditingListWidget() {
 
   editing_list_widget_->Show();
   UpdateEditingListWidgetBounds();
+  editing_list_widget_->widget_delegate()->SetAccessibleTitle(
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDITING_LIST_A11Y_LABEL));
 }
 
 void DisplayOverlayController::RemoveEditingListWidget() {

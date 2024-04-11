@@ -6383,6 +6383,9 @@
         <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_DELETE_TOOLTIP_TEXT" desc="The tooltip text for the trash button within Game Controls so that users know what the button does.">
           Delete
         </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_A11Y_LABEL" desc="A11y label for the button options menu. Spoken by screen readers when the button options gets focus but not visually rendered.">
+          Button options
+        </message>
         <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_EDIT_INFO" desc="The text directly below the title of the Button Options Menu explaining that you can choose keyboard keys for the current mobile game.">
           Place controls on game actions to play with keyboard keys
         </message>
@@ -6436,6 +6439,9 @@
         </message>
         <message name="IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_A11Y_LABEL" desc="A11y label for button placement mode. Spoken by screen readers when in button placement mode but not visually rendered.">
           Use arrow keys to move this control to the game action you want. Use the enter key to place the control. Use the escape key to cancel.
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_A11Y_LABEL" desc="A11y label for the editing list. Spoken by screen readers when the editing list gets focus but not visually rendered.">
+          Controls panel
         </message>
         <message name="IDS_INPUT_OVERLAY_EDITING_LIST_FIRST_CONTROL_LABEL" desc="The label to the left of the '+' button in the row below the title in the Game Controls editor menu without having created any buttons.">
           Create first control
