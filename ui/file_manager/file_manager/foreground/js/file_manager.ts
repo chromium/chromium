@@ -44,7 +44,7 @@ import {getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {driveRootEntryListKey, trashRootKey} from '../../state/ducks/volumes.js';
 import {DialogType, PropStatus, SearchLocation} from '../../state/state.js';
-import {getEmptyState, getEntry, getStore} from '../../state/store.js';
+import {getEmptyState, getEntry, getStore, getVolume} from '../../state/store.js';
 import {isXfTree} from '../../widgets/xf_tree_util.js';
 
 import {ActionsController} from './actions_controller.js';
@@ -1651,8 +1651,9 @@ export class FileManager {
 
     if (this.localUserFilesAllowed !== prefs.localUserFilesAllowed) {
       this.localUserFilesAllowed = prefs.localUserFilesAllowed;
-      // TODO(b/322779971): Trigger all changes necessary: remove placeholders,
-      // remove commands that aren't valid, etc.
+      // Trigger the change after prefs are updated, so that if needed, the
+      // default root can be resolved correctly.
+      await this.maybeChangeRootOnPreferencesUpdate_();
     }
 
     await this.updateOfficePrefs_(prefs);
@@ -1778,6 +1779,38 @@ export class FileManager {
     } else {
       this.navigateAwayFromDisabledRoot_(driveFakeRoot);
     }
+  }
+
+  /**
+   * Navigates to default display root if currently in a local folder and
+   * `localUserFilesAllowed` preference is updated to False.
+   */
+  private async maybeChangeRootOnPreferencesUpdate_() {
+    if (this.localUserFilesAllowed) {
+      return;
+    }
+    assert(this.directoryModel_);
+    assert(this.volumeManager_);
+
+    const fileData = this.directoryModel_.getCurrentFileData();
+    if (!fileData) {
+      return;
+    }
+
+    const tracker = this.directoryModel_.createDirectoryChangeTracker();
+    tracker.start();
+
+    const state = this.store_.getState();
+    const volume = getVolume(state, fileData);
+    // The current directory is pointing to an entry that has a volume,
+    // but the volume isn't mounted anymore.
+    if (fileData.volumeId && !volume) {
+      const displayRoot = await this.volumeManager_.getDefaultDisplayRoot();
+      if (displayRoot && !tracker.hasChanged) {
+        this.directoryModel_!.changeDirectoryEntry(displayRoot);
+      }
+    }
+    tracker.stop();
   }
 
   /**
