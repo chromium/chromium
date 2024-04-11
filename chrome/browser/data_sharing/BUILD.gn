@@ -27,6 +27,7 @@ if (is_android) {
   android_resources("java_resources") {
     sources = [
       "android/java/res/drawable/round_image_filled.xml",
+      "android/java/res/layout/data_sharing_invitation_dialog_footer.xml",
       "android/java/res/layout/shared_image_tiles.xml",
       "android/java/res/layout/shared_image_tiles_count.xml",
       "android/java/res/layout/shared_image_tiles_icon.xml",
@@ -37,6 +38,8 @@ if (is_android) {
   android_library("java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
     sources = [
+      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingInvitationDialogCoordinator.java",
+      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingInvitationDialogMediator.java",
       "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java",
       "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesCoordinator.java",
       "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/SharedImageTilesMediator.java",
@@ -74,7 +77,10 @@ if (is_android) {
   android_library("javatests") {
     testonly = true
 
-    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryTest.java" ]
+    sources = [
+      "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingInvitationDialogTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryTest.java",
+    ]
     deps = [
       "//base:base_java",
       "//base:base_java_test_support",
@@ -83,10 +89,14 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/test/android:chrome_java_integration_test_support",
       "//components/data_sharing/public:public_java",
+      "//content/public/test/android:content_java_test_support",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit:junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java",
+      "//ui/android:ui_java_test_support",
     ]
   }
 
