@@ -775,7 +775,9 @@ class AuthenticatorGPMArbitraryPinSheetModel
   const AuthenticatorRequestDialogModel::GpmPinError error_;
 };
 
-// The sheet shown for bootstrapping Google Password Manager passkeys.
+// The sheet shown for bootstrapping Google Password Manager passkeys during
+// sign-in.
+// TODO(rgod): Rename this sheet in a follow-up CL.
 class AuthenticatorTrustThisComputerSheetModel
     : public AuthenticatorSheetModelBase {
  public:
@@ -834,6 +836,30 @@ class AuthenticatorGpmOnboardingSheetModel
   std::u16string GetStepDescription() const override;
   bool IsCancelButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
+  void OnCancel() override;
+  bool IsAcceptButtonEnabled() const override;
+  bool IsAcceptButtonVisible() const override;
+  std::u16string GetAcceptButtonLabel() const override;
+  void OnAccept() override;
+};
+
+// The sheet shown for bootstrapping Google Password Manager passkeys during
+// passkey creation.
+class AuthenticatorTrustThisComputerCreationSheetModel
+    : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorTrustThisComputerCreationSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+
+  ~AuthenticatorTrustThisComputerCreationSheetModel() override;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsCancelButtonVisible() const override;
+  std::u16string GetCancelButtonLabel() const override;
+  std::u16string GetOtherMechanismButtonLabel() const override;
   void OnCancel() override;
   bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;

@@ -474,7 +474,7 @@ void GPMEnclaveController::OnGPMSelected() {
       break;
 
     case AccountState::kRecoverable:
-      model_->SetStep(Step::kTrustThisComputer);
+      model_->SetStep(Step::kTrustThisComputerCreation);
       break;
 
     case AccountState::kLoading:
@@ -518,7 +518,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
     case AccountState::kRecoverable:
       if (model_->priority_phone_name.has_value()) {
-        model_->SetStep(Step::kTrustThisComputer);
+        model_->SetStep(Step::kTrustThisComputerAssertion);
       } else {
         model_->SetStep(Step::kRecoverSecurityDomain);
       }
@@ -559,7 +559,8 @@ void GPMEnclaveController::PromptForPin() {
 }
 
 void GPMEnclaveController::OnTrustThisComputer() {
-  CHECK_EQ(model_->step(), Step::kTrustThisComputer);
+  CHECK(model_->step() == Step::kTrustThisComputerAssertion ||
+        model_->step() == Step::kTrustThisComputerCreation);
   model_->SetStep(Step::kRecoverSecurityDomain);
 }
 

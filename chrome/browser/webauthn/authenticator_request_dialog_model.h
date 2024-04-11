@@ -303,7 +303,8 @@ struct AuthenticatorRequestDialogModel {
 
     // Device bootstrap to use GPM passkeys.
     kRecoverSecurityDomain,
-    kTrustThisComputer,
+    kTrustThisComputerAssertion,
+    kTrustThisComputerCreation,
 
     // Changing GPM PIN.
     kGPMReauthAccount,

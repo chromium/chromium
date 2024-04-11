@@ -2008,3 +2008,68 @@ std::u16string AuthenticatorGpmOnboardingSheetModel::GetAcceptButtonLabel()
 void AuthenticatorGpmOnboardingSheetModel::OnAccept() {
   dialog_model()->OnGPMOnboardingAccepted();
 }
+
+// AuthenticatorTrustThisComputerCreationSheetModel ---------------------
+
+AuthenticatorTrustThisComputerCreationSheetModel::
+    AuthenticatorTrustThisComputerCreationSheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {
+  // TODO(rgod): Add correct illustration.
+  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+}
+
+AuthenticatorTrustThisComputerCreationSheetModel::
+    ~AuthenticatorTrustThisComputerCreationSheetModel() = default;
+
+std::u16string AuthenticatorTrustThisComputerCreationSheetModel::GetStepTitle()
+    const {
+  return u"To save this passkey to Google Password Manager, verify it's you "
+         u"(UNTRANSLATED)";
+}
+
+std::u16string
+AuthenticatorTrustThisComputerCreationSheetModel::GetStepDescription() const {
+  return u"You'll only have to do this once. Your passkey will be saved to "
+         u"Google Password Manager for username@gmail.com. (UNTRANSLATED)";
+}
+
+bool AuthenticatorTrustThisComputerCreationSheetModel::IsCancelButtonVisible()
+    const {
+  return true;
+}
+
+std::u16string
+AuthenticatorTrustThisComputerCreationSheetModel::GetCancelButtonLabel() const {
+  return l10n_util::GetStringUTF16(IDS_CANCEL);
+}
+
+void AuthenticatorTrustThisComputerCreationSheetModel::OnCancel() {
+  dialog_model()->StartOver();
+}
+
+bool AuthenticatorTrustThisComputerCreationSheetModel::IsAcceptButtonEnabled()
+    const {
+  return true;
+}
+
+bool AuthenticatorTrustThisComputerCreationSheetModel::IsAcceptButtonVisible()
+    const {
+  return true;
+}
+
+std::u16string
+AuthenticatorTrustThisComputerCreationSheetModel::GetAcceptButtonLabel() const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+}
+
+std::u16string
+AuthenticatorTrustThisComputerCreationSheetModel::GetOtherMechanismButtonLabel()
+    const {
+  return u"More options (UT)";
+}
+
+void AuthenticatorTrustThisComputerCreationSheetModel::OnAccept() {
+  dialog_model()->OnTrustThisComputer();
+}
