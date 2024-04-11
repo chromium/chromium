@@ -16,6 +16,7 @@ enum ViewId {
   kContentMetadataRow,
   kContentTitle,
   kContentIcon,
+  kScrollView,
   kScrollViewContents,
   kSummaryLabel,
   kThumbsUpButton,
@@ -51,6 +52,8 @@ inline constexpr gfx::Size kContentIconSize = gfx::Size(16, 16);
 inline constexpr int kPanelDefaultWidth = 360;
 inline constexpr int kPanelDefaultHeight = 492;
 inline constexpr gfx::Insets kPanelPadding(/*all=*/16);
+
+inline constexpr int kScrollContentsViewBottomPadding = 40;
 
 // TODO(b/333111220): Replace the string here with the correct URL.
 inline constexpr char kLearnMorePage[] = "https://google.com";

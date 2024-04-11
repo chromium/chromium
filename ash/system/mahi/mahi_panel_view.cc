@@ -256,17 +256,17 @@ END_METADATA
 BEGIN_VIEW_BUILDER(/*no export*/, BackButton, views::View)
 END_VIEW_BUILDER
 
-// ContentScrollView -----------------------------------------------------------
+// MahiScrollView -----------------------------------------------------------
 
 // Container for scrollable content in the Mahi panel, including the summary and
 // outlines section or the Q&A section. Clips its own bounds to present its
 // contents within a round-cornered container with a cutout in the bottom-right.
-class ContentScrollView : public views::ScrollView,
-                          public views::ViewTargeterDelegate {
-  METADATA_HEADER(ContentScrollView, views::ScrollView)
+class MahiScrollView : public views::ScrollView,
+                       public views::ViewTargeterDelegate {
+  METADATA_HEADER(MahiScrollView, views::ScrollView)
 
  public:
-  ContentScrollView() {
+  MahiScrollView() {
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
     SetBackgroundThemeColorId(cros_tokens::kCrosSysSystemOnBase);
     ClipHeightTo(/*min_height=*/0, /*max_height=*/INT_MAX);
@@ -355,7 +355,7 @@ class ContentScrollView : public views::ScrollView,
   }
 };
 
-BEGIN_METADATA(ContentScrollView)
+BEGIN_METADATA(MahiScrollView)
 END_METADATA
 
 }  // namespace
@@ -453,10 +453,16 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                                views::Builder<views::View>(
                                    CreateFeedbackButton(THUMBS_DOWN))),
               views::Builder<views::ScrollView>(
-                  std::make_unique<ContentScrollView>())
+                  std::make_unique<MahiScrollView>())
+                  .SetID(mahi_constants::ViewId::kScrollView)
                   .SetContents(
                       views::Builder<views::FlexLayoutView>()
                           .SetID(mahi_constants::ViewId::kScrollViewContents)
+                          // Extra bottom padding for http://b/332766742.
+                          .SetInteriorMargin(gfx::Insets::TLBR(
+                              0, 0,
+                              mahi_constants::kScrollContentsViewBottomPadding,
+                              0))
                           .AddChildren(
                               views::Builder<SummaryOutlinesSection>(
                                   std::make_unique<SummaryOutlinesSection>(

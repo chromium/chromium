@@ -22,8 +22,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -61,6 +63,15 @@ class MahiPanelViewPixelTest : public AshTestBase {
     scoped_setter_.reset();
 
     AshTestBase::TearDown();
+  }
+
+  // Scroll the scroll view inside Mahi panel to the bottom.
+  void ScrollToBottom() {
+    auto* scroll_view = views::AsViewClass<views::ScrollView>(
+        panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView));
+    ASSERT_TRUE(scroll_view);
+    scroll_view->vertical_scroll_bar()->ScrollByAmount(
+        views::ScrollBar::ScrollAmount::kEnd);
   }
 
   MockMahiManager& mock_mahi_manager() { return mock_mahi_manager_; }
@@ -129,7 +140,7 @@ TEST_F(MahiPanelViewPixelTest, SummaryView) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "summary_view", /*revision_number=*/0,
+      "summary_view", /*revision_number=*/1,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollViewContents)));
 }
 
@@ -195,8 +206,58 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_view_long_text", /*revision_number=*/2,
+      "question_answer_view_long_text", /*revision_number=*/3,
       question_answer_view));
+}
+
+TEST_F(MahiPanelViewPixelTest, SummaryViewScrollToBottom) {
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault([](chromeos::MahiManager::MahiSummaryCallback callback) {
+        std::move(callback).Run(
+            base::StrCat(std::vector<std::u16string>(60, u"Summary text ")),
+            chromeos::MahiResponseStatus::kSuccess);
+      });
+
+  ui_controller()->RefreshContents();
+  views::test::RunScheduledLayout(widget());
+
+  ScrollToBottom();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "summary_view_bottom", /*revision_number=*/0,
+      panel_view()->GetViewByID(mahi_constants::ViewId::kScrollViewContents)));
+}
+
+TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewScrollToBottom) {
+  const std::u16string answer =
+      base::StrCat(std::vector<std::u16string>(35, u"Long Answer "));
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault(
+          [&answer](
+              const std::u16string& question, bool current_panel_content,
+              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            std::move(callback).Run(answer,
+                                    chromeos::MahiResponseStatus::kSuccess);
+          });
+
+  // Set a valid text in the question textfield.
+  const std::u16string question =
+      base::StrCat(std::vector<std::u16string>(25, u"Long Question "));
+  views::AsViewClass<views::Textfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield))
+      ->SetText(question);
+
+  // Pressing the send button should create a question and answer text bubble.
+  LeftClickOn(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kAskQuestionSendButton));
+
+  views::test::RunScheduledLayout(widget());
+
+  ScrollToBottom();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "question_answer_bottom", /*revision_number=*/0,
+      panel_view()->GetViewByID(mahi_constants::ViewId::kScrollViewContents)));
 }
 
 }  // namespace ash

@@ -599,7 +599,8 @@ TEST_F(MahiPanelViewTest, ScrollViewContentsDynamicSize) {
 
   EXPECT_TRUE(summary_outlines_section->GetVisible());
   EXPECT_FALSE(question_answer_view->GetVisible());
-  EXPECT_EQ(summary_outlines_section->height(),
+  EXPECT_EQ(summary_outlines_section->height() +
+                mahi_constants::kScrollContentsViewBottomPadding,
             scroll_view_contents->GetPreferredSize().height());
 
   auto* const question_textfield = views::AsViewClass<views::Textfield>(
@@ -617,7 +618,8 @@ TEST_F(MahiPanelViewTest, ScrollViewContentsDynamicSize) {
   EXPECT_FALSE(summary_outlines_section->GetVisible());
   EXPECT_TRUE(question_answer_view->GetVisible());
 
-  EXPECT_EQ(question_answer_view->height(),
+  EXPECT_EQ(question_answer_view->height() +
+                mahi_constants::kScrollContentsViewBottomPadding,
             scroll_view_contents->GetPreferredSize().height());
 
   // Transition back to summary outlines view. Scroll view should change its
@@ -630,7 +632,8 @@ TEST_F(MahiPanelViewTest, ScrollViewContentsDynamicSize) {
   EXPECT_TRUE(summary_outlines_section->GetVisible());
   EXPECT_FALSE(question_answer_view->GetVisible());
 
-  EXPECT_EQ(summary_outlines_section->height(),
+  EXPECT_EQ(summary_outlines_section->height() +
+                mahi_constants::kScrollContentsViewBottomPadding,
             scroll_view_contents->GetPreferredSize().height());
 }
 
