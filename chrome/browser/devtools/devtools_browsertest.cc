@@ -3315,8 +3315,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionHostsPolicyTest,
           base::StrCat({kArbitraryPage, "#", url.spec()}));
 }
 
+// TODO(crbug.com/333791064): Flaky on multiple Mac & Linux builders.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_CanInspectAllowedHttpHost DISABLED_CanInspectAllowedHttpHost
+#else
+#define MAYBE_CanInspectAllowedHttpHost CanInspectAllowedHttpHost
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionHostsPolicyTest,
-                       CanInspectAllowedHttpHost) {
+                       MAYBE_CanInspectAllowedHttpHost) {
   GURL url(
       embedded_test_server()->GetURL("public.example.com", kArbitraryPage));
   extensions::TestExtensionDir dir;
