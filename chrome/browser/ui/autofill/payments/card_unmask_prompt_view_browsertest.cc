@@ -49,7 +49,7 @@ class TestCardUnmaskDelegate : public CardUnmaskDelegate {
       const UserProvidedUnmaskDetails& details) override {
     details_ = details;
   }
-  void OnUnmaskPromptClosed() override {}
+  void OnUnmaskPromptCancelled() override {}
   bool ShouldOfferFidoAuth() const override { return false; }
 
   base::WeakPtr<TestCardUnmaskDelegate> GetWeakPtr() {

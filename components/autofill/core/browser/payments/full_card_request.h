@@ -238,7 +238,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // CardUnmaskDelegate:
   void OnUnmaskPromptAccepted(
       const UserProvidedUnmaskDetails& user_response) override;
-  void OnUnmaskPromptClosed() override;
+  void OnUnmaskPromptCancelled() override;
   bool ShouldOfferFidoAuth() const override;
 
   // Called by autofill client when the risk data has been loaded.

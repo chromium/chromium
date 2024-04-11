@@ -266,7 +266,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForMaskedServerCardViaCvc) {
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // Verify full PAN and dCVV are both used when returned by the server.
@@ -287,7 +286,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndDcvvForMaskedServerCardViaDcvv) {
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPanWithDcvv(AutofillClient::PaymentsRpcResult::kSuccess, "4111",
                           "321");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // Verify getting the full PAN for a masked server card.
@@ -330,7 +328,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForLocalCard) {
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // Verify getting the CVC for an unmasked server card.
@@ -353,7 +350,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForFullServerCard) {
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // Verify getting the CVC for an unmasked server card with expiration date in
@@ -384,7 +380,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredFullServerCard) {
   details.exp_month = u"12";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // Verify getting the CVC for a masked server card with expiration date in the past.
@@ -414,7 +409,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredMaskedServerCard) {
   details.exp_month = u"12";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // Verify getting the full PAN, the expiration and the dCVV for a virtual card
@@ -473,7 +467,6 @@ TEST_F(FullCardRequestTest,
   response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
   request()->OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
                              response);
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 TEST_F(FullCardRequestTest,
@@ -539,11 +532,9 @@ TEST_F(FullCardRequestTest, SecondRequestOkAfterFirstFinished) {
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 
   MakeGetFullCardRequest(FullCardRequestOptions().with_credit_card(card));
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // If the user cancels the CVC prompt,
@@ -558,7 +549,7 @@ TEST_F(FullCardRequestTest, ClosePromptWithoutUserInput) {
 
   MakeGetFullCardRequest(FullCardRequestOptions().with_credit_card(
       CreditCard(CreditCard::RecordType::kMaskedServerCard, "server_id")));
-  card_unmask_delegate()->OnUnmaskPromptClosed();
+  card_unmask_delegate()->OnUnmaskPromptCancelled();
 }
 
 // If the server provides an empty PAN with PERMANENT_FAILURE error,
@@ -579,7 +570,6 @@ TEST_F(FullCardRequestTest, PermanentFailure) {
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kPermanentFailure, "");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // If the server provides an empty PAN with VCN_RETRIEVAL_TRY_AGAIN_FAILURE
@@ -612,7 +602,6 @@ TEST_F(FullCardRequestTest, VcnRetrievalTemporaryFailure) {
   OnDidGetRealPan(
       AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure, "",
       /*is_virtual_card=*/true);
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // If the server provides an empty PAN with VCN_RETRIEVAL_PERMANENT_FAILURE
@@ -645,7 +634,6 @@ TEST_F(FullCardRequestTest, VcnRetrievalPermanentFailure) {
   OnDidGetRealPan(
       AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure, "",
       /*is_virtual_card=*/true);
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // If the server provides an empty PAN with NETWORK_ERROR error,
@@ -666,7 +654,6 @@ TEST_F(FullCardRequestTest, NetworkError) {
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kNetworkError, "");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // If the server provides an empty PAN with TRY_AGAIN_FAILURE, the user can
@@ -698,7 +685,7 @@ TEST_F(FullCardRequestTest, TryAgainFailureGiveUp) {
     details.cvc = u"123";
     card_unmask_delegate()->OnUnmaskPromptAccepted(details);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kTryAgainFailure, "");
-    card_unmask_delegate()->OnUnmaskPromptClosed();
+    card_unmask_delegate()->OnUnmaskPromptCancelled();
     histogram_tester.ExpectUniqueSample(
         "Autofill.CvcAuth.ServerCard.RetryableError", test_event, 1);
   }
@@ -743,7 +730,6 @@ TEST_F(FullCardRequestTest, ServerCardTryAgainFailure) {
     details.cvc = u"123";
     card_unmask_delegate()->OnUnmaskPromptAccepted(details);
     OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
-    card_unmask_delegate()->OnUnmaskPromptClosed();
     histogram_tester.ExpectUniqueSample(
         "Autofill.CvcAuth.ServerCard.RetryableError", test_event, 1);
   }
@@ -819,7 +805,6 @@ TEST_F(FullCardRequestTest, UpdateExpDateForMaskedServerCard) {
   details.exp_year = u"2050";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // Verify updating expiration date for an unmasked server card.
@@ -846,7 +831,6 @@ TEST_F(FullCardRequestTest, UpdateExpDateForFullServerCard) {
   details.exp_year = u"2050";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // Verify updating expiration date for a local card.
@@ -876,7 +860,6 @@ TEST_F(FullCardRequestTest, UpdateExpDateForLocalCard) {
   details.exp_month = u"12";
   details.exp_year = u"2051";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // Verify getting full PAN and CVC for PaymentRequest.
@@ -900,7 +883,6 @@ TEST_F(FullCardRequestTest, UnmaskForPaymentRequest) {
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
 // Params of the FullCardRequestCardMetadataTest:

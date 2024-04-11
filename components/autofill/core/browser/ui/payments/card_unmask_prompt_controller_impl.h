@@ -128,6 +128,9 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
 
   CardUnmaskDelegate::UserProvidedUnmaskDetails pending_details_;
 
+  // Whether server has returned a final unmask result.
+  bool flow_ended_with_unmask_server_response_ = false;
+
   base::WeakPtrFactory<CardUnmaskPromptControllerImpl> weak_pointer_factory_{
       this};
 };

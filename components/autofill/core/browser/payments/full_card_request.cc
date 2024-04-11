@@ -242,7 +242,7 @@ void FullCardRequest::OnUnmaskPromptAccepted(
     SendUnmaskCardRequest();
 }
 
-void FullCardRequest::OnUnmaskPromptClosed() {
+void FullCardRequest::OnUnmaskPromptCancelled() {
   if (result_delegate_) {
     result_delegate_->OnFullCardRequestFailed(request_->card.record_type(),
                                               FailureType::PROMPT_CLOSED);

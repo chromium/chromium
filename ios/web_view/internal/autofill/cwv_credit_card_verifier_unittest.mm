@@ -62,7 +62,7 @@ class FakeCardUnmaskDelegate : public autofill::CardUnmaskDelegate {
           [credit_card_verifier_ didReceiveUnmaskVerificationResult:result];
         }));
   }
-  void OnUnmaskPromptClosed() override {}
+  void OnUnmaskPromptCancelled() override {}
   bool ShouldOfferFidoAuth() const override { return false; }
 
   base::WeakPtr<FakeCardUnmaskDelegate> GetWeakPtr() {

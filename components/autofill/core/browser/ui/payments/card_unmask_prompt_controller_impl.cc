@@ -130,6 +130,9 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
       return;
   }
 
+  flow_ended_with_unmask_server_response_ =
+      result != AutofillClient::PaymentsRpcResult::kTryAgainFailure;
+
   unmasking_result_ = result;
   AutofillClient::PaymentsRpcCardType card_type =
       IsVirtualCard() ? AutofillClient::PaymentsRpcCardType::kVirtualCard
@@ -150,8 +153,9 @@ void CardUnmaskPromptControllerImpl::OnUnmaskDialogClosed() {
   card_unmask_view_ = nullptr;
   LogOnCloseEvents();
   unmasking_result_ = AutofillClient::PaymentsRpcResult::kNone;
-  if (delegate_)
-    delegate_->OnUnmaskPromptClosed();
+  if (delegate_ && !flow_ended_with_unmask_server_response_) {
+    delegate_->OnUnmaskPromptCancelled();
+  }
 }
 
 void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
