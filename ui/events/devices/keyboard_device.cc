@@ -29,7 +29,8 @@ KeyboardDevice::KeyboardDevice(int id,
                                bool has_assistant_key,
                                bool has_function_key)
     : InputDevice(id, type, name, phys, sys_path, vendor, product, version),
-      has_assistant_key(has_assistant_key) {}
+      has_assistant_key(has_assistant_key),
+      has_function_key(has_function_key) {}
 
 KeyboardDevice::KeyboardDevice(InputDevice input_device,
                                bool has_assistant_key,
