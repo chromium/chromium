@@ -2490,7 +2490,64 @@ TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
           .SetAbsErrorLimit(2)));
 }
 
-TEST_P(VideoRendererPixelHiLoTest, SimpleYCoCgYUVRect) {
+class VideoRendererPixelHiLoColorSpaceTest
+    : public VideoRendererPixelTestBase,
+      public testing::WithParamInterface<std::tuple<bool, gfx::ColorSpace>> {
+ public:
+  VideoRendererPixelHiLoColorSpaceTest()
+      : VideoRendererPixelTestBase(RendererType::kSkiaGL) {}
+
+  bool IsHighbit() const { return std::get<0>(GetParam()); }
+  gfx::ColorSpace GetColorSpace() const { return std::get<1>(GetParam()); }
+  const std::string GetName() const {
+    auto cs = GetColorSpace();
+    switch (cs.GetMatrixID()) {
+      case gfx::ColorSpace::MatrixID::FCC:
+        return "_fcc_limited";
+      case gfx::ColorSpace::MatrixID::YCOCG:
+        return "_ycocg_limited";
+      case gfx::ColorSpace::MatrixID::SMPTE240M:
+        return "_smpte240m_limited";
+      case gfx::ColorSpace::MatrixID::YDZDX:
+        return "_ydzdx_limited";
+      case gfx::ColorSpace::MatrixID::GBR:
+        return "_gbr_limited";
+      default:
+        NOTREACHED();
+    }
+    return "";
+  }
+};
+
+gfx::ColorSpace yuv_color_spaces[] = {
+    gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
+                    gfx::ColorSpace::TransferID::SMPTE170M,
+                    gfx::ColorSpace::MatrixID::YCOCG,
+                    gfx::ColorSpace::RangeID::LIMITED),
+    gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
+                    gfx::ColorSpace::TransferID::SMPTE170M,
+                    gfx::ColorSpace::MatrixID::FCC,
+                    gfx::ColorSpace::RangeID::LIMITED),
+    gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
+                    gfx::ColorSpace::TransferID::SMPTE170M,
+                    gfx::ColorSpace::MatrixID::SMPTE240M,
+                    gfx::ColorSpace::RangeID::LIMITED),
+    gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
+                    gfx::ColorSpace::TransferID::SMPTE170M,
+                    gfx::ColorSpace::MatrixID::YDZDX,
+                    gfx::ColorSpace::RangeID::LIMITED),
+    gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
+                    gfx::ColorSpace::TransferID::SMPTE170M,
+                    gfx::ColorSpace::MatrixID::GBR,
+                    gfx::ColorSpace::RangeID::LIMITED),
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         VideoRendererPixelHiLoColorSpaceTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::ValuesIn(yuv_color_spaces)));
+
+TEST_P(VideoRendererPixelHiLoColorSpaceTest, SimpleYUVRect) {
   gfx::Rect rect(this->device_viewport_size_);
 
   CompositorRenderPassId id{1};
@@ -2499,12 +2556,8 @@ TEST_P(VideoRendererPixelHiLoTest, SimpleYCoCgYUVRect) {
   this->display_color_spaces_ = kRec601DisplayColorSpaces;
 
   CreateTestMultiplanarVideoDrawQuad_Striped(
-      media::PIXEL_FORMAT_I420,
-      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
-                      gfx::ColorSpace::TransferID::SMPTE170M,
-                      gfx::ColorSpace::MatrixID::YCOCG,
-                      gfx::ColorSpace::RangeID::LIMITED),
-      false, IsHighbit(), gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f), pass.get(),
+      media::PIXEL_FORMAT_I420, GetColorSpace(), false, IsHighbit(),
+      gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f), pass.get(),
       this->video_resource_updater_.get(), rect, rect,
       this->resource_provider_.get(), this->child_resource_provider_.get(),
       this->child_context_provider_.get());
@@ -2516,16 +2569,17 @@ TEST_P(VideoRendererPixelHiLoTest, SimpleYCoCgYUVRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
 
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("yuv_stripes.png"));
+  expected_result = expected_result.InsertBeforeExtensionASCII(GetName());
   // TODO(crbug.com/1465939): Remove error relaxations once software pixel
   // upload support lands for Windows for multiplanar SI.
-  EXPECT_TRUE(this->RunPixelTest(
-      &pass_list,
-      base::FilePath(FILE_PATH_LITERAL("yuv_stripes_ycocg_limited.png")),
-      cc::FuzzyPixelComparator()
-          .DiscardAlpha()
-          .SetErrorPixelsPercentageLimit(100.f)
-          .SetAvgAbsErrorLimit(1.0f)
-          .SetAbsErrorLimit(2)));
+  EXPECT_TRUE(this->RunPixelTest(&pass_list, expected_result,
+                                 cc::FuzzyPixelComparator()
+                                     .DiscardAlpha()
+                                     .SetErrorPixelsPercentageLimit(100.f)
+                                     .SetAvgAbsErrorLimit(1.0f)
+                                     .SetAbsErrorLimit(2)));
 }
 
 #if BUILDFLAG(IS_IOS)

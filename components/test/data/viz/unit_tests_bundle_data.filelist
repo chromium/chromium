@@ -291,8 +291,12 @@
 //components/test/data/viz/yuv_stripes.png
 //components/test/data/viz/yuv_stripes_alpha.png
 //components/test/data/viz/yuv_stripes_clipped.png
+//components/test/data/viz/yuv_stripes_fcc_limited.png
+//components/test/data/viz/yuv_stripes_gbr_limited.png
 //components/test/data/viz/yuv_stripes_offset.png
+//components/test/data/viz/yuv_stripes_smpte240m_limited.png
 //components/test/data/viz/yuv_stripes_ycocg_limited.png
+//components/test/data/viz/yuv_stripes_ydzdx_limited.png
 //components/test/data/viz/zoom_filter_skia_gl.png
 //components/test/data/viz/zoom_filter_skia_graphite.png
 //components/test/data/viz/zoom_filter_skia_vk.png
