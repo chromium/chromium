@@ -59,6 +59,10 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
   mojom::SourceRegistrationTimeConfig source_registration_time_config =
       config.source_registration_time_config();
 
+  static_assert((attribution_reporting::kMaxSourceExpiry.InDays() + 1) *
+                    kNullReportsRateIncludeSourceRegistrationTime >
+                kNullReportsRateExcludeSourceRegistrationTime);
+
   switch (source_registration_time_config) {
     case mojom::SourceRegistrationTimeConfig::kInclude: {
       std::optional<base::Time> rounded_attributed_source_time;
@@ -66,9 +70,6 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
         rounded_attributed_source_time =
             RoundDownToWholeDaySinceUnixEpoch(*attributed_source_time);
       }
-
-      static_assert(attribution_reporting::kMaxSourceExpiry == base::Days(30),
-                    "update null reports rate");
 
       CHECK(!has_trigger_context_id);
 

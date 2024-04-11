@@ -99,6 +99,9 @@ inline constexpr char kAttributionReportingRegisterOsSourceHeader[] =
 inline constexpr char kAttributionReportingRegisterOsTriggerHeader[] =
     "Attribution-Reporting-Register-OS-Trigger";
 
+inline constexpr double kNullReportsRateIncludeSourceRegistrationTime = .008;
+inline constexpr double kNullReportsRateExcludeSourceRegistrationTime = .05;
+
 }  // namespace attribution_reporting
 
 #endif  // COMPONENTS_ATTRIBUTION_REPORTING_CONSTANTS_H_
