@@ -136,6 +136,9 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTest.testTakeElementScreenshotInIframe',
     'ChromeDriverTest.testTakeElementScreenshotPartlyVisible',
     'ChromeDriverTest.testTakeLargeElementScreenshot',
+    # Flaky: https://crbug.com/333826980 (fails in 80% of cases on mac-arm64)
+    # Error message: Timed out receiving message from renderer: 10.000
+    'ChromeDriverTest.testTakeLargeElementViewportScreenshot',
     'ChromeDriverSiteIsolation.testCanClickOOPIF',
     # Flaky: https://crbug.com/1496826.
     'PureBidiTest.testParallelConnectionIsClosedOnSessionEnd',
