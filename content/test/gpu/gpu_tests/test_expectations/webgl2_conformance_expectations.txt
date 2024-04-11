@@ -451,7 +451,6 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 ####################
 
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
-crbug.com/angleproject/7109 [ angle-d3d11 win10 ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 
 ## Win / NVIDIA ##
@@ -469,24 +468,8 @@ crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] deqp/functional/gles3/shader
 # wildcard flaky suppression for all of the tests.
 crbug.com/483282 [ angle-d3d11 win amd ] conformance2/rendering/blitframebuffer-stencil-only.html [ Failure ]
 
-# Failing on AMD RX 5500 XT
-crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
-crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-offset.html [ Failure ]
-crbug.com/1409858 [ win amd-0x7340 angle-d3d11 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/1152603 [ win amd-0x7340 angle-d3d11 ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
-crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fboinvalidate/* [ Failure ]
-crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
-crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fborender/shared_colorbuffer_01.html [ Failure ]
-crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fborender/shared_colorbuffer_02.html [ Failure ]
-crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Failure ]
-crbug.com/1499404 [ win amd-0x7340 angle-d3d11 ] conformance2/textures/misc/tex-srgb-mipmap.html [ Failure ]
 
-# New extensions failing on Win/AMD
-crbug.com/1473838 [ win amd-0x7340 angle-d3d11 ] conformance/extensions/ext-clip-control.html [ Failure ]
-crbug.com/1473838 [ win amd-0x7340 angle-d3d11 ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 
-# D3D11 / AMD RX 5500 XT / Passthrough command decoder
-crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fborender/recreate_color_* [ RetryOnFailure ]
 
 ## Win / Intel ##
 
@@ -494,7 +477,6 @@ crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gle
 ## Win / Adreno 690 / D3D11
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
-crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/misc/texture-mips.html [ Failure ]
 crbug.com/1523323 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_lines.html [ Failure ]
 crbug.com/1523323 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
 crbug.com/1523323 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_triangles.html [ Failure ]
@@ -523,7 +505,6 @@ crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles
 crbug.com/41496352 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_float.html [ RetryOnFailure ]
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_int.html [ RetryOnFailure ]
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_uint.html [ RetryOnFailure ]
-crbug.com/323824490 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/ogles/GL/ceil/ceil_001_to_006.html [ RetryOnFailure ]
 
 # Graphite
 crbug.com/329322651 [ win graphite-enabled ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
@@ -572,7 +553,7 @@ crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional
 crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/1487266 [ amd-0x679e angle-metal monterey passthrough release ] deqp/functional/gles3/texturefiltering/2d_array_combinations_05.html [ Failure ]
 
-crbug.com/328100306 [ angle-metal graphite-enabled intel-0x3e9b sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
+crbug.com/328100306 [ amd-0x67ef angle-metal graphite-enabled sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
 
 ## SkiaGraphite on Metal AMD ##
 
@@ -621,8 +602,6 @@ crbug.com/327026292 [ angle-metal apple passthrough sonoma graphite-enabled ] co
 
 ## Metal Graphite ##
 
-crbug.com/329285449 [ mac angle-metal graphite-enabled apple ] conformance/textures/misc/texture-active-bind.html [ RetryOnFailure ]
-crbug.com/329285449 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/misc/texture-active-bind.html [ RetryOnFailure ]
 
 ######################################################################
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
@@ -657,7 +636,7 @@ crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-i
 crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
 crbug.com/1457723 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Failure ]
 crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1475765 [ angle-opengl bigsur nvidia-0xfe9 nvidia_lt_31.0.15.4601 ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1488444 [ mac-x86_64 nvidia-0xfe9 angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 
 ## Mac AMD ##
@@ -899,7 +878,6 @@ crbug.com/angleproject/8315 [ chromeos chromeos-board-amd64-generic passthrough 
 crbug.com/1488973 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1488978 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/1488979 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/1492240 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/extensions/ext-disjoint-timer-query-webgl2.html [ Failure ]
 crbug.com/1492241 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 crbug.com/1492242 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/buffers/uniform-buffers.html [ Failure ]
 crbug.com/1492245 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/extensions/oes-sample-variables.html [ Failure ]
@@ -955,7 +933,6 @@ crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 
 crbug.com/326490772 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 crbug.com/326490772 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/texture-bias.html [ Failure ]
-crbug.com/326490772 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 crbug.com/326490772 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/extensions/oes-sample-variables.html [ Failure ]
 
 ##############################
