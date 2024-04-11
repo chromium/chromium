@@ -36,14 +36,7 @@ namespace crypto {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// Fake certificate authority database used for testing.
-static const base::FilePath::CharType kReadOnlyCertDB[] =
-    FILE_PATH_LITERAL("/etc/fake_root_ca/nssdb");
-
-#else
-
+#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
 base::FilePath GetDefaultConfigDirectory() {
   base::FilePath dir;
   base::PathService::Get(base::DIR_HOME, &dir);
@@ -59,20 +52,14 @@ base::FilePath GetDefaultConfigDirectory() {
   DVLOG(2) << "DefaultConfigDirectory: " << dir.value();
   return dir;
 }
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// On non-Chrome OS platforms, return the default config directory. On Chrome OS
-// test images, return a read-only directory with fake root CA certs (which are
-// used by the local Google Accounts server mock we use when testing our login
-// code). On Chrome OS non-test images (where the read-only directory doesn't
-// exist), return an empty path.
+// On non-Chrome OS platforms, return the default config directory. On Chrome
+// OS return a empty path which will result in NSS being initialized without a
+// persistent database.
 base::FilePath GetInitialConfigDirectory() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::FilePath database_dir = base::FilePath(kReadOnlyCertDB);
-  if (!base::PathExists(database_dir))
-    database_dir.clear();
-  return database_dir;
+  return base::FilePath();
 #else
   return GetDefaultConfigDirectory();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

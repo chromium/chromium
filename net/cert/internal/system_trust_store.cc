@@ -4,27 +4,20 @@
 
 #include "net/cert/internal/system_trust_store.h"
 
-#include "base/memory/ptr_util.h"
-#include "build/build_config.h"
-#include "crypto/crypto_buildflags.h"
-
-#if BUILDFLAG(USE_NSS_CERTS)
-#include "net/cert/internal/system_trust_store_nss.h"
-#endif  // BUILDFLAG(USE_NSS_CERTS)
-
-#if BUILDFLAG(IS_MAC)
-#include <Security/Security.h>
-#endif
-
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
@@ -33,8 +26,11 @@
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
+#include "net/cert/internal/system_trust_store_nss.h"
 #include "net/cert/internal/trust_store_nss.h"
 #elif BUILDFLAG(IS_MAC)
+#include <Security/Security.h>
+
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_mac.h"
 #include "net/cert/x509_util_apple.h"
@@ -51,6 +47,63 @@
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
 namespace net {
+
+#if BUILDFLAG(IS_CHROMEOS)
+namespace internal {
+class PemFileCertStore {
+ public:
+  explicit PemFileCertStore(std::string_view file_name) {
+    // This will block on the cert verifier service thread, so the effect will
+    // just be to block any cert verifications (interactions with the cert
+    // verifier service are async mojo calls, so it shouldn't block the browser
+    // UI). There would be no benefit to moving this to a worker thread, since
+    // all cert verifications would still need to block on loading of the roots
+    // to complete.
+    base::ScopedAllowBlocking allow_blocking;
+    std::optional<std::vector<uint8_t>> certs_file =
+        base::ReadFileToBytes(base::FilePath(file_name));
+    if (!certs_file) {
+      return;
+    }
+
+    trust_store_ = std::make_unique<bssl::TrustStoreInMemory>();
+
+    CertificateList certs = X509Certificate::CreateCertificateListFromBytes(
+        *certs_file, X509Certificate::FORMAT_AUTO);
+
+    for (const auto& cert : certs) {
+      bssl::CertErrors errors;
+      auto parsed = bssl::ParsedCertificate::Create(
+          bssl::UpRef(cert->cert_buffer()),
+          x509_util::DefaultParseCertificateOptions(), &errors);
+      if (!parsed) {
+        LOG(ERROR) << file_name << ": " << errors.ToDebugString();
+        continue;
+      }
+      trust_store_->AddTrustAnchor(std::move(parsed));
+    }
+  }
+
+  bssl::TrustStoreInMemory* trust_store() { return trust_store_.get(); }
+
+ private:
+  std::unique_ptr<bssl::TrustStoreInMemory> trust_store_;
+};
+}  // namespace internal
+
+namespace {
+
+// On ChromeOS look for a PEM file of root CA certs to trust which may be
+// present on test images.
+bssl::TrustStoreInMemory* GetChromeOSTestTrustStore() {
+  constexpr char kCrosTestRootCertsFile[] = "/etc/fake_root_ca_certs.pem";
+  static base::NoDestructor<internal::PemFileCertStore> cros_test_roots{
+      kCrosTestRootCertsFile};
+  return cros_test_roots->trust_store();
+}
+
+}  // namespace
+#endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 class SystemTrustStoreChromeOnly : public SystemTrustStore {
@@ -99,6 +152,11 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
       std::unique_ptr<TrustStoreChrome> trust_store_chrome,
       bssl::TrustStore* trust_store_system)
       : trust_store_chrome_(std::move(trust_store_chrome)) {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (GetChromeOSTestTrustStore()) {
+      trust_store_collection_.AddTrustStore(GetChromeOSTestTrustStore());
+    }
+#endif
     trust_store_collection_.AddTrustStore(trust_store_system);
     trust_store_collection_.AddTrustStore(trust_store_chrome_.get());
   }

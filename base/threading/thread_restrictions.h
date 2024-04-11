@@ -362,6 +362,7 @@ class ProxyConfigServiceWin;
 class ScopedAllowBlockingForSettingGetter;
 namespace internal {
 class AddressTrackerLinux;
+class PemFileCertStore;
 }
 }  // namespace net
 namespace printing {
@@ -633,6 +634,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend class net::ProxyConfigServiceWin;  // http://crbug.com/61453
   friend class net::
       ScopedAllowBlockingForSettingGetter;  // http://crbug.com/69057
+  friend class net::internal::PemFileCertStore;
   friend class printing::LocalPrinterHandlerDefault;
   friend class printing::PrintBackendServiceManager;
   friend class printing::PrintPreviewUIUntrusted;
