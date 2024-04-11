@@ -837,48 +837,6 @@ constexpr base::FeatureParam<bool>
         &kProcessPerSiteUpToMainFrameThreshold,
         "ProcessPerSiteMainFrameAllowDevToolsAttached", false};
 
-// Enables bypassing the service worker fetch handler. This feature starts the
-// service worker for subsequent requests.
-BASE_FEATURE(kServiceWorkerBypassFetchHandler,
-             "ServiceWorkerBypassFetchHandler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<ServiceWorkerBypassFetchHandlerStrategy>::Option
-    service_worker_bypass_fetch_handler_strategy_options[] = {
-        {ServiceWorkerBypassFetchHandlerStrategy::kFeatureOptIn, "optin"},
-        {ServiceWorkerBypassFetchHandlerStrategy::kAllowList, "allowlist"}};
-const base::FeatureParam<ServiceWorkerBypassFetchHandlerStrategy>
-    kServiceWorkerBypassFetchHandlerStrategy{
-        &kServiceWorkerBypassFetchHandler, "strategy",
-        ServiceWorkerBypassFetchHandlerStrategy::kFeatureOptIn,
-        &service_worker_bypass_fetch_handler_strategy_options};
-
-const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>::Option
-    service_worker_bypass_fetch_handler_target_options[] = {
-        {
-            ServiceWorkerBypassFetchHandlerTarget::kMainResource,
-            "main_resource",
-        },
-        {
-            ServiceWorkerBypassFetchHandlerTarget::
-                kAllOnlyIfServiceWorkerNotStarted,
-            "all_only_if_service_worker_not_started",
-        },
-        {
-            ServiceWorkerBypassFetchHandlerTarget::kAllWithRaceNetworkRequest,
-            "all_with_race_network_request",
-        },
-        {
-            ServiceWorkerBypassFetchHandlerTarget::kSubResource,
-            "sub_resource",
-        },
-};
-const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>
-    kServiceWorkerBypassFetchHandlerTarget{
-        &kServiceWorkerBypassFetchHandler, "bypass_for",
-        ServiceWorkerBypassFetchHandlerTarget::kMainResource,
-        &service_worker_bypass_fetch_handler_target_options};
-
 // Enables ServiceWorker static routing API.
 // https://github.com/WICG/service-worker-static-routing-api
 BASE_FEATURE(kServiceWorkerStaticRouter,

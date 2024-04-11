@@ -4936,319 +4936,6 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByPointerBrowserTest,
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class ServiceWorkerBypassFetchHandlerTest
-    : public ServiceWorkerBrowserTest,
-      public testing::WithParamInterface<
-          std::tuple<bool,
-                     bool,
-                     features::ServiceWorkerBypassFetchHandlerTarget>> {
- public:
-  ServiceWorkerBypassFetchHandlerTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kServiceWorkerBypassFetchHandler,
-          {{"strategy", ShouldUseAllowListStrategy() ? "allowlist" : "optin"},
-           {"bypass_for", BypassFetchHandlerTargetStr()}}},
-         {features::kServiceWorkerBypassFetchHandlerHashStrings,
-          {{"script_checksum_to_bypass",
-            ShouldUseValidChecksum() ? kValidChecksum : kInvalidChecksum}}}},
-        {});
-  }
-  ~ServiceWorkerBypassFetchHandlerTest() override = default;
-
-  WebContents* web_contents() const { return shell()->web_contents(); }
-
-  RenderFrameHost* GetPrimaryMainFrame() {
-    return web_contents()->GetPrimaryMainFrame();
-  }
-
- protected:
-  bool ShouldUseValidChecksum() { return std::get<0>(GetParam()); }
-  bool ShouldUseAllowListStrategy() { return std::get<1>(GetParam()); }
-  features::ServiceWorkerBypassFetchHandlerTarget BypassFetchHandlerTarget() {
-    return std::get<2>(GetParam());
-  }
-  std::string BypassFetchHandlerTargetStr() {
-    switch (BypassFetchHandlerTarget()) {
-      case features::ServiceWorkerBypassFetchHandlerTarget::kMainResource:
-        return "main_resource";
-      case features::ServiceWorkerBypassFetchHandlerTarget::
-          kAllOnlyIfServiceWorkerNotStarted:
-        return "all_only_if_service_worker_not_started";
-      case features::ServiceWorkerBypassFetchHandlerTarget::kSubResource:
-        return "sub_resource";
-      case features::ServiceWorkerBypassFetchHandlerTarget::
-          kAllWithRaceNetworkRequest:
-        return "all_with_race_network_request";
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  std::string kValidChecksum =
-      "B437DA0A66F805F079E1F371F2BFAEF4A35BB9AEEA0A85827B954B05F6D63C6C";
-  std::string kInvalidChecksum = "";
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ServiceWorkerBypassFetchHandlerTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::Bool(),
-        testing::Values(
-            features::ServiceWorkerBypassFetchHandlerTarget::kMainResource,
-            features::ServiceWorkerBypassFetchHandlerTarget::
-                kAllOnlyIfServiceWorkerNotStarted,
-            features::ServiceWorkerBypassFetchHandlerTarget::kSubResource)));
-
-IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, All) {
-  StartServerAndNavigateToSetup();
-
-  const GURL create_service_worker_url(embedded_test_server()->GetURL(
-      "/service_worker/create_service_worker.html"));
-  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
-  // |in_scope_url| is a page that has more than one subresources.
-  const GURL in_scope_url(
-      embedded_test_server()->GetURL("/service_worker/with_subresources.html"));
-
-  // Register a service worker.
-  WorkerRunningStatusObserver observer1(public_context());
-  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
-  EXPECT_EQ("DONE",
-            EvalJs(GetPrimaryMainFrame(),
-                   "register('/service_worker/fetch_event_pass_through.js')"));
-  observer1.WaitUntilRunning();
-  scoped_refptr<ServiceWorkerVersion> version =
-      wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
-
-  // Stop the current running service worker.
-  StopServiceWorker(version.get());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-
-  // Navigate away from the service worker's scope.
-  EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-
-  // This script asks the service worker what fetch events it saw.
-  const std::string script = R"(
-      (async () => {
-        const saw_message = new Promise(resolve => {
-          navigator.serviceWorker.onmessage = event => {
-            resolve(event.data);
-          };
-        });
-        const registration = await navigator.serviceWorker.ready;
-        registration.active.postMessage('');
-        const message = await saw_message;
-        return message.length;
-      })();
-  )";
-
-  // Navigate to the service worker's scope.
-  WorkerRunningStatusObserver observer2(public_context());
-  EXPECT_TRUE(NavigateToURL(shell(), in_scope_url));
-
-  switch (BypassFetchHandlerTarget()) {
-    case features::ServiceWorkerBypassFetchHandlerTarget::kMainResource:
-      if (ShouldUseAllowListStrategy()) {
-        if (ShouldUseValidChecksum()) {
-          // If bypassing is allowed, the service worker was bypassed and the
-          // navigation request shouldn't be handled by the fetch handler.
-          // 2 from subresources.
-          EXPECT_EQ(2, EvalJs(GetPrimaryMainFrame(), script));
-        } else {
-          // If bypassing is not allowed, the navigation request should be
-          // handled by the fetch handler. 3 = main + subresources
-          EXPECT_EQ(3, EvalJs(GetPrimaryMainFrame(), script));
-        }
-      } else {
-        // If the allowlist isn't used, the service worker was bypassed and the
-        // navigation request shouldn't be handled by the fetch handler.
-        EXPECT_EQ(2, EvalJs(GetPrimaryMainFrame(), script));
-      }
-      break;
-    case features::ServiceWorkerBypassFetchHandlerTarget::
-        kAllOnlyIfServiceWorkerNotStarted:
-      // TODO(crbug.com/1371756): Consider supporing the allowlist if needed.
-
-      // this option doesn't involve a fetch handler at all when the
-      // ServiceWorker is not started yet while the navigation happens.
-      EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), script));
-
-      // Wait until running.
-      observer2.WaitUntilRunning();
-      version = wrapper()->GetLiveVersion(observer2.version_id());
-      EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning,
-                version->running_status());
-
-      // The handler is not used for subsequent requests even if the
-      // worker has already started.
-      EXPECT_TRUE(
-          ExecJs(GetPrimaryMainFrame(), "fetch('/service_worker/empty.html')"));
-      EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), script));
-
-      // Navigate to the page again while the ServicWorker is running.
-      EXPECT_TRUE(NavigateToURL(shell(), in_scope_url));
-      // Expect both the main resource and subresource are handled.
-      EXPECT_EQ(3, EvalJs(GetPrimaryMainFrame(), script));
-      break;
-    case features::ServiceWorkerBypassFetchHandlerTarget::kSubResource:
-      if (ShouldUseAllowListStrategy()) {
-        if (ShouldUseValidChecksum()) {
-          // If bypassing is allowed, subresources shouldn't be handled by the
-          // fetch handler.
-          // 1 = main resource
-          EXPECT_EQ(1, EvalJs(GetPrimaryMainFrame(), script));
-        } else {
-          // If bypassing is not allowed, subresources should be handled by the
-          // fetch handler.
-          // 3 = main + subresources
-          EXPECT_EQ(3, EvalJs(GetPrimaryMainFrame(), script));
-        }
-      } else {
-        // The service worker handles the navigation request, but bypasses fetch
-        // handlers for subsequent subresources.
-        EXPECT_EQ(1, EvalJs(GetPrimaryMainFrame(), script));
-      }
-      break;
-    case features::ServiceWorkerBypassFetchHandlerTarget::
-        kAllWithRaceNetworkRequest:
-      // This case is tested in ServiceWorkerRaceNetworkRequestBrowserTest.
-      NOTREACHED();
-      break;
-  }
-}
-
-class ServiceWorkerBypassFetchHandlerOriginTrialTest
-    : public ServiceWorkerBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // The public key for the default privatey key used by the
-    // tools/origin_trials/generate_token.py tool.
-    static constexpr char kOriginTrialTestPublicKey[] =
-        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
-    command_line->AppendSwitchASCII("origin-trial-public-key",
-                                    kOriginTrialTestPublicKey);
-  }
-  WebContents* web_contents() const { return shell()->web_contents(); }
-
-  RenderFrameHost* GetPrimaryMainFrame() {
-    return web_contents()->GetPrimaryMainFrame();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBypassFetchHandlerOriginTrialTest,
-                       BypassFetchHandlerForMainResource) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  // The URL that was used to register the Origin Trial token.
-  static constexpr char kOriginUrl[] = "https://127.0.0.1:44444";
-  // Generated by running (in tools/origin_trials):
-  // tools/origin_trials/generate_token.py https://127.0.0.1:44444 \
-  // ServiceWorkerBypassFetchHandlerForMainResource \
-  // --expire-timestamp=2000000000
-  static constexpr char kOriginTrialToken[] =
-      "A7lJi6aWVTbSCCs9Ju3k4SKBnTzE/"
-      "9j7OMHWdF2pjJLLZU5Fdt7IzilJOFp37hMyoeIUq4gCTdb9wSIC9jhU/"
-      "wgAAAB4eyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVhdHVyZSI6I"
-      "CJTZXJ2aWNlV29ya2VyQnlwYXNzRmV0Y2hIYW5kbGVyRm9yTWFpblJlc291cmNlIiwgImV4c"
-      "GlyeSI6IDIwMDAwMDAwMDB9";
-
-  const GURL main_page_url(
-      base::StrCat({kOriginUrl, "/create_service_worker.html"}));
-  const GURL service_worker_url(
-      base::StrCat({kOriginUrl, "/fetch_event_pass_through.js"}));
-
-  std::map<GURL, int /* number_of_invocations */> expected_request_urls = {
-      {main_page_url, 2},
-      {service_worker_url, 1},
-  };
-
-  base::RunLoop run_loop;
-
-  // The origin trial token is associated with an origin. We can't guarantee the
-  // EmbeddedTestServer to use a specific port. So the URLLoaderInterceptor is
-  // used instead.
-  URLLoaderInterceptor service_worker_loader(base::BindLambdaForTesting(
-      [&](URLLoaderInterceptor::RequestParams* params) {
-        auto it = expected_request_urls.find(params->url_request.url);
-        if (it == expected_request_urls.end()) {
-          return false;
-        }
-
-        const std::string content_type =
-            base::EndsWith(params->url_request.url.path_piece(), ".js")
-                ? "text/javascript"
-                : "text/html";
-
-        const std::string origin_trial_token =
-            params->url_request.url == service_worker_url ? kOriginTrialToken
-                                                          : "";
-
-        const std::string headers = base::ReplaceStringPlaceholders(
-            "HTTP/1.1 200 OK\n"
-            "Content-type: $1\n"
-            "Origin-Trial: $2\n"
-            "\n",
-            {content_type, origin_trial_token}, {});
-
-        URLLoaderInterceptor::WriteResponse(
-            "content/test/data/service_worker" + params->url_request.url.path(),
-            params->client.get(), &headers, std::optional<net::SSLInfo>(),
-            params->url_request.url);
-
-        if (--it->second == 0) {
-          expected_request_urls.erase(it);
-        }
-        if (expected_request_urls.empty()) {
-          run_loop.Quit();
-        }
-        return true;
-      }));
-
-  // Register a service worker.
-  WorkerRunningStatusObserver observer(public_context());
-  EXPECT_TRUE(NavigateToURL(shell(), main_page_url));
-  EXPECT_EQ("DONE", EvalJs(GetPrimaryMainFrame(),
-                           "register('/fetch_event_pass_through.js')"));
-  observer.WaitUntilRunning();
-  scoped_refptr<ServiceWorkerVersion> version =
-      wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
-
-  // Stop the current running service worker.
-  StopServiceWorker(version.get());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-
-  // Navigate away from the service worker's scope.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-
-  // Navigate to the service worker's scope.
-  EXPECT_TRUE(NavigateToURL(shell(), main_page_url));
-
-  // The service worker was bypassed and the navigation request shouldn't be
-  // handled by the fetch handler.
-  // The script asks the service worker what fetch events it saw.
-  EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), R"(
-      (async () => {
-        const saw_message = new Promise(resolve => {
-          navigator.serviceWorker.onmessage = event => {
-            resolve(event.data);
-          };
-        });
-        const registration = await navigator.serviceWorker.ready;
-        registration.active.postMessage('');
-        const message = await saw_message;
-        return message.length;
-      })();
-  )"));
-
-  run_loop.Run();
-}
-
 class ServiceWorkerSkipEmptyFetchHandlerBrowserTest
     : public ServiceWorkerBrowserTest {
  public:
@@ -5373,22 +5060,22 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
       ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler, 1);
 }
 
-// Test class for BestEffortServiceWorker (crbug.com/1420517) browsertest.
-class ServiceWorkerRaceNetworkRequestBrowserTest
+// Browser test for the Static Routing API's `race-network-and-fetch-handler`
+// source.
+class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
     : public ServiceWorkerBrowserTest {
  public:
-  ServiceWorkerRaceNetworkRequestBrowserTest()
+  static constexpr char kSwScriptUrl[] =
+      "/service_worker/static_router_race_match_all.js";
+
+  ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest()
       : https_server_(std::make_unique<net::EmbeddedTestServer>(
             net::EmbeddedTestServer::TYPE_HTTPS)) {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kServiceWorkerBypassFetchHandler,
-          {{"strategy", "optin"},
-           {"bypass_for", "all_with_race_network_request"}}}},
-        {});
     RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
         1024);
   }
-  ~ServiceWorkerRaceNetworkRequestBrowserTest() override = default;
+  ~ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest()
+      override = default;
 
   WebContents* web_contents() const { return shell()->web_contents(); }
 
@@ -5397,13 +5084,13 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
   }
 
   scoped_refptr<ServiceWorkerVersion> SetupAndRegisterServiceWorker() {
-    StartServerAndNavigateToSetup();
-    return RegisterRaceNetowrkRequestServiceWorker(embedded_test_server());
+    return SetupAndRegisterServiceWorkerInternal(kSwScriptUrl);
   }
 
   scoped_refptr<ServiceWorkerVersion>
   SetupAndRegisterServiceWorkerWithHTTPSServer() {
-    return RegisterRaceNetowrkRequestServiceWorker(https_server());
+    return RegisterRaceNetowrkRequestServiceWorker(https_server(),
+                                                   kSwScriptUrl);
   }
 
   EvalJsResult GetInnerText() {
@@ -5429,6 +5116,13 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
     RegisterRequestMonitorForRequestCount(https_server());
     RegisterRequestHandlerForSlowResponsePage(embedded_test_server());
     RegisterRequestHandlerForSlowResponsePage(https_server());
+  }
+
+  scoped_refptr<ServiceWorkerVersion> SetupAndRegisterServiceWorkerInternal(
+      const std::string& script_url) {
+    StartServerAndNavigateToSetup();
+    return RegisterRaceNetowrkRequestServiceWorker(embedded_test_server(),
+                                                   script_url);
   }
 
  private:
@@ -5503,7 +5197,8 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
   void RegisterRequestMonitorForRequestCount(
       net::EmbeddedTestServer* test_server) {
     test_server->RegisterRequestMonitor(base::BindRepeating(
-        &ServiceWorkerRaceNetworkRequestBrowserTest::MonitorRequestHandler,
+        &ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest::
+            MonitorRequestHandler,
         base::Unretained(this)));
   }
   void MonitorRequestHandler(const net::test_server::HttpRequest& request) {
@@ -5511,16 +5206,16 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
   }
 
   scoped_refptr<ServiceWorkerVersion> RegisterRaceNetowrkRequestServiceWorker(
-      net::EmbeddedTestServer* test_server) {
+      net::EmbeddedTestServer* test_server,
+      const std::string& script_url) {
     const GURL create_service_worker_url(
         test_server->GetURL("/service_worker/create_service_worker.html"));
 
     // Register a service worker.
     WorkerRunningStatusObserver observer1(public_context());
     EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
-    EXPECT_EQ("DONE",
-              EvalJs(GetPrimaryMainFrame(),
-                     "register('/service_worker/race_network_request.js')"));
+    EXPECT_EQ("DONE", EvalJs(GetPrimaryMainFrame(),
+                             base::StrCat({"register('", script_url, "')"})));
     observer1.WaitUntilRunning();
     scoped_refptr<ServiceWorkerVersion> version =
         wrapper()->GetLiveVersion(observer1.version_id());
@@ -5539,8 +5234,9 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       NetworkRequest_Wins) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    NetworkRequest_Wins) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
   // Capture the response head.
@@ -5562,8 +5258,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       NetworkRequest_Wins_MarkedAsSecure) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    NetworkRequest_Wins_MarkedAsSecure) {
   // Register the ServiceWorker and navigate to the in scope URL.
   StartServerAndNavigateToSetup();
   ASSERT_TRUE(https_server()->Start());
@@ -5586,8 +5283,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   CheckPageIsMarkedSecure(shell(), https_server()->GetCertificate());
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       NetworkRequest_Wins_MimeTypeSniffed) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    NetworkRequest_Wins_MimeTypeSniffed) {
   // Register the ServiceWorker and navigate to the in scope URL.
   StartServerAndNavigateToSetup();
 
@@ -5619,8 +5317,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
             GetInnerText());
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       NetworkRequest_Wins_Fetch_No_Respond) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    NetworkRequest_Wins_Fetch_No_Respond) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
   NavigateToURLBlockUntilNavigationsComplete(
@@ -5636,8 +5335,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 // TODO(crbug.com/1491332) Add tests for
 // kURLLoadOptionSendSSLInfoForCertificateError
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       NetworkRequest_Wins_NotFound_FetchHandler_Respond) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    NetworkRequest_Wins_NotFound_FetchHandler_Respond) {
   SetupAndRegisterServiceWorker();
 
   // Network request is faster, but the response is not found.
@@ -5653,8 +5353,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
             GetInnerText());
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       NetworkRequest_Wins_NotFound_FetchHandler_NotRespond) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    NetworkRequest_Wins_NotFound_FetchHandler_NotRespond) {
   SetupAndRegisterServiceWorker();
 
   // If the fallback request is not found. Then expect 404.
@@ -5674,8 +5375,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 #define MAYBE_NetworkRequest_Wins_FetchHandler_Fallback \
   NetworkRequest_Wins_FetchHandler_Fallback
 #endif
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       MAYBE_NetworkRequest_Wins_FetchHandler_Fallback) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    MAYBE_NetworkRequest_Wins_FetchHandler_Fallback) {
   // If RaceNetworkRequest comes first, there is a network error, and the fetch
   // handler result is a fallback. In this case the response from
   // RaceNetworkRequest is not used, because we need to support the case when
@@ -5698,8 +5400,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       NetworkRequest_Wins_FetchHandler_Fallback_LargeData) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    NetworkRequest_Wins_FetchHandler_Fallback_LargeData) {
   SetupAndRegisterServiceWorker();
   const std::string relative_url =
       "/service_worker/mock_response?sw_fallback&sw_slow&server_large_data";
@@ -5712,8 +5415,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       NetworkRequest_Wins_Post) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    NetworkRequest_Wins_Post) {
   SetupAndRegisterServiceWorker();
   const std::string action = "/service_worker/mock_response?sw_slow&sw_respond";
   EXPECT_TRUE(ExecJs(GetPrimaryMainFrame(),
@@ -5738,8 +5442,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 #else
 #define MAYBE_NetworkRequest_Wins_Redirect NetworkRequest_Wins_Redirect
 #endif
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       MAYBE_NetworkRequest_Wins_Redirect) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    MAYBE_NetworkRequest_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
   const std::string path =
       "/service_worker/mock_response?server_redirect&sw_slow&sw_respond";
@@ -5767,8 +5472,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 #define MAYBE_NetworkRequest_Wins_Redirect_PassThrough \
   NetworkRequest_Wins_Redirect_PassThrough
 #endif
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       MAYBE_NetworkRequest_Wins_Redirect_PassThrough) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    MAYBE_NetworkRequest_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
   const std::string path =
       "/service_worker/mock_response?server_redirect&sw_slow&sw_pass_through";
@@ -5789,8 +5495,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       FetchHandler_Wins) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    FetchHandler_Wins) {
   SetupAndRegisterServiceWorker();
   // Need to navigate to the page with slow response.
   const GURL slow_url = embedded_test_server()->GetURL(
@@ -5810,8 +5517,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       FetchHandler_Wins_Fallback) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    FetchHandler_Wins_Fallback) {
   SetupAndRegisterServiceWorker();
   // Fetch handler will fallback. This case the response from RaceNetworkRequest
   // is returned as a final response.
@@ -5832,8 +5540,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   EXPECT_FALSE(NavigateToURL(shell(), slow_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       FetchHandler_Wins_NotFound) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    FetchHandler_Wins_NotFound) {
   SetupAndRegisterServiceWorker();
   const GURL slow_url = embedded_test_server()->GetURL(
       "/service_worker/mock_response?server_slow&server_notfound&sw_fallback");
@@ -5850,8 +5559,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 #else
 #define MAYBE_FetchHandler_Wins_Redirect FetchHandler_Wins_Redirect
 #endif
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       MAYBE_FetchHandler_Wins_Redirect) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    MAYBE_FetchHandler_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
   const std::string path =
       "/service_worker/mock_response?server_redirect&server_slow&sw_respond";
@@ -5876,8 +5586,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 #define MAYBE_FetchHandler_Wins_Redirect_PassThrough \
   FetchHandler_Wins_Redirect_PassThrough
 #endif
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       MAYBE_FetchHandler_Wins_Redirect_PassThrough) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    MAYBE_FetchHandler_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
   const std::string path =
       "/service_worker/"
@@ -5898,8 +5609,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       FetchHandler_PassThrough) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    FetchHandler_PassThrough) {
   // Register the ServiceWorker and navigate to the in scope URL.
   scoped_refptr<ServiceWorkerVersion> version = SetupAndRegisterServiceWorker();
   // Capture the response head.
@@ -5928,8 +5640,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       FetchHandler_PassThrough_Clone) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    FetchHandler_PassThrough_Clone) {
   // Register the ServiceWorker and navigate to the in scope URL.
   scoped_refptr<ServiceWorkerVersion> version = SetupAndRegisterServiceWorker();
   // URL which create a cloned request and pass-through.
@@ -5963,8 +5676,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 #else
 #define MAYBE_Subresource_NetworkRequest_Wins Subresource_NetworkRequest_Wins
 #endif
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       MAYBE_Subresource_NetworkRequest_Wins) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    MAYBE_Subresource_NetworkRequest_Wins) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -5977,8 +5691,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
              "=> response.text())"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_NetworkRequest_Wins_Fetch_No_Respond) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    Subresource_NetworkRequest_Wins_Fetch_No_Respond) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -5990,8 +5705,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
              "=> response.text())"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_NetworkRequest_Wins_NotFound) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    Subresource_NetworkRequest_Wins_NotFound) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6012,8 +5728,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                         "server_notfound').then(response => response.status)"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_NetworkRequest_Wins_FetchHandler_Fallback) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    Subresource_NetworkRequest_Wins_FetchHandler_Fallback) {
   SetupAndRegisterServiceWorker();
   // Network request is faster, and the fetch handler will fallback.
   // This case the response from RaceNetworkRequset is used.
@@ -6025,7 +5742,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    ServiceWorkerRaceNetworkRequestBrowserTest,
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_NetworkRequest_Wins_FetchHandler_Fallback_LargeData) {
   SetupAndRegisterServiceWorker();
   EXPECT_EQ("race-network-request-with-large-data",
@@ -6036,7 +5753,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    ServiceWorkerRaceNetworkRequestBrowserTest,
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_NetworkRequest_Wins_FetchHandler_Fallback_Redirect) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
@@ -6061,8 +5778,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_NetworkRequest_Wins_Post) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    Subresource_NetworkRequest_Wins_Post) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
 
@@ -6080,8 +5798,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
             EvalJs(GetPrimaryMainFrame(), script));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_Redirect_Multiple) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    Subresource_Redirect_Multiple) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
 
@@ -6111,8 +5830,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 #define MAYBE_Subresource_NetworkRequest_Wins_Redirect \
   Subresource_NetworkRequest_Wins_Redirect
 #endif
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       MAYBE_Subresource_NetworkRequest_Wins_Redirect) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    MAYBE_Subresource_NetworkRequest_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
 
@@ -6140,7 +5860,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   Subresource_NetworkRequest_Wins_Redirect_PassThrough
 #endif
 IN_PROC_BROWSER_TEST_F(
-    ServiceWorkerRaceNetworkRequestBrowserTest,
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_Subresource_NetworkRequest_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6163,8 +5883,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_FetchHandler_Wins) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    Subresource_FetchHandler_Wins) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6178,8 +5899,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                    "response.text())"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_FetchHandler_Wins_Fallback) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    Subresource_FetchHandler_Wins_Fallback) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6203,8 +5925,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   EXPECT_FALSE(ExecJs(GetPrimaryMainFrame(), "fetch('" + relative_url + "')"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_FetchHandler_Wins_Fallback_Redirect) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    Subresource_FetchHandler_Wins_Fallback_Redirect) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6227,8 +5950,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_FetchHandler_Wins_NotFound) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    Subresource_FetchHandler_Wins_NotFound) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6251,8 +5975,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 #define MAYBE_Subresource_FetchHandler_Wins_Redirect \
   Subresource_FetchHandler_Wins_Redirect
 #endif
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       MAYBE_Subresource_FetchHandler_Wins_Redirect) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    MAYBE_Subresource_FetchHandler_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
 
@@ -6280,7 +6005,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   Subresource_FetchHandler_Wins_Redirect_PassThrough
 #endif
 IN_PROC_BROWSER_TEST_F(
-    ServiceWorkerRaceNetworkRequestBrowserTest,
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_Subresource_FetchHandler_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6304,8 +6029,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_FetchHandler_PassThrough) {
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    Subresource_FetchHandler_PassThrough) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6330,19 +6056,25 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 class ServiceWorkerAutoPreloadBrowserTest
-    : public ServiceWorkerRaceNetworkRequestBrowserTest,
+    : public ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
+  static constexpr char kSwScriptUrl[] = "/service_worker/auto_preload.js";
+
   ServiceWorkerAutoPreloadBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kServiceWorkerAutoPreload,
           {{"use_two_phase_write", GetParam() ? "true" : "false"}}}},
-        {{features::kServiceWorkerBypassFetchHandler}});
+        {});
     RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
         1024);
   }
 
   ~ServiceWorkerAutoPreloadBrowserTest() override = default;
+
+  scoped_refptr<ServiceWorkerVersion> SetupAndRegisterServiceWorker() {
+    return SetupAndRegisterServiceWorkerInternal(kSwScriptUrl);
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -6595,9 +6327,8 @@ class ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest
         blocked_host(), "/service_worker/create_service_worker.html"));
     WorkerRunningStatusObserver observer1(public_context());
     EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
-    EXPECT_EQ("DONE",
-              EvalJs(GetPrimaryMainFrame(),
-                     "register('/service_worker/race_network_request.js')"));
+    EXPECT_EQ("DONE", EvalJs(GetPrimaryMainFrame(),
+                             "register('/service_worker/auto_preload.js')"));
     observer1.WaitUntilRunning();
   }
 
@@ -6767,150 +6498,83 @@ IN_PROC_BROWSER_TEST_P(
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-class ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest
-    : public ServiceWorkerRaceNetworkRequestBrowserTest {
+class ServiceWorkerAutoPreloadAllowListBrowserTest
+    : public ServiceWorkerAutoPreloadBrowserTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // The public key for the default privatey key used by the
-    // tools/origin_trials/generate_token.py tool.
-    static constexpr char kOriginTrialTestPublicKey[] =
-        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
-    command_line->AppendSwitchASCII("origin-trial-public-key",
-                                    kOriginTrialTestPublicKey);
+  ServiceWorkerAutoPreloadAllowListBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kServiceWorkerAutoPreload,
+          {{"use_allowlist", "true"}, {"use_two_phase_write", "false"}}},
+         {features::kServiceWorkerBypassFetchHandlerHashStrings,
+          {{"script_checksum_to_bypass",
+            ShouldUseValidChecksum() ? kValidChecksum : kInvalidChecksum}}}},
+        {});
   }
+  ~ServiceWorkerAutoPreloadAllowListBrowserTest() override = default;
+
+  WebContents* web_contents() const { return shell()->web_contents(); }
+
+  RenderFrameHost* GetPrimaryMainFrame() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
+ protected:
+  bool ShouldUseValidChecksum() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::string kValidChecksum =
+      "042D3C49B5FA366582CEBA01E6E3DCD6259531CCAF64B26635B7F0C11C18BE0D";
+  std::string kInvalidChecksum = "";
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest,
-                       RaceNetworkRequest) {
-  embedded_test_server()->StartAcceptingConnections();
+INSTANTIATE_TEST_SUITE_P(ALL,
+                         ServiceWorkerAutoPreloadAllowListBrowserTest,
+                         testing::Bool());
 
-  // The URL that was used to register the Origin Trial token.
-  static constexpr char kOriginUrl[] = "https://127.0.0.1:44444";
-  // Generated by running (in tools/origin_trials):
-  // tools/origin_trials/generate_token.py https://127.0.0.1:44444 \
-  // ServiceWorkerBypassFetchHandlerWithRaceNetworkRequest \
-  // --expire-timestamp=2000000000
-  static constexpr char kOriginTrialToken[] =
-      "AywPGgJULst8eq0LDwGqFRqFTfbNIq+"
-      "dDh6BpmDRZxazAjL8JCiXtp51bRuaG7X7pxz35vwQ9+5hEPLLW0DMKA4AAAB/"
-      "eyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVhdHVyZSI6ICJTZXJ2"
-      "aWNlV29ya2VyQnlwYXNzRmV0Y2hIYW5kbGVyV2l0aFJhY2VOZXR3b3JrUmVxdWVzdCIsICJl"
-      "eHBpcnkiOiAyMDAwMDAwMDAwfQ==";
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadAllowListBrowserTest,
+                       EnableAutoPreloadIfScriptIsAllowed) {
+  SetupAndRegisterServiceWorker();
+  const std::string relative_url = "/service_worker/mock_response?sw_respond";
+  const GURL test_url = embedded_test_server()->GetURL(relative_url);
+  NavigationHandleObserver observer(web_contents(), test_url);
+  WorkerRunningStatusObserver service_worker_running_status_observer(
+      public_context());
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+  service_worker_running_status_observer.WaitUntilRunning();
 
-  const GURL main_page_url(
-      base::StrCat({kOriginUrl, "/create_service_worker.html"}));
-  const GURL main_page_url_with_params(
-      base::StrCat({main_page_url.spec(), "?sw_slow&sw_respond"}));
-  const GURL service_worker_url(
-      base::StrCat({kOriginUrl, "/race_network_request.js"}));
-  const GURL subresource_url_with_params(
-      base::StrCat({kOriginUrl, "/hello-from-sw.txt?sw_slow&sw_respond"}));
-
-  std::map<GURL, int /* number_of_invocations */> expected_request_urls = {
-      {main_page_url, 1},
-      {main_page_url_with_params, 1},
-      {subresource_url_with_params, 1},
-      {service_worker_url, 1},
-  };
-
-  base::RunLoop run_loop;
-
-  // The origin trial token is associated with an origin. We can't guarantee the
-  // EmbeddedTestServer to use a specific port. So the URLLoaderInterceptor is
-  // used instead.
-  URLLoaderInterceptor service_worker_loader(base::BindLambdaForTesting(
-      [&](URLLoaderInterceptor::RequestParams* params) {
-        auto it = expected_request_urls.find(params->url_request.url);
-        if (it == expected_request_urls.end()) {
-          return false;
-        }
-
-        const std::string content_type =
-            base::EndsWith(params->url_request.url.path_piece(), ".js")
-                ? "text/javascript"
-                : "text/html";
-
-        const std::string origin_trial_token =
-            params->url_request.url == service_worker_url ? kOriginTrialToken
-                                                          : "";
-
-        const std::string headers = base::ReplaceStringPlaceholders(
-            "HTTP/1.1 200 OK\n"
-            "Content-type: $1\n"
-            "Origin-Trial: $2\n"
-            "\n",
-            {content_type, origin_trial_token}, {});
-
-        URLLoaderInterceptor::WriteResponse(
-            "content/test/data/service_worker" + params->url_request.url.path(),
-            params->client.get(), &headers, std::optional<net::SSLInfo>(),
-            params->url_request.url);
-
-        if (--it->second == 0) {
-          expected_request_urls.erase(it);
-        }
-        if (expected_request_urls.empty()) {
-          run_loop.Quit();
-        }
-        return true;
-      }));
-
-  // Register a service worker.
-  WorkerRunningStatusObserver observer(public_context());
-  EXPECT_TRUE(NavigateToURL(shell(), main_page_url));
-  EXPECT_EQ("DONE", EvalJs(GetPrimaryMainFrame(),
-                           "register('/race_network_request.js')"));
-  observer.WaitUntilRunning();
-  scoped_refptr<ServiceWorkerVersion> version =
-      wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
-
-  // Stop the current running service worker.
-  StopServiceWorker(version.get());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-
-  // Navigate away from the service worker's scope.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-
-  // Navigate to the service worker's scope.
-  EXPECT_TRUE(NavigateToURL(shell(), main_page_url_with_params));
-
-  // ServiceWorker will respond after the delay, so we expect the response from
-  // the network request initiated by the RaceNetworkRequest mode comes first.
-  EXPECT_EQ("create service worker",
-            EvalJs(GetPrimaryMainFrame(), "document.title"));
-  EXPECT_EQ(
-      "hello from the service worker\n",
-      EvalJs(GetPrimaryMainFrame(),
-             "fetch('/hello-from-sw.txt?sw_slow&sw_respond').then(response "
-             "=> response.text())"));
-
-  run_loop.Run();
+  // The final response comes from the fetch handler, which returns a custom
+  // response without requiring network request. Expect the network request by
+  // the AutoPrealod feature only when the script checksum is in the allowlist.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(ShouldUseValidChecksum() ? 1 : 0, GetRequestCount(relative_url));
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            GetInnerText());
 }
 
-class ServiceWorkerRaceNetworkRequestOptOutBrowserTest
-    : public ServiceWorkerRaceNetworkRequestBrowserTest {
+class ServiceWorkerAutoPreloadOptOutBrowserTest
+    : public ServiceWorkerAutoPreloadBrowserTest {
  public:
-  ServiceWorkerRaceNetworkRequestOptOutBrowserTest() {
+  ServiceWorkerAutoPreloadOptOutBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kServiceWorkerBypassFetchHandler,
-             {{"strategy", "optin"},
-              {"bypass_for", "all_with_race_network_request"}}},
-            {features::kServiceWorkerStaticRouter, {}},
+            {features::kServiceWorkerAutoPreload, {{"strategy", "optin"}}},
             {blink::features::kServiceWorkerStaticRouterNotConditionEnabled,
              {}},
         },
         {});
   }
-  ~ServiceWorkerRaceNetworkRequestOptOutBrowserTest() override = default;
+  ~ServiceWorkerAutoPreloadOptOutBrowserTest() override = default;
 
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestOptOutBrowserTest,
+INSTANTIATE_TEST_SUITE_P(ALL,
+                         ServiceWorkerAutoPreloadOptOutBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadOptOutBrowserTest,
                        MainResourceFetchHandlerShouldNotRace) {
   SetupAndRegisterServiceWorker();
   const std::string relative_url = "/service_worker/no_race?sw_slow&sw_respond";
@@ -6937,7 +6601,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestOptOutBrowserTest,
   EXPECT_EQ(0, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestOptOutBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadOptOutBrowserTest,
                        SubresourceFetchHandlerShouldNotRace) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
@@ -7089,7 +6753,7 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
     } else if (type == TestType::kRaceNetworkAndFetch) {
       ASSERT_EQ("DONE",
                 EvalJs(GetPrimaryMainFrame(),
-                       "register('/service_worker/race_network_request.js')"));
+                       "register('/service_worker/static_router_race.js')"));
     }
     observer1.WaitUntilRunning();
     active_version_ = wrapper()->GetLiveVersion(observer1.version_id());

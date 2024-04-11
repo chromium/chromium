@@ -293,9 +293,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kTopicsAPI_BrowsingTopics_Method,
           WebFeature::kHTMLFencedFrameElement,
           WebFeature::kAuthorizationCrossOrigin,
-          WebFeature::kServiceWorkerBypassFetchHandlerForMainResource,
-          WebFeature::
-              kServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial,
           WebFeature::kCascadedCSSZoomNotEqualToOne,
           WebFeature::kV8Window_QueryLocalFonts_Method,
           WebFeature::kHiddenUntilFoundAttribute,

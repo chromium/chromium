@@ -874,8 +874,9 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::NetworkTrafficAnnotationTag() {
         "This request is issued by a navigation to fetch the content of the "
         "page that is being navigated to, or by a renderer to fetch "
         "subresources in the case where a service worker has been registered "
-        "for the page and the ServiceWorkerBypassFetchHandler feature and the "
-        "RaceNetworkRequest param are enabled."
+        "for the page and the ServiceWorkerAutoPreload feature is enabled, or "
+        "`race-network-and-fetch-handler` source in the Service Worker Static "
+        "Routing API is specified."
       trigger:
         "Navigating Chrome (by clicking on a link, bookmark, history item, "
         "using session restore, etc) and subsequent resource loading."

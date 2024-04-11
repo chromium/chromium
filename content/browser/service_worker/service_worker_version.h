@@ -241,8 +241,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void set_fetch_handler_type(FetchHandlerType fetch_handler_type);
 
   // Return the option indicating how the fetch handler should be bypassed.
-  // ServiceWorkerBypassFetchHandler feature uses this to let the renderer know
-  // to bypass fetch handlers for subresources.
+  // This is used to let the renderer know to bypass fetch handlers for
+  // subresources.
   FetchHandlerBypassOption fetch_handler_bypass_option() {
     return fetch_handler_bypass_option_;
   }

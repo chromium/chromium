@@ -62,15 +62,15 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
     kNoFetchHandler = 0,
     kNotSkipped = 1,
     kSkippedForEmptyFetchHandler = 2,
-    kMainResourceSkippedDueToOriginTrial = 3,
-    kMainResourceSkippedDueToFeatureFlag = 4,
+    // kMainResourceSkippedDueToOriginTrial = 3,
+    // kMainResourceSkippedDueToFeatureFlag = 4,
     // kMainResourceSkippedBecauseMatchedWithAllowedOriginList = 5,
-    kMainResourceSkippedBecauseMatchedWithAllowedScriptList = 6,
-    kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Stop = 7,
-    kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting = 8,
+    // kMainResourceSkippedBecauseMatchedWithAllowedScriptList = 6,
+    // kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Stop = 7,
+    // kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting =
+    // 8,
 
-    kMaxValue =
-        kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting,
+    kMaxValue = kSkippedForEmptyFetchHandler,
   };
 
   // Default duration to start fetch handler when service worker is started in
@@ -160,11 +160,8 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   // Runs after ServiceWorker has started.
   // Normally ServiceWorker starts before dispatching the main resource request,
-  // but if the ServiceWorkerBypassFetchHandler feature is enabled, we bypass
-  // the main resource request and then start ServiceWorker for subresources.
-  // Also, if we decided to start the service worker for
-  // the ServiceWorkerSkipEmptyFetchHandler feature and the browser handles
-  // an empty fetch handler, this runs after the service worker starts.
+  // but if the browser handles an empty fetch handler, this runs after the
+  // service worker starts.
   void DidStartWorker(blink::ServiceWorkerStatusCode status);
 
   int GetServiceWorkerForEmptyFetchHandlerDurationMs();

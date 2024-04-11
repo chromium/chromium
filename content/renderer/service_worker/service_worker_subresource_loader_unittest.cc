@@ -18,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
@@ -978,9 +979,7 @@ TEST_F(ServiceWorkerSubresourceLoaderTest,
        DropController_RestartFetchEvent_RaceNetworkRequest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kServiceWorkerBypassFetchHandler,
-      {{"strategy", "opt-in"},
-       {"bypass_for", "all_with_race_network_request"}});
+      features::kServiceWorkerAutoPreload, {{"strategy", "opt-in"}});
 
   mojo::Remote<network::mojom::URLLoaderFactory> factory =
       CreateSubresourceLoaderFactory();

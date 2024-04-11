@@ -1648,20 +1648,6 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForSubresource(
               GetThread()->GetTaskRunner(TaskType::kNetworking));
   fetch_response_callbacks_.Set(event_id, WrapDisallowNew(std::move(remote)));
 
-  if (params->race_network_request_loader_factory) {
-    UseCounter::Count(
-        this,
-        // If the runtime flag is enabled, that means the feature is enabled via
-        // OriginTrial. We count the feature usage separatefy from the a/b
-        // experiment to monitor the actual usage respectively.
-        RuntimeEnabledFeatures::ServiceWorkerRaceNetworkRequestEnabled(
-            ExecutionContext::From(ScriptController()->GetScriptState()))
-            ? WebFeature::
-                  kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial
-            : WebFeature::
-                  kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest);
-  }
-
   if (RequestedTermination()) {
     event_queue_->EnqueuePending(
         event_id,

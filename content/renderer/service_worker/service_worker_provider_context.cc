@@ -64,36 +64,6 @@ void CreateSubresourceLoaderFactoryForProviderContext(
           std::move(pending_fallback_factory)),
       std::move(receiver), std::move(task_runner));
 }
-
-// Returns the set of hash strings of fetch handlers which can be bypassed.
-const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {
-  const static base::NoDestructor<base::flat_set<std::string>> result(
-      base::SplitString(
-          features::kServiceWorkerBypassFetchHandlerBypassedHashStrings.Get(),
-          ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-
-  return *result;
-}
-
-bool ShouldBypassFetchHandlerForSubresource(
-    std::optional<std::string> sha256_script_checksum) {
-  if (!base::FeatureList::IsEnabled(
-          features::kServiceWorkerBypassFetchHandler)) {
-    return false;
-  }
-  if (features::kServiceWorkerBypassFetchHandlerTarget.Get() !=
-      features::ServiceWorkerBypassFetchHandlerTarget::kSubResource) {
-    return false;
-  }
-
-  switch (features::kServiceWorkerBypassFetchHandlerStrategy.Get()) {
-    case features::ServiceWorkerBypassFetchHandlerStrategy::kFeatureOptIn:
-      return true;
-    case features::ServiceWorkerBypassFetchHandlerStrategy::kAllowList:
-      return FetchHandlerBypassedHashStrings().contains(sha256_script_checksum);
-  }
-}
-
 }  // namespace
 
 ServiceWorkerProviderContext::ServiceWorkerProviderContext(
@@ -156,21 +126,6 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
       // not be ready for this case.
       CountFeature(
           blink::mojom::WebFeature::kServiceWorkerSkippedForSubresourceLoad);
-      return nullptr;
-    }
-
-    if (fetch_handler_bypass_option_ ==
-        blink::mojom::ServiceWorkerFetchHandlerBypassOption::
-            kBypassOnlyIfServiceWorkerNotStarted) {
-      // If the fetch handler for the main resource is skipped by
-      // ServiceWorkerBypassFetchHandler, the fetch handler doesn't handle
-      // subresources too.
-      return nullptr;
-    }
-
-    if (ShouldBypassFetchHandlerForSubresource(sha256_script_checksum_)) {
-      CountFeature(blink::mojom::WebFeature::
-                       kServiceWorkerBypassFetchHandlerForSubResource);
       return nullptr;
     }
   }

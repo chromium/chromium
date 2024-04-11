@@ -7160,6 +7160,7 @@ data/send-beacon-in-iframe.html
 data/send-beacon.html
 data/service_worker/add_save_data_to_title.js
 data/service_worker/add_save_data_to_title.js.mock-http-headers
+data/service_worker/auto_preload.js
 data/service_worker/cached_fetch_event.js
 data/service_worker/client_api_worker.js
 data/service_worker/clients_claim_worker.js
@@ -7229,7 +7230,7 @@ data/service_worker/navigation_preload_worker.js.mock-http-headers
 data/service_worker/non_function_fetch_event.js
 data/service_worker/one_subframe.html
 data/service_worker/race_network_request.html
-data/service_worker/race_network_request.js
+data/service_worker/race_network_request_base.js
 data/service_worker/race_network_request_from_fetch_handler.html
 data/service_worker/request_navigate.html
 data/service_worker/request_origin_worker.js
@@ -7238,6 +7239,8 @@ data/service_worker/skip_waiting_and_clients_claim_worker.js.mock-http-headers
 data/service_worker/static_import_worker.js
 data/service_worker/static_router.js
 data/service_worker/static_router_no_handler.js
+data/service_worker/static_router_race.js
+data/service_worker/static_router_race_match_all.js
 data/service_worker/sync.js.mock-http-headers
 data/service_worker/throttling_blocking_cache_addall_sw.js
 data/service_worker/throttling_blocking_sw.js

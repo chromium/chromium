@@ -10913,7 +10913,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4407" label="CSSAtRuleSwash"/>
   <int value="4408" label="CSSAtRuleOrnaments"/>
   <int value="4409" label="CSSAtRuleAnnotation"/>
-  <int value="4410" label="ServiceWorkerBypassFetchHandlerForMainResource"/>
+  <int value="4410"
+      label="OBSOLETE_ServiceWorkerBypassFetchHandlerForMainResource"/>
   <int value="4411" label="V8Document_HasPrivateToken_Method"/>
   <int value="4412" label="ServiceWorkerSkippedForEmptyFetchHandler"/>
   <int value="4413" label="ImageSet"/>
@@ -10967,7 +10968,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4455" label="ParseFromStringIncludeShadows"/>
   <int value="4456" label="WebAppManifestScopeExtensions"/>
   <int value="4457"
-      label="ServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial"/>
+      label="OBSOLETE_ServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial"/>
   <int value="4458"
       label="OBSOLETE_V8RegExpUnicodeSetIncompatibilitiesWithUnicodeMode"/>
   <int value="4459" label="FedCmAutoReauthn"/>
@@ -10998,7 +10999,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4482" label="RTCPeerConnectionLegacyGetStatsTrial"/>
   <int value="4483" label="ExecutedEmptyJavaScriptURLFromFrame"/>
   <int value="4484" label="ExecutedJavaScriptURLFromFrame"/>
-  <int value="4485" label="ServiceWorkerBypassFetchHandlerForSubResource"/>
+  <int value="4485"
+      label="OBSOLETE_ServiceWorkerBypassFetchHandlerForSubResource"/>
   <int value="4486" label="CSSAtRuleStartingStyle"/>
   <int value="4487" label="PrivateAggregationApiFledgeExtensions"/>
   <int value="4488" label="DeprecatedInterestGroupDailyUpdateUrl"/>
@@ -11063,7 +11065,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4546" label="AttributionReportingCrossAppWeb"/>
   <int value="4547" label="SecurePaymentConfirmationActivationlessShow"/>
   <int value="4548"
-      label="ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest"/>
+      label="OBSOLETE_ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest"/>
   <int value="4549" label="FlexIntrinsicSizesCacheMiss"/>
   <int value="4550" label="CSSStyleContainerQuery"/>
   <int value="4551" label="CSSValueAppearanceMediaSlider"/>
@@ -11075,7 +11077,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4557" label="CSSValueAppearanceSliderthumbHorizontal"/>
   <int value="4558" label="CSSValueAppearanceSliderthumbVertical"/>
   <int value="4559"
-      label="ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial"/>
+      label="OBSOLETE_ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial"/>
   <int value="4560"
       label="OBSOLETE_EventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved"/>
   <int value="4561" label="LinkRelPreloadAsFont"/>

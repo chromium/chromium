@@ -208,53 +208,6 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDisableProcessReuse);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerBypassFetchHandler);
-// ServiceWorkerBypassFetchHandlerStrategy provides the info how to decide if
-// the request should bypass fetch handlers or not.
-enum class ServiceWorkerBypassFetchHandlerStrategy {
-  // Use the allowlist provided by
-  // kServiceWorkerBypassFetchHandlerBypassedOrigins. If the request url's
-  // origin is in the list, fetch handlers are bypassed.
-  kAllowList,
-
-  // This option is to run the feature locally for the debugging purpose. It is
-  // used for the feature toggle in about:flags etc. It simply bypasses fetch
-  // handlers for all the main resource requests regardless of the url while the
-  // feature is enabled.
-  //
-  // This is set as a default value, but the origin trial uses a different
-  // mechanism to enable the feature per origin. When the feature is enabled by
-  // the origin trial, ServiceWorkerVersion in content/browser should contain
-  // the origin trial token. If the browser successfully confirm the token,
-  // fetch handlers are always bypassed regardless of
-  // ServiceWorkerBypassFetchHandlerStrategy.
-  kFeatureOptIn,
-};
-CONTENT_EXPORT extern const base::FeatureParam<
-    ServiceWorkerBypassFetchHandlerStrategy>
-    kServiceWorkerBypassFetchHandlerStrategy;
-enum class ServiceWorkerBypassFetchHandlerTarget {
-  // Bypass fetch handlers for main resource (navigation) requests. Fetch
-  // handlers will be bypassed regardless of the current ServiceWorker running
-  // status.
-  kMainResource,
-  // If the ServiceWorker is not started yet when the main resource request
-  // happens, it bypasses fetch handlers for the main resource and subsequent
-  // subresources. If the ServiceWorker is running, it invokes fetch handlers as
-  // usual.
-  kAllOnlyIfServiceWorkerNotStarted,
-  // BestEffortServiceWorker(crbug.com/1420517). It allows the browser to
-  // dispatch a request directly to the network even if there is a registered
-  // ServiceWorker. This behavior races the network request and the
-  // ServiceWorker fetch handler and uses the result of whichever is faster.
-  kAllWithRaceNetworkRequest,
-  // Bypass fetch handlers for subresource requests. Fetch handlers will be
-  // bypassed regardless of the current ServiceWorker running status.
-  kSubResource,
-};
-CONTENT_EXPORT extern const base::FeatureParam<
-    ServiceWorkerBypassFetchHandlerTarget>
-    kServiceWorkerBypassFetchHandlerTarget;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerStaticRouter);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserMediaCaptureOnFocus);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebLockScreenApi);
