@@ -6266,6 +6266,7 @@ data/gpu/canvas_uses_overlay.html
 data/gpu/concave_paths.html
 data/gpu/core_animation_status_api.html
 data/gpu/empty.html
+data/gpu/favicon.ico
 data/gpu/filter_effects.html
 data/gpu/functional_3d_css.html
 data/gpu/functional_blank.html
