@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
+
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -71,6 +74,7 @@ void DefaultBrowserPromptManager::ResetPromptPrefs(Profile* profile) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
   local_state->ClearPref(prefs::kDefaultBrowserDeclinedCount);
+  local_state->ClearPref(prefs::kDefaultBrowserFirstShownTime);
 }
 
 // static
@@ -85,6 +89,25 @@ void DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(
   local_state->SetInteger(
       prefs::kDefaultBrowserDeclinedCount,
       local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount) + 1);
+  local_state->ClearPref(prefs::kDefaultBrowserFirstShownTime);
+}
+
+// static
+void DefaultBrowserPromptManager::MaybeResetAppMenuPromptPrefs(
+    Profile* profile) {
+  if (!base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh) ||
+      !features::kShowDefaultBrowserAppMenuChip.Get()) {
+    g_browser_process->local_state()->ClearPref(
+        prefs::kDefaultBrowserFirstShownTime);
+    return;
+  }
+
+  if (!ShouldShowAppMenuPrompt()) {
+    // Found that app menu should no longer be shown. Triggers an implicit
+    // dismissal so that the subsequent call to ShouldShowPrompts() will return
+    // false.
+    UpdatePrefsForDismissedPrompt(profile);
+  }
 }
 
 void DefaultBrowserPromptManager::AddObserver(Observer* observer) {
@@ -95,7 +118,17 @@ void DefaultBrowserPromptManager::RemoveObserver(Observer* observer) {
 }
 
 void DefaultBrowserPromptManager::MaybeShowPrompt() {
-  if (ShouldShowInfoBarPrompt()) {
+  CHECK(base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh));
+
+  if (!ShouldShowPrompts()) {
+    return;
+  }
+
+  if (features::kShowDefaultBrowserAppMenuChip.Get()) {
+    SetShowAppMenuPromptVisibility(true);
+  }
+
+  if (features::kShowDefaultBrowserInfoBar.Get()) {
     browser_tab_strip_tracker_ =
         std::make_unique<BrowserTabStripTracker>(this, this);
     browser_tab_strip_tracker_->Init();
@@ -173,28 +206,9 @@ void DefaultBrowserPromptManager::RegisterSyntheticFieldTrial(
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
-void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
-    content::WebContents* web_contents,
-    Profile* profile) {
-  // Ensure that an infobar hasn't already been created.
-  CHECK(!infobars_.contains(web_contents));
-
-  infobars::InfoBar* infobar = chrome::DefaultBrowserInfoBarDelegate::Create(
-      infobars::ContentInfoBarManager::FromWebContents(web_contents), profile);
-  infobars_[web_contents] = infobar;
-
-  static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())->AddObserver(this);
-
-  auto* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  infobar_manager->AddObserver(this);
-}
-
-bool DefaultBrowserPromptManager::ShouldShowInfoBarPrompt(
-    PrefService* local_state) {
-  if (!features::kShowDefaultBrowserInfoBar.Get()) {
-    return false;
-  }
+// static
+bool DefaultBrowserPromptManager::ShouldShowPrompts() {
+  PrefService* local_state = g_browser_process->local_state();
 
   const int declined_count =
       local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
@@ -222,6 +236,36 @@ bool DefaultBrowserPromptManager::ShouldShowInfoBarPrompt(
   return (base::Time::Now() - last_declined_time) > reprompt_duration;
 }
 
+// static
+bool DefaultBrowserPromptManager::ShouldShowAppMenuPrompt() {
+  PrefService* local_state = g_browser_process->local_state();
+  const PrefService::Preference* first_shown_time_pref =
+      local_state->FindPreference(prefs::kDefaultBrowserFirstShownTime);
+  base::Time first_shown_time =
+      local_state->GetTime(prefs::kDefaultBrowserFirstShownTime);
+
+  return first_shown_time_pref->IsDefaultValue() ||
+         (base::Time::Now() - first_shown_time) <
+             features::kDefaultBrowserAppMenuDuration.Get();
+}
+
+void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
+    content::WebContents* web_contents,
+    Profile* profile) {
+  // Ensure that an infobar hasn't already been created.
+  CHECK(!infobars_.contains(web_contents));
+
+  infobars::InfoBar* infobar = chrome::DefaultBrowserInfoBarDelegate::Create(
+      infobars::ContentInfoBarManager::FromWebContents(web_contents), profile);
+  infobars_[web_contents] = infobar;
+
+  static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())->AddObserver(this);
+
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  infobar_manager->AddObserver(this);
+}
+
 void DefaultBrowserPromptManager::CloseAllInfoBars() {
   browser_tab_strip_tracker_.reset();
 
@@ -237,6 +281,16 @@ void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {
   if (show == show_app_menu_prompt_) {
     return;
   }
+
+  PrefService* local_state = g_browser_process->local_state();
+  if (show && local_state->FindPreference(prefs::kDefaultBrowserFirstShownTime)
+                  ->IsDefaultValue()) {
+    local_state->SetTime(prefs::kDefaultBrowserFirstShownTime,
+                         base::Time::Now());
+  }
+  // TODO(crbug.com/333597133): if (show), add timer that dismisses all prompts
+  // and calls UpdatePrefsForDismissedPrompt after the remaining show time.
+
   show_app_menu_prompt_ = show;
   for (auto& obs : observers_) {
     obs.OnShowAppMenuPromptChanged();

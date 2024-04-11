@@ -97,6 +97,8 @@ void OnCheckIsDefaultBrowserFinished(
     // synthetic trial cohort.
     DefaultBrowserPromptManager::MaybeJoinDefaultBrowserPromptCohort();
 
+    DefaultBrowserPromptManager::MaybeResetAppMenuPromptPrefs(profile);
+
     // Only show the prompt if some other program is the user's default browser.
     // In particular, don't show it if another install mode is default (e.g.,
     // don't prompt for Chrome Beta if stable Chrome is the default).

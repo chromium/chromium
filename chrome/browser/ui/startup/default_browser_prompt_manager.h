@@ -58,10 +58,12 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   // before re-prompting.
   static void UpdatePrefsForDismissedPrompt(Profile* profile);
 
+  // If enough time has passed since the first show time, the app menu should
+  // implicitly be dismissed, in which case prompts will not be shown when
+  // MaybeShowPrompt() is called.
+  static void MaybeResetAppMenuPromptPrefs(Profile* profile);
+
   bool get_show_app_menu_prompt() const { return show_app_menu_prompt_; }
-  void set_show_app_menu_prompt_for_testing(bool show) {
-    show_app_menu_prompt_ = show;
-  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -94,11 +96,14 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   // Reports to the launch study for the default browser prompt synthetic trial.
   static void RegisterSyntheticFieldTrial(const std::string& group_name);
 
+  // Whether prompts should be shown based on the last declined time/count prefs
+  // and the recurrence feature params.
+  static bool ShouldShowPrompts();
+
+  static bool ShouldShowAppMenuPrompt();
+
   void CreateInfoBarForWebContents(content::WebContents* contents,
                                    Profile* profile);
-
-  bool ShouldShowInfoBarPrompt(
-      PrefService* local_state = g_browser_process->local_state());
 
   void CloseAllInfoBars();
 

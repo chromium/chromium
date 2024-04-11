@@ -66,6 +66,9 @@ extern const base::FeatureParam<int> kMaxPromptCount;
 // Exponential backoff multiplier for the reprompt duration.
 extern const base::FeatureParam<int> kRepromptDurationMultiplier;
 
+// The duration after which the app menu prompt should not longer be shown.
+extern const base::FeatureParam<base::TimeDelta> kDefaultBrowserAppMenuDuration;
+
 BASE_DECLARE_FEATURE(kExtensionsMenuInAppMenu);
 bool IsExtensionMenuInRootAppMenu();
 

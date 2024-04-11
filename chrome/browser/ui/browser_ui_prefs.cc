@@ -69,8 +69,9 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterTimePref(prefs::kDefaultBrowserLastDeclinedTime,
                              base::Time());
-
   registry->RegisterIntegerPref(prefs::kDefaultBrowserDeclinedCount, 0);
+  registry->RegisterTimePref(prefs::kDefaultBrowserFirstShownTime,
+                             base::Time());
 }
 
 void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
