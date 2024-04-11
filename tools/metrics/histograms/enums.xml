@@ -14293,6 +14293,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="UTF-8 \xNN string escape"/>
   <int value="3" label="Vertical tab string escape (\\v)"/>
   <int value="4" label="Unescaped ASCII control character [0x00,0x1F]"/>
+  <int value="5" label="Unescaped newline in string (\\r or \\n)"/>
 </enum>
 
 <enum name="KAnonymityBidMode">

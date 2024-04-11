@@ -68,13 +68,9 @@ version = "1"
 # Temporarily inform our cargo tooling that we care about
 # the new version of serde_json_lenient. We are in the midst
 # of CLs that move from the older to the newer.
-[dependencies.serde_json_lenient_new_epoch]
+[dependencies.serde_json_lenient]
 package = "serde_json_lenient"
 version = "0.2"
-features = ["unbounded_depth", "float_roundtrip"]
-
-[dependencies.serde_json_lenient]
-version = "0.1"
 features = ["unbounded_depth", "float_roundtrip"]
 
 [dependencies.syn]

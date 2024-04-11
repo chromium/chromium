@@ -1088,7 +1088,7 @@ component("base") {
   defines += [ "IS_RAW_PTR_IMPL" ]
 
   if (build_rust_json_reader) {
-    deps += [ "//third_party/rust/serde_json_lenient/v0_1/wrapper" ]
+    deps += [ "//third_party/rust/serde_json_lenient/v0_2/wrapper" ]
   }
 
   # native_unwinder_android is intended for use solely via a dynamic feature

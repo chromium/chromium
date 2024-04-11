@@ -17,7 +17,7 @@ rust_static_library("wrapper") {
   public_deps = [ ":wrapper_functions" ]
   deps = [
     "//third_party/rust/serde/v1:lib",
-    "//third_party/rust/serde_json_lenient/v0_1:lib",
+    "//third_party/rust/serde_json_lenient/v0_2:lib",
   ]
 }
 

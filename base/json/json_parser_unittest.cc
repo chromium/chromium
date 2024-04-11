@@ -327,6 +327,16 @@ TEST_F(JSONParserTest, ErrorMessages) {
               parser.GetErrorMessage());
     EXPECT_EQ(JSONParser::JSON_INVALID_ESCAPE, parser.error_code());
   }
+
+  {
+    JSONParser parser(JSON_PARSE_RFC);
+    std::optional<Value> value = parser.Parse("\"abc\ndef\"");
+    EXPECT_FALSE(value);
+    EXPECT_EQ(
+        JSONParser::FormatErrorMessage(1, 4, JSONParser::kUnsupportedEncoding),
+        parser.GetErrorMessage());
+    EXPECT_EQ(JSONParser::JSON_UNSUPPORTED_ENCODING, parser.error_code());
+  }
 }
 
 }  // namespace internal

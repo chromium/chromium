@@ -851,12 +851,24 @@ TEST_P(JSONReaderTest, ASCIIControlCodes) {
   // rejected. RFC 8259 section 7 says "the characters that MUST be escaped
   // [include]... the control characters (U+0000 through U+001F)".
   //
-  // Nonetheless, we accept them, for backwards compatibility.
-  const char json[] = {'"', 'a', '\0', 'b', '\n', 'c', '"'};
-  std::optional<Value> root = JSONReader::Read(std::string(json, sizeof(json)));
-  ASSERT_TRUE(root);
-  ASSERT_TRUE(root->is_string());
-  EXPECT_EQ(5u, root->GetString().length());
+  // Currently, we accept \r and \n in JSON strings because they are widely used
+  // and somewhat useful (especially when nesting JSON messages), but reject all
+  // other control characters.
+  {
+    const char json[] = "\"a\rn\nc\"";
+    auto root = JSONReader::Read(json);
+    ASSERT_TRUE(root);
+    ASSERT_TRUE(root->is_string());
+    EXPECT_EQ(5u, root->GetString().length());
+  }
+
+  {
+    // Replace the \r with a disallowed \f, and require parsing to fail:
+    const char json[] = "\"a\fn\nc\"";
+    auto root = JSONReader::ReadAndReturnValueWithError(json);
+    EXPECT_FALSE(root.has_value());
+    EXPECT_NE("", root.error().message);
+  }
 }
 
 TEST_P(JSONReaderTest, MaxNesting) {
@@ -1101,7 +1113,7 @@ TEST_P(JSONReaderTest, LineColumnCounting) {
     SCOPED_TRACE(StringPrintf("case %u: \"%s\"", i, test_case.input));
 
     auto root = JSONReader::ReadAndReturnValueWithError(
-        test_case.input, JSON_PARSE_RFC | JSON_ALLOW_CONTROL_CHARS);
+        test_case.input, JSON_PARSE_RFC | JSON_ALLOW_NEWLINES_IN_STRINGS);
     EXPECT_FALSE(root.has_value());
     EXPECT_EQ(test_case.error_line, root.error().line);
     EXPECT_EQ(test_case.error_column, root.error().column);
@@ -1120,12 +1132,8 @@ TEST_P(JSONReaderTest, ChromiumExtensions) {
       {"{ /* comment */ \"foo\": 3 }", JSON_ALLOW_COMMENTS},
       {"{ // comment\n \"foo\": 3 }", JSON_ALLOW_COMMENTS},
       {"[\"\\xAB\"]", JSON_ALLOW_X_ESCAPES},
-      {"[\"\b\"]", JSON_ALLOW_CONTROL_CHARS},
-      {"[\"\f\"]", JSON_ALLOW_CONTROL_CHARS},
-      {"[\"\n\"]", JSON_ALLOW_CONTROL_CHARS},
-      {"[\"\r\"]", JSON_ALLOW_CONTROL_CHARS},
-      {"[\"\t\"]", JSON_ALLOW_CONTROL_CHARS},
-      {"[\"\v\"]", JSON_ALLOW_CONTROL_CHARS},
+      {"[\"\n\"]", JSON_ALLOW_NEWLINES_IN_STRINGS},
+      {"[\"\r\"]", JSON_ALLOW_NEWLINES_IN_STRINGS},
   };
 
   for (size_t i = 0; i < std::size(kCases); ++i) {
@@ -1147,6 +1155,32 @@ TEST_P(JSONReaderTest, ChromiumExtensions) {
     result = JSONReader::ReadAndReturnValueWithError(
         test_case.input, JSON_PARSE_CHROMIUM_EXTENSIONS & ~test_case.option);
     EXPECT_FALSE(result.has_value());
+  }
+}
+
+// For every control character, place it unescaped in a string and ensure that:
+// a) It doesn't parse with JSON_PARSE_RFC
+// b) It doesn't parse with JSON_PARSE_CHROMIUM_EXTENSIONS
+// c) It does parse with JSON_ALLOW_CONTROL_CHARS
+TEST_P(JSONReaderTest, UnescapedControls) {
+  std::string input = "\"foo\"";
+  // ECMA-404 (JSON standard) section 9: characters from 0x00 to 0x1f must be
+  // escaped.
+  for (char c = 0x00; c <= 0x1f; c++) {
+    input[1] = c;
+
+    auto result = JSONReader::Read(input, JSON_PARSE_RFC);
+    EXPECT_FALSE(result.has_value());
+
+    bool should_parse_with_extensions = (c == '\r' || c == '\n');
+    result = JSONReader::Read(input, JSON_PARSE_CHROMIUM_EXTENSIONS);
+    EXPECT_EQ(should_parse_with_extensions, result.has_value());
+
+    result = JSONReader::Read(input, JSON_ALLOW_CONTROL_CHARS);
+    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(result->is_string());
+    EXPECT_EQ(result->GetString().length(), input.length() - 2);
+    EXPECT_EQ(result->GetString()[0], c);
   }
 }
 

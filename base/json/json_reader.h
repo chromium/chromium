@@ -74,14 +74,19 @@ enum JSONParserOptions {
   // Permits \\xNN escapes as described above.
   JSON_ALLOW_X_ESCAPES = 1 << 5,
 
+  // Permits exactly \r and \n to occur in strings, which is normally not
+  // allowed; this is a subset of the behavior of JSON_ALLOW_CONTROL_CHARS.
+  JSON_ALLOW_NEWLINES_IN_STRINGS = 1 << 6,
+
   // This parser historically accepted, without configuration flags,
   // non-standard JSON extensions. This flag enables that traditional parsing
   // behavior.
   //
   // This set of options is mirrored in Rust
   // base::JsonOptions::with_chromium_extensions().
-  JSON_PARSE_CHROMIUM_EXTENSIONS =
-      JSON_ALLOW_COMMENTS | JSON_ALLOW_CONTROL_CHARS | JSON_ALLOW_X_ESCAPES,
+  JSON_PARSE_CHROMIUM_EXTENSIONS = JSON_ALLOW_COMMENTS |
+                                   JSON_ALLOW_NEWLINES_IN_STRINGS |
+                                   JSON_ALLOW_X_ESCAPES,
 };
 
 class BASE_EXPORT JSONReader {

@@ -24,7 +24,7 @@ include_rules = [
   "+third_party/rust/cxx",
   "+third_party/test_fonts",
   # JSON Deserialization.
-  "+third_party/rust/serde_json_lenient/v0_1/wrapper",
+  "+third_party/rust/serde_json_lenient/v0_2/wrapper",
 
   # These are implicitly brought in from the root, and we don't want them.
   "-ipc",

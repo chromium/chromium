@@ -188,11 +188,11 @@ TEST_F(EnhancedNetworkTtsUtilsTest,
 
 TEST_F(EnhancedNetworkTtsUtilsTest,
        UnpackJsonResponseFailsWithWrongDataFormat) {
-  // The data is not Base64 encoded.
-  const std::vector<uint8_t> response_data = {1, 2, 5};
-  const std::string encoded_data(response_data.begin(), response_data.end());
+  // The response data is not correctly base64 encoded, but is a valid JSON string embedded
+  // within a valid JSON message (kTemplateResponse). It should still be rejected due to not
+  // being valid base64.
   const std::string encoded_response =
-      base::StringPrintf(kTemplateResponse, encoded_data.c_str());
+      base::StringPrintf(kTemplateResponse, "a b");
   std::optional<base::Value> json = base::JSONReader::Read(encoded_response);
 
   mojom::TtsResponsePtr result = UnpackJsonResponse(

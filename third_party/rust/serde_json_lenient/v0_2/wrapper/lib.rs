@@ -18,7 +18,7 @@ const UTF8_BOM: [u8; 3] = [0xef, 0xbb, 0xbf];
 mod ffi {
     // From the `wrapper_functions` target.
     unsafe extern "C++" {
-        include!("third_party/rust/serde_json_lenient/v0_1/wrapper/functions.h");
+        include!("third_party/rust/serde_json_lenient/v0_2/wrapper/functions.h");
 
         type ContextPointer;
 
@@ -85,8 +85,11 @@ mod ffi {
         replace_invalid_characters: bool,
         /// Allows both C (/* */) and C++ (//) style comments.
         allow_comments: bool,
-        /// Permits unescaped ASCII control characters (such as unescaped \r and
-        /// \n) in the range [0x00,0x1F].
+        /// Permits unescaped \r and \n in strings. This is a subset of what
+        /// allow_control_chars allows.
+        allow_newlines: bool,
+        /// Permits unescaped ASCII control characters (such as unescaped \b,
+        /// \r, or \n) in the range [0x00,0x1F].
         allow_control_chars: bool,
         /// Permits \\v vertical tab escapes.
         allow_vert_tab: bool,
@@ -131,6 +134,13 @@ pub fn decode_json(
     let mut deserializer = serde_json_lenient::Deserializer::new(SliceRead::new(
         if json.starts_with(&UTF8_BOM) { &json[3..] } else { json },
         options.replace_invalid_characters,
+
+        // On the C++ side, allow_control_chars means "allow all control chars,
+        // including \r and \n", while in serde_json_lenient,
+        // allow_control_chars means "allow all controls chars, except \r and
+        // \n". To give the behavior that C++ client code is expecting, enable
+        // allow_newlines as well when allow_control_chars is supplied.
+        options.allow_newlines || options.allow_control_chars,
         options.allow_control_chars,
         options.allow_vert_tab,
         options.allow_x_escapes,

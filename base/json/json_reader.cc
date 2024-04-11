@@ -14,8 +14,8 @@
 
 #if BUILDFLAG(BUILD_RUST_JSON_READER)
 #include "base/strings/string_piece_rust.h"
-#include "third_party/rust/serde_json_lenient/v0_1/wrapper/functions.h"
-#include "third_party/rust/serde_json_lenient/v0_1/wrapper/lib.rs.h"
+#include "third_party/rust/serde_json_lenient/v0_2/wrapper/functions.h"
+#include "third_party/rust/serde_json_lenient/v0_2/wrapper/lib.rs.h"
 #endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
 #include "base/json/json_parser.h"
 
@@ -90,6 +90,7 @@ JSONReader::Result DecodeJSONInRust(std::string_view json,
       .replace_invalid_characters =
           (options & base::JSON_REPLACE_INVALID_CHARACTERS) != 0,
       .allow_comments = (options & base::JSON_ALLOW_COMMENTS) != 0,
+      .allow_newlines = (options & base::JSON_ALLOW_NEWLINES_IN_STRINGS) != 0,
       .allow_control_chars = (options & base::JSON_ALLOW_CONTROL_CHARS) != 0,
       .allow_vert_tab = (options & base::JSON_ALLOW_VERT_TAB) != 0,
       .allow_x_escapes = (options & base::JSON_ALLOW_X_ESCAPES) != 0,
