@@ -32,6 +32,10 @@ api::os_diagnostics::RoutineRunningInfo UncheckedConvertPtr(
     base::Uuid uuid,
     uint32_t percentage);
 
+api::os_diagnostics::NetworkBandwidthRoutineRunningInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfoPtr
+        input);
+
 api::os_diagnostics::RoutineWaitingInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticRoutineStateWaitingPtr input,
     base::Uuid uuid,
@@ -67,6 +71,9 @@ api::os_diagnostics::MemoryRoutineFinishedDetail UncheckedConvertPtr(
 api::os_diagnostics::FanRoutineFinishedDetail UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticFanRoutineDetailPtr input);
 
+api::os_diagnostics::NetworkBandwidthRoutineFinishedDetail UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineDetailPtr input);
+
 api::os_diagnostics::RoutineFinishedInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticRoutineStateFinishedPtr input,
     base::Uuid uuid,
@@ -85,6 +92,10 @@ api::os_diagnostics::MemtesterTestItemEnum Convert(
 
 api::os_diagnostics::HardwarePresenceStatus Convert(
     crosapi::mojom::TelemetryDiagnosticHardwarePresenceStatus input);
+
+api::os_diagnostics::NetworkBandwidthRoutineRunningType Convert(
+    crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type
+        input);
 
 template <class InputT,
           class OutputT = decltype(Convert(std::declval<InputT>())),

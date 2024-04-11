@@ -330,7 +330,7 @@ struct UrandomRoutineArgument {
   mojo_base.mojom.TimeDelta? exec_duration@0;
 };
 
-// This routine checks the network bandwidth and report the speed info.
+// This routine checks the network bandwidth and reports the speed info.
 //
 // NextMinVersion: 1, NextIndex: 0
 [Stable]
@@ -450,7 +450,7 @@ struct NetworkBandwidthRoutineRunningInfo {
   };
   Type type@0;
 
-  // The current network speed in Kbps.
+  // The current network speed in kbit/s.
   double speed_kbps@1;
 };
 
@@ -947,8 +947,8 @@ struct FanRoutineDetail {
 // NextMinVersion: 1, NextIndex: 2
 [Stable]
 struct NetworkBandwidthRoutineDetail {
-  // Average download speed in Kbit/s.
+  // Average download speed in kbit/s.
   double download_speed_kbps@0;
-  // Average upload speed in Kbit/s.
+  // Average upload speed in kbit/s.
   double upload_speed_kbps@1;
 };

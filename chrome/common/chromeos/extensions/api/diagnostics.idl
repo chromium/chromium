@@ -178,9 +178,27 @@ namespace os.diagnostics {
     DOMString? uuid;
   };
 
+  enum NetworkBandwidthRoutineRunningType {
+    download,
+    upload
+  };
+
+  dictionary NetworkBandwidthRoutineRunningInfo {
+    // The type of test that routine is running.
+    NetworkBandwidthRoutineRunningType type;
+    // The current network speed in Kbps.
+    double speedKbps;
+  };
+
+  // This is a union type. Exactly one field should be set.
+  dictionary RoutineRunningInfoUnion {
+    NetworkBandwidthRoutineRunningInfo? networkBandwidth;
+  };
+
   dictionary RoutineRunningInfo {
     DOMString? uuid;
     long? percentage;
+    RoutineRunningInfoUnion? info;
   };
 
   enum RoutineWaitingReason {
@@ -363,17 +381,29 @@ namespace os.diagnostics {
   dictionary CreateFanRoutineArguments {
   };
 
+  dictionary CreateNetworkBandwidthRoutineArguments {
+  };
+
+  dictionary NetworkBandwidthRoutineFinishedDetail {
+    // Average download speed in Kbit/s.
+    double downloadSpeedKbps;
+    // Average upload speed in Kbit/s.
+    double uploadSpeedKbps;
+  };
+
   // This is a union type. Exactly one field should be set.
   dictionary CreateRoutineArgumentsUnion {
     CreateMemoryRoutineArguments? memory;
     CreateVolumeButtonRoutineArguments? volumeButton;
     CreateFanRoutineArguments? fan;
+    CreateNetworkBandwidthRoutineArguments? networkBandwidth;
   };
 
   // This is a union type. Exactly one field should be set.
   dictionary RoutineFinishedDetailUnion {
     MemoryRoutineFinishedDetail? memory;
     FanRoutineFinishedDetail? fan;
+    NetworkBandwidthRoutineFinishedDetail? networkBandwidth;
   };
 
   dictionary RoutineFinishedInfo {

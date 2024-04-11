@@ -30,8 +30,19 @@ crosapi::mojom::TelemetryDiagnosticMemoryRoutineDetailPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryDiagnosticFanRoutineDetailPtr UncheckedConvertPtr(
     cros_healthd::mojom::FanRoutineDetailPtr input);
 
+crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineDetailPtr
+UncheckedConvertPtr(
+    cros_healthd::mojom::NetworkBandwidthRoutineDetailPtr input);
+
 crosapi::mojom::TelemetryDiagnosticRoutineStateInitializedPtr
 UncheckedConvertPtr(cros_healthd::mojom::RoutineStateInitializedPtr input);
+
+crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfoPtr
+UncheckedConvertPtr(
+    cros_healthd::mojom::NetworkBandwidthRoutineRunningInfoPtr input);
+
+crosapi::mojom::TelemetryDiagnosticRoutineRunningInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::RoutineRunningInfoPtr input);
 
 crosapi::mojom::TelemetryDiagnosticRoutineStateRunningPtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineStateRunningPtr input);
@@ -81,6 +92,10 @@ cros_healthd::mojom::CheckLedLitUpStateReplyPtr UncheckedConvertPtr(
 cros_healthd::mojom::RoutineInquiryReplyPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr input);
 
+cros_healthd::mojom::NetworkBandwidthRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineArgumentPtr
+        input);
+
 }  // namespace unchecked
 
 cros_healthd::mojom::LedName Convert(
@@ -100,6 +115,9 @@ crosapi::mojom::TelemetryDiagnosticHardwarePresenceStatus Convert(
 
 crosapi::mojom::TelemetryDiagnosticRoutineStateWaiting::Reason Convert(
     cros_healthd::mojom::RoutineStateWaiting::Reason input);
+
+crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type
+Convert(cros_healthd::mojom::NetworkBandwidthRoutineRunningInfo::Type input);
 
 template <class InputT,
           class OutputT = decltype(Convert(std::declval<InputT>())),

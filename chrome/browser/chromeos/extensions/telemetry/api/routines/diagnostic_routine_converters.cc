@@ -39,6 +39,29 @@ std::optional<cx_diag::RoutineFinishedDetailUnion> ConvertRoutineDetailUnionPtr(
     case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kFan:
       detail.fan = ConvertPtr(std::move(input->get_fan()));
       return detail;
+    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kNetworkBandwidth:
+      detail.network_bandwidth =
+          ConvertPtr(std::move(input->get_network_bandwidth()));
+      return detail;
+  }
+}
+
+std::optional<cx_diag::RoutineRunningInfoUnion>
+ConvertRoutineRunningInfoUnionPtr(
+    crosapi::TelemetryDiagnosticRoutineRunningInfoPtr input) {
+  if (input.is_null()) {
+    return std::nullopt;
+  }
+  cx_diag::RoutineRunningInfoUnion info;
+  switch (input->which()) {
+    case crosapi::TelemetryDiagnosticRoutineRunningInfo::Tag::
+        kUnrecognizedArgument:
+      LOG(WARNING) << "Got unknown routine running info";
+      return std::nullopt;
+    case crosapi::TelemetryDiagnosticRoutineRunningInfo::Tag::kNetworkBandwidth:
+      info.network_bandwidth =
+          ConvertPtr(std::move(input->get_network_bandwidth()));
+      return info;
   }
 }
 
@@ -61,7 +84,16 @@ cx_diag::RoutineRunningInfo UncheckedConvertPtr(
   cx_diag::RoutineRunningInfo result;
   result.uuid = uuid.AsLowercaseString();
   result.percentage = percentage;
+  result.info = ConvertRoutineRunningInfoUnionPtr(std::move(input->info));
   return result;
+}
+
+cx_diag::NetworkBandwidthRoutineRunningInfo UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfoPtr input) {
+  cx_diag::NetworkBandwidthRoutineRunningInfo info;
+  info.type = Convert(input->type);
+  info.speed_kbps = input->speed_kbps;
+  return info;
 }
 
 cx_diag::RoutineWaitingInfo UncheckedConvertPtr(
@@ -159,6 +191,14 @@ cx_diag::FanRoutineFinishedDetail UncheckedConvertPtr(
   result.failed_fan_ids = failed_fan_ids;
 
   result.fan_count_status = Convert(input->fan_count_status);
+  return result;
+}
+
+cx_diag::NetworkBandwidthRoutineFinishedDetail UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticNetworkBandwidthRoutineDetailPtr input) {
+  cx_diag::NetworkBandwidthRoutineFinishedDetail result;
+  result.download_speed_kbps = input->download_speed_kbps;
+  result.upload_speed_kbps = input->upload_speed_kbps;
   return result;
 }
 
@@ -266,6 +306,23 @@ cx_diag::HardwarePresenceStatus Convert(
       return cx_diag::HardwarePresenceStatus::kNotMatched;
     case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kNotConfigured:
       return cx_diag::HardwarePresenceStatus::kNotConfigured;
+  }
+  NOTREACHED_NORETURN();
+}
+
+cx_diag::NetworkBandwidthRoutineRunningType Convert(
+    crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type
+        input) {
+  switch (input) {
+    case crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type::
+        kUnmappedEnumField:
+      return cx_diag::NetworkBandwidthRoutineRunningType::kNone;
+    case crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type::
+        kDownload:
+      return cx_diag::NetworkBandwidthRoutineRunningType::kDownload;
+    case crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type::
+        kUpload:
+      return cx_diag::NetworkBandwidthRoutineRunningType::kUpload;
   }
   NOTREACHED_NORETURN();
 }

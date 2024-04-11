@@ -66,6 +66,14 @@ bool PopulateFanRoutineArguments(
   return true;
 }
 
+bool PopulateNetworkBandwidthRoutineArguments(
+    const cx_diag::CreateNetworkBandwidthRoutineArguments& cx_args,
+    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
+  out = crosapi::TelemetryDiagnosticRoutineArgument::NewNetworkBandwidth(
+      crosapi::TelemetryDiagnosticNetworkBandwidthRoutineArgument::New());
+  return true;
+}
+
 }  // namespace
 
 bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
@@ -308,6 +316,12 @@ ConvertRoutineArgumentsUnion(
   if (extension_union.fan) {
     if (result ||
         !PopulateFanRoutineArguments(extension_union.fan.value(), result)) {
+      return std::nullopt;
+    }
+  }
+  if (extension_union.network_bandwidth) {
+    if (result || !PopulateNetworkBandwidthRoutineArguments(
+                      extension_union.network_bandwidth.value(), result)) {
       return std::nullopt;
     }
   }

@@ -128,9 +128,15 @@ struct TelemetryDiagnosticLedLitUpRoutineArgument {
   TelemetryDiagnosticLedColor color@1;
 };
 
+// This routine checks the network bandwidth and reports the speed info.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct TelemetryDiagnosticNetworkBandwidthRoutineArgument {};
+
 // Argument types for the possible routines the routine control API can create.
 //
-// NextMinVersion: 5, NextIndex: 5
+// NextMinVersion: 6, NextIndex: 6
 [Stable, Extensible]
 union TelemetryDiagnosticRoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
@@ -144,6 +150,9 @@ union TelemetryDiagnosticRoutineArgument {
   [MinVersion=3] TelemetryDiagnosticFanRoutineArgument fan@3;
   // Arguments to create a LED lit up routine.
   [MinVersion=4] TelemetryDiagnosticLedLitUpRoutineArgument led_lit_up@4;
+  // Arguments to create a network bandwidth routine.
+  [MinVersion=5]
+  TelemetryDiagnosticNetworkBandwidthRoutineArgument network_bandwidth@5;
 };
 
 // Routine has been initialized but not yet started.
@@ -152,11 +161,48 @@ union TelemetryDiagnosticRoutineArgument {
 [Stable]
 struct TelemetryDiagnosticRoutineStateInitialized {};
 
+// Running info regarding network bandwidth routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo {
+  // The type of test that routine is running.
+  //
+  // NextMinVersion: 1, NextIndex: 3
+  [Stable, Extensible]
+  enum Type {
+    [Default] kUnmappedEnumField = 0,
+    // Routine is running download test.
+    kDownload = 1,
+    // Routine is running upload test.
+    kUpload = 2,
+  };
+  Type type@0;
+
+  // The current network speed in kbit/s.
+  double speed_kbps@1;
+};
+
+// Routine running info. Note that not every routine provides info during the
+// running state.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+union TelemetryDiagnosticRoutineRunningInfo {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedArgument @0;
+  // Running info of network bandwidth routine.
+  TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo network_bandwidth@1;
+};
+
 // Routine is currently running.
 //
-// NextMinVersion: 1, NextIndex: 0
+// NextMinVersion: 2, NextIndex: 1
 [Stable]
-struct TelemetryDiagnosticRoutineStateRunning {};
+struct TelemetryDiagnosticRoutineStateRunning {
+  [MinVersion=1] TelemetryDiagnosticRoutineRunningInfo? info@0;
+};
 
 // Details to reply to a routine requesting to check the LED lit up state.
 //
@@ -378,9 +424,20 @@ struct TelemetryDiagnosticFanRoutineDetail {
   TelemetryDiagnosticHardwarePresenceStatus fan_count_status@2;
 };
 
+// Details regarding network bandwidth routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryDiagnosticNetworkBandwidthRoutineDetail {
+  // Average download speed in kbit/s.
+  double download_speed_kbps@0;
+  // Average upload speed in kbit/s.
+  double upload_speed_kbps@1;
+};
+
 // Details about a finished routine.
 //
-// NextMinVersion: 4, NextIndex: 4
+// NextMinVersion: 5, NextIndex: 5
 [Stable, Extensible]
 union TelemetryDiagnosticRoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
@@ -392,6 +449,9 @@ union TelemetryDiagnosticRoutineDetail {
   [MinVersion=2] TelemetryDiagnosticVolumeButtonRoutineDetail volume_button@2;
   // Details of a completed fan routine.
   [MinVersion=3] TelemetryDiagnosticFanRoutineDetail fan@3;
+  // Details of a completed network bandwidth routine.
+  [MinVersion=4]
+  TelemetryDiagnosticNetworkBandwidthRoutineDetail network_bandwidth@4;
 };
 
 // Information about a finished routine.

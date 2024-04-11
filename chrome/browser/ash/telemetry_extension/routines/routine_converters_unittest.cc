@@ -95,6 +95,16 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertNetworkBandwidthRoutineArgumentPtr) {
+  auto input =
+      crosapi::TelemetryDiagnosticNetworkBandwidthRoutineArgument::New();
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertUnrecognizedRoutineInquiryReplyPtr) {
   auto input =
       crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
@@ -349,6 +359,19 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticNetworkBandwidthRoutineDetailPtr) {
+  auto input = healthd::NetworkBandwidthRoutineDetail::New();
+  input->download_speed_kbps = 123.0;
+  input->upload_speed_kbps = 456.0;
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->download_speed_kbps, 123.0);
+  EXPECT_EQ(result->upload_speed_kbps, 456.0);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertTelemetryDiagnosticRoutineDetailPtr) {
   EXPECT_EQ(
       ConvertRoutinePtr(healthd::RoutineDetail::NewUnrecognizedArgument(true)),
@@ -363,6 +386,12 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
                 healthd::FanRoutineDetail::New())),
             crosapi::TelemetryDiagnosticRoutineDetail::NewFan(
                 crosapi::TelemetryDiagnosticFanRoutineDetail::New()));
+
+  EXPECT_EQ(
+      ConvertRoutinePtr(healthd::RoutineDetail::NewNetworkBandwidth(
+          healthd::NetworkBandwidthRoutineDetail::New())),
+      crosapi::TelemetryDiagnosticRoutineDetail::NewNetworkBandwidth(
+          crosapi::TelemetryDiagnosticNetworkBandwidthRoutineDetail::New()));
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
@@ -430,6 +459,36 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
   EXPECT_EQ(result->state_union,
             crosapi::TelemetryDiagnosticRoutineStateUnion::NewRunning(
                 crosapi::TelemetryDiagnosticRoutineStateRunning::New()));
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticRoutineRunningInfoPtr) {
+  EXPECT_EQ(
+      ConvertRoutinePtr(
+          healthd::RoutineRunningInfo::NewUnrecognizedArgument(true)),
+      crosapi::TelemetryDiagnosticRoutineRunningInfo::NewUnrecognizedArgument(
+          true));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineRunningInfo::NewNetworkBandwidth(
+                healthd::NetworkBandwidthRoutineRunningInfo::New())),
+            crosapi::TelemetryDiagnosticRoutineRunningInfo::NewNetworkBandwidth(
+                crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::
+                    New()));
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticNetworkBandwidthRoutineRunningInfoPtr) {
+  auto input = healthd::NetworkBandwidthRoutineRunningInfo::New();
+  input->type = healthd::NetworkBandwidthRoutineRunningInfo::Type::kDownload;
+  input->speed_kbps = 100.0;
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->type,
+            crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::
+                Type::kDownload);
+  EXPECT_EQ(result->speed_kbps, 100.0);
 }
 
 }  // namespace ash::converters

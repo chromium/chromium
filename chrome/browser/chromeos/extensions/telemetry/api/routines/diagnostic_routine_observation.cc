@@ -80,6 +80,9 @@ std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
           cx_diag::OnFanRoutineFinished::kEventName,
           base::Value::List().Append(finished_info.ToValue()), browser_context);
     }
+    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kNetworkBandwidth:
+      // No need to support legacy finished events for newer routines.
+      return nullptr;
   }
   NOTREACHED_NORETURN();
 }

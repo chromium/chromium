@@ -374,14 +374,19 @@ extension-event based interface in M119. The interface is described in
 | buttonType | VolumeButtonType | The volume button to be tested |
 | timeoutSeconds | number | Length of time to listen to the volume button events. The value should be positive and less or equal to 600 seconds |
 
+### CreateNetworkBandwidthRoutineArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+
 ### CreateRoutineArgumentsUnion
 This is a union type. Exactly one field is set.
 
-| Property Name | Type | Released in Chrome version | Description |
------------- | ------- | ----------- | ----------- |
-| memory | CreateMemoryRoutineArguments | M125 | Arguments to create a memory routine |
-| volumeButton | CreateVolumeButtonRoutineArguments | M125 | Arguments to create a volume button routine |
-| fan | CreateFanRoutineArguments | M125 | Arguments to create a fan routine |
+| Property Name | Type | Released in Chrome version | Description | Additional permission needed to access |
+------------ | ------- | ----------- | ----------- | ----------- |
+| memory | CreateMemoryRoutineArguments | M125 | Arguments to create a memory routine | None |
+| volumeButton | CreateVolumeButtonRoutineArguments | M125 | Arguments to create a volume button routine | None |
+| fan | CreateFanRoutineArguments | M125 | Arguments to create a fan routine | None |
+| networkBandwidth | CreateNetworkBandwidthRoutineArguments | M125 | Arguments to create a network bandwidth routine | `os.diagnostics.network_info_mlab` |
 
 ### CreateRoutineResponse
 | Property Name | Type | Description |

@@ -15,6 +15,7 @@
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1102,6 +1103,119 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
         });
 
         const response = await chrome.os.diagnostics.createFanRoutine({
+        });
+        chrome.test.assertTrue(response !== undefined);
+        resolver(response.uuid);
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTest,
+    CreateNetworkBandwidthRoutineWithoutFeatureFlagUnrecognized) {
+  fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
+    auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
+        crosapi::TelemetryDiagnosticRoutineArgument::Tag::
+            kUnrecognizedArgument);
+    ASSERT_TRUE(control);
+  }));
+
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function createNetworkBandwidthRoutineUnrecognized() {
+        const result = await chrome.os.diagnostics.createRoutine({
+          networkBandwidth: {},
+        });
+
+        chrome.test.assertTrue(result !== undefined);
+        chrome.test.succeed();
+      }
+    ]);
+
+  )");
+}
+
+class PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest
+    : public TelemetryExtensionDiagnosticsApiV2BrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest,
+    CreateNetworkBandwidthRoutineWithFeatureFlagSuccess) {
+  fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
+    auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
+        crosapi::TelemetryDiagnosticRoutineArgument::Tag::kNetworkBandwidth);
+    ASSERT_TRUE(control);
+
+    auto network_bandwidth_detail =
+        crosapi::TelemetryDiagnosticNetworkBandwidthRoutineDetail::New();
+    network_bandwidth_detail->download_speed_kbps = 123.0;
+    network_bandwidth_detail->upload_speed_kbps = 456.0;
+
+    auto finished_state =
+        crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+    finished_state->detail =
+        crosapi::TelemetryDiagnosticRoutineDetail::NewNetworkBandwidth(
+            std::move(network_bandwidth_detail));
+    finished_state->has_passed = true;
+
+    auto state = crosapi::TelemetryDiagnosticRoutineState::New();
+    state->state_union =
+        crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
+            std::move(finished_state));
+
+    control->SetState(std::move(state));
+  }));
+
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function createNetworkBandwidthRoutine() {
+        let resolver;
+        // Set later once the routine was created.
+        var uuid = new Promise((resolve) => {
+          resolver = resolve;
+        });
+
+
+        let onInitCalled = false;
+        chrome.os.diagnostics.onRoutineInitialized.addListener(
+          async (status) => {
+          chrome.test.assertEq(status.uuid, await uuid);
+          onInitCalled = true;
+        });
+
+        // Only resolve the test once we got the final event.
+        chrome.os.diagnostics.onRoutineFinished.addListener(
+          async (status) => {
+          chrome.test.assertEq(status, {
+            "detail": {
+              "networkBandwidth": {
+                "downloadSpeedKbps": 123.0,
+                "uploadSpeedKbps": 456.0
+              }
+            },
+            "hasPassed": true,
+            "uuid": await uuid
+          });
+          chrome.test.assertTrue(onInitCalled);
+          chrome.test.succeed();
+        });
+
+        const response = await chrome.os.diagnostics.createRoutine({
+          networkBandwidth: {},
         });
         chrome.test.assertTrue(response !== undefined);
         resolver(response.uuid);

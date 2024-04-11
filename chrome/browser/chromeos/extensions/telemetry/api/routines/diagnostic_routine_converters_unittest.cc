@@ -44,6 +44,40 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineRunningInfo) {
 
   ASSERT_TRUE(result.percentage.has_value());
   EXPECT_EQ(static_cast<uint32_t>(*result.percentage), kPercentage);
+
+  EXPECT_FALSE(result.info.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     NetworkBandwidthRoutineRunningInfo) {
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
+  constexpr uint32_t kPercentage = 50;
+
+  auto running_info =
+      crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::New();
+  running_info->type = crosapi::
+      TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type::kDownload;
+  running_info->speed_kbps = 100.0;
+
+  auto input = crosapi::TelemetryDiagnosticRoutineStateRunning::New();
+  input->info =
+      crosapi::TelemetryDiagnosticRoutineRunningInfo::NewNetworkBandwidth(
+          std::move(running_info));
+
+  auto result = ConvertPtr(std::move(input), kUuid, kPercentage);
+
+  ASSERT_TRUE(result.uuid.has_value());
+  EXPECT_EQ(*result.uuid, kUuid.AsLowercaseString());
+
+  ASSERT_TRUE(result.percentage.has_value());
+  EXPECT_EQ(static_cast<uint32_t>(*result.percentage), kPercentage);
+
+  ASSERT_TRUE(result.info.has_value());
+  ASSERT_TRUE(result.info->network_bandwidth.has_value());
+
+  EXPECT_EQ(result.info->network_bandwidth->type,
+            cx_diag::NetworkBandwidthRoutineRunningType::kDownload);
+  EXPECT_EQ(result.info->network_bandwidth->speed_kbps, 100.0);
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingInfo) {
@@ -306,6 +340,36 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
 
   EXPECT_THAT(result.detail->fan->fan_count_status,
               cx_diag::HardwarePresenceStatus::kMatched);
+}
+
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     RoutineFinishedInfoWithNetworkBandwidthDetail) {
+  constexpr bool kHasPassed = true;
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
+
+  auto detail =
+      crosapi::TelemetryDiagnosticNetworkBandwidthRoutineDetail::New();
+  detail->download_speed_kbps = 123.0;
+  detail->upload_speed_kbps = 456.0;
+
+  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+  input->detail =
+      crosapi::TelemetryDiagnosticRoutineDetail::NewNetworkBandwidth(
+          std::move(detail));
+
+  auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
+
+  ASSERT_TRUE(result.uuid.has_value());
+  EXPECT_EQ(*result.uuid, kUuid.AsLowercaseString());
+
+  ASSERT_TRUE(result.has_passed.has_value());
+  EXPECT_EQ(*result.has_passed, kHasPassed);
+
+  ASSERT_TRUE(result.detail.has_value());
+  ASSERT_TRUE(result.detail->network_bandwidth.has_value());
+
+  EXPECT_EQ(result.detail->network_bandwidth->download_speed_kbps, 123.0);
+  EXPECT_EQ(result.detail->network_bandwidth->upload_speed_kbps, 456.0);
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, ExceptionReason) {

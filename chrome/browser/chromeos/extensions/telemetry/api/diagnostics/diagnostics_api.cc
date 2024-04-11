@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -23,6 +24,7 @@
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -59,6 +61,11 @@ ParseRoutineArgumentSupportResult(
     }
   }
   NOTREACHED_NORETURN();
+}
+
+bool IsPendingApprovalRoutine(
+    const crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr& arg) {
+  return arg->is_network_bandwidth();
 }
 
 }  // namespace
@@ -518,6 +525,14 @@ void OsDiagnosticsCreateRoutineFunction::RunIfAllowed() {
     return;
   }
 
+  // Block unreleased features behind the feature flag.
+  if (IsPendingApprovalRoutine(mojo_arg.value()) &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kTelemetryExtensionPendingApprovalApi)) {
+    mojo_arg = crosapi::mojom::TelemetryDiagnosticRoutineArgument::
+        NewUnrecognizedArgument(false);
+  }
+
   auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
   auto result = routines_manager->CreateRoutine(extension_id(),
                                                 std::move(mojo_arg.value()));
@@ -722,6 +737,14 @@ void OsDiagnosticsIsRoutineArgumentSupportedFunction::RunIfAllowed() {
   if (!mojo_arg.has_value()) {
     RespondWithError("Routine arguments are invalid.");
     return;
+  }
+
+  // Block unreleased features behind the feature flag.
+  if (IsPendingApprovalRoutine(mojo_arg.value()) &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kTelemetryExtensionPendingApprovalApi)) {
+    mojo_arg = crosapi::mojom::TelemetryDiagnosticRoutineArgument::
+        NewUnrecognizedArgument(false);
   }
 
   auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
