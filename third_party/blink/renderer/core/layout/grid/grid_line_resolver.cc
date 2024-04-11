@@ -208,22 +208,17 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
   // to be in area defined by `subgridded_columns` and `subgridded_rows`.
   auto ClampSubgridAreas = [](NamedGridAreaMap& subgrid_map,
                               const NamedGridAreaMap& style_map,
-                              GridArea subgrid_span) -> void {
-    const wtf_size_t subgrid_column_span =
-        subgrid_span.columns.IsTranslatedDefinite()
-            ? subgrid_span.columns.IntegerSpan()
-            : 1;
-    const wtf_size_t subgrid_row_span = subgrid_span.rows.IsTranslatedDefinite()
-                                            ? subgrid_span.rows.IntegerSpan()
-                                            : 1;
+                              const GridArea& subgrid_span) {
     for (const auto& pair : style_map) {
-      auto position = pair.value;
+      auto clamped_area = pair.value;
 
-      position.columns.Intersect(0, subgrid_column_span);
-      position.rows.Intersect(0, subgrid_row_span);
-
-      GridArea clamped_area(position.rows, position.columns);
-      subgrid_map.Set(pair.key, clamped_area);
+      if (subgrid_span.columns.IsTranslatedDefinite()) {
+        clamped_area.columns.Intersect(0, subgrid_span.columns.IntegerSpan());
+      }
+      if (subgrid_span.rows.IsTranslatedDefinite()) {
+        clamped_area.rows.Intersect(0, subgrid_span.rows.IntegerSpan());
+      }
+      subgrid_map.Set(pair.key, std::move(clamped_area));
     }
   };
 
