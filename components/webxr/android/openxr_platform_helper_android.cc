@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "content/public/browser/web_contents.h"
 #include "components/webxr/android/webxr_utils.h"
 #include "components/webxr/android/xr_session_coordinator.h"
 #include "content/public/browser/web_contents.h"
@@ -37,8 +38,11 @@ void OpenXrPlatformHelperAndroid::GetPlatformCreateInfo(
   auto activity_ready_callback =
       base::BindOnce(&OpenXrPlatformHelperAndroid::OnXrActivityReady,
                      base::Unretained(this), std::move(result_callback));
-  session_coordinator_->RequestXrSession(std::move(activity_ready_callback),
-                                         std::move(shutdown_callback));
+  session_coordinator_->RequestXrSession(
+      create_info.render_process_id,
+      create_info.render_frame_id,
+      std::move(activity_ready_callback),
+      std::move(shutdown_callback));
 }
 
 void OpenXrPlatformHelperAndroid::OnXrActivityReady(
