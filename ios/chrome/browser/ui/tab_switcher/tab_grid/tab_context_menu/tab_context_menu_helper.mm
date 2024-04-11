@@ -128,74 +128,60 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     return @[];
   }
 
-  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
+  UIMenuElement* pinAction;
+  UIMenuElement* shareAction;
+  UIMenuElement* addToReadingListAction;
+  UIAction* bookmarkAction;
+  UIMenuElement* selectAction;
+  UIAction* closeTabAction;
 
   const BOOL isPinActionEnabled = IsPinnedTabsEnabled() && !self.incognito &&
                                   !inactive && !tabSearchScenario;
   if (isPinActionEnabled) {
     if (pinned) {
-      [menuElements addObject:[actionFactory actionToUnpinTabWithBlock:^{
-                      [self.contextMenuDelegate unpinTabWithIdentifier:tabID];
-                    }]];
+      pinAction = [actionFactory actionToUnpinTabWithBlock:^{
+        [self.contextMenuDelegate unpinTabWithIdentifier:tabID];
+      }];
     } else {
-      [menuElements addObject:[actionFactory actionToPinTabWithBlock:^{
-                      [self.contextMenuDelegate pinTabWithIdentifier:tabID];
-                    }]];
+      pinAction = [actionFactory actionToPinTabWithBlock:^{
+        [self.contextMenuDelegate pinTabWithIdentifier:tabID];
+      }];
     }
-  }
-
-  if (IsTabGroupInGridEnabled()) {
-    std::set<const TabGroup*> groups =
-        GetAllGroupsForBrowserState(_browserState);
-
-    auto actionResult = ^(const TabGroup* group) {
-      [weakSelf handleAddWebState:tabID toGroup:group];
-    };
-    UIMenuElement* addTabToGroupMenu =
-        [actionFactory menuToAddTabToGroupWithGroups:groups
-                                        numberOfTabs:1
-                                               block:actionResult];
-    [menuElements addObject:addTabToGroupMenu];
   }
 
   if (!IsURLNewTabPage(item.URL)) {
-    [menuElements addObject:[actionFactory actionToShareWithBlock:^{
-                    [self.contextMenuDelegate
-                        shareURL:item.URL
-                           title:item.title
-                        scenario:SharingScenario::TabGridItem
-                        fromView:cell];
-                  }]];
+    shareAction = [actionFactory actionToShareWithBlock:^{
+      [self.contextMenuDelegate shareURL:item.URL
+                                   title:item.title
+                                scenario:SharingScenario::TabGridItem
+                                fromView:cell];
+    }];
 
     if (item.URL.SchemeIsHTTPOrHTTPS()) {
-      [menuElements
-          addObject:[actionFactory actionToAddToReadingListWithBlock:^{
+      addToReadingListAction =
+          [actionFactory actionToAddToReadingListWithBlock:^{
             [self.contextMenuDelegate addToReadingListURL:item.URL
                                                     title:item.title];
-          }]];
+          }];
     }
 
-    UIAction* bookmarkAction;
-    const BOOL currentlyBookmarked = [self isTabItemBookmarked:item];
-    if (currentlyBookmarked) {
-      bookmarkAction = [actionFactory actionToEditBookmarkWithBlock:^{
-        [self.contextMenuDelegate editBookmarkWithURL:item.URL];
-      }];
-    } else {
-      bookmarkAction = [actionFactory actionToBookmarkWithBlock:^{
-        [self.contextMenuDelegate bookmarkURL:item.URL title:item.title];
-      }];
-    }
-    // Bookmarking can be disabled from prefs (from an enterprise policy),
-    // if that's the case grey out the option in the menu.
     if (_browserState) {
+      const BOOL currentlyBookmarked = [self isTabItemBookmarked:item];
+      if (currentlyBookmarked) {
+        bookmarkAction = [actionFactory actionToEditBookmarkWithBlock:^{
+          [self.contextMenuDelegate editBookmarkWithURL:item.URL];
+        }];
+      } else {
+        bookmarkAction = [actionFactory actionToBookmarkWithBlock:^{
+          [self.contextMenuDelegate bookmarkURL:item.URL title:item.title];
+        }];
+      }
+      // Bookmarking can be disabled from prefs (from an enterprise policy),
+      // if that's the case grey out the option in the menu.
       BOOL isEditBookmarksEnabled = _browserState->GetPrefs()->GetBoolean(
           bookmarks::prefs::kEditBookmarksEnabled);
       if (!isEditBookmarksEnabled && bookmarkAction) {
         bookmarkAction.attributes = UIMenuElementAttributesDisabled;
-      }
-      if (bookmarkAction) {
-        [menuElements addObject:bookmarkAction];
       }
     }
   }
@@ -207,12 +193,11 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
       scenario == kMenuScenarioHistogramPinnedTabsEntry ||
       scenario == kMenuScenarioHistogramInactiveTabsEntry;
   if (!scenarioDisablesSelection) {
-    [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
-                    [self.contextMenuDelegate selectTabs];
-                  }]];
+    selectAction = [actionFactory actionToSelectTabsWithBlock:^{
+      [self.contextMenuDelegate selectTabs];
+    }];
   }
 
-  UIAction* closeTabAction;
   ProceduralBlock closeTabActionBlock = ^{
     [self.contextMenuDelegate closeTabWithIdentifier:tabID
                                            incognito:self.incognito];
@@ -226,7 +211,79 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
         [actionFactory actionToCloseRegularTabWithBlock:closeTabActionBlock];
   }
 
-  [menuElements addObject:closeTabAction];
+  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
+
+  if (IsTabGroupInGridEnabled()) {
+    std::set<const TabGroup*> groups =
+        GetAllGroupsForBrowserState(_browserState);
+
+    auto actionResult = ^(const TabGroup* group) {
+      [weakSelf handleAddWebState:tabID toGroup:group];
+    };
+    UIMenuElement* addToGroupAction =
+        [actionFactory menuToAddTabToGroupWithGroups:groups
+                                        numberOfTabs:1
+                                               block:actionResult];
+    if (shareAction) {
+      UIMenu* shareMenu = [UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:@[ shareAction ]];
+      [menuElements addObject:shareMenu];
+    }
+    NSArray<UIMenuElement*>* tabActions =
+        pinAction ? @[ pinAction, addToGroupAction ] : @[ addToGroupAction ];
+    UIMenu* tabMenu = [UIMenu menuWithTitle:@""
+                                      image:nil
+                                 identifier:nil
+                                    options:UIMenuOptionsDisplayInline
+                                   children:tabActions];
+    [menuElements addObject:tabMenu];
+
+    NSMutableArray<UIMenuElement*>* collectionsActions = [NSMutableArray array];
+    if (addToReadingListAction) {
+      [collectionsActions addObject:addToReadingListAction];
+    }
+    if (bookmarkAction) {
+      [collectionsActions addObject:bookmarkAction];
+    }
+    if (selectAction) {
+      [collectionsActions addObject:selectAction];
+    }
+    if (closeTabAction) {
+      [collectionsActions addObject:closeTabAction];
+    }
+
+    if (collectionsActions.count > 0) {
+      UIMenu* collectionsMenu = [UIMenu menuWithTitle:@""
+                                                image:nil
+                                           identifier:nil
+                                              options:UIMenuOptionsDisplayInline
+                                             children:collectionsActions];
+      [menuElements addObject:collectionsMenu];
+    }
+
+  } else {
+    if (pinAction) {
+      [menuElements addObject:pinAction];
+    }
+    if (shareAction) {
+      [menuElements addObject:shareAction];
+    }
+    if (addToReadingListAction) {
+      [menuElements addObject:addToReadingListAction];
+    }
+    if (bookmarkAction) {
+      [menuElements addObject:bookmarkAction];
+    }
+    if (selectAction) {
+      [menuElements addObject:selectAction];
+    }
+    if (closeTabAction) {
+      [menuElements addObject:closeTabAction];
+    }
+  }
 
   return menuElements;
 }
