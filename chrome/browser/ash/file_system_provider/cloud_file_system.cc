@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_system_provider/cloud_file_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/queue.h"
 #include "url/origin.h"
@@ -73,26 +74,27 @@ std::ostream& operator<<(std::ostream& out,
   NOTREACHED_NORETURN() << "Unknown ChangeType: " << type;
 }
 
+std::ostream& operator<<(std::ostream& out, CloudFileInfo* cloud_file_info) {
+  if (!cloud_file_info) {
+    return out << "none";
+  }
+  return out << "{version_tag = '" << cloud_file_info->version_tag << "'}";
+}
+
 std::ostream& operator<<(std::ostream& out,
                          ProvidedFileSystemObserver::Changes* changes) {
   if (!changes) {
     return out << "none";
   }
   for (size_t i = 0; i < changes->size(); ++i) {
-    const auto& [entry_path, change_type] = (*changes)[i];
-    out << entry_path << ": " << change_type;
+    const auto& [entry_path, change_type, cloud_file_info] = (*changes)[i];
+    out << entry_path << ": change_type = " << change_type
+        << ", cloud_file_info = " << cloud_file_info.get();
     if (i < changes->size() - 1) {
       out << ", ";
     }
   }
   return out;
-}
-
-std::ostream& operator<<(std::ostream& out, CloudFileInfo* cloud_file_info) {
-  if (!cloud_file_info) {
-    return out << "none";
-  }
-  return out << "{version_tag = '" << cloud_file_info->version_tag << "'}";
 }
 
 const std::string GetVersionTag(CloudFileInfo* cloud_file_info) {

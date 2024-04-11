@@ -90,12 +90,23 @@ crosapi::mojom::FSPChangeType ParseChangeType(
   return crosapi::mojom::FSPChangeType::kChanged;
 }
 
+crosapi::mojom::CloudFileInfoPtr ParseCloudFileInfo(
+    const std::optional<api::file_system_provider::CloudFileInfo>&
+        cloud_file_info) {
+  if (!cloud_file_info.has_value()) {
+    return nullptr;
+  }
+  return crosapi::mojom::CloudFileInfo::New(
+      cloud_file_info.value().version_tag);
+}
+
 // Convert the change from the IDL type to mojom type.
 crosapi::mojom::FSPChangePtr ParseChange(
     const api::file_system_provider::Change& change) {
   crosapi::mojom::FSPChangePtr result = crosapi::mojom::FSPChange::New();
   result->path = base::FilePath::FromUTF8Unsafe(change.entry_path);
   result->type = ParseChangeType(change.change_type);
+  result->cloud_file_info = ParseCloudFileInfo(change.cloud_file_info);
   return result;
 }
 

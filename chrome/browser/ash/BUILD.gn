@@ -1261,6 +1261,8 @@ source_set("ash") {
     "file_manager/zip_io_task.cc",
     "file_manager/zip_io_task.h",
     "file_system_provider/abort_callback.h",
+    "file_system_provider/cloud_file_info.cc",
+    "file_system_provider/cloud_file_info.h",
     "file_system_provider/cloud_file_system.cc",
     "file_system_provider/cloud_file_system.h",
     "file_system_provider/content_cache/cache_file_context.cc",

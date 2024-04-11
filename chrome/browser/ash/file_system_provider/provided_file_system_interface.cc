@@ -14,15 +14,6 @@ bool CloudIdentifier::operator==(const CloudIdentifier& other) const {
   return provider_name == other.provider_name && id == other.id;
 }
 
-CloudFileInfo::CloudFileInfo(const std::string& version_tag)
-    : version_tag(version_tag) {}
-
-CloudFileInfo::~CloudFileInfo() = default;
-
-bool CloudFileInfo::operator==(const CloudFileInfo& other) const {
-  return version_tag == other.version_tag;
-}
-
 EntryMetadata::EntryMetadata() = default;
 
 EntryMetadata::~EntryMetadata() = default;

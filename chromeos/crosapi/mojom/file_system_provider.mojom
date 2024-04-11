@@ -103,9 +103,16 @@ enum FSPChangeType {
 };
 
 [Stable]
+struct CloudFileInfo {
+  string? version_tag@0;
+};
+
+[Stable]
 struct FSPChange {
+  // Next MinVersion: 2
   FSPChangeType type@0;
   mojo_base.mojom.FilePath path@1;
+  [MinVersion=1] CloudFileInfo? cloud_file_info@2;
 };
 
 [Stable, Extensible]

@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
+#include "chrome/browser/ash/file_system_provider/cloud_file_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_observer.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 #include "storage/browser/file_system/async_file_util.h"
@@ -43,22 +44,6 @@ struct CloudIdentifier {
 
   CloudIdentifier(const std::string& provider_name, const std::string& id);
   bool operator==(const CloudIdentifier&) const;
-};
-
-// Represents version information relating to a particular file in cloud
-// storage.
-struct CloudFileInfo {
-  std::string version_tag;
-
-  explicit CloudFileInfo(const std::string& version_tag);
-
-  CloudFileInfo(const CloudFileInfo&) = delete;
-  CloudFileInfo& operator=(const CloudFileInfo&) = delete;
-
-  ~CloudFileInfo();
-
-  // Enables comparison for unit tests.
-  bool operator==(const CloudFileInfo&) const;
 };
 
 // Represents metadata for either a file or a directory.

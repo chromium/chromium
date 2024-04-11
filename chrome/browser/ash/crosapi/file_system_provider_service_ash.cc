@@ -8,6 +8,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ash/file_system_provider/cloud_file_info.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -203,10 +204,23 @@ storage::WatcherManager::ChangeType ParseChangeType(mojom::FSPChangeType type) {
   }
 }
 
+std::unique_ptr<ash::file_system_provider::CloudFileInfo> ParseCloudFileInfo(
+    mojom::CloudFileInfoPtr cloud_file_info) {
+  if (cloud_file_info.is_null()) {
+    return nullptr;
+  }
+  if (!cloud_file_info->version_tag.has_value()) {
+    return nullptr;
+  }
+  return std::make_unique<ash::file_system_provider::CloudFileInfo>(
+      cloud_file_info->version_tag.value());
+}
+
 // Convert the change from the mojom type to a native type.
 ProvidedFileSystemObserver::Change ParseChange(mojom::FSPChangePtr change) {
   return ProvidedFileSystemObserver::Change(
-      change->path, ParseChangeType(change->type));
+      change->path, ParseChangeType(change->type),
+      ParseCloudFileInfo(std::move(change->cloud_file_info)));
 }
 
 // Converts a list of child changes from the mojom type to a native type.

@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ash/file_system_provider/cloud_file_info.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 #include "storage/browser/file_system/watcher_manager.h"
 
@@ -28,7 +29,8 @@ class ProvidedFileSystemObserver {
   // Describes a change related to a watched entry.
   struct Change {
     Change(base::FilePath entry_path,
-           storage::WatcherManager::ChangeType change_type);
+           storage::WatcherManager::ChangeType change_type,
+           std::unique_ptr<CloudFileInfo> cloud_file_info);
 
     // Not copyable.
     Change(const Change&) = delete;
@@ -41,6 +43,7 @@ class ProvidedFileSystemObserver {
 
     base::FilePath entry_path;
     storage::WatcherManager::ChangeType change_type;
+    std::unique_ptr<CloudFileInfo> cloud_file_info;
   };
 
   // Called when a watched entry is changed, including removals. |callback|
