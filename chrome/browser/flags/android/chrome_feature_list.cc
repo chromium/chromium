@@ -124,7 +124,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kPushMessagingDisallowSenderIDs,
     &features::kPwaUpdateDialogForIcon,
     &features::kQuietNotificationPrompts,
-    &features::kToolbarUseHardwareBitmapDraw,
     &features::kWebNfc,
     &features::kIncognitoNtpRevamp,
     &feature_engagement::kIPHTabSwitcherButtonFeature,

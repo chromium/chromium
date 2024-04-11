@@ -93,7 +93,7 @@ public class ToolbarControlContainerTest {
 
     private void makeAdapter() {
         mAdapter =
-                new ToolbarViewResourceAdapter(mToolbarContainer, false) {
+                new ToolbarViewResourceAdapter(mToolbarContainer) {
                     @Override
                     public void onResourceRequested() {
                         // No-op normal functionality and just count calls instead.

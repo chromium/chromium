@@ -479,7 +479,6 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
-    public static final String TOOLBAR_USE_HARDWARE_BITMAP_DRAW = "ToolbarUseHardwareBitmapDraw";
     public static final String TOTALLY_EDGE_TO_EDGE = "TotallyEdgeToEdge";
     public static final String TRACKING_PROTECTION_NOTICE_REQUEST_TRACKING =
             "TrackingProtectionNoticeRequestTracking";
@@ -666,8 +665,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTestDefaultDisabled =
             newCachedFlag(TEST_DEFAULT_DISABLED, false);
     public static final CachedFlag sTestDefaultEnabled = newCachedFlag(TEST_DEFAULT_ENABLED, true);
-    public static final CachedFlag sToolbarUseHardwareBitmapDraw =
-            newCachedFlag(TOOLBAR_USE_HARDWARE_BITMAP_DRAW, false);
     public static final CachedFlag sUseChimeAndroidSdk =
             newCachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
@@ -759,7 +756,6 @@ public abstract class ChromeFeatureList {
                     sTabWindowManagerIndexReassignmentActivityInSameTask,
                     sTabWindowManagerIndexReassignmentActivityNotInAppTasks,
                     sTabWindowManagerReportIndicesMismatch,
-                    sToolbarUseHardwareBitmapDraw,
                     sUseChimeAndroidSdk,
                     sUseLibunwindstackNativeUnwinderAndroid,
                     sVerticalAutomotiveBackButtonToolbar);

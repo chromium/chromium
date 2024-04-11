@@ -12,7 +12,6 @@ import android.graphics.Region;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.os.Build;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -277,11 +276,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
 
         @Override
         protected ViewResourceAdapter createResourceAdapter() {
-            boolean useHardwareBitmapDraw = false;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                useHardwareBitmapDraw = ChromeFeatureList.sToolbarUseHardwareBitmapDraw.isEnabled();
-            }
-            return new ToolbarViewResourceAdapter(this, useHardwareBitmapDraw);
+            return new ToolbarViewResourceAdapter(this);
         }
 
         /**
@@ -370,8 +365,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         private int mControlsToken = TokenHolder.INVALID_TOKEN;
 
         /** Builds the resource adapter for the toolbar. */
-        public ToolbarViewResourceAdapter(View toolbarContainer, boolean useHardwareBitmapDraw) {
-            super(toolbarContainer, useHardwareBitmapDraw);
+        public ToolbarViewResourceAdapter(View toolbarContainer) {
+            super(toolbarContainer);
             mToolbarContainer = toolbarContainer;
             mToolbarHairline = mToolbarContainer.findViewById(R.id.toolbar_hairline);
         }

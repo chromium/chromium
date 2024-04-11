@@ -270,10 +270,6 @@ BASE_DECLARE_FEATURE(kToolbarPinning);
 
 bool IsToolbarPinningEnabled();
 
-// Determines how screenshots of the toolbar uses Software or Hardware drawing.
-// Works on Android 10+.
-BASE_DECLARE_FEATURE(kToolbarUseHardwareBitmapDraw);
-
 BASE_DECLARE_FEATURE(kTopChromeWebUIUsesSpareRenderer);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

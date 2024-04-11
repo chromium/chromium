@@ -414,10 +414,6 @@ bool IsToolbarPinningEnabled() {
 }
 #endif
 
-BASE_FEATURE(kToolbarUseHardwareBitmapDraw,
-             "ToolbarUseHardwareBitmapDraw",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether top chrome pages will use the spare renderer if no top
 // chrome renderers are present.
 BASE_FEATURE(kTopChromeWebUIUsesSpareRenderer,

@@ -165,7 +165,6 @@ BASE_DECLARE_FEATURE(kTabWindowManagerIndexReassignmentActivityNotInAppTasks);
 BASE_DECLARE_FEATURE(kTabWindowManagerReportIndicesMismatch);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);
-BASE_DECLARE_FEATURE(kToolbarUseHardwareBitmapDraw);
 BASE_DECLARE_FEATURE(kTotallyEdgeToEdge);
 BASE_DECLARE_FEATURE(kSafetyHub);
 BASE_DECLARE_FEATURE(kStartSurfaceAndroid);
