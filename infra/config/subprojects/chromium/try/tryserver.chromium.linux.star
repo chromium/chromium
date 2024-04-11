@@ -400,6 +400,7 @@ try_.orchestrator_builder(
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
+    use_clang_coverage = True,
 )
 
 try_.compilator_builder(
