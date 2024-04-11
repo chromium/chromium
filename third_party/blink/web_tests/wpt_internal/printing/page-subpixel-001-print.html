@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://www.w3.org/TR/css-page-3/#at-page-rule">
+<link rel="match" href="page-subpixel-001-print-ref.html">
+<meta name="assert" content="The square shouldn't be fuzzy.">
+<style>
+  @page {
+    margin: 0;
+    margin-top: 30.4px;
+    margin-left: 30.4px;
+  }
+  body {
+    margin: 0;
+  }
+</style>
+<div style="border:2px solid; width:60px; height:60px;"></div>

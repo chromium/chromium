@@ -3472,7 +3472,6 @@ crbug.com/964183 external/wpt/css/css-multicol/multicol-width-005.html [ Failure
 crbug.com/481431 external/wpt/css/css-multicol/multicol-zero-height-003.html [ Failure ]
 crbug.com/1191124 external/wpt/css/css-multicol/spanner-fragmentation-012.html [ Failure ]
 crbug.com/1224888 external/wpt/css/css-multicol/spanner-in-opacity.html [ Failure ]
-crbug.com/1494847 external/wpt/css/css-page/layers-002-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/layers-003-print.html [ Failure ]
 crbug.com/1494858 external/wpt/css/css-page/page-name-abspos-002-print.html [ Failure ]
 crbug.com/1494838 external/wpt/css/css-page/page-name-canvas-003-print.html [ Failure ]
@@ -3484,10 +3483,6 @@ crbug.com/1494838 external/wpt/css/css-page/page-name-img-003-print.html [ Failu
 crbug.com/1494838 external/wpt/css/css-page/page-name-img-004-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/page-name-margin-001-print.html [ Failure ]
 crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html [ Failure ]
-crbug.com/1494847 external/wpt/css/css-page/pseudo-first-margin-001-print.html [ Failure ]
-crbug.com/1494847 external/wpt/css/css-page/pseudo-first-margin-002-print.html [ Failure ]
-crbug.com/1494847 external/wpt/css/css-page/pseudo-first-margin-003-print.html [ Failure ]
-crbug.com/1498013 external/wpt/css/css-page/pseudo-first-margin-004-print.html [ Failure ]
 
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-007.tentative.html [ Failure ]
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-009.tentative.html [ Failure ]
