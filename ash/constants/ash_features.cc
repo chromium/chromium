@@ -367,11 +367,6 @@ BASE_FEATURE(kBorealisScaleClientByDPI,
              "BorealisScaleClientByDPI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Use the new WebUI installer instead of views installer.
-BASE_FEATURE(kBorealisWebUIInstaller,
-             "BorealisWebUIInstaller",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kBorealisZinkGlDriver,
              "BorealisZinkGlDriver",
              base::FEATURE_ENABLED_BY_DEFAULT);

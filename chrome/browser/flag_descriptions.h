@@ -439,9 +439,6 @@ extern const char kBorealisProvisionDescription[];
 extern const char kBorealisScaleClientByDPIName[];
 extern const char kBorealisScaleClientByDPIDescription[];
 
-extern const char kBorealisWebUIInstallerName[];
-extern const char kBorealisWebUIInstallerDescription[];
-
 extern const char kBorealisZinkGlDriverName[];
 extern const char kBorealisZinkGlDriverDescription[];
 

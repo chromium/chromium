@@ -3153,8 +3153,6 @@ constexpr char kBorealisPermittedInternalName[] = "borealis-enabled";
 constexpr char kBorealisProvisionInternalName[] = "borealis-provision";
 constexpr char kBorealisScaleClientByDPIInternalName[] =
     "borealis-scale-client-by-dpi";
-constexpr char kBorealisWebUIInstallerInternalName[] =
-    "borealis-web-ui-installer";
 constexpr char kBorealisZinkGlDriverInternalName[] = "borealis-zink-gl-driver";
 constexpr char kClipboardHistoryLongpressInternalName[] =
     "clipboard-history-longpress";
@@ -9199,10 +9197,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBorealisScaleClientByDPIName,
      flag_descriptions::kBorealisScaleClientByDPIDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisScaleClientByDPI)},
-    {kBorealisWebUIInstallerInternalName,
-     flag_descriptions::kBorealisWebUIInstallerName,
-     flag_descriptions::kBorealisWebUIInstallerDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBorealisWebUIInstaller)},
     {kBorealisZinkGlDriverInternalName,
      flag_descriptions::kBorealisZinkGlDriverName,
      flag_descriptions::kBorealisZinkGlDriverDescription, kOsCrOS,
@@ -11413,7 +11407,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
       !strcmp(kBorealisPermittedInternalName, entry.internal_name) ||
       !strcmp(kBorealisProvisionInternalName, entry.internal_name) ||
       !strcmp(kBorealisScaleClientByDPIInternalName, entry.internal_name) ||
-      !strcmp(kBorealisWebUIInstallerInternalName, entry.internal_name) ||
       !strcmp(kBorealisZinkGlDriverInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }

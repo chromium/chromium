@@ -9,9 +9,10 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
-#include "chrome/browser/ui/views/borealis/borealis_installer_view.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -24,7 +25,9 @@ void UserRequestedSteamGameInstall(Profile* profile, uint32_t steam_game_id) {
   bool installed =
       borealis::BorealisService::GetForProfile(profile)->Features().IsEnabled();
   if (!installed) {
-    ShowBorealisInstallerView(profile);
+    borealis::BorealisService::GetForProfile(profile)->AppLauncher().Launch(
+        borealis::kClientAppId,
+        base::DoNothing());
     return;
   }
 

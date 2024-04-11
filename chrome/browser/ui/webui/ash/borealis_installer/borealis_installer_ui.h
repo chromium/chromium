@@ -26,8 +26,6 @@ class BorealisInstallerUIConfig
   BorealisInstallerUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            chrome::kChromeUIBorealisInstallerHost) {}
-
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // The WebUI for chrome://borealis-installer

@@ -735,10 +735,6 @@ const char kBorealisScaleClientByDPIDescription[] =
     "Enable scaling the Steam client according to device DPI. "
     "If enabled this will override the force double scale flag.";
 
-const char kBorealisWebUIInstallerName[] = "Borealis WebUI Installer";
-const char kBorealisWebUIInstallerDescription[] =
-    "Use the new WebUI installer instead of views installer.";
-
 const char kBorealisZinkGlDriverName[] = "Borealis Zink GL Driver";
 const char kBorealisZinkGlDriverDescription[] =
     "Enables zink driver for GL rendering in Borealis. Can be enabled for "

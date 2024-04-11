@@ -34,11 +34,7 @@ void BorealisAppLauncherImpl::Launch(std::string app_id,
   if (!borealis::BorealisService::GetForProfile(profile_)
            ->Features()
            .IsEnabled()) {
-    if (base::FeatureList::IsEnabled(ash::features::kBorealisWebUIInstaller)) {
-      ash::BorealisInstallerDialog::Show(profile_);
-    } else {
-      borealis::ShowBorealisInstallerView(profile_);
-    }
+    ash::BorealisInstallerDialog::Show(profile_);
     std::move(callback).Run(LaunchResult::kSuccess);
     return;
   }

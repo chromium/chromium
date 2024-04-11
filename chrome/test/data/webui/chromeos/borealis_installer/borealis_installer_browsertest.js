@@ -15,11 +15,6 @@ this.BorealisInstallerBrowserTest = class extends PolymerTest {
   get browsePreload() {
     return 'chrome://borealis-installer/';
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['ash::features::kBorealisWebUIInstaller']};
-  }
 };
 
 const tests = [

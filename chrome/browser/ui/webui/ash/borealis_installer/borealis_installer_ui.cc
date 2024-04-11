@@ -20,11 +20,6 @@
 
 namespace ash {
 
-bool BorealisInstallerUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kBorealisWebUIInstaller);
-}
-
 BorealisInstallerUI::BorealisInstallerUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui}, web_ui_(web_ui) {
   // Set up the chrome://borealis-installer source.
