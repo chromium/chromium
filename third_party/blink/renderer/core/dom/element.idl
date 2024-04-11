@@ -143,7 +143,7 @@ dictionary CheckVisibilityOptions {
     readonly attribute long clientHeight;
 
     // Used by both Anchor Positioning and Popover
-    [CEReactions,RuntimeEnabled=CSSAnchorPositioning] attribute Element? anchorElement;
+    [CEReactions,RuntimeEnabled=HTMLAnchorAttribute] attribute Element? anchorElement;
 
     // Non-standard API
     [MeasureAs=ElementScrollIntoViewIfNeeded] void scrollIntoViewIfNeeded(optional boolean centerIfNeeded);

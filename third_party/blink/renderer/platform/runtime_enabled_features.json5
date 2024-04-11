@@ -2023,6 +2023,13 @@
       status: "stable",
       base_feature: "none",
     },
+    // The `anchor` attribute, supported by both anchor positioning and the
+    // popover API.
+    {
+      name: "HTMLAnchorAttribute",
+      status: "experimental",
+      implied_by: ["CSSAnchorPositioning"]
+    },
     // Adds support for the experimental `interesttarget`
     // attributes, as specified in the open-ui "Interest Invokers" explainer.
     // https://open-ui.org/components/interest-invokers.explainer/

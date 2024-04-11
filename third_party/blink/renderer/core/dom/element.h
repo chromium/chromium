@@ -1363,6 +1363,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists.
+  // TODO(crbug.com/40059176) If the HTMLAnchorAttribute feature is disabled,
+  // this will return nullptr;
   Element* anchorElement() const;
   void setAnchorElement(Element*);
 

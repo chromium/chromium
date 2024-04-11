@@ -1235,6 +1235,9 @@ void Element::InterestGained() {
 Element* Element::anchorElement() const {
   // TODO(crbug.com/1425215): Fix GetElementAttribute() for out-of-tree-scope
   // elements, so that we can remove the hack below.
+  if (!RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled()) {
+    return nullptr;
+  }
   if (!IsInTreeScope()) {
     return nullptr;
   }
@@ -1242,6 +1245,7 @@ Element* Element::anchorElement() const {
 }
 
 void Element::setAnchorElement(Element* new_element) {
+  CHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
   SetElementAttribute(html_names::kAnchorAttr, new_element);
   EnsureAnchorElementObserver().Notify();
 }
