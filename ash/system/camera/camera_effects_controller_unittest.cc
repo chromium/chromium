@@ -249,7 +249,7 @@ TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
         cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kPortraitRelight));
-    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
+    EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundReplace));
   }
 
@@ -261,7 +261,7 @@ TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
         cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kPortraitRelight));
-    EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
+    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundReplace));
   }
 
@@ -274,21 +274,20 @@ TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
         cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kPortraitRelight));
-    EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
+    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundReplace));
   }
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
-        {features::kFeatureManagementVideoConference,
-         features::kVcBackgroundReplace},
-        {});
+        {features::kFeatureManagementVideoConference},
+        {features::kVcBackgroundReplace});
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kPortraitRelight));
-    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
+    EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundReplace));
   }
 }
