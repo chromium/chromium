@@ -34,12 +34,7 @@ template <typename T>
 concept IsSupportedTensorType = IsAnyOf<T,
                                         Float16,
                                         float,
-                                        int8_t,
-                                        uint8_t,
                                         int32_t,
-                                        uint32_t,
-                                        int64_t,
-                                        uint64_t,
                                         char,
                                         bool>;
 }  // namespace internal
@@ -168,27 +163,24 @@ class GraphBuilder {
       const mojom::Transpose& operation,
       CoreML::Specification::MILSpec::Block& block);
 
-  template <typename DataType>
-    requires internal::IsSupportedTensorType<DataType>
-  void AddScalarImmediateValue(CoreML::Specification::MILSpec::Block& block,
-                               std::string_view name,
-                               const DataType& value);
-  template <typename DataType>
-    requires internal::IsSupportedTensorType<DataType>
-  void AddTensorImmediateValue(CoreML::Specification::MILSpec::Block& block,
-                               std::string_view name,
-                               base::span<const uint32_t> dimensions,
-                               base::span<const DataType> value);
   // Add constants as immediate values in the model file.
-  void AddConstantImmediateValue(uint64_t constant_id,
-                                 CoreML::Specification::MILSpec::Block& block);
+  base::expected<void, mojom::ErrorPtr> AddConstantImmediateValue(
+      uint64_t constant_id,
+      CoreML::Specification::MILSpec::Block& block);
   // Add constants to weight file.
-  void AddConstantFileValue(uint64_t constant_id,
-                            uint64_t offset,
-                            CoreML::Specification::MILSpec::Block& block);
+  base::expected<void, mojom::ErrorPtr> AddConstantFileValue(
+      uint64_t constant_id,
+      uint64_t offset,
+      CoreML::Specification::MILSpec::Block& block);
+  // Populate generic fields that apply to both `AddConstantImmediateValue`
+  // and `AddConstantFileValue`.
+  base::expected<void, mojom::ErrorPtr> PopulateConstantOpFromOperand(
+      uint64_t constant_id,
+      CoreML::Specification::MILSpec::Operation& op);
 
   // Helpers.
   const mojom::Operand& GetOperand(uint64_t operand_id) const;
+
   [[nodiscard]] const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   PopulateFeatureDescription(
@@ -216,20 +208,12 @@ class GraphBuilder {
       CoreML::Specification::MILSpec::DataType mil_data_type,
       base::span<const uint32_t> dimensions,
       CoreML::Specification::MILSpec::NamedValueType& named_value_type);
-  void PopulateValueType(const mojom::Operand& operand,
-                         CoreML::Specification::MILSpec::ValueType& value_type);
-  void PopulateValueType(CoreML::Specification::MILSpec::DataType mil_data_type,
-                         base::span<const uint32_t> dimensions,
-                         CoreML::Specification::MILSpec::ValueType& value_type,
-                         bool keep_scalar_type = true);
   // Update the `id_to_op_input_info_map_` to be used by ops later.
   void UpdateCoreMLInputInfoMap(uint64_t operand_id);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   SetupMlPackageDirStructure();
 
   std::string GetCoreMLNameFromOperand(uint64_t operand_id);
-  std::string GetCoreMLNameForParam(uint64_t operand_id,
-                                    std::string_view param_name);
   [[nodiscard]] std::string GenerateCoreMLNameForInternalOperand();
 
   // A reference to the WebNN compute graph that `this` instance is converting

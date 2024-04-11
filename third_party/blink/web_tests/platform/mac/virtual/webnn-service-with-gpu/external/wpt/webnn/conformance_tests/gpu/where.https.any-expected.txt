@@ -2,7 +2,7 @@ This is a testharness.js-based test.
 [FAIL] where float32 0D scalars
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
 [FAIL] where float32 1D constant tensors
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported input datatype."
 [FAIL] where float32 1D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
 [FAIL] where float32 2D tensors
