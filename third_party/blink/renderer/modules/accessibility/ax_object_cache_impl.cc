@@ -5537,6 +5537,11 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
       // Kept here for convenient debugging:
       // DVLOG(1) << "*** AX Serialize: " << ObjectFromAXID(id)->ToString(true);
       already_serialized_ids.insert(node_data.id);
+
+      // Now that the bounding box for this node is serialized, we can clear the
+      // node from changed_bounds_ids_ to avoid sending it in
+      // SerializeLocationChanges() later.
+      changed_bounds_ids_.erase(id);
     }
 
     DCHECK(already_serialized_ids.Contains(obj->AXObjectID()))
@@ -5944,6 +5949,9 @@ void AXObjectCacheImpl::InvalidateBoundingBox(
 void AXObjectCacheImpl::SetCachedBoundingBox(
     AXID id,
     const ui::AXRelativeBounds& bounds) {
+  // When a bounding box of a node is serialized, we store the last value for it
+  // in cached_bounding_boxes_, to help with comparing if it really changed
+  // or not when sending another serialization later.
   cached_bounding_boxes_.Set(id, bounds);
 }
 
