@@ -2757,6 +2757,8 @@ component("ash") {
     "wm/overview/birch/birch_chip_button.h",
     "wm/overview/birch/birch_chip_button_base.cc",
     "wm/overview/birch/birch_chip_button_base.h",
+    "wm/overview/birch/birch_chip_loader_view.cc",
+    "wm/overview/birch/birch_chip_loader_view.h",
     "wm/overview/cleanup_animation_observer.cc",
     "wm/overview/cleanup_animation_observer.h",
     "wm/overview/delayed_animation_observer.h",

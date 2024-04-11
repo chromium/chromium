@@ -9,8 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/birch/birch_model.h"
-#include "base/containers/flat_map.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -42,10 +40,8 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Register a bar view with its initialized callback which will be called
-  // after initialization.
-  void RegisterBar(BirchBarView* bar_view,
-                   base::OnceClosure bar_initialized_callback);
+  // Register a bar view.
+  void RegisterBar(BirchBarView* bar_view);
 
   // Called if the given `bar_view` is being destroyed.
   void OnBarDestroying(BirchBarView* bar_view);
@@ -91,13 +87,15 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer {
   // Called when the show suggestions pref changes.
   void OnShowSuggestionsPrefChanged();
 
+  // Called when the customize suggestion prefs change.
+  void OnCustomizeSuggestionsPrefChanged();
+
   // Birch items fetched from model.
   std::vector<std::unique_ptr<BirchItem>> items_;
 
   std::unique_ptr<BirchBarMenuModelAdapter> chip_menu_model_adapter_;
 
-  // The map of each bar view to corresponding initialized callback.
-  base::flat_map<raw_ptr<BirchBarView>, base::OnceClosure> bar_map_;
+  std::vector<raw_ptr<BirchBarView>> bar_views_;
 
   // Indicates if the data fetching is in progress.
   bool data_fetch_in_progress_ = false;

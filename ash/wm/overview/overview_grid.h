@@ -532,9 +532,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // `LegacyDeskBarView`.
   void MaybeInitDesksWidget();
 
-  // Makes the birch bar visible if exists.
-  void ShowBirchBarWidget();
-
   // Gets the layout of the overview items. Layout is done in 2 stages
   // maintaining fixed MRU ordering.
   // 1. Optimal height is determined. In this stage `height` is bisected to find

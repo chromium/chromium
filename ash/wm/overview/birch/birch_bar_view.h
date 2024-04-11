@@ -69,6 +69,12 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   static std::unique_ptr<views::Widget> CreateBirchBarWidget(
       aura::Window* root_window);
 
+  // Adds chip loaders to show loading animations.
+  void Loading();
+
+  // Adds chip loaders to show reloading animations.
+  void Reloading();
+
   // Shuts down the `BirchChipButtons`.
   void Shutdown();
 
@@ -103,6 +109,9 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
     kOneByFour,
     kTwoByTwo,
   };
+
+  // Remove all current chips.
+  void Clear();
 
   // Calculates the chip size according to current shelf position and display
   // size.

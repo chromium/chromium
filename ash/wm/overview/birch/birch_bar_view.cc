@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/birch/birch_bar_view.h"
 
+#include <array>
 #include <vector>
 
 #include "ash/birch/birch_item.h"
@@ -12,15 +13,18 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_settings.h"
 #include "ash/shelf/shelf.h"
+#include "ash/wm/overview/birch/birch_chip_loader_view.h"
 #include "ash/wm/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_class_properties.h"
 
@@ -42,6 +46,18 @@ constexpr int kLargeScreenThreshold = 1450;
 // The chips row capacity for different layout types.
 constexpr unsigned kRowCapacityOf2x2Layout = 2;
 constexpr unsigned kRowCapacityOf1x4Layout = 4;
+
+// The delays of chip loading animations corresponding to the chip positions on
+// the bar.
+constexpr std::array<base::TimeDelta, 4> kLoaderAnimationDelays{
+    base::Milliseconds(250), base::Milliseconds(450), base::Milliseconds(600),
+    base::Milliseconds(700)};
+
+// The delays of chip reloading animations corresponding to the chip positions
+// on the bar.
+constexpr std::array<base::TimeDelta, 4> kReloaderAnimationDelays{
+    base::Milliseconds(0), base::Milliseconds(200), base::Milliseconds(350),
+    base::Milliseconds(450)};
 
 // Calculates the space for each chip according to the available space and
 // number of chips.
@@ -99,7 +115,46 @@ std::unique_ptr<views::Widget> BirchBarView::CreateBirchBarWidget(
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::make_unique<BirchBarView>(root_window));
+  widget->Show();
   return widget;
+}
+
+void BirchBarView::Loading() {
+  CHECK(chips_.empty());
+
+  views::AnimationBuilder loading_animation;
+  for (const base::TimeDelta& delay : kLoaderAnimationDelays) {
+    auto* chip_loader = primary_row_->AddChildView(
+        views::Builder<BirchChipLoaderView>()
+            .SetPreferredSize(chip_size_)
+            .SetDelay(delay)
+            .SetType(BirchChipLoaderView::Type::kInit)
+            .Build());
+    chip_loader->AddAnimationToBuilder(loading_animation);
+    chips_.emplace_back(chip_loader);
+  }
+
+  Relayout(RelayoutReason::kAddRemoveChip);
+}
+
+void BirchBarView::Reloading() {
+  const size_t chip_num = chips_.size();
+  Clear();
+
+  views::AnimationBuilder reloading_animation;
+
+  for (size_t i = 0; i < chip_num; i++) {
+    auto* chip_loader = primary_row_->AddChildView(
+        views::Builder<BirchChipLoaderView>()
+            .SetPreferredSize(chip_size_)
+            .SetDelay(kReloaderAnimationDelays[i])
+            .SetType(BirchChipLoaderView::Type::kReload)
+            .Build());
+    chip_loader->AddAnimationToBuilder(reloading_animation);
+    chips_.emplace_back(chip_loader);
+  }
+
+  Relayout(RelayoutReason::kAddRemoveChip);
 }
 
 void BirchBarView::Shutdown() {
@@ -128,12 +183,7 @@ int BirchBarView::GetChipsNum() const {
 
 void BirchBarView::SetupChips(const std::vector<raw_ptr<BirchItem>>& items) {
   // Clear current chips.
-  chips_.clear();
-  primary_row_->RemoveAllChildViews();
-  if (secondary_row_) {
-    auto secondary_row = RemoveChildViewT(secondary_row_);
-    secondary_row_ = nullptr;
-  }
+  Clear();
 
   for (auto item : items) {
     chips_.emplace_back(
@@ -185,6 +235,15 @@ void BirchBarView::RemoveChip(BirchItem* item) {
   }
 
   Relayout(RelayoutReason::kAddRemoveChip);
+}
+
+void BirchBarView::Clear() {
+  chips_.clear();
+  primary_row_->RemoveAllChildViews();
+  if (secondary_row_) {
+    auto secondary_row = RemoveChildViewT(secondary_row_);
+    secondary_row_ = nullptr;
+  }
 }
 
 gfx::Size BirchBarView::GetChipSize() const {

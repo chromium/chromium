@@ -73,8 +73,9 @@ BirchBarController::BirchBarController(bool from_pine_service)
         prefs::kBirchUseReleaseNotes}) {
     customize_suggestions_pref_registrar_.Add(
         suggestion_pref,
-        base::BindRepeating(&BirchBarController::MaybeFetchDataFromModel,
-                            base::Unretained(this)));
+        base::BindRepeating(
+            &BirchBarController::OnCustomizeSuggestionsPrefChanged,
+            base::Unretained(this)));
   }
 
   if (GetShowBirchSuggestions()) {
@@ -85,8 +86,7 @@ BirchBarController::BirchBarController(bool from_pine_service)
 
 BirchBarController::~BirchBarController() {
   // Avoid dangling pointers to our `items_`.
-  for (auto& bar_and_callback : bar_map_) {
-    BirchBarView* bar_view = bar_and_callback.first;
+  for (auto& bar_view : bar_views_) {
     bar_view->Shutdown();
   }
 }
@@ -104,23 +104,23 @@ void BirchBarController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBirchShowSuggestions, true);
 }
 
-void BirchBarController::RegisterBar(
-    BirchBarView* bar_view,
-    base::OnceClosure bar_initialized_callback) {
-  // Register the bar view and its initialized callback.
-  bar_map_[bar_view] = std::move(bar_initialized_callback);
+void BirchBarController::RegisterBar(BirchBarView* bar_view) {
+  bar_views_.emplace_back(bar_view);
 
   // Directly initialize the bar view if data fetching is done.
   if (!birch_model_observer_.IsObserving() && !data_fetch_in_progress_) {
     InitBarWithItems(bar_view, items_);
+  } else if (from_pine_service_) {
+    // Perform loading animation at the beginning of pine section.
+    bar_view->Loading();
   }
 }
 
 void BirchBarController::OnBarDestroying(BirchBarView* bar_view) {
-  // Clear the initialized callback.
-  auto callback_iter = bar_map_.find(bar_view);
-  if (callback_iter != bar_map_.end()) {
-    bar_map_.erase(callback_iter);
+  // Remove the bar view.
+  auto iter = std::find(bar_views_.begin(), bar_views_.end(), bar_view);
+  if (iter != bar_views_.end()) {
+    bar_views_.erase(iter);
   }
 }
 
@@ -148,8 +148,7 @@ void BirchBarController::OnItemHiddenByUser(BirchItem* item) {
   BirchItem* extra_item = items_.size() > BirchBarView::kMaxChipsNum
                               ? items_[BirchBarView::kMaxChipsNum].get()
                               : nullptr;
-  for (auto& bar_and_callback : bar_map_) {
-    BirchBarView* bar_view = bar_and_callback.first;
+  for (auto& bar_view : bar_views_) {
     bar_view->RemoveChip(item);
     if (extra_item) {
       bar_view->AddChip(extra_item);
@@ -214,8 +213,8 @@ void BirchBarController::OnItemsFetchedFromModel() {
                                  /*buckets=*/10);
   RecordTimeOfDayRankingHistogram(items);
 
-  for (auto& bar_and_callback : bar_map_) {
-    InitBarWithItems(bar_and_callback.first, items);
+  for (auto& bar_view : bar_views_) {
+    InitBarWithItems(bar_view, items);
   }
 
   items_ = std::move(items);
@@ -235,11 +234,6 @@ void BirchBarController::InitBarWithItems(
   }
 
   bar_view->SetupChips(items_to_show);
-
-  // Only run bar initialized callback if there are valid items.
-  if (items.size() && !bar_map_[bar_view].is_null()) {
-    std::move(bar_map_[bar_view]).Run();
-  }
 }
 
 void BirchBarController::OnChipContextMenuClosed() {
@@ -257,11 +251,6 @@ void BirchBarController::OnBirchClientSet() {
 void BirchBarController::OnShowSuggestionsPrefChanged() {
   const bool show = GetShowBirchSuggestions();
 
-  // If to show all birch bars, we should re-fetch data from model.
-  if (show) {
-    MaybeFetchDataFromModel();
-  }
-
   auto* overview_session = GetOverviewSession();
   for (auto& root : Shell::GetAllRootWindows()) {
     auto* overview_grid = overview_session->GetGridWithRootWindow(root);
@@ -271,6 +260,14 @@ void BirchBarController::OnShowSuggestionsPrefChanged() {
       overview_grid->DestroyBirchBarWidget(/*by_user=*/true);
     }
   }
+}
+
+void BirchBarController::OnCustomizeSuggestionsPrefChanged() {
+  for (auto& bar_view : bar_views_) {
+    bar_view->Reloading();
+  }
+
+  MaybeFetchDataFromModel();
 }
 
 }  // namespace ash

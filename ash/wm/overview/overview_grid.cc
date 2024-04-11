@@ -2536,9 +2536,7 @@ void OverviewGrid::MaybeInitBirchBarWidget(bool by_user) {
   // Initialize the birch bar view with birch bar controller.
   auto* birch_bar_controller = BirchBarController::Get();
   CHECK(birch_bar_controller);
-  birch_bar_controller->RegisterBar(
-      birch_bar_view_, base::BindOnce(&OverviewGrid::ShowBirchBarWidget,
-                                      weak_ptr_factory_.GetWeakPtr()));
+  birch_bar_controller->RegisterBar(birch_bar_view_);
 
   // Stack birch bar at bottom to guarantee the dragged window is above it.
   auto* window = birch_bar_widget_->GetNativeWindow();
@@ -2724,12 +2722,6 @@ void OverviewGrid::MaybeInitDesksWidget() {
   // Stack desks bar at bottom to guarantee the dragged window is above it.
   auto* window = desks_widget_->GetNativeWindow();
   window->parent()->StackChildAtBottom(window);
-}
-
-void OverviewGrid::ShowBirchBarWidget() {
-  CHECK(birch_bar_widget_);
-  birch_bar_widget_->Show();
-  // TODO(zxdan): add birch bar showing animation.
 }
 
 std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
