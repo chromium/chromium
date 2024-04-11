@@ -167,6 +167,11 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
         base::to_underlying(GlanceablesViewId::kTasksBubbleListContainer)));
   }
 
+  views::LabelButton* GetAddNewTaskButton() const {
+    return views::AsViewClass<views::LabelButton>(GetTasksView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton)));
+  }
+
   std::vector<std::string> GetCurrentTaskListItemTitles() const {
     std::vector<std::string> current_items;
     for (views::View* child : GetTasksItemContainerView()->children()) {
@@ -471,9 +476,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, AddTaskItem) {
   ASSERT_TRUE(GetGlanceableTrayBubble());
   ASSERT_TRUE(GetTasksView());
 
-  const auto* const add_task_button =
-      views::AsViewClass<views::LabelButton>(GetTasksView()->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton)));
+  const auto* const add_task_button = GetAddNewTaskButton();
   ASSERT_TRUE(add_task_button);
 
   const auto* const task_items_container = GetTasksItemContainerView();
@@ -622,9 +625,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, TasksViewLayout) {
   const int original_task_view_height = GetTasksView()->height();
   ASSERT_GT(available_height_for_tasks, original_task_view_height);
 
-  const auto* const add_task_button =
-      views::AsViewClass<views::LabelButton>(GetTasksView()->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton)));
+  const auto* const add_task_button = GetAddNewTaskButton();
   ASSERT_TRUE(add_task_button);
 
   const auto* const task_items_container = GetTasksItemContainerView();

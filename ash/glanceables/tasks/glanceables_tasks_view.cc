@@ -320,6 +320,7 @@ void GlanceablesTasksView::UpdateTaskLists(
 
 void GlanceablesTasksView::AddNewTaskButtonPressed() {
   // TODO(b/301253574): make sure there is only one view is in `kEdit` state.
+  task_items_container_view_->SetVisible(true);
   auto* const pending_new_task = task_items_container_view_->AddChildViewAt(
       CreateTaskView(GetActiveTaskList()->id, /*task=*/nullptr),
       /*index=*/0);
@@ -475,7 +476,7 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
   // Set `task_items_container_view_` to invisible if there is no task so that
   // the layout manager won't include it as a visible view.
   task_items_container_view_->SetVisible(
-      task_items_container_view_->children().size() > 0);
+      !task_items_container_view_->children().empty());
   list_footer_view_->SetVisible(tasks->item_count() >= kMaximumTasks);
 
   task_list_combo_box_view_->SetTooltipText(
@@ -604,6 +605,8 @@ void GlanceablesTasksView::OnTaskSaved(
   }
   SetIsLoading(false);
   std::move(callback).Run(task);
+  task_items_container_view_->SetVisible(
+      !task_items_container_view_->children().empty());
   list_footer_view_->SetVisible(task_items_container_view_->children().size() >=
                                 kMaximumTasks);
 }
@@ -674,6 +677,8 @@ void GlanceablesTasksView::RemoveTaskView(
     add_new_task_button_->RequestFocus();
   }
   task_items_container_view_->RemoveChildViewT(task_view.get());
+  task_items_container_view_->SetVisible(
+      !task_items_container_view_->children().empty());
   PreferredSizeChanged();
 }
 
