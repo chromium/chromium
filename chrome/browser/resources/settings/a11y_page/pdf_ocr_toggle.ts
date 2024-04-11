@@ -98,7 +98,8 @@ export class SettingsPdfOcrToggleElement extends
       case ScreenAiInstallStatus.DOWNLOAD_FAILED:
         return this.i18n('pdfOcrDownloadErrorLabel');
       case ScreenAiInstallStatus.DOWNLOADED:
-        return this.i18n('pdfOcrDownloadCompleteLabel');
+        // Show the default subtitle if downloading is done.
+        // fallthrough
       case ScreenAiInstallStatus.NOT_DOWNLOADED:
         // No subtitle update, so show a generic subtitle describing PDF OCR.
         return this.i18n('pdfOcrSubtitle');

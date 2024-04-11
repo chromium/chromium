@@ -207,7 +207,6 @@ suite('<settings-text-to-speech-subpage>', function() {
 
     webUIListenerCallback(
         'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOADED);
-    assertEquals(
-        page.i18n('pdfOcrDownloadCompleteLabel'), pdfOcrToggle.subLabel);
+    assertEquals(page.i18n('pdfOcrSubtitle'), pdfOcrToggle.subLabel);
   });
 });

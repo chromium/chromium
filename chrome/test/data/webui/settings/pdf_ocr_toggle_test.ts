@@ -37,8 +37,9 @@ suite('SettingsPdfOcrToggleTest', () => {
 
   test('test pdf ocr toggle and pref', async () => {
     assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
-    // Simulate enabling a screen reader to show the PDF OCR toggle.
-    webUIListenerCallback('screen-reader-state-changed', true);
+    // PDF OCR toggle visibiilty depends on the screen reader state, but is
+    // managed by a11y_page.ts. Thus, no need to simulate enabling screen
+    // reader in this test.
 
     const toggle = testElement.$.toggle;
     await flushTasks();
@@ -59,8 +60,9 @@ suite('SettingsPdfOcrToggleTest', () => {
 
   test('test pdf ocr toggle subtitle', async () => {
     assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
-    // Simulate enabling a screen reader to show the PDF OCR toggle.
-    webUIListenerCallback('screen-reader-state-changed', true);
+    // PDF OCR toggle visibiilty depends on the screen reader state, but is
+    // managed by a11y_page.ts. Thus, no need to simulate enabling screen
+    // reader in this test.
 
     const toggle = testElement.$.toggle;
     await flushTasks();
@@ -83,7 +85,6 @@ suite('SettingsPdfOcrToggleTest', () => {
 
     webUIListenerCallback(
         'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOADED);
-    assertEquals(
-        testElement.i18n('pdfOcrDownloadCompleteLabel'), toggle.subLabel);
+    assertEquals(testElement.i18n('pdfOcrSubtitle'), toggle.subLabel);
   });
 });
