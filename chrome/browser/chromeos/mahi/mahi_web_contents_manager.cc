@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_client_impl.h"
@@ -66,22 +67,30 @@ void MahiWebContentsManager::Initialize() {
 
 void MahiWebContentsManager::OnFocusedPageLoadComplete(
     content::WebContents* web_contents) {
-  // Creates a new focused web content state, and fires `OnFocusedPageChanged()`
-  // event immediately so that `MahiManager` knows the focused page has changed.
-  focused_web_content_state_ = WebContentState(
-      web_contents->GetLastCommittedURL(), web_contents->GetTitle());
-  focused_web_content_state_.favicon = GetFavicon(web_contents);
+  // Page info may not be properly updated yet if the user forwards/backwards
+  // the tab through cache. Thus, if focused page's URL does not change, we
+  // don't create a new `focused_web_content_state_` here, and instead rely on
+  // the callback of `RequestAXTreeSnapshot` to update if needed.
+  if (web_contents->GetLastCommittedURL() != focused_web_content_state_.url) {
+    // Creates a new focused web content state, and fires
+    // `OnFocusedPageChanged()`
+    // event immediately so that `MahiManager` knows the focused page has
+    // changed.
+    focused_web_content_state_ = WebContentState(
+        web_contents->GetLastCommittedURL(), web_contents->GetTitle());
+    focused_web_content_state_.favicon = GetFavicon(web_contents);
 
-  // If the page is in the skip list, sets its distillability to false and
-  // notifies `MahiManager` immediately without requesting the snapshot.
-  if (ShouldSkip(web_contents)) {
-    focused_web_content_state_.is_distillable.emplace(false);
+    // If the page is in the skip list, sets its distillability to false and
+    // notifies `MahiManager` immediately without requesting the snapshot.
+    if (ShouldSkip(web_contents)) {
+      focused_web_content_state_.is_distillable.emplace(false);
+      client_->OnFocusedPageChanged(focused_web_content_state_);
+      return;
+    }
+
+    // Notifies `MahiManger` the focused page has changed.
     client_->OnFocusedPageChanged(focused_web_content_state_);
-    return;
   }
-
-  // Notifies `MahiManger` the focused page has changed.
-  client_->OnFocusedPageChanged(focused_web_content_state_);
 
   // Requests the a11y tree snapshot.
   content::RenderFrameHost* render_frame_host =
@@ -93,7 +102,7 @@ void MahiWebContentsManager::OnFocusedPageLoadComplete(
   web_contents->RequestAXTreeSnapshot(
       base::BindOnce(&MahiWebContentsManager::OnGetSnapshot,
                      weak_pointer_factory_.GetWeakPtr(),
-                     focused_web_content_state_.page_id),
+                     focused_web_content_state_.page_id, web_contents),
       ui::kAXModeWebContentsOnly,
       /* max_nodes= */ 5000, /* timeout= */ {});
 }
@@ -154,9 +163,24 @@ void MahiWebContentsManager::ResetInstanceForTesting() {
 
 void MahiWebContentsManager::OnGetSnapshot(
     const base::UnguessableToken& page_id,
+    content::WebContents* web_contents,
     const ui::AXTreeUpdate& snapshot) {
   // Updates states and checks the distillability of the snapshot.
   if (page_id == focused_web_content_state_.page_id) {
+    // If the acquired url does not match the one within the snapshot, updates
+    // `focused_web_content_state_` to ensure they match.
+    if (focused_web_content_state_.url != GURL(snapshot.tree_data.url)) {
+      focused_web_content_state_ =
+          WebContentState(GURL(snapshot.tree_data.url),
+                          base::UTF8ToUTF16(snapshot.tree_data.title));
+      // Attempts to update the favicon if the url of the focused web contents
+      // have updated.
+      if (web_contents && web_contents->GetLastCommittedURL() ==
+                              focused_web_content_state_.url) {
+        focused_web_content_state_.favicon = GetFavicon(web_contents);
+      }
+    }
+
     focused_web_content_state_.snapshot = snapshot;
     content_extraction_delegate_->CheckDistillablity(
         focused_web_content_state_);
