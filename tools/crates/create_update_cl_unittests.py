@@ -4,12 +4,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 import unittest
 
-from create_update_cl import DiffCrateIds, GetEpoch, ConvertCrateIdToCrateName,\
-                             ConvertCrateIdToCrateVersion, SortedMarkdownList,\
-                             CreateCommitDescription
-
+from create_update_cl import (
+    CHROMIUM_DIR,
+    ConvertCrateIdToCrateName,
+    ConvertCrateIdToCrateVersion,
+    ConvertCrateIdToEpochDir,
+    ConvertCrateIdToGnLabel,
+    ConvertCrateIdToVendorDir,
+    CreateCommitDescription,
+    CreateCommitTitle,
+    DiffCrateIds,
+    GetEpoch,
+    SortedMarkdownList,
+)
 
 class DiffCrateIdsTests(unittest.TestCase):
 
@@ -56,15 +66,23 @@ class DiffCrateIdsTests(unittest.TestCase):
 
 class CommitDescriptionTests(unittest.TestCase):
 
-    def testBasics(self):
+    def testTitle(self):
+        before = set(["updated_crate@2.0.1", "deleted@3.0.1"])
+        after = set(["updated_crate@2.0.2", "added@5.0.1"])
+        diff = DiffCrateIds(before, after, only_minor_updates=True)
+        actual_title = CreateCommitTitle("updated_crate@2.0.1", diff)
+        expected_title = \
+             "Roll updated_crate: 2.0.1 => 2.0.2 in //third_party/rust."
+        self.assertEqual(actual_title, expected_title)
+
+    def testFullDescription(self):
         before = set(["updated_crate@2.0.1", "deleted@3.0.1"])
         after = set(["updated_crate@2.0.2", "added@5.0.1"])
         diff = DiffCrateIds(before, after, only_minor_updates=True)
 
-        actual_desc = CreateCommitDescription("updated_crate@2.0.1", diff,
-                                              False)
+        actual_desc = CreateCommitDescription("Commit title.", diff, False)
         expected_desc = \
-"""Roll updated_crate: 2.0.1 => 2.0.2 in //third_party/rust.
+"""Commit title.
 
 This CL has been created semi-automatically.  The expected review
 process and other details can be found at
@@ -100,6 +118,39 @@ class OtherTests(unittest.TestCase):
     def testGetEpoch(self):
         self.assertEqual(GetEpoch("0.1.2"), "v0_1")
         self.assertEqual(GetEpoch("1.2.3"), "v1")
+
+    def testConvertCrateIdToEpochDir(self):
+        actual_dir = ConvertCrateIdToEpochDir("foo-bar@1.2.3")
+        expected_suffix = os.path.join("third_party", "rust", "foo_bar", "v1")
+        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
+                                                  expected_suffix))
+
+        actual_dir = ConvertCrateIdToEpochDir("bar_baz@0.12.3")
+        expected_suffix = os.path.join("third_party", "rust", "bar_baz",
+                                       "v0_12")
+        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
+                                                  expected_suffix))
+
+    def testConvertCrateIdToGnLabel(self):
+        self.assertEqual(ConvertCrateIdToGnLabel("foo-bar@1.2.3"),
+                         "//third_party/rust/foo_bar/v1:lib")
+        self.assertEqual(ConvertCrateIdToGnLabel("bar_baz@0.12.3"),
+                         "//third_party/rust/bar_baz/v0_12:lib")
+
+    def testConvertCrateIdToVendorDir(self):
+        actual_dir = ConvertCrateIdToVendorDir("foo-bar@1.2.3")
+        expected_suffix = os.path.join("third_party", "rust",
+                                       "chromium_crates_io", "vendor",
+                                       "foo-bar-1.2.3")
+        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
+                                                  expected_suffix))
+
+        actual_dir = ConvertCrateIdToVendorDir("bar_baz@0.12.3")
+        expected_suffix = os.path.join("third_party", "rust",
+                                       "chromium_crates_io", "vendor",
+                                       "bar_baz-0.12.3")
+        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
+                                                  expected_suffix))
 
     def testConvertCrateIdToCrateName(self):
         self.assertEqual(ConvertCrateIdToCrateName("foo-bar@1.2.3"), "foo-bar")

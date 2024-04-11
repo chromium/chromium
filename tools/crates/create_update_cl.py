@@ -11,6 +11,7 @@ import argparse
 import datetime
 import os
 import re
+import shlex
 import subprocess
 import sys
 import textwrap
@@ -24,17 +25,18 @@ from typing import List, Set, Dict
 # * `crate_name`   : "syn" string
 # * `crate_version`: "2.0.50" string
 # * `crate_id`     : "syn@2.0.50" string (syntax used by `cargo`)
-# * `crate_epoch`  : "syn@v2" string (made up syntax)
+# * `crate_epoch`  : "v2" string (syntax used in dir names under
+#                    //third_party/rust/<crate name>/<crate epoch>)
 #
 # Note that `crate_name` may not be unique (e.g. if there is both `syn@1.0.109`
-# and `syn@2.0.50`).  Also note that `crate_epoch` doesn't change during a minor
-# version update (such as the one that this script produces in `auto` and
-# `single` modes).
+# and `syn@2.0.50`).  Also note that f`{crate_name}@{crate_epoch}` doesn't
+# change during a minor version update (such as the one that this script
+# produces in `auto` and `single` modes).
 
 THIS_DIR = os.path.dirname(__file__)
-CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
-CRATES_DIR = os.path.join(CHROMIUM_DIR, "third_party", "rust",
-                          "chromium_crates_io")
+CHROMIUM_DIR = os.path.normpath(os.path.join(THIS_DIR, '..', '..'))
+THIRD_PARTY_RUST = os.path.join(CHROMIUM_DIR, "third_party", "rust")
+CRATES_DIR = os.path.join(THIRD_PARTY_RUST, "chromium_crates_io")
 VENDOR_DIR = os.path.join(CRATES_DIR, "vendor")
 CARGO_LOCK = os.path.join(CRATES_DIR, "Cargo.lock")
 VET_CONFIG = os.path.join(CRATES_DIR, "supply-chain", "config.toml")
@@ -46,6 +48,8 @@ RUN_GNRT = os.path.join(THIS_DIR, "run_gnrt.py")
 UPDATE_RUST_SCRIPT = os.path.join(CHROMIUM_DIR, "tools", "rust",
                                   "update_rust.py")
 
+g_is_verbose = False
+
 timestamp = datetime.datetime.now()
 BRANCH_BASENAME = "rust-crates-update"
 BRANCH_BASENAME += f"--{timestamp.year}{timestamp.month:02}{timestamp.day:02}"
@@ -56,6 +60,11 @@ def RunCommandAndCheckForErrors(args, check_stdout: bool):
     """Runs a command and returns its output."""
     args = list(args)
     assert args
+
+    if g_is_verbose:
+        escaped = [shlex.quote(arg) for arg in args]
+        msg = " ".join(escaped)
+        print(f"    Running: {msg}")
 
     # Needs shell=True on Windows due to git.bat in depot_tools.
     is_win = sys.platform.startswith('win32')
@@ -121,6 +130,10 @@ class CratesDiff:
     removed_crate_ids: List[str]
     added_crate_ids: List[str]
 
+    def size(self):
+        return len(self.updates) + len(self.added_crate_ids) + len(
+            self.removed_crate_ids)
+
 
 def DiffCrateIds(old_crate_ids: Set[str],
                  new_crate_ids: Set[str],
@@ -143,7 +156,8 @@ def DiffCrateIds(old_crate_ids: Set[str],
             name = ConvertCrateIdToCrateName(crate_id)
             version = ConvertCrateIdToCrateVersion(crate_id)
             if only_minor_updates:
-                key = GetCrateEpoch(name, version)
+                epoch = GetEpoch(version)
+                key = f'{name}@{epoch}'
             else:
                 key = name
             if key in result:
@@ -189,23 +203,53 @@ def GetEpoch(crate_version: str) -> str:
     return f'v{v[0]}'
 
 
-def GetCrateEpoch(crate_name: str, crate_version: str) -> str:
-    epoch = GetEpoch(crate_version)
-    return f'{crate_name}@{epoch}'
-
-
 def ConvertCrateIdToCrateName(crate_id: str) -> str:
-    """ Converts a `crate_id` (`crate_epoch` also ok) into a `crate_name`."""
+    """ Converts a `crate_id` into a `crate_name`."""
     return crate_id[:crate_id.find("@")]
 
 
 def ConvertCrateIdToCrateVersion(crate_id: str) -> str:
     """ Converts a `crate_id` into a `crate_version`."""
-    # Unlike ConvertCrateIdToCrateName this func can't work with a `crate_epoch`
-    assert '@v' not in crate_id
-
     crate_version = crate_id[crate_id.find("@") + 1:]
     return crate_version
+
+
+def _ConvertCrateIdToEpochDirRelativeToChromiumRoot(crate_id: str) -> str:
+    """ Converts a `crate_id` (e.g. "foo@1.2.3") into an epoch dir
+    (e.g. "third_party/rust/foo/v_1").  The returned dir is relative
+    to Chromium root. """
+    crate_name = ConvertCrateIdToCrateName(crate_id)
+    crate_name = crate_name.replace("-", "_")
+    epoch = GetEpoch(ConvertCrateIdToCrateVersion(crate_id))
+    target = os.path.join("third_party", "rust", crate_name, epoch)
+    return target
+
+
+def ConvertCrateIdToEpochDir(crate_id: str) -> str:
+    """ Converts a `crate_id` (e.g. "foo@1.2.3") into a path to an epoch dir
+    (e.g. on Windows: "<path to chromium root>\\third_party\\rust\\foo\\v_1").
+    """
+    return os.path.join(
+        CHROMIUM_DIR, _ConvertCrateIdToEpochDirRelativeToChromiumRoot(crate_id))
+
+
+def ConvertCrateIdToVendorDir(crate_id: str) -> str:
+    """ Converts a `crate_id` (e.g. "foo@1.2.3") into a path to a target dir
+    (e.g. on Windows: "<path to chromium root>\\third_party\\rust\\foo\\v_1").
+    """
+    crate_name = ConvertCrateIdToCrateName(crate_id)
+    crate_version = ConvertCrateIdToCrateVersion(crate_id)
+    crate_vendor_dir = os.path.join(VENDOR_DIR, f"{crate_name}-{crate_version}")
+    return crate_vendor_dir
+
+
+def ConvertCrateIdToGnLabel(crate_id: str) -> str:
+    """ Converts a `crate_id` (e.g. "foo@1.2.3") into
+    [a GN label](https://gn.googlesource.com/gn/+/main/docs/reference.md#labels)
+    (e.g. "//third_party/rust/foo/v_1:lib").  """
+    dir_name = _ConvertCrateIdToEpochDirRelativeToChromiumRoot(crate_id)
+    dir_name = dir_name.replace(os.sep, "/")  # GN uses `/` as a path separator.
+    return f"//{dir_name}:lib"
 
 
 def FindUpdateableCrates() -> List[str]:
@@ -238,9 +282,7 @@ def FindSizeOfCrateUpdate(crate_id: str) -> int:
     new_crate_ids = GetCurrentCrateIds()
     Git("reset", "--hard")
     diff = DiffCrateIds(old_crate_ids, new_crate_ids)
-    update_size = len(diff.updates) + len(diff.added_crate_ids) + len(
-        diff.removed_crate_ids)
-    return update_size
+    return diff.size()
 
 
 def FormatMarkdownItem(item: str) -> str:
@@ -299,16 +341,22 @@ def CreateVetPolicyDescription(crate_ids: List[str]) -> str:
     return description
 
 
-def CreateCommitDescription(main_old_crate_id: str, diff: CratesDiff,
+def CreateCommitTitle(old_crate_id: str, diff: CratesDiff) -> str:
+    crate_name = ConvertCrateIdToCrateName(old_crate_id)
+    old_version = ConvertCrateIdToCrateVersion(old_crate_id)
+    update = [u for u in diff.updates if u.old_crate_id == old_crate_id][0]
+    update = next(filter(lambda u: u.old_crate_id == old_crate_id,
+                         diff.updates))
+    new_version = ConvertCrateIdToCrateVersion(update.new_crate_id)
+    roll_summary = f"{crate_name}: " + \
+        f"{old_version} => {new_version}"
+    title = f"Roll {roll_summary} in //third_party/rust."
+    return title
+
+
+def CreateCommitDescription(title: str, diff: CratesDiff,
                             include_vet_criteria: bool) -> str:
-    main_crate_name = ConvertCrateIdToCrateName(main_old_crate_id)
-    main_old_version = ConvertCrateIdToCrateVersion(main_old_crate_id)
-    main_update = next(
-        filter(lambda u: u.old_crate_id == main_old_crate_id, diff.updates))
-    main_new_version = ConvertCrateIdToCrateVersion(main_update.new_crate_id)
-    roll_summary = f"{main_crate_name}: " + \
-        f"{main_old_version} => {main_new_version}"
-    description = f"""Roll {roll_summary} in //third_party/rust.
+    description = f"""{title}
 
 This CL has been created semi-automatically.  The expected review
 process and other details can be found at
@@ -366,56 +414,55 @@ def UpdateCrate(args, crate_id: str, upstream_branch: str):
               "maybe other steps will handle this crate...")
         return upstream_branch
     diff = DiffCrateIds(old_crate_ids, new_crate_ids)
-    description = CreateCommitDescription(crate_id, diff, False)
+    title = CreateCommitTitle(crate_id, diff)
+    description = CreateCommitDescription(title, diff, False)
 
     # Checkout a new git branch + `git cl upload`
     new_branch = f"{BRANCH_BASENAME}--{crate_id.replace('@', '-')}"
     Git("checkout", upstream_branch, "-b", new_branch)
     Git("branch", "--set-upstream-to", upstream_branch)
-    Git("add", "-f", "third_party/rust")
+    Git("add", "-f", f"{THIRD_PARTY_RUST}")
     Git("commit", "-m", description)
     if args.upload:
         print(f"  Running `git cl upload ...` ...")
         Git("cl", "upload", "--bypass-hooks", "--force",
             "--hashtag=cratesio-autoupdate",
             "--cc=chrome-rust-experiments+autoupdate@google.com")
-        issue = Git("cl", "issue")
 
+    FinishUpdatingCrate(args, title, diff)
+    return new_branch
+
+
+def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
     # git mv <vendor/old version> <vendor/new version>
-    print(f"  Running `git mv <vendor/old version> <vendor/new version>`...")
+    print(f"  Running `git mv <old dir> <new dir>` (for better diff)...")
     for update in diff.updates:
-        crate_name = ConvertCrateIdToCrateName(update.old_crate_id)
-        assert crate_name == ConvertCrateIdToCrateName(update.new_crate_id)
+        old_dir = ConvertCrateIdToVendorDir(update.old_crate_id)
+        new_dir = ConvertCrateIdToVendorDir(update.new_crate_id)
+        Git("mv", "--force", f"{old_dir}", f"{new_dir}")
 
-        old_version = ConvertCrateIdToCrateVersion(update.old_crate_id)
-        new_version = ConvertCrateIdToCrateVersion(update.new_crate_id)
-        old_dir = os.path.join(VENDOR_DIR, f"{crate_name}-{old_version}")
-        new_dir = os.path.join(VENDOR_DIR, f"{crate_name}-{new_version}")
-        Git("mv", "--", old_dir, new_dir)
-    Git("add", "-f", "third_party/rust")
-    Git("commit", "-m", "git mv <old dir> <new dir> (for better diff)")
-    if args.upload:
-        print(f"  Running `git cl upload ...` ...")
-        Git("cl", "upload", "--bypass-hooks", "--force", "-m",
-            "git mv <old dir> <new dir> (for better diff)")
+        old_target_dir = ConvertCrateIdToEpochDir(update.old_crate_id)
+        new_target_dir = ConvertCrateIdToEpochDir(update.new_crate_id)
+        if old_target_dir != new_target_dir:
+            Git("mv", "--force", old_target_dir, new_target_dir)
+    Git("add", "-f", f"{THIRD_PARTY_RUST}")
+    GitCommit(args, "git mv <old dir> <new dir> (for better diff)")
+    Git("reset", "--hard", "HEAD^")  # Undoing `git mv ...`
 
     # gnrt vendor
     print(f"  Running `gnrt vendor`...")
-    Git("reset", "--hard", "HEAD^")  # Undoing `git mv ...`
     Gnrt("vendor")
-    Git("add", "-f", "third_party/rust")
+    Git("add", "-f", f"{THIRD_PARTY_RUST}")
     # `INCLUSIVE_LANG_SCRIPT` below uses `git grep` and therefore depends on the
     # earlier `Git("add"...)` above.  Please don't reorder/coalesce the `add`.
     new_content = RunCommandAndCheckForErrors([INCLUSIVE_LANG_SCRIPT], False)
     with open(INCLUSIVE_LANG_CONFIG, "w") as f:
         f.write(new_content)
     Git("add", INCLUSIVE_LANG_CONFIG)
-    Git("commit", "-m", "gnrt vendor")
+    GitCommit(args, "gnrt vendor")
     if args.upload:
-        print(f"  Running `git cl upload ...` ...")
-        Git("cl", "upload", "--bypass-hooks", "--force", "-m", "gnrt vendor")
         print(f"  Running `git cl description ...` ...")
-        description = CreateCommitDescription(crate_id, diff, True)
+        description = CreateCommitDescription(title, diff, True)
         Git("cl", "description", f"--new-description={description}")
 
     # gnrt gen
@@ -424,31 +471,36 @@ def UpdateCrate(args, crate_id: str, upstream_branch: str):
     # Some crates (e.g. ones in the `remove_crates` list of `gnrt_config.toml`)
     # may result in no changes - this is why we have an `if` below...
     if Git("status", "--porcelain"):
-        Git("add", "-f", "third_party/rust")
-        Git("commit", "-m", "gnrt gen")
-        if args.upload:
-            print(f"  Running `git cl upload ...` ...")
-            Git("cl", "upload", "--bypass-hooks", "--force", "-m", "gnrt gen")
+        Git("add", "-f", f"{THIRD_PARTY_RUST}")
+        GitCommit(args, "gnrt gen")
 
     if args.upload:
+        issue = Git("cl", "issue")
         print(f"  {issue}")
 
-    return new_branch
+
+def RaiseErrorIfGitIsDirty():
+    if Git("status", "--porcelain"):
+        raise RuntimeError("Dirty `git status` - save you local changes "\
+                           "before rerunning the script")
 
 
 def CheckoutInitialBranch(branch):
     print(f"Checking out the `{branch}` branch...")
-    if Git("status", "--porcelain"):
-        raise RuntimeError("Dirty `git status` - save you local changes "\
-                           "before rerunning the script")
+    RaiseErrorIfGitIsDirty()
     Git("checkout", branch)
-    if Git("status", "--porcelain"):
-        raise RuntimeError("Dirty `git status` - save you local changes "\
-                           "before rerunning the script")
+    RaiseErrorIfGitIsDirty()
 
     # Ensure the //third_party/rust-toolchain version matches the branch.
     print("Running //tools/rust/update_rust.py (hopefully a no-op)...")
     RunCommandAndCheckForErrors([UPDATE_RUST_SCRIPT], False)
+
+
+def GitCommit(args, title):
+    Git("commit", "-m", title)
+    if args.upload:
+        print(f"  Running `git cl upload ...` ...")
+        Git("cl", "upload", "--bypass-hooks", "--force", "-m", title)
 
 
 def ResolveCrateNameToCrateId(crate_name):
@@ -508,6 +560,54 @@ def SingleCrate(args):
     UpdateCrate(args, crate_id, upstream_branch)
 
 
+def ManualUpdate(args):
+    title = args.title
+
+    RaiseErrorIfGitIsDirty()
+    print(f"Post-processing a manual edit of `Cargo.toml`...")
+
+    print(f"  Running `gnrt vendor` to detect `Cargo.lock` changes...")
+    old_crate_ids = GetCurrentCrateIds()
+    Gnrt("vendor")
+    new_crate_ids = GetCurrentCrateIds()
+    Git("reset", "--hard")
+    Git("clean", "-d", "--force", "--", f"{THIRD_PARTY_RUST}")
+    diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates=False)
+    if diff.size() == 0:
+        raise RuntimeError(
+            "No changes in `Cargo.lock` after running `gnrt vendor`")
+
+    # This covers most update steps: git mv, gnrt vendor, gnrt gen
+    FinishUpdatingCrate(args, title, diff)
+
+    # Remove old `//third_party/rust/foo/v<old>` directories
+    print(f"  Removing //third_party/rust/.../<old_epoch> ...")
+    for update in diff.updates:
+        old_target_dir = ConvertCrateIdToEpochDir(update.old_crate_id)
+        new_target_dir = ConvertCrateIdToEpochDir(update.new_crate_id)
+        if old_target_dir != new_target_dir:  # Skip minor crate updates
+            Git("rm", "-r", "--force", "--", old_target_dir)
+    GitCommit(args, "Removing //third_party/rust/.../<old_epoch>")
+
+    # Fix up the target names
+    print(f"  Updating the target name in BUILD.gn files...")
+    for update in diff.updates:
+        old_target = ConvertCrateIdToGnLabel(update.old_crate_id)
+        new_target = ConvertCrateIdToGnLabel(update.new_crate_id)
+        if old_target == new_target: continue
+        grep = Git("grep", "-l", old_target, "--", "*/BUILD.gn")
+        for path in grep.splitlines():
+            if not path: continue
+            if "third_party/rust" in path: continue
+            with open(path, 'r') as file:
+                file_contents = file.read()
+            file_contents = file_contents.replace(old_target, new_target)
+            with open(path, 'w') as file:
+                file.write(file_contents)
+            Git("add", "--", path)
+    GitCommit(args, "Updating the target name in BUILD.gn files")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Update Rust crates")
     parser.add_argument("--no-upload",
@@ -515,6 +615,7 @@ def main():
                         default=True,
                         action='store_false',
                         help="Avoids uploading CLs to Gerrit")
+    parser.add_argument("--verbose", action='store_true')
     subparsers = parser.add_subparsers(required=True)
 
     parser_auto = subparsers.add_parser(
@@ -537,7 +638,19 @@ def main():
         default="origin/main",
         help="The upstream branch on which to base the update CL.")
 
+    parser_manual = subparsers.add_parser(
+        "manual",
+        description="Generate update CL after manual edit of `Cargo.toml`")
+    parser_manual.set_defaults(func=ManualUpdate)
+    parser_manual.add_argument("--title",
+                               required=True,
+                               help="The first line of CL description.")
+
     args = parser.parse_args()
+
+    global g_is_verbose
+    g_is_verbose = args.verbose
+
     args.func(args)
 
     return 0

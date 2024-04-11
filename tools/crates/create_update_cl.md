@@ -150,14 +150,25 @@ introduce breaking changes in the _behavior_ of the existing APIs.
 
 To update:
 
-1. Edit `third_party/rust/chromium_crates_io/Cargo.toml` to change the version
-   being depended upon.
-1. Follow other steps described in
-   [`docs/rust.md`](../../docs/rust.md#importing-a-crate-from-crates_io) for
-   importing a new crate (e.g. `gnrt vendor`, `gnrt gen`, etc.)
-    - TODO(https://crbug.com/330729319): Try to automate some parts of this step
-1. Remove the old version's leftover files in `//third_party/rust/<crate>/<old
-   epoch>`
+1. Prepare `Cargo.toml` change:
+    1. `git checkout origin/main`
+    1. `git checkout -b major-version-update-of-foo`
+    1. Edit `third_party/rust/chromium_crates_io/Cargo.toml` to change the major
+       version of the crate (or crates) you want to update.
+       **Important**: Do not edit `Cargo.lock` (e.g. don't run `gnrt vendor`
+       etc.).
+    1. `git add third_party/rust/chromium_crates_io/Cargo.toml`
+    1. `git commit -m "Manual edit of Cargo.toml"`
+    1. `git cl upload -m "Manual edit of Cargo.toml" --bypass-hooks --skip-title --force`
+1. Run the helper script as follows:
+   `tools/crates/create_update_cl.py manual
+   --title "Roll foo crate to new major version in //third_party/rust."`
+    - This will fix up the CL description
+    - To make the review easier, one of the patchsets covers just the path
+      changes.  For example - see [the delta here](https://crrev.com/c/5445719/2..7).
+1. Follow the manual steps from the minor version update rotation:
+    1. `cargo vet` audit
+    1. Review, landing, etc.
 
 ### Workflow B: Incremental transition
 
