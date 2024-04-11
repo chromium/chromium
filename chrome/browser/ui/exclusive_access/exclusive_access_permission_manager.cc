@@ -102,9 +102,8 @@ void ExclusiveAccessPermissionManager::RequestPermissions(
   PendingRequests& requests = requests_it->second;
   requests.waiting_responses += requests.pending.size();
   for (PermissionRequest& request : requests.pending) {
-    // TODO: crbug.com/332984845 - Set the actual user gesture state.
-    content::PermissionRequestDescription description(request.type,
-                                                      /*user_gesture=*/false);
+    content::PermissionRequestDescription description(
+        request.type, web_contents->HasRecentInteraction());
     GetPermissionController(web_contents.get())
         ->RequestPermissionsFromCurrentDocument(
             rfh, std::move(description),
