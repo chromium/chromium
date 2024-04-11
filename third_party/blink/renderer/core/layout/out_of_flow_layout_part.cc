@@ -50,13 +50,15 @@ namespace blink {
 
 namespace {
 
+// `margin_box_start`/`margin_box_end` and `imcb_inset_start`/`imcb_inset_end`
+// are relative to the IMCB.
 bool CalculateNonOverflowingRangeInOneAxis(
+    LayoutUnit margin_box_start,
+    LayoutUnit margin_box_end,
+    LayoutUnit imcb_inset_start,
+    LayoutUnit imcb_inset_end,
     const std::optional<LayoutUnit>& inset_start,
     const std::optional<LayoutUnit>& inset_end,
-    const LayoutUnit& container_start,
-    const LayoutUnit& container_end,
-    const LayoutUnit& margin_box_start,
-    const LayoutUnit& margin_box_end,
     const std::optional<LayoutUnit>& additional_bounds_start,
     const std::optional<LayoutUnit>& additional_bounds_end,
     std::optional<LayoutUnit>* out_scroll_min,
@@ -65,7 +67,7 @@ bool CalculateNonOverflowingRangeInOneAxis(
     std::optional<LayoutUnit>* out_additional_scroll_max) {
   CHECK_EQ(additional_bounds_start.has_value(),
            additional_bounds_end.has_value());
-  LayoutUnit start_available_space = margin_box_start - container_start;
+  const LayoutUnit start_available_space = margin_box_start - imcb_inset_start;
   if (inset_start) {
     // If the start inset is non-auto, then the start edges of both the
     // scroll-adjusted inset-modified containing block and the scroll-shifted
@@ -82,7 +84,7 @@ bool CalculateNonOverflowingRangeInOneAxis(
     *out_scroll_max = start_available_space;
   }
   // Calculation for the end edge is symmetric.
-  LayoutUnit end_available_space = container_end - margin_box_end;
+  const LayoutUnit end_available_space = imcb_inset_end - margin_box_end;
   if (inset_end) {
     if (end_available_space < 0) {
       return false;
@@ -938,8 +940,6 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
 
 void OutOfFlowLayoutPart::LayoutCandidates(
     HeapVector<LogicalOofPositionedNode>* candidates) {
-  const WritingModeConverter conainer_converter(
-      container_builder_->GetWritingDirection(), container_builder_->Size());
   while (candidates->size() > 0) {
     if (!has_block_fragmentation_ ||
         container_builder_->IsInitialColumnBalancingPass())
@@ -1952,9 +1952,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
   const ContainingBlockInfo container_info = ([&]() -> ContainingBlockInfo {
     ContainingBlockInfo container_info = node_info.base_container_info;
-    std::optional<InsetAreaOffsets> offsets =
-        candidate_style.InsetAreaOffsets();
-    if (offsets.has_value()) {
+    if (const std::optional<InsetAreaOffsets> offsets =
+            candidate_style.InsetAreaOffsets()) {
       container_info = ApplyInsetAreaOffsets(offsets.value(), container_info);
     }
     return container_info;
@@ -2111,11 +2110,11 @@ OutOfFlowLayoutPart::TryCalculateOffset(
         candidate_writing_direction);
     offset_info.imcb_for_position_order = imcb_for_position_fallback;
     if (!CalculateNonOverflowingRangeInOneAxis(
-            insets.inline_start, insets.inline_end,
-            imcb_for_position_fallback->inline_start,
-            imcb_for_position_fallback->InlineEndOffset(),
             node_dimensions.MarginBoxInlineStart(),
             node_dimensions.MarginBoxInlineEnd(),
+            imcb_for_position_fallback->inline_start,
+            imcb_for_position_fallback->InlineEndOffset(), insets.inline_start,
+            insets.inline_end,
             additional_fallback_bounds.has_value()
                 ? std::make_optional(
                       additional_fallback_bounds->offset.inline_offset)
@@ -2145,11 +2144,11 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   std::optional<LayoutUnit> additional_block_scroll_max;
   if (try_fit_available_space) {
     if (!CalculateNonOverflowingRangeInOneAxis(
-            insets.block_start, insets.block_end,
-            imcb_for_position_fallback->block_start,
-            imcb_for_position_fallback->BlockEndOffset(),
             node_dimensions.MarginBoxBlockStart(),
             node_dimensions.MarginBoxBlockEnd(),
+            imcb_for_position_fallback->block_start,
+            imcb_for_position_fallback->BlockEndOffset(), insets.block_start,
+            insets.block_end,
             additional_fallback_bounds.has_value()
                 ? std::make_optional(
                       additional_fallback_bounds->offset.block_offset)
