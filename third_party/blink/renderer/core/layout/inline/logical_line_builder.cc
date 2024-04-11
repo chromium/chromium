@@ -155,7 +155,14 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       main_line_helper->PlaceBlockInInline(item, &item_result, line_box);
     } else if (item.Type() == InlineItem::kOpenRubyColumn) {
       DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
-      box = PlaceRubyColumn(line_info, item_result, *line_box, box);
+      if (item_result.ruby_column) {
+        box = PlaceRubyColumn(line_info, item_result, *line_box, box);
+      } else {
+        line_box->AddChild(item.BidiLevel());
+      }
+    } else if (item.Type() == InlineItem::kCloseRubyColumn) {
+      DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+      line_box->AddChild(item.BidiLevel());
     } else if (item.Type() == InlineItem::kListMarker) {
       PlaceListMarker(item, &item_result);
     } else if (item.Type() == InlineItem::kOutOfFlowPositioned) {

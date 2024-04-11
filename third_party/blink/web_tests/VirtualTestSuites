@@ -2833,5 +2833,13 @@
     "bases": ["external/wpt/css/css-overflow", "fast/overflow"],
     "args": ["--enable-blink-features=CSSLineClamp"],
     "owners": ["abotella@igalia.com"]
+  },
+  {
+    "prefix": "ruby-lb",
+    "platforms": ["Mac"],
+    "bases": ["external/wpt/css/css-ruby", "fast/ruby"],
+    "args": ["--enable-blink-features=RubyLineBreakable"],
+    "owners": ["tkent@chromium.org"],
+    "expires": "Oct 10, 2024"
   }
 ]
