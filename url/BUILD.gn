@@ -10,7 +10,7 @@ import("features.gni")
 import("//build/config/cronet/config.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-if (is_android || is_robolectric) {
+if (is_android) {
   import("//build/config/android/rules.gni")
 }
 

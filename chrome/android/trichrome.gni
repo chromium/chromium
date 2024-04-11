@@ -96,8 +96,6 @@ template("trichrome_library_apk_tmpl") {
 
     omit_dex = true
     include_size_info = is_official_build
-    alternative_android_sdk_dep = webview_framework_dep
-    r_java_root_package_name = "trichrome_lib"
     app_as_shared_lib = true
     version_name = chrome_version_name
     version_code = _version_code

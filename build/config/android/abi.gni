@@ -38,6 +38,7 @@ assert(!devtools_instrumentation_dumping || use_order_profiling,
 if (current_cpu == "x86") {
   android_app_abi = "x86"
   android_abi_target = "i686-linux-android"
+  sanitizer_arch = "i686"
 } else if (current_cpu == "arm") {
   import("//build/config/arm.gni")
   if (arm_version < 7) {
@@ -46,18 +47,18 @@ if (current_cpu == "x86") {
     android_app_abi = "armeabi-v7a"
   }
   android_abi_target = "arm-linux-androideabi"
+  sanitizer_arch = "arm"
 } else if (current_cpu == "mipsel") {
   android_app_abi = "mips"
   android_abi_target = "mipsel-linux-android"
 } else if (current_cpu == "x64") {
   android_app_abi = "x86_64"
-
-  # Place holder for x64 support, not tested.
-  # TODO: Enable clang support for Android x64. http://crbug.com/539781
   android_abi_target = "x86_64-linux-android"
+  sanitizer_arch = "x86_64"
 } else if (current_cpu == "arm64") {
   android_app_abi = "arm64-v8a"
   android_abi_target = "aarch64-linux-android"
+  sanitizer_arch = "aarch64"
 } else if (current_cpu == "mips64el") {
   android_app_abi = "mips64"
 
@@ -68,6 +69,7 @@ if (current_cpu == "x86") {
 
   # Place holder for riscv64 support, not tested.
   android_abi_target = "riscv64-linux-android"
+  sanitizer_arch = "riscv64"
 } else {
   assert(false, "Unknown Android ABI: " + current_cpu)
 }
