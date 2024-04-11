@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/devtools_prerender_attempt.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
@@ -799,7 +800,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
 int PrerenderHostRegistry::CreateAndStartHostForNewTab(
     const PrerenderAttributes& attributes,
     const PreloadingPredictor& creating_predictor,
-    const PreloadingPredictor& enacting_predictor) {
+    const PreloadingPredictor& enacting_predictor,
+    PreloadingConfidence confidence) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab));
   CHECK(IsSpeculationRuleType(attributes.trigger_type));
   std::string recorded_url =
@@ -812,8 +814,8 @@ int PrerenderHostRegistry::CreateAndStartHostForNewTab(
 
   auto handle = std::make_unique<PrerenderNewTabHandle>(
       attributes, *web_contents()->GetBrowserContext());
-  int prerender_host_id =
-      handle->StartPrerendering(creating_predictor, enacting_predictor);
+  int prerender_host_id = handle->StartPrerendering(
+      creating_predictor, enacting_predictor, confidence);
   if (prerender_host_id == RenderFrameHost::kNoFrameTreeNodeId)
     return RenderFrameHost::kNoFrameTreeNodeId;
   prerender_new_tab_handle_by_frame_tree_node_id_[prerender_host_id] =
@@ -1276,8 +1278,8 @@ void PrerenderHostRegistry::BackNavigationLikely(
     return;
   }
 
-  PreloadingData* preloading_data =
-      PreloadingData::GetOrCreateForWebContents(web_contents());
+  PreloadingDataImpl* preloading_data =
+      PreloadingDataImpl::GetOrCreateForWebContents(web_contents());
   preloading_data->SetIsNavigationInDomainCallback(
       predictor,
       base::BindRepeating(IsNavigationInSessionHistoryPredictorDomain));
@@ -1309,7 +1311,7 @@ void PrerenderHostRegistry::BackNavigationLikely(
       PreloadingData::GetSameURLMatcher(back_url);
   ukm::SourceId triggered_primary_page_source_id =
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  preloading_data->AddPreloadingPrediction(predictor, /*confidence=*/100,
+  preloading_data->AddPreloadingPrediction(predictor, PreloadingConfidence{100},
                                            same_url_matcher,
                                            triggered_primary_page_source_id);
   PreloadingAttempt* attempt = preloading_data->AddPreloadingAttempt(

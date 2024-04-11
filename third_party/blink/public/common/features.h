@@ -1087,6 +1087,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kPreloadingModelTimerStartDelay;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kPreloadingModelTimerInterval;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kPreloadingModelEnactCandidates;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kPreloadingModelPrefetchModerateThreshold;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kPreloadingModelPrerenderModerateThreshold;
 
 // Enables the same-origin main frame navigation in a prerendered page.
 // See https://crbug.com/1239281.

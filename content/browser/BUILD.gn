@@ -1515,6 +1515,7 @@ source_set("browser") {
     "preloading/preloading.h",
     "preloading/preloading_attempt_impl.cc",
     "preloading/preloading_attempt_impl.h",
+    "preloading/preloading_confidence.h",
     "preloading/preloading_config.cc",
     "preloading/preloading_config.h",
     "preloading/preloading_data_impl.cc",

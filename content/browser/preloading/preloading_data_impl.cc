@@ -138,10 +138,16 @@ void PreloadingDataImpl::AddPreloadingPrediction(
     int confidence,
     PreloadingURLMatchCallback url_match_predicate,
     ukm::SourceId triggering_primary_page_source_id) {
-  // Cross-check that we set confidence percentage in the limits.
-  CHECK_GE(confidence, 0);
-  CHECK_LE(confidence, 100);
+  AddPreloadingPrediction(predictor, PreloadingConfidence{confidence},
+                          std::move(url_match_predicate),
+                          triggering_primary_page_source_id);
+}
 
+void PreloadingDataImpl::AddPreloadingPrediction(
+    const PreloadingPredictor& predictor,
+    PreloadingConfidence confidence,
+    PreloadingURLMatchCallback url_match_predicate,
+    ukm::SourceId triggering_primary_page_source_id) {
   // We want to log the metrics for user visible primary pages to measure the
   // impact of PreloadingPredictions on the page user is viewing.
   // TODO(crbug.com/1330783): Extend this for non-primary page and inner

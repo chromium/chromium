@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/timer/elapsed_timer.h"
+#include "content/browser/preloading/preloading_confidence.h"
 #include "content/public/browser/preloading_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
@@ -43,7 +44,7 @@ class PreloadingPrediction {
 
   PreloadingPrediction(
       PreloadingPredictor predictor,
-      int confidence,
+      PreloadingConfidence confidence,
       ukm::SourceId triggered_primary_page_source_id,
       base::RepeatingCallback<bool(const GURL&)> url_match_predicate);
 
@@ -57,7 +58,7 @@ class PreloadingPrediction {
 
   // Confidence percentage of predictor's preloading prediction. This value
   // should be between 0 - 100.
-  const int confidence_;
+  const PreloadingConfidence confidence_;
 
   // Holds the triggered primary page of preloading operation ukm::SourceId.
   const ukm::SourceId triggered_primary_page_source_id_;

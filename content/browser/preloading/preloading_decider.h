@@ -7,6 +7,7 @@
 
 #include "content/browser/preloading/preconnector.h"
 #include "content/browser/preloading/prefetcher.h"
+#include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/prerenderer.h"
 #include "content/public/browser/document_user_data.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-forward.h"
@@ -91,13 +92,15 @@ class CONTENT_EXPORT PreloadingDecider
   // no other action is taken.
   void MaybeEnactCandidate(const GURL& url,
                            const PreloadingPredictor& enacting_predictor,
+                           PreloadingConfidence confidence,
                            bool fallback_to_preconnect);
 
   // Prefetches the |url| if it is safe and eligible to be prefetched. Returns
   // false if no suitable (given |enacting_predictor|) on-standby candidate is
   // found for the given |url|, or the Prefetcher does not accept the candidate.
   bool MaybePrefetch(const GURL& url,
-                     const PreloadingPredictor& enacting_predictor);
+                     const PreloadingPredictor& enacting_predictor,
+                     PreloadingConfidence confidence);
 
   // Returns true if a prefetch was attempted for the |url| and is not failed or
   // discarded by Prefetcher yet, and we should wait for it to finish.
@@ -110,20 +113,25 @@ class CONTENT_EXPORT PreloadingDecider
   // PreloadingPrediction has been added.
   std::pair<bool, bool> MaybePrerender(
       const GURL& url,
-      const PreloadingPredictor& enacting_predictor);
+      const PreloadingPredictor& enacting_predictor,
+      PreloadingConfidence confidence);
 
   // Returns true if a prerender was attempted for the |url| and is not failed
   // or discarded by Prerenderer yet, and we should wait for it to finish.
   bool ShouldWaitForPrerenderResult(const GURL& url);
 
   // Helper function to add a preloading prediction for the |url|
-  void AddPreloadingPrediction(const GURL& url, PreloadingPredictor predictor);
+  void AddPreloadingPrediction(const GURL& url,
+                               PreloadingPredictor predictor,
+                               PreloadingConfidence confidence);
 
   // Return true if |candidate| can be selected in response to a prediction by
   // |predictor|.
   bool IsSuitableCandidate(
       const blink::mojom::SpeculationCandidatePtr& candidate,
-      const PreloadingPredictor& predictor) const;
+      const PreloadingPredictor& predictor,
+      PreloadingConfidence confidence,
+      blink::mojom::SpeculationAction action) const;
 
   // Helper functions to add/remove a preloading candidate to
   // |on_standby_candidates_| and to reset |on_standby_candidates_|. Use these
@@ -162,8 +170,14 @@ class CONTENT_EXPORT PreloadingDecider
 
   // Behavior determined dynamically. Stored on this object rather than globally
   // so that it does not span unit tests.
-  struct BehaviorConfig;
+  class BehaviorConfig;
   std::unique_ptr<const BehaviorConfig> behavior_config_;
+
+  // Whether this page has ever received an ML model prediction. Once it has,
+  // the model predictions supersede the hover heuristic. We store this here,
+  // rather than per-BrowserContext, since even if the model is loaded, it may
+  // not run for some pages (e.g. insecure http).
+  bool ml_model_available_ = false;
 
   raw_ptr<PreloadingDeciderObserverForTesting> observer_for_testing_;
   Preconnector preconnector_;

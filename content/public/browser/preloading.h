@@ -134,6 +134,11 @@ static constexpr PreloadingPredictor kBackGestureNavigation(
     4,
     "BackGestureNavigation");
 
+// Preloading heuristics ML model.
+static constexpr PreloadingPredictor kPreloadingHeuristicsMLModel(
+    5,
+    "PreloadingHeuristicsMLModel");
+
 // TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
 // logging.
 }  // namespace preloading_predictor

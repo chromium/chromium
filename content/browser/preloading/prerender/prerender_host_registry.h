@@ -19,6 +19,7 @@
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
+#include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom-forward.h"
@@ -132,10 +133,10 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // the new WebContents manages the started host, and `this`
   // PrerenderHostRegistry manages PrerenderNewTabHandle that owns the
   // WebContents (see `prerender_new_tab_handle_by_frame_tree_node_id_`).
-  int CreateAndStartHostForNewTab(
-      const PrerenderAttributes& attributes,
-      const PreloadingPredictor& creating_predictor,
-      const PreloadingPredictor& enacting_predictor);
+  int CreateAndStartHostForNewTab(const PrerenderAttributes& attributes,
+                                  const PreloadingPredictor& creating_predictor,
+                                  const PreloadingPredictor& enacting_predictor,
+                                  PreloadingConfidence confidence);
 
   // Cancels the host registered for `frame_tree_node_id`. The host is
   // immediately removed from the map of non-reserved hosts but asynchronously

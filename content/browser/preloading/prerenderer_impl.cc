@@ -198,23 +198,26 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     // Eager candidates are enacted by the same predictor that creates them.
     PreloadingPredictor enacting_predictor =
         GetPredictorForPreloadingTriggerType(trigger_type);
-    MaybePrerender(candidate, enacting_predictor);
+    MaybePrerender(candidate, enacting_predictor, PreloadingConfidence{100});
   }
 }
 
 void PrerendererImpl::OnLCPPredicted() {
   blocked_ = false;
-  for (auto& [candidate, enacting_predictor] : std::move(blocked_candidates_)) {
-    MaybePrerender(candidate, enacting_predictor);
+  for (auto& [candidate, enacting_predictor, confidence] :
+       std::move(blocked_candidates_)) {
+    MaybePrerender(candidate, enacting_predictor, confidence);
   }
 }
 
 bool PrerendererImpl::MaybePrerender(
     const blink::mojom::SpeculationCandidatePtr& candidate,
-    const PreloadingPredictor& enacting_predictor) {
+    const PreloadingPredictor& enacting_predictor,
+    PreloadingConfidence confidence) {
   CHECK_EQ(candidate->action, blink::mojom::SpeculationAction::kPrerender);
   if (blocked_) {
-    blocked_candidates_.emplace_back(candidate->Clone(), enacting_predictor);
+    blocked_candidates_.emplace_back(candidate->Clone(), enacting_predictor,
+                                     confidence);
     return false;
   }
 
@@ -290,7 +293,7 @@ bool PrerendererImpl::MaybePrerender(
           // For the prerender-in-new-tab, PreloadingAttempt will be managed by
           // a prerender WebContents to be created later.
           return registry_->CreateAndStartHostForNewTab(
-              attributes, creating_predictor, enacting_predictor);
+              attributes, creating_predictor, enacting_predictor, confidence);
         }
         // Handle the rule as kNoHint if the prerender-in-new-tab is not
         // enabled.

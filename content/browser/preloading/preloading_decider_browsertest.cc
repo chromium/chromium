@@ -35,6 +35,8 @@ class PreloadingDeciderBrowserTest : public ContentBrowserTest {
         {
             {blink::features::kSpeculationRulesPointerDownHeuristics, {}},
             {blink::features::kSpeculationRulesPointerHoverHeuristics, {}},
+            {blink::features::kPreloadingHeuristicsMLModel,
+             {{"enact_candidates", "true"}}},
             {blink::features::kPrerender2InNewTab, {}},
         },
         {
@@ -99,6 +101,9 @@ IN_PROC_BROWSER_TEST_F(PreloadingDeciderBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Preloading.Predictor.UrlPointerHoverOnAnchor.Recall",
       PredictorConfusionMatrix::kFalseNegative, 1);
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Predictor.PreloadingHeuristicsMLModel.Recall",
+      PredictorConfusionMatrix::kFalseNegative, 1);
 }
 
 class PreloadingDeciderNonEagerBrowserTest
@@ -117,6 +122,7 @@ class PreloadingDeciderNonEagerBrowserTest
   static constexpr PreloadingPredictor kNonEagerPredictors[] = {
       preloading_predictor::kUrlPointerDownOnAnchor,
       preloading_predictor::kUrlPointerHoverOnAnchor,
+      preloading_predictor::kPreloadingHeuristicsMLModel,
   };
 
   static constexpr PreloadingType kPreloadingTypes[] = {
@@ -176,6 +182,10 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
     preloading_decider->OnPointerHover(
         next_page_url,
         blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0));
+  } else if (predictor() ==
+             preloading_predictor::kPreloadingHeuristicsMLModel) {
+    preloading_decider->OnPreloadingHeuristicsModelDone(next_page_url,
+                                                        /*score=*/1.0);
   } else {
     FAIL();
   }

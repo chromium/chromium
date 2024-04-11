@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDERER_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDERER_H_
 
+#include "content/browser/preloading/preloading_confidence.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
@@ -28,7 +29,8 @@ class Prerenderer {
 
   virtual bool MaybePrerender(
       const blink::mojom::SpeculationCandidatePtr& candidate,
-      const PreloadingPredictor& enacting_predictor) = 0;
+      const PreloadingPredictor& enacting_predictor,
+      PreloadingConfidence confidence) = 0;
 
   virtual bool ShouldWaitForPrerenderResult(const GURL& url) = 0;
 

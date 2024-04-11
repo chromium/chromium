@@ -15,7 +15,7 @@ namespace content {
 
 PreloadingPrediction::PreloadingPrediction(
     PreloadingPredictor predictor,
-    int confidence,
+    PreloadingConfidence confidence,
     ukm::SourceId triggered_primary_page_source_id,
     PreloadingURLMatchCallback url_match_predicate)
     : predictor_type_(predictor),
@@ -33,7 +33,7 @@ void PreloadingPrediction::RecordPreloadingPredictionUKMs(
   if (navigated_page_source_id != ukm::kInvalidSourceId) {
     ukm::builders::Preloading_Prediction builder(navigated_page_source_id);
     builder.SetPreloadingPredictor(predictor_type_.ukm_value())
-        .SetConfidence(confidence_)
+        .SetConfidence(static_cast<int>(confidence_))
         .SetAccuratePrediction(is_accurate_prediction_);
     if (time_to_next_navigation_) {
       builder.SetTimeToNextNavigation(ukm::GetExponentialBucketMinForCounts1000(
@@ -46,7 +46,7 @@ void PreloadingPrediction::RecordPreloadingPredictionUKMs(
     ukm::builders::Preloading_Prediction_PreviousPrimaryPage builder(
         triggered_primary_page_source_id_);
     builder.SetPreloadingPredictor(predictor_type_.ukm_value())
-        .SetConfidence(confidence_)
+        .SetConfidence(static_cast<int>(confidence_))
         .SetAccuratePrediction(is_accurate_prediction_);
     if (time_to_next_navigation_) {
       builder.SetTimeToNextNavigation(ukm::GetExponentialBucketMinForCounts1000(

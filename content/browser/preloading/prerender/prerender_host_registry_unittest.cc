@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -688,9 +689,9 @@ class PrerenderHostRegistryNewLimitAndSchedulerTest
     }();
 
     return IsNewTabTrigger(limit_group)
-               ? registry().CreateAndStartHostForNewTab(prerender_attributes,
-                                                        creating_predictor,
-                                                        enacting_predictor)
+               ? registry().CreateAndStartHostForNewTab(
+                     prerender_attributes, creating_predictor,
+                     enacting_predictor, PreloadingConfidence{100})
                : registry().CreateAndStartHost(prerender_attributes);
   }
 

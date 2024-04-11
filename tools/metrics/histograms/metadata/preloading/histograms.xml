@@ -62,6 +62,8 @@ chromium-metrics-reviews@google.com.
                due to change in Omnibox selection."/>
   <variant name="PointerDownOnAnchor"
       summary="When a pointerdown event happens on a HTTP/HTTPS anchor."/>
+  <variant name="PreloadingHeuristicsMLModel"
+      summary="When preloading is triggered by an ML model prediction."/>
   <variant name="SpeculationRules"
       summary="When preloading is triggered by the speculation rules."/>
   <variant name="Unspecified" summary=""/>

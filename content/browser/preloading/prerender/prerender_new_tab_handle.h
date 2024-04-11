@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/common/frame.mojom-forward.h"
 #include "content/public/browser/prerender_web_contents_delegate.h"
@@ -44,7 +45,8 @@ class PrerenderNewTabHandle {
   // of the prerendered page, which can be used as the id of PrerenderHost, on
   // success. Returns RenderFrameHost::kNoFrameTreeNodeId on failure.
   int StartPrerendering(const PreloadingPredictor& creating_predictor,
-                        const PreloadingPredictor& enacting_predictor);
+                        const PreloadingPredictor& enacting_predictor,
+                        PreloadingConfidence confidence);
 
   // Cancels prerendering started in `web_contents_`.
   void CancelPrerendering(const PrerenderCancellationReason& reason);

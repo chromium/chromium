@@ -67,7 +67,8 @@ PrerenderNewTabHandle::~PrerenderNewTabHandle() {
 
 int PrerenderNewTabHandle::StartPrerendering(
     const PreloadingPredictor& creating_predictor,
-    const PreloadingPredictor& enacting_predictor) {
+    const PreloadingPredictor& enacting_predictor,
+    PreloadingConfidence confidence) {
   CHECK(web_contents_);
   CHECK(attributes_.initiator_web_contents);
 
@@ -85,8 +86,7 @@ int PrerenderNewTabHandle::StartPrerendering(
           creating_predictor, enacting_predictor, PreloadingType::kPrerender,
           std::move(same_url_matcher), triggered_primary_page_source_id));
   preloading_data->AddPreloadingPrediction(
-      enacting_predictor,
-      /*confidence=*/100,
+      enacting_predictor, confidence,
       PreloadingData::GetSameURLMatcher(attributes_.prerendering_url),
       triggered_primary_page_source_id);
   preloading_data->CopyPredictorDomains(

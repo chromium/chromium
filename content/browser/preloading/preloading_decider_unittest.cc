@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetcher.h"
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerenderer.h"
@@ -80,14 +81,15 @@ class MockPrerenderer : public Prerenderer {
               candidate->injection_type);
       PreloadingPredictor enacting_predictor =
           GetPredictorForPreloadingTriggerType(trigger_type);
-      MaybePrerender(candidate, enacting_predictor);
+      MaybePrerender(candidate, enacting_predictor, PreloadingConfidence{100});
     }
   }
 
   void OnLCPPredicted() override {}
 
   bool MaybePrerender(const blink::mojom::SpeculationCandidatePtr& candidate,
-                      const PreloadingPredictor& enacting_predictor) override {
+                      const PreloadingPredictor& enacting_predictor,
+                      PreloadingConfidence confidence) override {
     if (PrerenderExists(candidate->url)) {
       return false;
     }
@@ -968,18 +970,29 @@ TEST_F(PreloadingDeciderTest,
       /*100*(75-0/500)=*/15, 1);
 }
 
-class PreloadingDeciderMLModelTest : public PreloadingDeciderTest {
+class PreloadingDeciderMLModelTest
+    : public PreloadingDeciderTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   PreloadingDeciderMLModelTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kPreloadingHeuristicsMLModel);
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {blink::features::kPreloadingHeuristicsMLModel,
+             {{"enact_candidates", GetParam() ? "true" : "false"}}},
+            {blink::features::kSpeculationRulesPointerHoverHeuristics, {}},
+        },
+        {});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PreloadingDeciderMLModelTest, OnPreloadingHeuristicsModelDone) {
+INSTANTIATE_TEST_SUITE_P(ParameterizedTests,
+                         PreloadingDeciderMLModelTest,
+                         testing::Bool());
+
+TEST_P(PreloadingDeciderMLModelTest, OnPreloadingHeuristicsModelDone) {
   base::HistogramTester histogram_tester;
 
   GURL url1{"https://www.example.com"};
@@ -1006,6 +1019,193 @@ TEST_F(PreloadingDeciderMLModelTest, OnPreloadingHeuristicsModelDone) {
   histogram_tester.ExpectBucketCount(
       "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Positive",
       /*100*0.9=*/90, 1);
+}
+
+TEST_P(PreloadingDeciderMLModelTest, UseHoverHeuristicWhenNoMLModelPresent) {
+  const GURL url = GetSameOriginUrl("/candidate1.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                    blink::mojom::SpeculationEagerness::kModerate));
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  const auto& prefetches = GetPrefetchService()->prefetches_;
+
+  EXPECT_TRUE(prefetches.empty());
+  // The page has never received a prediction from the ML model, so we fallback
+  // to the decisions of the hover heuristic.
+  preloading_decider->OnPointerHover(
+      url, blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0));
+  EXPECT_EQ(1u, prefetches.size());
+}
+
+class PreloadingDeciderMLModelActiveTest : public PreloadingDeciderTest {
+ public:
+  PreloadingDeciderMLModelActiveTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {blink::features::kPreloadingHeuristicsMLModel,
+             {{"enact_candidates", "true"},
+              {"prefetch_moderate_threshold", "40"},
+              {"prerender_moderate_threshold", "60"}}},
+            {blink::features::kSpeculationRulesPointerDownHeuristics, {}},
+            {blink::features::kSpeculationRulesPointerHoverHeuristics, {}},
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(PreloadingDeciderMLModelActiveTest,
+       ModelEnactsModeratePrefetchCandidate) {
+  const GURL url = GetSameOriginUrl("/candidate1.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                    blink::mojom::SpeculationEagerness::kModerate));
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  const auto& prefetches = GetPrefetchService()->prefetches_;
+
+  EXPECT_TRUE(prefetches.empty());
+  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.99);
+  EXPECT_EQ(1u, prefetches.size());
+}
+
+TEST_F(PreloadingDeciderMLModelActiveTest,
+       ModelEnactsModeratePrerenderCandidate) {
+  const GURL url = GetSameOriginUrl("/candidate1.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrerender,
+                    blink::mojom::SpeculationEagerness::kModerate));
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+  ScopedMockPrerenderer prerenderer(preloading_decider);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  const auto& prerenders = prerenderer.Get()->prerenders_;
+
+  EXPECT_TRUE(prerenders.empty());
+  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.99);
+  EXPECT_EQ(1u, prerenders.size());
+}
+
+TEST_F(PreloadingDeciderMLModelActiveTest,
+       ModelPrerendersCandidateOverPrefetch) {
+  const GURL url = GetSameOriginUrl("/candidate1.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrerender,
+                    blink::mojom::SpeculationEagerness::kModerate));
+  candidates.push_back(
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                    blink::mojom::SpeculationEagerness::kModerate));
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+  ScopedMockPrerenderer prerenderer(preloading_decider);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  const auto& prefetches = GetPrefetchService()->prefetches_;
+  const auto& prerenders = prerenderer.Get()->prerenders_;
+
+  EXPECT_TRUE(prefetches.empty());
+  EXPECT_TRUE(prerenders.empty());
+  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.99);
+  EXPECT_TRUE(prefetches.empty());
+  EXPECT_EQ(1u, prerenders.size());
+}
+
+TEST_F(PreloadingDeciderMLModelActiveTest, ModelConfidenceThreshold) {
+  const GURL url = GetSameOriginUrl("/candidate1.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrerender,
+                    blink::mojom::SpeculationEagerness::kModerate));
+  candidates.push_back(
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                    blink::mojom::SpeculationEagerness::kModerate));
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+  ScopedMockPrerenderer prerenderer(preloading_decider);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  const auto& prefetches = GetPrefetchService()->prefetches_;
+  const auto& prerenders = prerenderer.Get()->prerenders_;
+
+  EXPECT_TRUE(prefetches.empty());
+  EXPECT_TRUE(prerenders.empty());
+  // The test is configured such that this is a high enough confidence for
+  // prefetch, but not for prerender.
+  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.50);
+  EXPECT_EQ(1u, prefetches.size());
+  EXPECT_TRUE(prerenders.empty());
+}
+
+TEST_F(PreloadingDeciderMLModelActiveTest, ModelNoPreconnectFallback) {
+  const GURL url = GetSameOriginUrl("/candidate1.html");
+
+  MockContentBrowserClient browser_client;
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+  ScopedMockPrerenderer prerenderer(preloading_decider);
+  auto* preconnect_delegate = browser_client.GetDelegate();
+
+  const auto& prefetches = GetPrefetchService()->prefetches_;
+  const auto& prerenders = prerenderer.Get()->prerenders_;
+
+  EXPECT_FALSE(preconnect_delegate->Target().has_value());
+  EXPECT_TRUE(prefetches.empty());
+  EXPECT_TRUE(prerenders.empty());
+  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.99);
+  EXPECT_FALSE(preconnect_delegate->Target().has_value());
+  EXPECT_TRUE(prefetches.empty());
+  EXPECT_TRUE(prerenders.empty());
+}
+
+TEST_F(PreloadingDeciderMLModelActiveTest, ModelSupersedesHoverHeuristic) {
+  const GURL url = GetSameOriginUrl("/candidate1.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                    blink::mojom::SpeculationEagerness::kModerate));
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  const auto& prefetches = GetPrefetchService()->prefetches_;
+
+  EXPECT_TRUE(prefetches.empty());
+  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.05);
+  EXPECT_TRUE(prefetches.empty());
+  // The model has indicated that the candidate is not worth prefetching, so we
+  // should not prefetch based on the hover heuristic either.
+  preloading_decider->OnPointerHover(
+      url, blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0));
+  EXPECT_TRUE(prefetches.empty());
+  // But once we have a stronger signal like pointer down, we should prefetch.
+  preloading_decider->OnPointerDown(url);
+  EXPECT_EQ(1u, prefetches.size());
 }
 
 }  // namespace

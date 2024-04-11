@@ -12,6 +12,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/preloading_confidence.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -86,6 +87,11 @@ class CONTENT_EXPORT PreloadingDataImpl
       PreloadingPredictor predictor) {
     return is_navigation_in_predictor_domain_callbacks_.count(predictor);
   }
+
+  void AddPreloadingPrediction(const PreloadingPredictor& predictor,
+                               PreloadingConfidence confidence,
+                               PreloadingURLMatchCallback url_match_predicate,
+                               ukm::SourceId triggering_primary_page_source_id);
 
   // A version of `AddPreloadingAttempt` which takes two PreloadingPredictors in
   // the case where one predictor creates a preloading candidate which is

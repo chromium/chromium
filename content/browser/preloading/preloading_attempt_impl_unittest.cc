@@ -27,6 +27,7 @@ const PreloadingPredictor kPredictors[] = {
     preloading_predictor::kUrlPointerHoverOnAnchor,
     preloading_predictor::kLinkRel,
     preloading_predictor::kBackGestureNavigation,
+    preloading_predictor::kPreloadingHeuristicsMLModel,
     content_preloading_predictor::kSpeculationRules,
     content_preloading_predictor::kMouseBackButton,
     content_preloading_predictor::kSpeculationRulesFromIsolatedWorld,
