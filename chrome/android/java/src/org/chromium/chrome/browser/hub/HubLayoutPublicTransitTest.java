@@ -36,6 +36,7 @@ import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPo
 import org.chromium.chrome.test.transit.HubIncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.HubTabSwitcherAppMenuFacility;
 import org.chromium.chrome.test.transit.HubTabSwitcherStation;
+import org.chromium.chrome.test.transit.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.NewTabPageStation;
 import org.chromium.chrome.test.transit.PageAppMenuFacility;
 import org.chromium.chrome.test.transit.PageStation;
@@ -100,7 +101,7 @@ public class HubLayoutPublicTransitTest {
 
         HubTabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
 
-        NewTabPageStation newIncognitoTab = appMenu.openNewIncognitoTab();
+        IncognitoNewTabPageStation newIncognitoTab = appMenu.openNewIncognitoTab();
 
         // Reset to original state for batching.
         HubIncognitoTabSwitcherStation incognitoTabSwitcher =
@@ -117,7 +118,7 @@ public class HubLayoutPublicTransitTest {
         PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
 
         PageAppMenuFacility appMenu = page.openAppMenu();
-        NewTabPageStation incognitoNewTabPage = appMenu.openNewIncognitoTab();
+        IncognitoNewTabPageStation incognitoNewTabPage = appMenu.openNewIncognitoTab();
 
         HubIncognitoTabSwitcherStation incognitoTabSwitcher =
                 incognitoNewTabPage.openHub(HubIncognitoTabSwitcherStation.class);
