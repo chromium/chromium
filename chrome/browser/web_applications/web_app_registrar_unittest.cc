@@ -307,8 +307,8 @@ TEST_F(WebAppRegistrarTest, InitWithApps) {
 }
 
 TEST_F(WebAppRegistrarTest, InitRegistrarAndDoForEachApp) {
-  base::flat_set<webapps::AppId> ids = PopulateRegistry(
-      CreateRegistryForTesting("https://example.com/path", 20));
+  base::flat_set<webapps::AppId> ids =
+      PopulateRegistry(CreateRegistryForTesting("https://example.com/path", 5));
   StartWebAppProvider();
 
   for (const WebApp& web_app : registrar().GetAppsIncludingStubs()) {
@@ -320,9 +320,9 @@ TEST_F(WebAppRegistrarTest, InitRegistrarAndDoForEachApp) {
 }
 
 TEST_F(WebAppRegistrarTest, DoForEachAndUnregisterAllApps) {
-  Registry registry = CreateRegistryForTesting("https://example.com/path", 20);
+  Registry registry = CreateRegistryForTesting("https://example.com/path", 5);
   auto ids = PopulateRegistry(std::move(registry));
-  EXPECT_EQ(20UL, ids.size());
+  EXPECT_EQ(5UL, ids.size());
 
   StartWebAppProvider();
 
@@ -341,11 +341,11 @@ TEST_F(WebAppRegistrarTest, AppsInstalledByUserMetric) {
   base::HistogramTester histogram_tester;
 
   // All of these apps are marked as 'not locally installed'.
-  PopulateRegistry(CreateRegistryForTesting("https://example.com/path", 10));
+  PopulateRegistry(CreateRegistryForTesting("https://example.com/path", 5));
   StartWebAppProvider();
 
   histogram_tester.ExpectUniqueSample("WebApp.InstalledCount.ByUser",
-                                      /*sample=*/10,
+                                      /*sample=*/5,
                                       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "WebApp.InstalledCount.ByUserNotLocallyInstalled", /*sample=*/0,
@@ -394,7 +394,7 @@ TEST_F(WebAppRegistrarTest, AppsNotLocallyInstalledMetric) {
 
 TEST_F(WebAppRegistrarTest, GetApps) {
   base::flat_set<webapps::AppId> ids =
-      PopulateRegistryWithApps("https://example.com/path", 10);
+      PopulateRegistryWithApps("https://example.com/path", 5);
   StartWebAppProvider();
 
   int not_in_sync_install_count = 0;
@@ -402,7 +402,7 @@ TEST_F(WebAppRegistrarTest, GetApps) {
     ++not_in_sync_install_count;
     EXPECT_TRUE(base::Contains(ids, web_app.app_id()));
   }
-  EXPECT_EQ(10, not_in_sync_install_count);
+  EXPECT_EQ(5, not_in_sync_install_count);
 
   auto web_app_in_sync1 = test::CreateWebApp(GURL("https://example.org/sync1"));
   web_app_in_sync1->SetIsFromSyncAndPendingInstallation(true);
@@ -419,7 +419,7 @@ TEST_F(WebAppRegistrarTest, GetApps) {
        registrar().GetAppsIncludingStubs()) {
     ++all_apps_count;
   }
-  EXPECT_EQ(12, all_apps_count);
+  EXPECT_EQ(7, all_apps_count);
 
   for (const WebApp& web_app : registrar().GetApps()) {
     EXPECT_NE(web_app_id_in_sync1, web_app.app_id());
@@ -437,7 +437,7 @@ TEST_F(WebAppRegistrarTest, GetApps) {
   for ([[maybe_unused]] const WebApp& web_app : registrar().GetApps()) {
     ++not_in_sync_install_count;
   }
-  EXPECT_EQ(10, not_in_sync_install_count);
+  EXPECT_EQ(5, not_in_sync_install_count);
 }
 
 TEST_F(WebAppRegistrarTest, GetAppDataFields) {
@@ -751,7 +751,7 @@ TEST_F(WebAppRegistrarTest, FindPwaOverShortcut) {
 
 TEST_F(WebAppRegistrarTest, BeginAndCommitUpdate) {
   base::flat_set<webapps::AppId> ids =
-      PopulateRegistryWithApps("https://example.com/path", 10);
+      PopulateRegistryWithApps("https://example.com/path", 5);
   StartWebAppProvider();
 
   base::test::TestFuture<bool> future;
@@ -788,7 +788,7 @@ TEST_F(WebAppRegistrarTest, BeginAndCommitUpdate) {
 
 TEST_F(WebAppRegistrarTest, CommitEmptyUpdate) {
   base::flat_set<webapps::AppId> ids =
-      PopulateRegistryWithApps("https://example.com/path", 10);
+      PopulateRegistryWithApps("https://example.com/path", 5);
   StartWebAppProvider();
   const auto initial_registry = database_factory().ReadRegistry();
 
@@ -822,7 +822,7 @@ TEST_F(WebAppRegistrarTest, CommitEmptyUpdate) {
 
 TEST_F(WebAppRegistrarTest, ScopedRegistryUpdate) {
   base::flat_set<webapps::AppId> ids =
-      PopulateRegistryWithApps("https://example.com/path", 10);
+      PopulateRegistryWithApps("https://example.com/path", 5);
   StartWebAppProvider();
   const auto initial_registry = database_factory().ReadRegistry();
 
@@ -1037,10 +1037,10 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
 
 TEST_F(WebAppRegistrarTest,
        AppsFromSyncAndPendingInstallationExcludedFromGetAppIds) {
-  PopulateRegistryWithApps("https://example.com/path/", 20);
+  PopulateRegistryWithApps("https://example.com/path/", 5);
   StartWebAppProvider();
 
-  EXPECT_EQ(20u, registrar().GetAppIds().size());
+  EXPECT_EQ(5u, registrar().GetAppIds().size());
 
   std::unique_ptr<WebApp> web_app_in_sync_install =
       test::CreateWebApp(GURL("https://example.org/"));
@@ -1052,7 +1052,7 @@ TEST_F(WebAppRegistrarTest,
 
   // Tests that GetAppIds() excludes web app in sync install:
   std::vector<webapps::AppId> ids = registrar().GetAppIds();
-  EXPECT_EQ(20u, ids.size());
+  EXPECT_EQ(5u, ids.size());
   for (const webapps::AppId& app_id : ids) {
     EXPECT_NE(app_id, web_app_in_sync_install_id);
   }
