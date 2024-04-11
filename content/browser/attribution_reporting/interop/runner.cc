@@ -38,7 +38,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
-#include "components/aggregation_service/features.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/features.h"
@@ -53,7 +53,6 @@
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/interop/parser.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -61,6 +60,7 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
+#include "content/browser/attribution_reporting/interop/parser.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
@@ -440,10 +440,9 @@ RunAttributionInteropSimulation(AttributionInteropRun run,
 
   static_cast<AggregationServiceImpl*>(
       storage_partition->GetAggregationService())
-      ->SetPublicKeysForTesting( // IN-TEST
-          GetAggregationServiceProcessingUrl(url::Origin::Create(
-              GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
-                       .Get()))),
+      ->SetPublicKeysForTesting(  // IN-TEST
+          GetAggregationServiceProcessingUrl(
+              ::aggregation_service::GetDefaultAggregationCoordinatorOrigin()),
           PublicKeyset({hpke_key},
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));
