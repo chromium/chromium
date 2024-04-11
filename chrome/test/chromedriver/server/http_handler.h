@@ -156,7 +156,7 @@ class HttpHandler {
 
   void SendResponseOverWebSocket(HttpServerInterface* http_server,
                                  int connection_id,
-                                 std::optional<double> maybe_id,
+                                 const std::optional<base::Value>& maybe_id,
                                  const Status& status,
                                  std::unique_ptr<base::Value> result,
                                  const std::string& session_id,
@@ -184,7 +184,7 @@ class HttpHandler {
                            bool w3c);
   void OnNewBidiSessionOnCmdThread(HttpServerInterface* http_server,
                                    int connection_id,
-                                   std::optional<double> maybe_id,
+                                   const std::optional<base::Value>& maybe_id,
                                    const Status& status,
                                    std::unique_ptr<base::Value> result,
                                    const std::string& session_id,
@@ -241,7 +241,7 @@ Status ParseBidiCommand(const std::string& data, base::Value::Dict& parsed);
 
 base::Value::Dict CreateBidiErrorResponse(
     Status status,
-    std::optional<double> maybe_id = std::nullopt);
+    std::optional<base::Value> maybe_id = std::nullopt);
 
 }  // namespace internal
 

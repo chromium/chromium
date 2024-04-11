@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -16,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"  // For CHECK macros.
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -105,6 +107,13 @@ base::flat_set<std::string> kKnownBidiSessionCommands = {
     "input.performActions",
     "input.releaseActions",
 };
+
+std::optional<base::Value> Clone(const std::optional<base::Value>& original) {
+  if (!original.has_value()) {
+    return std::nullopt;
+  }
+  return std::make_optional(original->Clone());
+}
 
 bool w3cMode(const std::string& session_id,
              const SessionThreadMap& session_thread_map) {
@@ -1693,25 +1702,26 @@ void HttpHandler::OnWebSocketUnboundConnectionRequest(
                      base::Unretained(http_server), connection_id, info));
 }
 
-void HttpHandler::SendResponseOverWebSocket(HttpServerInterface* http_server,
-                                            int connection_id,
-                                            std::optional<double> maybe_id,
-                                            const Status& status,
-                                            std::unique_ptr<base::Value> result,
-                                            const std::string& session_id,
-                                            bool w3c) {
+void HttpHandler::SendResponseOverWebSocket(
+    HttpServerInterface* http_server,
+    int connection_id,
+    const std::optional<base::Value>& maybe_id,
+    const Status& status,
+    std::unique_ptr<base::Value> result,
+    const std::string& session_id,
+    bool w3c) {
   base::Value::Dict response;
   if (status.IsOk()) {
     if (!result) {
       return;
     }
     response.Set("type", "success");
-    if (maybe_id) {
-      response.Set("id", *maybe_id);
+    if (maybe_id.has_value()) {
+      response.Set("id", maybe_id->Clone());
     }
     response.Set("result", std::move(*result));
   } else {
-    response = internal::CreateBidiErrorResponse(status, maybe_id);
+    response = internal::CreateBidiErrorResponse(status, Clone(maybe_id));
   }
   std::string message;
   if (base::JSONWriter::Write(response, &message)) {
@@ -1756,7 +1766,7 @@ void HttpHandler::OnNewSessionCreated(const CommandCallback& next_callback,
 void HttpHandler::OnNewBidiSessionOnCmdThread(
     HttpServerInterface* http_server,
     int connection_id,
-    std::optional<double> maybe_id,
+    const std::optional<base::Value>& maybe_id,
     const Status& status,
     std::unique_ptr<base::Value> result,
     const std::string& session_id,
@@ -1791,7 +1801,7 @@ void HttpHandler::OnNewBidiSessionOnCmdThread(
     VLOG(0) << "session thread is not found";
   }
 
-  SendResponseOverWebSocket(http_server, connection_id, maybe_id, status,
+  SendResponseOverWebSocket(http_server, connection_id, Clone(maybe_id), status,
                             std::move(result), session_id, w3c);
 }
 
@@ -1802,22 +1812,24 @@ void HttpHandler::OnWebSocketMessage(HttpServerInterface* http_server,
   Status status = internal::ParseBidiCommand(data, parsed);
 
   auto it = connection_session_map_.find(connection_id);
+  base::Value* maybe_id_as_value = parsed.Find("id");
+  std::optional<base::Value> maybe_id =
+      maybe_id_as_value ? std::make_optional(maybe_id_as_value->Clone())
+                        : std::nullopt;
   if (it == connection_session_map_.end()) {
     // Session was terminated but the connection is not yet closed
     Status invalid_session_error{kInvalidSessionId, "session not found"};
-    SendResponseOverWebSocket(http_server, connection_id,
-                              parsed.FindDouble("id"), invalid_session_error,
-                              nullptr, "", true);
+    SendResponseOverWebSocket(http_server, connection_id, std::move(maybe_id),
+                              invalid_session_error, nullptr, "", true);
     return;
   }
-  std::optional<double> maybe_id = parsed.FindDouble("id");
   std::string* method = parsed.FindString("method");
 
   // Invalid session id must be handled first and it has been.
   // Now we can handle other errors.
   if (status.IsError()) {
-    SendResponseOverWebSocket(http_server, connection_id, maybe_id, status,
-                              nullptr, it->second, true);
+    SendResponseOverWebSocket(http_server, connection_id, std::move(maybe_id),
+                              status, nullptr, it->second, true);
     return;
   }
 
@@ -1828,13 +1840,13 @@ void HttpHandler::OnWebSocketMessage(HttpServerInterface* http_server,
   if (cmd_it != static_bidi_command_map_.end()) {
     CommandCallback callback = base::BindRepeating(
         &HttpHandler::SendResponseOverWebSocket, weak_ptr_factory_.GetWeakPtr(),
-        http_server, connection_id, maybe_id);
+        http_server, connection_id, Clone(maybe_id));
 
     if (*method == "session.new") {
       callback = base::BindRepeating(&HttpHandler::OnNewBidiSessionOnCmdThread,
                                      weak_ptr_factory_.GetWeakPtr(),
                                      base::Unretained(http_server),
-                                     connection_id, maybe_id);
+                                     connection_id, std::move(maybe_id));
     }
 
     cmd_it->second.Run(parsed, session_id, std::move(callback));
@@ -1849,12 +1861,11 @@ void HttpHandler::OnWebSocketMessage(HttpServerInterface* http_server,
   if (session_id.empty()) {
     if (kKnownBidiSessionCommands.contains(*method)) {
       Status invalid_session_error{kInvalidSessionId, "session not found"};
-      SendResponseOverWebSocket(http_server, connection_id,
-                                parsed.FindDouble("id"), invalid_session_error,
-                                nullptr, "", true);
+      SendResponseOverWebSocket(http_server, connection_id, std::move(maybe_id),
+                                invalid_session_error, nullptr, "", true);
     } else {
       Status unknown_static_command = {kUnknownCommand, *method};
-      SendResponseOverWebSocket(http_server, connection_id, maybe_id,
+      SendResponseOverWebSocket(http_server, connection_id, std::move(maybe_id),
                                 unknown_static_command, nullptr, session_id,
                                 true);
     }
@@ -1865,7 +1876,7 @@ void HttpHandler::OnWebSocketMessage(HttpServerInterface* http_server,
   if (cmd_it != session_bidi_command_map_.end()) {
     CommandCallback callback = base::BindRepeating(
         &HttpHandler::SendResponseOverWebSocket, weak_ptr_factory_.GetWeakPtr(),
-        http_server, connection_id, maybe_id);
+        http_server, connection_id, std::move(maybe_id));
     cmd_it->second.Run(parsed, session_id, std::move(callback));
     return;
   }
@@ -1879,7 +1890,7 @@ void HttpHandler::OnWebSocketMessage(HttpServerInterface* http_server,
       params, session_id,
       base::BindRepeating(&HttpHandler::SendResponseOverWebSocket,
                           weak_ptr_factory_.GetWeakPtr(), http_server,
-                          connection_id, maybe_id));
+                          connection_id, std::move(maybe_id)));
 }
 
 void HttpHandler::OnWebSocketResponseOnCmdThread(
@@ -2045,13 +2056,13 @@ Status internal::ParseBidiCommand(const std::string& data,
 
 base::Value::Dict internal::CreateBidiErrorResponse(
     Status status,
-    std::optional<double> maybe_id) {
+    std::optional<base::Value> maybe_id) {
   base::Value::Dict ret;
   // Error is generated by ChromeDriver
   ret.Set("type", "error");
   ret.Set("message", status.message());
   ret.Set("error", StatusCodeToString(status.code()));
-  if (maybe_id) {
+  if (maybe_id.has_value()) {
     ret.Set("id", std::move(*maybe_id));
   }
   return ret;
