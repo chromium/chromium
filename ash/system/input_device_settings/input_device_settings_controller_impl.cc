@@ -692,6 +692,7 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
       prefs::kPointingStickUpdateSettingsMetricInfo);
 
   pref_registry->RegisterListPref(prefs::kKeyboardDeviceImpostersListPref);
+  pref_registry->RegisterListPref(prefs::kMouseDeviceImpostersListPref);
   pref_registry->RegisterDictionaryPref(prefs::kMouseButtonRemappingsDictPref);
   pref_registry->RegisterDictionaryPref(
       prefs::kGraphicsTabletTabletButtonRemappingsDictPref);
@@ -719,6 +720,10 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
+  if (!features::IsMouseImposterCheckEnabled()) {
+    pref_service->ClearPref(prefs::kMouseDeviceImpostersListPref);
+  }
+
   // If the flag is disabled, clear the button remapping dictionaries.
   if (!features::IsPeripheralCustomizationEnabled()) {
     pref_service->ClearPref(
@@ -742,6 +747,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->SetDict(prefs::kPointingStickDeviceSettingsDictPref, {});
     pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
     pref_service->SetList(prefs::kKeyboardDeviceImpostersListPref, {});
+    pref_service->SetList(prefs::kMouseDeviceImpostersListPref, {});
 
     pref_service->ClearPref(prefs::kKeyboardInternalSettings);
     pref_service->ClearPref(prefs::kKeyboardUpdateSettingsMetricInfo);

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/bluetooth_devices_observer.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -69,7 +70,29 @@ bool IsKeyboardAKnownImposterFalsePositive(const ui::InputDevice& device) {
   return base::Contains(imposters, device_key);
 }
 
-// Saves `imposter_false_positives_to_add` to the know list of imposters in
+// Imposter here means a device that has a virtual keyboard device as well as a
+// virtual mouse device presented to evdev and the mouse device is "fake".
+bool IsMouseAKnownImposterFalsePositive(const ui::InputDevice& device) {
+  if (!features::IsMouseImposterCheckEnabled()) {
+    return false;
+  }
+
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
+    return false;
+  }
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!prefs) {
+    return false;
+  }
+
+  const auto& imposters = prefs->GetList(prefs::kMouseDeviceImpostersListPref);
+  const std::string device_key = BuildDeviceKey(device);
+  return base::Contains(imposters, device_key);
+}
+
+// Saves `imposter_false_positives_to_add` to the known list of imposters in
 // prefs. Clears the list if it successfully adds the devices to prefs.
 void SaveKeyboardsToImposterPref(
     base::flat_set<std::string>& imposter_false_positives_to_add) {
@@ -94,6 +117,35 @@ void SaveKeyboardsToImposterPref(
   }
 
   prefs->SetList(prefs::kKeyboardDeviceImpostersListPref,
+                 std::move(updated_imposters));
+  imposter_false_positives_to_add.clear();
+}
+
+// Saves `imposter_false_positives_to_add` to the known list of mouse imposters
+// in prefs. Clears the list if it successfully adds the devices to prefs.
+void SaveMiceToImposterPref(
+    base::flat_set<std::string>& imposter_false_positives_to_add) {
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
+    return;
+  }
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!prefs) {
+    return;
+  }
+
+  auto updated_imposters =
+      prefs->GetList(prefs::kMouseDeviceImpostersListPref).Clone();
+  for (const auto& device_key : imposter_false_positives_to_add) {
+    if (base::Contains(updated_imposters, device_key)) {
+      continue;
+    }
+
+    updated_imposters.Append(device_key);
+  }
+
+  prefs->SetList(prefs::kMouseDeviceImpostersListPref,
                  std::move(updated_imposters));
   imposter_false_positives_to_add.clear();
 }
@@ -166,6 +218,10 @@ bool IsDeviceASuspectedImposter<mojom::MousePtr>(
       break;
   }
 
+  if (IsMouseAKnownImposterFalsePositive(device)) {
+    return false;
+  }
+
   // If the device is bluetooth, check the bluetooth device to see if it is a
   // mouse or mouse/keyboard combo.
   if (device.type == ui::INPUT_DEVICE_BLUETOOTH) {
@@ -185,7 +241,11 @@ bool IsDeviceASuspectedImposter<mojom::MousePtr>(
     return true;
   }
 
-  return false;
+  if (!features::IsMouseImposterCheckEnabled()) {
+    return false;
+  }
+
+  return device.suspected_mouse_imposter;
 }
 
 template <typename T>
@@ -295,6 +355,35 @@ void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::HandleImposterPref(
 }
 
 template <>
+void InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>::HandleImposterPref(
+    const std::vector<ui::InputDevice>& updated_device_list) {
+  if (!features::IsMouseImposterCheckEnabled()) {
+    return;
+  }
+
+  // Use a temporary set to store the device ids of imposter devices so devices
+  // get removed upon device disconnect.
+  base::flat_set<DeviceId> updated_imposter_devices;
+  for (const ui::InputDevice& device : updated_device_list) {
+    if (device.suspected_mouse_imposter) {
+      updated_imposter_devices.insert(device.id);
+      continue;
+    }
+
+    // If the device is no longer an imposter and once was (which means it was
+    // in `mouse_imposter_devices_`) add it to our list of device keys to add to
+    // the known imposter list.
+    if (mouse_imposter_devices_.contains(device.id)) {
+      mouse_imposter_false_positives_to_add_.insert(BuildDeviceKey(device));
+    }
+  }
+  mouse_imposter_devices_ = std::move(updated_imposter_devices);
+
+  // Always try to add additional devices to the imposter pref list.
+  SaveMiceToImposterPref(mouse_imposter_false_positives_to_add_);
+}
+
+template <>
 void InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>::
     HandleImposterPref(
         const std::vector<ui::KeyboardDevice>& updated_device_list) {
@@ -308,16 +397,16 @@ void InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>::
     }
 
     // If the device is no longer an imposter and once was (which means it was
-    // in `imposter_devices_`) add it to our list of device keys to add to the
-    // known imposter list.
-    if (imposter_devices_.contains(device.id)) {
-      imposter_false_positives_to_add_.insert(BuildDeviceKey(device));
+    // in `keyboard_imposter_devices_`) add it to our list of device keys to add
+    // to the known imposter list.
+    if (keyboard_imposter_devices_.contains(device.id)) {
+      keyboard_imposter_false_positives_to_add_.insert(BuildDeviceKey(device));
     }
   }
-  imposter_devices_ = std::move(updated_imposter_devices);
+  keyboard_imposter_devices_ = std::move(updated_imposter_devices);
 
   // Always try to add additional devices to the imposter pref list.
-  SaveKeyboardsToImposterPref(imposter_false_positives_to_add_);
+  SaveKeyboardsToImposterPref(keyboard_imposter_false_positives_to_add_);
 }
 
 template <typename MojomDevicePtr, typename InputDeviceType>

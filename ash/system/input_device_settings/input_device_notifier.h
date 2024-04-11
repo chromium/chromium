@@ -73,21 +73,31 @@ class ASH_EXPORT InputDeviceNotifier : public ui::InputDeviceEventObserver,
 
   std::unique_ptr<BluetoothDevicesObserver> bluetooth_devices_observer_;
 
-  // The set of devices that were imposters last time devices were refreshed.
-  base::flat_set<DeviceId> imposter_devices_;
+  // The set of devices that were keyboard imposters last time devices were
+  // refreshed.
+  base::flat_set<DeviceId> keyboard_imposter_devices_;
+  // The set of devices that were mouse imposters last time devices were
+  // refreshed.
+  base::flat_set<DeviceId> mouse_imposter_devices_;
   // The set of device keys to add to the prefs.
-  base::flat_set<std::string> imposter_false_positives_to_add_;
+  base::flat_set<std::string> keyboard_imposter_false_positives_to_add_;
+  base::flat_set<std::string> mouse_imposter_false_positives_to_add_;
 };
 
 // Below explicit template instantiations needed for all supported types.
 template <>
-ASH_EXPORT std::vector<ui::KeyboardDevice>
-InputDeviceNotifier<mojom::KeyboardPtr,
-                    ui::KeyboardDevice>::GetUpdatedDeviceList();
-template <>
 ASH_EXPORT void
 InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>::HandleImposterPref(
     const std::vector<ui::KeyboardDevice>& updated_device_list);
+template <>
+ASH_EXPORT void
+InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>::HandleImposterPref(
+    const std::vector<ui::InputDevice>& updated_device_list);
+
+template <>
+ASH_EXPORT std::vector<ui::KeyboardDevice>
+InputDeviceNotifier<mojom::KeyboardPtr,
+                    ui::KeyboardDevice>::GetUpdatedDeviceList();
 template <>
 ASH_EXPORT std::vector<ui::TouchpadDevice>
 InputDeviceNotifier<mojom::TouchpadPtr,

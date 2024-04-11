@@ -73,6 +73,10 @@ inline constexpr char kKeyboardInternalSettings[] =
 // to be valid (ie false positives).
 inline constexpr char kKeyboardDeviceImpostersListPref[] =
     "settings.keyboard.imposter_false_positives";
+// Pref which contains a list of previously seen imposter mice that we know to
+// be valid (ie false positives).
+inline constexpr char kMouseDeviceImpostersListPref[] =
+    "settings.mouse.imposter_false_positives";
 
 // Prefs which contain dictionaries of button remappings for each connected
 // device.
