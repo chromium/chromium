@@ -304,11 +304,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
     });
 
-    this.synth.onvoiceschanged = () => {
-      this.getVoices(/*refresh =*/ true);
-    };
-
     this.showLoading();
+
+    if (this.isReadAloudEnabled_) {
+      this.synth.onvoiceschanged = () => {
+        this.getVoices(/*refresh =*/ true);
+      };
+    }
 
     document.onselectionchange = () => {
       // When Read Aloud is playing, user-selection is disabled on the Read
