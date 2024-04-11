@@ -8,12 +8,15 @@
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/common/features.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
@@ -85,57 +88,72 @@ using autofill_address_profile_infobar_overlays::
 #pragma mark - Private
 
 - (void)onSaveUpdateViewDismissed {
-  SaveAddressProfileInfobarModalOverlayMediator* modalMediator =
-      static_cast<SaveAddressProfileInfobarModalOverlayMediator*>(
-          self.modalMediator);
   if (!self.config) {
     return;
   }
-  _autofillProfile =
-      std::make_unique<autofill::AutofillProfile>(*(self.config->GetProfile()));
-  autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
-  self.sharedEditViewMediator = [[AutofillProfileEditMediator alloc]
-         initWithDelegate:self
-      personalDataManager:personalDataManager
-          autofillProfile:_autofillProfile.get()
-              countryCode:nil
-        isMigrationPrompt:self.config->is_migration_to_account()];
 
-  LegacyInfobarEditAddressProfileTableViewController* editModalViewController =
-      [[LegacyInfobarEditAddressProfileTableViewController alloc]
-          initWithModalDelegate:modalMediator];
-  self.sharedEditViewController =
-      [[AutofillProfileEditTableViewController alloc]
-          initWithDelegate:self.sharedEditViewMediator
-                  userEmail:(self.config->user_email()
-                                ? base::SysUTF16ToNSString(
-                                      self.config->user_email().value())
-                                : nil)controller:editModalViewController
-              settingsView:NO];
-  self.sharedEditViewMediator.consumer = self.sharedEditViewController;
-  editModalViewController.handler = self.sharedEditViewController;
+  if (base::FeatureList::IsEnabled(
+          kAutofillDynamicallyLoadsFieldsForAddressInput)) {
+    web::WebState* webState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    AutofillBottomSheetTabHelper* bottomSheetTabHelper =
+        AutofillBottomSheetTabHelper::FromWebState(webState);
+    bottomSheetTabHelper->ShowEditAddressBottomSheet();
+  } else {
+    SaveAddressProfileInfobarModalOverlayMediator* modalMediator =
+        static_cast<SaveAddressProfileInfobarModalOverlayMediator*>(
+            self.modalMediator);
+    _autofillProfile = std::make_unique<autofill::AutofillProfile>(
+        *(self.config->GetProfile()));
+    autofill::PersonalDataManager* personalDataManager =
+        autofill::PersonalDataManagerFactory::GetForBrowserState(
+            self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+    self.sharedEditViewMediator = [[AutofillProfileEditMediator alloc]
+           initWithDelegate:self
+        personalDataManager:personalDataManager
+            autofillProfile:_autofillProfile.get()
+                countryCode:nil
+          isMigrationPrompt:self.config->is_migration_to_account()];
 
-  modalMediator.editAddressConsumer = editModalViewController;
-  self.modalMediator = modalMediator;
-  self.modalViewController = editModalViewController;
+    LegacyInfobarEditAddressProfileTableViewController*
+        editModalViewController =
+            [[LegacyInfobarEditAddressProfileTableViewController alloc]
+                initWithModalDelegate:modalMediator];
+    self.sharedEditViewController =
+        [[AutofillProfileEditTableViewController alloc]
+            initWithDelegate:self.sharedEditViewMediator
+                   userEmail:(self.config->user_email()
+                                  ? base::SysUTF16ToNSString(
+                                        self.config->user_email().value())
+                                  : nil)controller:editModalViewController
+                settingsView:NO];
+    self.sharedEditViewMediator.consumer = self.sharedEditViewController;
+    editModalViewController.handler = self.sharedEditViewController;
 
-  [self configureViewController];
-  [self.baseViewController presentViewController:self.viewController
-                                        animated:YES
-                                      completion:nil];
+    modalMediator.editAddressConsumer = editModalViewController;
+    self.modalMediator = modalMediator;
+    self.modalViewController = editModalViewController;
+
+    [self configureViewController];
+    [self.baseViewController presentViewController:self.viewController
+                                          animated:YES
+                                        completion:nil];
+  }
 }
 
 #pragma mark - AutofillProfileEditMediatorDelegate
 
 - (void)autofillEditProfileMediatorDidFinish:
     (AutofillProfileEditMediator*)mediator {
+  CHECK(!base::FeatureList::IsEnabled(
+      kAutofillDynamicallyLoadsFieldsForAddressInput));
 }
 
 - (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country
                                           countryList:(NSArray<CountryItem*>*)
                                                           allCountries {
+  CHECK(!base::FeatureList::IsEnabled(
+      kAutofillDynamicallyLoadsFieldsForAddressInput));
   AutofillCountrySelectionTableViewController*
       autofillCountrySelectionTableViewController =
           [[AutofillCountrySelectionTableViewController alloc]
@@ -150,14 +168,18 @@ using autofill_address_profile_infobar_overlays::
 }
 
 - (void)didSaveProfile {
+  CHECK(!base::FeatureList::IsEnabled(
+      kAutofillDynamicallyLoadsFieldsForAddressInput));
   [self.modalMediator saveEditedProfileWithProfileData:_autofillProfile.get()];
 }
 
 #pragma mark - AutofillCountrySelectionTableViewControllerDelegate
 
 - (void)didSelectCountry:(CountryItem*)selectedCountry {
+  CHECK(!base::FeatureList::IsEnabled(
+      kAutofillDynamicallyLoadsFieldsForAddressInput));
   [self.modalViewController.navigationController popViewControllerAnimated:YES];
-  DCHECK(self.sharedEditViewMediator);
+  CHECK(self.sharedEditViewMediator);
   [self.sharedEditViewMediator didSelectCountry:selectedCountry];
 }
 

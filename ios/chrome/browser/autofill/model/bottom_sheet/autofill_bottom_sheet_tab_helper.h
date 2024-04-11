@@ -79,6 +79,9 @@ class AutofillBottomSheetTabHelper
       autofill::VirtualCardEnrollUiModel model,
       autofill::VirtualCardEnrollmentCallbacks callbacks);
 
+  // Send a command to show the bottom sheet to edit an address.
+  void ShowEditAddressBottomSheet();
+
   // Handler for JavaScript messages. Dispatch to more specific handler.
   void OnFormMessageReceived(const web::ScriptMessage& message);
 

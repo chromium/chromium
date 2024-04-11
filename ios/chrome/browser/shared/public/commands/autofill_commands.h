@@ -31,9 +31,12 @@ struct VirtualCardEnrollUiModel;
 // Shows the plus address bottom sheet view controller.
 - (void)showPlusAddressesBottomSheet;
 
-// Shows a command to show the VCN enrollment Bottom Sheet.
+// Sends a command to show the VCN enrollment Bottom Sheet.
 - (void)showVirtualCardEnrollmentBottomSheet:
     (const autofill::VirtualCardEnrollUiModel&)model;
+
+// Sends a command to show the bottom sheet to edit an address.
+- (void)showEditAddressBottomSheet;
 
 // Commands to manage the Autofill error dialog.
 - (void)showAutofillErrorDialog:

@@ -1687,6 +1687,10 @@ enum class ToolbarKind {
   [self.virtualCardEnrollmentBottomSheetCoordinator start];
 }
 
+- (void)showEditAddressBottomSheet {
+  // TODO(crbug.com/148226): Implement.
+}
+
 - (void)showAutofillErrorDialog:
     (autofill::AutofillErrorDialogContext)errorContext {
   if (self.autofillErrorDialogCoordinator) {

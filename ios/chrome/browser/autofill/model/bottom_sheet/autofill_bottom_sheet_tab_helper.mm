@@ -86,6 +86,10 @@ void AutofillBottomSheetTabHelper::ShowVirtualCardEnrollmentBottomSheet(
   [commands_handler_ showVirtualCardEnrollmentBottomSheet:model];
 }
 
+void AutofillBottomSheetTabHelper::ShowEditAddressBottomSheet() {
+  [commands_handler_ showEditAddressBottomSheet];
+}
+
 void AutofillBottomSheetTabHelper::SetAutofillBottomSheetHandler(
     id<AutofillCommands> commands_handler) {
   commands_handler_ = commands_handler;
