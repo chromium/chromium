@@ -7485,6 +7485,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_APP_INSTALL_DIALOG_FAILED_INSTALL_TITLE" desc="Title shown in the app install dialog if the app failed to install.">
     Can't install app. Something went wrong.
   </message>
+  <message name="IDS_APP_INSTALL_DIALOG_APP_ICON_ALT" desc="Alt text for the app icon displayed in the app install dialog. This is the text that will be read by screen reader when the app icon is focused.">
+    <ph name="APP">$1<ex>Google Docs</ex></ph> logo
+  </message>
 
   <!-- Extended Updates Dialog -->
   <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_HEADING" desc="Dialog heading of the Extended Updates Dialog" translateable="false">

@@ -46,6 +46,7 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
       {"noAppDataDescription", IDS_APP_INSTALL_DIALOG_NO_APP_DATA_DESCRIPTION},
       {"tryAgain", IDS_APP_INSTALL_DIALOG_TRY_AGAIN_BUTTON_LABEL},
       {"failedInstall", IDS_APP_INSTALL_DIALOG_FAILED_INSTALL_TITLE},
+      {"iconAlt", IDS_APP_INSTALL_DIALOG_APP_ICON_ALT},
   };
 
   source->AddLocalizedStrings(kStrings);

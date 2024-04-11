@@ -197,6 +197,10 @@ class AppInstallDialogElement extends HTMLElement {
       const iconElement = this.$<HTMLImageElement>('#app-icon');
       assert(iconElement);
       iconElement.setAttribute('auto-src', dialogArgs.args.iconUrl.url);
+      iconElement.setAttribute(
+          'alt',
+          loadTimeData.substituteString(
+              loadTimeData.getString('iconAlt'), dialogArgs.args.name));
 
       if (dialogArgs.args.description) {
         this.$<HTMLDivElement>('#description').textContent =
