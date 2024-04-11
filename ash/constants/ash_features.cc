@@ -1242,6 +1242,15 @@ constexpr base::FeatureParam<base::TimeDelta>
 // Enables or disables Focus Mode feature on ChromeOS.
 BASE_FEATURE(kFocusMode, "FocusMode", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Force enables additional on-device parental controls regardless of the device
+// region.
+// Used for development and testing only. Should remain disabled by default.
+// See `kForceEnableAdditionalOnDeviceAppsParentalControls` description for the
+// feature details.
+BASE_FEATURE(kForceAdditionalOnDeviceAppsParentalControlsAllRegions,
+             "ForceAdditionalOnDeviceAppsParentalControlsAllRegions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, makes the Projector app use server side speech
 // recognition instead of on-device speech recognition.
 BASE_FEATURE(kForceEnableServerSideSpeechRecognitionForDev,
@@ -3537,6 +3546,11 @@ bool IsFloatingWorkspaceEnabled() {
 
 bool IsFloatingWorkspaceV2Enabled() {
   return base::FeatureList::IsEnabled(kFloatingWorkspaceV2);
+}
+
+bool IsForceAdditionalOnDeviceAppsParentalControlsAllRegionsEnabled() {
+  return base::FeatureList::IsEnabled(
+      kForceAdditionalOnDeviceAppsParentalControlsAllRegions);
 }
 
 bool IsFocusModeEnabled() {

@@ -403,6 +403,8 @@ extern const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOffTime;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFingerprintAuthFactor);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFocusMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kForceAdditionalOnDeviceAppsParentalControlsAllRegions);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kForceEnableServerSideSpeechRecognitionForDev);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kForceReSyncDrive);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kForestFeature);
@@ -1036,6 +1038,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFlexAutoEnrollmentEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFocusModeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsForceAdditionalOnDeviceAppsParentalControlsAllRegionsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldForceEnableServerSideSpeechRecognitionForDev();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsForceReSyncDriveEnabled();
