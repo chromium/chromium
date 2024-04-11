@@ -172,7 +172,9 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
       result.result());
 }
 
-std::optional<DebugDataType> GetReportDataType(EventLevelResult result) {
+std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
+    EventLevelResult result,
+    const CreateReportResult::Limits& limits) {
   switch (result) {
     case EventLevelResult::kSuccess:
     case EventLevelResult::kProhibitedByBrowserPolicy:
@@ -180,66 +182,91 @@ std::optional<DebugDataType> GetReportDataType(EventLevelResult result) {
     case EventLevelResult::kNotRegistered:
       return std::nullopt;
     case EventLevelResult::kInternalError:
-      return DebugDataType::kTriggerUnknownError;
+      return DebugDataTypeAndBody(DebugDataType::kTriggerUnknownError);
     case EventLevelResult::kNoCapacityForConversionDestination:
-      return DebugDataType::kTriggerEventStorageLimit;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerEventStorageLimit,
+          GetLimit(limits.max_event_level_reports_per_destination.value()));
     case EventLevelResult::kExcessiveReportingOrigins:
-      return DebugDataType::kTriggerReportingOriginLimit;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerReportingOriginLimit,
+          GetLimit(
+              limits.rate_limits_max_attribution_reporting_origins.value()));
     case EventLevelResult::kNoMatchingImpressions:
-      return DebugDataType::kTriggerNoMatchingSource;
+      return DebugDataTypeAndBody(DebugDataType::kTriggerNoMatchingSource);
     case EventLevelResult::kExcessiveAttributions:
-      return DebugDataType::kTriggerEventAttributionsPerSourceDestinationLimit;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerEventAttributionsPerSourceDestinationLimit,
+          GetLimit(limits.rate_limits_max_attributions.value()));
     case EventLevelResult::kNoMatchingSourceFilterData:
-      return DebugDataType::kTriggerNoMatchingFilterData;
+      return DebugDataTypeAndBody(DebugDataType::kTriggerNoMatchingFilterData);
     case EventLevelResult::kDeduplicated:
-      return DebugDataType::kTriggerEventDeduplicated;
+      return DebugDataTypeAndBody(DebugDataType::kTriggerEventDeduplicated);
     case EventLevelResult::kNoMatchingConfigurations:
-      return DebugDataType::kTriggerEventNoMatchingConfigurations;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerEventNoMatchingConfigurations);
     case EventLevelResult::kNeverAttributedSource:
     case EventLevelResult::kFalselyAttributedSource:
-      return DebugDataType::kTriggerEventNoise;
+      return DebugDataTypeAndBody(DebugDataType::kTriggerEventNoise);
     case EventLevelResult::kPriorityTooLow:
-      return DebugDataType::kTriggerEventLowPriority;
+      return DebugDataTypeAndBody(DebugDataType::kTriggerEventLowPriority);
     case EventLevelResult::kExcessiveReports:
-      return DebugDataType::kTriggerEventExcessiveReports;
+      return DebugDataTypeAndBody(DebugDataType::kTriggerEventExcessiveReports);
     case EventLevelResult::kReportWindowNotStarted:
-      return DebugDataType::kTriggerEventReportWindowNotStarted;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerEventReportWindowNotStarted);
     case EventLevelResult::kReportWindowPassed:
-      return DebugDataType::kTriggerEventReportWindowPassed;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerEventReportWindowPassed);
     case EventLevelResult::kNoMatchingTriggerData:
-      return DebugDataType::kTriggerEventNoMatchingTriggerData;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerEventNoMatchingTriggerData);
   }
 }
 
-std::optional<DebugDataType> GetReportDataType(AggregatableResult result) {
+std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
+    AggregatableResult result,
+    const CreateReportResult::Limits& limits) {
   switch (result) {
     case AggregatableResult::kSuccess:
     case AggregatableResult::kNotRegistered:
     case AggregatableResult::kProhibitedByBrowserPolicy:
       return std::nullopt;
     case AggregatableResult::kInternalError:
-      return DebugDataType::kTriggerUnknownError;
+      return DebugDataTypeAndBody(DebugDataType::kTriggerUnknownError);
     case AggregatableResult::kNoCapacityForConversionDestination:
-      return DebugDataType::kTriggerAggregateStorageLimit;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerAggregateStorageLimit,
+          GetLimit(limits.max_aggregatable_reports_per_destination.value()));
     case AggregatableResult::kExcessiveReportingOrigins:
-      return DebugDataType::kTriggerReportingOriginLimit;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerReportingOriginLimit,
+          GetLimit(
+              limits.rate_limits_max_attribution_reporting_origins.value()));
     case AggregatableResult::kNoMatchingImpressions:
-      return DebugDataType::kTriggerNoMatchingSource;
+      return DebugDataTypeAndBody(DebugDataType::kTriggerNoMatchingSource);
     case AggregatableResult::kExcessiveAttributions:
-      return DebugDataType::
-          kTriggerAggregateAttributionsPerSourceDestinationLimit;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerAggregateAttributionsPerSourceDestinationLimit,
+          GetLimit(limits.rate_limits_max_attributions.value()));
     case AggregatableResult::kNoMatchingSourceFilterData:
-      return DebugDataType::kTriggerNoMatchingFilterData;
+      return DebugDataTypeAndBody(DebugDataType::kTriggerNoMatchingFilterData);
     case AggregatableResult::kDeduplicated:
-      return DebugDataType::kTriggerAggregateDeduplicated;
+      return DebugDataTypeAndBody(DebugDataType::kTriggerAggregateDeduplicated);
     case AggregatableResult::kNoHistograms:
-      return DebugDataType::kTriggerAggregateNoContributions;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerAggregateNoContributions);
     case AggregatableResult::kInsufficientBudget:
-      return DebugDataType::kTriggerAggregateInsufficientBudget;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerAggregateInsufficientBudget,
+          GetLimit(attribution_reporting::kMaxAggregatableValue));
     case AggregatableResult::kReportWindowPassed:
-      return DebugDataType::kTriggerAggregateReportWindowPassed;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerAggregateReportWindowPassed);
     case AggregatableResult::kExcessiveReports:
-      return DebugDataType::kTriggerAggregateExcessiveReports;
+      return DebugDataTypeAndBody(
+          DebugDataType::kTriggerAggregateExcessiveReports,
+          GetLimit(limits.max_aggregatable_reports_per_source.value()));
   }
 }
 
@@ -329,19 +356,14 @@ void SetLimit(base::Value::Dict& data_body, base::Value limit) {
   data_body.Set("limit", std::move(limit));
 }
 
-template <typename T>
-void SetLimit(base::Value::Dict& data_body, T limit) {
-  data_body.Set("limit", base::NumberToString(limit));
-}
-
-template <typename T>
-void SetLimit(base::Value::Dict& data_body, std::optional<T> limit) {
-  DCHECK(limit.has_value());
-  SetLimit(data_body, *limit);
-}
-
-base::Value::Dict GetReportDataBody(DebugDataType data_type,
+base::Value::Dict GetReportDataBody(DebugDataTypeAndBody data,
                                     const CreateReportResult& result) {
+  if (data.debug_data_type == DebugDataType::kTriggerEventExcessiveReports ||
+      data.debug_data_type == DebugDataType::kTriggerEventLowPriority) {
+    DCHECK(result.dropped_event_level_report());
+    return result.dropped_event_level_report()->ReportBody();
+  }
+
   base::Value::Dict data_body;
   data_body.Set(
       kAttributionDestination,
@@ -356,59 +378,8 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
                   source->common_info().source_site(), source->debug_key());
   }
 
-  switch (data_type) {
-    case DebugDataType::kTriggerNoMatchingSource:
-    case DebugDataType::kTriggerNoMatchingFilterData:
-    case DebugDataType::kTriggerEventDeduplicated:
-    case DebugDataType::kTriggerEventNoMatchingConfigurations:
-    case DebugDataType::kTriggerEventNoise:
-    case DebugDataType::kTriggerEventReportWindowNotStarted:
-    case DebugDataType::kTriggerEventReportWindowPassed:
-    case DebugDataType::kTriggerEventNoMatchingTriggerData:
-    case DebugDataType::kTriggerAggregateDeduplicated:
-    case DebugDataType::kTriggerAggregateNoContributions:
-    case DebugDataType::kTriggerAggregateReportWindowPassed:
-    case DebugDataType::kTriggerUnknownError:
-      break;
-    case DebugDataType::kTriggerEventAttributionsPerSourceDestinationLimit:
-    case DebugDataType::kTriggerAggregateAttributionsPerSourceDestinationLimit:
-      SetLimit(data_body, result.limits().rate_limits_max_attributions);
-      break;
-    case DebugDataType::kTriggerAggregateInsufficientBudget:
-      SetLimit<int>(data_body, attribution_reporting::kMaxAggregatableValue);
-      break;
-    case DebugDataType::kTriggerAggregateExcessiveReports:
-      SetLimit(data_body, result.limits().max_aggregatable_reports_per_source);
-      break;
-    case DebugDataType::kTriggerReportingOriginLimit:
-      SetLimit(data_body,
-               result.limits().rate_limits_max_attribution_reporting_origins);
-      break;
-    case DebugDataType::kTriggerEventStorageLimit:
-      SetLimit(data_body,
-               result.limits().max_event_level_reports_per_destination);
-      break;
-    case DebugDataType::kTriggerAggregateStorageLimit:
-      SetLimit(data_body,
-               result.limits().max_aggregatable_reports_per_destination);
-      break;
-    case DebugDataType::kTriggerEventLowPriority:
-    case DebugDataType::kTriggerEventExcessiveReports:
-      DCHECK(result.dropped_event_level_report());
-      return result.dropped_event_level_report()->ReportBody();
-    case DebugDataType::kSourceDestinationLimit:
-    case DebugDataType::kSourceNoised:
-    case DebugDataType::kSourceStorageLimit:
-    case DebugDataType::kSourceSuccess:
-    case DebugDataType::kSourceUnknownError:
-    case DebugDataType::kSourceDestinationRateLimit:
-    case DebugDataType::kOsSourceDelegated:
-    case DebugDataType::kOsTriggerDelegated:
-    case DebugDataType::kHeaderParsingError:
-    case DebugDataType::kSourceReportingOriginPerSiteLimit:
-    case DebugDataType::kSourceMaxChannelCapacityReached:
-    case DebugDataType::kSourceMaxTriggerDataCardinalityReached:
-      NOTREACHED_NORETURN();
+  if (!data.limit.is_none()) {
+    SetLimit(data_body, std::move(data.limit));
   }
 
   return data_body;
@@ -493,23 +464,26 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
   base::Value::List report_body;
 
-  std::optional<DebugDataType> event_level_data_type =
-      GetReportDataType(result.event_level_status());
-  if (event_level_data_type) {
-    report_body.Append(
-        GetReportData(*event_level_data_type,
-                      GetReportDataBody(*event_level_data_type, result)));
-    RecordVerboseDebugReportType(*event_level_data_type);
+  std::optional<DebugDataType> event_level_type;
+  if (std::optional<DebugDataTypeAndBody> event_level_data_type_limit =
+          GetReportDataTypeAndLimit(result.event_level_status(),
+                                    result.limits())) {
+    event_level_type = event_level_data_type_limit->debug_data_type;
+    report_body.Append(GetReportData(
+        event_level_data_type_limit->debug_data_type,
+        GetReportDataBody(std::move(*event_level_data_type_limit), result)));
+    RecordVerboseDebugReportType(event_level_data_type_limit->debug_data_type);
   }
 
-  if (std::optional<DebugDataType> aggregatable_data_type =
-          GetReportDataType(result.aggregatable_status());
-      aggregatable_data_type &&
-      aggregatable_data_type != event_level_data_type) {
-    report_body.Append(
-        GetReportData(*aggregatable_data_type,
-                      GetReportDataBody(*aggregatable_data_type, result)));
-    RecordVerboseDebugReportType(*aggregatable_data_type);
+  if (std::optional<DebugDataTypeAndBody> aggregatable_data_type_limit =
+          GetReportDataTypeAndLimit(result.aggregatable_status(),
+                                    result.limits());
+      aggregatable_data_type_limit &&
+      aggregatable_data_type_limit->debug_data_type != event_level_type) {
+    report_body.Append(GetReportData(
+        aggregatable_data_type_limit->debug_data_type,
+        GetReportDataBody(std::move(*aggregatable_data_type_limit), result)));
+    RecordVerboseDebugReportType(aggregatable_data_type_limit->debug_data_type);
   }
 
   if (report_body.empty()) {
