@@ -3,118 +3,118 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='This'
-++++++++++UNKNOWN label='This'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='paragraph has '
-++++++++++UNKNOWN label='paragraph has '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='text'
-++++++++++UNKNOWN label='text'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='in'
-++++++++++UNKNOWN label='in'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='spans'
-++++++++++UNKNOWN label='spans'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='.'
-++++++++++UNKNOWN label='.'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='E1. Eat'
-++++++++++UNKNOWN label='E1. Eat'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++LINK focusable label='space' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='space' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='space'
+++++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='E2. Eat'
-++++++++++UNKNOWN label='E2. Eat'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++LINK focusable label='space' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='space' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='space'
+++++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='E3. Eat'
-++++++++++UNKNOWN label='E3. Eat'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++LINK focusable label='space' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='space' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='space'
+++++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++LINK focusable label='E4. Eat' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='E4. Eat' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='E4. Eat'
+++++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='space'
-++++++++++UNKNOWN label='space'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++LINK focusable label='E5. Eat' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='E5. Eat' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='E5. Eat'
+++++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='space'
-++++++++++UNKNOWN label='space'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++LINK focusable label='E6. Eat' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='E6. Eat' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='E6. Eat'
+++++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='space'
-++++++++++UNKNOWN label='space'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='K1. Keep'
-++++++++++UNKNOWN label='K1. Keep'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='space'
-++++++++++UNKNOWN label='space'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='K2. Keep'
-++++++++++UNKNOWN label='K2. Keep'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='space'
-++++++++++UNKNOWN label='space'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='K3. Keep'
-++++++++++UNKNOWN label='K3. Keep'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='space'
-++++++++++UNKNOWN label='space'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='K4. Keep '
-++++++++++UNKNOWN label='K4. Keep '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='space'
-++++++++++UNKNOWN label='space'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='K5. Keep'
-++++++++++UNKNOWN label='K5. Keep'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='space'
-++++++++++UNKNOWN label='space'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='K6. Keep '
-++++++++++UNKNOWN label='K6. Keep '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='space'
-++++++++++UNKNOWN label='space'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='K7. Keep'
-++++++++++UNKNOWN label='K7. Keep'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' space'
-++++++++++UNKNOWN label=' space'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='K8. Keep'
-++++++++++UNKNOWN label='K8. Keep'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='space'
-++++++++++UNKNOWN label='space'
+++++++++++UNKNOWN

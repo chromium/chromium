@@ -4,11 +4,11 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN hidden
 ++++++++PARAGRAPH
 ++++++++++STATIC_TEXT label='no overflow'
-++++++++++++UNKNOWN label='no overflow'
+++++++++++++UNKNOWN
 ++++++UNKNOWN hidden
 ++++++++PARAGRAPH
 ++++++++++STATIC_TEXT label='clipped large lots of text more text'
-++++++++++++UNKNOWN label='clipped large lots of text more text'
+++++++++++++UNKNOWN
 ++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='ab cd'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='ab cd'
@@ -19,46 +19,46 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN hidden
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='tiny'
-++++++++++++++UNKNOWN label='tiny'
+++++++++++++++UNKNOWN
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='x=hidden'
-++++++++++++++UNKNOWN label='x=hidden'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN focusable label='x=hidden'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='x=hidden'
-++++++++++++++UNKNOWN label='x=hidden'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN focusable label='x=auto'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='x=auto'
-++++++++++++++UNKNOWN label='x=auto'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN focusable label='x=scroll'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='x=scroll'
-++++++++++++++UNKNOWN label='x=scroll'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='x=visible'
-++++++++++++++UNKNOWN label='x=visible'
+++++++++++++++UNKNOWN
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='y=hidden'
-++++++++++++++UNKNOWN label='y=hidden'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN focusable label='y=hidden'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='y=hidden'
-++++++++++++++UNKNOWN label='y=hidden'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN focusable label='y=auto'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='y=auto'
-++++++++++++++UNKNOWN label='y=auto'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN focusable label='y=scroll'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='y=scroll'
-++++++++++++++UNKNOWN label='y=scroll'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='y=visible'
-++++++++++++++UNKNOWN label='y=visible'
+++++++++++++++UNKNOWN

@@ -6,27 +6,27 @@ rootWebArea
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++staticText name='First item properly groups itself despite '
-++++++++++++inlineTextBox name='First item properly groups itself despite '
+++++++++++++inlineTextBox
 ++++++++++staticText name='bolded'
-++++++++++++inlineTextBox name='bolded'
+++++++++++++inlineTextBox
 ++++++++++staticText name=' text.'
-++++++++++++inlineTextBox name=' text.'
+++++++++++++inlineTextBox
 ++++++++listItem
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++staticText name='This should also be '
-++++++++++++inlineTextBox name='This should also be '
+++++++++++++inlineTextBox
 ++++++++++staticText name='seen'
-++++++++++++inlineTextBox name='seen'
+++++++++++++inlineTextBox
 ++++++++++staticText name=' as a group.'
-++++++++++++inlineTextBox name=' as a group.'
+++++++++++++inlineTextBox
 ++++++++listItem
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++staticText name='Some '
-++++++++++++inlineTextBox name='Some '
+++++++++++++inlineTextBox
 ++++++++++strong
 ++++++++++++staticText name='more'
-++++++++++++++inlineTextBox name='more'
+++++++++++++++inlineTextBox
 ++++++++++staticText name=' text.'
-++++++++++++inlineTextBox name=' text.'
+++++++++++++inlineTextBox

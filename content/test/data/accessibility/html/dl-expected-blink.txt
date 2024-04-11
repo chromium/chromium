@@ -4,10 +4,10 @@ rootWebArea
 ++++++descriptionList
 ++++++++term
 ++++++++++staticText name='Term'
-++++++++++++inlineTextBox name='Term'
+++++++++++++inlineTextBox
 ++++++++definition
 ++++++++++staticText name='Description'
-++++++++++++inlineTextBox name='Description'
+++++++++++++inlineTextBox
 ++++++definition
 ++++++++staticText name='Definition'
-++++++++++inlineTextBox name='Definition'
+++++++++++inlineTextBox

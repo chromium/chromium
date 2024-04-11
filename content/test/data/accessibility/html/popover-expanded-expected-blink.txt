@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer
 ++++++button expanded name='Will expand'
 ++++++++staticText name='Will expand'
-++++++++++inlineTextBox name='Will expand'
+++++++++++inlineTextBox
 ++++++group ispopup=auto
 ++++++++staticText name='PopoverIsExpanded'
-++++++++++inlineTextBox name='PopoverIsExpanded'
+++++++++++inlineTextBox

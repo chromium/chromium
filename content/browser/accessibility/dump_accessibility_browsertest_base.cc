@@ -227,10 +227,14 @@ void DumpAccessibilityTestBase::ChooseFeatures(
     std::vector<base::test::FeatureRef>* enabled_features,
     std::vector<base::test::FeatureRef>* disabled_features) {
   // For the best test coverage during development of this feature, enable the
-  // code that expposes document markers on AXInlineTextBox objects and the
+  // code that exposes document markers on AXInlineTextBox objects and the
   // corresponding code in AXPosition on the browser that collects those
   // markers.
   enabled_features->emplace_back(features::kUseAXPositionForDocumentMarkers);
+  // For improved test coverage ahead of a finch trial, enable the feature that
+  // prunes redundant text for inline text boxes.
+  enabled_features->emplace_back(
+      features::kAccessibilityPruneRedundantInlineText);
 }
 
 std::string DumpAccessibilityTestBase::DumpTreeAsString() const {

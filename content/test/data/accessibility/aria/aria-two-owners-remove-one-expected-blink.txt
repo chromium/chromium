@@ -7,13 +7,13 @@ rootWebArea name='done'
 ++++++++++++genericContainer
 ++++++++++++++button name='1'
 ++++++++++++++++staticText name='1'
-++++++++++++++++++inlineTextBox name='1'
+++++++++++++++++++inlineTextBox
 ++++++genericContainer ignored
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='%E2%80%9C'
-++++++++++++++inlineTextBox name='%E2%80%9C'
+++++++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='%E2%80%9D'
-++++++++++++++inlineTextBox name='%E2%80%9D'
+++++++++++++++inlineTextBox

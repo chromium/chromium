@@ -6,30 +6,30 @@ rootWebArea name='Table example #2'
 ++++++++++layoutTableRow
 ++++++++++++layoutTableCell name='1'
 ++++++++++++++staticText name='1'
-++++++++++++++++inlineTextBox name='1'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='2'
 ++++++++++++++staticText name='2'
-++++++++++++++++inlineTextBox name='2'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='3'
 ++++++++++++++staticText name='3'
-++++++++++++++++inlineTextBox name='3'
+++++++++++++++++inlineTextBox
 ++++++++++layoutTableRow
 ++++++++++++layoutTableCell name='4'
 ++++++++++++++staticText name='4'
-++++++++++++++++inlineTextBox name='4'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='5'
 ++++++++++++++staticText name='5'
-++++++++++++++++inlineTextBox name='5'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='6'
 ++++++++++++++staticText name='6'
-++++++++++++++++inlineTextBox name='6'
+++++++++++++++++inlineTextBox
 ++++++++++layoutTableRow
 ++++++++++++layoutTableCell name='7'
 ++++++++++++++staticText name='7'
-++++++++++++++++inlineTextBox name='7'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='8'
 ++++++++++++++staticText name='8'
-++++++++++++++++inlineTextBox name='8'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='9'
 ++++++++++++++staticText name='9'
-++++++++++++++++inlineTextBox name='9'
+++++++++++++++++inlineTextBox

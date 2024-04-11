@@ -7,26 +7,26 @@ rootWebArea
 ++++++++++++genericContainer ignored
 ++++++++++++++paragraph
 ++++++++++++++++staticText name='My favorite browser is '
-++++++++++++++++++inlineTextBox name='My favorite browser is '
+++++++++++++++++++inlineTextBox
 ++++++++++++++++contentDeletion
 ++++++++++++++++++staticText name='ABC'
-++++++++++++++++++++inlineTextBox name='ABC'
+++++++++++++++++++++inlineTextBox
 ++++++++++++++++staticText name=' '
-++++++++++++++++++inlineTextBox name=' '
+++++++++++++++++++inlineTextBox
 ++++++++++++++++contentInsertion
 ++++++++++++++++++staticText name='Chrome'
-++++++++++++++++++++inlineTextBox name='Chrome'
+++++++++++++++++++++inlineTextBox
 ++++++++++++++++staticText name='!'
-++++++++++++++++++inlineTextBox name='!'
+++++++++++++++++++inlineTextBox
 ++++++iframe
 ++++++++rootWebArea
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++paragraph
 ++++++++++++++++staticText name='This test is to check '
-++++++++++++++++++inlineTextBox name='This test is to check '
+++++++++++++++++++inlineTextBox
 ++++++++++++++++mark
 ++++++++++++++++++staticText name='mark tag'
-++++++++++++++++++++inlineTextBox name='mark tag'
+++++++++++++++++++++inlineTextBox
 ++++++++++++++++staticText name='.'
-++++++++++++++++++inlineTextBox name='.'
+++++++++++++++++++inlineTextBox

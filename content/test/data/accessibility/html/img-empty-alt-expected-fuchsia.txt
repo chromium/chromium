@@ -2,15 +2,15 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++IMAGE
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++IMAGE
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++IMAGE label='full'

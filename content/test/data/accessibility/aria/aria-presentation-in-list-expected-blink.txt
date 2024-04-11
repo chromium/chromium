@@ -6,12 +6,12 @@ rootWebArea isLineBreakingObject=true
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++staticText name='One'
-++++++++++++inlineTextBox name='One'
+++++++++++++inlineTextBox
 ++++++++listItem isLineBreakingObject=true
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++staticText name='Two'
-++++++++++++inlineTextBox name='Two'
+++++++++++++inlineTextBox
 ++++++++++staticText name=' '
 ++++++++++staticText name='Three'
-++++++++++++inlineTextBox name='Three'
+++++++++++++inlineTextBox

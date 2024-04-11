@@ -3,49 +3,49 @@ rootWebArea
 ++++genericContainer ignored
 ++++++list
 ++++++++listItem
-++++++++++listMarker name='1. ' nextOnLineId=inlineTextBox:"this is the first item"
+++++++++++listMarker name='1. ' nextOnLineId=inlineTextBox
 ++++++++++++staticText ignored name='1. '
 ++++++++++staticText name='this is the first item' previousOnLineId=staticText:"1. "
-++++++++++++inlineTextBox name='this is the first item' previousOnLineId=staticText:"1. "
+++++++++++++inlineTextBox previousOnLineId=staticText:"1. "
 ++++++++listItem
-++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox:"this is the second item (for now)"
+++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox
 ++++++++++++staticText ignored name='2. '
 ++++++++++staticText name='this is the second item (for now)' previousOnLineId=staticText:"2. "
-++++++++++++inlineTextBox name='this is the second item (for now)' previousOnLineId=staticText:"2. "
+++++++++++++inlineTextBox previousOnLineId=staticText:"2. "
 ++++++++listItem
-++++++++++listMarker name='3. ' nextOnLineId=inlineTextBox:"Hello"
+++++++++++listMarker name='3. ' nextOnLineId=inlineTextBox
 ++++++++++++staticText ignored name='3. '
 ++++++++++staticText name='Hello' previousOnLineId=staticText:"3. "
-++++++++++++inlineTextBox name='Hello' previousOnLineId=staticText:"3. "
-++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"Hello"
+++++++++++++inlineTextBox previousOnLineId=staticText:"3. "
+++++++++++staticText name=' ' previousOnLineId=inlineTextBox
 ++++++++++staticText name='world this'
-++++++++++++inlineTextBox name='world this'
-++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"world this"
+++++++++++++inlineTextBox
+++++++++++staticText name=' ' previousOnLineId=inlineTextBox
 ++++++++++staticText name='is just like docs, and your kitchen sink'
-++++++++++++inlineTextBox name='is just like docs, and your kitchen sink'
+++++++++++++inlineTextBox
 === Start Continuation ===
 rootWebArea name='done'
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++list
 ++++++++listItem
-++++++++++listMarker name='1. ' nextOnLineId=inlineTextBox:"this is the first item"
+++++++++++listMarker name='1. ' nextOnLineId=inlineTextBox
 ++++++++++++staticText ignored name='1. '
 ++++++++++staticText name='this is the first item' previousOnLineId=staticText:"1. "
-++++++++++++inlineTextBox name='this is the first item' previousOnLineId=staticText:"1. "
+++++++++++++inlineTextBox previousOnLineId=staticText:"1. "
 ++++++++listItem
-++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox:"Hello"
+++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox
 ++++++++++++staticText ignored name='2. '
 ++++++++++staticText name='Hello' previousOnLineId=staticText:"2. "
-++++++++++++inlineTextBox name='Hello' previousOnLineId=staticText:"2. "
-++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"Hello"
+++++++++++++inlineTextBox previousOnLineId=staticText:"2. "
+++++++++++staticText name=' ' previousOnLineId=inlineTextBox
 ++++++++++staticText name='world this'
-++++++++++++inlineTextBox name='world this'
-++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"world this"
+++++++++++++inlineTextBox
+++++++++++staticText name=' ' previousOnLineId=inlineTextBox
 ++++++++++staticText name='is just like docs, and your kitchen sink'
-++++++++++++inlineTextBox name='is just like docs, and your kitchen sink'
+++++++++++++inlineTextBox
 ++++++++listItem
-++++++++++listMarker name='3. ' nextOnLineId=inlineTextBox:"this is the second item (for now)"
+++++++++++listMarker name='3. ' nextOnLineId=inlineTextBox
 ++++++++++++staticText ignored name='3. '
 ++++++++++staticText name='this is the second item (for now)' previousOnLineId=staticText:"3. "
-++++++++++++inlineTextBox name='this is the second item (for now)' previousOnLineId=staticText:"3. "
+++++++++++++inlineTextBox previousOnLineId=staticText:"3. "

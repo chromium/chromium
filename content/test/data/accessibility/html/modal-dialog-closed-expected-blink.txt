@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++staticText name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
-++++++++inlineTextBox name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
+++++++++inlineTextBox
 ++++++section
 ++++++++comboBoxSelect collapsed value='This should be in the tree.' haspopup=menu
 ++++++++++menuListPopup invisible

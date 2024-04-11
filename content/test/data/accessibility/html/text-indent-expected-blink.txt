@@ -3,22 +3,22 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer textIndent=13.23
 ++++++++staticText name='Text indent 50px'
-++++++++++inlineTextBox name='Text indent 50px'
+++++++++++inlineTextBox
 ++++++genericContainer textIndent=-13.23
 ++++++++staticText name='Text indent -50px'
-++++++++++inlineTextBox name='Text indent -50px'
+++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='Text indent 0px'
-++++++++++inlineTextBox name='Text indent 0px'
+++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='Text indent initial'
-++++++++++inlineTextBox name='Text indent initial'
+++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='Text indent inherit'
-++++++++++inlineTextBox name='Text indent inherit'
+++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='No text indent specified'
-++++++++++inlineTextBox name='No text indent specified'
+++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='Invalid text indent'
-++++++++++inlineTextBox name='Invalid text indent'
+++++++++++inlineTextBox

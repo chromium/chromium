@@ -4,13 +4,13 @@ rootWebArea
 ++++++list
 ++++++++term
 ++++++++++staticText name='Term1'
-++++++++++++inlineTextBox name='Term1'
+++++++++++++inlineTextBox
 ++++++++definition
 ++++++++++staticText name='Definition1'
-++++++++++++inlineTextBox name='Definition1'
+++++++++++++inlineTextBox
 ++++++++term
 ++++++++++staticText name='Term2'
-++++++++++++inlineTextBox name='Term2'
+++++++++++++inlineTextBox
 ++++++++definition
 ++++++++++staticText name='Definition2'
-++++++++++++inlineTextBox name='Definition2'
+++++++++++++inlineTextBox

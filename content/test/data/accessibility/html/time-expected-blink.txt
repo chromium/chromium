@@ -3,9 +3,9 @@ rootWebArea
 ++++genericContainer
 ++++++time
 ++++++++staticText name='10:00'
-++++++++++inlineTextBox name='10:00'
+++++++++++inlineTextBox
 ++++++staticText name=' '
-++++++++inlineTextBox name=' '
+++++++++inlineTextBox
 ++++++time
 ++++++++staticText name='Valentines day'
-++++++++++inlineTextBox name='Valentines day'
+++++++++++inlineTextBox

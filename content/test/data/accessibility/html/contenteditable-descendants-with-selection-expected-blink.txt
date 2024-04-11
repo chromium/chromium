@@ -4,29 +4,29 @@ rootWebArea
 ++++++genericContainer editable multiline richlyEditable value='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.' nonAtomicTextFieldRoot=true TreeData.textSelStartOffset=0 TreeData.textSelEndOffset=3
 ++++++++paragraph editable richlyEditable
 ++++++++++staticText editable richlyEditable name='A contenteditable with a '
-++++++++++++inlineTextBox editable richlyEditable name='A contenteditable with a '
+++++++++++++inlineTextBox editable richlyEditable
 ++++++++++link editable richlyEditable name='link'
 ++++++++++++staticText editable richlyEditable name='link'
-++++++++++++++inlineTextBox editable richlyEditable name='link'
+++++++++++++++inlineTextBox editable richlyEditable
 ++++++++++staticText editable richlyEditable name=' and an '
-++++++++++++inlineTextBox editable richlyEditable name=' and an '
+++++++++++++inlineTextBox editable richlyEditable
 ++++++++++image editable name='Image'
 ++++++++++staticText editable richlyEditable name=' and a '
-++++++++++++inlineTextBox editable richlyEditable name=' and a '
+++++++++++++inlineTextBox editable richlyEditable
 ++++++++++button editable name='Button'
 ++++++++++++staticText name='Button'
-++++++++++++++inlineTextBox name='Button'
+++++++++++++++inlineTextBox
 ++++++++++staticText editable richlyEditable name='.'
-++++++++++++inlineTextBox editable richlyEditable name='.'
+++++++++++++inlineTextBox editable richlyEditable
 ++++++++table editable richlyEditable
 ++++++++++rowGroup editable ignored richlyEditable
 ++++++++++++row editable richlyEditable
 ++++++++++++++cell editable richlyEditable name='Always expose editable tables as tables.'
 ++++++++++++++++staticText editable richlyEditable name='Always expose editable tables as tables.'
-++++++++++++++++++inlineTextBox editable richlyEditable name='Always expose editable tables as tables.'
+++++++++++++++++++inlineTextBox editable richlyEditable
 ++++++++list editable richlyEditable
 ++++++++++listItem editable richlyEditable
 ++++++++++++listMarker name='1. '
 ++++++++++++++staticText ignored name='1. '
 ++++++++++++staticText editable richlyEditable name='Editable list item.'
-++++++++++++++inlineTextBox editable richlyEditable name='Editable list item.'
+++++++++++++++inlineTextBox editable richlyEditable

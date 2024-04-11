@@ -4,10 +4,10 @@ rootWebArea
 ++++++menu
 ++++++++menuItemRadio name='Menu item 1' checkedState=false
 ++++++++++staticText name='Menu item 1'
-++++++++++++inlineTextBox name='Menu item 1'
+++++++++++++inlineTextBox
 ++++++++menuItemRadio name='Menu item 2' checkedState=true
 ++++++++++staticText name='Menu item 2'
-++++++++++++inlineTextBox name='Menu item 2'
+++++++++++++inlineTextBox
 ++++++++menuItemRadio name='Menu item 3' checkedState=false
 ++++++++++staticText name='Menu item 3'
-++++++++++++inlineTextBox name='Menu item 3'
+++++++++++++inlineTextBox

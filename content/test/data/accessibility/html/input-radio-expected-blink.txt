@@ -4,12 +4,12 @@ rootWebArea
 ++++++section
 ++++++++radioButton inputType='radio' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton
 ++++++++staticText name='Radio1'
-++++++++++inlineTextBox name='Radio1'
+++++++++++inlineTextBox
 ++++++++lineBreak name='<newline>'
-++++++++++inlineTextBox name='<newline>'
+++++++++++inlineTextBox
 ++++++++radioButton inputType='radio' setSize=2 posInSet=2 checkedState=false radioGroupIds=radioButton
 ++++++++staticText name='Radio2'
-++++++++++inlineTextBox name='Radio2'
+++++++++++inlineTextBox
 ++++++section
 ++++++++labelText ignored
 ++++++++++radioButton inputType='radio' name='Radio3' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton

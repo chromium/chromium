@@ -5,7 +5,7 @@ rootWebArea
 ++++++++docEndnotes
 ++++++++++docEndnote
 ++++++++++++staticText name='Endnote 1'
-++++++++++++++inlineTextBox name='Endnote 1'
+++++++++++++++inlineTextBox
 ++++++++++docEndnote
 ++++++++++++staticText name='Endnote 2'
-++++++++++++++inlineTextBox name='Endnote 2'
+++++++++++++++inlineTextBox

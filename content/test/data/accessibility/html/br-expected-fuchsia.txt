@@ -2,15 +2,15 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++UNKNOWN label='<newline>'
-++++++++UNKNOWN label='<newline>'
+++++++++UNKNOWN
 ++++++STATIC_TEXT label='Text line 1'
-++++++++UNKNOWN label='Text line 1'
+++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='Text line 2'
-++++++++++UNKNOWN label='Text line 2'
+++++++++++UNKNOWN
 ++++++++UNKNOWN label='<newline>'
-++++++++++UNKNOWN label='<newline>'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='Text line 3'
-++++++++++UNKNOWN label='Text line 3'
+++++++++++UNKNOWN
 ++++++UNKNOWN label='<newline>'
-++++++++UNKNOWN label='<newline>'
+++++++++UNKNOWN

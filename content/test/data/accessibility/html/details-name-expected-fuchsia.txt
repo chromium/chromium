@@ -7,7 +7,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++LIST_ELEMENT_MARKER hidden
 ++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
 ++++++++++++STATIC_TEXT label='the summary' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='the summary'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++STATIC_TEXT hidden label='<newline>    '
 ++++++++++STATIC_TEXT hidden label='<newline>    '
@@ -20,18 +20,18 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++LIST_ELEMENT_MARKER hidden
 ++++++++++++++++STATIC_TEXT hidden label='%E2%96%BE '
 ++++++++++++++STATIC_TEXT label='materials' actions='{DEFAULT}'
-++++++++++++++++UNKNOWN label='materials'
+++++++++++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
 ++++++++++++PARAGRAPH
 ++++++++++++++STATIC_TEXT label='Info about what it's made of.'
-++++++++++++++++UNKNOWN label='Info about what it's made of.'
+++++++++++++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN focusable label='dimensions' actions='{DEFAULT}'
 ++++++++++++++LIST_ELEMENT_MARKER hidden
 ++++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
 ++++++++++++++STATIC_TEXT label='dimensions' actions='{DEFAULT}'
-++++++++++++++++UNKNOWN label='dimensions'
+++++++++++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
 ++++++++++++STATIC_TEXT hidden label='<newline>      '
 ++++++++++++STATIC_TEXT hidden label='<newline>      '
@@ -43,7 +43,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++LIST_ELEMENT_MARKER hidden
 ++++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
 ++++++++++++++STATIC_TEXT label='origin' actions='{DEFAULT}'
-++++++++++++++++UNKNOWN label='origin'
+++++++++++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
 ++++++++++++STATIC_TEXT hidden label='<newline>      '
 ++++++++++++STATIC_TEXT hidden label='<newline>      '

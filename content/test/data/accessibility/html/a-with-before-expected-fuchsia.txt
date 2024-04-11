@@ -2,12 +2,12 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++STATIC_TEXT label='Here is a '
-++++++++UNKNOWN label='Here is a '
+++++++++UNKNOWN
 ++++++LINK focusable label='[linked] link' actions='{DEFAULT}'
 ++++++++UNKNOWN hidden
 ++++++++++STATIC_TEXT label='[linked] ' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='[linked] '
+++++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='link' actions='{DEFAULT}'
-++++++++++UNKNOWN label='link'
+++++++++++UNKNOWN
 ++++++STATIC_TEXT label='.'
-++++++++UNKNOWN label='.'
+++++++++UNKNOWN

@@ -3,14 +3,14 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='An unnamed section element gets the section role.'
-++++++++++UNKNOWN label='An unnamed section element gets the section role.'
+++++++++++UNKNOWN
 ++++++UNKNOWN label='name'
 ++++++++STATIC_TEXT label='Named section element #1 gets the region role'
-++++++++++UNKNOWN label='Named section element #1 gets the region role'
+++++++++++UNKNOWN
 ++++++UNKNOWN label='Named section element #2 gets the region role'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Named section element #2 gets the region role'
-++++++++++++UNKNOWN label='Named section element #2 gets the region role'
+++++++++++++UNKNOWN
 ++++++UNKNOWN label='name'
 ++++++++STATIC_TEXT label='Named section element #3 gets the region role'
-++++++++++UNKNOWN label='Named section element #3 gets the region role'
+++++++++++UNKNOWN

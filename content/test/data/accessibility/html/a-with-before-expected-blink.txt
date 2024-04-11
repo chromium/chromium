@@ -2,12 +2,12 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++staticText name='Here is a '
-++++++++inlineTextBox name='Here is a '
+++++++++inlineTextBox
 ++++++link linked name='[linked] link'
 ++++++++genericContainer ignored
 ++++++++++staticText linked name='[linked] '
-++++++++++++inlineTextBox name='[linked] '
+++++++++++++inlineTextBox
 ++++++++staticText linked name='link'
-++++++++++inlineTextBox name='link'
+++++++++++inlineTextBox
 ++++++staticText name='.'
-++++++++inlineTextBox name='.'
+++++++++inlineTextBox

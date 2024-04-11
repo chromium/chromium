@@ -4,63 +4,63 @@ rootWebArea
 ++++++genericContainer
 ++++++++genericContainer ignored
 ++++++++++staticText name='item1item2'
-++++++++++++inlineTextBox name='item1item2'
+++++++++++++inlineTextBox
 ++++++++++image
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++genericContainer
 ++++++++++staticText name='Some Text'
-++++++++++++inlineTextBox name='Some Text'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='code'
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++genericContainer
 ++++++++++staticText name='Some Text'
-++++++++++++inlineTextBox name='Some Text'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText ignored
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++genericContainer
 ++++++++++staticText name='Some Text'
-++++++++++++inlineTextBox name='Some Text'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++image name='star'
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++genericContainer
 ++++++++++staticText name='Some Text'
-++++++++++++inlineTextBox name='Some Text'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++image
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++genericContainer
 ++++++++++staticText name='Some Text'
-++++++++++++inlineTextBox name='Some Text'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='a list of items'
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++genericContainer
 ++++++++++staticText name='Some Text'
-++++++++++++inlineTextBox name='Some Text'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++image
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++genericContainer
 ++++++++++staticText name='Some Text'
-++++++++++++inlineTextBox name='Some Text'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++paragraph
 ++++++++++staticText name='Some Text'
-++++++++++++inlineTextBox name='Some Text'
+++++++++++++inlineTextBox
 ++++++image name='alt'
 ++++++genericContainer
 ++++++++staticText name='DOM Text'
-++++++++++inlineTextBox name='DOM Text'
+++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='DOM Text'
-++++++++++inlineTextBox name='DOM Text'
+++++++++++inlineTextBox

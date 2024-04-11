@@ -7,8 +7,8 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN label='interesting on Android'
 ++++++UNKNOWN actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Div with click handler' actions='{DEFAULT}'
-++++++++++UNKNOWN label='Div with click handler'
+++++++++++UNKNOWN
 ++++++BUTTON label='I am interesting' actions='{DEFAULT}'
 ++++++++PARAGRAPH actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='I should not be interesting' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='I should not be interesting'
+++++++++++++UNKNOWN

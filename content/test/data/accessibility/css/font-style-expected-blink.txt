@@ -3,53 +3,53 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='The '
-++++++++++inlineTextBox name='The '
+++++++++++inlineTextBox
 ++++++++staticText name='quick' textStyle=2
-++++++++++inlineTextBox name='quick'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='brown' textStyle=4
-++++++++++inlineTextBox name='brown'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='fox' textStyle=8
-++++++++++inlineTextBox name='fox'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='jumped' textStyle=6
-++++++++++inlineTextBox name='jumped'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='over' textStyle=12
-++++++++++inlineTextBox name='over'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='dog' textStyle=14
-++++++++++inlineTextBox name='dog'
+++++++++++inlineTextBox
 ++++++genericContainer multiline value='Normal bold italic underline line-through subscript superscript'
 ++++++++staticText name='Normal'
-++++++++++inlineTextBox name='Normal'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='bold' textStyle=2
-++++++++++inlineTextBox name='bold'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='italic' textStyle=4
-++++++++++inlineTextBox name='italic'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='underline' textStyle=8
-++++++++++inlineTextBox name='underline'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='line-through' textStyle=16
-++++++++++inlineTextBox name='line-through'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='subscript' textPosition=subscript
-++++++++++inlineTextBox name='subscript'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='superscript' textPosition=superscript
-++++++++++inlineTextBox name='superscript'
+++++++++++inlineTextBox

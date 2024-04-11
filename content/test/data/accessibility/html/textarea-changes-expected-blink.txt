@@ -4,4 +4,4 @@ rootWebArea name='done'
 ++++++textField multiline value='xyz'
 ++++++++genericContainer
 ++++++++++staticText name='xyz'
-++++++++++++inlineTextBox name='xyz'
+++++++++++++inlineTextBox

@@ -18,4 +18,4 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN label='formatting.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This test is to check pre formatting.'
-++++++++++UNKNOWN label='This test is to check pre formatting.'
+++++++++++UNKNOWN

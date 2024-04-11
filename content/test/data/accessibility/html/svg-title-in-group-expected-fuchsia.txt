@@ -5,4 +5,4 @@ UNKNOWN focusable has_input_focus
 ++++++++IMAGE label='abcde'
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='NL'
-++++++++++++++UNKNOWN label='NL'
+++++++++++++++UNKNOWN

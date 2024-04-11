@@ -7,18 +7,18 @@ rootWebArea
 ++++++++++row
 ++++++++++++columnHeader name='Text'
 ++++++++++++++staticText name='Text'
-++++++++++++++++inlineTextBox name='Text'
+++++++++++++++++inlineTextBox
 ++++++++++row
 ++++++++++++rowHeader name='Should be a row header'
 ++++++++++++++staticText name='Should be a row header'
-++++++++++++++++inlineTextBox name='Should be a row header'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='text'
 ++++++++++++++staticText name='text'
-++++++++++++++++inlineTextBox name='text'
+++++++++++++++++inlineTextBox
 ++++++++++row
 ++++++++++++rowHeader name='Should also be a row header'
 ++++++++++++++staticText name='Should also be a row header'
-++++++++++++++++inlineTextBox name='Should also be a row header'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='text2'
 ++++++++++++++staticText name='text2'
-++++++++++++++++inlineTextBox name='text2'
+++++++++++++++++inlineTextBox

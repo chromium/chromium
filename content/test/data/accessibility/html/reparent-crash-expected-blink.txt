@@ -4,4 +4,4 @@ rootWebArea
 ++++++listItem description='@NO_CHILDREN_DUMP' descriptionFrom=ariaDescription
 ++++++genericContainer
 ++++++++staticText name='Done'
-++++++++++inlineTextBox name='Done'
+++++++++++inlineTextBox

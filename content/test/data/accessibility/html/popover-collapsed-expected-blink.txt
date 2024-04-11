@@ -3,4 +3,4 @@ rootWebArea name='PopoverNowClosed'
 ++++genericContainer
 ++++++button collapsed name='Will collapse'
 ++++++++staticText name='Will collapse'
-++++++++++inlineTextBox name='Will collapse'
+++++++++++inlineTextBox

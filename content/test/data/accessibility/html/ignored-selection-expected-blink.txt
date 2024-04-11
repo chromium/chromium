@@ -2,9 +2,9 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++staticText name='this text is not ignored' TreeData.textSelStartOffset=0
-++++++++inlineTextBox name='this text is not ignored'
+++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='after selection'
-++++++++++inlineTextBox name='after selection'
+++++++++++inlineTextBox
 ++++++staticText name='Done' TreeData.textSelEndOffset=4
-++++++++inlineTextBox name='Done'
+++++++++inlineTextBox

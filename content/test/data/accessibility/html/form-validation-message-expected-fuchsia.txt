@@ -5,6 +5,6 @@ UNKNOWN focusable
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Pet name:'
-++++++++++++UNKNOWN label='Pet name:'
+++++++++++++UNKNOWN
 ++++++++TEXT_FIELD focusable has_input_focus label='Pet name:' actions='{DEFAULT, SET_VALUE}'
 ++++++++++UNKNOWN

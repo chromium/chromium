@@ -5,14 +5,14 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='Header inside article.'
-++++++++++++++UNKNOWN label='Header inside article.'
+++++++++++++++UNKNOWN
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='Header inside section.'
-++++++++++++++UNKNOWN label='Header inside section.'
+++++++++++++++UNKNOWN
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='Header inside main.'
-++++++++++++++UNKNOWN label='Header inside main.'
+++++++++++++++UNKNOWN

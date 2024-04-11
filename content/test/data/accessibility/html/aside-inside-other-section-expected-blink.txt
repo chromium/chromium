@@ -5,17 +5,17 @@ rootWebArea
 ++++++++genericContainer
 ++++++++++paragraph
 ++++++++++++staticText name='Unnamed aside inside article.'
-++++++++++++++inlineTextBox name='Unnamed aside inside article.'
+++++++++++++++inlineTextBox
 ++++++++complementary name='aside'
 ++++++++++paragraph
 ++++++++++++staticText name='Named aside inside article.'
-++++++++++++++inlineTextBox name='Named aside inside article.'
+++++++++++++++inlineTextBox
 ++++++section
 ++++++++genericContainer
 ++++++++++paragraph
 ++++++++++++staticText name='Unnamed aside inside section.'
-++++++++++++++inlineTextBox name='Unnamed aside inside section.'
+++++++++++++++inlineTextBox
 ++++++++complementary name='aside'
 ++++++++++paragraph
 ++++++++++++staticText name='Named aside inside section.'
-++++++++++++++inlineTextBox name='Named aside inside section.'
+++++++++++++++inlineTextBox

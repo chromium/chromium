@@ -6,13 +6,13 @@ rootWebArea
 ++++++++++layoutTableRow
 ++++++++++++layoutTableCell name='Cats'
 ++++++++++++++staticText name='Cats'
-++++++++++++++++inlineTextBox name='Cats'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='Dogs'
 ++++++++++++++staticText name='Dogs'
-++++++++++++++++inlineTextBox name='Dogs'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='Iguanas'
 ++++++++++++++staticText name='Iguanas'
-++++++++++++++++inlineTextBox name='Iguanas'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='Fish'
 ++++++++++++++staticText name='Fish'
-++++++++++++++++inlineTextBox name='Fish'
+++++++++++++++++inlineTextBox

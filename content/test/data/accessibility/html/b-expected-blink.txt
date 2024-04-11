@@ -3,8 +3,8 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='Some '
-++++++++++inlineTextBox name='Some '
+++++++++++inlineTextBox
 ++++++++staticText name='bold' textStyle=2
-++++++++++inlineTextBox name='bold'
+++++++++++inlineTextBox
 ++++++++staticText name=' text'
-++++++++++inlineTextBox name=' text'
+++++++++++inlineTextBox

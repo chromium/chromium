@@ -5,118 +5,118 @@ rootWebArea
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='1'
-++++++++++++inlineTextBox name='1'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='] '
-++++++++++++++inlineTextBox name='] '
+++++++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='2'
-++++++++++++inlineTextBox name='2'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='] '
-++++++++++++++inlineTextBox name='] '
+++++++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='3'
-++++++++++++inlineTextBox name='3'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='] '
-++++++++++++++inlineTextBox name='] '
+++++++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='4'
-++++++++++++inlineTextBox name='4'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name=']'
-++++++++++++++inlineTextBox name=']'
+++++++++++++++inlineTextBox
 ++++++genericContainer name='whitespace with spans'
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='1'
-++++++++++++inlineTextBox name='1'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='] '
-++++++++++++++inlineTextBox name='] '
+++++++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='2'
-++++++++++++inlineTextBox name='2'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='] '
-++++++++++++++inlineTextBox name='] '
+++++++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='3'
-++++++++++++inlineTextBox name='3'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='] '
-++++++++++++++inlineTextBox name='] '
+++++++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='4'
-++++++++++++inlineTextBox name='4'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name=']'
-++++++++++++++inlineTextBox name=']'
+++++++++++++++inlineTextBox
 ++++++genericContainer name='whitespace with spans and text'
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='1'
-++++++++++++inlineTextBox name='1'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='] '
-++++++++++++++inlineTextBox name='] '
+++++++++++++++inlineTextBox
 ++++++++staticText name='abc'
-++++++++++inlineTextBox name='abc'
+++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='2'
-++++++++++++inlineTextBox name='2'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='] '
-++++++++++++++inlineTextBox name='] '
+++++++++++++++inlineTextBox
 ++++++++staticText name='def'
-++++++++++inlineTextBox name='def'
+++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='3'
-++++++++++++inlineTextBox name='3'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='] '
-++++++++++++++inlineTextBox name='] '
+++++++++++++++inlineTextBox
 ++++++++staticText name='ghi'
-++++++++++inlineTextBox name='ghi'
+++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
-++++++++++++++inlineTextBox name='['
+++++++++++++++inlineTextBox
 ++++++++++staticText name='4'
-++++++++++++inlineTextBox name='4'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='] '
-++++++++++++++inlineTextBox name='] '
+++++++++++++++inlineTextBox
 ++++++++staticText name='jkl'
-++++++++++inlineTextBox name='jkl'
+++++++++++inlineTextBox

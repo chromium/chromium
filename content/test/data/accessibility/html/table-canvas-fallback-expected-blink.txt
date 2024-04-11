@@ -30,14 +30,14 @@ rootWebArea
 ++++++++++layoutTableRow
 ++++++++++++layoutTableCell name='Watermelon'
 ++++++++++++++staticText name='Watermelon'
-++++++++++++++++inlineTextBox name='Watermelon'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='Fish food'
 ++++++++++++++staticText name='Fish food'
-++++++++++++++++inlineTextBox name='Fish food'
+++++++++++++++++inlineTextBox
 ++++++++++layoutTableRow
 ++++++++++++layoutTableCell name='Tunafish'
 ++++++++++++++staticText name='Tunafish'
-++++++++++++++++inlineTextBox name='Tunafish'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='Beef'
 ++++++++++++++staticText name='Beef'
-++++++++++++++++inlineTextBox name='Beef'
+++++++++++++++++inlineTextBox

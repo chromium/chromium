@@ -3,7 +3,7 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='No id'
-++++++++++UNKNOWN label='No id'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='Has id'
-++++++++++UNKNOWN label='Has id'
+++++++++++UNKNOWN

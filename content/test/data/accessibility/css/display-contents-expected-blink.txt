@@ -4,20 +4,20 @@ rootWebArea
 ++++++paragraph
 ++++++++button name='Button'
 ++++++++++staticText name='Button'
-++++++++++++inlineTextBox name='Button'
+++++++++++++inlineTextBox
 ++++++paragraph ignored
 ++++++listBox
 ++++++++staticText name='Listbox'
-++++++++++inlineTextBox name='Listbox'
+++++++++++inlineTextBox
 ++++++paragraph ignored
 ++++++paragraph ignored
 ++++++genericContainer description='Description' descriptionFrom=relatedElement
 ++++++genericContainer
 ++++++++staticText name='Description'
-++++++++++inlineTextBox name='Description'
+++++++++++inlineTextBox
 ++++++paragraph ignored
 ++++++staticText name='Generic'
-++++++++inlineTextBox name='Generic'
+++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='Generic (nested)'
-++++++++++inlineTextBox name='Generic (nested)'
+++++++++++inlineTextBox

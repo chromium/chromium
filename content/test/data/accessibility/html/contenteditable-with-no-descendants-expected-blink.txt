@@ -6,4 +6,4 @@ rootWebArea
 ++++++genericContainer editable multiline richlyEditable name='title'
 ++++++paragraph
 ++++++++staticText name='description'
-++++++++++inlineTextBox name='description'
+++++++++++inlineTextBox

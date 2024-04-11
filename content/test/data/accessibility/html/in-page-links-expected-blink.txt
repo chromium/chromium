@@ -3,52 +3,52 @@ rootWebArea
 ++++genericContainer ignored
 ++++++link name='Empty anchor' defaultActionVerb=jump inPageLinkTargetId=genericContainer
 ++++++++staticText name='Empty anchor' defaultActionVerb=clickAncestor
-++++++++++inlineTextBox name='Empty anchor'
+++++++++++inlineTextBox
 ++++++staticText name=' '
-++++++++inlineTextBox name=' '
+++++++++inlineTextBox
 ++++++link name='Anchor with content' defaultActionVerb=jump inPageLinkTargetId=genericContainer
 ++++++++staticText name='Anchor with content' defaultActionVerb=clickAncestor
-++++++++++inlineTextBox name='Anchor with content'
+++++++++++inlineTextBox
 ++++++staticText name=' '
-++++++++inlineTextBox name=' '
+++++++++inlineTextBox
 ++++++link name='Anchor with ID' defaultActionVerb=jump inPageLinkTargetId=genericContainer
 ++++++++staticText name='Anchor with ID' defaultActionVerb=clickAncestor
-++++++++++inlineTextBox name='Anchor with ID'
+++++++++++inlineTextBox
 ++++++staticText name=' '
-++++++++inlineTextBox name=' '
+++++++++inlineTextBox
 ++++++link name='Empty span' defaultActionVerb=jump inPageLinkTargetId=genericContainer
 ++++++++staticText name='Empty span' defaultActionVerb=clickAncestor
-++++++++++inlineTextBox name='Empty span'
+++++++++++inlineTextBox
 ++++++staticText name=' '
-++++++++inlineTextBox name=' '
+++++++++inlineTextBox
 ++++++link name='Span with content' defaultActionVerb=jump inPageLinkTargetId=genericContainer
 ++++++++staticText name='Span with content' defaultActionVerb=clickAncestor
-++++++++++inlineTextBox name='Span with content'
+++++++++++inlineTextBox
 ++++++staticText name=' '
-++++++++inlineTextBox name=' '
+++++++++inlineTextBox
 ++++++link name='Paragraph with content' defaultActionVerb=jump inPageLinkTargetId=paragraph
 ++++++++staticText name='Paragraph with content' defaultActionVerb=clickAncestor
-++++++++++inlineTextBox name='Paragraph with content'
+++++++++++inlineTextBox
 ++++++paragraph
 ++++++++genericContainer
 ++++++++staticText name='After empty anchor'
-++++++++++inlineTextBox name='After empty anchor'
+++++++++++inlineTextBox
 ++++++paragraph
 ++++++++genericContainer
 ++++++++++staticText name='Anchor with content'
-++++++++++++inlineTextBox name='Anchor with content'
+++++++++++++inlineTextBox
 ++++++paragraph
 ++++++++genericContainer
 ++++++++++staticText name='Anchor with ID'
-++++++++++++inlineTextBox name='Anchor with ID'
+++++++++++++inlineTextBox
 ++++++paragraph
 ++++++++genericContainer
 ++++++++staticText name='After empty span'
-++++++++++inlineTextBox name='After empty span'
+++++++++++inlineTextBox
 ++++++paragraph
 ++++++++genericContainer
 ++++++++++staticText name='Span with content'
-++++++++++++inlineTextBox name='Span with content'
+++++++++++++inlineTextBox
 ++++++paragraph
 ++++++++staticText name='Paragraph with content'
-++++++++++inlineTextBox name='Paragraph with content'
+++++++++++inlineTextBox

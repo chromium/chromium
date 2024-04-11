@@ -6,30 +6,30 @@ rootWebArea name='Table example - focusable thead, tbody, tfoot'
 ++++++++++row
 ++++++++++++columnHeader name='Sum'
 ++++++++++++++staticText name='Sum'
-++++++++++++++++inlineTextBox name='Sum'
+++++++++++++++++inlineTextBox
 ++++++++++++columnHeader name='Subtraction'
 ++++++++++++++staticText name='Subtraction'
-++++++++++++++++inlineTextBox name='Subtraction'
+++++++++++++++++inlineTextBox
 ++++++++rowGroup
 ++++++++++row
 ++++++++++++cell name='10'
 ++++++++++++++staticText name='10'
-++++++++++++++++inlineTextBox name='10'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='7'
 ++++++++++++++staticText name='7'
-++++++++++++++++inlineTextBox name='7'
+++++++++++++++++inlineTextBox
 ++++++++++row
 ++++++++++++cell name='2'
 ++++++++++++++staticText name='2'
-++++++++++++++++inlineTextBox name='2'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='4'
 ++++++++++++++staticText name='4'
-++++++++++++++++inlineTextBox name='4'
+++++++++++++++++inlineTextBox
 ++++++++rowGroup
 ++++++++++row
 ++++++++++++cell name='12'
 ++++++++++++++staticText name='12'
-++++++++++++++++inlineTextBox name='12'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='3'
 ++++++++++++++staticText name='3'
-++++++++++++++++inlineTextBox name='3'
+++++++++++++++++inlineTextBox

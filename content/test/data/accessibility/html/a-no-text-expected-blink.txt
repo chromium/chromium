@@ -20,6 +20,6 @@ rootWebArea
 ++++++link
 ++++++++image
 ++++++staticText name=' '
-++++++++inlineTextBox name=' '
+++++++++inlineTextBox
 ++++++link
 ++++++++image

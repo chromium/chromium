@@ -8,4 +8,4 @@ rootWebArea pageLocation=(0, 0) scrollX=0 scrollY=0
 ++++++++++++++genericContainer pageLocation=(300, 300)
 ++++++++++++++++button pageLocation=(300, 300) pageSize=(250, 50) name='Scrolled Button'
 ++++++++++++++++++staticText pageLocation=(300, 300) name='Scrolled Button'
-++++++++++++++++++++inlineTextBox pageLocation=(300, 300) name='Scrolled Button'
+++++++++++++++++++++inlineTextBox pageLocation=(300, 300)

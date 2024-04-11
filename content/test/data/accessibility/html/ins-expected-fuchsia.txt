@@ -3,14 +3,14 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='My favorite browser is '
-++++++++++UNKNOWN label='My favorite browser is '
+++++++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='ABC'
-++++++++++++UNKNOWN label='ABC'
+++++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' '
-++++++++++UNKNOWN label=' '
+++++++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Chrome'
-++++++++++++UNKNOWN label='Chrome'
+++++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='!'
-++++++++++UNKNOWN label='!'
+++++++++++UNKNOWN

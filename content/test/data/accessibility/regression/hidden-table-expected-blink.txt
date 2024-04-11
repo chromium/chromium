@@ -6,12 +6,12 @@ rootWebArea
 ++++++++++row
 ++++++++++++columnHeader name='Header 1'
 ++++++++++++++staticText name='Header 1'
-++++++++++++++++inlineTextBox name='Header 1'
+++++++++++++++++inlineTextBox
 ++++++++++++columnHeader name='Header 2'
 ++++++++++++++staticText name='Header 2'
-++++++++++++++++inlineTextBox name='Header 2'
+++++++++++++++++inlineTextBox
 ++++++++rowGroup ignored invisible
 ++++++++rowGroup ignored
 ++++++genericContainer
 ++++++++staticText name='Done'
-++++++++++inlineTextBox name='Done'
+++++++++++inlineTextBox

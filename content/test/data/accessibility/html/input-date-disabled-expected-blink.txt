@@ -7,14 +7,14 @@ rootWebArea
 ++++++++++++genericContainer
 ++++++++++++++spinButton name='Month' placeholder='mm' restriction=disabled valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
 ++++++++++++++++staticText name='mm'
-++++++++++++++++++inlineTextBox name='mm'
+++++++++++++++++++inlineTextBox
 ++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox name='/'
+++++++++++++++++inlineTextBox
 ++++++++++++++spinButton name='Day' placeholder='dd' restriction=disabled valueForRange=0.00 minValueForRange=1.00 maxValueForRange=31.00
 ++++++++++++++++staticText name='dd'
-++++++++++++++++++inlineTextBox name='dd'
+++++++++++++++++++inlineTextBox
 ++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox name='/'
+++++++++++++++++inlineTextBox
 ++++++++++++++spinButton name='Year' placeholder='yyyy' restriction=disabled valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++staticText name='yyyy'
-++++++++++++++++++inlineTextBox name='yyyy'
+++++++++++++++++++inlineTextBox

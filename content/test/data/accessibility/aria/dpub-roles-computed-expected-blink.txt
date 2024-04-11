@@ -5,25 +5,25 @@ rootWebArea
 ++++++++list
 ++++++++++docBiblioEntry
 ++++++++++++staticText name='biblioentry'
-++++++++++++++inlineTextBox name='biblioentry'
+++++++++++++++inlineTextBox
 ++++++++++list
 ++++++++++++listItem
 ++++++++++++++staticText name='not a biblioentry'
-++++++++++++++++inlineTextBox name='not a biblioentry'
+++++++++++++++++inlineTextBox
 ++++++++list
 ++++++++++docBiblioEntry
 ++++++++++++staticText name='biblioentry'
-++++++++++++++inlineTextBox name='biblioentry'
+++++++++++++++inlineTextBox
 ++++++docEndnotes
 ++++++++list
 ++++++++++docEndnote
 ++++++++++++staticText name='endnote'
-++++++++++++++inlineTextBox name='endnote'
+++++++++++++++inlineTextBox
 ++++++++++list
 ++++++++++++listItem
 ++++++++++++++staticText name='not an endnote'
-++++++++++++++++inlineTextBox name='not an endnote'
+++++++++++++++++inlineTextBox
 ++++++++list
 ++++++++++docEndnote
 ++++++++++++staticText name='endnote'
-++++++++++++++inlineTextBox name='endnote'
+++++++++++++++inlineTextBox

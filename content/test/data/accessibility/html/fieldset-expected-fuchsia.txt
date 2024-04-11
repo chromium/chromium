@@ -5,9 +5,9 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN label='Browser Engines:'
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='Browser Engines:'
-++++++++++++++UNKNOWN label='Browser Engines:'
+++++++++++++++UNKNOWN
 ++++++UNKNOWN label='Which cake do you prefer?'
 ++++++++UNKNOWN
 ++++++++++UNKNOWN label='Which cake do you prefer?'
 ++++++++++++STATIC_TEXT label='Which cake do you prefer?'
-++++++++++++++UNKNOWN label='Which cake do you prefer?'
+++++++++++++++UNKNOWN

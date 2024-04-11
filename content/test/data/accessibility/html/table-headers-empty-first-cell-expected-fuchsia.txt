@@ -4,98 +4,98 @@ UNKNOWN focusable has_input_focus label='Table example - headers with empty firs
 ++++++TABLE label='Delivery slots:' number_of_rows=5 number_of_columns=6
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Delivery slots:'
-++++++++++++UNKNOWN label='Delivery slots:'
+++++++++++++UNKNOWN
 ++++++++ROW_GROUP hidden
 ++++++++++TABLE_ROW
 ++++++++++++CELL cell_row_span=1 cell_column_span=1
 ++++++++++++COLUMN_HEADER label='Monday' cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Monday'
-++++++++++++++++UNKNOWN label='Monday'
+++++++++++++++++UNKNOWN
 ++++++++++++COLUMN_HEADER label='Tuesday' cell_column_index=2 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Tuesday'
-++++++++++++++++UNKNOWN label='Tuesday'
+++++++++++++++++UNKNOWN
 ++++++++++++COLUMN_HEADER label='Wednesday' cell_column_index=3 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Wednesday'
-++++++++++++++++UNKNOWN label='Wednesday'
+++++++++++++++++UNKNOWN
 ++++++++++++COLUMN_HEADER label='Thursday' cell_column_index=4 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Thursday'
-++++++++++++++++UNKNOWN label='Thursday'
+++++++++++++++++UNKNOWN
 ++++++++++++COLUMN_HEADER label='Friday' cell_column_index=5 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Friday'
-++++++++++++++++UNKNOWN label='Friday'
+++++++++++++++++UNKNOWN
 ++++++++++TABLE_ROW row_index=1
 ++++++++++++UNKNOWN label='09:00 - 11:00' cell_row_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='09:00 - 11:00'
-++++++++++++++++UNKNOWN label='09:00 - 11:00'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Closed' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Closed'
-++++++++++++++++UNKNOWN label='Closed'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Open' cell_row_index=1 cell_column_index=2 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Open'
-++++++++++++++++UNKNOWN label='Open'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Open' cell_row_index=1 cell_column_index=3 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Open'
-++++++++++++++++UNKNOWN label='Open'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Closed' cell_row_index=1 cell_column_index=4 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Closed'
-++++++++++++++++UNKNOWN label='Closed'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Closed' cell_row_index=1 cell_column_index=5 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Closed'
-++++++++++++++++UNKNOWN label='Closed'
+++++++++++++++++UNKNOWN
 ++++++++++TABLE_ROW row_index=2
 ++++++++++++UNKNOWN label='11:00 - 13:00' cell_row_index=2 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='11:00 - 13:00'
-++++++++++++++++UNKNOWN label='11:00 - 13:00'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Open' cell_row_index=2 cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Open'
-++++++++++++++++UNKNOWN label='Open'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Open' cell_row_index=2 cell_column_index=2 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Open'
-++++++++++++++++UNKNOWN label='Open'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Closed' cell_row_index=2 cell_column_index=3 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Closed'
-++++++++++++++++UNKNOWN label='Closed'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Closed' cell_row_index=2 cell_column_index=4 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Closed'
-++++++++++++++++UNKNOWN label='Closed'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Closed' cell_row_index=2 cell_column_index=5 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Closed'
-++++++++++++++++UNKNOWN label='Closed'
+++++++++++++++++UNKNOWN
 ++++++++++TABLE_ROW row_index=3
 ++++++++++++UNKNOWN label='13:00 - 15:00' cell_row_index=3 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='13:00 - 15:00'
-++++++++++++++++UNKNOWN label='13:00 - 15:00'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Open' cell_row_index=3 cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Open'
-++++++++++++++++UNKNOWN label='Open'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Open' cell_row_index=3 cell_column_index=2 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Open'
-++++++++++++++++UNKNOWN label='Open'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Open' cell_row_index=3 cell_column_index=3 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Open'
-++++++++++++++++UNKNOWN label='Open'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Closed' cell_row_index=3 cell_column_index=4 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Closed'
-++++++++++++++++UNKNOWN label='Closed'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Closed' cell_row_index=3 cell_column_index=5 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Closed'
-++++++++++++++++UNKNOWN label='Closed'
+++++++++++++++++UNKNOWN
 ++++++++++TABLE_ROW row_index=4
 ++++++++++++UNKNOWN label='15:00 - 17:00' cell_row_index=4 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='15:00 - 17:00'
-++++++++++++++++UNKNOWN label='15:00 - 17:00'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Closed' cell_row_index=4 cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Closed'
-++++++++++++++++UNKNOWN label='Closed'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Closed' cell_row_index=4 cell_column_index=2 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Closed'
-++++++++++++++++UNKNOWN label='Closed'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Closed' cell_row_index=4 cell_column_index=3 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Closed'
-++++++++++++++++UNKNOWN label='Closed'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Open' cell_row_index=4 cell_column_index=4 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Open'
-++++++++++++++++UNKNOWN label='Open'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Open' cell_row_index=4 cell_column_index=5 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Open'
-++++++++++++++++UNKNOWN label='Open'
+++++++++++++++++UNKNOWN

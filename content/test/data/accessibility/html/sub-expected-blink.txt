@@ -3,31 +3,31 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='This text contains '
-++++++++++inlineTextBox name='This text contains '
+++++++++++inlineTextBox
 ++++++++subscript textPosition=subscript
 ++++++++++staticText name='subscript' textPosition=subscript
-++++++++++++inlineTextBox name='subscript'
+++++++++++++inlineTextBox
 ++++++++staticText name=' text.'
-++++++++++inlineTextBox name=' text.'
+++++++++++inlineTextBox
 ++++++paragraph
 ++++++++staticText name='H'
-++++++++++inlineTextBox name='H'
+++++++++++inlineTextBox
 ++++++++subscript textPosition=subscript
 ++++++++++staticText name=' ' textPosition=subscript
-++++++++++++inlineTextBox name=' '
+++++++++++++inlineTextBox
 ++++++++++contentDeletion textPosition=subscript textStyle=16
 ++++++++++++genericContainer name='3' textPosition=subscript textStyle=16
 ++++++++++++++genericContainer name='oops' textPosition=subscript textStyle=16
 ++++++++++++++++staticText name='3' textPosition=subscript textStyle=16
-++++++++++++++++++inlineTextBox name='3'
+++++++++++++++++++inlineTextBox
 ++++++++++staticText name=' ' textPosition=subscript
-++++++++++++inlineTextBox name=' '
+++++++++++++inlineTextBox
 ++++++++++contentInsertion textPosition=subscript textStyle=8
 ++++++++++++link name='2' textPosition=subscript textStyle=8
 ++++++++++++++genericContainer name='better' textPosition=subscript textStyle=8
 ++++++++++++++++staticText name='2' textPosition=subscript textStyle=8
-++++++++++++++++++inlineTextBox name='2'
+++++++++++++++++++inlineTextBox
 ++++++++++staticText name=' ' textPosition=subscript
-++++++++++++inlineTextBox name=' '
+++++++++++++inlineTextBox
 ++++++++staticText name='O'
-++++++++++inlineTextBox name='O'
+++++++++++inlineTextBox

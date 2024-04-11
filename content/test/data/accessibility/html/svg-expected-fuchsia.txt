@@ -4,4 +4,4 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN label='svg' secondary_label='SVG Title Tag'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Test'
-++++++++++++UNKNOWN label='Test'
+++++++++++++UNKNOWN

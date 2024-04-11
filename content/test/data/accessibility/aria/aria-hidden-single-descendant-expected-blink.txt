@@ -6,5 +6,5 @@ rootWebArea
 ++++++genericContainer
 ++++++++button name='expect visible subtree'
 ++++++++++staticText name='expect visible subtree'
-++++++++++++inlineTextBox name='expect visible subtree'
+++++++++++++inlineTextBox
 ++++++group name='Done'

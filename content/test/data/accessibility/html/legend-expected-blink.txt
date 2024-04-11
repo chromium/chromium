@@ -5,12 +5,12 @@ rootWebArea
 ++++++++group name='Browser Engines:'
 ++++++++++legend
 ++++++++++++staticText name='Browser Engines:'
-++++++++++++++inlineTextBox name='Browser Engines:'
+++++++++++++++inlineTextBox
 ++++++++++staticText name='Browser: '
-++++++++++++inlineTextBox name='Browser: '
+++++++++++++inlineTextBox
 ++++++++++textField
 ++++++++++++genericContainer
 ++++++++++staticText name=' Rendering Engine: '
-++++++++++++inlineTextBox name=' Rendering Engine: '
+++++++++++++inlineTextBox
 ++++++++++textField
 ++++++++++++genericContainer

@@ -3,9 +3,9 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='The '
-++++++++++inlineTextBox name='The '
+++++++++++inlineTextBox
 ++++++++abbr name='World Health Organization'
 ++++++++++staticText name='WHO'
-++++++++++++inlineTextBox name='WHO'
+++++++++++++inlineTextBox
 ++++++++staticText name=' was founded in 1948.'
-++++++++++inlineTextBox name=' was founded in 1948.'
+++++++++++inlineTextBox

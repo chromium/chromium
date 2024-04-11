@@ -3,52 +3,52 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++LINK focusable label='Empty anchor' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Empty anchor' actions='{DEFAULT}'
-++++++++++UNKNOWN label='Empty anchor'
+++++++++++UNKNOWN
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++LINK focusable label='Anchor with content' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Anchor with content' actions='{DEFAULT}'
-++++++++++UNKNOWN label='Anchor with content'
+++++++++++UNKNOWN
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++LINK focusable label='Anchor with ID' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Anchor with ID' actions='{DEFAULT}'
-++++++++++UNKNOWN label='Anchor with ID'
+++++++++++UNKNOWN
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++LINK focusable label='Empty span' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Empty span' actions='{DEFAULT}'
-++++++++++UNKNOWN label='Empty span'
+++++++++++UNKNOWN
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++LINK focusable label='Span with content' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Span with content' actions='{DEFAULT}'
-++++++++++UNKNOWN label='Span with content'
+++++++++++UNKNOWN
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++LINK focusable label='Paragraph with content' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Paragraph with content' actions='{DEFAULT}'
-++++++++++UNKNOWN label='Paragraph with content'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++UNKNOWN
 ++++++++STATIC_TEXT label='After empty anchor'
-++++++++++UNKNOWN label='After empty anchor'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Anchor with content'
-++++++++++++UNKNOWN label='Anchor with content'
+++++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Anchor with ID'
-++++++++++++UNKNOWN label='Anchor with ID'
+++++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++UNKNOWN
 ++++++++STATIC_TEXT label='After empty span'
-++++++++++UNKNOWN label='After empty span'
+++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Span with content'
-++++++++++++UNKNOWN label='Span with content'
+++++++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='Paragraph with content'
-++++++++++UNKNOWN label='Paragraph with content'
+++++++++++UNKNOWN

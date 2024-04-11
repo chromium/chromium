@@ -2,10 +2,10 @@ rootWebArea
 ++genericContainer ignored invisible
 ++++dialog
 ++++++staticText name='The dialog subtree should be the only text content in the accessibility tree. '
-++++++++inlineTextBox name='The dialog subtree should be the only text content in the accessibility tree. '
+++++++++inlineTextBox
 ++++++link name='Link inside the dialog.'
 ++++++++staticText name='Link inside the dialog.'
-++++++++++inlineTextBox name='Link inside the dialog.'
+++++++++++inlineTextBox
 ++++comboBoxSelect ignored invisible
 ++++++menuListPopup ignored invisible
 ++++++++menuListOption ignored

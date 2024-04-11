@@ -6,7 +6,7 @@ rootWebArea
 ++++++++++row
 ++++++++++++cell name='Fred'
 ++++++++++++++staticText name='Fred'
-++++++++++++++++inlineTextBox name='Fred'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='Jackson'
 ++++++++++++++staticText name='Jackson'
-++++++++++++++++inlineTextBox name='Jackson'
+++++++++++++++++inlineTextBox

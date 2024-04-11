@@ -4,16 +4,16 @@ rootWebArea isLineBreakingObject=true
 ++++++genericContainer multiline value='1. text in span in presentational paragraph in li<newline>2. A list item with both a br and<newline>an inner p role=presentation' isLineBreakingObject=true
 ++++++++list isLineBreakingObject=true
 ++++++++++listItem isLineBreakingObject=true
-++++++++++++listMarker name='1. ' nextOnLineId=inlineTextBox:"text in span in presentational paragraph in li"
+++++++++++++listMarker name='1. ' nextOnLineId=inlineTextBox
 ++++++++++++++staticText ignored name='1. '
 ++++++++++++staticText name='text in span in presentational paragraph in li' previousOnLineId=staticText:"1. "
-++++++++++++++inlineTextBox name='text in span in presentational paragraph in li' previousOnLineId=staticText:"1. "
+++++++++++++++inlineTextBox previousOnLineId=staticText:"1. "
 ++++++++++listItem isLineBreakingObject=true
-++++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox:"A list item with both a br and"
+++++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox
 ++++++++++++++staticText ignored name='2. '
-++++++++++++staticText name='A list item with both a br and' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=staticText:"2. "
-++++++++++++++inlineTextBox name='A list item with both a br and' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=staticText:"2. "
-++++++++++++lineBreak name='<newline>' previousOnLineId=inlineTextBox:"A list item with both a br and" isLineBreakingObject=true
-++++++++++++++inlineTextBox name='<newline>' previousOnLineId=inlineTextBox:"A list item with both a br and" isLineBreakingObject=true
+++++++++++++staticText name='A list item with both a br and' nextOnLineId=inlineTextBox previousOnLineId=staticText:"2. "
+++++++++++++++inlineTextBox nextOnLineId=inlineTextBox previousOnLineId=staticText:"2. "
+++++++++++++lineBreak name='<newline>' previousOnLineId=inlineTextBox isLineBreakingObject=true
+++++++++++++++inlineTextBox previousOnLineId=inlineTextBox isLineBreakingObject=true
 ++++++++++++staticText name='an inner p role=presentation'
-++++++++++++++inlineTextBox name='an inner p role=presentation'
+++++++++++++++inlineTextBox

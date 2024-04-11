@@ -7,17 +7,17 @@ rootWebArea
 ++++++++++++layoutTableRow
 ++++++++++++++layoutTableCell name='1.'
 ++++++++++++++++staticText name='1.'
-++++++++++++++++++inlineTextBox name='1.'
+++++++++++++++++++inlineTextBox
 ++++++++++++++layoutTableCell name='2.'
 ++++++++++++++++staticText name='2.'
-++++++++++++++++++inlineTextBox name='2.'
+++++++++++++++++++inlineTextBox
 ++++++genericContainer name='3. 4.'
 ++++++++layoutTable
 ++++++++++genericContainer ignored
 ++++++++++++layoutTableRow
 ++++++++++++++layoutTableCell name='3.'
 ++++++++++++++++staticText name='3.'
-++++++++++++++++++inlineTextBox name='3.'
+++++++++++++++++++inlineTextBox
 ++++++++++++++layoutTableCell name='4.'
 ++++++++++++++++staticText name='4.'
-++++++++++++++++++inlineTextBox name='4.'
+++++++++++++++++++inlineTextBox

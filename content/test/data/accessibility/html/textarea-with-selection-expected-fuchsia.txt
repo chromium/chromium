@@ -9,4 +9,4 @@ UNKNOWN focusable
 ++++++++++++UNKNOWN label='control.'
 ++++++++++++UNKNOWN label='<newline>'
 ++++++++++UNKNOWN label='<newline>'
-++++++++++++UNKNOWN label='<newline>'
+++++++++++++UNKNOWN

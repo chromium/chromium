@@ -5,10 +5,10 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN
 ++++++++++UNKNOWN focusable label='focusable'
 ++++++++++++STATIC_TEXT label='focusable'
-++++++++++++++UNKNOWN label='focusable'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='not focusable'
-++++++++++++UNKNOWN label='not focusable'
+++++++++++++UNKNOWN
 ++++++UNKNOWN label='Not text descendants'
 ++++++++UNKNOWN focusable
 ++++++++UNKNOWN hidden

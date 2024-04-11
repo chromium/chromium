@@ -3,8 +3,8 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++++staticText name='Cats '
-++++++++++inlineTextBox name='Cats '
+++++++++++inlineTextBox
 ++++++++genericContainer
 ++++++++++code
 ++++++++++++staticText name='done'
-++++++++++++++inlineTextBox name='done'
+++++++++++++++inlineTextBox

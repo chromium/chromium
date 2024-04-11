@@ -4,6 +4,6 @@ rootWebArea pageLocation=(0, 0)
 ++++++genericContainer pageLocation=(0, 0)
 ++++++++genericContainer pageLocation=(0, 0)
 ++++++++++staticText pageLocation=(0, 0) name='Before'
-++++++++++++inlineTextBox pageLocation=(0, 0) name='Before'
+++++++++++++inlineTextBox pageLocation=(0, 0)
 ++++++++staticText pageLocation=(100, 0) name='After'
-++++++++++inlineTextBox pageLocation=(100, 0) name='After'
+++++++++++inlineTextBox pageLocation=(100, 0)

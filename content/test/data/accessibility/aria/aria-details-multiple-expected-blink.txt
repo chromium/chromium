@@ -2,18 +2,18 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++staticText name='Some '
-++++++++inlineTextBox name='Some '
+++++++++inlineTextBox
 ++++++mark detailsIds=comment,docFootnote,definition
 ++++++++staticText name='highlighted text'
-++++++++++inlineTextBox name='highlighted text'
+++++++++++inlineTextBox
 ++++++staticText name=' example.'
-++++++++inlineTextBox name=' example.'
+++++++++inlineTextBox
 ++++++comment
 ++++++++staticText name='Good job!'
-++++++++++inlineTextBox name='Good job!'
+++++++++++inlineTextBox
 ++++++docFootnote
 ++++++++staticText name='Some footnote.'
-++++++++++inlineTextBox name='Some footnote.'
+++++++++++inlineTextBox
 ++++++definition
 ++++++++staticText name='The meaning is.'
-++++++++++inlineTextBox name='The meaning is.'
+++++++++++inlineTextBox

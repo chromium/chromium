@@ -20,6 +20,6 @@ UNKNOWN focusable has_input_focus
 ++++++LINK focusable actions='{DEFAULT}'
 ++++++++IMAGE actions='{DEFAULT}'
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++LINK focusable actions='{DEFAULT}'
 ++++++++IMAGE actions='{DEFAULT}'

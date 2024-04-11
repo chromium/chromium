@@ -3,4 +3,4 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++BUTTON focusable label='Click me!' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Click me!' actions='{DEFAULT}'
-++++++++++UNKNOWN label='Click me!'
+++++++++++UNKNOWN

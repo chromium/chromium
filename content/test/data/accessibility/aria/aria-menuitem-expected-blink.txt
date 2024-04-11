@@ -4,14 +4,14 @@ rootWebArea
 ++++++menu
 ++++++++menuItem name='File'
 ++++++++++staticText name='File'
-++++++++++++inlineTextBox name='File'
+++++++++++++inlineTextBox
 ++++++++menuItem name='Edit'
 ++++++++++staticText name='Edit'
-++++++++++++inlineTextBox name='Edit'
+++++++++++++inlineTextBox
 ++++++++menuItem name='Complex menuitem'
 ++++++++++staticText name='Complex '
-++++++++++++inlineTextBox name='Complex '
+++++++++++++inlineTextBox
 ++++++++++textField
 ++++++++++++genericContainer
 ++++++++++staticText name=' menuitem'
-++++++++++++inlineTextBox name=' menuitem'
+++++++++++++inlineTextBox

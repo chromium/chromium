@@ -6,19 +6,19 @@ rootWebArea
 ++++++++++genericContainer
 ++++++++button default name='First submit in a form is a valid default button'
 ++++++++++staticText name='First submit in a form is a valid default button'
-++++++++++++inlineTextBox name='First submit in a form is a valid default button'
+++++++++++++inlineTextBox
 ++++++++button name='Second submit in a form not a valid default button'
 ++++++++++staticText name='Second submit in a form not a valid default button'
-++++++++++++inlineTextBox name='Second submit in a form not a valid default button'
+++++++++++++inlineTextBox
 ++++++section
 ++++++++textField
 ++++++++++genericContainer
 ++++++++button default name='First button in form is a valid default button'
 ++++++++++staticText name='First button in form is a valid default button'
-++++++++++++inlineTextBox name='First button in form is a valid default button'
+++++++++++++inlineTextBox
 ++++++++button name='Second button in form not a valid default button'
 ++++++++++staticText name='Second button in form not a valid default button'
-++++++++++++inlineTextBox name='Second button in form not a valid default button'
+++++++++++++inlineTextBox
 ++++++button name='Submit outside of form not a valid default button'
 ++++++++staticText name='Submit outside of form not a valid default button'
-++++++++++inlineTextBox name='Submit outside of form not a valid default button'
+++++++++++inlineTextBox

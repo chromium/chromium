@@ -4,9 +4,9 @@ rootWebArea
 ++++++splitter horizontal name='Outside custom element'
 ++++++genericContainer
 ++++++++staticText name='a'
-++++++++++inlineTextBox name='a'
+++++++++++inlineTextBox
 ++++++splitter horizontal name='Inside custom element'
 ++++++genericContainer ignored
 ++++++++genericContainer ignored
 ++++++++++staticText name='a'
-++++++++++++inlineTextBox name='a'
+++++++++++++inlineTextBox

@@ -8,56 +8,56 @@ rootWebArea
 ++++++++++++++genericContainer ignored
 ++++++++++++++++genericContainer
 ++++++++++++++++++staticText name='1'
-++++++++++++++++++++inlineTextBox name='1'
+++++++++++++++++++++inlineTextBox
 ++++++++++staticText name='Heading'
-++++++++++++inlineTextBox name='Heading'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer ignored
 ++++++++++++++++genericContainer
 ++++++++++++++++++staticText name='1'
-++++++++++++++++++++inlineTextBox name='1'
+++++++++++++++++++++inlineTextBox
 ++++++++staticText name='\nParagraph'
-++++++++++inlineTextBox name='\nParagraph'
+++++++++++inlineTextBox
 ++++++genericContainer ignored
 ++++++++heading name='2 Heading 2'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer
 ++++++++++++++++staticText name='2'
-++++++++++++++++++inlineTextBox name='2'
+++++++++++++++++++inlineTextBox
 ++++++++++staticText name='Heading'
-++++++++++++inlineTextBox name='Heading'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer
 ++++++++++++++++staticText name='2'
-++++++++++++++++++inlineTextBox name='2'
+++++++++++++++++++inlineTextBox
 ++++++++staticText name='\nParagraph'
-++++++++++inlineTextBox name='\nParagraph'
+++++++++++inlineTextBox
 ++++++genericContainer ignored
 ++++++++heading name='3 Heading 3'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer
 ++++++++++++++staticText name='3'
-++++++++++++++++inlineTextBox name='3'
+++++++++++++++++inlineTextBox
 ++++++++++staticText name='Heading'
-++++++++++++inlineTextBox name='Heading'
+++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer
 ++++++++++++++staticText name='3'
-++++++++++++++++inlineTextBox name='3'
+++++++++++++++++inlineTextBox
 ++++++++staticText name='\nParagraph'
-++++++++++inlineTextBox name='\nParagraph'
+++++++++++inlineTextBox
 ++++++genericContainer ignored
 ++++++++heading name='4 Heading 4'
 ++++++++++genericContainer
 ++++++++++++staticText name='4'
-++++++++++++++inlineTextBox name='4'
+++++++++++++++inlineTextBox
 ++++++++++staticText name='Heading'
-++++++++++++inlineTextBox name='Heading'
+++++++++++++inlineTextBox
 ++++++++++genericContainer
 ++++++++++++staticText name='4'
-++++++++++++++inlineTextBox name='4'
+++++++++++++++inlineTextBox
 ++++++++staticText name='\nParagraph'
-++++++++++inlineTextBox name='\nParagraph'
+++++++++++inlineTextBox

@@ -5,4 +5,4 @@ rootWebArea htmlTag='#document'
 ++++++++genericContainer ignored invisible htmlTag='slot'
 ++++++++paragraph htmlTag='p'
 ++++++++++staticText name='paragraph'
-++++++++++++inlineTextBox name='paragraph'
+++++++++++++inlineTextBox

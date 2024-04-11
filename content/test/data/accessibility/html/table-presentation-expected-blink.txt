@@ -6,14 +6,14 @@ rootWebArea name='Table with role=presentation'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer
 ++++++++++++++staticText name='1'
-++++++++++++++++inlineTextBox name='1'
+++++++++++++++++inlineTextBox
 ++++++++++++genericContainer
 ++++++++++++++staticText name='2'
-++++++++++++++++inlineTextBox name='2'
+++++++++++++++++inlineTextBox
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer
 ++++++++++++++staticText name='4'
-++++++++++++++++inlineTextBox name='4'
+++++++++++++++++inlineTextBox
 ++++++++++++genericContainer
 ++++++++++++++staticText name='5'
-++++++++++++++++inlineTextBox name='5'
+++++++++++++++++inlineTextBox

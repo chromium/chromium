@@ -6,14 +6,14 @@ rootWebArea name='Table example - th rowheader'
 ++++++++++row
 ++++++++++++rowHeader name='Firstname'
 ++++++++++++++staticText name='Firstname'
-++++++++++++++++inlineTextBox name='Firstname'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='Jill'
 ++++++++++++++staticText name='Jill'
-++++++++++++++++inlineTextBox name='Jill'
+++++++++++++++++inlineTextBox
 ++++++++++row
 ++++++++++++rowHeader name='Lastname'
 ++++++++++++++staticText name='Lastname'
-++++++++++++++++inlineTextBox name='Lastname'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='Smith'
 ++++++++++++++staticText name='Smith'
-++++++++++++++++inlineTextBox name='Smith'
+++++++++++++++++inlineTextBox

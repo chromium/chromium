@@ -2,4 +2,4 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++staticText name='Variable'
-++++++++inlineTextBox name='Variable'
+++++++++inlineTextBox

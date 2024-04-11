@@ -7,43 +7,43 @@ UNKNOWN focusable has_input_focus label='Table example - headers on all sides'
 ++++++++++++CELL cell_row_span=1 cell_column_span=1
 ++++++++++++COLUMN_HEADER label='Red' cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Red'
-++++++++++++++++UNKNOWN label='Red'
+++++++++++++++++UNKNOWN
 ++++++++++++COLUMN_HEADER label='Green' cell_column_index=2 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Green'
-++++++++++++++++UNKNOWN label='Green'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL cell_column_index=3 cell_row_span=1 cell_column_span=1
 ++++++++++TABLE_ROW row_index=1
 ++++++++++++UNKNOWN label='Fruit' cell_row_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Fruit'
-++++++++++++++++UNKNOWN label='Fruit'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='strawberry' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='strawberry'
-++++++++++++++++UNKNOWN label='strawberry'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='lime' cell_row_index=1 cell_column_index=2 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='lime'
-++++++++++++++++UNKNOWN label='lime'
+++++++++++++++++UNKNOWN
 ++++++++++++UNKNOWN label='Fruit' cell_row_index=1 cell_column_index=3 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Fruit'
-++++++++++++++++UNKNOWN label='Fruit'
+++++++++++++++++UNKNOWN
 ++++++++++TABLE_ROW row_index=2
 ++++++++++++UNKNOWN label='Veggies' cell_row_index=2 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Veggies'
-++++++++++++++++UNKNOWN label='Veggies'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='radish' cell_row_index=2 cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='radish'
-++++++++++++++++UNKNOWN label='radish'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='spinach' cell_row_index=2 cell_column_index=2 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='spinach'
-++++++++++++++++UNKNOWN label='spinach'
+++++++++++++++++UNKNOWN
 ++++++++++++UNKNOWN label='Veggies' cell_row_index=2 cell_column_index=3 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Veggies'
-++++++++++++++++UNKNOWN label='Veggies'
+++++++++++++++++UNKNOWN
 ++++++++++TABLE_ROW row_index=3
 ++++++++++++CELL cell_row_index=3 cell_row_span=1 cell_column_span=1
 ++++++++++++COLUMN_HEADER label='Red' cell_row_index=3 cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Red'
-++++++++++++++++UNKNOWN label='Red'
+++++++++++++++++UNKNOWN
 ++++++++++++COLUMN_HEADER label='Green' cell_row_index=3 cell_column_index=2 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Green'
-++++++++++++++++UNKNOWN label='Green'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL cell_row_index=3 cell_column_index=3 cell_row_span=1 cell_column_span=1

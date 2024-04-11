@@ -4,9 +4,9 @@ UNKNOWN focusable
 ++++++UNKNOWN
 ++++++++UNKNOWN focusable has_input_focus label='tab1' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='tab1' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='tab1'
+++++++++++++UNKNOWN
 ++++++++UNKNOWN focusable label='tab2' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='tab2' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='tab2'
+++++++++++++UNKNOWN
 ++++++STATIC_TEXT label='Done'
-++++++++UNKNOWN label='Done'
+++++++++UNKNOWN

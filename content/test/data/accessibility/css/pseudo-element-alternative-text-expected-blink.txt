@@ -4,9 +4,9 @@ rootWebArea
 ++++++genericContainer
 ++++++++image name='alternative text'
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name='DOM text'
-++++++++++inlineTextBox name='DOM text'
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++image

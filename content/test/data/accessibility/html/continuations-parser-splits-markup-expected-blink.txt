@@ -5,11 +5,11 @@ rootWebArea isLineBreakingObject=true
 ++++++++genericContainer className='copied-element' display='inline'
 ++++++++++genericContainer className='before' display='block' isLineBreakingObject=true
 ++++++++++++staticText name='Before'
-++++++++++++++inlineTextBox name='Before'
+++++++++++++++inlineTextBox
 ++++++++genericContainer className='ever' display='block' isLineBreakingObject=true
 ++++++++++genericContainer className='copied-element' display='inline'
 ++++++++++++staticText name='Ever '
-++++++++++++++inlineTextBox name='Ever '
+++++++++++++++inlineTextBox
 ++++++++++link className='after' display='inline' name='After'
 ++++++++++++staticText name='After'
-++++++++++++++inlineTextBox name='After'
+++++++++++++++inlineTextBox

@@ -4,12 +4,12 @@ rootWebArea
 ++++++textField inputType='text' value='aaYYYYbb'
 ++++++++genericContainer
 ++++++++++staticText name='aaYYYYbb'
-++++++++++++inlineTextBox name='aaYYYYbb'
+++++++++++++inlineTextBox
 ++++++textField inputType='text' value='aa'
 ++++++++genericContainer
 ++++++++++staticText name='aa'
-++++++++++++inlineTextBox name='aa'
+++++++++++++inlineTextBox
 ++++++textField inputType='text' value='After'
 ++++++++genericContainer
 ++++++++++staticText name='After'
-++++++++++++inlineTextBox name='After'
+++++++++++++inlineTextBox

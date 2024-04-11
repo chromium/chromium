@@ -4,12 +4,12 @@ rootWebArea
 ++++++section
 ++++++++heading name='Heading with link'
 ++++++++++staticText name='Heading '
-++++++++++++inlineTextBox name='Heading '
+++++++++++++inlineTextBox
 ++++++++++link name='with link'
 ++++++++++++staticText name='with link'
-++++++++++++++inlineTextBox name='with link'
+++++++++++++++inlineTextBox
 ++++++++staticText name='Presentational heading '
-++++++++++inlineTextBox name='Presentational heading '
+++++++++++inlineTextBox
 ++++++++link name='with link'
 ++++++++++staticText name='with link'
-++++++++++++inlineTextBox name='with link'
+++++++++++++inlineTextBox

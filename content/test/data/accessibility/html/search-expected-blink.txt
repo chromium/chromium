@@ -4,6 +4,6 @@ rootWebArea
 ++++++search
 ++++++++labelText
 ++++++++++staticText name='Search element.'
-++++++++++++inlineTextBox name='Search element.'
+++++++++++++inlineTextBox
 ++++++++searchBox
 ++++++++++genericContainer

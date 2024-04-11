@@ -3,4 +3,4 @@ rootWebArea name='done'
 ++++genericContainer ignored
 ++++++tabList horizontal
 ++++++++staticText name='tab list'
-++++++++++inlineTextBox name='tab list'
+++++++++++inlineTextBox

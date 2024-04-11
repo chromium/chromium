@@ -3,16 +3,16 @@ UNKNOWN focusable has_input_focus label='Action verbs'
 ++++UNKNOWN hidden
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Generic div'
-++++++++++UNKNOWN label='Generic div'
+++++++++++UNKNOWN
 ++++++UNKNOWN label='Heading'
 ++++++++STATIC_TEXT label='Heading'
-++++++++++UNKNOWN label='Heading'
+++++++++++UNKNOWN
 ++++++BUTTON focusable label='Button' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Button' actions='{DEFAULT}'
-++++++++++UNKNOWN label='Button'
+++++++++++UNKNOWN
 ++++++LINK focusable label='Link' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Link' actions='{DEFAULT}'
-++++++++++UNKNOWN label='Link'
+++++++++++UNKNOWN
 ++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}'
 ++++++++UNKNOWN
 ++++++SEARCH_BOX focusable actions='{DEFAULT, SET_VALUE}'
@@ -25,14 +25,14 @@ UNKNOWN focusable has_input_focus label='Action verbs'
 ++++++RADIO_BUTTON focusable actions='{DEFAULT}' checked_state='UNCHECKED'
 ++++++UNKNOWN focusable label='ARIA Switch' actions='{DEFAULT}' checked_state='UNCHECKED'
 ++++++++STATIC_TEXT label='ARIA Switch' actions='{DEFAULT}'
-++++++++++UNKNOWN label='ARIA Switch'
+++++++++++UNKNOWN
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable label='Summary' actions='{DEFAULT}'
 ++++++++++++LIST_ELEMENT_MARKER hidden
 ++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
 ++++++++++++STATIC_TEXT label='Summary' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='Summary'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++STATIC_TEXT hidden label='Details'
 ++++++UNKNOWN focusable actions='{DEFAULT}' value='Pop-up button'
@@ -40,38 +40,38 @@ UNKNOWN focusable has_input_focus label='Action verbs'
 ++++++++++UNKNOWN focusable selected label='Pop-up button' actions='{DEFAULT}'
 ++++++UNKNOWN actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Div with click handler' actions='{DEFAULT}'
-++++++++++UNKNOWN label='Div with click handler'
+++++++++++UNKNOWN
 ++++++UNKNOWN actions='{DEFAULT}'
 ++++++++PARAGRAPH actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Paragraph with click handler on parent' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='Paragraph with click handler on parent'
+++++++++++++UNKNOWN
 ++++++UNKNOWN
 ++++++++UNKNOWN label='Menu item 1' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Menu item 1' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='Menu item 1'
+++++++++++++UNKNOWN
 ++++++++UNKNOWN label='Menu item 2' actions='{DEFAULT}' checked_state='CHECKED'
 ++++++++++STATIC_TEXT label='Menu item 2' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='Menu item 2'
+++++++++++++UNKNOWN
 ++++++++UNKNOWN label='Menu item 3' actions='{DEFAULT}' checked_state='UNCHECKED'
 ++++++++++STATIC_TEXT label='Menu item 3' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='Menu item 3'
+++++++++++++UNKNOWN
 ++++++BUTTON label='ARIA Button' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='ARIA Button' actions='{DEFAULT}'
-++++++++++UNKNOWN label='ARIA Button'
+++++++++++UNKNOWN
 ++++++BUTTON focusable label='ARIA button with tab index' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='ARIA button with tab index' actions='{DEFAULT}'
-++++++++++UNKNOWN label='ARIA button with tab index'
+++++++++++UNKNOWN
 ++++++BUTTON focusable label='ARIA button with negative tab index' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='ARIA button with negative tab index' actions='{DEFAULT}'
-++++++++++UNKNOWN label='ARIA button with negative tab index'
+++++++++++UNKNOWN
 ++++++UNKNOWN actions='{DEFAULT}'
 ++++++++BUTTON focusable label='ARIA button that is an active descendant' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='ARIA button that is an active descendant' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='ARIA button that is an active descendant'
+++++++++++++UNKNOWN
 ++++++UNKNOWN actions='{DEFAULT}'
 ++++++++UNKNOWN label='ARIA switch in clickable container' actions='{DEFAULT}' checked_state='UNCHECKED'
 ++++++++++STATIC_TEXT label='ARIA switch in clickable container' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='ARIA switch in clickable container'
+++++++++++++UNKNOWN
 ++++++++UNKNOWN actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Generic in clickable container' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='Generic in clickable container'
+++++++++++++UNKNOWN

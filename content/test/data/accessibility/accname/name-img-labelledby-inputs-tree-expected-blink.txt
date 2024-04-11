@@ -4,13 +4,13 @@ rootWebArea
 ++++++textField value='peanuts'
 ++++++++genericContainer
 ++++++++++staticText name='peanuts'
-++++++++++++inlineTextBox name='peanuts'
+++++++++++++inlineTextBox
 ++++++textField value='popcorn'
 ++++++++genericContainer
 ++++++++++staticText name='popcorn'
-++++++++++++inlineTextBox name='popcorn'
+++++++++++++inlineTextBox
 ++++++textField value='apple jacks'
 ++++++++genericContainer
 ++++++++++staticText name='apple jacks'
-++++++++++++inlineTextBox name='apple jacks'
+++++++++++++inlineTextBox
 ++++++image name='peanuts popcorn apple jacks'

@@ -3,13 +3,13 @@ rootWebArea
 ++++genericContainer ignored
 ++++++log
 ++++++++staticText name='This test is for aria-atomic="false"'
-++++++++++inlineTextBox name='This test is for aria-atomic="false"'
+++++++++++inlineTextBox
 ++++++log containerLiveAtomic=true liveAtomic=true
 ++++++++staticText name='This test is for aria-atomic="true"' containerLiveAtomic=true
-++++++++++inlineTextBox name='This test is for aria-atomic="true"'
+++++++++++inlineTextBox
 ++++++alert containerLiveAtomic=true liveAtomic=true
 ++++++++staticText name='This test is for alert.' containerLiveAtomic=true
-++++++++++inlineTextBox name='This test is for alert.'
+++++++++++inlineTextBox
 ++++++status containerLiveAtomic=true liveAtomic=true
 ++++++++staticText name='This test is for status.' containerLiveAtomic=true
-++++++++++inlineTextBox name='This test is for status.'
+++++++++++inlineTextBox

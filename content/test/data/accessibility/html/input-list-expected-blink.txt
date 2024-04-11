@@ -3,7 +3,7 @@ rootWebArea focusable
 ++++genericContainer
 ++++++labelText
 ++++++++staticText name='Choose a pokemon '
-++++++++++inlineTextBox name='Choose a pokemon '
+++++++++++inlineTextBox
 ++++++++textFieldWithComboBox editable focusable autoComplete='list' inputType='text' name='Choose a pokemon' haspopup=listbox
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored

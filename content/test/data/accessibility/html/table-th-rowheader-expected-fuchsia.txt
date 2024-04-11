@@ -6,14 +6,14 @@ UNKNOWN focusable has_input_focus label='Table example - th rowheader'
 ++++++++++TABLE_ROW
 ++++++++++++UNKNOWN label='Firstname' cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Firstname'
-++++++++++++++++UNKNOWN label='Firstname'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Jill' cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Jill'
-++++++++++++++++UNKNOWN label='Jill'
+++++++++++++++++UNKNOWN
 ++++++++++TABLE_ROW row_index=1
 ++++++++++++UNKNOWN label='Lastname' cell_row_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Lastname'
-++++++++++++++++UNKNOWN label='Lastname'
+++++++++++++++++UNKNOWN
 ++++++++++++CELL label='Smith' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Smith'
-++++++++++++++++UNKNOWN label='Smith'
+++++++++++++++++UNKNOWN

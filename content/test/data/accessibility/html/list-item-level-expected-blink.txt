@@ -4,47 +4,47 @@ rootWebArea
 ++++++list
 ++++++++listItem hierarchicalLevel=1
 ++++++++++staticText name='Level 1, Item 1'
-++++++++++++inlineTextBox name='Level 1, Item 1'
+++++++++++++inlineTextBox
 ++++++++listItem hierarchicalLevel=1
 ++++++++++staticText name='Level 1, Item 2'
-++++++++++++inlineTextBox name='Level 1, Item 2'
+++++++++++++inlineTextBox
 ++++++++list
 ++++++++++listItem hierarchicalLevel=2
 ++++++++++++staticText name='Level 2a, Item 1'
-++++++++++++++inlineTextBox name='Level 2a, Item 1'
+++++++++++++++inlineTextBox
 ++++++++++listItem hierarchicalLevel=2
 ++++++++++++staticText name='Level 2a, Item 2'
-++++++++++++++inlineTextBox name='Level 2a, Item 2'
+++++++++++++++inlineTextBox
 ++++++++++list
 ++++++++++++listItem hierarchicalLevel=3
 ++++++++++++++staticText name='Level 3, Item 1'
-++++++++++++++++inlineTextBox name='Level 3, Item 1'
+++++++++++++++++inlineTextBox
 ++++++++++++listItem hierarchicalLevel=3
 ++++++++++++++staticText name='Level 3, Item 2'
-++++++++++++++++inlineTextBox name='Level 3, Item 2'
+++++++++++++++++inlineTextBox
 ++++++++++++++list
 ++++++++++++++++listItem hierarchicalLevel=4
 ++++++++++++++++++staticText name='Level 4, Item 1'
-++++++++++++++++++++inlineTextBox name='Level 4, Item 1'
+++++++++++++++++++++inlineTextBox
 ++++++++++++++++listItem hierarchicalLevel=4
 ++++++++++++++++++staticText name='Level 4, Item 2'
-++++++++++++++++++++inlineTextBox name='Level 4, Item 2'
+++++++++++++++++++++inlineTextBox
 ++++++++++++++++listItem hierarchicalLevel=4
 ++++++++++++++++++staticText name='Level 4, Item 3'
-++++++++++++++++++++inlineTextBox name='Level 4, Item 3'
+++++++++++++++++++++inlineTextBox
 ++++++++listItem hierarchicalLevel=1
 ++++++++++staticText name='Level 1, Item 3'
-++++++++++++inlineTextBox name='Level 1, Item 3'
+++++++++++++inlineTextBox
 ++++++++++list
 ++++++++++++listItem hierarchicalLevel=2
 ++++++++++++++staticText name='Level 2b, Item 1'
-++++++++++++++++inlineTextBox name='Level 2b, Item 1'
+++++++++++++++++inlineTextBox
 ++++++++listItem hierarchicalLevel=1
 ++++++++++staticText name='Level 1, Item 4'
-++++++++++++inlineTextBox name='Level 1, Item 4'
+++++++++++++inlineTextBox
 ++++++listItem hierarchicalLevel=1
 ++++++++staticText name='Level 1, Not within list group, Item 1'
-++++++++++inlineTextBox name='Level 1, Not within list group, Item 1'
+++++++++++inlineTextBox
 ++++++listItem hierarchicalLevel=1
 ++++++++staticText name='Level 1, Not within list group, Item 2'
-++++++++++inlineTextBox name='Level 1, Not within list group, Item 2'
+++++++++++inlineTextBox

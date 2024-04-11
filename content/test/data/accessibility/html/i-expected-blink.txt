@@ -3,8 +3,8 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='This is to check '
-++++++++++inlineTextBox name='This is to check '
+++++++++++inlineTextBox
 ++++++++staticText name='italic property'
-++++++++++inlineTextBox name='italic property'
+++++++++++inlineTextBox
 ++++++++staticText name=' using i tag.'
-++++++++++inlineTextBox name=' using i tag.'
+++++++++++inlineTextBox

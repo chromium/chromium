@@ -4,20 +4,20 @@ rootWebArea
 ++++++textFieldWithComboBox autoComplete='inline' value='autocomplete=inline' haspopup=listbox
 ++++++++genericContainer
 ++++++++++staticText name='autocomplete=inline'
-++++++++++++inlineTextBox name='autocomplete=inline'
+++++++++++++inlineTextBox
 ++++++textFieldWithComboBox autoComplete='list' value='autocomplete=list' haspopup=listbox
 ++++++++genericContainer
 ++++++++++staticText name='autocomplete=list'
-++++++++++++inlineTextBox name='autocomplete=list'
+++++++++++++inlineTextBox
 ++++++textFieldWithComboBox autoComplete='both' value='autocomplete=both' haspopup=listbox
 ++++++++genericContainer
 ++++++++++staticText name='autocomplete=both'
-++++++++++++inlineTextBox name='autocomplete=both'
+++++++++++++inlineTextBox
 ++++++textFieldWithComboBox value='autocomplete=none' haspopup=listbox
 ++++++++genericContainer
 ++++++++++staticText name='autocomplete=none'
-++++++++++++inlineTextBox name='autocomplete=none'
+++++++++++++inlineTextBox
 ++++++textField autoComplete='inline' value='No role with autocomplete=inline'
 ++++++++genericContainer
 ++++++++++staticText name='No role with autocomplete=inline'
-++++++++++++inlineTextBox name='No role with autocomplete=inline'
+++++++++++++inlineTextBox

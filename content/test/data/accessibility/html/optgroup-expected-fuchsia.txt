@@ -6,7 +6,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN label='Enabled'
 ++++++++++++++STATIC_TEXT label='Enabled'
-++++++++++++++++UNKNOWN label='Enabled'
+++++++++++++++++UNKNOWN
 ++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN focusable label='One' actions='{DEFAULT}'
 ++++++++++++++UNKNOWN focusable label='Two' actions='{DEFAULT}'
@@ -15,7 +15,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN label='Disabled'
 ++++++++++++++STATIC_TEXT label='Disabled'
-++++++++++++++++UNKNOWN label='Disabled'
+++++++++++++++++UNKNOWN
 ++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN label='One' actions='{DEFAULT}'
 ++++++++++++++UNKNOWN label='Two' actions='{DEFAULT}'

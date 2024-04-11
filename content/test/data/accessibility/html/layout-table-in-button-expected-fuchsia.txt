@@ -7,4 +7,4 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN label='Conversation with Foo. 0 unread messages.'
 ++++++++++++++UNKNOWN label='Conversation with Foo. 0 unread messages.'
 ++++++++++++++++STATIC_TEXT label='Foo'
-++++++++++++++++++UNKNOWN label='Foo'
+++++++++++++++++++UNKNOWN

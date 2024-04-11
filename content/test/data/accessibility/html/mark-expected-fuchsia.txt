@@ -3,9 +3,9 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='This test is to check '
-++++++++++UNKNOWN label='This test is to check '
+++++++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='mark tag'
-++++++++++++UNKNOWN label='mark tag'
+++++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='.'
-++++++++++UNKNOWN label='.'
+++++++++++UNKNOWN

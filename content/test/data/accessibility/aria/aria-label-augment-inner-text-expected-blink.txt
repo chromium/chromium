@@ -3,15 +3,15 @@ rootWebArea
 ++++genericContainer
 ++++++link name='Link'
 ++++++++staticText name='Link'
-++++++++++inlineTextBox name='Link'
+++++++++++inlineTextBox
 ++++++staticText name=' '
-++++++++inlineTextBox name=' '
+++++++++inlineTextBox
 ++++++link name='AriaLabel'
 ++++++++staticText name='Link'
-++++++++++inlineTextBox name='Link'
+++++++++++inlineTextBox
 ++++++button name='Button'
 ++++++++staticText name='Button'
-++++++++++inlineTextBox name='Button'
+++++++++++inlineTextBox
 ++++++button name='AriaLabel'
 ++++++++staticText name='Button'
-++++++++++inlineTextBox name='Button'
+++++++++++inlineTextBox

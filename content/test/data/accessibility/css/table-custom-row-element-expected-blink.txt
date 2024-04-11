@@ -6,31 +6,31 @@ rootWebArea
 ++++++++++layoutTableRow
 ++++++++++++layoutTableCell name='a'
 ++++++++++++++staticText name='a'
-++++++++++++++++inlineTextBox name='a'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='b'
 ++++++++++++++staticText name='b'
-++++++++++++++++inlineTextBox name='b'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='c'
 ++++++++++++++staticText name='c'
-++++++++++++++++inlineTextBox name='c'
+++++++++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++layoutTableRow
 ++++++++++++layoutTableCell name='a'
 ++++++++++++++staticText name='a'
-++++++++++++++++inlineTextBox name='a'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='b'
 ++++++++++++++staticText name='b'
-++++++++++++++++inlineTextBox name='b'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='c'
 ++++++++++++++staticText name='c'
-++++++++++++++++inlineTextBox name='c'
+++++++++++++++++inlineTextBox
 ++++++++++layoutTableRow
 ++++++++++++layoutTableCell name='a'
 ++++++++++++++staticText name='a'
-++++++++++++++++inlineTextBox name='a'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='b'
 ++++++++++++++staticText name='b'
-++++++++++++++++inlineTextBox name='b'
+++++++++++++++++inlineTextBox
 ++++++++++++layoutTableCell name='c'
 ++++++++++++++staticText name='c'
-++++++++++++++++inlineTextBox name='c'
+++++++++++++++++inlineTextBox

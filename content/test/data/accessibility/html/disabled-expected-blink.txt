@@ -5,21 +5,21 @@ rootWebArea
 ++++++checkBox name='Disabled' restriction=disabled checkedState=false
 ++++++button name='Enabled'
 ++++++++staticText name='Enabled'
-++++++++++inlineTextBox name='Enabled'
+++++++++++inlineTextBox
 ++++++button name='Disabled' restriction=disabled
 ++++++++staticText name='Disabled'
-++++++++++inlineTextBox name='Disabled'
+++++++++++inlineTextBox
 ++++++section
 ++++++++staticText name='Enabled form '
-++++++++++inlineTextBox name='Enabled form '
+++++++++++inlineTextBox
 ++++++++checkBox name='Checkbox' checkedState=false
 ++++++++button name='Button'
 ++++++++++staticText name='Button'
-++++++++++++inlineTextBox name='Button'
+++++++++++++inlineTextBox
 ++++++section restriction=disabled
 ++++++++staticText name='Disabled form '
-++++++++++inlineTextBox name='Disabled form '
+++++++++++inlineTextBox
 ++++++++checkBox name='Checkbox' restriction=disabled checkedState=false
 ++++++++button name='Button' restriction=disabled
 ++++++++++staticText name='Button'
-++++++++++++inlineTextBox name='Button'
+++++++++++++inlineTextBox

@@ -3,75 +3,75 @@ rootWebArea
 ++++genericContainer ignored
 ++++++heading name='Level 2' hierarchicalLevel=2
 ++++++++staticText name='Level 2'
-++++++++++inlineTextBox name='Level 2'
+++++++++++inlineTextBox
 ++++++heading name='Level 9' hierarchicalLevel=9
 ++++++++staticText name='Level 9'
-++++++++++inlineTextBox name='Level 9'
+++++++++++inlineTextBox
 ++++++heading name='Level 1' hierarchicalLevel=1
 ++++++++staticText name='Level 1'
-++++++++++inlineTextBox name='Level 1'
+++++++++++inlineTextBox
 ++++++heading name='Level 3' hierarchicalLevel=3
 ++++++++staticText name='Level 3'
-++++++++++inlineTextBox name='Level 3'
+++++++++++inlineTextBox
 ++++++heading name='Level 3' hierarchicalLevel=3
 ++++++++staticText name='Level 3'
-++++++++++inlineTextBox name='Level 3'
+++++++++++inlineTextBox
 ++++++heading name='Level 4' hierarchicalLevel=4
 ++++++++staticText name='Level 4'
-++++++++++inlineTextBox name='Level 4'
+++++++++++inlineTextBox
 ++++++heading name='Level 5' hierarchicalLevel=5
 ++++++++staticText name='Level 5'
-++++++++++inlineTextBox name='Level 5'
+++++++++++inlineTextBox
 ++++++tree
 ++++++++treeItem name='Tree item at level 1' hierarchicalLevel=1 selected=false
 ++++++++++staticText name='Tree item at level 1'
-++++++++++++inlineTextBox name='Tree item at level 1'
+++++++++++++inlineTextBox
 ++++++++++group
 ++++++++++++treeItem name='Tree item at level 2' hierarchicalLevel=2 selected=false
 ++++++++++++++staticText name='Tree item at level 2'
-++++++++++++++++inlineTextBox name='Tree item at level 2'
+++++++++++++++++inlineTextBox
 ++++++++++++treeItem name='Tree item at level 2, aria-level is 0' hierarchicalLevel=2 selected=false
 ++++++++++++++staticText name='Tree item at level 2, aria-level is 0'
-++++++++++++++++inlineTextBox name='Tree item at level 2, aria-level is 0'
+++++++++++++++++inlineTextBox
 ++++++++treeItem name='Tree item at level 3' hierarchicalLevel=3 selected=false
 ++++++++++staticText name='Tree item at level 3'
-++++++++++++inlineTextBox name='Tree item at level 3'
+++++++++++++inlineTextBox
 ++++++++treeItem name='Tree item at level 20' hierarchicalLevel=20 selected=false
 ++++++++++staticText name='Tree item at level 20'
-++++++++++++inlineTextBox name='Tree item at level 20'
+++++++++++++inlineTextBox
 ++++++++treeItem name='Tree item at level 1' hierarchicalLevel=1 selected=false
 ++++++++++staticText name='Tree item at level 1'
-++++++++++++inlineTextBox name='Tree item at level 1'
+++++++++++++inlineTextBox
 ++++++++treeItem name='Tree item at level 1' hierarchicalLevel=1 selected=false
 ++++++++++staticText name='Tree item at level 1'
-++++++++++++inlineTextBox name='Tree item at level 1'
+++++++++++++inlineTextBox
 ++++++++treeItem name='Tree item at level 1' hierarchicalLevel=1 selected=false
 ++++++++++staticText name='Tree item at level 1'
-++++++++++++inlineTextBox name='Tree item at level 1'
+++++++++++++inlineTextBox
 ++++++treeGrid
 ++++++++rowGroup ignored
 ++++++++++row hierarchicalLevel=1
 ++++++++++++cell name='Cell at level 1'
 ++++++++++++++staticText name='Cell at level 1'
-++++++++++++++++inlineTextBox name='Cell at level 1'
+++++++++++++++++inlineTextBox
 ++++++++++row hierarchicalLevel=2
 ++++++++++++cell name='Cell at level 2'
 ++++++++++++++staticText name='Cell at level 2'
-++++++++++++++++inlineTextBox name='Cell at level 2'
+++++++++++++++++inlineTextBox
 ++++++listItem hierarchicalLevel=1
 ++++++++staticText name='List item at level 1'
-++++++++++inlineTextBox name='List item at level 1'
+++++++++++inlineTextBox
 ++++++listItem hierarchicalLevel=3
 ++++++++staticText name='List item at level 3'
-++++++++++inlineTextBox name='List item at level 3'
+++++++++++inlineTextBox
 ++++++list
 ++++++++listItem hierarchicalLevel=2
 ++++++++++staticText name='List item at level 2'
-++++++++++++inlineTextBox name='List item at level 2'
+++++++++++++inlineTextBox
 ++++++++list
 ++++++++++listItem hierarchicalLevel=2
 ++++++++++++staticText name='List item at level 2'
-++++++++++++++inlineTextBox name='List item at level 2'
+++++++++++++++inlineTextBox
 ++++++++++listItem hierarchicalLevel=7
 ++++++++++++staticText name='List item at level 7'
-++++++++++++++inlineTextBox name='List item at level 7'
+++++++++++++++inlineTextBox

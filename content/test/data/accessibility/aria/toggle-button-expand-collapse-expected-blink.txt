@@ -3,13 +3,13 @@ rootWebArea
 ++++genericContainer ignored
 ++++++toggleButton collapsed name='Toggle button, pressed, collapsed' checkedState=true
 ++++++++staticText name='Toggle button, pressed, collapsed'
-++++++++++inlineTextBox name='Toggle button, pressed, collapsed'
+++++++++++inlineTextBox
 ++++++toggleButton collapsed name='Toggle button, not pressed, collapsed' checkedState=false
 ++++++++staticText name='Toggle button, not pressed, collapsed'
-++++++++++inlineTextBox name='Toggle button, not pressed, collapsed'
+++++++++++inlineTextBox
 ++++++toggleButton expanded name='Toggle button, pressed, expanded' checkedState=true
 ++++++++staticText name='Toggle button, pressed, expanded'
-++++++++++inlineTextBox name='Toggle button, pressed, expanded'
+++++++++++inlineTextBox
 ++++++toggleButton expanded name='Toggle button, not pressed, collapsed"' checkedState=false
 ++++++++staticText name='Toggle button, not pressed, collapsed"'
-++++++++++inlineTextBox name='Toggle button, not pressed, collapsed"'
+++++++++++inlineTextBox

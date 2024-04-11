@@ -3,34 +3,34 @@ rootWebArea text-align=left
 ++++genericContainer ignored
 ++++++genericContainer text-align=left
 ++++++++staticText name='Left-aligned text'
-++++++++++inlineTextBox name='Left-aligned text'
+++++++++++inlineTextBox
 ++++++genericContainer text-align=right
 ++++++++staticText name='Right-aligned text'
-++++++++++inlineTextBox name='Right-aligned text'
+++++++++++inlineTextBox
 ++++++genericContainer text-align=center
 ++++++++staticText name='Centered text'
-++++++++++inlineTextBox name='Centered text'
+++++++++++inlineTextBox
 ++++++genericContainer text-align=justify
 ++++++++staticText name='Justified text'
-++++++++++inlineTextBox name='Justified text'
+++++++++++inlineTextBox
 ++++++genericContainer text-align=left
 ++++++++staticText name='Webkit left-aligned text'
-++++++++++inlineTextBox name='Webkit left-aligned text'
+++++++++++inlineTextBox
 ++++++genericContainer text-align=right
 ++++++++staticText name='Webkit right-aligned text'
-++++++++++inlineTextBox name='Webkit right-aligned text'
+++++++++++inlineTextBox
 ++++++genericContainer text-align=center
 ++++++++staticText name='Webkit centered text'
-++++++++++inlineTextBox name='Webkit centered text'
+++++++++++inlineTextBox
 ++++++genericContainer text-align=left
 ++++++++staticText name='Start-aligned text'
-++++++++++inlineTextBox name='Start-aligned text'
+++++++++++inlineTextBox
 ++++++genericContainer text-align=right
 ++++++++staticText name='End-aligned text'
-++++++++++inlineTextBox name='End-aligned text'
+++++++++++inlineTextBox
 ++++++genericContainer text-align=left
 ++++++++staticText name='No text alignment specified'
-++++++++++inlineTextBox name='No text alignment specified'
+++++++++++inlineTextBox
 ++++++genericContainer text-align=left
 ++++++++staticText name='Invalid text alignment'
-++++++++++inlineTextBox name='Invalid text alignment'
+++++++++++inlineTextBox

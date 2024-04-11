@@ -5,6 +5,6 @@ rootWebArea name='done'
 ++++++++group
 ++++++++++mark
 ++++++++++++staticText name='xyz'
-++++++++++++++inlineTextBox name='xyz'
+++++++++++++++inlineTextBox
 ++++++++staticText name='From hidden'
-++++++++++inlineTextBox name='From hidden'
+++++++++++inlineTextBox

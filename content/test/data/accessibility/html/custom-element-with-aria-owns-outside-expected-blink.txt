@@ -4,14 +4,14 @@ rootWebArea
 ++++++splitter horizontal name='Outside custom element'
 ++++++paragraph
 ++++++++staticText name='Hello, world'
-++++++++++inlineTextBox name='Hello, world'
+++++++++++inlineTextBox
 ++++++splitter horizontal name='Inside custom element'
 ++++++group
 ++++++++button name='something'
 ++++++++++staticText name='something'
-++++++++++++inlineTextBox name='something'
+++++++++++++inlineTextBox
 ++++++++button name='something'
 ++++++++++staticText name='something'
-++++++++++++inlineTextBox name='something'
+++++++++++++inlineTextBox
 ++++++staticText name=' '
-++++++++inlineTextBox name=' '
+++++++++inlineTextBox

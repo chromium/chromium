@@ -6,106 +6,106 @@ rootWebArea
 ++++++++++row name='Cell 1, row 1, level 1 Cell 2, row 1, level 1' hierarchicalLevel=1
 ++++++++++++cell name='Cell 1, row 1, level 1'
 ++++++++++++++staticText name='Cell 1, row 1, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='Cell 2, row 1, level 1'
 ++++++++++++++staticText name='Cell 2, row 1, level 1'
-++++++++++++++++inlineTextBox name='Cell 2, row 1, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 2, level 1 Cell 2, row 2, level 1' hierarchicalLevel=1
 ++++++++++++cell name='Cell 1, row 2, level 1'
 ++++++++++++++staticText name='Cell 1, row 2, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 2, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='Cell 2, row 2, level 1'
 ++++++++++++++staticText name='Cell 2, row 2, level 1'
-++++++++++++++++inlineTextBox name='Cell 2, row 2, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 3, level 1 Cell 2, row 3, level 1' hierarchicalLevel=1
 ++++++++++++cell name='Cell 1, row 3, level 1'
 ++++++++++++++staticText name='Cell 1, row 3, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 3, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='Cell 2, row 3, level 1'
 ++++++++++++++staticText name='Cell 2, row 3, level 1'
-++++++++++++++++inlineTextBox name='Cell 2, row 3, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 1, level 2' hierarchicalLevel=2
 ++++++++++++cell name='Cell 1, row 1, level 2'
 ++++++++++++++staticText name='Cell 1, row 1, level 2'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, level 2'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 2, level 2' hierarchicalLevel=2
 ++++++++++++cell name='Cell 1, row 2, level 2'
 ++++++++++++++staticText name='Cell 1, row 2, level 2'
-++++++++++++++++inlineTextBox name='Cell 1, row 2, level 2'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 3, level 2' hierarchicalLevel=2
 ++++++++++++cell name='Cell 1, row 3, level 2'
 ++++++++++++++staticText name='Cell 1, row 3, level 2'
-++++++++++++++++inlineTextBox name='Cell 1, row 3, level 2'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 4, level 2' hierarchicalLevel=2
 ++++++++++++cell name='Cell 1, row 4, level 2'
 ++++++++++++++staticText name='Cell 1, row 4, level 2'
-++++++++++++++++inlineTextBox name='Cell 1, row 4, level 2'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 2, level 2' hierarchicalLevel=3
 ++++++++++++cell name='Cell 1, row 2, level 2'
 ++++++++++++++staticText name='Cell 1, row 2, level 2'
-++++++++++++++++inlineTextBox name='Cell 1, row 2, level 2'
+++++++++++++++++inlineTextBox
 ++++++treeGrid
 ++++++++rowGroup setSize=4
 ++++++++++row name='Cell 1, row 1, rowgroup 1, level 1' hierarchicalLevel=1
 ++++++++++++cell name='Cell 1, row 1, rowgroup 1, level 1'
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 1, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 1, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 2, rowgroup 1, level 1' hierarchicalLevel=1
 ++++++++++++cell name='Cell 1, row 2, rowgroup 1, level 1'
 ++++++++++++++staticText name='Cell 1, row 2, rowgroup 1, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 2, rowgroup 1, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 3, rowgroup 1, level 1' hierarchicalLevel=1
 ++++++++++++cell name='Cell 1, row 3, rowgroup 1, level 1'
 ++++++++++++++staticText name='Cell 1, row 3, rowgroup 1, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 3, rowgroup 1, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 1, rowgroup 1, level 2' hierarchicalLevel=2
 ++++++++++++cell name='Cell 1, row 1, rowgroup 1, level 2'
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 1, level 2'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 1, level 2'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 1, rowgroup 1, level 1' hierarchicalLevel=1
 ++++++++++++cell name='Cell 1, row 1, rowgroup 1, level 1'
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 1, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 1, level 1'
+++++++++++++++++inlineTextBox
 ++++++++rowGroup setSize=1
 ++++++++++row name='Cell 1, row 1, rowgroup 2, level 1 Cell 2, row 1, rowgroup 2, level 1' hierarchicalLevel=1
 ++++++++++++cell name='Cell 1, row 1, rowgroup 2, level 1'
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 2, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 2, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='Cell 2, row 1, rowgroup 2, level 1'
 ++++++++++++++staticText name='Cell 2, row 1, rowgroup 2, level 1'
-++++++++++++++++inlineTextBox name='Cell 2, row 1, rowgroup 2, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++row name='Cell 1, row 1, rowgroup 2, level 2 Cell 2, row 1, rowgroup 2, level 2 Cell 3, row 1, rowgroup 2, level 2' hierarchicalLevel=2
 ++++++++++++cell name='Cell 1, row 1, rowgroup 2, level 2'
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 2, level 2'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 2, level 2'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='Cell 2, row 1, rowgroup 2, level 2'
 ++++++++++++++staticText name='Cell 2, row 1, rowgroup 2, level 2'
-++++++++++++++++inlineTextBox name='Cell 2, row 1, rowgroup 2, level 2'
+++++++++++++++++inlineTextBox
 ++++++++++++cell name='Cell 3, row 1, rowgroup 2, level 2'
 ++++++++++++++staticText name='Cell 3, row 1, rowgroup 2, level 2'
-++++++++++++++++inlineTextBox name='Cell 3, row 1, rowgroup 2, level 2'
+++++++++++++++++inlineTextBox
 ++++++treeGrid
 ++++++++genericContainer ignored
 ++++++++++rowGroup setSize=4
 ++++++++++++row name='Cell 1, row 1, rowgroup 1, level 1' hierarchicalLevel=1
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 1, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 1, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++++row name='Cell 1, row 2, rowgroup 1, level 1' hierarchicalLevel=1
 ++++++++++++++staticText name='Cell 1, row 2, rowgroup 1, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 2, rowgroup 1, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++++row name='Cell 1, row 3, rowgroup 1, level 1' hierarchicalLevel=1
 ++++++++++++++staticText name='Cell 1, row 3, rowgroup 1, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 3, rowgroup 1, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++++row name='Cell 1, row 1, rowgroup 1, level 2' hierarchicalLevel=2
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 1, level 2'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 1, level 2'
+++++++++++++++++inlineTextBox
 ++++++++++++row name='Cell 1, row 1, rowgroup 1, level 1' hierarchicalLevel=1
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 1, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 1, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++rowGroup setSize=1
 ++++++++++++row name='Cell 1, row 1, rowgroup 2, level 1 Cell 2, row 1, rowgroup 2, level 1' hierarchicalLevel=1
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 2, level 1 Cell 2, row 1, rowgroup 2, level 1'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 2, level 1 Cell 2, row 1, rowgroup 2, level 1'
+++++++++++++++++inlineTextBox
 ++++++++++++row name='Cell 1, row 1, rowgroup 2, level 2 Cell 2, row 1, rowgroup 2, level 2 Cell 3, row 1, rowgroup 2, level 2' hierarchicalLevel=2
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 2, level 2 Cell 2, row 1, rowgroup 2, level 2 Cell 3, row 1, rowgroup 2, level 2'
-++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 2, level 2 Cell 2, row 1, rowgroup 2, level 2 Cell 3, row 1, rowgroup 2, level 2'
+++++++++++++++++inlineTextBox

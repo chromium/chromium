@@ -3,22 +3,22 @@ rootWebArea
 ++++genericContainer
 ++++++button size=(300, 150) name='Button fits'
 ++++++++staticText name='Button fits'
-++++++++++inlineTextBox name='Button fits'
+++++++++++inlineTextBox
 ++++++button offscreen size=(300, 150) pageSize=(1, 150) name='Button offscreen X'
 ++++++++staticText offscreen name='Button offscreen X'
-++++++++++inlineTextBox offscreen name='Button offscreen X'
+++++++++++inlineTextBox offscreen
 ++++++button offscreen size=(300, 150) pageSize=(300, 1) name='Button offscreen Y'
 ++++++++staticText offscreen name='Button offscreen Y'
-++++++++++inlineTextBox offscreen name='Button offscreen Y'
+++++++++++inlineTextBox offscreen
 ++++++button size=(300, 150) name='Button partially on screen'
 ++++++++staticText name='Button partially on screen'
-++++++++++inlineTextBox name='Button partially on screen'
+++++++++++inlineTextBox
 ++++++button offscreen size=(300, 150) pageSize=(1, 1) name='Button offscreen'
 ++++++++staticText offscreen pageSize=(1, 1) name='Button offscreen'
-++++++++++inlineTextBox offscreen pageSize=(1, 1) name='Button offscreen'
+++++++++++inlineTextBox offscreen pageSize=(1, 1)
 ++++++button offscreen size=(300, 150) pageSize=(1, 1) name='Button offscreen top'
 ++++++++staticText offscreen pageSize=(1, 1) name='Button offscreen top'
-++++++++++inlineTextBox offscreen pageSize=(1, 1) name='Button offscreen top'
+++++++++++inlineTextBox offscreen pageSize=(1, 1)
 ++++++button size=(300, 150) pageSize=(208, 58) name='Button partially on screen'
 ++++++++staticText offscreen name='Button partially on screen'
-++++++++++inlineTextBox offscreen name='Button partially on screen'
+++++++++++inlineTextBox offscreen

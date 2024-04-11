@@ -4,4 +4,4 @@ rootWebArea name='done'
 ++++++list
 ++++++++listItem hierarchicalLevel=1
 ++++++++++staticText name='item'
-++++++++++++inlineTextBox name='item'
+++++++++++++inlineTextBox

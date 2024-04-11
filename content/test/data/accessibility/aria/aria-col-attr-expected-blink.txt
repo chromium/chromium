@@ -5,23 +5,23 @@ rootWebArea
 ++++++++row
 ++++++++++columnHeader name='cell 2' ariaCellColumnIndex=2 ariaCellColumnSpan=2
 ++++++++++++staticText name='cell 2'
-++++++++++++++inlineTextBox name='cell 2'
+++++++++++++++inlineTextBox
 ++++++++++columnHeader name='cell 4' ariaCellColumnIndex=4
 ++++++++++++staticText name='cell 4'
-++++++++++++++inlineTextBox name='cell 4'
+++++++++++++++inlineTextBox
 ++++++++++columnHeader name='cell 5' ariaCellColumnIndex=5
 ++++++++++++staticText name='cell 5'
-++++++++++++++inlineTextBox name='cell 5'
+++++++++++++++inlineTextBox
 ++++++++row ariaCellColumnIndex=2
 ++++++++++cell name='cell 2' ariaCellColumnIndex=2
 ++++++++++++staticText name='cell 2'
-++++++++++++++inlineTextBox name='cell 2'
+++++++++++++++inlineTextBox
 ++++++++++cell name='cell 3' ariaCellColumnIndex=3
 ++++++++++++staticText name='cell 3'
-++++++++++++++inlineTextBox name='cell 3'
+++++++++++++++inlineTextBox
 ++++++++++cell name='cell 4' ariaCellColumnIndex=4
 ++++++++++++staticText name='cell 4'
-++++++++++++++inlineTextBox name='cell 4'
+++++++++++++++inlineTextBox
 ++++++++++cell name='cell 5' ariaCellColumnIndex=5
 ++++++++++++staticText name='cell 5'
-++++++++++++++inlineTextBox name='cell 5'
+++++++++++++++inlineTextBox

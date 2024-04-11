@@ -7,9 +7,9 @@ UNKNOWN focusable has_input_focus
 ++++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 ' actions='{DEFAULT}'
 ++++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
 ++++++++++++STATIC_TEXT label='Hello' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='Hello'
+++++++++++++++UNKNOWN
 ++++++++++LIST_ELEMENT actions='{DEFAULT}' list_element_index=2
 ++++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 ' actions='{DEFAULT}'
 ++++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
 ++++++++++++STATIC_TEXT label='Bye' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='Bye'
+++++++++++++++UNKNOWN

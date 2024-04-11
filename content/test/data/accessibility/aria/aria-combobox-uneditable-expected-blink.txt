@@ -3,17 +3,17 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer
 ++++++++staticText name='Choose a fruit, with text content'
-++++++++++inlineTextBox name='Choose a fruit, with text content'
+++++++++++inlineTextBox
 ++++++comboBoxMenuButton collapsed name='Choose a fruit, with text content' value='Apple' activedescendantId=listBoxOption haspopup=listbox controlsIds=listBox
 ++++++++staticText name='Apple'
-++++++++++inlineTextBox name='Apple'
+++++++++++inlineTextBox
 ++++++listBox
 ++++++++listBoxOption name='Apple' selected=true
 ++++++++++staticText name='Apple'
-++++++++++++inlineTextBox name='Apple'
+++++++++++++inlineTextBox
 ++++++++listBoxOption name='Banana' selected=false
 ++++++++++staticText name='Banana'
-++++++++++++inlineTextBox name='Banana'
+++++++++++++inlineTextBox
 ++++++++listBoxOption name='Cherry' selected=false
 ++++++++++staticText name='Cherry'
-++++++++++++inlineTextBox name='Cherry'
+++++++++++++inlineTextBox

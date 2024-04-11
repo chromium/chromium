@@ -4,8 +4,8 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++BUTTON focusable label='Submit' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Submit'
-++++++++++++UNKNOWN label='Submit'
+++++++++++++UNKNOWN
 ++++++UNKNOWN label='Name'
 ++++++++BUTTON focusable label='Submit' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Submit'
-++++++++++++UNKNOWN label='Submit'
+++++++++++++UNKNOWN

@@ -4,7 +4,7 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Coffee'
-++++++++++++UNKNOWN label='Coffee'
+++++++++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Black hot drink'
-++++++++++++UNKNOWN label='Black hot drink'
+++++++++++++UNKNOWN

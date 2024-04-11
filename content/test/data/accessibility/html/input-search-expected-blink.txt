@@ -4,4 +4,4 @@ rootWebArea
 ++++++searchBox value='Search terms'
 ++++++++genericContainer
 ++++++++++staticText name='Search terms'
-++++++++++++inlineTextBox name='Search terms'
+++++++++++++inlineTextBox

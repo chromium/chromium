@@ -8,4 +8,4 @@ rootWebArea
 ++++++++genericContainer
 ++++++comboBoxMenuButton name='ComboBoxMenuButton"' value='Select' haspopup=listbox
 ++++++++staticText name='Select'
-++++++++++inlineTextBox name='Select'
+++++++++++inlineTextBox

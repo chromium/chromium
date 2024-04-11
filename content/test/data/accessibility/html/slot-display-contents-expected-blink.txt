@@ -5,4 +5,4 @@ rootWebArea htmlTag='#document'
 ++++++++genericContainer ignored htmlTag='slot'
 ++++++++++button htmlTag='button' name='Test'
 ++++++++++++staticText name='Test'
-++++++++++++++inlineTextBox name='Test'
+++++++++++++++inlineTextBox

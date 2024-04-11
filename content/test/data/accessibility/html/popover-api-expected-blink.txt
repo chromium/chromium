@@ -5,70 +5,70 @@ rootWebArea
 ++++++++disclosureTriangle ignored invisible
 ++++++button collapsed name='Button pointing to hidden popover'
 ++++++++staticText name='Button pointing to hidden popover'
-++++++++++inlineTextBox name='Button pointing to hidden popover'
+++++++++++inlineTextBox
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Text input pointing to hidden popover '
-++++++++inlineTextBox name='Text input pointing to hidden popover '
+++++++++inlineTextBox
 ++++++button name='Hide button pointing to hidden manual'
 ++++++++staticText name='Hide button pointing to hidden manual'
-++++++++++inlineTextBox name='Hide button pointing to hidden manual'
+++++++++++inlineTextBox
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Email input pointing to hidden manual '
-++++++++inlineTextBox name='Email input pointing to hidden manual '
+++++++++inlineTextBox
 ++++++button name='Button pointing to hint popover'
 ++++++++staticText name='Button pointing to hint popover'
-++++++++++inlineTextBox name='Button pointing to hint popover'
+++++++++++inlineTextBox
 ++++++button name='Button pointing to "rich" hint popover'
 ++++++++staticText name='Button pointing to "rich" hint popover'
-++++++++++inlineTextBox name='Button pointing to "rich" hint popover'
+++++++++++inlineTextBox
 ++++++button name='Button pointing to non-popover'
 ++++++++staticText name='Button pointing to non-popover'
-++++++++++inlineTextBox name='Button pointing to non-popover'
+++++++++++inlineTextBox
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Text input pointing to non-popover'
-++++++++inlineTextBox name='Text input pointing to non-popover'
+++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='No popover attribute'
-++++++++++inlineTextBox name='No popover attribute'
+++++++++++inlineTextBox
 ++++++button name='Button pointing to invalid popover value'
 ++++++++staticText name='Button pointing to invalid popover value'
-++++++++++inlineTextBox name='Button pointing to invalid popover value'
+++++++++++inlineTextBox
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Text input pointing to invalid popover value'
-++++++++inlineTextBox name='Text input pointing to invalid popover value'
+++++++++inlineTextBox
 ++++++paragraph
 ++++++++staticText name='Showing/visible popovers below'
-++++++++++inlineTextBox name='Showing/visible popovers below'
+++++++++++inlineTextBox
 ++++++button expanded name='Button pointing to showing popover' detailsIds=group
 ++++++++staticText name='Button pointing to showing popover'
-++++++++++inlineTextBox name='Button pointing to showing popover'
+++++++++++inlineTextBox
 ++++++button expanded name='w/o details'
 ++++++++staticText name='w/o details'
-++++++++++inlineTextBox name='w/o details'
+++++++++++inlineTextBox
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Tel input pointing to showing popover '
-++++++++inlineTextBox name='Tel input pointing to showing popover '
+++++++++inlineTextBox
 ++++++button expanded name='Show button pointing to nested popover' detailsIds=group
 ++++++++staticText name='Show button pointing to nested popover'
-++++++++++inlineTextBox name='Show button pointing to nested popover'
+++++++++++inlineTextBox
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Url input pointing to nested popover '
-++++++++inlineTextBox name='Url input pointing to nested popover '
+++++++++inlineTextBox
 ++++++group ispopup=auto
 ++++++++staticText name='Popover (showing)'
-++++++++++inlineTextBox name='Popover (showing)'
+++++++++++inlineTextBox
 ++++++++group ispopup=auto
 ++++++++++staticText name='Nested popover (showing)'
-++++++++++++inlineTextBox name='Nested popover (showing)'
+++++++++++++inlineTextBox
 ++++++button name='Hide button pointing to showing manual (should add aria-details)' detailsIds=group
 ++++++++staticText name='Hide button pointing to showing manual (should add aria-details)'
-++++++++++inlineTextBox name='Hide button pointing to showing manual (should add aria-details)'
+++++++++++inlineTextBox
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Url input pointing to showing manual '
@@ -76,13 +76,13 @@ rootWebArea
 ++++++++inlineTextBox name='manual '
 ++++++button name='Hide button pointing to showing manual (should NOT add aria-details)'
 ++++++++staticText name='Hide button pointing to showing manual (should NOT add aria-details)'
-++++++++++inlineTextBox name='Hide button pointing to showing manual (should NOT add aria-details)'
+++++++++++inlineTextBox
 ++++++group ispopup=manual
 ++++++++staticText name='Manual (showing)'
-++++++++++inlineTextBox name='Manual (showing)'
+++++++++++inlineTextBox
 ++++++group ispopup=manual
 ++++++++staticText name='Popover=hint (showing) '
-++++++++++inlineTextBox name='Popover=hint (showing) '
+++++++++++inlineTextBox
 ++++++++link name='Link'
 ++++++++++staticText name='Link'
-++++++++++++inlineTextBox name='Link'
+++++++++++++inlineTextBox

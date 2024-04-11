@@ -7,8 +7,8 @@ rootWebArea scrollable=false
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer
 ++++++++++++++++staticText name='visible text'
-++++++++++++++++++inlineTextBox name='visible text'
+++++++++++++++++++inlineTextBox
 ++++++++++++++genericContainer ignored
 ++++++++++++++genericContainer
 ++++++++++++++++staticText name='hidden from viewport'
-++++++++++++++++++inlineTextBox name='hidden from viewport'
+++++++++++++++++++inlineTextBox

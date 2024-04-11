@@ -6,13 +6,13 @@ rootWebArea
 ++++++++++genericContainer
 ++++++++++++genericContainer
 ++++++++++++++staticText name='Week '
-++++++++++++++++inlineTextBox name='Week '
+++++++++++++++++inlineTextBox
 ++++++++++++++spinButton name='Week' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=53.00
 ++++++++++++++++staticText name='--'
-++++++++++++++++++inlineTextBox name='--'
+++++++++++++++++++inlineTextBox
 ++++++++++++++staticText name=', '
-++++++++++++++++inlineTextBox name=', '
+++++++++++++++++inlineTextBox
 ++++++++++++++spinButton name='Year' placeholder='----' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++staticText name='----'
-++++++++++++++++++inlineTextBox name='----'
+++++++++++++++++++inlineTextBox
 ++++++++++popUpButton description='Show week picker' name='Show week picker' descriptionFrom=title haspopup=menu

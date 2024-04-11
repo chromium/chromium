@@ -5,7 +5,7 @@ UNKNOWN focusable
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable actions='{DEFAULT}' value='Option 1'
 ++++++++++++STATIC_TEXT label='Custom selectlist button' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='Custom selectlist button'
+++++++++++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN actions='{DEFAULT}'
 ++++++++++++UNKNOWN focusable has_input_focus selected label='Option 1' actions='{DEFAULT}'

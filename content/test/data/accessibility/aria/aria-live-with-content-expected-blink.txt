@@ -3,10 +3,10 @@ rootWebArea
 ++++genericContainer ignored
 ++++++marquee containerLiveRelevant='additions text' containerLiveStatus='off' liveRelevant='additions text' liveStatus='off' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
 ++++++++staticText containerLiveRelevant='additions text' containerLiveStatus='off' name='Off' liveRelevant='additions text' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
-++++++++++inlineTextBox name='Off'
+++++++++++inlineTextBox
 ++++++marquee containerLiveRelevant='additions text' containerLiveStatus='polite' liveRelevant='additions text' liveStatus='polite' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
 ++++++++staticText containerLiveRelevant='additions text' containerLiveStatus='polite' name='Polite' liveRelevant='additions text' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
-++++++++++inlineTextBox name='Polite'
+++++++++++inlineTextBox
 ++++++marquee containerLiveRelevant='additions text' containerLiveStatus='assertive' liveRelevant='additions text' liveStatus='assertive' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
 ++++++++staticText containerLiveRelevant='additions text' containerLiveStatus='assertive' name='Assertive' liveRelevant='additions text' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
-++++++++++inlineTextBox name='Assertive'
+++++++++++inlineTextBox

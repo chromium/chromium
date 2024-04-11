@@ -5,6 +5,6 @@ rootWebArea
 ++++++section
 ++++++++labelText
 ++++++++++staticText name='Pet name:'
-++++++++++++inlineTextBox name='Pet name:'
+++++++++++++inlineTextBox
 ++++++++textField required name='Pet name:' invalidState=true errorMessageIds=alert
 ++++++++++genericContainer

@@ -4,10 +4,10 @@ rootWebArea
 ++++++genericContainer ignored
 ++++++++blockquote
 ++++++++++staticText name='Top level'
-++++++++++++inlineTextBox name='Top level'
+++++++++++++inlineTextBox
 ++++++++++blockquote
 ++++++++++++staticText name='Sub'
-++++++++++++++inlineTextBox name='Sub'
+++++++++++++++inlineTextBox
 ++++++++++++blockquote
 ++++++++++++++staticText name='Sub-sub'
-++++++++++++++++inlineTextBox name='Sub-sub'
+++++++++++++++++inlineTextBox

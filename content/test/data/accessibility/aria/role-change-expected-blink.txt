@@ -5,10 +5,10 @@ rootWebArea
 ++++++++row
 ++++++++++cell name='Cell'
 ++++++++++++staticText name='Cell'
-++++++++++++++inlineTextBox name='Cell'
+++++++++++++++inlineTextBox
 ++++++++++cell name='Cell'
 ++++++++++++staticText name='Cell'
-++++++++++++++inlineTextBox name='Cell'
+++++++++++++++inlineTextBox
 ++++++table name='Real data table'
 ++++++++caption
 ++++++++++staticText name='Real data table'
@@ -19,4 +19,4 @@ rootWebArea
 ++++++++++row
 ++++++++++++cell name='X'
 ++++++++++++++staticText name='X'
-++++++++++++++++inlineTextBox name='X'
+++++++++++++++++inlineTextBox

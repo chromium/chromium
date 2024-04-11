@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer
 ++++++code
 ++++++++staticText name='A piece of computer code'
-++++++++++inlineTextBox name='A piece of computer code'
+++++++++++inlineTextBox

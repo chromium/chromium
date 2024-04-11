@@ -3,23 +3,23 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer notUserSelectableStyle=true
 ++++++++staticText name='1. unselectable' notUserSelectableStyle=true
-++++++++++inlineTextBox name='1. unselectable'
+++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='2. Selectable'
-++++++++++inlineTextBox name='2. Selectable'
+++++++++++inlineTextBox
 ++++++genericContainer notUserSelectableStyle=true
 ++++++++staticText name='3. unselectable' notUserSelectableStyle=true
-++++++++++inlineTextBox name='3. unselectable'
+++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='4. Selectable'
-++++++++++inlineTextBox name='4. Selectable'
+++++++++++inlineTextBox
 ++++++list
 ++++++++listItem
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++staticText name='One'
-++++++++++++inlineTextBox name='One'
+++++++++++++inlineTextBox
 ++++++genericContainer ignored
 ++++++++genericContainer notUserSelectableStyle=true
 ++++++++++staticText name='Inner' notUserSelectableStyle=true
-++++++++++++inlineTextBox name='Inner'
+++++++++++++inlineTextBox

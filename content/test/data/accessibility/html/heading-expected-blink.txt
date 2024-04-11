@@ -3,19 +3,19 @@ rootWebArea
 ++++genericContainer ignored
 ++++++heading name='Heading 1' hierarchicalLevel=1
 ++++++++staticText name='Heading 1'
-++++++++++inlineTextBox name='Heading 1'
+++++++++++inlineTextBox
 ++++++heading name='Heading 2' hierarchicalLevel=2
 ++++++++staticText name='Heading 2'
-++++++++++inlineTextBox name='Heading 2'
+++++++++++inlineTextBox
 ++++++heading name='Heading 3' hierarchicalLevel=3
 ++++++++staticText name='Heading 3'
-++++++++++inlineTextBox name='Heading 3'
+++++++++++inlineTextBox
 ++++++heading name='Heading 4' hierarchicalLevel=4
 ++++++++staticText name='Heading 4'
-++++++++++inlineTextBox name='Heading 4'
+++++++++++inlineTextBox
 ++++++heading name='Heading 5' hierarchicalLevel=5
 ++++++++staticText name='Heading 5'
-++++++++++inlineTextBox name='Heading 5'
+++++++++++inlineTextBox
 ++++++heading name='Heading 6' hierarchicalLevel=6
 ++++++++staticText name='Heading 6'
-++++++++++inlineTextBox name='Heading 6'
+++++++++++inlineTextBox

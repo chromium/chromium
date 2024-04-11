@@ -2,9 +2,9 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++STATIC_TEXT label='Before'
-++++++++UNKNOWN label='Before'
+++++++++UNKNOWN
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='Paragraph'
-++++++++++UNKNOWN label='Paragraph'
+++++++++++UNKNOWN
 ++++++STATIC_TEXT label='After'
-++++++++UNKNOWN label='After'
+++++++++UNKNOWN

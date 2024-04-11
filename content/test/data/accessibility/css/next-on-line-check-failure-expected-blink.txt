@@ -4,4 +4,4 @@ rootWebArea
 ++++list
 ++++++genericContainer ignored
 ++++++++staticText name='0'
-++++++++++inlineTextBox name='0'
+++++++++++inlineTextBox

@@ -3,35 +3,35 @@ rootWebArea
 ++++genericContainer ignored
 ++++++button name='Scroll'
 ++++++++staticText name='Scroll'
-++++++++++inlineTextBox name='Scroll'
+++++++++++inlineTextBox
 ++++++genericContainer location=(8, 70)
 ++++++++staticText name='title'
-++++++++++inlineTextBox name='title'
+++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++heading name='Heading #1'
 ++++++++++staticText name='Heading #1'
-++++++++++++inlineTextBox name='Heading #1'
+++++++++++++inlineTextBox
 ++++++++heading name='Heading #2'
 ++++++++++staticText name='Heading #2'
-++++++++++++inlineTextBox name='Heading #2'
+++++++++++++inlineTextBox
 ++++++++heading name='Heading #3'
 ++++++++++staticText name='Heading #3'
-++++++++++++inlineTextBox name='Heading #3'
+++++++++++++inlineTextBox
 ++++++++heading name='Heading #4'
 ++++++++++staticText name='Heading #4'
-++++++++++++inlineTextBox name='Heading #4'
+++++++++++++inlineTextBox
 ++++++++heading name='Heading #5'
 ++++++++++staticText name='Heading #5'
-++++++++++++inlineTextBox name='Heading #5'
+++++++++++++inlineTextBox
 ++++++++heading name='Heading #6'
 ++++++++++staticText name='Heading #6'
-++++++++++++inlineTextBox name='Heading #6'
+++++++++++++inlineTextBox
 ++++++++heading name='Heading #7'
 ++++++++++staticText name='Heading #7'
-++++++++++++inlineTextBox name='Heading #7'
+++++++++++++inlineTextBox
 ++++++++heading name='Heading #8'
 ++++++++++staticText name='Heading #8'
-++++++++++++inlineTextBox name='Heading #8'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++staticText name='done'
-++++++++++inlineTextBox name='done'
+++++++++++inlineTextBox

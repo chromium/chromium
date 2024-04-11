@@ -4,7 +4,7 @@ rootWebArea
 ++++++group
 ++++++++link name='Group Link1'
 ++++++++++staticText name='Group Link1'
-++++++++++++inlineTextBox name='Group Link1'
+++++++++++++inlineTextBox
 ++++++++link name='Group Link2'
 ++++++++++staticText name='Group Link2'
-++++++++++++inlineTextBox name='Group Link2'
+++++++++++++inlineTextBox

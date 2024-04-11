@@ -6,14 +6,14 @@ UNKNOWN focusable has_input_focus label='Table with role=presentation'
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN
 ++++++++++++++STATIC_TEXT label='1'
-++++++++++++++++UNKNOWN label='1'
+++++++++++++++++UNKNOWN
 ++++++++++++UNKNOWN
 ++++++++++++++STATIC_TEXT label='2'
-++++++++++++++++UNKNOWN label='2'
+++++++++++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN
 ++++++++++++++STATIC_TEXT label='4'
-++++++++++++++++UNKNOWN label='4'
+++++++++++++++++UNKNOWN
 ++++++++++++UNKNOWN
 ++++++++++++++STATIC_TEXT label='5'
-++++++++++++++++UNKNOWN label='5'
+++++++++++++++++UNKNOWN

@@ -3,8 +3,8 @@ rootWebArea
 ++++genericContainer ignored
 ++++++button name='Onscreen'
 ++++++++staticText name='Onscreen'
-++++++++++inlineTextBox name='Onscreen'
+++++++++++inlineTextBox
 ++++++genericContainer ignored
 ++++++button offscreen name='Offscreen'
 ++++++++staticText offscreen name='Offscreen'
-++++++++++inlineTextBox offscreen name='Offscreen'
+++++++++++inlineTextBox offscreen

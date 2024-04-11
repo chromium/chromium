@@ -5,89 +5,89 @@ rootWebArea
 ++++++++checkBox name='Test 1: Flash the screen 2 times.' checkedState=false
 ++++++++labelText
 ++++++++++staticText name='Test 1: Flash the screen'
-++++++++++++inlineTextBox name='Test 1: Flash the screen'
+++++++++++++inlineTextBox
 ++++++++++listBox
 ++++++++++++listBoxOption name='1' selected=false
 ++++++++++++++staticText name='1'
-++++++++++++++++inlineTextBox name='1'
+++++++++++++++++inlineTextBox
 ++++++++++++listBoxOption name='2' selected=true
 ++++++++++++++staticText name='2'
-++++++++++++++++inlineTextBox name='2'
+++++++++++++++++inlineTextBox
 ++++++++++++listBoxOption name='3' selected=false
 ++++++++++++++staticText name='3'
-++++++++++++++++inlineTextBox name='3'
+++++++++++++++++inlineTextBox
 ++++++++++staticText name='times.'
-++++++++++++inlineTextBox name='times.'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++checkBox name='Test 2: Flash the screen 2 times.' checkedState=false
 ++++++++labelText
 ++++++++++staticText name='Test 2: Flash the screen'
-++++++++++++inlineTextBox name='Test 2: Flash the screen'
+++++++++++++inlineTextBox
 ++++++++++comboBoxGrouping
 ++++++++++++textField controlsIds=listBox
 ++++++++++++listBox
 ++++++++++++++listBoxOption name='1' selected=false
 ++++++++++++++++staticText name='1'
-++++++++++++++++++inlineTextBox name='1'
+++++++++++++++++++inlineTextBox
 ++++++++++++++listBoxOption name='2' selected=true
 ++++++++++++++++staticText name='2'
-++++++++++++++++++inlineTextBox name='2'
+++++++++++++++++++inlineTextBox
 ++++++++++++++listBoxOption name='3' selected=false
 ++++++++++++++++staticText name='3'
-++++++++++++++++++inlineTextBox name='3'
+++++++++++++++++++inlineTextBox
 ++++++++++staticText name='times.'
-++++++++++++inlineTextBox name='times.'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++checkBox name='Test 3: Flash the screen two times.' checkedState=false
 ++++++++labelText
 ++++++++++staticText name='Test 3: Flash the screen'
-++++++++++++inlineTextBox name='Test 3: Flash the screen'
+++++++++++++inlineTextBox
 ++++++++++listBox
 ++++++++++++listBoxOption name='1' selected=false
 ++++++++++++++staticText name='1'
-++++++++++++++++inlineTextBox name='1'
+++++++++++++++++inlineTextBox
 ++++++++++++listBoxOption name='two' selected=true
 ++++++++++++++staticText name='2'
-++++++++++++++++inlineTextBox name='2'
+++++++++++++++++inlineTextBox
 ++++++++++++listBoxOption name='3' selected=false
 ++++++++++++++staticText name='3'
-++++++++++++++++inlineTextBox name='3'
+++++++++++++++++inlineTextBox
 ++++++++++staticText name='times.'
-++++++++++++inlineTextBox name='times.'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++checkBox name='Test 4: Flash the screen two times.' checkedState=false
 ++++++++labelText
 ++++++++++staticText name='Test 4: Flash the screen'
-++++++++++++inlineTextBox name='Test 4: Flash the screen'
+++++++++++++inlineTextBox
 ++++++++++comboBoxGrouping
 ++++++++++++textField controlsIds=listBox
 ++++++++++++listBox
 ++++++++++++++listBoxOption name='1' selected=false
 ++++++++++++++++staticText name='1'
-++++++++++++++++++inlineTextBox name='1'
+++++++++++++++++++inlineTextBox
 ++++++++++++++listBoxOption name='two' selected=true
 ++++++++++++++++staticText name='2'
-++++++++++++++++++inlineTextBox name='2'
+++++++++++++++++++inlineTextBox
 ++++++++++++++listBoxOption name='3' selected=false
 ++++++++++++++++staticText name='3'
-++++++++++++++++++inlineTextBox name='3'
+++++++++++++++++++inlineTextBox
 ++++++++++staticText name='times.'
-++++++++++++inlineTextBox name='times.'
+++++++++++++inlineTextBox
 ++++++genericContainer
 ++++++++checkBox name='Test 5: Flash the screen two times.' checkedState=false
 ++++++++labelText
 ++++++++++staticText name='Test 5: Flash the screen'
-++++++++++++inlineTextBox name='Test 5: Flash the screen'
+++++++++++++inlineTextBox
 ++++++++++comboBoxMenuButton value='two'
 ++++++++++++listBox
 ++++++++++++++listBoxOption name='1' selected=false
 ++++++++++++++++staticText name='1'
-++++++++++++++++++inlineTextBox name='1'
+++++++++++++++++++inlineTextBox
 ++++++++++++++listBoxOption name='two' selected=true
 ++++++++++++++++staticText name='2'
-++++++++++++++++++inlineTextBox name='2'
+++++++++++++++++++inlineTextBox
 ++++++++++++++listBoxOption name='3' selected=false
 ++++++++++++++++staticText name='3'
-++++++++++++++++++inlineTextBox name='3'
+++++++++++++++++++inlineTextBox
 ++++++++++staticText name='times.'
-++++++++++++inlineTextBox name='times.'
+++++++++++++inlineTextBox

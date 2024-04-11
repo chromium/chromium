@@ -67,7 +67,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++UNKNOWN hidden
 ++++++++++++++++++STATIC_TEXT hidden label='Picture in picture'
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN label=' '
+++++++++UNKNOWN
 ++++++UNKNOWN label='Unable to play media.'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden

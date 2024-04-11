@@ -3,21 +3,21 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='A('
-++++++++++inlineTextBox name='A('
+++++++++++inlineTextBox
 ++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox
 ++++++++staticText name=')B'
-++++++++++inlineTextBox name=')B'
+++++++++++inlineTextBox
 ++++++paragraph
 ++++++++staticText name='C('
-++++++++++inlineTextBox name='C('
+++++++++++inlineTextBox
 ++++++++lineBreak name='<newline>'
-++++++++++inlineTextBox name='<newline>'
+++++++++++inlineTextBox
 ++++++++staticText name=')D'
-++++++++++inlineTextBox name=')D'
+++++++++++inlineTextBox
 ++++++paragraph
 ++++++++staticText name='E('
-++++++++++inlineTextBox name='E('
+++++++++++inlineTextBox
 ++++++++staticText name=' '
 ++++++++staticText name=')F'
-++++++++++inlineTextBox name=')F'
+++++++++++inlineTextBox

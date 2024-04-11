@@ -4,11 +4,11 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++BUTTON focusable label='Button' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Button' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='Button'
+++++++++++++UNKNOWN
 ++++++UNKNOWN
 ++++++++BUTTON focusable label='Button' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Button' actions='{DEFAULT}'
-++++++++++++UNKNOWN label='Button'
+++++++++++++UNKNOWN
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++UNKNOWN focusable
@@ -17,7 +17,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++UNKNOWN
 ++++++++++++++++++BUTTON focusable label='Ordinary Button' actions='{DEFAULT}'
 ++++++++++++++++++++STATIC_TEXT label='Ordinary Button' actions='{DEFAULT}'
-++++++++++++++++++++++UNKNOWN label='Ordinary Button'
+++++++++++++++++++++++UNKNOWN
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++UNKNOWN focusable
@@ -26,4 +26,4 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++UNKNOWN
 ++++++++++++++++++BUTTON focusable label='Scrolled Button' actions='{DEFAULT}'
 ++++++++++++++++++++STATIC_TEXT label='Scrolled Button' actions='{DEFAULT}'
-++++++++++++++++++++++UNKNOWN label='Scrolled Button'
+++++++++++++++++++++++UNKNOWN

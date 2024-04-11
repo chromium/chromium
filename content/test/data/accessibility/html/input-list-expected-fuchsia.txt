@@ -3,7 +3,7 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Choose a pokemon '
-++++++++++UNKNOWN label='Choose a pokemon '
+++++++++++UNKNOWN
 ++++++++TEXT_FIELD_WITH_COMBO_BOX focusable label='Choose a pokemon' actions='{DEFAULT, SET_VALUE}'
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN hidden

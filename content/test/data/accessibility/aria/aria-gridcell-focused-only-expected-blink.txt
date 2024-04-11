@@ -5,16 +5,16 @@ rootWebArea
 ++++++++row
 ++++++++++columnHeader name='Browser'
 ++++++++++++staticText name='Browser'
-++++++++++++++inlineTextBox name='Browser'
+++++++++++++++inlineTextBox
 ++++++++++columnHeader name='Rendering Engine'
 ++++++++++++staticText name='Rendering Engine'
-++++++++++++++inlineTextBox name='Rendering Engine'
+++++++++++++++inlineTextBox
 ++++++++row
 ++++++++++cell name='Chrome'
 ++++++++++++staticText name='Chrome'
-++++++++++++++inlineTextBox name='Chrome'
+++++++++++++++inlineTextBox
 ++++++++++cell name='Blink'
 ++++++++++++staticText name='Blink'
-++++++++++++++inlineTextBox name='Blink'
+++++++++++++++inlineTextBox
 ++++++staticText name='Done'
-++++++++inlineTextBox name='Done'
+++++++++inlineTextBox

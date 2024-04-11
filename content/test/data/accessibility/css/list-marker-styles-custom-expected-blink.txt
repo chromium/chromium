@@ -6,37 +6,37 @@ rootWebArea
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++staticText name='disc'
-++++++++++++inlineTextBox name='disc'
+++++++++++++inlineTextBox
 ++++++list
 ++++++++listItem listStyle=circle
 ++++++++++listMarker name='%E2%97%A6 '
 ++++++++++++staticText ignored name='%E2%97%A6 '
 ++++++++++staticText name='circle'
-++++++++++++inlineTextBox name='circle'
+++++++++++++inlineTextBox
 ++++++list
 ++++++++listItem listStyle=square
 ++++++++++listMarker name='%E2%96%A0 '
 ++++++++++++staticText ignored name='%E2%96%A0 '
 ++++++++++staticText name='square'
-++++++++++++inlineTextBox name='square'
+++++++++++++inlineTextBox
 ++++++list
 ++++++++listItem listStyle=other
 ++++++++++listMarker name='%E2%96%BE '
 ++++++++++++staticText ignored name='%E2%96%BE '
 ++++++++++staticText name='disclosure-open'
-++++++++++++inlineTextBox name='disclosure-open'
+++++++++++++inlineTextBox
 ++++++list
 ++++++++listItem listStyle=other
 ++++++++++listMarker name='%E2%96%B8 '
 ++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++staticText name='disclosure-closed'
-++++++++++++inlineTextBox name='disclosure-closed'
+++++++++++++inlineTextBox
 ++++++list
 ++++++++listItem listStyle=disc
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='One. '
 ++++++++++staticText name='explicit-bullets'
-++++++++++++inlineTextBox name='explicit-bullets'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=disc
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='Two. '
@@ -48,7 +48,7 @@ rootWebArea
 ++++++++++listMarker name='1. '
 ++++++++++++staticText ignored name='One. '
 ++++++++++staticText name='explicit-numbers'
-++++++++++++inlineTextBox name='explicit-numbers'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=numeric
 ++++++++++listMarker name='2. '
 ++++++++++++staticText ignored name='Two. '
@@ -60,7 +60,7 @@ rootWebArea
 ++++++++++listMarker name='One. '
 ++++++++++++staticText ignored name='One. '
 ++++++++++staticText name='explicit-words'
-++++++++++++inlineTextBox name='explicit-words'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=other
 ++++++++++listMarker name='Two. '
 ++++++++++++staticText ignored name='Two. '
@@ -72,7 +72,7 @@ rootWebArea
 ++++++++++listMarker name='One. '
 ++++++++++++staticText ignored name='One. '
 ++++++++++staticText name='auto-alphabetic'
-++++++++++++inlineTextBox name='auto-alphabetic'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=other
 ++++++++++listMarker name='Two. '
 ++++++++++++staticText ignored name='Two. '
@@ -84,7 +84,7 @@ rootWebArea
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='One. '
 ++++++++++staticText name='auto-cyclic'
-++++++++++++inlineTextBox name='auto-cyclic'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=disc
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='Two. '
@@ -96,7 +96,7 @@ rootWebArea
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='One. '
 ++++++++++staticText name='auto-extends'
-++++++++++++inlineTextBox name='auto-extends'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=disc
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='Two. '
@@ -108,7 +108,7 @@ rootWebArea
 ++++++++++listMarker name='1. '
 ++++++++++++staticText ignored name='One. '
 ++++++++++staticText name='auto-fixed'
-++++++++++++inlineTextBox name='auto-fixed'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=numeric
 ++++++++++listMarker name='2. '
 ++++++++++++staticText ignored name='Two. '
@@ -120,7 +120,7 @@ rootWebArea
 ++++++++++listMarker name='1. '
 ++++++++++++staticText ignored name='One. '
 ++++++++++staticText name='auto-symbolic'
-++++++++++++inlineTextBox name='auto-symbolic'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=numeric
 ++++++++++listMarker name='2. '
 ++++++++++++staticText ignored name='Two. '
@@ -132,7 +132,7 @@ rootWebArea
 ++++++++++listMarker name='1. '
 ++++++++++++staticText ignored name='One. '
 ++++++++++staticText name='auto-numeric'
-++++++++++++inlineTextBox name='auto-numeric'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=numeric
 ++++++++++listMarker name='2. '
 ++++++++++++staticText ignored name='Two. '
@@ -144,7 +144,7 @@ rootWebArea
 ++++++++++listMarker name='1. '
 ++++++++++++staticText ignored name='One. '
 ++++++++++staticText name='auto-additive'
-++++++++++++inlineTextBox name='auto-additive'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=numeric
 ++++++++++listMarker name='2. '
 ++++++++++++staticText ignored name='Two. '
@@ -156,7 +156,7 @@ rootWebArea
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='Yi> '
 ++++++++++staticText name='reference-bullets'
-++++++++++++inlineTextBox name='reference-bullets'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=disc
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='Er> '
@@ -168,7 +168,7 @@ rootWebArea
 ++++++++++listMarker name='1> '
 ++++++++++++staticText ignored name='Yi> '
 ++++++++++staticText name='reference-numbers'
-++++++++++++inlineTextBox name='reference-numbers'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=numeric
 ++++++++++listMarker name='2> '
 ++++++++++++staticText ignored name='Er> '
@@ -180,7 +180,7 @@ rootWebArea
 ++++++++++listMarker name='One> '
 ++++++++++++staticText ignored name='Yi> '
 ++++++++++staticText name='reference-words'
-++++++++++++inlineTextBox name='reference-words'
+++++++++++++inlineTextBox
 ++++++++listItem listStyle=other
 ++++++++++listMarker name='Two> '
 ++++++++++++staticText ignored name='Er> '

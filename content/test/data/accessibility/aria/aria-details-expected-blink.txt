@@ -6,16 +6,16 @@ rootWebArea
 ++++++++++genericContainer
 ++++++paragraph
 ++++++++staticText name='Details'
-++++++++++inlineTextBox name='Details'
+++++++++++inlineTextBox
 ++++++paragraph
 ++++++++staticText name='This '
-++++++++++inlineTextBox name='This '
+++++++++++inlineTextBox
 ++++++++genericContainer detailsIds=group,image
 ++++++++++staticText name='text'
-++++++++++++inlineTextBox name='text'
+++++++++++++inlineTextBox
 ++++++++staticText name=' has details'
-++++++++++inlineTextBox name=' has details'
+++++++++++inlineTextBox
 ++++++group
 ++++++++staticText name='Text details'
-++++++++++inlineTextBox name='Text details'
+++++++++++inlineTextBox
 ++++++image name='Image details'

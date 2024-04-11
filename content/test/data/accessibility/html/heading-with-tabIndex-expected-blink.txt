@@ -3,13 +3,13 @@ rootWebArea
 ++++genericContainer ignored
 ++++++heading name='Heading 2, no tabIndex' hierarchicalLevel=2
 ++++++++staticText name='Heading 2, no tabIndex'
-++++++++++inlineTextBox name='Heading 2, no tabIndex'
+++++++++++inlineTextBox
 ++++++heading name='Heading 1, tabIndex of negative 1' hierarchicalLevel=1
 ++++++++staticText name='Heading 1, tabIndex of negative 1'
-++++++++++inlineTextBox name='Heading 1, tabIndex of negative 1'
+++++++++++inlineTextBox
 ++++++heading name='Heading 3, tabIndex of 0' hierarchicalLevel=3
 ++++++++staticText name='Heading 3, tabIndex of 0'
-++++++++++inlineTextBox name='Heading 3, tabIndex of 0'
+++++++++++inlineTextBox
 ++++++heading name='Heading 4, tabIndex of 1' hierarchicalLevel=4
 ++++++++staticText name='Heading 4, tabIndex of 1'
-++++++++++inlineTextBox name='Heading 4, tabIndex of 1'
+++++++++++inlineTextBox

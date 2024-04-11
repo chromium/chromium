@@ -7,7 +7,7 @@ rootWebArea focusable
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer
 ++++++++++++++++staticText name='Option 1'
-++++++++++++++++++inlineTextBox name='Option 1'
+++++++++++++++++++inlineTextBox
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer ignored
 ++++++++genericContainer ignored
@@ -20,6 +20,6 @@ rootWebArea focusable
 ++++++++genericContainer ignored
 ++++++++++comboBoxMenuButton collapsed focusable value='Option 1' haspopup=listbox
 ++++++++++++staticText name='Custom selectlist button'
-++++++++++++++inlineTextBox name='Custom selectlist button'
+++++++++++++++inlineTextBox
 ++++++++genericContainer ignored
 ++++++++++listBox ignored invisible

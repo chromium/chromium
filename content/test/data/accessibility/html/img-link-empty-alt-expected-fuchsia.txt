@@ -3,14 +3,14 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++LINK focusable label='unread ' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='unread ' actions='{DEFAULT}'
-++++++++++UNKNOWN label='unread '
+++++++++++UNKNOWN
 ++++++LINK focusable label='read ' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='read ' actions='{DEFAULT}'
-++++++++++UNKNOWN label='read '
+++++++++++UNKNOWN
 ++++++LINK focusable label='read ' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='read ' actions='{DEFAULT}'
-++++++++++UNKNOWN label='read '
+++++++++++UNKNOWN
 ++++++LINK focusable label='read' actions='{DEFAULT}'
 ++++++++IMAGE actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='read' actions='{DEFAULT}'
-++++++++++UNKNOWN label='read'
+++++++++++UNKNOWN

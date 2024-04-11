@@ -12,13 +12,13 @@ rootWebArea
 ++++++++++genericContainer
 ++++++paragraph
 ++++++++staticText name='Error for invalid input'
-++++++++++inlineTextBox name='Error for invalid input'
+++++++++++inlineTextBox
 ++++++paragraph
 ++++++++staticText name='Another error for invalid input'
-++++++++++inlineTextBox name='Another error for invalid input'
+++++++++++inlineTextBox
 ++++++paragraph
 ++++++++staticText name='Error for input which is not invalid'
-++++++++++inlineTextBox name='Error for input which is not invalid'
+++++++++++inlineTextBox
 ++++++paragraph
 ++++++++staticText name='Error for input with invalid not set'
-++++++++++inlineTextBox name='Error for input with invalid not set'
+++++++++++inlineTextBox

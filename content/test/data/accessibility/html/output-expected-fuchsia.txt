@@ -5,9 +5,9 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN focusable actions='{DEFAULT, SET_VALUE}'
 ++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' + '
-++++++++++UNKNOWN label=' + '
+++++++++++UNKNOWN
 ++++++++UNKNOWN focusable actions='{DEFAULT, SET_VALUE}'
 ++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' ='
-++++++++++UNKNOWN label=' ='
+++++++++++UNKNOWN
 ++++++++UNKNOWN

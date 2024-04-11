@@ -3,8 +3,8 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='Some '
-++++++++++UNKNOWN label='Some '
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label='bold'
-++++++++++UNKNOWN label='bold'
+++++++++++UNKNOWN
 ++++++++STATIC_TEXT label=' text'
-++++++++++UNKNOWN label=' text'
+++++++++++UNKNOWN
