@@ -377,8 +377,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-treeitem-focus.html"));
 }
 
-// TODO(crbug.com/40844027): Flaky on win
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/40844027): Flaky on win & mac
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_AccessibilityEventsAriaComboBoxFocus \
   DISABLED_AccessibilityEventsAriaComboBoxFocus
 #else
