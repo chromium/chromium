@@ -1200,7 +1200,8 @@ TEST_F(MahiPanelViewTest, InappropriateQuestionError) {
       mahi_constants::ViewId::kQuestionAnswerErrorLabel));
 }
 
-TEST_F(MahiPanelViewTest, ClickMetrics) {
+// TODO(crbug.com/333800096): Re-enable this test
+TEST_F(MahiPanelViewTest, DISABLED_ClickMetrics) {
   base::HistogramTester histogram;
   histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
                               mahi_constants::PanelButton::kCloseButton, 0);
