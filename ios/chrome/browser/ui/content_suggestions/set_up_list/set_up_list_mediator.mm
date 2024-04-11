@@ -208,12 +208,14 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }
 
 - (void)showSetUpList {
-  NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
-    DCHECK(!IsIOSMagicStackCollectionViewEnabled());
-    [self.consumer showSetUpListModuleWithConfigs:[self setUpListConfigs]];
+  DCHECK(!IsIOSMagicStackCollectionViewEnabled());
+  [self.consumer showSetUpListModuleWithConfigs:[self setUpListConfigs]];
   [self.contentSuggestionsMetricsRecorder recordSetUpListShown];
-  for (SetUpListItemViewData* item in items) {
-    [self.contentSuggestionsMetricsRecorder recordSetUpListItemShown:item.type];
+  for (SetUpListConfig* config in [self setUpListConfigs]) {
+    for (SetUpListItemViewData* item in config.setUpListItems) {
+      [self.contentSuggestionsMetricsRecorder
+          recordSetUpListItemShown:item.type];
+    }
   }
 }
 
