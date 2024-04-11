@@ -84,7 +84,7 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
 #if BUILDFLAG(IS_CHROMEOS)
       GetConfigForAppMall(),
       GetConfigForCalculator(),
-      GetConfigForContainer(), // TODO(http://b/331212317): Pass `device_info`.
+      GetConfigForContainer(device_info),
       GetConfigForGoogleCalendar(),
       GetConfigForGoogleChat(),
       GetConfigForGoogleMeet(),
