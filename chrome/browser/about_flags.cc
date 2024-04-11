@@ -7209,11 +7209,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabAndLinkDragDropDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabAndLinkDragDropAndroid)},
 
-    {"enable-tab-engagement-reporting",
-     flag_descriptions::kTabEngagementReportingName,
-     flag_descriptions::kTabEngagementReportingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabEngagementReportingAndroid)},
-
     {"enable-tablet-toolbar-reordering",
      flag_descriptions::kTabletToolbarReorderingAndroidName,
      flag_descriptions::kTabletToolbarReorderingAndroidDescription, kOsAndroid,

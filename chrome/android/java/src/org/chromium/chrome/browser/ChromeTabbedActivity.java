@@ -205,9 +205,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
-import org.chromium.chrome.browser.tasks.EngagementTimeUtil;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
-import org.chromium.chrome.browser.tasks.JourneyManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.ReturnToChromeBackPressHandler;
 import org.chromium.chrome.browser.tasks.TasksUma;
@@ -1156,21 +1154,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    private void initJourneyManager() {
-        assert mLayoutManager != null;
-
-        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.initJourneyManager")) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_ENGAGEMENT_REPORTING_ANDROID)) {
-                // The lifecycle of this object is managed by the lifecycle dispatcher.
-                new JourneyManager(
-                        getTabModelSelector(),
-                        getLifecycleDispatcher(),
-                        mLayoutManager,
-                        new EngagementTimeUtil());
-            }
-        }
-    }
-
     @Override
     protected OneshotSupplier<ProfileProvider> createProfileProvider() {
         return new ActivityProfileProvider(getLifecycleDispatcher());
@@ -1207,9 +1190,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(
                             this::maybeGetFeedAppLifecycleAndMaybeCreatePageViewObserver));
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    mCallbackController.makeCancelable(this::initJourneyManager));
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::finishNativeInitialization));

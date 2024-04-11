@@ -269,7 +269,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabDragDropAndroid,
     &kTabAndLinkDragDropAndroid,
     &kTabStripGroupIndicatorsAndroid,
-    &kTabEngagementReportingAndroid,
     &kTabGroupPaneAndroid,
     &kTabGroupParityAndroid,
     &kTabIdMapAndroid,
@@ -849,10 +848,6 @@ BASE_FEATURE(kTabDragDropAndroid,
 
 BASE_FEATURE(kTabAndLinkDragDropAndroid,
              "TabAndLinkDragDropAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabEngagementReportingAndroid,
-             "TabEngagementReportingAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupPaneAndroid,

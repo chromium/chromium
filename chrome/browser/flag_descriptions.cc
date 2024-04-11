@@ -3263,10 +3263,6 @@ const char kTabAndLinkDragDropDescription[] =
     "Enables Tab drag/drop UI to move tab across windows via strip and "
     "switcher UI. Enables link drag to open a tab.";
 
-const char kTabEngagementReportingName[] = "Tab Engagement Metrics";
-const char kTabEngagementReportingDescription[] =
-    "Tracks tab engagement and lifetime metrics.";
-
 const char kCommerceDeveloperName[] = "Commerce developer mode";
 const char kCommerceDeveloperDescription[] =
     "Allows users in the allowlist to enter the developer mode";

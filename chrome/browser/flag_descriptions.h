@@ -1917,9 +1917,6 @@ extern const char kTabDragDropDescription[];
 extern const char kTabAndLinkDragDropName[];
 extern const char kTabAndLinkDragDropDescription[];
 
-extern const char kTabEngagementReportingName[];
-extern const char kTabEngagementReportingDescription[];
-
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];
 
