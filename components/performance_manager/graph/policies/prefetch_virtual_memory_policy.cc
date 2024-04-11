@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/files/file_util.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 
@@ -15,7 +16,9 @@ namespace performance_manager::policies {
 PrefetchVirtualMemoryPolicy::PrefetchVirtualMemoryPolicy(
     base::FilePath file_to_prefetch)
     : file_to_prefetch_(std::move(file_to_prefetch)),
-      last_prefetch_time_(base::TimeTicks::Now()) {
+      last_prefetch_time_(base::TimeTicks::Now()),
+      ongoing_preread_(false),
+      weak_ptr_factory_(this) {
   TRACE_EVENT_INSTANT("browser",
                       "PrefetchVirtualMemoryPolicy::"
                       "PrefetchVirtualMemoryPolicy");
@@ -40,10 +43,26 @@ void PrefetchVirtualMemoryPolicy::OnTakenFromGraph(Graph* graph) {
 // DLL contents in RAM.
 void PrefetchVirtualMemoryPolicy::OnProcessNodeAdded(
     const ProcessNode* process_node) {
-  if (NeedToRefresh()) {
+  if (NeedToRefresh() && !ongoing_preread_) {
     TRACE_EVENT0("browser", "PrefetchVirtualMemoryPolicy::NeedToRefresh");
-    base::PreReadFile(file_to_prefetch_, /*is_executable=*/true,
-                      /*sequential=*/false);
+    ongoing_preread_ = true;
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(
+            [](base::FilePath file) {
+              base::PreReadFile(file,
+                                /*is_executable=*/true,
+                                /*sequential=*/false);
+            },
+            file_to_prefetch_),
+        base::BindOnce(
+            [](base::WeakPtr<PrefetchVirtualMemoryPolicy> policy) {
+              if (policy) {
+                policy->ongoing_preread_ = false;
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

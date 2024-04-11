@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_POLICIES_PREFETCH_VIRTUAL_MEMORY_POLICY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_POLICIES_PREFETCH_VIRTUAL_MEMORY_POLICY_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
 
@@ -37,6 +38,8 @@ class PrefetchVirtualMemoryPolicy : public GraphOwned,
 
   base::FilePath file_to_prefetch_;
   base::TimeTicks last_prefetch_time_;
+  bool ongoing_preread_;
+  base::WeakPtrFactory<PrefetchVirtualMemoryPolicy> weak_ptr_factory_;
 };
 
 }  // namespace performance_manager::policies
