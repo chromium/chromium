@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_FAKE_NEARBY_CONNECTION_H_
-#define CHROME_BROWSER_NEARBY_SHARING_FAKE_NEARBY_CONNECTION_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_FAKE_NEARBY_CONNECTION_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_FAKE_NEARBY_CONNECTION_H_
 
 #include <queue>
 #include <vector>
 
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection.h"
 
 class FakeNearbyConnection : public NearbyConnection {
  public:
@@ -39,4 +39,4 @@ class FakeNearbyConnection : public NearbyConnection {
   base::OnceClosure disconnect_listener_;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_FAKE_NEARBY_CONNECTION_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CONNECTIONS_MANAGER_FAKE_NEARBY_CONNECTION_H_

@@ -10,9 +10,9 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/components/data_migration/constants.h"
 #include "chromeos/ash/components/data_migration/pending_file_transfer_queue.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection.h"
 
 namespace data_migration {
 

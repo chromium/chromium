@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 source_set("connections_manager") {
   sources = [
+    "nearby_connection.cc",
+    "nearby_connection.h",
     "nearby_connections_manager.cc",
     "nearby_connections_manager.h",
   ]
@@ -15,7 +17,6 @@ source_set("connections_manager") {
   deps = [
     "//base",
     "//chrome/browser/nearby_sharing/common",
-    "//chrome/browser/nearby_sharing/public/cpp:cpp",
     "//chromeos/ash/components/nearby/presence:presence",
     "//chromeos/ash/services/nearby/public/mojom",
     "//third_party/abseil-cpp:absl",
@@ -28,6 +29,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "fake_nearby_connection.cc",
+    "fake_nearby_connection.h",
     "fake_nearby_connections_manager.cc",
     "fake_nearby_connections_manager.h",
   ]

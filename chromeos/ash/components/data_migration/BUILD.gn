@@ -39,7 +39,7 @@ source_set("device") {
     ":pending_file_transfer_queue",
     ":rts_receiver",
     "//base",
-    "//chrome/browser/nearby_sharing/public/cpp",
+    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
   ]
 }
 
@@ -67,7 +67,6 @@ source_set("file_transfer") {
     ":file_receiver",
     ":pending_file_transfer_queue",
     "//base",
-    "//chrome/browser/nearby_sharing/public/cpp:cpp",
     "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
   ]
 }
@@ -90,7 +89,6 @@ source_set("rts_receiver") {
   deps = [
     ":pending_file_transfer_queue",
     "//base",
-    "//chrome/browser/nearby_sharing/public/cpp:cpp",
     "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
   ]
 }
@@ -142,7 +140,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/nearby_sharing/public/cpp:cpp",
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/services/nearby/public/mojom",
     "//testing/gmock",

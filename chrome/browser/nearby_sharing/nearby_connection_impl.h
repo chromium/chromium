@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_IMPL_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_CONNECTION_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
-
 #include <queue>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 class NearbyConnectionsManager;

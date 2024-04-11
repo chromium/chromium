@@ -11,7 +11,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/components/data_migration/constants.h"
 #include "chromeos/ash/components/data_migration/pending_file_transfer_queue.h"
 #include "chromeos/ash/components/data_migration/testing/connection_barrier.h"
