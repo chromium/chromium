@@ -25,12 +25,12 @@ TabFeatures::TabFeaturesFactory& GetFactory() {
 }  // namespace
 
 // static
-std::unique_ptr<TabFeatures> TabFeatures::CreateTabFeatures(TabModel* tab) {
+std::unique_ptr<TabFeatures> TabFeatures::CreateTabFeatures() {
   if (GetFactory()) {
-    return GetFactory().Run(tab);
+    return GetFactory().Run();
   }
   // Constructor is protected.
-  return base::WrapUnique(new TabFeatures(tab));
+  return base::WrapUnique(new TabFeatures());
 }
 
 TabFeatures::~TabFeatures() = default;
@@ -41,12 +41,24 @@ void TabFeatures::ReplaceTabFeaturesForTesting(TabFeaturesFactory factory) {
   f = std::move(factory);
 }
 
-TabFeatures::TabFeatures(TabModel* tab) {
-  // Features that are only enabled for normal browser windows.
+void TabFeatures::Init(TabModel* tab) {
+  CHECK(!initialized_);
+  initialized_ = true;
+
+  // Avoid passing `TabModel` directly to features. Instead, pass the minimum
+  // necessary state or controllers necessary.
+  // Ping erikchen for assistance. This comment will be deleted after there are
+  // 10+ features.
+  //
+  // Features that are only enabled for normal browser windows. By default most
+  // features should be instantiated in this block.
   if (tab->owning_model()->delegate()->IsNormalWindow()) {
+    // TODO(https://crbug.com/333791050): Don't pass TabModel.
     lens_overlay_controller_ = CreateLensController(tab);
   }
 }
+
+TabFeatures::TabFeatures() = default;
 
 std::unique_ptr<LensOverlayController> TabFeatures::CreateLensController(
     TabModel* tab) {

@@ -19,10 +19,8 @@ TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
   // may later change if the Tab is detached.
   CHECK(owning_model);
 
-  // Features that are only enabled for normal browser windows.
-  if (owning_model->delegate()->IsNormalWindow()) {
-    tab_features_ = TabFeatures::CreateTabFeatures(this);
-  }
+  tab_features_ = TabFeatures::CreateTabFeatures();
+  tab_features_->Init(this);
 }
 
 TabModel::~TabModel() = default;

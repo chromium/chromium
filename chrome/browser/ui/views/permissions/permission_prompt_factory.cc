@@ -77,12 +77,14 @@ bool ShouldIgnorePermissionRequest(
   LocationBarView* location_bar = GetLocationBarView(browser);
   bool cant_display_prompt = location_bar && location_bar->IsEditingOrEmpty();
 
-  tabs::TabFeatures* current_tab_features =
-      browser->tab_strip_model()->GetActiveTab()->tab_features();
+  LensOverlayController* lens_overlay_controller =
+      browser->tab_strip_model()
+          ->GetActiveTab()
+          ->tab_features()
+          ->lens_overlay_controller();
   // Don't show prompt if Lens Overlay is showing
   // TODO(b/331940245): Refactor to be decoupled from LensOverlayController
-  if (current_tab_features &&
-      current_tab_features->lens_overlay_controller()->IsOverlayShowing()) {
+  if (lens_overlay_controller && lens_overlay_controller->IsOverlayShowing()) {
     cant_display_prompt = true;
   }
 

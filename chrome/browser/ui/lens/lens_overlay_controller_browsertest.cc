@@ -53,7 +53,7 @@ class LensOverlayControllerFake : public LensOverlayController {
 
 class TabFeaturesFake : public tabs::TabFeatures {
  public:
-  explicit TabFeaturesFake(tabs::TabModel* tab) : tabs::TabFeatures(tab) {}
+  TabFeaturesFake() = default;
 
  protected:
   std::unique_ptr<LensOverlayController> CreateLensController(
@@ -84,8 +84,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     tabs::TabFeatures::ReplaceTabFeaturesForTesting(base::NullCallback());
   }
 
-  std::unique_ptr<tabs::TabFeatures> CreateTabFeatures(tabs::TabModel* tab) {
-    return std::make_unique<TabFeaturesFake>(tab);
+  std::unique_ptr<tabs::TabFeatures> CreateTabFeatures() {
+    return std::make_unique<TabFeaturesFake>();
   }
 
   content::WebContents* GetOverlayWebContents() {

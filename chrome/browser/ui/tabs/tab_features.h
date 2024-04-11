@@ -19,7 +19,7 @@ class TabModel;
 // tab. It can be subclassed by tests to perform dependency injection.
 class TabFeatures {
  public:
-  static std::unique_ptr<TabFeatures> CreateTabFeatures(TabModel* tab);
+  static std::unique_ptr<TabFeatures> CreateTabFeatures();
   virtual ~TabFeatures();
 
   TabFeatures(const TabFeatures&) = delete;
@@ -27,15 +27,18 @@ class TabFeatures {
 
   // Call this method to stub out TabFeatures for tests.
   using TabFeaturesFactory =
-      base::RepeatingCallback<std::unique_ptr<TabFeatures>(TabModel*)>;
+      base::RepeatingCallback<std::unique_ptr<TabFeatures>()>;
   static void ReplaceTabFeaturesForTesting(TabFeaturesFactory factory);
 
   LensOverlayController* lens_overlay_controller() {
     return lens_overlay_controller_.get();
   }
 
+  // Called exactly once to initialize features.
+  void Init(TabModel* tab);
+
  protected:
-  explicit TabFeatures(TabModel* tab);
+  TabFeatures();
 
   // Override these methods to stub out individual feature controllers for
   // testing.
@@ -43,6 +46,8 @@ class TabFeatures {
       TabModel* tab);
 
  private:
+  bool initialized_ = false;
+
   // Features that are per-tab will each have a controller.
   std::unique_ptr<LensOverlayController> lens_overlay_controller_;
 };
