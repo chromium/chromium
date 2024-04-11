@@ -425,6 +425,13 @@ class CORE_EXPORT Document : public ContainerNode,
 
   SelectorQueryCache& GetSelectorQueryCache();
 
+  void SetStatePreservingAtomicMoveInProgress(bool value) {
+    state_preserving_atomic_move_in_progress_ = value;
+  }
+  bool StatePreservingAtomicMoveInProgress() const {
+    return state_preserving_atomic_move_in_progress_;
+  }
+
   // Focus Management.
   Element* ActiveElement() const;
   bool hasFocus() const;
@@ -2872,6 +2879,13 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // See description in ScheduleShadowTreeCreation().
   HeapHashSet<Member<HTMLInputElement>> elements_needing_shadow_tree_;
+
+  // See https://github.com/whatwg/dom/issues/1255 and
+  // https://crbug.com/40150299. This flag is consulted via its getter, by any
+  // code in the Node insertion/removal path that's interested in NOT resetting
+  // certain state, when the insertion is triggered via the state-preserving
+  // atomic move API (so far, `Node#moveBefore()`).
+  bool state_preserving_atomic_move_in_progress_ = false;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

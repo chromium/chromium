@@ -75,6 +75,7 @@
     boolean isDefaultNamespace(DOMString? namespaceURI);
 
     [CEReactions, PerWorldBindings, RaisesException] Node insertBefore(Node node, Node? child);
+    [CEReactions, PerWorldBindings, RaisesException, RuntimeEnabled=AtomicMoveAPI] Node moveBefore(Node node, Node? child);
     [CEReactions, PerWorldBindings, RaisesException, RuntimeCallStatsCounter=NodeAppendChild] Node appendChild(Node node);
     [CEReactions, PerWorldBindings, RaisesException] Node replaceChild(Node node, Node child);
     [CEReactions, RaisesException, RuntimeCallStatsCounter=NodeRemoveChild] Node removeChild(Node child);

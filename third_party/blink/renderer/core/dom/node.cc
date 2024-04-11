@@ -598,6 +598,43 @@ Node* Node::insertBefore(Node* new_child, Node* ref_child) {
   return insertBefore(new_child, ref_child, ASSERT_NO_EXCEPTION);
 }
 
+Node* Node::moveBefore(Node* new_child,
+                       Node* ref_child,
+                       ExceptionState& exception_state) {
+  DCHECK(new_child);
+
+  // TODO(https://crbug.com/40150299): We likely want more conditions to
+  // disqualify a state-preserving move, like moves that would be across a
+  // shadow boundary. Add more conditions and tests.
+  //
+  // Only perform a state-preserving atomic move if the child is ALREADY
+  // connected. If the child is NOT connected, then script can run during the
+  // node's initial post-insertion steps (i.e.,
+  // `Node::DidNotifySubtreeInsertionsToDocument()`), and no script is permitted
+  // to run during atomic moves.
+  const bool perform_state_preserving_atomic_move = new_child->isConnected();
+
+  if (perform_state_preserving_atomic_move) {
+    // When `moveBefore()` is called, AND we're actually performing a
+    // state-preserving atomic move, no script can run synchronously during the
+    // move. That means it is impossible for nested `moveBefore()` calls to
+    // occur. Assert that no atomic move is already in progress.
+    DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
+    GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  }
+
+  Node* return_node = insertBefore(new_child, ref_child, exception_state);
+
+  // Regardless of whether we were *actually* performing a state-preserving
+  // atomic move, we can safely, unconditionally reset the document's boolean.
+  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+
+  // We don't need to conditionally return `nullptr` if `exception_state` had an
+  // exception. `insertBefore()` already handles this for us, so we can just
+  // unconditionally return its value.
+  return return_node;
+}
+
 Node* Node::replaceChild(Node* new_child,
                          Node* old_child,
                          ExceptionState& exception_state) {

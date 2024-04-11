@@ -338,6 +338,12 @@
       name: "AriaNotify",
       status: "test",
     },
+    // See https://crbug.com/40150299, and
+    // https://github.com/whatwg/dom/issues/1255.
+    {
+      name: "AtomicMoveAPI",
+      status: "test",
+    },
     {
       name: "AtomicMoveOverride",
       // No "status" field, so that this is not enabled on WPTs by default.
