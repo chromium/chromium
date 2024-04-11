@@ -71,6 +71,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 @implementation OmniboxTextFieldExperimental
 
+@synthesize additionalText = _additionalText;
 @dynamic delegate;
 
 #pragma mark - Public methods
@@ -190,6 +191,21 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   return [self textInRange:[self markedTextRange]];
 }
 
+- (NSString*)displayedText {
+  return self.text;
+}
+
+- (BOOL)hasAutocompleteText {
+  return self.autocompleteTextLength > 0;
+}
+
+- (void)clearAutocompleteText {
+  if ([self hasAutocompleteText]) {
+    self.text = self.userText;
+    self.autocompleteTextLength = 0;
+  }
+}
+
 - (NSRange)selectedNSRange {
   DCHECK([self isFirstResponder]);
   UITextPosition* beginning = [self beginningOfDocument];
@@ -203,7 +219,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (NSTextAlignment)bestTextAlignment {
   if ([self isFirstResponder]) {
-    return [self bestAlignmentForText:self.text];
+    return DetermineBestAlignmentForText(self.text);
   }
   return NSTextAlignmentNatural;
 }
@@ -811,39 +827,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   self.selectedTextRange = textRange;
 }
 
+#pragma mark - helpers
+
 - (void)acceptAutocompleteText {
   [self setText:self.text];
   self.autocompleteTextLength = 0;
-}
-
-- (BOOL)hasAutocompleteText {
-  return self.autocompleteTextLength > 0;
-}
-
-- (void)clearAutocompleteText {
-  if ([self hasAutocompleteText]) {
-    self.text = self.userText;
-    self.autocompleteTextLength = 0;
-  }
-}
-
-#pragma mark - helpers
-
-- (NSTextAlignment)bestAlignmentForText:(NSString*)text {
-  if (text.length) {
-    NSString* lang = CFBridgingRelease(CFStringTokenizerCopyBestStringLanguage(
-        (CFStringRef)text, CFRangeMake(0, text.length)));
-
-    if ([NSLocale characterDirectionForLanguage:lang] ==
-        NSLocaleLanguageDirectionRightToLeft) {
-      return NSTextAlignmentRight;
-    }
-  }
-  return NSTextAlignmentLeft;
-}
-
-- (NSString*)displayedText {
-  return self.text;
 }
 
 // Helper method used to set the text of this field.
@@ -935,16 +923,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   for (UIView* subview in self.subviews)
     [layers addObject:subview.layer];
   return layers;
-}
-
-- (BOOL)isTextFieldLTR {
-  return [[self class] userInterfaceLayoutDirectionForSemanticContentAttribute:
-                           self.semanticContentAttribute] ==
-         UIUserInterfaceLayoutDirectionLeftToRight;
-}
-
-- (CGRect)layoutLeftViewForBounds:(CGRect)bounds {
-  return CGRectZero;
 }
 
 @end
