@@ -9,6 +9,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -105,6 +107,8 @@ BOOL WaitForKeyboardToAppear() {
   if ([self isRunningTest:@selector(testUpdatePromptAppearsOnFormSubmission)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordBottomSheet);
+  } else if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
+    config.features_enabled.push_back(kAutofillStickyInfobarIos);
   }
   return config;
 }
@@ -241,6 +245,71 @@ BOOL WaitForKeyboardToAppear() {
 
   credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
   GREYAssertEqual(1, credentialsCount, @"Wrong number of final credentials.");
+}
+
+// Tests the sticky password prompt journey where the prompt remains there when
+// navigating without an explicit user gesture, and then the prompt is dismissed
+// when navigating with a user gesture. Test with the password save prompt but
+// the type of password prompt doesn't matter in this test case.
+- (void)testStickySavePromptJourney {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_login_form.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+
+  // Emulate user interacting with fields.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("submit_button")];
+
+  // Wait until the save password prompt becomes visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
+
+  {
+    // Reloading page from script shouldn't dismiss the infobar.
+    NSString* script = @"location.reload();";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+  {
+    // Assigning url from script to the page aka open an url shouldn't dismiss
+    // the infobar.
+    NSString* script = @"window.location.assign(window.location.href);";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+  {
+    // Pushing new history entry without reloading content shouldn't dismiss the
+    // infobar.
+    NSString* script = @"history.pushState({}, '', 'destination2.html');";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+  {
+    // Replacing history entry without reloading content shouldn't dismiss the
+    // infobar.
+    NSString* script = @"history.replaceState({}, '', 'destination3.html');";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+
+  // Wait some time for things to settle.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(200));
+
+  // Verify that the prompt is still there after the non-user initiated
+  // navigations.
+  [[EarlGrey
+      selectElementWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Navigate with an emulated user gesture.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_login_form.html")];
+
+  // Verify that the infobar is dismissed.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD)];
 }
 
 // Tests password generation flow.
