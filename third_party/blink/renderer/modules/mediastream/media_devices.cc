@@ -645,11 +645,12 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LocalDOMWindow* const window = DomWindow();
-  // This timeout of base::Seconds(6) is an initial value and based on the data
-  // in Media.MediaDevices.GetDisplayMedia.Latency, it should be iterated upon.
+  // Using timeout of base::Seconds(12) based on the
+  // Media.MediaDevices.GetDisplayMedia.Latency values. With the earlier value
+  // of base::Seconds(6), we got about 25% of results counted as kTimeout.
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<UserMediaRequestResult, MediaStream>>(
-      script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(6));
+      script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(12));
   auto promise = resolver->Promise();
 
   if (!window) {
