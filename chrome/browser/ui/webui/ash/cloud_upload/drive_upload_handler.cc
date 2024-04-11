@@ -574,12 +574,6 @@ void DriveUploadHandler::OnGetDriveMetadata(
       } else {
         LOG(ERROR) << "Unexpected alternate URL - Drive editing unavailable: "
                    << hosted_url.host();
-        // TODO(b/323452926): Remove DumpWithoutCrashing() once sure the
-        // introduction of kFileNotAnOfficeFile fixed the only cause of
-        // kUnexpectedAlternateUrlHost.
-        SCOPED_CRASH_KEY_STRING64("OfficeUpload", "UnexpectedHost",
-                                  hosted_url.host());
-        base::debug::DumpWithoutCrashing();
         OnEndCopy(OfficeFilesUploadResult::kUnexpectedAlternateUrlHost);
       }
     } else {
