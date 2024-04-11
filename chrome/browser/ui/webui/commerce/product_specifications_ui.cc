@@ -43,7 +43,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   // Add required resources.
   webui::SetupWebUIDataSource(
       source, base::make_span(kCommerceResources, kCommerceResourcesSize),
-      IDR_COMMERCE_PRODUCT_SPECIFICATIONS_HTML);
+      IDR_COMMERCE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_HTML);
 
   source->AddString("message", "Some example content...");
   source->AddString("pageTitle", "Compare");

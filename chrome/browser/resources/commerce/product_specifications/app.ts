@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
-import './product_specifications_table.js';
+import '../strings.m.js';
+import './table.js';
 
-import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
-import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
+import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import type {TableColumn, TableRow} from './product_specifications_table.js';
-import {Router} from './router.js';
+import {Router} from '../router.js';
+import type {TableColumn, TableRow} from './table.js';
 
 export class ProductSpecificationsElement extends PolymerElement {
   static get is() {

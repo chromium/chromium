@@ -5,7 +5,10 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  files = [ "product_specifications_app_test.ts" ]
+  files = [
+    "product_specifications/app_test.ts",
+    "product_specifications/table_test.ts",
+  ]
   ts_path_mappings =
       [ "chrome://compare/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/commerce/tsc/*",

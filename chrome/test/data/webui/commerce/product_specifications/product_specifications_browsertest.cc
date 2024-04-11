@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -23,5 +22,9 @@ class ProductSpecificationsTest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, App) {
-  RunTest("commerce/product_specifications_app_test.js", "mocha.run()");
+  RunTest("commerce/product_specifications/app_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, Table) {
+  RunTest("commerce/product_specifications/table_test.js", "mocha.run()");
 }

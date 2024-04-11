@@ -3,14 +3,12 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "commerce"
 
-  static_files = [
-    "product_specifications.html",
-    "product_specifications.css",
-  ]
+  static_files = [ "product_specifications/product_specifications.html" ]
 
+  # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
-    "app.ts",
-    "product_specifications_table.ts",
+    "product_specifications/app.ts",
+    "product_specifications/table.ts",
   ]
 
   non_web_component_files = [ "router.ts" ]

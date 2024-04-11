@@ -26,7 +26,7 @@ source_set("browser_tests") {
     "access_code_cast/access_code_cast_browsertest.cc",
     "bookmarks/bookmarks_browsertest.cc",
     "chrome_timeticks_browsertest.cc",
-    "commerce/product_specifications_browsertest.cc",
+    "commerce/product_specifications/product_specifications_browsertest.cc",
     "commerce_internals/commerce_internals_browsertest.cc",
     "cr_components/cr_components_browsertest.cc",
     "cr_elements/cr_elements_browsertest.cc",
