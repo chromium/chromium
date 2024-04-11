@@ -18,84 +18,84 @@ class PrintPreviewBrowserTest : public WebUIMochaBrowserTest {
 using PrintPreviewTest = PrintPreviewBrowserTest;
 
 // Note: Keep tests below in alphabetical ordering.
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ColorSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ColorSettings) {
   RunTest("print_preview/color_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, CopiesSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, CopiesSettings) {
   RunTest("print_preview/copies_settings_test.js", "mocha.run()");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DestinationSelectTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DestinationSelect) {
   RunTest("print_preview/destination_select_test.js", "mocha.run()");
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DpiSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DpiSettings) {
   RunTest("print_preview/dpi_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DuplexSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DuplexSettings) {
   RunTest("print_preview/duplex_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, InvalidSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, InvalidSettings) {
   RunTest("print_preview/invalid_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, LayoutSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, LayoutSettings) {
   RunTest("print_preview/layout_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MarginsSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MarginsSettings) {
   RunTest("print_preview/margins_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MediaSizeSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MediaSizeSettings) {
   RunTest("print_preview/media_size_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MediaTypeSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MediaTypeSettings) {
   RunTest("print_preview/media_type_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsAvailabilityTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsAvailability) {
   RunTest("print_preview/model_settings_availability_test.js", "mocha.run()");
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsPolicyTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsPolicy) {
   RunTest("print_preview/model_settings_policy_test.js", "mocha.run()");
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, OtherOptionsSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, OtherOptionsSettings) {
   RunTest("print_preview/other_options_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PagesPerSheetSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PagesPerSheetSettings) {
   RunTest("print_preview/pages_per_sheet_settings_test.js", "mocha.run()");
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PinSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PinSettings) {
   RunTest("print_preview/pin_settings_test.js", "mocha.run()");
 }
 #endif
 
 // Test is flaky on LaCros, see crbug.com/328690296
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SearchableDropDownCrosTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SearchableDropDownCros) {
   RunTest("print_preview/searchable_drop_down_cros_test.js", "mocha.run()");
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SelectMixinTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SelectMixin) {
   RunTest("print_preview/select_mixin_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SettingsSelectTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SettingsSelect) {
   RunTest("print_preview/settings_select_test.js", "mocha.run()");
 }
 
