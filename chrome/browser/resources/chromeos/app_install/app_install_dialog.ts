@@ -42,7 +42,9 @@ interface StateData {
     disabled?: boolean, labelId: string, handler: (event: MouseEvent) => void,
     handleOnce?: boolean, iconIdQuery: string,
   };
-  cancelButtonLabelId: string;
+  cancelButton: {
+    disabled?: boolean, labelId: string,
+  };
 }
 
 /**
@@ -84,7 +86,9 @@ class AppInstallDialogElement extends HTMLElement {
           handleOnce: true,
           iconIdQuery: '#action-icon-install',
         },
-        cancelButtonLabelId: 'cancel',
+        cancelButton: {
+          labelId: 'cancel',
+        },
       },
       [DialogState.INSTALLING]: {
         title: {
@@ -97,7 +101,10 @@ class AppInstallDialogElement extends HTMLElement {
           handler() {},
           iconIdQuery: '#action-icon-installing',
         },
-        cancelButtonLabelId: 'cancel',
+        cancelButton: {
+          disabled: true,
+          labelId: 'cancel',
+        },
       },
       [DialogState.INSTALLED]: {
         title: {
@@ -109,7 +116,9 @@ class AppInstallDialogElement extends HTMLElement {
           handler: () => this.onOpenAppButtonClick(),
           iconIdQuery: '#action-icon-open-app',
         },
-        cancelButtonLabelId: 'close',
+        cancelButton: {
+          labelId: 'close',
+        },
       },
       [DialogState.ALREADY_INSTALLED]: {
         title: {
@@ -121,7 +130,9 @@ class AppInstallDialogElement extends HTMLElement {
           handler: () => this.onOpenAppButtonClick(),
           iconIdQuery: '#action-icon-open-app',
         },
-        cancelButtonLabelId: 'close',
+        cancelButton: {
+          labelId: 'close',
+        },
       },
       [DialogState.NO_DATA]: {
         title: {
@@ -141,7 +152,9 @@ class AppInstallDialogElement extends HTMLElement {
           handleOnce: true,
           iconIdQuery: '#action-icon-try-again',
         },
-        cancelButtonLabelId: 'cancel',
+        cancelButton: {
+          labelId: 'cancel',
+        },
       },
       [DialogState.FAILED_INSTALL]: {
         title: {
@@ -154,7 +167,9 @@ class AppInstallDialogElement extends HTMLElement {
           handleOnce: true,
           iconIdQuery: '#action-icon-try-again',
         },
-        cancelButtonLabelId: 'cancel',
+        cancelButton: {
+          labelId: 'cancel',
+        },
       },
     };
   }
@@ -220,6 +235,9 @@ class AppInstallDialogElement extends HTMLElement {
   }
 
   private onCancelButtonClick(): void {
+    if (this.$<Button>('.cancel-button').disabled) {
+      return;
+    }
     this.proxy.handler.closeDialog();
   }
 
@@ -287,7 +305,8 @@ class AppInstallDialogElement extends HTMLElement {
 
     const cancelButton = this.$<Button>('.cancel-button');
     assert(cancelButton);
-    cancelButton.label = loadTimeData.getString(data.cancelButtonLabelId);
+    cancelButton.disabled = Boolean(data.cancelButton.disabled);
+    cancelButton.label = loadTimeData.getString(data.cancelButton.labelId);
   }
 }
 
