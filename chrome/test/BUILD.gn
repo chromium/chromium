@@ -6460,6 +6460,7 @@ test("unit_tests") {
     "../browser/trusted_vault/trusted_vault_encryption_keys_tab_helper_unittest.cc",
     "../browser/ui/autofill/autofill_client_provider_unittest.cc",
     "../browser/ui/autofill/autofill_popup_controller_impl_unittest.cc",
+    "../browser/ui/autofill/autofill_popup_controller_unittest.cc",
     "../browser/ui/autofill/chrome_autofill_client_unittest.cc",
     "../browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller_impl_unittest.cc",
     "../browser/ui/autofill/payments/chrome_payments_autofill_client_unittest.cc",
@@ -10325,7 +10326,13 @@ test("unit_tests") {
 
 static_library("test_support_unit") {
   testonly = true
-  sources = [ "base/run_all_unittests.cc" ]
+  sources = [
+    "../browser/ui/autofill/autofill_popup_controller_test_base.cc",
+    "../browser/ui/autofill/autofill_popup_controller_test_base.h",
+    "../browser/ui/autofill/mock_autofill_popup_view.cc",
+    "../browser/ui/autofill/mock_autofill_popup_view.h",
+    "base/run_all_unittests.cc",
+  ]
 
   public_deps = [
     ":test_support",
@@ -10336,10 +10343,13 @@ static_library("test_support_unit") {
     "//chrome/common",
     "//mojo/core/test:test_support",
   ]
-  deps = []
+  deps = [
+    "//chrome/browser/autofill",
+    "//components/autofill/content/browser:test_support",
+  ]
 
   if (is_win) {
-    deps = [ "//chrome/install_static/test:test_support" ]
+    deps += [ "//chrome/install_static/test:test_support" ]
   }
 
   if (is_chromeos_ash) {
@@ -10360,6 +10370,10 @@ static_library("test_support_unit") {
 
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros:test_support" ]
+  }
+
+  if (is_android) {
+    deps += [ "//chrome/browser/keyboard_accessory/test_utils/android" ]
   }
 
   if (enable_bound_session_credentials) {
