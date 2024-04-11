@@ -1879,16 +1879,35 @@ void TabDragController::EndDragImpl(EndDragType type) {
 void TabDragController::AttachTabsToNewBrowserOnDrop() {
   DCHECK(!attached_context_hidden_);
 
+  // TODO(crbug.com/40238145): `CreateBrowserForDrag()` does almost the same as
+  // this method. Factor out the common parts into a separate method.
+
+  // Find if there's a controlling app, and thus we should open an app window.
+  Browser* from_browser = BrowserView::GetBrowserViewForNativeWindow(
+                              GetAttachedBrowserWidget()->GetNativeWindow())
+                              ->browser();
+  const std::optional<webapps::AppId> controlling_app =
+      GetControllingAppForDrag(from_browser);
+  const bool open_as_web_app = controlling_app.has_value();
+
+  Browser::CreateParams create_params =
+      open_as_web_app
+          ? Browser::CreateParams::CreateForApp(
+                web_app::GenerateApplicationNameFromAppId(
+                    controlling_app.value()),
+                /* trusted_source=*/true, gfx::Rect(), from_browser->profile(),
+                /* user_gesture=*/true)
+          : from_browser->create_params();
+
   views::Widget* widget = attached_context_->GetWidget();
   gfx::Rect window_bounds(widget->GetRestoredBounds());
   window_bounds.set_origin(GetWindowCreatePoint(last_point_in_screen_));
 
-  Browser::CreateParams create_params =
-      BrowserView::GetBrowserViewForNativeWindow(
-          GetAttachedBrowserWidget()->GetNativeWindow())
-          ->browser()
-          ->create_params();
-  create_params.initial_bounds = window_bounds;
+  // Web app windows have their own initial size independent of the source
+  // browser window.
+  if (!open_as_web_app) {
+    create_params.initial_bounds = window_bounds;
+  }
 
   // Don't copy the initial workspace since the *current* workspace might be
   // different and copying the workspace will move the tab to the initial one.
@@ -1900,9 +1919,12 @@ void TabDragController::AttachTabsToNewBrowserOnDrop() {
   create_params.user_title = std::string();
 
   Browser* browser = Browser::Create(create_params);
-  // If the window is created maximized then the bounds we supplied are ignored.
-  // We need to reset them again so they are honored.
-  browser->window()->SetBounds(window_bounds);
+
+  if (!open_as_web_app) {
+    // If the window is created maximized then the bounds we supplied are
+    // ignored. We need to reset them again so they are honored.
+    browser->window()->SetBounds(window_bounds);
+  }
 
   auto* new_context = BrowserView::GetBrowserViewForBrowser(browser)
                           ->tabstrip()
@@ -2415,6 +2437,9 @@ Browser* TabDragController::CreateBrowserForDrag(
     const gfx::Point& point_in_screen,
     gfx::Vector2d* drag_offset,
     std::vector<gfx::Rect>* drag_bounds) {
+  // TODO(crbug.com/40238145): `AttachTabsToNewBrowserOnDrop()` does almost the
+  // same as this method. Factor out the common parts into a separate method.
+
   source->GetWidget()
       ->GetCompositor()
       ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
@@ -2446,10 +2471,7 @@ Browser* TabDragController::CreateBrowserForDrag(
                     controlling_app.value()),
                 /* trusted_source=*/true, gfx::Rect(), from_browser->profile(),
                 /* user_gesture=*/true)
-          : BrowserView::GetBrowserViewForNativeWindow(
-                GetAttachedBrowserWidget()->GetNativeWindow())
-                ->browser()
-                ->create_params();
+          : from_browser->create_params();
 
   // Web app windows have their own initial size independent of the source
   // browser window.
