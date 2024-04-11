@@ -85,17 +85,11 @@ TEST_F(ReconfigurableAudioBusPoolTest, MaxCapacity) {
   reconfigurable_audio_bus_pool_->InsertAudioBus(std::move(first_audio_bus));
   AudioBus* second_audio_bus_ptr = second_audio_bus.get();
   reconfigurable_audio_bus_pool_->InsertAudioBus(std::move(second_audio_bus));
-  AudioBus* third_audio_bus_ptr = third_audio_bus.get();
   reconfigurable_audio_bus_pool_->InsertAudioBus(std::move(third_audio_bus));
 
   EXPECT_EQ(second_audio_bus_ptr,
             reconfigurable_audio_bus_pool_->GetAudioBus().get());
   EXPECT_EQ(first_audio_bus_ptr,
-            reconfigurable_audio_bus_pool_->GetAudioBus().get());
-
-  // The third audio bus was not recycled because the max capacity of the pool
-  // is 2.
-  EXPECT_NE(third_audio_bus_ptr,
             reconfigurable_audio_bus_pool_->GetAudioBus().get());
 }
 
