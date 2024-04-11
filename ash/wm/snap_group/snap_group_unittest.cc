@@ -4654,6 +4654,39 @@ TEST_F(SnapGroupTest, SnapToReplaceWithRatioMargin) {
       snap_group_controller->AreWindowsInSnapGroup(w4.get(), w3.get()));
 }
 
+// Tests that when dragging another window to snap in Overview with the
+// existence of snap group. The to-be-snapped window will not replace the window
+// in the snap group. See http://b/333603509 for more details.
+TEST_F(SnapGroupTest, DoNotSnapToReplaceSnapGroupInOverview) {
+  std::unique_ptr<aura::Window> w0(
+      CreateAppWindow(gfx::Rect(10, 10, 200, 100)));
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  ASSERT_FALSE(split_view_controller()->InSplitViewMode());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
+  auto* overview_item0 = GetOverviewItemForWindow(w0.get());
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      gfx::ToRoundedPoint(overview_item0->target_bounds().CenterPoint()));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(0, 0));
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(WindowState::Get(w0.get())->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
+
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w0.get(), w1.get()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w0.get(), w2.get()));
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupHistogramTest:
 

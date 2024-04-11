@@ -127,7 +127,12 @@ SnapGroup* SnapGroupController::GetSnapGroupForGivenWindow(
 bool SnapGroupController::OnSnappingWindow(
     aura::Window* to_be_snapped_window,
     WindowSnapActionSource snap_action_source) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  // Early return when `snap_action_source` originates from
+  // `kDragOrSelectOverviewWindowToSnap` to avoid snap-to-replace within another
+  // snap group in Overview.
+  if (display::Screen::GetScreen()->InTabletMode() ||
+      snap_action_source ==
+          WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap) {
     return false;
   }
 
