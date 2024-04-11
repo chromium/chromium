@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
 
 #include "base/sequence_checker.h"
-#include "sql/init_status.h"
+#include "sql/statement.h"
 #include "sql/transaction.h"
 
 namespace ash::file_system_provider {
@@ -21,6 +21,18 @@ static constexpr char kItemsCreateTableSql[] =
         "accessed_time INTEGER NOT NULL, "
         "UNIQUE(fsp_path, version_tag) ON CONFLICT REPLACE, "
         "PRIMARY KEY(id AUTOINCREMENT))";
+// clang-format on
+
+static constexpr char kInsertItemSql[] =
+    // clang-format off
+    "INSERT INTO items "
+    "(fsp_path, version_tag, accessed_time) VALUES (?, ?, ?) "
+    "RETURNING id";
+// clang-format on
+
+static constexpr char kSelectItemByIdSql[] =
+    // clang-format off
+    "SELECT fsp_path, version_tag, accessed_time FROM items WHERE id=? LIMIT 1";
 // clang-format on
 
 }  // namespace
@@ -79,6 +91,69 @@ bool ContextDatabase::Initialize() {
   }
 
   return committer.Commit();
+}
+
+bool ContextDatabase::AddItem(const base::FilePath& fsp_path,
+                              const std::string& version_tag,
+                              base::Time accessed_time,
+                              int64_t* inserted_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (fsp_path.empty() || version_tag.empty() || accessed_time.is_null()) {
+    return false;
+  }
+
+  std::unique_ptr<sql::Statement> statement = std::make_unique<sql::Statement>(
+      db_.GetCachedStatement(SQL_FROM_HERE, kInsertItemSql));
+  if (!statement) {
+    LOG(ERROR) << "Couldn't create SQL statement";
+    return false;
+  }
+
+  statement->BindString(0, fsp_path.value());
+  statement->BindString(1, version_tag);
+  statement->BindInt64(2, accessed_time.InMillisecondsSinceUnixEpoch());
+  if (!statement->Step()) {
+    LOG(ERROR) << "Couldn't execute statement";
+    return false;
+  }
+
+  *inserted_id = statement->ColumnInt64(0);
+  return true;
+}
+
+bool ContextDatabase::GetItemById(int64_t item_id, Item& item) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (item_id < 0) {
+    return false;
+  }
+
+  std::unique_ptr<sql::Statement> statement = std::make_unique<sql::Statement>(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectItemByIdSql));
+  if (!statement) {
+    LOG(ERROR) << "Couldn't create SQL statement";
+    return false;
+  }
+
+  statement->BindInt64(0, item_id);
+  if (!statement->Step()) {
+    // In the event the `Step()` failed, this could simply mean there is no item
+    // for the `item_id`. `Succeeded` will return true in this case.
+    if (statement->Succeeded()) {
+      item.item_exists = false;
+      return true;
+    }
+    LOG(ERROR) << "Couldn't execute statement";
+    return false;
+  }
+
+  item.fsp_path = base::FilePath(statement->ColumnString(0));
+  item.version_tag = statement->ColumnString(1);
+  item.accessed_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(statement->ColumnInt64(2));
+
+  return true;
 }
 
 bool ContextDatabase::Raze() {

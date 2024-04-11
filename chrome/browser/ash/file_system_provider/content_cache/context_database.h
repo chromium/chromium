@@ -28,6 +28,30 @@ class ContextDatabase {
   // empty) or at the path specified by the `db_path` in the constructor.
   bool Initialize();
 
+  // Insert an item into the database and returns the unique ID that references
+  // this item. In the event the `fsp_path` and `version_tag` have previously
+  // been used, this will remove the conflicted record and insert a new one.
+  bool AddItem(const base::FilePath& fsp_path,
+               const std::string& version_tag,
+               base::Time accessed_time,
+               int64_t* inserted_id);
+
+  // Represents a row returned from the SQLite database with the additional
+  // field of `item_exists` that will be set to `false` if the item requested is
+  // not available.
+  struct Item {
+    base::FilePath fsp_path;
+    base::Time accessed_time;
+    std::string version_tag;
+    bool item_exists = true;
+  };
+
+  // Retrieve an item by `item_id`. If this returns false, indicates a more
+  // fatal error. If this returns true the supplied `Item` will contain the data
+  // or alternatively the field `item_exists` will be false indicating the
+  // requested record is not available.
+  bool GetItemById(int64_t item_id, Item& item);
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
