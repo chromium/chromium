@@ -533,6 +533,18 @@ chromium-metrics-reviews@google.com.
   <summary>Total size of the profile data (excluding sub-folders).</summary>
 </histogram>
 
+<histogram name="Profile.TotalSizeRecursive" units="MB"
+    expires_after="2024-09-25">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Total size of the profile data (including sub-folders).
+
+    Recorded with some delay after a profile is loaded, excluding off-the-record
+    profiles.
+  </summary>
+</histogram>
+
 <histogram name="Profile.TriggeredReset" enum="BooleanReset"
     expires_after="2020-05-03">
   <owner>robertshield@chromium.org</owner>
