@@ -167,6 +167,7 @@ void UserPolicySigninService::Shutdown() {
   if (identity_manager())
     identity_manager()->RemoveObserver(this);
   UserPolicySigninServiceBase::Shutdown();
+  profile_ = nullptr;
 }
 
 void UserPolicySigninService::ShutdownCloudPolicyManager() {
