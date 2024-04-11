@@ -2150,7 +2150,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 #if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
 
 // TODO(crbug.com/1466360):  Enable once thread flakiness is resolved.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/332652840): It is flaky with SkiaGraphite enabled on Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_NonInteractiveChangesAreBatched \
   DISABLED_NonInteractiveChangesAreBatched
 #else
