@@ -213,11 +213,11 @@ void AppPreloadService::OnFirstLoginFlowComplete(base::TimeTicks start_time,
 
 bool AppPreloadService::ShouldInstallApp(const PreloadAppDefinition& app) {
   // We preload android apps (when feature enabled) and web apps.
-  if (app.GetPlatform() == AppType::kArc) {
+  if (app.GetPlatform() == PackageType::kArc) {
     if (!base::FeatureList::IsEnabled(apps::kAppPreloadServiceEnableArcApps)) {
       return false;
     }
-  } else if (app.GetPlatform() != AppType::kWeb) {
+  } else if (app.GetPlatform() != PackageType::kWeb) {
     return false;
   }
 
@@ -235,7 +235,7 @@ bool AppPreloadService::ShouldInstallApp(const PreloadAppDefinition& app) {
   // retrying the flow after an install error for a different app.
 
   // TODO(crbug.com/329144520) Implement already installed check for android.
-  if (app.GetPlatform() == AppType::kArc) {
+  if (app.GetPlatform() == PackageType::kArc) {
     return true;
   }
 

@@ -71,7 +71,8 @@
 namespace {
 
 const char kTestPackageName[] = "com.example.this";
-const apps::PackageId kTestPackageId(apps::AppType::kArc, "com.example.this");
+const apps::PackageId kTestPackageId(apps::PackageType::kArc,
+                                     "com.example.this");
 
 std::vector<arc::IntentFilter> CreateFilterList(
     const std::string& package_name,

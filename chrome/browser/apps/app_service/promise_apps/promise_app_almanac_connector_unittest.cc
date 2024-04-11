@@ -28,7 +28,7 @@
 
 namespace apps {
 
-const PackageId kTestPackageId(AppType::kArc, "test.package.name");
+const PackageId kTestPackageId(PackageType::kArc, "test.package.name");
 
 class PromiseAppAlmanacConnectorTest : public testing::Test {
  public:

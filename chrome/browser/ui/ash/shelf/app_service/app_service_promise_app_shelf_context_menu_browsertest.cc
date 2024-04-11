@@ -47,7 +47,7 @@ class AppServicePromiseAppShelfContextMenuBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppShelfContextMenuBrowserTest,
                        MenuOnlyHasPin) {
-  apps::PackageId package_id(apps::AppType::kArc, "com.example.test");
+  apps::PackageId package_id(apps::PackageType::kArc, "com.example.test");
   AddTestPromiseApp(package_id);
 
   ash::ShelfModel* shelf_model = ash::ShelfModel::Get();

@@ -16,7 +16,7 @@
 
 namespace apps {
 
-const PackageId kTestPackageId(AppType::kArc, "test.package.name");
+const PackageId kTestPackageId(PackageType::kArc, "test.package.name");
 
 class PromiseAppRegistryCacheTest : public testing::Test {
  public:
@@ -79,11 +79,11 @@ TEST_F(PromiseAppRegistryCacheTest, GetAllPromiseApps) {
   EXPECT_EQ(cache()->GetAllPromiseApps().size(), 0u);
 
   // Register some promise apps.
-  auto package_id_1 = PackageId(AppType::kArc, "test1");
+  auto package_id_1 = PackageId(PackageType::kArc, "test1");
   auto promise_app_1 = std::make_unique<PromiseApp>(package_id_1);
   cache()->OnPromiseApp(std::move(promise_app_1));
 
-  auto package_id_2 = PackageId(AppType::kArc, "test2");
+  auto package_id_2 = PackageId(PackageType::kArc, "test2");
   auto promise_app_2 = std::make_unique<PromiseApp>(package_id_2);
   cache()->OnPromiseApp(std::move(promise_app_2));
 

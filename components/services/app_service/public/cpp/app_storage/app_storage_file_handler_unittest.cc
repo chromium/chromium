@@ -114,7 +114,7 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->name = kAppName2;
     app2->short_name = kAppShortName;
     app2->publisher_id = "publisher_id";
-    app2->installer_package_id = PackageId(AppType::kWeb, "publisher_id");
+    app2->installer_package_id = PackageId(PackageType::kWeb, "publisher_id");
     app2->description = "description";
     app2->version = "version";
     app2->additional_search_terms = {"item1", "item2"};

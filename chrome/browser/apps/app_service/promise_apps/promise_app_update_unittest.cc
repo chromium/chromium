@@ -12,7 +12,7 @@ namespace apps {
 
 class PromiseAppUpdateTest : public testing::Test {
  public:
-  PackageId package_id = PackageId(AppType::kArc, "test.package.name");
+  PackageId package_id = PackageId(PackageType::kArc, "test.package.name");
 };
 
 TEST_F(PromiseAppUpdateTest, StateIsNonNull) {

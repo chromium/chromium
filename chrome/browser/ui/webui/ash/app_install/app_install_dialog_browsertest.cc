@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, NoAppError) {
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
   proxy->AppInstallService().InstallApp(
       apps::AppInstallSurface::kAppInstallUriUnknown,
-      apps::PackageId(apps::AppType::kWeb, "invalid"),
+      apps::PackageId(apps::PackageType::kWeb, "invalid"),
       /*anchor_window=*/std::nullopt,
       /*callback=*/base::DoNothing());
 

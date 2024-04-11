@@ -147,7 +147,7 @@ class AppInstallNavigationThrottleBrowserTest
     GURL manifest_url = embedded_test_server()->GetURL("/web_apps/basic.json");
     webapps::ManifestId manifest_id = start_url;
     webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(manifest_id);
-    PackageId package_id(apps::AppType::kWeb, manifest_id.spec());
+    PackageId package_id(apps::PackageType::kWeb, manifest_id.spec());
 
     // Set Almanac server payload.
     response_map_[embedded_test_server()->GetURL("/v1/app-install")] = [&] {

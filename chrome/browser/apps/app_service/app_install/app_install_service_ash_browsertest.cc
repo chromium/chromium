@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_P(AppInstallServiceAshGuestBrowserTest, InstallApp) {
   AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->AppInstallService()
       .InstallApp(AppInstallSurface::kAppInstallUriUnknown,
-                  PackageId(AppType::kWeb, "test"),
+                  PackageId(PackageType::kWeb, "test"),
                   /*anchor_window=*/std::nullopt, run_loop.QuitClosure());
   run_loop.Run();
 
