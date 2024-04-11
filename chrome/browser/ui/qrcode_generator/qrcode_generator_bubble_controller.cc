@@ -51,8 +51,6 @@ void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
   bubble_shown_ = true;
   qrcode_generator_bubble_ = browser->window()->ShowQRCodeGeneratorBubble(
       &GetWebContents(), url, show_back_button);
-
-  UpdateIcon();
 }
 
 void QRCodeGeneratorBubbleController::HideBubble() {
@@ -88,21 +86,6 @@ void QRCodeGeneratorBubbleController::OnBackButtonPressed() {
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           &GetWebContents());
   controller->ShowBubble(share::ShareAttempt(&GetWebContents()));
-}
-
-void QRCodeGeneratorBubbleController::UpdateIcon() {
-  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
-  // UpdateIcon() can be called during browser teardown.
-  if (!browser)
-    return;
-
-  if (sharing_hub::SharingHubOmniboxEnabled(
-          GetWebContents().GetBrowserContext())) {
-    browser->window()->UpdatePageActionIcon(PageActionIconType::kSharingHub);
-  } else {
-    browser->window()->UpdatePageActionIcon(
-        PageActionIconType::kQRCodeGenerator);
-  }
 }
 
 QRCodeGeneratorBubbleController::QRCodeGeneratorBubbleController(

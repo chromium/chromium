@@ -139,7 +139,6 @@
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_promo_bubble_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 #include "chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.h"
@@ -2107,8 +2106,9 @@ void BrowserView::UpdatePageActionIcon(PageActionIconType type) {
 
   PageActionIconView* icon =
       toolbar_button_provider_->GetPageActionIconView(type);
-  if (icon)
+  if (icon) {
     icon->Update();
+  }
 }
 
 autofill::AutofillBubbleHandler* BrowserView::GetAutofillBubbleHandler() {
@@ -2973,24 +2973,13 @@ BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,
     on_back_button_pressed = controller->GetOnBackButtonPressedCallback();
   }
 
-  PageActionIconType icon_type =
-      sharing_hub::SharingHubOmniboxEnabled(browser_->profile())
-          ? PageActionIconType::kSharingHub
-          : PageActionIconType::kQRCodeGenerator;
-
   auto* bubble = new qrcode_generator::QRCodeGeneratorBubble(
-      toolbar_button_provider()->GetAnchorView(icon_type),
+      toolbar_button_provider()->GetAnchorView(std::nullopt),
       contents->GetWeakPtr(), std::move(on_closing),
       std::move(on_back_button_pressed), url);
 
-  PageActionIconView* icon_view =
-      toolbar_button_provider()->GetPageActionIconView(icon_type);
-  if (icon_view)
-    bubble->SetHighlightedButton(icon_view);
-
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->Show();
-
   return bubble;
 }
 
@@ -3025,17 +3014,8 @@ SharingDialog* BrowserView::ShowSharingDialog(
 send_tab_to_self::SendTabToSelfBubbleView*
 BrowserView::ShowSendTabToSelfDevicePickerBubble(
     content::WebContents* web_contents) {
-  PageActionIconType icon_type =
-      sharing_hub::SharingHubOmniboxEnabled(browser_->profile())
-          ? PageActionIconType::kSharingHub
-          : PageActionIconType::kSendTabToSelf;
-
   auto* bubble = new send_tab_to_self::SendTabToSelfDevicePickerBubbleView(
-      toolbar_button_provider()->GetAnchorView(icon_type), web_contents);
-  PageActionIconView* icon_view =
-      toolbar_button_provider()->GetPageActionIconView(icon_type);
-  if (icon_view)
-    bubble->SetHighlightedButton(icon_view);
+      toolbar_button_provider()->GetAnchorView(std::nullopt), web_contents);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   // This is always triggered due to a user gesture, c.f. this method's
@@ -3047,18 +3027,9 @@ BrowserView::ShowSendTabToSelfDevicePickerBubble(
 send_tab_to_self::SendTabToSelfBubbleView*
 BrowserView::ShowSendTabToSelfPromoBubble(content::WebContents* web_contents,
                                           bool show_signin_button) {
-  PageActionIconType icon_type =
-      sharing_hub::SharingHubOmniboxEnabled(web_contents->GetBrowserContext())
-          ? PageActionIconType::kSharingHub
-          : PageActionIconType::kSendTabToSelf;
-
   auto* bubble = new send_tab_to_self::SendTabToSelfPromoBubbleView(
-      toolbar_button_provider()->GetAnchorView(icon_type), web_contents,
+      toolbar_button_provider()->GetAnchorView(std::nullopt), web_contents,
       show_signin_button);
-  PageActionIconView* icon_view =
-      toolbar_button_provider()->GetPageActionIconView(icon_type);
-  if (icon_view)
-    bubble->SetHighlightedButton(icon_view);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   // This is always triggered due to a user gesture, c.f. method documentation.

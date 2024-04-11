@@ -37,11 +37,4 @@ bool ShouldDisplayEntryPoint(content::WebContents* web_contents) {
   return GetEntryPointDisplayReason(web_contents).has_value();
 }
 
-bool ShouldOfferOmniboxIcon(content::WebContents* web_contents) {
-  if (!web_contents)
-    return false;
-  return !web_contents->IsWaitingForResponse() &&
-         ShouldDisplayEntryPoint(web_contents);
-}
-
 }  // namespace send_tab_to_self

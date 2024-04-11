@@ -1598,7 +1598,7 @@ bool CanSendTabToSelf(const Browser* browser) {
       browser->tab_strip_model()->GetActiveWebContents());
 }
 
-void SendTabToSelfFromPageAction(Browser* browser) {
+void SendTabToSelf(Browser* browser) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   send_tab_to_self::ShowBubble(web_contents);
@@ -1614,7 +1614,7 @@ bool CanGenerateQrCode(const Browser* browser) {
                                       ->GetURL());
 }
 
-void GenerateQRCodeFromPageAction(Browser* browser) {
+void GenerateQRCode(Browser* browser) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   qrcode_generator::QRCodeGeneratorBubbleController* controller =
@@ -1624,7 +1624,7 @@ void GenerateQRCodeFromPageAction(Browser* browser) {
   controller->ShowBubble(entry->GetURL());
 }
 
-void SharingHubFromPageAction(Browser* browser) {
+void SharingHub(Browser* browser) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   sharing_hub::SharingHubBubbleController* controller =
@@ -1633,7 +1633,7 @@ void SharingHubFromPageAction(Browser* browser) {
   controller->ShowBubble(share::ShareAttempt(web_contents));
 }
 
-void ScreenshotCaptureFromPageAction(Browser* browser) {
+void ScreenshotCapture(Browser* browser) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   sharing_hub::ScreenshotCapturedBubbleController* controller =

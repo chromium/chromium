@@ -236,7 +236,8 @@ views::AccessiblePaneView* WebAppFrameToolbarView::GetAsAccessiblePaneView() {
   return this;
 }
 
-views::View* WebAppFrameToolbarView::GetAnchorView(PageActionIconType type) {
+views::View* WebAppFrameToolbarView::GetAnchorView(
+    std::optional<PageActionIconType> type) {
   views::View* anchor = GetAppMenuButton();
   return anchor ? anchor : this;
 }

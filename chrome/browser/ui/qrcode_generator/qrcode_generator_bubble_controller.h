@@ -62,8 +62,6 @@ class QRCodeGeneratorBubbleController
   // Handler for when the back button is pressed.
   void OnBackButtonPressed();
 
-  void UpdateIcon();
-
   // Will be nullptr if no bubble is currently shown.
   raw_ptr<QRCodeGeneratorBubbleView> qrcode_generator_bubble_ = nullptr;
 

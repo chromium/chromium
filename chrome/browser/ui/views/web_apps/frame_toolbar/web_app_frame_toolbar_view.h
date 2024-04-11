@@ -78,7 +78,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   gfx::Rect GetFindBarBoundingBox(int contents_bottom) override;
   void FocusToolbar() override;
   views::AccessiblePaneView* GetAsAccessiblePaneView() override;
-  views::View* GetAnchorView(PageActionIconType type) override;
+  views::View* GetAnchorView(std::optional<PageActionIconType> type) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
   SidePanelToolbarButton* GetSidePanelButton() override;
   AvatarToolbarButton* GetAvatarToolbarButton() override;

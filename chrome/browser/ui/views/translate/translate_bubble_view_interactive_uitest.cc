@@ -160,7 +160,7 @@ class TranslateBubbleViewUITest
                                            const std::string& expected_lang) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     if (GetParam() == "MultipleBubble") {
-      chrome::GenerateQRCodeFromPageAction(browser());
+      chrome::GenerateQRCode(browser());
     }
 
     while (expected_lang !=

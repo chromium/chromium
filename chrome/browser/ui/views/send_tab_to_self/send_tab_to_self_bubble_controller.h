@@ -101,8 +101,6 @@ class SendTabToSelfBubbleController
   FRIEND_TEST_ALL_PREFIXES(SendTabToSelfDevicePickerBubbleViewTest,
                            DevicePressed);
 
-  void UpdateIcon();
-
   Profile* GetProfile();
 
   // Weak reference. Will be nullptr if no bubble is currently shown.

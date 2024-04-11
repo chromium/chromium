@@ -1175,7 +1175,8 @@ views::AccessiblePaneView* ToolbarView::GetAsAccessiblePaneView() {
   return this;
 }
 
-views::View* ToolbarView::GetAnchorView(PageActionIconType type) {
+views::View* ToolbarView::GetAnchorView(
+    std::optional<PageActionIconType> type) {
   return location_bar_;
 }
 

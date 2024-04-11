@@ -22,9 +22,6 @@ std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
 // Returns true if the entry point should be shown.
 bool ShouldDisplayEntryPoint(content::WebContents* web_contents);
 
-// Returns true if the omnibox icon for the feature should be offered.
-bool ShouldOfferOmniboxIcon(content::WebContents* web_contents);
-
 }  // namespace send_tab_to_self
 
 #endif  // CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_UTIL_H_

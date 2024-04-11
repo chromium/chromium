@@ -40,8 +40,6 @@
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
-#include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_icon_view.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_icon_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
@@ -190,12 +188,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate, params.browser));
         break;
-      case PageActionIconType::kQRCodeGenerator:
-        add_page_action_icon(
-            type, std::make_unique<qrcode_generator::QRCodeGeneratorIconView>(
-                      params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
-        break;
       case PageActionIconType::kReadAnything:
         add_page_action_icon(type, std::make_unique<ReadAnythingIconView>(
                                        params.command_updater, params.browser,
@@ -221,12 +213,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             std::make_unique<autofill::SavePaymentIconView>(
                 params.command_updater, params.icon_label_bubble_delegate,
                 params.page_action_icon_delegate, IDC_SAVE_IBAN_FOR_PAGE));
-        break;
-      case PageActionIconType::kSendTabToSelf:
-        add_page_action_icon(
-            type, std::make_unique<send_tab_to_self::SendTabToSelfIconView>(
-                      params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
         break;
       case PageActionIconType::kSharingHub:
         add_page_action_icon(

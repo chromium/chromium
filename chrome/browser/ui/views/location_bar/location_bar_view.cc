@@ -30,7 +30,6 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
@@ -71,7 +70,6 @@
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
@@ -356,9 +354,7 @@ void LocationBarView::Init() {
       params.types_enabled.push_back(PageActionIconType::kSideSearch);
     }
 
-    params.types_enabled.push_back(PageActionIconType::kSendTabToSelf);
     params.types_enabled.push_back(PageActionIconType::kClickToCall);
-    params.types_enabled.push_back(PageActionIconType::kQRCodeGenerator);
     if (base::FeatureList::IsEnabled(kWebOTPCrossDevice))
       params.types_enabled.push_back(PageActionIconType::kSmsRemoteFetcher);
     params.types_enabled.push_back(PageActionIconType::kManagePasswords);
@@ -943,18 +939,6 @@ void LocationBarView::Update(WebContents* contents) {
   else
     omnibox_view_->Update();
 
-  PageActionIconView* send_tab_to_self_icon =
-      page_action_icon_controller_->GetIconView(
-          PageActionIconType::kSendTabToSelf);
-  if (send_tab_to_self_icon)
-    send_tab_to_self_icon->SetVisible(false);
-
-  PageActionIconView* qr_generator_icon =
-      page_action_icon_controller_->GetIconView(
-          PageActionIconType::kQRCodeGenerator);
-  if (qr_generator_icon)
-    qr_generator_icon->SetVisible(false);
-
   OnChanged();  // NOTE: Triggers layout.
 
   // A permission prompt may be suspended due to an invalid state (empty or
@@ -1285,23 +1269,6 @@ void LocationBarView::UpdateContentSettingsIcons() {
   }
 }
 
-inline void LocationBarView::UpdateQRCodeGeneratorIcon() {
-  PageActionIconView* icon = page_action_icon_controller_->GetIconView(
-      PageActionIconType::kQRCodeGenerator);
-  if (icon)
-    icon->Update();
-}
-
-inline bool LocationBarView::UpdateSendTabToSelfIcon() {
-  PageActionIconView* icon = page_action_icon_controller_->GetIconView(
-      PageActionIconType::kSendTabToSelf);
-  if (!icon)
-    return false;
-  bool was_visible = icon->GetVisible();
-  icon->Update();
-  return was_visible != icon->GetVisible();
-}
-
 void LocationBarView::SaveStateToContents(WebContents* contents) {
   omnibox_view_->SaveStateToTab(contents);
 }
@@ -1457,8 +1424,6 @@ void LocationBarView::OnChanged() {
       IsVirtualKeyboardVisible(GetWidget()));
   InvalidateLayout();
   SchedulePaint();
-  UpdateSendTabToSelfIcon();
-  UpdateQRCodeGeneratorIcon();
   UpdateChipVisibility();
 }
 
@@ -1490,17 +1455,12 @@ void LocationBarView::OnOmniboxFocused() {
   // Only show hover animation in unfocused steady state.  Since focusing
   // the omnibox is intentional, snapping is better than transitioning here.
   hover_animation_.Reset();
-
-  UpdateSendTabToSelfIcon();
-  UpdateQRCodeGeneratorIcon();
   RefreshBackground();
 }
 
 void LocationBarView::OnOmniboxBlurred() {
   if (views::FocusRing::Get(this))
     views::FocusRing::Get(this)->SchedulePaint();
-  UpdateSendTabToSelfIcon();
-  UpdateQRCodeGeneratorIcon();
   RefreshBackground();
 }
 

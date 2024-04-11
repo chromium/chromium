@@ -23,11 +23,11 @@ enum class PageActionIconType {
   kPaymentsOfferNotification = 9,
   kPriceTracking = 10,
   kPwaInstall = 11,
-  kQRCodeGenerator = 12,
+  // DEPRECATED: kQRCodeGenerator = 12,
   // DEPRECATED: kReaderMode = 13,
   kAutofillAddress = 14,
   kSaveCard = 15,
-  kSendTabToSelf = 16,
+  // DEPRECATED: kSendTabToSelf = 16,
   kSharingHub = 17,
   kSideSearch = 18,
   kSmsRemoteFetcher = 19,
@@ -55,10 +55,8 @@ static_assert(
     static_cast<int>(PageActionIconType::kPaymentsOfferNotification) == 9);
 static_assert(static_cast<int>(PageActionIconType::kPriceTracking) == 10);
 static_assert(static_cast<int>(PageActionIconType::kPwaInstall) == 11);
-static_assert(static_cast<int>(PageActionIconType::kQRCodeGenerator) == 12);
 static_assert(static_cast<int>(PageActionIconType::kAutofillAddress) == 14);
 static_assert(static_cast<int>(PageActionIconType::kSaveCard) == 15);
-static_assert(static_cast<int>(PageActionIconType::kSendTabToSelf) == 16);
 static_assert(static_cast<int>(PageActionIconType::kSharingHub) == 17);
 static_assert(static_cast<int>(PageActionIconType::kSideSearch) == 18);
 static_assert(static_cast<int>(PageActionIconType::kSmsRemoteFetcher) == 19);

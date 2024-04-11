@@ -673,16 +673,16 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ManagePasswordsForPage(browser_);
       break;
     case IDC_SEND_TAB_TO_SELF:
-      SendTabToSelfFromPageAction(browser_);
+      SendTabToSelf(browser_);
       break;
     case IDC_QRCODE_GENERATOR:
-      GenerateQRCodeFromPageAction(browser_);
+      GenerateQRCode(browser_);
       break;
     case IDC_SHARING_HUB:
-      SharingHubFromPageAction(browser_);
+      SharingHub(browser_);
       break;
     case IDC_SHARING_HUB_SCREENSHOT:
-      ScreenshotCaptureFromPageAction(browser_);
+      ScreenshotCapture(browser_);
       break;
     case IDC_FOLLOW:
       FollowSite(browser_->tab_strip_model()->GetActiveWebContents());
