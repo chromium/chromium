@@ -10,6 +10,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/channel.h"
@@ -95,6 +96,10 @@ AppMenuIconController::AppMenuIconController(UpgradeDetector* upgrade_detector,
 
   global_error_observation_.Observe(
       GlobalErrorServiceFactory::GetForProfile(profile_));
+#if !BUILDFLAG(IS_CHROMEOS)
+  default_browser_prompt_observation_.Observe(
+      DefaultBrowserPromptManager::GetInstance());
+#endif
 
   upgrade_detector_->AddObserver(this);
 }
@@ -135,6 +140,11 @@ AppMenuIconController::GetTypeAndSeverity() const {
     return {IconType::GLOBAL_ERROR, Severity::MEDIUM};
   }
 #endif
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (DefaultBrowserPromptManager::GetInstance()->get_show_app_menu_prompt()) {
+    return {IconType::DEFAULT_BROWSER_PROMPT, Severity::LOW};
+  }
+#endif
   return {IconType::NONE, Severity::NONE};
 }
 
@@ -152,5 +162,9 @@ void AppMenuIconController::OnGlobalErrorsChanged() {
 }
 
 void AppMenuIconController::OnUpgradeRecommended() {
+  UpdateDelegate();
+}
+
+void AppMenuIconController::OnShowAppMenuPromptChanged() {
   UpdateDelegate();
 }
