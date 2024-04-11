@@ -161,36 +161,6 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
-            "name": "clang/alink",
-            "action": "(.*_)?alink",
-            "inputs": [
-                "third_party/llvm-build/Release+Asserts/bin/llvm-ar",
-            ],
-            "remote": config.get(ctx, "cog"),
-            "canonicalize_dir": True,
-            "accumulate": True,
-            "timeout": "4m",
-        },
-        {
-            "name": "clang/link",
-            "action": "(.*_)?link",
-            "command_prefix": "\"python3\" \"../../build/toolchain/gcc_link_wrapper.py\"",
-            "inputs": [
-                "third_party/llvm-build/Release+Asserts/bin/clang",
-                "third_party/llvm-build/Release+Asserts/bin/clang++",
-                "third_party/llvm-build/Release+Asserts/bin/ld.lld",
-                "third_party/llvm-build/Release+Asserts/bin/lld",
-                "build/toolchain/whole_archive.py",
-                "build/toolchain/wrapper_utils.py",
-                "build/toolchain/gcc_link_wrapper.py",
-                "build/linux/debian_bullseye_amd64-sysroot:link",
-            ],
-            "remote": config.get(ctx, "cog"),
-            "platform_ref": "large",
-            "canonicalize_dir": True,
-            "timeout": "10m",
-        },
-        {
             "name": "clang-coverage/cxx",
             "action": "(.*_)?cxx",
             "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
@@ -237,6 +207,7 @@ def __step_config(ctx, step_config):
                     "*.stamp",
                 ],
                 "remote": config.get(ctx, "remote-library-link"),
+                "canonicalize_dir": True,
                 "platform_ref": "large",
                 "accumulate": True,
             },
@@ -260,6 +231,7 @@ def __step_config(ctx, step_config):
                     "*.stamp",
                 ],
                 "remote": config.get(ctx, "remote-library-link"),
+                "canonicalize_dir": True,
                 "platform_ref": "large",
             },
             {
@@ -282,7 +254,9 @@ def __step_config(ctx, step_config):
                     "*.stamp",
                 ],
                 "remote": config.get(ctx, "remote-exec-link"),
+                "canonicalize_dir": True,
                 "platform_ref": "large",
+                "timeout": "10m",
             },
         ])
     return step_config
