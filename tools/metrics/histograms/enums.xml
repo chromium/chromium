@@ -12935,6 +12935,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="-2147418113" label="E_UNEXPECTED"/>
   <int value="-2147417848" label="RPC_E_DISCONNECTED"/>
   <int value="-2147417825" label="RPC_E_TIMEOUT"/>
+  <int value="-2147319779" label="TYPE_E_LIBNOTREGISTERED"/>
+  <int value="-2147312566" label="TYPE_E_CANTLOADLIBRARY"/>
   <int value="-2147221232" label="CLASS_E_NOAGGREGATION"/>
   <int value="-2147221164" label="REGDB_E_CLASSNOTREG"/>
   <int value="-2147220480"
@@ -13014,12 +13016,16 @@ Called by update_permissions_policy_enum.py.-->
   <int value="-2147024713" label="ERROR_ALREADY_EXISTS"/>
   <int value="-2147024703" label="ERROR_BAD_EXE_FORMAT"/>
   <int value="-2147024110" label="ERROR_ACCESS_DISABLED_NO_SAFER_UI_BY_POLICY"/>
+  <int value="-2147023843" label="ERROR_SERVICE_REQUEST_TIMEOUT"/>
   <int value="-2147023838" label="ERROR_SERVICE_DISABLED"/>
+  <int value="-2147023836" label="ERROR_SERVICE_DOES_NOT_EXIST"/>
+  <int value="-2147023812" label="ERROR_NOT_SAFEBOOT_SERVICE"/>
   <int value="-2147023728" label="ERROR_NOT_FOUND"/>
   <int value="-2147023673" label="ERROR_CANCELLED"/>
   <int value="-2147023605" label="ERROR_DRIVER_PROCESS_TERMINATED"/>
   <int value="-2147023589" label="ERROR_INVALID_OWNER"/>
   <int value="-2147023504" label="ERROR_FILE_CORRUPT"/>
+  <int value="-2147023441" label="ERROR_COMMITMENT_LIMIT"/>
   <int value="-2147023436" label="ERROR_TIMEOUT"/>
   <int value="-2147023179" label="RPC_S_UNKNOWN_IF"/>
   <int value="-2147023174" label="RPC_S_SERVER_UNAVAILABLE"/>
