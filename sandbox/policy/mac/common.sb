@@ -191,6 +191,15 @@
   (subpath "/usr/lib")
 )
 
+; In some circumstances, Safari updates are installed below /Library/Apple and
+; SafariServices.framework in /System/Library/Frameworks is replaced with a
+; symlink into that directory tree. These paths must be readable to allow
+; the framework to be loaded.
+(allow file-read*
+  (subpath "/Library/Apple/System/Library/Frameworks")
+  (subpath "/Library/Apple/System/Library/PrivateFrameworks")
+)
+
 ; Reads from /etc.
 ; This is read by CFPrefs calling getpwuid in a loop. libinfo then fails to
 ; contact any of the opendirectoryd mach services, and falls back to
