@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -83,6 +84,11 @@ void PrewarmHttpDiskCacheManager::MaybePrewarmResources(
       "PrewarmHttpDiskCacheManager::MaybePrewarmMainResourceAndSubresources",
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+
+  // Avoid making network service to be more busy during the browser startup.
+  if (!AfterStartupTaskUtils::IsBrowserStartupComplete()) {
+    return;
+  }
 
   url::Origin top_frame_origin =
       url::Origin::Create(top_frame_main_resource_url);
