@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -185,6 +186,12 @@ QuickStartController::QuickStartController() {
   if (session_manager::SessionManager::Get()->session_state() !=
           session_manager::SessionState::OOBE &&
       !features::IsOobeQuickStartOnLoginScreenEnabled()) {
+    return;
+  }
+
+  // A guest session state is SessionState::OOBE if there are no other users
+  // added. Quick Start is not available in this case.
+  if (ProfileManager::GetActiveUserProfile()->IsGuestSession()) {
     return;
   }
 
