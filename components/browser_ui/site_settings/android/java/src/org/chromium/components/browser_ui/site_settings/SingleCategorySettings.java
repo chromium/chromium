@@ -1092,7 +1092,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             preference.setIcon(
                     SettingsUtils.getTintedIcon(
                             getContext(),
-                            ContentSettingsResources.getIcon(mCategory.getContentSettingsType())));
+                            ContentSettingsResources.getIcon(
+                                    mCategory.getContentSettingsType(),
+                                    getSiteSettingsDelegate())));
             preference.setTitle(entry.first.get(0).getName());
             preference.setFragment(ChosenObjectSettings.class.getCanonicalName());
             getPreferenceScreen().addPreference(preference);
@@ -1350,7 +1352,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     private void configureBinaryToggle(ChromeSwitchPreference binaryToggle, int contentType) {
         binaryToggle.setOnPreferenceChangeListener(this);
-        binaryToggle.setTitle(ContentSettingsResources.getTitle(contentType));
+        binaryToggle.setTitle(
+                ContentSettingsResources.getTitle(contentType, getSiteSettingsDelegate()));
 
         // Set summary on or off.
         BrowserContextHandle browserContextHandle =
@@ -1359,11 +1362,16 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 && WebsitePreferenceBridge.isLocationAllowedByPolicy(browserContextHandle)) {
             binaryToggle.setSummaryOn(ContentSettingsResources.getGeolocationAllowedSummary());
         } else {
-            binaryToggle.setSummaryOn(ContentSettingsResources.getEnabledSummary(contentType));
+            binaryToggle.setSummaryOn(
+                    ContentSettingsResources.getEnabledSummary(
+                            contentType, getSiteSettingsDelegate()));
         }
-        binaryToggle.setSummaryOff(ContentSettingsResources.getDisabledSummary(contentType));
+        binaryToggle.setSummaryOff(
+                ContentSettingsResources.getDisabledSummary(
+                        contentType, getSiteSettingsDelegate()));
         int summaryForAccessibility =
-                ContentSettingsResources.getSummaryOverrideForScreenReader(contentType);
+                ContentSettingsResources.getSummaryOverrideForScreenReader(
+                        contentType, getSiteSettingsDelegate());
         if (summaryForAccessibility != 0) {
             binaryToggle.setSummaryOverrideForScreenReader(
                     getContext().getString(summaryForAccessibility));

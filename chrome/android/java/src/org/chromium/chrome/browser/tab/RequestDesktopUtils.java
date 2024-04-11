@@ -358,6 +358,7 @@ public class RequestDesktopUtils {
                                 () -> {
                                     SiteSettingsHelper.showCategorySettings(
                                             context,
+                                            profile,
                                             SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
                                     tracker.notifyEvent(
                                             EventConstants.DESKTOP_SITE_DEFAULT_ON_PRIMARY_ACTION);
