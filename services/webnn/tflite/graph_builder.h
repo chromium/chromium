@@ -42,7 +42,7 @@ concept IsSupportedTensorType = IsAnyOf<T, float, int32_t, uint32_t>;
 // serialize.
 //
 // The instances of the class may not be allocated on the heap, but as a member
-// variable of a non-stack-allocated and be single-use per conversion.
+// variable of a non-stack-allocated class and be single-use per conversion.
 class GraphBuilder final {
   STACK_ALLOCATED();
 
@@ -182,9 +182,8 @@ class GraphBuilder final {
       const mojom::Split& split);
   OperatorOffset SerializeTranspose(const mojom::Transpose& transpose);
 
-  // There are no further methods should be called on this class after this
-  // function because the buffer of `buffer_` is now owned by the detached
-  // buffer.
+  // No further methods may be called on this class after calling this method
+  // because the buffer of `buffer_` is now owned by the detached buffer.
   flatbuffers::DetachedBuffer FinishAndTakeFlatBuffer(
       base::span<const uint64_t> input_operands,
       base::span<const uint64_t> output_operands);

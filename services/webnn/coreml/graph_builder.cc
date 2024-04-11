@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -424,7 +425,7 @@ std::string GetCoreMLNameFromOutput(std::string_view output_name) {
 }
 
 // static
-[[nodiscard]] base::expected<std::unique_ptr<GraphBuilder>, mojom::ErrorPtr>
+base::expected<std::unique_ptr<GraphBuilder::Result>, mojom::ErrorPtr>
 GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info,
                              const base::FilePath& working_directory) {
   // Use a random string for the model package directory, because MLModel
@@ -437,28 +438,21 @@ GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info,
 
   base::FilePath data_dir = ml_package_dir.Append(kMlPackageDataDir);
 
-  auto graph_builder = base::WrapUnique(new GraphBuilder(
-      graph_info, std::move(ml_package_dir),
-      data_dir.Append(kMlPackageModelFileName),
-      data_dir.Append(kMlPackageWeightsDir).Append(kMlPackageWeightsFileName)));
+  GraphBuilder graph_builder(graph_info, std::move(ml_package_dir));
 
-  RETURN_IF_ERROR(graph_builder->BuildCoreMLModel());
+  RETURN_IF_ERROR(graph_builder.BuildCoreMLModel());
 
-  if (!graph_builder->SerializeModel()) {
+  if (!graph_builder.SerializeModel()) {
     return NewUnknownError("Failed to serialize CoreML model.");
   }
 
-  return graph_builder;
+  return graph_builder.FinishAndTakeResult();
 }
 
 GraphBuilder::GraphBuilder(const mojom::GraphInfo& graph_info,
-                           base::FilePath ml_package_dir,
-                           base::FilePath model_file_path,
-                           base::FilePath weights_file_path)
+                           base::FilePath ml_package_dir)
     : graph_info_(graph_info),
-      ml_package_dir_(std::move(ml_package_dir)),
-      model_file_path_(std::move(model_file_path)),
-      weights_file_path_(std::move(weights_file_path)) {}
+      result_(std::make_unique<Result>(std::move(ml_package_dir))) {}
 
 GraphBuilder::~GraphBuilder() = default;
 
@@ -589,7 +583,10 @@ GraphBuilder::BuildCoreMLModel() {
 bool GraphBuilder::SerializeModel() {
   base::ElapsedTimer ml_model_write_timer;
   // This will always overwrite if there is an existing file.
-  std::fstream model_file(model_file_path_.value(),
+  std::fstream model_file(ml_package_dir()
+                              .Append(kMlPackageDataDir)
+                              .Append(kMlPackageModelFileName)
+                              .value(),
                           std::ios::out | std::ios::binary);
   bool result = ml_model_.SerializeToOstream(&model_file);
   UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelWrite",
@@ -597,9 +594,16 @@ bool GraphBuilder::SerializeModel() {
   return result;
 }
 
+std::unique_ptr<GraphBuilder::Result> GraphBuilder::FinishAndTakeResult() {
+  return std::move(result_);
+}
+
 base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
     CoreML::Specification::MILSpec::Block& block) {
-  base::File weights_file(weights_file_path_,
+  base::File weights_file(ml_package_dir()
+                              .Append(kMlPackageDataDir)
+                              .Append(kMlPackageWeightsDir)
+                              .Append(kMlPackageWeightsFileName),
                           base::File::FLAG_CREATE | base::File::FLAG_WRITE);
 
   uint64_t current_offset = 0;
@@ -645,21 +649,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
     }
   }
   return base::ok();
-}
-
-const mojom::Operand& GraphBuilder::GetOperand(uint64_t operand_id) const {
-  return *graph_info_->id_to_operand_map.at(operand_id);
-}
-
-const GraphBuilder::OperandInfo& GraphBuilder::FindInputOperandInfo(
-    const std::string& input_name) const {
-  auto id = input_name_to_id_map_.find(input_name);
-  CHECK(id != input_name_to_id_map_.end());
-  return GetOperandInfo(id->second);
-}
-
-const base::FilePath& GraphBuilder::GetModelFilePath() {
-  return ml_package_dir_;
 }
 
 void GraphBuilder::AddPlaceholderInput(
@@ -715,14 +704,15 @@ void GraphBuilder::AddPlaceholderInput(
       *main_function.add_inputs();
   PopulateNamedValueType(input_id, input);
 
-  CHECK(input_name_to_id_map_.try_emplace(operand.name.value(), input_id)
+  CHECK(input_name_to_id_map()
+            .try_emplace(operand.name.value(), input_id)
             .second);
   return base::ok();
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOutput(
     uint64_t output_id) {
-  CHECK(id_to_op_input_info_map_.contains(output_id));
+  CHECK(id_to_operand_info_map().contains(output_id));
   auto* mutable_description = ml_model_.mutable_description();
   auto* feature_description = mutable_description->add_output();
   RETURN_IF_ERROR(PopulateFeatureDescription(output_id, *feature_description));
@@ -1300,9 +1290,13 @@ void GraphBuilder::AddConstantFileValue(
   attributes["val"] = std::move(blob_value);
 }
 
+const mojom::Operand& GraphBuilder::GetOperand(uint64_t operand_id) const {
+  return *graph_info_->id_to_operand_map.at(operand_id);
+}
+
 [[nodiscard]] const GraphBuilder::OperandInfo& GraphBuilder::GetOperandInfo(
     uint64_t operand_id) const {
-  return id_to_op_input_info_map_.at(operand_id);
+  return result_->GetOperandInfo(operand_id);
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilder::PopulateFeatureDescription(
@@ -1385,7 +1379,7 @@ void GraphBuilder::UpdateCoreMLInputInfoMap(uint64_t operand_id) {
   const mojom::Operand& operand = GetOperand(operand_id);
   const CoreML::Specification::MILSpec::DataType mil_data_type =
       OperandTypeToMILDataType(operand.data_type);
-  CHECK(id_to_op_input_info_map_
+  CHECK(id_to_operand_info_map()
             .try_emplace(operand_id,
                          OperandInfo(GetCoreMLNameFromOperand(operand_id),
                                      operand.dimensions.empty()
@@ -1428,10 +1422,10 @@ void GraphBuilder::PopulateValueType(
 
 base::expected<void, mojom::ErrorPtr>
 GraphBuilder::SetupMlPackageDirStructure() {
-  if (!base::CreateDirectory(ml_package_dir_)) {
+  if (!base::CreateDirectory(ml_package_dir())) {
     return NewUnknownError("Fail to create .mlpackage directory.");
   }
-  base::FilePath data_dir = ml_package_dir_.Append(kMlPackageDataDir);
+  base::FilePath data_dir = ml_package_dir().Append(kMlPackageDataDir);
   if (!base::CreateDirectory(data_dir)) {
     return NewUnknownError("Fail to create .mlpackage/Data directory.");
   }
@@ -1470,7 +1464,8 @@ GraphBuilder::SetupMlPackageDirStructure() {
   metadata.Set(kManifestItemInfoEntriesKey, std::move(item_info_entries));
   metadata.Set(kManifestVersionKey, kManifestVersionValue);
   metadata.Set(kManifestModelIdentifierKey, model_identifier);
-  JSONFileValueSerializer serializer(ml_package_dir_.Append(kManifestFileName));
+  JSONFileValueSerializer serializer(
+      ml_package_dir().Append(kManifestFileName));
   if (!serializer.Serialize(std::move(metadata))) {
     return NewUnknownError("Fail to create Manifest.json for mlpackage.");
   }
@@ -1509,17 +1504,39 @@ std::string GraphBuilder::GetCoreMLNameForParam(uint64_t operand_id,
       kStringSeparator);
 }
 GraphBuilder::OperandInfo::OperandInfo(
-    std::string coreml_name, std::vector<uint32_t> dimensions,
+    std::string coreml_name,
+    std::vector<uint32_t> dimensions,
     mojom::Operand::DataType data_type,
     CoreML::Specification::MILSpec::DataType mil_data_type)
     : coreml_name(std::move(coreml_name)),
       dimensions(std::move(dimensions)),
       data_type(data_type),
-      mil_data_type(std::move(mil_data_type)) {}
+      mil_data_type(mil_data_type) {}
 
 GraphBuilder::OperandInfo::OperandInfo() = default;
 GraphBuilder::OperandInfo::~OperandInfo() = default;
 GraphBuilder::OperandInfo::OperandInfo(OperandInfo&) = default;
 GraphBuilder::OperandInfo::OperandInfo(OperandInfo&&) = default;
+
+GraphBuilder::Result::Result(base::FilePath ml_package_dir)
+    : ml_package_dir(std::move(ml_package_dir)) {}
+GraphBuilder::Result::~Result() = default;
+
+const GraphBuilder::OperandInfo& GraphBuilder::Result::FindInputOperandInfo(
+    const std::string& input_name) const {
+  auto it = input_name_to_id_map.find(input_name);
+  return GetOperandInfo(it->second);
+}
+
+const base::FilePath& GraphBuilder::Result::GetModelFilePath() {
+  return ml_package_dir;
+}
+
+const GraphBuilder::OperandInfo& GraphBuilder::Result::GetOperandInfo(
+    uint64_t operand_id) const {
+  auto it = id_to_operand_info_map.find(operand_id);
+  CHECK(it != id_to_operand_info_map.end());
+  return it->second;
+}
 
 }  // namespace webnn::coreml

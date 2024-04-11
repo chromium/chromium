@@ -82,7 +82,7 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
   base::ElapsedTimer ml_model_write_timer;
   // Generate .mlpackage.
   ASSIGN_OR_RETURN(
-      std::unique_ptr<GraphBuilder> graph_builder,
+      std::unique_ptr<GraphBuilder::Result> build_graph_result,
       GraphBuilder::CreateAndBuild(*graph_info.get(), model_file_dir.GetPath()),
       [&](mojom::ErrorPtr error) {
         originating_sequence->PostTask(
@@ -104,7 +104,7 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
   for (auto const& [name, size] :
        compute_resource_info.input_name_to_byte_length_map) {
     std::optional<GraphImpl::CoreMLFeatureInfo> coreml_feature_info =
-        GetCoreMLFeatureInfo(graph_builder->FindInputOperandInfo(name));
+        GetCoreMLFeatureInfo(build_graph_result->FindInputOperandInfo(name));
     if (!coreml_feature_info.has_value()) {
       originating_sequence->PostTask(
           FROM_HERE,
@@ -139,7 +139,7 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
 
   [MLModel
       compileModelAtURL:base::apple::FilePathToNSURL(
-                            graph_builder->GetModelFilePath())
+                            build_graph_result->GetModelFilePath())
       completionHandler:^(NSURL* compiled_model_url, NSError* error) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "WebNN.CoreML.TimingMs.MLModelCompile",
