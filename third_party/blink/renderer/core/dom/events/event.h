@@ -108,7 +108,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
   // a potential privacy leak from the frame to its embedder, clamp all of them
   // to the epoch.
   static Event* CreateFenced(const AtomicString& type) {
-    return MakeGarbageCollected<Event>(type, Bubbles::kYes, Cancelable::kNo,
+    return MakeGarbageCollected<Event>(type, Bubbles::kYes, Cancelable::kYes,
                                        base::TimeTicks::UnixEpoch());
   }
 
