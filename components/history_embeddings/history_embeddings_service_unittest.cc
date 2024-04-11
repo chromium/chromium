@@ -62,7 +62,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
           if (!iterator) {
             return;
           }
-          while (const UrlEmbeddings* item = iterator->Next()) {
+          while (iterator->Next()) {
             result++;
           }
 
