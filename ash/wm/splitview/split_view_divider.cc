@@ -299,10 +299,11 @@ void SplitViewDivider::UpdateDividerBounds() {
 }
 
 gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(bool is_dragging) {
+  auto* root_window = GetRootWindow();
   const gfx::Rect work_area_bounds_in_screen =
-      GetWorkAreaBoundsInScreen(divider_widget_->GetNativeWindow());
+      GetWorkAreaBoundsInScreen(root_window);
   return GetDividerBoundsInScreen(work_area_bounds_in_screen,
-                                  IsLayoutHorizontal(GetRootWindow()),
+                                  IsLayoutHorizontal(root_window),
                                   divider_position_, is_dragging);
 }
 
@@ -337,6 +338,7 @@ void SplitViewDivider::MaybeAddObservedWindow(aura::Window* window) {
        transient_manager->transient_children()) {
     StartObservingTransientChild(transient_window);
   }
+
   RefreshDividerState(/*observed_windows_changed=*/true);
 }
 
@@ -470,6 +472,17 @@ void SplitViewDivider::OnTransientChildRemoved(aura::Window* window,
   StopObservingTransientChild(transient);
 }
 
+void SplitViewDivider::OnDisplayMetricsChanged(const display::Display& display,
+                                               uint32_t metrics) {
+  if (!(metrics &
+        (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
+         DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_WORK_AREA))) {
+    return;
+  }
+
+  UpdateDividerBounds();
+}
+
 void SplitViewDivider::RefreshDividerState(bool observed_windows_changed) {
   // Avoid any recursive updates.
   if (is_refreshing_state_) {
@@ -572,6 +585,7 @@ void SplitViewDivider::CloseDividerWidget() {
     if (auto* transient_parent = wm::GetTransientParent(divider_window)) {
       wm::RemoveTransientChild(transient_parent, divider_window);
     }
+
     // During the asynchronous window closing, there may be a duration when the
     // divider widget is closing, but the pointer to `this` is not cleared in
     // `SplitViewDividerView` yet, i.e. in `Layout()` which is called during

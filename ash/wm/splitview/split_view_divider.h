@@ -10,6 +10,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/transient_window_observer.h"
 
@@ -32,7 +33,8 @@ class SplitViewDividerView;
 // always be placed above its observed windows to be able to receive events
 // unless it's being dragged.
 class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
-                                    public ::wm::TransientWindowObserver {
+                                    public wm::TransientWindowObserver,
+                                    public display::DisplayObserver {
  public:
   // The split view resize behavior in tablet mode. The normal mode resizes
   // windows on drag events. In the fast mode, windows are instead moved. A
@@ -148,6 +150,10 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   void OnTransientChildRemoved(aura::Window* window,
                                aura::Window* transient) override;
 
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
+
   SplitViewDividerView* divider_view_for_testing() { return divider_view_; }
 
  private:
@@ -234,6 +240,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
 
   // True *while* a resize event is being processed.
   bool processing_resize_event_ = false;
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

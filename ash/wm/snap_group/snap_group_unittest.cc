@@ -16,10 +16,12 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/style/close_button.h"
@@ -285,6 +287,8 @@ bool UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
   union_bounds.Union(w2_bounds);
   const auto divider_bounds =
       divider->GetDividerBoundsInScreen(/*is_dragging=*/false);
+  EXPECT_FALSE(w1_bounds.Contains(divider_bounds));
+  EXPECT_FALSE(w2_bounds.Contains(divider_bounds));
   EXPECT_FALSE(w1_bounds.Intersects(divider_bounds));
   EXPECT_FALSE(w2_bounds.Intersects(divider_bounds));
   union_bounds.Union(divider_bounds);
@@ -2596,6 +2600,49 @@ TEST_F(SnapGroupTest, SnapGroupDividerBoundsTest) {
 
     MaximizeToClearTheSession(w1.get());
     MaximizeToClearTheSession(w2.get());
+  }
+}
+
+// Tests that window and divider boundaries adjust correctly with shelf
+// auto-hide behavior change.
+TEST_F(SnapGroupTest, SnapGroupDividerBoundsWithShelfAutoHideBehaviorChange) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  SplitViewDivider* divider = snap_group_divider();
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+
+  Shelf* shelf = GetPrimaryShelf();
+  ASSERT_EQ(shelf->auto_hide_behavior(), ShelfAutoHideBehavior::kNever);
+
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  EXPECT_EQ(divider_widget->GetWindowBoundsInScreen().height(),
+            work_area_bounds().height());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), divider);
+}
+
+// Tests that snapped windows and divider bounds adjust correctly when shelf
+// alignment changes.
+TEST_F(SnapGroupTest, SnapGroupDividerBoundsWithShelfAlignmentChange) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  SplitViewDivider* divider = snap_group_divider();
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+
+  Shelf* shelf = GetPrimaryShelf();
+  ASSERT_EQ(shelf->alignment(), ShelfAlignment::kBottom);
+  for (auto alignment : {ShelfAlignment::kLeft, ShelfAlignment::kRight,
+                         ShelfAlignment::kBottom}) {
+    shelf->SetAlignment(alignment);
+    const gfx::Rect divider_bounds = divider_widget->GetWindowBoundsInScreen();
+    EXPECT_EQ(divider_bounds.x(), w1->GetBoundsInScreen().right());
+    EXPECT_EQ(divider_bounds.right(), w2->GetBoundsInScreen().x());
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), divider);
   }
 }
 

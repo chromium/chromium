@@ -109,6 +109,7 @@ void SplitViewDividerView::Layout(PassKey) {
   }
 
   SetBoundsRect(GetLocalBounds());
+  RefreshFeedbackButtonBounds();
   divider_handler_view_->Refresh(divider_->is_resizing_with_divider());
 }
 
