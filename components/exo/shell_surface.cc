@@ -533,6 +533,12 @@ const ui::Layer* ShellSurface::GetCommitTargetLayer() const {
 ////////////////////////////////////////////////////////////////////////////////
 // ShellSurfaceBase overrides:
 
+void ShellSurface::OnSurfaceCommit() {
+  // Send configure only after the effect of the commit is finalized.
+  ScopedConfigure scoped_configure(this, false);
+  ShellSurfaceBase::OnSurfaceCommit();
+}
+
 void ShellSurface::InitializeWindowState(ash::WindowState* window_state) {
   window_state->AddObserver(this);
   window_state->set_allow_set_bounds_direct(movement_disabled_);
@@ -911,7 +917,6 @@ bool ShellSurface::OnPreWidgetCommit() {
 }
 
 void ShellSurface::ShowWidget(bool activate) {
-  ScopedConfigure scoped_configure(this, false);
   ShellSurfaceBase::ShowWidget(activate);
 
   // Now that the shell surface is ready, make sure it has up to date occlusion
@@ -995,8 +1000,10 @@ void ShellSurface::MaybeMakeTransient() {
 }
 
 void ShellSurface::Configure(bool ends_drag) {
-  // Delay configure callback if |scoped_configure_| is set.
-  if (scoped_configure_) {
+  // Delay configure callback if |scoped_configure_| is set. But if
+  // |widget_| is not set yet then it ignores |scoped_configure_| so that an
+  // initial configure can be sent.
+  if (widget_ && scoped_configure_) {
     scoped_configure_->set_needs_configure();
     return;
   }

@@ -298,6 +298,53 @@ TEST_F(ShellSurfaceTest, DeleteShellSurfaceWithTransientChildren) {
   parent_shell_surface.reset();
 }
 
+TEST_F(ShellSurfaceTest, CommitAndConfigure) {
+  // Test that a commit produces an expected configure. A commit to a surface
+  // without a buffer attached should produce a configure with zero size. Then
+  // once a buffer is attached, a commit should produce a configure
+  // corresponding to the size of the buffer.
+  auto shell_surface =
+      test::ShellSurfaceBuilder().SetNoCommit().BuildShellSurface();
+
+  uint32_t serial = 0;
+  gfx::Rect bounds;
+  aura::Window::OcclusionState occlusion_state;
+  auto configure_callback = base::BindRepeating(
+      [](uint32_t* const serial_ptr, gfx::Rect* bounds_ptr,
+         aura::Window::OcclusionState* occlusion_state_ptr,
+         const gfx::Rect& bounds, chromeos::WindowStateType state_type,
+         bool resizing, bool activated, const gfx::Vector2d& origin_offset,
+         float raster_scale, aura::Window::OcclusionState occlusion_state,
+         std::optional<chromeos::WindowStateType>) {
+        *bounds_ptr = bounds;
+        *occlusion_state_ptr = occlusion_state;
+        return ++(*serial_ptr);
+      },
+      &serial, &bounds, &occlusion_state);
+  shell_surface->set_configure_callback(configure_callback);
+
+  // Receiving a commit without a buffer should result in an initial configure
+  // with bounds gfx::Rect(0, 0, 0, 0). Note that although `ShellSurface` does
+  // not implement xdg-shell, in xdg-shell spec sending 0x0 bounds is used to
+  // hint to a client that the bounds should be determined by the client (i.e.
+  // ShellSurface implicitly follows xdg-shell spec here).
+  shell_surface->root_surface()->Commit();
+  ASSERT_EQ(1u, serial);
+  EXPECT_EQ(bounds, gfx::Rect(0, 0, 0, 0));
+
+  // Attaching a buffer and committing should produce a single configure with
+  // the size equal to the buffer size.
+  constexpr gfx::Size kBufferSize(64, 64);
+  auto buffer = test::ExoTestHelper::CreateBuffer(kBufferSize);
+  shell_surface->root_surface()->Attach(buffer.get());
+  shell_surface->root_surface()->Commit();
+  ASSERT_EQ(2u, serial);
+  EXPECT_EQ(bounds.size(), kBufferSize);
+  // The occlusion state should be visible since there is no other window
+  // occluding the surface.
+  EXPECT_EQ(occlusion_state, aura::Window::OcclusionState::VISIBLE);
+}
+
 TEST_F(ShellSurfaceTest, Maximize) {
   auto shell_surface =
       test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
@@ -407,7 +454,7 @@ TEST_F(ShellSurfaceTest, Minimize) {
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "ExoShellSurface-0");
   uint32_t serial = 0;
-  chromeos::WindowStateType state[2]{chromeos::WindowStateType::kNormal};
+  chromeos::WindowStateType state[1]{chromeos::WindowStateType::kNormal};
   auto configure_callback = base::BindRepeating(
       [](uint32_t* const serial_ptr, chromeos::WindowStateType* state_ptr,
          const gfx::Rect& bounds, chromeos::WindowStateType state_type,
@@ -426,9 +473,8 @@ TEST_F(ShellSurfaceTest, Minimize) {
 
   // Two configures (initial configure and the state change configure) should be
   // sent with the minimzied state.
-  ASSERT_EQ(2u, serial);
+  ASSERT_EQ(1u, serial);
   EXPECT_EQ(chromeos::WindowStateType::kMinimized, state[0]);
-  EXPECT_EQ(chromeos::WindowStateType::kMinimized, state[1]);
   shell_surface->set_configure_callback(ShellSurface::ConfigureCallback());
 
   // Minimized widget should be Shown.
@@ -1711,7 +1757,7 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   // Commit without contents should result in a configure callback with empty
   // suggested size as a mechanisms to ask the client size itself.
   surface->Commit();
-  EXPECT_TRUE(config_data.suggested_bounds.IsEmpty());
+  ASSERT_TRUE(config_data.suggested_bounds.IsEmpty());
   EXPECT_TRUE(shell_surface->GetWidget());
   EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
   EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
@@ -3624,9 +3670,8 @@ TEST_F(ShellSurfaceTest, RasterScaleChangeVsOcclusionChangeOrder) {
   aura::Window* widget_window = shell_surface->GetWidget()->GetNativeWindow();
   shell_surface->Minimize();
 
-  // Initial configure and configure for minimize, and configure for HIDDEN
-  // state.
-  EXPECT_EQ(3u, config_vec.size());
+  // Initial configure and configure for minimize.
+  EXPECT_EQ(2u, config_vec.size());
 
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -3642,18 +3687,18 @@ TEST_F(ShellSurfaceTest, RasterScaleChangeVsOcclusionChangeOrder) {
   EXPECT_NE(1.0, widget_window->GetProperty(aura::client::kRasterScale));
 
   // Make sure raster scale was changed first.
-  ASSERT_EQ(5u, config_vec.size());
-  EXPECT_NE(1.0, config_vec[3].raster_scale);
+  ASSERT_EQ(4u, config_vec.size());
+  EXPECT_NE(1.0, config_vec[2].raster_scale);
   EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
-            config_vec[3].occlusion_state);
-  EXPECT_NE(1.0, config_vec[4].raster_scale);
+            config_vec[2].occlusion_state);
+  EXPECT_NE(1.0, config_vec[3].raster_scale);
   EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
-            config_vec[4].occlusion_state);
+            config_vec[3].occlusion_state);
 
   ash::WaitForOverviewEnterAnimation();
 
   // No extra configure should occur.
-  EXPECT_EQ(5u, config_vec.size());
+  EXPECT_EQ(4u, config_vec.size());
 
   overview_controller->EndOverview(ash::OverviewEndAction::kTests);
 
@@ -3662,7 +3707,7 @@ TEST_F(ShellSurfaceTest, RasterScaleChangeVsOcclusionChangeOrder) {
   EXPECT_NE(1.0, widget_window->GetProperty(aura::client::kRasterScale));
 
   // No extra configure should occur.
-  EXPECT_EQ(5u, config_vec.size());
+  EXPECT_EQ(4u, config_vec.size());
 
   ash::WaitForOverviewExitAnimation();
 
@@ -3672,13 +3717,13 @@ TEST_F(ShellSurfaceTest, RasterScaleChangeVsOcclusionChangeOrder) {
   EXPECT_EQ(1.0, widget_window->GetProperty(aura::client::kRasterScale));
 
   // Make sure occlusion is updated before raster scale.
-  ASSERT_EQ(7u, config_vec.size());
-  EXPECT_NE(1.0, config_vec[5].raster_scale);
+  ASSERT_EQ(6u, config_vec.size());
+  EXPECT_NE(1.0, config_vec[4].raster_scale);
+  EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
+            config_vec[4].occlusion_state);
+  EXPECT_EQ(1.0, config_vec[5].raster_scale);
   EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
             config_vec[5].occlusion_state);
-  EXPECT_EQ(1.0, config_vec[6].raster_scale);
-  EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
-            config_vec[6].occlusion_state);
 }
 
 TEST_F(ShellSurfaceTest, ThrottleFrameRateViaController) {
