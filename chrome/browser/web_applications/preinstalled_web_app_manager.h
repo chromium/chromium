@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -19,6 +20,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -46,6 +48,8 @@ class WebAppProvider;
 // similar to WebAppPolicyManager.
 class PreinstalledWebAppManager {
  public:
+  using CacheDeviceInfoCallback = base::OnceClosure;
+  using ConsumeDeviceInfo = base::OnceCallback<void(DeviceInfo)>;
   using ConsumeLoadedConfigs = base::OnceCallback<void(LoadedConfigs)>;
   using ConsumeParsedConfigs = base::OnceCallback<void(ParsedConfigs)>;
   using ConsumeInstallOptions =
@@ -140,6 +144,9 @@ class PreinstalledWebAppManager {
   void LoadAndSynchronize(SynchronizeCallback callback);
 
   void Load(ConsumeInstallOptions callback);
+  void LoadDeviceInfo(ConsumeDeviceInfo callback);
+  void CacheDeviceInfo(CacheDeviceInfoCallback callback,
+                       DeviceInfo device_info);
   void LoadConfigs(ConsumeLoadedConfigs callback);
   void ParseConfigs(ConsumeParsedConfigs callback,
                     LoadedConfigs loaded_configs);
@@ -181,6 +188,9 @@ class PreinstalledWebAppManager {
   std::unique_ptr<DebugInfo> debug_info_;
 
   std::unique_ptr<DeviceDataInitializedEvent> device_data_initialized_event_;
+
+  // TODO(http://b/333583704): Revert CL which added this field after migration.
+  std::optional<DeviceInfo> device_info_;
 
   base::ObserverList<PreinstalledWebAppManager::Observer, /*check_empty=*/true>
       observers_;

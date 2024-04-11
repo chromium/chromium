@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/echo/echo_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -181,31 +182,18 @@ EchoPrivateGetOobeTimestampFunction::~EchoPrivateGetOobeTimestampFunction() {
 }
 
 ExtensionFunction::ResponseAction EchoPrivateGetOobeTimestampFunction::Run() {
-  auto callback = base::BindOnce(
-      &EchoPrivateGetOobeTimestampFunction::RespondWithResult, this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->echo_private_ash()
-      ->GetOobeTimestamp(std::move(callback));
-#else
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::EchoPrivate>() &&
-      static_cast<uint32_t>(
-          lacros_service->GetInterfaceVersion<crosapi::mojom::EchoPrivate>()) >=
-          crosapi::mojom::EchoPrivate::kGetOobeTimestampMinVersion) {
-    lacros_service->GetRemote<crosapi::mojom::EchoPrivate>()->GetOobeTimestamp(
-        std::move(callback));
-  } else {
-    return RespondNow(Error("EchoPrivate unavailable."));
-  }
-#endif
+  chromeos::echo_util::GetOobeTimestamp(base::BindOnce(
+      &EchoPrivateGetOobeTimestampFunction::RespondWithResult, this));
   return RespondLater();
 }
 
 void EchoPrivateGetOobeTimestampFunction::RespondWithResult(
-    const std::string& timestamp) {
-  Respond(WithArguments(timestamp));
+    base::expected<std::string, std::string> timestamp_or_error) {
+  if (timestamp_or_error.has_value()) {
+    Respond(WithArguments(std::move(timestamp_or_error.value())));
+    return;
+  }
+  Respond(Error(std::move(timestamp_or_error.error())));
 }
 
 EchoPrivateGetUserConsentFunction::EchoPrivateGetUserConsentFunction() =

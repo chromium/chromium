@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/notifications/echo_dialog_view.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -32,11 +33,10 @@ namespace {
 
 // Gets the Oobe timestamp on a sequence that allows file-access.
 std::string GetOobeTimestampBackground() {
-  base::File::Info file_info;
-  return base::GetFileInfo(base::FilePath("/home/chronos/.oobe_completed"),
-                           &file_info)
-             ? base::UnlocalizedTimeFormatWithPattern(
-                   file_info.creation_time, "y-M-d", icu::TimeZone::getGMT())
+  base::Time creation_time = ash::StartupUtils::GetTimeOfOobeFlagFileCreation();
+  return !creation_time.is_null()
+             ? base::UnlocalizedTimeFormatWithPattern(creation_time, "y-M-d",
+                                                      icu::TimeZone::getGMT())
              : std::string();
 }
 

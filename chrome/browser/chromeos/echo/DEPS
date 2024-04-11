@@ -1,0 +1,4 @@
+include_rules = [
+  # Guarded by IS_CHROMEOS_ASH.
+  "+chrome/browser/ash/crosapi",
+]

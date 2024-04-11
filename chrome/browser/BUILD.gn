@@ -5847,6 +5847,8 @@ static_library("browser") {
       "certificate_provider/sign_requests.h",
       "certificate_provider/thread_safe_certificate_map.cc",
       "certificate_provider/thread_safe_certificate_map.h",
+      "chromeos/echo/echo_util.cc",
+      "chromeos/echo/echo_util.h",
       "chromeos/kcer/kcer_factory.cc",
       "chromeos/kcer/kcer_factory.h",
       "device_notifications/device_pinned_notification_renderer.cc",

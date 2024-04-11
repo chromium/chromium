@@ -59,7 +59,9 @@ bool IsGoogleInternalAccount() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-std::vector<ExternalInstallOptions> GetChromeBrandedApps(Profile& profile) {
+std::vector<ExternalInstallOptions> GetChromeBrandedApps(
+    Profile& profile,
+    const std::optional<DeviceInfo>& device_info) {
   bool is_standalone_tabbed =
       IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(profile);
   // TODO(crbug.com/1104692): Replace these C++ configs with JSON configs like
@@ -82,7 +84,7 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(Profile& profile) {
 #if BUILDFLAG(IS_CHROMEOS)
       GetConfigForAppMall(),
       GetConfigForCalculator(),
-      GetConfigForContainer(),
+      GetConfigForContainer(), // TODO(http://b/331212317): Pass `device_info`.
       GetConfigForGoogleCalendar(),
       GetConfigForGoogleChat(),
       GetConfigForGoogleMeet(),
@@ -94,12 +96,26 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(Profile& profile) {
 
 }  // namespace
 
+DeviceInfo::DeviceInfo() = default;
+
+DeviceInfo::DeviceInfo(const DeviceInfo&) = default;
+
+DeviceInfo::DeviceInfo(DeviceInfo&&) = default;
+
+DeviceInfo& DeviceInfo::operator=(const DeviceInfo&) = default;
+
+DeviceInfo& DeviceInfo::operator=(DeviceInfo&&) = default;
+
+DeviceInfo::~DeviceInfo() = default;
+
 bool PreinstalledWebAppsDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kDisableDefaultApps);
 }
 
-std::vector<ExternalInstallOptions> GetPreinstalledWebApps(Profile& profile) {
+std::vector<ExternalInstallOptions> GetPreinstalledWebApps(
+    Profile& profile,
+    const std::optional<DeviceInfo>& device_info) {
   if (g_preinstalled_app_data_for_testing)
     return *g_preinstalled_app_data_for_testing;
 
@@ -110,13 +126,14 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps(Profile& profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug/1346167): replace with config in admin console.
   if (IsGoogleInternalAccount()) {
-    std::vector<ExternalInstallOptions> apps = GetChromeBrandedApps(profile);
+    std::vector<ExternalInstallOptions> apps =
+        GetChromeBrandedApps(profile, device_info);
     apps.push_back(GetConfigForMessagesDogfood());
     return apps;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  return GetChromeBrandedApps(profile);
+  return GetChromeBrandedApps(profile, device_info);
 #else
   return {};
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

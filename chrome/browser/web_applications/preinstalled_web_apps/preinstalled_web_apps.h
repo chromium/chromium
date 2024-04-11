@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_PREINSTALLED_WEB_APPS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_PREINSTALLED_WEB_APPS_H_
 
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -15,10 +17,30 @@ class Profile;
 
 namespace web_app {
 
+// TODO(http://b/333583704): Revert CL which added this struct after migration.
+struct DeviceInfo {
+  DeviceInfo();
+  DeviceInfo(const DeviceInfo&);
+  DeviceInfo(DeviceInfo&&);
+  DeviceInfo& operator=(const DeviceInfo&);
+  DeviceInfo& operator=(DeviceInfo&&);
+  ~DeviceInfo();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // The OOBE timestamp corresponding to the time of device registration. If
+  // present, the timestamp is a "y-M-d" formatted GMT date string. If absent,
+  // the timestamp is unavailable. This is known to occur during first boot due
+  // to a race condition between device registration and preinstallation.
+  std::optional<std::string> oobe_timestamp;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+};
+
 bool PreinstalledWebAppsDisabled();
 
 // Returns the list of web apps that should be pre-installed on new profiles.
-std::vector<ExternalInstallOptions> GetPreinstalledWebApps(Profile& profile);
+std::vector<ExternalInstallOptions> GetPreinstalledWebApps(
+    Profile& profile,
+    const std::optional<DeviceInfo>& device_info = std::nullopt);
 
 // A subset of ExternalInstallOptions pertaining to web app migration.
 struct PreinstalledWebAppMigration {

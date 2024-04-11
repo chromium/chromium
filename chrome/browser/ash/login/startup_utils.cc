@@ -208,12 +208,20 @@ void StartupUtils::SaveScreenAfterConsumerUpdate(const std::string& screen) {
 }
 
 // static
-base::TimeDelta StartupUtils::GetTimeSinceOobeFlagFileCreation() {
+base::Time StartupUtils::GetTimeOfOobeFlagFileCreation() {
   const base::FilePath oobe_complete_flag_path = GetOobeCompleteFlagPath();
   base::File::Info file_info;
-  if (base::GetFileInfo(oobe_complete_flag_path, &file_info))
-    return base::Time::Now() - file_info.creation_time;
-  return base::TimeDelta();
+  if (base::GetFileInfo(oobe_complete_flag_path, &file_info)) {
+    return file_info.creation_time;
+  }
+  return base::Time();
+}
+
+// static
+base::TimeDelta StartupUtils::GetTimeSinceOobeFlagFileCreation() {
+  base::Time creation_time = GetTimeOfOobeFlagFileCreation();
+  return !creation_time.is_null() ? base::Time::Now() - creation_time
+                                  : base::TimeDelta();
 }
 
 // static

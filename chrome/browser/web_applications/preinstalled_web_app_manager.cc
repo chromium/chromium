@@ -33,6 +33,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 // TODO(crbug.com/1402145): Remove or at least isolate circular dependencies on
 // app service by moving this code to //c/b/web_applications/adjustments, or
@@ -73,6 +74,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+// TODO(http://b/333583704): Revert CL which added this include after migration.
+#include "chrome/browser/chromeos/echo/echo_util.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_window_experiment_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -752,10 +755,42 @@ void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
     return;
   }
 
-  LoadConfigs(base::BindOnce(
-      &PreinstalledWebAppManager::ParseConfigs, weak_ptr_factory_.GetWeakPtr(),
-      base::BindOnce(&PreinstalledWebAppManager::PostProcessConfigs,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  RunChainedCallbacks(
+      base::BindOnce(&PreinstalledWebAppManager::LoadDeviceInfo, weak_ptr),
+      base::BindOnce(&PreinstalledWebAppManager::CacheDeviceInfo, weak_ptr),
+      base::BindOnce(&PreinstalledWebAppManager::LoadConfigs, weak_ptr),
+      base::BindOnce(&PreinstalledWebAppManager::ParseConfigs, weak_ptr),
+      base::BindOnce(&PreinstalledWebAppManager::PostProcessConfigs, weak_ptr),
+      std::move(callback));
+}
+
+// TODO(http://b/333583704): Revert CL which added this method after migration.
+void PreinstalledWebAppManager::LoadDeviceInfo(ConsumeDeviceInfo callback) {
+#if BUILDFLAG(IS_CHROMEOS)
+  chromeos::echo_util::GetOobeTimestamp(base::BindOnce(
+      [](ConsumeDeviceInfo callback,
+         base::expected<std::string, std::string> oobe_timestamp_or_error) {
+        DeviceInfo device_info;
+        if (oobe_timestamp_or_error.has_value() &&
+            oobe_timestamp_or_error.value().length()) {
+          device_info.oobe_timestamp =
+              std::move(oobe_timestamp_or_error.value());
+        }
+        std::move(callback).Run(std::move(device_info));
+      },
+      std::move(callback)));
+#else  // BUILDFLAG(IS_CHROMEOS)
+  std::move(callback).Run(DeviceInfo());
+#endif
+}
+
+// TODO(http://b/333583704): Revert CL which added this method after migration.
+void PreinstalledWebAppManager::CacheDeviceInfo(
+    CacheDeviceInfoCallback callback,
+    DeviceInfo device_info) {
+  device_info_ = std::move(device_info);
+  std::move(callback).Run();
 }
 
 void PreinstalledWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
@@ -814,7 +849,8 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     ConsumeInstallOptions callback,
     ParsedConfigs parsed_configs) {
   // Add hard coded configs.
-  for (ExternalInstallOptions& options : GetPreinstalledWebApps(*profile_)) {
+  for (ExternalInstallOptions& options :
+       GetPreinstalledWebApps(*profile_, device_info_)) {
     parsed_configs.options_list.push_back(std::move(options));
   }
 
