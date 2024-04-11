@@ -28,6 +28,10 @@ void FakeMahiWebContentsManager::RequestContentFromPage(
   client_->GetContent(focused_web_content_state().page_id, std::move(callback));
 }
 
+bool FakeMahiWebContentsManager::GetPrefValue() const {
+  return pref_state_;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void FakeMahiWebContentsManager::SetMahiBrowserDelegateForTesting(
     crosapi::mojom::MahiBrowserDelegate* delegate) {

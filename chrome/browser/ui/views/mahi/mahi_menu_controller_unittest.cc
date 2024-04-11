@@ -46,6 +46,8 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
     // Sets the focused page's distillability to true so that it does not block
     // the menu widget's display.
     ChangePageDistillability(true);
+    // Sets the default pref is true for testing.
+    ChangePrefValue(true);
   }
 
   MahiMenuControllerTest(const MahiMenuControllerTest&) = delete;
@@ -58,6 +60,10 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
   void ChangePageDistillability(bool value) {
     fake_mahi_web_contents_manager_.set_focused_web_content_is_distillable(
         value);
+  }
+
+  void ChangePrefValue(bool value) {
+    fake_mahi_web_contents_manager_.SetPrefForTesting(value);
   }
 
  protected:
@@ -150,6 +156,43 @@ TEST_F(MahiMenuControllerTest, TextSelected) {
   menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
   EXPECT_FALSE(read_write_cards_ui_controller_.widget_for_test());
   EXPECT_FALSE(read_write_cards_ui_controller_.GetMahiViewForTest());
+}
+
+// Tests the behavior of the controller when pref state changed.
+TEST_F(MahiMenuControllerTest, PrefChange) {
+  EXPECT_FALSE(menu_controller()->menu_widget_for_test());
+
+  // Menu widget should show when text is displayed as the default is that Mahi
+  // is enabled.
+  menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                     /*selected_text=*/"",
+                                     /*surrounding_text=*/"");
+
+  EXPECT_TRUE(menu_controller()->menu_widget_for_test());
+  EXPECT_TRUE(menu_controller()->menu_widget_for_test()->IsVisible());
+  EXPECT_TRUE(views::IsViewClass<MahiMenuView>(
+      menu_controller()->menu_widget_for_test()->GetContentsView()));
+
+  // Menu widget should hide when dismissed.
+  menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
+  EXPECT_FALSE(menu_controller()->menu_widget_for_test());
+
+  // If pref value is false, then menu widget should not be triggered.
+  ChangePrefValue(false);
+  menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                     /*selected_text=*/"",
+                                     /*surrounding_text=*/"");
+  EXPECT_FALSE(menu_controller()->menu_widget_for_test());
+
+  // Set pref to true should show the widget again.
+  ChangePrefValue(true);
+  menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                     /*selected_text=*/"",
+                                     /*surrounding_text=*/"");
+  EXPECT_TRUE(menu_controller()->menu_widget_for_test());
+  EXPECT_TRUE(menu_controller()->menu_widget_for_test()->IsVisible());
+  EXPECT_TRUE(views::IsViewClass<MahiMenuView>(
+      menu_controller()->menu_widget_for_test()->GetContentsView()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

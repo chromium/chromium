@@ -45,6 +45,9 @@ class FakeMahiWebContentsManager : public MahiWebContentsManager {
   void RequestContentFromPage(const base::UnguessableToken& page_id,
                               GetContentCallback callback);
 
+  bool GetPrefValue() const override;
+  void SetPrefForTesting(bool pref_state) { pref_state_ = pref_state; }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetMahiBrowserDelegateForTesting(
       crosapi::mojom::MahiBrowserDelegate* delegate);
@@ -52,6 +55,8 @@ class FakeMahiWebContentsManager : public MahiWebContentsManager {
   void BindMahiBrowserDelegateForTesting(
       mojo::PendingRemote<crosapi::mojom::MahiBrowserDelegate> pending_remote);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+ private:
+  bool pref_state_ = true;
 };
 
 }  // namespace mahi

@@ -35,6 +35,7 @@ class PrefsAshObserver {
 
   void OnDnsOverHttpsModeChanged(base::Value value);
   void OnDnsOverHttpsEffectiveTemplatesChromeOSChanged(base::Value value);
+  void OnMahiEnabledChanged(base::Value value);
   // TODO(acostinas, b/328566515) Remove monitoring of the
   // kDnsOverHttpsTemplates after version 126.
   void OnDeprecatedDnsOverHttpsTemplatesChanged(base::Value value);
@@ -67,6 +68,7 @@ class PrefsAshObserver {
   raw_ptr<PrefService> local_state_{nullptr};
   std::unique_ptr<CrosapiPrefObserver> doh_mode_observer_;
   std::unique_ptr<CrosapiPrefObserver> doh_templates_observer_;
+  std::unique_ptr<CrosapiPrefObserver> mahi_prefs_observer_;
   // Tracks whether the DoH template URI is set via the pref
   // kDnsOverHttpsTemplates (which is deprecated in Lacros) or via the new pref,
   // kDnsOverHttpsEffectiveTemplatesChromeOS.

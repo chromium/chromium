@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
@@ -19,7 +20,9 @@
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -122,6 +125,20 @@ bool MahiWebContentsManager::IsFocusedPageDistillable() {
     return false;
   }
   return focused_web_content_state_.is_distillable.value();
+}
+
+bool MahiWebContentsManager::GetPrefValue() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
+  return profile->GetPrefs()->GetBoolean(ash::prefs::kMahiEnabled);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return mahi_pref_lacros_;
+#endif
 }
 
 // static

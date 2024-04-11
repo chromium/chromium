@@ -4,9 +4,13 @@
 
 #include "chrome/browser/lacros/prefs_ash_observer.h"
 
+#include <memory>
+
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
@@ -34,6 +38,12 @@ void PrefsAshObserver::Init() {
       base::BindRepeating(
           &PrefsAshObserver::OnDnsOverHttpsEffectiveTemplatesChromeOSChanged,
           base::Unretained(this)));
+
+  mahi_prefs_observer_ = std::make_unique<CrosapiPrefObserver>(
+      crosapi::mojom::PrefPath::kMahiEnabled,
+      base::BindRepeating(&PrefsAshObserver::OnMahiEnabledChanged,
+                          base::Unretained(this)));
+
   // TODO(acostinas, b/328566515) Remove `deprecated_doh_templates_observer_` in
   // version 126. In the meantime, monitor the pref kDnsOverHttpsTemplates
   // (which is deprecated in Lacros) to support older version of Ash.
@@ -103,6 +113,15 @@ void PrefsAshObserver::OnDnsOverHttpsEffectiveTemplatesChromeOSChanged(
   }
   local_state_->SetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
                           value.GetString());
+}
+
+void PrefsAshObserver::OnMahiEnabledChanged(base::Value value) {
+  if (!value.is_bool()) {
+    LOG(WARNING) << "Unexpected value type: "
+                 << base::Value::GetTypeName(value.type());
+    return;
+  }
+  mahi::MahiWebContentsManager::Get()->set_mahi_pref_lacros(value.GetBool());
 }
 
 void PrefsAshObserver::OnDeprecatedDnsOverHttpsTemplatesChanged(

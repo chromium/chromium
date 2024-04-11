@@ -67,6 +67,10 @@ class MahiWebContentsManager {
   // distillability has not been checked yet.
   bool IsFocusedPageDistillable();
 
+  // Virtual so that can be overridden in test.
+  virtual bool GetPrefValue() const;
+  void set_mahi_pref_lacros(bool value) { mahi_pref_lacros_ = value; }
+
  private:
   friend base::NoDestructor<MahiWebContentsManager>;
   // Friends to access some test-only functions.
@@ -107,6 +111,8 @@ class MahiWebContentsManager {
   std::unique_ptr<MahiContentExtractionDelegate> content_extraction_delegate_;
   std::unique_ptr<MahiBrowserClientImpl> client_;
   bool is_initialized_ = false;
+
+  bool mahi_pref_lacros_ = false;
 
   // The state of the web content which get focus in the browser.
   WebContentState focused_web_content_state_{/*url=*/GURL(), /*title=*/u""};

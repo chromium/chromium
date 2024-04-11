@@ -133,6 +133,8 @@ enum PrefPath {
   [MinVersion=17] kDnsOverHttpsEffectiveTemplatesChromeOS = 45,
   // M125: prefs::kAccessibilityReducedAnimationsEnabled
   [MinVersion=18] kAccessibilityReducedAnimationsEnabled = 46,
+  // M125: ash::prefs::kMahiEnabled
+  [MinVersion=19] kMahiEnabled = 47,
 };
 
 // Information about who or what is controlling a particular pref. This is used
