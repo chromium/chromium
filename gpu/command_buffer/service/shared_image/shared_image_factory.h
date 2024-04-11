@@ -27,10 +27,6 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
 
-namespace viz {
-class VulkanContextProvider;
-}  // namespace viz
-
 namespace gpu {
 class MemoryTracker;
 class SharedContextState;
@@ -135,10 +131,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   // |SharedImageManager::GetUsageForMailbox|.
   uint32_t GetUsageForMailbox(const Mailbox& mailbox);
 
-  SharedContextState* GetSharedContextState() const {
-    return shared_context_state_;
-  }
-
 #if BUILDFLAG(IS_WIN)
   bool CopyToGpuMemoryBuffer(const Mailbox& mailbox);
 #endif
@@ -174,16 +166,15 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                                gfx::BufferUsage usage);
 
   raw_ptr<SharedImageManager> shared_image_manager_;
-  raw_ptr<SharedContextState> shared_context_state_;
+  const scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<MemoryTypeTracker> memory_tracker_;
 
   // This is used if the factory is created on display compositor to check for
   // sharing between threads.
   const bool is_for_display_compositor_;
 
-  // This is |shared_context_state_|'s context type. Some tests leave
-  // |shared_context_state_| as nullptr, in which case this is set to a default
-  /// of kGL.
+  // This is |context_state_|'s GrContextType or GrContextType::kNone if there
+  // is no shared context.
   const GrContextType gr_context_type_;
 
   // The set of SharedImages which have been created (and are being kept alive)
@@ -199,10 +190,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   // Used for creating swap chains
   raw_ptr<D3DImageBackingFactory> d3d_backing_factory_ = nullptr;
 #endif
-
-#if BUILDFLAG(IS_FUCHSIA)
-  viz::VulkanContextProvider* vulkan_context_provider_;
-#endif  // BUILDFLAG(IS_FUCHSIA)
 
   gfx::GpuExtraInfo gpu_extra_info_;
   gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;

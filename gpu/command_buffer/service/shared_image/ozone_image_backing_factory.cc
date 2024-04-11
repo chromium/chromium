@@ -74,10 +74,10 @@ constexpr uint32_t kSupportedUsage =
 }  // namespace
 
 OzoneImageBackingFactory::OzoneImageBackingFactory(
-    SharedContextState* shared_context_state,
+    scoped_refptr<SharedContextState> shared_context_state,
     const GpuDriverBugWorkarounds& workarounds)
     : SharedImageBackingFactory(kSupportedUsage),
-      shared_context_state_(shared_context_state),
+      shared_context_state_(std::move(shared_context_state)),
       workarounds_(workarounds) {}
 
 OzoneImageBackingFactory::~OzoneImageBackingFactory() = default;
@@ -124,7 +124,7 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
   return std::make_unique<OzoneImageBacking>(
       mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
       surface_origin, alpha_type, usage, std::move(debug_label),
-      shared_context_state_.get(), std::move(pixmap), workarounds_,
+      shared_context_state_, std::move(pixmap), workarounds_,
       std::move(buffer_usage));
 }
 
@@ -209,7 +209,7 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
       GetPlaneBufferFormat(plane, buffer_format));
   auto backing = std::make_unique<OzoneImageBacking>(
       mailbox, plane_format, plane, plane_size, color_space, surface_origin,
-      alpha_type, usage, std::move(debug_label), shared_context_state_.get(),
+      alpha_type, usage, std::move(debug_label), shared_context_state_,
       std::move(pixmap), workarounds_);
   backing->SetCleared();
 
@@ -241,7 +241,7 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   auto backing = std::make_unique<OzoneImageBacking>(
       mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
       surface_origin, alpha_type, usage, std::move(debug_label),
-      shared_context_state_.get(), std::move(pixmap), workarounds_);
+      shared_context_state_, std::move(pixmap), workarounds_);
   backing->SetCleared();
 
   return backing;

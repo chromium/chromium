@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -40,10 +41,25 @@ class SharedImageFactoryTest : public testing::Test {
     SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
 #endif  // BUILDFLAG(IS_MAC)
 
+    context_state_ = base::MakeRefCounted<SharedContextState>(
+        base::MakeRefCounted<gl::GLShareGroup>(), surface_, context_,
+        /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
+        GrContextType::kGL);
+
     GpuPreferences preferences;
     GpuDriverBugWorkarounds workarounds;
+
+    bool initialize_gl = context_state_->InitializeGL(
+        preferences, base::MakeRefCounted<gles2::FeatureInfo>(
+                         workarounds, GpuFeatureInfo()));
+    ASSERT_TRUE(initialize_gl);
+
+    bool initialize_skia =
+        context_state_->InitializeSkia(preferences, workarounds);
+    ASSERT_TRUE(initialize_skia);
+
     factory_ = std::make_unique<SharedImageFactory>(
-        preferences, workarounds, GpuFeatureInfo(), nullptr,
+        preferences, workarounds, GpuFeatureInfo(), context_state_.get(),
         &shared_image_manager_, nullptr,
         /*is_for_display_compositor=*/false);
   }
@@ -56,6 +72,7 @@ class SharedImageFactoryTest : public testing::Test {
  protected:
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
+  scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<SharedImageFactory> factory_;
   SharedImageManager shared_image_manager_;
 };
@@ -90,7 +107,7 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
   GpuPreferences preferences;
   GpuDriverBugWorkarounds workarounds;
   auto other_factory = std::make_unique<SharedImageFactory>(
-      preferences, workarounds, GpuFeatureInfo(), nullptr,
+      preferences, workarounds, GpuFeatureInfo(), context_state_.get(),
       &shared_image_manager_, nullptr,
       /*is_for_display_compositor=*/false);
   EXPECT_FALSE(other_factory->CreateSharedImage(

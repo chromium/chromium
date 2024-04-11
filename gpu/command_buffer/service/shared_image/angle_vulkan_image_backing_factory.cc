@@ -37,13 +37,13 @@ constexpr uint32_t kSupportedUsage =
 AngleVulkanImageBackingFactory::AngleVulkanImageBackingFactory(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
-    SharedContextState* context_state)
+    scoped_refptr<SharedContextState> context_state)
     : GLCommonImageBackingFactory(kSupportedUsage,
                                   gpu_preferences,
                                   workarounds,
                                   context_state->feature_info(),
                                   context_state->progress_reporter()),
-      context_state_(context_state) {
+      context_state_(std::move(context_state)) {
   DCHECK(context_state_->GrContextIsVulkan());
   DCHECK(gl::GLSurfaceEGL::GetGLDisplayEGL()->ext->b_EGL_ANGLE_vulkan_image);
 }
@@ -88,8 +88,9 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
       context_state_, mailbox, format, size, color_space, surface_origin,
       alpha_type, usage, std::move(debug_label));
 
-  if (!backing->Initialize(data))
+  if (!backing->Initialize(data)) {
     return nullptr;
+  }
 
   return backing;
 }

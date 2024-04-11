@@ -215,7 +215,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
 };
 
 AngleVulkanImageBacking::AngleVulkanImageBacking(
-    SharedContextState* context_state,
+    scoped_refptr<SharedContextState> context_state,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
     const gfx::Size& size,
@@ -234,7 +234,7 @@ AngleVulkanImageBacking::AngleVulkanImageBacking(
                                       std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       /*is_thread_safe=*/false),
-      context_state_(context_state) {}
+      context_state_(std::move(context_state)) {}
 
 AngleVulkanImageBacking::~AngleVulkanImageBacking() {
   DCHECK(!is_gl_write_in_process_);
@@ -409,7 +409,7 @@ AngleVulkanImageBacking::ProduceSkiaGanesh(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   if (context_state->GrContextIsVulkan()) {
-    DCHECK_EQ(context_state_, context_state.get());
+    DCHECK_EQ(context_state_, context_state);
     return std::make_unique<SkiaAngleVulkanImageRepresentation>(
         context_state->gr_context(), manager, this, tracker);
   }

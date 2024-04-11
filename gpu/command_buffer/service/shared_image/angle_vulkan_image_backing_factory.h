@@ -15,9 +15,10 @@ class SharedContextState;
 class GPU_GLES2_EXPORT AngleVulkanImageBackingFactory
     : public GLCommonImageBackingFactory {
  public:
-  AngleVulkanImageBackingFactory(const GpuPreferences& gpu_preferences,
-                                 const GpuDriverBugWorkarounds& workarounds,
-                                 SharedContextState* context_state);
+  AngleVulkanImageBackingFactory(
+      const GpuPreferences& gpu_preferences,
+      const GpuDriverBugWorkarounds& workarounds,
+      scoped_refptr<SharedContextState> context_state);
   ~AngleVulkanImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation:
@@ -78,7 +79,7 @@ class GPU_GLES2_EXPORT AngleVulkanImageBackingFactory
   bool CanUseAngleVulkanImageBacking(uint32_t usage,
                                      gfx::GpuMemoryBufferType gmb_type) const;
 
-  raw_ptr<SharedContextState> context_state_;
+  const scoped_refptr<SharedContextState> context_state_;
 };
 
 }  // namespace gpu

@@ -108,7 +108,7 @@ class GPU_GLES2_EXPORT ExternalVkImageBackingFactory
 
   bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type);
 
-  scoped_refptr<SharedContextState> context_state_;
+  const scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<VulkanCommandPool> command_pool_;
 
   // Map VkImageUsageFlags flags based on VkFormat for VK_IMAGE_TILING_OPTIMAL.

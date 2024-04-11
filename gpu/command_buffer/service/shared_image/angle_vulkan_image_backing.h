@@ -20,7 +20,7 @@ class TexturePassthrough;
 
 class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking {
  public:
-  AngleVulkanImageBacking(SharedContextState* context_state,
+  AngleVulkanImageBacking(scoped_refptr<SharedContextState> context_state,
                           const Mailbox& mailbox,
                           viz::SharedImageFormat format,
                           const gfx::Size& size,
@@ -77,7 +77,7 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking {
 
   GrDirectContext* gr_context() { return context_state_->gr_context(); }
 
-  const raw_ptr<SharedContextState> context_state_;
+  const scoped_refptr<SharedContextState> context_state_;
 
   // In general there will be the same number of Vulkan and GL textures.
   // For multi-planar VkFormats there are no equivalent multi-planar GL

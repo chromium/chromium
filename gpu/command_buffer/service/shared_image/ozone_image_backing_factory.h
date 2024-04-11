@@ -24,8 +24,9 @@ class SharedContextState;
 class GPU_GLES2_EXPORT OzoneImageBackingFactory
     : public SharedImageBackingFactory {
  public:
-  explicit OzoneImageBackingFactory(SharedContextState* shared_context_state,
-                                    const GpuDriverBugWorkarounds& workarounds);
+  explicit OzoneImageBackingFactory(
+      scoped_refptr<SharedContextState> shared_context_state,
+      const GpuDriverBugWorkarounds& workarounds);
 
   ~OzoneImageBackingFactory() override;
 
@@ -106,7 +107,7 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
   bool CanImportNativePixmapToWebGPU();
   bool CanWebGPUSynchronizeGpuFence();
 
-  const raw_ptr<SharedContextState> shared_context_state_;
+  const scoped_refptr<SharedContextState> shared_context_state_;
   const GpuDriverBugWorkarounds workarounds_;
 
   // This method optionally takes BufferUsage as a parameter.

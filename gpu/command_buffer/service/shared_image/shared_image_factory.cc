@@ -196,11 +196,11 @@ SharedImageFactory::SharedImageFactory(
     MemoryTracker* memory_tracker,
     bool is_for_display_compositor)
     : shared_image_manager_(shared_image_manager),
-      shared_context_state_(context_state),
+      context_state_(context_state),
       memory_tracker_(std::make_unique<MemoryTypeTracker>(memory_tracker)),
       is_for_display_compositor_(is_for_display_compositor),
-      gr_context_type_(context_state ? context_state->gr_context_type()
-                                     : GrContextType::kGL),
+      gr_context_type_(context_state_ ? context_state_->gr_context_type()
+                                      : GrContextType::kNone),
       gpu_preferences_(gpu_preferences),
 #if BUILDFLAG(IS_MAC)
       macos_specific_texture_target_(
@@ -244,10 +244,9 @@ SharedImageFactory::SharedImageFactory(
     return;
   }
 
-  scoped_refptr<gles2::FeatureInfo> feature_info;
-  if (shared_context_state_) {
-    feature_info = shared_context_state_->feature_info();
-  }
+  CHECK(context_state_);
+  scoped_refptr<gles2::FeatureInfo> feature_info =
+      context_state_->feature_info();
 
   if (!feature_info) {
     // For some unit tests like SharedImageFactoryTest, |shared_context_state_|
@@ -259,39 +258,37 @@ SharedImageFactory::SharedImageFactory(
                              use_passthrough, gles2::DisallowedFeatures());
   }
 
-  if (context_state) {
+  {
     auto wrapped_sk_image_factory =
-        std::make_unique<WrappedSkImageBackingFactory>(context_state);
+        std::make_unique<WrappedSkImageBackingFactory>(context_state_);
     factories_.push_back(std::move(wrapped_sk_image_factory));
   }
 
-  if (features::IsUsingRawDraw() && context_state) {
+  if (features::IsUsingRawDraw()) {
     auto factory = std::make_unique<RawDrawImageBackingFactory>();
     factories_.push_back(std::move(factory));
   }
 
   bool use_gl =
-      gl::GetGLImplementation() != gl::kGLImplementationNone &&
-      (!is_for_display_compositor_ || gr_context_type_ == GrContextType::kGL);
+      !is_for_display_compositor_ || gr_context_type_ == GrContextType::kGL;
   if (use_gl) {
     auto gl_texture_backing_factory =
         std::make_unique<GLTextureImageBackingFactory>(
             gpu_preferences, workarounds, feature_info.get(),
-            shared_context_state_ ? shared_context_state_->progress_reporter()
-                                  : nullptr);
+            context_state_->progress_reporter());
     factories_.push_back(std::move(gl_texture_backing_factory));
   }
 
 #if BUILDFLAG(IS_WIN)
   if (gl::DirectCompositionSupported()) {
-    factories_.push_back(std::make_unique<DCompImageBackingFactory>(
-        shared_context_state_.get()));
+    factories_.push_back(
+        std::make_unique<DCompImageBackingFactory>(context_state_));
   }
-  if (D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences)) {
+  if (D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences_)) {
     auto d3d_factory = std::make_unique<D3DImageBackingFactory>(
-        shared_context_state_->GetD3D11Device(),
+        context_state_->GetD3D11Device(),
         shared_image_manager_->dxgi_shared_handle_manager(),
-        shared_context_state_->GetGLFormatCaps());
+        context_state_->GetGLFormatCaps());
     d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));
   }
@@ -303,14 +300,14 @@ SharedImageFactory::SharedImageFactory(
   if ((gr_context_type_ == GrContextType::kVulkan) &&
       (base::FeatureList::IsEnabled(features::kVulkanFromANGLE))) {
     auto factory = std::make_unique<AngleVulkanImageBackingFactory>(
-        gpu_preferences, workarounds, context_state);
+        gpu_preferences_, workarounds_, context_state_);
     factories_.push_back(std::move(factory));
   }
 
 #if BUILDFLAG(IS_WIN)
   if (gr_context_type_ == GrContextType::kVulkan) {
     auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageBackingFactory>(context_state);
+        std::make_unique<ExternalVkImageBackingFactory>(context_state_);
     factories_.push_back(std::move(external_vk_image_factory));
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -326,7 +323,7 @@ SharedImageFactory::SharedImageFactory(
       egl_display->ext->b_EGL_KHR_fence_sync &&
       gl::g_current_gl_driver->ext.b_GL_OES_EGL_image) {
     auto egl_backing_factory = std::make_unique<EGLImageBackingFactory>(
-        gpu_preferences, workarounds, feature_info.get());
+        gpu_preferences_, workarounds_, feature_info.get());
     factories_.push_back(std::move(egl_backing_factory));
   }
 #endif  // defined(USE_EGL)
@@ -334,7 +331,7 @@ SharedImageFactory::SharedImageFactory(
 #if BUILDFLAG(IS_ANDROID)
   bool is_ahb_supported = true;
   if (gr_context_type_ == GrContextType::kVulkan) {
-    const auto& enabled_extensions = context_state->vk_context_provider()
+    const auto& enabled_extensions = context_state_->vk_context_provider()
                                          ->GetDeviceQueue()
                                          ->enabled_extensions();
     is_ahb_supported = gfx::HasExtension(
@@ -343,13 +340,13 @@ SharedImageFactory::SharedImageFactory(
   }
   if (is_ahb_supported) {
     auto ahb_factory = std::make_unique<AHardwareBufferImageBackingFactory>(
-        feature_info.get(), gpu_preferences);
+        feature_info.get(), gpu_preferences_);
     factories_.push_back(std::move(ahb_factory));
   }
   if (gr_context_type_ == GrContextType::kVulkan &&
       !base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
     auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageBackingFactory>(context_state);
+        std::make_unique<ExternalVkImageBackingFactory>(context_state_);
     factories_.push_back(std::move(external_vk_image_factory));
   }
 #elif BUILDFLAG(IS_OZONE)
@@ -357,36 +354,25 @@ SharedImageFactory::SharedImageFactory(
   if (ui::OzonePlatform::GetInstance()
           ->GetPlatformRuntimeProperties()
           .supports_native_pixmaps) {
-    auto ozone_factory =
-        std::make_unique<OzoneImageBackingFactory>(context_state, workarounds);
+    auto ozone_factory = std::make_unique<OzoneImageBackingFactory>(
+        context_state_, workarounds_);
     factories_.push_back(std::move(ozone_factory));
   }
 #if BUILDFLAG(ENABLE_VULKAN)
   if (gr_context_type_ == GrContextType::kVulkan) {
     auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageBackingFactory>(context_state);
+        std::make_unique<ExternalVkImageBackingFactory>(context_state_);
     factories_.push_back(std::move(external_vk_image_factory));
-#if BUILDFLAG(IS_FUCHSIA)
-    vulkan_context_provider_ = context_state->vk_context_provider();
-#endif  // BUILDFLAG(IS_FUCHSIA)
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_APPLE)
   {
-    // For some unit tests like SharedImageFactoryTest, |shared_context_state_|
-    // could be nullptr.
-    int32_t max_texture_size = shared_context_state_
-                                   ? shared_context_state_->GetMaxTextureSize()
-                                   : 8192;
-    auto* progress_reporter = shared_context_state_
-                                  ? shared_context_state_->progress_reporter()
-                                  : nullptr;
     auto iosurface_backing_factory =
         std::make_unique<IOSurfaceImageBackingFactory>(
-            gpu_preferences.gr_context_type, max_texture_size,
-            feature_info.get(), progress_reporter,
+            gr_context_type_, context_state_->GetMaxTextureSize(),
+            feature_info.get(), context_state_->progress_reporter(),
 #if BUILDFLAG(IS_MAC)
             macos_specific_texture_target_);
 #else
@@ -827,10 +813,11 @@ void SharedImageFactory::RegisterSysmemBufferCollection(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
+  auto* vulkan_context_provider = context_state_->vk_context_provider();
   VkDevice device =
-      vulkan_context_provider_->GetDeviceQueue()->GetVulkanDevice();
+      vulkan_context_provider->GetDeviceQueue()->GetVulkanDevice();
   DCHECK(device != VK_NULL_HANDLE);
-  vulkan_context_provider_->GetVulkanImplementation()
+  vulkan_context_provider->GetVulkanImplementation()
       ->RegisterSysmemBufferCollection(
           device, std::move(service_handle), std::move(sysmem_token), format,
           usage, gfx::Size(), 0, register_with_image_pipe);
@@ -887,18 +874,17 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
       workarounds_.r8_egl_images_broken;
   shared_image_caps.disable_webgpu_shared_images =
       workarounds_.disable_webgpu_shared_images;
-  if (!shared_context_state_) {
+  if (!context_state_) {
     shared_image_caps.is_r16f_supported = false;
   } else if (is_skia_graphite || gr_context_type_ == GrContextType::kVulkan) {
     // R16F is always supported with Dawn and Vulkan contexts.
     shared_image_caps.is_r16f_supported = true;
   } else if (gr_context_type_ == GrContextType::kGL) {
-    CHECK(shared_context_state_->gr_context());
+    CHECK(context_state_->gr_context());
     // With Skia GL, R16F is supported only with GLES 3.0 and above.
     shared_image_caps.is_r16f_supported =
-        shared_context_state_->feature_info()->gl_version_info().IsAtLeastGLES(
-            3, 0) &&
-        shared_context_state_->gr_context()->colorTypeSupportedAsImage(
+        context_state_->feature_info()->gl_version_info().IsAtLeastGLES(3, 0) &&
+        context_state_->gr_context()->colorTypeSupportedAsImage(
             kA16_float_SkColorType);
   }
 
