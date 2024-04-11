@@ -191,11 +191,11 @@
           "group": "tryserver.chromium.dawn"
         },
         {
-          "builder": "dawn-try-win10-x86-rel",
+          "builder": "dawn-try-win-x86-nvidia-exp",
           "group": "tryserver.chromium.dawn"
         },
         {
-          "builder": "dawn-try-xin-x86-nvidia-exp",
+          "builder": "dawn-try-win10-x86-rel",
           "group": "tryserver.chromium.dawn"
         }
       ]

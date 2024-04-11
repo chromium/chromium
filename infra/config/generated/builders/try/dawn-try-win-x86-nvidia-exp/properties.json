@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/dawn-try-xin-x86-nvidia-exp/gn-args.json"
+        "infra/config/generated/builders/try/dawn-try-win-x86-nvidia-exp/gn-args.json"
       ],
       "builder_db": {
         "entries": [

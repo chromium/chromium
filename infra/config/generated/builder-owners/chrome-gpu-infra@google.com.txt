@@ -160,10 +160,10 @@ try/dawn-try-mac-intel-exp
 try/dawn-try-win-x64-intel-exp
 try/dawn-try-win-x64-nvidia-exp
 try/dawn-try-win-x86-intel-exp
+try/dawn-try-win-x86-nvidia-exp
 try/dawn-try-win10-x64-intel-asan
 try/dawn-try-win10-x64-nvidia-asan
 try/dawn-try-win10-x86-rel
-try/dawn-try-xin-x86-nvidia-exp
 try/dawn-win10-x64-deps-rel
 try/dawn-win10-x86-deps-rel
 try/gpu-fyi-try-android-m-nexus-5x-64

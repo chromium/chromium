@@ -511,7 +511,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "dawn-try-xin-x86-nvidia-exp",
+    name = "dawn-try-win-x86-nvidia-exp",
     description_html = "Runs ToT Dawn tests on experimental Win/NVIDIA/x86 configs",
     mirrors = [
         "ci/Dawn Win10 x86 Builder",

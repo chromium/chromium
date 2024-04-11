@@ -51,10 +51,10 @@ chromium/try/dawn-try-mac-intel-exp
 chromium/try/dawn-try-win-x64-intel-exp
 chromium/try/dawn-try-win-x64-nvidia-exp
 chromium/try/dawn-try-win-x86-intel-exp
+chromium/try/dawn-try-win-x86-nvidia-exp
 chromium/try/dawn-try-win10-x64-intel-asan
 chromium/try/dawn-try-win10-x64-nvidia-asan
 chromium/try/dawn-try-win10-x86-rel
-chromium/try/dawn-try-xin-x86-nvidia-exp
 chromium/try/dawn-win10-x64-deps-rel
 chromium/try/dawn-win10-x86-deps-rel
 chromium/try/fuchsia-arm64-cast-receiver-rel
