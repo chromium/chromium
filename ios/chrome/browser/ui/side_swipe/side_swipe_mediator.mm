@@ -39,8 +39,6 @@ NSString* const kSideSwipeDidStopNotification =
 
 namespace {
 
-enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
-
 // Swipe starting distance from edge.
 const CGFloat kSwipeEdge = 20;
 
@@ -187,6 +185,24 @@ const CGFloat kIpadTabSwipeDistance = 100;
   [_panGestureRecognizer setSwipeThreshold:kPanGestureRecognizerThreshold];
   [_panGestureRecognizer setDelegate:self];
   [view addGestureRecognizer:_panGestureRecognizer];
+}
+
+- (void)animateSwipe:(SwipeType)swipeType
+         inDirection:(UISwipeGestureRecognizerDirection)direction {
+  if (_inSwipe || [_swipeDelegate preventSideSwipe]) {
+    return;
+  }
+  switch (swipeType) {
+    case SwipeType::NONE:
+      NOTREACHED();
+      break;
+    case SwipeType::CHANGE_PAGE:
+      [self animatePageNavigationInDirection:direction];
+      break;
+    case SwipeType::CHANGE_TAB:
+      // TODO(crbug.com/40276959): Implement.
+      break;
+  }
 }
 
 - (web::WebState*)activeWebState {
@@ -365,16 +381,53 @@ const CGFloat kIpadTabSwipeDistance = 100;
   __weak SideSwipeMediator* weakSelf = self;
   [_pageSideSwipeView handleHorizontalPan:gesture
       onOverThresholdCompletion:^{
-        [weakSelf handleOverThresholdCompletion:gesture];
+        [weakSelf handleOverThresholdCompletion:gesture.direction];
       }
       onUnderThresholdCompletion:^{
         [weakSelf handleUnderThresholdCompletion];
       }];
 }
 
-- (void)handleOverThresholdCompletion:(SideSwipeGestureRecognizer*)gesture {
+// Animate page navigation.
+- (void)animatePageNavigationInDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  BOOL canNavigate = [self canNavigate:IsSwipingBack(direction)];
+  CHECK(canNavigate);
+
+  _inSwipe = YES;
+  [_swipeDelegate updateAccessoryViewsForSideSwipeWithVisibility:NO];
+
+  UIView* navigatingView = [_swipeDelegate sideSwipeContentView].superview;
+  CGRect navigatingBounds = navigatingView.bounds;
+  CGFloat headerHeight = [_swipeDelegate headerHeightForSideSwipe];
+  CGRect navigationFrame =
+      CGRectMake(CGRectGetMinX(navigatingBounds),
+                 CGRectGetMinY(navigatingBounds) + headerHeight,
+                 CGRectGetWidth(navigatingBounds),
+                 CGRectGetHeight(navigatingBounds) - headerHeight);
+
+  _pageSideSwipeView = [[SideSwipeNavigationView alloc]
+      initWithFrame:navigationFrame
+      withDirection:direction
+        canNavigate:YES
+              image:[UIImage imageNamed:@"side_swipe_navigation_back"]];
+  [_pageSideSwipeView setTargetView:[_swipeDelegate sideSwipeContentView]];
+
+  [navigatingView insertSubview:_pageSideSwipeView
+                   belowSubview:[_swipeDelegate topToolbarView]];
+
+  __weak SideSwipeMediator* weakSelf = self;
+  [_pageSideSwipeView
+      animateHorizontalPanWithDirection:direction
+                      completionHandler:^{
+                        [weakSelf handleOverThresholdCompletion:direction];
+                      }];
+}
+
+- (void)handleOverThresholdCompletion:
+    (UISwipeGestureRecognizerDirection)direction {
   web::WebState* webState = self.activeWebState;
-  BOOL wantsBack = IsSwipingBack(gesture.direction);
+  BOOL wantsBack = IsSwipingBack(direction);
   if (webState) {
     if (wantsBack) {
       web_navigation_util::GoBack(webState);

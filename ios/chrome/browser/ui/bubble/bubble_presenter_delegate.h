@@ -20,10 +20,15 @@
 - (BOOL)isNTPScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter;
 
 // Notifies the delegate that the user has performed the pull-to-refresh gesture
-// as instructed by the in-product help
+// as instructed by the in-product help.
 - (void)bubblePresenterDidPerformPullToRefreshGesture:
     (BubblePresenter*)bubblePresenter;
 
+// Notifies the delegate that the user has performed the back/forward swipe
+// gesture as instructed by the in-product help.
+- (void)bubblePresenter:(BubblePresenter*)bubblePresenter
+    didPerformSwipeToNavigateInDirection:
+        (UISwipeGestureRecognizerDirection)direction;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_DELEGATE_H_

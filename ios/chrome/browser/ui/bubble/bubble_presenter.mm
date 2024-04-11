@@ -674,7 +674,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   if (view == self.pullToRefreshGestureIPH) {
     [self.delegate bubblePresenterDidPerformPullToRefreshGesture:self];
   } else if (view == self.swipeBackForwardGestureIPH) {
-    // TODO(crbug.com/40276959): Implement.
+    [self.delegate bubblePresenter:self
+        didPerformSwipeToNavigateInDirection:direction];
   } else {
     NOTREACHED();
   }

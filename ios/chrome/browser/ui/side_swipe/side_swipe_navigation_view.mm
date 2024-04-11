@@ -7,8 +7,6 @@
 #import <numbers>
 
 #import "base/check.h"
-#import "base/metrics/user_metrics.h"
-#import "base/metrics/user_metrics_action.h"
 #import "base/numerics/math_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_gesture_recognizer.h"
@@ -63,7 +61,7 @@ const CGFloat kSelectionDownScale = 0.1875;
 const CGFloat kSelectionAnimationScale = 26;
 
 // The duration of the animations played when the threshold is met.
-const CGFloat kSelectionAnimationDuration = 0.5;
+const NSTimeInterval kSelectionAnimationDuration = 0.5;
 
 UIColor* SelectionCircleColor() {
   return [UIColor colorNamed:kTextfieldBackgroundColor];
@@ -167,12 +165,13 @@ UIColor* SelectionCircleColor() {
 }
 
 - (void)updateFrameAndAnimateContents:(CGFloat)distance
-                           forGesture:(SideSwipeGestureRecognizer*)gesture {
+                         forDirection:
+                             (UISwipeGestureRecognizerDirection)direction {
   CGFloat width = CGRectGetWidth(self.targetView.bounds);
 
   // Immediately set frame size.
   CGRect frame = self.frame;
-  if (gesture.direction == UISwipeGestureRecognizerDirectionRight) {
+  if (direction == UISwipeGestureRecognizerDirectionRight) {
     frame.size.width = self.targetView.frame.origin.x;
     frame.origin.x = 0;
   } else {
@@ -192,7 +191,7 @@ UIColor* SelectionCircleColor() {
 
   CGFloat rotationStart = -CGFloat(std::numbers::pi) / 2;
   CGFloat rotationEnd = 0;
-  if (gesture.direction == UISwipeGestureRecognizerDirectionLeft) {
+  if (direction == UISwipeGestureRecognizerDirectionLeft) {
     rotationStart = CGFloat(std::numbers::pi) * 1.5;
     rotationEnd = CGFloat(std::numbers::pi);
   }
@@ -340,7 +339,7 @@ UIColor* SelectionCircleColor() {
   }
   self.targetView.frame = frame;
 
-  [self updateFrameAndAnimateContents:distance forGesture:gesture];
+  [self updateFrameAndAnimateContents:distance forDirection:gesture.direction];
 
   if (gesture.state == UIGestureRecognizerStateEnded ||
       gesture.state == UIGestureRecognizerStateCancelled ||
@@ -351,51 +350,56 @@ UIColor* SelectionCircleColor() {
     // and that the distance including expected velocity is over `threshold`.
     if (distance > kArrowThreshold && finalDistance > threshold &&
         _canNavigate && gesture.state == UIGestureRecognizerStateEnded) {
-      TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleMedium);
-
       // Speed up the animation for higher velocity swipes.
-      CGFloat animationTime = MapValueToRange(
+      NSTimeInterval animationTime = MapValueToRange(
           {threshold, width},
           {kSelectionAnimationDuration, kSelectionAnimationDuration / 2},
           finalDistance);
-      [self animateTargetViewCompleted:YES
-                         withDirection:gesture.direction
-                          withDuration:animationTime];
-      [self explodeSelection:onOverThresholdCompletion];
-      if (IsSwipingForward(gesture.direction)) {
-        base::RecordAction(base::UserMetricsAction(
-            "MobileEdgeSwipeNavigationForwardCompleted"));
-      } else {
-        base::RecordAction(
-            base::UserMetricsAction("MobileEdgeSwipeNavigationBackCompleted"));
-      }
+      [self performNavigationAnimationWithDirection:gesture.direction
+                                           duration:animationTime
+                                  completionHandler:onOverThresholdCompletion];
     } else {
       [self animateTargetViewCompleted:NO
                          withDirection:gesture.direction
                           withDuration:0.1];
       onUnderThresholdCompletion();
-      if (IsSwipingForward(gesture.direction)) {
-        base::RecordAction(base::UserMetricsAction(
-            "MobileEdgeSwipeNavigationForwardCancelled"));
-      } else {
-        base::RecordAction(
-            base::UserMetricsAction("MobileEdgeSwipeNavigationBackCancelled"));
-      }
     }
     _thresholdTriggered = NO;
   }
 }
 
+- (void)animateHorizontalPanWithDirection:
+            (UISwipeGestureRecognizerDirection)direction
+                        completionHandler:(void (^)(void))completion {
+  if (!_canNavigate) {
+    return;
+  }
+  CGFloat width = CGRectGetWidth(self.targetView.bounds);
+  CGFloat distance = width * kSwipeThreshold;
+  CGRect frame = self.targetView.frame;
+  if (direction == UISwipeGestureRecognizerDirectionLeft) {
+    frame.origin.x = -distance;
+  } else {
+    frame.origin.x = distance;
+  }
+  self.targetView.frame = frame;
+
+  [self updateFrameAndAnimateContents:distance forDirection:direction];
+  [self performNavigationAnimationWithDirection:direction
+                                       duration:kSelectionAnimationDuration
+                              completionHandler:completion];
+}
+
 - (void)animateTargetViewCompleted:(BOOL)completed
                      withDirection:(UISwipeGestureRecognizerDirection)direction
-                      withDuration:(CGFloat)duration {
+                      withDuration:(NSTimeInterval)duration {
   __weak SideSwipeNavigationView* weakSelf = self;
-  CGFloat cleanUpDelay = completed ? kSelectionAnimationDuration - duration : 0;
+  NSTimeInterval cleanUpDelay =
+      completed ? kSelectionAnimationDuration - duration : 0;
   [UIView animateWithDuration:duration
       animations:^{
         [weakSelf handleTargetViewAnimationWithCompleted:completed
-                                           withDirection:direction
-                                            withDuration:duration];
+                                           withDirection:direction];
       }
       completion:^(BOOL finished) {
         // Give the other animations time to complete.
@@ -410,8 +414,7 @@ UIColor* SelectionCircleColor() {
 - (void)handleTargetViewAnimationWithCompleted:(BOOL)completed
                                  withDirection:
                                      (UISwipeGestureRecognizerDirection)
-                                         direction
-                                  withDuration:(CGFloat)duration {
+                                         direction {
   CGRect targetFrame = self.targetView.frame;
   CGRect frame = self.frame;
   CGFloat width = CGRectGetWidth(self.targetView.bounds);
@@ -435,6 +438,19 @@ UIColor* SelectionCircleColor() {
   CGRect bounds = self.bounds;
   CGPoint center = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
   [_arrowView setCenter:AlignPointToPixel(center)];
+}
+
+// Animate navigation with the duration `animationTime` and execute completion
+// handler afterwards.
+- (void)performNavigationAnimationWithDirection:
+            (UISwipeGestureRecognizerDirection)direction
+                                       duration:(NSTimeInterval)animationTime
+                              completionHandler:(void (^)(void))block {
+  TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleMedium);
+  [self animateTargetViewCompleted:YES
+                     withDirection:direction
+                      withDuration:animationTime];
+  [self explodeSelection:block];
 }
 
 - (void)handleTargetViewAnimationCompletion {

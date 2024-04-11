@@ -22,6 +22,8 @@ extern NSString* const kSideSwipeWillStartNotification;
 // Notification sent when the user finishes a side swipe (on tablet).
 extern NSString* const kSideSwipeDidStopNotification;
 
+enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
+
 @protocol SideSwipeMediatorDelegate
 @required
 // Called when the horizontal stack view is done and should be removed.
@@ -86,6 +88,10 @@ extern NSString* const kSideSwipeDidStopNotification;
 // Resets the swipeDelegate's contentView frame origin x position to zero if
 // there is an active swipe.
 - (void)resetContentView;
+
+// Performs an animation that simulates a swipe with `swipeType` in `direction`.
+- (void)animateSwipe:(SwipeType)swipeType
+         inDirection:(UISwipeGestureRecognizerDirection)direction;
 
 @end
 

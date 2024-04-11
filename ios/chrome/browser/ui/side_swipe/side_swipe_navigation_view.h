@@ -26,6 +26,13 @@
 - (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
      onOverThresholdCompletion:(void (^)(void))onOverThresholdCompletion
     onUnderThresholdCompletion:(void (^)(void))onUnderThresholdCompletion;
+
+// Performs an animation on the view that simulates a swipe in `direction` and
+// call `completion` when the animation completes.
+- (void)animateHorizontalPanWithDirection:
+            (UISwipeGestureRecognizerDirection)direction
+                        completionHandler:(void (^)(void))completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SIDE_SWIPE_SIDE_SWIPE_NAVIGATION_VIEW_H_

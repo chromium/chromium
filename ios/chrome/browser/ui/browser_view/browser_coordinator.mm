@@ -3199,6 +3199,13 @@ enum class ToolbarKind {
   [controller forceAnimatedScrollRefresh];
 }
 
+- (void)bubblePresenter:(BubblePresenter*)bubblePresenter
+    didPerformSwipeToNavigateInDirection:
+        (UISwipeGestureRecognizerDirection)direction {
+  [_sideSwipeMediator animateSwipe:SwipeType::CHANGE_PAGE
+                       inDirection:direction];
+}
+
 #pragma mark - OverscrollActionsControllerDelegate methods.
 
 - (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
