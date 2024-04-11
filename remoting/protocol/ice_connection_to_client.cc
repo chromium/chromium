@@ -93,7 +93,7 @@ void IceConnectionToClient::Disconnect(ErrorCode error) {
 }
 
 std::unique_ptr<VideoStream> IceConnectionToClient::StartVideoStream(
-    const std::string& stream_name,
+    webrtc::ScreenId screen_id,
     std::unique_ptr<DesktopCapturer> desktop_capturer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

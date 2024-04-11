@@ -57,6 +57,7 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_config.h"
 #include "remoting/protocol/video_frame_pump.h"
+#include "remoting/protocol/webrtc_video_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 #if defined(WEBRTC_USE_GIO)
@@ -66,14 +67,9 @@
 namespace {
 
 constexpr char kRtcLogTransferDataChannelPrefix[] = "rtc-log-transfer-";
-constexpr char kStreamName[] = "screen_stream";
 
 constexpr base::TimeDelta kDefaultBoostCaptureInterval = base::Milliseconds(5);
 constexpr base::TimeDelta kDefaultBoostDuration = base::Milliseconds(50);
-
-std::string StreamNameForId(webrtc::ScreenId id) {
-  return std::string(kStreamName) + "_" + base::NumberToString(id);
-}
 
 }  // namespace
 
@@ -585,7 +581,7 @@ void ClientSession::CreateMediaStreams() {
   DCHECK(video_streams_.empty());
 
   auto video_stream = connection_->StartVideoStream(
-      kStreamName,
+      webrtc::kFullDesktopScreenId,
       desktop_environment_->CreateVideoCapturer(webrtc::kFullDesktopScreenId));
 
   // Create an AudioStream to pump audio from the capturer to the client.
@@ -627,14 +623,10 @@ void ClientSession::CreatePerMonitorVideoStreams() {
       continue;
     }
 
-    auto stream_name = StreamNameForId(id);
-
-    HOST_LOG << "Creating video stream: " << stream_name;
+    HOST_LOG << "Creating video stream for id " << id;
 
     auto video_stream = connection_->StartVideoStream(
-        stream_name, desktop_environment_->CreateVideoCapturer(id));
-    // This call is needed by WebrtcVideoStream for per-frame stats reporting.
-    video_stream->SelectSource(id);
+        id, desktop_environment_->CreateVideoCapturer(id));
 
     // SetObserver(this) is not called on the new video-stream, because
     // per-monitor resizing should be handled by OnDesktopDisplayChanged()
@@ -1164,7 +1156,8 @@ void ClientSession::OnDesktopDisplayChanged(
     video_track = layout.add_video_track();
     video_track->CopyFrom(display);
     if (multiStreamEnabled) {
-      video_track->set_media_stream_id(StreamNameForId(display.screen_id()));
+      video_track->set_media_stream_id(
+          protocol::WebrtcVideoStream::StreamNameForId(display.screen_id()));
     }
 
     LOG(INFO) << "  Display " << display_id << " = " << display.position_x()

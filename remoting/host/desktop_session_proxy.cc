@@ -360,15 +360,8 @@ void DesktopSessionProxy::RebindSingleVideoCapturer(
     base::WeakPtr<IpcVideoFrameCapturer> capturer_weakptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (video_capturers_.size() > 1U) {
-    // SelectSource() should not be called in multi-stream mode, but
-    // WebrtcVideoStream currently calls it when setting the screen ID for
-    // stats-reporting.
-    // TODO: b/331679617 - Fix ClientSession/WebrtcVideoStream to not call
-    // SelectSource() in multi-stream mode.
-    LOG(WARNING) << "Ignoring SelectSource() for multi-stream.";
-    return;
-  }
+  // SelectSource() is not used in multi-stream mode.
+  DCHECK_LE(video_capturers_.size(), 1U);
 
   if (base::FindPtrOrNull(video_capturers_, new_id) == capturer_weakptr.get()) {
     // The capturer is already bound to `new_id`, so there's no value in

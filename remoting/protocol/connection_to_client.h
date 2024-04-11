@@ -12,6 +12,7 @@
 #include "remoting/base/session_options.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/transport.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
 class DesktopCapturer;
@@ -85,9 +86,10 @@ class ConnectionToClient {
   virtual void Disconnect(ErrorCode error) = 0;
 
   // Start video stream that sends screen content from |desktop_capturer| to the
-  // client.
+  // client. |screen_id| should be webrtc::kFullDesktopScreenId for
+  // single-stream mode, or the screen being captured for multi-stream mode.
   virtual std::unique_ptr<VideoStream> StartVideoStream(
-      const std::string& stream_name,
+      webrtc::ScreenId screen_id,
       std::unique_ptr<DesktopCapturer> desktop_capturer) = 0;
 
   // Starts an audio stream. Returns nullptr if audio is not supported by the

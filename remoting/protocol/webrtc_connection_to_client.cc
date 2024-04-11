@@ -87,15 +87,14 @@ void WebrtcConnectionToClient::Disconnect(ErrorCode error) {
 }
 
 std::unique_ptr<VideoStream> WebrtcConnectionToClient::StartVideoStream(
-    const std::string& stream_name,
+    webrtc::ScreenId screen_id,
     std::unique_ptr<DesktopCapturer> desktop_capturer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(transport_);
 
-  auto stream =
-      std::make_unique<WebrtcVideoStream>(stream_name, session_options_);
+  auto stream = std::make_unique<WebrtcVideoStream>(session_options_);
   stream->set_video_stats_dispatcher(video_stats_dispatcher_.GetWeakPtr());
-  stream->Start(std::move(desktop_capturer), transport_.get(),
+  stream->Start(screen_id, std::move(desktop_capturer), transport_.get(),
                 video_encoder_factory_);
   stream->SetEventTimestampsSource(
       event_dispatcher_->event_timestamps_source());
