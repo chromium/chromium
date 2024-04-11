@@ -1923,6 +1923,10 @@ extern const char kTabEngagementReportingDescription[];
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];
 
+extern const char kTabGroupsSaveUIUpdateId[];
+extern const char kTabGroupsSaveUIUpdateName[];
+extern const char kTabGroupsSaveUIUpdateDescription[];
+
 extern const char kTabHoverCardImagesName[];
 extern const char kTabHoverCardImagesDescription[];
 

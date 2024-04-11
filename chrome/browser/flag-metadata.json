@@ -7932,6 +7932,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "tab-groups-save-ui-update",
+    "owners": [ "chrome-cros@google.com", "yuhengh@chromium.org", "pengchaocai@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "tab-groups-save-v2",
     "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org", "dljames@chromium.org" ],
     "expiry_milestone": 150

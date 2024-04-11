@@ -3271,6 +3271,11 @@ const char kCommerceDeveloperName[] = "Commerce developer mode";
 const char kCommerceDeveloperDescription[] =
     "Allows users in the allowlist to enter the developer mode";
 
+const char kTabGroupsSaveUIUpdateId[] = "tab-groups-save-ui-update";
+const char kTabGroupsSaveUIUpdateName[] = "Tab Groups Save UI Update";
+const char kTabGroupsSaveUIUpdateDescription[] =
+    "Enables saved tab group pinning, everything menu and bookmarks bar change";
+
 const char kTabHoverCardImagesName[] = "Tab Hover Card Images";
 const char kTabHoverCardImagesDescription[] =
     "Shows a preview image in tab hover cards, if tab hover cards are enabled.";

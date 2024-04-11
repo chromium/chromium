@@ -6550,6 +6550,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kQuickSettingsPWANotifications)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {flag_descriptions::kTabGroupsSaveUIUpdateId,
+     flag_descriptions::kTabGroupsSaveUIUpdateName,
+     flag_descriptions::kTabGroupsSaveUIUpdateDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(tab_groups::kTabGroupsSaveUIUpdate)},
+
     {flag_descriptions::kScrollableTabStripFlagId,
      flag_descriptions::kScrollableTabStripName,
      flag_descriptions::kScrollableTabStripDescription, kOsDesktop,
