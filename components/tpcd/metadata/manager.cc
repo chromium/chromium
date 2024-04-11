@@ -58,6 +58,14 @@ bool Manager::IsAllowed(const GURL& url,
          GetContentSetting(grants_, url, first_party_url, out_info);
 }
 
+uint32_t Manager::GenerateRand() const {
+  base::RandomBitGenerator generator;
+  std::uniform_int_distribution<uint32_t> distribution(Parser::kMinDtrp + 1,
+                                                       Parser::kMaxDtrp);
+  uint32_t rand = distribution(generator);
+  return rand;
+}
+
 void Manager::SetGrants(const ContentSettingsForOneType& grants) {
   base::AutoLock lock(grants_lock_);
 
@@ -115,12 +123,7 @@ void Manager::OnMetadataReady() {
                                   ? metadata_entry.dtrp_override()
                                   : metadata_entry.dtrp();
 
-      base::RandomBitGenerator generator;
-      std::uniform_int_distribution<uint32_t> distribution(Parser::kMinDtrp + 1,
-                                                           Parser::kMaxDtrp);
-      uint32_t rand = distribution(generator);
-
-      auto cohort = rand <= elected_dtrp
+      auto cohort = GenerateRand() <= elected_dtrp
                         ? content_settings::mojom::TpcdMetadataCohort::
                               GRACE_PERIOD_FORCED_OFF
                         : content_settings::mojom::TpcdMetadataCohort::

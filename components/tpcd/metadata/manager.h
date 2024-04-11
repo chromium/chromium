@@ -55,6 +55,10 @@ class Manager : public common::ManagerBase, public Parser::Observer {
     SetGrants(grants);
   }
 
+ protected:
+  // Generates a random number between (`Parser::kMinDtrp`, `Parser::kMaxDtrp`].
+  virtual uint32_t GenerateRand() const;
+
  private:
   friend base::NoDestructor<Manager>;
 

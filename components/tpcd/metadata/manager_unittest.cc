@@ -197,6 +197,21 @@ TEST_P(ManagerTest, FireSyncCallback) {
   }
 }
 
+class DeterministicManager : public Manager {
+ public:
+  DeterministicManager(Parser* parser, GrantsSyncCallback callback)
+      : Manager(parser, callback) {}
+  ~DeterministicManager() override = default;
+
+  // Returns a deterministic "random" value for testing.
+  uint32_t GenerateRand() const override { return rand_; }
+
+  void set_rand(uint32_t rand) { rand_ = rand; }
+
+ private:
+  uint32_t rand_ = 0;
+};
+
 class ManagerCohortsTest
     : public testing::Test,
       public testing::WithParamInterface<std::tuple<bool, int32_t>> {
@@ -216,6 +231,15 @@ class ManagerCohortsTest
       manager_ = std::make_unique<Manager>(GetParser(), callback);
     }
     return manager_.get();
+  }
+
+  DeterministicManager* GetDeterministicManager(
+      GrantsSyncCallback callback = base::NullCallback()) {
+    if (!det_manager_) {
+      det_manager_ =
+          std::make_unique<DeterministicManager>(GetParser(), callback);
+    }
+    return det_manager_.get();
   }
 
   bool IsTpcdMetadataStagedRollbackEnabled() { return std::get<0>(GetParam()); }
@@ -268,6 +292,7 @@ class ManagerCohortsTest
   // Guarantees proper tear down of dependencies.
   void TearDown() override {
     delete manager_.release();
+    delete det_manager_.release();
     delete parser_.release();
   }
 
@@ -275,6 +300,7 @@ class ManagerCohortsTest
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<Parser> parser_;
   std::unique_ptr<Manager> manager_;
+  std::unique_ptr<DeterministicManager> det_manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -399,6 +425,90 @@ TEST_P(ManagerCohortsTest, DTRP_100Percent) {
     EXPECT_EQ(
         picked_cohort,
         content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF);
+  } else {
+    EXPECT_EQ(picked_cohort,
+              content_settings::mojom::TpcdMetadataCohort::DEFAULT);
+  }
+}
+
+TEST_P(ManagerCohortsTest, DTRP_GE_Rand) {
+  // dtrp_being_tested is arbitrary here, selected between (0,100).
+  const uint32_t dtrp_being_tested = 55;
+  // rand_being_tested is set as-is here to test the boundary between behaviors.
+  const uint32_t rand_being_tested = dtrp_being_tested;
+
+  const std::string primary_pattern_spec = "https://www.der.com";
+  const std::string secondary_pattern_spec = "https://www.foo.com";
+
+  Metadata metadata;
+  helpers::AddEntryToMetadata(
+      metadata, primary_pattern_spec, secondary_pattern_spec,
+      ToRuleSourceStr(GetTpcdMetadataRuleSource()), dtrp_being_tested);
+  EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+  DeterministicManager* manager = GetDeterministicManager();
+  manager->set_rand(rand_being_tested);
+  GetParser()->ParseMetadata(metadata.SerializeAsString());
+
+  EXPECT_EQ(manager->GetGrants().size(), 1u);
+  EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
+            primary_pattern_spec);
+  EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
+            secondary_pattern_spec);
+
+  auto rule_source =
+      manager->GetGrants().front().metadata.tpcd_metadata_rule_source();
+  EXPECT_EQ(rule_source, GetTpcdMetadataRuleSource());
+
+  auto picked_cohort =
+      manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+  if (IsTpcdMetadataStagedRollbackEnabled() &&
+      Parser::IsDtrpEligible(rule_source)) {
+    EXPECT_EQ(
+        picked_cohort,
+        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF);
+  } else {
+    EXPECT_EQ(picked_cohort,
+              content_settings::mojom::TpcdMetadataCohort::DEFAULT);
+  }
+}
+
+TEST_P(ManagerCohortsTest, DTRP_LT_Rand) {
+  // dtrp_being_tested is arbitrary here, selected between (0,100).
+  const uint32_t dtrp_being_tested = 55;
+  // rand_being_tested is set as-is here to test the boundary between behaviors.
+  const uint32_t rand_being_tested = dtrp_being_tested + 1;
+
+  const std::string primary_pattern_spec = "https://www.der.com";
+  const std::string secondary_pattern_spec = "https://www.foo.com";
+
+  Metadata metadata;
+  helpers::AddEntryToMetadata(
+      metadata, primary_pattern_spec, secondary_pattern_spec,
+      ToRuleSourceStr(GetTpcdMetadataRuleSource()), dtrp_being_tested);
+  EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+  DeterministicManager* manager = GetDeterministicManager();
+  manager->set_rand(rand_being_tested);
+  GetParser()->ParseMetadata(metadata.SerializeAsString());
+
+  EXPECT_EQ(manager->GetGrants().size(), 1u);
+  EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
+            primary_pattern_spec);
+  EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
+            secondary_pattern_spec);
+
+  auto rule_source =
+      manager->GetGrants().front().metadata.tpcd_metadata_rule_source();
+  EXPECT_EQ(rule_source, GetTpcdMetadataRuleSource());
+
+  auto picked_cohort =
+      manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+  if (IsTpcdMetadataStagedRollbackEnabled() &&
+      Parser::IsDtrpEligible(rule_source)) {
+    EXPECT_EQ(
+        picked_cohort,
+        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON);
   } else {
     EXPECT_EQ(picked_cohort,
               content_settings::mojom::TpcdMetadataCohort::DEFAULT);
