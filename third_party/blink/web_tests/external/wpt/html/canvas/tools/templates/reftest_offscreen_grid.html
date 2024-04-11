@@ -13,7 +13,7 @@
 <p class="desc">{{ desc }}</p>
 {% if notes %}<p class="notes">{{ notes }}{% endif %}
 
-<div style="display: grid; grid-gap: 5px;
+<div style="display: grid; grid-gap: 4px;
             grid-template-columns: repeat({{ grid_width }}, max-content);
             font-size: 13px; text-align: center;">
 {% for variant in offscreen_variants %}
@@ -21,8 +21,10 @@
   {% for variant_name in variant.grid_variant_names %}
   <div>{{ variant_name }}</div>
   {% endfor %}
-  <canvas id="canvas{{ variant.id }}" width="{{ variant.size[0]
-          }}" height="{{ variant.size[1] }}"{{ variant.canvas }}>
+  <canvas id="canvas{{ variant.id
+      }}" width="{{ variant.size[0]
+      }}" height="{{ variant.size[1]
+      }}" style="outline: 1px solid"{{ variant.canvas }}>
     <p class="fallback">FAIL (fallback content)</p>
   </canvas>
   <script type="module">
