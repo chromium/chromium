@@ -503,7 +503,6 @@ try_.gpu.optional_tests_builder(
     # TODO(b/333068134): remove after the bug is fixed.
     experiments = {"luci.buildbucket.backend_alt": 0},
     main_list_view = "try",
-    siso_enabled = False,
     tryjob = try_.job(
         location_filters = [
             # Inclusion filters.
