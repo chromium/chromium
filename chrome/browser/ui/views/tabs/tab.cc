@@ -226,7 +226,7 @@ Tab::Tab(TabSlotController* controller)
   // |title_| paints on top of an opaque region (the tab background) of a
   // non-opaque layer (the tabstrip's layer), which cannot currently be detected
   // by the subpixel-rendering opacity check.
-  // TODO(https://crbug.com/1139395): Improve the check so that this case doen't
+  // TODO(crbug.com/40725997): Improve the check so that this case doen't
   // need a manual suppression by detecting cases where the text is painted onto
   // onto opaque parts of a not-entirely-opaque layer.
   title_->SetSkipSubpixelRenderingOpacityCheck(true);
@@ -621,7 +621,7 @@ void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Move the hit test area for hovering up so that it is not overlapped by tab
   // hover cards when they are shown.
-  // TODO(crbug.com/978134): Once Linux/CrOS widget transparency is solved,
+  // TODO(crbug.com/41467565): Once Linux/CrOS widget transparency is solved,
   // remove that case.
   constexpr int kHoverCardOverlap = 6;
   if (event.location().y() >= height() - kHoverCardOverlap) {
@@ -994,8 +994,8 @@ void Tab::MaybeAdjustLeftForPinnedTab(gfx::Rect* bounds,
   const int pinned_width = tab_style()->GetPinnedWidth();
   const int ideal_delta = width() - pinned_width;
   const int ideal_x = (pinned_width - visual_width) / 2;
-  // TODO(crbug.com/533570): This code is broken when the current width is less
-  // than the pinned width.
+  // TODO(crbug.com/40436434): This code is broken when the current width is
+  // less than the pinned width.
   bounds->set_x(
       bounds->x() +
       base::ClampRound(

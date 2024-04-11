@@ -79,8 +79,8 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
   int tab_search_button_index = GetIndexOf(tab_search_button_).value();
   int index =
       before_tab_strip ? tab_search_button_index + 1 : tab_search_button_index;
-  // TODO(1469126): Consider hiding the button when the request has started,
-  // vs. when the button as clicked.
+  // TODO(crbug.com/40925230): Consider hiding the button when the request has
+  // started, vs. when the button as clicked.
   tab_organization_button_ = AddChildViewAt(
       std::make_unique<TabOrganizationButton>(
           tab_strip_controller,

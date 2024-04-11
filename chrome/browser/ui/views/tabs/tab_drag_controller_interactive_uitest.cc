@@ -3239,7 +3239,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
 }
 
 // Home tab can't be detached.
-// TODO(crbug.com/1381358): Enable this test for Linux and Lacros.
+// TODO(crbug.com/40245163): Enable this test for Linux and Lacros.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #define MAYBE_CantDragHomeTab DISABLED_CantDragHomeTab
 #else
@@ -3505,7 +3505,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 // Creates two browsers, drags from first into the second in such a way that
 // no detaching should happen.
-// TODO(crbug.com/1509717): Reenable flaky test.
+// TODO(crbug.com/41482323): Reenable flaky test.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DISABLED_DragDirectlyToSecondWindow) {
   // TODO(pkasting): Crashes when detaching browser.  https://crbug.com/918733
@@ -3755,7 +3755,7 @@ void DragWindowAndVerifyOffset(DetachToBrowserTabDragControllerTest* test,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 // TODO(mukai): enable this test on Windows and Linux.
-// TODO(crbug.com/979013): flaky on Mac
+// TODO(crbug.com/41468034): flaky on Mac
 #define MAYBE_OffsetForDraggingTab DISABLED_OffsetForDraggingTab
 #else
 #define MAYBE_OffsetForDraggingTab OffsetForDraggingTab
@@ -3767,7 +3767,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 }
 
-// TODO(960915): fix flakiness and re-enable this test on mac/linux.
+// TODO(crbug.com/41457552): fix flakiness and re-enable this test on mac/linux.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DISABLED_OffsetForDraggingDetachedTab) {
   AddTabsAndResetBrowser(browser(), 1);
@@ -4228,7 +4228,7 @@ void DragSingleTabToSeparateWindowInSecondDisplayStep2(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Drags from browser to a second display and releases input.
-// TODO(crbug.com/1499240): Test is flaky on multiple bots.
+// TODO(crbug.com/40940016): Test is flaky on multiple bots.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
                        DISABLED_DragSingleTabToSeparateWindowInSecondDisplay) {
   AddTabsAndResetBrowser(browser(), 1);
@@ -4244,7 +4244,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
                           start.y() + GetDetachY(tab_strip));
   ASSERT_TRUE(second_display.bounds().Contains(target));
 
-  // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
+  // TODO(crbug.com/40638870): Unit tests should be able to simulate mouse input
   // without having to call |CursorManager::SetDisplay|.
   ash::Shell::Get()->cursor_manager()->SetDisplay(second_display);
   DragTabAndNotify(
@@ -5150,7 +5150,7 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values("mouse")));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1488094): Enable Multi Display Test on lacros
+// TODO(crbug.com/40283516): Enable Multi Display Test on lacros
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DifferentDeviceScaleFactorDisplayTabDragControllerTest,

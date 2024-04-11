@@ -244,7 +244,7 @@ void TabStripScrollContainer::ScrollTowardsTrailingTab() {
 void TabStripScrollContainer::FrameColorsChanged() {
   SkColor foreground_enabled_color =
       tab_strip_->GetTabForegroundColor(TabActive::kInactive);
-  // TODO(crbug.com/1385859): Get a disabled color that is lighter
+  // TODO(crbug.com/40879445): Get a disabled color that is lighter
   // and changes with the frame background color
   SkColor foreground_disabled_color =
       GetColorProvider()->GetColor(kColorTabForegroundInactiveFrameInactive);

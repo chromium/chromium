@@ -415,7 +415,7 @@ TabDragController::Liveness TabDragController::Init(
   ref->last_point_in_screen_ = start_point_in_screen_;
   // Detachable tabs are not supported on Mac if the window is an out-of-process
   // (remote_cocoa) window, i.e. a PWA window.
-  // TODO(https://crbug.com/1076777): Make detachable tabs work in PWAs on Mac.
+  // TODO(crbug.com/40128833): Make detachable tabs work in PWAs on Mac.
 #if BUILDFLAG(IS_MAC)
   if (ref->source_context_->GetWidget() &&
       remote_cocoa::IsWindowRemote(
@@ -2368,7 +2368,7 @@ void TabDragController::AdjustBrowserAndTabBoundsForDrag(
   // If the new tabstrip region is smaller than the old, resize and reposition
   // the tabs to provide a sense of continuity.
   if (current_tab_area_width < previous_tab_area_width) {
-    // TODO(https://crbug.com/1324577): Fix the case where the source window
+    // TODO(crbug.com/40839358): Fix the case where the source window
     // spans two monitors horizontally, and IsRTL is true.
 
     // `leading_ratio` is the proportion of the previous tab area width which is
@@ -2704,8 +2704,8 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
     // window. In this case, since the dragged tabs can't move further right in
     // the tabstrip, it will never go "beyond" the left_group and therefore
     // never leave it unless we add this check. See crbug.com/1134376.
-    // TODO(crbug/1329344): Update this to work better with Tab Scrolling once
-    // dragging near the end of the tabstrip is cleaner.
+    // TODO(crbug.com/40842551): Update this to work better with Tab Scrolling
+    // once dragging near the end of the tabstrip is cleaner.
     if (tab_bounds_in_drag_context_coords(selected.back()).right() >=
         attached_context_->TabDragAreaEndX()) {
       return std::nullopt;
@@ -2753,8 +2753,8 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
   const int active_index = model->active_index();
 
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1411448): Remove DumpWithoutCrashing() if Widget::IsClosed()
-  // check above works.
+  // TODO(crbug.com/40890295): Remove DumpWithoutCrashing() if
+  // Widget::IsClosed() check above works.
   if (!model->ContainsIndex(active_index)) {
     if (active_index == TabStripModel::kNoTab) {
       LOG(ERROR) << "TabStripModel of the browser tyring to attach to has no "

@@ -396,7 +396,7 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
   // CreateHoverCard() above. Regardless, the validity needs to be checked
   // before the next call.
   // See: crbug.com/1295601, crbug.com/1322117, crbug.com/1348956
-  // TODO(crbug.com/1364303): look into this and figure out what is actually
+  // TODO(crbug.com/40865488): look into this and figure out what is actually
   // happening.
   if (!TargetTabIsValid()) {
     HideHoverCard();

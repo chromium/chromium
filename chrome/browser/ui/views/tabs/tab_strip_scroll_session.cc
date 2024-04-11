@@ -84,7 +84,7 @@ bool TabStripScrollSessionWithTimer::IsRunning() {
 }
 
 int TabStripScrollSessionWithTimer::CalculateSpeed() {
-  // TODO(crbug.com/1378735): Use the expected offset at a given time to
+  // TODO(crbug.com/40875170): Use the expected offset at a given time to
   // calculate the current offset. This can help with making up
   // for rounding off the calculation to int in the next call.
   // Also use the time elapsed to calculate the expected offset.
@@ -173,7 +173,7 @@ TabStripScrollSessionWithTimer::GetTabScrollDirection() {
       dragged_tabs_rect_drag_context_coord.origin().x() <=
       (visible_rect_drag_context_coord.origin().x() + GetScrollableOffset());
 
-  // TODO(crbug.com/1378683): Add case for both maybe scroll left and right.
+  // TODO(crbug.com/40875138): Add case for both maybe scroll left and right.
   // This would happen when many tabs are selected.
   if (maybe_scroll_towards_trailing_tabs) {
     return TabStripScrollSession::TabScrollDirection::

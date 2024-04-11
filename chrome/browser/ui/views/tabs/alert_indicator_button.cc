@@ -453,7 +453,7 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
       if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kSerialPortChromeRefreshIcon;
       } else {
-        // TODO(https://crbug.com/917204): This icon is too large to fit
+        // TODO(crbug.com/40607459): This icon is too large to fit
         // properly as a tab indicator and should be replaced.
         icon = &vector_icons::kSerialPortIcon;
       }

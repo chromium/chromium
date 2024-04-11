@@ -39,8 +39,8 @@ namespace {
 enum OmitOnPlatforms {
   kRunOnAllPlatforms = 0,
 
-  // TODO(crbug/1267013): Remove once emoji (including modified/joined emoji)
-  // are supported on Fuchsia.
+  // TODO(crbug.com/40204305): Remove once emoji (including modified/joined
+  // emoji) are supported on Fuchsia.
   kOmitOnFuchsia = 1 << 1,
 };
 
