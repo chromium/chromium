@@ -218,26 +218,27 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   [[EarlGrey selectElementWithMatcher:SettingsProfileMatcher()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
-  // Icons are not present when the Keyboard Accessory Upgrade feature is
-  // enabled.
-  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    // Verify the status of the icons.
-    [[EarlGrey
-        selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-        performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-    [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-        assertWithMatcher:grey_userInteractionEnabled()];
-    [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
-        assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-  }
-
-  // Verify the keyboard is not covered by the profiles view.
-  // TODO(crbug.com/332956674): Remove version check once fixed.
+  // TODO(crbug.com/332956674): Keyboard and keyboard accessory are not present
+  // on iOS 17.4+, remove version check once fixed.
   if (@available(iOS 17.4, *)) {
-    // Skip verification.
+    // Skip verifications.
   } else {
+    // Icons are not present when the Keyboard Accessory Upgrade feature is
+    // enabled.
+    if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+      // Verify the status of the icons.
+      [[EarlGrey
+          selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+          performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
+      [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+          assertWithMatcher:grey_sufficientlyVisible()];
+      [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+          assertWithMatcher:grey_userInteractionEnabled()];
+      [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+          assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+    }
+
+    // Verify the keyboard is not covered by the profiles view.
     GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                    @"Keyboard should be shown");
   }

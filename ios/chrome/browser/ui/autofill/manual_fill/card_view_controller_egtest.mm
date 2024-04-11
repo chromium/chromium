@@ -421,19 +421,20 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
 
-  // Verify the status of the icons.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
-      assertWithMatcher:grey_userInteractionEnabled()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-
-  // Verify the keyboard is not covered by the cards view.
-  // TODO(crbug.com/332956674): Remove version check once fixed.
+  // TODO(crbug.com/332956674): Keyboard and keyboard accessory are not present
+  // on iOS 17.4+, remove version check once fixed.
   if (@available(iOS 17.4, *)) {
-    // Skip verification.
+    // Skip verifications.
   } else {
+    // Verify the status of the icons.
+    [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+        assertWithMatcher:grey_userInteractionEnabled()];
+    [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+        assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+
+    // Verify the keyboard is not cover by the cards view.
     [[EarlGrey
         selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
         assertWithMatcher:grey_notVisible()];
@@ -539,19 +540,20 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
 
-  // Verify the status of the icons.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
-      assertWithMatcher:grey_userInteractionEnabled()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-
-  // Verify the keyboard is not cover by the cards view.
-  // TODO(crbug.com/332956674): Remove version check once fixed.
+  // TODO(crbug.com/332956674): Keyboard and keyboard accessory are not present
+  // on iOS 17.4+, remove version check once fixed.
   if (@available(iOS 17.4, *)) {
-    // Skip verification.
+    // Skip verifications.
   } else {
+    // Verify the status of the icons.
+    [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
+        assertWithMatcher:grey_userInteractionEnabled()];
+    [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+        assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+
+    // Verify the keyboard is not cover by the cards view.
     [[EarlGrey
         selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
         assertWithMatcher:grey_notVisible()];
