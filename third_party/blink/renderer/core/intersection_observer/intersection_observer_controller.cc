@@ -65,6 +65,16 @@ bool IntersectionObserverController::ComputeIntersections(
     LocalFrameUkmAggregator* metrics_aggregator,
     std::optional<base::TimeTicks>& monotonic_time,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update) {
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
+  debug_info_ = debug_info_ +
+                String::Format("%x %f,%f|", flags,
+                               accumulated_scroll_delta_since_last_update.x(),
+                               accumulated_scroll_delta_since_last_update.y());
+  if (debug_info_.length() > 256) {
+    debug_info_ = debug_info_.Right(192);
+  }
+#endif
+
   needs_occlusion_tracking_ = false;
   if (!GetExecutionContext()) {
     return false;

@@ -13,9 +13,10 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
+#define CHECK_SKIPPED_UPDATE_ON_SCROLL() DCHECK_IS_ON()
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#endif
 
 namespace blink {
 
@@ -23,8 +24,6 @@ class Element;
 class LayoutBox;
 class LayoutObject;
 class Node;
-
-#define CHECK_SKIPPED_UPDATE_ON_SCROLL() DCHECK_IS_ON()
 
 // Computes the intersection between an ancestor (root) node and a
 // descendant (target) element, with overflow and CSS clipping applied.
@@ -105,8 +104,11 @@ class CORE_EXPORT IntersectionGeometry {
     gfx::Transform root_to_view_transform;
     int relationship = 0;
     bool root_scrolls_target = false;
+    String root_clip_tree;
+    String target_clip_tree;
+    String target_transform_tree;
 
-    WTF::String ToString() const;
+    String ToString() const;
 #endif
   };
 

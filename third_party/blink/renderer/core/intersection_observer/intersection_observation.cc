@@ -104,9 +104,17 @@ int64_t IntersectionObservation::ComputeIntersection(
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   if (cached_rects_backup) {
     // A skipped update on scroll should generate the same result.
-    CHECK_EQ(last_threshold_index_, geometry.ThresholdIndex())
-        << "Previous: " << cached_rects_backup->ToString()
-        << "\nNew: " << cached_rects_.ToString();
+    if (last_threshold_index_ != geometry.ThresholdIndex()) {
+      SCOPED_CRASH_KEY_STRING1024("IO", "Previous",
+                                  cached_rects_backup->ToString().Utf8());
+      SCOPED_CRASH_KEY_STRING1024("IO", "New", cached_rects_.ToString().Utf8());
+      auto* controller =
+          Target()->GetDocument().GetIntersectionObserverController();
+      SCOPED_CRASH_KEY_STRING256(
+          "IO", "debug",
+          controller ? controller->DebugInfo().Utf8() : "no controller");
+      CHECK_EQ(last_threshold_index_, geometry.ThresholdIndex());
+    }
     CHECK_EQ(last_is_visible_, geometry.IsVisible());
     cached_rects_ = cached_rects_backup.value();
     return 0;
