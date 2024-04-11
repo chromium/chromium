@@ -1232,6 +1232,7 @@ if (current_toolchain == default_toolchain) {
       "//components/embedder_support/android:context_menu_java",
       "//components/embedder_support/android:junit_test_support",
       "//components/embedder_support/android:util_java",
+      "//components/external_intents/android:java",
       "//components/externalauth/android:java",
       "//components/externalauth/android:junit",
       "//components/favicon/android:java",

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.searchwidget;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -28,14 +27,12 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
-import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.content.WebContentsFactory;
-import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -55,7 +52,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDeleg
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
-import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -64,21 +60,16 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
-import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
-import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -436,72 +427,13 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private void finishNativeInitializationWithProfile(Profile profile) {
         refinePageClassWithProfile(profile);
-        TabDelegateFactory factory =
-                new TabDelegateFactory() {
-                    @Override
-                    public TabWebContentsDelegateAndroid createWebContentsDelegate(Tab tab) {
-                        return new TabWebContentsDelegateAndroid() {
-                            @Override
-                            public int getDisplayMode() {
-                                return DisplayMode.BROWSER;
-                            }
-
-                            @Override
-                            protected boolean shouldResumeRequestsForCreatedWindow() {
-                                return false;
-                            }
-
-                            @Override
-                            protected boolean addNewContents(
-                                    WebContents sourceWebContents,
-                                    WebContents webContents,
-                                    int disposition,
-                                    Rect initialPosition,
-                                    boolean userGesture) {
-                                return false;
-                            }
-
-                            @Override
-                            protected void setOverlayMode(boolean useOverlayMode) {}
-
-                            @Override
-                            public boolean canShowAppBanners() {
-                                return false;
-                            }
-                        };
-                    }
-
-                    @Override
-                    public ExternalNavigationHandler createExternalNavigationHandler(Tab tab) {
-                        return null;
-                    }
-
-                    @Override
-                    public ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
-                        return null;
-                    }
-
-                    @Override
-                    public BrowserControlsVisibilityDelegate
-                            createBrowserControlsVisibilityDelegate(Tab tab) {
-                        return null;
-                    }
-
-                    @Override
-                    public NativePage createNativePage(
-                            String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo) {
-                        // SearchActivity does not create native pages.
-                        return null;
-                    }
-                };
-
         WebContents webContents = WebContentsFactory.createWebContents(profile, false, false);
         mTab =
                 new TabBuilder(profile)
                         .setWindow(getWindowAndroid())
                         .setLaunchType(TabLaunchType.FROM_EXTERNAL_APP)
                         .setWebContents(webContents)
-                        .setDelegateFactory(factory)
+                        .setDelegateFactory(new SearchActivityTabDelegateFactory())
                         .build();
         mTab.loadUrl(new LoadUrlParams(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
 

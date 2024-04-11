@@ -1006,6 +1006,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckUpdatesDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java",
   "java/src/org/chromium/chrome/browser/searchwidget/SearchActivityLocationBarLayout.java",
+  "java/src/org/chromium/chrome/browser/searchwidget/SearchActivityTabDelegateFactory.java",
   "java/src/org/chromium/chrome/browser/searchwidget/SearchActivityUtils.java",
   "java/src/org/chromium/chrome/browser/searchwidget/SearchBoxDataProvider.java",
   "java/src/org/chromium/chrome/browser/searchwidget/SearchWidgetProvider.java",
