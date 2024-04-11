@@ -10128,6 +10128,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSettingsEnableGetTheMostOutOfChromeDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(::features::kGetTheMostOutOfChrome)},
 
+    {"ios-promo-address-bubble", flag_descriptions::kIOSPromoAddressBubbleName,
+     flag_descriptions::kIOSPromoAddressBubbleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kIOSPromoAddressBubble)},
+
     {"ios-promo-bookmark-bubble",
      flag_descriptions::kIOSPromoBookmarkBubbleName,
      flag_descriptions::kIOSPromoBookmarkBubbleDescription, kOsDesktop,

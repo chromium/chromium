@@ -5137,6 +5137,15 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ios-promo-address-bubble",
+    "owners": [
+      "aliaaborhamy@google.com",
+      "gujen@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 129
+  },
+  {
     "name": "ios-promo-bookmark-bubble",
     "owners": [
       "aliaaborhamy@google.com",

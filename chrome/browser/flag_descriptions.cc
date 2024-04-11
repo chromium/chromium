@@ -5029,11 +5029,16 @@ const char kSettingsEnableGetTheMostOutOfChromeDescription[] =
     "When enabled, the 'Get the most out of Chrome' documentation section "
     "will be available.";
 
-const char kIOSPromoBookmarkBubbleName[] =
-    "Contextual Chrome for iOS promo in the add/update bookmark bubble.";
+const char kIOSPromoAddressBubbleName[] = "Chrome for iOS promo : addresses";
+const char kIOSPromoAddressBubbleDescription[] =
+    "When enabled, the Contextual Chrome for iOS promo will be shown to"
+    "the eligible users when they save/update their address.";
+
+const char kIOSPromoBookmarkBubbleName[] = "Chrome for iOS promo : bookmarks";
 const char kIOSPromoBookmarkBubbleDescription[] =
     "When enabled, the Contextual Chrome for iOS promo will be shown to"
     "the eligible users when they add/update their bookmarks.";
+
 #endif
 
 const char kWebAppDedupeInstallUrlsName[] = "Web App Dedupe Install URLs";
