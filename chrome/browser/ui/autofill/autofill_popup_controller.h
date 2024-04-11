@@ -18,11 +18,29 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace autofill {
+
+struct PopupControllerCommon;
 
 // This interface provides data to an AutofillPopupView.
 class AutofillPopupController : public AutofillPopupViewDelegate {
  public:
+  // Acts as a factory method to create a new `AutofillPopupController`, or
+  // reuse `previous` if the construction arguments are the same. `previous` may
+  // be invalidated by this call. The controller will listen for keyboard input
+  // routed to `web_contents` while the popup is showing, unless `web_contents`
+  // is null.
+  static base::WeakPtr<AutofillPopupController> GetOrCreate(
+      base::WeakPtr<AutofillPopupController> previous,
+      base::WeakPtr<AutofillPopupDelegate> delegate,
+      content::WebContents* web_contents,
+      PopupControllerCommon controller_common,
+      int32_t form_control_ax_id);
+
   // Recalculates the height and width of the popup and triggers a redraw when
   // suggestions change.
   virtual void OnSuggestionsChanged() = 0;

@@ -117,6 +117,21 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST_F(AutofillPopupControllerImplTest,
+       ManualFallBackTriggerSource_IgnoresClickOutsideCheck) {
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry},
+                  AutofillSuggestionTriggerSource::kManualFallbackAddress);
+
+  // Generate a popup, so it can be hidden later. It doesn't matter what the
+  // external_delegate thinks is being shown in the process, since we are just
+  // testing the popup here.
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+
+  EXPECT_TRUE(client()
+                  .popup_controller(manager())
+                  .ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 

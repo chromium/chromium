@@ -368,21 +368,6 @@ TEST_F(AutofillPopupControllerTest,
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
 }
 
-TEST_F(AutofillPopupControllerTest,
-       ManualFallBackTriggerSource_IgnoresClickOutsideCheck) {
-  ShowSuggestions(manager(), {PopupItemId::kAddressEntry},
-                  AutofillSuggestionTriggerSource::kManualFallbackAddress);
-
-  // Generate a popup, so it can be hidden later. It doesn't matter what the
-  // external_delegate thinks is being shown in the process, since we are just
-  // testing the popup here.
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-
-  EXPECT_TRUE(client()
-                  .popup_controller(manager())
-                  .ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
-}
-
 TEST_F(AutofillPopupControllerTest, UpdateDataListValues) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   std::vector<SelectOption> options = {
@@ -516,15 +501,14 @@ TEST_F(AutofillPopupControllerTest, PopupsWithOnlyDataLists) {
 
 TEST_F(AutofillPopupControllerTest, GetOrCreate) {
   auto create_controller = [&](gfx::RectF bounds) {
-    return AutofillPopupControllerImpl::GetOrCreate(
+    return AutofillPopupController::GetOrCreate(
         client().popup_controller(manager()).GetWeakPtr(),
         manager().external_delegate().GetWeakPtrForTest(), nullptr,
         PopupControllerCommon(std::move(bounds), base::i18n::UNKNOWN_DIRECTION,
                               nullptr),
         /*form_control_ax_id=*/0);
   };
-  WeakPtr<AutofillPopupControllerImpl> controller =
-      create_controller(gfx::RectF());
+  WeakPtr<AutofillPopupController> controller = create_controller(gfx::RectF());
   EXPECT_TRUE(controller);
 
   controller->Hide(PopupHidingReason::kViewDestroyed);
@@ -533,7 +517,7 @@ TEST_F(AutofillPopupControllerTest, GetOrCreate) {
   controller = create_controller(gfx::RectF());
   EXPECT_TRUE(controller);
 
-  WeakPtr<AutofillPopupControllerImpl> controller2 =
+  WeakPtr<AutofillPopupController> controller2 =
       create_controller(gfx::RectF());
   EXPECT_EQ(controller.get(), controller2.get());
 
@@ -544,7 +528,7 @@ TEST_F(AutofillPopupControllerTest, GetOrCreate) {
   EXPECT_CALL(client().popup_controller(manager()),
               Hide(PopupHidingReason::kViewDestroyed));
   gfx::RectF bounds(0.f, 0.f, 1.f, 2.f);
-  base::WeakPtr<AutofillPopupControllerImpl> controller3 =
+  base::WeakPtr<AutofillPopupController> controller3 =
       create_controller(bounds);
   EXPECT_EQ(&client().popup_controller(manager()), controller3.get());
   EXPECT_EQ(bounds, static_cast<AutofillPopupController*>(controller3.get())
@@ -553,7 +537,7 @@ TEST_F(AutofillPopupControllerTest, GetOrCreate) {
 
   client().popup_controller(manager()).DoHide();
 
-  const base::WeakPtr<AutofillPopupControllerImpl> controller4 =
+  const base::WeakPtr<AutofillPopupController> controller4 =
       create_controller(bounds);
   EXPECT_EQ(&client().popup_controller(manager()), controller4.get());
   EXPECT_EQ(bounds,
@@ -568,14 +552,14 @@ TEST_F(AutofillPopupControllerTest, ProperlyResetController) {
                               PopupItemId::kAutocompleteEntry});
 
   // Now show a new popup with the same controller, but with fewer items.
-  WeakPtr<AutofillPopupControllerImpl> controller =
-      AutofillPopupControllerImpl::GetOrCreate(
+  WeakPtr<AutofillPopupController> controller =
+      AutofillPopupController::GetOrCreate(
           client().popup_controller(manager()).GetWeakPtr(),
           manager().external_delegate().GetWeakPtrForTest(), nullptr,
           PopupControllerCommon(gfx::RectF(), base::i18n::UNKNOWN_DIRECTION,
                                 nullptr),
           /*form_control_ax_id=*/0);
-  EXPECT_EQ(0, controller->GetLineCountForTesting());
+  EXPECT_EQ(0, controller->GetLineCount());
 }
 
 TEST_F(AutofillPopupControllerTest, UnselectingClearsPreview) {
@@ -913,8 +897,6 @@ class AutofillPopupControllerTestHidingLogic
  public:
   void SetUp() override {
     AutofillPopupControllerTest::SetUp();
-#if !BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(IS_ANDROID)
     sub_frame_ = CreateAndNavigateChildFrame(
                      main_frame(), GURL("https://bar.com"), "sub_frame")
                      ->GetWeakDocumentPtr();

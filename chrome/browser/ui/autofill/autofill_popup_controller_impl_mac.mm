@@ -17,7 +17,7 @@ using base::WeakPtr;
 namespace autofill {
 
 // static
-WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
+WeakPtr<AutofillPopupController> AutofillPopupController::GetOrCreate(
     WeakPtr<AutofillPopupController> previous,
     WeakPtr<AutofillPopupDelegate> delegate,
     content::WebContents* web_contents,
@@ -36,7 +36,7 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
   if (previous.get())
     previous->Hide(PopupHidingReason::kViewDestroyed);
 
-  AutofillPopupControllerImpl* controller = new AutofillPopupControllerImplMac(
+  auto* controller = new AutofillPopupControllerImplMac(
       delegate, web_contents, std::move(controller_common), form_control_ax_id);
   return controller->GetWeakPtr();
 }

@@ -74,17 +74,6 @@ class AutofillPopupControllerImpl
   AutofillPopupControllerImpl& operator=(const AutofillPopupControllerImpl&) =
       delete;
 
-  // Creates a new `AutofillPopupControllerImpl`, or reuses `previous` if the
-  // construction arguments are the same. `previous` may be invalidated by this
-  // call. The controller will listen for keyboard input routed to
-  // `web_contents` while the popup is showing, unless `web_contents` is NULL.
-  static base::WeakPtr<AutofillPopupControllerImpl> GetOrCreate(
-      base::WeakPtr<AutofillPopupController> previous,
-      base::WeakPtr<AutofillPopupDelegate> delegate,
-      content::WebContents* web_contents,
-      PopupControllerCommon controller_common,
-      int32_t form_control_ax_id);
-
   // Handles a key press event and returns whether the event should be swallowed
   // (meaning that no other handler, in not particular the default handler, can
   // process it).
@@ -133,8 +122,6 @@ class AutofillPopupControllerImpl
     time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
   }
 
-  int GetLineCountForTesting() const { return GetLineCount(); }
-
  protected:
   AutofillPopupControllerImpl(
       base::WeakPtr<AutofillPopupDelegate> delegate,
@@ -176,6 +163,8 @@ class AutofillPopupControllerImpl
   virtual void HideViewAndDie();
 
  private:
+  friend class AutofillPopupController;
+
   // Clear the internal state of the controller. This is needed to ensure that
   // when the popup is reused it doesn't leak values between uses.
   void ClearState();

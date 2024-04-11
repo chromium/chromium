@@ -110,7 +110,7 @@ bool IsAncestorOf(content::RenderFrameHost* ancestor,
 
 #if !BUILDFLAG(IS_MAC)
 // static
-WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
+WeakPtr<AutofillPopupController> AutofillPopupController::GetOrCreate(
     WeakPtr<AutofillPopupController> previous,
     WeakPtr<AutofillPopupDelegate> delegate,
     content::WebContents* web_contents,
@@ -133,12 +133,12 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     previous->Hide(PopupHidingReason::kViewDestroyed);
   }
 #if BUILDFLAG(IS_ANDROID)
-  AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
+  auto* controller = new AutofillPopupControllerImpl(
       delegate, web_contents, std::move(controller_common), form_control_ax_id,
       base::BindRepeating(&local_password_migration::ShowWarning),
       /*parent=*/std::nullopt);
 #else
-  AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
+  auto* controller = new AutofillPopupControllerImpl(
       delegate, web_contents, std::move(controller_common), form_control_ax_id,
       base::DoNothing(), /*parent=*/std::nullopt);
 #endif
