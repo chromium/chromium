@@ -2573,6 +2573,16 @@
     "owners": ["dylancutler@google.com"]
   },
   {
+    "prefix": "ancestor-chain-bit-considered",
+    "platforms": ["Linux"],
+    "bases": [
+      "http/tests/cookies/partitioned-cookies/ancestor-chain.https.html"
+    ],
+    "args": ["--enable-features=AncestorChainBitEnabledInPartitionedCookies"],
+    "expires": "Oct 1, 2024",
+    "owners": ["selya@google.com"]
+  },
+  {
     "prefix": "permission-element",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/permission-element"],
