@@ -8,13 +8,16 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
@@ -26,9 +29,6 @@ namespace {
 const char kProductOneUrl[] = "https://example.com/productone";
 const char kProductTwoUrl[] = "https://example.com.com/producttwo";
 const char kProductSpecsName[] = "name";
-const char kUuid[] = "uuid";
-const int kCreationTime = 1000;
-const int kUpdateTime = 1001;
 
 sync_pb::CompareSpecifics BuildCompareSpecifics(
     const std::string& uuid,
@@ -50,17 +50,59 @@ sync_pb::CompareSpecifics BuildCompareSpecifics(
 }
 
 const sync_pb::CompareSpecifics kCompareSpecifics[] = {
-    BuildCompareSpecifics("abba",
+    BuildCompareSpecifics("abe18411-bd7e-4819-b9b5-11e66e0ad8b4",
                           1710953277,
                           1710953277 + base::Time::kMillisecondsPerDay,
                           "my first set",
                           {"https://foo.com", "https://bar.com"}),
     BuildCompareSpecifics(
-        "baab",
+        "f448709c-fe1f-44ea-883e-f46267b97d29",
         1711035900,
         1711035900 + (2 * base::Time::kMillisecondsPerDay) / 3,
         "my next set",
         {"https://some-url.com", "https://another-url.com"})};
+
+syncer::EntityData MakeEntityData(const sync_pb::CompareSpecifics& specifics) {
+  syncer::EntityData entity_data;
+  *entity_data.specifics.mutable_compare() = specifics;
+  entity_data.name = base::StringPrintf("%s_%s", specifics.name().c_str(),
+                                        specifics.uuid().c_str());
+  return entity_data;
+}
+
+void AddTestSpecifics(commerce::ProductSpecificationsSyncBridge* bridge) {
+  syncer::EntityChangeList add_changes;
+  for (const auto& specifics : kCompareSpecifics) {
+    add_changes.push_back(syncer::EntityChange::CreateAdd(
+        specifics.uuid(), MakeEntityData(specifics)));
+  }
+  bridge->ApplyIncrementalSyncChanges(
+      std::make_unique<syncer::InMemoryMetadataChangeList>(),
+      std::move(add_changes));
+}
+
+MATCHER_P(HasAllProductSpecs, compare_specifics, "") {
+  std::vector<const GURL> specifics_urls;
+  for (const sync_pb::ComparisonData& data : compare_specifics.data()) {
+    specifics_urls.push_back(GURL(data.url()));
+  }
+  return arg.uuid().AsLowercaseString() == compare_specifics.uuid() &&
+         arg.creation_time() ==
+             base::Time::FromMillisecondsSinceUnixEpoch(
+                 compare_specifics.creation_time_unix_epoch_micros()) &&
+         arg.update_time() ==
+             base::Time::FromMillisecondsSinceUnixEpoch(
+                 compare_specifics.update_time_unix_epoch_micros()) &&
+         arg.name() == compare_specifics.name() && arg.urls() == specifics_urls;
+}
+
+MATCHER_P(IsUuid, uuid, "") {
+  return arg.AsLowercaseString() == uuid;
+}
+
+MATCHER_P2(HasProductSpecsNameUrl, name, urls, "") {
+  return arg.name() == name && arg.urls() == urls;
+}
 
 }  // namespace
 
@@ -87,12 +129,6 @@ class MockProductSpecificationsSyncBridge
                syncer::EntityChangeList entity_changes),
               (override));
 
-  MOCK_METHOD(std::optional<syncer::ModelError>,
-              ApplyIncrementalSyncChanges,
-              (std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
-               syncer::EntityChangeList entity_changes),
-              (override));
-
   MOCK_METHOD(std::string,
               GetStorageKey,
               (const syncer::EntityData& entity_data),
@@ -113,20 +149,36 @@ class MockProductSpecificationsSyncBridge
               (DataCallback callback),
               (override));
 
-  MOCK_METHOD(const std::optional<sync_pb::CompareSpecifics>,
-              AddProductSpecifications,
-              (const std::string& name, const std::vector<const GURL>& urls),
-              (override));
-
   void AddCompareSpecifics(const sync_pb::CompareSpecifics& compare_specifics) {
     entries_.emplace(compare_specifics.uuid(), compare_specifics);
   }
+};
+
+class MockProductSpecificationsSetObserver
+    : public ProductSpecificationsSet::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnProductSpecificationsSetAdded,
+              (const ProductSpecificationsSet& set),
+              (const override));
+
+  MOCK_METHOD(void,
+              OnProductSpecificationsSetUpdate,
+              (const ProductSpecificationsSet& set),
+              (const override));
+
+  MOCK_METHOD(void,
+              OnProductSpecificationsSetRemoved,
+              (const base::Uuid& uuid),
+              (const override));
 };
 
 class ProductSpecificationsServiceTest : public testing::Test {
  public:
   void SetUp() override {
     store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+    ON_CALL(processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(true));
     std::unique_ptr<MockProductSpecificationsSyncBridge> bridge =
         std::make_unique<MockProductSpecificationsSyncBridge>(
             syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store()),
@@ -134,36 +186,23 @@ class ProductSpecificationsServiceTest : public testing::Test {
     bridge_ = bridge.get();
     service_ =
         std::make_unique<ProductSpecificationsService>(std::move(bridge));
+    service_->AddObserver(&observer_);
     base::RunLoop().RunUntilIdle();
   }
+
+  void TearDown() override { service_->RemoveObserver(&observer_); }
 
   MockProductSpecificationsSyncBridge* bridge() { return bridge_; }
 
   ProductSpecificationsService* service() { return service_.get(); }
 
-  void MockAddProductSpecifications() {
-    ON_CALL(*bridge_, AddProductSpecifications(testing::_, testing::_))
-        .WillByDefault(
-            [](const std::string& name, const std::vector<const GURL>& urls) {
-              sync_pb::CompareSpecifics specifics;
-              specifics.set_uuid(kUuid);
-              specifics.set_creation_time_unix_epoch_micros(kCreationTime);
-              specifics.set_update_time_unix_epoch_micros(kUpdateTime);
-              specifics.set_name(name);
-              for (const GURL& url : urls) {
-                sync_pb::ComparisonData* data = specifics.add_data();
-                data->set_url(url.spec());
-              }
-              return specifics;
-            });
+  testing::NiceMock<MockProductSpecificationsSetObserver>* observer() {
+    return &observer_;
   }
 
   void MockFailedAddProductSpecifications() {
-    ON_CALL(*bridge_, AddProductSpecifications(testing::_, testing::_))
-        .WillByDefault(
-            [](const std::string& name, const std::vector<const GURL>& urls) {
-              return std::nullopt;
-            });
+    ON_CALL(processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(false));
   }
 
   void CheckSpecsAgainstSpecifics(
@@ -191,6 +230,7 @@ class ProductSpecificationsServiceTest : public testing::Test {
   raw_ptr<MockProductSpecificationsSyncBridge> bridge_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<MockProductSpecificationsSetObserver> observer_;
 
   syncer::ModelTypeStore* store() { return store_.get(); }
 
@@ -212,7 +252,12 @@ TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsSuccess) {
-  MockAddProductSpecifications();
+  std::vector<const GURL> expected_product_urls{GURL(kProductOneUrl),
+                                                GURL(kProductTwoUrl)};
+  EXPECT_CALL(*observer(),
+              OnProductSpecificationsSetAdded(HasProductSpecsNameUrl(
+                  kProductSpecsName, expected_product_urls)))
+      .Times(1);
   std::optional<const ProductSpecificationsSet> product_spec_set =
       service()->AddProductSpecificationsSet(
           kProductSpecsName, {GURL(kProductOneUrl), GURL(kProductTwoUrl)});
@@ -222,11 +267,79 @@ TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsSuccess) {
   EXPECT_EQ(kProductTwoUrl, product_spec_set.value().urls()[1].spec());
 }
 
+TEST_F(ProductSpecificationsServiceTest, TestRemoveProductSpecifications) {
+  AddTestSpecifics(bridge());
+  EXPECT_CALL(*observer(), OnProductSpecificationsSetRemoved(
+                               IsUuid(kCompareSpecifics[0].uuid())))
+      .Times(1);
+  service()->DeleteProductSpecificationsSet(kCompareSpecifics[0].uuid());
+}
+
 TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsFailure) {
   MockFailedAddProductSpecifications();
   EXPECT_EQ(std::nullopt, service()->AddProductSpecificationsSet(
                               kProductSpecsName,
                               {GURL(kProductOneUrl), GURL(kProductTwoUrl)}));
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestObserverNewSpecifics) {
+  syncer::EntityChangeList add_changes;
+  for (const auto& specifics : kCompareSpecifics) {
+    add_changes.push_back(syncer::EntityChange::CreateAdd(
+        specifics.uuid(), MakeEntityData(specifics)));
+    EXPECT_CALL(*observer(),
+                OnProductSpecificationsSetAdded(HasAllProductSpecs(specifics)))
+        .Times(1);
+  }
+  bridge()->ApplyIncrementalSyncChanges(
+      std::make_unique<syncer::InMemoryMetadataChangeList>(),
+      std::move(add_changes));
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestObserverUpdateSpecifics) {
+  AddTestSpecifics(bridge());
+  syncer::EntityChangeList update_changes;
+  sync_pb::CompareSpecifics new_specifics = kCompareSpecifics[0];
+  sync_pb::ComparisonData* new_specifics_data = new_specifics.add_data();
+  new_specifics_data->set_url("https://newurl.com/");
+  new_specifics.set_update_time_unix_epoch_micros(
+      new_specifics.update_time_unix_epoch_micros() +
+      base::Time::kMillisecondsPerDay);
+  update_changes.push_back(syncer::EntityChange::CreateUpdate(
+      new_specifics.uuid(), MakeEntityData(new_specifics)));
+
+  // Won't be updated because the update timestamp hasn't increased.
+  sync_pb::CompareSpecifics noupdate_specifics = kCompareSpecifics[1];
+  sync_pb::ComparisonData* noupdate_specifics_data =
+      noupdate_specifics.add_data();
+  noupdate_specifics_data->set_url("https://newurl.com/");
+  update_changes.push_back(syncer::EntityChange::CreateUpdate(
+      noupdate_specifics.uuid(), MakeEntityData(noupdate_specifics)));
+
+  EXPECT_CALL(*observer(), OnProductSpecificationsSetUpdate(
+                               HasAllProductSpecs(new_specifics)))
+      .Times(1);
+  EXPECT_CALL(*observer(), OnProductSpecificationsSetUpdate(
+                               HasAllProductSpecs(noupdate_specifics)))
+      .Times(0);
+  bridge()->ApplyIncrementalSyncChanges(
+      std::make_unique<syncer::InMemoryMetadataChangeList>(),
+      std::move(update_changes));
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestObserverRemoveSpecifics) {
+  AddTestSpecifics(bridge());
+  syncer::EntityChangeList remove_changes;
+  for (const auto& specifics : kCompareSpecifics) {
+    remove_changes.push_back(
+        syncer::EntityChange::CreateDelete(specifics.uuid()));
+    EXPECT_CALL(*observer(),
+                OnProductSpecificationsSetRemoved(IsUuid(specifics.uuid())))
+        .Times(1);
+  }
+  bridge()->ApplyIncrementalSyncChanges(
+      std::make_unique<syncer::InMemoryMetadataChangeList>(),
+      std::move(remove_changes));
 }
 
 }  // namespace commerce

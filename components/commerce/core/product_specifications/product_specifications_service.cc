@@ -58,4 +58,14 @@ void ProductSpecificationsService::DeleteProductSpecificationsSet(
   bridge_->DeleteProductSpecificationsSet(uuid);
 }
 
+void ProductSpecificationsService::AddObserver(
+    const commerce::ProductSpecificationsSet::Observer* observer) {
+  bridge_->AddObserver(observer);
+}
+
+void ProductSpecificationsService::RemoveObserver(
+    const commerce::ProductSpecificationsSet::Observer* observer) {
+  bridge_->RemoveObserver(observer);
+}
+
 }  // namespace commerce

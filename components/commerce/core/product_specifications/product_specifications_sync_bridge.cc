@@ -70,6 +70,7 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_ADD:
         entries_.emplace(change->storage_key(), specifics);
         batch->WriteData(change->storage_key(), specifics.SerializeAsString());
+        OnSpecificsAdded(specifics);
         break;
       case syncer::EntityChange::ACTION_UPDATE: {
         auto local_specifics = entries_.find(change->storage_key());
@@ -80,6 +81,7 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
             entries_[change->storage_key()] = specifics;
             batch->WriteData(change->storage_key(),
                              specifics.SerializeAsString());
+            OnSpecificsUpdated(specifics);
           }
         }
         break;
@@ -87,6 +89,7 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_DELETE:
         entries_.erase(change->storage_key());
         batch->DeleteData(change->storage_key());
+        OnSpecificsRemoved(change->storage_key());
         break;
     }
   }
@@ -154,6 +157,7 @@ ProductSpecificationsSyncBridge::AddProductSpecifications(
 
   batch->WriteData(specifics.uuid(), specifics.SerializeAsString());
   Commit(std::move(batch));
+  OnSpecificsAdded(specifics);
   return std::optional(specifics);
 }
 
@@ -172,6 +176,7 @@ void ProductSpecificationsSyncBridge::DeleteProductSpecificationsSet(
   batch->DeleteData(uuid);
 
   Commit(std::move(batch));
+  OnSpecificsRemoved(uuid);
 }
 
 void ProductSpecificationsSyncBridge::OnStoreCreated(
@@ -232,6 +237,38 @@ void ProductSpecificationsSyncBridge::OnCommit(
     const std::optional<syncer::ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
+  }
+}
+
+void ProductSpecificationsSyncBridge::AddObserver(
+    const commerce::ProductSpecificationsSet::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+void ProductSpecificationsSyncBridge::RemoveObserver(
+    const commerce::ProductSpecificationsSet::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void ProductSpecificationsSyncBridge::OnSpecificsAdded(
+    const sync_pb::CompareSpecifics& compare_specifics) {
+  for (const auto& observer : observers_) {
+    observer.OnProductSpecificationsSetAdded(
+        ProductSpecificationsSet::FromProto(compare_specifics));
+  }
+}
+
+void ProductSpecificationsSyncBridge::OnSpecificsUpdated(
+    const sync_pb::CompareSpecifics& compare_specifics) {
+  for (const auto& observer : observers_) {
+    observer.OnProductSpecificationsSetUpdate(
+        ProductSpecificationsSet::FromProto(compare_specifics));
+  }
+}
+
+void ProductSpecificationsSyncBridge::OnSpecificsRemoved(
+    const std::string& uuid) {
+  for (const auto& observer : observers_) {
+    observer.OnProductSpecificationsSetRemoved(uuid);
   }
 }
 

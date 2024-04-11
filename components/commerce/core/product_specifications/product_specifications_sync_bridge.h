@@ -6,6 +6,8 @@
 #define COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SYNC_BRIDGE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -57,6 +59,9 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
+  base::ObserverList<const commerce::ProductSpecificationsSet::Observer>
+      observers_;
+
   virtual const std::optional<sync_pb::CompareSpecifics>
   AddProductSpecifications(const std::string& name,
                            const std::vector<const GURL>& urls);
@@ -74,6 +79,15 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
   void OnCommit(const std::optional<syncer::ModelError>& error);
+
+  void AddObserver(
+      const commerce::ProductSpecificationsSet::Observer* observer);
+  void RemoveObserver(
+      const commerce::ProductSpecificationsSet::Observer* observer);
+
+  void OnSpecificsAdded(const sync_pb::CompareSpecifics& compare_specifics);
+  void OnSpecificsUpdated(const sync_pb::CompareSpecifics& compare_specifics);
+  void OnSpecificsRemoved(const std::string& uuid);
 
   base::WeakPtrFactory<ProductSpecificationsSyncBridge> weak_ptr_factory_{this};
 };

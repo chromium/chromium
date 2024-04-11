@@ -38,6 +38,14 @@ class ProductSpecificationsService : public KeyedService {
   // Deletes product specification set corresponding to identifier |uuid|.
   void DeleteProductSpecificationsSet(const std::string& uuid);
 
+  // Observer monitoring add/remove/update of ProductSpecificationSets.
+  void AddObserver(
+      const commerce::ProductSpecificationsSet::Observer* observer);
+
+  // Remove observer monitoring add/remove/update of ProductSpecificationSets.
+  void RemoveObserver(
+      const commerce::ProductSpecificationsSet::Observer* observer);
+
  private:
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

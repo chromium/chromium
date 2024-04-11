@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/sync/protocol/compare_specifics.pb.h"
@@ -15,10 +16,30 @@
 namespace commerce {
 
 class ProductSpecificationsService;
+class ProductSpecificationsSyncBridge;
 
 // Contains a set of product specifications.
 class ProductSpecificationsSet {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnProductSpecificationsSetAdded(
+        const ProductSpecificationsSet& product_specifications_set) const {}
+
+    virtual void OnProductSpecificationsSetUpdate(
+        const ProductSpecificationsSet& product_specifications_set) const {}
+
+    virtual void OnProductSpecificationsSetRemoved(
+        const base::Uuid& uuid) const {}
+
+   private:
+    friend commerce::ProductSpecificationsSyncBridge;
+
+    void OnProductSpecificationsSetRemoved(const std::string& uuid) const {
+      OnProductSpecificationsSetRemoved(base::Uuid::ParseLowercase(uuid));
+    }
+  };
+
   ProductSpecificationsSet(const std::string& uuid,
                            const int64_t creation_time_usec_since_epoch,
                            const int64_t update_time_usec_since_epoch,
@@ -47,6 +68,7 @@ class ProductSpecificationsSet {
 
  private:
   friend commerce::ProductSpecificationsService;
+  friend commerce::ProductSpecificationsSyncBridge;
 
   static ProductSpecificationsSet FromProto(
       const sync_pb::CompareSpecifics& compare_specifics);
