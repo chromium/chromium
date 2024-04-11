@@ -5,38 +5,11 @@
 #include "third_party/blink/renderer/core/loader/resource/text_resource.h"
 
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
-
-namespace {
-
-class SVGDocumentResourceFactory : public ResourceFactory {
- public:
-  SVGDocumentResourceFactory()
-      : ResourceFactory(ResourceType::kSVGDocument,
-                        TextResourceDecoderOptions::kXMLContent) {}
-
-  Resource* Create(
-      const ResourceRequest& request,
-      const ResourceLoaderOptions& options,
-      const TextResourceDecoderOptions& decoder_options) const override {
-    return MakeGarbageCollected<TextResource>(
-        request, ResourceType::kSVGDocument, options, decoder_options);
-  }
-};
-
-}  // namespace
-
-TextResource* TextResource::FetchSVGDocument(FetchParameters& params,
-                                             ResourceFetcher* fetcher,
-                                             ResourceClient* client) {
-  return To<TextResource>(
-      fetcher->RequestResource(params, SVGDocumentResourceFactory(), client));
-}
 
 TextResource::TextResource(const ResourceRequest& resource_request,
                            ResourceType type,

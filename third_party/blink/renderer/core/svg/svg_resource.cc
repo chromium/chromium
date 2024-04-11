@@ -241,7 +241,11 @@ void ExternalSVGResource::Load(Document& document) {
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;
   FetchParameters params(ResourceRequest(url_), options);
-  document_content_ = SVGResourceDocumentContent::Fetch(params, document, this);
+  document_content_ = SVGResourceDocumentContent::Fetch(params, document);
+  if (!document_content_) {
+    return;
+  }
+  document_content_->AddObserver(this);
   target_ = ResolveTarget();
 }
 
@@ -258,20 +262,22 @@ void ExternalSVGResource::LoadWithoutCSP(Document& document) {
   FetchParameters params(ResourceRequest(url_), options);
   params.SetContentSecurityCheck(
       network::mojom::blink::CSPDisposition::DO_NOT_CHECK);
-  document_content_ = SVGResourceDocumentContent::Fetch(params, document, this);
+  document_content_ = SVGResourceDocumentContent::Fetch(params, document);
+  if (!document_content_) {
+    return;
+  }
+  document_content_->AddObserver(this);
   target_ = ResolveTarget();
 }
 
-void ExternalSVGResource::NotifyFinished(Resource*) {
+void ExternalSVGResource::ResourceNotifyFinished(
+    SVGResourceDocumentContent* document_content) {
+  DCHECK_EQ(document_content_, document_content);
   Element* new_target = ResolveTarget();
   if (new_target == target_)
     return;
   target_ = new_target;
   NotifyContentChanged();
-}
-
-String ExternalSVGResource::DebugName() const {
-  return "ExternalSVGResource";
 }
 
 Element* ExternalSVGResource::ResolveTarget() {
@@ -290,7 +296,6 @@ Element* ExternalSVGResource::ResolveTarget() {
 void ExternalSVGResource::Trace(Visitor* visitor) const {
   visitor->Trace(document_content_);
   SVGResource::Trace(visitor);
-  ResourceClient::Trace(visitor);
 }
 
 ExternalSVGResourceImageContent::ExternalSVGResourceImageContent(

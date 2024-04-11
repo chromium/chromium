@@ -188,7 +188,12 @@ bool ShouldResourceBeAddedToMemoryCache(const FetchParameters& params,
   return IsMainThread() &&
          params.GetResourceRequest().HttpMethod() == http_names::kGET &&
          params.Options().data_buffering_policy != kDoNotBufferData &&
-         !IsRawResource(*resource);
+         !IsRawResource(*resource) &&
+         // Always create a new resource for SVG resource documents since they
+         // are tied to the requesting document. There's a document-scoped cache
+         // in-front of the ResourceFetcher that will handle reuse (see
+         // SVGResourceDocumentContent::Fetch()).
+         resource->GetType() != ResourceType::kSVGDocument;
 }
 
 bool ShouldResourceBeKeptStrongReferenceByType(

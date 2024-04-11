@@ -26,9 +26,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
@@ -38,7 +38,7 @@ class SVGResourceDocumentContent;
 
 class SVGUseElement final : public SVGGraphicsElement,
                             public SVGURIReference,
-                            public ResourceClient {
+                            public SVGResourceDocumentObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -104,8 +104,11 @@ class SVGUseElement final : public SVGGraphicsElement,
                               const SVGElement& new_target) const;
 
   void QueueOrDispatchPendingEvent(const AtomicString&);
-  void NotifyFinished(Resource*) override;
-  String DebugName() const override;
+
+  // SVGResourceDocumentObserver:
+  void ResourceNotifyFinished(SVGResourceDocumentContent*) override;
+
+  void UpdateDocumentContent(SVGResourceDocumentContent*);
   void UpdateTargetReference();
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(

@@ -129,6 +129,8 @@ blink_core_sources_loader = [
   "resource/script_resource.h",
   "resource/speculation_rules_resource.cc",
   "resource/speculation_rules_resource.h",
+  "resource/svg_document_resource.cc",
+  "resource/svg_document_resource.h",
   "resource/text_resource.cc",
   "resource/text_resource.h",
   "resource/video_timing.h",
