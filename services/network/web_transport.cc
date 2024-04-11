@@ -236,7 +236,7 @@ class WebTransport::Stream final {
     MaySendFin();
     while (readable_ && outgoing_ && outgoing_->CanWrite()) {
       const void* data = nullptr;
-      uint32_t available = 0;
+      size_t available = 0;
       MojoResult result = readable_->BeginReadData(
           &data, &available, MOJO_BEGIN_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -286,7 +286,7 @@ class WebTransport::Stream final {
       quic::WebTransportStream::ReadResult read_result;
       if (incoming_->ReadableBytes() > 0) {
         void* buffer = nullptr;
-        uint32_t available = 0;
+        size_t available = 0;
         MojoResult result = writable_->BeginWriteData(
             &buffer, &available, MOJO_BEGIN_WRITE_DATA_FLAG_NONE);
         if (result == MOJO_RESULT_SHOULD_WAIT) {

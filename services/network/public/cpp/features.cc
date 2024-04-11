@@ -296,12 +296,12 @@ uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
 #endif
 }
 
-uint32_t GetNetAdapterMaxBufSize() {
+size_t GetNetAdapterMaxBufSize() {
   return GetNetAdapterMaxBufSizeParam();
 }
 
 // static
-uint32_t GetLoaderChunkSize() {
+size_t GetLoaderChunkSize() {
   return GetMaxNumConsumedBytesInTask();
 }
 

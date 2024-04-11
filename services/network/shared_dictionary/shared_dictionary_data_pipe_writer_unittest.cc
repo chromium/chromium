@@ -93,7 +93,7 @@ class SharedDictionaryDataPipeWriterTest : public ::testing::Test {
   std::string GetDataInComsumerHandle(bool consume = false) {
     std::string output;
     const void* buffer;
-    uint32_t num_bytes;
+    size_t num_bytes;
     MojoResult result = consumer_handle_->BeginReadData(
         &buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_FAILED_PRECONDITION ||

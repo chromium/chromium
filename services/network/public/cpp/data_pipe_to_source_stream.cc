@@ -48,13 +48,13 @@ int DataPipeToSourceStream::Read(net::IOBuffer* buf,
   }
 
   const void* buffer = nullptr;
-  uint32_t available = 0;
+  size_t available = 0;
   MojoResult result =
       body_->BeginReadData(&buffer, &available, MOJO_READ_DATA_FLAG_NONE);
   switch (result) {
     case MOJO_RESULT_OK: {
-      uint32_t consume =
-          std::min(base::checked_cast<uint32_t>(buf_size), available);
+      size_t consume =
+          std::min(base::checked_cast<size_t>(buf_size), available);
       memcpy(buf->data(), buffer, consume);
       body_->EndReadData(consume);
       return base::checked_cast<int>(consume);
@@ -81,13 +81,13 @@ void DataPipeToSourceStream::OnReadable(MojoResult unused) {
   DCHECK(pending_callback_);
   DCHECK(output_buf_);
   const void* buffer = nullptr;
-  uint32_t available = 0;
+  size_t available = 0;
   MojoResult result =
       body_->BeginReadData(&buffer, &available, MOJO_READ_DATA_FLAG_NONE);
   switch (result) {
     case MOJO_RESULT_OK: {
-      uint32_t consume =
-          std::min(base::checked_cast<uint32_t>(output_buf_size_), available);
+      size_t consume =
+          std::min(base::checked_cast<size_t>(output_buf_size_), available);
       memcpy(output_buf_->data(), buffer, consume);
       body_->EndReadData(consume);
       std::move(pending_callback_).Run(consume);

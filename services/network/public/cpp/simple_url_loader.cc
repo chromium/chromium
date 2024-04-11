@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -163,9 +164,8 @@ class StringUploadDataPipeGetter : public mojom::DataPipeGetter {
     DCHECK_LE(write_position_, upload_string_.length());
 
     while (true) {
-      uint32_t write_size = static_cast<uint32_t>(
-          std::min(static_cast<size_t>(32 * 1024),
-                   upload_string_.length() - write_position_));
+      size_t write_size = std::min(static_cast<size_t>(32 * 1024),
+                                   upload_string_.length() - write_position_);
       if (write_size == 0) {
         // Upload is done. Close the upload body pipe and wait for another call
         // to Read().
@@ -545,7 +545,7 @@ class BodyReader {
       }
 
       const void* body_data;
-      uint32_t read_size;
+      size_t read_size;
       MojoResult result = body_data_pipe_->BeginReadData(
           &body_data, &read_size, MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -568,9 +568,11 @@ class BodyReader {
       }
 
       // Check size against the limit.
-      uint32_t copy_size = read_size;
-      if (static_cast<int64_t>(copy_size) > max_body_size_ - total_bytes_read_)
+      uint32_t copy_size = base::checked_cast<uint32_t>(read_size);
+      if (base::strict_cast<int64_t>(copy_size) >
+          max_body_size_ - total_bytes_read_) {
         copy_size = max_body_size_ - total_bytes_read_;
+      }
 
       total_bytes_read_ += copy_size;
 

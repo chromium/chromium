@@ -114,7 +114,7 @@ class SourceStreamToDataPipeTest
     MojoResult result = MOJO_RESULT_OK;
     while (result == MOJO_RESULT_OK || result == MOJO_RESULT_SHOULD_WAIT) {
       char buffer[16];
-      uint32_t read_size = sizeof(buffer);
+      size_t read_size = sizeof(buffer);
       result =
           consumer_end().ReadData(buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_FAILED_PRECONDITION)

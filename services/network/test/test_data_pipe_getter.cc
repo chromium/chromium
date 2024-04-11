@@ -66,9 +66,8 @@ void TestDataPipeGetter::WriteData() {
   DCHECK_LE(write_position_, string_to_write_.length());
 
   while (true) {
-    uint32_t write_size = static_cast<uint32_t>(
-        std::min(static_cast<size_t>(32 * 1024),
-                 string_to_write_.length() - write_position_));
+    size_t write_size = std::min(static_cast<size_t>(32 * 1024),
+                                 string_to_write_.length() - write_position_);
     if (write_size == 0) {
       // Writing all the data for one call to Read() is done. Close the pipe and
       // wait for another call to Read().

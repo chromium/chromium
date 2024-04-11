@@ -1077,7 +1077,7 @@ TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_DisableLoadTiming) {
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_LargeBody) {
-  constexpr uint32_t kReadDataSize = 512;
+  constexpr size_t kReadDataSize = 512;
   // Arbitrary response body size larger than `kReadDataSize`.
   constexpr int kBodySize = 2 * 1024 + 659;
   DCHECK_GE(kMaxPerEntrySize, kBodySize);
@@ -1094,7 +1094,7 @@ TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_LargeBody) {
   std::string received_body;
   while (true) {
     char buf[kReadDataSize];
-    uint32_t num_bytes = kReadDataSize;
+    size_t num_bytes = kReadDataSize;
     MojoResult result =
         consumer_handle->ReadData(buf, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
 
@@ -1141,10 +1141,10 @@ TEST_F(NetworkServiceMemoryCacheTest,
       pair.client->response_body_release();
 
   // Read the half of the response body.
-  int num_read = 0;
+  size_t num_read = 0;
   while (num_read < kReadDataSize) {
     char buf[kReadDataSize];
-    uint32_t num_bytes = kReadDataSize;
+    size_t num_bytes = kReadDataSize;
     MojoResult result =
         consumer_handle->ReadData(buf, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_SHOULD_WAIT) {

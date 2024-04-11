@@ -255,7 +255,7 @@ class TestServer {
       return;
     }
     char buffer[16];
-    uint32_t read_size = sizeof(buffer);
+    size_t read_size = sizeof(buffer);
     result = server_socket_receive_handle_->ReadData(buffer, &read_size,
                                                      MOJO_READ_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_SHOULD_WAIT)
@@ -323,14 +323,13 @@ class TCPSocketTest : public testing::Test {
     while (received_contents.size() < num_bytes) {
       base::RunLoop().RunUntilIdle();
       std::vector<char> buffer(num_bytes);
-      uint32_t read_size = static_cast<uint32_t>(num_bytes);
-      MojoResult result = handle->get().ReadData(buffer.data(), &read_size,
+      MojoResult result = handle->get().ReadData(buffer.data(), &num_bytes,
                                                  MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_SHOULD_WAIT)
         continue;
       if (result != MOJO_RESULT_OK)
         return received_contents;
-      received_contents.append(buffer.data(), read_size);
+      received_contents.append(buffer.data(), num_bytes);
     }
     return received_contents;
   }
@@ -616,7 +615,7 @@ TEST_F(TCPSocketTest, SocketClosed) {
   // Read from |client_socket_receive_handle| again should return that the pipe
   // is broken.
   char buffer[16];
-  uint32_t read_size = sizeof(buffer);
+  size_t read_size = sizeof(buffer);
   MojoResult mojo_result = client_socket_receive_handle->ReadData(
       buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
   ASSERT_EQ(MOJO_RESULT_FAILED_PRECONDITION, mojo_result);
@@ -625,7 +624,7 @@ TEST_F(TCPSocketTest, SocketClosed) {
   // Send pipe should be closed.
   while (true) {
     base::RunLoop().RunUntilIdle();
-    uint32_t size = strlen(kTestMsg);
+    size_t size = strlen(kTestMsg);
     MojoResult r = client_socket_send_handle->WriteData(
         kTestMsg, &size, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
     if (r == MOJO_RESULT_SHOULD_WAIT)
@@ -867,7 +866,7 @@ TEST_P(TCPSocketWithMockSocketTest, ServerAcceptWithObserverReadError) {
   EXPECT_EQ(net::OK, callback->WaitForResult());
 
   base::RunLoop().RunUntilIdle();
-  uint32_t read_size = 16;
+  size_t read_size = 16;
   std::vector<char> buffer(read_size);
   MojoResult result = receive_handle->ReadData(buffer.data(), &read_size,
                                                MOJO_READ_DATA_FLAG_NONE);
@@ -919,7 +918,7 @@ TEST_P(TCPSocketWithMockSocketTest, ServerAcceptWithObserverWriteError) {
   // Repeatedly write data to the |send_handle| until write fails.
   while (true) {
     base::RunLoop().RunUntilIdle();
-    uint32_t num_bytes = strlen(kTestMsg);
+    size_t num_bytes = strlen(kTestMsg);
     MojoResult result = send_handle->WriteData(&kTestMsg, &num_bytes,
                                                MOJO_WRITE_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_SHOULD_WAIT)
@@ -969,7 +968,7 @@ TEST_P(TCPSocketWithMockSocketTest, ReadAndWriteMultiple) {
     EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kMsgSize));
     // Write multiple times.
     for (size_t i = 0; i < kMsgSize; ++i) {
-      uint32_t num_bytes = 1;
+      size_t num_bytes = 1;
       EXPECT_EQ(MOJO_RESULT_OK,
                 client_socket_send_handle->WriteData(
                     &kTestMsg[i], &num_bytes, MOJO_WRITE_DATA_FLAG_NONE));
@@ -1021,13 +1020,13 @@ TEST_P(TCPSocketWithMockSocketTest, PartialStreamSocketWrite) {
     // Write twice, each with kMsgSize/2 bytes which is bigger than the 1-byte
     // MockWrite(). This is to exercise that StreamSocket::Write() can do
     // partial write.
-    uint32_t first_write_size = kMsgSize / 2;
+    size_t first_write_size = kMsgSize / 2;
     EXPECT_EQ(MOJO_RESULT_OK,
               client_socket_send_handle->WriteData(
                   &kTestMsg[0], &first_write_size, MOJO_WRITE_DATA_FLAG_NONE));
     // Flush the kMsgSize/2 byte write.
     base::RunLoop().RunUntilIdle();
-    uint32_t second_write_size = kMsgSize - first_write_size;
+    size_t second_write_size = kMsgSize - first_write_size;
     EXPECT_EQ(MOJO_RESULT_OK,
               client_socket_send_handle->WriteData(&kTestMsg[first_write_size],
                                                    &second_write_size,
@@ -1061,7 +1060,7 @@ TEST_P(TCPSocketWithMockSocketTest, ReadError) {
   EXPECT_EQ("", Read(&client_socket_receive_handle, 1));
   EXPECT_EQ(net::ERR_FAILED, observer()->WaitForReadError());
   // Writes can proceed even though there is a read error.
-  uint32_t num_bytes = strlen(kTestMsg);
+  size_t num_bytes = strlen(kTestMsg);
   EXPECT_EQ(MOJO_RESULT_OK,
             client_socket_send_handle->WriteData(&kTestMsg, &num_bytes,
                                                  MOJO_WRITE_DATA_FLAG_NONE));
@@ -1093,7 +1092,7 @@ TEST_P(TCPSocketWithMockSocketTest, WriteError) {
       client_socket.BindNewPipeAndPassReceiver(),
       observer()->GetObserverRemote(), std::nullopt /*local_addr*/, server_addr,
       &client_socket_receive_handle, &client_socket_send_handle);
-  uint32_t num_bytes = strlen(kTestMsg);
+  size_t num_bytes = strlen(kTestMsg);
   EXPECT_EQ(MOJO_RESULT_OK,
             client_socket_send_handle->WriteData(&kTestMsg, &num_bytes,
                                                  MOJO_WRITE_DATA_FLAG_NONE));

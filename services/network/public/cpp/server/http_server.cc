@@ -233,7 +233,7 @@ void HttpServer::OnReadable(int connection_id,
     return;
 
   const void* read_buffer;
-  unsigned int bytes_read;
+  size_t bytes_read;
   result = connection->receive_handle().BeginReadData(&read_buffer, &bytes_read,
                                                       MOJO_READ_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -353,7 +353,7 @@ void HttpServer::OnWritable(int connection_id, MojoResult result) {
     return;
 
   std::string& write_buf = connection->write_buf();
-  unsigned int buffer_size = write_buf.size();
+  size_t buffer_size = write_buf.size();
 
   if (!connection->write_buf().empty()) {
     result = connection->send_handle().WriteData(write_buf.data(), &buffer_size,

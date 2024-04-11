@@ -339,7 +339,7 @@ void TestURLLoaderFactory::SimulateResponse(
     mojo::ScopedDataPipeProducerHandle producer_handle;
     CHECK_EQ(mojo::CreateDataPipe(content.size(), producer_handle, body),
              MOJO_RESULT_OK);
-    uint32_t bytes_written = content.size();
+    size_t bytes_written = content.size();
     CHECK_EQ(MOJO_RESULT_OK,
              producer_handle->WriteData(content.data(), &bytes_written,
                                         MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));

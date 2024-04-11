@@ -91,7 +91,7 @@ void SharedDictionaryDataPipeWriter::ContinueReadWrite(
     MojoResult,
     const mojo::HandleSignalsState& state) {
   const void* buffer;
-  uint32_t buffer_size = 0;
+  size_t buffer_size = 0;
   MojoResult result = consumer_handle_->BeginReadData(
       &buffer, &buffer_size, MOJO_BEGIN_READ_DATA_FLAG_NONE);
   switch (result) {

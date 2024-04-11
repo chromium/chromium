@@ -73,7 +73,7 @@ MojoResult ReadConsumerData(mojo::ScopedDataPipeConsumerHandle& consumer,
             }
             if (state.readable()) {
               char read_buffer[32];
-              uint32_t bytes_read = sizeof(read_buffer);
+              size_t bytes_read = sizeof(read_buffer);
               result = consumer->ReadData(read_buffer, &bytes_read,
                                           MOJO_READ_DATA_FLAG_NONE);
               EXPECT_EQ(MOJO_RESULT_OK, result);
@@ -203,7 +203,7 @@ TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
   mojo::ScopedDataPipeConsumerHandle consumer;
   CreateDataPipe(&producer, &consumer);
 
-  uint32_t bytes_read = std::char_traits<char>::length(kBuffer);
+  size_t bytes_read = std::char_traits<char>::length(kBuffer);
   auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>(kBuffer);
 
   MojoResult result =
@@ -300,7 +300,7 @@ TEST_F(BluetoothSerialPortImplTest, StartReadingLargeBufferTest) {
             EXPECT_EQ(result, MOJO_RESULT_OK);
             if (state.readable()) {
               char read_buffer[32];
-              uint32_t bytes_read = sizeof(read_buffer);
+              size_t bytes_read = sizeof(read_buffer);
               result = consumer->ReadData(read_buffer, &bytes_read,
                                           MOJO_READ_DATA_FLAG_NONE);
               if (result == MOJO_RESULT_OK) {
@@ -391,7 +391,7 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteWithDataInPipe) {
   mojo::ScopedDataPipeConsumerHandle consumer;
   CreateDataPipe(&producer, &consumer);
 
-  uint32_t bytes_read = std::char_traits<char>::length(kBuffer);
+  size_t bytes_read = std::char_traits<char>::length(kBuffer);
 
   MojoResult result =
       producer->WriteData(&kBuffer, &bytes_read, MOJO_WRITE_DATA_FLAG_NONE);
@@ -438,7 +438,7 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteAndWriteNewPipe) {
   constexpr size_t kBufferSize = kCapacityNumBytes;
   constexpr size_t kBufferMidpointPos = kBufferSize / 2;
   const std::string write_data = CreateTestData(kBufferSize);
-  uint32_t bytes_written;
+  size_t bytes_written;
   MojoResult result;
 
   const std::string pre_flush_data =

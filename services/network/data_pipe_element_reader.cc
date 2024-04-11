@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
@@ -117,12 +118,12 @@ int DataPipeElementReader::ReadInternal(net::IOBuffer* buf, int buf_length) {
   if (BytesRemaining() == 0)
     return net::OK;
 
-  uint32_t num_bytes = buf_length;
+  size_t num_bytes = base::checked_cast<size_t>(buf_length);
   MojoResult rv =
       data_pipe_->ReadData(buf->data(), &num_bytes, MOJO_READ_DATA_FLAG_NONE);
   if (rv == MOJO_RESULT_OK) {
     bytes_read_ += num_bytes;
-    return num_bytes;
+    return base::checked_cast<int>(num_bytes);
   }
 
   if (rv == MOJO_RESULT_SHOULD_WAIT) {

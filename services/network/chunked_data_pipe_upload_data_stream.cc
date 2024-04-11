@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
@@ -113,7 +114,7 @@ int ChunkedDataPipeUploadDataStream::ReadInternal(net::IOBuffer* buf,
                             base::Unretained(this)));
   }
 
-  uint32_t num_bytes = buf_len;
+  size_t num_bytes = base::checked_cast<size_t>(buf_len);
   if (size_ && num_bytes > *size_ - bytes_read_)
     num_bytes = *size_ - bytes_read_;
   MojoResult rv =
@@ -246,7 +247,7 @@ void ChunkedDataPipeUploadDataStream::EnableCache(size_t dst_window_size) {
 }
 
 void ChunkedDataPipeUploadDataStream::WriteToCacheIfNeeded(net::IOBuffer* buf,
-                                                           uint32_t num_bytes) {
+                                                           size_t num_bytes) {
   if (cache_state_ != CacheState::kActive)
     return;
 

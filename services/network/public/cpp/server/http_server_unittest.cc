@@ -82,7 +82,7 @@ class TestHttpClient {
 
   void Send(const std::string& message) {
     size_t index = 0;
-    uint32_t write_size = message.size();
+    size_t write_size = message.size();
     while (write_size > 0) {
       base::RunLoop().RunUntilIdle();
       MojoResult result = send_pipe_handle_->WriteData(
@@ -100,14 +100,13 @@ class TestHttpClient {
     while (data->size() < num_bytes) {
       base::RunLoop().RunUntilIdle();
       std::vector<char> buffer(num_bytes);
-      uint32_t read_size = num_bytes;
       MojoResult result = receive_pipe_handle_->ReadData(
-          buffer.data(), &read_size, MOJO_READ_DATA_FLAG_NONE);
+          buffer.data(), &num_bytes, MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_SHOULD_WAIT)
         continue;
       if (result != MOJO_RESULT_OK)
         return false;
-      data->append(buffer.data(), read_size);
+      data->append(buffer.data(), num_bytes);
     }
     return true;
   }

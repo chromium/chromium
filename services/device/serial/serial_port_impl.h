@@ -74,8 +74,7 @@ class SerialPortImpl : public mojom::SerialPort {
                 OpenCallback callback);
   void PortOpened(OpenCallback callback, bool success);
   void WriteToPort(MojoResult result, const mojo::HandleSignalsState& state);
-  void OnWriteToPortCompleted(uint32_t bytes_expected,
-                              uint32_t bytes_sent,
+  void OnWriteToPortCompleted(uint32_t bytes_sent,
                               mojom::SerialSendError error);
   void ReadFromPortAndWriteOut(MojoResult result,
                                const mojo::HandleSignalsState& state);

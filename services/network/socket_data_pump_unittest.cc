@@ -123,14 +123,13 @@ class SocketDataPumpTest : public testing::Test,
     while (received_contents.size() < num_bytes) {
       base::RunLoop().RunUntilIdle();
       std::vector<char> buffer(num_bytes);
-      uint32_t read_size = static_cast<uint32_t>(num_bytes);
-      MojoResult result = handle->get().ReadData(buffer.data(), &read_size,
+      MojoResult result = handle->get().ReadData(buffer.data(), &num_bytes,
                                                  MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_SHOULD_WAIT)
         continue;
       if (result != MOJO_RESULT_OK)
         return received_contents;
-      received_contents.append(buffer.data(), read_size);
+      received_contents.append(buffer.data(), num_bytes);
     }
     return received_contents;
   }
@@ -180,7 +179,7 @@ TEST_P(SocketDataPumpTest, ReadAndWriteMultiple) {
     EXPECT_EQ(kTestMsg, Read(&receive_handle_, kMsgSize));
     // Write multiple times.
     for (size_t i = 0; i < kMsgSize; ++i) {
-      uint32_t num_bytes = 1;
+      size_t num_bytes = 1;
       EXPECT_EQ(MOJO_RESULT_OK,
                 send_handle_->WriteData(&kTestMsg[i], &num_bytes,
                                         MOJO_WRITE_DATA_FLAG_NONE));
@@ -221,14 +220,14 @@ TEST_P(SocketDataPumpTest, PartialStreamSocketWrite) {
     // Write twice, each with kMsgSize/2 bytes which is bigger than the 1-byte
     // MockWrite(). This is to exercise that StreamSocket::Write() can do
     // partial write.
-    uint32_t first_write_size = kMsgSize / 2;
+    size_t first_write_size = kMsgSize / 2;
     EXPECT_EQ(MOJO_RESULT_OK,
               send_handle_->WriteData(&kTestMsg[0], &first_write_size,
                                       MOJO_WRITE_DATA_FLAG_NONE));
     EXPECT_EQ(kMsgSize / 2, first_write_size);
     // Flush the kMsgSize/2 byte write.
     base::RunLoop().RunUntilIdle();
-    uint32_t second_write_size = kMsgSize - first_write_size;
+    size_t second_write_size = kMsgSize - first_write_size;
     EXPECT_EQ(
         MOJO_RESULT_OK,
         send_handle_->WriteData(&kTestMsg[first_write_size], &second_write_size,
@@ -252,7 +251,7 @@ TEST_P(SocketDataPumpTest, ReadEof) {
   EXPECT_EQ("", Read(&receive_handle_, 1));
   EXPECT_EQ(net::OK, delegate()->WaitForReadError());
   // Writes can proceed even though there is a read error.
-  uint32_t num_bytes = strlen(kTestMsg);
+  size_t num_bytes = strlen(kTestMsg);
   EXPECT_EQ(MOJO_RESULT_OK, send_handle_->WriteData(&kTestMsg, &num_bytes,
                                                     MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(strlen(kTestMsg), num_bytes);
@@ -273,7 +272,7 @@ TEST_P(SocketDataPumpTest, ReadError) {
   EXPECT_EQ("", Read(&receive_handle_, 1));
   EXPECT_EQ(net::ERR_FAILED, delegate()->WaitForReadError());
   // Writes can proceed even though there is a read error.
-  uint32_t num_bytes = strlen(kTestMsg);
+  size_t num_bytes = strlen(kTestMsg);
   EXPECT_EQ(MOJO_RESULT_OK, send_handle_->WriteData(&kTestMsg, &num_bytes,
                                                     MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(strlen(kTestMsg), num_bytes);
@@ -291,7 +290,7 @@ TEST_P(SocketDataPumpTest, WriteEof) {
   net::MockWrite writes[] = {net::MockWrite(mode, net::OK)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   Init(&data_provider);
-  uint32_t num_bytes = strlen(kTestMsg);
+  size_t num_bytes = strlen(kTestMsg);
   EXPECT_EQ(MOJO_RESULT_OK, send_handle_->WriteData(&kTestMsg, &num_bytes,
                                                     MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(strlen(kTestMsg), num_bytes);
@@ -312,7 +311,7 @@ TEST_P(SocketDataPumpTest, WriteError) {
   net::MockWrite writes[] = {net::MockWrite(mode, net::ERR_FAILED)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   Init(&data_provider);
-  uint32_t num_bytes = strlen(kTestMsg);
+  size_t num_bytes = strlen(kTestMsg);
   EXPECT_EQ(MOJO_RESULT_OK, send_handle_->WriteData(&kTestMsg, &num_bytes,
                                                     MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(strlen(kTestMsg), num_bytes);

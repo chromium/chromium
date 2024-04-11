@@ -83,8 +83,7 @@ class ProxyResolvingSocketTestBase {
     while (received_contents.size() < num_bytes) {
       base::RunLoop().RunUntilIdle();
       std::vector<char> buffer(num_bytes);
-      uint32_t read_size =
-          static_cast<uint32_t>(num_bytes - received_contents.size());
+      size_t read_size = num_bytes - received_contents.size();
       MojoResult result = handle->get().ReadData(buffer.data(), &read_size,
                                                  MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_SHOULD_WAIT)
@@ -305,7 +304,7 @@ TEST_P(ProxyResolvingSocketTest, BasicReadWrite) {
     EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kMsgSize));
     // Write multiple times.
     for (size_t i = 0; i < kMsgSize; ++i) {
-      uint32_t num_bytes = 1;
+      size_t num_bytes = 1;
       EXPECT_EQ(MOJO_RESULT_OK,
                 client_socket_send_handle->WriteData(
                     &kTestMsg[i], &num_bytes, MOJO_WRITE_DATA_FLAG_NONE));

@@ -739,13 +739,12 @@ void WebSocket::SendDataFrame(base::span<const char>* payload) {
   DCHECK_GT(payload->size(), 0u);
   MojoResult begin_result;
   void* buffer;
-  uint32_t writable_size;
-  while ((writable_size = static_cast<uint32_t>(payload->size())) > 0 &&
+  size_t writable_size;
+  while ((writable_size = payload->size()) > 0 &&
          (begin_result = writable_->BeginWriteData(
               &buffer, &writable_size, MOJO_WRITE_DATA_FLAG_NONE)) ==
              MOJO_RESULT_OK) {
-    const uint32_t size_to_write =
-        std::min(writable_size, static_cast<uint32_t>(payload->size()));
+    const size_t size_to_write = std::min(writable_size, payload->size());
     DCHECK_GT(size_to_write, 0u);
 
     memcpy(buffer, payload->data(), size_to_write);
@@ -832,7 +831,7 @@ bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
     }
 
     const void* buffer = nullptr;
-    uint32_t readable_size = 0;
+    size_t readable_size = 0;
     const MojoResult begin_result = readable_->BeginReadData(
         &buffer, &readable_size, MOJO_READ_DATA_FLAG_NONE);
     if (begin_result == MOJO_RESULT_SHOULD_WAIT) {
@@ -860,7 +859,7 @@ bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
     if (message_under_reassembly_) {
       CHECK_GT(data_frame->data_length, bytes_reassembled_);
       const size_t bytes_to_copy =
-          std::min(static_cast<uint64_t>(readable_size),
+          std::min(base::strict_cast<uint64_t>(readable_size),
                    data_frame->data_length - bytes_reassembled_);
       memcpy(message_under_reassembly_->data() + bytes_reassembled_, buffer,
              bytes_to_copy);

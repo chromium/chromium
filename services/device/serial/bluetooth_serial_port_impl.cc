@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "services/device/public/cpp/device_features.h"
@@ -197,7 +198,7 @@ void BluetoothSerialPortImpl::ReadMore() {
   DCHECK(!read_pending_);
 
   void* buffer = nullptr;
-  uint32_t buffer_num_bytes = 0;
+  size_t buffer_num_bytes = 0;
   // The |buffer| is owned by |out_stream_|.
   MojoResult result = out_stream_->BeginWriteData(&buffer, &buffer_num_bytes,
                                                   MOJO_WRITE_DATA_FLAG_NONE);
@@ -220,7 +221,7 @@ void BluetoothSerialPortImpl::ReadMore() {
     const size_t num_remaining_bytes =
         receive_buffer_size_ - receive_buffer_next_byte_pos_;
     const size_t bytes_to_copy =
-        std::min(num_remaining_bytes, size_t{buffer_num_bytes});
+        std::min(num_remaining_bytes, buffer_num_bytes);
     std::copy(
         receive_buffer_->data() + receive_buffer_next_byte_pos_,
         receive_buffer_->data() + receive_buffer_next_byte_pos_ + bytes_to_copy,
@@ -238,7 +239,7 @@ void BluetoothSerialPortImpl::ReadMore() {
   pending_write_buffer_ =
       base::make_span(static_cast<char*>(buffer), buffer_num_bytes);
   bluetooth_socket_->Receive(
-      buffer_num_bytes,
+      base::checked_cast<int>(buffer_num_bytes),
       base::BindOnce(&BluetoothSerialPortImpl::OnBluetoothSocketReceive,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&BluetoothSerialPortImpl::OnBluetoothSocketReceiveError,
@@ -352,7 +353,7 @@ void BluetoothSerialPortImpl::WriteMore() {
   DCHECK(!write_pending_);
 
   const void* buffer = nullptr;
-  uint32_t buffer_size = 0;
+  size_t buffer_size = 0;
   // |buffer| is owned by |in_stream_|.
   MojoResult result = in_stream_->BeginReadData(&buffer, &buffer_size,
                                                 MOJO_WRITE_DATA_FLAG_NONE);
@@ -387,7 +388,7 @@ void BluetoothSerialPortImpl::WriteMore() {
 
   // The call to EndReadData() will be delayed until after Send() completes.
   bluetooth_socket_->Send(
-      io_buffer, buffer_size,
+      io_buffer, base::checked_cast<int>(buffer_size),
       base::BindOnce(&BluetoothSerialPortImpl::OnBluetoothSocketSend,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&BluetoothSerialPortImpl::OnBluetoothSocketSendError,

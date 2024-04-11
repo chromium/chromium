@@ -28,8 +28,8 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
     mojo::ScopedDataPipeProducerHandle* handle,
     scoped_refptr<NetToMojoPendingBuffer>* pending) {
   void* buf = nullptr;
-  const uint32_t kMaxBufSize = features::GetNetAdapterMaxBufSize();
-  uint32_t num_bytes = kMaxBufSize;
+  const size_t kMaxBufSize = features::GetNetAdapterMaxBufSize();
+  size_t num_bytes = kMaxBufSize;
   MojoResult result =
       (*handle)->BeginWriteData(&buf, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
   if (result != MOJO_RESULT_OK) {
@@ -39,9 +39,8 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
   if (num_bytes > kMaxBufSize) {
     num_bytes = kMaxBufSize;
   }
-  *pending = new NetToMojoPendingBuffer(
-      std::move(*handle),
-      {static_cast<char*>(buf), static_cast<size_t>(num_bytes)});
+  *pending = new NetToMojoPendingBuffer(std::move(*handle),
+                                        {static_cast<char*>(buf), num_bytes});
   return MOJO_RESULT_OK;
 }
 
@@ -78,7 +77,7 @@ MojoResult MojoToNetPendingBuffer::BeginRead(
     mojo::ScopedDataPipeConsumerHandle* handle,
     scoped_refptr<MojoToNetPendingBuffer>* pending) {
   const void* buffer = nullptr;
-  uint32_t num_bytes = 0;
+  size_t num_bytes = 0;
   MojoResult result =
       (*handle)->BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
   if (result != MOJO_RESULT_OK) {
@@ -86,8 +85,7 @@ MojoResult MojoToNetPendingBuffer::BeginRead(
     return result;
   }
   *pending = new MojoToNetPendingBuffer(
-      std::move(*handle),
-      {static_cast<const char*>(buffer), static_cast<size_t>(num_bytes)});
+      std::move(*handle), {static_cast<const char*>(buffer), num_bytes});
   return MOJO_RESULT_OK;
 }
 

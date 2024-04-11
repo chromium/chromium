@@ -2145,7 +2145,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           std::string upload_body;
           while (true) {
             char read_buffer[32 * 1024];
-            uint32_t read_size = sizeof(read_buffer);
+            size_t read_size = sizeof(read_buffer);
             MojoResult result = upload_data_pipe_->ReadData(
                 read_buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
             if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -2164,7 +2164,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_TRUE(upload_data_pipe_.is_valid());
           MojoResult result;
           char byte;
-          uint32_t read_size;
+          size_t read_size;
           while (true) {
             read_size = 1;
             result = upload_data_pipe_->ReadData(&byte, &read_size,
@@ -2262,7 +2262,7 @@ class MockURLLoader : public network::mojom::URLLoader {
         }
         case TestLoaderEvent::kBodyDataRead: {
           if (should_create_data_pipe_) {
-            uint32_t num_bytes = 1;
+            size_t num_bytes = 1;
             // Writing one byte should always succeed synchronously, for the
             // amount of data these tests send.
             EXPECT_EQ(MOJO_RESULT_OK,

@@ -84,10 +84,10 @@ extern uint32_t GetDataPipeDefaultAllocationSize(
     DataPipeAllocationSize = DataPipeAllocationSize::kDefaultSizeOnly);
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern uint32_t GetNetAdapterMaxBufSize();
+extern size_t GetNetAdapterMaxBufSize();
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern uint32_t GetLoaderChunkSize();
+extern size_t GetLoaderChunkSize();
 
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kCorsNonWildcardRequestHeadersSupport);

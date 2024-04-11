@@ -72,7 +72,7 @@ class DataPipeToSourceStreamTest
     }
     bool one_byte_at_a_time =
         GetParam().write_mode == WriteMode::ONE_BYTE_AT_A_TIME;
-    uint32_t num_bytes = one_byte_at_a_time ? 1 : message_.size();
+    size_t num_bytes = one_byte_at_a_time ? 1 : message_.size();
     MojoResult result = producer_end_->WriteData(message_.data(), &num_bytes,
                                                  MOJO_WRITE_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_OK) {
@@ -172,7 +172,7 @@ TEST_P(DataPipeToSourceStreamTest, DestructorClosesConsumerEnd) {
   const char message[] = "Hello, world!";
   Init(message);
   CloseAdapter();
-  uint32_t num_bytes = sizeof(message) - 1;
+  size_t num_bytes = sizeof(message) - 1;
   MojoResult result =
       producer_end().WriteData(message, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
   EXPECT_EQ(result, MOJO_RESULT_FAILED_PRECONDITION);

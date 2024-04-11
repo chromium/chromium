@@ -821,7 +821,7 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest,
 #define WRITE_DATA_SYNC(write_pipe, str)                            \
   {                                                                 \
     std::string data(str);                                          \
-    uint32_t num_size = data.size();                                \
+    size_t num_size = data.size();                                  \
     EXPECT_EQ(write_pipe->WriteData((void*)data.c_str(), &num_size, \
                                     MOJO_WRITE_DATA_FLAG_NONE),     \
               MOJO_RESULT_OK);                                      \

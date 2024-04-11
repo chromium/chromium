@@ -161,8 +161,7 @@ void NetworkServiceMemoryCacheURLLoader::WriteMore() {
     DCHECK_GE(content_->size(), write_position_);
     DCHECK_GE(std::numeric_limits<uint32_t>::max(),
               content_->size() - write_position_);
-    uint32_t write_size =
-        static_cast<uint32_t>(content_->size() - write_position_);
+    size_t write_size = content_->size() - write_position_;
     if (write_size == 0) {
       write_completed = true;
       break;

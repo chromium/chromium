@@ -105,9 +105,9 @@ class ConsumerHost::StreamWriter {
   void WriteToStream(std::unique_ptr<Slice> slice, bool has_more) {
     DCHECK(stream_.is_valid());
 
-    uint32_t write_position = 0;
+    size_t write_position = 0;
     while (write_position < slice->size()) {
-      uint32_t write_bytes = slice->size() - write_position;
+      size_t write_bytes = slice->size() - write_position;
 
       MojoResult result =
           stream_->WriteData(slice->data() + write_position, &write_bytes,
