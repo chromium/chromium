@@ -214,6 +214,8 @@ source_set("fuzztest_internal") {
     "src/fuzztest/domain.h",
     "src/fuzztest/domain_core.h",
     "src/fuzztest/fuzztest.h",
+    "src/fuzztest/fuzztest_macros.cc",
+    "src/fuzztest/fuzztest_macros.h",
     "src/fuzztest/googletest_fixture_adapter.h",
     "src/fuzztest/internal/any.h",
     "src/fuzztest/internal/centipede_adaptor.h",
