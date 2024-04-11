@@ -828,26 +828,12 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::EnumerateDevicesUWP(
     GetDevicesInfoCallback result_callback) {
   DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
 
-  // The |device_info_callback| created by base::BindRepeating() is copyable,
-  // which is necessary for the below lambda function of |callback| for the
-  // asynchronous operation. The reason is to permanently capture anything in a
-  // lambda, it must be copyable, merely movable is insufficient.
+  // When an error occurs below, the `UWP_ENUM_ERROR_HANDLER()` macro runs
+  // `device_info_callback` with a `nullptr` operation.
   auto device_info_callback = base::BindOnce(
       &VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP,
       scoped_refptr<ComThreadData>(this), std::move(devices_info),
       std::move(result_callback));
-  auto callback = Microsoft::WRL::Callback<
-      ABI::Windows::Foundation::IAsyncOperationCompletedHandler<
-          DeviceInformationCollection*>>(
-      [com_thread_runner = com_thread_runner_,
-       device_info_callback = std::move(device_info_callback)](
-          IAsyncOperation<DeviceInformationCollection*>* operation,
-          AsyncStatus status) mutable -> HRESULT {
-        com_thread_runner->PostTask(
-            FROM_HERE, base::BindOnce(std::move(device_info_callback),
-                                      base::Unretained(operation)));
-        return S_OK;
-      });
 
   ComPtr<ABI::Windows::Devices::Enumeration::IDeviceInformationStatics>
       dev_info_statics;
@@ -873,14 +859,29 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::EnumerateDevicesUWP(
     return;
   }
 
-  hr = async_op->put_Completed(callback.Get());
-  if (FAILED(hr)) {
-    UWP_ENUM_ERROR_HANDLER(hr, "Register async operation callback failed: ");
-    return;
-  }
-
   // Keep a reference to incomplete |asyn_op| for releasing later.
   async_ops_.insert(async_op);
+
+  auto callback = Microsoft::WRL::Callback<
+      ABI::Windows::Foundation::IAsyncOperationCompletedHandler<
+          DeviceInformationCollection*>>(
+      [com_thread_runner = com_thread_runner_,
+       device_info_callback = std::move(device_info_callback)](
+          IAsyncOperation<DeviceInformationCollection*>* operation,
+          AsyncStatus status) mutable -> HRESULT {
+        com_thread_runner->PostTask(
+            FROM_HERE, base::BindOnce(std::move(device_info_callback),
+                                      base::Unretained(operation)));
+        return S_OK;
+      });
+
+  hr = async_op->put_Completed(callback.Get());
+  if (FAILED(hr)) {
+    DLOG(WARNING) << "Register async operation callback failed: "
+                  << logging::SystemErrorCodeToString(hr);
+    // Run the callback after the error to report no devices found.
+    callback->Invoke(async_op, AsyncStatus::Completed);
+  }
 }
 
 void VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP(
