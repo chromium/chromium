@@ -206,7 +206,7 @@ class TabImpl implements Tab {
     private int mThemeColor;
     private int mBackgroundColor;
     private boolean mIsWebContentObscured;
-    private long mTimestampMillis;
+    private long mTimestampMillis = INVALID_TIMESTAMP;
     private int mParentId = INVALID_TAB_ID;
     private int mRootId;
     private @Nullable Token mTabGroupId;

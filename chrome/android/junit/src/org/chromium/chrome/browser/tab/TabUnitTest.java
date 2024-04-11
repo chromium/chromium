@@ -286,4 +286,11 @@ public class TabUnitTest {
         mTab.autofill(values);
         verify(mAutofillProvider).autofill(values);
     }
+
+    @Test
+    @SmallTest
+    public void testDefaultInvalidTimestamp() {
+        Tab tab = new TabImpl(1, mProfile, TabLaunchType.FROM_LINK);
+        assertThat(tab.getTimestampMillis(), equalTo(TabImpl.INVALID_TIMESTAMP));
+    }
 }
