@@ -260,12 +260,12 @@ std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
   api::autofill_private::AccountInfo api_account;
   api_account.email = account->email;
   api_account.is_sync_enabled_for_autofill_profiles =
-      personal_data.IsSyncFeatureEnabledForAutofill();
+      personal_data.address_data_manager().IsSyncFeatureEnabledForAutofill();
   api_account.is_eligible_for_address_account_storage =
       personal_data.address_data_manager().IsEligibleForAddressAccountStorage();
   api_account.is_autofill_sync_toggle_enabled =
-      personal_data.IsUserSelectableTypeEnabled(
-          syncer::UserSelectableType::kAutofill);
+      personal_data.address_data_manager()
+          .IsAutofillUserSelectableTypeEnabled();
   api_account.is_autofill_sync_toggle_available =
       personal_data.IsAutofillSyncToggleAvailable();
   return std::move(api_account);

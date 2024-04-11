@@ -227,6 +227,15 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns the value of the AutofillProfileEnabled pref.
   virtual bool IsAutofillProfileEnabled() const;
 
+  // Returns true if Sync-the-feature is enabled and
+  // UserSelectableType::kAutofill is among the user's selected data types.
+  // TODO(crbug.com/40066949): Remove this method once ConsentLevel::kSync and
+  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
+  bool IsSyncFeatureEnabledForAutofill() const;
+
+  // Returns true if `syncer::UserSelectableType::kAutofill` is enabled.
+  bool IsAutofillUserSelectableTypeEnabled() const;
+
   // Sets the Sync UserSelectableType::kAutofill toggle value.
   // TODO(crbug.com/1502843): Used for the toggle on the Autofill Settings page
   // only. It controls syncing of autofill data stored in user accounts for

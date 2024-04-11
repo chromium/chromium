@@ -531,6 +531,20 @@ bool AddressDataManager::IsAutofillProfileEnabled() const {
   return prefs::IsAutofillProfileEnabled(pref_service_);
 }
 
+bool AddressDataManager::IsSyncFeatureEnabledForAutofill() const {
+  // TODO(crbug.com/40066949): Remove this method in favor of
+  // `IsUserSelectableTypeEnabled` once ConsentLevel::kSync and
+  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
+  return sync_service_ != nullptr && sync_service_->IsSyncFeatureEnabled() &&
+         IsAutofillUserSelectableTypeEnabled();
+}
+
+bool AddressDataManager::IsAutofillUserSelectableTypeEnabled() const {
+  return sync_service_ != nullptr &&
+         sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kAutofill);
+}
+
 void AddressDataManager::SetAutofillSelectableTypeEnabled(bool enabled) {
   if (sync_service_ != nullptr) {
     sync_service_->GetUserSettings()->SetSelectedType(

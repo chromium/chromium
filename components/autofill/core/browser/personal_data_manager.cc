@@ -444,20 +444,6 @@ const std::string& PersonalDataManager::GetCountryCodeForExperimentGroup()
   return experiment_country_code_;
 }
 
-bool PersonalDataManager::IsSyncFeatureEnabledForAutofill() const {
-  // TODO(crbug.com/40066949): Remove this method in favor of
-  // `IsUserSelectableTypeEnabled` once ConsentLevel::kSync and
-  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
-  return sync_service_ != nullptr && sync_service_->IsSyncFeatureEnabled() &&
-         IsUserSelectableTypeEnabled(syncer::UserSelectableType::kAutofill);
-}
-
-bool PersonalDataManager::IsUserSelectableTypeEnabled(
-    syncer::UserSelectableType type) const {
-  return sync_service_ != nullptr &&
-         sync_service_->GetUserSettings()->GetSelectedTypes().Has(type);
-}
-
 void PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
     bool enabled) {
   payments_data_manager_->SetPaymentMethodsMandatoryReauthEnabled(enabled);

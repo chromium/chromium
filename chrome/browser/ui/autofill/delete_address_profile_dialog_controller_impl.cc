@@ -80,7 +80,7 @@ DeleteAddressProfileDialogControllerImpl::GetDeleteConfirmationText() const {
   PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
       web_contents_->GetBrowserContext());
   return l10n_util::GetStringUTF16(
-      pdm->IsSyncFeatureEnabledForAutofill()
+      pdm->address_data_manager().IsSyncFeatureEnabledForAutofill()
           ? IDS_AUTOFILL_DELETE_SYNC_ADDRESS_SOURCE_NOTICE
           : IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_SOURCE_NOTICE);
 }

@@ -103,7 +103,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
     // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync is not used
     // anymore, and thus IsSyncFeatureEnabledForAutofill() will always be false.
     return l10n_util::GetStringFUTF16(
-        personal_data_->IsSyncFeatureEnabledForAutofill()
+        personal_data_->address_data_manager().IsSyncFeatureEnabledForAutofill()
             ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
             : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE,
         base::UTF8ToUTF16(account->email));

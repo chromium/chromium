@@ -413,15 +413,6 @@ class PersonalDataManager : public KeyedService,
   // database by adding, updating and removing credit cards.
   void SetCreditCards(std::vector<CreditCard>* credit_cards);
 
-  // Returns true if Sync-the-feature is enabled and
-  // UserSelectableType::kAutofill is among the user's selected data types.
-  // TODO(crbug.com/40066949): Remove this method once ConsentLevel::kSync and
-  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
-  bool IsSyncFeatureEnabledForAutofill() const;
-
-  // Returns true if the user's selectable `type` is enabled.
-  bool IsUserSelectableTypeEnabled(syncer::UserSelectableType type) const;
-
   // TODO(b/322170538): Deprecated. Use the functions in
   // `payments_data_manager()` instead. Some callers on iOS still rely on this.
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled);
