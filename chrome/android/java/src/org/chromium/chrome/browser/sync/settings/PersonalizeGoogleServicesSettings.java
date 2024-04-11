@@ -34,7 +34,7 @@ public class PersonalizeGoogleServicesSettings extends ChromeBaseSettingsFragmen
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
-        getActivity().setTitle(R.string.sign_in_personalize_google_services_title);
+        getActivity().setTitle(R.string.sign_in_personalize_google_services_title_eea);
         SettingsUtils.addPreferencesFromResource(
                 this, R.xml.personalize_google_services_preferences);
 

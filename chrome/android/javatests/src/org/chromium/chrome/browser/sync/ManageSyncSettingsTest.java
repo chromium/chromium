@@ -977,6 +977,22 @@ public class ManageSyncSettingsTest {
 
     @Test
     @LargeTest
+    @Feature({"PersonalizedGoogleServices", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
+    public void testLinkedServicesSettingEea() throws Exception {
+        when(mTemplateUrlService.isEeaChoiceCountry()).thenReturn(true);
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                });
+        render(fragment, "sync_settings_linked_services_setting_eea");
+    }
+
+    @Test
+    @LargeTest
     @Feature({"PersonalizedGoogleServices"})
     public void testClickGoogleActivityControls() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
@@ -1039,7 +1055,7 @@ public class ManageSyncSettingsTest {
                     recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
                 });
         // Click the Personalize Google services
-        onView(withText(R.string.sign_in_personalize_google_services_title)).perform(click());
+        onView(withText(R.string.sign_in_personalize_google_services_title_eea)).perform(click());
         onView(withText(R.string.personalized_google_services_summary))
                 .check(matches(isDisplayed()));
     }

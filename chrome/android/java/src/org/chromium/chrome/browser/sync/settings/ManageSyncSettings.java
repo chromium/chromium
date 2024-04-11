@@ -302,7 +302,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
         mGoogleActivityControls = findPreference(PREF_GOOGLE_ACTIVITY_CONTROLS);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINKED_SERVICES_SETTING)) {
-            mGoogleActivityControls.setTitle(R.string.sign_in_personalize_google_services_title);
+            if (isEeaChoiceCountry()) {
+                mGoogleActivityControls.setTitle(
+                        R.string.sign_in_personalize_google_services_title_eea);
+            } else {
+                mGoogleActivityControls.setTitle(
+                        R.string.sign_in_personalize_google_services_title);
+            }
             mGoogleActivityControls.setSummary(
                     R.string.sign_in_personalize_google_services_summary);
         }
@@ -614,12 +620,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private void onGoogleActivityControlsClicked(String signedInAccountName) {
-        TemplateUrlService templateUrlService =
-                TemplateUrlServiceFactory.getForProfile(getProfile());
-        boolean isEeaChoiceCountry = templateUrlService.isEeaChoiceCountry();
-
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINKED_SERVICES_SETTING)
-                && isEeaChoiceCountry) {
+                && isEeaChoiceCountry()) {
             mSettingsLauncher.launchSettingsActivity(
                     getContext(), PersonalizeGoogleServicesSettings.class);
             RecordUserAction.record("Signin_AccountSettings_PersonalizeGoogleServicesClicked");
@@ -892,5 +894,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         return ChromeFeatureList.isEnabled(
                         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
                 && !mSyncService.hasSyncConsent();
+    }
+
+    private boolean isEeaChoiceCountry() {
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(getProfile());
+        return templateUrlService.isEeaChoiceCountry();
     }
 }
