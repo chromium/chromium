@@ -1197,6 +1197,14 @@ const CSSValue* BorderBottomRightRadius::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForBorderRadiusCorner(
       style.BorderBottomRightRadius(), style);
 }
+
+const CSSValue* BorderBottomStyle::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ParseBorderStyleSide(range, context);
+}
+
 const CSSValue* BorderBottomStyle::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -1442,6 +1450,13 @@ const CSSValue* BorderLeftColor::CSSValueFromComputedStyleInternal(
                    style, border_left_color, value_phase);
 }
 
+const CSSValue* BorderLeftStyle::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ParseBorderStyleSide(range, context);
+}
+
 const CSSValue* BorderLeftStyle::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -1503,6 +1518,13 @@ const CSSValue* BorderRightColor::CSSValueFromComputedStyleInternal(
              ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
                    style, border_right_color, value_phase);
+}
+
+const CSSValue* BorderRightStyle::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ParseBorderStyleSide(range, context);
 }
 
 const CSSValue* BorderRightStyle::CSSValueFromComputedStyleInternal(
@@ -1612,6 +1634,13 @@ const CSSValue* BorderTopRightRadius::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForBorderRadiusCorner(
       style.BorderTopRightRadius(), style);
+}
+
+const CSSValue* BorderTopStyle::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ParseBorderStyleSide(range, context);
 }
 
 const CSSValue* BorderTopStyle::CSSValueFromComputedStyleInternal(

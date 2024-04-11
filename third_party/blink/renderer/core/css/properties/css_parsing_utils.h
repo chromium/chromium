@@ -194,6 +194,7 @@ bool ConsumeOneOrTwoValuedPosition(CSSParserTokenRange&,
                                    CSSValue*& result_y);
 bool ConsumeBorderShorthand(CSSParserTokenRange&,
                             const CSSParserContext&,
+                            const CSSParserLocalContext&,
                             const CSSValue*& result_width,
                             const CSSValue*& result_style,
                             const CSSValue*& result_color);
@@ -412,6 +413,8 @@ CSSValue* ParseBorderRadiusCorner(CSSParserTokenRange&,
 CSSValue* ParseBorderWidthSide(CSSParserTokenRange&,
                                const CSSParserContext&,
                                const CSSParserLocalContext&);
+const CSSValue* ParseBorderStyleSide(CSSParserTokenRange&,
+                                     const CSSParserContext&);
 
 CSSValue* ConsumeShadow(CSSParserTokenRange&,
                         const CSSParserContext&,

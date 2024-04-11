@@ -589,14 +589,14 @@ bool BorderBlock::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
-    const CSSParserLocalContext&,
+    const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* width = nullptr;
   const CSSValue* style = nullptr;
   const CSSValue* color = nullptr;
 
-  if (!css_parsing_utils::ConsumeBorderShorthand(range, context, width, style,
-                                                 color)) {
+  if (!css_parsing_utils::ConsumeBorderShorthand(range, context, local_context,
+                                                 width, style, color)) {
     return false;
   };
 
@@ -731,14 +731,14 @@ bool Border::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
-    const CSSParserLocalContext&,
+    const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* width = nullptr;
   const CSSValue* style = nullptr;
   const CSSValue* color = nullptr;
 
-  if (!css_parsing_utils::ConsumeBorderShorthand(range, context, width, style,
-                                                 color)) {
+  if (!css_parsing_utils::ConsumeBorderShorthand(range, context, local_context,
+                                                 width, style, color)) {
     return false;
   };
 
@@ -863,14 +863,14 @@ bool BorderInline::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
-    const CSSParserLocalContext&,
+    const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* width = nullptr;
   const CSSValue* style = nullptr;
   const CSSValue* color = nullptr;
 
-  if (!css_parsing_utils::ConsumeBorderShorthand(range, context, width, style,
-                                                 color)) {
+  if (!css_parsing_utils::ConsumeBorderShorthand(range, context, local_context,
+                                                 width, style, color)) {
     return false;
   };
 

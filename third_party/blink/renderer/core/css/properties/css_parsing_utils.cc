@@ -2330,26 +2330,29 @@ bool ConsumeOneOrTwoValuedPosition(CSSParserTokenRange& range,
 
 bool ConsumeBorderShorthand(CSSParserTokenRange& range,
                             const CSSParserContext& context,
+                            const CSSParserLocalContext& local_context,
                             const CSSValue*& result_width,
                             const CSSValue*& result_style,
                             const CSSValue*& result_color) {
   while (!result_width || !result_style || !result_color) {
     if (!result_width) {
-      result_width = ConsumeLineWidth(range, context, UnitlessQuirk::kForbid);
+      result_width = ParseBorderWidthSide(range, context, local_context);
       if (result_width) {
+        ConsumeCommaIncludingWhitespace(range);
         continue;
       }
     }
     if (!result_style) {
-      result_style = ParseLonghand(CSSPropertyID::kBorderLeftStyle,
-                                   CSSPropertyID::kBorder, context, range);
+      result_style = ParseBorderStyleSide(range, context);
       if (result_style) {
+        ConsumeCommaIncludingWhitespace(range);
         continue;
       }
     }
     if (!result_color) {
-      result_color = ConsumeColor(range, context);
+      result_color = ConsumeBorderColorSide(range, context, local_context);
       if (result_color) {
+        ConsumeCommaIncludingWhitespace(range);
         continue;
       }
     }
@@ -4835,6 +4838,30 @@ CSSValue* ParseBorderWidthSide(CSSParserTokenRange& range,
   return ConsumeBorderWidth(range, context, unitless);
 }
 
+const CSSValue* ParseBorderStyleSide(CSSParserTokenRange& range,
+                                     const CSSParserContext& context) {
+  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+      IsUASheetBehavior(context.Mode()) &&
+      range.Peek().FunctionId() ==
+          CSSValueID::kInternalAppearanceAutoBaseSelect) {
+    CSSParserTokenRange range_copy = range;
+    CSSParserTokenRange arg_range = ConsumeFunction(range_copy);
+    CSSValue* auto_value = ConsumeIdent(arg_range);
+    if (!auto_value || !ConsumeCommaIncludingWhitespace(arg_range)) {
+      return nullptr;
+    }
+    CSSValue* base_select_value = ConsumeIdent(arg_range);
+    if (!base_select_value || !arg_range.AtEnd()) {
+      return nullptr;
+    }
+    range = range_copy;
+    return MakeGarbageCollected<CSSAppearanceAutoBaseSelectValuePair>(
+        auto_value, base_select_value);
+  }
+  return ParseLonghand(CSSPropertyID::kBorderLeftStyle, CSSPropertyID::kBorder,
+                       context, range);
+}
+
 CSSValue* ConsumeShadow(CSSParserTokenRange& range,
                         const CSSParserContext& context,
                         AllowInsetAndSpread inset_and_spread) {
@@ -6989,12 +7016,39 @@ CSSValue* ConsumeBorderColorSide(CSSParserTokenRange& range,
   bool allow_quirky_colors = IsQuirksModeBehavior(context.Mode()) &&
                              (shorthand == CSSPropertyID::kInvalid ||
                               shorthand == CSSPropertyID::kBorderColor);
+  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+      range.Peek().FunctionId() ==
+          CSSValueID::kInternalAppearanceAutoBaseSelect &&
+      IsUASheetBehavior(context.Mode())) {
+    return ConsumeAppearanceAutoBaseSelectColor(
+        range, context, allow_quirky_colors,
+        AllowedColorKeywords::kAllowSystemColor);
+  }
   return ConsumeColor(range, context, allow_quirky_colors);
 }
 
 CSSValue* ConsumeBorderWidth(CSSParserTokenRange& range,
                              const CSSParserContext& context,
                              UnitlessQuirk unitless) {
+  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+      IsUASheetBehavior(context.Mode()) &&
+      range.Peek().FunctionId() ==
+          CSSValueID::kInternalAppearanceAutoBaseSelect) {
+    CSSParserTokenRange range_copy = range;
+    CSSParserTokenRange arg_range = ConsumeFunction(range_copy);
+    CSSValue* auto_value = ConsumeLineWidth(arg_range, context, unitless);
+    if (!auto_value || !ConsumeCommaIncludingWhitespace(arg_range)) {
+      return nullptr;
+    }
+    CSSValue* base_select_value =
+        ConsumeLineWidth(arg_range, context, unitless);
+    if (!base_select_value || !arg_range.AtEnd()) {
+      return nullptr;
+    }
+    range = range_copy;
+    return MakeGarbageCollected<CSSAppearanceAutoBaseSelectValuePair>(
+        auto_value, base_select_value);
+  }
   return ConsumeLineWidth(range, context, unitless);
 }
 

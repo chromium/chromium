@@ -8,6 +8,9 @@
 
 select {
   background-color: -internal-appearance-auto-base-select(Field, transparent);
+  border: -internal-appearance-auto-base-select(1px, 0px),
+          -internal-appearance-auto-base-select(solid, none),
+          -internal-appearance-auto-base-select(light-dark(#767676, #858585), transparent);
 }
 
 /* Undo unwanted styles from select rules */
