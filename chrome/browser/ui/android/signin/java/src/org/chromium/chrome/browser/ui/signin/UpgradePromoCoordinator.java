@@ -34,7 +34,7 @@ public final class UpgradePromoCoordinator
                 FullscreenSigninCoordinator.Delegate {
     public interface Delegate {
         /** Notifies when the user clicked the "add account" button. */
-        void addAccount();
+        void addAccountInUpgradePromo();
 
         /**
          * The supplier that supplies whether reading policy value is necessary. See {@link
@@ -123,7 +123,7 @@ public final class UpgradePromoCoordinator
     /** Implements {@link FullscreenSigninCoordinator.Delegate} */
     @Override
     public void addAccount() {
-        mDelegate.addAccount();
+        mDelegate.addAccountInUpgradePromo();
     }
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate} */
@@ -234,10 +234,6 @@ public final class UpgradePromoCoordinator
             return;
         }
         advanceToNextPage();
-    }
-
-    public void onAccountSelected(String accountName) {
-        mSigninCoordinator.onAccountSelected(accountName);
     }
 
     private void inflateViewSwitcher() {

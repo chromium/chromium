@@ -10,13 +10,11 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -40,7 +38,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -208,29 +205,6 @@ public class UpgradePromoIntegrationTest {
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-    }
-
-    @Test
-    @MediumTest
-    public void testAddAccount() {
-        String secondAccountEmail = "jane.doe@gmail.com";
-        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, secondAccountEmail);
-        launchActivity();
-
-        // Verify that the fullscreen sign-in promo is shown with the default account.
-        onView(withId(org.chromium.chrome.test.R.id.fullscreen_signin))
-                .check(matches(isDisplayed()));
-        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()))
-                .check(matches(isDisplayed()));
-
-        // Add the second account.
-        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail())).perform(click());
-        onView(withText(R.string.signin_add_account_to_device)).perform(click());
-
-        // Verify that the fullscreen sign-in promo is shown with the newly added account.
-        onView(withId(org.chromium.chrome.test.R.id.fullscreen_signin))
-                .check(matches(isDisplayed()));
-        onView(withText(secondAccountEmail)).check(matches(isDisplayed()));
     }
 
     private void launchActivity() {
