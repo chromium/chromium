@@ -160,6 +160,7 @@ class CORE_EXPORT HighlightOverlay {
                   uint16_t,
                   HighlightRange,
                   TextPaintStyle,
+                  float,
                   Vector<HighlightDecoration>);
     HighlightPart(HighlightLayerType, uint16_t, HighlightRange);
 
@@ -174,6 +175,7 @@ class CORE_EXPORT HighlightOverlay {
     uint16_t layer_index;
     HighlightRange range;
     TextPaintStyle style;
+    float stroke_width;
     Vector<HighlightDecoration> decorations;
   };
 

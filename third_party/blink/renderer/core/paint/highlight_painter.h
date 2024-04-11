@@ -189,7 +189,7 @@ class CORE_EXPORT HighlightPainter {
   void FastPaintSpellingGrammarDecorations();
 
   // PaintCase() == kOverlay only
-  void PaintOriginatingText(const TextPaintStyle&, DOMNodeId);
+  void PaintOriginatingShadow(const TextPaintStyle&, DOMNodeId);
   void PaintHighlightOverlays(const TextPaintStyle&,
                               DOMNodeId,
                               bool paint_marker_backgrounds,
@@ -212,7 +212,7 @@ class CORE_EXPORT HighlightPainter {
  private:
   struct HighlightEdgeInfo {
     unsigned offset;
-    LayoutUnit x;
+    float x;
   };
 
   Case ComputePaintCase() const;
@@ -240,12 +240,14 @@ class CORE_EXPORT HighlightPainter {
       const HighlightOverlay::HighlightRange&);
   LineRelativeRect LocalRectInWritingModeSpace(unsigned from,
                                                unsigned to) const;
-  void ClipToPartDecorations(const LineRelativeRect& part_rect);
-  void PaintDecorationsExceptLineThrough(
-      const HighlightOverlay::HighlightPart&);
+  void ClipToPartRect(const LineRelativeRect& part_rect);
   void PaintDecorationsExceptLineThrough(const HighlightOverlay::HighlightPart&,
+                                         const LineRelativeRect&);
+  void PaintDecorationsExceptLineThrough(const HighlightOverlay::HighlightPart&,
+                                         const LineRelativeRect&,
                                          TextDecorationLine lines_to_paint);
-  void PaintDecorationsOnlyLineThrough(const HighlightOverlay::HighlightPart&);
+  void PaintDecorationsOnlyLineThrough(const HighlightOverlay::HighlightPart&,
+                                       const LineRelativeRect&);
 
   // Paints text with a highlight color. For composition markers, omit the last
   // two arguments. For PseudoHighlightMarkers, include both the PseudoId and

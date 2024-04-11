@@ -250,11 +250,13 @@ HighlightPart::HighlightPart(HighlightLayerType type,
                              uint16_t layer_index,
                              HighlightRange range,
                              TextPaintStyle style,
+                             float stroke_width,
                              Vector<HighlightDecoration> decorations)
     : type(type),
       layer_index(layer_index),
       range(range),
       style(style),
+      stroke_width(stroke_width),
       decorations(std::move(decorations)) {}
 
 HighlightPart::HighlightPart(HighlightLayerType type,
@@ -264,6 +266,7 @@ HighlightPart::HighlightPart(HighlightLayerType type,
                     layer_index,
                     range,
                     TextPaintStyle(),
+                    0,
                     Vector<HighlightDecoration>{}) {}
 
 String HighlightPart::ToString() const {
@@ -523,6 +526,8 @@ HeapVector<HighlightPart> HighlightOverlay::ComputeParts(
     const TextFragmentPaintInfo& content_offsets,
     const HeapVector<HighlightLayer>& layers,
     const Vector<HighlightEdge>& edges) {
+  const float originating_stroke_width =
+      layers[0].style ? layers[0].style->TextStrokeWidth() : 0;
   const HighlightStyleUtils::HighlightTextPaintStyle& originating_text_style =
       layers[0].text_style;
   const HighlightDecoration originating_decoration{
@@ -539,6 +544,7 @@ HeapVector<HighlightPart> HighlightOverlay::ComputeParts(
                                    0,
                                    {content_offsets.from, content_offsets.to},
                                    originating_text_style.style,
+                                   originating_stroke_width,
                                    {originating_decoration}});
     return result;
   }
@@ -549,6 +555,7 @@ HeapVector<HighlightPart> HighlightOverlay::ComputeParts(
                       {content_offsets.from,
                        ClampOffset(edges.front().Offset(), content_offsets)},
                       originating_text_style.style,
+                      originating_stroke_width,
                       {originating_decoration}});
   }
   for (const HighlightEdge& edge : edges) {
@@ -563,6 +570,7 @@ HeapVector<HighlightPart> HighlightOverlay::ComputeParts(
                            0,
                            {part_from, part_to},
                            originating_text_style.style,
+                           originating_stroke_width,
                            {originating_decoration}};
         HighlightStyleUtils::HighlightTextPaintStyle previous_layer_style =
             originating_text_style;
@@ -609,6 +617,7 @@ HeapVector<HighlightPart> HighlightOverlay::ComputeParts(
                       {ClampOffset(edges.back().Offset(), content_offsets),
                        content_offsets.to},
                       originating_text_style.style,
+                      originating_stroke_width,
                       {originating_decoration}});
   }
   return result;

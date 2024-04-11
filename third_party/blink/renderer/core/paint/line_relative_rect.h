@@ -228,6 +228,24 @@ struct CORE_EXPORT LineRelativeRect {
                : AffineTransform(0, -1, 1, 0, LineLeft() - LineOver(),
                                  LineLeft() + LineOver() + InlineSize());
   }
+
+  LineRelativeRect EnclosingLineRelativeRect() {
+    int left = FloorToInt(offset.line_left);
+    int top = FloorToInt(offset.line_over);
+    int max_right = (offset.line_left + size.inline_size).Ceil();
+    int max_bottom = (offset.line_over + size.block_size).Ceil();
+    return {{LayoutUnit(left), LayoutUnit(top)},
+            {LayoutUnit(max_right - left), LayoutUnit(max_bottom - top)}};
+  }
+
+  // Shift up the inline-start edge and the block-start by `d`, and shift down
+  // the inline-end edge and the block-end edge by `d`.
+  void Inflate(LayoutUnit d) {
+    offset.line_left -= d;
+    size.inline_size += d * 2;
+    offset.line_over -= d;
+    size.block_size += d * 2;
+  }
 };
 
 // TODO(crbug.com/962299): These functions should upgraded to force correct
