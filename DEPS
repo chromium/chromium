@@ -1178,7 +1178,7 @@ deps = {
 
   # For Linux and Chromium OS.
   'src/third_party/cros_system_api': {
-      'url': Var('chromium_git') + '/chromiumos/platform2/system_api.git' + '@' + 'b7dce64f68622017e2cd32c32cfd34cefc6150f4',
+      'url': Var('chromium_git') + '/chromiumos/platform2/system_api.git' + '@' + 'a402de012c03f81bed7c69a21f442f60a86aeb44',
       'condition': 'checkout_linux or checkout_chromeos',
   },
 
