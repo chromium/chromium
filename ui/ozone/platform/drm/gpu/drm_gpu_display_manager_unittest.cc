@@ -528,17 +528,8 @@ class DrmGpuDisplayManagerMockedDeviceTest : public DrmGpuDisplayManagerTest {
   }
 };
 
-// TODO: b/40263526 - Re-enable for ASan LSan builds after eliminiating circular
-// dependency causing the DrmDevice to leak.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_ConfigureDisplaysAlternateCrtcFallbackSuccess \
-  DISABLED_ConfigureDisplaysAlternateCrtcFallbackSuccess
-#else
-#define MAYBE_ConfigureDisplaysAlternateCrtcFallbackSuccess \
-  ConfigureDisplaysAlternateCrtcFallbackSuccess
-#endif
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
-       MAYBE_ConfigureDisplaysAlternateCrtcFallbackSuccess) {
+       ConfigureDisplaysAlternateCrtcFallbackSuccess) {
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
@@ -835,17 +826,8 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
               IsEmpty());
 }
 
-// TODO: b/40263526 - Re-enable for ASan LSan builds after eliminiating circular
-// dependency causing the DrmDevice to leak.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_ConfigureDisplaysUseSuccesfulStateForCommit \
-  DISABLED_ConfigureDisplaysUseSuccesfulStateForCommit
-#else
-#define MAYBE_ConfigureDisplaysUseSuccesfulStateForCommit \
-  ConfigureDisplaysUseSuccesfulStateForCommit
-#endif
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
-       MAYBE_ConfigureDisplaysUseSuccesfulStateForCommit) {
+       ConfigureDisplaysUseSuccesfulStateForCommit) {
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
