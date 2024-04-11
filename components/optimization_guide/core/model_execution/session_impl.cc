@@ -616,10 +616,6 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
 
 void SessionImpl::SendResponse(ResponseType response_type) {
   on_device_state_->timer_for_first_response.Stop();
-  if (!on_device_state_->callback) {
-    on_device_state_->histogram_logger.reset();
-    return;
-  }
 
   proto::OnDeviceModelServiceResponse* logged_response =
       on_device_state_->MutableLoggedResponse();
