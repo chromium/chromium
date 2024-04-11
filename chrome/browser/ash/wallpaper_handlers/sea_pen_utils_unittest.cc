@@ -183,11 +183,11 @@ TEST_F(SeaPenUtilsTest, GetFeedbackText) {
       ash::personalization_app::mojom::SeaPenFeedbackMetadata::New();
   metadata->log_id = "Flower";
   metadata->is_positive = true;
-  metadata->generation_seed = 1234567890;
+  metadata->generation_seed = 4294967290;
 
   std::string feedback_text =
       "#AIWallpaper Positive: test template query\ntemplate: Flower\noptions: "
-      "(0:0)(1:12)\ngeneration_seed: 1234567890\n";
+      "(0:0)(1:12)\ngeneration_seed: 4294967290\n";
   EXPECT_EQ(feedback_text, GetFeedbackText(template_query, metadata));
 }
 

@@ -157,7 +157,7 @@ std::string GetFeedbackText(
     base::StringAppendF(&feedback_text, "(%d:%d)", static_cast<int32_t>(chip),
                         static_cast<int32_t>(option));
   }
-  base::StringAppendF(&feedback_text, "\ngeneration_seed: %d\n",
+  base::StringAppendF(&feedback_text, "\ngeneration_seed: %u\n",
                       metadata->generation_seed);
   return feedback_text;
 }
