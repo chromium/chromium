@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     UrlFilterUiTest,
-    testing::Values(FamilyIdentifier("FAMILY_DMA_ELIGIBILE_NO_CONSENT"),
+    testing::Values(FamilyIdentifier("FAMILY_DMA_ELIGIBLE_NO_CONSENT"),
                     FamilyIdentifier("FAMILY_DMA_ELIGIBLE_WITH_CONSENT"),
                     FamilyIdentifier("FAMILY_DMA_INELIGIBLE")),
     [](const auto& info) { return info.param->data(); });
