@@ -33,6 +33,7 @@ constexpr CGFloat kBackgroundAlpha = 0.6;
 constexpr CGFloat kSubTitleHorizontalPadding = 7;
 constexpr CGFloat kThreeDotButtonSize = 19;
 constexpr CGFloat kTitleBackgroundCornerRadius = 17;
+constexpr CGFloat kPlusImageSize = 20;
 }  // namespace
 
 @interface TabGroupViewController () <UINavigationBarDelegate>
@@ -232,10 +233,12 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 // Returns the navigation item which contain the plus button.
 - (UINavigationItem*)configuredPlusButton {
   UINavigationItem* plus = [[UINavigationItem alloc] init];
-  plus.rightBarButtonItem = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                           target:self
-                           action:@selector(didTapPlusButton)];
+  UIImage* plusImage = DefaultSymbolWithPointSize(kPlusSymbol, kPlusImageSize);
+  plus.rightBarButtonItem =
+      [[UIBarButtonItem alloc] initWithImage:plusImage
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(didTapPlusButton)];
   return plus;
 }
 

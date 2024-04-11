@@ -277,9 +277,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
       preferredFontDescriptorWithTextStyle:UIFontTextStyleBody]
       fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-  UIFont* fontAttribute =
-      isCompact ? [UIFont fontWithDescriptor:boldDescriptor size:0.0]
-                : [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  UIFont* fontAttribute = [UIFont fontWithDescriptor:boldDescriptor size:0.0];
   NSDictionary* attributes = @{
     NSFontAttributeName : fontAttribute,
     NSForegroundColorAttributeName : textColor
