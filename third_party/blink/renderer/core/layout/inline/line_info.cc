@@ -536,7 +536,7 @@ std::ostream& operator<<(std::ostream& ostream, const LineInfo& line_info) {
           << " width_=" << line_info.Width() << " Results=[\n";
   const String& text_content = line_info.ItemsData().text_content;
   for (const auto& result : line_info.Results()) {
-    ostream << "\t" << result.ToString(text_content).Utf8().c_str() << "\n";
+    ostream << result.ToString(text_content, "\t").Utf8() << "\n";
   }
   return ostream << "]";
 }

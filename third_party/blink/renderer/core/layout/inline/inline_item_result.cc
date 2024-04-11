@@ -67,10 +67,12 @@ void InlineItemResult::Trace(Visitor* visitor) const {
   visitor->Trace(positioned_float);
 }
 
-String InlineItemResult::ToString(const String& ifc_text_content) const {
-  // This is almost same as InlineItem::ToString(), but this shows associated
-  // text precisely.
+String InlineItemResult::ToString(const String& ifc_text_content,
+                                  const String& indent) const {
+  // Unlike InlineItem::ToString(), this shows associated text precisely, and
+  // shows kOpenRubyColumn structure.
   StringBuilder builder;
+  builder.Append(indent);
   builder.Append("InlineItemResult ");
   builder.Append(item->InlineItemTypeToString(item->Type()));
   builder.Append(" ");
@@ -78,6 +80,26 @@ String InlineItemResult::ToString(const String& ifc_text_content) const {
     builder.Append(
         ifc_text_content.Substring(TextOffset().start, TextOffset().Length())
             .EncodeForDebugging());
+  } else if (item->Type() == InlineItem::kOpenRubyColumn && ruby_column) {
+    builder.Append(item->GetLayoutObject()->ToString());
+    builder.Append(", base_line: [\n");
+    String child_indent = indent + "\t";
+    for (const auto& r : ruby_column->base_line.Results()) {
+      builder.Append(r.ToString(ifc_text_content, child_indent));
+      builder.Append("\n");
+    }
+    for (wtf_size_t i = 0; i < ruby_column->annotation_line_list.size(); ++i) {
+      builder.Append(indent);
+      builder.Append("], annotation_line_list[");
+      builder.AppendNumber(i);
+      builder.Append("]: [\n");
+      for (const auto& r : ruby_column->annotation_line_list[i].Results()) {
+        builder.Append(r.ToString(ifc_text_content, child_indent));
+        builder.Append("\n");
+      }
+    }
+    builder.Append(indent);
+    builder.Append("]");
   } else if (item->GetLayoutObject()) {
     builder.Append(item->GetLayoutObject()->ToString());
   }
