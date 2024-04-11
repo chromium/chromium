@@ -1184,7 +1184,8 @@ void SplitViewController::OnWindowDestroyed(aura::Window* window) {
 void SplitViewController::OnWindowRemovingFromRootWindow(
     aura::Window* window,
     aura::Window* new_root) {
-  if (new_root != root_window_) {
+  if (new_root) {
+    // Detach the window first to stop ongoing divider animations.
     OnSnappedWindowDetached(window,
                             WindowDetachedReason::kWindowMovedToAnotherDisplay);
   }
@@ -2235,9 +2236,10 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
     to_be_activated_window_ = nullptr;
   }
 
-  const bool is_window_destroyed_or_moved =
-      reason == WindowDetachedReason::kWindowDestroyed ||
+  const bool is_window_moved =
       reason == WindowDetachedReason::kWindowMovedToAnotherDisplay;
+  const bool is_window_destroyed_or_moved =
+      reason == WindowDetachedReason::kWindowDestroyed || is_window_moved;
   const SnapPosition position_of_snapped_window =
       GetPositionOfSnappedWindow(window);
 
@@ -2280,6 +2282,11 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
     EndSplitView(reason == WindowDetachedReason::kWindowDragged
                      ? EndReason::kWindowDragStarted
                      : EndReason::kNormal);
+    if (is_window_moved) {
+      // If the snapped window is being moved to another display, end overview.
+      Shell::Get()->overview_controller()->EndOverview(
+          OverviewEndAction::kSplitView);
+    }
   } else {
     DCHECK(InTabletSplitViewMode());
     aura::Window* other_window =

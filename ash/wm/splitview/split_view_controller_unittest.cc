@@ -4030,6 +4030,100 @@ TEST_F(SplitViewControllerTest, SnapToCorrectDisplay) {
       w2->GetBoundsInScreen());
 }
 
+// Tests that using the shortcut to move the snapped window to another display
+// works as intended.
+TEST_F(SplitViewControllerTest, MoveWindowToDisplayShortcut) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  UpdateDisplay("1200x900,800x600");
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w2(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
+
+  // Also create `w3` and `w4` on each display so we can start partial overview.
+  std::unique_ptr<aura::Window> w3(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w4(
+      CreateTestWindow(gfx::Rect(1200, 0, 200, 200)));
+
+  auto* split_view_controller1 =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  auto* split_view_controller2 =
+      SplitViewController::Get(Shell::GetRootWindowForDisplayId(
+          display_manager_test.GetSecondaryDisplay().id()));
+  auto* overview_controller = OverviewController::Get();
+
+  // Test for both setups.
+  enum class TestCase { kFasterSplitScreenSetup, kOverviewDragToSnap };
+  const auto kTestCases = {TestCase::kFasterSplitScreenSetup,
+                           TestCase::kOverviewDragToSnap};
+
+  for (const auto kTestCase : kTestCases) {
+    // 1 - Snap `w1` to primary on display 1.
+    if (kTestCase == TestCase::kOverviewDragToSnap) {
+      ToggleOverview();
+      ASSERT_TRUE(overview_controller->InOverviewSession());
+    }
+    split_view_controller1->SnapWindow(
+        w1.get(), SnapPosition::kPrimary,
+        WindowSnapActionSource::kDragWindowToEdgeToSnap);
+
+    // Expect we start splitview on root 1 but not root 2.
+    if (faster_split_screen_enabled()) {
+      EXPECT_TRUE(overview_controller->InOverviewSession());
+      EXPECT_TRUE(split_view_controller1->InSplitViewMode());
+      EXPECT_FALSE(split_view_controller2->InSplitViewMode());
+    }
+
+    // Use the shortcut ALT+SEARCH+M to move `w1` to display 2.
+    wm::ActivateWindow(w1.get());
+    PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+    const gfx::Rect work_area2 =
+        display_manager_test.GetSecondaryDisplay().work_area();
+    EXPECT_EQ(gfx::Rect(work_area2.x(), 0, work_area2.width() / 2,
+                        work_area2.height()),
+              w1->GetBoundsInScreen());
+
+    // Expect we ended overview and splitview.
+    if (faster_split_screen_enabled()) {
+      EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
+      EXPECT_FALSE(split_view_controller1->InSplitViewMode());
+      EXPECT_FALSE(split_view_controller2->InSplitViewMode());
+    }
+
+    // 2 - Snap `w1` to secondary on display 2.
+    if (kTestCase == TestCase::kOverviewDragToSnap) {
+      ToggleOverview();
+      ASSERT_TRUE(overview_controller->InOverviewSession());
+    }
+    split_view_controller2->SnapWindow(
+        w1.get(), SnapPosition::kSecondary,
+        WindowSnapActionSource::kDragWindowToEdgeToSnap);
+
+    // Expect we start splitview on root 2 but not root 1.
+    if (faster_split_screen_enabled()) {
+      EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
+      EXPECT_FALSE(split_view_controller1->InSplitViewMode());
+      EXPECT_TRUE(split_view_controller2->InSplitViewMode());
+    }
+
+    // Use the shortcut ALT+SEARCH+M to move `w1` to display 1.
+    wm::ActivateWindow(w1.get());
+    PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+    const gfx::Rect work_area1 =
+        display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+    EXPECT_EQ(gfx::Rect(work_area1.width() / 2, 0, work_area1.width() / 2,
+                        work_area1.height()),
+              w1->GetBoundsInScreen());
+
+    // Expect we ended overview and splitview.
+    if (faster_split_screen_enabled()) {
+      EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
+      EXPECT_FALSE(split_view_controller2->InSplitViewMode());
+      EXPECT_FALSE(split_view_controller1->InSplitViewMode());
+    }
+  }
+}
+
 // The test class that enables the feature flag of portrait mode split view
 // virtual keyboard improvement and the virtual keyboard.
 class SplitViewKeyboardTest : public SplitViewControllerTest {
