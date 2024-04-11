@@ -16,7 +16,8 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
+import {NavigationMixin} from '../navigation_mixin.js';
+import {navigateToNextStep} from '../router.js';
 import type {DefaultBrowserInfo, StepIndicatorModel} from '../shared/nux_types.js';
 
 import {getTemplate} from './nux_set_as_default.html.js';

@@ -6,7 +6,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {navigateTo, navigateToNextStep, NavigationMixin, Routes} from 'chrome://welcome/navigation_mixin.js';
+import {NavigationMixin} from 'chrome://welcome/navigation_mixin.js';
+import {navigateTo, navigateToNextStep, Routes} from 'chrome://welcome/router.js';
 
 suite('NavigationBehaviorTest', function() {
   class TestElement extends NavigationMixin

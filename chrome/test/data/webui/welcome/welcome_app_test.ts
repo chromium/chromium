@@ -7,7 +7,7 @@ import 'chrome://welcome/welcome_app.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {LandingViewProxyImpl} from 'chrome://welcome/landing_view_proxy.js';
-import {navigateTo, Routes} from 'chrome://welcome/navigation_mixin.js';
+import {navigateTo, Routes} from 'chrome://welcome/router.js';
 import {NuxSetAsDefaultProxyImpl} from 'chrome://welcome/set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkProxyImpl} from 'chrome://welcome/shared/bookmark_proxy.js';
 import type {DefaultBrowserInfo} from 'chrome://welcome/shared/nux_types.js';

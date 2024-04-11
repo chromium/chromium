@@ -77,6 +77,7 @@ build_webui("build") {
     "navigation_mixin.ts",
     "ntp_background/ntp_background_metrics_proxy.ts",
     "ntp_background/ntp_background_proxy.ts",
+    "router.ts",
     "set_as_default/nux_set_as_default_proxy.ts",
     "shared/bookmark_proxy.ts",
     "shared/module_metrics_proxy.ts",

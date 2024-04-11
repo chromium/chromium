@@ -14,7 +14,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './landing_view.html.js';
 import type {LandingViewProxy} from './landing_view_proxy.js';
 import {LandingViewProxyImpl} from './landing_view_proxy.js';
-import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
+import {NavigationMixin} from './navigation_mixin.js';
+import {navigateTo, Routes} from './router.js';
 import type {OnboardingBackgroundElement} from './shared/onboarding_background.js';
 import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
 
