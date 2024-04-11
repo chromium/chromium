@@ -105,5 +105,11 @@ BASE_FEATURE(kUniversalInstallIcon,
 
 extern const base::FeatureParam<int> kMinimumFaviconSize{&kUniversalInstallIcon,
                                                          "size", 48};
+
+// Allow using default manifest URL.
+BASE_FEATURE(kUniversalInstallDefaultUrl,
+             "UniversalInstallDefaultUrl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace webapps

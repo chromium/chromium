@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/common/content_features.h"
@@ -214,11 +215,15 @@ TEST_P(InstallableEvaluatorCriteriaUnitTest, CheckStartUrl) {
                           InstallableStatusCode::NO_ERROR_DETECTED,
                           InstallableStatusCode::NO_ERROR_DETECTED);
 
-  // No manifest start_url or invalid
+  // No valid specified start_url, but has default manifest start_url.
   manifest()->start_url = GURL("https://www.example.com");
   manifest()->has_valid_specified_start_url = false;
+  InstallableStatusCode expected_url_result =
+      base::FeatureList::IsEnabled(features::kUniversalInstallDefaultUrl)
+          ? InstallableStatusCode::NO_ERROR_DETECTED
+          : InstallableStatusCode::START_URL_NOT_VALID;
   TestCheckInstallability(InstallableStatusCode::START_URL_NOT_VALID,
-                          InstallableStatusCode::START_URL_NOT_VALID,
+                          expected_url_result,
                           InstallableStatusCode::NO_ERROR_DETECTED);
 
   // Valid application_url
@@ -235,17 +240,17 @@ TEST_P(InstallableEvaluatorCriteriaUnitTest, CheckStartUrl) {
   metadata()->application_url = GURL();
   manifest()->has_valid_specified_start_url = false;
   TestCheckInstallability(InstallableStatusCode::START_URL_NOT_VALID,
-                          InstallableStatusCode::START_URL_NOT_VALID,
+                          expected_url_result,
                           InstallableStatusCode::NO_ERROR_DETECTED);
 
-  // No start_url, Not root scope page
+  // No valid specified start_url, but has default manifest start_url, Not root
+  // scope page
   web_contents_tester()->NavigateAndCommit(
       GURL("https://www.example.com/path/pageB"));
   manifest()->start_url = GURL("https://www.example.com/pageB");
   manifest()->has_valid_specified_start_url = false;
   TestCheckInstallability(InstallableStatusCode::START_URL_NOT_VALID,
-                          InstallableStatusCode::START_URL_NOT_VALID,
-                          InstallableStatusCode::START_URL_NOT_VALID);
+                          expected_url_result, expected_url_result);
 }
 
 TEST_P(InstallableEvaluatorCriteriaUnitTest, CheckNameOrShortName) {

@@ -7,15 +7,14 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "components/security_state/core/security_state.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 
@@ -82,6 +81,10 @@ bool HasValidStartUrl(const blink::mojom::Manifest& manifest,
   CHECK((!manifest.start_url.is_valid() && !manifest.id.is_valid() &&
          !manifest.has_valid_specified_start_url) ||
         (manifest.start_url.is_valid() && manifest.id.is_valid()));
+  bool valid_manifest_start_url =
+      base::FeatureList::IsEnabled(features::kUniversalInstallDefaultUrl)
+          ? manifest.start_url.is_valid()
+          : manifest.has_valid_specified_start_url;
   switch (criteria) {
     case InstallableCriteria::kValidManifestIgnoreDisplay:
     case InstallableCriteria::kValidManifestWithIcons:
@@ -89,11 +92,9 @@ bool HasValidStartUrl(const blink::mojom::Manifest& manifest,
     case InstallableCriteria::kDoNotCheck:
       return true;
     case InstallableCriteria::kImplicitManifestFieldsHTML:
-      return manifest.has_valid_specified_start_url ||
-             metadata.application_url.is_valid();
+      return valid_manifest_start_url || metadata.application_url.is_valid();
     case InstallableCriteria::kNoManifestAtRootScope:
-      return manifest.has_valid_specified_start_url ||
-             metadata.application_url.is_valid() ||
+      return valid_manifest_start_url || metadata.application_url.is_valid() ||
              site_url.GetWithoutFilename().path().length() <= 1;
   }
 }

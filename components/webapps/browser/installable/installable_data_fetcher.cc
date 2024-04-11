@@ -5,7 +5,6 @@
 #include "components/webapps/browser/installable/installable_data_fetcher.h"
 
 #include "base/functional/callback.h"
-#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/constants.h"

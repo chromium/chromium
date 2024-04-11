@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
-#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 
 namespace webapps {

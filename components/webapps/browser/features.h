@@ -62,6 +62,7 @@ BASE_DECLARE_FEATURE(kUniversalInstallManifest);
 BASE_DECLARE_FEATURE(kUniversalInstallIcon);
 BASE_DECLARE_FEATURE(kUniversalInstallRootScopeNoManifest);
 extern const base::FeatureParam<int> kMinimumFaviconSize;
+BASE_DECLARE_FEATURE(kUniversalInstallDefaultUrl);
 
 }  // namespace features
 }  // namespace webapps
