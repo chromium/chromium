@@ -320,7 +320,10 @@ void StorageAccessGrantPermissionContext::DecidePermission(
                              /*relying_party_embedder=*/embedding_site,
                              /*identity_provider=*/requesting_site)) {
       RecordOutcomeSample(RequestOutcome::kAllowedByFedCM);
-      std::move(callback).Run(CONTENT_SETTING_ALLOW);
+      fedcm_context->MarkStorageAccessEligible(
+          /*relying_party_embedder=*/embedding_site,
+          /*identity_provider=*/requesting_site,
+          base::BindOnce(std::move(callback), CONTENT_SETTING_ALLOW));
       return;
     }
   }

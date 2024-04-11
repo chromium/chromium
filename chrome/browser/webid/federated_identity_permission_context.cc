@@ -73,6 +73,14 @@ bool FederatedIdentityPermissionContext::HasSharingPermission(
                                          identity_provider);
 }
 
+void FederatedIdentityPermissionContext::MarkStorageAccessEligible(
+    const net::SchemefulSite& relying_party_embedder,
+    const net::SchemefulSite& identity_provider,
+    base::OnceClosure callback) {
+  sharing_context_->MarkStorageAccessEligible(
+      relying_party_embedder, identity_provider, std::move(callback));
+}
+
 void FederatedIdentityPermissionContext::GrantSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,

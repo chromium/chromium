@@ -96,6 +96,14 @@ class FederatedIdentityPermissionContext
   bool HasSharingPermission(const net::SchemefulSite& relying_party_embedder,
                             const net::SchemefulSite& identity_provider);
 
+  // Marks the given (site, site) pair as eligible to use FedCM sharing
+  // permission as a signal for the Storage Access API. This is only valid to
+  // call for pairs that already have sharing permission.
+  void MarkStorageAccessEligible(
+      const net::SchemefulSite& relying_party_embedder,
+      const net::SchemefulSite& identity_provider,
+      base::OnceClosure callback);
+
   // Converts existing sharing permission grants into (site, site)-keyed content
   // settings.
   ContentSettingsForOneType GetSharingPermissionGrantsAsContentSettings();

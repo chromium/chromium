@@ -406,11 +406,22 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
       url::Origin::Create(GURL("https://www.identity_provider.com"));
   constexpr char account_id[] = "my_account";
 
+  net::SchemefulSite rp_embedder_site(relying_party_embedder);
+  net::SchemefulSite idp_site(identity_provider);
+
   context()->GrantPermission(relying_party_requester, relying_party_embedder,
                              identity_provider, account_id);
-  ASSERT_TRUE(
-      context()->HasPermission(net::SchemefulSite(relying_party_embedder),
-                               net::SchemefulSite(identity_provider)));
+  ASSERT_TRUE(context()->HasPermission(rp_embedder_site, idp_site));
+
+  EXPECT_THAT(context()->GetSharingPermissionGrantsAsContentSettings(),
+              IsEmpty());
+
+  {
+    base::test::TestFuture<void> future;
+    context()->MarkStorageAccessEligible(rp_embedder_site, idp_site,
+                                         future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
 
   EXPECT_THAT(context()->GetSharingPermissionGrantsAsContentSettings(),
               ElementsAre(ContentSettingPatternSource(

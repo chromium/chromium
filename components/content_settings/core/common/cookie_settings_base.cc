@@ -731,9 +731,9 @@ bool CookieSettingsBase::IsAllowedByStorageAccessGrant(
     return true;
   }
   // Note: no need to check permissions policy here. If the appropriate
-  // permissions policy was not present, then `overrides` would not
-  // contain `kStorageAccessGrantEligible`, and we'd have returned early
-  // above.
+  // permissions policy was not present, then no matching
+  // FEDERATED_IDENTITY_SHARING setting would be sent to this instance from the
+  // browser process.
   return GetContentSetting(url, first_party_url,
                            ContentSettingsType::FEDERATED_IDENTITY_SHARING,
                            /*info=*/nullptr) == CONTENT_SETTING_ALLOW;

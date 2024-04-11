@@ -94,6 +94,9 @@ FederatedIdentityAccountKeyedPermissionContext::
           raw_ref<content::BrowserContext>::from_ptr(browser_context)),
       clock_(base::DefaultClock::GetInstance()) {}
 
+FederatedIdentityAccountKeyedPermissionContext::
+    ~FederatedIdentityAccountKeyedPermissionContext() = default;
+
 bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const url::Origin& relying_party_requester) {
   for (const auto& object : GetGrantedObjects(relying_party_requester)) {
@@ -260,6 +263,23 @@ void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
                            std::move(new_object));
   }
 
+  // No need to erase from `storage_access_eligible_connections_` here; it's ok
+  // if that set is a superset of the actually-granted permissions, since we
+  // only send the intersection to the network service anyway. Furthermore, it's
+  // tricky to correctly erase here, since there may be multiple permissions
+  // with different origins but the same sites.
+
+  SyncSharingPermissionGrantsToNetworkService(std::move(callback));
+}
+
+void FederatedIdentityAccountKeyedPermissionContext::MarkStorageAccessEligible(
+    const net::SchemefulSite& relying_party_embedder,
+    const net::SchemefulSite& identity_provider,
+    base::OnceClosure callback) {
+  CHECK(HasPermission(relying_party_embedder, identity_provider));
+  storage_access_eligible_connections_.insert(
+      std::make_pair(relying_party_embedder, identity_provider));
+
   SyncSharingPermissionGrantsToNetworkService(std::move(callback));
 }
 
@@ -359,7 +379,10 @@ ContentSettingsForOneType FederatedIdentityAccountKeyedPermissionContext::
         object->value.FindString(kRpEmbedderKey);
     const std::string* idp_origin = object->value.FindString(kSharingIdpKey);
 
-    if (!rp_embedder_origin || !idp_origin) {
+    if (!rp_embedder_origin || !idp_origin ||
+        !storage_access_eligible_connections_.contains(
+            std::make_pair(net::SchemefulSite(GURL(*rp_embedder_origin)),
+                           net::SchemefulSite(GURL(*idp_origin))))) {
       continue;
     }
 
