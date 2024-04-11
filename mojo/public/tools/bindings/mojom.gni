@@ -871,12 +871,9 @@ template("mojom") {
     } else if (defined(invoker.export_class_attribute_shared) ||
                defined(invoker.export_class_attribute)) {
       if (defined(invoker.export_class_attribute_shared)) {
-        assert(defined(invoker.export_header_shared))
         shared_component_export_macro = invoker.export_class_attribute_shared
         shared_component_impl_macro = invoker.export_define_shared
       } else {
-        assert(!defined(invoker.export_header_shared))
-
         # If no explicit shared attribute/define was provided by the invoker,
         # we derive some reasonable settings frorm the default variant.
         shared_component_export_macro = "COMPONENT_EXPORT(MOJOM_SHARED_" +
