@@ -351,6 +351,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // Handles collecting metrics on user triggered screenshots
 @property(nonatomic, strong)
     ScreenshotMetricsRecorder* screenshotMetricsRecorder;
+// Cleanup any persisted data for the session restration on disk.
+- (void)cleanupSessionStateCache;
 // Cleanup snapshots on disk.
 - (void)cleanupSnapshots;
 // Cleanup discarded sessions on disk.
@@ -1087,19 +1089,10 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)scheduleSessionStateCacheCleanup {
-  // TODO(crbug.com/325612229): Refactor this to handle multiple browser states.
-  // Consider dedicated handling in DeferredInitializationRunner.
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kPurgeWebSessionStates
                   block:^{
-                    ChromeBrowserState* browserState =
-                        self.appState.mainBrowserState;
-
-                    if (browserState) {
-                      SessionRestorationServiceFactory::GetForBrowserState(
-                          browserState)
-                          ->PurgeUnassociatedData(base::DoNothing());
-                    }
+                    [self cleanupSessionStateCache];
                   }];
 }
 
@@ -1415,6 +1408,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 #pragma mark - Helper methods.
+
+- (void)cleanupSessionStateCache {
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    SessionRestorationServiceFactory::GetForBrowserState(browserState)
+        ->PurgeUnassociatedData(base::DoNothing());
+  }
+}
 
 - (void)cleanupSnapshots {
   // TODO(crbug.com/1116496): Browsers for disconnected scenes are not in the
