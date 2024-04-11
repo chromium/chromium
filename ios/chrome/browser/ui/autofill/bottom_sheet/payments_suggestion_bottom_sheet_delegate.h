@@ -14,7 +14,7 @@
 // Request to disable the bottom sheet, potentially refocusing the field which
 // originally triggered the bottom sheet after the bottom sheet has been
 // disabled.
-- (void)disableBottomSheet;
+- (void)disableBottomSheetAndRefocus:(BOOL)refocus;
 
 @end
 

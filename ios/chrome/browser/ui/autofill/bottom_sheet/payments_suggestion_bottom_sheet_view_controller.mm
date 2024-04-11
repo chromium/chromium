@@ -134,7 +134,7 @@ CGFloat const kTitleLogoHeight = 24;
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
   if (self.disableBottomSheetOnExit) {
-    [self.delegate disableBottomSheet];
+    [self.delegate disableBottomSheetAndRefocus:YES];
   }
   [self.handler viewDidDisappear];
 }
@@ -219,6 +219,8 @@ CGFloat const kTitleLogoHeight = 24;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  self.disableBottomSheetOnExit = NO;
+
   NSInteger index = [self selectedRow];
   [self.handler primaryButtonTapped:_creditCardData[index]];
 

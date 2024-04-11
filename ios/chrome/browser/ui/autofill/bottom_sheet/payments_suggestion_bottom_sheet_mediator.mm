@@ -70,10 +70,6 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
                               autofill::PersonalDataManagerObserver>>
       _scopedPersonalDataManagerObservation;
 
-  // Whether the field that triggered the bottom sheet will need to refocus when
-  // the bottom sheet is dismissed. Default is true.
-  bool _needsRefocus;
-
   // Information regarding the triggering form for this bottom sheet.
   autofill::FormActivityParams _params;
 }
@@ -89,7 +85,6 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
                  personalDataManager:
                      (autofill::PersonalDataManager*)personalDataManager {
   if (self = [super init]) {
-    _needsRefocus = true;
     _params = params;
     _hasCreditCards = NO;
     _webStateList = webStateList;
@@ -232,12 +227,11 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
     // Last resort safety exit: On the unlikely event that the provider was set
     // incorrectly (for example if local predictions and server predictions are
     // different), simply exit and open the keyboard.
-    _needsRefocus = true;
-    [self disableBottomSheet];
+    [self disableBottomSheetAndRefocus:YES];
     [self logExitReason:kBadProvider];
     return;
   }
-  _needsRefocus = false;
+  [self disableBottomSheetAndRefocus:NO];
 
   // Create a form suggestion containing the selected credit card's backend id
   // so that the suggestion provider can properly fill the form.
@@ -263,11 +257,11 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
   [provider didSelectSuggestion:suggestion params:_params];
 }
 
-- (void)disableBottomSheet {
+- (void)disableBottomSheetAndRefocus:(BOOL)refocus {
   if (_webStateList) {
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
     AutofillBottomSheetTabHelper::FromWebState(activeWebState)
-        ->DetachPaymentsListenersForAllFrames(_needsRefocus);
+        ->DetachPaymentsListenersForAllFrames(refocus);
   }
 }
 
