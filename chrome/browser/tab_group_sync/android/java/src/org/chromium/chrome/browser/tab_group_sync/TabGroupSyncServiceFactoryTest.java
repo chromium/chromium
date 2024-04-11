@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 
+import androidx.annotation.NonNull;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -23,7 +24,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
@@ -48,7 +51,47 @@ public class TabGroupSyncServiceFactoryTest {
                     public void removeObserver(Observer observer) {}
 
                     @Override
+                    public void createGroup(int groupId) {}
+
+                    @Override
                     public void removeGroup(int groupId) {}
+
+                    @Override
+                    public void updateVisualData(
+                            int tabGroupId, @NonNull String title, int color) {}
+
+                    @Override
+                    public void addTab(
+                            int tabGroupId, int tabId, String title, GURL url, int position) {}
+
+                    @Override
+                    public void updateTab(
+                            int tabGroupId, int tabId, String title, GURL url, int position) {}
+
+                    @Override
+                    public void removeTab(int tabGroupId, int tabId) {}
+
+                    @Override
+                    public String[] getAllGroupIds() {
+                        return new String[0];
+                    }
+
+                    @Override
+                    public SavedTabGroup getGroup(String syncGroupId) {
+                        return null;
+                    }
+
+                    @Override
+                    public SavedTabGroup getGroup(int localGroupId) {
+                        return null;
+                    }
+
+                    @Override
+                    public void updateLocalTabGroupId(String syncId, int localId) {}
+
+                    @Override
+                    public void updateLocalTabId(
+                            int localGroupId, String syncTabId, int localTabId) {}
                 };
 
         TabGroupSyncServiceFactory.setForTesting(testService);
