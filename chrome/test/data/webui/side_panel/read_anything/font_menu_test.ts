@@ -84,6 +84,10 @@ suite('FontMenu', () => {
       updateFonts(['font 1']);
       assertEquals(fontMenuOptions.length, 1);
 
+      // initial-count in the dom-repeat for the fonts menu limits the
+      // size of the font menu, so adding more than 8 fonts is difficult to
+      // test. If more than 8 fonts are added on the actual menu, we can
+      // increase the initial-count.
       updateFonts([
         'font 1',
         'font 2',
@@ -93,10 +97,8 @@ suite('FontMenu', () => {
         'font 6',
         'font 7',
         'font 8',
-        'font 9',
-        'font 10',
       ]);
-      assertEquals(fontMenuOptions.length, 10);
+      assertEquals(fontMenuOptions.length, 8);
     });
 
     test('each font option is styled with the font that it is', () => {

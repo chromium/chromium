@@ -173,7 +173,7 @@
             on-keydown="onFontSelectKeyDown_"
             aria-label="$i18n{fontNameTitle}"
             title="$i18n{fontNameTitle}">
-      <template is="dom-repeat" items="[[fontOptions_]]">
+      <template is="dom-repeat" items="[[fontOptions_]]" initial-count="8">
         <option value="[[item]]">
           [[getFontItemLabel_(item, areFontsLoaded_)]]</option>
       </template>
@@ -201,7 +201,7 @@
 
   <hr class="separator" aria-hidden="true">
 
-  <template is="dom-repeat" items="[[textStyleToggles_]]">
+  <template is="dom-repeat" items="[[textStyleToggles_]]" initial-count="1">
     <cr-icon-button
     tabindex="-1"
     class="toolbar-button"
@@ -214,7 +214,7 @@
     </cr-icon-button>
   </template>
 
-  <template is="dom-repeat" items="[[textStyleOptions_]]">
+  <template is="dom-repeat" items="[[textStyleOptions_]]" initial-count="2">
     <cr-icon-button
       class="toolbar-button"
       id="[[item.id]]"
@@ -250,7 +250,7 @@
        -->
   <cr-action-menu id="moreOptionsMenu" on-keydown="onToolbarKeyDown_"
         hidden>
-    <template is="dom-repeat" items="[[moreOptionsButtons_]]">
+    <template is="dom-repeat" items="[[moreOptionsButtons_]]" inital-count="3">
       <cr-icon-button
         id="[[item.id]]"
         class="more-options-icon"
@@ -265,7 +265,8 @@
   <cr-lazy-render id="rateMenu">
     <template>
       <cr-action-menu>
-        <template is="dom-repeat" items="[[rateOptions_]]" index-as="index">
+        <template is="dom-repeat" items="[[rateOptions_]]" index-as="index"
+                  initial-count="8">
           <button class="dropdown-item" on-click="onRateClick_">
             <iron-icon class$="button-image check-mark
               check-mark-hidden-[[isRateItemSelected_(index)]]"
@@ -307,7 +308,8 @@
   <cr-lazy-render id="colorMenu">
     <template>
       <cr-action-menu>
-        <template is="dom-repeat" items="[[colorOptions_]]" index-as="index">
+        <template is="dom-repeat" items="[[colorOptions_]]" index-as="index"
+                  initial-count="5">
           <button class="dropdown-item" on-click="onColorClick_">
             <iron-icon class$="button-image check-mark
                               check-mark-hidden-[[isColorItemSelected_(index)]]"
@@ -323,7 +325,8 @@
     <template>
       <cr-action-menu>
         <template is="dom-repeat"
-                  items="[[lineSpacingOptions_]]" index-as="index">
+                  items="[[lineSpacingOptions_]]" index-as="index"
+                  initial-count="3">
           <button class="dropdown-item" on-click="onLineSpacingClick_">
             <iron-icon class$="button-image check-mark
                         check-mark-hidden-[[isLineSpacingItemSelected_(index)]]"
@@ -339,7 +342,8 @@
     <template>
       <cr-action-menu>
         <template is="dom-repeat"
-                  items="[[letterSpacingOptions_]]" index-as="index">
+                  items="[[letterSpacingOptions_]]" index-as="index"
+                  initial-count="3">
           <button class="dropdown-item" on-click="onLetterSpacingClick_">
             <iron-icon class$="button-image check-mark
                       check-mark-hidden-[[isLetterSpacingItemSelected_(index)]]"
@@ -354,7 +358,8 @@
   <cr-lazy-render id="fontMenu">
     <template>
       <cr-action-menu>
-        <template is="dom-repeat" items="[[fontOptions_]]" index-as="index">
+        <template is="dom-repeat" items="[[fontOptions_]]" index-as="index"
+                  initial-count="8">
           <button class="dropdown-item" on-click="onFontClick_"
               style$="font-family:[[item]]">
             <iron-icon
