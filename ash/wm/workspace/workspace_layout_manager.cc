@@ -209,60 +209,6 @@ void WorkspaceLayoutManager::SetChildBounds(aura::Window* child,
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// WorkspaceLayoutManager, ash::KeyboardControllerObserver implementation:
-
-void WorkspaceLayoutManager::OnKeyboardVisibleBoundsChanged(
-    const gfx::Rect& new_bounds) {
-  auto* keyboard_window =
-      keyboard::KeyboardUIController::Get()->GetKeyboardWindow();
-  if (keyboard_window && keyboard_window->GetRootWindow() == root_window_)
-    MaybeUpdateA11yFloatingPanelOrPipBounds();
-}
-
-void WorkspaceLayoutManager::OnKeyboardDisplacingBoundsChanged(
-    const gfx::Rect& new_bounds_in_screen) {
-  aura::Window* window = window_util::GetActiveWindow();
-  if (!window)
-    return;
-
-  window = window->GetToplevelWindow();
-  if (!window_->Contains(window))
-    return;
-
-  WindowState* window_state = WindowState::Get(window);
-  if (window_state->ignore_keyboard_bounds_change())
-    return;
-
-  if (!new_bounds_in_screen.IsEmpty()) {
-    // Store existing bounds to be restored before resizing for keyboard if it
-    // is not already stored.
-    if (!window_state->HasRestoreBounds())
-      window_state->SaveCurrentBoundsForRestore();
-
-    gfx::Rect window_bounds(window->GetTargetBounds());
-    ::wm::ConvertRectToScreen(window_, &window_bounds);
-    const int vertical_displacement =
-        std::max(0, window_bounds.bottom() - new_bounds_in_screen.y());
-    const int shift = std::min(
-        vertical_displacement,
-        window_bounds.y() -
-            screen_util::GetDisplayWorkAreaBoundsInParent(window_).y());
-    if (shift > 0) {
-      const gfx::Point origin(window_bounds.x(), window_bounds.y() - shift);
-      SetChildBounds(window, gfx::Rect(origin, window_bounds.size()));
-    }
-  } else if (window_state->IsNormalStateType() &&
-             window_state->HasRestoreBounds()) {
-    // Keyboard hidden, restore original bounds if they exist. If the user has
-    // resized or dragged the window in the meantime, WorkspaceWindowResizer
-    // will have cleared the restore bounds and this code will not accidentally
-    // override user intent. Only do this for normal window states that use the
-    // restore bounds.
-    window_state->SetAndClearRestoreBounds();
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////
 // WorkspaceLayoutManager, aura::WindowObserver implementation:
 
 void WorkspaceLayoutManager::OnWindowHierarchyChanged(
@@ -382,6 +328,65 @@ void WorkspaceLayoutManager::OnWindowActivated(ActivationReason reason,
 
   UpdateFullscreenState();
   UpdateShelfVisibility();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// WorkspaceLayoutManager, ash::KeyboardControllerObserver implementation:
+
+void WorkspaceLayoutManager::OnKeyboardVisibleBoundsChanged(
+    const gfx::Rect& new_bounds) {
+  auto* keyboard_window =
+      keyboard::KeyboardUIController::Get()->GetKeyboardWindow();
+  if (keyboard_window && keyboard_window->GetRootWindow() == root_window_) {
+    MaybeUpdateA11yFloatingPanelOrPipBounds();
+  }
+}
+
+void WorkspaceLayoutManager::OnKeyboardDisplacingBoundsChanged(
+    const gfx::Rect& new_bounds_in_screen) {
+  aura::Window* window = window_util::GetActiveWindow();
+  if (!window) {
+    return;
+  }
+
+  window = window->GetToplevelWindow();
+  if (!window_->Contains(window)) {
+    return;
+  }
+
+  WindowState* window_state = WindowState::Get(window);
+  if (window_state->ignore_keyboard_bounds_change()) {
+    return;
+  }
+
+  if (!new_bounds_in_screen.IsEmpty()) {
+    // Store existing bounds to be restored before resizing for keyboard if it
+    // is not already stored.
+    if (!window_state->HasRestoreBounds()) {
+      window_state->SaveCurrentBoundsForRestore();
+    }
+
+    gfx::Rect window_bounds(window->GetTargetBounds());
+    wm::ConvertRectToScreen(window_, &window_bounds);
+    const int vertical_displacement =
+        std::max(0, window_bounds.bottom() - new_bounds_in_screen.y());
+    const int shift = std::min(
+        vertical_displacement,
+        window_bounds.y() -
+            screen_util::GetDisplayWorkAreaBoundsInParent(window_).y());
+    if (shift > 0) {
+      const gfx::Point origin(window_bounds.x(), window_bounds.y() - shift);
+      SetChildBounds(window, gfx::Rect(origin, window_bounds.size()));
+    }
+  } else if (window_state->IsNormalStateType() &&
+             window_state->HasRestoreBounds()) {
+    // Keyboard hidden, restore original bounds if they exist. If the user has
+    // resized or dragged the window in the meantime, WorkspaceWindowResizer
+    // will have cleared the restore bounds and this code will not accidentally
+    // override user intent. Only do this for normal window states that use the
+    // restore bounds.
+    window_state->SetAndClearRestoreBounds();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////

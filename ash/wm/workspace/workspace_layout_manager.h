@@ -27,18 +27,18 @@ enum class TabletState;
 
 namespace ash {
 
-class RootWindowController;
 class BackdropController;
+class RootWindowController;
 class WMEvent;
 
 // LayoutManager used on the window created for a workspace.
 class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
                                           public aura::WindowObserver,
-                                          public ::wm::ActivationChangeObserver,
+                                          public wm::ActivationChangeObserver,
                                           public KeyboardControllerObserver,
+                                          public WindowStateObserver,
                                           public display::DisplayObserver,
                                           public ShellObserver,
-                                          public WindowStateObserver,
                                           public ShelfObserver,
                                           public AppListControllerObserver {
  public:
@@ -79,10 +79,9 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   void OnWindowActivating(ActivationReason reason,
                           aura::Window* gaining_active,
                           aura::Window* losing_active) override;
-  void OnWindowActivated(
-      ::wm::ActivationChangeObserver::ActivationReason reason,
-      aura::Window* gained_active,
-      aura::Window* lost_active) override;
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
   // KeyboardControllerObserver:
   void OnKeyboardVisibleBoundsChanged(const gfx::Rect& new_bounds) override;
