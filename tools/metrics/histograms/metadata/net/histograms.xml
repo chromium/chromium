@@ -3871,6 +3871,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.PacketsBeforeEcnTransition" units="packets"
+    expires_after="2024-07-01">
+  <owner>martinduke@google.com</owner>
+  <owner>rch@chromium.org</owner>
+  <summary>
+    The number of packets received before the session observes an Explicit
+    Congestion Notification (ECN) marking different from the first one in the
+    session. Reported when the session occurs. A value of zero means no
+    transition occurred.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.PacketWriteTime" units="units"
     expires_after="2024-09-06">
   <owner>dschinazi@chromium.org</owner>

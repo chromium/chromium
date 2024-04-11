@@ -1051,6 +1051,9 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
   UMA_HISTOGRAM_ENUMERATION(
       "Net.QuicSession.EcnMarksObserved",
       static_cast<EcnPermutations>(observed_incoming_ecn_));
+  UMA_HISTOGRAM_COUNTS_10M(
+      "Net.QuicSession.PacketsBeforeEcnTransition",
+      observed_ecn_transition_ ? incoming_packets_before_ecn_transition_ : 0);
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.NumTotalStreams",
                           num_total_streams_);
 
@@ -3596,8 +3599,16 @@ bool QuicChromiumClientSession::OnPacket(
     const quic::QuicSocketAddress& local_address,
     const quic::QuicSocketAddress& peer_address) {
   ProcessUdpPacket(local_address, peer_address, packet);
-  observed_incoming_ecn_ |=
+  uint8_t new_incoming_ecn =
       (0x1 << static_cast<uint8_t>(packet.ecn_codepoint()));
+  if (new_incoming_ecn != observed_incoming_ecn_ &&
+      incoming_packets_before_ecn_transition_ > 0) {
+    observed_ecn_transition_ = true;
+  }
+  if (!observed_ecn_transition_) {
+    ++incoming_packets_before_ecn_transition_;
+  }
+  observed_incoming_ecn_ |= new_incoming_ecn;
   if (!connection()->connected()) {
     NotifyFactoryOfSessionClosedLater();
     return false;

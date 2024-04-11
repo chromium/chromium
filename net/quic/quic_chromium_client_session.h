@@ -1156,6 +1156,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // end of the session.
   uint8_t observed_incoming_ecn_ = 0;
 
+  // The number of incoming packets in this session before it observes a change
+  // in the incoming packet ECN marking.
+  uint64_t incoming_packets_before_ecn_transition_ = 0;
+
+  // When true, the session has observed a transition and can stop incrementing
+  // incoming_packets_before_ecn_transition_.
+  bool observed_ecn_transition_ = false;
+
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };
 
