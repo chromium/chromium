@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
@@ -26,6 +27,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
@@ -35,6 +37,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/fixed_array.h"
 #include "build/build_config.h"
 #include "components/grit/components_resources.h"
 #include "components/printing/common/print_params.h"
@@ -128,6 +131,37 @@ struct ParamWithFitToPageScale {
   Param param;
   double fit_to_page_scale_factor = 1.0f;
 };
+
+// TODO(crbug.com/40822424): Remove this and related code when the bug is fixed.
+enum class DebugEvent {
+  kNone = 0,
+  kPrintBegin1 = 1,
+  kPrintBegin2 = 2,
+  kPrintBegin3 = 3,
+  kSetPrintSettings1 = 4,
+  kSetPrintSettings2 = 5,
+  kSetPrintSettings3 = 6,
+  kSetPrintSettings4 = 7,
+  kSetPrintSettings5 = 8,
+  kSetPrintSettings6 = 9,
+  kSetPrintSettings7 = 10,
+  kSetPrintSettings8 = 11,
+};
+
+constexpr size_t kDebugEventMaxCount = 10;
+size_t g_debug_events_index = 0;
+
+base::FixedArray<DebugEvent>& GetDebugEvents() {
+  static base::NoDestructor<base::FixedArray<DebugEvent>> debug_events(
+      kDebugEventMaxCount);
+  return *debug_events;
+}
+
+void RecordDebugEvent(DebugEvent event) {
+  GetDebugEvents()[g_debug_events_index] = event;
+  ++g_debug_events_index;
+  g_debug_events_index %= kDebugEventMaxCount;
+}
 
 void ExecuteScript(blink::WebLocalFrame* frame,
                    const char* script_format,
@@ -653,6 +687,7 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
   cc::PaintCanvasAutoRestore auto_restore(canvas, true);
   canvas->scale(1 / scale_factor, 1 / scale_factor);
 
+  RecordDebugEvent(DebugEvent::kPrintBegin1);
   frame.PrintBegin(webkit_params, blink::WebNode());
   frame.PrintPage(0, canvas);
   frame.PrintEnd();
@@ -930,6 +965,7 @@ void PrepareFrameAndViewForPrint::EnterPrintModeInternal(
   blink::WebView* web_view = frame()->View();
   web_view->GetSettings()->SetShouldPrintBackgrounds(
       params.should_print_backgrounds);
+  RecordDebugEvent(DebugEvent::kPrintBegin2);
   page_count_ = frame()->PrintBegin(web_print_params, node_to_print_);
   is_printing_started_ = true;
 }
@@ -1104,6 +1140,31 @@ void PrepareFrameAndViewForPrint::FinishPrinting() {
       if (!owns_web_view_) {
         web_view->GetSettings()->SetShouldPrintBackgrounds(false);
       }
+
+      const auto& debug_events = GetDebugEvents();
+      DebugEvent debug_event_alias0 = debug_events[0];
+      DebugEvent debug_event_alias1 = debug_events[1];
+      DebugEvent debug_event_alias2 = debug_events[2];
+      DebugEvent debug_event_alias3 = debug_events[3];
+      DebugEvent debug_event_alias4 = debug_events[4];
+      DebugEvent debug_event_alias5 = debug_events[5];
+      DebugEvent debug_event_alias6 = debug_events[6];
+      DebugEvent debug_event_alias7 = debug_events[7];
+      DebugEvent debug_event_alias8 = debug_events[8];
+      DebugEvent debug_event_alias9 = debug_events[9];
+      size_t debug_event_index = g_debug_events_index;
+      base::debug::Alias(&debug_event_alias0);
+      base::debug::Alias(&debug_event_alias1);
+      base::debug::Alias(&debug_event_alias2);
+      base::debug::Alias(&debug_event_alias3);
+      base::debug::Alias(&debug_event_alias4);
+      base::debug::Alias(&debug_event_alias5);
+      base::debug::Alias(&debug_event_alias6);
+      base::debug::Alias(&debug_event_alias7);
+      base::debug::Alias(&debug_event_alias8);
+      base::debug::Alias(&debug_event_alias9);
+      base::debug::Alias(&debug_event_index);
+
       frame->PrintEnd();
     }
     if (owns_web_view_) {
@@ -1332,6 +1393,10 @@ void PrintRenderFrameHelper::PrintWithParams(
       center_on_paper && !settings->params->prefer_css_page_size
           ? mojom::PrintScalingOption::kCenterShrinkToFitPaper
           : mojom::PrintScalingOption::kSourceSize;
+  RecordDebugEvent(settings->params->printed_doc_type ==
+                           mojom::SkiaDocumentType::kMSKP
+                       ? DebugEvent::kSetPrintSettings1
+                       : DebugEvent::kSetPrintSettings2);
   SetPrintPagesParams(*settings);
   prep_frame_view_ =
       std::make_unique<PrepareFrameAndViewForPrint>(frame, plugin_node);
@@ -1539,6 +1604,7 @@ void PrintRenderFrameHelper::PrintFrameContent(
   // try to handle pdf plugin element until that bug is fixed.
   {
     TRACE_EVENT0("print", "PrintRenderFrameHelper::PrintFrameContent");
+    RecordDebugEvent(DebugEvent::kPrintBegin3);
     if (frame->PrintBegin(web_print_params,
                           /*constrain_to_node=*/blink::WebElement())) {
       frame->PrintPage(0, canvas);
@@ -2080,6 +2146,10 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
         print_settings->params->prefer_css_page_size
             ? mojom::PrintScalingOption::kSourceSize
             : scaling_option;
+    RecordDebugEvent(print_settings->params->printed_doc_type ==
+                             mojom::SkiaDocumentType::kMSKP
+                         ? DebugEvent::kSetPrintSettings3
+                         : DebugEvent::kSetPrintSettings4);
     SetPrintPagesParams(*print_settings);
   }
 
@@ -2337,6 +2407,10 @@ bool PrintRenderFrameHelper::InitPrintSettings(blink::WebLocalFrame* frame,
   settings.params->print_scaling_option =
       center_on_paper ? mojom::PrintScalingOption::kCenterShrinkToFitPaper
                       : mojom::PrintScalingOption::kSourceSize;
+  RecordDebugEvent(settings.params->printed_doc_type ==
+                           mojom::SkiaDocumentType::kMSKP
+                       ? DebugEvent::kSetPrintSettings5
+                       : DebugEvent::kSetPrintSettings6);
   SetPrintPagesParams(settings);
   return true;
 }
@@ -2409,6 +2483,10 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
   settings->params->print_scaling_option = GetPrintScalingOption(
       frame, node, source_is_html, *job_settings, *settings->params);
 
+  RecordDebugEvent(settings->params->printed_doc_type ==
+                           mojom::SkiaDocumentType::kMSKP
+                       ? DebugEvent::kSetPrintSettings7
+                       : DebugEvent::kSetPrintSettings8);
   SetPrintPagesParams(*settings);
   return true;
 }
