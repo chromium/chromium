@@ -229,15 +229,10 @@ OnDeviceModelServiceController::CreateSession(
   CHECK_EQ(reason, OnDeviceModelEligibilityReason::kSuccess);
 
   SessionImpl::OnDeviceOptions opts;
-  opts.start_session_fn =
-      base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
-                          weak_ptr_factory_.GetWeakPtr(), model_paths);
-  opts.classify_text_safety_fn =
-      base::BindRepeating(&OnDeviceModelServiceController::ClassifyTextSafety,
-                          weak_ptr_factory_.GetWeakPtr(), model_paths);
+  opts.model_client = std::make_unique<OnDeviceModelClient>(
+      weak_ptr_factory_.GetWeakPtr(), model_paths);
   opts.model_versions.CopyFrom(model_versions_.value());
   opts.adapter = std::move(adapter);
-  opts.controller = weak_ptr_factory_.GetWeakPtr();
   opts.safety_cfg = SafetyConfig(safety_config);
 
   return std::make_unique<SessionImpl>(
@@ -277,21 +272,6 @@ OnDeviceModelServiceController::GetOrCreateModelRemote(
                             base::Unretained(this)));
   }
   return model_remote_;
-}
-
-void OnDeviceModelServiceController::StartMojoSession(
-    on_device_model::ModelAssetPaths model_paths,
-    mojo::PendingReceiver<on_device_model::mojom::Session> session) {
-  GetOrCreateModelRemote(model_paths)->StartSession(std::move(session));
-}
-
-void OnDeviceModelServiceController::ClassifyTextSafety(
-    on_device_model::ModelAssetPaths model_paths,
-    const std::string& text,
-    on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback
-        callback) {
-  GetOrCreateModelRemote(model_paths)
-      ->ClassifyTextSafety(text, std::move(callback));
 }
 
 void OnDeviceModelServiceController::OnModelAssetsLoaded(
@@ -412,11 +392,6 @@ void OnDeviceModelServiceController::OnDisconnected() {
   access_controller_->OnDisconnectedFromRemote();
 }
 
-bool OnDeviceModelServiceController::ShouldStartNewSession() const {
-  return access_controller_->ShouldStartNewSession() ==
-         OnDeviceModelEligibilityReason::kSuccess;
-}
-
 void OnDeviceModelServiceController::ShutdownServiceIfNoModelLoaded() {
   if (!model_remote_) {
     service_remote_.reset();
@@ -441,6 +416,38 @@ proto::OnDeviceModelVersions OnDeviceModelServiceController::GetModelVersions(
   }
 
   return versions;
+}
+
+OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(
+    base::WeakPtr<OnDeviceModelServiceController> controller,
+    on_device_model::ModelAssetPaths model_paths)
+    : controller_(controller), model_paths_(model_paths) {}
+
+OnDeviceModelServiceController::OnDeviceModelClient::~OnDeviceModelClient() =
+    default;
+
+bool OnDeviceModelServiceController::OnDeviceModelClient::ShouldUse() {
+  return controller_ &&
+         controller_->access_controller_->ShouldStartNewSession() ==
+             OnDeviceModelEligibilityReason::kSuccess;
+}
+
+mojo::Remote<on_device_model::mojom::OnDeviceModel>&
+OnDeviceModelServiceController::OnDeviceModelClient::GetModelRemote() {
+  return controller_->GetOrCreateModelRemote(model_paths_);
+}
+
+void OnDeviceModelServiceController::OnDeviceModelClient::
+    OnResponseCompleted() {
+  if (controller_) {
+    controller_->access_controller_->OnResponseCompleted();
+  }
+}
+
+void OnDeviceModelServiceController::OnDeviceModelClient::OnSessionTimedOut() {
+  if (controller_) {
+    controller_->access_controller_->OnSessionTimedOut();
+  }
 }
 
 std::optional<proto::FeatureTextSafetyConfiguration>

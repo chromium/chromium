@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SESSION_IMPL_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SESSION_IMPL_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -26,7 +27,6 @@ class OptimizationGuideLogger;
 
 namespace optimization_guide {
 class OnDeviceModelFeatureAdapter;
-class OnDeviceModelServiceController;
 
 using ExecuteRemoteFn = base::RepeatingCallback<void(
     ModelBasedCapabilityKey feature,
@@ -49,11 +49,11 @@ class SafetyConfig final {
   // or the language could not be detected despite the classifier requiring one
   // or more specific languages.
   bool IsTextInUnsupportedOrUndeterminedLanguage(
-    const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
+      const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
 
   // Whether scores indicate the output text is unsafe.
   bool IsUnsafeText(
-    const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
+      const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
 
   // The number of request safety checks to perform.
   int NumRequestChecks() const;
@@ -79,27 +79,28 @@ class SafetyConfig final {
 class SessionImpl : public OptimizationGuideModelExecutor::Session,
                         public on_device_model::mojom::StreamingResponder {
  public:
-  using StartSessionFn = base::RepeatingCallback<void(
-      mojo::PendingReceiver<on_device_model::mojom::Session>)>;
-  using ClassifyTextSafetyFn = base::RepeatingCallback<void(
-      const std::string&,
-      on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback)>;
+  class OnDeviceModelClient {
+   public:
+    virtual ~OnDeviceModelClient() = 0;
+    // Called to check whether this client is still usable.
+    virtual bool ShouldUse() = 0;
+    // Called to retrieve connection the managed model.
+    virtual mojo::Remote<on_device_model::mojom::OnDeviceModel>&
+    GetModelRemote() = 0;
+    // Called to report a successful execution of the model.
+    virtual void OnResponseCompleted() = 0;
+    // Called to report a timeout reached while waiting for model response.
+    virtual void OnSessionTimedOut() = 0;
+  };
 
   struct OnDeviceOptions final {
     OnDeviceOptions();
     OnDeviceOptions(OnDeviceOptions&&);
     ~OnDeviceOptions();
 
-    using StartSessionFn = base::RepeatingCallback<void(
-        mojo::PendingReceiver<on_device_model::mojom::Session>)>;
-    using ClassifyTextSafetyFn = base::RepeatingCallback<void(
-        const std::string&,
-        on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback)>;
-    StartSessionFn start_session_fn;
-    ClassifyTextSafetyFn classify_text_safety_fn;
+    std::unique_ptr<OnDeviceModelClient> model_client;
     proto::OnDeviceModelVersions model_versions;
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
-    base::WeakPtr<OnDeviceModelServiceController> controller;
     SafetyConfig safety_cfg;
 
     // Returns true if the on-device model may be used.
@@ -282,6 +283,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Called when the connection to the service is dropped.
   void OnDisconnect();
+
+  // Called when a on-device response was not received within the timeout.
+  void OnSessionTimedOut();
 
   // Sends `current_response_` to the client.
   void SendResponse(ResponseType response_type);

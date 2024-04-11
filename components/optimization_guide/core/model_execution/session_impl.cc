@@ -164,12 +164,14 @@ class SessionImpl::ContextProcessor
   mojo::Receiver<on_device_model::mojom::ContextClient> client_{this};
 };
 
+SessionImpl::OnDeviceModelClient::~OnDeviceModelClient() = default;
+
 SessionImpl::OnDeviceOptions::OnDeviceOptions() = default;
 SessionImpl::OnDeviceOptions::OnDeviceOptions(OnDeviceOptions&&) = default;
 SessionImpl::OnDeviceOptions::~OnDeviceOptions() = default;
 
 bool SessionImpl::OnDeviceOptions::ShouldUse() const {
-  return controller && controller->ShouldStartNewSession();
+  return model_client->ShouldUse();
 }
 
 SessionImpl::SessionImpl(
@@ -392,8 +394,7 @@ void SessionImpl::ExecuteModel(
   on_device_state_->start = base::TimeTicks::Now();
   on_device_state_->timer_for_first_response.Start(
       FROM_HERE, features::GetOnDeviceModelTimeForInitialResponse(),
-      base::BindOnce(&SessionImpl::DestroyOnDeviceStateAndFallbackToRemote,
-                     base::Unretained(this), ExecuteModelResult::kTimedOut));
+      base::BindOnce(&SessionImpl::OnSessionTimedOut, base::Unretained(this)));
 
   auto options = on_device_model::mojom::InputOptions::New();
   options->text = input->input_string;
@@ -427,7 +428,7 @@ void SessionImpl::RunNextRequestSafetyCheckOrBeginExecution(
   proto::InternalOnDeviceModelExecutionInfo check_log;
   check_log.mutable_request()->mutable_text_safety_model_request()->set_text(
       check_input->input_string);
-  on_device_state_->opts.classify_text_safety_fn.Run(
+  on_device_state_->opts.model_client->GetModelRemote()->ClassifyTextSafety(
       check_input->input_string,
       base::BindOnce(&SessionImpl::OnRequestSafetyResult,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
@@ -536,10 +537,7 @@ void SessionImpl::OnComplete(
       time_to_completion);
   on_device_state_->MutableLoggedResponse()->set_time_to_completion_millis(
       time_to_completion.InMilliseconds());
-  if (on_device_state_->opts.controller) {
-    on_device_state_->opts.controller->access_controller(/*pass_key=*/{})
-        ->OnResponseCompleted();
-  }
+  on_device_state_->opts.model_client->OnResponseCompleted();
 
   if (on_device_state_->opts.safety_cfg.IsMissingSafetyInfo(
           !!summary->safety_info)) {
@@ -560,7 +558,7 @@ void SessionImpl::OnComplete(
 on_device_model::mojom::Session& SessionImpl::GetOrCreateSession() {
   CHECK(ShouldUseOnDeviceModel());
   if (!on_device_state_->session) {
-    on_device_state_->opts.start_session_fn.Run(
+    on_device_state_->opts.model_client->GetModelRemote()->StartSession(
         on_device_state_->session.BindNewPipeAndPassReceiver());
     on_device_state_->session.set_disconnect_handler(
         base::BindOnce(&SessionImpl::OnDisconnect, base::Unretained(this)));
@@ -752,16 +750,16 @@ void SessionImpl::SendSuccessCompletionCallback(
 }
 
 bool SessionImpl::ShouldUseOnDeviceModel() const {
-  return on_device_state_ && on_device_state_->opts.ShouldUse();
+  return on_device_state_ && on_device_state_->opts.model_client->ShouldUse();
+}
+
+void SessionImpl::OnSessionTimedOut() {
+  on_device_state_->opts.model_client->OnSessionTimedOut();
+  DestroyOnDeviceStateAndFallbackToRemote(ExecuteModelResult::kTimedOut);
 }
 
 void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
     ExecuteModelResult result) {
-  if (result == ExecuteModelResult::kTimedOut &&
-      on_device_state_->opts.controller) {
-    on_device_state_->opts.controller->access_controller(/*pass_key=*/{})
-        ->OnSessionTimedOut();
-  }
   if (on_device_state_->histogram_logger) {
     on_device_state_->histogram_logger->set_result(result);
   }
@@ -868,7 +866,9 @@ bool SafetyConfig::IsMissingSafetyInfo(bool has_safety_info) const {
 }
 
 std::optional<uint32_t> SafetyConfig::TokenInterval() const {
-  if (!proto_) return std::nullopt;
+  if (!proto_) {
+    return std::nullopt;
+  }
   return features::GetOnDeviceModelTextSafetyTokenInterval();
 }
 
@@ -921,8 +921,8 @@ int SafetyConfig::NumRequestChecks() const {
 }
 
 std::optional<SubstitutionResult> SafetyConfig::GetRequestCheckInput(
-      int check_idx,
-      const google::protobuf::MessageLite& message) const {
+    int check_idx,
+    const google::protobuf::MessageLite& message) const {
   return CreateSubstitutions(message,
                              proto_->request_check(check_idx).input_template());
 }

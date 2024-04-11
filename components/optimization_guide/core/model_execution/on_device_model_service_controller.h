@@ -88,12 +88,6 @@ class OnDeviceModelServiceController
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback);
 
-  OnDeviceModelAccessController* access_controller(base::PassKey<SessionImpl>) {
-    return access_controller_.get();
-  }
-
-  bool ShouldStartNewSession() const;
-
   // Shuts down the service if there is no active model.
   void ShutdownServiceIfNoModelLoaded();
 
@@ -126,6 +120,23 @@ class OnDeviceModelServiceController
   }
 
  private:
+  class OnDeviceModelClient : public SessionImpl::OnDeviceModelClient {
+   public:
+    OnDeviceModelClient(
+        base::WeakPtr<OnDeviceModelServiceController> controller,
+        on_device_model::ModelAssetPaths model_paths);
+    ~OnDeviceModelClient() override;
+    bool ShouldUse() override;
+    mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetModelRemote()
+        override;
+    void OnResponseCompleted() override;
+    void OnSessionTimedOut() override;
+
+   private:
+    base::WeakPtr<OnDeviceModelServiceController> controller_;
+    on_device_model::ModelAssetPaths model_paths_;
+  };
+  friend class OnDeviceModelClient;
   friend class base::RefCounted<OnDeviceModelServiceController>;
   friend class ChromeOnDeviceModelServiceController;
   friend class OnDeviceModelServiceControllerTest;
@@ -164,20 +175,9 @@ class OnDeviceModelServiceController
                     const std::string& component_version);
   void ClearModelPath();
 
+  // Ensures the service is running and provides a remote for the model.
   mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateModelRemote(
       on_device_model::ModelAssetPaths model_paths);
-
-  // Makes sure the service is running and starts a mojo session.
-  void StartMojoSession(
-      on_device_model::ModelAssetPaths model_paths,
-      mojo::PendingReceiver<on_device_model::mojom::Session> session);
-
-  // Invoke ClassifyTextSafety on the service.
-  void ClassifyTextSafety(
-      on_device_model::ModelAssetPaths model_paths,
-      const std::string& text,
-      on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback
-          callback);
 
   // Invoked at the end of model load, to continue with model execution.
   void OnLoadModelResult(on_device_model::mojom::LoadModelResult result);
