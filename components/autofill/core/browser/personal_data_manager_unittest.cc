@@ -122,19 +122,6 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromVariations) {
   EXPECT_EQ(expected_country_code, actual_country_code);
 }
 
-TEST_F(PersonalDataManagerTest, OnAccountsCookieDeletedByUserAction) {
-  // Set up some sync transport opt-ins in the prefs.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
-      prefs_.get(), CoreAccountId::FromGaiaId("account1"), true);
-  EXPECT_FALSE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
-
-  // Simulate that the cookies get cleared by the user.
-  personal_data_->OnAccountsCookieDeletedByUserAction();
-
-  // Make sure the pref is now empty.
-  EXPECT_TRUE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
-}
-
 TEST_F(PersonalDataManagerTest, IsCountryEligibleForAccountStorage) {
   EXPECT_TRUE(personal_data_->IsCountryEligibleForAccountStorage("AT"));
   EXPECT_FALSE(personal_data_->IsCountryEligibleForAccountStorage("IR"));

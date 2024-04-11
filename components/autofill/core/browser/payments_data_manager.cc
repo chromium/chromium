@@ -295,6 +295,9 @@ PaymentsDataManager::PaymentsDataManager(
   if (sync_service_) {
     sync_observer_.Observe(sync_service_);
   }
+  if (identity_manager_) {
+    identity_observer_.Observe(identity_manager_);
+  }
 }
 
 PaymentsDataManager::~PaymentsDataManager() {
@@ -463,6 +466,11 @@ void PaymentsDataManager::OnStateChanged(syncer::SyncService* sync_service) {
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   database_helper_->SetUseAccountStorageForServerData(
       sync_service && !sync_service->IsSyncFeatureEnabled());
+}
+
+void PaymentsDataManager::OnAccountsCookieDeletedByUserAction() {
+  // Clear all the Sync Transport feature opt-ins.
+  prefs::ClearSyncTransportOptIns(pref_service_);
 }
 
 void PaymentsDataManager::Refresh() {

@@ -113,8 +113,7 @@ class PersonalDataManagerObserver;
 // was posted before the add operation has finished, the remove would
 // incorrectly get rejected by the PDM.
 class PersonalDataManager : public KeyedService,
-                            public history::HistoryServiceObserver,
-                            public signin::IdentityManager::Observer {
+                            public history::HistoryServiceObserver {
  public:
   using ProfileOrder = AddressDataManager::ProfileOrder;
 
@@ -169,9 +168,6 @@ class PersonalDataManager : public KeyedService,
   // history::HistoryServiceObserver
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
-
-  // signin::IdentityManager::Observer:
-  void OnAccountsCookieDeletedByUserAction() override;
 
   // Returns the account info of currently signed-in user, or std::nullopt if
   // the user is not signed-in or the identity manager is not available.

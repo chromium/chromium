@@ -51,7 +51,8 @@ class TestPersonalDataManager;
 class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
                             public WebDataServiceConsumer,
                             public AccountInfoGetter,
-                            public syncer::SyncServiceObserver {
+                            public syncer::SyncServiceObserver,
+                            public signin::IdentityManager::Observer {
  public:
   PaymentsDataManager(
       scoped_refptr<AutofillWebDataService> profile_database,
@@ -82,6 +83,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+
+  // signin::IdentityManager::Observer:
+  void OnAccountsCookieDeletedByUserAction() override;
 
   // Reloads all payments data from the database.
   void Refresh();
@@ -571,6 +575,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // The identity manager that this instance uses. Must outlive this instance.
   const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_observer_{this};
 
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;

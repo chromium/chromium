@@ -100,6 +100,7 @@ void PersonalDataManager::Init(
       identity_manager, app_locale_, notify_observers);
 
   pref_service_ = pref_service;
+  identity_manager_ = identity_manager;
 
   alternative_state_name_map_updater_ =
       std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
@@ -108,11 +109,6 @@ void PersonalDataManager::Init(
   history_service_ = history_service;
   if (history_service_)
     history_service_observation_.Observe(history_service_.get());
-
-  // Listen for account cookie deletion by the user.
-  identity_manager_ = identity_manager;
-  if (identity_manager_)
-    identity_manager_->AddObserver(this);
 
   SetSyncService(sync_service);
 
@@ -139,14 +135,11 @@ PersonalDataManager::~PersonalDataManager() = default;
 
 void PersonalDataManager::Shutdown() {
   sync_service_ = nullptr;
+  identity_manager_ = nullptr;
 
   if (history_service_)
     history_service_observation_.Reset();
   history_service_ = nullptr;
-
-  if (identity_manager_)
-    identity_manager_->RemoveObserver(this);
-  identity_manager_ = nullptr;
 
   // The following members register observers, which needs to be unregistered
   // before the dependent service's `Shutdown()`.
@@ -162,11 +155,6 @@ void PersonalDataManager::OnHistoryDeletions(
     AutofillCrowdsourcingManager::ClearUploadHistory(pref_service_);
   }
   address_data_manager_->OnHistoryDeletions(deletion_info);
-}
-
-void PersonalDataManager::OnAccountsCookieDeletedByUserAction() {
-  // Clear all the Sync Transport feature opt-ins.
-  prefs::ClearSyncTransportOptIns(pref_service_);
 }
 
 std::optional<CoreAccountInfo> PersonalDataManager::GetPrimaryAccountInfo()

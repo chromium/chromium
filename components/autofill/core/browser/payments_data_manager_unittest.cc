@@ -2990,4 +2990,17 @@ TEST_F(PaymentsDataManagerTest, GetAccountInfoForPaymentsServer) {
             payments_data_manager().GetAccountInfoForPaymentsServer().email);
 }
 
+TEST_F(PaymentsDataManagerTest, OnAccountsCookieDeletedByUserAction) {
+  // Set up some sync transport opt-ins in the prefs.
+  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
+      prefs_.get(), CoreAccountId::FromGaiaId("account1"), true);
+  EXPECT_FALSE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
+
+  // Simulate that the cookies get cleared by the user.
+  payments_data_manager().OnAccountsCookieDeletedByUserAction();
+
+  // Make sure the pref is now empty.
+  EXPECT_TRUE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
+}
+
 }  // namespace autofill
