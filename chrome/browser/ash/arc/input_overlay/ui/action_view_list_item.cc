@@ -54,9 +54,9 @@ bool ActionViewListItem::OnKeyPressed(const ui::KeyEvent& event) {
       controller_->HideActionHighlightWidget();
     }
     // Tab key is not considered as processed here, so it falls to the end to
-    // return false.
+    // return parent class call.
   }
-  return false;
+  return ActionEditView::OnKeyPressed(event);
 }
 
 void ActionViewListItem::OnFocus() {
