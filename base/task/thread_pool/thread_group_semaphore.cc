@@ -69,9 +69,9 @@ class ThreadGroupSemaphore::SemaphoreWorkerDelegate
   // `outer` owns the worker for which this delegate is
   // constructed. `join_called_for_testing` is shared amongst workers, and
   // owned by `outer`.
-  explicit SemaphoreWorkerDelegate(TrackedRef<ThreadGroup> outer,
-                                   bool is_excess,
-                                   AtomicFlag* join_called_for_testing);
+  SemaphoreWorkerDelegate(TrackedRef<ThreadGroup> outer,
+                          bool is_excess,
+                          AtomicFlag* join_called_for_testing);
   SemaphoreWorkerDelegate(const SemaphoreWorkerDelegate&) = delete;
   SemaphoreWorkerDelegate& operator=(const SemaphoreWorkerDelegate&) = delete;
 
@@ -173,9 +173,7 @@ void ThreadGroupSemaphore::PushTaskSourceAndWakeUpWorkers(
 }
 
 size_t ThreadGroupSemaphore::NumberOfIdleWorkersLockRequiredForTesting() const {
-  return static_cast<size_t>(
-      ClampSub(static_cast<int64_t>(workers_.size()),
-               static_cast<int64_t>(num_active_signals_)));
+  return ClampSub(workers_.size(), num_active_signals_);
 }
 
 ThreadGroupSemaphore::SemaphoreWorkerDelegate::SemaphoreWorkerDelegate(
@@ -252,7 +250,7 @@ bool ThreadGroupSemaphore::SemaphoreWorkerDelegate::CanGetWorkLockRequired(
   // where this decision is made by the number of workers which were signaled),
   // this worker should not get work, until tasks are no longer in excess
   // (i.e. max tasks increases).
-  if (static_cast<size_t>(outer()->num_active_signals_) > outer()->max_tasks_) {
+  if (outer()->num_active_signals_ > outer()->max_tasks_) {
     OnWorkerBecomesIdleLockRequired(executor, worker);
     return false;
   }
@@ -331,7 +329,7 @@ ThreadGroupSemaphore::SemaphoreWorkerDelegate::SwapProcessedTask(
     return GetWorkLockRequired(&workers_executor,
                                static_cast<WorkerThreadSemaphore*>(worker));
   } else if (outer()->GetDesiredNumAwakeWorkersLockRequired() >=
-             static_cast<size_t>(outer()->num_active_signals_)) {
+             outer()->num_active_signals_) {
     // When the thread pool wants more work to be run but hasn't signaled
     // workers for it yet we can take advantage and grab more work without
     // signal/wait contention.
@@ -378,9 +376,9 @@ void ThreadGroupSemaphore::SemaphoreWorkerDelegate::
     OnWorkerBecomesIdleLockRequired(BaseScopedCommandsExecutor* executor,
                                     WorkerThread* worker_base) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  CHECK_GT(outer()->num_active_signals_, 0u);
   --outer()->num_active_signals_;
   outer()->idle_workers_set_cv_for_testing_->Signal();
-  CHECK_GE(outer()->num_active_signals_, 0);
 }
 
 void ThreadGroupSemaphore::SemaphoreWorkerDelegate::RecordUnnecessaryWakeup() {
@@ -495,9 +493,8 @@ void ThreadGroupSemaphore::EnsureEnoughWorkersLockRequired(
 
   const size_t new_signals = std::min(
       // Don't signal more than `workers_.size()` workers.
-      {static_cast<size_t>(ClampSub(workers_.size(), num_active_signals_)),
-       static_cast<size_t>(
-           ClampSub(desired_awake_workers, num_active_signals_))});
+      {ClampSub(workers_.size(), num_active_signals_),
+       ClampSub(desired_awake_workers, num_active_signals_)});
   AnnotateAcquiredLockAlias alias(lock_, executor->outer()->lock_);
   for (size_t i = 0; i < new_signals; ++i) {
     executor->ScheduleSignal();

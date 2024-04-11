@@ -122,7 +122,9 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
         static_cast<ThreadGroupImpl*>(thread_group_.get());
     thread_group_impl->Start(kMaxTasks, kMaxBestEffortTasks, TimeDelta::Max(),
                              service_thread_.task_runner(), nullptr,
-                             worker_environment);
+                             worker_environment,
+                             /*synchronous_thread_start_for_testing=*/false,
+                             /*may_block_threshold=*/{});
   }
 
   void DestroyThreadGroup() {

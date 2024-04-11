@@ -91,9 +91,8 @@ class BASE_EXPORT ThreadGroup {
       scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
       WorkerThreadObserver* worker_thread_observer,
       WorkerEnvironment worker_environment,
-      bool synchronous_thread_start_for_testing = false,
-      std::optional<TimeDelta> may_block_threshold =
-          std::optional<TimeDelta>()) = 0;
+      bool synchronous_thread_start_for_testing,
+      std::optional<TimeDelta> may_block_threshold) = 0;
 
   // Registers the thread group in TLS.
   void BindToCurrentThread();

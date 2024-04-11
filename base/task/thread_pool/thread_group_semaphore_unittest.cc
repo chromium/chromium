@@ -1593,7 +1593,9 @@ class ThreadGroupSemaphoreBlockingCallAndMaxBestEffortTasksTest
     CreateThreadGroup();
     thread_group_->Start(kMaxTasks, kMaxBestEffortTasks, base::TimeDelta::Max(),
                          service_thread_.task_runner(), nullptr,
-                         ThreadGroup::WorkerEnvironment::NONE);
+                         ThreadGroup::WorkerEnvironment::NONE,
+                         /*synchronous_thread_start_for_testing=*/false,
+                         /*may_block_threshold=*/{});
   }
 
   void TearDown() override {
@@ -1672,7 +1674,9 @@ TEST_F(ThreadGroupSemaphoreImplStartInBodyTest, RacyCleanup) {
   thread_group_->Start(kLocalMaxTasks, kLocalMaxTasks,
                        kReclaimTimeForRacyCleanupTest,
                        service_thread_.task_runner(), nullptr,
-                       ThreadGroup::WorkerEnvironment::NONE);
+                       ThreadGroup::WorkerEnvironment::NONE,
+                       /*synchronous_thread_start_for_testing=*/false,
+                       /*may_block_threshold=*/{});
 
   scoped_refptr<TaskRunner> task_runner = test::CreatePooledTaskRunner(
       {WithBaseSyncPrimitives()}, &mock_pooled_task_runner_delegate_);

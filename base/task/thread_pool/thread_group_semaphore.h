@@ -95,7 +95,7 @@ class BASE_EXPORT ThreadGroupSemaphore : public ThreadGroup {
   // and is no longer considered signaled at
   // OnWorkerBecomesIdleLockRequired(). Will not exceed `workers_.size()` due to
   // being deliberately capped in`EnsureEnoughWorkersLockRequired().
-  int num_active_signals_ GUARDED_BY(lock_) = 0;
+  size_t num_active_signals_ GUARDED_BY(lock_) = 0;
 
   size_t worker_sequence_num_ GUARDED_BY(lock_) = 0;
 
