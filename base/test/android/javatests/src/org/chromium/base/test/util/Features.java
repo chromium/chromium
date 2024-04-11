@@ -12,10 +12,12 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureList;
 import org.chromium.base.cached_flags.CachedFlag;
 import org.chromium.base.cached_flags.CachedFlagUtils;
+import org.chromium.base.test.util.AnnotationProcessingUtils.AnnotationExtractor;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -74,9 +76,6 @@ public class Features {
      * to {@link FeatureList}'s test values.
      */
     public static class JUnitProcessor extends Processor {
-        public JUnitProcessor() {
-            super(EnableFeatures.class, DisableFeatures.class);
-        }
 
         @Override
         protected void collectFeatures() {
@@ -101,9 +100,6 @@ public class Features {
      * collected feature states are applied to {@link CommandLine}.
      */
     public static class InstrumentationProcessor extends Processor {
-        public InstrumentationProcessor() {
-            super(EnableFeatures.class, DisableFeatures.class);
-        }
 
         @Override
         protected void collectFeatures() {
@@ -132,6 +128,10 @@ public class Features {
                 Class<? extends Annotation> firstAnnotationType,
                 Class<? extends Annotation>... additionalTypes) {
             super(firstAnnotationType, additionalTypes);
+        }
+
+        public Processor() {
+            super(EnableFeatures.class, DisableFeatures.class);
         }
 
         @Override
@@ -164,6 +164,19 @@ public class Features {
                 disable(((DisableFeatures) annotation).value());
             }
         }
+    }
+
+    /**
+     * Collect feature annotations form |testMethod| and apply them for robolectric tests.
+     *
+     * @param testMethod an @Test method from a Robolectric test.
+     */
+    public void applyFeaturesFromTestMethodForRobolectric(Method testMethod) {
+        AnnotationExtractor annotationExtractor =
+                new AnnotationExtractor(EnableFeatures.class, DisableFeatures.class);
+        List<Annotation> annotations = annotationExtractor.getMatchingAnnotations(testMethod);
+        collectFeatures(annotations);
+        applyForJUnit();
     }
 
     /**
@@ -216,6 +229,19 @@ public class Features {
 
     private void clearRegisteredState() {
         mRegisteredState.clear();
+    }
+
+    /** Resets test fixtures for Feature flags after a Robolectric Test. */
+    public static void resetAfterRobolectricTest() {
+        // Resets state that might persist in between tests.
+        FeatureList.setTestFeatures(null);
+
+        resetCachedFlags(false);
+
+        // sInstance may already be null if there are nested usages.
+        if (sInstance == null) return;
+
+        sInstance.clearRegisteredState();
     }
 
     /**

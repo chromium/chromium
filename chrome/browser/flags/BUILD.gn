@@ -64,7 +64,6 @@ robolectric_library("flags_junit_tests") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsAnnotationUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithProcessorUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithoutProcessorUnitTest.java",
   ]
   deps = [
     ":java",

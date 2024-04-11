@@ -38,6 +38,8 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -108,20 +110,20 @@ public class PartnerCustomizationsUmaUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
     public void testIsEnabled() {
-        FeatureList.setTestValues(mEnabledTestValues);
         Assert.assertTrue(PartnerCustomizationsUma.isEnabled());
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
     public void testIsEnabled_false() {
-        FeatureList.setTestValues(mDisabledTestValues);
         Assert.assertFalse(PartnerCustomizationsUma.isEnabled());
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
     public void testOnFinishNativeInitializationEnabled_alreadyEnabled() {
-        FeatureList.setTestValues(mEnabledTestValues);
         mPartnerCustomizationsUma.onFinishNativeInitializationOrEnabled(
                 mActivityLifecycleDispatcherMock, () -> mDidCall = true);
         verifyNoInteractions(mActivityLifecycleDispatcherMock);
@@ -129,8 +131,8 @@ public class PartnerCustomizationsUmaUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
     public void testOnFinishNativeInitializationEnabled_alreadyDisabled() {
-        FeatureList.setTestValues(mDisabledTestValues);
         mPartnerCustomizationsUma.onFinishNativeInitializationOrEnabled(
                 mActivityLifecycleDispatcherMock, () -> mDidCall = true);
         verifyNoInteractions(mActivityLifecycleDispatcherMock);
@@ -147,6 +149,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testOnFinishNativeInitializationEnabled_beforeNativeInit() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         mPartnerCustomizationsUma.onFinishNativeInitializationOrEnabled(
                 mActivityLifecycleDispatcherMock, () -> mDidCall = true);
         NativeInitObserver observer = captureObserverFromLifecycleMock();
@@ -163,6 +167,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testOnFinishNativeInitializationEnabled_beforeNativeInitDisabled() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         mPartnerCustomizationsUma.onFinishNativeInitializationOrEnabled(
                 mActivityLifecycleDispatcherMock, () -> mDidCall = true);
         NativeInitObserver observer = captureObserverFromLifecycleMock();
@@ -521,6 +527,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testCreateNtpIncorrectlyBeforeCustomization() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(NTP_INCORRECTLY, NOT_CACHED, SOME_DELEGATE);
         expectInitializationCompleted(
@@ -548,6 +556,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testCreateNtpCorrectlyBeforeCustomization() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(NTP_CORRECTLY, NOT_CACHED, SOME_DELEGATE);
         expectInitializationCompleted(
@@ -575,6 +585,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testCreateNtpUnknownBeforeCustomization() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(NTP_UNKNOWN, NOT_CACHED, SOME_DELEGATE);
         expectInitializationCompleted(builder, NOT_CACHED, SOME_DELEGATE, CANCELLED, UNUSED_TIME);
@@ -600,6 +612,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testCreatePartnerHomepageBeforeCustomization() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(PARTNER_CUSTOM_HOMEPAGE, NOT_CACHED, SOME_DELEGATE);
         expectInitializationCompleted(
@@ -627,6 +641,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testCreateOtherHomepageBeforeCustomization() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(OTHER_CUSTOM_HOMEPAGE, false, SOME_DELEGATE);
         expectInitializationCompleted(
@@ -659,6 +675,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testCreateNtpCorrectlyCached() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(NTP_CORRECTLY, CACHED, SOME_DELEGATE);
         expectInitializationCompleted(
@@ -686,6 +704,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testCreatePartnerHomepageCached() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(PARTNER_CUSTOM_HOMEPAGE, CACHED, SOME_DELEGATE);
         expectInitializationCompleted(
@@ -713,6 +733,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testCreateNtpCorrectlyAfterCustomization() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(NTP_CORRECTLY, NOT_CACHED, SOME_DELEGATE);
         expectInitializationCompleted(
@@ -737,6 +759,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testCreatePartnerHomepageAfterCustomization() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(PARTNER_CUSTOM_HOMEPAGE, NOT_CACHED, SOME_DELEGATE);
         expectInitializationCompleted(
@@ -765,6 +789,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Test
     public void testCreateInitialTabCalledBeforeCustomizationStarts() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         HistogramWatcher.Builder beforeStartedBuilder =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(
@@ -804,6 +830,8 @@ public class PartnerCustomizationsUmaUnitTest {
      */
     @Test
     public void testCreateInitialTabCalledMultipleTimes() {
+        // Unset test values so that FeatureList#isInitialized returns false.
+        FeatureList.setTestValues(null);
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(PARTNER_CUSTOM_HOMEPAGE, NOT_CACHED, SOME_DELEGATE);
         expectInitializationCompleted(

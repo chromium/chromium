@@ -10,6 +10,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.TimeoutTimer;
 import org.chromium.testing.local.ChromiumAndroidConfigurer;
 
@@ -22,6 +24,9 @@ public class BaseRobolectricAndroidConfigurer
         builder.doNotAcquireClass(BaseRobolectricTestRunner.HelperTestRunner.class)
                 // Requires access to non-fake SystemClock.
                 .doNotAcquireClass(TimeoutTimer.class)
+                // Annotations used by the test runner itself to set up feature flags.
+                .doNotAcquireClass(EnableFeatures.class)
+                .doNotAcquireClass(DisableFeatures.class)
                 // Called from outside of sandbox classloader in BaseRobolectricTestRunner.
                 .doNotAcquireClass(ResettersForTesting.class);
     }

@@ -780,9 +780,10 @@ public abstract class ChromeFeatureList {
 
     // MutableFlagWithSafeDefault instances.
     /* Alphabetical: */
+    public static final MutableFlagWithSafeDefault sAdaptiveButtonInTopToolbarCustomizationV2 =
+            newMutableFlagWithSafeDefault(ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, false);
     public static final MutableFlagWithSafeDefault sAndroidImprovedBookmarks =
             newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
-
     public static final MutableFlagWithSafeDefault sAnimateSuggestionsListAppearance =
             newMutableFlagWithSafeDefault(ANIMATE_SUGGESTIONS_LIST_APPEARANCE, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutter =
@@ -821,6 +822,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_ID_MAP, true);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
+    public static final MutableFlagWithSafeDefault sTotallyEdgeToEdge =
+            newMutableFlagWithSafeDefault(TOTALLY_EDGE_TO_EDGE, false);
     public static final MutableFlagWithSafeDefault sTouchDownTriggerForPrefetch =
             newMutableFlagWithSafeDefault(OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
     public static final MutableFlagWithSafeDefault sVisibleUrlTruncationV2 =

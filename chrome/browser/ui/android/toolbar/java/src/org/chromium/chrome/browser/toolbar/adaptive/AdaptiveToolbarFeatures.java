@@ -108,8 +108,7 @@ public class AdaptiveToolbarFeatures {
      * <p>Must be called with the {@link FeatureList} initialized.
      */
     public static boolean isCustomizationEnabled() {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)) {
+        if (!ChromeFeatureList.sAdaptiveButtonInTopToolbarCustomizationV2.isEnabled()) {
             return false;
         }
         final int minVersion =

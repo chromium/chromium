@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,8 +47,7 @@ public class TotallyEdgeToEdge {
      * @return Whether this Feature is enabled or not.
      */
     static boolean isEnabled() {
-        return FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.TOTALLY_EDGE_TO_EDGE);
+        return ChromeFeatureList.sTotallyEdgeToEdge.isEnabled();
     }
 
     /**

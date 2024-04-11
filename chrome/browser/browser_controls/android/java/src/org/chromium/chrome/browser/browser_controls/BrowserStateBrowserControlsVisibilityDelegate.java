@@ -10,7 +10,6 @@ import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.FeatureList;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -115,10 +114,8 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
             // there wasn't any significant change to the screen. They should unlock as soon as the
             // capture logic thinks it's safe to do so. Long term this can probably be removed for
             // all.
-            boolean useSuppression =
-                    (FeatureList.isInitialized()
-                            && ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES));
+            boolean useSuppression = ChromeFeatureList.sSuppressionToolbarCaptures.isEnabled();
+
             if (!useSuppression) {
                 ensureControlsVisibleForMinDuration();
             }
