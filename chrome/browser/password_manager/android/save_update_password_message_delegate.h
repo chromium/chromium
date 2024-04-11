@@ -173,6 +173,8 @@ class SaveUpdatePasswordMessageDelegate
   MessageDismissReasonToPasswordManagerUIDismissalReason(
       messages::DismissReason dismiss_reason);
 
+  void MaybeNudgeToUpdateGmsCore();
+
   PasswordEditDialogFactory password_edit_dialog_factory_;
 
   raw_ptr<content::WebContents> web_contents_ = nullptr;

@@ -46,6 +46,9 @@ using password_manager::UsesSplitStoresAndUPMForLocal;
 // Duration of message before timeout; 20 seconds.
 const int kMessageDismissDurationMs = 20000;
 
+constexpr base::TimeDelta kUpdateGMSCoreMessageDisplayDelay =
+    base::Milliseconds(500);
+
 // Log the outcome of the save/update password workflow.
 // It differentiates whether the the flow was accepted/cancelled immediately
 // or after calling the password edit dialog.
@@ -103,17 +106,6 @@ void TryToShowPasswordMigrationWarning(
         Profile::FromBrowserContext(web_contents->GetBrowserContext()),
         password_manager::metrics_util::PasswordMigrationWarningTriggers::
             kPasswordSaveUpdateMessage);
-  }
-}
-
-void MaybeNudgeToUpdateGmsCore(ManagePasswordsState& passwords_state) {
-  if (passwords_state.client()
-          ->GetPasswordFeatureManager()
-          ->ShouldUpdateGmsCore()) {
-    passwords_state.client()->ShowPasswordManagerErrorMessage(
-        password_manager::ErrorMessageFlowType::kSaveFlow,
-        password_manager::PasswordStoreBackendErrorType::
-            kGMSCoreOutdatedSavingPossible);
   }
 }
 
@@ -378,7 +370,12 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
 void SaveUpdatePasswordMessageDelegate::SavePassword() {
   if (!device_lock_bridge_->ShouldShowDeviceLockUi()) {
     passwords_state_.form_manager()->Save();
-    MaybeNudgeToUpdateGmsCore(passwords_state_);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &SaveUpdatePasswordMessageDelegate::MaybeNudgeToUpdateGmsCore,
+            weak_ptr_factory_.GetWeakPtr()),
+        kUpdateGMSCoreMessageDisplayDelay);
     return;
   }
   device_lock_bridge_->LaunchDeviceLockUiIfNeededBeforeRunningCallback(
@@ -393,7 +390,12 @@ void SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi(
   CHECK(device_lock_bridge_->RequiresDeviceLock());
   if (is_device_lock_requirement_met) {
     passwords_state_.form_manager()->Save();
-    MaybeNudgeToUpdateGmsCore(passwords_state_);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &SaveUpdatePasswordMessageDelegate::MaybeNudgeToUpdateGmsCore,
+            weak_ptr_factory_.GetWeakPtr()),
+        kUpdateGMSCoreMessageDisplayDelay);
     TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
                                       web_contents_);
   }
@@ -645,4 +647,15 @@ SaveUpdatePasswordMessageDelegate::
       break;
   }
   return ui_dismissal_reason;
+}
+
+void SaveUpdatePasswordMessageDelegate::MaybeNudgeToUpdateGmsCore() {
+  if (passwords_state_.client()
+          ->GetPasswordFeatureManager()
+          ->ShouldUpdateGmsCore()) {
+    passwords_state_.client()->ShowPasswordManagerErrorMessage(
+        password_manager::ErrorMessageFlowType::kSaveFlow,
+        password_manager::PasswordStoreBackendErrorType::
+            kGMSCoreOutdatedSavingPossible);
+  }
 }

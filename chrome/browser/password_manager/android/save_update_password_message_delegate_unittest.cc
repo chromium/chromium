@@ -233,6 +233,8 @@ class SaveUpdatePasswordMessageDelegateTest
     return delegate_.get();
   }
 
+  void FastForward() { task_environment()->FastForwardBy(base::Seconds(1)); }
+
  private:
   PasswordForm pending_credentials_;
   GURL password_form_url_;
@@ -251,8 +253,9 @@ class SaveUpdatePasswordMessageDelegateTest
   MockPasswordManagerClient password_manager_client_;
 };
 
-SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest() =
-    default;
+SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest()
+    : ChromeRenderViewHostTestHarness(
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
 void SaveUpdatePasswordMessageDelegateTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
@@ -643,6 +646,9 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
       .WillOnce(Return(true));
   TriggerActionClick();
+
+  // Fast forward, since Update message is shown with a delay.
+  FastForward();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
@@ -668,6 +674,9 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
       .WillOnce(Return(false));
   TriggerActionClick();
+
+  // Fast forward, since Update message is shown with a delay.
+  FastForward();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
@@ -765,6 +774,9 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
       .WillOnce(Return(true));
   TriggerActionClick();
+
+  // Fast forward, since Update message is shown with a delay.
+  FastForward();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
@@ -795,6 +807,9 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
       .WillOnce(Return(false));
   TriggerActionClick();
+
+  // Fast forward, since Update message is shown with a delay.
+  FastForward();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
@@ -879,6 +894,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                                 /*password=*/kPassword);
   EXPECT_CALL(GetMigrationWarningCallback(), Run);
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+  // Fast forward, since Update message is shown with a delay.
+  FastForward();
 }
 
 // Tests that the message to update GMSCore will not show when the user accepts
@@ -914,6 +931,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                                 /*password=*/kPassword);
   EXPECT_CALL(GetMigrationWarningCallback(), Run);
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+  // Fast forward, since Update message is shown with a delay.
+  FastForward();
 }
 
 // Tests that the local password migration warning will show when the user
