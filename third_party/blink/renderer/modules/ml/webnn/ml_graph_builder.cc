@@ -2187,9 +2187,7 @@ MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
   auto validated_output = webnn::ValidateTransposeAndInferOutput(
       ConvertToComponentOperand(input), permutation);
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
 
@@ -2203,8 +2201,7 @@ MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
       this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), transpose);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   transpose->Connect({input}, {output.value()});
