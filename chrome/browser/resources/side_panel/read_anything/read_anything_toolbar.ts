@@ -338,9 +338,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // the parent element via one way data binding.
   private readonly hasContent: boolean;
 
+  constructor() {
+    super();
+    this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
+  }
+
   override connectedCallback() {
     super.connectedCallback();
-    this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     if (this.isReadAloudEnabled_) {
       this.textStyleOptions_.push(
           {
