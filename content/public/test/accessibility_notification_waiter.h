@@ -50,9 +50,8 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   ~AccessibilityNotificationWaiter() override;
 
   // Blocks until the specific accessibility notification registered in
-  // AccessibilityNotificationWaiter is received. Ignores notifications for
-  // "about:blank". Returns true if an event was received, false if waiting
-  // ended for some other reason.
+  // AccessibilityNotificationWaiter is received. Returns true if an event was
+  // received, false if waiting ended for some other reason.
   // Pass true for |all_frames| to wait for a notification on all frames
   // before returning, rather than waiting for only a single notification
   // from any frame.
