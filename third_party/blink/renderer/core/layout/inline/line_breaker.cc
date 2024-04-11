@@ -2979,6 +2979,16 @@ bool LineBreaker::HandleRuby(LineInfo* line_info) {
   LayoutUnit ruby_size = MaxLineWidth(base_line_info, annotation_line_list);
 
   {
+    // Recreate lines because lines created with LineBreakerMode::kMaxContent
+    // are not usable in InlineLayoutAlgorithm.
+    base_line_info =
+        CreateSubLineInfo(base_start, base_end_index, LayoutUnit::NearlyMax());
+    for (wtf_size_t i = 0; i < annotation_data.size(); ++i) {
+      annotation_line_list[i] = CreateSubLineInfo(
+          annotation_data[i].start, annotation_data[i].end_item_index,
+          LayoutUnit::NearlyMax());
+    }
+
     AddRubyColumnResult(item, base_line_info, annotation_line_list,
                         annotation_data, ruby_size, *line_info);
     position_ += ruby_size;
