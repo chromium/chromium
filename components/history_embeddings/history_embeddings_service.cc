@@ -297,11 +297,19 @@ void HistoryEmbeddingsService::OnSearchCompleted(
 void HistoryEmbeddingsService::DeterminePassageVisibility(
     SearchResultCallback callback,
     std::vector<ScoredUrl> scored_urls) {
-  if (!page_content_annotations_service_ ||
-      !page_content_annotations_service_->GetModelInfoForType(
-          page_content_annotations::AnnotationType::kContentVisibility)) {
-    // Cannot calculate visibility, consider everything to not be visible.
-    std::move(callback).Run({});
+  bool is_visibility_model_available =
+      page_content_annotations_service_ &&
+      page_content_annotations_service_->GetModelInfoForType(
+          page_content_annotations::AnnotationType::kContentVisibility);
+  base::UmaHistogramCounts100("History.Embeddings.NumUrlsMatched",
+                              scored_urls.size());
+
+  base::UmaHistogramBoolean(
+      "History.Embeddings.VisibilityModelAvailableAtQuery",
+      is_visibility_model_available);
+  if (!is_visibility_model_available) {
+    OnPassageVisibilityCalculated(std::move(callback), std::move(scored_urls),
+                                  {});
     return;
   }
 
@@ -323,18 +331,30 @@ void HistoryEmbeddingsService::OnPassageVisibilityCalculated(
     std::vector<ScoredUrl> scored_urls,
     const std::vector<page_content_annotations::BatchAnnotationResult>&
         annotation_results) {
-  CHECK_EQ(scored_urls.size(), annotation_results.size());
+  if (annotation_results.empty()) {
+    scored_urls.clear();
+  } else {
+    CHECK_EQ(scored_urls.size(), annotation_results.size());
 
-  // Filter for scored URLs that are ok to be shown to the user.
-  auto urls_it = scored_urls.begin();
-  for (const page_content_annotations::BatchAnnotationResult& result :
-       annotation_results) {
-    if (result.visibility_score().value_or(0.0) <=
-        kContentVisibilityThreshold.Get()) {
-      urls_it = scored_urls.erase(urls_it);
-    } else {
-      ++urls_it;
+    // Filter for scored URLs that are ok to be shown to the user.
+    auto urls_it = scored_urls.begin();
+    for (const page_content_annotations::BatchAnnotationResult& result :
+         annotation_results) {
+      if (result.visibility_score().value_or(0.0) <=
+          kContentVisibilityThreshold.Get()) {
+        urls_it = scored_urls.erase(urls_it);
+      } else {
+        ++urls_it;
+      }
     }
+  }
+
+  base::UmaHistogramCounts100("History.Embeddings.NumMatchedUrlsVisible",
+                              scored_urls.size());
+
+  if (scored_urls.empty()) {
+    std::move(callback).Run({});
+    return;
   }
 
   // Use the callback task mechanism for simplicity and easier control with

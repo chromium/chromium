@@ -1746,6 +1746,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.NumMatchedUrlsVisible" units="counts"
+    expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Number of URLs that matched the query and are allowed to be shown based on
+    the content visibility policy. Logged each time a query leveraging history
+    embeddings is performed.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.NumUrlsMatched" units="counts"
+    expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Number of URLs that matched the query. Logged each time a query leveraging
+    history embeddings is performed.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Passages.ExtractionTime" units="ms"
     expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>
@@ -1785,6 +1806,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether the attempt to compute the query embedding succeeded. Logged each
     time an embedding was requested for a query.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.VisibilityModelAvailableAtQuery"
+    enum="Boolean" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Whether the visibility model was available to determine whether the search
+    results should be shown to the user for a given query. Logged each time a
+    query leveraging history embeddings is performed.
   </summary>
 </histogram>
 

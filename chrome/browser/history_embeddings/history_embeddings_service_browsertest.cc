@@ -129,6 +129,12 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.QueryEmbeddingSucceeded", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.VisibilityModelAvailableAtQuery", true, 1);
+  histogram_tester.ExpectUniqueSample("History.Embeddings.NumUrlsMatched", 1,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.NumMatchedUrlsVisible", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -144,11 +150,50 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(store_future.Wait());
 
+  base::HistogramTester histogram_tester;
+
   // Search for the passage.
   base::test::TestFuture<SearchResult> search_future;
   service()->Search("A B C D e f g", 1, search_future.GetCallback());
   SearchResult result = search_future.Take();
   EXPECT_TRUE(result.empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.QueryEmbeddingSucceeded", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.VisibilityModelAvailableAtQuery", true, 1);
+  histogram_tester.ExpectUniqueSample("History.Embeddings.NumUrlsMatched", 1,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.NumMatchedUrlsVisible", 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
+                       SearchReturnsNoResultsVisibilityModelNotAvailable) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::test::TestFuture<UrlPassages> store_future;
+  callback_for_tests() = store_future.GetRepeatingCallback();
+
+  const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(store_future.Wait());
+
+  base::HistogramTester histogram_tester;
+
+  // Search for the passage.
+  base::test::TestFuture<SearchResult> search_future;
+  service()->Search("A B C D e f g", 1, search_future.GetCallback());
+  SearchResult result = search_future.Take();
+  EXPECT_TRUE(result.empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.QueryEmbeddingSucceeded", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.VisibilityModelAvailableAtQuery", false, 1);
+  histogram_tester.ExpectUniqueSample("History.Embeddings.NumUrlsMatched", 1,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.NumMatchedUrlsVisible", 0, 1);
 }
 
 }  // namespace history_embeddings
