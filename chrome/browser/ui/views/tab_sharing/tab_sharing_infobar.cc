@@ -26,7 +26,8 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-constexpr auto kCscPermissionButtonInsets = gfx::Insets::VH(4, 8);
+constexpr auto kCapturedSurfaceControlIndicatorButtonInsets =
+    gfx::Insets::VH(4, 8);
 }
 
 TabSharingInfoBar::TabSharingInfoBar(
@@ -42,7 +43,7 @@ TabSharingInfoBar::TabSharingInfoBar(
                                  int button_context =
                                      views::style::CONTEXT_BUTTON_MD) {
     const bool use_text_color_for_icon =
-        type != TabSharingInfoBarDelegate::kCscPermission;
+        type != TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator;
     auto* button = AddChildView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(click_function, base::Unretained(this)),
         delegate_ptr->GetButtonLabel(type), button_context,
@@ -81,16 +82,17 @@ TabSharingInfoBar::TabSharingInfoBar(
                       &TabSharingInfoBar::QuickNavButtonPressed);
   }
 
-  if (buttons & TabSharingInfoBarDelegate::kCscPermission) {
-    csc_permission_button_ = create_button(
-        TabSharingInfoBarDelegate::kCscPermission,
+  if (buttons & TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator) {
+    csc_indicator_button_ = create_button(
+        TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator,
         &TabSharingInfoBar::OnCapturedSurfaceControlActivityIndicatorPressed,
         CONTEXT_OMNIBOX_PRIMARY);
-    csc_permission_button_->SetStyle(ui::ButtonStyle::kDefault);
-    csc_permission_button_->SetCornerRadius(
+    csc_indicator_button_->SetStyle(ui::ButtonStyle::kDefault);
+    csc_indicator_button_->SetCornerRadius(
         GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
-    csc_permission_button_->SetCustomPadding(kCscPermissionButtonInsets);
-    csc_permission_button_->SetTextColorId(
+    csc_indicator_button_->SetCustomPadding(
+        kCapturedSurfaceControlIndicatorButtonInsets);
+    csc_indicator_button_->SetTextColorId(
         views::Button::ButtonState::STATE_NORMAL, ui::kColorSysOnSurface);
   }
 
@@ -116,8 +118,8 @@ void TabSharingInfoBar::Layout(PassKey) {
     quick_nav_button_->SizeToPreferredSize();
   }
 
-  if (csc_permission_button_) {
-    csc_permission_button_->SizeToPreferredSize();
+  if (csc_indicator_button_) {
+    csc_indicator_button_->SizeToPreferredSize();
   }
 
   int x = GetStartX();
@@ -148,8 +150,8 @@ void TabSharingInfoBar::Layout(PassKey) {
   if (quick_nav_button_) {
     order_of_buttons.push_back(quick_nav_button_);
   }
-  if (csc_permission_button_) {
-    order_of_buttons.push_back(csc_permission_button_);
+  if (csc_indicator_button_) {
+    order_of_buttons.push_back(csc_indicator_button_);
   }
 
   if (!views::PlatformStyle::kIsOkButtonLeading) {
@@ -213,7 +215,7 @@ int TabSharingInfoBar::NonLabelWidth() const {
 
   const int button_count =
       (stop_button_ ? 1 : 0) + (share_this_tab_instead_button_ ? 1 : 0) +
-      (quick_nav_button_ ? 1 : 0) + (csc_permission_button_ ? 1 : 0);
+      (quick_nav_button_ ? 1 : 0) + (csc_indicator_button_ ? 1 : 0);
 
   int width =
       (label_->GetText().empty() || button_count == 0) ? 0 : label_spacing;
@@ -225,7 +227,7 @@ int TabSharingInfoBar::NonLabelWidth() const {
                ? share_this_tab_instead_button_->width()
                : 0;
   width += quick_nav_button_ ? quick_nav_button_->width() : 0;
-  width += csc_permission_button_ ? csc_permission_button_->width() : 0;
+  width += csc_indicator_button_ ? csc_indicator_button_->width() : 0;
 
   return width + ((width && !link_->GetText().empty()) ? label_spacing : 0);
 }

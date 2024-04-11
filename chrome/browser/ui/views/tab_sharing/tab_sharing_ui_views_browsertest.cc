@@ -124,24 +124,24 @@ ui::ImageModel GetQuickNavButtonImage(Browser* browser, int tab) {
       ->GetButtonImage(TabSharingInfoBarDelegate::InfoBarButton::kQuickNav);
 }
 
-// TODO(crbug.com/1466247): Rename to "...Indicator".
-bool HasCscPermissionButton(Browser* browser, int tab) {
+bool HasCscIndicatorButton(Browser* browser, int tab) {
   return GetDelegate(browser, tab)->GetButtons() &
-         TabSharingInfoBarDelegate::InfoBarButton::kCscPermission;
+         TabSharingInfoBarDelegate::InfoBarButton::
+             kCapturedSurfaceControlIndicator;
 }
 
-std::u16string GetCscPermissionButtonLabel(Browser* browser, int tab) {
-  DCHECK(HasCscPermissionButton(browser, tab));  // Test error otherwise.
+std::u16string GetCscIndicatorButtonLabel(Browser* browser, int tab) {
+  DCHECK(HasCscIndicatorButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonLabel(
-          TabSharingInfoBarDelegate::InfoBarButton::kCscPermission);
+      ->GetButtonLabel(TabSharingInfoBarDelegate::InfoBarButton::
+                           kCapturedSurfaceControlIndicator);
 }
 
-ui::ImageModel GetCscPermissionButtonImage(Browser* browser, int tab) {
-  DCHECK(HasCscPermissionButton(browser, tab));  // Test error otherwise.
+ui::ImageModel GetCscIndicatorButtonImage(Browser* browser, int tab) {
+  DCHECK(HasCscIndicatorButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonImage(
-          TabSharingInfoBarDelegate::InfoBarButton::kCscPermission);
+      ->GetButtonImage(TabSharingInfoBarDelegate::InfoBarButton::
+                           kCapturedSurfaceControlIndicator);
 }
 
 std::u16string GetExpectedSwitchToMessage(Browser* browser, int tab) {
@@ -317,7 +317,7 @@ class TabSharingUIViewsBrowserTest
       if (i == capturing_tab && i == captured_tab) {
         // Self-capture.
         EXPECT_FALSE(HasShareThisTabInsteadButton(browser, i));
-        EXPECT_FALSE(HasCscPermissionButton(browser, i));
+        EXPECT_FALSE(HasCscIndicatorButton(browser, i));
       } else if (i == capturing_tab) {
         // Capturing-tab's infobar.
         ASSERT_TRUE(HasQuickNavButton(browser, i));
@@ -325,14 +325,14 @@ class TabSharingUIViewsBrowserTest
                   GetExpectedSwitchToMessage(browser, captured_tab));
         EXPECT_EQ(GetQuickNavButtonImage(browser, i),
                   GetFaviconAssociatedWith(browser, captured_tab));
-        EXPECT_EQ(HasCscPermissionButton(browser, i),
+        EXPECT_EQ(HasCscIndicatorButton(browser, i),
                   has_captured_surface_control_indicator);
-        if (HasCscPermissionButton(browser, i)) {
+        if (HasCscIndicatorButton(browser, i)) {
           EXPECT_EQ(
-              GetCscPermissionButtonLabel(browser, i),
+              GetCscIndicatorButtonLabel(browser, i),
               l10n_util::GetStringUTF16(
                   IDS_TAB_SHARING_INFOBAR_CAPTURED_SURFACE_CONTROL_PERMISSION_BUTTON));
-          EXPECT_EQ(GetCscPermissionButtonImage(browser, i),
+          EXPECT_EQ(GetCscIndicatorButtonImage(browser, i),
                     ui::ImageModel::FromVectorIcon(
                         vector_icons::kTouchpadMouseIcon, ui::kColorSysPrimary,
                         /*icon_size=*/16));
@@ -344,7 +344,7 @@ class TabSharingUIViewsBrowserTest
                   GetExpectedSwitchToMessage(browser, capturing_tab));
         EXPECT_EQ(GetQuickNavButtonImage(browser, i),
                   GetFaviconAssociatedWith(browser, capturing_tab));
-        EXPECT_FALSE(HasCscPermissionButton(browser, i));
+        EXPECT_FALSE(HasCscIndicatorButton(browser, i));
       } else if (infobar_manager->infobars().size() > 0) {
         // Any other infobar.
         ASSERT_TRUE(HasShareThisTabInsteadButton(browser, i));
@@ -355,7 +355,7 @@ class TabSharingUIViewsBrowserTest
         EXPECT_EQ(ShareThisTabInsteadButtonIsEnabled(browser, i),
                   i != tab_with_disabled_button)
             << "Tab: " << i;
-        EXPECT_FALSE(HasCscPermissionButton(browser, i));
+        EXPECT_FALSE(HasCscIndicatorButton(browser, i));
       }
     }
   }

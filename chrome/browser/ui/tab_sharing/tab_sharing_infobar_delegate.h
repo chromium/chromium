@@ -53,8 +53,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
     kStop = 1 << 0,
     kShareThisTabInstead = 1 << 1,
     kQuickNav = 1 << 2,
-    // TODO(crbug.com/1466247): Rename to kCapturedSurfaceControlIndicator.
-    kCscPermission = 1 << 3,
+    kCapturedSurfaceControlIndicator = 1 << 3,
   };
 
   enum class ButtonState {
@@ -82,7 +81,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   class TabSharingInfoBarDelegateButton;
   class ShareTabInsteadButton;
   class SwitchToTabButton;
-  class CscPermissionButton;
+  class CscIndicatorButton;
 
   // Creates a tab sharing infobar, which has 1-2 buttons.
   //
@@ -163,9 +162,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
 
   std::unique_ptr<ShareTabInsteadButton> share_this_tab_instead_button_;
   std::unique_ptr<SwitchToTabButton> quick_nav_button_;
-  // TODO(crbug.com/324468211): Rename both class and member to remove the word
-  // "permission".
-  std::unique_ptr<CscPermissionButton> csc_permission_button_;
+  std::unique_ptr<CscIndicatorButton> csc_indicator_button_;
 };
 
 std::unique_ptr<infobars::InfoBar> CreateTabSharingInfoBar(

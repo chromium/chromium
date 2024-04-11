@@ -55,7 +55,7 @@ class TabSharingInfoBar : public InfoBarView {
   raw_ptr<views::MdTextButton> stop_button_ = nullptr;
   raw_ptr<views::MdTextButton> share_this_tab_instead_button_ = nullptr;
   raw_ptr<views::MdTextButton> quick_nav_button_ = nullptr;
-  raw_ptr<views::MdTextButton> csc_permission_button_ = nullptr;
+  raw_ptr<views::MdTextButton> csc_indicator_button_ = nullptr;
   raw_ptr<views::Link> link_ = nullptr;
 };
 

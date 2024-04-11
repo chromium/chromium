@@ -192,11 +192,11 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
                 IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_UNTITLED_TAB_LABEL,
                 kAppName));
 
-  const int expected_buttons = TabSharingInfoBarDelegate::kStop |
-                               TabSharingInfoBarDelegate::kQuickNav |
-                               (captured_surface_control_active_
-                                    ? TabSharingInfoBarDelegate::kCscPermission
-                                    : 0);
+  const int expected_buttons =
+      TabSharingInfoBarDelegate::kStop | TabSharingInfoBarDelegate::kQuickNav |
+      (captured_surface_control_active_
+           ? TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator
+           : 0);
   EXPECT_EQ(delegate->GetButtons(), expected_buttons);
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
@@ -208,7 +208,8 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
 
   if (captured_surface_control_active_) {
     EXPECT_EQ(
-        delegate->GetButtonLabel(TabSharingInfoBarDelegate::kCscPermission),
+        delegate->GetButtonLabel(
+            TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator),
         l10n_util::GetStringUTF16(
             IDS_TAB_SHARING_INFOBAR_CAPTURED_SURFACE_CONTROL_PERMISSION_BUTTON));
   }

@@ -36,7 +36,7 @@
 namespace {
 using TabRole = ::TabSharingInfoBarDelegate::TabRole;
 
-constexpr int kCscPermissionButtonIconHeight = 16;
+constexpr int kCapturedSurfaceControlIndicatorButtonIconHeight = 16;
 }  // namespace
 
 class TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
@@ -165,12 +165,12 @@ class TabSharingInfoBarDelegate::SwitchToTabButton
   const bool focus_target_is_capturer_;
 };
 
-class TabSharingInfoBarDelegate::CscPermissionButton
+class TabSharingInfoBarDelegate::CscIndicatorButton
     : public TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
  public:
-  explicit CscPermissionButton(content::WebContents* web_contents)
+  explicit CscIndicatorButton(content::WebContents* web_contents)
       : web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr) {}
-  ~CscPermissionButton() override = default;
+  ~CscIndicatorButton() override = default;
 
   void Click(infobars::InfoBar* infobar) override {
     if (!web_contents_) {
@@ -187,9 +187,9 @@ class TabSharingInfoBarDelegate::CscPermissionButton
   bool IsEnabled() const override { return true; }
 
   ui::ImageModel GetImage() const override {
-    return ui::ImageModel::FromVectorIcon(vector_icons::kTouchpadMouseIcon,
-                                          ui::kColorSysPrimary,
-                                          kCscPermissionButtonIconHeight);
+    return ui::ImageModel::FromVectorIcon(
+        vector_icons::kTouchpadMouseIcon, ui::kColorSysPrimary,
+        kCapturedSurfaceControlIndicatorButtonIconHeight);
   }
 
  private:
@@ -322,8 +322,7 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
   if (role_ == TabRole::kCapturingTab && captured_surface_control_active &&
       base::FeatureList::IsEnabled(
           features::kCapturedSurfaceControlStickyPermissions)) {
-    csc_permission_button_ =
-        std::make_unique<CscPermissionButton>(web_contents);
+    csc_indicator_button_ = std::make_unique<CscIndicatorButton>(web_contents);
   }
 }
 
@@ -379,9 +378,9 @@ std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
       DCHECK(quick_nav_button_);
       return quick_nav_button_->GetLabel();
 
-    case kCscPermission:
-      DCHECK(csc_permission_button_);
-      return csc_permission_button_->GetLabel();
+    case kCapturedSurfaceControlIndicator:
+      DCHECK(csc_indicator_button_);
+      return csc_indicator_button_->GetLabel();
   }
   NOTREACHED_NORETURN();
 }
@@ -405,9 +404,9 @@ ui::ImageModel TabSharingInfoBarDelegate::GetButtonImage(
       DCHECK(quick_nav_button_);
       return quick_nav_button_->GetImage();
 
-    case kCscPermission:
-      DCHECK(csc_permission_button_);
-      return csc_permission_button_->GetImage();
+    case kCapturedSurfaceControlIndicator:
+      DCHECK(csc_indicator_button_);
+      return csc_indicator_button_->GetImage();
   }
   NOTREACHED_NORETURN();
 }
@@ -428,9 +427,9 @@ bool TabSharingInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
       DCHECK(quick_nav_button_);
       return quick_nav_button_->IsEnabled();
 
-    case kCscPermission:
-      DCHECK(csc_permission_button_);
-      return csc_permission_button_->IsEnabled();
+    case kCapturedSurfaceControlIndicator:
+      DCHECK(csc_indicator_button_);
+      return csc_indicator_button_->IsEnabled();
   }
   NOTREACHED_NORETURN();
 }
@@ -452,9 +451,9 @@ std::u16string TabSharingInfoBarDelegate::GetButtonTooltip(
       DCHECK(quick_nav_button_);
       return quick_nav_button_->GetTooltip();
 
-    case kCscPermission:
-      DCHECK(csc_permission_button_);
-      return csc_permission_button_->GetTooltip();
+    case kCapturedSurfaceControlIndicator:
+      DCHECK(csc_indicator_button_);
+      return csc_indicator_button_->GetTooltip();
   }
   NOTREACHED_NORETURN();
 }
@@ -462,7 +461,7 @@ std::u16string TabSharingInfoBarDelegate::GetButtonTooltip(
 int TabSharingInfoBarDelegate::GetButtons() const {
   return kStop | (share_this_tab_instead_button_ ? kShareThisTabInstead : 0) |
          (quick_nav_button_ ? kQuickNav : 0) |
-         (csc_permission_button_ ? kCscPermission : 0);
+         (csc_indicator_button_ ? kCapturedSurfaceControlIndicator : 0);
 }
 
 void TabSharingInfoBarDelegate::Stop() {
@@ -481,8 +480,8 @@ void TabSharingInfoBarDelegate::QuickNav() {
 
 void TabSharingInfoBarDelegate::
     OnCapturedSurfaceControlActivityIndicatorPressed() {
-  DCHECK(csc_permission_button_);
-  csc_permission_button_->Click(infobar());
+  DCHECK(csc_indicator_button_);
+  csc_indicator_button_->Click(infobar());
 }
 
 bool TabSharingInfoBarDelegate::IsCloseable() const {
