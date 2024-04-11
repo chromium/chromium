@@ -572,8 +572,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest("webrequest/test_simple")) << message_;
 }
 
+// TODO(crbug.com/333791060): Parameterized test is flaky on multiple bots.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       WebRequestComplex) {
+                       DISABLED_WebRequestComplex) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_complex")) << message_;
 }
