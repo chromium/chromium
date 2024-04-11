@@ -39,6 +39,10 @@ source_set("core") {
 
   if (is_android) {
     sources += [
+      "android/tab_group_sync_conversions_bridge.cc",
+      "android/tab_group_sync_conversions_bridge.h",
+      "android/tab_group_sync_conversions_utils.cc",
+      "android/tab_group_sync_conversions_utils.h",
       "android/tab_group_sync_service_android.cc",
       "android/tab_group_sync_service_android.h",
     ]
@@ -54,6 +58,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroup.java",
       "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroupTab.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncService.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java",
     ]
@@ -79,7 +84,10 @@ if (is_android) {
       "//chrome/browser",
     ]
 
-    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java",
+    ]
   }
 
   java_cpp_enum("tab_group_sync_enums_java") {
