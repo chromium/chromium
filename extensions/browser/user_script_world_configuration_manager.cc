@@ -8,6 +8,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/renderer_startup_helper.h"
 
@@ -27,6 +28,7 @@ class UserScriptWorldConfigurationManagerFactory
             "UserScriptWorldConfigurationManager",
             BrowserContextDependencyManager::GetInstance()) {
     DependsOn(ExtensionPrefsFactory::GetInstance());
+    DependsOn(ExtensionRegistryFactory::GetInstance());
     DependsOn(RendererStartupHelperFactory::GetInstance());
   }
 
@@ -93,6 +95,7 @@ UserScriptWorldConfigurationManager::UserScriptWorldConfigurationManager(
     : extension_prefs_(ExtensionPrefs::Get(browser_context)),
       renderer_helper_(
           RendererStartupHelperFactory::GetForBrowserContext(browser_context)) {
+  registry_observation_.Observe(ExtensionRegistry::Get(browser_context));
 }
 
 UserScriptWorldConfigurationManager::~UserScriptWorldConfigurationManager() =
@@ -197,6 +200,19 @@ UserScriptWorldConfigurationManager* UserScriptWorldConfigurationManager::Get(
   auto& factory =
       static_cast<UserScriptWorldConfigurationManagerFactory&>(GetFactory());
   return factory.GetForBrowserContext(browser_context);
+}
+
+void UserScriptWorldConfigurationManager::OnExtensionWillBeInstalled(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    bool is_update,
+    const std::string& old_name) {
+  if (!is_update) {
+    return;
+  }
+
+  extension_prefs_->UpdateExtensionPref(
+      extension->id(), kUserScriptsWorldsConfiguration.name, std::nullopt);
 }
 
 }  // namespace extensions

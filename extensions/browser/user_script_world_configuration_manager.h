@@ -10,7 +10,10 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 
@@ -29,7 +32,9 @@ class RendererStartupHelper;
 // configurations themselves are stored in the associated ExtensionPrefs.
 // Note: Like the ExtensionPrefs themselves, this class is shared between
 // on- and off-the-record contexts.
-class UserScriptWorldConfigurationManager : public KeyedService {
+class UserScriptWorldConfigurationManager
+    : public KeyedService,
+      public ExtensionRegistryObserver {
  public:
   explicit UserScriptWorldConfigurationManager(
       content::BrowserContext* browser_context);
@@ -66,6 +71,13 @@ class UserScriptWorldConfigurationManager : public KeyedService {
       content::BrowserContext* browser_context);
 
  private:
+  // ExtensionRegistryObserver:
+  void OnExtensionWillBeInstalled(
+      content::BrowserContext* browser_context,
+      const Extension* extension,
+      bool is_update,
+      const std::string& old_name) override;
+
   // The ExtensionPrefs to use when setting or retrieving isolated world
   // configurations. Safe to use because this KeyedService depends on
   // ExtensionPrefs.
@@ -79,6 +91,9 @@ class UserScriptWorldConfigurationManager : public KeyedService {
   // is always the accurate object to send updates through.
   // Always safe to use because this depends on it as a KeyedService.
   raw_ptr<RendererStartupHelper> renderer_helper_;
+
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 };
 
 }  // namespace extensions
