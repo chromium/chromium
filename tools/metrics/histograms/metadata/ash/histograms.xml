@@ -4693,14 +4693,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Ash.LoginAnimation.Duration2.{TabletOrClamshell}"
-    units="ms" expires_after="2024-09-01">
+<histogram name="Ash.LoginAnimation.Duration2.{TabletOrClamshell}" units="ms"
+    expires_after="2024-09-01">
   <owner>oshima@chromium.org</owner>
   <owner>zhzhliu@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
   <summary>
     The duration of how long it took to finish all animations applied during the
     login process, from the time the first animation is added, to the time the
