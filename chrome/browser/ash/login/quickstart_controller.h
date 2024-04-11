@@ -22,6 +22,8 @@
 
 namespace ash::quick_start {
 
+class QuickStartMetrics;
+
 // Main orchestrator of the QuickStart flow in OOBE
 //
 // QuickStartController holds all the logic for QuickStart and acts as the
@@ -178,8 +180,11 @@ class QuickStartController
   void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
                                properties) override;
 
-  // Records ScreenOpened metric when UiState changes.
+  // Records ScreenOpened metric when UiState or OOBE screen changes.
   void MaybeRecordQuickStartScreenOpened(UiState new_ui);
+
+  // Records ScreenClosed metric when UiState or OOBE screen changes.
+  void MaybeRecordQuickStartScreenClosed(UiState closed_ui);
 
   // Updates the UI state and notifies the frontend.
   void UpdateUiState(UiState ui_state);
@@ -263,6 +268,8 @@ class QuickStartController
   // QuickStartScreen implements the UiDelegate and registers itself whenever it
   // is shown. UI updates happen over this observation path.
   base::ObserverList<UiDelegate> ui_delegates_;
+
+  std::unique_ptr<QuickStartMetrics> metrics_;
 
   // Gaia credentials used for account creation.
   TargetDeviceBootstrapController::GaiaCredentials gaia_creds_;

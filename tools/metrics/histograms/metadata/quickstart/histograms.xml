@@ -346,6 +346,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.ScreenClosed.{ScreenName}.ViewDuration" units="ms"
+    expires_after="2025-04-09">
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    How long a user viewed a screen. This includes all major Quick Start screens
+    as well as all other OOBE screens that occur in the middle of the Quick
+    Start flow. Recorded when a screen is closed.
+  </summary>
+  <token key="ScreenName">
+    <variant name="AddChild"/>
+    <variant name="CheckingForUpdateAndDeterminingDeviceConfiguration"/>
+    <variant name="ChooseChromebookSetup"/>
+    <variant name="ConsumerUpdate"/>
+    <variant name="GaiaInfoScreen"/>
+    <variant name="GaiaScreen"/>
+    <variant name="NetworkScreen"/>
+    <variant name="None"/>
+    <variant name="Other"/>
+    <variant name="QSComplete"/>
+    <variant name="QSConnectingToWifi"/>
+    <variant name="QSCreatingAccount"/>
+    <variant name="QSGettingGoogleAccountInfo"/>
+    <variant name="QSResumingConnectionAfterUpdate"/>
+    <variant name="QSSelectGoogleAccount"/>
+    <variant name="QSSetUpWithAndroidPhone"/>
+    <variant name="QSWifiCredentialsReceived"/>
+    <variant name="ReviewPrivacyAndTerms"/>
+    <variant name="SetupDevicePIN"/>
+    <variant name="UnifiedSetup"/>
+    <variant name="WelcomeScreen"/>
+  </token>
+</histogram>
+
 <histogram name="QuickStart.ScreenOpened" enum="QuickStartScreenName"
     expires_after="2024-12-01">
   <owner>bhartmire@google.com</owner>

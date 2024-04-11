@@ -48,7 +48,9 @@ class QuickStartMetrics {
                                       // transfer succeeds.
     kQSSelectGoogleAccount = 19,  // Quick Start UI informing user to confirm
                                   // account on phone.
-    kMaxValue = kQSSelectGoogleAccount
+    kQSCreatingAccount = 20,      // Quick Start UI attempting to login with
+                                  // transferred account details.
+    kMaxValue = kQSCreatingAccount
   };
 
   enum class ExitReason {
@@ -206,13 +208,6 @@ class QuickStartMetrics {
   static MessageType MapResponseToMessageType(
       QuickStartResponseType response_type);
 
-  static void RecordScreenOpened(ScreenName screen);
-
-  static void RecordScreenClosed(ScreenName screen,
-                                 int32_t session_id,
-                                 base::Time timestamp,
-                                 std::optional<ScreenName> previous_screen);
-
   static void RecordWifiTransferResult(
       bool succeeded,
       std::optional<WifiTransferResultFailureReason> failure_reason);
@@ -235,6 +230,10 @@ class QuickStartMetrics {
   QuickStartMetrics(const QuickStartMetrics&) = delete;
   const QuickStartMetrics& operator=(const QuickStartMetrics&) = delete;
   virtual ~QuickStartMetrics();
+
+  void RecordScreenOpened(ScreenName screen);
+
+  void RecordScreenClosed(ScreenName screen);
 
   // Records the start of an attempt to fetch challenge bytes from Gaia.
   // Challenge bytes are later used to generate a Remote Attestation certificate
@@ -292,6 +291,8 @@ class QuickStartMetrics {
   // finishes.
   std::unique_ptr<base::ElapsedTimer> fast_pair_advertising_timer_;
   std::optional<AdvertisingMethod> fast_pair_advertising_method_;
+
+  std::unique_ptr<base::ElapsedTimer> screen_opened_view_duration_timer_;
 
   // Timer to keep track of handshake duration. Should be constructed when
   // the handshake starts and destroyed when the handshake finishes.
