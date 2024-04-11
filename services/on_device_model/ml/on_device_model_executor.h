@@ -5,6 +5,7 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_ML_ON_DEVICE_MODEL_EXECUTOR_H_
 #define SERVICES_ON_DEVICE_MODEL_ML_ON_DEVICE_MODEL_EXECUTOR_H_
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 
@@ -72,6 +73,7 @@ class OnDeviceModelExecutor
 
   ChromeMLModel model_ = 0;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  uint32_t max_tokens_ = 0;
 };
 
 }  // namespace ml

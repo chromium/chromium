@@ -4,6 +4,8 @@
 
 #include "services/on_device_model/ml/on_device_model_executor.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -35,6 +37,8 @@ using on_device_model::mojom::LoadModelResult;
 
 namespace ml {
 namespace {
+
+constexpr uint32_t kReserveTokensForSafety = 2;
 
 const base::FeatureParam<int> kMaxTopK{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
@@ -272,10 +276,12 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
  public:
   SessionImpl(const ChromeML& chrome_ml,
               ChromeMLModel model,
+              uint32_t max_tokens,
               scoped_refptr<LanguageDetector> language_detector,
               std::optional<uint32_t> adaptation_id)
       : chrome_ml_(chrome_ml),
         model_(model),
+        max_tokens_(max_tokens),
         language_detector_(std::move(language_detector)),
         adaptation_id_(adaptation_id) {}
   ~SessionImpl() override = default;
@@ -297,7 +303,8 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
     ChromeMLExecuteOptions options{
         .prompt = input->text.c_str(),
         .context_mode = GetContextMode(*input) | ContextMode::kSave,
-        .max_tokens = input->max_tokens.value_or(0),
+        .max_tokens =
+            std::min(input->max_tokens.value_or(max_tokens_), max_tokens_),
         .token_offset = input->token_offset.value_or(0),
         .context_saved_fn = &context_saved_fn,
         .top_k = GetTopK(input->top_k),
@@ -329,7 +336,8 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
     ChromeMLExecuteOptions options{
         .prompt = input->text.c_str(),
         .context_mode = GetContextMode(*input),
-        .max_tokens = input->max_tokens.value_or(0),
+        .max_tokens =
+            std::min(input->max_tokens.value_or(max_tokens_), max_tokens_),
         .token_offset = input->token_offset.value_or(0),
         .max_output_tokens = input->max_output_tokens.value_or(0),
         .score_ts_interval = ts_interval,
@@ -364,6 +372,7 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
   bool clear_context_ = true;
   const raw_ref<const ChromeML> chrome_ml_;
   ChromeMLModel model_;
+  const uint32_t max_tokens_;
   const scoped_refptr<LanguageDetector> language_detector_;
   std::unique_ptr<Responder> responder_;
   std::set<std::unique_ptr<ContextHolder>> context_holders_;
@@ -402,8 +411,9 @@ OnDeviceModelExecutor::CreateWithResult(
 
 std::unique_ptr<on_device_model::OnDeviceModel::Session>
 OnDeviceModelExecutor::CreateSession(std::optional<uint32_t> adaptation_id) {
-  return std::make_unique<SessionImpl>(*chrome_ml_, model_, language_detector_,
-                                       adaptation_id);
+  return std::make_unique<SessionImpl>(*chrome_ml_, model_,
+                                       max_tokens_ - kReserveTokensForSafety,
+                                       language_detector_, adaptation_id);
 }
 
 on_device_model::mojom::SafetyInfoPtr OnDeviceModelExecutor::ClassifyTextSafety(
@@ -506,6 +516,8 @@ LoadModelResult OnDeviceModelExecutor::Init(
     }
   }
 
+  max_tokens_ = std::max(params->max_tokens, kReserveTokensForSafety);
+
   auto model_proto_dispose =
       CreateWeakCallbackFn(&OnDeviceModelExecutor::DisposeModelProto, this);
   ChromeMLModelData data = {
@@ -520,7 +532,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       CreateWeakCallbackFn(&OnDeviceModelExecutor::DisposeSentencepiece, this);
   ChromeMLModelDescriptor descriptor = {
       .model_data = &data,
-      .max_tokens = params->max_tokens,
+      .max_tokens = max_tokens_,
       .temperature = 0.0f,
       .top_k = kMaxTopK.Get(),
       .ts_dimension = params->ts_dimension.value_or(0),
