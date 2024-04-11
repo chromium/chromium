@@ -4451,10 +4451,6 @@ if (is_robolectric) {
   #
   #    static_library_provider: Specifies a single target that this target will
   #      use as a static library APK.
-  #      Additionally, when allotting libraries to be packaged into modules, the
-  #      libraries packaged into the static library will be accounted for to
-  #      avoid library duplication. Effectively, the static library will be
-  #      treated as the parent of the base module.
   #
   #    expected_libs_and_assets: Verify the list of included native libraries
   #      and assets is consistent with the given expectation file.
@@ -4573,57 +4569,6 @@ if (is_robolectric) {
       _module_targets += [ _module.module_target ]
       _module_java_targets += [ "${_module.module_target}__java" ]
       _module_build_configs += [ _module.build_config ]
-    }
-
-    if (_uses_static_library) {
-      _lib_proxy_module = {
-        name = "lib"
-      }
-      _static_library_target_name =
-          get_label_info(invoker.static_library_provider, "name")
-      _static_library_gen_dir =
-          get_label_info(invoker.static_library_provider, "target_gen_dir")
-      _lib_proxy_module.build_config = "$_static_library_gen_dir/$_static_library_target_name.build_config.json"
-      _lib_proxy_module.build_config_target =
-          "${invoker.static_library_provider}$build_config_target_suffix"
-    }
-
-    # Allot native libraries to modules they should be packaged into. This is
-    # necessary since all libraries that are depended on by multiple modules
-    # have to go into base or the static shared library if it exists.
-    # TODO(crbug.com/1021565): It would be nice if this lived outside the
-    # android_app_bundle template and the static shared library would pull in
-    # the libs as allotted by this step.
-    _native_libraries_config =
-        "$target_gen_dir/$_target_name.native_libraries_config"
-    _native_libraries_config_target = "${_target_name}__allot_native_libraries"
-    allot_native_libraries(_native_libraries_config_target) {
-      modules = _modules
-      native_libraries_filearg_keys = [
-        "native:libraries",
-        "native:loadable_modules",
-      ]
-      output = _native_libraries_config
-      if (_uses_static_library) {
-        modules += [ _lib_proxy_module ]
-      }
-    }
-    if (defined(android_app_secondary_abi)) {
-      _secondary_abi_native_libraries_config =
-          "$target_gen_dir/$_target_name.secondary_abi_native_libraries_config"
-      _secondary_abi_native_libraries_config_target =
-          "${_target_name}__allot_secondary_abi_native_libraries"
-      allot_native_libraries(_secondary_abi_native_libraries_config_target) {
-        modules = _modules
-        native_libraries_filearg_keys = [
-          "native:secondary_abi_libraries",
-          "native:secondary_abi_loadable_modules",
-        ]
-        output = _secondary_abi_native_libraries_config
-        if (_uses_static_library) {
-          modules += [ _lib_proxy_module ]
-        }
-      }
     }
 
     # Used to expose the module Java targets of the bundle.
@@ -4837,7 +4782,6 @@ if (is_robolectric) {
         min_sdk_version = _min_sdk_version
         build_config = _module_build_config
         module_zip_path = _module_zip_path
-        native_libraries_config = _native_libraries_config
         if (!_proguard_enabled) {
           dex_path = _dex_path
           # dex_path is read from the build_config in the proguard case.
@@ -4852,25 +4796,13 @@ if (is_robolectric) {
                                  ])
           top_target_name = _target_name
           build_config_target = _module_build_config_target
-          native_libraries_config_target = ":$_native_libraries_config_target"
-          if (defined(android_app_secondary_abi)) {
-            secondary_abi_native_libraries_config_target =
-                ":$_secondary_abi_native_libraries_config_target"
-          }
         }
 
         deps = [
-          ":$_native_libraries_config_target",
           _dex_target_for_module,
           _module_build_config_target,
           _module_target,
         ]
-
-        if (defined(android_app_secondary_abi)) {
-          secondary_abi_native_libraries_config =
-              _secondary_abi_native_libraries_config
-          deps += [ ":$_secondary_abi_native_libraries_config_target" ]
-        }
 
         if (_enable_art_profile_optimizations && _include_baseline_profile) {
           # extra_assets is a list of ["{src_path}:{dst_path}"]

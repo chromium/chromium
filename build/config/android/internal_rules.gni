@@ -4422,8 +4422,6 @@ if (enable_java_templates) {
 #     this will always perform synchronized proguarding.
 template("create_android_app_bundle_module") {
   _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
-  _rebased_native_libraries_config =
-      rebase_path(invoker.native_libraries_config, root_build_dir)
 
   forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   _deps = invoker.deps
@@ -4436,10 +4434,7 @@ template("create_android_app_bundle_module") {
   #       dependencies like extra native libraries are all pulled from the
   #       .build_config.json through @FileArg() references (see below) and
   #       will be listed in the generated depfile instead.
-  _inputs = [
-    invoker.build_config,
-    invoker.native_libraries_config,
-  ]
+  _inputs = [ invoker.build_config ]
   _outputs = [ invoker.module_zip_path ]
   _args = [
     "--format=bundle-module",
@@ -4450,8 +4445,8 @@ template("create_android_app_bundle_module") {
     "--assets=@FileArg($_rebased_build_config:assets)",
     "--uncompressed-assets=@FileArg(" +
         "$_rebased_build_config:uncompressed_assets)",
-    "--native-libs=@FileArg($_rebased_native_libraries_config" +
-        ":${invoker.module_name})",
+    "--native-libs=@FileArg($_rebased_build_config:native:libraries)",
+    "--native-libs=@FileArg($_rebased_build_config:native:loadable_modules)",
     "--native-lib-placeholders=@FileArg($_rebased_build_config" +
         ":native:native_library_placeholders)",
     "--secondary-native-lib-placeholders=@FileArg($_rebased_build_config" +
@@ -4461,13 +4456,11 @@ template("create_android_app_bundle_module") {
     "--library-always-compress=@FileArg($_rebased_build_config:native:library_always_compress)",
   ]
   if (defined(android_app_secondary_abi)) {
-    _rebased_secondary_abi_native_libraries_config =
-        rebase_path(invoker.secondary_abi_native_libraries_config,
-                    root_build_dir)
     _args += [
-      "--secondary-native-libs",
-      "@FileArg($_rebased_secondary_abi_native_libraries_config" +
-          ":${invoker.module_name})",
+      "--secondary-native-libs=@FileArg(" +
+          "$_rebased_build_config:native:secondary_abi_libraries)",
+      "--secondary-native-libs=@FileArg(" +
+          "$_rebased_build_config:native:secondary_abi_loadable_modules)",
       "--secondary-android-abi=$android_app_secondary_abi",
     ]
   }
@@ -4503,16 +4496,8 @@ template("create_android_app_bundle_module") {
       inputs = [
         invoker.expected_libs_and_assets,
         invoker.build_config,
-        invoker.native_libraries_config,
       ]
-      deps = [
-        invoker.build_config_target,
-        invoker.native_libraries_config_target,
-      ]
-      if (defined(android_app_secondary_abi)) {
-        inputs += [ invoker.secondary_abi_native_libraries_config ]
-        deps += [ invoker.secondary_abi_native_libraries_config_target ]
-      }
+      deps = [ invoker.build_config_target ]
       outputs = [
         _actual_file,
         _failure_file,
@@ -4551,54 +4536,5 @@ template("create_android_app_bundle_module") {
              "--depfile",
              rebase_path(depfile, root_build_dir),
            ]
-  }
-}
-
-# Allots native libraries depended on by feature modules to the module the
-# libraries should be packaged into. The packaging module may be different from
-# the dependee module in case a library is depended on by multiple modules. In
-# that case the library will be allotted to the closest ancestor given a module
-# dependency tree (see |parent| below).
-#
-# Variables:
-#   modules: List of scopes with the following format:
-#     name: The module's name.
-#     parent: The module's parent's name.
-#     build_config: Path to the module's build config.
-#     build_config_target: Target creating |build_config|.
-#   native_libraries_filearg_keys: Keys to be used in
-#     @FileArg(|build_config|:<keys>) expressions pointing to a list of native
-#     libraries to consider in |build_config|.
-#   output: Path to native libraries config.
-template("allot_native_libraries") {
-  action_with_pydeps(target_name) {
-    script = "//build/android/gyp/allot_native_libraries.py"
-    args = [
-      "--output",
-      rebase_path(invoker.output, root_build_dir),
-    ]
-    outputs = [ invoker.output ]
-    deps = []
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
-    }
-    inputs = []
-    foreach(_module, invoker.modules) {
-      deps += [ _module.build_config_target ]
-      inputs += [ _module.build_config ]
-      _rebased_build_config = rebase_path(_module.build_config, root_out_dir)
-      foreach(_key, invoker.native_libraries_filearg_keys) {
-        args += [
-          "--libraries",
-          "${_module.name},@FileArg($_rebased_build_config:$_key)",
-        ]
-      }
-      if (defined(_module.parent)) {
-        args += [
-          "--dep",
-          "${_module.parent}:${_module.name}",
-        ]
-      }
-    }
   }
 }
