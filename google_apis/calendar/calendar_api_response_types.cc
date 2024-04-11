@@ -55,7 +55,6 @@ constexpr char kCalendarEventKind[] = "calendar#event";
 constexpr char kColorId[] = "colorId";
 constexpr char kEnd[] = "end";
 constexpr char kHtmlLink[] = "htmlLink";
-constexpr char kPathToCreatorSelf[] = "creator.self";
 constexpr char kStart[] = "start";
 constexpr char kStatus[] = "status";
 constexpr char kSummary[] = "summary";
@@ -90,8 +89,8 @@ constexpr char kEntryPointUri[] = "uri";
 // (e.g. the value is structurally different from expected).
 bool ConvertEventStatus(const base::Value* value,
                         CalendarEvent::EventStatus* result) {
-  DCHECK(value);
-  DCHECK(result);
+  CHECK(value);
+  CHECK(result);
 
   const auto* status = value->GetIfString();
   if (!status) {
@@ -125,8 +124,19 @@ std::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
     // - user invited 2+ guests and removed themselves from the event (also,
     // the `attendeesOmitted` flag will be set to true).
 
-    const bool is_self_created =
-        event->FindBoolByDottedPath(kPathToCreatorSelf).value_or(false);
+    bool is_self_created = false;
+    // For non-primary-calendar events, a self-created event does not
+    // contain a creator field. Therefore, we assume that if an event
+    // is confirmed and has no attendees it is self-created.
+    const std::string* event_status = event->FindString(kStatus);
+    if (event_status) {
+      const auto it = kEventStatuses.find(*event_status);
+      if (it != kEventStatuses.end() &&
+          it->second == CalendarEvent::EventStatus::kConfirmed) {
+        is_self_created = true;
+      }
+    }
+
     const bool has_omitted_attendees =
         event->FindBool(kAttendeesOmitted).value_or(false);
 

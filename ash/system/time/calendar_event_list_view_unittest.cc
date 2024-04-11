@@ -4,17 +4,26 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
+#include "ash/calendar/calendar_controller.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_event_list_item_view.h"
+#include "ash/system/time/calendar_list_model.h"
+#include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
+#include "google_apis/calendar/calendar_api_requests.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/label_button.h"
@@ -71,12 +80,22 @@ std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList() {
   return event_list;
 }
 
+const char* kCalendarId1 = "user1@email.com";
+const char* kCalendarSummary1 = "user1@email.com";
+const char* kCalendarColorId1 = "12";
+bool kCalendarSelected1 = true;
+bool kCalendarPrimary1 = true;
+
 }  // namespace
 
-class CalendarViewEventListViewTest : public AshTestBase,
-                                      public testing::WithParamInterface<bool> {
+class CalendarViewEventListViewTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*multi_calendar_enabled=*/bool> {
  public:
-  CalendarViewEventListViewTest() = default;
+  CalendarViewEventListViewTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kMultiCalendarSupport, IsMultiCalendarEnabled());
+  }
   CalendarViewEventListViewTest(const CalendarViewEventListViewTest&) = delete;
   CalendarViewEventListViewTest& operator=(
       const CalendarViewEventListViewTest&) = delete;
@@ -85,6 +104,7 @@ class CalendarViewEventListViewTest : public AshTestBase,
   void SetUp() override {
     AshTestBase::SetUp();
     controller_ = std::make_unique<CalendarViewController>();
+    calendar_model_ = Shell::Get()->system_tray_model()->calendar_model();
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
   }
@@ -92,26 +112,25 @@ class CalendarViewEventListViewTest : public AshTestBase,
   void TearDown() override {
     event_list_view_.reset();
     controller_.reset();
+    scoped_feature_list_.Reset();
     widget_.reset();
+
     AshTestBase::TearDown();
   }
+
+  bool IsMultiCalendarEnabled() { return GetParam(); }
 
   void CreateEventListView(base::Time date) {
     event_list_view_.reset();
     controller_->UpdateMonth(date);
-    Shell::Get()->system_tray_model()->calendar_model()->OnEventsFetched(
-        calendar_utils::GetStartOfMonthUTC(date),
-        google_apis::ApiErrorCode::HTTP_SUCCESS, CreateMockEventList().get());
+    calendar_model_->OnEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                                     google_apis::calendar::kPrimaryCalendarId,
+                                     google_apis::ApiErrorCode::HTTP_SUCCESS,
+                                     CreateMockEventList().get());
     controller_->selected_date_ = date;
     event_list_view_ =
         std::make_unique<CalendarEventListView>(controller_.get());
     widget_->SetContentsView(event_list_view_.get());
-  }
-
-  void RefetchEvents(base::Time start_of_month,
-                     const google_apis::calendar::EventList* events) {
-    Shell::Get()->system_tray_model()->calendar_model()->OnEventsFetched(
-        start_of_month, google_apis::HTTP_SUCCESS, events);
   }
 
   void SetSelectedDate(base::Time date) {
@@ -172,14 +191,19 @@ class CalendarViewEventListViewTest : public AshTestBase,
 
  private:
   std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
+  raw_ptr<CalendarModel, DanglingUntriaged> calendar_model_;
   std::unique_ptr<CalendarEventListView> event_list_view_;
   std::unique_ptr<CalendarViewController> controller_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   static base::Time fake_time_;
 };
 
 base::Time CalendarViewEventListViewTest::fake_time_;
 
-INSTANTIATE_TEST_SUITE_P(All, CalendarViewEventListViewTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(MultiCalendar,
+                         CalendarViewEventListViewTest,
+                         testing::Bool());
 
 TEST_P(CalendarViewEventListViewTest, ShowEvents) {
   base::Time date;
@@ -262,41 +286,6 @@ TEST_P(CalendarViewEventListViewTest, LaunchItem) {
   EXPECT_EQ(histogram_tester.GetTotalSum(
                 "Ash.Calendar.EventListViewJelly.EventDisplayedCount"),
             3);
-}
-
-TEST_P(CalendarViewEventListViewTest, RefreshEvents) {
-  base::Time date;
-  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
-  CreateEventListView(date);
-
-  SetSelectedDate(date);
-
-  // With the initial event list there should be 3 events on the 18th.
-  EXPECT_EQ(3u, GetContentViewSize());
-
-  base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(
-      controller()->selected_date_midnight());
-  auto event_list = std::make_unique<google_apis::calendar::EventList>();
-  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
-      "id_4", "summary_4", "21 Nov 2021 8:30 GMT", "21 Nov 2021 9:30 GMT"));
-
-  // Calls the `OnEventsFetched` method to update the events in the model.
-  // The event list view should be re-rendered automatically with the new event
-  // list.
-  RefetchEvents(start_of_month, event_list.get());
-
-  // Shows 0 events and shows open in google calendar button after the refresh.
-  EXPECT_EQ(1u, GetEmptyContentViewSize());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
-            GetEmptyLabel());
-
-  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
-      "id_0", "summary_0", "18 Nov 2021 8:30 GMT", "18 Nov 2021 9:30 GMT"));
-  RefetchEvents(start_of_month, event_list.get());
-
-  // Shows 1 event after the refresh.
-  EXPECT_EQ(1u, GetContentViewSize());
-  EXPECT_EQ(u"summary_0", GetSummary(0)->GetText());
 }
 
 TEST_P(CalendarViewEventListViewTest, ScrollToCurrentOrNextEvent) {
@@ -480,6 +469,199 @@ TEST_P(CalendarViewEventListViewTest,
   auto first_item_bounds =
       GetHighlightView(current_or_next_event_index())->GetBoundsInScreen();
   EXPECT_EQ(scroll_view_visible_bounds.y(), first_item_bounds.y());
+}
+
+class CalendarViewEventListViewFetchTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*multi_calendar_enabled=*/bool> {
+ public:
+  CalendarViewEventListViewFetchTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kMultiCalendarSupport, IsMultiCalendarEnabled());
+  }
+  CalendarViewEventListViewFetchTest(
+      const CalendarViewEventListViewFetchTest&) = delete;
+  CalendarViewEventListViewFetchTest& operator=(
+      const CalendarViewEventListViewFetchTest&) = delete;
+  ~CalendarViewEventListViewFetchTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    // Register a mock `CalendarClient` to the `CalendarController`.
+    const std::string email = "user1@email.com";
+    account_id_ = AccountId::FromUserEmail(email);
+    Shell::Get()->calendar_controller()->SetActiveUserAccountIdForTesting(
+        account_id_);
+    calendar_model_ = Shell::Get()->system_tray_model()->calendar_model();
+    calendar_client_ =
+        std::make_unique<calendar_test_utils::CalendarClientTestImpl>();
+    controller_ = std::make_unique<CalendarViewController>();
+    Shell::Get()->calendar_controller()->RegisterClientForUser(
+        account_id_, calendar_client_.get());
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        ash::prefs::kCalendarIntegrationEnabled, true);
+  }
+
+  void TearDown() override {
+    event_list_view_.reset();
+    controller_.reset();
+    scoped_feature_list_.Reset();
+    time_overrides_.reset();
+
+    AshTestBase::TearDown();
+  }
+
+  bool IsMultiCalendarEnabled() { return GetParam(); }
+
+  void WaitUntilFetched() {
+    task_environment()->FastForwardBy(base::Minutes(1));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void CreateEventListView(base::Time date) {
+    event_list_view_.reset();
+    controller_->UpdateMonth(date);
+    calendar_model_->OnEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                                     google_apis::calendar::kPrimaryCalendarId,
+                                     google_apis::ApiErrorCode::HTTP_SUCCESS,
+                                     CreateMockEventList().get());
+    controller_->selected_date_ = date;
+    event_list_view_ =
+        std::make_unique<CalendarEventListView>(controller_.get());
+  }
+
+  void SetCalendarList() {
+    // Sets a mock calendar list.
+    std::list<std::unique_ptr<google_apis::calendar::SingleCalendar>> calendars;
+    calendars.push_back(calendar_test_utils::CreateCalendar(
+        kCalendarId1, kCalendarSummary1, kCalendarColorId1, kCalendarSelected1,
+        kCalendarPrimary1));
+    calendar_client_->SetCalendarList(
+        calendar_test_utils::CreateMockCalendarList(std::move(calendars)));
+  }
+
+  void SetEventList(std::unique_ptr<google_apis::calendar::EventList> events) {
+    calendar_client_->SetEventList(std::move(events));
+  }
+
+  void FetchCalendars() {
+    Shell::Get()->system_tray_model()->calendar_list_model()->FetchCalendars();
+    WaitUntilFetched();
+  }
+
+  void RefetchEvents(base::Time start_of_month) {
+    calendar_model_->FetchEvents(start_of_month);
+    WaitUntilFetched();
+  }
+
+  void SetTodayFromTime(base::Time date) {
+    std::set<base::Time> months = calendar_utils::GetSurroundingMonthsUTC(
+        date, calendar_utils::kNumSurroundingMonthsCached);
+
+    calendar_model_->non_prunable_months_.clear();
+    // Non-prunable months are today's date and the two surrounding months.
+    calendar_model_->AddNonPrunableMonths(months);
+  }
+
+  void SetSelectedDate(base::Time date) {
+    controller_->selected_date_ = date;
+    controller_->ShowEventListView(/*calendar_date_cell_view=*/nullptr, date,
+                                   /*row_index=*/0);
+  }
+
+  void UpdateEventList() { event_list_view_->UpdateListItems(); }
+
+  views::View* content_view() { return event_list_view_->content_view_; }
+  CalendarViewController* controller() { return controller_.get(); }
+
+  views::View* GetSameDayEventsContainer() {
+    views::View* container =
+        content_view()->GetViewByID(kEventListSameDayEventsContainer);
+    CHECK(container);
+
+    return container;
+  }
+
+  views::Label* GetSummary(int child_index) {
+    return static_cast<views::Label*>(
+        static_cast<CalendarEventListItemView*>(
+            GetSameDayEventsContainer()->children()[child_index])
+            ->GetViewByID(kSummaryLabelID));
+  }
+
+  std::u16string GetEmptyLabel() {
+    return static_cast<views::LabelButton*>(
+               content_view()->children()[0]->children()[0])
+        ->GetText();
+  }
+
+  size_t GetContentViewSize() {
+    return GetSameDayEventsContainer()->children().size();
+  }
+
+  size_t GetEmptyContentViewSize() { return content_view()->children().size(); }
+
+ private:
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
+  std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
+  raw_ptr<CalendarModel, DanglingUntriaged> calendar_model_;
+  std::unique_ptr<CalendarEventListView> event_list_view_;
+  std::unique_ptr<CalendarViewController> controller_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  AccountId account_id_;
+};
+
+INSTANTIATE_TEST_SUITE_P(MultiCalendar,
+                         CalendarViewEventListViewFetchTest,
+                         testing::Bool());
+
+TEST_P(CalendarViewEventListViewFetchTest, RefreshEvents) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  CreateEventListView(date);
+
+  SetSelectedDate(date);
+  SetTodayFromTime(date);
+
+  // With the initial event list there should be 3 events on the 18th.
+  EXPECT_EQ(3u, GetContentViewSize());
+
+  if (IsMultiCalendarEnabled()) {
+    // Set and fetch a calendar list so FetchEvents can create an event fetch.
+    SetCalendarList();
+    FetchCalendars();
+  }
+
+  base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(
+      controller()->selected_date_midnight());
+  auto event_list = std::make_unique<google_apis::calendar::EventList>();
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_4", "summary_4", "21 Nov 2021 8:30 GMT", "21 Nov 2021 9:30 GMT"));
+  SetEventList(std::move(event_list));
+
+  // Calls the `FetchEvents` method to update the events in the model.
+  // The event list view should be re-rendered automatically with the new event
+  // list.
+  RefetchEvents(start_of_month);
+
+  // Shows 0 events and shows open in google calendar button after the refresh.
+  EXPECT_EQ(1u, GetEmptyContentViewSize());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
+            GetEmptyLabel());
+
+  auto event_list2 = std::make_unique<google_apis::calendar::EventList>();
+  event_list2->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_0", "summary_0", "18 Nov 2021 8:30 GMT", "18 Nov 2021 9:30 GMT"));
+  SetEventList(std::move(event_list2));
+
+  RefetchEvents(start_of_month);
+
+  // Shows 1 event after the refresh.
+  EXPECT_EQ(1u, GetContentViewSize());
+  EXPECT_EQ(u"summary_0", GetSummary(0)->GetText());
 }
 
 }  // namespace ash

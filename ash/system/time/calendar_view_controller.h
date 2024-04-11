@@ -210,6 +210,7 @@ class ASH_EXPORT CalendarViewController {
   // For unit tests.
   friend class CalendarMonthViewTest;
   friend class CalendarViewAnimationTest;
+  friend class CalendarViewEventListViewFetchTest;
   friend class CalendarViewEventListViewTest;
   friend class CalendarViewTest;
   friend class CalendarViewEventListItemViewTest;

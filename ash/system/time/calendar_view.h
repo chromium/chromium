@@ -86,9 +86,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // CalendarModel::Observer:
   void OnEventsFetched(const CalendarModel::FetchingStatus status,
-                       const base::Time start_time,
-                       const google_apis::calendar::EventList* events) override;
-  void OnTimeout(base::Time start_of_month) override;
+                       const base::Time start_time) override;
 
   // CalendarViewController::Observer:
   void OnMonthChanged() override;
@@ -275,6 +273,9 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // Updates the on-screen month map with the current months on screen.
   void UpdateOnScreenMonthMap();
+
+  // Returns true if there is no Calendar List fetch in progress.
+  bool CalendarsFetchComplete();
 
   // Returns whether or not we've finished fetching CalendarEvents.
   bool EventsFetchComplete();

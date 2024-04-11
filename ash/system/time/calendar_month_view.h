@@ -151,8 +151,7 @@ class ASH_EXPORT CalendarMonthView : public views::View,
 
   // CalendarModel::Observer:
   void OnEventsFetched(const CalendarModel::FetchingStatus status,
-                       const base::Time start_time,
-                       const google_apis::calendar::EventList* events) override;
+                       const base::Time start_time) override;
 
   // Enable each cell's focus behavior.
   void EnableFocus();

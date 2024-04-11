@@ -172,11 +172,14 @@ TEST_F(CalendarApiRequestsTest, GetEventListRequest) {
   base::Time::Exploded exploded;
   events->items()[0]->start_time().date_time().LocalExplode(&exploded);
   EXPECT_EQ(exploded.month, 11);
+  // Verifies that events containing a colorId do not have their color IDs
+  // replaced by calendar_color_id.
   EXPECT_EQ(events->items()[0]->color_id(), "3");
   EXPECT_EQ(events->items()[1]->color_id(), "3");
   // Verifies that an event without a colorId in the response yields an event
-  // object with a color ID equal to calendar_color_id.
-  EXPECT_EQ(events->items()[2]->color_id(), kTestCalendarColorId);
+  // object with a color ID equal to calendar_color_id (prepended by a marker).
+  EXPECT_EQ(events->items()[2]->color_id(),
+            calendar::kInjectedColorIdPrefix + kTestCalendarColorId);
 }
 
 // Tests that CalendarApiEventsRequest can generate the correct url and get the

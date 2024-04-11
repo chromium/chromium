@@ -192,8 +192,11 @@ base::OnceClosure CalendarClientTestImpl::GetEventList(
     const base::Time end_time,
     const std::string& calendar_id,
     const std::string& calendar_color_id) {
-  // TODO(b/308696020): Implement Test Client changes in conjunction with
-  // Calendar Model changes.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), error_, std::move(events_)),
+      task_delay_);
+
   return base::DoNothing();
 }
 

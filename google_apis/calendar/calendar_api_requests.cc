@@ -26,11 +26,15 @@ namespace calendar {
 namespace {
 
 // For events without an event color, fill the colorId field with the color ID
-// provided.
+// provided by the calendar.
 void FillEmptyColorFields(EventList* events, const std::string& color) {
   for (auto& event : events->items()) {
     if (event->color_id().empty()) {
-      event->set_color_id(color);
+      // Events and calendars have some shared color IDs associated with
+      // different colors. Here we prepend the injected ID with a marker
+      // to indicate that the color ID does not represent an original event
+      // color.
+      event->set_color_id(kInjectedColorIdPrefix + color);
     }
   }
 }
@@ -202,7 +206,7 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
       url_generator_(url_generator),
       start_time_(start_time),
       end_time_(end_time),
-      calendar_id_(kPrimaryCalendarID) {
+      calendar_id_(kPrimaryCalendarId) {
   CHECK(!callback_.is_null());
 }
 

@@ -59,12 +59,24 @@ class ASH_EXPORT CalendarListModel : public SessionObserver {
   // Returns true if the calendar list is currently being fetched.
   bool get_fetch_in_progress() { return fetch_in_progress_; }
 
+  // Returns true if the calendar list is currently cached and there is no
+  // calendar list fetch in progress.
+  bool list_cached_and_no_fetch_in_progress() {
+    return (is_cached_ && !fetch_in_progress_);
+  }
+
   // Returns the currently cached calendar list.
   // The calendar list should have at least one entry (for the primary calendar)
   // if the account that authorized the fetch uses Google Calendar.
   CalendarList GetCachedCalendarList();
 
  private:
+  // For unit tests.
+  friend class CalendarUpNextViewPixelTest;
+  friend class CalendarViewWithUpNextViewAnimationTest;
+  friend class CalendarViewWithUpNextViewTest;
+  friend class PostLoginGlanceablesMetricsRecorderTest;
+
   // A callback invoked when the calendar list fetch is complete. If the fetch
   // was successful, the cached calendar list is replaced. If the fetch failed
   // and a calendar list is already cached, the calendar list is not modified.

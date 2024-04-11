@@ -438,10 +438,19 @@ CalendarMonthView::CalendarMonthView(
 
   fetch_month_ = first_day_of_month_local.UTCMidnight();
 
-  // TODO(b/308701913): Set up calendar list model observer and modify event
-  // fetching logic accordingly.
+  if (calendar_utils::IsMultiCalendarEnabled()) {
+    // Set up the Calendar List Model observer to trigger an event fetch only
+    // after the calendar list fetch is completed.
+    scoped_calendar_list_model_observer_.Observe(calendar_list_model_.get());
 
-  FetchEvents(fetch_month_);
+    // If the month view has been created after a successful calendar list
+    // fetch, this will trigger an event list fetch immediately. Otherwise,
+    // events will be fetched during `OnCalendarListFetchComplete`.
+    calendar_model_->MaybeFetchEvents(fetch_month_);
+  } else {
+    FetchEvents(fetch_month_);
+  }
+
   bool has_fetched_data =
       calendar_view_controller_->IsSuccessfullyFetched(fetch_month_);
   const bool should_fetch_calendar_data =
@@ -633,13 +642,12 @@ void CalendarMonthView::OnCalendarListFetchComplete() {
 
 void CalendarMonthView::OnEventsFetched(
     const CalendarModel::FetchingStatus status,
-    const base::Time start_time,
-    const google_apis::calendar::EventList* events) {
+    const base::Time start_time) {
   if (status == CalendarModel::kSuccess && start_time == fetch_month_) {
     UpdateIsFetchedAndRepaint(true);
   }
 
-  if (!events || events->items().size() == 0) {
+  if (!(calendar_model_->MonthHasEvents(start_time))) {
     return;
   }
 

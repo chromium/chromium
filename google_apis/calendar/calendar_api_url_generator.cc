@@ -56,7 +56,7 @@ GURL CalendarApiUrlGenerator::GetCalendarEventListUrl(
   } else {
     url = base_url_.Resolve(
         base::StringPrintf(kCalendarV3EventsUrlFormat,
-                           base::EscapePath(kPrimaryCalendarID).c_str()));
+                           base::EscapePath(kPrimaryCalendarId).c_str()));
   }
   std::string start_time_string = util::FormatTimeAsString(start_time);
   std::string end_time_string = util::FormatTimeAsString(end_time);

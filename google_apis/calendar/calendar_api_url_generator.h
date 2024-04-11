@@ -27,7 +27,7 @@ class CalendarApiUrlGenerator {
 
   // Returns a URL to fetch a list of calendar events.
   // |calendar_id|   ID of the calendar to fetch events from. If empty,
-  //                 kPrimaryCalendarID is used in its place.
+  //                 kPrimaryCalendarId is used in its place.
   // |start_time|    Start time of the event window
   // |end_time|      End time of the aforementioned window
   // |single_events| If true, expand recurring events into instances and only

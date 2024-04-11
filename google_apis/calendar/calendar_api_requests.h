@@ -20,7 +20,9 @@ namespace google_apis {
 
 namespace calendar {
 
-inline constexpr char kPrimaryCalendarID[] = "primary";
+// A marker to indicate an event has been injected with its calendar's colorId.
+inline const std::string kInjectedColorIdPrefix = "c";
+inline constexpr char kPrimaryCalendarId[] = "primary";
 
 // Callback used for requests that the server returns Calendar List
 // data formatted into JSON value.

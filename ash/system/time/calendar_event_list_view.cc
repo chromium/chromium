@@ -254,8 +254,7 @@ void CalendarEventListView::OnSelectedDateUpdated() {
 
 void CalendarEventListView::OnEventsFetched(
     const CalendarModel::FetchingStatus status,
-    const base::Time start_time,
-    const google_apis::calendar::EventList* events) {
+    const base::Time start_time) {
   if (status == CalendarModel::kSuccess &&
       start_time == calendar_utils::GetStartOfMonthUTC(
                         calendar_view_controller_->selected_date_midnight())) {

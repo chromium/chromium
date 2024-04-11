@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "google_apis/calendar/calendar_api_requests.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/test_util.h"
@@ -304,14 +305,24 @@ TEST_F(CalendarKeyedServiceIOTest, GetEventListForNonDefaultCalendar) {
   }
 
   EXPECT_EQ(google_apis::HTTP_SUCCESS, error);
-  const google_apis::calendar::CalendarEvent& event = *events->items()[2];
+  const google_apis::calendar::CalendarEvent& event = *events->items()[1];
   // Verify that a returned event matches one at the same position on the mock
   // group calendar events list.
-  EXPECT_EQ(event.summary(), "Popcorn Pop-Up");
-  EXPECT_EQ(event.id(), "kff9ghr5gt8fhhechomqnld9et");
+  EXPECT_EQ(event.summary(), "Strawberry Refreshers @ 4th Floor Cafe");
+  EXPECT_EQ(event.id(), "z27t6aqhloxm19wpwcrk7gyycy");
+  // Verify that the event color ID has not been injected with the value passed
+  // in for calendar_color_id because the field was already populated.
+  EXPECT_EQ(event.color_id(), "7");
+
+  const google_apis::calendar::CalendarEvent& event2 = *events->items()[2];
+  // Verify that a returned event matches one at the same position on the mock
+  // group calendar events list.
+  EXPECT_EQ(event2.summary(), "Popcorn Pop-Up");
+  EXPECT_EQ(event2.id(), "kff9ghr5gt8fhhechomqnld9et");
   // Verify that the event color ID is now equal to the value passed into
-  // calendar_color_id.
-  EXPECT_EQ(event.color_id(), kTestGroupCalendarColorId);
+  // calendar_color_id (prepended by a marker).
+  EXPECT_EQ(event2.color_id(), google_apis::calendar::kInjectedColorIdPrefix +
+                                   kTestGroupCalendarColorId);
 }
 
 }  // namespace ash

@@ -79,6 +79,22 @@ constexpr auto kEventHexColorCodes =
          {"10", "5B9157"},
          {"11", "D45D5D"}});
 
+// In Multi-Calendar, events without a custom color are injected with the color
+// ID of the calendar they belong to in order to maintain a visible distinction
+// between calendars when viewing events.
+// Modified events have been prepended with a marker (`kInjectedColorIdPrefix`)
+// to indicate that the calendar color map should be used to decode the color.
+constexpr auto kCalendarHexColorCodes =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
+        {{"c1", "ac725e"},  {"c2", "d06b64"},  {"c3", "f83a22"},
+         {"c4", "fa573c"},  {"c5", "ff7537"},  {"c6", "ffad46"},
+         {"c7", "42d692"},  {"c8", "16a765"},  {"c9", "7bd148"},
+         {"c10", "b3dc6c"}, {"c11", "fbe983"}, {"c12", "fad165"},
+         {"c13", "92e1c0"}, {"c14", "9fe1e7"}, {"c15", "9fc6e7"},
+         {"c16", "4986e7"}, {"c17", "9a9cff"}, {"c18", "b99aff"},
+         {"c19", "c2c2c2"}, {"c20", "cabdbf"}, {"c21", "cca6ac"},
+         {"c22", "f691b2"}, {"c23", "cd74e6"}, {"c24", "a47ae2"}});
+
 constexpr SkAlpha SK_Alpha38Opacity = 0x61;
 constexpr SkAlpha SK_Alpha50Opacity = 0x80;
 
@@ -90,7 +106,8 @@ class CalendarEventListItemDot : public views::View {
   explicit CalendarEventListItemDot(std::string color_id)
       : alpha_(color_id == kPastEventsColorId ? SK_Alpha38Opacity
                                               : SK_AlphaOPAQUE) {
-    DCHECK(color_id.empty() || kEventHexColorCodes.count(color_id));
+    CHECK(color_id.empty() || kEventHexColorCodes.count(color_id) ||
+          kCalendarHexColorCodes.count(color_id));
 
     std::string_view hex_code = LookupColorId(color_id);
     base::HexStringToInt(hex_code, &color_);
@@ -115,11 +132,17 @@ class CalendarEventListItemDot : public views::View {
 
  private:
   std::string_view LookupColorId(std::string color_id) {
-    const auto iter = kEventHexColorCodes.find(color_id);
-    if (iter == kEventHexColorCodes.end()) {
-      return kEventHexColorCodes.at(kDefaultColorId);
+    const auto event_color_iter = kEventHexColorCodes.find(color_id);
+    if (event_color_iter != kEventHexColorCodes.end()) {
+      return event_color_iter->second;
     }
-    return iter->second;
+    if (calendar_utils::IsMultiCalendarEnabled()) {
+      const auto cal_color_iter = kCalendarHexColorCodes.find(color_id);
+      if (cal_color_iter != kCalendarHexColorCodes.end()) {
+        return cal_color_iter->second;
+      }
+    }
+    return kEventHexColorCodes.at(kDefaultColorId);
   }
 
   // The color value and the opacity of the dot.

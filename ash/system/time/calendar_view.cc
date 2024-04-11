@@ -571,7 +571,9 @@ CalendarView::CalendarView(bool use_glanceables_container_style)
   content_view_->SetPaintToLayer();
   content_view_->layer()->SetFillsBoundsOpaquely(false);
 
-  // TODO(b/308701913): Initiate calendar list fetch here.
+  if (calendar_utils::IsMultiCalendarEnabled()) {
+    calendar_list_model_->FetchCalendars();
+  }
 
   SetMonthViews();
 
@@ -966,8 +968,13 @@ bool CalendarView::EventsFetchComplete() {
 }
 
 void CalendarView::MaybeUpdateLoadingBarVisibility() {
-  // TODO(b/308701913): Check for calendar list fetch completion as well here.
-  const bool visible = !EventsFetchComplete();
+  bool visible;
+  if (calendar_utils::IsMultiCalendarEnabled()) {
+    visible = !(!calendar_list_model_->get_fetch_in_progress() &&
+                EventsFetchComplete());
+  } else {
+    visible = !EventsFetchComplete();
+  }
   progress_bar_->UpdateProgressBarVisibility(
       /*visible=*/visible);
 
@@ -1247,10 +1254,8 @@ void CalendarView::OnMonthChanged() {
       .SetOpacity(temp_header_, 1.0f);
 }
 
-void CalendarView::OnEventsFetched(
-    const CalendarModel::FetchingStatus status,
-    const base::Time start_time,
-    const google_apis::calendar::EventList* events) {
+void CalendarView::OnEventsFetched(const CalendarModel::FetchingStatus status,
+                                   const base::Time start_time) {
   if (base::Contains(on_screen_month_, start_time)) {
     on_screen_month_[start_time] = status;
   }
@@ -1264,14 +1269,6 @@ void CalendarView::OnEventsFetched(
                         base::Time::NowFromSystemTime().UTCMidnight())) {
     MaybeShowUpNextView();
   }
-}
-
-void CalendarView::OnTimeout(const base::Time start_time) {
-  if (base::Contains(on_screen_month_, start_time)) {
-    on_screen_month_[start_time] = CalendarModel::kNever;
-  }
-
-  MaybeUpdateLoadingBarVisibility();
 }
 
 void CalendarView::OpenEventList() {
