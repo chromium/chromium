@@ -4301,6 +4301,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabStrip.TitleBitmapFactory.getTitleBitmap.Length"
+    units="characters" expires_after="2024-05-10">
+  <owner>peilinwang@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    The full (untruncated) length of the title to be converted to a bitmap by
+    TitleBitmapFactory.getTitleBitmap.
+
+    Recorded once per call, if the title is neither null nor empty.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabSwitcher.CreationTime" units="ms"
     expires_after="2024-06-30">
   <owner>skavuluru@chromium.org</owner>
