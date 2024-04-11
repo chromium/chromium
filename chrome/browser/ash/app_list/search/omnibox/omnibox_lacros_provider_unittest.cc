@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -138,8 +139,7 @@ class TestSearchResultProducer : public cam::SearchController {
 
 }  // namespace
 
-// Our main test fixture. Provides `search_producer_` with which tests can
-// produce "lacros-side" results, and `search_controller_` with which tests can
+// Our main test fixture. Provides `search_controller_` with which tests can
 // read the output of the `OmniboxLacrosProvider`.
 class OmniboxLacrosProviderTest : public testing::Test {
  public:
@@ -173,12 +173,6 @@ class OmniboxLacrosProviderTest : public testing::Test {
 
     crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 
-    // Create fake lacros-side logic.
-    search_producer_ = std::make_unique<TestSearchResultProducer>();
-    crosapi_manager_->crosapi_ash()
-        ->search_provider_ash()
-        ->RegisterSearchController(search_producer_->BindToRemote());
-
     // Create client of our provider.
     search_controller_ = std::make_unique<TestSearchController>();
 
@@ -192,18 +186,17 @@ class OmniboxLacrosProviderTest : public testing::Test {
   void TearDown() override {
     omnibox_provider_ = nullptr;
     search_controller_.reset();
-    search_producer_.reset();
     crosapi_manager_.reset();
     ash::LoginState::Shutdown();
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
   }
 
-  // Tells the producer to produce the given results, then waits for the results
-  // to be transmitted over their Mojo pipe.
-  void ProduceResults(std::vector<cam::SearchResultPtr> results) {
-    search_producer_->ProduceResults(std::move(results));
-    base::RunLoop().RunUntilIdle();
+  void RegisterSearchController(
+      mojo::PendingRemote<cam::SearchController> search_controller) {
+    crosapi_manager_->crosapi_ash()
+        ->search_provider_ash()
+        ->RegisterSearchController(std::move(search_controller));
   }
 
   // Starts a search and waits for the query to be sent to "lacros" over a Mojo
@@ -222,7 +215,6 @@ class OmniboxLacrosProviderTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<TestSearchResultProducer> search_producer_;
   std::unique_ptr<TestSearchController> search_controller_;
 
  private:
@@ -239,15 +231,18 @@ class OmniboxLacrosProviderTest : public testing::Test {
 
 // Test that results sent from lacros each instantiate a Chrome search result.
 TEST_F(OmniboxLacrosProviderTest, Basic) {
+  auto search_producer = std::make_unique<TestSearchResultProducer>();
+  RegisterSearchController(search_producer->BindToRemote());
   StartSearch(u"query");
-  EXPECT_EQ(u"query", search_producer_->last_query());
+  EXPECT_EQ(u"query", search_producer->last_query());
 
   std::vector<cam::SearchResultPtr> to_produce;
   to_produce.emplace_back(NewOmniboxResult("https://example.com/result"));
   to_produce.emplace_back(NewAnswerResult(
       "https://example.com/answer", cam::SearchResult::AnswerType::kWeather));
   to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab"));
-  ProduceResults(std::move(to_produce));
+  search_producer->ProduceResults(std::move(to_produce));
+  base::RunLoop().RunUntilIdle();
 
   // Results always appear after answer and open tab entries.
   ASSERT_EQ(3u, search_controller_->last_results().size());
@@ -261,19 +256,23 @@ TEST_F(OmniboxLacrosProviderTest, Basic) {
 
 // Test that newly-produced results supersede previous results.
 TEST_F(OmniboxLacrosProviderTest, NewResults) {
+  auto search_producer = std::make_unique<TestSearchResultProducer>();
+  RegisterSearchController(search_producer->BindToRemote());
   StartSearch(u"query");
 
   // Produce one result.
   std::vector<cam::SearchResultPtr> to_produce;
   to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab_1"));
-  ProduceResults(std::move(to_produce));
+  search_producer->ProduceResults(std::move(to_produce));
+  base::RunLoop().RunUntilIdle();
 
   StartSearch(u"query2");
 
   // Then produce another.
   to_produce.clear();
   to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab_2"));
-  ProduceResults(std::move(to_produce));
+  search_producer->ProduceResults(std::move(to_produce));
+  base::RunLoop().RunUntilIdle();
 
   // Only newest result should be stored.
   ASSERT_EQ(1u, search_controller_->last_results().size());
@@ -283,6 +282,8 @@ TEST_F(OmniboxLacrosProviderTest, NewResults) {
 
 // Test that invalid URLs aren't accepted.
 TEST_F(OmniboxLacrosProviderTest, BadUrls) {
+  auto search_producer = std::make_unique<TestSearchResultProducer>();
+  RegisterSearchController(search_producer->BindToRemote());
   StartSearch(u"query");
 
   // All results have bad URLs.
@@ -291,7 +292,8 @@ TEST_F(OmniboxLacrosProviderTest, BadUrls) {
   to_produce.emplace_back(
       NewAnswerResult("badscheme", cam::SearchResult::AnswerType::kWeather));
   to_produce.emplace_back(NewOpenTabResult("http://?k=v"));
-  ProduceResults(std::move(to_produce));
+  search_producer->ProduceResults(std::move(to_produce));
+  base::RunLoop().RunUntilIdle();
 
   // None of the results should be accepted.
   EXPECT_TRUE(search_controller_->last_results().empty());
@@ -299,6 +301,8 @@ TEST_F(OmniboxLacrosProviderTest, BadUrls) {
 
 // Test that results with the same URL are deduplicated in the correct order.
 TEST_F(OmniboxLacrosProviderTest, Deduplicate) {
+  auto search_producer = std::make_unique<TestSearchResultProducer>();
+  RegisterSearchController(search_producer->BindToRemote());
   StartSearch(u"query");
 
   // A result that has the same URL as another result, but is a history (i.e.
@@ -314,7 +318,8 @@ TEST_F(OmniboxLacrosProviderTest, Deduplicate) {
   to_produce.emplace_back(NewOmniboxResult("https://example.com/result_1"));
   to_produce.emplace_back(std::move(history_result));
 
-  ProduceResults(std::move(to_produce));
+  search_producer->ProduceResults(std::move(to_produce));
+  base::RunLoop().RunUntilIdle();
 
   // Only the higher-priority (i.e. history) result for URL 1 should be kept.
   ASSERT_EQ(2u, search_controller_->last_results().size());
@@ -328,6 +333,8 @@ TEST_F(OmniboxLacrosProviderTest, Deduplicate) {
 // Test that results aren't created for URLs for which there are other
 // specialist producers.
 TEST_F(OmniboxLacrosProviderTest, UnhandledUrls) {
+  auto search_producer = std::make_unique<TestSearchResultProducer>();
+  RegisterSearchController(search_producer->BindToRemote());
   StartSearch(u"query");
 
   // Drive URLs aren't handled (_unless_ they are open tabs pointing to the
@@ -339,7 +346,8 @@ TEST_F(OmniboxLacrosProviderTest, UnhandledUrls) {
   to_produce.emplace_back(NewOpenTabResult("https://drive.google.com/doc1"));
   to_produce.emplace_back(NewOpenTabResult("https://docs.google.com/doc2"));
   to_produce.emplace_back(NewOpenTabResult("file:///docs/doc3"));
-  ProduceResults(std::move(to_produce));
+  search_producer->ProduceResults(std::move(to_produce));
+  base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(2u, search_controller_->last_results().size());
   EXPECT_EQ("opentab://https://drive.google.com/doc1",
@@ -351,20 +359,23 @@ TEST_F(OmniboxLacrosProviderTest, UnhandledUrls) {
 // Test that all non-answer results are filtered if web search is disabled in
 // search control.
 TEST_F(OmniboxLacrosProviderTest, WebSearchControl) {
+  auto search_producer = std::make_unique<TestSearchResultProducer>();
+  RegisterSearchController(search_producer->BindToRemote());
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       ash::features::kLauncherSearchControl);
   DisableWebSearch();
 
   StartSearch(u"query");
-  EXPECT_EQ(u"query", search_producer_->last_query());
+  EXPECT_EQ(u"query", search_producer->last_query());
 
   std::vector<cam::SearchResultPtr> to_produce;
   to_produce.emplace_back(NewOmniboxResult("https://example.com/result"));
   to_produce.emplace_back(NewAnswerResult(
       "https://example.com/answer", cam::SearchResult::AnswerType::kWeather));
   to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab"));
-  ProduceResults(std::move(to_produce));
+  search_producer->ProduceResults(std::move(to_produce));
+  base::RunLoop().RunUntilIdle();
 
   // Results always appear after answer and open tab entries.
   ASSERT_EQ(1u, search_controller_->last_results().size());
@@ -372,78 +383,7 @@ TEST_F(OmniboxLacrosProviderTest, WebSearchControl) {
             search_controller_->last_results()[0]->id());
 }
 
-// A secondary test fixture which does not have any search producer connected to
-// the crosapi manager.
-class OmniboxLacrosProviderNoCrosAPITest : public testing::Test {
- public:
-  OmniboxLacrosProviderNoCrosAPITest() = default;
-  OmniboxLacrosProviderNoCrosAPITest(
-      const OmniboxLacrosProviderNoCrosAPITest&) = delete;
-  OmniboxLacrosProviderNoCrosAPITest& operator=(
-      const OmniboxLacrosProviderNoCrosAPITest&) = delete;
-  ~OmniboxLacrosProviderNoCrosAPITest() override = default;
-
-  void SetUp() override {
-    // Create the profile manager and an active profile.
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    // The profile needs a template URL service for history Omnibox results.
-    profile_ = profile_manager_->CreateTestingProfile(
-        chrome::kInitialProfile,
-        {{TemplateURLServiceFactory::GetInstance(),
-          base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}});
-
-    // The idle service has dependencies we can't instantiate in unit tests.
-    crosapi::IdleServiceAsh::DisableForTesting();
-
-    // The crosapi manager reads the global login state.
-    ash::LoginState::Initialize();
-
-    crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
-
-    // Create fake lacros-side logic.
-    crosapi_manager_->crosapi_ash()->search_provider_ash();
-
-    // Create client of our provider.
-    search_controller_ = std::make_unique<TestSearchController>();
-
-    // Create the object to actually test.
-    auto omnibox_provider = std::make_unique<OmniboxLacrosProvider>(
-        profile_, &list_controller_, crosapi_manager_.get());
-    omnibox_provider_ = omnibox_provider.get();
-    search_controller_->AddProvider(std::move(omnibox_provider));
-  }
-
-  void TearDown() override {
-    omnibox_provider_ = nullptr;
-    search_controller_.reset();
-    crosapi_manager_.reset();
-    ash::LoginState::Shutdown();
-    profile_ = nullptr;
-    profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
-  }
-
-  // Starts a search and waits for the query to be sent to "lacros" over a Mojo
-  // pipe.
-  void StartSearch(const std::u16string& query) {
-    search_controller_->StartSearch(query);
-    base::RunLoop().RunUntilIdle();
-  }
-
- protected:
-  std::unique_ptr<TestSearchController> search_controller_;
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
-  TestAppListControllerDelegate list_controller_;
-  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile> profile_;
-  raw_ptr<OmniboxLacrosProvider> omnibox_provider_;
-};
-
-TEST_F(OmniboxLacrosProviderNoCrosAPITest, SystemURLsWorkWithNoSearchProvider) {
+TEST_F(OmniboxLacrosProviderTest, SystemURLsWorkWithNoSearchProvider) {
   StartSearch(u"os://flags");
 
   ASSERT_EQ(1u, search_controller_->last_results().size());
