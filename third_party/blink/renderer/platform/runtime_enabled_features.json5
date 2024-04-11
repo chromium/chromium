@@ -2035,7 +2035,6 @@
     {
       name: "HTMLAnchorAttribute",
       status: "experimental",
-      implied_by: ["CSSAnchorPositioning"]
     },
     // Adds support for the experimental `interesttarget`
     // attributes, as specified in the open-ui "Interest Invokers" explainer.
