@@ -506,14 +506,14 @@ ci.builder(
             target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = ["arm64-generic"],
+            cros_boards_with_qemu_images = ["arm64-generic-vm"],
         ),
     ),
     gn_args = gn_args.config(
         configs = [
             "chromeos_device",
             "reclient",
-            "arm64-generic",
+            "arm64-generic-vm",
             "dcheck_always_on",
             "ozone_headless",
         ],

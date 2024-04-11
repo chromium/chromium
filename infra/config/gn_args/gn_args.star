@@ -167,6 +167,11 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "arm64-generic-vm",
+    args_file = "//build/args/chromeos/arm64-generic-vm.gni",
+)
+
+gn_args.config(
     name = "arm64_host",
     args = {
         "test_host_cpu": "arm64",
