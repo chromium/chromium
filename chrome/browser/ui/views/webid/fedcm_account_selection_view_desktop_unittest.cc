@@ -286,11 +286,13 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget,
       const std::optional<content::IdentityProviderData>& new_account_idp =
           std::nullopt,
-      bool request_permission = true) {
+      bool request_permission = true,
+      content::IdentityProviderMetadata idp_metadata =
+          content::IdentityProviderMetadata()) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), account_selection_view_.get());
     Show(*controller, accounts, sign_in_mode, rp_mode, new_account_idp,
-         request_permission);
+         request_permission, idp_metadata);
     return controller;
   }
 
@@ -300,15 +302,16 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
             blink::mojom::RpMode rp_mode,
             const std::optional<content::IdentityProviderData>&
                 new_account_idp = std::nullopt,
-            bool request_permission = true) {
-    controller.Show(
-        kTopFrameEtldPlusOne,
-        std::make_optional<std::string>(kIframeEtldPlusOne),
-        {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
-          content::ClientMetadata(GURL(), GURL(), GURL()),
-          blink::mojom::RpContext::kSignIn, request_permission,
-          /*has_login_status_mismatch=*/false}},
-        sign_in_mode, rp_mode, new_account_idp);
+            bool request_permission = true,
+            content::IdentityProviderMetadata idp_metadata =
+                content::IdentityProviderMetadata()) {
+    controller.Show(kTopFrameEtldPlusOne,
+                    std::make_optional<std::string>(kIframeEtldPlusOne),
+                    {{kIdpEtldPlusOne, accounts, idp_metadata,
+                      content::ClientMetadata(GURL(), GURL(), GURL()),
+                      blink::mojom::RpContext::kSignIn, request_permission,
+                      /*has_login_status_mismatch=*/false}},
+                    sign_in_mode, rp_mode, new_account_idp);
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowMismatchDialog(
@@ -1792,4 +1795,60 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId));
+}
+
+// Tests that if IDP supports add account, the correct sheet type is shown
+// depending on the number of accounts and the rp mode.
+TEST_F(FedCmAccountSelectionViewDesktopTest, SupportAddAccount) {
+  const char kAccountId1[] = "account_id1";
+  const char kAccountId2[] = "account_id2";
+  IdentityProviderDisplayData single_account_idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  IdentityProviderDisplayData multiple_accounts_idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignIn},
+                                         {kAccountId2, LoginState::kSignIn}});
+
+  content::IdentityProviderMetadata idp_metadata;
+  idp_metadata.supports_add_account = true;
+
+  {
+    // Single account widget flow.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShow(single_account_idp_data.accounts, SignInMode::kExplicit,
+                      blink::mojom::RpMode::kWidget,
+                      /*new_account_idp=*/std::nullopt,
+                      /*request_permission=*/false, idp_metadata);
+    EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+              account_selection_view_->sheet_type_);
+  }
+  {
+    // Multiple account widget flow.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShow(multiple_accounts_idp_data.accounts,
+                      SignInMode::kExplicit, blink::mojom::RpMode::kWidget,
+                      /*new_account_idp=*/std::nullopt,
+                      /*request_permission=*/false, idp_metadata);
+    EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+              account_selection_view_->sheet_type_);
+  }
+  {
+    // Single account button flow.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShow(single_account_idp_data.accounts, SignInMode::kExplicit,
+                      blink::mojom::RpMode::kButton,
+                      /*new_account_idp=*/std::nullopt,
+                      /*request_permission=*/false, idp_metadata);
+    EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+              account_selection_view_->sheet_type_);
+  }
+  {
+    // Multiple account button flow.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShow(multiple_accounts_idp_data.accounts,
+                      SignInMode::kExplicit, blink::mojom::RpMode::kButton,
+                      /*new_account_idp=*/std::nullopt,
+                      /*request_permission=*/false, idp_metadata);
+    EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+              account_selection_view_->sheet_type_);
+  }
 }

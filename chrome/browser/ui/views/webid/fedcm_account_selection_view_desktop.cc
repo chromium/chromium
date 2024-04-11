@@ -172,16 +172,25 @@ void FedCmAccountSelectionView::Show(
           *new_account_idp_display_data_,
           /*show_back_button=*/accounts_size > 1u ? true : false);
     }
-  } else if (idp_display_data_list_.size() == 1u && accounts_size == 1u &&
-             !idp_display_data_list_[0].idp_metadata.supports_add_account) {
-    // When there is a single IDP and a single account to show and the IDP does
-    // not support adding an account, we can use the single account UI.
-    state_ = GetDialogType() == DialogType::MODAL ? State::SINGLE_ACCOUNT_PICKER
-                                                  : State::REQUEST_PERMISSION;
-    account_selection_view_->ShowSingleAccountConfirmDialog(
-        top_frame_for_display_, iframe_for_display_,
-        idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
-        /*show_back_button=*/false);
+  } else if (idp_display_data_list_.size() == 1u && accounts_size == 1u) {
+    if (GetDialogType() == DialogType::MODAL) {
+      state_ = State::SINGLE_ACCOUNT_PICKER;
+      account_selection_view_->ShowSingleAccountConfirmDialog(
+          top_frame_for_display_, iframe_for_display_,
+          idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
+          /*show_back_button=*/false);
+    } else if (idp_display_data_list_[0].idp_metadata.supports_add_account) {
+      // The logic to support add account is in ShowMultiAccountPicker for the
+      // bubble dialog.
+      state_ = State::MULTI_ACCOUNT_PICKER;
+      account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_);
+    } else {
+      state_ = State::REQUEST_PERMISSION;
+      account_selection_view_->ShowSingleAccountConfirmDialog(
+          top_frame_for_display_, iframe_for_display_,
+          idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
+          /*show_back_button=*/false);
+    }
   } else {
     state_ = State::MULTI_ACCOUNT_PICKER;
     account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_);
