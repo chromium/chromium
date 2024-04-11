@@ -290,6 +290,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Wallpaper" summary="Wallpaper App"/>
 </variants>
 
+<variants name="SeaPenImageSource">
+  <variant name="Create" summary="A newly created image"/>
+  <variant name="Recent" summary="A recent image previously created"/>
+</variants>
+
 <variants name="SeaPenTemplateName">
   <variant name="Art" summary="Template Classic art"/>
   <variant name="Characters" summary="Template Characters"/>
@@ -6980,6 +6985,17 @@ chromium-metrics-reviews@google.com.
     Emitted when a user navigates to the SeaPen page in the {AppName} App.
   </summary>
   <token key="AppName" variants="SeaPenAppName"/>
+</histogram>
+
+<histogram name="Ash.SeaPen.{AppName}.{Source}.ImageSet" enum="BooleanHit"
+    expires_after="2025-03-30">
+  <owner>pzliu@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emmitted when the user sets a {Source} SeaPen image as {AppName}.
+  </summary>
+  <token key="AppName" variants="SeaPenAppName"/>
+  <token key="Source" variants="SeaPenImageSource"/>
 </histogram>
 
 <histogram name="Ash.SeaPen.{TemplateName}.UserFeedback" enum="Boolean"

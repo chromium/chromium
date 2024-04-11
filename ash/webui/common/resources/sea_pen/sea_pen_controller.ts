@@ -5,6 +5,7 @@
 import {SeaPenImageId} from './constants.js';
 import {MantaStatusCode, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import * as seaPenAction from './sea_pen_actions.js';
+import {logSeaPenImageSet} from './sea_pen_metrics_logger.js';
 import {SeaPenStoreInterface} from './sea_pen_store.js';
 import {isNonEmptyArray} from './sea_pen_utils.js';
 
@@ -36,6 +37,10 @@ export async function selectRecentSeaPenImage(
         success ? id : originalCurrentSelected));
   }
   store.endBatchUpdate();
+
+  if (success) {
+    logSeaPenImageSet(/*source=*/ 'Recent');
+  }
 }
 
 export async function searchSeaPenThumbnails(
@@ -73,6 +78,7 @@ export async function selectSeaPenWallpaper(
   // Re-fetches the recent Sea Pen image if setting sea pen wallpaper
   // successfully, which means the file has been downloaded successfully.
   if (success) {
+    logSeaPenImageSet(/*source=*/ 'Create');
     await fetchRecentSeaPenData(provider, store);
   }
 }

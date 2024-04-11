@@ -45,6 +45,12 @@ export function logRecentImageActionMenuItemClick(
       RecentImageActionMenuItem.MAX_VALUE + 1);
 }
 
+export function logSeaPenImageSet(source: 'Create'|'Recent') {
+  const appName = isPersonalizationApp() ? 'Wallpaper' : 'VcBackground';
+  chrome.metricsPrivate.recordBoolean(
+      `Ash.SeaPen.${appName}.${source}.ImageSet`, true);
+}
+
 export function logSeaPenVisited() {
   const appName = isPersonalizationApp() ? 'Wallpaper' : 'VcBackground';
   chrome.metricsPrivate.recordBoolean(`Ash.SeaPen.${appName}.Visited`, true);
