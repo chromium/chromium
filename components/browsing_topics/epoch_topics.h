@@ -19,8 +19,16 @@ namespace browsing_topics {
 // document.browsingTopics().
 class EpochTopics {
  public:
+  // Construct topics as the result of a failed calculation. It's given a null
+  // `calculator_result_status_`, implying that this is read from prefs upon
+  // browser restart.
   explicit EpochTopics(base::Time calculation_time);
 
+  // Construct topics as the result of a failed calculation.
+  EpochTopics(base::Time calculation_time,
+              CalculatorResultStatus calculator_result_status);
+
+  // Construct topics as the result of a successful calculation.
   EpochTopics(std::vector<TopicAndDomains> top_topics_and_observing_domains,
               size_t padded_top_topics_start_index,
               int config_version,
@@ -94,6 +102,11 @@ class EpochTopics {
     return from_manually_triggered_calculation_;
   }
 
+  const std::optional<CalculatorResultStatus>& calculator_result_status()
+      const {
+    return calculator_result_status_;
+  }
+
  private:
   std::optional<Topic> TopicForSiteHelper(
       const std::string& top_domain,
@@ -144,6 +157,10 @@ class EpochTopics {
   // instead of being visible only after a caller-dependant delay. The value
   // does not persist after restarting the browser (it is not saved).
   bool from_manually_triggered_calculation_ = false;
+
+  // The calculation result (success / failure with reason). The failure status
+  // does not persist after restarting the browser (it is not saved).
+  std::optional<CalculatorResultStatus> calculator_result_status_;
 };
 
 }  // namespace browsing_topics

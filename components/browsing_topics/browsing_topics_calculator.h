@@ -45,23 +45,6 @@ namespace browsing_topics {
 // contexts), and return it as the final result.
 class BrowsingTopicsCalculator {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class CalculatorResultStatus {
-    kSuccess = 0,
-    kFailurePermissionDenied = 1,
-    kFailureApiUsageContextQueryError = 2,
-    kFailureAnnotationExecutionError = 3,
-    kFailureTaxonomyVersionNotSupportedInBinary = 4,
-    kHangingAfterApiUsageRequested = 5,
-    kHangingAfterHistoryRequested = 6,
-    kHangingAfterModelRequested = 7,
-    kHangingAfterAnnotationRequested = 8,
-    kTerminated = 9,
-
-    kMaxValue = kTerminated,
-  };
-
   using CalculateCompletedCallback = base::OnceCallback<void(EpochTopics)>;
 
   BrowsingTopicsCalculator(
@@ -71,6 +54,7 @@ class BrowsingTopicsCalculator {
       Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
       bool is_manually_triggered,
+      bool is_timeout_retry,
       base::Time session_start_time,
       CalculateCompletedCallback callback);
 
@@ -82,6 +66,8 @@ class BrowsingTopicsCalculator {
   virtual ~BrowsingTopicsCalculator();
 
   bool is_manually_triggered() const { return is_manually_triggered_; }
+
+  bool is_timeout_retry() const { return is_timeout_retry_; }
 
  protected:
   // This method exists for the purposes of overriding in tests.
@@ -119,10 +105,9 @@ class BrowsingTopicsCalculator {
 
   void OnGetTopicsForHostsCompleted(const std::vector<Annotation>& results);
 
-  void OnCalculateCompleted(CalculatorResultStatus status,
-                            EpochTopics epoch_topics);
+  void OnCalculateCompleted(EpochTopics epoch_topics);
 
-  void RecordHangingMetrics();
+  void OnCalculationHanging();
 
   // Those pointers are safe to hold and use throughout the lifetime of
   // `BrowsingTopicsService`, which owns this object.
@@ -138,8 +123,6 @@ class BrowsingTopicsCalculator {
 
   base::Time history_data_start_time_;
   base::Time api_usage_context_data_start_time_;
-
-  base::OneShotTimer hanging_metrics_recorder_timer_;
 
   Progress progress_ = Progress::kStarted;
 
@@ -158,6 +141,9 @@ class BrowsingTopicsCalculator {
   // Whether this calculator was generated via the topics-internals page rather
   // than via a scheduled task.
   bool is_manually_triggered_;
+
+  // Whether this calculation is a retry after a previous hanging calculation.
+  bool is_timeout_retry_;
 
   base::Time session_start_time_;
 

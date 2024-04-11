@@ -474,12 +474,15 @@ const base::FeatureParam<int> kBrowsingTopicsTaxonomyVersion{
 // topic will be blocked as well.
 const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
     &kBrowsingTopicsParameters, "disabled_topics_list", ""};
-
 // Comma separated list of Topic IDs. Prioritize these topics and their
 // descendants during top topic selection.
 const base::FeatureParam<std::string> kBrowsingTopicsPrioritizedTopicsList{
     &kBrowsingTopicsParameters, "prioritized_topics_list",
     "57,86,126,149,172,180,196,207,239,254,263,272,289,299,332"};
+// When a topics calculation times out for the first time, the duration to wait
+// before starting a new one.
+const base::FeatureParam<base::TimeDelta> kBrowsingTopicsFirstTimeoutRetryDelay{
+    &kBrowsingTopicsParameters, "first_timeout_retry_delay", base::Minutes(1)};
 
 // When enabled, every mainframe same-doc navigation will increment the
 // `viz::LocalSurfaceId` from the impl thread.

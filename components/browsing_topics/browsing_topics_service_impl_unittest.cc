@@ -55,6 +55,7 @@ constexpr base::TimeDelta kMaxEpochIntroductionDelay = 2 * kOneTestDay;
 
 constexpr base::TimeDelta kDatabaseFetchDelay = base::Milliseconds(1);
 constexpr base::TimeDelta kCalculatorDelay = base::Milliseconds(1);
+constexpr base::TimeDelta kFirstTimeoutRetryDelay = base::Milliseconds(10);
 
 constexpr browsing_topics::HmacKey kTestKey = {1};
 
@@ -62,6 +63,8 @@ constexpr base::Time kTime1 =
     base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
 constexpr base::Time kTime2 =
     base::Time::FromDeltaSinceWindowsEpoch(base::Days(2));
+constexpr base::Time kTime3 =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Days(3));
 
 constexpr int kConfigVersion = 1;
 constexpr int kTaxonomyVersion = 1;
@@ -128,6 +131,7 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
       Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
       bool is_manually_triggered,
+      bool is_timeout_retry,
       base::Time session_start_time,
       BrowsingTopicsCalculator::CalculateCompletedCallback callback) override {
     DCHECK(!mock_calculator_results_.empty());
@@ -139,8 +143,8 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
 
     return std::make_unique<TesterBrowsingTopicsCalculator>(
         privacy_sandbox_settings, history_service, site_data_manager, annotator,
-        session_start_time, std::move(callback), std::move(next_epoch),
-        calculator_finish_delay_);
+        is_timeout_retry, session_start_time, std::move(callback),
+        std::move(next_epoch), calculator_finish_delay_);
   }
 
   const BrowsingTopicsState& browsing_topics_state() override {
@@ -182,6 +186,10 @@ class BrowsingTopicsServiceImplTest
          {blink::features::kBrowsingTopicsParameters,
           {{"time_period_per_epoch",
             base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
+           {"first_timeout_retry_delay",
+            base::StrCat(
+                {base::NumberToString(kFirstTimeoutRetryDelay.InMilliseconds()),
+                 "ms"})},
            {"max_epoch_introduction_delay",
             base::StrCat(
                 {base::NumberToString(kMaxEpochIntroductionDelay.InSeconds()),
@@ -348,18 +356,18 @@ TEST_F(BrowsingTopicsServiceImplTest, EmptyInitialState_CalculationScheduling) {
   base::Time start_time = base::Time::Now();
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
-                                                      {Topic(2), {}},
-                                                      {Topic(3), {}},
-                                                      {Topic(4), {}},
-                                                      {Topic(5), {}}},
-                                                     kTime1));
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     kTime2));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        kTime1));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime2));
 
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
@@ -426,12 +434,12 @@ TEST_F(BrowsingTopicsServiceImplTest,
       /*next_scheduled_calculation_time=*/start_time + kOneTestDay);
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     kTime2));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime2));
 
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
@@ -484,7 +492,8 @@ TEST_F(BrowsingTopicsServiceImplTest,
       /*next_scheduled_calculation_time=*/start_time + kOneTestDay);
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(EpochTopics(kTime2));
+  mock_calculator_results.emplace(EpochTopics(
+      kTime2, CalculatorResultStatus::kFailureAnnotationExecutionError));
 
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
   task_environment()->RunUntilIdle();
@@ -536,12 +545,12 @@ TEST_F(
       /*next_scheduled_calculation_time=*/start_time - base::Microseconds(1));
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     kTime2));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime2));
 
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
@@ -591,12 +600,13 @@ TEST_F(
       /*next_scheduled_calculation_time=*/start_time + kOneTestDay);
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     start_time - kOneTestDay));
+  mock_calculator_results.emplace(
+      CreateTestEpochTopics({{Topic(6), {}},
+                             {Topic(7), {}},
+                             {Topic(8), {}},
+                             {Topic(9), {}},
+                             {Topic(10), {}}},
+                            start_time - kOneTestDay));
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
   // Finish file loading.
@@ -633,12 +643,12 @@ TEST_F(
       /*next_scheduled_calculation_time=*/start_time + 15 * kOneTestDay);
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     kTime2));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime2));
 
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
@@ -673,12 +683,12 @@ TEST_F(BrowsingTopicsServiceImplTest,
       /*next_scheduled_calculation_time=*/start_time + kOneTestDay);
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     kTime2));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime2));
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
   NavigateToPage(GURL("https://www.foo.com"));
@@ -786,14 +796,14 @@ TEST_F(BrowsingTopicsServiceImplTest,
       /*next_scheduled_calculation_time=*/start_time + kOneTestDay);
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {}},
                              {Topic(2), {}},
                              {Topic(3), {}},
                              {Topic(4), {}},
                              {Topic(5), {}}},
                             start_time + kCalculatorDelay));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {}},
                              {Topic(7), {}},
                              {Topic(8), {}},
@@ -860,13 +870,13 @@ TEST_F(
   base::Time start_time = base::Time::Now();
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
-                                                      {Topic(2), {}},
-                                                      {Topic(3), {}},
-                                                      {Topic(4), {}},
-                                                      {Topic(5), {}}},
-                                                     start_time));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        start_time));
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {}},
                              {Topic(7), {}},
                              {Topic(8), {}},
@@ -899,18 +909,214 @@ TEST_F(
       0u);
 }
 
+TEST_F(BrowsingTopicsServiceImplTest, TimeoutRetry_Success) {
+  base::Time start_time = base::Time::Now();
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.emplace(
+      EpochTopics(kTime1, CalculatorResultStatus::kHangingAfterModelRequested));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime2));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 0u);
+
+  // Finish file loading.
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
+  EXPECT_TRUE(browsing_topics_state().epochs().empty());
+
+  // Finish the calculation.
+  task_environment()->FastForwardBy(kCalculatorDelay);
+
+  // Epochs and `next_scheduled_calculation_time` are not updated, because the
+  // first calculation timed out, and a retry was scheduled.
+  EXPECT_TRUE(browsing_topics_state().epochs().empty());
+  EXPECT_EQ(browsing_topics_state().next_scheduled_calculation_time(),
+            base::Time());
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
+
+  // Forward the time right before the timeout retry.
+  task_environment()->FastForwardBy(kFirstTimeoutRetryDelay -
+                                    base::Microseconds(1));
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
+
+  // Forward the time to the timeout retry.
+  task_environment()->FastForwardBy(base::Microseconds(1));
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 2u);
+
+  // Finish the timeout retry. An epoch was added. The next calculation is
+  // scheduled one epoch after.
+  task_environment()->FastForwardBy(kCalculatorDelay);
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 2u);
+  EXPECT_EQ(browsing_topics_state().epochs()[0].calculation_time(), kTime2);
+  EXPECT_EQ(browsing_topics_state().epochs()[0].calculator_result_status(),
+            CalculatorResultStatus::kSuccess);
+  EXPECT_EQ(
+      browsing_topics_state().next_scheduled_calculation_time(),
+      start_time + 2 * kCalculatorDelay + kFirstTimeoutRetryDelay + kEpoch);
+}
+
+TEST_F(BrowsingTopicsServiceImplTest, TimeoutRetry_TimeoutAgain) {
+  base::Time start_time = base::Time::Now();
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.emplace(
+      EpochTopics(kTime1, CalculatorResultStatus::kHangingAfterModelRequested));
+  mock_calculator_results.emplace(EpochTopics(
+      kTime2, CalculatorResultStatus::kHangingAfterAnnotationRequested));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime3));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 0u);
+
+  // Finish file loading.
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
+  EXPECT_TRUE(browsing_topics_state().epochs().empty());
+
+  // Finish the calculation.
+  task_environment()->FastForwardBy(kCalculatorDelay);
+
+  // Epochs and `next_scheduled_calculation_time` are not updated, because the
+  // first calculation timed out, and a retry was scheduled.
+  EXPECT_TRUE(browsing_topics_state().epochs().empty());
+  EXPECT_EQ(browsing_topics_state().next_scheduled_calculation_time(),
+            base::Time());
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
+
+  // Forward the time to the timeout retry.
+  task_environment()->FastForwardBy(kFirstTimeoutRetryDelay);
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 2u);
+
+  // Finish the timeout retry.
+  task_environment()->FastForwardBy(kCalculatorDelay);
+
+  // Epochs and `next_scheduled_calculation_time` are still not updated, because
+  // the calculation timed out again, and a retry was scheduled.
+  EXPECT_TRUE(browsing_topics_state().epochs().empty());
+  EXPECT_EQ(browsing_topics_state().next_scheduled_calculation_time(),
+            base::Time());
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 2u);
+
+  // Forward the time right before the second timeout retry.
+  task_environment()->FastForwardBy(kEpoch - base::Microseconds(1));
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 2u);
+
+  // Forward the time to the second timeout retry.
+  task_environment()->FastForwardBy(base::Microseconds(1));
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 3u);
+
+  // Finish the calculation. An epoch was added. The next calculation is
+  // scheduled one epoch after.
+  task_environment()->FastForwardBy(kCalculatorDelay);
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 3u);
+  EXPECT_EQ(browsing_topics_state().epochs()[0].calculation_time(), kTime3);
+  EXPECT_EQ(browsing_topics_state().epochs()[0].calculator_result_status(),
+            CalculatorResultStatus::kSuccess);
+  EXPECT_EQ(
+      browsing_topics_state().next_scheduled_calculation_time(),
+      start_time + 3 * kCalculatorDelay + kFirstTimeoutRetryDelay + 2 * kEpoch);
+}
+
+TEST_F(BrowsingTopicsServiceImplTest,
+       TimeoutRetry_InterruptedByHistoryDeletion) {
+  base::Time start_time = base::Time::Now();
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.emplace(
+      EpochTopics(kTime1, CalculatorResultStatus::kHangingAfterModelRequested));
+  mock_calculator_results.emplace(EpochTopics(
+      kTime2, CalculatorResultStatus::kHangingAfterAnnotationRequested));
+  mock_calculator_results.emplace(EpochTopics(
+      kTime3, CalculatorResultStatus::kHangingAfterHistoryRequested));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 0u);
+
+  // Finish file loading.
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
+  EXPECT_TRUE(browsing_topics_state().epochs().empty());
+
+  // Finish the calculation.
+  task_environment()->FastForwardBy(kCalculatorDelay);
+
+  // Epochs and `next_scheduled_calculation_time` are not updated, because the
+  // first calculation timed out, and a retry was scheduled.
+  EXPECT_TRUE(browsing_topics_state().epochs().empty());
+  EXPECT_EQ(browsing_topics_state().next_scheduled_calculation_time(),
+            base::Time());
+
+  // Forward the time to the timeout retry.
+  task_environment()->FastForwardBy(kFirstTimeoutRetryDelay);
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 2u);
+
+  // Before the calculation finish, delete history. This should trigger a topics
+  // re-calculation.
+  task_environment()->FastForwardBy(kCalculatorDelay - base::Microseconds(1));
+
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange(start_time, start_time + 2 * kOneTestDay),
+      /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
+      /*restrict_urls=*/std::nullopt);
+  browsing_topics_service_->OnHistoryDeletions(history_service_.get(),
+                                               deletion_info);
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 3u);
+
+  // The calculation shouldn't finish at the originally expected time, as it was
+  // dropped and a new calculation has started.
+  task_environment()->FastForwardBy(base::Microseconds(1));
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 0u);
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 3u);
+
+  // Finish the re-started calculation. Epochs and
+  // `next_scheduled_calculation_time` are still not updated, because the
+  // calculation timed out again, and a retry was scheduled.
+  task_environment()->FastForwardBy(kCalculatorDelay - base::Microseconds(1));
+  EXPECT_TRUE(browsing_topics_state().epochs().empty());
+  EXPECT_EQ(browsing_topics_state().next_scheduled_calculation_time(),
+            base::Time());
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 3u);
+
+  // Forward the time by `kFirstTimeoutRetryDelay`. No new calculation has
+  // started. This shows that the second retry had a delay longer than
+  // `kFirstTimeoutRetryDelay`, which suggests that re-started calculation was
+  // also considered as a timeout retry.
+  task_environment()->FastForwardBy(kFirstTimeoutRetryDelay);
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 3u);
+}
+
 TEST_F(BrowsingTopicsServiceImplTest,
        OnURLsDeleted_TimeRangeOverlapWithOneEpoch) {
   base::Time start_time = base::Time::Now();
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
-                                                      {Topic(2), {}},
-                                                      {Topic(3), {}},
-                                                      {Topic(4), {}},
-                                                      {Topic(5), {}}},
-                                                     start_time));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        start_time));
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {}},
                              {Topic(7), {}},
                              {Topic(8), {}},
@@ -946,13 +1152,13 @@ TEST_F(BrowsingTopicsServiceImplTest,
   base::Time start_time = base::Time::Now();
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
-                                                      {Topic(2), {}},
-                                                      {Topic(3), {}},
-                                                      {Topic(4), {}},
-                                                      {Topic(5), {}}},
-                                                     start_time));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        start_time));
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {}},
                              {Topic(7), {}},
                              {Topic(8), {}},
@@ -986,18 +1192,18 @@ TEST_F(BrowsingTopicsServiceImplTest, Recalculate) {
   base::Time start_time = base::Time::Now();
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
-                                                      {Topic(2), {}},
-                                                      {Topic(3), {}},
-                                                      {Topic(4), {}},
-                                                      {Topic(5), {}}},
-                                                     kTime1));
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     kTime2));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        kTime1));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime2));
 
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
@@ -1036,7 +1242,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1079,7 +1285,7 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1149,7 +1355,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1201,14 +1407,14 @@ TEST_F(BrowsingTopicsServiceImplTest,
 TEST_F(BrowsingTopicsServiceImplTest,
        HandleTopicsWebApi_TwoEpochsWithDifferentConfigVersions) {
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
                              {Topic(9), {GetHashedDomain("bar.com")}},
                              {Topic(10), {GetHashedDomain("bar.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1248,12 +1454,12 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch_Filtered) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
-                                                      {Topic(2), {}},
-                                                      {Topic(3), {}},
-                                                      {Topic(4), {}},
-                                                      {Topic(5), {}}},
-                                                     kTime1));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        kTime1));
 
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
@@ -1302,7 +1508,7 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch_Filtered) {
 TEST_F(BrowsingTopicsServiceImplTest,
        HandleTopicsWebApi_TopicNotAllowedByPrivacySandboxSettings) {
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1362,28 +1568,28 @@ TEST_F(BrowsingTopicsServiceImplTest,
 
 TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_FourEpochs) {
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
                              {Topic(4), {GetHashedDomain("bar.com")}},
                              {Topic(5), {GetHashedDomain("bar.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
                              {Topic(9), {GetHashedDomain("bar.com")}},
                              {Topic(10), {GetHashedDomain("bar.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(11), {GetHashedDomain("bar.com")}},
                              {Topic(12), {GetHashedDomain("bar.com")}},
                              {Topic(13), {GetHashedDomain("bar.com")}},
                              {Topic(14), {GetHashedDomain("bar.com")}},
                              {Topic(15), {GetHashedDomain("bar.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(16), {GetHashedDomain("bar.com")}},
                              {Topic(17), {GetHashedDomain("bar.com")}},
                              {Topic(18), {GetHashedDomain("bar.com")}},
@@ -1440,28 +1646,28 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_FourEpochs) {
 TEST_F(BrowsingTopicsServiceImplTest,
        HandleTopicsWebApi_DuplicateTopicsRemoved) {
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
                              {Topic(4), {GetHashedDomain("bar.com")}},
                              {Topic(5), {GetHashedDomain("bar.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
                              {Topic(9), {GetHashedDomain("bar.com")}},
                              {Topic(10), {GetHashedDomain("bar.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
                              {Topic(4), {GetHashedDomain("bar.com")}},
                              {Topic(5), {GetHashedDomain("bar.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
@@ -1527,28 +1733,28 @@ TEST_F(BrowsingTopicsServiceImplTest,
 TEST_F(BrowsingTopicsServiceImplTest,
        HandleTopicsWebApi_TopicsReturnedInSortedOrder) {
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
                              {Topic(9), {GetHashedDomain("bar.com")}},
                              {Topic(10), {GetHashedDomain("bar.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
                              {Topic(4), {GetHashedDomain("bar.com")}},
                              {Topic(5), {GetHashedDomain("bar.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
                              {Topic(9), {GetHashedDomain("bar.com")}},
                              {Topic(10), {GetHashedDomain("bar.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1582,7 +1788,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
 TEST_F(BrowsingTopicsServiceImplTest,
        HandleTopicsWebApi_TopicsReturnedInSortedOrder_DifferentVersions) {
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
@@ -1591,7 +1797,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
                             kTime1,
                             /*padded_top_topics_start_index=*/5,
                             /*model_version=*/4));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1600,7 +1806,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
                             kTime1,
                             /*padded_top_topics_start_index=*/5,
                             /*model_version=*/3));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
@@ -1609,7 +1815,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
                             kTime1,
                             /*padded_top_topics_start_index=*/5,
                             /*model_version=*/2));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1649,30 +1855,30 @@ TEST_F(BrowsingTopicsServiceImplTest,
 TEST_F(BrowsingTopicsServiceImplTest, NumVersionsInEpochs_OneVerison) {
   base::queue<EpochTopics> mock_calculator_results;
 
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     kTime1));
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     kTime1));
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     kTime1));
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     kTime1));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime1));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime1));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime1));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime1));
 
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
@@ -1735,10 +1941,10 @@ TEST_F(BrowsingTopicsServiceImplTest,
   epoch_version3.ClearTopics();
   epoch_version4.ClearTopics();
 
-  mock_calculator_results.push(std::move(epoch_version1));
-  mock_calculator_results.push(std::move(epoch_version2));
-  mock_calculator_results.push(std::move(epoch_version3));
-  mock_calculator_results.push(std::move(epoch_version4));
+  mock_calculator_results.emplace(std::move(epoch_version1));
+  mock_calculator_results.emplace(std::move(epoch_version2));
+  mock_calculator_results.emplace(std::move(epoch_version3));
+  mock_calculator_results.emplace(std::move(epoch_version4));
 
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
@@ -1757,7 +1963,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
 
 TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_TrackedUsageContext) {
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1795,7 +2001,7 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_TrackedUsageContext) {
 
 TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_DoesNotObserve) {
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1829,7 +2035,7 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_DoesNotObserve) {
 
 TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_DoesNotGetTopics) {
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1871,7 +2077,7 @@ TEST_F(
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1909,7 +2115,7 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_ZeroAndOneTopic) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1978,7 +2184,7 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_3Topics) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -1986,21 +2192,21 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_3Topics) {
                              {Topic(5), {GetHashedDomain("bar.com")}}},
                             kTime1,
                             /*padded_top_topics_start_index=*/0));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
                              {Topic(9), {GetHashedDomain("bar.com")}},
                              {Topic(10), {GetHashedDomain("bar.com")}}},
                             kTime1, /*padded_top_topics_start_index=*/0));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
                              {Topic(4), {GetHashedDomain("bar.com")}},
                              {Topic(5), {GetHashedDomain("bar.com")}}},
                             kTime1, /*padded_top_topics_start_index=*/0));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
@@ -2069,7 +2275,7 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_3Topics) {
 
 TEST_F(BrowsingTopicsServiceImplTest, GetTopTopicsForDisplay) {
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -2077,14 +2283,14 @@ TEST_F(BrowsingTopicsServiceImplTest, GetTopTopicsForDisplay) {
                              {Topic(5), {GetHashedDomain("bar.com")}}},
                             kTime1,
                             /*padded_top_topics_start_index=*/1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
                              {Topic(9), {GetHashedDomain("bar.com")}},
                              {Topic(10), {GetHashedDomain("bar.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
                              {Topic(2), {GetHashedDomain("bar.com")}},
                              {Topic(3), {GetHashedDomain("bar.com")}},
@@ -2092,7 +2298,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetTopTopicsForDisplay) {
                              {Topic(5), {GetHashedDomain("bar.com")}}},
                             kTime1,
                             /*padded_top_topics_start_index=*/2));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
                              {Topic(8), {GetHashedDomain("bar.com")}},
@@ -2134,12 +2340,12 @@ TEST_F(BrowsingTopicsServiceImplTest,
   base::Time start_time = base::Time::Now();
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
-                                                      {Topic(2), {}},
-                                                      {Topic(3), {}},
-                                                      {Topic(4), {}},
-                                                      {Topic(5), {}}},
-                                                     start_time));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        start_time));
 
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
@@ -2178,14 +2384,14 @@ TEST_F(BrowsingTopicsServiceImplTest,
   base::Time start_time = base::Time::Now();
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
-                                                      {Topic(2), {}},
-                                                      {Topic(3), {}},
-                                                      {Topic(4), {}},
-                                                      {Topic(5), {}}},
-                                                     start_time));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        start_time));
 
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {}},
                              {Topic(2), {}},
                              {Topic(3), {}},
@@ -2232,7 +2438,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
       HashedHost(123), HashedDomain(456), "456.com", base::Time::Now());
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {HashedDomain(123), HashedDomain(456)}},
                              {Topic(2), {}},
                              {Topic(0), {}},  // blocked
@@ -2241,9 +2447,11 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
                             start_time));
 
   // Failed calculation.
-  mock_calculator_results.push(EpochTopics(start_time + kEpoch));
+  mock_calculator_results.emplace(
+      EpochTopics(start_time + kEpoch,
+                  CalculatorResultStatus::kFailureAnnotationExecutionError));
 
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {}},
                              {Topic(7), {}},
                              {Topic(8), {}},
@@ -2339,13 +2547,13 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopic) {
   base::Time start_time = base::Time::Now();
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
-                                                      {Topic(2), {}},
-                                                      {Topic(3), {}},
-                                                      {Topic(4), {}},
-                                                      {Topic(5), {}}},
-                                                     start_time));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        start_time));
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {}},
                              {Topic(7), {}},
                              {Topic(8), {}},
@@ -2391,12 +2599,12 @@ TEST_F(BrowsingTopicsServiceImplTest, BlockTopicWithFinch) {
       /*next_scheduled_calculation_time=*/start_time + kOneTestDay);
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
-                                                      {Topic(2), {}},
-                                                      {Topic(3), {}},
-                                                      {Topic(4), {}},
-                                                      {Topic(5), {}}},
-                                                     kTime2));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        kTime2));
 
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -2447,12 +2655,12 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopicBeforeLoadFinish) {
       /*next_scheduled_calculation_time=*/start_time + kOneTestDay);
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
-                                                      {Topic(7), {}},
-                                                      {Topic(8), {}},
-                                                      {Topic(9), {}},
-                                                      {Topic(10), {}}},
-                                                     kTime2));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime2));
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
   privacy_sandbox_settings_->SetTopicAllowed(
@@ -2476,13 +2684,13 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearAllTopicsData) {
   base::Time start_time = base::Time::Now();
 
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
-                                                      {Topic(2), {}},
-                                                      {Topic(3), {}},
-                                                      {Topic(4), {}},
-                                                      {Topic(5), {}}},
-                                                     start_time));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        start_time));
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {}},
                              {Topic(7), {}},
                              {Topic(8), {}},
@@ -2524,14 +2732,14 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearAllTopicsData) {
 
 TEST_F(BrowsingTopicsServiceImplTest, ClearTopicsDataForOrigin) {
   base::queue<EpochTopics> mock_calculator_results;
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("b.com")}},
                              {Topic(2), {GetHashedDomain("b.com")}},
                              {Topic(3), {GetHashedDomain("b.com")}},
                              {Topic(4), {GetHashedDomain("b.com")}},
                              {Topic(5), {GetHashedDomain("b.com")}}},
                             kTime1));
-  mock_calculator_results.push(
+  mock_calculator_results.emplace(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("b.com")}},
                              {Topic(7), {GetHashedDomain("b.com")}},
                              {Topic(8), {GetHashedDomain("b.com")}},

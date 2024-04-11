@@ -50,9 +50,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the browsing topics calculation result status (i.e. success, or the
     failure reason). Topics calculations can typically occur weekly, but can
-    also be manually triggered from the topics-internals page. Recored when a
-    topics calculation completes, or when it's detected to be hanging, or when
-    it's canceled due to data races or browser shutdown.
+    also be manually triggered from the topics-internals page, or can be retries
+    of a previously failed calculation (due to hanging or data race). Recorded
+    when a topics calculation completes, or when it's detected to be hanging, or
+    when it's canceled due to data races or browser shutdown.
   </summary>
 </histogram>
 
@@ -142,6 +143,23 @@ chromium-metrics-reviews@google.com.
     calculation finishes and results from a prior epoch are available. This
     metric is recorded even in case of a calculation failure (e.g. permission
     denied, etc.).
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.TimeoutRetry.CalculatorResultStatus"
+    enum="BrowsingTopicsCalculatorResultStatus" expires_after="2024-10-06">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the browsing topics calculation result status (i.e. success, or the
+    failure reason), for those that are triggered due to the previous
+    calculation timed out. Topics calculations can typically occur weekly, but
+    can also be manually triggered from the topics-internals page, or can be
+    retries of a previously failed calculation (due to hanging or data race).
+    Recorded when the timeout-retried topics calculation completes, or when it's
+    detected to be hanging (again), or when it's canceled due to data races or
+    browser shutdown.
   </summary>
 </histogram>
 
@@ -286,7 +304,7 @@ chromium-metrics-reviews@google.com.
   <owner>jkarlin@chromium.org</owner>
   <summary>
     Records initialization status of BrowsingTopics SiteDataStorage database.
-    Recored when the database is lazily initialised when the first operation is
+    Recorded when the database is lazily initialised when the first operation is
     encountered.
   </summary>
 </histogram>

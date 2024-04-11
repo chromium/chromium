@@ -38,6 +38,13 @@ bool ShouldUseRandomTopic(uint64_t random_or_top_topic_decision_hash) {
 EpochTopics::EpochTopics(base::Time calculation_time)
     : calculation_time_(calculation_time) {}
 
+EpochTopics::EpochTopics(base::Time calculation_time,
+                         CalculatorResultStatus calculator_result_status)
+    : calculation_time_(calculation_time),
+      calculator_result_status_(calculator_result_status) {
+  CHECK_NE(calculator_result_status, CalculatorResultStatus::kSuccess);
+}
+
 EpochTopics::EpochTopics(
     std::vector<TopicAndDomains> top_topics_and_observing_domains,
     size_t padded_top_topics_start_index,
@@ -53,8 +60,8 @@ EpochTopics::EpochTopics(
       taxonomy_version_(taxonomy_version),
       model_version_(model_version),
       calculation_time_(calculation_time),
-      from_manually_triggered_calculation_(
-          from_manually_triggered_calculation) {
+      from_manually_triggered_calculation_(from_manually_triggered_calculation),
+      calculator_result_status_(CalculatorResultStatus::kSuccess) {
   DCHECK_EQ(base::checked_cast<int>(top_topics_and_observing_domains_.size()),
             blink::features::kBrowsingTopicsNumberOfTopTopicsPerEpoch.Get());
   DCHECK_LE(padded_top_topics_start_index,

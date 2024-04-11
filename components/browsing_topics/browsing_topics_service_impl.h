@@ -79,6 +79,7 @@ class BrowsingTopicsServiceImpl
       Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
       bool is_manually_triggered,
+      bool is_timeout_retry,
       base::Time session_start_time,
       BrowsingTopicsCalculator::CalculateCompletedCallback callback);
 
@@ -123,13 +124,17 @@ class BrowsingTopicsServiceImpl
       std::unique_ptr<Annotator> annotator,
       TopicAccessedCallback topic_accessed_callback);
 
-  void ScheduleBrowsingTopicsCalculation(base::TimeDelta delay);
+  void ScheduleBrowsingTopicsCalculation(bool is_manually_triggered,
+                                         bool is_timeout_retry,
+                                         base::TimeDelta delay);
 
   // Initialize `topics_calculator_` to start calculating this epoch's top
   // topics and context observed topics. Set `is_manually_triggered`  to true if
   // this calculation was triggered via the topics-internals page rather than
-  // the regular schedule.
-  void CalculateBrowsingTopics(bool is_manually_triggered);
+  // the regular schedule. Set `is_timeout_retry` to true if this calculation is
+  // a retry after a previous hanging calculation.
+  void CalculateBrowsingTopics(bool is_manually_triggered,
+                               bool is_timeout_retry);
 
   // Set `browsing_topics_state_loaded_` to true. Start scheduling the topics
   // calculation.

@@ -253,6 +253,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kBrowsingTopicsDisabledTopicsList;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kBrowsingTopicsPrioritizedTopicsList;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kBrowsingTopicsFirstTimeoutRetryDelay;
 constexpr int kBrowsingTopicsTaxonomyVersionDefault = 2;
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

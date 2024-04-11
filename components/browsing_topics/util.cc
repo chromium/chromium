@@ -51,6 +51,13 @@ browsing_topics::HmacKey& GetHmacKeyOverrideForTesting() {
 
 }  // namespace
 
+bool DoesCalculationFailDueToHanging(CalculatorResultStatus status) {
+  return status == CalculatorResultStatus::kHangingAfterApiUsageRequested ||
+         status == CalculatorResultStatus::kHangingAfterHistoryRequested ||
+         status == CalculatorResultStatus::kHangingAfterModelRequested ||
+         status == CalculatorResultStatus::kHangingAfterAnnotationRequested;
+}
+
 HmacKey GenerateRandomHmacKey() {
   if (g_hmac_key_overridden)
     return GetHmacKeyOverrideForTesting();

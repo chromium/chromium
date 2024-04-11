@@ -337,6 +337,7 @@ TEST_F(EpochTopicsTest, EmptyEpochTopics_ToAndFromDictValue) {
   EXPECT_EQ(read_epoch_topics.taxonomy_version(), 0);
   EXPECT_EQ(read_epoch_topics.model_version(), 0);
   EXPECT_EQ(read_epoch_topics.calculation_time(), kCalculationTime);
+  EXPECT_FALSE(read_epoch_topics.calculator_result_status());
 
   CandidateTopic candidate_topic = epoch_topics.CandidateTopicForSite(
       /*top_domain=*/"foo.com", HashedDomain(1), kTestKey);
@@ -361,10 +362,33 @@ TEST_F(EpochTopicsTest, PopulatedEpochTopics_ToAndFromValue) {
   EXPECT_TRUE(epoch_topics.from_manually_triggered_calculation());
   EXPECT_FALSE(read_epoch_topics.from_manually_triggered_calculation());
 
+  // The kSuccess `calculator_result_status` should persist after being written.
+  EXPECT_EQ(epoch_topics.calculator_result_status(),
+            CalculatorResultStatus::kSuccess);
+  EXPECT_EQ(read_epoch_topics.calculator_result_status(),
+            CalculatorResultStatus::kSuccess);
+
   CandidateTopic candidate_topic = epoch_topics.CandidateTopicForSite(
       /*top_domain=*/"foo.com", HashedDomain(1), kTestKey);
 
   EXPECT_EQ(candidate_topic.topic(), Topic(2));
+}
+
+TEST_F(EpochTopicsTest,
+       EmptyEpochTopicsWithCalculatorResultStatus_ToAndFromDictValue) {
+  EpochTopics epoch_topics(
+      kCalculationTime,
+      CalculatorResultStatus::kFailureAnnotationExecutionError);
+
+  base::Value::Dict dict_value = epoch_topics.ToDictValue();
+  EpochTopics read_epoch_topics = EpochTopics::FromDictValue(dict_value);
+
+  EXPECT_TRUE(read_epoch_topics.empty());
+
+  // The failure `calculator_result_status` should persist after being written.
+  EXPECT_EQ(epoch_topics.calculator_result_status(),
+            CalculatorResultStatus::kFailureAnnotationExecutionError);
+  EXPECT_FALSE(read_epoch_topics.calculator_result_status());
 }
 
 }  // namespace browsing_topics

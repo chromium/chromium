@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/browsing_topics/annotator.h"
 #include "components/browsing_topics/common/semantic_tree.h"
+#include "components/browsing_topics/util.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -67,20 +68,24 @@ base::Time DeriveApiUsageContextDataStartTime(
 }
 
 void RecordCalculatorResultMetrics(
-    const BrowsingTopicsCalculator::CalculatorResultStatus& status,
     const EpochTopics& epoch_topics,
-    base::TimeDelta calculation_start_time_since_session_start) {
-  base::UmaHistogramEnumeration(
-      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus2", status);
+    base::TimeDelta calculation_start_time_since_session_start,
+    bool is_timeout_retry) {
+  const std::optional<CalculatorResultStatus>& status =
+      epoch_topics.calculator_result_status();
+  CHECK(status);
 
-  if (status == BrowsingTopicsCalculator::CalculatorResultStatus::
-                    kHangingAfterApiUsageRequested ||
-      status == BrowsingTopicsCalculator::CalculatorResultStatus::
-                    kHangingAfterHistoryRequested ||
-      status == BrowsingTopicsCalculator::CalculatorResultStatus::
-                    kHangingAfterModelRequested ||
-      status == BrowsingTopicsCalculator::CalculatorResultStatus::
-                    kHangingAfterAnnotationRequested) {
+  base::UmaHistogramEnumeration(
+      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus2", *status);
+
+  if (is_timeout_retry) {
+    base::UmaHistogramEnumeration(
+        "BrowsingTopics.EpochTopicsCalculation.TimeoutRetry."
+        "CalculatorResultStatus",
+        *status);
+  }
+
+  if (DoesCalculationFailDueToHanging(*status)) {
     base::UmaHistogramExactLinear(
         "BrowsingTopics.EpochTopicsCalculation.Hanging.DaysSinceSessionStart",
         calculation_start_time_since_session_start.InDays(),
@@ -96,7 +101,7 @@ void RecordCalculatorResultMetrics(
   ukm::builders::BrowsingTopics_EpochTopicsCalculationResult builder(
       ukm::NoURLSourceId());
 
-  if (status == BrowsingTopicsCalculator::CalculatorResultStatus::kSuccess) {
+  if (*status == CalculatorResultStatus::kSuccess) {
     const std::vector<TopicAndDomains>& topics =
         epoch_topics.top_topics_and_observing_domains();
 
@@ -205,6 +210,7 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
     Annotator* annotator,
     const base::circular_deque<EpochTopics>& epochs,
     bool is_manually_triggered,
+    bool is_timeout_retry,
     base::Time session_start_time,
     CalculateCompletedCallback callback)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
@@ -214,6 +220,7 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
       calculate_completed_callback_(std::move(callback)),
       calculation_time_(base::Time::Now()),
       is_manually_triggered_(is_manually_triggered),
+      is_timeout_retry_(is_timeout_retry),
       session_start_time_(session_start_time) {
   base::UmaHistogramExactLinear(
       "BrowsingTopics.EpochTopicsCalculation.Started.DaysSinceSessionStart",
@@ -233,24 +240,23 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
       FROM_HERE, base::BindOnce(&BrowsingTopicsCalculator::CheckCanCalculate,
                                 weak_ptr_factory_.GetWeakPtr()));
 
-  hanging_metrics_recorder_timer_.Start(
-      FROM_HERE, base::Seconds(30),
-      base::BindOnce(&BrowsingTopicsCalculator::RecordHangingMetrics,
-                     weak_ptr_factory_.GetWeakPtr()));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BrowsingTopicsCalculator::OnCalculationHanging,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Seconds(30));
 }
 
 BrowsingTopicsCalculator::~BrowsingTopicsCalculator() {
-  // If the calculation completed, and/or if the hanging metrics were already
-  // recorded at the hanging detection timeout, then don't record the metrics
-  // about termination.
-  if (!hanging_metrics_recorder_timer_.IsRunning() ||
-      progress_ == Progress::kCompleted) {
+  // If the calculation has completed, then don't record the metrics about
+  // termination.
+  if (progress_ == Progress::kCompleted) {
     return;
   }
 
-  RecordCalculatorResultMetrics(CalculatorResultStatus::kTerminated,
-                                EpochTopics(calculation_time_),
-                                calculation_time_ - session_start_time_);
+  RecordCalculatorResultMetrics(
+      EpochTopics(calculation_time_, CalculatorResultStatus::kTerminated),
+      calculation_time_ - session_start_time_, is_timeout_retry_);
 }
 
 uint64_t BrowsingTopicsCalculator::GenerateRandUint64() {
@@ -339,8 +345,8 @@ void BrowsingTopicsCalculator::CheckCanCalculate() {
   CHECK_EQ(progress_, Progress::kStarted);
 
   if (!privacy_sandbox_settings_->IsTopicsAllowed()) {
-    OnCalculateCompleted(CalculatorResultStatus::kFailurePermissionDenied,
-                         EpochTopics(calculation_time_));
+    OnCalculateCompleted(EpochTopics(
+        calculation_time_, CalculatorResultStatus::kFailurePermissionDenied));
     return;
   }
 
@@ -365,8 +371,8 @@ void BrowsingTopicsCalculator::OnGetRecentBrowsingTopicsApiUsagesCompleted(
 
   if (!result.success) {
     OnCalculateCompleted(
-        CalculatorResultStatus::kFailureApiUsageContextQueryError,
-        EpochTopics(calculation_time_));
+        EpochTopics(calculation_time_,
+                    CalculatorResultStatus::kFailureApiUsageContextQueryError));
     return;
   }
 
@@ -465,17 +471,17 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
 
   if (!model_info) {
     OnCalculateCompleted(
-        CalculatorResultStatus::kFailureAnnotationExecutionError,
-        EpochTopics(calculation_time_));
+        EpochTopics(calculation_time_,
+                    CalculatorResultStatus::kFailureAnnotationExecutionError));
     return;
   }
 
   SemanticTree semantic_tree;
   if (!semantic_tree.IsTaxonomySupported(
           blink::features::kBrowsingTopicsTaxonomyVersion.Get())) {
-    OnCalculateCompleted(
-        CalculatorResultStatus::kFailureTaxonomyVersionNotSupportedInBinary,
-        EpochTopics(calculation_time_));
+    OnCalculateCompleted(EpochTopics(
+        calculation_time_,
+        CalculatorResultStatus::kFailureTaxonomyVersionNotSupportedInBinary));
     return;
   }
 
@@ -539,7 +545,6 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
   }
 
   OnCalculateCompleted(
-      CalculatorResultStatus::kSuccess,
       EpochTopics(std::move(top_topics_and_observing_domains),
                   padded_top_topics_start_index, CurrentConfigVersion(),
                   blink::features::kBrowsingTopicsTaxonomyVersion.Get(),
@@ -547,35 +552,33 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
 }
 
 void BrowsingTopicsCalculator::OnCalculateCompleted(
-    CalculatorResultStatus status,
     EpochTopics epoch_topics) {
   progress_ = Progress::kCompleted;
 
-  DCHECK(status != CalculatorResultStatus::kSuccess || !epoch_topics.empty());
+  const std::optional<CalculatorResultStatus>& status =
+      epoch_topics.calculator_result_status();
+  CHECK(status);
 
-  // We allow the calculation to complete normally if the completion occurs
-  // after the hanging detection timeout. But in that case, we only record the
-  // hanging metrics and skip the regular success/failure metrics.
-  if (hanging_metrics_recorder_timer_.IsRunning()) {
-    RecordCalculatorResultMetrics(status, epoch_topics,
-                                  calculation_time_ - session_start_time_);
-  }
+  DCHECK(*status != CalculatorResultStatus::kSuccess || !epoch_topics.empty());
+
+  RecordCalculatorResultMetrics(
+      epoch_topics, calculation_time_ - session_start_time_, is_timeout_retry_);
 
   std::move(calculate_completed_callback_).Run(std::move(epoch_topics));
 
   // Do not add code after this. BrowsingTopicsCalculator has been destroyed.
 }
 
-void BrowsingTopicsCalculator::RecordHangingMetrics() {
-  // Because `RecordHangingMetrics` was posted later and given a higher delay,
+void BrowsingTopicsCalculator::OnCalculationHanging() {
+  // Because `OnCalculationHanging` was posted later and given a higher delay,
   // it must occur after `CheckCanCalculate`. And because `CheckCanCalculate`
   // updates `progress_` from `kStarted` to `kApiUsageRequested`, by the time
-  // `RecordHangingMetrics` runs, `progress_` should never be `kStarted`.
+  // `OnCalculationHanging` runs, `progress_` should never be `kStarted`.
   CHECK_NE(progress_, Progress::kStarted);
 
   // When the calculation completes, it updates `progress_` to `kCompleted` and
   // triggers the destruction of `this`. Thus, by the time
-  // `RecordHangingMetrics` runs, `progress_` should never be `kCompleted`.
+  // `OnCalculationHanging` runs, `progress_` should never be `kCompleted`.
   CHECK_NE(progress_, Progress::kCompleted);
 
   CalculatorResultStatus status;
@@ -596,8 +599,7 @@ void BrowsingTopicsCalculator::RecordHangingMetrics() {
       NOTREACHED_NORETURN();
   }
 
-  RecordCalculatorResultMetrics(status, EpochTopics(calculation_time_),
-                                calculation_time_ - session_start_time_);
+  OnCalculateCompleted(EpochTopics(calculation_time_, status));
 }
 
 }  // namespace browsing_topics
