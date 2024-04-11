@@ -15,6 +15,8 @@ import java.util.List;
 
 /** This class provides Android PackageManager related utility methods. */
 public class PackageManagerUtils {
+    public static final String XR_IMMERSIVE_FEATURE_NAME = "android.software.xr.immersive";
+
     private static final String TAG = "PackageManagerUtils";
 
     // This is the intent Android uses internally to detect browser apps.
@@ -82,6 +84,12 @@ public class PackageManagerUtils {
      */
     public static boolean canResolveActivity(Intent intent) {
         return canResolveActivity(intent, 0);
+    }
+
+    /** Check if the system has the given system feature available. */
+    public static boolean hasSystemFeature(String feature) {
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
+        return pm.hasSystemFeature(feature);
     }
 
     /**

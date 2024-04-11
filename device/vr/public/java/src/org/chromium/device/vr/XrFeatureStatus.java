@@ -7,12 +7,13 @@ package org.chromium.device.vr;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-/** A wrapper */
+import org.chromium.base.PackageManagerUtils;
+
+/** A wrapper to allow querying feature status that depends on java state from native. */
 @JNINamespace("device")
 public class XrFeatureStatus {
     @CalledByNative
     public static boolean hasImmersiveFeature() {
-        // TODO(https://crbug.com/333511556): Implement this.
-        return false;
+        return PackageManagerUtils.hasSystemFeature(PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME);
     }
 }
