@@ -64,6 +64,7 @@
 #include "ui/views/window/client_view.h"
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
 #endif
 
@@ -1077,7 +1078,8 @@ class BrowserView : public BrowserWindow,
   // safe-browsing's realtime to `watermark_view_`.
   void ApplyDataProtectionSettings(
       base::WeakPtr<content::WebContents> expected_web_contents,
-      const std::string& watermark_text);
+      const enterprise_data_protection::UrlSettings& settings);
+  void ApplyWatermarkSettings(const std::string& watermark_text);
 
   // Applies data protection settings if there are any to apply, otherwise
   // delay clearing the data protection settings until the page loads.
@@ -1091,7 +1093,7 @@ class BrowserView : public BrowserWindow,
   // `DocumentOnLoadCompletedInPrimaryMainFrame()`.
   void DelayApplyDataProtectionSettingsIfEmpty(
       base::WeakPtr<content::WebContents> expected_web_contents,
-      const std::string& watermark_text);
+      const enterprise_data_protection::UrlSettings& settings);
 
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame, DanglingUntriaged> frame_ = nullptr;

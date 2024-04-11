@@ -41,6 +41,10 @@ const char* kSkippedUrls[] = {
     "chrome-extension://abcdefghijklmnop",
 };
 
+content::Page& GetPageFromWebContents(content::WebContents* web_contents) {
+  return web_contents->GetPrimaryMainFrame()->GetPage();
+}
+
 safe_browsing::RTLookupResponse::ThreatInfo GetTestThreatInfo(
     std::string watermark_text,
     int64_t timestamp_seconds) {
@@ -84,21 +88,33 @@ class FakeRealTimeUrlLookupService
 
     callback_task_runner->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(response_callback),
-                       /*is_rt_lookup_successful=*/true,
-                       /*is_cached_response=*/true, std::move(response)));
-
-    if (!on_start_lookup_complete_.is_null()) {
-      std::move(on_start_lookup_complete_).Run();
-    }
+        base::BindOnce(
+            [](safe_browsing::RTLookupResponseCallback response_callback,
+               base::OnceClosure on_start_lookup_complete,
+               bool is_rt_lookup_successful,
+               std::unique_ptr<safe_browsing::RTLookupResponse> response) {
+              std::move(response_callback)
+                  .Run(is_rt_lookup_successful,
+                       /*is_cached_response=*/false, std::move(response));
+              if (!on_start_lookup_complete.is_null()) {
+                std::move(on_start_lookup_complete).Run();
+              }
+            },
+            std::move(response_callback), std::move(on_start_lookup_complete_),
+            is_rt_lookup_successful_, std::move(response)));
   }
 
   void set_on_start_lookup_complete(base::OnceClosure closure) {
     on_start_lookup_complete_ = std::move(closure);
   }
 
+  void set_is_rt_lookup_successful(bool successful) {
+    is_rt_lookup_successful_ = successful;
+  }
+
  private:
   base::OnceClosure on_start_lookup_complete_;
+  bool is_rt_lookup_successful_ = true;
 };
 
 class DataProtectionNavigationObserverTest
@@ -154,6 +170,7 @@ class DataProtectionNavigationObserverTest
   }
 
   void TearDown() override {
+    DataProtectionNavigationObserver::SetLookupServiceForTesting(nullptr);
     SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         profile())
@@ -193,7 +210,7 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   simulator->Start();
   content::NavigationHandle* navigation_handle =
       simulator->GetNavigationHandle();
-  base::test::TestFuture<const std::string&> future;
+  base::test::TestFuture<const UrlSettings&> future;
 
   base::test::TestFuture<void> future_lookup_complete;
   lookup_service_.set_on_start_lookup_complete(
@@ -212,7 +229,7 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   // Call DidFinishNavigation() navigation, which should invoke our callback.
   simulator->Commit();
 
-  std::string watermark_text = future.Get();
+  std::string watermark_text = future.Get().watermark_text;
   Profile* profile = Profile::FromBrowserContext(browser_context());
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
@@ -221,6 +238,52 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
             "custom_message\n" +
                 connectors_service->GetRealTimeUrlCheckIdentifier() +
                 "\n2024-02-29T04:36:04.000Z");
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_NE(user_data->settings().watermark_text.find("custom_message"),
+            std::string::npos);
+}
+
+// An invalid watermark response generates no report.
+TEST_F(DataProtectionNavigationObserverTest, InvalidResponse_NoReport) {
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://test"), web_contents()->GetPrimaryMainFrame());
+
+  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
+  // this is called by BrowserView. So we simply call Start() and manually
+  // construct the class using the navigation handle that is provided once
+  // Start() is called.
+  simulator->Start();
+  content::NavigationHandle* navigation_handle =
+      simulator->GetNavigationHandle();
+  base::test::TestFuture<const UrlSettings&> future;
+
+  base::test::TestFuture<void> future_lookup_complete;
+  lookup_service_.set_is_rt_lookup_successful(false);
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+
+  // The DataProtectionNavigationObserver needs to be constructed using
+  // CreateForNavigationHandle to allow for proper lifetime management of the
+  // object, since we call DeleteForNavigationHandle() in our
+  // DidFinishNavigation() override.
+  enterprise_data_protection::DataProtectionNavigationObserver::
+      CreateForNavigationHandle(*navigation_handle, &lookup_service_,
+                                navigation_handle->GetWebContents(),
+                                future.GetCallback());
+  EXPECT_TRUE(future_lookup_complete.Wait());
+
+  // Call DidFinishNavigation() navigation, which should invoke our callback.
+  simulator->Commit();
+
+  std::string watermark_text = future.Get().watermark_text;
+  EXPECT_TRUE(watermark_text.empty());
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
@@ -234,11 +297,11 @@ TEST_F(DataProtectionNavigationObserverTest,
     content::NavigationHandle* navigation_handle =
         simulator->GetNavigationHandle();
 
-    base::test::TestFuture<const std::string&> future;
+    base::test::TestFuture<const UrlSettings&> future;
     DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
         Profile::FromBrowserContext(browser_context()), navigation_handle,
         future.GetCallback());
-    ASSERT_EQ(future.Get(), std::string());
+    ASSERT_EQ(future.Get(), UrlSettings());
   }
 }
 
@@ -248,12 +311,36 @@ TEST_F(DataProtectionNavigationObserverTest,
 
   for (const auto* url : kSkippedUrls) {
     NavigateAndCommit(GURL(url));
-    base::test::TestFuture<const std::string&> future;
+    base::test::TestFuture<const UrlSettings&> future;
     DataProtectionNavigationObserver::GetDataProtectionSettings(
         Profile::FromBrowserContext(browser_context()), web_contents(),
         future.GetCallback());
-    ASSERT_EQ(future.Get(), std::string());
+    ASSERT_EQ(future.Get(), UrlSettings());
   }
+}
+
+TEST_F(DataProtectionNavigationObserverTest, GetDataProtectionSettings) {
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+  DataProtectionNavigationObserver::SetLookupServiceForTesting(
+      &lookup_service_);
+
+  SetContents(CreateTestWebContents());
+  NavigateAndCommit(GURL("https://example.com"));
+
+  base::test::TestFuture<const UrlSettings&> future;
+  DataProtectionNavigationObserver::GetDataProtectionSettings(
+      Profile::FromBrowserContext(browser_context()), web_contents(),
+      future.GetCallback());
+  EXPECT_NE(future.Get().watermark_text.find("custom_message"),
+            std::string::npos);
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_NE(user_data->settings().watermark_text.find("custom_message"),
+            std::string::npos);
 }
 
 namespace {

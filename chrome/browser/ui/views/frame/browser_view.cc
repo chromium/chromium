@@ -342,11 +342,6 @@
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
-
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
 using content::WebContents;
@@ -2775,7 +2770,7 @@ void BrowserView::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // regardless of the order in which they execute.
 
   if (watermark_view_ && clear_watermark_text_on_page_load_) {
-    ApplyDataProtectionSettings(web_contents()->GetWeakPtr(), std::string());
+    ApplyWatermarkSettings(std::string());
   }
 }
 
@@ -5512,15 +5507,19 @@ void BrowserView::UpdateFullscreenAllowedFromPolicy(
 
 void BrowserView::ApplyDataProtectionSettings(
     base::WeakPtr<content::WebContents> expected_web_contents,
-    const std::string& watermark_text) {
+    const enterprise_data_protection::UrlSettings& settings) {
   // Since retrieving data protections is async, make sure that the view is
   // still on the right tab before applying the settings.
   if (!expected_web_contents || web_contents() != expected_web_contents.get()) {
     return;
   }
 
+  ApplyWatermarkSettings(settings.watermark_text);
+}
+
+void BrowserView::ApplyWatermarkSettings(const std::string& watermark_text) {
   if (watermark_view_) {
-    watermark_view_->SetString(std::move(watermark_text));
+    watermark_view_->SetString(watermark_text);
   }
 
   // Watermark string should not be changed once the page loads.
@@ -5529,15 +5528,15 @@ void BrowserView::ApplyDataProtectionSettings(
 
 void BrowserView::DelayApplyDataProtectionSettingsIfEmpty(
     base::WeakPtr<content::WebContents> expected_web_contents,
-    const std::string& watermark_text) {
+    const enterprise_data_protection::UrlSettings& settings) {
   // Since retrieving data protections is async, make sure that the view is
   // still on the right tab before applying the settings.
   if (!expected_web_contents || web_contents() != expected_web_contents.get()) {
     return;
   }
 
-  if (!watermark_text.empty()) {
-    ApplyDataProtectionSettings(expected_web_contents, watermark_text);
+  if (!settings.watermark_text.empty()) {
+    ApplyDataProtectionSettings(expected_web_contents, settings);
   } else {
     // The watermark string should be cleared.  Delay that until the page
     // finishes loading.

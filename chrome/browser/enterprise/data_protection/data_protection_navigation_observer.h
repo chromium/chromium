@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -40,7 +41,7 @@ class DataProtectionNavigationObserver
   // Callback that is meant to update data protection settings. For now,
   // it is only accepts a std::string parameter for the watermark string.
   // change this when adding new data protection settings.
-  using Callback = base::OnceCallback<void(const std::string&)>;
+  using Callback = base::OnceCallback<void(const UrlSettings&)>;
 
   // Log values for source of realtime URL lookup verdict. This is used to log
   // metrics as DataProtectionURLVerdictSource, so numeric values must not be
@@ -96,13 +97,15 @@ class DataProtectionNavigationObserver
 
   ~DataProtectionNavigationObserver() override;
 
+  static void SetLookupServiceForTesting(
+      safe_browsing::RealTimeUrlLookupServiceBase* lookup_service);
+
  private:
   friend class content::NavigationHandleUserData<
       DataProtectionNavigationObserver>;
 
   void OnLookupComplete(
-      std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response,
-      const std::string& watermark_text);
+      std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response);
 
   // content::WebContentsObserver:
   void DidRedirectNavigation(
@@ -111,11 +114,6 @@ class DataProtectionNavigationObserver
       content::NavigationHandle* navigation_handle) override;
 
   bool is_from_cache_ = false;
-
-  // The full watermark string to show over the page. Empty if no watermark
-  // verdict has been obtained.
-  // TODO: Remove this value as it is redundant with `rt_lookup_response_`.
-  std::optional<std::string> watermark_text_;
 
   // The verdict corresponding to `watermark_text_` if it is populated. Used for
   // reporting.
@@ -133,12 +131,6 @@ class DataProtectionNavigationObserver
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
-
-// Return the watermark string to display if present in `threat_info`. Revealed
-// for testing
-std::string GetWatermarkString(
-    const std::string& identifier,
-    const safe_browsing::RTLookupResponse::ThreatInfo& threat_info);
 
 }  // namespace enterprise_data_protection
 
