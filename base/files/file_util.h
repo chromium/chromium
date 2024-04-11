@@ -525,6 +525,15 @@ BASE_EXPORT bool CreateWinHardLink(const FilePath& to_file,
 #endif
 
 // This function will return if the given file is a symlink or not.
+//
+// IMPORTANT NOTE: This method is subject to race conditions, meaning its
+// results might not always accurately reflect the current state of the file
+// system by the time they are used. Specifically, the link target could change
+// between the time of this check and subsequent operations, leading to
+// potential inconsistencies. Therefore, this method should only be used by
+// callers that need to know nothing more than whether or not a given directory
+// entry is a symlink. When the path to the target is required, callers should
+// instead use `base::ReadSymbolicLink()` or `base::ReadSymbolicLinkAbsolute()`.
 BASE_EXPORT bool IsLink(const FilePath& file_path);
 
 // Returns information about the given file path. Also see |File::GetInfo|.

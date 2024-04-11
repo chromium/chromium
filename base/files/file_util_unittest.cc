@@ -114,7 +114,39 @@ FilePath MakeShortFilePath(const FilePath& input) {
 
   return FilePath(path_short_str);
 }
+
+bool CreateWinSymbolicLink(const FilePath& target, const FilePath& symlink) {
+  // Determine whether the target is a directory. This is necessary because
+  // creating a symbolic link requires different flags depending on the type
+  // of the target (file vs. directory).
+  DWORD attrs = GetFileAttributes(target.value().c_str());
+  if (attrs == INVALID_FILE_ATTRIBUTES) {
+    // Unable to retrieve attributes for the target. It might not exist, or
+    // there may be a permissions issue. Either way, we cannot proceed.
+    return false;
+  }
+
+  DWORD flags =
+      attrs & FILE_ATTRIBUTE_DIRECTORY ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0;
+
+  return ::CreateSymbolicLink(
+      symlink.value().c_str(), target.value().c_str(),
+      flags | SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE);
+}
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
+
+bool CreateSymbolicLinkForTesting(const FilePath& target,
+                                  const FilePath& symlink) {
+#if BUILDFLAG(IS_WIN)
+  return CreateWinSymbolicLink(target, symlink);
+#else
+  return CreateSymbolicLink(target, symlink);
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_MAC)
 // Provide a simple way to change the permissions bits on |path| in tests.
@@ -388,6 +420,88 @@ TEST_F(FileUtilTest, NormalizeFilePathBasic) {
   ASSERT_TRUE(normalized_file_a_path.DirName()
       .IsParent(normalized_file_b_path.DirName()));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
+
+TEST_F(FileUtilTest, IsLinkCreateWinSymbolicLinkOnFile) {
+  FilePath target_file_path;
+  ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir_.GetPath(), &target_file_path));
+  EXPECT_FALSE(IsLink(target_file_path));
+
+  base::FilePath symlink_path =
+      temp_dir_.GetPath().Append(FPL("symlink_to_target"));
+
+  ASSERT_TRUE(CreateSymbolicLinkForTesting(target_file_path, symlink_path));
+  EXPECT_TRUE(IsLink(symlink_path));
+}
+
+TEST_F(FileUtilTest, IsLinkCreateWinSymbolicLinkOnDirectory) {
+  FilePath target_path = temp_dir_.GetPath().Append(FPL("target"));
+  ASSERT_TRUE(CreateDirectory(target_path));
+  EXPECT_FALSE(IsLink(target_path));
+
+  base::FilePath symlink_path =
+      temp_dir_.GetPath().Append(FPL("symlink_to_target"));
+
+  ASSERT_TRUE(CreateSymbolicLinkForTesting(target_path, symlink_path));
+  EXPECT_TRUE(IsLink(symlink_path));
+}
+
+TEST_F(FileUtilTest, IsLinkMissingFile) {
+  EXPECT_FALSE(IsLink(FilePath()));
+}
+
+TEST_F(FileUtilTest, IsLinkWithDeletedTargetFile) {
+  // Set up a symlink pointing to a temporary file.
+  FilePath target_file_path;
+  ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir_.GetPath(), &target_file_path));
+  FilePath symlink_path =
+      temp_dir_.GetPath().Append(FPL("symlink_to_missing_target"));
+  ASSERT_TRUE(CreateSymbolicLinkForTesting(target_file_path, symlink_path));
+
+  // Verify that the symlink is recognized correctly.
+  EXPECT_TRUE(IsLink(symlink_path));
+
+  // Delete the target file.
+  ASSERT_TRUE(DeleteFile(target_file_path));
+
+  // Verify that IsLink still returns true for the symlink, even though its
+  // target is missing.
+  EXPECT_TRUE(IsLink(symlink_path));
+}
+
+TEST_F(FileUtilTest, IsLinkWithDeletedTargetDirectory) {
+  // Set up a symlink pointing to a temporary file.
+  FilePath target_path = temp_dir_.GetPath().Append(FPL("target"));
+  ASSERT_TRUE(CreateDirectory(target_path));
+  FilePath symlink_path =
+      temp_dir_.GetPath().Append(FPL("symlink_to_missing_target"));
+  ASSERT_TRUE(CreateSymbolicLinkForTesting(target_path, symlink_path));
+
+  // Verify that the symlink is recognized correctly.
+  EXPECT_TRUE(IsLink(symlink_path));
+
+  // Delete the target file.
+  ASSERT_TRUE(DeleteFile(target_path));
+
+  // Verify that IsLink still returns true for the symlink, even though its
+  // target is missing.
+  EXPECT_TRUE(IsLink(symlink_path));
+}
+
+TEST_F(FileUtilTest, IsLinkWihtoutReparsePointAttributeOnDirectory) {
+  FilePath target_path = temp_dir_.GetPath().Append(FPL("target"));
+  ASSERT_TRUE(CreateDirectory(target_path));
+  EXPECT_FALSE(IsLink(target_path));
+}
+
+TEST_F(FileUtilTest, IsLinkWihtoutReparsePointAttributeOnFile) {
+  FilePath target_file_path;
+  ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir_.GetPath(), &target_file_path));
+  EXPECT_FALSE(IsLink(target_file_path));
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_WIN)
 
