@@ -1531,12 +1531,14 @@ void SplitViewController::OnKeyboardOccludedBoundsChanged(
 
   // Get current active input field.
   auto* text_input_client = GetCurrentInputMethod()->GetTextInputClient();
-  if (!text_input_client)
+  if (!text_input_client) {
     return;
+  }
 
   const gfx::Rect caret_bounds = text_input_client->GetCaretBounds();
-  if (caret_bounds == gfx::Rect())
+  if (caret_bounds == gfx::Rect()) {
     return;
+  }
 
   // Move the bottom window if the caret is less than `kMinCaretKeyboardDist`
   // dip above the upper bounds of the virtual keyboard.
@@ -1557,8 +1559,6 @@ void SplitViewController::OnKeyboardOccludedBoundsChanged(
   bottom_bounds.set_y(y);
   bottom_bounds.set_height(keyboard_occluded_y - y);
 
-  int divider_position = y - kSplitviewDividerShortSideLength;
-
   // Set bottom window bounds.
   {
     base::AutoReset<bool> enable_bounds_change(&changing_bounds_by_vk_, true);
@@ -1567,15 +1567,7 @@ void SplitViewController::OnKeyboardOccludedBoundsChanged(
         display::Screen::GetScreen()->GetDisplayNearestWindow(root_window_));
   }
 
-  CHECK(split_view_divider_.divider_widget());
-
-  // Set split view divider bounds.
-  split_view_divider_.divider_widget()->SetBounds(
-      SplitViewDivider::GetDividerBoundsInScreen(work_area, /*landscape=*/false,
-                                                 divider_position,
-                                                 /*is_dragging=*/false));
-  // Make split view divider unadjustable.
-  split_view_divider_.SetAdjustable(false);
+  split_view_divider_.OnKeyboardOccludedBoundsChangedInPortrait(work_area, y);
 }
 
 void SplitViewController::OnWindowActivated(ActivationReason reason,

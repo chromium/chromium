@@ -114,6 +114,12 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   void AddObservedWindow(aura::Window* window);
   void RemoveObservedWindow(aura::Window* window);
 
+  // Called by the LayoutDividerController on a keyboard bounds change, where
+  // `work_area` is the total work area and `y` is the vertical position of the
+  // bottom window.
+  void OnKeyboardOccludedBoundsChangedInPortrait(const gfx::Rect& work_area,
+                                                 int y);
+
   // Called when a window tab(s) are being dragged around the workspace. The
   // divider should be placed beneath the dragged window during dragging and be
   // placed above the dragged window when drag is completed.

@@ -330,6 +330,31 @@ void SplitViewDivider::RemoveObservedWindow(aura::Window* window) {
   }
 }
 
+void SplitViewDivider::OnKeyboardOccludedBoundsChangedInPortrait(
+    const gfx::Rect& work_area,
+    int y) {
+  // If the divider widget doesn't exist, i.e. in clamshell split view, we are
+  // done.
+  if (!divider_widget_) {
+    return;
+  }
+
+  CHECK(!IsLayoutHorizontal(GetRootWindow()));
+
+  // Else subtract the divider width and update the widget bounds. Note we
+  // *don't* update `divider_position_` since it may be used to restore the
+  // window bounds in `SplitViewController::OnWindowActivated()`.
+  // TODO(b/331459348): Investigate why we don't update `divider_position_` and
+  // fix this code.
+  const int divider_position = y - kSplitviewDividerShortSideLength;
+  divider_widget_->SetBounds(
+      GetDividerBoundsInScreen(work_area, /*landscape=*/false, divider_position,
+                               /*is_dragging=*/false));
+
+  // Make split view divider unadjustable.
+  SetAdjustable(false);
+}
+
 void SplitViewDivider::OnWindowDragStarted(aura::Window* dragged_window) {
   dragged_window_ = dragged_window;
   RefreshStackingOrder();
