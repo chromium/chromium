@@ -1443,9 +1443,10 @@ RootWindowController::BuildBirchMenuModelAdapter(
 
   return std::make_unique<BirchBarMenuModelAdapter>(
       std::make_unique<BirchBarContextMenuModel>(
-          nullptr, is_birch_bar_showing
-                       ? BirchBarContextMenuModel::Type::kExpandedBarMenu
-                       : BirchBarContextMenuModel::Type::kCollapsedBarMenu),
+          BirchBarController::Get(),
+          is_birch_bar_showing
+              ? BirchBarContextMenuModel::Type::kExpandedBarMenu
+              : BirchBarContextMenuModel::Type::kCollapsedBarMenu),
       wallpaper_widget_controller()->GetWidget(), source_type,
       base::BindOnce(&RootWindowController::OnMenuClosed,
                      base::Unretained(this)),

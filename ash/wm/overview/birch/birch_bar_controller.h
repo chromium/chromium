@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -27,7 +28,8 @@ class BirchItem;
 
 // The controller used to manage the birch bar in every `OverviewGrid`. It will
 // fetch data from `BirchModel` and distribute the data to birch bars.
-class ASH_EXPORT BirchBarController : public BirchModel::Observer {
+class ASH_EXPORT BirchBarController : public BirchModel::Observer,
+                                      public ui::SimpleMenuModel::Delegate {
  public:
   explicit BirchBarController(bool from_pine_service);
   BirchBarController(const BirchBarController&) = delete;
@@ -59,6 +61,9 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer {
 
   // Gets if the user allows the suggestions to show.
   bool GetShowBirchSuggestions() const;
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
 
   BirchBarMenuModelAdapter* chip_menu_model_adapter_for_testing() {
     return chip_menu_model_adapter_.get();
@@ -108,6 +113,11 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer {
 
   // Customize suggestions pref change registrar.
   PrefChangeRegistrar customize_suggestions_pref_registrar_;
+
+  // To avoid sending multiple data requests when reset suggestions, the
+  // variable is used as an indicator to block the data request from
+  // `OnCustomizeSuggestionsPrefChanged`.
+  bool hold_data_request_on_suggestion_pref_change_ = false;
 
   base::ScopedObservation<BirchModel, BirchModel::Observer>
       birch_model_observer_{this};

@@ -65,8 +65,6 @@ BirchBarController::BirchBarController(bool from_pine_service)
   // Init and register the customize suggestion pref changed callback.
   customize_suggestions_pref_registrar_.Init(GetPrefService());
 
-  // If any suggestion source is enabled/disabled, we re-fetch the data and
-  // update the birch bars.
   for (const auto& suggestion_pref :
        {prefs::kBirchUseCalendar, prefs::kBirchUseWeather,
         prefs::kBirchUseFileSuggest, prefs::kBirchUseRecentTabs,
@@ -171,6 +169,31 @@ bool BirchBarController::GetShowBirchSuggestions() const {
       prefs::kBirchShowSuggestions);
 }
 
+void BirchBarController::ExecuteCommand(int command_id, int event_flags) {
+  if (command_id ==
+      base::to_underlying(BirchBarContextMenuModel::CommandId::kReset)) {
+    bool suggestion_pref_changed = false;
+    {
+      // Holding the data fetch requests to avoid sending multiple requests.
+      base::AutoReset<bool> hold_data_request(
+          &hold_data_request_on_suggestion_pref_change_, true);
+      for (const auto& pref_name :
+           {prefs::kBirchUseWeather, prefs::kBirchUseCalendar,
+            prefs::kBirchUseFileSuggest, prefs::kBirchUseRecentTabs}) {
+        auto* pref_service = GetPrefService();
+        suggestion_pref_changed |= !pref_service->GetBoolean(pref_name);
+        pref_service->SetBoolean(pref_name, true);
+      }
+    }
+
+    // If there are suggestion prefs being changed, call suggestion pref changed
+    // callback.
+    if (suggestion_pref_changed) {
+      OnCustomizeSuggestionsPrefChanged();
+    }
+  }
+}
+
 void BirchBarController::MaybeFetchDataFromModel() {
   if (data_fetch_in_progress_) {
     return;
@@ -263,6 +286,10 @@ void BirchBarController::OnShowSuggestionsPrefChanged() {
 }
 
 void BirchBarController::OnCustomizeSuggestionsPrefChanged() {
+  if (hold_data_request_on_suggestion_pref_change_) {
+    return;
+  }
+
   for (auto& bar_view : bar_views_) {
     bar_view->Reloading();
   }

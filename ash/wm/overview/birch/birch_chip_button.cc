@@ -224,12 +224,16 @@ void BirchChipButton::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
+  auto* birch_bar_controller = BirchBarController::Get();
+  CHECK(birch_bar_controller);
+
   switch (command_id) {
     case base::to_underlying(
         BirchBarContextMenuModel::CommandId::kHideSuggestion):
-      if (auto* birch_bar_controller = BirchBarController::Get()) {
         birch_bar_controller->OnItemHiddenByUser(item_);
-      }
+        break;
+    case base::to_underlying(BirchBarContextMenuModel::CommandId::kReset):
+      birch_bar_controller->ExecuteCommand(command_id, event_flags);
       break;
     // TODO(zxdan): handle other commands.
     default:

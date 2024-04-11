@@ -726,6 +726,79 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestions) {
   }
 }
 
+// Tests resetting suggestions from context menu.
+TEST_F(BirchBarMenuTest, ResetSuggestions) {
+  // Create 4 suggestions, one for each customizable suggestion type.
+  SetWeatherItems(/*num=*/1);
+  SetCalendarItems(/*num=*/1);
+  SetFileItems(/*num=*/1);
+  SetTabItems(/*num=*/1);
+
+  // Enter Overview and check a bar view is created.
+  EnterOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+
+  // The birch bars should be shown.
+  EXPECT_TRUE(grid_test_api.birch_bar_view());
+
+  // Cache the chips.
+  const auto& bar_chips = grid_test_api.GetBirchChips();
+
+  // The functor to check if given suggestion types are shown in the bar chips.
+  auto has_suggestion_types =
+      [](const std::vector<BirchItemType>& types,
+         const std::vector<raw_ptr<BirchChipButtonBase>>& chips) -> bool {
+    return base::ranges::all_of(types, [&](BirchItemType type) {
+      return base::ranges::any_of(chips,
+                                  [&](raw_ptr<BirchChipButtonBase> chip) {
+                                    return chip->GetItem()->GetType() == type;
+                                  });
+    });
+  };
+
+  // Disable the calendar and file suggestions such that only weather and tab
+  // suggestions are shown.
+  auto* pref_service = GetPrefService();
+  pref_service->SetBoolean(prefs::kBirchUseCalendar, false);
+  pref_service->SetBoolean(prefs::kBirchUseFileSuggest, false);
+
+  EXPECT_EQ(2u, bar_chips.size());
+  EXPECT_TRUE(has_suggestion_types(
+      {BirchItemType::kWeather, BirchItemType::kTab}, bar_chips));
+
+  auto* root_window_controller = RootWindowController::ForWindow(root_window);
+  // Right clicking on the wallpaper of the first display to show the context
+  // menu.
+  RightClickOn(root_window_controller->wallpaper_widget_controller()
+                   ->GetWidget()
+                   ->GetContentsView());
+
+  auto* model_adapter =
+      root_window_controller->menu_model_adapter_for_testing();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* reset_item = sub_menu->GetMenuItemAt(5);
+  EXPECT_EQ(reset_item->GetCommand(),
+            base::to_underlying(BirchBarContextMenuModel::CommandId::kReset));
+
+  // Clicking on the reset button to enable all suggestions pref and all four
+  // types of suggestion chips should be shown on the bar.
+  LeftClickOn(reset_item);
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseWeather));
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseCalendar));
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseFileSuggest));
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseRecentTabs));
+
+  EXPECT_EQ(4u, bar_chips.size());
+  EXPECT_TRUE(
+      has_suggestion_types({BirchItemType::kWeather, BirchItemType::kCalendar,
+                            BirchItemType::kFile, BirchItemType::kTab},
+                           bar_chips));
+}
+
 // Tests that there is no crash if hiding the suggestions by toggle the switch
 // button in chip's submenu.
 TEST_F(BirchBarMenuTest, NoCrashHideSuggestionsByChipSubmenu) {
