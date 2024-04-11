@@ -4534,7 +4534,6 @@
 <translation id="4403266582403435904">언제든지 간편하게 데이터를 복원하거나 새 기기로 데이터를 이전하세요. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
 <translation id="4403775189117163360">다른 폴더 선택</translation>
 <translation id="4404136731284211429">다시 검색</translation>
-<translation id="4404619268534288383">탭 그룹 저장 및 동기화</translation>
 <translation id="4404843640767531781">부모님이 <ph name="APP_NAME" /> 앱을 차단했습니다. 이 앱을 사용하려면 부모님에게 권한을 요청하세요.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">다음 폴더로 이동…</translation>
@@ -5176,7 +5175,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4899696330053002588">광고 포함</translation>
 <translation id="490031510406860025">이 사이트에서 허용되지 않음</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" />Hz - 인터레이스됨</translation>
-<translation id="490056871160016482">사이트에서 이 기능을 사용하여 사용자 동작과 관계없이 몰입도 높은 전체 화면 환경을 제공합니다.</translation>
 <translation id="4900652253009739885">'선택'에 할당된 스위치가 1개이므로 삭제할 수 없습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="4901154724271753917">최근에 닫은 탭 펼치기</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> 실험의 상태를 선택하세요.</translation>
@@ -5501,7 +5499,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> 차단됨</translation>
 <translation id="5163910114647549394">탭스트립 끝으로 탭을 이동함</translation>
 <translation id="5164530241085602114"><ph name="SITE" />의 알림이 허용되지 않습니다.</translation>
-<translation id="5165989352025966137">전체 화면으로 자동 전환하도록 허용됨</translation>
 <translation id="516747639689914043">하이퍼텍스트 전송 프로토콜(HTTP)</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5171045022955879922">검색 또는 URL 입력</translation>
@@ -5803,7 +5800,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="541737483547792035">화면 확대</translation>
 <translation id="541822678830750798">이 사이트를 읽고 변경할 액세스 권한 요청 중</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">탭 그룹 저장 및 리콜을 사용 설정합니다. 탭 그룹을 마우스 오른쪽 버튼으로 클릭하여 저장합니다. 북마크바에서 그룹을 불러옵니다.</translation>
 <translation id="5420274697768050645">보안 강화를 위해 비밀번호로 기기를 잠금 해제하도록 설정합니다.</translation>
 <translation id="5420438158931847627">텍스트와 이미지의 선명도를 결정합니다.</translation>
 <translation id="5420935737933866496">링크 복사(&amp;L)</translation>
@@ -6200,6 +6196,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5723967018671998714">시크릿 모드에서는 타사 쿠키가 차단됨</translation>
 <translation id="5725112283692663422">AI로 테마 만들기에 관한 의견 보내기</translation>
 <translation id="5727728807527375859">확장 프로그램, 애플리케이션, 테마로 인해 컴퓨터가 손상될 수 있습니다. 계속하시겠습니까?</translation>
+<translation id="5728072125198221967">연결된 Google 서비스</translation>
 <translation id="5728290366864286776">이 확장 프로그램은 사이트 정보를 읽고 변경하거나 백그라운드에서 실행될 수 있습니다.</translation>
 <translation id="5728450728039149624">Smart Lock 화면 잠금 옵션</translation>
 <translation id="572914206753951782">Chromebook이 최신 버전인지 확인하세요. 그런 다음 Chromebook을 다시 시작한 후 다시 시도해 보세요.</translation>
@@ -8184,7 +8181,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" />에서 호스팅하는 이 로그인 서비스는 카메라에 액세스합니다.</translation>
 <translation id="7292067737327289208">조직에서 <ph name="BEGIN_LINK" />브라우저를 관리<ph name="END_LINK" />하고 <ph name="PROFILE_DOMAIN" />에서 <ph name="BEGIN_LINK" />프로필을 관리<ph name="END_LINK" />합니다.</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" />(<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">전체 화면으로 자동 전환하도록 허용되지 않음</translation>
 <translation id="7295614427631867477">Android, Play 및 관련 앱은 각각의 데이터 수집 및 이용 정책을 따릅니다.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> 폴더 선택</translation>
 <translation id="7297726121602187087">진한 녹색</translation>
@@ -9731,7 +9727,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> 후 로그아웃됩니다</translation>
 <translation id="8431190899827883166">탭한 항목 표시</translation>
 <translation id="843173223122814223">AI로 배경 만들기</translation>
-<translation id="8432724317983466962">전체 화면으로 전환하려면 기본적으로 사용자 동작이 필요합니다</translation>
 <translation id="8433186206711564395">네트워크 설정</translation>
 <translation id="8434480141477525001">NaCl 디버그 포트</translation>
 <translation id="8436054240208929121">로그인하고 동기화를 사용 설정하면 Chrome에서 탭 그룹을 추천하고 탭을 깔끔하게 정리할 수 있습니다.</translation>

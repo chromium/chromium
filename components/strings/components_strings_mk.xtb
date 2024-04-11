@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">Ја гледате опоменава бидејќи сајтов не поддржува HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Самолеплива фолија</translation>
 <translation id="1430915738399379752">Печати</translation>
-<translation id="1431021750861456539">Автоматско отворање на цел екран</translation>
 <translation id="1432187715652018471">страница сака да инсталира ракувач на услуги.</translation>
 <translation id="1432581352905426595">Управувајте со пребарувачи</translation>
 <translation id="1433225466058025572">Обидете се да ги преместите датотеките повторно</translation>
@@ -2318,7 +2317,6 @@
     <ph name="LINE_BREAK" />
     Обидете се да го контактирате вашиот системски администратор.</translation>
 <translation id="549333378215107354">Големина 3</translation>
-<translation id="5501712702042287009">автоматско отворање на цел екран</translation>
 <translation id="550365051221576010">Пополнување сѐ</translation>
 <translation id="5508443345185481044">Фотоапарати и видеокамери</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Вклучи</translation>
 <translation id="5862579898803147654">Фиока за складирање 8</translation>
+<translation id="5863515189965725638">Изменете го IBAN</translation>
 <translation id="5863847714970149516">Страницата што ќе се појави може да се обиде да ви наплати пари</translation>
 <translation id="5866257070973731571">Додајте телефонски број</translation>
 <translation id="5866898949289125849">Гледате страница со алатки за програмери</translation>

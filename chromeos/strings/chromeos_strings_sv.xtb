@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">fjärilar</translation>
 <translation id="188114911237521550">Inaktivera mörkt läge</translation>
-<translation id="188268299367474594">Välj bland tillgängliga APN:er</translation>
 <translation id="1885577615937958993">spola framåt i media</translation>
 <translation id="1887850431809612466">Revision av maskinvara</translation>
 <translation id="189221451253258459">neongrön</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Flyttalsprecision</translation>
 <translation id="2448312741937722512">Typ</translation>
-<translation id="2465272316171730950">Vi är fullt upptagna. Kom tillbaka om en stund.</translation>
 <translation id="2472215337771558851">Använd Hjälp mig att skriva för att skapa ett utkast eller finjustera befintligt arbete (med hjälp av Googles AI)</translation>
 <translation id="2480572840229215612">krabbor</translation>
 <translation id="248546197012830854">Enheten är offline. Anslut till ett wifi-nätverk för att se hjälpinnehåll.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">visa fönster</translation>
 <translation id="2513396635448525189">Inloggningsbild</translation>
 <translation id="2517472476991765520">Sök</translation>
-<translation id="2520213071283358374">Använd detta APN</translation>
 <translation id="2521835766824839541">föregående spår</translation>
 <translation id="2526590354069164005">Skrivbord</translation>
 <translation id="253029298928638905">Startar om …</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Delnätsmask</translation>
 <translation id="4454245904991689773">Skanningar sparas i</translation>
 <translation id="4456812688969919973">Knappen Spara APN är nu inaktiverad</translation>
-<translation id="4460905888685975163">Använd detta APN har nu inaktiverats</translation>
 <translation id="4469288414739283461">Skärmsläckare med jorden</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Det gick inte att pinga gateway för nätverket som inte är standard</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Serverns värdnamn</translation>
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">upp</translation>
 <translation id="5107243100836678918">Ett kortkommando utan <ph name="META_KEY" />tangenten kan hamna i konflikt med ett kortkommando för en viss app. Tryck på kortkommandot igen om du vill fortsätta använda det, eller tryck på ett nytt kortkommando med <ph name="KEY" />tangenten. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Liknande:</translation>
 <translation id="5130848777448318809">ponnyer</translation>
@@ -845,6 +842,8 @@
 <translation id="5946538341867151940">Du är inte ansluten än. Om din mobiloperatör rekommenderar en anpassad APN anger du APN-uppgifterna genom att välja + Ny APN</translation>
 <translation id="5947266287934282605">Om den sista dagen i månaden infaller före den här dagen återställs data den sista dagen i månaden</translation>
 <translation id="5948460390109837040">hundar</translation>
+<translation id="594989847980441553">Välj Skapa för att skapa en bild med AI.
+        Alla skapade bilder visas automatiskt här.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">korallfärgad</translation>
 <translation id="5984145644188835034">Standardbakgrund</translation>
@@ -1064,7 +1063,6 @@
 <translation id="7147557737960578492">Tilldela på nytt genom att välja en ny tangent</translation>
 <translation id="714876143603641390">LAN-anslutningar</translation>
 <translation id="7154020516215182599">Ge feedback eller beskriv problemet. Om möjligt inkluderar du stegen för att återskapa problemet.</translation>
-<translation id="7155037718620478619">Upptäck fler APN</translation>
 <translation id="7155171745945906037">Befintligt foto från kamera eller fil</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Profilbild</translation>
@@ -1194,6 +1192,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Leverantörstyp</translation>
 <translation id="7882501334836096755">Offentlig nyckel</translation>
+<translation id="78957024357676568">vänster</translation>
 <translation id="7897043345768902965">gångväg</translation>
 <translation id="7903695460270716054">Välj handplockade konstverk och bilder</translation>
 <translation id="7915220255123750251">Hantera APN-inställningar för nätverket. APN upprättar en anslutning mellan ett mobilnätverk och internet.</translation>
@@ -1223,7 +1222,6 @@
 <translation id="8075838845814659848">Batteritid som återstår</translation>
 <translation id="8076492880354921740">Flikar</translation>
 <translation id="8079860070590459552">en blomsteräng</translation>
-<translation id="8081553043098820199">Ogiltiga APN:er kan leda till att mobilanslutningen inaktiveras. Ange endast APN:er som tillhandahålls av mobiloperatören eller administratören.</translation>
 <translation id="8082366717211101304">Det gick inte att matcha DNS från Android-appar</translation>
 <translation id="8082644724189923105">tangentbordszon</translation>
 <translation id="808894953321890993">Ändra lösenord</translation>
@@ -1231,6 +1229,7 @@
 <translation id="8104083085214006426">Du använder ett öppet och osäkert nätverk</translation>
 <translation id="811820734797650957">(Android) Gateway går att pinga</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8132480444149501833">Begär trafikräknare</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Välj <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1255,6 @@
 <translation id="8294431847097064396">Källa</translation>
 <translation id="8302368968391049045">HTTPS-brandvägg</translation>
 <translation id="8312330582793120272">spela upp media</translation>
-<translation id="8317819321190319496">Använd detta APN har nu aktiverats</translation>
 <translation id="8318753676953949627">Inga bilder</translation>
 <translation id="8320910311642849813">en skog</translation>
 <translation id="8329018942023753850">appen kalkylator</translation>
@@ -1282,6 +1280,7 @@
 <translation id="8410244574650205435">Identifierades automatiskt</translation>
 <translation id="8420955526972171689">Kör tester och felsök vid problem med maskinvara</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">ned</translation>
 <translation id="8431300646573772016">Nyheter i ChromeOS</translation>
 <translation id="843568408673868420">Internetanslutning</translation>
 <translation id="844521431886043384">DNS har inte konfigurerats</translation>
@@ -1372,6 +1371,7 @@
 <translation id="894617464444543719">Enheten är en telefon.</translation>
 <translation id="8950424402482976779">överst</translation>
 <translation id="8954341524817067858">berg</translation>
+<translation id="8957423540740801332">höger</translation>
 <translation id="8960969673307890087">vattenmeloner</translation>
 <translation id="8961025972867871808">pingviner</translation>
 <translation id="8968751544471797276">Laddningshastighet</translation>

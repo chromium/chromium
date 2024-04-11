@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Mynd yn ôl</translation>
 <translation id="2546283357679194313">Cwcis a data gwefan</translation>
 <translation id="2550801787432930915">Cerdyn gostyngiad pris</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Mae 1 cwci wedi'i rwystro}zero{Mae # cwci wedi'u rhwystro}two{Mae # gwci wedi'u rhwystro}few{Mae # chwci wedi'u rhwystro}many{Mae # chwci wedi'u rhwystro}other{Mae # cwci wedi'u rhwystro}}</translation>
 <translation id="2570922361219980984">Mae mynediad lleoliad hefyd wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Wedi'i ehangu - cliciwch i grebachu.</translation>
 <translation id="2586657967955657006">Clipfwrdd</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Mynd yn ôl</translation>
 <translation id="8444433999583714703">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich lleoliad, trowch leoliad ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
 <translation id="8447861592752582886">Dirymu caniatâd dyfais</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Mae 1 cwci yn cael ei ddefnyddio}zero{Mae # cwci yn cael eu defnyddio}two{Mae # gwci yn cael eu defnyddio}few{Mae # chwci yn cael eu defnyddio}many{Mae # chwci yn cael eu defnyddio}other{Mae # cwci yn cael eu defnyddio}}</translation>
 <translation id="8487700953926739672">Ar gael all-lein</translation>
 <translation id="848952951823693243">Gofyn am wefan symudol bob amser</translation>
 <translation id="8499083585497694743">Dad-ddistewi'r meicroffon</translation>

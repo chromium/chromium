@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Geri qayıdın</translation>
 <translation id="2546283357679194313">Kukilər və sayt datası</translation>
 <translation id="2550801787432930915">Qiymətin düşməsi kartı</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 kuki bloklanıb}other{# kuki bloklanıb}}</translation>
 <translation id="2570922361219980984">Bu cihazda məkan girişi də deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> girişi aktiv edin.</translation>
 <translation id="257931822824936280">Geniş - Qısaltmaq üçün klikləyin</translation>
 <translation id="2586657967955657006">Mübadilə buferi</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Geri axtarı</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> tətbiqinə məkanınıza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> məkanı da aktiv edin.</translation>
 <translation id="8447861592752582886">Cihaz icazəsini ləğv edin</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 kuki istifadə olunur}other{# kuki istifadə olunur}}</translation>
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
 <translation id="848952951823693243">Həmişə mobil sayt tələb edin</translation>
 <translation id="8499083585497694743">Mikrofonu səssiz rejimdən çıxarın</translation>

@@ -243,7 +243,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1428729058023778569">Nakikita mo ang babalang ito dahil hindi sinusuportahan ng site na ito ang HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Self-Adhesive Film</translation>
 <translation id="1430915738399379752">I-print</translation>
-<translation id="1431021750861456539">Awtomatikong fullscreen</translation>
 <translation id="1432187715652018471">Gusto ng page na mag-install ng tagapangasiwa ng serbisyo.</translation>
 <translation id="1432581352905426595">Pamahalaan ang mga search engine</translation>
 <translation id="1433225466058025572">Subukang ilipat ulit ang iyong mga file</translation>
@@ -380,6 +379,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="168693727862418163">Hindi na-validate ang value ng patakarang ito sa schema nito at babalewalain ito.</translation>
 <translation id="168841957122794586">Naglalaman ang server certificate ng isang mahinang cryptographic key.</translation>
 <translation id="1689333818294560261">Nickname</translation>
+<translation id="1691425742011409472">lock ng pointer</translation>
 <translation id="1692622044604477956">Mga Listing ng Pelikula at Oras ng Pagpapalabas sa Sinehan</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Paano mo mapapamahalaan ang iyong data:<ph name="END_BOLD" /> Awtomatikong dine-delete ng Chrome ang mga paksang mahigit 4 na linggo na. Habang patuloy kang nagba-browse, posibleng may paksang lumabas ulit sa listahan. Puwede mo ring i-block ang mga paksang ayaw mong i-share ng Chrome sa mga site at i-off ang mga paksa ng ad anumang oras sa mga setting ng Chrome.</translation>
 <translation id="1697532407822776718">Handa ka na!</translation>
@@ -729,6 +729,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2337852623177822836">Kinokontrol ng iyong administrator ang setting</translation>
 <translation id="2340263603246777781">Gustong makipagpares ng <ph name="ORIGIN" /></translation>
 <translation id="2346319942568447007">Larawang kinopya mo</translation>
+<translation id="2349056830177284083">Lock ng keyboard</translation>
 <translation id="2349957959687031096">Button na Magbukas ng tab na Incognito, i-activate para makapagbukas ng bagong tab na Incognito para makapag-browse nang pribado</translation>
 <translation id="2350796302381711542">Papayagan ang <ph name="HANDLER_HOSTNAME" /> na buksan ang lahat ng <ph name="PROTOCOL" /> (na) link sa halip na ang <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Pinapayagan ang camera at mikropono</translation>
@@ -945,6 +946,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Na-reset ang koneksyon.</translation>
 <translation id="2786008859124691917">Mga Bisikleta at Accessory</translation>
+<translation id="2791955793407772554">Lock ng pointer</translation>
 <translation id="2792012897584536778">Nag-set up ang mga administrator ng device na ito ng mga certificate ng seguridad na puwedeng magbigay-daan sa kanilang matingnan ang content ng mga website na binibisita mo.</translation>
 <translation id="2794233252405721443">Naka-block ang site</translation>
 <translation id="2794629552137076216">Glass (Naka-surface)</translation>
@@ -1082,6 +1084,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
             <ph name="LIST_ITEM" />History ng paghahanap<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Impormasyong inilagay sa mga form<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Savings</translation>
 <translation id="3103188521861412364">Mga Stock at Bond</translation>
 <translation id="3105172416063519923">Asset ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Suriin ang configuration ng secure na DNS<ph name="END_LINK" /></translation>
@@ -1103,6 +1106,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3121994479408824897">Pumunta sa <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Mga Label (Permanente)</translation>
 <translation id="3133565499688974786">Ang <ph name="SEARCH_ENGINE_NAME" /> na ang iyong default na search engine</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - Maghanap ng <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">Mga Serbisyong Pangnegosyo</translation>
 <translation id="3141093262818886744">Buksan pa rin</translation>
 <translation id="3141641372357166056">Walang pasya sa pahintulot</translation>
@@ -1299,6 +1303,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3493660662684070951">Mga Truck, Van, at SUV</translation>
 <translation id="3495081129428749620">Hanapin sa page
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Suweldo</translation>
 <translation id="3497627066518778351">Sumuri ng listahan ng on-device na data ng site sa isang bagong window</translation>
 <translation id="3498215018399854026">Hindi namin makaugnayan ang iyong magulang sa sandaling ito. Pakisubukang muli.</translation>
 <translation id="350069200438440499">File name:</translation>
@@ -1428,12 +1433,14 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3711895659073496551">Suspendihin</translation>
 <translation id="3712006010833051684">Envelope #10</translation>
 <translation id="3712624925041724820">Naubos na ang mga lisensya</translation>
+<translation id="3713277100229669269">Puwede mo na ngayong makita ang mga benepisyo ng card bago ka magbayad</translation>
 <translation id="371420189621607696">Kumpetisyon sa Video Gaming</translation>
 <translation id="3714633008798122362">kalendaryo ng web</translation>
 <translation id="3714780639079136834">I-on ang mobile data o Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Na-block ang file para hindi ma-upload}one{<ph name="FILE_COUNT" /> file ang na-block para hindi ma-upload}other{<ph name="FILE_COUNT" /> na file ang na-block para hindi ma-upload}}</translation>
 <translation id="3715545959749027023">Kapag na-flag ng Chrome ang mga event tungkol sa seguridad, ipapadala sa iyong administrator ang nauugnay na data tungkol sa mga event. Puwedeng kabilang dito ang mga URL ng mga page na binibisita mo sa Chrome, pangalan ng file or metadata, pag-crash ng browser o tab, at ang username na ginamit mo para mag-sign in sa mga web-based na application, iyong device at Chrome.</translation>
 <translation id="3715597595485130451">Kumonekta sa Wi-Fi</translation>
+<translation id="3716622997181469465">lock ng keyboard</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Suriin ang configuration ng proxy, firewall at DNS<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Habang ina-update, hindi mo magagamit ang iyong device sa loob ng hanggang 10 minuto.</translation>
 <translation id="372429172604983730">Kabilang ang antivirus, firewall, at pag-filter ng web o proxy na software sa mga application na maaaring magsanhi ng ganitong error.</translation>
@@ -2318,7 +2325,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
     <ph name="LINE_BREAK" />
     Subukang makipag-ugnayan sa iyong system administrator.</translation>
 <translation id="549333378215107354">Laki 3</translation>
-<translation id="5501712702042287009">awtomatikong fullscreen</translation>
 <translation id="550365051221576010">Punan ang lahat</translation>
 <translation id="5508443345185481044">Mga Camera at Camcorder</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2335,6 +2341,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5519696598216267194">Papel (Naka-prepunch)</translation>
 <translation id="5521782189689806907">Cabinetry</translation>
 <translation id="5523118979700054094">Pangalan ng patakaran</translation>
+<translation id="5523588073846127669">Hindi tinatanggap ng merchant ang virtual card na ito</translation>
 <translation id="5525755241743357906">Kinopya o inilipat ang file</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para i-personalize ang iyong mga tool sa accessibility sa mga setting ng ChromeOS</translation>
 <translation id="55293785478302737">Edge stitch</translation>
@@ -2499,6 +2506,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">I-on</translation>
 <translation id="5862579898803147654">Stacker 8</translation>
+<translation id="5863515189965725638">I-edit ang IBAN</translation>
 <translation id="5863847714970149516">Maaari kang singilin sa susunod na page</translation>
 <translation id="5866257070973731571">Magdagdag ng Numero ng Telepono</translation>
 <translation id="5866898949289125849">Isang page ng mga tool ng developer ang tinitingnan mo</translation>
@@ -3517,6 +3525,7 @@ Mga karagdagang detalye:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">I-customize ang mga laki ng font at typeface sa Chrome</translation>
 <translation id="7752995774971033316">Hindi pinamamahalaan</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - Makipag-chat sa <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Magsasara ang iyong mga tab ng Chrome at Chrome app kapag nagsimula ang pag-update</translation>
 <translation id="7755287808199759310">Maaari itong i-unblock ng iyong magulang para sa iyo</translation>
 <translation id="7755624218968747854">Pangunahing Rolyo</translation>
@@ -3715,6 +3724,7 @@ Mga karagdagang detalye:
 <translation id="81563721597823545">Kagamitan sa Hockey</translation>
 <translation id="8161095570253161196">Ipagpatuloy ang pag-browse</translation>
 <translation id="8163866351304776260">Quad punch left</translation>
+<translation id="8163998196788647716">Pantransaksyong account</translation>
 <translation id="8164078261547504572">Gusto mo bang makatanggap ng mga email kapag bumaba ang mga presyo?</translation>
 <translation id="8169175551046720804">Hindi puwedeng itakda sa iisang dictionary ang mga key na "<ph name="DATA_CONTROLS_KEYS" />"</translation>
 <translation id="8175796834047840627">Nag-aalok ang Chrome na i-save ang iyong mga card sa Google Account mo dahil naka-sign in ka. Maaari mong baguhin ang gawing ito sa mga setting.</translation>

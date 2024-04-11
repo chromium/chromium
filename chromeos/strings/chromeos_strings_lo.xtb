@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">ແມງກະເບື້ອ</translation>
 <translation id="188114911237521550">ປິດໂໝດມືດ</translation>
-<translation id="188268299367474594">ເລືອກຈາກ APN ທີ່ພ້ອມນຳໃຊ້</translation>
 <translation id="1885577615937958993">ເລື່ອນມີເດຍໄປໜ້າ</translation>
 <translation id="1887850431809612466">ການປັບປຸງແກ້ໄຂຮາດແວ</translation>
 <translation id="189221451253258459">ຂຽວນີອອນ</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">ຮູບທີ <ph name="CURRENT_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">ຄວາມຖືກຕ້ອງຂອງຈຸດລອຍຕົວ</translation>
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
-<translation id="2465272316171730950">ລະບົບບໍ່ຫວ່າງດຳເນີນການ. ກະລຸນາກັບມາໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="2472215337771558851">ໃຊ້ຊ່ວຍຂ້ອຍຂຽນເພື່ອສ້າງສະບັບຮ່າງ ຫຼື ປັບປ່ຽນວຽກທີ່ມີຢູ່ແລ້ວ, ຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="2480572840229215612">ປູ</translation>
 <translation id="248546197012830854">ອຸປະກອນອອບລາຍຢູ່. ເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍ Wi-Fi ເພື່ອເບິ່ງເນື້ອຫາຊ່ວຍເຫຼືອ.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">ສະແດງໜ້າຈໍ</translation>
 <translation id="2513396635448525189">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
-<translation id="2520213071283358374">ໃຊ້ APN ນີ້</translation>
 <translation id="2521835766824839541">ເພງກ່ອນໜ້າ</translation>
 <translation id="2526590354069164005">ເດັສທັອບ</translation>
 <translation id="253029298928638905">ກຳ​ລັງ​ຣີ​ສະ​ຕາດ...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Subnet Mask</translation>
 <translation id="4454245904991689773">ສະແກນເພື່ອ</translation>
 <translation id="4456812688969919973">ປິດການນຳໃຊ້ປຸ່ມບັນທຶກ APN ແລ້ວ</translation>
-<translation id="4460905888685975163">ຕອນນີ້ໃຊ້ APN ນີ້ປິດການນຳໃຊ້ແລ້ວ</translation>
 <translation id="4469288414739283461">ພາບພັກໜ້າຈໍການເຄື່ອນທີ່ຂອງໂລກ</translation>
 <translation id="4479639480957787382">ອີເທີເນັດ</translation>
 <translation id="4483049906298469269">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">ຊື່ໂຮ​ສເຊີບເວີ</translation>
 <translation id="5089810972385038852">ລັດ</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">ຂຶ້ນ</translation>
 <translation id="5107243100836678918">ຄີລັດທີ່ບໍ່ມີປຸ່ມ <ph name="META_KEY" /> ອາດຂັດແຍ່ງກັບທາງລັດຂອງບາງແອັບ. ກົດທາງລັດນີ້ອີກຄັ້ງເພື່ອສືບຕໍ່ໃຊ້ມັນ ຫຼື ກົດທາງລັດໃໝ່ໂດຍໃຊ້ປຸ່ມ <ph name="KEY" />. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">ຄ້າຍກັນ:</translation>
 <translation id="5130848777448318809">ມ້າແຄະ</translation>
@@ -1067,7 +1064,6 @@
 <translation id="7147557737960578492">ກຳນົດໃໝ່ໂດຍການເລືອກປຸ່ມໃໝ່</translation>
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>
 <translation id="7154020516215182599">ແບ່ງປັນຄຳຕິຊົມ ຫຼື ອະທິບາຍບັນຫາຂອງທ່ານ. ຫາກເປັນໄປໄດ້, ໃຫ້ຮວມຂັ້ນຕອນໃນການເຮັດໃຫ້ເກີດບັນຫາຂອງທ່ານຄືນໃໝ່.</translation>
-<translation id="7155037718620478619">ຄົ້ນພົບ APN ເພີ່ມເຕີມ</translation>
 <translation id="7155171745945906037">ຮູບຖ່າຍທີ່ມີຢູ່ຈາກກ້ອງຖ່າຍຮູບ ຫຼື ໄຟລ໌</translation>
 <translation id="7162487448488904999">ຄັງຮູບ</translation>
 <translation id="7170236477717446850">ຮູບໂປຣໄຟລ໌</translation>
@@ -1170,16 +1166,6 @@
 <translation id="773153675489693198">ຈຳນວນຮອບ</translation>
 <translation id="7746357909584236306">ແກ້ໄຂໄດ້</translation>
 <translation id="7747039790905080783">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
-<translation id="7748162180830414915">ເລືອກຮູບແບບສີສັນ ແລະ ຈາກນັ້ນເລືອກຄຳທີ່ຂີດກ້ອງໄວ້ເພື່ອປັບແຕ່ງສ່ວນຕົວຮູບ AI ຂອງທ່ານ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ເລືອກ "ສ້າງແຮງບັນດານໃຈໃຫ້ຂ້ອຍ" ເພື່ອຮັບຕົວເລືອກຮູບ AI ທີ່ເປັນເອກະລັກ ແລະ ຫຼາກຫຼາຍຍິ່ງຂຶ້ນ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ເມື່ອທ່ານສ້າງດ້ວຍ AI, prompt ຈະຖືກສົ່ງໄປຫາເຊີບເວີ Google AI ເພື່ອສ້າງຮູບ ແລະ ປັບປຸງສິນຄ້າ, ເຊິ່ງຂຶ້ນກັບ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວຂອງ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI ສ້າງເນື້ອຫາແມ່ນຄຸນສົມບັດການທົດລອງ, ໃນການພັດທະນາໄລຍະເລີ່ມຕົ້ນ ແລະ ຕອນນີ້ອາດມີໃຫ້ໃຊ້ໃນວົງຈຳກັດ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7752963721013053477">ຮຸ່ງອະລຸນສູ່ຄວາມມືດ - ພິເສດສະເພາະ</translation>
 <translation id="7762130827864645708">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານສຳເລັດແລ້ວ. ກະລຸນາໃຊ້ລະຫັດຜ່ານໃໝ່ນັບຈາກນີ້ໄປ.</translation>
 <translation id="7763470514545477072">ຈັບຄູ່ສ່ວນຕໍ່ທ້າຍຂອງໂດເມນ</translation>
@@ -1207,6 +1193,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ປະ​ເພດ​ຜູ້ໃຫ້​ບໍ​ລິ​ການ​</translation>
 <translation id="7882501334836096755">ກະແຈສາທາລະນະ</translation>
+<translation id="78957024357676568">ເບື້ອງຊ້າຍ</translation>
 <translation id="7897043345768902965">ທາງຍ່າງ</translation>
 <translation id="7903695460270716054">ເລືອກໜ້າປົກ ແລະ ຮູບທີ່ຄັດສັນມາ</translation>
 <translation id="7915220255123750251">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ.</translation>
@@ -1237,7 +1224,6 @@
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="8076492880354921740">ແຖບ</translation>
 <translation id="8079860070590459552">ທົ່ງດອກໄມ້</translation>
-<translation id="8081553043098820199">APN ທີ່ບໍ່ຖືກຕ້ອງອາດເຮັດໃຫ້ການເຊື່ອມຕໍ່ມືຖືຂອງທ່ານຖືກປິດການນຳໃຊ້. ຕັ້ງຄ່າ APN ທີ່ມາຈາກຜູ້ໃຫ້ບໍລິການມືຖື ຫຼື ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເທົ່ານັ້ນ.</translation>
 <translation id="8082366717211101304">ບໍ່ສາມາດລະບຸ DNS ຈາກແອັບ Android ໄດ້</translation>
 <translation id="8082644724189923105">ໂຊນແປ້ນພິມ</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
@@ -1245,6 +1231,7 @@
 <translation id="8104083085214006426">ທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍເປີດ ແລະ ບໍ່ປອດໄພຢູ່</translation>
 <translation id="811820734797650957">(Android) ສາມາດ Ping ເກດເວໄດ້</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
 <translation id="8132480444149501833">ຮ້ອງຂໍຕົວນັບທຣາບຟິກ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">ເລືອກ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1270,7 +1257,6 @@
 <translation id="8294431847097064396">ແຫຼ່ງທີ່ມາ</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8312330582793120272">ຫຼິ້ນມີເດຍ</translation>
-<translation id="8317819321190319496">ຕອນນີ້ໃຊ້ APN ນີ້ເປີດການນຳໃຊ້ແລ້ວ</translation>
 <translation id="8318753676953949627">ບໍ່ມີຮູບ</translation>
 <translation id="8320910311642849813">ປ່າ</translation>
 <translation id="8329018942023753850">ແອັບຈັກຄິດໄລ່</translation>
@@ -1296,6 +1282,7 @@
 <translation id="8410244574650205435">ກວດສອບອັດຕະໂນມັດ</translation>
 <translation id="8420955526972171689">ທົດສອບ ແລະ ແກ້ໄຂບັນຫາຮາດແວ</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">ລົງ</translation>
 <translation id="8431300646573772016">ມີຫຍັງໃໝ່ກັບ ChromeOS</translation>
 <translation id="843568408673868420">ການເຊື່ອມຕໍ່ອິນເຕີເນັດ</translation>
 <translation id="844521431886043384">ບໍ່ໄດ້ຕັ້ງຄ່າ DNS ເທື່ອ</translation>
@@ -1387,6 +1374,7 @@
 <translation id="894617464444543719">ອຸປະກອນແມ່ນໂທລະສັບ.</translation>
 <translation id="8950424402482976779">ເທິງສຸດ</translation>
 <translation id="8954341524817067858">ພູເຂົາ</translation>
+<translation id="8957423540740801332">ເບື້ອງຂວາ</translation>
 <translation id="8960969673307890087">ໝາກໂມ</translation>
 <translation id="8961025972867871808">ເພນກວິນ</translation>
 <translation id="8968751544471797276">ອັດຕາການສາກ</translation>

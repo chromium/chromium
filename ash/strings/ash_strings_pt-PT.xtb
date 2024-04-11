@@ -226,6 +226,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta traseira)</translation>
 <translation id="1869497990620230175">Ficheiros rápidos</translation>
 <translation id="1871023081802165724">Reproduzir conteúdo multimédia</translation>
+<translation id="1871915835366697861">Não disponível para este jogo</translation>
 <translation id="1879018240766558464">De momento, as janelas de navegação anónima não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="1882814835921407042">Sem rede móvel</translation>
 <translation id="1882897271359938046">A espelhar para <ph name="DISPLAY_NAME" /></translation>
@@ -1432,7 +1433,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6537924328260219877">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, bateria do telemóvel: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">A analisar a transferência <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">A transmitir para <ph name="RECEIVER_NAME" /></translation>
-<translation id="6546062506073634094">Pesquisa de imagens por conteúdo e pré-visualizações de imagens</translation>
 <translation id="6555373427270923730">Introduza um endereço Web na barra de endereço e, em seguida, prima <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalação</translation>
@@ -1792,6 +1792,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="79341161159229895">Conta gerida por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" />.</translation>
 <translation id="793716872548410480">Prima <ph name="SHORTCUT_KEY_NAME" /> + V para ver a sua área de transferência. Os últimos 5 itens que copiou são guardados na sua área de transferência.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
+<translation id="7943516765291457328">Ative o Bluetooth para procurar zonas Wi-Fi próximas</translation>
 <translation id="7944023924886109030">Veja todos os eventos de hoje</translation>
 <translation id="7945357288295809525">Mostrar definições de acessibilidade, funcionalidade "<ph name="ENABLED_FEATURES" />" ativada.</translation>
 <translation id="7947798320695032612">A app <ph name="APP_NAME" /> quer usar o(a) <ph name="DEVICE_NAME" /></translation>

@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">papillons</translation>
 <translation id="188114911237521550">Désactiver le mode sombre</translation>
-<translation id="188268299367474594">Choisir parmi les noms de points d'accès proposés</translation>
 <translation id="1885577615937958993">avance rapide du contenu multimédia</translation>
 <translation id="1887850431809612466">Révision du matériel</translation>
 <translation id="189221451253258459">vert néon</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Image : <ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2465272316171730950">Nous avons atteint notre capacité maximale. Veuillez revenir un peu plus tard.</translation>
 <translation id="2472215337771558851">Utilisez l'Aide à la rédaction pour créer un brouillon ou pour affiner un travail existant, propulsé par l'IA de Google</translation>
 <translation id="2480572840229215612">crabes</translation>
 <translation id="248546197012830854">L'appareil est hors ligne. Connectez-vous au réseau Wi-Fi pour afficher le contenu d'aide.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">afficher les fenêtres</translation>
 <translation id="2513396635448525189">Image de connexion</translation>
 <translation id="2517472476991765520">Rechercher</translation>
-<translation id="2520213071283358374">Utiliser ce nom de point d'accès</translation>
 <translation id="2521835766824839541">chanson précédente</translation>
 <translation id="2526590354069164005">Ordinateur de bureau</translation>
 <translation id="253029298928638905">Redémarrage en cours…</translation>
@@ -334,13 +331,13 @@
 <translation id="2860473693272905224">Placez une autre page sur le numériseur</translation>
 <translation id="2872961005593481000">Arrêter</translation>
 <translation id="2873483161362553159">Navigation dans le navigateur</translation>
-<translation id="2873939192640533085">Saisissez une invite telle que « avoir l'air plus confiant »</translation>
+<translation id="2873939192640533085">Saisissez une requête telle que « avoir l'air plus confiant »</translation>
 <translation id="2874939134665556319">Chanson précédente</translation>
 <translation id="2875812231449496375">Activez ce paramètre pour obtenir de meilleurs résultats avec ce fond d'écran. Vous pouvez le désactiver à tout moment.</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="2880569433548999039">Écran de veille Cloud Flow</translation>
 <translation id="2882230315487799269">Personnaliser l'invite IA</translation>
-<translation id="2888298276507578975">Saisissez une invite telle que « écrire une note de remerciement »</translation>
+<translation id="2888298276507578975">Saisissez une requête telle que « écrire une note de remerciement »</translation>
 <translation id="2890557891229184386">île tropicale</translation>
 <translation id="2895772081848316509">sombre</translation>
 <translation id="2926057806159140518">Entrez votre nom d'utilisateur et votre mot de passe ou numérisez votre code QR</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Masque de sous-réseau</translation>
 <translation id="4454245904991689773">Numériser vers</translation>
 <translation id="4456812688969919973">Le bouton Enregistrer le nom de point d'accès est désormais désactivé</translation>
-<translation id="4460905888685975163">Utiliser ce nom de point d'accès est maintenant désactivé</translation>
 <translation id="4469288414739283461">Écran de veille Earth Flow</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Nom d'hôte du serveur</translation>
 <translation id="5089810972385038852">État/province</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">haut</translation>
 <translation id="5107243100836678918">Un raccourci ne comprenant pas la touche de <ph name="META_KEY" /> peut entrer en conflit avec le raccourci de certaines applications. Appuyez à nouveau sur ce raccourci pour continuer à l'utiliser ou appuyez sur un nouveau raccourci à l'aide de la touche de <ph name="KEY" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Mots de sens similaire :</translation>
 <translation id="5130848777448318809">poneys</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Attribuez une nouvelle touche en la sélectionnant</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
 <translation id="7154020516215182599">Faites-nous part de vos commentaires ou décrivez votre problème. Si possible, incluez les étapes à suivre pour reproduire votre problème.</translation>
-<translation id="7155037718620478619">Découvrir plus de noms de point d'accès</translation>
 <translation id="7155171745945906037">Photo existante de l'appareil photo ou du fichier</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Photo du profil</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type de fournisseur</translation>
 <translation id="7882501334836096755">Clé publique</translation>
+<translation id="78957024357676568">gauche</translation>
 <translation id="7897043345768902965">passerelle</translation>
 <translation id="7903695460270716054">Choisir parmi une sélection d'illustrations et d'images</translation>
 <translation id="7915220255123750251">Gérez les paramètres de NPA du réseau. Les NPA établissent une connexion entre un réseau cellulaire et Internet.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Charge restante</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8079860070590459552">champ de fleurs</translation>
-<translation id="8081553043098820199">Des noms de points d'accès non valides pourraient entraîner la désactivation de votre connexion mobile. Définissez uniquement les noms de points d'accès fournis par votre fournisseur de services mobiles ou votre administrateur.</translation>
 <translation id="8082366717211101304">Impossible de résoudre le DNS à partir d'applications Android</translation>
 <translation id="8082644724189923105">zone du clavier</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Vous utilisez un réseau ouvert et non sécurisé</translation>
 <translation id="811820734797650957">La passerelle peut faire l'objet d'un ping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Confirmer</translation>
 <translation id="8132480444149501833">Demander des compteurs de trafic</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Sélectionner <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Source</translation>
 <translation id="8302368968391049045">Pare-feu HTTPS</translation>
 <translation id="8312330582793120272">lire le contenu multimédia</translation>
-<translation id="8317819321190319496">Utiliser ce nom de point d'accès est maintenant activé</translation>
 <translation id="8318753676953949627">Aucune image</translation>
 <translation id="8320910311642849813">forêt</translation>
 <translation id="8329018942023753850">application calculatrice</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Pays détecté automatiquement</translation>
 <translation id="8420955526972171689">Réalisez des tests et des étapes de dépannage en cas de problèmes matériels</translation>
 <translation id="8422748173858722634">IIEM</translation>
+<translation id="8424039430705546751">bas</translation>
 <translation id="8431300646573772016">Nouveautés dans Chrome OS</translation>
 <translation id="843568408673868420">Connectivité Internet</translation>
 <translation id="844521431886043384">Le DNS n'est pas configuré</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">L'appareil est un téléphone.</translation>
 <translation id="8950424402482976779">haut</translation>
 <translation id="8954341524817067858">montagnes</translation>
+<translation id="8957423540740801332">droite</translation>
 <translation id="8960969673307890087">melons d'eau</translation>
 <translation id="8961025972867871808">manchots</translation>
 <translation id="8968751544471797276">Vitesse de recharge</translation>

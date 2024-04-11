@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">फुलपाखरे</translation>
 <translation id="188114911237521550">गडद मोड बंद करा</translation>
-<translation id="188268299367474594">उपलब्ध APNs मधून निवडा</translation>
 <translation id="1885577615937958993">मीडिया फास्ट फॉरवर्ड करा</translation>
 <translation id="1887850431809612466">हार्डवेअर पुनरावृत्ती</translation>
 <translation id="189221451253258459">निऑन ग्रीन</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> पैकी <ph name="CURRENT_PAGE" /> ची इमेज</translation>
 <translation id="2446553403094072641">फ्लोटिंग पॉइंटची अचूकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
-<translation id="2465272316171730950">आमची क्षमता संपली आहे. कृपया काही वेळाने परत या.</translation>
 <translation id="2472215337771558851">मसुदा तयार करण्यासाठी किंवा सध्याच्या कामामध्ये सुधारणा करण्यासाठी Google AI द्वारे सक्षम केलेले मला लिहिण्यात मदत करा वापरा</translation>
 <translation id="2480572840229215612">खेकडे</translation>
 <translation id="248546197012830854">डिव्हाइस ऑफलाइन आहे. मदत आशय पाहण्यासाठी वाय-फायशी कनेक्ट करा.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">विंडो दाखवा</translation>
 <translation id="2513396635448525189">लॉगिन इमेज</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
-<translation id="2520213071283358374">हे APN वापरा</translation>
 <translation id="2521835766824839541">मागील ट्रॅक</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="253029298928638905">रीस्टार्ट करत आहे…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">सबनेट मास्क</translation>
 <translation id="4454245904991689773">येथे स्कॅन करा</translation>
 <translation id="4456812688969919973">APN सेव्ह करा हे बटण आता बंद केले आहे</translation>
-<translation id="4460905888685975163">हे APN वापरा आता बंद केले आहे</translation>
 <translation id="4469288414739283461">अर्थ फ्लो स्क्रीन सेव्हर</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">डीफॉल्ट नसलेला नेटवर्क गेटवे पिंग करता आला नाही</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">सर्व्हर होस्टनाव</translation>
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">वर</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> कीशिवाय शॉर्टकटचा वापर केल्याने, काही अ‍ॅप्सच्या शॉर्टकटमध्ये समस्या निर्माण होऊ शकतात. हा शॉर्टकट वापरणे पुढे सुरू ठेवण्यासाठी, तो पुन्हा प्रेस करा किंवा <ph name="KEY" /> की वापरून नवीन शॉर्टकट प्रेस करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">समानार्थी:</translation>
 <translation id="5130848777448318809">पोनी</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">नवीन की निवडून पुन्हा असाइन करा</translation>
 <translation id="714876143603641390">LAN कनेक्टिव्हिटी</translation>
 <translation id="7154020516215182599">तुमचा फीडबॅक शेअर करा किंवा तुमच्या समस्येचे वर्णन करा. शक्य असल्यास, तुमची समस्या पुन्हा तयार करता येण्यासाठी पायऱ्या समाविष्ट करा.</translation>
-<translation id="7155037718620478619">आणखी APNs शोधा</translation>
 <translation id="7155171745945906037">कॅमेरा किंवा फाईल मधील विद्यमान फोटो</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">प्रोफाइल फोटो</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">प्रदाता प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक की</translation>
+<translation id="78957024357676568">डावे</translation>
 <translation id="7897043345768902965">पादचारी मार्ग</translation>
 <translation id="7903695460270716054">निवडक आर्टवर्क आणि इमेज निवडा</translation>
 <translation id="7915220255123750251">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APNs ही मोबाइल नेटवर्क आणि इंटरनेट यांदरम्यान कनेक्शन जोडतात.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">शिल्लक चार्जिंग</translation>
 <translation id="8076492880354921740">टॅब</translation>
 <translation id="8079860070590459552">फुलांचे शेत</translation>
-<translation id="8081553043098820199">APNs मुळे तुमचे मोबाइल कनेक्शन बंद होऊ शकते. फक्त तुमच्या मोबाइल पुरवठादार किंवा अ‍ॅडमिनिस्ट्रेटरने दिलेले APNs सेट करा.</translation>
 <translation id="8082366717211101304">Android अ‍ॅप्सवरून DNS चे निराकरण करू शकत नाही</translation>
 <translation id="8082644724189923105">कीबोर्ड झोन</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">तुम्ही खुले आणि असुरक्षित नेटवर्क वापरत आहात</translation>
 <translation id="811820734797650957">(Android) गेटवे ला पिंग केले जाऊ शकते</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
+<translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8132480444149501833">ट्रॅफिक काउंटरची विनंती करा</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> निवडा</translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8302368968391049045">HTTPS फायरवॉल</translation>
 <translation id="8312330582793120272">मीडिया प्ले करा</translation>
-<translation id="8317819321190319496">हे APN वापरा आता सुरू केले आहे</translation>
 <translation id="8318753676953949627">कोणत्याही इमेज नाहीत</translation>
 <translation id="8320910311642849813">जंगल</translation>
 <translation id="8329018942023753850">Calculator ॲप</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">आपोआप डिटेक्ट केले</translation>
 <translation id="8420955526972171689">हार्डवेअरशी संबंधित समस्यांसाठी चाचण्या आणि ट्रबलशूटिंग रन करा</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">खाली</translation>
 <translation id="8431300646573772016">ChromeOS मध्ये नवीन</translation>
 <translation id="843568408673868420">इंटरनेट कनेक्टिव्हिटी</translation>
 <translation id="844521431886043384">DNS सेट केलेली नाही</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">डिव्हाइस हे फोन आहे.</translation>
 <translation id="8950424402482976779">सर्वात वरती</translation>
 <translation id="8954341524817067858">पर्वत</translation>
+<translation id="8957423540740801332">उजवे</translation>
 <translation id="8960969673307890087">कलिंगडे</translation>
 <translation id="8961025972867871808">पेंग्विन</translation>
 <translation id="8968751544471797276">चार्ज करण्याचा रेट</translation>

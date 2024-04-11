@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Natrag</translation>
 <translation id="2546283357679194313">Kolačići i podaci o web-lokacijama</translation>
 <translation id="2550801787432930915">Kartica o sniženju cijene</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Blokiran je jedan kolačić}one{Blokiran je # kolačić}few{Blokirana su # kolačića}other{Blokirano je # kolačića}}</translation>
 <translation id="2570922361219980984">Pristup lokaciji isključen je i za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Prošireno – kliknite za sažimanje.</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Traži unatrag</translation>
 <translation id="8444433999583714703">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašoj lokaciji, uključite lokaciju i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opozovi odobrenje uređaja</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Koristi se jedan kolačić}one{Koristi se # kolačić}few{Koriste se # kolačića}other{Koristi se # kolačića}}</translation>
 <translation id="8487700953926739672">Dostupno izvanmrežno</translation>
 <translation id="848952951823693243">Uvijek zahtijevaj web-lokaciju za mobilne uređaje</translation>
 <translation id="8499083585497694743">Uključi mikrofon</translation>

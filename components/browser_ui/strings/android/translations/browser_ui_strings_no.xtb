@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Gå tilbake</translation>
 <translation id="2546283357679194313">Informasjonskapsler og data fra nettsteder</translation>
 <translation id="2550801787432930915">Avslagskort</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 informasjonskapsel er blokkert}other{# informasjonskapsler er blokkert}}</translation>
 <translation id="2570922361219980984">Posisjonstilgang er også slått av for denne enheten. Slå den på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Utvidet – klikk for å minimere.</translation>
 <translation id="2586657967955657006">Utklippstavle</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Spol bakover</translation>
 <translation id="8444433999583714703">For å gi <ph name="APP_NAME" /> tilgang til posisjonen din må du også slå på posisjon i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opphev tillatelsen til enhetstilgang</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 informasjonskapsel er i bruk}other{# informasjonskapsler er i bruk}}</translation>
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>
 <translation id="848952951823693243">Be alltid om mobilnettstedet</translation>
 <translation id="8499083585497694743">Slå på mikrofonen</translation>

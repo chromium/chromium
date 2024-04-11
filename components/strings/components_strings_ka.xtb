@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">ამ გაფრთხილებას ხედავთ იმიტომ, რომ ამ საიტის მიერ HTTPS მხარდაუჭერელია. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">თვითმწებვარე აფსკი</translation>
 <translation id="1430915738399379752">ბეჭდვა</translation>
-<translation id="1431021750861456539">ავტომატური სრულეკრანიანი რეჟიმი</translation>
 <translation id="1432187715652018471">გვერდს სურს სერვისის დამმუშავებლის ინსტალაცია.</translation>
 <translation id="1432581352905426595">საძიებო სისტემების მართვა</translation>
 <translation id="1433225466058025572">ცადეთ თქვენი ფაილების ხელახლა გადატანა</translation>
@@ -2318,7 +2317,6 @@
     <ph name="LINE_BREAK" />
     დაუკავშირდით თქვენი სისტემის ადმინისტრატორს.</translation>
 <translation id="549333378215107354">ზომა 3</translation>
-<translation id="5501712702042287009">ავტომატური სრულეკრანიანი რეჟიმი</translation>
 <translation id="550365051221576010">ყველაფრის შევსება</translation>
 <translation id="5508443345185481044">კამერები და ვიდეოკამერები</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ჩართვა</translation>
 <translation id="5862579898803147654">სტეკერი 8</translation>
+<translation id="5863515189965725638">IBAN-ის რედაქტირება</translation>
 <translation id="5863847714970149516">გვერდმა, რომელზე გადასვლასაც აპირებთ, შეიძლება დაგაკისროთ თანხის გადახდა</translation>
 <translation id="5866257070973731571">დაამატეთ ტელეფონის ნომერი</translation>
 <translation id="5866898949289125849">თქვენ ათვალიერებთ დეველოპერთა ხელსაწყოების გვერდს</translation>

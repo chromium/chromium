@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">πεταλούδες</translation>
 <translation id="188114911237521550">Απενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
-<translation id="188268299367474594">Επιλογή από τα διαθέσιμα APN</translation>
 <translation id="1885577615937958993">γρήγορη προώθηση μέσου</translation>
 <translation id="1887850431809612466">Έκδοση υλικού</translation>
 <translation id="189221451253258459">πράσινο νέον</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Εικόνα <ph name="CURRENT_PAGE" /> από <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Ακρίβεια κινητής υποδιαστολής</translation>
 <translation id="2448312741937722512">Τύπος</translation>
-<translation id="2465272316171730950">Αυτή τη στιγμή δεν μπορούμε να σας εξυπηρετήσουμε. Επιστρέψτε σε λίγο.</translation>
 <translation id="2472215337771558851">Χρησιμοποιήστε τη λειτουργία Βοήθησέ με να γράψω, για να δημιουργήσετε ένα πρόχειρο ή να τελειοποιήσετε μια υπάρχουσα εργασία, με την υποστήριξη του Google AI</translation>
 <translation id="2480572840229215612">καβούρια</translation>
 <translation id="248546197012830854">Η συσκευή είναι εκτός σύνδεσης. Συνδεθείτε στο δίκτυο Wi-Fi για να δείτε περιεχόμενο βοήθειας.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">προβολή παραθύρων</translation>
 <translation id="2513396635448525189">Εικόνα σύνδεσης</translation>
 <translation id="2517472476991765520">Σάρωση</translation>
-<translation id="2520213071283358374">Χρήση αυτού του APN</translation>
 <translation id="2521835766824839541">προηγούμενο κομμάτι</translation>
 <translation id="2526590354069164005">Επιφάνεια εργασίας</translation>
 <translation id="253029298928638905">Επανεκκίνηση…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Μάσκα υποδικτύου</translation>
 <translation id="4454245904991689773">Σάρωση σε</translation>
 <translation id="4456812688969919973">Το κουμπί αποθήκευσης APN είναι πλέον απενεργοποιημένο</translation>
-<translation id="4460905888685975163">Το κουμπί Χρήση αυτού του APN είναι πλέον απενεργοποιημένο</translation>
 <translation id="4469288414739283461">Προστασία οθόνης Κίνηση της Γης</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Όνομα κεντρικού υπολογιστή διακομιστή</translation>
 <translation id="5089810972385038852">Πολιτεία</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">επάνω</translation>
 <translation id="5107243100836678918">Η συντόμευση χωρίς πλήκτρο <ph name="META_KEY" /> ενδέχεται να δημιουργήσει διένεξη με τη συντόμευση κάποιας εφαρμογής. Πατήστε ξανά αυτή τη συντόμευση για να συνεχίσετε να τη χρησιμοποιείτε ή πατήστε μια νέα συντόμευση χρησιμοποιώντας το πλήκτρο <ph name="KEY" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Συνώνυμα:</translation>
 <translation id="5130848777448318809">πόνυ</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Εκχωρήστε εκ νέου επιλέγοντας ένα νέο πλήκτρο</translation>
 <translation id="714876143603641390">Συνδεσιμότητα LAN</translation>
 <translation id="7154020516215182599">Μοιραστείτε τα σχόλιά σας ή περιγράψτε το πρόβλημά σας. Εάν είναι δυνατόν, συμπεριλάβετε βήματα για την αναπαραγωγή του προβλήματός σας.</translation>
-<translation id="7155037718620478619">Ανακάλυψη περισσότερων APN</translation>
 <translation id="7155171745945906037">Υπάρχουσα φωτογραφία από την κάμερα ή το αρχείο</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Φωτογραφία προφίλ</translation>
@@ -1194,12 +1190,14 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Τύπος παρόχου</translation>
 <translation id="7882501334836096755">Δημόσιο κλειδί</translation>
+<translation id="78957024357676568">αριστερά</translation>
 <translation id="7897043345768902965">πεζόδρομος</translation>
 <translation id="7903695460270716054">Επιλογή επιμελημένων έργων τέχνης και εικόνων</translation>
 <translation id="7915220255123750251">Διαχείριση ρυθμίσεων APN δικτύου. Τα APN δημιουργούν μια σύνδεση μεταξύ ενός δικτύου κινητής τηλεφωνίας και του διαδικτύου.</translation>
 <translation id="7936303884198020182">Δεν βρέθηκαν διακομιστές ονομάτων.</translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7943235353293548836">Χρονικό διάστημα συνεχούς μηνύματος keepalive</translation>
+<translation id="7943516765291457328">Ενεργοποιήστε το Bluetooth για να κάνετε σάρωση για σημεία πρόσβασης Wi-Fi σε κοντινή απόσταση</translation>
 <translation id="7944562637040950644">εναλλαγή οπίσθιου φωτισμού πληκτρολογίου</translation>
 <translation id="7953669802889559161">Μέθοδοι εισαγωγής</translation>
 <translation id="7955587717700691983">Πληκτρολόγιο Bluetooth</translation>
@@ -1223,7 +1221,6 @@
 <translation id="8075838845814659848">Υπόλοιπο φόρτισης</translation>
 <translation id="8076492880354921740">Καρτέλες</translation>
 <translation id="8079860070590459552">αγρό με λουλούδια</translation>
-<translation id="8081553043098820199">Τα μη έγκυρα APN μπορεί να προκαλέσουν την απενεργοποίηση της σύνδεσης κινητής τηλεφωνίας σας. Ορίστε APN που παρέχονται μόνο από τον πάροχο κινητής τηλεφωνίας ή τον διαχειριστή σας.</translation>
 <translation id="8082366717211101304">Δεν είναι δυνατή η επίλυση DNS από εφαρμογές Android.</translation>
 <translation id="8082644724189923105">ζώνη πληκτρολογίου</translation>
 <translation id="808894953321890993">Αλλαγή κωδικού πρόσβασης</translation>
@@ -1231,6 +1228,7 @@
 <translation id="8104083085214006426">Χρησιμοποιείτε ένα ανοιχτό και μη ασφαλές δίκτυο.</translation>
 <translation id="811820734797650957">(Android) Η πύλη λαμβάνει ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">Επιβεβαίωση</translation>
 <translation id="8132480444149501833">Αίτημα για μετρητές επισκεψιμότητας</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Επιλέξτε <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1254,6 @@
 <translation id="8294431847097064396">Πηγή</translation>
 <translation id="8302368968391049045">Τείχος προστασίας HTTPS</translation>
 <translation id="8312330582793120272">αναπαραγωγή μέσων</translation>
-<translation id="8317819321190319496">Το κουμπί Χρήση αυτού του APN είναι πλέον ενεργοποιημένο</translation>
 <translation id="8318753676953949627">Δεν υπάρχουν εικόνες</translation>
 <translation id="8320910311642849813">δάσος</translation>
 <translation id="8329018942023753850">εφαρμογή Αριθμομηχανή</translation>
@@ -1282,6 +1279,7 @@
 <translation id="8410244574650205435">Εντοπίστηκε αυτόματα</translation>
 <translation id="8420955526972171689">Εκτέλεση δοκιμών και αντιμετώπιση προβλημάτων για προβλήματα εξοπλισμού</translation>
 <translation id="8422748173858722634">Αριθμός ΙΜΕΙ</translation>
+<translation id="8424039430705546751">κάτω</translation>
 <translation id="8431300646573772016">Νέα στοιχεία Chrome OS</translation>
 <translation id="843568408673868420">Συνδεσιμότητα στο διαδίκτυο</translation>
 <translation id="844521431886043384">Το DNS δεν έχει ρυθμιστεί.</translation>
@@ -1329,6 +1327,7 @@
 <translation id="8747900814994928677">Επιβεβαίωση αλλαγής</translation>
 <translation id="8749478549112817787">Φόντο κάμερας</translation>
 <translation id="8755946156089753497">πύργος</translation>
+<translation id="8756235582947991808">Πώς να δημιουργήσετε περιεχόμενο με τεχνολογία AI και ορισμένα πράγματα που πρέπει να έχετε υπόψη</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Λεύκωμα Φωτογραφιών Google</translation>
 <translation id="8775713578693478175">APN μόντεμ</translation>
@@ -1372,6 +1371,7 @@
 <translation id="894617464444543719">Η συσκευή είναι τηλέφωνο.</translation>
 <translation id="8950424402482976779">κορυφή</translation>
 <translation id="8954341524817067858">βουνά</translation>
+<translation id="8957423540740801332">δεξιά</translation>
 <translation id="8960969673307890087">καρπούζια</translation>
 <translation id="8961025972867871808">πιγκουίνοι</translation>
 <translation id="8968751544471797276">Ρυθμός φόρτισης</translation>

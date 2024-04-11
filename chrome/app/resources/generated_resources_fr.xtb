@@ -4520,7 +4520,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4403266582403435904">Restaurez vos données ou changez d'appareil, facilement et à tout moment. Les sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe du compte Google de votre enfant.</translation>
 <translation id="4403775189117163360">Choisir un autre dossier</translation>
 <translation id="4404136731284211429">Analyser de nouveau</translation>
-<translation id="4404619268534288383">Enregistrer et synchroniser les groupes d'onglets</translation>
 <translation id="4404843640767531781">L'application <ph name="APP_NAME" /> est bloquée par un parent. Tu as besoin de leur autorisation pour l'utiliser.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Déplacer vers…</translation>
@@ -5161,7 +5160,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4899696330053002588">Contient des annonces</translation>
 <translation id="490031510406860025">Non autorisée sur ce site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz (entrelacé)</translation>
-<translation id="490056871160016482">Les sites utilisent cette fonctionnalité pour proposer une expérience immersive en plein écran, indépendamment des gestes des utilisateurs</translation>
 <translation id="4900652253009739885">Impossible de supprimer l'unique contacteur associé à "Sélectionner". Appuyez sur une touche pour <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Développer "Récemment fermés"</translation>
 <translation id="4901309472892185668">Sélectionnez l'état du test pour <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5486,7 +5484,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5162905305237671850">Ce <ph name="DEVICE_TYPE" /> a été bloqué</translation>
 <translation id="5163910114647549394">Onglet déplacé à la fin de la barre d'onglets</translation>
 <translation id="5164530241085602114">Notifications non autorisées pour <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Autorisés à passer automatiquement en plein écran</translation>
 <translation id="516747639689914043">Protocole de transfert hypertexte (HTTP)</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5171045022955879922">Rechercher ou saisir une URL</translation>
@@ -5788,7 +5785,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="541737483547792035">Agrandir l'écran</translation>
 <translation id="541822678830750798">Demande d'autorisation de lecture et de modification pour ce site</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Active l'enregistrement et le rappel des groupes d'onglets. Effectuez un clic droit sur un groupe d'onglets pour l'enregistrer. Rappelez les groupes à partir de la barre de favoris</translation>
 <translation id="5420274697768050645">Pour plus de sécurité, exiger un mot de passe pour déverrouiller l'appareil</translation>
 <translation id="5420438158931847627">Détermine la netteté des images et du texte</translation>
 <translation id="5420935737933866496">Copier le &amp;lien</translation>
@@ -6186,6 +6182,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5723967018671998714">Les cookies tiers sont bloqués lorsque vous utilisez le mode navigation privée</translation>
 <translation id="5725112283692663422">Envoyer des commentaires sur la création d'un thème avec l'IA</translation>
 <translation id="5727728807527375859">Les extensions, les applications et les thèmes peuvent endommager votre ordinateur. Voulez-vous vraiment continuer ?</translation>
+<translation id="5728072125198221967">Services Google associés</translation>
 <translation id="5728290366864286776">Cette extension peut lire et modifier les informations du site ou s'exécuter en arrière-plan</translation>
 <translation id="5728450728039149624">Options du verrouillage de l'écran Smart Lock</translation>
 <translation id="572914206753951782">Vérifiez que votre Chromebook est à jour. Ensuite, redémarrez-le et réessayez.</translation>
@@ -8172,7 +8169,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7290242001003353852">Ce service de connexion hébergé par <ph name="SAML_DOMAIN" /> accède actuellement à votre caméra.</translation>
 <translation id="7292067737327289208">Votre <ph name="BEGIN_LINK" />navigateur est géré<ph name="END_LINK" /> par votre organisation, et votre <ph name="BEGIN_LINK" />profil est géré<ph name="END_LINK" /> par <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Non autorisés à passer automatiquement en plein écran</translation>
 <translation id="7295614427631867477">Notez qu'Android, Play et les applications associées sont régis par leurs propres règles d'utilisation et de collecte de données.</translation>
 <translation id="7296503797589217366">Sélectionner le dossier <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Vert foncé</translation>
@@ -9719,7 +9715,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="84297032718407999">Vous allez être déconnecté dans <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Afficher les éléments sélectionnés</translation>
 <translation id="843173223122814223">Créer des arrière-plans avec l'IA</translation>
-<translation id="8432724317983466962">Par défaut, le passage en plein écran nécessite un geste de l'utilisateur</translation>
 <translation id="8433186206711564395">Paramètres réseau</translation>
 <translation id="8434480141477525001">Port de débogage de Native Client</translation>
 <translation id="8436054240208929121">Connectez-vous et activez la synchronisation pour permettre à Chrome de vous suggérer des groupes d'onglets et d'organiser vos onglets</translation>

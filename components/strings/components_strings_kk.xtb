@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">Бұл сайт HTTPS қолдамайды, сондықтан осы хабарландыруды көріп тұрсыз. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Өздігінен жабысатын үлдір</translation>
 <translation id="1430915738399379752">Басып шығару</translation>
-<translation id="1431021750861456539">Автоматты толық экран</translation>
 <translation id="1432187715652018471">Бет қызмет өңдегішін орнатпақ.</translation>
 <translation id="1432581352905426595">Іздеу жүйелерін басқару</translation>
 <translation id="1433225466058025572">Файлдарды қайта жылжытып көріңіз</translation>
@@ -2317,7 +2316,6 @@
     <ph name="LINE_BREAK" />
     Жүйелік әкімшімен хабарласып көріңіз.</translation>
 <translation id="549333378215107354">Өлшемі: 3</translation>
-<translation id="5501712702042287009">автоматты толық экран</translation>
 <translation id="550365051221576010">Барлығын толтыру</translation>
 <translation id="5508443345185481044">Камералар мен бейне жазу құрылғылары</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2498,6 +2496,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Қосу</translation>
 <translation id="5862579898803147654">8-жинастырушы</translation>
+<translation id="5863515189965725638">IBAN нөмірін өңдеу</translation>
 <translation id="5863847714970149516">Бұл бет сізден ақшалай ақы алуға тырысуы мүмкін</translation>
 <translation id="5866257070973731571">Телефон нөмірін қосу</translation>
 <translation id="5866898949289125849">Әзірлеуші құралдары беті ашылды.</translation>

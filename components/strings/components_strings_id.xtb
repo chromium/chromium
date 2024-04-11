@@ -243,7 +243,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1428729058023778569">Anda melihat peringatan ini karena situs ini tidak mendukung HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Film dengan Perekat</translation>
 <translation id="1430915738399379752">Cetak</translation>
-<translation id="1431021750861456539">Layar penuh otomatis</translation>
 <translation id="1432187715652018471">Halaman ingin menginstal pengendali layanan.</translation>
 <translation id="1432581352905426595">Kelola mesin telusur</translation>
 <translation id="1433225466058025572">Coba pindahkan file lagi</translation>
@@ -2318,7 +2317,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
     <ph name="LINE_BREAK" />
     Coba hubungi administrator sistem Anda.</translation>
 <translation id="549333378215107354">Ukuran 3</translation>
-<translation id="5501712702042287009">layar penuh otomatis</translation>
 <translation id="550365051221576010">Isi semua</translation>
 <translation id="5508443345185481044">Kamera &amp; Perekam Video</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Aktifkan</translation>
 <translation id="5862579898803147654">Tempat kertas 8</translation>
+<translation id="5863515189965725638">Edit IBAN</translation>
 <translation id="5863847714970149516">Halaman berikutnya mungkin mencoba menagih Anda.</translation>
 <translation id="5866257070973731571">Tambahkan Nomor Telepon</translation>
 <translation id="5866898949289125849">Anda sedang menampilkan halaman developer tools</translation>

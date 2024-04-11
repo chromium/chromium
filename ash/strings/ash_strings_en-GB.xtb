@@ -1432,7 +1432,6 @@ No devices connected.</translation>
 <translation id="6537924328260219877">Signal strength <ph name="SIGNAL_STRENGTH" />, phone battery <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Download scanning <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Casting to <ph name="RECEIVER_NAME" /></translation>
-<translation id="6546062506073634094">Image search by content and image previews</translation>
 <translation id="6555373427270923730">Type a web address in the address bar, then press <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 New install</translation>

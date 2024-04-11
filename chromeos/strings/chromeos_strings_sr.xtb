@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">лептири</translation>
 <translation id="188114911237521550">Искључите тамни режим</translation>
-<translation id="188268299367474594">Одаберите неки од доступних назива приступне тачке</translation>
 <translation id="1885577615937958993">премотајте медијски садржај унапред</translation>
 <translation id="1887850431809612466">Ревизија хардвера</translation>
 <translation id="189221451253258459">флуоресцентно зелене</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. слика од <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Прецизност покретног зареза</translation>
 <translation id="2448312741937722512">Тип</translation>
-<translation id="2465272316171730950">Капацитет је попуњен. Вратите се ускоро.</translation>
 <translation id="2472215337771558851">Користите Помоћ при писању да бисте направили радну верзију или побољшали постојећи рад који омогућава Google вештачка интелигенција</translation>
 <translation id="2480572840229215612">крабе</translation>
 <translation id="248546197012830854">Уређај је офлајн. Повежите се на WiFi мрежу да бисте видели садржај помоћи.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">прегледајте прозоре</translation>
 <translation id="2513396635448525189">Слика за пријављивање</translation>
 <translation id="2517472476991765520">Скенирај</translation>
-<translation id="2520213071283358374">Користи овај назив приступне тачке</translation>
 <translation id="2521835766824839541">претходна песма</translation>
 <translation id="2526590354069164005">Радна површина</translation>
 <translation id="253029298928638905">Рестартује се...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Маска подмреже</translation>
 <translation id="4454245904991689773">Скенирај у:</translation>
 <translation id="4456812688969919973">Дугме Сачувај назив приступне тачке је сада онемогућено</translation>
-<translation id="4460905888685975163">Коришћење овог назива приступне тачке је сада онемогућено</translation>
 <translation id="4469288414739283461">Чувар екрана са земљом</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Пинговање мрежног пролаза који није подразумеван није успело</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Име хоста сервера</translation>
 <translation id="5089810972385038852">Држава</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Пречица без тастера <ph name="META_KEY" /> може да буде у супротности са пречицом неке апликације. Поново притисните ову пречицу да бисте наставили да је користите или притисните нову пречицу помоћу тастера <ph name="KEY" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Слично:</translation>
 <translation id="5130848777448318809">понији</translation>
@@ -845,6 +842,8 @@
 <translation id="5946538341867151940">Још увек нисте повезани. Ако мобилни оператер препоручује прилагођени назив приступне тачке, унесите га тако што ћете изабрати „+ Нови назив приступне тачке“</translation>
 <translation id="5947266287934282605">Ако је последњи дан у месецу пре овог дана, подаци ће се ресетовати последњег дана у месецу</translation>
 <translation id="5948460390109837040">пси</translation>
+<translation id="594989847980441553">Изаберите Направи да бисте направили слику помоћу вештачке интелигенције.
+        Све направљене слике ће се аутоматски приказивати овде.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">корал</translation>
 <translation id="5984145644188835034">Подразумевана позадина</translation>
@@ -1064,7 +1063,6 @@
 <translation id="7147557737960578492">Поново доделите тако што ћете изабрати нови тастер</translation>
 <translation id="714876143603641390">Повезивање LAN-а</translation>
 <translation id="7154020516215182599">Пошаљите повратне информације или опишите проблем. Ако је то могуће, уврстите кораке за изазивање истог проблема.</translation>
-<translation id="7155037718620478619">Откријте још назива приступне тачке</translation>
 <translation id="7155171745945906037">Постојећа фотографија из камере или датотеке</translation>
 <translation id="7162487448488904999">Галерија</translation>
 <translation id="7170236477717446850">Слика профила</translation>
@@ -1194,6 +1192,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип добављача</translation>
 <translation id="7882501334836096755">Јавни кључ</translation>
+<translation id="78957024357676568">лево</translation>
 <translation id="7897043345768902965">пешачком стазом</translation>
 <translation id="7903695460270716054">Одаберите неке од припремљених илустрација и слика</translation>
 <translation id="7915220255123750251">Управљајте подешавањима назива приступне тачке мреже. Називи приступних тачака успостављају везу између мобилне мреже и интернета.</translation>
@@ -1223,7 +1222,6 @@
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
 <translation id="8076492880354921740">Картице</translation>
 <translation id="8079860070590459552">поље цвећа</translation>
-<translation id="8081553043098820199">Неважећи називи приступних тачака могу да доведу до онемогућавања мобилне везе. Подесите само називе приступних тачака које пружа мобилни оператер или администратор.</translation>
 <translation id="8082366717211101304">DNS не може да се разреши из Android апликација</translation>
 <translation id="8082644724189923105">зона тастатуре</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
@@ -1231,6 +1229,7 @@
 <translation id="8104083085214006426">Користите отворену и необезбеђену мрежу</translation>
 <translation id="811820734797650957">(Android) Мрежни пролаз може да се пингује</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Потврди</translation>
 <translation id="8132480444149501833">Затражи бројаче саобраћаја</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Изаберите <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1255,6 @@
 <translation id="8294431847097064396">Извор</translation>
 <translation id="8302368968391049045">HTTPS заштитни зид</translation>
 <translation id="8312330582793120272">пуштајте медије</translation>
-<translation id="8317819321190319496">Коришћење овог назива приступне тачке је сада омогућено</translation>
 <translation id="8318753676953949627">Нема слика</translation>
 <translation id="8320910311642849813">шума</translation>
 <translation id="8329018942023753850">апликација Калкулатор</translation>
@@ -1282,6 +1280,7 @@
 <translation id="8410244574650205435">Аутоматски изабрано</translation>
 <translation id="8420955526972171689">Покретање тестова и решавање проблема са хардвером</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">надоле</translation>
 <translation id="8431300646573772016">Новости у Chrome ОС-у</translation>
 <translation id="843568408673868420">Повезивање на интернет</translation>
 <translation id="844521431886043384">DNS није подешен</translation>
@@ -1372,6 +1371,7 @@
 <translation id="894617464444543719">Уређај је телефон.</translation>
 <translation id="8950424402482976779">горња</translation>
 <translation id="8954341524817067858">планине</translation>
+<translation id="8957423540740801332">десно</translation>
 <translation id="8960969673307890087">лубенице</translation>
 <translation id="8961025972867871808">пингвини</translation>
 <translation id="8968751544471797276">Брзина пуњења</translation>

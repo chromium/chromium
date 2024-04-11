@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Ortga qaytish</translation>
 <translation id="2546283357679194313">Cookie fayllari va sayt ma’lumotlari</translation>
 <translation id="2550801787432930915">Narx tushishi bildirgisi</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 ta cookie fayl bloklandi}other{# ta cookie fayl bloklandi}}</translation>
 <translation id="2570922361219980984">Bu qurilmada joylashuv xizmati yoqilmagan, uni <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali yoqing.</translation>
 <translation id="257931822824936280">Kengaytirilgan - yig‘ish uchun bosing</translation>
 <translation id="2586657967955657006">Klipbord</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Orqaga qaytarish</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> joylashuvingizni aniqlay olishi uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali Joylashuvni aniqlash xizmatini yoqing.</translation>
 <translation id="8447861592752582886">Qurilma ruxsatini bekor qilish</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 ta cookie fayl ishlatilmoqda}other{# ta cookie fayl ishlatilmoqda}}</translation>
 <translation id="8487700953926739672">Internetsiz foydalanish mumkin</translation>
 <translation id="848952951823693243">Har doim mobil versiya ochilsin</translation>
 <translation id="8499083585497694743">Mikrofon ovozini yoqish</translation>

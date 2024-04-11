@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">Энэ сайт HTTPS-г дэмждэггүй тул та энэ сануулгыг харж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Өөрөө наалддаг хальс</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
-<translation id="1431021750861456539">Автомат бүтэн дэлгэц</translation>
 <translation id="1432187715652018471">хуудас үйлчилгээ зохицуулагчийг суулгахыг хүсэж байна.</translation>
 <translation id="1432581352905426595">Хайлтын системийг удирдах</translation>
 <translation id="1433225466058025572">Файлуудаа дахин зөөж үзнэ үү</translation>
@@ -2319,7 +2318,6 @@
     <ph name="LINE_BREAK" />
     Та системийн админтайгаа холбогдоно уу.</translation>
 <translation id="549333378215107354">Хэмжээ 3</translation>
-<translation id="5501712702042287009">автомат бүтэн дэлгэц</translation>
 <translation id="550365051221576010">Бүгдийг бөглөх</translation>
 <translation id="5508443345185481044">Камер, видео камерууд</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2500,6 +2498,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Асаах</translation>
 <translation id="5862579898803147654">Гарах цаасыг зэрэгцүүлэх тавцан 8</translation>
+<translation id="5863515189965725638">Олон улсын банк акаунтны дугаарыг засах</translation>
 <translation id="5863847714970149516">Дараагийн хуудас танд төлбөр ногдуулж болзошгүй</translation>
 <translation id="5866257070973731571">Утасны дугаар нэмэх</translation>
 <translation id="5866898949289125849">Та хөгжүүлэгч хэрэгслийн хуудсыг харж байна</translation>

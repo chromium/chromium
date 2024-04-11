@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Egin atzera</translation>
 <translation id="2546283357679194313">Cookieak eta webguneetako datuak</translation>
 <translation id="2550801787432930915">Prezio-jaitsieraren txartela</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie blokeatuta}other{# cookie blokeatuta}}</translation>
 <translation id="2570922361219980984">Kokapenerako sarbidea desaktibatuta dago gailu honetan ere. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Zabalduta; egin klik tolesteko.</translation>
 <translation id="2586657967955657006">Arbela</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Atzeratu</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> aplikazioari kokapena erabiltzeko baimena emateko, kokapena erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Kendu gailua erabiltzeko baimena</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Erabiltzen den 1 cookie}other{Erabiltzen diren # cookie}}</translation>
 <translation id="8487700953926739672">Konexiorik gabe erabilgarri</translation>
 <translation id="848952951823693243">Eskatu beti mugikorretarako webgunea</translation>
 <translation id="8499083585497694743">Aktibatu mikrofonoa</translation>

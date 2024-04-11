@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">חזרה</translation>
 <translation id="2546283357679194313">‏קובצי Cookie ונתונים מאתרים</translation>
 <translation id="2550801787432930915">כרטיס לגבי ירידה במחיר</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{‏נחסם קובץ cookie אחד}one{‏נחסמו # קובצי cookie}two{‏נחסמו # קובצי cookie}other{‏נחסמו # קובצי cookie}}</translation>
 <translation id="2570922361219980984">‏גם הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">מורחב - יש ללחוץ כדי לכווץ.</translation>
 <translation id="2586657967955657006">לוח</translation>
@@ -459,7 +458,6 @@
 <translation id="8441146129660941386">הרצה לאחור</translation>
 <translation id="8444433999583714703">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המיקום, צריך להפעיל את המיקום גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">שלילת הרשאות מכשיר</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{‏קובץ cookie אחד נמצא בשימוש}one{‏# קובצי cookie נמצאים בשימוש}two{‏# קובצי cookie נמצאים בשימוש}other{‏# קובצי cookie נמצאים בשימוש}}</translation>
 <translation id="8487700953926739672">זמין אופליין</translation>
 <translation id="848952951823693243">תמיד תוצג בקשה לגרסת האתר לנייד</translation>
 <translation id="8499083585497694743">ביטול של השתקת המיקרופון</translation>

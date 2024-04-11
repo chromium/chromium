@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">skoenlappers</translation>
 <translation id="188114911237521550">Skakel donkermodus af</translation>
-<translation id="188268299367474594">Kies uit beskikbare APN’s</translation>
 <translation id="1885577615937958993">spoel media vorentoe</translation>
 <translation id="1887850431809612466">Hardewarehersiening</translation>
 <translation id="189221451253258459">neongroen</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Prent <ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Akkuraatheid van wisselpunt</translation>
 <translation id="2448312741937722512">Soort</translation>
-<translation id="2465272316171730950">Ons het nie tans kapasiteit nie. Kom asseblief ’n bietjie later terug.</translation>
 <translation id="2472215337771558851">Gebruik Help my skryf om ’n konsep te skep of om bestaande werk af te rond, aangedryf deur Google AI</translation>
 <translation id="2480572840229215612">krappe</translation>
 <translation id="248546197012830854">Toestel is vanlyn. Koppel aan wi-fi-netwerk om hulpinhoud te sien.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">wys vensters</translation>
 <translation id="2513396635448525189">Aanmeldprent</translation>
 <translation id="2517472476991765520">Skandeer</translation>
-<translation id="2520213071283358374">Gebruik hierdie APN</translation>
 <translation id="2521835766824839541">vorige snit</translation>
 <translation id="2526590354069164005">Rekenaar</translation>
 <translation id="253029298928638905">Herbegin tans …</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Subnetmasker</translation>
 <translation id="4454245904991689773">Skandeer na</translation>
 <translation id="4456812688969919973">Stoor APN-knoppie is nou gedeaktiveer</translation>
-<translation id="4460905888685975163">Gebruik hierdie APN is nou gedeaktiveer</translation>
 <translation id="4469288414739283461">Aardevloeisluimerskerm</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kon nie die nieversteknetwerkdeurgang pieng nie</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Bediener se gasheernaam</translation>
 <translation id="5089810972385038852">Deelstaat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">op</translation>
 <translation id="5107243100836678918">Kortpad sonder <ph name="META_KEY" />-sleutel kan dalk met sommige apps se kortpad bots. Druk weer hierdie kortpad om voort te gaan om dit te gebruik, of druk ’n nuwe kortpad deur die <ph name="KEY" />-sleutel te gebruik. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Soortgelyk:</translation>
 <translation id="5130848777448318809">ponies</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Wys weer toe deur ’n nuwe sleutel te kies</translation>
 <translation id="714876143603641390">LAN-konnektiwiteit</translation>
 <translation id="7154020516215182599">Deel jou terugvoer of beskryf jou kwessie. Sluit indien moontlik stappe in om jou kwessie te herproduseer.</translation>
-<translation id="7155037718620478619">Ontdek meer APN’s</translation>
 <translation id="7155171745945906037">Bestaande foto in kamera of lêer</translation>
 <translation id="7162487448488904999">Galery</translation>
 <translation id="7170236477717446850">Profielprent</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Verskaffertipe</translation>
 <translation id="7882501334836096755">Publieke sleutel</translation>
+<translation id="78957024357676568">links</translation>
 <translation id="7897043345768902965">wandelpad</translation>
 <translation id="7903695460270716054">Kies saamgestelde kunswerke en prente</translation>
 <translation id="7915220255123750251">Bestuur netwerk-APN-instellings. APN’e vestig ’n verbinding tussen ’n selnetwerk en die internet.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Oorblywende batterykrag</translation>
 <translation id="8076492880354921740">Oortjies</translation>
 <translation id="8079860070590459552">veld met blomme</translation>
-<translation id="8081553043098820199">Ongeldige APN’s kan veroorsaak dat jou mobiele verbinding gedeaktiveer word. Stel net APN’s wat deur jou mobielediensverskaffer of administrateur verskaf word.</translation>
 <translation id="8082366717211101304">Kan nie DNS van Android-programme af oplos nie</translation>
 <translation id="8082644724189923105">sleutelbord sone</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Jy gebruik tans 'n oop en onveilige netwerk</translation>
 <translation id="811820734797650957">(Android) Deurgang kan gepieng word</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8131740175452115882">Bevestig</translation>
 <translation id="8132480444149501833">Versoek verkeertellers</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Kies <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8302368968391049045">HTTPS-brandmuur</translation>
 <translation id="8312330582793120272">speel media</translation>
-<translation id="8317819321190319496">Gebruik hierdie APN is nou geaktiveer</translation>
 <translation id="8318753676953949627">Geen prente nie</translation>
 <translation id="8320910311642849813">woud</translation>
 <translation id="8329018942023753850">sakrekenaarapp</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Outomaties bespeur</translation>
 <translation id="8420955526972171689">Doen toetse en foutsporing vir hardewarekwessies</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">af</translation>
 <translation id="8431300646573772016">Wat's nuut in ChromeOS</translation>
 <translation id="843568408673868420">Internetkonnektiwiteit</translation>
 <translation id="844521431886043384">DNS is nie opgestel nie</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Toestel is 'n foon.</translation>
 <translation id="8950424402482976779">bo</translation>
 <translation id="8954341524817067858">berge</translation>
+<translation id="8957423540740801332">regs</translation>
 <translation id="8960969673307890087">waatlemoene</translation>
 <translation id="8961025972867871808">pikkewyne</translation>
 <translation id="8968751544471797276">Laaikoers</translation>

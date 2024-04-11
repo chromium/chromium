@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Վերադառնալ</translation>
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
 <translation id="2550801787432930915">«Գնիջեցում» քարտ</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Արգելափակվել է 1 քուքի ֆայլ}one{Արգելափակվել է # քուքի ֆայլ}other{Արգելափակվել է # քուքի ֆայլ}}</translation>
 <translation id="2570922361219980984">Այս սարքի տեղորոշումը նույնպես անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="257931822824936280">Ընդարձակված - կոծկելու համար սեղմեք:</translation>
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Որոնել դեպի հետ</translation>
 <translation id="8444433999583714703">Որպեսզի ձեր տեղադրությունը հասանելի դառնա <ph name="APP_NAME" />-ին, միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="8447861592752582886">Արգելել սարքի օգտագործումը</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 օգտագործվող քուքի}one{# օգտագործվող քուքի}other{# օգտագործվող քուքի}}</translation>
 <translation id="8487700953926739672">Մատչելի է անցանց ռեժիմում</translation>
 <translation id="848952951823693243">Միշտ պահանջել կայքի բջջային տարբերակը</translation>
 <translation id="8499083585497694743">Միացնել խոսափողը</translation>

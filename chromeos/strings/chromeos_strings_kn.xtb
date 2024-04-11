@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">ಚಿಟ್ಟೆಗಳು</translation>
 <translation id="188114911237521550">ಕತ್ತಲೆ ಮೋಡ್ ಆಫ್ ಮಾಡಿ</translation>
-<translation id="188268299367474594">ಲಭ್ಯವಿರುವ APN ಗಳಿಂದ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="1885577615937958993">ಮಾಧ್ಯಮವನ್ನು ಫಾಸ್ಟ್ ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="1887850431809612466">ಹಾರ್ಡ್‌ವೇರ್ ಪರಿಷ್ಕರಣೆ</translation>
 <translation id="189221451253258459">ನಿಯಾನ್ ಹಸಿರು</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">ಚಿತ್ರ <ph name="TOTAL_PAGES" /> ರಲ್ಲಿ <ph name="CURRENT_PAGE" /></translation>
 <translation id="2446553403094072641">ಫ್ಲೋಟಿಂಗ್ ಪಾಯಿಂಟ್ ನಿಖರತೆ</translation>
 <translation id="2448312741937722512">ಪ್ರಕಾರ</translation>
-<translation id="2465272316171730950">ಪ್ರಸ್ತುತ ಓವರ್‌ಲೋಡ್ ಆಗಿದೆ. ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2472215337771558851">Google AI ನಿಂದ ಚಾಲಿತ, ಡ್ರಾಫ್ಟ್ ರಚಿಸಲು ಅಥವಾ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಕೆಲಸವನ್ನು ರೀಫೈನ್ ಮಾಡುವುದಕ್ಕೆ ನನಗೆ ಬರೆಯಲು ಸಹಾಯ ಮಾಡಿ ಎಂಬುದನ್ನು ಬಳಸಿ</translation>
 <translation id="2480572840229215612">ಏಡಿಗಳು</translation>
 <translation id="248546197012830854">ಸಾಧನ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ. ಸಹಾಯ ವಿಷಯವನ್ನು ನೋಡಲು ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2513396635448525189">ಲಾಗಿನ್ ಚಿತ್ರ</translation>
 <translation id="2517472476991765520">ಸ್ಕ್ಯಾನ್</translation>
-<translation id="2520213071283358374">ಈ APN ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="2521835766824839541">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="2526590354069164005">ಡೆಸ್ಕ್‌ಟಾಪ್</translation>
 <translation id="253029298928638905">ಮರುಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">ಸಬ್‌ನೆಟ್‌ ಮಾಸ್ಕ್‌</translation>
 <translation id="4454245904991689773">ಇದರಲ್ಲಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="4456812688969919973">APN ಸೇವ್ ಮಾಡಿ ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="4460905888685975163">'ಈ APN ಅನ್ನು ಬಳಸಿ' ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4469288414739283461">ಭೂಮಿ ತಿರುಗುವ ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4483049906298469269">ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">ಸರ್ವರ್ ಹೋಸ್ಟ್ ಹೆಸರು</translation>
 <translation id="5089810972385038852">ರಾಜ್ಯ</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">ಮೇಲಕ್ಕೆ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> ಕೀ ಇಲ್ಲದ ಶಾರ್ಟ್‌ಕಟ್ ಕೆಲವು ಆ್ಯಪ್‌ಗಳ ಶಾರ್ಟ್‌ಕಟ್‌ನೊಂದಿಗೆ ಹೊಂದಿಕೊಳ್ಳದೇ ಇರಬಹುದು. ಇದನ್ನು ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿ ಅಥವಾ <ph name="KEY" /> ಕೀ ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">ಸಮಾನ:</translation>
 <translation id="5130848777448318809">ಪೋನಿಗಳು</translation>
@@ -1066,7 +1063,6 @@
 <translation id="7147557737960578492">ಹೊಸ ಕೀ ಒಂದನ್ನು ಆಯ್ಕೆ ಮಾಡುವ ಮೂಲಕ ಮರು ಆಯೋಜಿಸಿ</translation>
 <translation id="714876143603641390">LAN ಕನೆಕ್ಟಿವಿಟಿ</translation>
 <translation id="7154020516215182599">ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ. ಸಾಧ್ಯವಾದರೆ, ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ಮರು ರಚಿಸಲು ಹಂತಗಳನ್ನು ಸೇರಿಸಿ.</translation>
-<translation id="7155037718620478619">ಇನ್ನಷ್ಟು APN ಗಳನ್ನು ಅನ್ವೇಷಿಸಿ</translation>
 <translation id="7155171745945906037">ಕ್ಯಾಮರಾ ಅಥವಾ ಫೈಲ್‌ನಿಂದ ಪ್ರಸ್ತುತ ಫೋಟೋ</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">ಪ್ರೊಫೈಲ್‌ ಚಿತ್ರ</translation>
@@ -1196,12 +1192,14 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ಪೂರೈಕೆದಾರರ ಪ್ರಕಾರ</translation>
 <translation id="7882501334836096755">ಸಾರ್ವಜನಿಕ ಕೀ</translation>
+<translation id="78957024357676568">ಎಡಕ್ಕೆ</translation>
 <translation id="7897043345768902965">ವಾಕ್‌ವೇ</translation>
 <translation id="7903695460270716054">ಕ್ಯುರೇಟೆಡ್ ಕಲಾಕೃತಿ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7915220255123750251">ನೆಟ್‌ವರ್ಕ್ APN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ. APN ಗಳು ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಹಾಗೂ ಇಂಟರ್ನೆಟ್ ನಡುವೆ ಕನೆಕ್ಷನ್ ಅನ್ನು ಸ್ಥಾಪಿಸುತ್ತವೆ.</translation>
 <translation id="7936303884198020182">ಹೆಸರು ಇಲ್ಲದ ಸರ್ವರ್‌ಗಳು ಕಂಡುಬಂದಿವೆ.</translation>
 <translation id="7942349550061667556">ಕೆಂಪು</translation>
 <translation id="7943235353293548836">ನಿರಂತರ ಕೀಪ್-ಅಲೈವ್ ಇಂಟರ್‌ವಲ್</translation>
+<translation id="7943516765291457328">ಸಮೀಪದ ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ಬ್ಲೂಟೂತ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="7944562637040950644">ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="7953669802889559161">ಇನ್‌ಪುಟ್‌ಗಳು</translation>
 <translation id="7955587717700691983">ಬ್ಲೂಟೂತ್ ಕೀಬೋರ್ಡ್</translation>
@@ -1225,7 +1223,6 @@
 <translation id="8075838845814659848">ಉಳಿದಿರುವ ಚಾರ್ಜ್</translation>
 <translation id="8076492880354921740">ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="8079860070590459552">ಹೂದೋಟ</translation>
-<translation id="8081553043098820199">ಅಮಾನ್ಯವಾದ APN ಗಳು ನಿಮ್ಮ ಮೊಬೈಲ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಕಾರಣವಾಗಬಹುದು. ನಿಮ್ಮ ಮೊಬೈಲ್ ಪೂರೈಕೆದಾರರು ಅಥವಾ ನಿರ್ವಾಹಕರು ಒದಗಿಸುವ APN ಗಳನ್ನು ಮಾತ್ರ ಸೆಟ್ ಮಾಡಿ.</translation>
 <translation id="8082366717211101304">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ DNS ಅನ್ನು ಬಗೆಹರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="8082644724189923105">ಕೀಬೋರ್ಡ್ ಝೋನ್</translation>
 <translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>
@@ -1233,6 +1230,7 @@
 <translation id="8104083085214006426">ನೀವು ಓಪನ್ ಮತ್ತು ಸುರಕ್ಷಿತವಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ</translation>
 <translation id="811820734797650957">(Android) ಗೇಟ್‌ವೇ ಅನ್ನು ಪಿಂಗ್ ಮಾಡಬಹುದು</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
 <translation id="8132480444149501833">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -1258,7 +1256,6 @@
 <translation id="8294431847097064396">ಮೂಲ</translation>
 <translation id="8302368968391049045">HTTPS ಫೈರ್‌ವಾಲ್</translation>
 <translation id="8312330582793120272">ಮಾಧ್ಯಮವನ್ನು ಪ್ಲೇ ಮಾಡಿ</translation>
-<translation id="8317819321190319496">'ಈ APN ಅನ್ನು ಬಳಸಿ' ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8318753676953949627">ಯಾವುದೇ ಚಿತ್ರಗಳಿಲ್ಲ</translation>
 <translation id="8320910311642849813">ಕಾಡು</translation>
 <translation id="8329018942023753850">ಕ್ಯಾಲ್ಕ್ಯುಲೇಟರ್ ಆ್ಯಪ್</translation>
@@ -1284,6 +1281,7 @@
 <translation id="8410244574650205435">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="8420955526972171689">ಹಾರ್ಡ್‌ವೇರ್ ಸಮಸ್ಯೆಗಳಿಗಾಗಿ ಪರೀಕ್ಷೆಗಳು ಹಾಗೂ ಸಮಸ್ಯೆ ನಿವಾರಣೆಯನ್ನು ರನ್ ಮಾಡಿ</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">ಕೆಳಗೆ</translation>
 <translation id="8431300646573772016">ChromeOS ನಲ್ಲಿ ಹೊಸದೇನಿದೆ</translation>
 <translation id="843568408673868420">ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ</translation>
 <translation id="844521431886043384">DNS ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿಲ್ಲ</translation>
@@ -1331,6 +1329,7 @@
 <translation id="8747900814994928677">ಬದಲಾವಣೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8749478549112817787">ಕ್ಯಾಮರಾದ ಹಿನ್ನೆಲೆ</translation>
 <translation id="8755946156089753497">ಗೋಪುರ</translation>
+<translation id="8756235582947991808">AI ಮೂಲಕ ರಚಿಸುವುದು ಹೇಗೆ ಹಾಗೂ ನೆನಪಿಡಬೇಕಾದ ಕೆಲವು ವಿಷಯಗಳು</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ಆಲ್ಬಮ್‌</translation>
 <translation id="8775713578693478175">ಮೋಡೆಮ್ APN</translation>
@@ -1374,6 +1373,7 @@
 <translation id="894617464444543719">ಸಾಧನವು ಫೋನ್ ಆಗಿದೆ.</translation>
 <translation id="8950424402482976779">ಮೇಲೆ</translation>
 <translation id="8954341524817067858">ಬೆಟ್ಟಗಳು</translation>
+<translation id="8957423540740801332">ಬಲಕ್ಕೆ</translation>
 <translation id="8960969673307890087">ಕಲ್ಲಂಗಡಿಗಳು</translation>
 <translation id="8961025972867871808">ಪೆಂಗ್ವಿನ್‌ಗಳು</translation>
 <translation id="8968751544471797276">ಚಾರ್ಜಿಂಗ್ ರೇಟ್</translation>

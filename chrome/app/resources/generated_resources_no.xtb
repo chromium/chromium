@@ -979,6 +979,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1720318856472900922">Autentisering av tjeneren TLS WWW</translation>
 <translation id="172123215662733643">Søk etter bilder med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> administreres<ph name="END_LINK" /> av <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="1723166841621737307">Hvordan bidrar data til at Chrome fungerer bedre for deg?</translation>
 <translation id="1723824996674794290">&amp;Nytt vindu</translation>
 <translation id="1724801751621173132">Inndatamodus</translation>
 <translation id="1725562816265788801">Fanerulling</translation>
@@ -1002,6 +1003,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1743970419083351269">Lukk nedlastingsraden</translation>
 <translation id="1744108098763830590">bakgrunnsside</translation>
 <translation id="1745732479023874451">Administrer kontakter</translation>
+<translation id="1746797507422124818">Dataene dine når du surfer</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Vil du åpne og redigere # filer i denne nettappen?}}</translation>
 <translation id="1748329107062243374">Bruk en passnøkkel fra <ph name="DEVICE_NAME" /> for å logge på <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Du kan lagre dette passordet i Google-kontoen din eller bare på denne enheten</translation>
@@ -4465,6 +4467,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4357583358198801992">Vis fanegrupper</translation>
 <translation id="4358361163731478742">Ingen apper støtter valg av appspråk</translation>
 <translation id="4358643842961018282">Enheten er oppdatert</translation>
+<translation id="4358995225307748864">Velg appen du vil åpne</translation>
 <translation id="4359408040881008151">Installert på grunn av avhengige utvidelser.</translation>
 <translation id="4359717112757026264">Bybilde</translation>
 <translation id="4359809482106103048">Kort fortalt om sikkerhet</translation>
@@ -4527,7 +4530,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4403266582403435904">Gjenopprett data eller bytt enhet enkelt når som helst. Sikkerhetskopier lastes opp til Google og krypteres med passordet for barnets Google-konto.</translation>
 <translation id="4403775189117163360">Velg en annen mappe</translation>
 <translation id="4404136731284211429">Gjennomsøk på nytt</translation>
-<translation id="4404619268534288383">Lagring og synkronisering av fanegrupper</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> er blokkert av forelderen din. Spør forelderen din om tillatelse til å bruke denne appen.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Flytt til …</translation>
@@ -4631,6 +4633,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> startet på nytt uventet</translation>
 <translation id="4481467543947557978">Service Worker</translation>
 <translation id="4482990632723642375">Nylig lukket fane</translation>
+<translation id="4485245862007675842">Chrome får nettet til å fungere bedre for deg</translation>
 <translation id="4486333480498805415">Posisjonsnøyaktighet</translation>
 <translation id="4487489714832036847">Chromebook bruker apper i stedet for tradisjonell programvare. Skaff deg apper for produktivitet, underholdning med mer.</translation>
 <translation id="4488257340342212116">Nettsteder som har lov til å bruke kameraet ditt</translation>
@@ -5168,7 +5171,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4899696330053002588">Inneholder annonser</translation>
 <translation id="490031510406860025">Ikke tillatt på dette nettstedet</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – linjefletting</translation>
-<translation id="490056871160016482">Nettsteder bruker denne funksjonen for å tilby engasjerende fullskjermopplevelser uavhengig av brukerbevegelser</translation>
 <translation id="4900652253009739885">Kan ikke fjerne den eneste bryteren som er tilordnet «Velg». Trykk på en valgfri tast for å <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Vis nylig lukkede</translation>
 <translation id="4901309472892185668">Velg eksperimenttilstand for <ph name="EXPERIMENT_NAME" />-eksperimentet.</translation>
@@ -5493,7 +5495,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> er blokkert</translation>
 <translation id="5163910114647549394">Fanen er flyttet til slutten av faneraden</translation>
 <translation id="5164530241085602114">Varsler er ikke tillatt for <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Nettsteder som har lov til å gå over i fullskjerm automatisk</translation>
 <translation id="516747639689914043">Protokoll for hypertekstoverføring (HTTP)</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5171045022955879922">Søk, eller skriv inn en nettadresse</translation>
@@ -5794,7 +5795,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="541737483547792035">Forstørr skjermen</translation>
 <translation id="541822678830750798">Ber om å få lese og endre dette nettstedet</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Gjør det mulig å lagre og gjenopprette fanegrupper. Høyreklikk på en fanegruppe for å lagre den. Gjenopprett grupper fra bokmerkeraden.</translation>
 <translation id="5420274697768050645">Krev passord for å låse opp enheten, for ekstra sikkerhet</translation>
 <translation id="5420438158931847627">Bestemmer skarpheten på tekst og bilder</translation>
 <translation id="5420935737933866496">Kopier &amp;linken</translation>
@@ -6191,6 +6191,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5723967018671998714">Informasjonskapsler fra tredjeparter er blokkert i inkognitomodus</translation>
 <translation id="5725112283692663422">Send tilbakemelding om Lag tema med AI</translation>
 <translation id="5727728807527375859">Utvidelser, programtillegg og temaer kan skade datamaskinen. Er du sikker på at du vil fortsette?</translation>
+<translation id="5728072125198221967">Sammenknyttede Google-tjenester</translation>
 <translation id="5728290366864286776">Denne utvidelsen kan lese og endre nettstedinformasjon eller kjøre i bakgrunnen</translation>
 <translation id="5728450728039149624">Alternativer for Smart Lock-skjermlåsen</translation>
 <translation id="572914206753951782">Sørg for at Chromebooken er oppdatert til nyeste versjon. Start deretter Chromebooken på nytt, og prøv igjen.</translation>
@@ -6272,6 +6273,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5793339252089865437">Hvis du laster ned oppdateringen via mobilnettverket ditt, kan det føre til ekstrakostnader.</translation>
 <translation id="5793420564274426163">Bekreftelse på sammenkobling</translation>
 <translation id="5794034487966529952">Skrivebordet <ph name="DESK_TITLE" /> har <ph name="NUM_BROWSERS" /> åpne nettleservinduer</translation>
+<translation id="5794086402489402632">Hva er forskjellen mellom nettleser- og søkeloggen?</translation>
 <translation id="5794414402486823030">Åpne alltid med systemvisningsprogrammet</translation>
 <translation id="5794700615121138172">Delte mapper i Linux</translation>
 <translation id="5794786537412027208">Avslutt alle Chrome-apper</translation>
@@ -8057,6 +8059,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7196913789568937443">Sikkerhetskopiér til Google Disk. Gjenopprett data eller bytt enhet når som helst – helt enkelt. Sikkerhetskopiene dine lastes opp til Google og krypteres med passordet for Google-kontoen din. <ph name="BEGIN_LINK1" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Få Google Søk og smarte funksjoner fra Google hver gang du surfer på nettet</translation>
 <translation id="719791532916917144">Hurtigtast</translation>
+<translation id="7197958763276896180">Hvorfor slutter Chrome med informasjonskapsler fra tredjeparter?</translation>
 <translation id="7198503619164954386">Du må bruke en bedriftsregistrert enhet</translation>
 <translation id="7199158086730159431">Få hjelp</translation>
 <translation id="7199452998289813782">Sett castingen til <ph name="DEVICE_NAME" /> på pause</translation>
@@ -8175,7 +8178,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7290242001003353852">Denne påloggingstjenesten, som driftes av <ph name="SAML_DOMAIN" />, har tilgang til kameraet ditt</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Nettleseren din administreres<ph name="END_LINK" /> av organisasjonen din, og <ph name="BEGIN_LINK" />profilen din administreres<ph name="END_LINK" /> av <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Nettsteder som ikke har lov til å gå over i fullskjerm automatisk</translation>
 <translation id="7295614427631867477">Merk at Android, Play og tilknyttede apper er styrt av sine egne retningslinjer for datainnsamling og bruk.</translation>
 <translation id="7296503797589217366">Velg mappen <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Mørk grønn</translation>
@@ -9722,7 +9724,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="84297032718407999">Du logges av om <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Vis trykk</translation>
 <translation id="843173223122814223">Lag bakgrunner med AI</translation>
-<translation id="8432724317983466962">Overgang til fullskjerm krever som standard en brukerbevegelse</translation>
 <translation id="8433186206711564395">Nettverksinnstillinger</translation>
 <translation id="8434480141477525001">Feilsøkingsport for NaCl</translation>
 <translation id="8436054240208929121">Logg på og slå på synkronisering for å la Chrome foreslå fanegrupper og organisere fanene dine</translation>

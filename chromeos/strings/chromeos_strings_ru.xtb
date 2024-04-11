@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">бабочки</translation>
 <translation id="188114911237521550">Выключить тёмную тему</translation>
-<translation id="188268299367474594">Выберите точку доступа из предложенных вариантов</translation>
 <translation id="1885577615937958993">перемотать вперед</translation>
 <translation id="1887850431809612466">Версия оборудования</translation>
 <translation id="189221451253258459">неоново-зеленый</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Изображение: <ph name="CURRENT_PAGE" /> из <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Точность чисел с плавающей запятой</translation>
 <translation id="2448312741937722512">Тип</translation>
-<translation id="2465272316171730950">Нет свободных ресурсов. Повторите попытку позже.</translation>
 <translation id="2472215337771558851">Генератор текстов создаст черновик или поможет улучшить существующий текст, используя технологии ИИ от Google.</translation>
 <translation id="2480572840229215612">крабы</translation>
 <translation id="248546197012830854">Устройство не подключено к интернету. Подключитесь к сети Wi-Fi, чтобы посмотреть справочный контент.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">показать окна</translation>
 <translation id="2513396635448525189">Изображение на экране входа</translation>
 <translation id="2517472476991765520">Сканировать</translation>
-<translation id="2520213071283358374">Использовать эту точку доступа</translation>
 <translation id="2521835766824839541">предыдущий трек</translation>
 <translation id="2526590354069164005">Рабочий стол</translation>
 <translation id="253029298928638905">Перезапуск…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Маска подсети</translation>
 <translation id="4454245904991689773">Место сохранения</translation>
 <translation id="4456812688969919973">Кнопка "Сохранить точку доступа" недоступна</translation>
-<translation id="4460905888685975163">Кнопка "Использовать эту точку доступа" отключена</translation>
 <translation id="4469288414739283461">Динамическая заставка с Землей</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Имя хоста сервера</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">вверх</translation>
 <translation id="5107243100836678918">Сочетание без клавиши <ph name="META_KEY" /> может конфликтовать с сочетаниями клавиш некоторых приложений. Нажмите это сочетание клавиш ещё раз, чтобы продолжить его использовать, или выберите новое с клавишей <ph name="KEY" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Синонимы:</translation>
 <translation id="5130848777448318809">пони</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Переназначьте, выбрав новую клавишу.</translation>
 <translation id="714876143603641390">Подключение к локальной сети</translation>
 <translation id="7154020516215182599">Оставьте отзыв или опишите проблему. Если возможно, укажите действия для воспроизведения проблемы.</translation>
-<translation id="7155037718620478619">Найти точки доступа</translation>
 <translation id="7155171745945906037">Фото с камеры или из галереи</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7170236477717446850">Фото профиля</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип провайдера</translation>
 <translation id="7882501334836096755">Открытый ключ</translation>
+<translation id="78957024357676568">влево</translation>
 <translation id="7897043345768902965">тротуар</translation>
 <translation id="7903695460270716054">Выбрать произведения искусства и красивые фото</translation>
 <translation id="7915220255123750251">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Уровень заряда</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8079860070590459552">поле с цветами</translation>
-<translation id="8081553043098820199">Из-за недопустимой точки доступа подключение к мобильной сети может быть потеряно. Используйте только варианты, предложенные мобильным оператором или администратором.</translation>
 <translation id="8082366717211101304">Не удается выполнить DNS-преобразование в приложениях для Android.</translation>
 <translation id="8082644724189923105">зона клавиатуры</translation>
 <translation id="808894953321890993">Сменить пароль</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Вы используете открытую небезопасную сеть.</translation>
 <translation id="811820734797650957">Запрос ping к шлюзу (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8132480444149501833">Запросить счетчики трафика</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Выбрать вариант "<ph name="TOPIC_SOURCE" />" (<ph name="TOPIC_SOURCE_DESC" />)</translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Источник</translation>
 <translation id="8302368968391049045">Брандмауэр HTTPS</translation>
 <translation id="8312330582793120272">воспроизвести медиаконтент</translation>
-<translation id="8317819321190319496">Кнопка "Использовать эту точку доступа" включена</translation>
 <translation id="8318753676953949627">Нет изображений</translation>
 <translation id="8320910311642849813">лес</translation>
 <translation id="8329018942023753850">приложение "Калькулятор"</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Определена автоматически</translation>
 <translation id="8420955526972171689">Запускайте тесты и устраняйте неполадки аппаратного обеспечения.</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">вниз</translation>
 <translation id="8431300646573772016">Что нового в Chrome OS</translation>
 <translation id="843568408673868420">Подключение к интернету</translation>
 <translation id="844521431886043384">DNS-сервер не настроен.</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Это телефон.</translation>
 <translation id="8950424402482976779">сверху</translation>
 <translation id="8954341524817067858">горы</translation>
+<translation id="8957423540740801332">вправо</translation>
 <translation id="8960969673307890087">арбузы</translation>
 <translation id="8961025972867871808">пингвины</translation>
 <translation id="8968751544471797276">Скорость зарядки</translation>

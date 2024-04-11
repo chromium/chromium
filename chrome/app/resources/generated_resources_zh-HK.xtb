@@ -4530,7 +4530,6 @@
 <translation id="4403266582403435904">隨時輕鬆還原資料或轉用裝置。備份會上載至 Google，並使用您子女的 Google 帳戶密碼加密。</translation>
 <translation id="4403775189117163360">選擇其他資料夾</translation>
 <translation id="4404136731284211429">重新掃瞄</translation>
-<translation id="4404619268534288383">儲存及同步分頁群組</translation>
 <translation id="4404843640767531781">您的家長已封鎖「<ph name="APP_NAME" />」。請要求家長授權使用此應用程式。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移至…</translation>
@@ -5172,7 +5171,6 @@
 <translation id="4899696330053002588">包含廣告</translation>
 <translation id="490031510406860025">不允許在此網站執行</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - 交錯顯示</translation>
-<translation id="490056871160016482">無論使用者用什麼手勢，網站都會使用此功能來提供沉浸式全螢幕體驗</translation>
 <translation id="4900652253009739885">這是為「選取」動作指派的唯一按鍵，因此無法移除。按任何鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="4901154724271753917">展開最近關閉的分頁</translation>
 <translation id="4901309472892185668">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。</translation>
@@ -5497,7 +5495,6 @@
 <translation id="5162905305237671850">已封鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">分頁移咗去分頁欄嘅最尾</translation>
 <translation id="5164530241085602114">已禁止 <ph name="SITE" /> 傳送通知</translation>
-<translation id="5165989352025966137">已允許自動進入全螢幕模式</translation>
 <translation id="516747639689914043">超文本傳輸協定 (HTTP)</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
@@ -5799,7 +5796,6 @@
 <translation id="541737483547792035">放大畫面</translation>
 <translation id="541822678830750798">正在要求讀取及變更此網站</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">啟用儲存及恢復分頁群組的功能。如要儲存分頁群組，請在群組上按一下右鍵；如要恢復分頁群組，請使用書籤列。</translation>
 <translation id="5420274697768050645">需要使用密碼解鎖裝置以提升安全性</translation>
 <translation id="5420438158931847627">決定文字和圖片的銳利度</translation>
 <translation id="5420935737933866496">複製連結(&amp;L)</translation>
@@ -6194,6 +6190,7 @@
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5725112283692663422">提供你對「以 AI 製作主題」的意見</translation>
 <translation id="5727728807527375859">擴充功能、應用程式及主題可能損害您的電腦，確定要繼續嗎？</translation>
+<translation id="5728072125198221967">連結的 Google 服務</translation>
 <translation id="5728290366864286776">此擴充程式可讀取及變更網站資料，或在背景中執行</translation>
 <translation id="5728450728039149624">Smart Lock 螢幕鎖定選項</translation>
 <translation id="572914206753951782">請確認 Chromebook 已更新至最新版本。然後，請重新啟動 Chromebook，並再試一次。</translation>
@@ -8178,7 +8175,6 @@
 <translation id="7290242001003353852">此登入服務商 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的相機。</translation>
 <translation id="7292067737327289208">你的<ph name="BEGIN_LINK" />瀏覽器<ph name="END_LINK" />由機構管理，<ph name="BEGIN_LINK" />個人檔案<ph name="END_LINK" />則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">不允許自動進入全螢幕模式</translation>
 <translation id="7295614427631867477">請注意，Android、Google Play 以及相關聯的應用程式受各自的資料收集政策和使用政策管限。</translation>
 <translation id="7296503797589217366">揀資料夾：<ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">深綠色</translation>
@@ -9724,7 +9720,6 @@
 <translation id="84297032718407999">您將於 <ph name="LOGOUT_TIME_LEFT" />後登出</translation>
 <translation id="8431190899827883166">顯示輕按選項</translation>
 <translation id="843173223122814223">以 AI 製作背景</translation>
-<translation id="8432724317983466962">根據預設，使用者需要使用手勢才能進入全螢幕模式</translation>
 <translation id="8433186206711564395">網絡設定</translation>
 <translation id="8434480141477525001">NaCl 偵錯連接埠</translation>
 <translation id="8436054240208929121">登入並開啟同步功能，允許 Chrome 提供分頁群組建議及整理分頁</translation>

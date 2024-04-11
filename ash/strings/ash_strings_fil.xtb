@@ -226,6 +226,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1864454756846565995">USB-C device (port sa rear)</translation>
 <translation id="1869497990620230175">Mga mabilisang file</translation>
 <translation id="1871023081802165724">Mag-play ng media</translation>
+<translation id="1871915835366697861">Hindi available para sa larong ito</translation>
 <translation id="1879018240766558464">Kasalukuyang hindi sinusuportahan ang mga Incognito window. Mase-save ang iba pang app.</translation>
 <translation id="1882814835921407042">Walang mobile network</translation>
 <translation id="1882897271359938046">Nagmi-mirror sa <ph name="DISPLAY_NAME" /></translation>
@@ -1432,7 +1433,6 @@ Walang nakakonektang device.</translation>
 <translation id="6537924328260219877">Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Baterya ng Telepono <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Sina-scan ang <ph name="FILENAME" /> para sa pag-download</translation>
 <translation id="6542521951477560771">Nagka-cast sa <ph name="RECEIVER_NAME" /></translation>
-<translation id="6546062506073634094">Paghahanap ng larawan ayon sa mga preview ng content at larawan</translation>
 <translation id="6555373427270923730">Mag-type ng address sa web sa address bar, at pagkatapos ay pindutin ang <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Kaka-install lang</translation>
@@ -1791,6 +1791,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="79341161159229895">Pinamamahalaan nina <ph name="FIRST_PARENT_EMAIL" /> at <ph name="SECOND_PARENT_EMAIL" /> ang account</translation>
 <translation id="793716872548410480">Pindutin ang <ph name="SHORTCUT_KEY_NAME" /> + V para tingnan ang iyong clipboard. Naka-save sa iyong clipboard ang huling 5 item na kinopya mo.</translation>
 <translation id="7942349550061667556">Pula</translation>
+<translation id="7943516765291457328">I-on ang Bluetooth para mag-scan ng mga kalapit na hotspot</translation>
 <translation id="7944023924886109030">Tingnan ang lahat ng event ngayong araw</translation>
 <translation id="7945357288295809525">Ipakita ang mga setting ng accessibility, naka-enable ang "<ph name="ENABLED_FEATURES" />."</translation>
 <translation id="7947798320695032612">Gustong gamitin ng <ph name="APP_NAME" /> ang iyong <ph name="DEVICE_NAME" /></translation>

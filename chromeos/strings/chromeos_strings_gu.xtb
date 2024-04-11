@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">પતંગિયાં</translation>
 <translation id="188114911237521550">ઘેરો મોડ બંધ કરો</translation>
-<translation id="188268299367474594">ઉપલબ્ધ APNsમાંથી પસંદ કરો</translation>
 <translation id="1885577615937958993">મીડિયાને ફાસ્ટ ફૉરવર્ડ કરો</translation>
 <translation id="1887850431809612466">હાર્ડવેર પુનરાવર્તન</translation>
 <translation id="189221451253258459">નિઓન લીલો</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />માંથી <ph name="CURRENT_PAGE" />ની છબી</translation>
 <translation id="2446553403094072641">ફ્લોટિંગ પૉઇન્ટની સચોટતા</translation>
 <translation id="2448312741937722512">પ્રકાર</translation>
-<translation id="2465272316171730950">હમણાં અમે તમારી સહાય કરી શકીશું નહીં. કૃપા કરીને થોડા સમય પછી ફરી પાછા આવો.</translation>
 <translation id="2472215337771558851">ડ્રાફ્ટ બનાવ અથવા હાલના લખાણને સુધારવા માટે, Google AI દ્વારા સંચાલિત 'લખવામાં મારી સહાય કરો'નો ઉપયોગ કરો</translation>
 <translation id="2480572840229215612">કરચલાં</translation>
 <translation id="248546197012830854">ડિવાઇસ ઑફલાઇન છે. સહાયક કન્ટેન્ટ જોવા માટે વાઇ-ફાઇ નેટવર્ક સાથે કનેક્ટ કરો.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">વિન્ડો બતાવો</translation>
 <translation id="2513396635448525189">લૉગ ઇન છબી</translation>
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
-<translation id="2520213071283358374">આ APNનો ઉપયોગ કરો</translation>
 <translation id="2521835766824839541">પહેલાનો ટ્રૅક</translation>
 <translation id="2526590354069164005">ડેસ્કટૉપ</translation>
 <translation id="253029298928638905">ફરી શરૂ કરી રહ્યાં છીએ…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">સબનેટ માસ્ક</translation>
 <translation id="4454245904991689773">સ્કૅન કરીને અહીં સાચવો</translation>
 <translation id="4456812688969919973">APN સાચવો બટન હમણાં બંધ છે</translation>
-<translation id="4460905888685975163">'આ APNનો ઉપયોગ કરો' બટન હવે બંધ છે</translation>
 <translation id="4469288414739283461">અર્થ ફ્લો સ્ક્રીન સેવર</translation>
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4483049906298469269">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">સર્વર હોસ્ટનું નામ</translation>
 <translation id="5089810972385038852">રાજ્ય</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">ઉપર</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> કી વિનાનો શૉર્ટકટ કોઈ ઍપના શૉર્ટકટ સાથે વિસંગત હોઈ શકે છે. આ શૉર્ટકટનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે તેને ફરીથી દબાવો અથવા <ph name="KEY" /> કીનો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">સમાન:</translation>
 <translation id="5130848777448318809">ટટ્ટુઓ</translation>
@@ -1066,7 +1063,6 @@
 <translation id="7147557737960578492">નવી કી પસંદ કરીને ફરીથી સોંપણી કરો</translation>
 <translation id="714876143603641390">LAN કનેક્ટિવિટી</translation>
 <translation id="7154020516215182599">તમારી સમસ્યાનું વર્ણન કરો અથવા તમારો પ્રતિસાદ શેર કરો. જો શક્ય હોય, તો તમારી સમસ્યા વધુ સારી રીતે સમજી શકાય તે માટે તબક્કાવાર જણાવો.</translation>
-<translation id="7155037718620478619">વધુ APNs શોધો</translation>
 <translation id="7155171745945906037">કૅમેરા અથવા ફાઇલમાંથી અસ્તિત્વમાંનો ફોટો</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">પ્રોફાઇલ ચિત્ર</translation>
@@ -1196,12 +1192,14 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">પ્રદાતાનો પ્રકાર</translation>
 <translation id="7882501334836096755">જાહેર કી</translation>
+<translation id="78957024357676568">ડાબી</translation>
 <translation id="7897043345768902965">પગપાળા ચાલવાનો રસ્તો</translation>
 <translation id="7903695460270716054">ક્યુરેટ કરેલા આર્ટવર્ક અને છબીઓ પસંદ કરો</translation>
 <translation id="7915220255123750251">નેટવર્ક APN સેટિંગ મેનેજ કરો. APN સેલ્યુલર નેટવર્ક અને ઇન્ટરનેટ વચ્ચે કનેક્શન સ્થાપિત કરે છે.</translation>
 <translation id="7936303884198020182">IP કન્ફિગ્યુરેશનમાં કોઈ નામ સર્વર મળ્યા નથી</translation>
 <translation id="7942349550061667556">લાલ</translation>
 <translation id="7943235353293548836">સતત keepalive અવધિ</translation>
+<translation id="7943516765291457328">નજીકના હૉટસ્પૉટ સ્કૅન કરવા માટે બ્લૂટૂથ ચાલુ કરો</translation>
 <translation id="7944562637040950644">કીબોર્ડની બૅકલાઇટ ટૉગલ કરો</translation>
 <translation id="7953669802889559161">ઇનપુટ</translation>
 <translation id="7955587717700691983">બ્લૂટૂથ કીબોર્ડ</translation>
@@ -1225,7 +1223,6 @@
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
 <translation id="8079860070590459552">ફૂલવાડી</translation>
-<translation id="8081553043098820199">અમાન્ય APNsને કારણે તમારું મોબાઇલ કનેક્શન બંધ થઈ શકે છે. માત્ર તમારા મોબાઇલ પ્રદાતા અથવા ઍડમિનિસ્ટ્રેટર દ્વારા આપવામાં આવેલા APNs સેટ કરો.</translation>
 <translation id="8082366717211101304">Android ઍપથી DNSનું નિરાકરણ કરી શકતા નથી</translation>
 <translation id="8082644724189923105">કીબોર્ડ ઝોન</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
@@ -1233,6 +1230,7 @@
 <translation id="8104083085214006426">તમે ઓપન અને અસુરક્ષિત નેટવર્કનો ઉપયોગ કરી રહ્યાં છો</translation>
 <translation id="811820734797650957">(Android) ગેટવેને પિંગ કરી શકાય છે</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8132480444149501833">ટ્રાફિક કાઉન્ટરની વિનંતી કરો</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> પસંદ કરો</translation>
@@ -1258,7 +1256,6 @@
 <translation id="8294431847097064396">સ્રોત</translation>
 <translation id="8302368968391049045">HTTPS ફાયરવૉલ</translation>
 <translation id="8312330582793120272">મીડિયા ચલાવો</translation>
-<translation id="8317819321190319496">'આ APNનો ઉપયોગ કરો' બટન હવે ચાલુ છે</translation>
 <translation id="8318753676953949627">કોઈ છબી ઉપલબ્ધ નથી</translation>
 <translation id="8320910311642849813">જંગલ</translation>
 <translation id="8329018942023753850">કેલ્ક્યુલેટર ઍપ</translation>
@@ -1284,6 +1281,7 @@
 <translation id="8410244574650205435">ઑટોમૅટિક રીતે શોધાયેલું</translation>
 <translation id="8420955526972171689">હાર્ડવેર સંબંધિત સમસ્યાઓ માટે, પરીક્ષણો અને સમસ્યા નિવારણ ચલાવો</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">નીચે</translation>
 <translation id="8431300646573772016">ChromeOSમાં નવું શું છે</translation>
 <translation id="843568408673868420">ઇન્ટરનેટ કનેક્ટિવિટી</translation>
 <translation id="844521431886043384">DNSનું સેટઅપ કર્યું</translation>
@@ -1331,6 +1329,7 @@
 <translation id="8747900814994928677">ફેરફાર કન્ફર્મ કરો</translation>
 <translation id="8749478549112817787">કૅમેરાનું બૅકગ્રાઉન્ડ</translation>
 <translation id="8755946156089753497">ટાવર</translation>
+<translation id="8756235582947991808">AI વડે કેવી રીતે બનાવવું અને ધ્યાનમાં રાખવા જેવી કેટલીક બાબતો</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos આલ્બમ</translation>
 <translation id="8775713578693478175">મૉડેમ APN</translation>
@@ -1374,6 +1373,7 @@
 <translation id="894617464444543719">ડિવાઇસ એક ફોન છે.</translation>
 <translation id="8950424402482976779">સૌથી ઉપર</translation>
 <translation id="8954341524817067858">પર્વતો</translation>
+<translation id="8957423540740801332">જમણી</translation>
 <translation id="8960969673307890087">તડબૂચ</translation>
 <translation id="8961025972867871808">પેન્ગવિન</translation>
 <translation id="8968751544471797276">ચાર્જ થવાની ટકાવારી</translation>

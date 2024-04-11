@@ -243,7 +243,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1428729058023778569">Þessi viðvörun birtist vegna þess að þetta vefsvæði styður ekki HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Sjálflímandi filma</translation>
 <translation id="1430915738399379752">Prenta</translation>
-<translation id="1431021750861456539">Allur skjárinn sjálfkrafa</translation>
 <translation id="1432187715652018471">síða vill setja upp þjónustuhjálparforrit.</translation>
 <translation id="1432581352905426595">Stjórna leitarvélum</translation>
 <translation id="1433225466058025572">Prófaðu að flytja skrárnar þínar aftur</translation>
@@ -2318,7 +2317,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
     <ph name="LINE_BREAK" />
     Prófaðu að hafa samband við vefstjórann þinn.</translation>
 <translation id="549333378215107354">Stærð 3</translation>
-<translation id="5501712702042287009">allur skjárinn sjálfkrafa</translation>
 <translation id="550365051221576010">Útfylla allt</translation>
 <translation id="5508443345185481044">Myndavélar og myndupptökuvélar</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Kveikja</translation>
 <translation id="5862579898803147654">Staflari 8</translation>
+<translation id="5863515189965725638">Breyta IBAN</translation>
 <translation id="5863847714970149516">Síðan gæti reynt að rukka þig um greiðslu</translation>
 <translation id="5866257070973731571">Bæta við símanúmeri</translation>
 <translation id="5866898949289125849">Þú ert að skoða síðu forritunarverkfæra</translation>

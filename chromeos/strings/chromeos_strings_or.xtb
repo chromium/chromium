@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">ପ୍ରଜାପତି</translation>
 <translation id="188114911237521550">ଡାର୍କ ମୋଡ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="188268299367474594">ଉପଲବ୍ଧ APNଗୁଡ଼ିକରୁ ବାଛନ୍ତୁ</translation>
 <translation id="1885577615937958993">ମିଡିଆକୁ ଫାଷ୍ଟ ଫରୱାର୍ଡ କରନ୍ତୁ</translation>
 <translation id="1887850431809612466">ହାର୍ଡୱେୟାର୍ ପୁନରାବୃତ୍ତି</translation>
 <translation id="189221451253258459">ନିଅନ ଗ୍ରୀନ</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />ରୁ <ph name="CURRENT_PAGE" /> ନମ୍ବର ଇମେଜ</translation>
 <translation id="2446553403094072641">ଫ୍ଲୋଟିଂ ପଏଣ୍ଟର ସଠିକତା</translation>
 <translation id="2448312741937722512">ପ୍ରକାର</translation>
-<translation id="2465272316171730950">ଏହି ସମୟରେ ଆମେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବାରେ ଅସମର୍ଥ। ଦୟାକରି କିଛି ସମୟ ପରେ ଫେରନ୍ତୁ।</translation>
 <translation id="2472215337771558851">ଏକ ଡ୍ରାଫ୍ଟ ତିଆରି କରିବା କିମ୍ବା Google AI ଦ୍ୱାରା ପରିଚାଳିତ ପୂର୍ବରୁ ଥିବା କାର୍ଯ୍ୟକୁ ରିଫାଇନ କରିବା ପାଇଁ 'ଲେଖିବାରେ ମୋତେ ସାହାଯ୍ୟ କରନ୍ତୁ'କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2480572840229215612">କଙ୍କଡ଼ା</translation>
 <translation id="248546197012830854">ଡିଭାଇସ ଅଫଲାଇନ ଅଛି। ସହାୟତା ବିଷୟବସ୍ତୁ ଦେଖିବାକୁ ୱାଇ-ଫାଇ ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରନ୍ତୁ।</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">ୱିଣ୍ଡୋଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="2513396635448525189">ଲଗଇନ୍ ଛବି</translation>
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
-<translation id="2520213071283358374">ଏହି APN ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2521835766824839541">ପୂର୍ବବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="2526590354069164005">ଡେସ୍କଟପ୍</translation>
 <translation id="253029298928638905">ରିଷ୍ଟାର୍ଟ କରାଯାଉଛି...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">ସବନେଟ୍ ମାସ୍କ</translation>
 <translation id="4454245904991689773">ସ୍କାନ୍ କରି ଏଠାରେ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="4456812688969919973">'APN ସେଭ କରନ୍ତୁ' ବଟନକୁ ବର୍ତ୍ତମାନ ଅକ୍ଷମ କରାଯାଇଛି</translation>
-<translation id="4460905888685975163">'ଏହି APN ବ୍ୟବହାର କରନ୍ତୁ'କୁ ବର୍ତ୍ତମାନ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="4469288414739283461">ଆର୍ଥ ଫ୍ଲୋ ସ୍କ୍ରିନ ସେଭର</translation>
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
@@ -1064,7 +1060,6 @@
 <translation id="7147557737960578492">ଏକ ନୂଆ କୀ ଚୟନ କରି ପୁଣି ଆସାଇନ କରନ୍ତୁ</translation>
 <translation id="714876143603641390">LAN ସଂଯୋଗ</translation>
 <translation id="7154020516215182599">ଆପଣଙ୍କ ମତାମତ ସେୟାର କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ସମସ୍ୟାର ବର୍ଣ୍ଣନା କରନ୍ତୁ। ଯଦି ସମ୍ଭବ ହୁଏ, ତେବେ ଆପଣଙ୍କ ସମସ୍ୟା ପୁଣି ସୃଷ୍ଟି କରିବା ପାଇଁ ଷ୍ଟେପଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ।</translation>
-<translation id="7155037718620478619">ଅଧିକ APN ଡିସ୍କଭର କରନ୍ତୁ</translation>
 <translation id="7155171745945906037">କ୍ୟାମେରା କିମ୍ବା ଫାଇଲ୍‍‍ରେ ବିଦ୍ୟମାନ ଥିବା ଫଟୋ</translation>
 <translation id="7162487448488904999">ଗ୍ୟାଲେରୀ</translation>
 <translation id="7170236477717446850">ପ୍ରୋଫାଇଲ୍ ଛବି</translation>
@@ -1194,6 +1189,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ପ୍ରଦାତା ପ୍ରକାର</translation>
 <translation id="7882501334836096755">ସାର୍ବଜନୀନ କୀ</translation>
+<translation id="78957024357676568">ବାମ</translation>
 <translation id="7897043345768902965">ୱାକୱେ</translation>
 <translation id="7903695460270716054">କ୍ୟୁରେଟ କରାଯାଇଥିବା କଳାକୃତି ଏବଂ ଇମେଜ ବାଛନ୍ତୁ</translation>
 <translation id="7915220255123750251">ନେଟୱାର୍କ APN ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ। APNଗୁଡ଼ିକ ଏକ ସେଲୁଲାର ନେଟୱାର୍କ ଏବଂ ଇଣ୍ଟରନେଟ ମଧ୍ୟରେ ଏକ କନେକ୍ସନ ତିଆରି କରେ।</translation>
@@ -1223,7 +1219,6 @@
 <translation id="8075838845814659848">ବାକି ଥିବା ଚାର୍ଜ</translation>
 <translation id="8076492880354921740">ଟାବ୍</translation>
 <translation id="8079860070590459552">ଫୁଲର କ୍ଷେତ</translation>
-<translation id="8081553043098820199">ଅବୈଧ APNଗୁଡ଼ିକ ଯୋଗୁଁ ଆପଣଙ୍କ ମୋବାଇଲ କନେକ୍ସନ ଅକ୍ଷମ ହୋଇପାରେ। ଆପଣଙ୍କ ମୋବାଇଲ ସେବା ପ୍ରଦାନକାରୀ କିମ୍ବା ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା APNଗୁଡ଼ିକୁ କେବଳ ସେଟ କରନ୍ତୁ।</translation>
 <translation id="8082366717211101304">Android ଆପଗୁଡ଼ିକରୁ DNSର ସମାଧାନ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8082644724189923105">କୀବୋର୍ଡ ଜୋନ</translation>
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
@@ -1231,6 +1226,7 @@
 <translation id="8104083085214006426">ଆପଣ ଏକ ଖୋଲା ଏବଂ ଅସୁରକ୍ଷିତ ନେଟୱାର୍କ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
 <translation id="811820734797650957">(Android) ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8132480444149501833">ଟ୍ରାଫିକ୍ କାଉଣ୍ଟରର ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ଚୟନ କରନ୍ତୁ</translation>
@@ -1256,7 +1252,6 @@
 <translation id="8294431847097064396">ଉତ୍ସ</translation>
 <translation id="8302368968391049045">HTTPS ଫାୟାରୱାଲ୍</translation>
 <translation id="8312330582793120272">ମିଡିଆ ପ୍ଲେ କରନ୍ତୁ</translation>
-<translation id="8317819321190319496">'ଏହି APN ବ୍ୟବହାର କରନ୍ତୁ'କୁ ବର୍ତ୍ତମାନ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="8318753676953949627">କୌଣସି ଇମେଜ୍ ନାହିଁ</translation>
 <translation id="8320910311642849813">ଜଙ୍ଗଲ</translation>
 <translation id="8329018942023753850">କାଲକୁଲେଟର ଆପ</translation>
@@ -1372,6 +1367,7 @@
 <translation id="894617464444543719">ଡିଭାଇସଟି ଏକ ଫୋନ ଅଟେ।</translation>
 <translation id="8950424402482976779">ଶୀର୍ଷ</translation>
 <translation id="8954341524817067858">ପର୍ବତ</translation>
+<translation id="8957423540740801332">ଡାହାଣ</translation>
 <translation id="8960969673307890087">ତରଭୁଜ</translation>
 <translation id="8961025972867871808">ପେଙ୍ଗୁଇନ</translation>
 <translation id="8968751544471797276">ଚାର୍ଜିଂ ରେଟ୍</translation>

@@ -244,7 +244,6 @@
 <translation id="1428729058023778569">អ្នកមើលឃើញ​ការព្រមាននេះ ដោយសារ​គេហទំព័រនេះ​មិនស្គាល់ HTTPS ទេ។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">ហ្វ៊ីលបកបិទ</translation>
 <translation id="1430915738399379752">បោះពុម្ព</translation>
-<translation id="1431021750861456539">អេក្រង់​ពេញស្វ័យប្រវត្តិ</translation>
 <translation id="1432187715652018471">ទំព័រចង់​ដំឡើងឧបករណ៍​ដោះស្រាយសេវាកម្ម។</translation>
 <translation id="1432581352905426595">គ្រប់គ្រងម៉ាស៊ីនស្វែងរក</translation>
 <translation id="1433225466058025572">សាកល្បង​ផ្លាស់ទី​ឯកសារ​របស់អ្នក​ម្ដងទៀត</translation>
@@ -1088,6 +1087,7 @@
             <ph name="LIST_ITEM" />ប្រវត្តិ​ស្វែងរក<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />ព័ត៌មាន​ដែលបានបញ្ចូលក្នុង​ទម្រង់បែបបទ<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">គណនី​សន្សំ</translation>
 <translation id="3103188521861412364">ភាគហ៊ុន និង​សញ្ញាបណ្ណ</translation>
 <translation id="3105172416063519923">ID ទ្រព្យសកម្ម៖</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ពិនិត្យ​ការកំណត់រចនាសម្ព័ន្ធ DNS សុវត្ថិភាព<ph name="END_LINK" /></translation>
@@ -1306,6 +1306,7 @@
 <translation id="3493660662684070951">រថយន្តធំ ឡានដឹក​ទំនិញ និង​រថយន្តប្រភេទ SUV</translation>
 <translation id="3495081129428749620">ស្វែងរក​នៅក្នុងទំព័រ
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">ប្រាក់បៀវត្សរ៍</translation>
 <translation id="3497627066518778351">ពិនិត្យមើល​បញ្ជី​ទិន្នន័យ​គេហទំព័រ​នៅលើ​ឧបករណ៍​នៅក្នុង​វិនដូថ្មី</translation>
 <translation id="3498215018399854026">យើងមិនអាចទាក់ទងទៅកាន់ឪពុកម្តាយរបស់អ្នកទេនាពេលបច្ចុប្បន្ន។ សូមព្យាយាមម្តងទៀត។</translation>
 <translation id="350069200438440499">ឈ្មោះឯកសារ៖</translation>
@@ -2328,7 +2329,6 @@
     <ph name="LINE_BREAK" />
     ព្យាយាមទាក់ទងអ្នកគ្រប់គ្រងប្រព័ន្ធរបស់អ្នក។</translation>
 <translation id="549333378215107354">ទំហំ 3</translation>
-<translation id="5501712702042287009">អេក្រង់​ពេញស្វ័យប្រវត្តិ</translation>
 <translation id="550365051221576010">បំពេញអ្វីគ្រប់យ៉ាង</translation>
 <translation id="5508443345185481044">កាមេរ៉ា និង​កាម៉េរាថត​វីដេអូ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2345,6 +2345,7 @@
 <translation id="5519696598216267194">ក្រដាស (ចោះរន្ធស្រាប់)</translation>
 <translation id="5521782189689806907">ការធ្វើទូ</translation>
 <translation id="5523118979700054094">ឈ្មោះគោលការណ៍</translation>
+<translation id="5523588073846127669">ឈ្មួញមិនទទួលយកកាតនិម្មិតនេះទេ</translation>
 <translation id="5525755241743357906">ឯកសារ​ត្រូវបាន​ចម្លង ឬ​ផ្លាស់ទី</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច tab រួចចុច Enter ដើម្បីកំណត់​ឧបករណ៍ភាពងាយស្រួល​ឱ្យស្របនឹងអ្នកនៅក្នុង​ការកំណត់ ChromeOS</translation>
 <translation id="55293785478302737">ដេរ​គែម</translation>
@@ -2509,6 +2510,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">បើក</translation>
 <translation id="5862579898803147654">ទម្រគំនរ​ទី 8</translation>
+<translation id="5863515189965725638">កែ IBAN</translation>
 <translation id="5863847714970149516">ទំព័រ​ខាងមុខ​អាច​ព្យាយាម​គិតប្រាក់​ពីអ្នក</translation>
 <translation id="5866257070973731571">បញ្ចូល​លេខ​ទូរសព្ទ</translation>
 <translation id="5866898949289125849">អ្នកកំពុងមើល​ទំព័រឧបករណ៍​របស់​អ្នកអភិវឌ្ឍន៍</translation>
@@ -3728,6 +3730,7 @@
 <translation id="81563721597823545">បរិក្ខារ​កីឡា​ហុកគី</translation>
 <translation id="8161095570253161196">បន្ត​រុករក</translation>
 <translation id="8163866351304776260">ចោះ​បួនរន្ធ​ខាងឆ្វេង</translation>
+<translation id="8163998196788647716">គណនីសម្រាប់ធ្វើប្រតិបត្តិការ</translation>
 <translation id="8164078261547504572">ចង់​ទទួលបាន​អ៊ីមែល​នៅ​ពេល​ធ្លាក់​ថ្លៃ​មែនទេ?</translation>
 <translation id="8169175551046720804">មិនអាច​កំណត់កូដ "<ph name="DATA_CONTROLS_KEYS" />" នៅក្នុង​វចនានុក្រម​តែមួយ​បានទេ</translation>
 <translation id="8175796834047840627">Chrome ផ្ដល់ជូន​ជម្រើស​រក្សាទុកបណ្ណរបស់អ្នកនៅ​ក្នុងគណនី Google របស់អ្នក ដោយសារ​អ្នកចូលគណនី។ អ្នកអាចប្ដូរសកម្មភាពនេះ​បាននៅក្នុងការកំណត់។</translation>

@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">এই সাইটে HTTPS কাজ করে না, তাই আপনি এই সতর্কতা দেখছেন। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">সেল্ফ-অ্যাডেসিভ ফিল্ম</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
-<translation id="1431021750861456539">অটোমেটিক ফুল-স্ক্রিন</translation>
 <translation id="1432187715652018471">পৃষ্ঠাটি একটি পরিষেবা নিয়ন্ত্রক ইনস্টল করতে চায়।</translation>
 <translation id="1432581352905426595">সার্চ ইঞ্জিনগুলি পরিচালনা করুন</translation>
 <translation id="1433225466058025572">আপনার ফাইল আবার সরানোর চেষ্টা করে দেখুন</translation>
@@ -1086,6 +1085,7 @@
             <ph name="LIST_ITEM" />সার্চ ইতিহাস<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />ফর্মে লেখা তথ্য<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">সেভিংস</translation>
 <translation id="3103188521861412364">স্টক ও বন্ড</translation>
 <translation id="3105172416063519923">সম্পদ আইডি:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />নিরাপদ DNS কনফিগারেশন চেক করে দেখা হচ্ছে<ph name="END_LINK" /></translation>
@@ -1304,6 +1304,7 @@
 <translation id="3493660662684070951">ট্রাক, ভ্যান ও এসইউভি</translation>
 <translation id="3495081129428749620">এই পৃষ্ঠাতে খুঁজুন
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">বেতন</translation>
 <translation id="3497627066518778351">নতুন উইন্ডোতে অন-ডিভাইস সাইট ডেটার তালিকা পর্যালোচনা করুন</translation>
 <translation id="3498215018399854026">আমরা এই মুহূর্তে আপনার পিতামাতার সাথে যোগাযোগ করতে পারিনি৷ অনুগ্রহ করে আবার চেষ্টা করুন৷</translation>
 <translation id="350069200438440499">ফাইলের নাম:</translation>
@@ -2325,7 +2326,6 @@
     <ph name="LINE_BREAK" />
     আপনার সিস্টেম প্রশাসকের সাথে যোগাযোগের চেষ্টা করুন।</translation>
 <translation id="549333378215107354">সাইজ ৩</translation>
-<translation id="5501712702042287009">অটোমেটিক ফুল-স্ক্রিন</translation>
 <translation id="550365051221576010">ঠিকানার সবকটি ফিল্ডে তথ্য লিখুন</translation>
 <translation id="5508443345185481044">ক্যামেরা ও ক্যামকোডার</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2342,6 +2342,7 @@
 <translation id="5519696598216267194">পেপার (প্রিপাঞ্চড)</translation>
 <translation id="5521782189689806907">আলমারি বানানো</translation>
 <translation id="5523118979700054094">নীতি নাম</translation>
+<translation id="5523588073846127669">ব্যবসায়ী এই ভার্চুয়াল কার্ড গ্রহণ করেন না</translation>
 <translation id="5525755241743357906">ফাইল কপি করা বা সরিয়ে দেওয়া হয়েছে</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS সেটিংস থেকে আপনার অ্যাক্সেসিবিলিটি টুল পছন্দ মতো বেছে নিতে 'Tab' কী প্রেস করে 'Enter' কী প্রেস করুন</translation>
 <translation id="55293785478302737">ধারের দিকে সেলাই</translation>
@@ -2506,6 +2507,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
 <translation id="5862579898803147654">স্ট্যাকার ৮</translation>
+<translation id="5863515189965725638">IBAN এডিট করুন</translation>
 <translation id="5863847714970149516">পরের পৃষ্ঠাতে আপনাকে চার্জ করা হতে পারে</translation>
 <translation id="5866257070973731571">ফোন নম্বর যোগ করুন</translation>
 <translation id="5866898949289125849">আপনি ডেভেলপারের টুল পৃষ্ঠা দেখছেন</translation>
@@ -3722,6 +3724,7 @@
 <translation id="81563721597823545">হকির সরঞ্জাম</translation>
 <translation id="8161095570253161196">ব্রাউজিং চালু করুন</translation>
 <translation id="8163866351304776260">বাঁদিকে কোয়াড পাঞ্চ</translation>
+<translation id="8163998196788647716">অ্যাকাউন্টে ট্রানজ্যাকশন করা</translation>
 <translation id="8164078261547504572">দাম কমলে ইমেল পেতে চান?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" কী একই অভিধানে সেট করা যাচ্ছে না</translation>
 <translation id="8175796834047840627">আপনি সাইন-ইন করে রয়েছেন বলে, Chrome আপনার কার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করার অফার করছে। সেটিংসে গিয়ে এই আচরণটি পরিবর্তন করতে পারেন।</translation>

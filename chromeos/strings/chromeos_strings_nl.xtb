@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">vlinders</translation>
 <translation id="188114911237521550">Donkere modus uitzetten</translation>
-<translation id="188268299367474594">Kiezen uit beschikbare APN's</translation>
 <translation id="1885577615937958993">media vooruitspoelen</translation>
 <translation id="1887850431809612466">Hardwarerevisie</translation>
 <translation id="189221451253258459">neongroen</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Afbeelding <ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nauwkeurigheid van zwevendekommagetallen</translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2465272316171730950">We zijn nu erg druk. Probeer het later opnieuw.</translation>
 <translation id="2472215337771558851">Gebruik Help me met schrijven om een conceptversie te maken of bestaand werk te verfijnen, mogelijk gemaakt door AI van Google</translation>
 <translation id="2480572840229215612">krabben</translation>
 <translation id="248546197012830854">Het apparaat is offline. Maak verbinding met een wifi-netwerk om Help-content te bekijken.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">vensters tonen</translation>
 <translation id="2513396635448525189">Inlogafbeelding</translation>
 <translation id="2517472476991765520">Scannen</translation>
-<translation id="2520213071283358374">Deze APN gebruiken</translation>
 <translation id="2521835766824839541">vorig nummer</translation>
 <translation id="2526590354069164005">Bureaublad</translation>
 <translation id="253029298928638905">Opnieuw opstarten…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Netmask</translation>
 <translation id="4454245904991689773">Scannen naar</translation>
 <translation id="4456812688969919973">De knop APN opslaan staat nu uit</translation>
-<translation id="4460905888685975163">Deze APN gebruiken staat nu uit</translation>
 <translation id="4469288414739283461">Screensaver Aardestroom</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kan de niet-standaard netwerkgateway niet pingen</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Hostnaam van server</translation>
 <translation id="5089810972385038852">Staat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">omhoog</translation>
 <translation id="5107243100836678918">Sneltoets zonder <ph name="META_KEY" />-toets kan conflicteren met de sneltoets van bepaalde apps. Druk opnieuw op deze sneltoets om die te blijven gebruiken of druk op een nieuwe sneltoets met de <ph name="KEY" />-toets. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Vergelijkbaar:</translation>
 <translation id="5130848777448318809">pony's</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Wijs opnieuw toe door een nieuwe toets te selecteren</translation>
 <translation id="714876143603641390">LAN-connectiviteit</translation>
 <translation id="7154020516215182599">Deel je feedback of beschrijf je probleem. Voeg waar mogelijk stappen toe om het probleem te reproduceren.</translation>
-<translation id="7155037718620478619">Meer APN's ontdekken</translation>
 <translation id="7155171745945906037">Bestaande foto van camera of uit bestand</translation>
 <translation id="7162487448488904999">Galerij</translation>
 <translation id="7170236477717446850">Profielfoto</translation>
@@ -1194,6 +1190,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type provider</translation>
 <translation id="7882501334836096755">Openbare sleutel</translation>
+<translation id="78957024357676568">links</translation>
 <translation id="7897043345768902965">voetpad</translation>
 <translation id="7903695460270716054">Beheerde kunst en afbeeldingen kiezen</translation>
 <translation id="7915220255123750251">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet.</translation>
@@ -1223,7 +1220,6 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8075838845814659848">Resterende batterijlading</translation>
 <translation id="8076492880354921740">Tabbladen</translation>
 <translation id="8079860070590459552">bloemenveld</translation>
-<translation id="8081553043098820199">Ongeldige APN's kunnen ertoe leiden dat je mobiele verbinding wordt uitgezet. Stel alleen APN's in die worden geleverd door je mobiele provider of beheerder.</translation>
 <translation id="8082366717211101304">Kan DNS niet omzetten vanuit Android-apps</translation>
 <translation id="8082644724189923105">toetsenbordzone</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
@@ -1231,6 +1227,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8104083085214006426">Je gebruikt een open of niet-beveiligd netwerk</translation>
 <translation id="811820734797650957">(Android) Gateway kan worden gepingd</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8132480444149501833">Verkeerstellers aanvragen</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selecteren</translation>
@@ -1256,7 +1253,6 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8302368968391049045">HTTPS-firewall</translation>
 <translation id="8312330582793120272">media afspelen</translation>
-<translation id="8317819321190319496">Deze APN gebruiken staat nu aan</translation>
 <translation id="8318753676953949627">Geen afbeeldingen</translation>
 <translation id="8320910311642849813">bos</translation>
 <translation id="8329018942023753850">rekenmachine-app</translation>
@@ -1282,6 +1278,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8410244574650205435">Automatisch gevonden</translation>
 <translation id="8420955526972171689">Tests uitvoeren en hardwareproblemen oplossen</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">omlaag</translation>
 <translation id="8431300646573772016">Nieuw bij Chrome OS</translation>
 <translation id="843568408673868420">Internetverbinding</translation>
 <translation id="844521431886043384">DNS is niet ingesteld</translation>
@@ -1372,6 +1369,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="894617464444543719">Apparaat is een telefoon.</translation>
 <translation id="8950424402482976779">boven</translation>
 <translation id="8954341524817067858">bergen</translation>
+<translation id="8957423540740801332">rechts</translation>
 <translation id="8960969673307890087">watermeloenen</translation>
 <translation id="8961025972867871808">pinguïns</translation>
 <translation id="8968751544471797276">Oplaadsnelheid</translation>

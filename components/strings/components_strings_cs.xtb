@@ -243,7 +243,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1428729058023778569">Toto varování se vám zobrazuje, protože tento web nepodporuje protokol HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Samolepicí fólie</translation>
 <translation id="1430915738399379752">Tisk</translation>
-<translation id="1431021750861456539">Automatický režim celé obrazovky</translation>
 <translation id="1432187715652018471">stránka chce instalovat obslužný nástroj služby.</translation>
 <translation id="1432581352905426595">Spravovat vyhledávače</translation>
 <translation id="1433225466058025572">Zkuste soubory přesunout znovu</translation>
@@ -2314,7 +2313,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <ph name="LINE_BREAK" />
 Kontaktujte administrátora systému.</translation>
 <translation id="549333378215107354">Velikost 3</translation>
-<translation id="5501712702042287009">automatický režim celé obrazovky</translation>
 <translation id="550365051221576010">Vyplnit vše</translation>
 <translation id="5508443345185481044">Fotoaparáty a kamery</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2495,6 +2493,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Zapnout</translation>
 <translation id="5862579898803147654">Stohovač 8</translation>
+<translation id="5863515189965725638">Úprava čísla IBAN</translation>
 <translation id="5863847714970149516">Následující stránka se vám může pokusit naúčtovat poplatky</translation>
 <translation id="5866257070973731571">Přidání telefonního čísla</translation>
 <translation id="5866898949289125849">Prohlížíte si stránku nástrojů pro vývojáře</translation>

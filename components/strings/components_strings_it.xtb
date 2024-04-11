@@ -243,7 +243,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1428729058023778569">Questo avviso è stato visualizzato perché il sito non supporta HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Pellicola autoadesiva</translation>
 <translation id="1430915738399379752">Stampa</translation>
-<translation id="1431021750861456539">Schermo intero automatico</translation>
 <translation id="1432187715652018471">La pagina vuole installare un gestore di servizi.</translation>
 <translation id="1432581352905426595">Gestisci motori di ricerca</translation>
 <translation id="1433225466058025572">Prova a spostare di nuovo i file</translation>
@@ -2315,7 +2314,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
     <ph name="LINE_BREAK" />
     Prova a contattare l'amministratore di sistema.</translation>
 <translation id="549333378215107354">Dimensione 3</translation>
-<translation id="5501712702042287009">schermo intero automatico</translation>
 <translation id="550365051221576010">Compila tutti i campi</translation>
 <translation id="5508443345185481044">Macchine fotografiche e videocamere</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2496,6 +2494,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Attiva</translation>
 <translation id="5862579898803147654">Fascicolatore 8</translation>
+<translation id="5863515189965725638">Modifica IBAN</translation>
 <translation id="5863847714970149516">La pagina che segue potrebbe tentare di addebitarti dei costi</translation>
 <translation id="5866257070973731571">Aggiungi numero di telefono</translation>
 <translation id="5866898949289125849">Stai visualizzando una pagina di strumenti per sviluppatori</translation>

@@ -226,6 +226,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1864454756846565995">Peranti USB-C (port belakang)</translation>
 <translation id="1869497990620230175">Fail pantas</translation>
 <translation id="1871023081802165724">Mainkan media</translation>
+<translation id="1871915835366697861">Tidak tersedia untuk permainan ini</translation>
 <translation id="1879018240766558464">Tetingkap inkognito tidak disokong pada masa ini. Apl lain akan disimpan.</translation>
 <translation id="1882814835921407042">Tiada rangkaian mudah alih</translation>
 <translation id="1882897271359938046">Mencerminkan <ph name="DISPLAY_NAME" /></translation>
@@ -1432,7 +1433,6 @@ Tiada peranti disambungkan.</translation>
 <translation id="6537924328260219877">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Bateri Telefon <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Pengimbasan muat turun <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Menghantar ke <ph name="RECEIVER_NAME" /></translation>
-<translation id="6546062506073634094">Carian imej berdasarkan kandungan dan pratonton imej</translation>
 <translation id="6555373427270923730">Taipkan alamat web dalam bar alamat, kemudian tekan <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Pemasangan baharu</translation>
@@ -1792,6 +1792,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="79341161159229895">Akaun diurus oleh <ph name="FIRST_PARENT_EMAIL" /> dan <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Tekan <ph name="SHORTCUT_KEY_NAME" /> + V untuk melihat papan keratan anda. 5 item terakhir yang telah anda salin disimpan pada papan keratan anda.</translation>
 <translation id="7942349550061667556">Merah</translation>
+<translation id="7943516765291457328">Hidupkan Bluetooth untuk mengimbas tempat liputan berdekatan</translation>
 <translation id="7944023924886109030">Lihat semua peristiwa hari ini</translation>
 <translation id="7945357288295809525">Memaparkan tetapan kebolehaksesan, "<ph name="ENABLED_FEATURES" />" didayakan.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> mahu menggunakan <ph name="DEVICE_NAME" /> anda</translation>

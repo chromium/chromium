@@ -3068,7 +3068,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3308134619352333507">Ukryj przycisk</translation>
 <translation id="3308852433423051161">Ładuję Asystenta Google...</translation>
 <translation id="3309330461362844500">Identyfikator certyfikowanego profilu</translation>
-<translation id="3309342848710561035">Nie udało się pobrać danych aplikacji</translation>
 <translation id="3311445899360743395">Dane powiązane z tą aplikacją mogą zostać usunięte z urządzenia.</translation>
 <translation id="3312470654018965389">Konfiguruję kontener Linuksa</translation>
 <translation id="3312883087018430408">Aby wyszukać coś w określonej witrynie lub w określonej części Chrome, wpisz odpowiedni skrót na pasku adresu i dodaj wybrany skrót klawiszowy. Na przykład żeby wyszukać coś w zakładkach, wpisz „@bookmarks”, a następnie naciśnij klawisz Tab lub spację.</translation>
@@ -4510,7 +4509,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4403266582403435904">Łatwo przywróć dane lub zmień urządzenie, gdy tylko chcesz. Kopie zapasowe są szyfrowane za pomocą hasła do konta Google Twojego dziecka i przesyłane do Google.</translation>
 <translation id="4403775189117163360">Wybierz inny folder</translation>
 <translation id="4404136731284211429">Skanuj ponownie</translation>
-<translation id="4404619268534288383">Zapisywanie i synchronizowanie grup kart</translation>
 <translation id="4404843640767531781">Twój rodzic zablokował aplikację <ph name="APP_NAME" />. Aby móc z niej korzystać, poproś go o pozwolenie.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Przenieś do…</translation>
@@ -5154,7 +5152,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4899696330053002588">Zawiera reklamy</translation>
 <translation id="490031510406860025">Niedozwolone w tej witrynie</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – z przeplotem</translation>
-<translation id="490056871160016482">Strony używają tej funkcji, aby wyświetlać atrakcyjne reklamy pełnoekranowe niezależnie od gestów użytkownika</translation>
 <translation id="4900652253009739885">Nie można usunąć jedynego przełącznika przypisanego do czynności „Wybierz”. Aby <ph name="RESPONSE" />, naciśnij dowolny klawisz.</translation>
 <translation id="4901154724271753917">Rozwiń ostatnio zamknięte</translation>
 <translation id="4901309472892185668">Wybierz stan eksperymentu <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5479,7 +5476,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5162905305237671850">Urządzenie <ph name="DEVICE_TYPE" /> zostało zablokowane</translation>
 <translation id="5163910114647549394">Karta została przeniesiona na koniec paska kart</translation>
 <translation id="5164530241085602114">Witryna <ph name="SITE" /> nie może wysyłać powiadomień</translation>
-<translation id="5165989352025966137">Zezwolono na automatyczne włączanie pełnego ekranu</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5171045022955879922">Wyszukaj lub wpisz URL</translation>
@@ -5780,7 +5776,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="541737483547792035">Powiększenie ekranu</translation>
 <translation id="541822678830750798">Prosi o zgodę na odczytywanie i zmienianie tej witryny</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Umożliwia zapisywanie i wycofywanie grup kart. Aby zapisać grupę kart, kliknij ją prawym przyciskiem myszy. Grupy możesz wycofywać na pasku zakładek.</translation>
 <translation id="5420274697768050645">Dla większego bezpieczeństwa przed odblokowaniem urządzenia wymagaj hasła</translation>
 <translation id="5420438158931847627">Wpływa na ostrość tekstu i grafiki</translation>
 <translation id="5420935737933866496">Kopiuj &amp;link</translation>
@@ -6177,6 +6172,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5723967018671998714">Pliki cookie innych firm są blokowane w trybie incognito</translation>
 <translation id="5725112283692663422">Prześlij opinię na temat tworzenia motywu z AI</translation>
 <translation id="5727728807527375859">Rozszerzenia, aplikacje i motywy mogą wyrządzić szkody na komputerze. Czy na pewno chcesz kontynuować?</translation>
+<translation id="5728072125198221967">Połączone usługi Google</translation>
 <translation id="5728290366864286776">To rozszerzenie może odczytywać i zmieniać informacje o witrynie oraz działać w tle</translation>
 <translation id="5728450728039149624">Opcje ekranu blokady Smart Lock</translation>
 <translation id="572914206753951782">Upewnij się, że masz najnowszą wersję Chromebooka. Następnie uruchom ponownie Chromebooka i spróbuj jeszcze raz.</translation>
@@ -8165,7 +8161,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7290242001003353852">Ta usługa logowania, pochodząca z domeny <ph name="SAML_DOMAIN" />, ma dostęp do kamery.</translation>
 <translation id="7292067737327289208">Twoją <ph name="BEGIN_LINK" />przeglądarką zarządza<ph name="END_LINK" /> Twoja organizacja, a Twoim <ph name="BEGIN_LINK" />profilem<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Nie zezwolono na automatyczne włączanie pełnego ekranu</translation>
 <translation id="7295614427631867477">Pamiętaj, że Android, Play i powiązane aplikacje mogą podlegać własnym zasadom zbierania i wykorzystywania danych.</translation>
 <translation id="7296503797589217366">Wybierz folder <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Ciemnozielony</translation>
@@ -9712,7 +9707,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="84297032718407999">Wylogujemy Cię za <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Pokaż kliknięcia</translation>
 <translation id="843173223122814223">Twórz tła za pomocą AI</translation>
-<translation id="8432724317983466962">Domyślnie włączenie pełnego ekranu wymaga gestu użytkownika</translation>
 <translation id="8433186206711564395">Ustawienia sieci</translation>
 <translation id="8434480141477525001">Port debugowania NaCl</translation>
 <translation id="8436054240208929121">Zaloguj się i włącz synchronizację, aby umożliwić Chrome sugerowanie grup kart i porządkowanie kart</translation>

@@ -4518,7 +4518,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4403266582403435904">Canvia de dispositiu o restaura'n les dades fàcilment en qualsevol moment. Les còpies de seguretat es pengen a Google i s'encripten amb la contrasenya del Compte de Google del teu fill o filla.</translation>
 <translation id="4403775189117163360">Tria una altra carpeta</translation>
 <translation id="4404136731284211429">Torna a analitzar</translation>
-<translation id="4404619268534288383">Desar i sincronitzar grups de pestanyes</translation>
 <translation id="4404843640767531781">El teu pare o mare ha bloquejat <ph name="APP_NAME" />. Demana-li permís per utilitzar aquesta aplicació.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg i *.png</translation>
 <translation id="4405224443901389797">Mou a…</translation>
@@ -5159,7 +5158,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4899696330053002588">Conté anuncis</translation>
 <translation id="490031510406860025">No es permet en aquest lloc web</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz, entrellaçat</translation>
-<translation id="490056871160016482">Els llocs web utilitzen aquesta funció per oferir experiències immersives en pantalla completa independentment dels gestos de l'usuari</translation>
 <translation id="4900652253009739885">No es pot suprimir l'únic interruptor assignat a Selecciona. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Desplega les que s'han tancat recentment</translation>
 <translation id="4901309472892185668">Selecciona l'estat de l'experiment <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5484,7 +5482,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5162905305237671850">El dispositiu <ph name="DEVICE_TYPE" /> s'ha bloquejat</translation>
 <translation id="5163910114647549394">La pestanya s'ha mogut al final de la barra de pestanyes</translation>
 <translation id="5164530241085602114">No es permeten les notificacions per a <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Amb permís per entrar automàticament en pantalla completa</translation>
 <translation id="516747639689914043">Protocol de transferència d'hipertext (HTTP)</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5171045022955879922">Cerqueu o escriviu l'URL</translation>
@@ -5787,7 +5784,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="541737483547792035">Amplia la pantalla</translation>
 <translation id="541822678830750798">S'està sol·licitant llegir i canviar aquest lloc web</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Activa la possibilitat de desar i recuperar grups de pestanyes. Fes clic amb el botó dret en un grup de pestanyes per desar-lo. Recupera els grups de la barra d'adreces d'interès.</translation>
 <translation id="5420274697768050645">Sol·licita una contrasenya per desbloquejar el dispositiu i millorar la seguretat</translation>
 <translation id="5420438158931847627">Determina la nitidesa del text i les imatges</translation>
 <translation id="5420935737933866496">Copia l'&amp;enllaç</translation>
@@ -6183,6 +6179,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5723967018671998714">Les galetes de tercers estan bloquejades en mode d'incògnit</translation>
 <translation id="5725112283692663422">Envia suggeriments sobre Crea un tema amb IA</translation>
 <translation id="5727728807527375859">Les extensions, les aplicacions i els temes poden malmetre el vostre equip. Segur que voleu continuar?</translation>
+<translation id="5728072125198221967">Serveis de Google enllaçats</translation>
 <translation id="5728290366864286776">Aquesta extensió pot llegir i canviar la informació d'un lloc web o executar-se en segon pla</translation>
 <translation id="5728450728039149624">Opcions de bloqueig de pantalla de Smart Lock</translation>
 <translation id="572914206753951782">Assegura't que el Chromebook tingui la versió més recent. A continuació, reinicia'l i torna-ho a provar.</translation>
@@ -8166,7 +8163,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7290242001003353852">Aquest servei d'inici de sessió, que s'allotja a <ph name="SAML_DOMAIN" />, està accedint a la càmera.</translation>
 <translation id="7292067737327289208">La teva organització <ph name="BEGIN_LINK" />gestiona el navegador<ph name="END_LINK" /> i <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />gestiona el perfil<ph name="END_LINK" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Sense permís per entrar automàticament en pantalla completa</translation>
 <translation id="7295614427631867477">Tingues en compte que Android, Play i les aplicacions associades es regeixen per les seves pròpies polítiques d'ús i recollida de dades.</translation>
 <translation id="7296503797589217366">Selecciona la carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verd fosc</translation>
@@ -9714,7 +9710,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="84297032718407999">Es tancarà la sessió d'aquí a <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Mostra els tocs</translation>
 <translation id="843173223122814223">Crea fons amb IA</translation>
-<translation id="8432724317983466962">Per accedir al mode de pantalla completa, cal el gest d'un usuari de manera predeterminada</translation>
 <translation id="8433186206711564395">Configuració de la xarxa</translation>
 <translation id="8434480141477525001">Port de depuració NaCI</translation>
 <translation id="8436054240208929121">Inicia la sessió i activa la sincronització per permetre que Chrome et suggereixi grups de pestanyes i mantén les pestanyes organitzades</translation>

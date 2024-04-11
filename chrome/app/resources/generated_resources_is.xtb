@@ -4535,7 +4535,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4403266582403435904">Endurheimtu gögn eða skiptu um tæki hvenær sem er á einfaldan hátt. Öryggisafritum er hlaðið upp á Google og þau dulkóðuð með aðgangsorði Google reiknings barnsins þíns.</translation>
 <translation id="4403775189117163360">Velja aðra möppu</translation>
 <translation id="4404136731284211429">Leita aftur</translation>
-<translation id="4404619268534288383">Vistun og samstilling flipahópa</translation>
 <translation id="4404843640767531781">Foreldri þitt hefur sett <ph name="APP_NAME" /> á bannlista. Biddu foreldri þitt um leyfi til að nota þetta forrit.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Færa í…</translation>
@@ -5177,7 +5176,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4899696330053002588">Inniheldur auglýsingar</translation>
 <translation id="490031510406860025">Ekki leyft á þessu vefsvæði</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – samfléttað</translation>
-<translation id="490056871160016482">Vefsvæði nota þennan eiginleika til að bjóða upp á áhrifaríka upplifun á öllum skjánum, án tillits til bendinga notanda</translation>
 <translation id="4900652253009739885">Ekki er hægt að fjarlægja eina rofann sem er úthlutaður til „Velja“. Ýttu á hvaða hnapp sem er til að <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Stækka „Nýlega lokað“</translation>
 <translation id="4901309472892185668">Veldu ástand tilraunar fyrir <ph name="EXPERIMENT_NAME" /> tilraunina.</translation>
@@ -5502,7 +5500,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5162905305237671850">Lokað hefur verið fyrir <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">Flipi færður neðst á flipastiku</translation>
 <translation id="5164530241085602114">Tilkynningar ekki leyfðar fyrir <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Má birta allan skjáinn sjálfkrafa</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5171045022955879922">Leitaðu eða sláðu inn vefslóð</translation>
@@ -5804,7 +5801,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="541737483547792035">Stækka skjá</translation>
 <translation id="541822678830750798">Fer fram á að lesa og breyta þessu vefsvæði</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Kveikir á að vista og muna eftir flipahópum. Hægrismelltu á flipahóp til að vista hann. Finndu svo hópana á bókamerkjastikunni.</translation>
 <translation id="5420274697768050645">Bæta öryggi með því að biðja um aðgangsorð þegar tæki er opnað</translation>
 <translation id="5420438158931847627">Segir til um skerpu texta og mynda</translation>
 <translation id="5420935737933866496">Afrita tengil</translation>
@@ -6201,6 +6197,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5723967018671998714">Lokað er á fótspor frá þriðja aðila í huliðsstillingu</translation>
 <translation id="5725112283692663422">Senda ábendingu um þemagerð með gervigreind</translation>
 <translation id="5727728807527375859">Viðbætur, forrit og þemu geta skaðað tölvuna þína. Ertu viss um að þú viljir halda áfram?</translation>
+<translation id="5728072125198221967">Tengdar Google-þjónustur</translation>
 <translation id="5728290366864286776">Þessi viðbót kann að lesa og breyta vefsvæðisupplýsingum eða keyra í bakgrunni</translation>
 <translation id="5728450728039149624">Valkostir Smart Lock skjáláss</translation>
 <translation id="572914206753951782">Gakktu úr skugga um að Chromebook keyri nýjustu útgáfuna. Endurræstu svo Chromebook og reyndu aftur.</translation>
@@ -8186,7 +8183,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7290242001003353852">Þessi innskráningarþjónusta, sem er hýst af <ph name="SAML_DOMAIN" />, fær aðgang að myndavélinni.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Vafranum þínum er stjórnað<ph name="END_LINK" /> af fyrirtækinu þínu og <ph name="BEGIN_LINK" />prófílnum þínum er stjórnað<ph name="END_LINK" /> af <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Má ekki birta allan skjáinn sjálfkrafa</translation>
 <translation id="7295614427631867477">Athugaðu að Android, Play og tengd forrit eru háð sínum eigin reglum um gagnasöfnun og notkun.</translation>
 <translation id="7296503797589217366">Veldu möppu <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Dökkgrænn</translation>
@@ -9732,7 +9728,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="84297032718407999">Þú verður skráð(ur) út eftir <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Sýna snertingar</translation>
 <translation id="843173223122814223">Búa til bakgrunna með gervigreind</translation>
-<translation id="8432724317983466962">Að birta allan skjáinn krefst sjálfgefið aðgerðar notanda</translation>
 <translation id="8433186206711564395">Netstillingar</translation>
 <translation id="8434480141477525001">Villuleitargátt NaCl</translation>
 <translation id="8436054240208929121">Skráðu þig inn og kveiktu á samstillingu til að láta Chrome stinga upp á flipahópum og flokka flipa</translation>

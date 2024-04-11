@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">пеперуди</translation>
 <translation id="188114911237521550">Изключване на тъмния режим</translation>
-<translation id="188268299367474594">Изберете от наличните имена на точките за достъп (APN)</translation>
 <translation id="1885577615937958993">превъртане на мултимедията напред</translation>
 <translation id="1887850431809612466">Версия на хардуера</translation>
 <translation id="189221451253258459">неоновозелен</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Изображение <ph name="CURRENT_PAGE" /> от <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Точност на плаващата точка</translation>
 <translation id="2448312741937722512">Тип</translation>
-<translation id="2465272316171730950">Капацитетът ни е достигнат. Заповядайте отново след малко.</translation>
 <translation id="2472215337771558851">Използвайте функцията „Помощ при писане“, базирана на AI на Google, за да създадете чернова или да прецизирате съществуващ текст</translation>
 <translation id="2480572840229215612">раци</translation>
 <translation id="248546197012830854">Устройството е офлайн. Свържете се с Wi-Fi мрежа, за да видите помощното съдържание.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">показване на прозорците</translation>
 <translation id="2513396635448525189">Изображение при влизане в профила</translation>
 <translation id="2517472476991765520">Сканиране</translation>
-<translation id="2520213071283358374">Използване на това име на точката за достъп (APN)</translation>
 <translation id="2521835766824839541">предишен запис</translation>
 <translation id="2526590354069164005">Работен плот</translation>
 <translation id="253029298928638905">Рестартира се…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Подмрежова маска</translation>
 <translation id="4454245904991689773">Сканиране във</translation>
 <translation id="4456812688969919973">Бутонът за запазване на името на точката за достъп (APN) вече е деактивиран</translation>
-<translation id="4460905888685975163">Бутонът „Използване на това име на точката за достъп (APN)“ вече не е активен</translation>
 <translation id="4469288414739283461">Скрийнсейвър със Земята</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Неуспех при команда ping към шлюза на допълнителната мрежа</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Име на хоста за сървъра</translation>
 <translation id="5089810972385038852">Щат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Клавишната комбинация без клавиша „<ph name="META_KEY" />“ може да е в конфликт с комбинация в приложение. Натиснете тази комбинация отново, за да продължите да я използвате, или натиснете нова, като включите и клавиша „<ph name="KEY" />“. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Подобни:</translation>
 <translation id="5130848777448318809">понита</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Повторно задаване чрез избиране на нов клавиш</translation>
 <translation id="714876143603641390">Връзка с LAN</translation>
 <translation id="7154020516215182599">Споделете отзиви или опишете проблема си. Ако е възможно, включете стъпките за възпроизвеждане на проблема.</translation>
-<translation id="7155037718620478619">Откриване на още APN</translation>
 <translation id="7155171745945906037">Съществуваща снимка от камерата или от файл</translation>
 <translation id="7162487448488904999">Галерия</translation>
 <translation id="7170236477717446850">Снимка на потребителския профил</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип на доставчика</translation>
 <translation id="7882501334836096755">Публичен ключ</translation>
+<translation id="78957024357676568">наляво</translation>
 <translation id="7897043345768902965">пешеходна пътека</translation>
 <translation id="7903695460270716054">Изберете подбрани произведения на изкуството и изображения</translation>
 <translation id="7915220255123750251">Управление на настройките за името на точката за достъп (APN) за мрежата. Чрез APN се установява връзка между мобилна мрежа и интернет.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Оставащ заряд</translation>
 <translation id="8076492880354921740">Раздели</translation>
 <translation id="8079860070590459552">поле с цветя</translation>
-<translation id="8081553043098820199">Невалидните имена на точки за достъп (APN) може да доведат до деактивиране на мобилната ви връзка. Задавайте само имена, предоставени от мобилния оператор или администратора ви.</translation>
 <translation id="8082366717211101304">Преобразуването от DNS не е възможно от приложения за Android</translation>
 <translation id="8082644724189923105">зона на клавиатурата</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Използвате отворена и незащитена мрежа</translation>
 <translation id="811820734797650957">(Android) Шлюзът отговаря на команда ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8132480444149501833">Заявяване на броячи за трафика</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Избиране на <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Източник</translation>
 <translation id="8302368968391049045">Защитна стена за HTTPS</translation>
 <translation id="8312330582793120272">пускане на мултимедията</translation>
-<translation id="8317819321190319496">Бутонът „Използване на това име на точката за достъп (APN)“ вече е активен</translation>
 <translation id="8318753676953949627">Няма изображения</translation>
 <translation id="8320910311642849813">гора</translation>
 <translation id="8329018942023753850">приложение за калкулатор</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Автоматично установено</translation>
 <translation id="8420955526972171689">Извършвайте тестове и отстранявайте неизправности при проблеми с хардуера</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">надолу</translation>
 <translation id="8431300646573772016">Новите неща в Chrome OS</translation>
 <translation id="843568408673868420">Връзка с интернет</translation>
 <translation id="844521431886043384">Не е настроен DNS</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Устройството е телефон.</translation>
 <translation id="8950424402482976779">горна част</translation>
 <translation id="8954341524817067858">планини</translation>
+<translation id="8957423540740801332">надясно</translation>
 <translation id="8960969673307890087">дини</translation>
 <translation id="8961025972867871808">пингвини</translation>
 <translation id="8968751544471797276">Скорост на зареждане</translation>

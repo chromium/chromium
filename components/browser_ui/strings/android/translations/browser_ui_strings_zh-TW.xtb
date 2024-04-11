@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">返回</translation>
 <translation id="2546283357679194313">Cookie 和網站資料</translation>
 <translation id="2550801787432930915">降價資訊卡</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{已封鎖 1 個 Cookie}other{已封鎖 # 個 Cookie}}</translation>
 <translation id="2570922361219980984">此外，這部裝置的位置資訊存取權已關閉。請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中予以開啟。</translation>
 <translation id="257931822824936280">已展開 - 按一下即可收合。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">倒轉到特定的播放時間點</translation>
 <translation id="8444433999583714703">如要允許 <ph name="APP_NAME" /> 存取你的位置，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟定位功能。</translation>
 <translation id="8447861592752582886">撤銷裝置權限</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{目前使用 1 個 Cookie}other{目前使用 # 個 Cookie}}</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="848952951823693243">一律要求行動版網站</translation>
 <translation id="8499083585497694743">將麥克風取消靜音</translation>

@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">প্রজাপতি</translation>
 <translation id="188114911237521550">'ডার্ক মোড' বন্ধ করুন</translation>
-<translation id="188268299367474594">উপলভ্য APN থেকে বেছে নিন</translation>
 <translation id="1885577615937958993">মিডিয়া ফাস্ট ফরওয়ার্ড করুন</translation>
 <translation id="1887850431809612466">হার্ডওয়্যার পুনর্বিবেচনাগুলি</translation>
 <translation id="189221451253258459">নিয়ন সবুজ</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />টির মধ্যে <ph name="CURRENT_PAGE" /> নম্বর ছবি</translation>
 <translation id="2446553403094072641">ফ্লোটিং পয়েন্ট অ্যাকুরেসি</translation>
 <translation id="2448312741937722512">প্রকার</translation>
-<translation id="2465272316171730950">আমরা আর সাহায্য করতে পারছি না। একটু পরে আবার চেষ্টা করুন।</translation>
 <translation id="2472215337771558851">Google AI দ্বারা পরিচালিত, 'আমাকে লিখতে সাহায্য করুন' ফিচার কোনও ড্রাফ্ট তৈরি করতে বা আগে থাকা কাজ রিফাইন করতে ব্যবহার করুন</translation>
 <translation id="2480572840229215612">কাঁকড়া</translation>
 <translation id="248546197012830854">ডিভাইস অফলাইন আছে। সহায়তা কন্টেন্ট দেখতে ওয়াই-ফাই নেটওয়ার্কের সাথে কানেক্ট করুন।</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">উইন্ডো দেখুন</translation>
 <translation id="2513396635448525189">'লগ-ইন'-এর ছবি</translation>
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
-<translation id="2520213071283358374">এই APN ব্যবহার করুন</translation>
 <translation id="2521835766824839541">আগের ট্র্যাক</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="253029298928638905">রিস্টার্ট হচ্ছে...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">সাবনেট মাস্ক</translation>
 <translation id="4454245904991689773">স্ক্যান করা ফাইল এখানে সেভ করুন</translation>
 <translation id="4456812688969919973">'APN সেভ করুন' বোতাম এখন বন্ধ আছে</translation>
-<translation id="4460905888685975163">'এই APN ব্যবহার করুন' বোতামটি এখন বন্ধ আছে</translation>
 <translation id="4469288414739283461">আর্থ ফ্লো স্ক্রিন সেভার</translation>
 <translation id="4479639480957787382">ইথারনেট</translation>
 <translation id="4483049906298469269">ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">সার্ভার হোস্টনাম</translation>
 <translation id="5089810972385038852">রাজ্য</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">উপরে</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> 'কী' ছাড়া শর্টকার্ট কয়েকটি অ্যাপের শর্টকার্টের ক্ষেত্রে সমস্যা সৃষ্টি করতে পারে। এটি ব্যবহার করা চালিয়ে যেতে এই শর্টকার্ট প্রেস করুন বা <ph name="KEY" /> 'কী' ব্যবহার করে নতুন শর্টকার্ট প্রেস করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">একই ধরনের:</translation>
 <translation id="5130848777448318809">ছোট ঘোড়া</translation>
@@ -1066,7 +1063,6 @@
 <translation id="7147557737960578492">নতুন 'কী' বেছে নেওয়ার মাধ্যমে আবার অ্যাসাইন করুন</translation>
 <translation id="714876143603641390">Lan কানেক্টিভিটি</translation>
 <translation id="7154020516215182599">আপনার মতামত শেয়ার করুন বা সমস্যা বর্ণনা করুন। সম্ভব হলে, আপনার সমস্য়া শুরু থেকে পর্যায়ক্রমে বোঝার জন্য প্রয়োজনীয় ধাপগুলি এখানে লিখুন।</translation>
-<translation id="7155037718620478619">আরও APN ডিসকভার করুন</translation>
 <translation id="7155171745945906037">ক্যামেরা বা ফাইল থেকে বিদ্যমান ফটো</translation>
 <translation id="7162487448488904999">গ্যালারি</translation>
 <translation id="7170236477717446850">প্রোফাইল ছবি</translation>
@@ -1196,12 +1192,14 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">পরিষেবা প্রদানকারীর ধরন</translation>
 <translation id="7882501334836096755">সর্বজনীন 'কী'</translation>
+<translation id="78957024357676568">বাঁ</translation>
 <translation id="7897043345768902965">হাঁটার পথ</translation>
 <translation id="7903695460270716054">কিউরেট করা আর্টওয়ার্ক ও ছবি বেছে নিন</translation>
 <translation id="7915220255123750251">নেটওয়ার্ক APN সেটিংস ম্যানেজ করুন। APN একটি সেলুলার নেটওয়ার্ক এবং ইন্টারনেটের মধ্যে কানেকশন তৈরি করে।</translation>
 <translation id="7936303884198020182">ডোমেন নেম সার্ভার খুঁজে পাওয়া যায়নি</translation>
 <translation id="7942349550061667556">লাল</translation>
 <translation id="7943235353293548836">অবিরাম সক্রিয়-রাখা ইন্টারভ্যাল</translation>
+<translation id="7943516765291457328">আশেপাশের হটস্পটের জন্য স্ক্যান করতে ব্লুটুথ চালু করুন</translation>
 <translation id="7944562637040950644">কীবোর্ড ব্যাকলাইট টগল করুন</translation>
 <translation id="7953669802889559161">ইনপুট</translation>
 <translation id="7955587717700691983">ব্লুটুথ কীবোর্ড</translation>
@@ -1225,7 +1223,6 @@
 <translation id="8075838845814659848">বাকি থাকা চার্জ</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8079860070590459552">ফিল্ড অফ ফ্লাওয়ার</translation>
-<translation id="8081553043098820199">ভুল APN-এর কারণে আপনার মোবাইল কানেকশন বন্ধ হয়ে যেতে পারে। শুধুমাত্র আপনার মোবাইল পরিষেবা প্রদানকারী বা অ্যাডমিনিস্ট্রেটরের দেওয়া APN সেট করুন।</translation>
 <translation id="8082366717211101304">অ্যানড্রয়েড অ্যাপ থেকে ডিএনএস সংক্রান্ত সমস্যার সমাধান করা যাচ্ছে না</translation>
 <translation id="8082644724189923105">কীবোর্ডের জোন</translation>
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
@@ -1233,6 +1230,7 @@
 <translation id="8104083085214006426">আপনি একটি ওপেন এবং নিরাপদ নয় এমন নেটওয়ার্ক ব্যবহার করছেন</translation>
 <translation id="811820734797650957">(Android) গেটওয়ে পিং করা যেতে পারে</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
+<translation id="8131740175452115882">নিশ্চিত হন</translation>
 <translation id="8132480444149501833">ট্রাফিক কাউন্টার্স-এর অনুরোধ করুন</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> বেছে নিন</translation>
@@ -1258,7 +1256,6 @@
 <translation id="8294431847097064396">উৎস</translation>
 <translation id="8302368968391049045">HTTPS ফায়ারওয়াল</translation>
 <translation id="8312330582793120272">মিডিয়া চালান</translation>
-<translation id="8317819321190319496">'এই APN ব্যবহার করুন' বোতামটি এখন চালু আছে</translation>
 <translation id="8318753676953949627">কোন ছবি নেই</translation>
 <translation id="8320910311642849813">ফরেস্ট</translation>
 <translation id="8329018942023753850">Calculator অ্যাপ</translation>
@@ -1284,6 +1281,7 @@
 <translation id="8410244574650205435">অটোমেটিক শনাক্ত করা হয়েছে</translation>
 <translation id="8420955526972171689">টেস্ট রান করানো ও হার্ডওয়্যার সংক্রান্ত সমস্যার সমাধান</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">নিচে</translation>
 <translation id="8431300646573772016">ChromeOS-এ নতুন কী আছে</translation>
 <translation id="843568408673868420">ইন্টারনেট কানেক্টিভিটি</translation>
 <translation id="844521431886043384">DNS সেট আপ করা হয়নি</translation>
@@ -1331,6 +1329,7 @@
 <translation id="8747900814994928677">পরিবর্তন কনফার্ম করুন</translation>
 <translation id="8749478549112817787">ক্যামেরা ব্যাকগ্রাউন্ড</translation>
 <translation id="8755946156089753497">টাওয়ার</translation>
+<translation id="8756235582947991808">AI ব্যবহার করে কীভাবে তৈরি করতে হয় এবং মনে রাখার মতো কয়েকটি বিষয়</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos অ্যালবাম</translation>
 <translation id="8775713578693478175">মোডেম APN</translation>
@@ -1374,6 +1373,7 @@
 <translation id="894617464444543719">ডিভাইস একটি ফোন।</translation>
 <translation id="8950424402482976779">উপরে</translation>
 <translation id="8954341524817067858">পর্বতমালা</translation>
+<translation id="8957423540740801332">ডান</translation>
 <translation id="8960969673307890087">তরমুজ</translation>
 <translation id="8961025972867871808">পেঙ্গুইন</translation>
 <translation id="8968751544471797276">চর্জিং রেট</translation>

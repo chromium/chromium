@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1533488253335887280">Madali at secure na access sa iyong mga password mula sa home screen.</translation>
+<translation id="1590550141045148182">Buksan o isara ang iyong mga tab kung kailan mo gusto.</translation>
+<translation id="2036020471903443693">Makikita mo ang iyong tab na naka-pin sa ibaba ng screen mo.</translation>
+<translation id="2984477737332162971">Pumunta sa iyong mga nakabukas na tab.</translation>
+<translation id="3595188309555410362">Kung mayroon kang mga tab na matagal mo nang hindi nagagamit, ililipat na ang mga ito sa seksyong Mga Hindi Aktibong Tab.</translation>
+<translation id="3941788408634637840">I-tap ang Mga Hindi Aktibong Tab (kung available).</translation>
+<translation id="3942215673032261195">Puwede mong i-pin ang mga paborito mong site para sa madaling pag-access sa ibang pagkakataon.</translation>
+<translation id="4196935312151003338">Piliin ang “I-pin ang Tab” mula sa menu.</translation>
+<translation id="4497631794981705027">Pindutin nang matagal ang home screen.</translation>
+<translation id="463279609093232564">Sa kaliwang bahagi sa itaas ng screen, i-tap ang +.</translation>
+<translation id="5604467549230434026">Sa box ng Mga Search Widget, ilagay ang salitang Chrome.</translation>
+<translation id="5639067007765618198">Widget ng Google Password Manager</translation>
 <translation id="5922999516621365983">I-drag ang tab dito para i-pin ito.</translation>
 <translation id="5979837087407522202">Maghanap ng Mga Password</translation>
+<translation id="6109989197058801417">Pindutin nang matagal ang tab na gusto mong i-pin.</translation>
+<translation id="639614003069108254">Piliin ang Password Manager, at pagkatapos ay i-tap ang Magdagdag ng Widget.</translation>
+<translation id="6905308710260460250">Mga Naka-pin na Tab</translation>
+<translation id="720206380500582061">Pamahalaan ang mga setting ng Mga Hindi Aktibong Tab sa ilalim ng Mga Setting &gt; Mga Tab.</translation>
 <translation id="8077675488769462025">Mga Hindi Aktibong Tab</translation>
+<translation id="8602952180069641300">Mag-scroll papunta sa itaas ng iyong Mga Tab.</translation>
+<translation id="979990360845983227">Hindi ginamit sa loob ng 14 na araw o higit pa</translation>
 </translationbundle>

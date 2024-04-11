@@ -4534,7 +4534,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4403266582403435904">Easily restore data or switch devices at any time. Backups are uploaded to Google and encrypted using your child's Google Account password.</translation>
 <translation id="4403775189117163360">Choose a different folder</translation>
 <translation id="4404136731284211429">Scan again</translation>
-<translation id="4404619268534288383">Tab groups save and sync</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> is blocked by your parent. Ask your parent for permission to use this app.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Move to…</translation>
@@ -5176,7 +5175,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4899696330053002588">Contains ads</translation>
 <translation id="490031510406860025">Not allowed on this site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – interlaced</translation>
-<translation id="490056871160016482">Sites use this feature to offer immersive fullscreen experiences regardless of user gestures</translation>
 <translation id="4900652253009739885">Can’t remove the only switch assigned to 'Select'. Press any key to <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Expand recently closed</translation>
 <translation id="4901309472892185668">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment.</translation>
@@ -5501,7 +5499,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> has been blocked</translation>
 <translation id="5163910114647549394">Tab moved to end of tabstrip</translation>
 <translation id="5164530241085602114">Notifications not allowed for <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Allowed to enter fullscreen automatically</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5171045022955879922">Search or type URL</translation>
@@ -5803,7 +5800,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="541737483547792035">Magnify screen</translation>
 <translation id="541822678830750798">Requesting to read and change this site</translation>
 <translation id="5419405654816502573">Voice match</translation>
-<translation id="5420061891386124792">Enables saving and recalling of tab groups. Right-click a tab group to save it. Recall groups from the bookmarks bar.</translation>
 <translation id="5420274697768050645">Require password to unlock device for added security</translation>
 <translation id="5420438158931847627">Determines sharpness of text and images</translation>
 <translation id="5420935737933866496">Copy &amp;Link</translation>
@@ -6200,6 +6196,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
 <translation id="5725112283692663422">Send feedback for create theme with AI</translation>
 <translation id="5727728807527375859">Extensions, apps and themes can harm your computer. Are you sure that you want to continue?</translation>
+<translation id="5728072125198221967">Linked Google services</translation>
 <translation id="5728290366864286776">This extension may read and change site information or run in the background</translation>
 <translation id="5728450728039149624">Smart Lock screen lock options</translation>
 <translation id="572914206753951782">Make sure your Chromebook is on the latest version. Then, restart your Chromebook and try again.</translation>
@@ -8184,7 +8181,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7290242001003353852">This sign-in service, hosted by <ph name="SAML_DOMAIN" />, is accessing your camera.</translation>
 <translation id="7292067737327289208">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by your organisation and your <ph name="BEGIN_LINK" />profile is managed<ph name="END_LINK" /> by <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Not allowed to enter fullscreen automatically</translation>
 <translation id="7295614427631867477">Note that Android, Play and associated apps are governed by their own data collection and use policies.</translation>
 <translation id="7296503797589217366">Select folder <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Dark green</translation>
@@ -9731,7 +9727,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="84297032718407999">You'll be signed out in <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Show taps</translation>
 <translation id="843173223122814223">Create backgrounds with AI</translation>
-<translation id="8432724317983466962">Entering fullscreen requires a user gesture by default</translation>
 <translation id="8433186206711564395">Network settings</translation>
 <translation id="8434480141477525001">NaCl Debug Port</translation>
 <translation id="8436054240208929121">Sign in and turn on sync to let Chrome suggest tab groups and keep your tabs organised</translation>

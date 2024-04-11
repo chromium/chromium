@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
 <translation id="2546283357679194313">कुकीहरू र साइट डाटा</translation>
 <translation id="2550801787432930915">मूल्य घटेको जानकारी दिने कार्ड</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{१ कुकीमाथि रोक लगाइयो}other{# कुकीहरूमाथि रोक लगाइयो}}</translation>
 <translation id="2570922361219980984">यो डिभाइसको स्थानमाथिको पहुँच पनि निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
 <translation id="257931822824936280">विस्तृत गरिएको - संक्षिप्त पार्न क्लिक गर्नुहोस्</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">पछाडि खोज्नुहोस्</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> लाई आफ्नो स्थान प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई लोकेसन सर्भिस पनि अन गर्नुहोस्।</translation>
 <translation id="8447861592752582886">यन्त्र सम्बन्धी अनुमतिलाई उल्टाउनुहोस्</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{एउटा कुकी प्रयोग भइरहेको छ}other{# वटा कुकी प्रयोग भइरहेका छन्}}</translation>
 <translation id="8487700953926739672">अफलाईन उपलब्ध</translation>
 <translation id="848952951823693243">सधैँ साइटको मोबाइल भ्यू देखाउनुहोस्</translation>
 <translation id="8499083585497694743">माइक्रोफोन अनम्युट गर्नुहोस्</translation>

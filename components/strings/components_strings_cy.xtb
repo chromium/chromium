@@ -243,7 +243,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1428729058023778569">Rydych yn gweld y rhybudd hwn oherwydd nid yw'r wefan hon yn cefnogi HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Ffilm Hunanlynol</translation>
 <translation id="1430915738399379752">Argraffu</translation>
-<translation id="1431021750861456539">Sgrîn lawn awtomatig</translation>
 <translation id="1432187715652018471">mae tudalen eisiau gosod trinydd gwasanaethau.</translation>
 <translation id="1432581352905426595">Rheoli peiriannau chwilio</translation>
 <translation id="1433225466058025572">Rhowch gynnig ar symud eich ffeiliau eto</translation>
@@ -2318,7 +2317,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
     <ph name="LINE_BREAK" />
     Rhowch gynnig ar gysylltu â'ch gweinyddwr system.</translation>
 <translation id="549333378215107354">Maint 3</translation>
-<translation id="5501712702042287009">sgrîn lawn awtomatig</translation>
 <translation id="550365051221576010">Llenwi popeth</translation>
 <translation id="5508443345185481044">Camerâu a Chamcordyddion</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Troi ymlaen</translation>
 <translation id="5862579898803147654">Pentyrrwr 8</translation>
+<translation id="5863515189965725638">Golygu'r IBAN</translation>
 <translation id="5863847714970149516">Gallai'r dudalen rydych ar fin mynd arni geisio codi tâl arnoch</translation>
 <translation id="5866257070973731571">Ychwanegu Rhif Ffôn</translation>
 <translation id="5866898949289125849">Rydych yn edrych ar dudalen offer datblygwyr</translation>

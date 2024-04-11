@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">borboletas</translation>
 <translation id="188114911237521550">Desativar modo escuro</translation>
-<translation id="188268299367474594">Escolha um dos APNs disponíveis</translation>
 <translation id="1885577615937958993">avançar o conteúdo multimédia</translation>
 <translation id="1887850431809612466">Revisão de hardware</translation>
 <translation id="189221451253258459">verde fluorescente</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Imagem <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precisão da vírgula flutuante</translation>
 <translation id="2448312741937722512">Tipo</translation>
-<translation id="2465272316171730950">Estamos no limite da nossa capacidade. Volte dentro de alguns momentos.</translation>
 <translation id="2472215337771558851">Use a funcionalidade Ajuda-me a escrever para criar um rascunho ou refinar um trabalho existente com tecnologia de IA da Google</translation>
 <translation id="2480572840229215612">caranguejos</translation>
 <translation id="248546197012830854">O dispositivo está offline. Ligue-se à rede Wi-Fi para ver o conteúdo de ajuda.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">mostrar janelas</translation>
 <translation id="2513396635448525189">Imagem de início de sessão</translation>
 <translation id="2517472476991765520">Digitalizar</translation>
-<translation id="2520213071283358374">Usar APN</translation>
 <translation id="2521835766824839541">faixa anterior</translation>
 <translation id="2526590354069164005">Ambiente de trabalho</translation>
 <translation id="253029298928638905">A reiniciar…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Máscara de sub-rede</translation>
 <translation id="4454245904991689773">Digitalizar para</translation>
 <translation id="4456812688969919973">O botão Guardar APN está agora desativado</translation>
-<translation id="4460905888685975163">A utilização deste APN está agora desativada</translation>
 <translation id="4469288414739283461">Proteção de ecrã Fluxo da Terra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha ao enviar ping ao gateway da rede não predefinida.</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Nome do anfitrião do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">para cima</translation>
 <translation id="5107243100836678918">O atalho sem tecla de <ph name="META_KEY" /> pode entrar em conflito com o atalho de alguma app. Prima este atalho novamente para continuar a usá-lo ou prima um novo atalho com a tecla de <ph name="KEY" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Sinónimos:</translation>
 <translation id="5130848777448318809">póneis</translation>
@@ -845,6 +842,8 @@
 <translation id="5946538341867151940">Ainda não estabeleceu ligação. Se o seu operador móvel recomendar um APN (nome do ponto de acesso) personalizado, introduza as informações do APN através da seleção de "+ Novo APN"</translation>
 <translation id="5947266287934282605">Se o último dia do mês for antes deste dia, os dados são repostos no último dia do mês</translation>
 <translation id="5948460390109837040">cães</translation>
+<translation id="594989847980441553">Selecione "Criar" para criar uma imagem com IA.
+        Todas as imagens criadas vão ser automaticamente apresentadas aqui.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">coral</translation>
 <translation id="5984145644188835034">Imagem de fundo predefinida</translation>
@@ -1064,7 +1063,6 @@
 <translation id="7147557737960578492">Reatribua selecionando uma nova tecla</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>
 <translation id="7154020516215182599">Partilhe o seu feedback ou descreva o problema. Se possível, inclua passos para reproduzir o problema.</translation>
-<translation id="7155037718620478619">Descobrir mais APNs</translation>
 <translation id="7155171745945906037">Foto existente da câmara ou do ficheiro</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Imagem do perfil</translation>
@@ -1194,12 +1192,14 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
 <translation id="7882501334836096755">Chave pública</translation>
+<translation id="78957024357676568">esquerda</translation>
 <translation id="7897043345768902965">passeio</translation>
 <translation id="7903695460270716054">Escolha imagens e ilustrações organizadas</translation>
 <translation id="7915220255123750251">Faça a gestão das definições do APN (Nome do Ponto de Acesso) da rede. Os APNs estabelecem uma ligação entre uma rede móvel e a Internet.</translation>
 <translation id="7936303884198020182">Não foram encontrados servidores de nomes.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943235353293548836">Intervalo keep-alive persistente</translation>
+<translation id="7943516765291457328">Ative o Bluetooth para procurar zonas Wi-Fi próximas</translation>
 <translation id="7944562637040950644">ativar/desativar a retroiluminação do teclado</translation>
 <translation id="7953669802889559161">Métodos de introdução</translation>
 <translation id="7955587717700691983">Teclado Bluetooth</translation>
@@ -1223,7 +1223,6 @@
 <translation id="8075838845814659848">Carregamento restante</translation>
 <translation id="8076492880354921740">Separadores</translation>
 <translation id="8079860070590459552">campo de flores</translation>
-<translation id="8081553043098820199">Os APNs inválidos podem fazer com que a ligação móvel seja desativada. Defina apenas os APNs fornecidos pelo administrador ou fornecedor de serviços móveis.</translation>
 <translation id="8082366717211101304">Não é possível resolver o DNS a partir de apps Android</translation>
 <translation id="8082644724189923105">zona do teclado</translation>
 <translation id="808894953321890993">Alterar palavra-passe</translation>
@@ -1231,6 +1230,7 @@
 <translation id="8104083085214006426">Está a utilizar uma rede aberta e insegura</translation>
 <translation id="811820734797650957">(Android) É possível enviar ping ao gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfego</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Selecionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1256,6 @@
 <translation id="8294431847097064396">Origem</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8312330582793120272">reproduzir conteúdo multimédia</translation>
-<translation id="8317819321190319496">A utilização deste APN está agora ativada</translation>
 <translation id="8318753676953949627">Não existem imagens</translation>
 <translation id="8320910311642849813">floresta</translation>
 <translation id="8329018942023753850">app calculadora</translation>
@@ -1282,6 +1281,7 @@
 <translation id="8410244574650205435">Detetado automaticamente</translation>
 <translation id="8420955526972171689">Execute testes e a resolução de problemas de hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">para baixo</translation>
 <translation id="8431300646573772016">Novidades no ChromeOS</translation>
 <translation id="843568408673868420">Ligação à Internet</translation>
 <translation id="844521431886043384">O DNS não está configurado</translation>
@@ -1329,6 +1329,7 @@
 <translation id="8747900814994928677">Confirme a alteração</translation>
 <translation id="8749478549112817787">Fundo da câmara</translation>
 <translation id="8755946156089753497">torre</translation>
+<translation id="8756235582947991808">Como criar com a IA e alguns aspetos a ter em conta</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum do Google Fotos</translation>
 <translation id="8775713578693478175">APN do modem</translation>
@@ -1372,6 +1373,7 @@
 <translation id="894617464444543719">O dispositivo é um telemóvel.</translation>
 <translation id="8950424402482976779">superior</translation>
 <translation id="8954341524817067858">montanhas</translation>
+<translation id="8957423540740801332">direita</translation>
 <translation id="8960969673307890087">melancias</translation>
 <translation id="8961025972867871808">pinguins</translation>
 <translation id="8968751544471797276">Velocidade de carregamento</translation>

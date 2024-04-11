@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">kupu-kupu</translation>
 <translation id="188114911237521550">Matikan mod gelap</translation>
-<translation id="188268299367474594">Pilih daripada APN yang tersedia</translation>
 <translation id="1885577615937958993">mundar laju media</translation>
 <translation id="1887850431809612466">Semakan perkakasan</translation>
 <translation id="189221451253258459">hijau neon</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Imej <ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Ketepatan titik terapung</translation>
 <translation id="2448312741937722512">Jenis</translation>
-<translation id="2465272316171730950">Kami sangat sibuk pada masa ini. Sila kembali nanti.</translation>
 <translation id="2472215337771558851">Gunakan Bantu saya tulis untuk membuat draf atau memperhalus kerja sedia ada, dikuasakan oleh Google AI</translation>
 <translation id="2480572840229215612">ketam</translation>
 <translation id="248546197012830854">Peranti di luar talian. Sambung kepada rangkaian Wi-Fi untuk melihat kandungan bantuan.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">tunjukkan tetingkap</translation>
 <translation id="2513396635448525189">Imej log masuk</translation>
 <translation id="2517472476991765520">Imbas</translation>
-<translation id="2520213071283358374">Gunakan APN ini</translation>
 <translation id="2521835766824839541">lagu sebelumnya</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Memulakan semula...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Topeng subnet</translation>
 <translation id="4454245904991689773">Imbas dan simpan pada</translation>
 <translation id="4456812688969919973">Butang simpan APN kini dilumpuhkan</translation>
-<translation id="4460905888685975163">Gunakan APN ini kini dilumpuhkan</translation>
 <translation id="4469288414739283461">Penyelamat skrin aliran Bumi</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Nama hos pelayan</translation>
 <translation id="5089810972385038852">Negeri</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">ke atas</translation>
 <translation id="5107243100836678918">Pintasan tanpa kekunci <ph name="META_KEY" /> mungkin bercanggah dengan sesetengah pintasan apl. Tekan pintasan ini sekali lagi untuk terus digunakan atau tekan pintasan baharu menggunakan kekunci <ph name="KEY" />. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Serupa:</translation>
 <translation id="5130848777448318809">kuda padi</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Tetapkan semula dengan memilih kunci baharu</translation>
 <translation id="714876143603641390">Kesambungan LAN</translation>
 <translation id="7154020516215182599">Kongsi maklum balas anda atau huraikan isu anda. Jika boleh, sertakan langkah untuk menghasilkan semula isu anda.</translation>
-<translation id="7155037718620478619">Temukan lebih banyak APN</translation>
 <translation id="7155171745945906037">Foto sedia ada daripada kamera atau fail</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7170236477717446850">Gambar profil</translation>
@@ -1194,12 +1190,14 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
 <translation id="7882501334836096755">Kunci awam</translation>
+<translation id="78957024357676568">kiri</translation>
 <translation id="7897043345768902965">laluan pejalan kaki</translation>
 <translation id="7903695460270716054">Pilih kerja seni dan imej yang dipilih susun</translation>
 <translation id="7915220255123750251">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dan Internet.</translation>
 <translation id="7936303884198020182">Pelayan tanpa nama ditemukan</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943235353293548836">Selang pengekal berterusan</translation>
+<translation id="7943516765291457328">Hidupkan Bluetooth untuk mengimbas tempat liputan berdekatan</translation>
 <translation id="7944562637040950644">togol lampu latar papan kekunci</translation>
 <translation id="7953669802889559161">Masukan</translation>
 <translation id="7955587717700691983">Papan kekunci Bluetooth</translation>
@@ -1223,7 +1221,6 @@
 <translation id="8075838845814659848">Baki cas</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8079860070590459552">padang penuh bunga</translation>
-<translation id="8081553043098820199">APN yang tidak sah boleh menyebabkan sambungan mudah alih anda dilumpuhkan. Hanya tetapkan APN yang disediakan oleh penyedia mudah alih atau pentadbir anda.</translation>
 <translation id="8082366717211101304">Tidak dapat menyelesaikan DNS daripada apl Android</translation>
 <translation id="8082644724189923105">zon papan kekunci</translation>
 <translation id="808894953321890993">Tukar kata laluan</translation>
@@ -1231,6 +1228,7 @@
 <translation id="8104083085214006426">Anda sedang menggunakan rangkaian terbuka dan tidak selamat</translation>
 <translation id="811820734797650957">Get laluan boleh Diping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8131740175452115882">Sahkan</translation>
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Pilih <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1254,6 @@
 <translation id="8294431847097064396">Sumber</translation>
 <translation id="8302368968391049045">Tembok Api HTTPS</translation>
 <translation id="8312330582793120272">mainkan media</translation>
-<translation id="8317819321190319496">Gunakan APN ini kini didayakan</translation>
 <translation id="8318753676953949627">Tiada Imej</translation>
 <translation id="8320910311642849813">hutan</translation>
 <translation id="8329018942023753850">apl kalkulator</translation>
@@ -1282,6 +1279,7 @@
 <translation id="8410244574650205435">Dikesan secara automatik</translation>
 <translation id="8420955526972171689">Jalankan ujian dan penyelesaian masalah bagi isu perkakasan</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">ke bawah</translation>
 <translation id="8431300646573772016">Item Baharu Chrome OS</translation>
 <translation id="843568408673868420">Sambungan Internet</translation>
 <translation id="844521431886043384">DNS tidak disediakan</translation>
@@ -1329,6 +1327,7 @@
 <translation id="8747900814994928677">Sahkan penukaran</translation>
 <translation id="8749478549112817787">Latar Kamera</translation>
 <translation id="8755946156089753497">menara</translation>
+<translation id="8756235582947991808">Cara mencipta dengan AI dan beberapa perkara untuk diingati</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
 <translation id="8775713578693478175">APN modem</translation>
@@ -1372,6 +1371,7 @@
 <translation id="894617464444543719">Peranti ialah telefon.</translation>
 <translation id="8950424402482976779">atas</translation>
 <translation id="8954341524817067858">gunung</translation>
+<translation id="8957423540740801332">kanan</translation>
 <translation id="8960969673307890087">tembikai</translation>
 <translation id="8961025972867871808">penguin</translation>
 <translation id="8968751544471797276">Kadar pengecasan</translation>

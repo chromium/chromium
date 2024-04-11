@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Артқа қайту</translation>
 <translation id="2546283357679194313">Cookie файлдары және торап деректері</translation>
 <translation id="2550801787432930915">Баға түсуінің картасы</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie файлы бөгелді.}other{# cookie файлы бөгелді.}}</translation>
 <translation id="2570922361219980984">Бұл құрылғыда да орынды анықтау қызметі өшірулі. Оны <ph name="BEGIN_LINK" />Android параметрлері<ph name="END_LINK" /> арқылы қосыңыз.</translation>
 <translation id="257931822824936280">Жайылған – жию үшін басыңыз.</translation>
 <translation id="2586657967955657006">Буфер</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Артқа</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> браузері геодерегіңізді пайдалануы үшін, <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> оны да қосыңыз.</translation>
 <translation id="8447861592752582886">Құрылғыға кіру рұқсатының күшін жою</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie файлы қолданылып жатыр}other{# cookie файлы қолданылып жатыр}}</translation>
 <translation id="8487700953926739672">Желіден тыс істейді</translation>
 <translation id="848952951823693243">Әрдайым сайттың мобильдік нұсқасын сұрау</translation>
 <translation id="8499083585497694743">Микрофон дыбысын қосу</translation>

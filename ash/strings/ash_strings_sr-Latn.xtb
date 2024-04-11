@@ -1433,7 +1433,6 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6537924328260219877">Jačina signala <ph name="SIGNAL_STRENGTH" />, baterija telefona <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Skenira se fajl <ph name="FILENAME" /> koji se preuzima</translation>
 <translation id="6542521951477560771">Prebacuje se na <ph name="RECEIVER_NAME" /></translation>
-<translation id="6546062506073634094">Pretraga slika prema sadržaju i pregledima slika</translation>
 <translation id="6555373427270923730">Unesite veb-adresu u traku za adresu, pa pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Novo instaliranje</translation>

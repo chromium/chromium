@@ -243,7 +243,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1428729058023778569">Je duke e parë këtë paralajmërim pasi kjo faqe nuk mbështet HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Film me vetëngjitje</translation>
 <translation id="1430915738399379752">Printo</translation>
-<translation id="1431021750861456539">Ekrani i plotë automatik</translation>
 <translation id="1432187715652018471">faqja kërkon të instalojë një përpunues të shërbimit.</translation>
 <translation id="1432581352905426595">Menaxho motorët e kërkimit</translation>
 <translation id="1433225466058025572">Provo t'i zhvendosësh përsëri skedarët e tu</translation>
@@ -2318,7 +2317,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     <ph name="LINE_BREAK" />
     Provo të kontaktosh me administratorin e sistemit.</translation>
 <translation id="549333378215107354">Madhësia 3</translation>
-<translation id="5501712702042287009">ekrani i plotë automatik</translation>
 <translation id="550365051221576010">Plotësoji të gjitha</translation>
 <translation id="5508443345185481044">Kamera dhe videokamera</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
 <translation id="5862579898803147654">Stivuesi 8</translation>
+<translation id="5863515189965725638">Modifiko numrin IBAN</translation>
 <translation id="5863847714970149516">Faqja në vijim mund të përpiqet të të tarifojë në para</translation>
 <translation id="5866257070973731571">Shto numër telefoni</translation>
 <translation id="5866898949289125849">Po shikon një faqe të veglave të zhvilluesit</translation>

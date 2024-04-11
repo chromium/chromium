@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="2546283357679194313">કૂકીઝ અને સાઇટ ડેટા</translation>
 <translation id="2550801787432930915">કિંમતમાં ઘટાડાનું કાર્ડ</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 કુકીને બ્લૉક કરેલી છે}one{# કુકીને બ્લૉક કરેલી છે}other{# કુકીને બ્લૉક કરેલી છે}}</translation>
 <translation id="2570922361219980984">આ ઉપકરણ માટે સ્થાન ઍક્સેસ પણ બંધ છે. તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
 <translation id="257931822824936280">વિસ્તૃત - સંકુચિત કરવા માટે ક્લિક કરો.</translation>
 <translation id="2586657967955657006">ક્લિપબોર્ડ</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">પાછળ કરો</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> તમારું સ્થાન ઍક્સેસ કરી શકે તે માટે, <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ સ્થાન ચાલુ કરો.</translation>
 <translation id="8447861592752582886">ઉપકરણની પરવાનગી રદબાતલ કરો</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{વપરાશમાંની 1 કુકી}one{વપરાશમાંની # કુકી}other{વપરાશમાંની # કુકી}}</translation>
 <translation id="8487700953926739672">ઑફલાઇન ઉપલબ્ધ</translation>
 <translation id="848952951823693243">હંમેશાં મોબાઇલ સાઇટની વિનંતી કરો</translation>
 <translation id="8499083585497694743">માઇક્રોફોન અનમ્યૂટ કરો</translation>

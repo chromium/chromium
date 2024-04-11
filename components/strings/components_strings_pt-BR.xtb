@@ -243,7 +243,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1428729058023778569">Este aviso está sendo exibido porque o site não é compatível com HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Filme autoadesivo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
-<translation id="1431021750861456539">Tela cheia automática</translation>
 <translation id="1432187715652018471">A página quer instalar um manipulador de serviço.</translation>
 <translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
 <translation id="1433225466058025572">Tente mover os arquivos de novo</translation>
@@ -2318,7 +2317,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
     <ph name="LINE_BREAK" />
     Tente entrar em contato com o administrador do sistema.</translation>
 <translation id="549333378215107354">Tamanho 3</translation>
-<translation id="5501712702042287009">tela cheia automática</translation>
 <translation id="550365051221576010">Preencher tudo</translation>
 <translation id="5508443345185481044">Câmeras fotográficas e filmadoras</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5862579898803147654">Empilhador 8</translation>
+<translation id="5863515189965725638">Editar IBAN</translation>
 <translation id="5863847714970149516">A página que você está prestes a acessar pode tentar cobrar pagamentos</translation>
 <translation id="5866257070973731571">Adicione um Número de Telefone</translation>
 <translation id="5866898949289125849">Você está vendo uma página de ferramentas para desenvolvedores</translation>

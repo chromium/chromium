@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">матылькі</translation>
 <translation id="188114911237521550">Выключыць цёмны рэжым</translation>
-<translation id="188268299367474594">Выберыце APN з даступных варыянтаў</translation>
 <translation id="1885577615937958993">пераматаць медыязмесціва ўперад</translation>
 <translation id="1887850431809612466">Версія апаратнага забеспячэння</translation>
 <translation id="189221451253258459">неонава-зялёны</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Відарыс <ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Дакладнасць выкарыстання нефіксаванай коскі</translation>
 <translation id="2448312741937722512">Тып</translation>
-<translation id="2465272316171730950">Наша сістэма перагружана. Вярніцеся пазней.</translation>
 <translation id="2472215337771558851">Выкарыстоўвайце дапамогу з напісаннем на аснове штучнага інтэлекту ад Google, каб ствараць чарнавікі або дапрацоўваць існуючыя тэксты</translation>
 <translation id="2480572840229215612">крабы</translation>
 <translation id="248546197012830854">Прылада па-за сеткай. Каб праглядзець даведачнае змесціва, падключыцеся да сеткі Wi-Fi.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">паказаць вокны</translation>
 <translation id="2513396635448525189">Відарыс уліковага запісу</translation>
 <translation id="2517472476991765520">Пошук</translation>
-<translation id="2520213071283358374">Выкарыстоўваць гэты пункт APN</translation>
 <translation id="2521835766824839541">папярэдні трэк</translation>
 <translation id="2526590354069164005">Працоўны стол</translation>
 <translation id="253029298928638905">Ідзе перазапуск...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Маска падсеткі</translation>
 <translation id="4454245904991689773">Сканіраваць у</translation>
 <translation id="4456812688969919973">Кнопка "Захаваць APN" адключана</translation>
-<translation id="4460905888685975163">Кнопка "Выкарыстоўваць гэты пункт APN" выключана</translation>
 <translation id="4469288414739283461">Застаўка "Рух Зямлі"</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не ўдалося праверыць сувязь з нестандартным сеткавым шлюзам</translation>
@@ -1064,7 +1060,6 @@
 <translation id="7147557737960578492">Перапрызначце клавішу (выберыце новую)</translation>
 <translation id="714876143603641390">Магчымасць падключэння LAN</translation>
 <translation id="7154020516215182599">Напішыце водгук або апішыце праблему. Па магчымасці ўкажыце, якія дзеянні да яе прыводзяць.</translation>
-<translation id="7155037718620478619">Паглядзець іншыя APN</translation>
 <translation id="7155171745945906037">Існуючае фота з камеры або файла</translation>
 <translation id="7162487448488904999">Галерэя</translation>
 <translation id="7170236477717446850">Фота профілю</translation>
@@ -1192,6 +1187,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тып пастаўшчыка</translation>
 <translation id="7882501334836096755">Адкрыты ключ</translation>
+<translation id="78957024357676568">злева</translation>
 <translation id="7897043345768902965">пешаходная дарожка</translation>
 <translation id="7903695460270716054">Выбраць падабраныя творы і відарысы</translation>
 <translation id="7915220255123750251">Кіраванне наладамі сеткавых APN. З дапамогай APN устанаўліваецца падключэнне паміж сотавай сеткай і інтэрнэтам.</translation>
@@ -1221,7 +1217,6 @@
 <translation id="8075838845814659848">Узровень зараду акумулятара</translation>
 <translation id="8076492880354921740">Укладкі</translation>
 <translation id="8079860070590459552">поле кветак</translation>
-<translation id="8081553043098820199">Пры выкарыстанні недапушчальных APN мабільнае падключэнне можа быць страчана. Выкарыстоўвайце толькі APN, прапанаваныя аператарам мабільнай сувязі або адміністратарам.</translation>
 <translation id="8082366717211101304">Не ўдалося ажыццявіць DNS-пераўтварэнне з праграм для Android</translation>
 <translation id="8082644724189923105">зона клавіятуры</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
@@ -1229,6 +1224,7 @@
 <translation id="8104083085214006426">Вы карыстаецеся адкрытай небяспечнай сеткай</translation>
 <translation id="811820734797650957">(Android) Можна выканаць праверку ping для шлюза</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Пацвердзіць</translation>
 <translation id="8132480444149501833">Запытаць лічыльнікі трафіка</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Выбраць <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1254,7 +1250,6 @@
 <translation id="8294431847097064396">Крыніца</translation>
 <translation id="8302368968391049045">Брандмаўар HTTPS</translation>
 <translation id="8312330582793120272">прайграць медыязмесціва</translation>
-<translation id="8317819321190319496">Кнопка "Выкарыстоўваць гэты пункт APN" уключана</translation>
 <translation id="8318753676953949627">Няма відарысаў</translation>
 <translation id="8320910311642849813">лес</translation>
 <translation id="8329018942023753850">праграма "Калькулятар"</translation>
@@ -1370,6 +1365,7 @@
 <translation id="894617464444543719">Гэта тэлефон.</translation>
 <translation id="8950424402482976779">зверху</translation>
 <translation id="8954341524817067858">горы</translation>
+<translation id="8957423540740801332">справа</translation>
 <translation id="8960969673307890087">кавуны</translation>
 <translation id="8961025972867871808">пінгвіны</translation>
 <translation id="8968751544471797276">Хуткасць зарадкі</translation>

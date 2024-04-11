@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">பட்டாம்பூச்சிகள்</translation>
 <translation id="188114911237521550">டார்க் பயன்முறையை முடக்குதல்</translation>
-<translation id="188268299367474594">கிடைக்கக்கூடிய APNகளில் இருந்து தேர்வுசெய்யுங்கள்</translation>
 <translation id="1885577615937958993">மீடியாவை முன்னோக்கி நகர்த்துவதற்கான ஐகான்</translation>
 <translation id="1887850431809612466">வன்பொருள் பதிப்பு</translation>
 <translation id="189221451253258459">நியான் பச்சை</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">படம்: <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">ஃப்லோட்டிங் பாயிண்ட் துல்லியத்தன்மை</translation>
 <translation id="2448312741937722512">வகை</translation>
-<translation id="2465272316171730950">தற்போது அதிகமானோர் பயன்படுத்துகின்றனர். சிறிது நேரம் கழித்து முயலவும்.</translation>
 <translation id="2472215337771558851">Google AI வழங்கும் ‘எழுத எனக்கு உதவு’ கருவி மூலம் வரைவை உருவாக்கலாம், ஏற்கெனவே உள்ளவற்றை மேம்படுத்தலாம்</translation>
 <translation id="2480572840229215612">நண்டுகள்</translation>
 <translation id="248546197012830854">சாதனம் ஆஃப்லைனில் உள்ளது. உதவி உள்ளடக்கத்தைப் பார்க்க வைஃபை நெட்வொர்க்குடன் இணைக்கவும்.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">சாளரங்களைக் காட்டுவதற்கான ஐகான்</translation>
 <translation id="2513396635448525189">உள்நுழைவுப் படம்</translation>
 <translation id="2517472476991765520">ஸ்கேன்</translation>
-<translation id="2520213071283358374">இந்த APNனைப் பயன்படுத்து</translation>
 <translation id="2521835766824839541">முந்தைய டிராக் ஐகான்</translation>
 <translation id="2526590354069164005">டெஸ்க்டாப்</translation>
 <translation id="253029298928638905">மீண்டும் தொடங்குகிறது...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">சப்நெட் மாஸ்க்</translation>
 <translation id="4454245904991689773">இதில் சேமி</translation>
 <translation id="4456812688969919973">'APNனைச் சேமி' பட்டன் இப்போது முடக்கப்பட்டுள்ளது</translation>
-<translation id="4460905888685975163">‘இந்த APNனைப் பயன்படுத்து’ பட்டன் முடக்கப்பட்டது</translation>
 <translation id="4469288414739283461">எர்த் ஃப்ளோ ஸ்கிரீன் சேவர்</translation>
 <translation id="4479639480957787382">ஈத்தர்நெட்</translation>
 <translation id="4483049906298469269">இயல்புநிலையற்ற நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">சேவையக ஹோஸ்ட்பெயர்</translation>
 <translation id="5089810972385038852">மாநிலம்</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">மேல்</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> பட்டன் இல்லாத ஷார்ட்கட், சில ஆப்ஸின் ஷார்ட்கட்டுடன் முரண்படக்கூடும். இந்த ஷார்ட்கட்டைத் தொடர்ந்து பயன்படுத்த, அதை மீண்டும் அழுத்தவும் அல்லது <ph name="KEY" /> பட்டனைப் பயன்படுத்தி புதிய ஷார்ட்கட்டை அழுத்தவும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">இதைப் போன்றவை:</translation>
 <translation id="5130848777448318809">சிறிய குதிரைகள்</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">புதிய பட்டனைத் தேர்ந்தெடுப்பதன் மூலம் மீண்டும் அமையுங்கள்</translation>
 <translation id="714876143603641390">LAN இணைப்புநிலை</translation>
 <translation id="7154020516215182599">கருத்தைப் பகிருங்கள் அல்லது சிக்கலை விவரியுங்கள். முடிந்தால், உங்கள் சிக்கலை மீண்டும் நிகழ்த்திக் காட்டுவதற்கான படிகளை வழங்குங்கள்.</translation>
-<translation id="7155037718620478619">மேலும் APNகளைக் கண்டறி</translation>
 <translation id="7155171745945906037">கேமரா அல்லது ஃபைலில் இருக்கும் படம்</translation>
 <translation id="7162487448488904999">கேலரி</translation>
 <translation id="7170236477717446850">சுயவிவரப் படம்</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">வழங்குநர் வகை</translation>
 <translation id="7882501334836096755">பொதுக் குறியீடு</translation>
+<translation id="78957024357676568">இடது</translation>
 <translation id="7897043345768902965">நடைபாதை</translation>
 <translation id="7903695460270716054">தேர்ந்தெடுக்கப்பட்ட ஆர்ட்வொர்க்கையும் படங்களையும் தேர்வுசெய்யும்</translation>
 <translation id="7915220255123750251">நெட்வொர்க் APN அமைப்புகளை நிர்வகிக்கலாம். மொபைல் நெட்வொர்க் மற்றும் இணையத்திற்கு இடையில் APNகள் இணைப்பை உருவாக்கும்.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">மீதமுள்ள சார்ஜ்</translation>
 <translation id="8076492880354921740">தாவல்கள்</translation>
 <translation id="8079860070590459552">பூந்தோட்டம்</translation>
-<translation id="8081553043098820199">தவறான APNகள் உங்கள் மொபைல் இணைப்பை முடக்கலாம். உங்கள் மொபைல் சேவை வழங்குநர் அல்லது நிர்வாகி வழங்கியுள்ள APNகளை மட்டும் அமைக்கவும்.</translation>
 <translation id="8082366717211101304">Android ஆப்ஸில் இருந்து DNS கோரிக்கையைத் தீர்க்க முடியவில்லை</translation>
 <translation id="8082644724189923105">கீபோர்டு பகுதி</translation>
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">பொதுவான, பாதுகாப்பற்ற நெட்வொர்க்கைப் பயன்படுத்துகிறீர்கள்</translation>
 <translation id="811820734797650957">(Android) கேட்வேயைத் தொடர்புகொள்வது</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">உறுதிப்படுத்து</translation>
 <translation id="8132480444149501833">டிராஃபிக் கவுண்ட்டர்களைக் கோரு</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ஐத் தேர்ந்தெடுங்கள்</translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">மூலம்</translation>
 <translation id="8302368968391049045">HTTPS ஃபயர்வால்</translation>
 <translation id="8312330582793120272">மீடியாவைப் பிளே செய்வதற்கான ஐகான்</translation>
-<translation id="8317819321190319496">‘இந்த APNனைப் பயன்படுத்து’ பட்டன் இயக்கப்பட்டது</translation>
 <translation id="8318753676953949627">படங்கள் இல்லை</translation>
 <translation id="8320910311642849813">காடு</translation>
 <translation id="8329018942023753850">கால்குலேட்டர் ஆப்ஸ் ஐகான்</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">தானாகக் கண்டறியப்பட்டது</translation>
 <translation id="8420955526972171689">வன்பொருள் சிக்கல்களைக் கண்டறிய சோதனைகளை இயக்கலாம், பிழையறிந்து திருத்தலாம்</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">கீழ்</translation>
 <translation id="8431300646573772016">ChromeOSஸில் புதியவை</translation>
 <translation id="843568408673868420">இணைய இணைப்பு</translation>
 <translation id="844521431886043384">DNS அமைக்கப்படவில்லை</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">சாதனம் ஒரு மொபைல்.</translation>
 <translation id="8950424402482976779">மேற்புறம்</translation>
 <translation id="8954341524817067858">மலைகள்</translation>
+<translation id="8957423540740801332">வலது</translation>
 <translation id="8960969673307890087">தர்பூசணிகள்</translation>
 <translation id="8961025972867871808">பென்குயின்கள்</translation>
 <translation id="8968751544471797276">சார்ஜிங் விகிதம்</translation>

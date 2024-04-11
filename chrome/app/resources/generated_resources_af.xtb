@@ -4534,7 +4534,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4403266582403435904">Stel data enige tyd maklik terug of wissel toestelle. Rugsteune word na Google toe opgelaai en met jou kind se Google-rekeningwagwoord geënkripteer.</translation>
 <translation id="4403775189117163360">Kies 'n ander vouer</translation>
 <translation id="4404136731284211429">Soek weer</translation>
-<translation id="4404619268534288383">Stoor en sinkroniseer oortjiegroepe</translation>
 <translation id="4404843640767531781">Jou ouer blokkeer <ph name="APP_NAME" />. Vra jou ouer vir toestemming om hierdie program te gebruik.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Skuif na …</translation>
@@ -5176,7 +5175,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4899696330053002588">Bevat advertensies</translation>
 <translation id="490031510406860025">Word nie op hierdie werf toegelaat nie</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – deurweef</translation>
-<translation id="490056871160016482">Werwe gebruik hierdie kenmerk om meesleurende volskermervarings te bied, ongeag gebruikergebare</translation>
 <translation id="4900652253009739885">Kan nie die enigste skakelaar verwyder wat vir "Kies" toegewys is nie. Druk enige sleutel om <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Vou Onlangs Toegemaak uit</translation>
 <translation id="4901309472892185668">Kies eksperimenttoestand vir die <ph name="EXPERIMENT_NAME" />-eksperiment.</translation>
@@ -5501,7 +5499,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> is geblokkeer</translation>
 <translation id="5163910114647549394">Oortjie is na einde van oortjiestrook geskuif</translation>
 <translation id="5164530241085602114">Kennisgewings word nie vir <ph name="SITE" /> toegelaat nie</translation>
-<translation id="5165989352025966137">Word toegelaat om volskerm outomaties te gebruik</translation>
 <translation id="516747639689914043">Hiperteksoordragprotokol (HTTP)</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5171045022955879922">Soek of tik URL in</translation>
@@ -5803,7 +5800,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="541737483547792035">Vergroot skerm</translation>
 <translation id="541822678830750798">Versoek om hierdie werf te lees en te verander</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Aktiveer die stoor en herroep van oortjiegroepe. Regsklik op ’n oortjiegroep om dit te stoor. Herroep groepe van die boekmerkbalk.</translation>
 <translation id="5420274697768050645">Vereis wagwoord om toestel te ontsluit vir ekstra veiligheid</translation>
 <translation id="5420438158931847627">Bepaal die skerpheid van teks en prente</translation>
 <translation id="5420935737933866496">Kopieer &amp;skakel</translation>
@@ -6201,6 +6197,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5723967018671998714">Derdepartywebkoekies word in incognitomodus geblokkeer</translation>
 <translation id="5725112283692663422">Stuur terugvoer vir Skep tema met AI</translation>
 <translation id="5727728807527375859">Uitbreidings, programme en temas kan jou rekenaar beskadig. Is jy seker jy wil voortgaan?</translation>
+<translation id="5728072125198221967">Gekoppelde Google-dienste</translation>
 <translation id="5728290366864286776">Hierdie uitbreiding kan werfinligting lees en verander of in die agtergrond laat loop</translation>
 <translation id="5728450728039149624">Smart Lock-skermslotopsies</translation>
 <translation id="572914206753951782">Maak seker dat jou Chromebook op die jongste weergawe is. Herbegin dan jou Chromebook en probeer weer.</translation>
@@ -8184,7 +8181,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7290242001003353852">Hierdie aanmelddiens, waarvan <ph name="SAML_DOMAIN" /> die gasheer is, gaan tans by jou kamera in.</translation>
 <translation id="7292067737327289208">Jou organisasie <ph name="BEGIN_LINK" />bestuur jou blaaier<ph name="END_LINK" /> en <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />bestuur jou profiel<ph name="END_LINK" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Word nie toegelaat om outomaties volskerm te gebruik nie</translation>
 <translation id="7295614427631867477">Let daarop dat Android, Play en geassosieerde programme deur hul eie beleide vir data-insameling- en gebruik beheer word.</translation>
 <translation id="7296503797589217366">Kies vouer <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Donkergroen</translation>
@@ -9730,7 +9726,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="84297032718407999">Jy sal oor <ph name="LOGOUT_TIME_LEFT" /> afgemeld word</translation>
 <translation id="8431190899827883166">Wys tikke</translation>
 <translation id="843173223122814223">Skep agtergronde met AI</translation>
-<translation id="8432724317983466962">’n Gebruikergebaar word by verstek benodig om volskerm te gebruik</translation>
 <translation id="8433186206711564395">Netwerkinstellings</translation>
 <translation id="8434480141477525001">NaCl-ontfoutpoort</translation>
 <translation id="8436054240208929121">Meld aan en skakel sinkronisering aan sodat Chrome oortjiegroepe kan voorstel en jou oortjies georganiseer kan hou</translation>

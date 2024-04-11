@@ -1433,7 +1433,6 @@
 <translation id="6537924328260219877">ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ກຳລັງສະແກນການດາວໂຫຼດ <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">ກໍາລັງສົ່ງສັນຍານຫາ <ph name="RECEIVER_NAME" /></translation>
-<translation id="6546062506073634094">ຊອກຫາຮູບຕາມເນື້ອຫາ ແລະ ຕົວຢ່າງຮູບ</translation>
 <translation id="6555373427270923730">ພິມທີ່ຢູ່ເວັບໃນແຖບທີ່ຢູ່, ແລ້ວກົດ <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 ຕິດຕັ້ງໃໝ່</translation>

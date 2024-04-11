@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">તમે આ ચેતવણી જોઈ રહ્યાં છો કારણ કે આ સાઇટ HTTPSને સપોર્ટ કરતી નથી. <ph name="BEGIN_LEARN_MORE_LINK" />વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">સેલ્ફ-એડહેસિવ ફિલ્મ</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
-<translation id="1431021750861456539">ઑટોમૅટિક પૂર્ણસ્ક્રીન</translation>
 <translation id="1432187715652018471">પેજ સેવાનું હૅન્ડલર ઇન્સ્ટૉલ કરવા માગે છે.</translation>
 <translation id="1432581352905426595">શોધ એન્જિન મેનેજ કરો</translation>
 <translation id="1433225466058025572">તમારી ફાઇલોની ફરીથી ખસેડવાનો પ્રયાસ કરો</translation>
@@ -1085,6 +1084,7 @@
             <ph name="LIST_ITEM" />શોધ ઇતિહાસ<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />ફોર્મમાં દાખલ કરેલી માહિતી<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">સેવિંગ એકાઉન્ટ</translation>
 <translation id="3103188521861412364">સ્ટૉક અને બૉન્ડ</translation>
 <translation id="3105172416063519923">સંપત્તિ ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />સુરક્ષિત DNS ગોઠવણી ચેક કરી રહ્યાં છીએ<ph name="END_LINK" /></translation>
@@ -1303,6 +1303,7 @@
 <translation id="3493660662684070951">ટ્રક, વેન અને SUVs</translation>
 <translation id="3495081129428749620">પેજ
     <ph name="PAGE_TITLE" />માં શોધો</translation>
+<translation id="3495818359064790343">પગાર</translation>
 <translation id="3497627066518778351">નવી વિન્ડોમાં ડિવાઇસ પર સાઇટના ડેટાની સૂચિનો રિવ્યૂ કરો</translation>
 <translation id="3498215018399854026">અમે આ પળે તમારા વાલી સુધી પહોંચી શક્યાં નથી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="350069200438440499">ફાઇલનું નામ:</translation>
@@ -2324,7 +2325,6 @@
     <ph name="LINE_BREAK" />
     તમારા સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="549333378215107354">કદ 3</translation>
-<translation id="5501712702042287009">ઑટોમૅટિક પૂર્ણસ્ક્રીન</translation>
 <translation id="550365051221576010">બધું ભરો</translation>
 <translation id="5508443345185481044">કૅમેરા અને કૅમકોર્ડર</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2341,6 +2341,7 @@
 <translation id="5519696598216267194">પેપર (પહેલેથી પંચ કરેલું)</translation>
 <translation id="5521782189689806907">કૅબિનેટ બનાવવા</translation>
 <translation id="5523118979700054094">નીતિનું નામ</translation>
+<translation id="5523588073846127669">વેપારી આ વર્ચ્યુઅલ કાર્ડ સ્વીકારતા નથી</translation>
 <translation id="5525755241743357906">ફાઇલને કૉપિ કરવામાં કે ખસેડવામાં આવી છે</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS સેટિંગમાં જઈને તમારા ઍક્સેસિબિલિટીના ટૂલને મનગમતા બનાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="55293785478302737">કિનારી જોડવી</translation>
@@ -2505,6 +2506,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ચાલુ કરો</translation>
 <translation id="5862579898803147654">સ્ટૅકર 8</translation>
+<translation id="5863515189965725638">IBANમાં ફેરફાર કરો</translation>
 <translation id="5863847714970149516">આગળનું પેજ તમને શુલ્ક લાગુ કરી શકે છે</translation>
 <translation id="5866257070973731571">ફોન નંબર ઉમેરો</translation>
 <translation id="5866898949289125849">તમે ડેવલપર સાધનોનું પેજ જોઈ રહ્યાં છો</translation>
@@ -3722,6 +3724,7 @@
 <translation id="81563721597823545">હૉકીનું સાધન</translation>
 <translation id="8161095570253161196">બ્રાઉઝ કરવાનું ફરી શરૂ કરો</translation>
 <translation id="8163866351304776260">ડાબી બાજુએ ચતુષ્કોણ કાણું પાડો</translation>
+<translation id="8163998196788647716">જે એકાઉન્ટમાંથી વ્યવહાર કરવામાં આવી રહ્યો છે</translation>
 <translation id="8164078261547504572">કિંમતમાં ઘટાડો થાય ત્યારે ઇમેઇલ મેળવવા માંગો છો?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" કીને સમાન શબ્દકોશમાં સેટ કરી શકતા નથી</translation>
 <translation id="8175796834047840627">તમે સાઇન ઇન કરેલું છે તેથી Chrome તમને તમારા કાર્ડ તમારા Google એકાઉન્ટમાં સાચવવાની ઑફર કરે છે. તમે સેટિંગમાં આ વર્તણૂકને બદલી શકો છો.</translation>

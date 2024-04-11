@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">fiðrildi</translation>
 <translation id="188114911237521550">Slökkva á dökku þema</translation>
-<translation id="188268299367474594">Velja úr tiltækum aðgangsstöðum</translation>
 <translation id="1885577615937958993">spóla áfram í efni</translation>
 <translation id="1887850431809612466">Útgáfa vélbúnaðar</translation>
 <translation id="189221451253258459">neongrænn</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Mynd <ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nákvæmni hlaupakommu</translation>
 <translation id="2448312741937722512">Gerð</translation>
-<translation id="2465272316171730950">Við getum ekki tekið meira að okkur eins og er. Komdu aftur eftir smástund.</translation>
 <translation id="2472215337771558851">Notaðu rithjálp til að búa til drög eða fínpússa fyrirliggjandi skrif með aðstoð gervigreindar Google</translation>
 <translation id="2480572840229215612">krabbar</translation>
 <translation id="248546197012830854">Tækið er ekki nettengt. Tengstu Wi-Fi neti til að sjá hjálparefni.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">sýna glugga</translation>
 <translation id="2513396635448525189">Innskráningarmynd</translation>
 <translation id="2517472476991765520">Leita</translation>
-<translation id="2520213071283358374">Nota þennan aðgangsstað</translation>
 <translation id="2521835766824839541">fyrra lag</translation>
 <translation id="2526590354069164005">Skjáborð</translation>
 <translation id="253029298928638905">Endurræsir…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Undirnetssía</translation>
 <translation id="4454245904991689773">Skanna í</translation>
 <translation id="4456812688969919973">Ekki hægt að vista hnapp fyrir aðgangsstað lengur</translation>
-<translation id="4460905888685975163">Hnappurinn „Nota þennan aðgangsstað“ er nú óvirkur</translation>
 <translation id="4469288414739283461">Skjávari, jarðarflæði</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ping-prófun ósjálfgefinnar netkerfisgáttar mistókst</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Hýsilheiti þjóns</translation>
 <translation id="5089810972385038852">Ríki</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">upp</translation>
 <translation id="5107243100836678918">Flýtileið án <ph name="META_KEY" />-lykils gæti stangast á við flýtileið einhvers forrits. Ýttu aftur á þessa flýtileið til að halda áfram að nota hana eða ýttu á nýja flýtileið með <ph name="KEY" />-lyklinum. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Svipað:</translation>
 <translation id="5130848777448318809">smáhestar</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Endurúthlutaðu með því að velja nýjan lykil</translation>
 <translation id="714876143603641390">LAN-tenging</translation>
 <translation id="7154020516215182599">Sendu ábendingu eða lýstu vandamálinu. Ef mögulegt er skaltu taka fram skrefin sem leiddu til vandamálsins.</translation>
-<translation id="7155037718620478619">Uppgötva fleiri aðgangsstaði</translation>
 <translation id="7155171745945906037">Fyrirliggjandi mynd úr myndavél eða skrá</translation>
 <translation id="7162487448488904999">Gallerí</translation>
 <translation id="7170236477717446850">Prófílmynd</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Gerð veitu</translation>
 <translation id="7882501334836096755">Opinber lykill</translation>
+<translation id="78957024357676568">vinstri</translation>
 <translation id="7897043345768902965">göngustíg</translation>
 <translation id="7903695460270716054">Veldu sérvalin listaverk og myndir</translation>
 <translation id="7915220255123750251">Stjórna stillingum aðgangsstaðar netkerfis. Aðgangsstaðir tengja saman farsímakerfi og internetið.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Hleðsla eftir</translation>
 <translation id="8076492880354921740">Flipar</translation>
 <translation id="8079860070590459552">blómaakri</translation>
-<translation id="8081553043098820199">Ógildur aðgangsstaður gæti valdið því að slökkt sé á farsímatengingunni þinni. Stilltu aðeins aðgangsstaði sem símafyrirtækið þitt eða kerfisstjóri úthlutar.</translation>
 <translation id="8082366717211101304">Ekki er hægt að leysa úr DNS frá Android forritum</translation>
 <translation id="8082644724189923105">svæði lyklaborðs</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Þú ert að nota opið og ótraust netkerfi</translation>
 <translation id="811820734797650957">(Android) Hægt er að ping-prófa gátt</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8132480444149501833">Biðja um talningu umferðar</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Velja <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Uppruni</translation>
 <translation id="8302368968391049045">HTTPS-eldveggur</translation>
 <translation id="8312330582793120272">spila efni</translation>
-<translation id="8317819321190319496">Hnappurinn „Nota þennan aðgangsstað“ er nú virkur</translation>
 <translation id="8318753676953949627">Engar myndir</translation>
 <translation id="8320910311642849813">skógi</translation>
 <translation id="8329018942023753850">reiknivélarforrit</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Greint sjálfkrafa</translation>
 <translation id="8420955526972171689">Keyra prófanir og úrræðaleit fyrir vandamál í vélbúnaði</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">niður</translation>
 <translation id="8431300646573772016">Nýjungar í ChromeOS</translation>
 <translation id="843568408673868420">Nettenging</translation>
 <translation id="844521431886043384">Ekki er búið að setja upp DNS</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Tækið er sími.</translation>
 <translation id="8950424402482976779">efst</translation>
 <translation id="8954341524817067858">fjöll</translation>
+<translation id="8957423540740801332">hægri</translation>
 <translation id="8960969673307890087">vatnsmelónur</translation>
 <translation id="8961025972867871808">mörgæsir</translation>
 <translation id="8968751544471797276">Hleðsluhraði</translation>

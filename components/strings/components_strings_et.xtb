@@ -243,7 +243,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1428729058023778569">Näete seda hoiatust, kuna see sait ei toeta HTTPS-i. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Isekleepuv kile</translation>
 <translation id="1430915738399379752">Printimine</translation>
-<translation id="1431021750861456539">Automaatne täisekraan</translation>
 <translation id="1432187715652018471">leht soovib installida teenusetöötleja.</translation>
 <translation id="1432581352905426595">Halda otsingumootoreid</translation>
 <translation id="1433225466058025572">Proovige oma failid uuesti teisaldada</translation>
@@ -2318,7 +2317,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
     <ph name="LINE_BREAK" />
     Võtke ühendust süsteemiadministraatoriga.</translation>
 <translation id="549333378215107354">Suurus 3</translation>
-<translation id="5501712702042287009">automaatne täisekraan</translation>
 <translation id="550365051221576010">Sisestage kõik</translation>
 <translation id="5508443345185481044">Foto- ja videokaamerad</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="5862579898803147654">Virnastaja 8</translation>
+<translation id="5863515189965725638">IBAN-i muutmine</translation>
 <translation id="5863847714970149516">Järgmisel lehel võidakse teilt üritada tasu võtta</translation>
 <translation id="5866257070973731571">Telefoninumbri lisamine</translation>
 <translation id="5866898949289125849">Vaatate arendaja tööriistade lehte</translation>

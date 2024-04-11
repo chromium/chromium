@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">метелики</translation>
 <translation id="188114911237521550">Вимкнути темний режим</translation>
-<translation id="188268299367474594">Виберіть точку доступу (APN)</translation>
 <translation id="1885577615937958993">перемотати медіаконтент уперед</translation>
 <translation id="1887850431809612466">Апаратне забезпечення</translation>
 <translation id="189221451253258459">неоново-зеленому</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Зображення <ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Точність рухомої коми</translation>
 <translation id="2448312741937722512">Тип</translation>
-<translation id="2465272316171730950">Систему перевантажено. Спробуйте пізніше.</translation>
 <translation id="2472215337771558851">Скористайтеся функцією "Допомога з текстом", щоб створити чернетку або покращити наявний текст завдяки ШІ від Google</translation>
 <translation id="2480572840229215612">краби</translation>
 <translation id="248546197012830854">Пристрій не підключено до Інтернету. Щоб переглянути довідковий контент, підключіться до мережі Wi-Fi.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">показати вікна</translation>
 <translation id="2513396635448525189">Зображення облікового запису</translation>
 <translation id="2517472476991765520">Сканувати</translation>
-<translation id="2520213071283358374">Використовувати цю точку доступу</translation>
 <translation id="2521835766824839541">попередня композиція</translation>
 <translation id="2526590354069164005">Google Desktop</translation>
 <translation id="253029298928638905">Перезапускається…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Маска підмережі</translation>
 <translation id="4454245904991689773">Зберегти зіскановані файли в</translation>
 <translation id="4456812688969919973">Кнопку "Зберегти APN" увімкнено</translation>
-<translation id="4460905888685975163">Кнопка "Використовувати цю точку доступу" неактивна</translation>
 <translation id="4469288414739283461">Заставка "Поверхня землі"</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Ім’я хосту сервера</translation>
 <translation id="5089810972385038852">Штат/провінція</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">угору</translation>
 <translation id="5107243100836678918">Комбінація клавіш без клавіші <ph name="META_KEY" /> може конфліктувати з налаштуваннями деяких додатків. Натисніть цю комбінацію ще раз, щоб і далі використовувати її, або створіть новий варіант із клавішею <ph name="KEY" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Синоніми:</translation>
 <translation id="5130848777448318809">поні</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Виберіть нову клавішу, щоб перепризначити</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>
 <translation id="7154020516215182599">Залиште відгук або опишіть проблему. За можливості перелічіть дії, після яких виникає ця проблема.</translation>
-<translation id="7155037718620478619">Показати інші точки доступу (APN)</translation>
 <translation id="7155171745945906037">Наявні фотографії з камери або файлу</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7170236477717446850">Зображення профілю</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип постачальника</translation>
 <translation id="7882501334836096755">Відкритий ключ</translation>
+<translation id="78957024357676568">ліворуч</translation>
 <translation id="7897043345768902965">доріжка</translation>
 <translation id="7903695460270716054">Вибрати рекомендовані твори мистецтва й зображення</translation>
 <translation id="7915220255123750251">Керуйте налаштуваннями APN мережі: за допомогою ідентифікаторів APN установлюється зв’язок між мобільною мережею й Інтернетом.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Рівень заряду</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8079860070590459552">поле квітів</translation>
-<translation id="8081553043098820199">Якщо підключитися до недійсної точки доступу, з’єднання з мобільною мережею може бути вимкнено. Налаштовуйте лише точки доступу, надані вашим мобільним оператором або адміністратором.</translation>
 <translation id="8082366717211101304">Не вдається перетворити DNS із додатків для Android</translation>
 <translation id="8082644724189923105">зона клавіатури</translation>
 <translation id="808894953321890993">Змінити пароль</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Ви використовуєте відкриту та незахищену мережу</translation>
 <translation id="811820734797650957">Шлюз можна перевірити (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8132480444149501833">Надіслати запит на лічильники трафіку</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Вибрати тему "<ph name="TOPIC_SOURCE" />" з описом "<ph name="TOPIC_SOURCE_DESC" />"</translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Джерело</translation>
 <translation id="8302368968391049045">Брандмауер HTTPS</translation>
 <translation id="8312330582793120272">відтворити медіаконтент</translation>
-<translation id="8317819321190319496">Кнопка "Використовувати цю точку доступу" активна</translation>
 <translation id="8318753676953949627">Немає зображень</translation>
 <translation id="8320910311642849813">ліс</translation>
 <translation id="8329018942023753850">додаток Калькулятор</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Визначено автоматично</translation>
 <translation id="8420955526972171689">Проводьте тести й вирішуйте проблеми з апаратним забезпеченням</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">униз</translation>
 <translation id="8431300646573772016">Нові функції ОС Chrome</translation>
 <translation id="843568408673868420">Інтернет-з’єднання</translation>
 <translation id="844521431886043384">DNS не налаштовано</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Це телефон.</translation>
 <translation id="8950424402482976779">верх</translation>
 <translation id="8954341524817067858">гори</translation>
+<translation id="8957423540740801332">праворуч</translation>
 <translation id="8960969673307890087">кавуни</translation>
 <translation id="8961025972867871808">пінгвіни</translation>
 <translation id="8968751544471797276">Швидкість заряджання</translation>

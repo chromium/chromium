@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C デバイス（背面のポート）</translation>
 <translation id="1869497990620230175">クイック ファイル</translation>
 <translation id="1871023081802165724">メディアを再生する</translation>
+<translation id="1871915835366697861">このゲームでは利用できません</translation>
 <translation id="1879018240766558464">シークレット ウィンドウは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="1882814835921407042">モバイル ネットワークに接続されていません</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> へミラーリング</translation>
@@ -1432,7 +1433,6 @@
 <translation id="6537924328260219877">信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ダウンロードする <ph name="FILENAME" /> をスキャンしています</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> にキャストしています</translation>
-<translation id="6546062506073634094">コンテンツと画像プレビューによる画像検索</translation>
 <translation id="6555373427270923730">アドレスバーにウェブアドレスを入力して、<ph name="MODIFIER" />+<ph name="KEY" /> キーを押す</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 新たなインストール</translation>
@@ -1793,6 +1793,7 @@
 <translation id="79341161159229895">このアカウントは <ph name="FIRST_PARENT_EMAIL" /> と <ph name="SECOND_PARENT_EMAIL" /> により管理されています</translation>
 <translation id="793716872548410480"><ph name="SHORTCUT_KEY_NAME" />+V キーを押すと、クリップボードを表示できます。クリップボードに、コピーした最新のアイテム 5 件が保存されています。</translation>
 <translation id="7942349550061667556">赤</translation>
+<translation id="7943516765291457328">近くのアクセス ポイントをスキャンするには Bluetooth をオンにしてください</translation>
 <translation id="7944023924886109030">今日の予定をすべて表示</translation>
 <translation id="7945357288295809525">ユーザー補助設定を表示します。「<ph name="ENABLED_FEATURES" />」が有効になっています。</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> が <ph name="DEVICE_NAME" /> の使用をリクエストしています</translation>

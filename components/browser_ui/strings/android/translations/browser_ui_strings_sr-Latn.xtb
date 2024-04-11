@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Nazad</translation>
 <translation id="2546283357679194313">Kolačići i podaci o sajtovima</translation>
 <translation id="2550801787432930915">Kartica sniženja</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 kolačić je blokiran}one{# kolačić je blokiran}few{# kolačića su blokirana}other{# kolačića je blokirano}}</translation>
 <translation id="2570922361219980984">Pristup lokaciji je isključen i za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Prošireno je – Kliknite da biste skupili.</translation>
 <translation id="2586657967955657006">Memorija</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Premotaj unazad</translation>
 <translation id="8444433999583714703">Da biste dozvolili da <ph name="APP_NAME" /> pristupa lokaciji, uključite lokaciju i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opozovi dozvolu za uređaj</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Koristi se 1 kolačić}one{Koristi se # kolačić}few{Koriste se # kolačića}other{Koristi se # kolačića}}</translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="848952951823693243">Uvek se zahteva mobilni sajt</translation>
 <translation id="8499083585497694743">Uključi zvuk mikrofona</translation>

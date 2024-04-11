@@ -538,6 +538,7 @@
 <translation id="1410797069449661718">最初のタブまでスクロール</translation>
 <translation id="1410806973194718079">ポリシーを確認できません</translation>
 <translation id="1411400282355634827">Bluetooth デバイスの権限をすべてリセットしますか？</translation>
+<translation id="141163372431617064">サイトにポインタのロックを許可しない</translation>
 <translation id="1414315029670184034">サイトにカメラの使用を許可しない</translation>
 <translation id="1414648216875402825">アップデートしようとしているバージョンの <ph name="PRODUCT_NAME" /> には開発中の機能が含まれており、不安定です。クラッシュや予期しないバグが発生します。続行する場合は十分にご注意ください。</translation>
 <translation id="1415708812149920388">クリップボードの読み取りアクセスが拒否されました</translation>
@@ -972,6 +973,7 @@
 <translation id="1720318856472900922">TLS WWW サーバー認証</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />で画像を検索</translation>
 <translation id="1722460139690167654">ご使用の <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> は <ph name="ENROLLMENT_DOMAIN" /> によって管理されています<ph name="END_LINK" /></translation>
+<translation id="1723166841621737307">データは Chrome の利便性にどう役立つ？</translation>
 <translation id="1723824996674794290">新しいウィンドウ(&amp;N)</translation>
 <translation id="1724801751621173132">ローマ字入力・かな入力</translation>
 <translation id="1725562816265788801">タブスクロール</translation>
@@ -995,6 +997,7 @@
 <translation id="1743970419083351269">ダウンロード バーを閉じる</translation>
 <translation id="1744108098763830590">バックグラウンド ページ</translation>
 <translation id="1745732479023874451">連絡先を管理</translation>
+<translation id="1746797507422124818">ブラウジングの際のユーザーデータ</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# 件のファイルをこのウェブアプリで開いて編集しますか？}}</translation>
 <translation id="1748329107062243374"><ph name="DEVICE_NAME" /> のパスキーを使用して <ph name="WEBSITE" /> にログインする</translation>
 <translation id="1748563609363301860">このパスワードは、Google アカウントまたはこのデバイスのみに保存できます。</translation>
@@ -1359,6 +1362,7 @@
 <translation id="2010501376126504057">対応デバイス</translation>
 <translation id="201217432804812273">[グループを保存する] をオンにする</translation>
 <translation id="2012935757369720523">ファイルを削除</translation>
+<translation id="2013467735169740431">サイトがキーボードのロックを要求できるようにする</translation>
 <translation id="2013550551806600826">実際に試してみましょう。設定のオンとオフを切り替え、テストエリアのタッチパッドを 2 本の指でスクロールします。この動作は、後から [設定] &gt; [デバイス] &gt; [マウスとタッチパッド] でも設定できます。</translation>
 <translation id="2015232545623037616">PC と Chromecast が同じ Wi-Fi ネットワークに接続している</translation>
 <translation id="2016473077102413275">画像を必要とする機能は動作しなくなります</translation>
@@ -2185,6 +2189,7 @@
 <translation id="2613535083491958306"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を編集できるようになります</translation>
 <translation id="2613747923081026172">グループを作成</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{この拡張機能で <ph name="FILE1" /> を開いて編集する}other{このアプリで <ph name="FILE1" /> などを開いて編集する}}</translation>
+<translation id="2615927647449180540">ポインタのロックを許可しないサイト</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> 上にある自分のデータの読み取りと変更</translation>
 <translation id="2618797463720777311">ニアバイシェアの設定</translation>
 <translation id="2619340799655338321">再生 / 一時停止</translation>
@@ -3050,6 +3055,7 @@
 <translation id="3293644607209440645">このページを送信</translation>
 <translation id="32939749466444286">Linux コンテナを起動できませんでした。もう一度お試しください。</translation>
 <translation id="3294437725009624529">ゲスト</translation>
+<translation id="3294484594253557399">サイトはポインタのロックを使用することにより、マウスポインタを非表示にしてページの外に出ないようにします。</translation>
 <translation id="3294686910656423119">使用統計データと障害レポート</translation>
 <translation id="3295241308788901889">タブをキャストしています</translation>
 <translation id="3297105622164376095">サードパーティのログイン メッセージの表示を許可するサイト</translation>
@@ -4123,6 +4129,7 @@
 <translation id="4094647278880271855">サポートされていない環境変数が使用されています: <ph name="BAD_VAR" />。これにより、安全性とセキュリティが損なわれます。</translation>
 <translation id="4095264805865317199">モバイル有効化 UI を開く</translation>
 <translation id="4095425503313512126">ブラウジングと検索が高速になります</translation>
+<translation id="4095483462103784441">新しいタブグループを作成</translation>
 <translation id="4095507791297118304">メイン ディスプレイ</translation>
 <translation id="4096421352214844684">スマートフォンのアクセス ポイントに自動的に接続します。</translation>
 <translation id="4096508467498758490">デベロッパー モードの拡張機能を無効にする</translation>
@@ -4448,6 +4455,7 @@
 <translation id="4357583358198801992">タブグループを表示</translation>
 <translation id="4358361163731478742">アプリの言語選択に対応しているアプリはありません</translation>
 <translation id="4358643842961018282">お使いのデバイスは最新の状態です</translation>
+<translation id="4358995225307748864">開くアプリを選択</translation>
 <translation id="4359408040881008151">依存関係にある拡張機能によってインストールされました。</translation>
 <translation id="4359717112757026264">Cityscape</translation>
 <translation id="4359809482106103048">安全に関する概要</translation>
@@ -4510,7 +4518,6 @@
 <translation id="4403266582403435904">データの復元やデバイスの切り替えがいつでも簡単にできます。バックアップ データは Google にアップロードされ、お子様の Google アカウントのパスワードを使用して暗号化されます。</translation>
 <translation id="4403775189117163360">別のフォルダを選択</translation>
 <translation id="4404136731284211429">再スキャン</translation>
-<translation id="4404619268534288383">タブグループの保存と同期</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> は保護者によってブロックされています。このアプリを使用するには、保護者の許可が必要です。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移動…</translation>
@@ -4613,6 +4620,7 @@
 <translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> で予期しない再起動が行われました</translation>
 <translation id="4481467543947557978">Service Worker</translation>
 <translation id="4482990632723642375">最近閉じたタブ</translation>
+<translation id="4485245862007675842">Chrome でウェブをより快適に</translation>
 <translation id="4486333480498805415">位置情報の精度</translation>
 <translation id="4487489714832036847">Chromebook では従来のソフトウェアではなくアプリを使用します。仕事効率化やエンタメなど、豊富なアプリが揃っています。</translation>
 <translation id="4488257340342212116">カメラの使用を許可するサイト</translation>
@@ -5031,6 +5039,7 @@
 <translation id="4819323978093861656">{0,plural, =0{まもなく終了します。}=1{1 秒後に終了します}other{# 秒後に終了します}}</translation>
 <translation id="4819607494758673676">Google アシスタントの通知</translation>
 <translation id="4819818293886748542">サポートツールのリンクを取得</translation>
+<translation id="4820082996741546682">キーボードのロックを許可するサイト</translation>
 <translation id="4820236583224459650">有効なチケットとして設定</translation>
 <translation id="4820795723433418303">ファンクション キーを最上段のキーとして使用する</translation>
 <translation id="4821935166599369261">プロファイル記録の開始(&amp;P)</translation>
@@ -5107,6 +5116,7 @@
 <translation id="4872192066608821120">パスワードをインポートするには、CSV ファイルを選択してください</translation>
 <translation id="4872212987539553601">オンデバイスの暗号化を設定</translation>
 <translation id="4873312501243535625">メディア ファイル チェッカー</translation>
+<translation id="4874705075711349931">サイトはキーボードのロックを使用することにより、通常はブラウザやオペレーティング システムで処理されるキーボード入力をキャプチャします。</translation>
 <translation id="4876273079589074638">このクラッシュについて迅速に調査、解決できるよう、具体的な操作についてできるだけ詳しくご説明ください。</translation>
 <translation id="4876305945144899064">ユーザー名が指定されていません</translation>
 <translation id="4876327226315760474">この場合、サイトの機能は想定どおりに動作するものの、ブラウジング保護の強度が低くなる可能性があります。</translation>
@@ -5150,7 +5160,6 @@
 <translation id="4899696330053002588">広告が表示されます</translation>
 <translation id="490031510406860025">このサイトでは許可されていません</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - インターレース</translation>
-<translation id="490056871160016482">サイトがユーザーの操作に関係なく没入型の全画面表示モードを使用する機能です</translation>
 <translation id="4900652253009739885">「選択」に割り当てられているスイッチが 1 つしかないため、削除できません。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
 <translation id="4901154724271753917">最近閉じたタブを展開する</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。</translation>
@@ -5475,7 +5484,6 @@
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> をブロックしました</translation>
 <translation id="5163910114647549394">タブをタブバーの右端に移動しました</translation>
 <translation id="5164530241085602114"><ph name="SITE" /> では通知が許可されていません</translation>
-<translation id="5165989352025966137">全画面表示への自動切り替えを許可するサイト</translation>
 <translation id="516747639689914043">ハイパーテキスト トランスポート プロトコル（HTTP）</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5171045022955879922">検索または URL を入力</translation>
@@ -5775,7 +5783,6 @@
 <translation id="541737483547792035">画面の拡大</translation>
 <translation id="541822678830750798">このサイトの読み取りと変更をリクエストしています</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">タブグループを保存し、呼び出す機能です。タブグループを右クリックして保存します。呼び出しはブックマーク バーから行います。</translation>
 <translation id="5420274697768050645">セキュリティ強化のため、デバイスのロック解除にパスワードを要求する</translation>
 <translation id="5420438158931847627">テキストと画像をどの程度鮮明に表示するかを指定します</translation>
 <translation id="5420935737933866496">リンクをコピー(&amp;L)</translation>
@@ -6172,6 +6179,7 @@
 <translation id="5723967018671998714">シークレット モードでサードパーティの Cookie がブロックされています</translation>
 <translation id="5725112283692663422">[AI を使用してテーマを作成] に関するフィードバックを送信</translation>
 <translation id="5727728807527375859">拡張機能、アプリ、テーマはパソコンに悪影響を与える可能性があります。処理を続けてもよろしいですか？</translation>
+<translation id="5728072125198221967">リンクされている Google サービス</translation>
 <translation id="5728290366864286776">この拡張機能には、サイト情報の読み取りや変更、バックグラウンドでの実行が許可されています</translation>
 <translation id="5728450728039149624">Smart Lock の画面ロックの方法</translation>
 <translation id="572914206753951782">Chromebook が最新バージョンであることを確認します。その後、Chromebook を再起動してもう一度お試しください。</translation>
@@ -6253,6 +6261,7 @@
 <translation id="5793339252089865437">モバイル ネットワーク経由でアップデートをダウンロードすると、追加料金が発生する可能性があります。</translation>
 <translation id="5793420564274426163">ペア設定の確認</translation>
 <translation id="5794034487966529952">デスク「<ph name="DESK_TITLE" />」には <ph name="NUM_BROWSERS" /> 個のブラウザ ウィンドウが開いています</translation>
+<translation id="5794086402489402632">閲覧履歴と検索履歴の違いは？</translation>
 <translation id="5794414402486823030">常にシステム ビューアで開く</translation>
 <translation id="5794700615121138172">Linux の共有フォルダ</translation>
 <translation id="5794786537412027208">すべての Chrome アプリを終了</translation>
@@ -6309,6 +6318,7 @@
 <translation id="583431638776747">サイトを利用できませんでした</translation>
 <translation id="5834581999798853053">あと約 <ph name="TIME" /> 分</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> が HID デバイスにアクセスしています}=2{<ph name="EXTENSION1" />、<ph name="EXTENSION2" /> の拡張機能がデバイスにアクセスしています}other{<ph name="EXTENSION1" />、<ph name="EXTENSION2" />、その他 {3} 個の拡張機能がデバイスにアクセスしています}}</translation>
+<translation id="5835714760577949748">キーボードのロックを許可しないサイト</translation>
 <translation id="583673505367439042">サイトがデバイスのファイルやフォルダの編集を要求できるようにする</translation>
 <translation id="5836999627049108525">翻訳元の言語</translation>
 <translation id="583756221537636748">ケース</translation>
@@ -8036,6 +8046,7 @@
 <translation id="7196913789568937443">Google ドライブにバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ対象にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Google 検索や Google の最先端技術をブラウジングで活用できます</translation>
 <translation id="719791532916917144">キーボード ショートカット</translation>
+<translation id="7197958763276896180">Chrome がサードパーティ Cookie を廃止する理由は？</translation>
 <translation id="7198503619164954386">企業登録のデバイスを使用する必要があります</translation>
 <translation id="7199158086730159431">ヘルプ(&amp;E)</translation>
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" /> へのキャストを一時停止する</translation>
@@ -8153,7 +8164,6 @@
 <translation id="7290242001003353852">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされており、カメラにアクセスしています。</translation>
 <translation id="7292067737327289208">お使いの<ph name="BEGIN_LINK" />ブラウザは組織<ph name="END_LINK" />によって、<ph name="BEGIN_LINK" />プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理<ph name="END_LINK" />されています</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" />（<ph name="VARIANT" />）</translation>
-<translation id="7295305918366078219">全画面表示への自動切り替えを許可しないサイト</translation>
 <translation id="7295614427631867477">なお、Android、Play、および関連付けられているアプリには、それぞれ独自のデータ収集と使用のポリシーが適用されます。</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> フォルダを選択</translation>
 <translation id="7297726121602187087">暗い緑</translation>
@@ -8835,6 +8845,7 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7788948939674438635">サイトにキーボードのロックを許可しない</translation>
 <translation id="7789963078219276159">スタートページの背景が<ph name="CATEGORY" />に変更されました。</translation>
 <translation id="7791269138074599214">入力方法</translation>
 <translation id="7791429245559955092">このアプリケーションは、現在使用している Chrome プロフィールにインストールされます</translation>
@@ -9698,7 +9709,6 @@
 <translation id="84297032718407999">あと <ph name="LOGOUT_TIME_LEFT" />でログアウトします</translation>
 <translation id="8431190899827883166">タップを表示</translation>
 <translation id="843173223122814223">AI で背景を作成</translation>
-<translation id="8432724317983466962">デフォルトでは、全画面表示にするにはユーザーの操作が必要です</translation>
 <translation id="8433186206711564395">ネットワーク設定</translation>
 <translation id="8434480141477525001">NaCl デバッグ ポート</translation>
 <translation id="8436054240208929121">タブグループの提案機能を使ってタブを整理するには、ログインして同期をオンにしてください</translation>
@@ -9864,6 +9874,7 @@
 <translation id="8561206103590473338">ゾウ</translation>
 <translation id="8561565784790166472">続行する場合は十分ご注意ください</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
+<translation id="8562115322675481339">新しいタブグループを作成</translation>
 <translation id="8563043098557365232">システム サービスでのみ許可</translation>
 <translation id="8564220755011656606">マイクにアクセスできません</translation>
 <translation id="8565650234829130278">アプリのダウングレードが試行されました。</translation>
@@ -10344,6 +10355,7 @@
 <translation id="8930622219860340959">ワイヤレス</translation>
 <translation id="8931076093143205651">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
 <translation id="8931475688782629595">同期する内容の管理</translation>
+<translation id="8931479761457920281">ポインタのロックを許可するサイト</translation>
 <translation id="8931713990831679796">これらのプリンタは接続されていて、使用できる状態です。プロフィールに保存すると、簡単にアクセスできるようになります。</translation>
 <translation id="8932654652795262306">インスタント テザリングの詳細</translation>
 <translation id="893298445929867520">カートを非表示にしました。今後変更を行った場合は再表示されます。</translation>
@@ -10811,6 +10823,7 @@
 <translation id="978146274692397928">初期の句読点幅を全角にする</translation>
 <translation id="978978324795544535">アイテムをダブルタップして 2 回目のタップで長押しし、ドラッグしてアイテムを移動します</translation>
 <translation id="97905529126098460">このウィンドウはキャンセル処理の完了後に閉じられます。</translation>
+<translation id="979345485590886759">サイトがマウスポインタのロックを要求できるようにする</translation>
 <translation id="980731642137034229">操作メニューボタン</translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="983192555821071799">すべてのタブを閉じる</translation>

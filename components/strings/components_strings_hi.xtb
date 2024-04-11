@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">यह साइट एचटीटीपीएस पर काम नहीं करती, इसलिए आपको यह चेतावनी दिख रही है. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">सेल्फ़-ऐधीसिव फ़िल्म</translation>
 <translation id="1430915738399379752">प्रिंट करें</translation>
-<translation id="1431021750861456539">फ़ुलस्क्रीन अपने-आप चालू होने की सेटिंग</translation>
 <translation id="1432187715652018471">यह पेज, सेवा हैंडलर इंस्टॉल करना चाहता है.</translation>
 <translation id="1432581352905426595">सर्च इंजन प्रबंधित करें</translation>
 <translation id="1433225466058025572">अपनी फ़ाइलें फिर से मूव करने की कोशिश करें</translation>
@@ -2318,7 +2317,6 @@
     <ph name="LINE_BREAK" />
     अपने सिस्टम एडमिन से संपर्क करने की कोशिश करें.</translation>
 <translation id="549333378215107354">आकार 3</translation>
-<translation id="5501712702042287009">फ़ुलस्क्रीन अपने-आप चालू होने की सेटिंग</translation>
 <translation id="550365051221576010">सभी जानकारी भरें</translation>
 <translation id="5508443345185481044">कैमरा और कैमकॉर्डर</translation>
 <translation id="5509762909502811065">बी0</translation>
@@ -2499,6 +2497,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5862579898803147654">स्टैकर 8</translation>
+<translation id="5863515189965725638">IBAN में बदलाव करें</translation>
 <translation id="5863847714970149516">आगे आने वाला पेज आपसे शुल्क लेने की कोशिश कर सकता है</translation>
 <translation id="5866257070973731571">फ़ोन नंबर जोड़ें</translation>
 <translation id="5866898949289125849">आप डेवलपर के टूल वाला पेज देख रहे हैं</translation>

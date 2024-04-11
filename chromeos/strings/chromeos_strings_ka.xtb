@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">პეპლები</translation>
 <translation id="188114911237521550">მუქი რეჟიმის გამორთვა</translation>
-<translation id="188268299367474594">აირჩიეთ ხელმისაწვდომი APN-ებიდან</translation>
 <translation id="1885577615937958993">მედიის წინ გადახვევა</translation>
 <translation id="1887850431809612466">აპარატურის ვერსია</translation>
 <translation id="189221451253258459">ნეონური მწვანე</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">სურათი <ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" />-დან</translation>
 <translation id="2446553403094072641">მოლივლივე წერტილის სიზუსტე</translation>
 <translation id="2448312741937722512">ტიპი</translation>
-<translation id="2465272316171730950">ჩვენ შესაძლებლობების ზღვარზე ვმუშაობთ. დაბრუნდით ოდნავ მოგვიანებით.</translation>
 <translation id="2472215337771558851">ისარგებლეთ დაწერაში დახმარებით, რომ Google-ის ხელოვნური ინტელექტის მეშვეობით შექმნათ მონახაზი, ან დახვეწოთ არსებული ნამუშევარი.</translation>
 <translation id="2480572840229215612">კიბორჩხლები</translation>
 <translation id="248546197012830854">მოწყობილობა ხაზგარეშე რეჟიმშია. დამხმარე კონტენტის სანახავად დაუკავშირდით Wi-Fi ქსელს.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">ფანჯრების ჩვენება</translation>
 <translation id="2513396635448525189">შესვლის სურათი</translation>
 <translation id="2517472476991765520">სკანირება</translation>
-<translation id="2520213071283358374">ამ APN-ის გამოყენება</translation>
 <translation id="2521835766824839541">წინა ჩანაწერი</translation>
 <translation id="2526590354069164005">სამუშაო დაფა</translation>
 <translation id="253029298928638905">მიმდინარეობს გადატვირთვა...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">ქვექსელის ნიღაბი</translation>
 <translation id="4454245904991689773">შენახვის ადგილი</translation>
 <translation id="4456812688969919973">APN-ის შენახვის ღილაკი ახლა გათიშულია</translation>
-<translation id="4460905888685975163">ამ APN-ის გამოყენების ვარიანტი ახლა გათიშულია</translation>
 <translation id="4469288414739283461">მიწის ნაკადის ეკრანმზოგი</translation>
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">სერვერის სახელი</translation>
 <translation id="5089810972385038852">შტატი</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">ზემოთ</translation>
 <translation id="5107243100836678918">მალსახმობები „<ph name="META_KEY" />“ კლავიშის გარეშე, შესაძლოა, კონფლიქტში აღმოჩნდეს ზოგიერთი აპის მალსახმობებთან. ხელახლა დააჭირეთ ამ მალსახმობს, რომ გააგრძელოთ მისი გამოყენება, ან დააჭირეთ ახალ მალსახმობს „<ph name="KEY" />“ კლავიშთან ერთად. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">სინონიმური:</translation>
 <translation id="5130848777448318809">პონები</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">მინიჭების შესაცვლელად აირჩიეთ ახალი კლავიში</translation>
 <translation id="714876143603641390">LAN-ის კავშირი</translation>
 <translation id="7154020516215182599">გამოგვეხმაურეთ ან აღწერეთ პრობლემა. შეძლებისდაგვარად, დაურთეთ პრობლემის რეპროდუქციისთვის გასავლელი ნაბიჯები.</translation>
-<translation id="7155037718620478619">სხვა APN-ების აღმოჩენა</translation>
 <translation id="7155171745945906037">არსებული ფოტო კამერიდან ან ფაილიდან</translation>
 <translation id="7162487448488904999">გალერეა</translation>
 <translation id="7170236477717446850">პროფილის სურათი</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">პროვაიდერის ტიპი</translation>
 <translation id="7882501334836096755">საჯარო გასაღები</translation>
+<translation id="78957024357676568">მარცხნივ</translation>
 <translation id="7897043345768902965">ქვეითად სასიარულო გზა</translation>
 <translation id="7903695460270716054">აირჩიეთ კურირებული სურათები და ხელოვნების ნიმუშები</translation>
 <translation id="7915220255123750251">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">დარჩენილი მუხტი</translation>
 <translation id="8076492880354921740">ჩანართები</translation>
 <translation id="8079860070590459552">ყვავილების მდელო</translation>
-<translation id="8081553043098820199">არასწორმა APN-ებმა, შესაძლოა, მობილური კავშირის გათიშვა გამოიწვიოს. დააყენეთ მხოლოდ თქვენი მობილური ოპერატორის ან ადმინისტრატორის მიერ მოწოდებული APN-ები.</translation>
 <translation id="8082366717211101304">DNS-ის დარეგულირება ვერ მოხერხდა Android აპებიდან</translation>
 <translation id="8082644724189923105">კლავიატურის ზონა</translation>
 <translation id="808894953321890993">პაროლის შეცვლა</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">თქვენ ღია და არასტაბილური ქსელით სარგებლობთ</translation>
 <translation id="811820734797650957">(Android) გეითვეის ping-მეთოდით ტესტირება</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8131740175452115882">დაადასტურება</translation>
 <translation id="8132480444149501833">ტრაფიკის მთვლელების მოთხოვნა</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">აირჩიეთ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">წყარო</translation>
 <translation id="8302368968391049045">HTTPS ქსელის დაცვა</translation>
 <translation id="8312330582793120272">მედიის დაკვრა</translation>
-<translation id="8317819321190319496">ამ APN-ის გამოყენების ვარიანტი ახლა აქტიურია</translation>
 <translation id="8318753676953949627">სურათები არ არის</translation>
 <translation id="8320910311642849813">ტყე</translation>
 <translation id="8329018942023753850">კალკულატორის აპი</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">ავტომატურად აღმოჩენილი</translation>
 <translation id="8420955526972171689">შეასრულეთ ტესტები და დეფექტების აღმოფხვრა აპარატურის პრობლემების შემთხვევაში</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">ქვემოთ</translation>
 <translation id="8431300646573772016">სიახლეები ChromeOS-ში</translation>
 <translation id="843568408673868420">ინტერნეტ-კავშირი</translation>
 <translation id="844521431886043384">DNS არ არის დაყენებული</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">მოწყობილობა არის ტელეფონი.</translation>
 <translation id="8950424402482976779">ზედა</translation>
 <translation id="8954341524817067858">მთები</translation>
+<translation id="8957423540740801332">მარჯვნივ</translation>
 <translation id="8960969673307890087">საზამთროები</translation>
 <translation id="8961025972867871808">პინგვინები</translation>
 <translation id="8968751544471797276">დატენის სიჩქარე</translation>

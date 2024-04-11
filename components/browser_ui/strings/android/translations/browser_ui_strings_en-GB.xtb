@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Go back</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2550801787432930915">Price drop card</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie blocked}other{# cookies blocked}}</translation>
 <translation id="2570922361219980984">Location access is also off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Seek backward</translation>
 <translation id="8444433999583714703">To let <ph name="APP_NAME" /> access your location, also turn on location in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoke device permission</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie in use}other{# cookies in use}}</translation>
 <translation id="8487700953926739672">Available offline</translation>
 <translation id="848952951823693243">Always request mobile site</translation>
 <translation id="8499083585497694743">Unmute microphone</translation>

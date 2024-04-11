@@ -226,6 +226,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1864454756846565995">Zariadenie USB-C (port vzadu)</translation>
 <translation id="1869497990620230175">Rýchle súbory</translation>
 <translation id="1871023081802165724">Prehratie médií</translation>
+<translation id="1871915835366697861">Nie je k dispozícii pre túto hru</translation>
 <translation id="1879018240766558464">Okná inkognito momentálne nie sú podporované. Ostatné aplikácie budú uložené.</translation>
 <translation id="1882814835921407042">Žiadna mobilná sieť</translation>
 <translation id="1882897271359938046">Zrkadlenie na displej <ph name="DISPLAY_NAME" /></translation>
@@ -1432,7 +1433,6 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6537924328260219877">Sila signálu <ph name="SIGNAL_STRENGTH" />, batéria telefónu <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Kontroluje sa stiahnutý súbor <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Prebieha prenášanie do zariadenia <ph name="RECEIVER_NAME" /></translation>
-<translation id="6546062506073634094">Vyhľadávanie podľa obrázkov na základe ukážok obsahu a obrázkov</translation>
 <translation id="6555373427270923730">Zadajte do panela s adresou webovú adresu a potom stlačte <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nová inštalácia</translation>
@@ -1792,6 +1792,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="79341161159229895">Správcovia účtu: <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Schránku zobrazíte klávesmi <ph name="SHORTCUT_KEY_NAME" /> + V. Posledných päť skopírovaných položiek sa uloží do vašej schránky.</translation>
 <translation id="7942349550061667556">Červená</translation>
+<translation id="7943516765291457328">Ak chcete vyhľadávať hotspoty v okolí, zapnite Bluetooth</translation>
 <translation id="7944023924886109030">Zobraziť všetky dnešné udalosti</translation>
 <translation id="7945357288295809525">Zobraziť nastavenia dostupnosti, funkcie <ph name="ENABLED_FEATURES" /> sú povolené.</translation>
 <translation id="7947798320695032612">Aplikácia <ph name="APP_NAME" /> chce použiť vaše zariadenie <ph name="DEVICE_NAME" /></translation>

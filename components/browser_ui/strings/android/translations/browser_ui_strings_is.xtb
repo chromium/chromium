@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Fara til baka</translation>
 <translation id="2546283357679194313">Fótspor og gögn vefsvæða</translation>
 <translation id="2550801787432930915">Verðlækkunarspjald</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Lokað á eitt fótspor}one{Lokað á # fótspor}other{Lokað á # fótspor}}</translation>
 <translation id="2570922361219980984">Einnig er slökkt á aðgangi að staðsetningu fyrir þetta tæki. Kveiktu á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Stækkað – smelltu til að minnka.</translation>
 <translation id="2586657967955657006">Klippiborð</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Spóla til baka</translation>
 <translation id="8444433999583714703">Til að veita <ph name="APP_NAME" /> aðgang að staðsetningu þinni þarftu einnig að kveikja á henni í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Afturkalla tækjaheimild</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 fótspor í notkun}one{# fótspor í notkun}other{# fótspor í notkun}}</translation>
 <translation id="8487700953926739672">Í boði án nettengingar</translation>
 <translation id="848952951823693243">Biðja alltaf um símaútgáfu vefsvæða</translation>
 <translation id="8499083585497694743">Kveikja á hljóðnema</translation>

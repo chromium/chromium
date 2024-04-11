@@ -4520,7 +4520,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4403266582403435904">Restabilește date sau schimbă cu ușurință dispozitivele în orice moment. Backupurile sunt încărcate pe serverele Google și sunt criptate folosind parola pentru Contul Google al copilului tău.</translation>
 <translation id="4403775189117163360">Alege alt dosar</translation>
 <translation id="4404136731284211429">Verifică din nou</translation>
-<translation id="4404619268534288383">Salvarea și sincronizarea grupurilor de file</translation>
 <translation id="4404843640767531781">Aplicația <ph name="APP_NAME" /> a fost blocată de părintele tău. Solicită părintelui permisiunea de a folosi această aplicație.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mută în…</translation>
@@ -5161,7 +5160,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4899696330053002588">Conține anunțuri</translation>
 <translation id="490031510406860025">Nepermisă pe acest site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – intercalat</translation>
-<translation id="490056871160016482">Site-urile folosesc această funcție pentru a oferi experiențe captivante pe ecran complet, indiferent de gesturile utilizatorului</translation>
 <translation id="4900652253009739885">Nu se poate elimina singurul comutator atribuit acțiunii Selectează. Apasă orice tastă pentru acțiunea <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Extinde filele închise recent</translation>
 <translation id="4901309472892185668">Selectează starea experimentului pentru experimentul <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5486,7 +5484,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5162905305237671850">Acest <ph name="DEVICE_TYPE" /> a fost blocat</translation>
 <translation id="5163910114647549394">Fila a fost mutată la sfârșitul barei cu file</translation>
 <translation id="5164530241085602114">Notificările nu sunt permise pentru <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Au permisiunea de a intra automat în modul ecran complet</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5171045022955879922">Caută sau introdu adresa URL</translation>
@@ -5788,7 +5785,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="541737483547792035">Mărește ecranul</translation>
 <translation id="541822678830750798">Se solicită citirea și modificarea acestui site</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Activează salvarea și restabilirea grupurilor de file. Dă clic dreapta pe un grup de file pentru a-l salva. Restabilește grupuri din bara de marcaje.</translation>
 <translation id="5420274697768050645">Solicită parola ca să deblochezi dispozitivul pentru mai multă securitate</translation>
 <translation id="5420438158931847627">Stabilește claritatea textului și imaginilor</translation>
 <translation id="5420935737933866496">Copiază &amp;linkul</translation>
@@ -6185,6 +6181,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5723967018671998714">Cookie-urile terță parte sunt blocate în modul Incognito</translation>
 <translation id="5725112283692663422">Trimite feedback despre opțiunea Creează o temă cu AI</translation>
 <translation id="5727728807527375859">Extensiile, aplicațiile și temele pot dăuna computerului. Sigur vrei să continui?</translation>
+<translation id="5728072125198221967">Servicii Google conectate</translation>
 <translation id="5728290366864286776">Această extensie poate să citească și să modifice informațiile despre site-uri sau să ruleze în fundal</translation>
 <translation id="5728450728039149624">Opțiuni pentru blocarea ecranului Smart Lock</translation>
 <translation id="572914206753951782">Verifică dacă Chromebookul folosește cea mai recentă versiune. Apoi repornește Chromebookul și încearcă din nou.</translation>
@@ -8171,7 +8168,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7290242001003353852">Acest serviciu de conectare, găzduit de <ph name="SAML_DOMAIN" />, îți accesează camera foto.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Browserul este gestionat<ph name="END_LINK" /> de organizația ta, iar <ph name="BEGIN_LINK" />profilul este gestionat<ph name="END_LINK" /> de <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Nu au permisiunea de a intra automat în modul ecran complet</translation>
 <translation id="7295614427631867477">Reține că Android, Play și aplicațiile asociate sunt guvernate de propriile politici privind colectarea și utilizarea datelor.</translation>
 <translation id="7296503797589217366">Selectează dosarul <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verde închis</translation>
@@ -9718,7 +9714,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="84297032718407999">Vei fi deconectat(ă) peste <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Afișează atingerile</translation>
 <translation id="843173223122814223">Creează fundaluri cu AI</translation>
-<translation id="8432724317983466962">Pentru a intra în modul ecran complet este necesar în mod prestabilit un gest al utilizatorului</translation>
 <translation id="8433186206711564395">Setări de rețea</translation>
 <translation id="8434480141477525001">Port remediere NaCl</translation>
 <translation id="8436054240208929121">Conectează-te și activează sincronizarea pentru a permite browserului Chrome să sugereze grupuri de file și să-ți păstreze filele organizate</translation>

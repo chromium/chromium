@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2546283357679194313">Файлы сookie і даныя сайтаў</translation>
 <translation id="2550801787432930915">Картка з апавяшчэннем пра зніжэнне цаны</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 файл cookie заблакіраваны}one{# файл cookie заблакіраваны}few{# файлы cookie заблакіраваны}many{# файлаў cookie заблакіраваны}other{# файла cookie заблакіраваны}}</translation>
 <translation id="2570922361219980984">Доступ да месцазнаходжання для гэтай прылады таксама выключаны. Уключыце яго ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Разгорнута. Націсніце, каб згарнуць.</translation>
 <translation id="2586657967955657006">Буфер абмену</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Перайсці назад</translation>
 <translation id="8444433999583714703">Каб даць праграме "<ph name="APP_NAME" />" доступ да даных пра ваша месцазнаходжанне, уключыце апошнія ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Адклікаць дазвол на доступ да прылады</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Выкарыстоўваецца 1 файл cookie}one{Выкарыстоўваецца # файл cookie}few{Выкарыстоўваюцца # файлы cookie}many{Выкарыстоўваюцца # файлаў cookie}other{Выкарыстоўваюцца # файла cookie}}</translation>
 <translation id="8487700953926739672">Даступна па-за сеткай</translation>
 <translation id="848952951823693243">Заўсёды запытваць версію сайта для мабільных прылад</translation>
 <translation id="8499083585497694743">Уключыць мікрафон</translation>

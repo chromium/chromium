@@ -243,7 +243,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1428729058023778569">To opozorilo je prikazano, ker spletno mesto ne podpira protokola HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Self-Adhesive Film</translation>
 <translation id="1430915738399379752">Natisni</translation>
-<translation id="1431021750861456539">Samodejni celozaslonski način</translation>
 <translation id="1432187715652018471">stran želi namestiti rutino za obravnavo storitev.</translation>
 <translation id="1432581352905426595">Upravljanje iskalnikov</translation>
 <translation id="1433225466058025572">Poskusite znova premakniti datoteke</translation>
@@ -2318,7 +2317,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     <ph name="LINE_BREAK" />
     Poskusite se obrniti na skrbnika sistema.</translation>
 <translation id="549333378215107354">Velikost 3</translation>
-<translation id="5501712702042287009">samodejni celozaslonski način</translation>
 <translation id="550365051221576010">Izpolnitev vsega</translation>
 <translation id="5508443345185481044">Videokamere</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Vklopi</translation>
 <translation id="5862579898803147654">Zlagalnik 8</translation>
+<translation id="5863515189965725638">Urejanje IBAN-a</translation>
 <translation id="5863847714970149516">Stran, ki se bo odprla, vam bo morda poskusila kaj zaračunati</translation>
 <translation id="5866257070973731571">Dodajanje telefonske številke</translation>
 <translation id="5866898949289125849">Ogledujete si stran z orodji za razvijalce</translation>

@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">戻る</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="2550801787432930915">値下げカード</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 個の Cookie がブロックされました}other{# 個の Cookie がブロックされました}}</translation>
 <translation id="2570922361219980984">位置情報へのアクセスがデバイスでもオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="257931822824936280">展開されています - クリックすると折りたたまれます。</translation>
 <translation id="2586657967955657006">クリップボード</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">後方にシーク再生</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> に現在地へのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも位置情報をオンにしてください。</translation>
 <translation id="8447861592752582886">デバイスの許可を取り消します</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 個の Cookie が使用中です}other{# 個の Cookie が使用中です}}</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="848952951823693243">常にモバイル版サイトを表示する</translation>
 <translation id="8499083585497694743">マイクのミュートを解除</translation>

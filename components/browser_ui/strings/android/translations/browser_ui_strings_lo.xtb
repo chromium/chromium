@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">ກັບ​ຄືນ​ໄປ</translation>
 <translation id="2546283357679194313">ຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌...</translation>
 <translation id="2550801787432930915">ບັດລາຄາຕ່ຳລົງ</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{ບລັອກຄຸກກີ້ 1 ລາຍການແລ້ວ}other{ບລັອກຄຸກກີ້ # ລາຍການ}}</translation>
 <translation id="2570922361219980984">ການເຂົ້າເຖິງສະຖານທີ່ປິດຢູ່ສຳລັບອຸປະກອນນີ້ນຳອີກ. ກະລຸນາເປີດມັນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">ຂະ​ຫຍາຍແລ້ວ - ຄລິກ​ເພື່ອຫຍໍ້ລົງ.</translation>
 <translation id="2586657967955657006">ຄລິບບອດ</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">ເລື່ອນກັບຫຼັງ</translation>
 <translation id="8444433999583714703">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານ, ກະລຸນາເປີດສະຖານທີ່ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
 <translation id="8447861592752582886">ຖອນການອະນຸຍາດອຸປະກອນ</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ມີການນຳໃຊ້ຄຸກກີ້ 1 ລາຍການ}other{ມີການນຳໃຊ້ຄຸກກີ້ # ລາຍການ}}</translation>
 <translation id="8487700953926739672">ມີອອຟລາຍນ໌ຢູ່</translation>
 <translation id="848952951823693243">ຮ້ອງຂໍເວັບໄຊມືຖືທຸກເທື່ອ</translation>
 <translation id="8499083585497694743">ເຊົາປິດສຽງໄມໂຄຣໂຟນ</translation>

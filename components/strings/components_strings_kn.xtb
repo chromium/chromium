@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">ಈ ಸೈಟ್ HTTPS ಅನ್ನು ಬೆಂಬಲಿಸದ ಕಾರಣ, ನೀವು ಈ ಎಚ್ಚರಿಕೆಯನ್ನು ನೋಡುತ್ತಿದ್ದೀರಿ. <ph name="BEGIN_LEARN_MORE_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">ಸ್ವಯಂ-ಅಂಟಿಕೊಳ್ಳುವ ಚಿತ್ರ</translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
-<translation id="1431021750861456539">ಸ್ವಯಂಚಾಲಿತ ಫುಲ್‌ಸ್ಕ್ರೀನ್</translation>
 <translation id="1432187715652018471">ಈ ಪುಟ ಸೇವೆಯ ನಿರ್ವಾಹಕವನ್ನು ಸೇರಿಸಲು ಬಯಸುತ್ತಿದೆ.</translation>
 <translation id="1432581352905426595">ಹುಡುಕಾಟದ ಇಂಜಿನ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1433225466058025572">ಪುನಃ ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
@@ -1085,6 +1084,7 @@
             <ph name="LIST_ITEM" />ಹುಡುಕಾಟದ ಇತಿಹಾಸ<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">ಉಳಿತಾಯ</translation>
 <translation id="3103188521861412364">ಸ್ಟಾಕ್‌ಗಳು ಮತ್ತು ಬಾಂಡ್‌ಗಳು</translation>
 <translation id="3105172416063519923">ಸ್ವತ್ತು ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ಸುರಕ್ಷಿತ DNS ಕಾನ್ಫಿಗರೇಶನ್‌ ಅನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="END_LINK" /></translation>
@@ -1301,6 +1301,7 @@
 <translation id="3493660662684070951">ಟ್ರಕ್‌ಗಳು, ವ್ಯಾನ್‌ಗಳು ಮತ್ತು SUV ಗಳು</translation>
 <translation id="3495081129428749620">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">ವೇತನ</translation>
 <translation id="3497627066518778351">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಸಾಧನದಲ್ಲಿರುವ ಸೈಟ್ ಡೇಟಾದ ಪಟ್ಟಿಯೊಂದನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3498215018399854026">ಈ ಕ್ಷಣದಲ್ಲಿ ನಿಮ್ಮ ಪೋಷಕರನ್ನು ತಲುಪಲು ನಮಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="350069200438440499">ಫೈಲ್ ಹೆಸರು:</translation>
@@ -2321,7 +2322,6 @@
     <ph name="LINE_BREAK" />
     ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="549333378215107354">ಗಾತ್ರ 3</translation>
-<translation id="5501712702042287009">ಸ್ವಯಂಚಾಲಿತ ಫುಲ್‌ಸ್ಕ್ರೀನ್</translation>
 <translation id="550365051221576010">ಪ್ರತಿಯೊಂದನ್ನು ಭರ್ತಿ ಮಾಡಿ</translation>
 <translation id="5508443345185481044">ಕ್ಯಾಮರಾಗಳು ಮತ್ತು ಕ್ಯಾಮ್‌ಕಾರ್ಡರ್‌ಗಳು</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2338,6 +2338,7 @@
 <translation id="5519696598216267194">ಕಾಗದ (ಪ್ರಿಪಂಚ್‌ಮಾಡಲಾದ)</translation>
 <translation id="5521782189689806907">ಕ್ಯಾಬಿನೆಟ್ರಿ</translation>
 <translation id="5523118979700054094">ನೀತಿ ಹೆಸರು</translation>
+<translation id="5523588073846127669">ವ್ಯಾಪಾರಿ ಈ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಸ್ವೀಕರಿಸುವುದಿಲ್ಲ</translation>
 <translation id="5525755241743357906">ಫೈಲ್ ಅನ್ನು ನಕಲಿಸಲಾಗಿದೆ ಅಥವಾ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪ್ರವೇಶಿಸುವಿಕೆಯ ಪರಿಕರಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
 <translation id="55293785478302737">ಅಂಚನ್ನು ಹೊಲಿಯಿರಿ</translation>
@@ -2502,6 +2503,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ಆನ್ ಮಾಡಿ</translation>
 <translation id="5862579898803147654">ಸ್ಟ್ಯಾಕರ್ 8</translation>
+<translation id="5863515189965725638">IBAN ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5863847714970149516">ಮುಂದಿನ ಪುಟವು ನಿಮಗೆ ಶುಲ್ಕ ವಿಧಿಸಲು ಪ್ರಯತ್ನಿಸಬಹುದು</translation>
 <translation id="5866257070973731571">ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="5866898949289125849">ನೀವು, ಡೆವಲಪರ್ ಪರಿಕರಗಳ ಪುಟವನ್ನು ವೀಕ್ಷಿಸುತ್ತಿದ್ದೀರಿ</translation>
@@ -3718,6 +3720,7 @@
 <translation id="81563721597823545">ಹಾಕಿ ಉಪಕರಣ</translation>
 <translation id="8161095570253161196">ಬ್ರೌಸ್ ಮಾಡುವಿಕೆಯನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="8163866351304776260">ಎಡಭಾಗದಲ್ಲಿ ನಾಲ್ಕು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
+<translation id="8163998196788647716">ವಹಿವಾಟು ಖಾತೆ</translation>
 <translation id="8164078261547504572">ಬೆಲೆಗಳು ಕುಸಿತವಾದಾಗ ಇಮೇಲ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಪಡೆಯಬೇಕೇ?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" ಕೀಲಿಗಳನ್ನು ಅದೇ ನಿಘಂಟಿನಲ್ಲಿ ಸೆಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8175796834047840627">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಕಾರಣದಿಂದಾಗಿ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು Chrome ಅವಕಾಶ ನೀಡುತ್ತಿದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಈ ವರ್ತನೆಯನ್ನು ಬದಲಿಸಬಹುದು.</translation>

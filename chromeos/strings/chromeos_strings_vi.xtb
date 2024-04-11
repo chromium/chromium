@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">bướm</translation>
 <translation id="188114911237521550">Tắt chế độ tối</translation>
-<translation id="188268299367474594">Chọn trong số các APN hiện có</translation>
 <translation id="1885577615937958993">tua nhanh nội dung nghe nhìn</translation>
 <translation id="1887850431809612466">Hiệu chỉnh phần cứng</translation>
 <translation id="189221451253258459">xanh lục neon</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Hình ảnh <ph name="CURRENT_PAGE" /> trong tổng số <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Độ chính xác của dấu phẩy động</translation>
 <translation id="2448312741937722512">Loại</translation>
-<translation id="2465272316171730950">Chúng tôi hiện đang hoạt động hết công suất. Vui lòng quay lại sau giây lát.</translation>
 <translation id="2472215337771558851">Sử dụng tính năng Giúp tôi viết để soạn bản nháp hoặc trau chuốt văn bản hiện có, dựa trên công nghệ AI của Google</translation>
 <translation id="2480572840229215612">cua</translation>
 <translation id="248546197012830854">Thiết bị hiện không có kết nối mạng. Hãy kết nối với mạng Wi-Fi để xem nội dung trợ giúp.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">hiện cửa sổ</translation>
 <translation id="2513396635448525189">Hình ảnh đăng nhập</translation>
 <translation id="2517472476991765520">Quét</translation>
-<translation id="2520213071283358374">Dùng APN này</translation>
 <translation id="2521835766824839541">bản nhạc trước</translation>
 <translation id="2526590354069164005">Màn hình nền</translation>
 <translation id="253029298928638905">Đang khởi động lại…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Mặt nạ mạng con</translation>
 <translation id="4454245904991689773">Lưu bản quét vào</translation>
 <translation id="4456812688969919973">Nút Lưu APN hiện đã tắt</translation>
-<translation id="4460905888685975163">Nút Dùng APN này hiện đang tắt</translation>
 <translation id="4469288414739283461">Trình bảo vệ màn hình Dòng chảy của đất</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Tên máy chủ</translation>
 <translation id="5089810972385038852">Tỉnh</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">lên</translation>
 <translation id="5107243100836678918">Phím tắt không dùng phím <ph name="META_KEY" /> có thể xung đột với phím tắt của ứng dụng nào đó. Nhấn phím tắt này một lần nữa để tiếp tục sử dụng hoặc nhấn một phím tắt mới dùng phím <ph name="KEY" />. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Tương tự:</translation>
 <translation id="5130848777448318809">ngựa pony</translation>
@@ -835,7 +832,7 @@
 <translation id="590746845088109442">mèo</translation>
 <translation id="5907649332524363701">màu phím</translation>
 <translation id="5916084858004523819">Bị cấm</translation>
-<translation id="5916664084637901428">Bật</translation>
+<translation id="5916664084637901428">Đang bật</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Các tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Nút xoá dành cho <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Cảnh huyền ảo</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Chỉ định lại bằng cách chọn một phím mới</translation>
 <translation id="714876143603641390">Khả năng kết nối với mạng LAN</translation>
 <translation id="7154020516215182599">Chia sẻ phản hồi hoặc mô tả vấn đề của bạn. Nếu có thể, hãy nêu các bước tái hiện vấn đề của bạn.</translation>
-<translation id="7155037718620478619">Khám phá APN khác</translation>
 <translation id="7155171745945906037">Ảnh hiện có từ máy ảnh hoặc tệp</translation>
 <translation id="7162487448488904999">Thư viện</translation>
 <translation id="7170236477717446850">Ảnh hồ sơ</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Loại nhà mạng</translation>
 <translation id="7882501334836096755">Khóa công khai</translation>
+<translation id="78957024357676568">trái</translation>
 <translation id="7897043345768902965">lối đi bộ</translation>
 <translation id="7903695460270716054">Chọn hình ảnh và hình minh hoạ tuyển chọn</translation>
 <translation id="7915220255123750251">Quản lý chế độ cài đặt APN của mạng. APN thiết lập kết nối giữa mạng di động và Internet.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Mức pin còn lại</translation>
 <translation id="8076492880354921740">Thẻ</translation>
 <translation id="8079860070590459552">cánh đồng hoa</translation>
-<translation id="8081553043098820199">APN không hợp lệ có thể khiến kết nối di động của bạn bị tắt. Chỉ đặt APN do nhà cung cấp mạng di động hoặc quản trị viên cung cấp.</translation>
 <translation id="8082366717211101304">Không thể phân giải DNS từ các ứng dụng Android</translation>
 <translation id="8082644724189923105">vùng bàn phím</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Bạn đang dùng mạng mở và không an toàn</translation>
 <translation id="811820734797650957">(Android) Có thể ping cổng vào</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8132480444149501833">Yêu cầu Bộ đếm lưu lượng truy cập</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Chọn <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Nguồn</translation>
 <translation id="8302368968391049045">Tường lửa HTTPS</translation>
 <translation id="8312330582793120272">phát nội dung nghe nhìn</translation>
-<translation id="8317819321190319496">Nút Dùng APN này hiện đang bật</translation>
 <translation id="8318753676953949627">Không có hình ảnh nào</translation>
 <translation id="8320910311642849813">rừng</translation>
 <translation id="8329018942023753850">ứng dụng máy tính</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Được phát hiện tự động</translation>
 <translation id="8420955526972171689">Chạy các bài kiểm tra và khắc phục sự cố phần cứng</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">xuống</translation>
 <translation id="8431300646573772016">ChromeOS có gì mới</translation>
 <translation id="843568408673868420">Tình trạng kết nối Internet</translation>
 <translation id="844521431886043384">Chưa thiết lập DNS</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Thiết bị là điện thoại.</translation>
 <translation id="8950424402482976779">trên cùng</translation>
 <translation id="8954341524817067858">núi</translation>
+<translation id="8957423540740801332">phải</translation>
 <translation id="8960969673307890087">dưa hấu</translation>
 <translation id="8961025972867871808">chim cánh cụt</translation>
 <translation id="8968751544471797276">Tốc độ sạc</translation>

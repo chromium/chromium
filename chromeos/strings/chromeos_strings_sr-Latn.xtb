@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">leptiri</translation>
 <translation id="188114911237521550">Isključite tamni režim</translation>
-<translation id="188268299367474594">Odaberite neki od dostupnih naziva pristupne tačke</translation>
 <translation id="1885577615937958993">premotajte medijski sadržaj unapred</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
 <translation id="189221451253258459">fluorescentno zelene</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. slika od <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Preciznost pokretnog zareza</translation>
 <translation id="2448312741937722512">Tip</translation>
-<translation id="2465272316171730950">Kapacitet je popunjen. Vratite se uskoro.</translation>
 <translation id="2472215337771558851">Koristite Pomoć pri pisanju da biste napravili radnu verziju ili poboljšali postojeći rad koji omogućava Google veštačka inteligencija</translation>
 <translation id="2480572840229215612">krabe</translation>
 <translation id="248546197012830854">Uređaj je oflajn. Povežite se na WiFi mrežu da biste videli sadržaj pomoći.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">pregledajte prozore</translation>
 <translation id="2513396635448525189">Slika za prijavljivanje</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
-<translation id="2520213071283358374">Koristi ovaj naziv pristupne tačke</translation>
 <translation id="2521835766824839541">prethodna pesma</translation>
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="253029298928638905">Restartuje se...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Maska podmreže</translation>
 <translation id="4454245904991689773">Skeniraj u:</translation>
 <translation id="4456812688969919973">Dugme Sačuvaj naziv pristupne tačke je sada onemogućeno</translation>
-<translation id="4460905888685975163">Korišćenje ovog naziva pristupne tačke je sada onemogućeno</translation>
 <translation id="4469288414739283461">Čuvar ekrana sa zemljom</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Pingovanje mrežnog prolaza koji nije podrazumevan nije uspelo</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Ime hosta servera</translation>
 <translation id="5089810972385038852">Država</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">nagore</translation>
 <translation id="5107243100836678918">Prečica bez tastera <ph name="META_KEY" /> može da bude u suprotnosti sa prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da biste nastavili da je koristite ili pritisnite novu prečicu pomoću tastera <ph name="KEY" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Slično:</translation>
 <translation id="5130848777448318809">poniji</translation>
@@ -845,6 +842,8 @@
 <translation id="5946538341867151940">Još uvek niste povezani. Ako mobilni operater preporučuje prilagođeni naziv pristupne tačke, unesite ga tako što ćete izabrati „+ Novi naziv pristupne tačke“</translation>
 <translation id="5947266287934282605">Ako je poslednji dan u mesecu pre ovog dana, podaci će se resetovati poslednjeg dana u mesecu</translation>
 <translation id="5948460390109837040">psi</translation>
+<translation id="594989847980441553">Izaberite Napravi da biste napravili sliku pomoću veštačke inteligencije.
+        Sve napravljene slike će se automatski prikazivati ovde.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">koral</translation>
 <translation id="5984145644188835034">Podrazumevana pozadina</translation>
@@ -1064,7 +1063,6 @@
 <translation id="7147557737960578492">Ponovo dodelite tako što ćete izabrati novi taster</translation>
 <translation id="714876143603641390">Povezivanje LAN-a</translation>
 <translation id="7154020516215182599">Pošaljite povratne informacije ili opišite problem. Ako je to moguće, uvrstite korake za izazivanje istog problema.</translation>
-<translation id="7155037718620478619">Otkrijte još naziva pristupne tačke</translation>
 <translation id="7155171745945906037">Postojeća fotografija iz kamere ili datoteke</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7170236477717446850">Slika profila</translation>
@@ -1194,6 +1192,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tip dobavljača</translation>
 <translation id="7882501334836096755">Javni ključ</translation>
+<translation id="78957024357676568">levo</translation>
 <translation id="7897043345768902965">pešačkom stazom</translation>
 <translation id="7903695460270716054">Odaberite neke od pripremljenih ilustracija i slika</translation>
 <translation id="7915220255123750251">Upravljajte podešavanjima naziva pristupne tačke mreže. Nazivi pristupnih tačaka uspostavljaju vezu između mobilne mreže i interneta.</translation>
@@ -1223,7 +1222,6 @@
 <translation id="8075838845814659848">Preostali nivo napunjenosti baterije</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8079860070590459552">polje cveća</translation>
-<translation id="8081553043098820199">Nevažeći nazivi pristupnih tačaka mogu da dovedu do onemogućavanja mobilne veze. Podesite samo nazive pristupnih tačaka koje pruža mobilni operater ili administrator.</translation>
 <translation id="8082366717211101304">DNS ne može da se razreši iz Android aplikacija</translation>
 <translation id="8082644724189923105">zona tastature</translation>
 <translation id="808894953321890993">Promeni lozinku</translation>
@@ -1231,6 +1229,7 @@
 <translation id="8104083085214006426">Koristite otvorenu i neobezbeđenu mrežu</translation>
 <translation id="811820734797650957">(Android) Mrežni prolaz može da se pinguje</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Izaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1255,6 @@
 <translation id="8294431847097064396">Izvor</translation>
 <translation id="8302368968391049045">HTTPS zaštitni zid</translation>
 <translation id="8312330582793120272">puštajte medije</translation>
-<translation id="8317819321190319496">Korišćenje ovog naziva pristupne tačke je sada omogućeno</translation>
 <translation id="8318753676953949627">Nema slika</translation>
 <translation id="8320910311642849813">šuma</translation>
 <translation id="8329018942023753850">aplikacija Kalkulator</translation>
@@ -1282,6 +1280,7 @@
 <translation id="8410244574650205435">Automatski izabrano</translation>
 <translation id="8420955526972171689">Pokretanje testova i rešavanje problema sa hardverom</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">nadole</translation>
 <translation id="8431300646573772016">Novosti u Chrome OS-u</translation>
 <translation id="843568408673868420">Povezivanje na internet</translation>
 <translation id="844521431886043384">DNS nije podešen</translation>
@@ -1372,6 +1371,7 @@
 <translation id="894617464444543719">Uređaj je telefon.</translation>
 <translation id="8950424402482976779">gornja</translation>
 <translation id="8954341524817067858">planine</translation>
+<translation id="8957423540740801332">desno</translation>
 <translation id="8960969673307890087">lubenice</translation>
 <translation id="8961025972867871808">pingvini</translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>

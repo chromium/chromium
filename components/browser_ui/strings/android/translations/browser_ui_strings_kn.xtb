@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">ಹಿಂದಿರುಗಿ</translation>
 <translation id="2546283357679194313">ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ</translation>
 <translation id="2550801787432930915">ಬೆಲೆ ಇಳಿಕೆಯ ಕಾರ್ಡ್</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 ಕುಕೀಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{# ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{# ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="2570922361219980984">ಈ ಸಾಧನದ ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಸಹ ಆಫ್ ಆಗಿದೆ. ಅದನ್ನು <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಆನ್ ಮಾಡಿ.</translation>
 <translation id="257931822824936280">ವಿಸ್ತರಿಸಲಾಗಿದೆ - ಕುಗ್ಗಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="2586657967955657006">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">ಹಿಂದಕ್ಕೆ ಸೀಕ್ ಮಾಡಿ</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸುವುದಕ್ಕೆ ಅನುಮತಿಸಲು, <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಸ್ಥಳವನ್ನು ಸಹ ಆನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="8447861592752582886">ಸಾಧನ ಅನುಮತಿಯನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಿ</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 ಕುಕಿ ಬಳಕೆಯಲ್ಲಿದೆ}one{# ಕುಕೀಗಳು ಬಳಕೆಯಲ್ಲಿವೆ}other{# ಕುಕೀಗಳು ಬಳಕೆಯಲ್ಲಿವೆ}}</translation>
 <translation id="8487700953926739672">ಆಫ್‌ಲೈನ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="848952951823693243">ಮೊಬೈಲ್ ಸೈಟ್ ಅನ್ನು ಯಾವಾಗಲೂ ವಿನಂತಿಸಿ</translation>
 <translation id="8499083585497694743">ಮೈಕ್ರೋಫೋನ್‌ ಅನ್‍ಮ್ಯೂಟ್ ಮಾಡಿ</translation>

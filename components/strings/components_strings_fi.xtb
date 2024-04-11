@@ -243,7 +243,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1428729058023778569">Näet tämän varoituksen, koska sivusto ei tue HTTPS:ää. <ph name="BEGIN_LEARN_MORE_LINK" />Lue lisää<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Kontaktimuovi</translation>
 <translation id="1430915738399379752">Tulosta</translation>
-<translation id="1431021750861456539">Automaattinen koko näyttö</translation>
 <translation id="1432187715652018471">sivu haluaa asentaa palvelukäsittelijän.</translation>
 <translation id="1432581352905426595">Hallinnoi hakukoneita</translation>
 <translation id="1433225466058025572">Kokeile siirtää tiedostot uudelleen</translation>
@@ -2319,7 +2318,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     <ph name="LINE_BREAK" />
     Ota yhteyttä järjestelmänvalvojaasi.</translation>
 <translation id="549333378215107354">Koko 3</translation>
-<translation id="5501712702042287009">automaattinen koko näyttö</translation>
 <translation id="550365051221576010">Täytä kaikki</translation>
 <translation id="5508443345185481044">Kamerat ja videokamerat</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2500,6 +2498,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="5862579898803147654">Pinoaja 8</translation>
+<translation id="5863515189965725638">Muokkaa IBAN-numeroa</translation>
 <translation id="5863847714970149516">Avaamasi sivu voi yrittää veloittaa sinulta rahaa</translation>
 <translation id="5866257070973731571">Lisää puhelinnumero</translation>
 <translation id="5866898949289125849">Katselet kehittäjätyökalut-sivustoa</translation>

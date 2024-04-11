@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">motyle</translation>
 <translation id="188114911237521550">Wyłącz tryb ciemny</translation>
-<translation id="188268299367474594">Wybierz spośród dostępnych punktów APN</translation>
 <translation id="1885577615937958993">przewiń do przodu</translation>
 <translation id="1887850431809612466">Wersja sprzętu</translation>
 <translation id="189221451253258459">neonowa zieleń</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Zdjęcie <ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
 <translation id="2448312741937722512">Typ</translation>
-<translation id="2465272316171730950">Brakuje nam wolnych zasobów. Wróć za chwilę.</translation>
 <translation id="2472215337771558851">Użyj funkcji Pomóż mi w pisaniu, aby utworzyć wersję lub dopracować już istniejącą pracę z wykorzystaniem AI od Google</translation>
 <translation id="2480572840229215612">kraby</translation>
 <translation id="248546197012830854">Urządzenie jest offline. Aby wyświetlić materiały pomocy, połącz się z siecią Wi-Fi.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">pokaż okna</translation>
 <translation id="2513396635448525189">Obraz użytkownika</translation>
 <translation id="2517472476991765520">Skanuj</translation>
-<translation id="2520213071283358374">Używaj tego punktu APN</translation>
 <translation id="2521835766824839541">poprzedni utwór</translation>
 <translation id="2526590354069164005">Pulpit</translation>
 <translation id="253029298928638905">Uruchamiam ponownie…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Maska podsieci</translation>
 <translation id="4454245904991689773">Skanuj do</translation>
 <translation id="4456812688969919973">Przycisk Zapisz APN jest teraz wyłączony</translation>
-<translation id="4460905888685975163">Opcja Używaj tego punktu APN jest teraz wyłączona</translation>
 <translation id="4469288414739283461">Wygaszacz ekranu Ziemia</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Nazwa hosta serwera</translation>
 <translation id="5089810972385038852">Stan</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">w górę</translation>
 <translation id="5107243100836678918">Skrót bez klawisza <ph name="META_KEY" /> może być w konflikcie z jakimś skrótem aplikacji. Naciśnij ten skrót ponownie, aby nadal go używać, albo naciśnij nowy skrót z użyciem klawisza <ph name="KEY" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Synonimy:</translation>
 <translation id="5130848777448318809">kucyki</translation>
@@ -1066,7 +1063,6 @@
 <translation id="7147557737960578492">Przypisz ponownie, wybierając nowy klawisz</translation>
 <translation id="714876143603641390">Łączność LAN</translation>
 <translation id="7154020516215182599">Podziel się opinią lub opisz problem. Jeśli to możliwe, wykonaj kroki umożliwiające odtworzenie problemu.</translation>
-<translation id="7155037718620478619">Odkryj więcej APN-ów</translation>
 <translation id="7155171745945906037">Istniejące zdjęcie z kamery lub pliku</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Zdjęcie profilowe</translation>
@@ -1167,15 +1163,6 @@
 <translation id="773153675489693198">Liczba cykli</translation>
 <translation id="7746357909584236306">do edycji</translation>
 <translation id="7747039790905080783">Klucz wstępny</translation>
-<translation id="7748162180830414915">Wybierz motyw, a następnie podkreślone słowa, aby spersonalizować obrazy AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />Wybierz „Zainspiruj mnie”, aby uzyskać dostęp do bardziej unikalnych i zróżnicowanych opcji obrazów AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Gdy tworzysz treści za pomocą AI, prompt jest wysyłany na serwery AI od Google w celu wygenerowania obrazów oraz użycia go ulepszania usługi, zgodnie z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Polityką prywatności Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatywna AI to funkcja eksperymentalna, która znajduje się we wczesnej fazie rozwoju i obecnie jest dostępna z ograniczeniami. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7752963721013053477">Od świtu do zmierzchu – na wyłączność</translation>
 <translation id="7762130827864645708">Hasło zostało zmienione. Od teraz używaj nowego hasła.</translation>
 <translation id="7763470514545477072">Dopasowanie sufiksu domeny</translation>
@@ -1203,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ dostawcy</translation>
 <translation id="7882501334836096755">Klucz publiczny</translation>
+<translation id="78957024357676568">w lewo</translation>
 <translation id="7897043345768902965">chodnik</translation>
 <translation id="7903695460270716054">Wybierz wyselekcjonowane obrazy i zdjęcia</translation>
 <translation id="7915220255123750251">Zarządzaj ustawieniami APN sieci. Punkty APN nawiązują połączenie między siecią komórkową a internetem.</translation>
@@ -1233,7 +1221,6 @@
 <translation id="8075838845814659848">Stan naładowania</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8079860070590459552">pola kwiatów</translation>
-<translation id="8081553043098820199">Nieprawidłowe punkty APN mogą spowodować wyłączenie połączenia mobilnego. Skonfiguruj tylko te punkty APN, które udostępnia operator komórkowy lub administrator.</translation>
 <translation id="8082366717211101304">Nie udało się znaleźć DNS w aplikacjach na Androida</translation>
 <translation id="8082644724189923105">strefa klawiatury</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
@@ -1241,6 +1228,7 @@
 <translation id="8104083085214006426">Używasz niezabezpieczonej sieci otwartej</translation>
 <translation id="811820734797650957">(Android) Brama reaguje na ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8132480444149501833">Poproś o liczniki natężenia ruchu</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Wybierz <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
@@ -1266,7 +1254,6 @@
 <translation id="8294431847097064396">Źródło</translation>
 <translation id="8302368968391049045">Zapora sieciowa HTTPS</translation>
 <translation id="8312330582793120272">odtwórz multimedia</translation>
-<translation id="8317819321190319496">Opcja Używaj tego punktu APN jest teraz włączona</translation>
 <translation id="8318753676953949627">Brak obrazów</translation>
 <translation id="8320910311642849813">las</translation>
 <translation id="8329018942023753850">aplikacja Kalkulator</translation>
@@ -1292,6 +1279,7 @@
 <translation id="8410244574650205435">Wykryty automatycznie</translation>
 <translation id="8420955526972171689">Uruchamianie testów i rozwiązywanie problemów ze sprzętem</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">w dół</translation>
 <translation id="8431300646573772016">Co nowego w Chrome OS</translation>
 <translation id="843568408673868420">Połączenie z internetem</translation>
 <translation id="844521431886043384">Nie skonfigurowano DNS</translation>
@@ -1383,6 +1371,7 @@
 <translation id="894617464444543719">Urządzenie to telefon.</translation>
 <translation id="8950424402482976779">góra</translation>
 <translation id="8954341524817067858">góry</translation>
+<translation id="8957423540740801332">w prawo</translation>
 <translation id="8960969673307890087">arbuzy</translation>
 <translation id="8961025972867871808">pingwiny</translation>
 <translation id="8968751544471797276">Szybkość ładowania</translation>

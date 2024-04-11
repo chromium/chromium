@@ -4519,7 +4519,6 @@
 <translation id="4403266582403435904">กู้คืนข้อมูลหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองจะอัปโหลดขึ้น Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google ของบุตรหลาน</translation>
 <translation id="4403775189117163360">เลือกโฟลเดอร์อื่น</translation>
 <translation id="4404136731284211429">สแกนอีกครั้ง</translation>
-<translation id="4404619268534288383">บันทึกและซิงค์กลุ่มแท็บ</translation>
 <translation id="4404843640767531781">ผู้ปกครองของคุณบล็อก <ph name="APP_NAME" /> ไว้ โปรดขอสิทธิ์จากผู้ปกครองเพื่อใช้แอปนี้</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">ย้ายไปที่…</translation>
@@ -5160,7 +5159,6 @@
 <translation id="4899696330053002588">มีโฆษณา</translation>
 <translation id="490031510406860025">ไม่อนุญาตในเว็บไซต์นี้</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - อินเทอร์เลซ</translation>
-<translation id="490056871160016482">เว็บไซต์ต่างๆ ใช้ฟีเจอร์นี้เพื่อมอบประสบการณ์แบบเต็มหน้าจอที่สมจริงโดยไม่คำนึงถึงการกระทำของผู้ใช้</translation>
 <translation id="4900652253009739885">นำสวิตช์เพียงอันเดียวที่กำหนดให้กับ "เลือก" ออกไม่ได้ กดแป้นใดก็ได้เพื่อ<ph name="RESPONSE" /></translation>
 <translation id="4901154724271753917">ขยายรายการแท็บที่เพิ่งปิดไป</translation>
 <translation id="4901309472892185668">เลือกสถานะการทดสอบสำหรับการทดสอบ<ph name="EXPERIMENT_NAME" /></translation>
@@ -5485,7 +5483,6 @@
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ถูกบล็อก</translation>
 <translation id="5163910114647549394">แท็บย้ายไปอยู่ท้ายสุดของแถบแท็บ</translation>
 <translation id="5164530241085602114">ไม่อนุญาตให้ <ph name="SITE" /> ส่งการแจ้งเตือน</translation>
-<translation id="5165989352025966137">ได้รับอนุญาตให้เข้าสู่โหมดเต็มหน้าจอโดยอัตโนมัติ</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5171045022955879922">ค้นหาหรือพิมพ์ URL</translation>
@@ -5787,7 +5784,6 @@
 <translation id="541737483547792035">ขยายหน้าจอ</translation>
 <translation id="541822678830750798">กำลังส่งคำขออ่านและเปลี่ยนแปลงเว็บไซต์นี้</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">เปิดใช้การบันทึกและเรียกคืนกลุ่มแท็บ คลิกขวาที่กลุ่มแท็บเพื่อบันทึก เรียกคืนกลุ่มแท็บจากแถบบุ๊กมาร์ก</translation>
 <translation id="5420274697768050645">ต้องใช้รหัสผ่านปลดล็อกอุปกรณ์เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="5420438158931847627">กำหนดความคมชัดของข้อความและรูปภาพ</translation>
 <translation id="5420935737933866496">คัดลอกลิงก์</translation>
@@ -6182,6 +6178,7 @@
 <translation id="5723967018671998714">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตนอยู่</translation>
 <translation id="5725112283692663422">ส่งความคิดเห็นเกี่ยวกับการสร้างธีมด้วย AI</translation>
 <translation id="5727728807527375859">ส่วนขยาย แอปพลิเคชัน และธีมอาจเป็นอันตรายต่อคอมพิวเตอร์ของคุณได้ คุณแน่ใจหรือไม่ว่าต้องการดำเนินการต่อ</translation>
+<translation id="5728072125198221967">บริการของ Google ที่ลิงก์ไว้</translation>
 <translation id="5728290366864286776">ส่วนขยายนี้อาจอ่านและเปลี่ยนแปลงข้อมูลเว็บไซต์หรือทํางานอยู่เบื้องหลัง</translation>
 <translation id="5728450728039149624">ตัวเลือกล็อกหน้าจอ Smart Lock</translation>
 <translation id="572914206753951782">ตรวจสอบว่า Chromebook เป็นเวอร์ชันล่าสุด จากนั้นรีสตาร์ท Chromebook แล้วลองอีกครั้ง</translation>
@@ -8165,7 +8162,6 @@
 <translation id="7290242001003353852">บริการลงชื่อเข้าใช้ที่โฮสต์โดย <ph name="SAML_DOMAIN" /> กำลังเข้าถึงกล้องถ่ายรูปของคุณ</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />เบราว์เซอร์ได้รับการจัดการ<ph name="END_LINK" />โดยองค์กร และ<ph name="BEGIN_LINK" />โปรไฟล์ของคุณได้รับการจัดการ<ph name="END_LINK" />โดย <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">ไม่ได้รับอนุญาตให้เข้าสู่โหมดเต็มหน้าจอโดยอัตโนมัติ</translation>
 <translation id="7295614427631867477">โปรดทราบว่า Android, Play และแอปที่เชื่อมโยงจะอยู่ภายใต้นโยบายการรวบรวมและการใช้งานข้อมูลของตน</translation>
 <translation id="7296503797589217366">เลือกโฟลเดอร์ <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">สีเขียวเข้ม</translation>
@@ -9711,7 +9707,6 @@
 <translation id="84297032718407999">คุณจะออกจากระบบใน <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">แสดงการแตะ</translation>
 <translation id="843173223122814223">สร้างพื้นหลังด้วย AI</translation>
-<translation id="8432724317983466962">โดยค่าเริ่มต้น ผู้ใช้จำเป็นต้องมีการกระทำเพื่อเข้าสู่โหมดเต็มหน้าจอ</translation>
 <translation id="8433186206711564395">การตั้งค่าเครือข่าย</translation>
 <translation id="8434480141477525001">พอร์ตแก้ปัญหา NaCl</translation>
 <translation id="8436054240208929121">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อให้ Chrome แนะนำกลุ่มแท็บและจัดระเบียบแท็บ</translation>

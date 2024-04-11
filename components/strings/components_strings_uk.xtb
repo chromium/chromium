@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">Ви бачите це попередження, оскільки цей сайт не підтримує HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Самоклейна плівка</translation>
 <translation id="1430915738399379752">Друк</translation>
-<translation id="1431021750861456539">Автоматично відкривати на весь екран</translation>
 <translation id="1432187715652018471">сторінка хоче встановити обробник сервісів.</translation>
 <translation id="1432581352905426595">Керувати пошуковими системами</translation>
 <translation id="1433225466058025572">Спробуйте повторно перемістити файли</translation>
@@ -2318,7 +2317,6 @@
     <ph name="LINE_BREAK" />
     Зв’яжіться зі своїм системним адміністратором.</translation>
 <translation id="549333378215107354">Розмір 3</translation>
-<translation id="5501712702042287009">автоматично відкривати на весь екран</translation>
 <translation id="550365051221576010">Заповнити все</translation>
 <translation id="5508443345185481044">Фотоапарати й відеокамери</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
 <translation id="5862579898803147654">Накопичувач 8</translation>
+<translation id="5863515189965725638">Змінити номер IBAN</translation>
 <translation id="5863847714970149516">Наступна сторінка може спробувати стягнути плату</translation>
 <translation id="5866257070973731571">Додайте номер телефону</translation>
 <translation id="5866898949289125849">Ви переглядаєте сторінку Інструментів розробника</translation>

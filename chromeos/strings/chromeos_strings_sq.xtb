@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">flutura</translation>
 <translation id="188114911237521550">Çaktivizo modalitetin e errët</translation>
-<translation id="188268299367474594">Zgjidh nga APN-të e disponueshme</translation>
 <translation id="1885577615937958993">kalo median shpejt përpara</translation>
 <translation id="1887850431809612466">Rishikimi i harduerit</translation>
 <translation id="189221451253258459">jeshile neoni</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Imazhi <ph name="CURRENT_PAGE" /> nga <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Saktësia e pikës pluskuese</translation>
 <translation id="2448312741937722512">Shkruaj</translation>
-<translation id="2465272316171730950">Ne jemi në nivelin maksimal të kapacitetit. Kthehu përsëri pas pak.</translation>
 <translation id="2472215337771558851">Përdor "Më ndihmo të shkruaj" për të krijuar një draft ose për të rafinuar një punë ekzistuese, mundësuar nga inteligjenca artificiale e Google</translation>
 <translation id="2480572840229215612">gaforre</translation>
 <translation id="248546197012830854">Pajisja është offline. Lidhu me rrjetin Wi-Fi për të parë përmbajtjen ndihmëse.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">shfaq dritaret</translation>
 <translation id="2513396635448525189">Imazhi i identifikimit</translation>
 <translation id="2517472476991765520">Skano</translation>
-<translation id="2520213071283358374">Përdor këtë APN</translation>
 <translation id="2521835766824839541">pjesa muzikore e mëparshme</translation>
 <translation id="2526590354069164005">Desktopi</translation>
 <translation id="253029298928638905">Po riniset...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Maska e nënrrjetit</translation>
 <translation id="4454245904991689773">Skano te</translation>
 <translation id="4456812688969919973">Butoni "Ruaj APN-në" është çaktivizuar tani</translation>
-<translation id="4460905888685975163">"Përdor këtë APN" është çaktivizuar tani</translation>
 <translation id="4469288414739283461">Mbrojtësi i ekranit për rrjedhën e tokës</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Emri i strehuesit të serverit</translation>
 <translation id="5089810972385038852">Shteti</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">lart</translation>
 <translation id="5107243100836678918">Shkurtorja pa tastin "<ph name="META_KEY" />" mund të jetë në konflikt me shkurtoren e një aplikacioni tjetër. Shtyp përsëri këtë shkurtore për të vazhduar ta përdorësh ose shtyp një shkurtore të re duke përdorur tastin "<ph name="KEY" />". <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Të ngjashme:</translation>
 <translation id="5130848777448318809">kalushë</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Ricakto duke zgjedhur një tast të ri</translation>
 <translation id="714876143603641390">Lidhshmëria e LAN-it</translation>
 <translation id="7154020516215182599">Ndaj komentet e tua ose përshkruaj problemin tënd. Nëse është e mundur, përfshi hapat për rikrijimin e problemit tënd.</translation>
-<translation id="7155037718620478619">Zbulo më shumë APN</translation>
 <translation id="7155171745945906037">Fotografi ekzistuese nga kamera ose skedari</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Fotografia e profilit</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Lloji i ofruesit</translation>
 <translation id="7882501334836096755">Çelës publik</translation>
+<translation id="78957024357676568">majtas</translation>
 <translation id="7897043345768902965">rrugicë</translation>
 <translation id="7903695460270716054">Zgjidh ilustrime dhe imazhe të seleksionuara</translation>
 <translation id="7915220255123750251">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Karikimi i mbetur</translation>
 <translation id="8076492880354921740">Skedat</translation>
 <translation id="8079860070590459552">fushë me lule</translation>
-<translation id="8081553043098820199">APN-të e pavlefshme mund të shkaktojnë çaktivizimin e lidhjes së rrjetit celular. Cakto vetëm APN-të e ofruara nga operatori celular ose administratori.</translation>
 <translation id="8082366717211101304">DNS-ja nuk mund të zgjidhet nga aplikacionet për Android</translation>
 <translation id="8082644724189923105">zona e tastierës</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Po përdor një rrjet të hapur dhe të pasigurt</translation>
 <translation id="811820734797650957">(Android) Portëkalimi mund të marrë ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8132480444149501833">Kërko matësit e trafikut</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Zgjidh "<ph name="TOPIC_SOURCE_DESC" />" nga "<ph name="TOPIC_SOURCE" />"</translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Burimi</translation>
 <translation id="8302368968391049045">Mur mbrojtës HTTPS</translation>
 <translation id="8312330582793120272">luaj median</translation>
-<translation id="8317819321190319496">"Përdor këtë APN" është aktivizuar tani</translation>
 <translation id="8318753676953949627">Nuk ka imazhe</translation>
 <translation id="8320910311642849813">pyll</translation>
 <translation id="8329018942023753850">aplikacioni i makinës llogaritëse</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Zbuluar automatikisht</translation>
 <translation id="8420955526972171689">Ekzekuto teste dhe zgjidhjen e problemeve për problemet e harduerit</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">poshtë</translation>
 <translation id="8431300646573772016">Të rejat me ChromeOS</translation>
 <translation id="843568408673868420">Lidhshmëria e internetit</translation>
 <translation id="844521431886043384">DNS-ja nuk është konfiguruar</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Pajisja është një telefon.</translation>
 <translation id="8950424402482976779">në krye</translation>
 <translation id="8954341524817067858">male</translation>
+<translation id="8957423540740801332">djathtas</translation>
 <translation id="8960969673307890087">shalqinj</translation>
 <translation id="8961025972867871808">pinguinë</translation>
 <translation id="8968751544471797276">Shpejtësia e karikimit</translation>

@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">leptiri</translation>
 <translation id="188114911237521550">Isključivanje tamnog načina</translation>
-<translation id="188268299367474594">Odaberite jedan od dostupnih APN-ova</translation>
 <translation id="1885577615937958993">premotavanje multimedijskog sadržaja unaprijed</translation>
 <translation id="1887850431809612466">Hardverska revizija</translation>
 <translation id="189221451253258459">fluorescentno zelene boje</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Slika <ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Točnost pomičnog zareza</translation>
 <translation id="2448312741937722512">Vrsta</translation>
-<translation id="2465272316171730950">Radimo punim kapacitetom. Vratite se uskoro.</translation>
 <translation id="2472215337771558851">Značajku Pomoć pri pisanju koju omogućuje Googleov AI koristite da biste izradili skicu ili usavršili postojeći rad</translation>
 <translation id="2480572840229215612">rakovi</translation>
 <translation id="248546197012830854">Uređaj je offline. Povežite se s Wi-Fi mrežom da biste vidjeli sadržaj pomoći.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">prikaz prozora</translation>
 <translation id="2513396635448525189">Slika za prijavu</translation>
 <translation id="2517472476991765520">Traži</translation>
-<translation id="2520213071283358374">Koristi ovaj APN</translation>
 <translation id="2521835766824839541">prethodna pjesma</translation>
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="253029298928638905">Ponovno pokretanje…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Maska podmreže</translation>
 <translation id="4454245904991689773">Skeniraj u</translation>
 <translation id="4456812688969919973">Gumb za spremanje APN-a sada je onemogućen</translation>
-<translation id="4460905888685975163">Upotreba ovog APN-a sada je onemogućena</translation>
 <translation id="4469288414739283461">Čuvar zaslona sa Zemljom</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Pinganje pristupnika mreže koja nije zadana nije uspjelo</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Naziv hosta poslužitelja</translation>
 <translation id="5089810972385038852">Savezna država</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">gore</translation>
 <translation id="5107243100836678918">Prečac bez tipke <ph name="META_KEY" /> može biti u sukobu s prečacem neke aplikacije. Ponovno pritisnite taj prečac kako biste ga nastavili upotrebljavati ili pritisnite novi prečac pomoću tipke <ph name="KEY" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Slično:</translation>
 <translation id="5130848777448318809">poniji</translation>
@@ -845,6 +842,8 @@
 <translation id="5946538341867151940">Još niste povezani. Ako vaš mobilni operater preporučuje prilagođeni APN, unesite podatke o APN-u tako da odaberete + Novi APN</translation>
 <translation id="5947266287934282605">Ako je zadnji dan u mjesecu prije tog dana, podaci se poništavaju zadnjeg dana u mjesecu</translation>
 <translation id="5948460390109837040">psi</translation>
+<translation id="594989847980441553">Odaberite Izradi da biste izradili sliku pomoću umjetne inteligencije.
+        Sve izrađene slike automatski će se prikazati ovdje.</translation>
 <translation id="5972388717451707488">Ažuriraj alat</translation>
 <translation id="5975130252842127517">koralj</translation>
 <translation id="5984145644188835034">Zadana pozadina</translation>
@@ -1064,7 +1063,6 @@
 <translation id="7147557737960578492">Ponovno dodijelite odabirom nove tipke</translation>
 <translation id="714876143603641390">LAN povezivost</translation>
 <translation id="7154020516215182599">Podijelite povratne informacije ili opišite svoj problem. Ako je moguće, uključite korake za reprodukciju problema.</translation>
-<translation id="7155037718620478619">Otkrijte više pristupnih točaka (APN-ova)</translation>
 <translation id="7155171745945906037">Postojeća fotografija s fotoaparata ili iz datoteke</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7170236477717446850">Profilna slika</translation>
@@ -1194,6 +1192,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Vrsta davatelja usluge</translation>
 <translation id="7882501334836096755">Javni ključ</translation>
+<translation id="78957024357676568">lijevo</translation>
 <translation id="7897043345768902965">nogostup</translation>
 <translation id="7903695460270716054">Odaberite birana umjetnička djela i slike</translation>
 <translation id="7915220255123750251">Upravljajte postavkama APN-a mreže. APN-ovi uspostavljaju vezu između mobilne mreže i interneta.</translation>
@@ -1223,7 +1222,6 @@
 <translation id="8075838845814659848">Preostala razina napunjenosti</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8079860070590459552">cvjetnog polja</translation>
-<translation id="8081553043098820199">Nevažeći APN-ovi mogu dovesti do onemogućivanja mobilne veze. Postavite samo APN-ove koje ste dobili od mobilnog operatera ili administratora.</translation>
 <translation id="8082366717211101304">Razrješavanje DNS-a iz Android aplikacija nije uspjelo</translation>
 <translation id="8082644724189923105">zona tipkovnice</translation>
 <translation id="808894953321890993">Promjena zaporke</translation>
@@ -1231,6 +1229,7 @@
 <translation id="8104083085214006426">Upotrebljavate otvorenu i nesigurnu mrežu</translation>
 <translation id="811820734797650957">(Android) Pristupnik se može pingati</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8132480444149501833">Zatraži brojače prometa</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Odaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1255,6 @@
 <translation id="8294431847097064396">Izvor</translation>
 <translation id="8302368968391049045">Vatrozid za HTTPS</translation>
 <translation id="8312330582793120272">reprodukcija medijskih sadržaja</translation>
-<translation id="8317819321190319496">Upotreba tog APN-a sada je omogućena</translation>
 <translation id="8318753676953949627">Nema slika</translation>
 <translation id="8320910311642849813">šume</translation>
 <translation id="8329018942023753850">aplikacija kalkulator</translation>
@@ -1282,6 +1280,7 @@
 <translation id="8410244574650205435">Automatski detektirano</translation>
 <translation id="8420955526972171689">Izvođenje testova i rješavanje problema s hardverom</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">dolje</translation>
 <translation id="8431300646573772016">Novo u Chrome OS-u</translation>
 <translation id="843568408673868420">Povezivanje s internetom</translation>
 <translation id="844521431886043384">DNS nije postavljen</translation>
@@ -1372,6 +1371,7 @@
 <translation id="894617464444543719">Uređaj je telefon.</translation>
 <translation id="8950424402482976779">na vrhu</translation>
 <translation id="8954341524817067858">planine</translation>
+<translation id="8957423540740801332">desno</translation>
 <translation id="8960969673307890087">lubenice</translation>
 <translation id="8961025972867871808">pingvini</translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>

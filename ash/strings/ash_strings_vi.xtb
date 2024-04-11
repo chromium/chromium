@@ -1273,7 +1273,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5911231045062997865">Hiện chúng tôi không hỗ trợ cửa sổ Lacros. Các ứng dụng khác sẽ được lưu.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Thông báo mới, tổng cộng có <ph name="NOTIFICATION_COUNT" /> thông báo</translation>
-<translation id="5916664084637901428">Bật</translation>
+<translation id="5916664084637901428">Đang bật</translation>
 <translation id="5920710855273935292">Micrô đang tắt.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> đang bật.</translation>
 <translation id="5947494881799873997">Hoàn nguyên</translation>
@@ -1432,7 +1432,6 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6537924328260219877">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Pin điện thoại <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Đang quét tệp tải xuống <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Đang truyền tới <ph name="RECEIVER_NAME" /></translation>
-<translation id="6546062506073634094">Tìm kiếm hình ảnh theo nội dung và bản xem trước hình ảnh</translation>
 <translation id="6555373427270923730">Nhập địa chỉ web vào thanh địa chỉ, sau đó nhấn phím <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Mới cài đặt</translation>

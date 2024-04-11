@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C උපාංගය (පසුපස තොට)</translation>
 <translation id="1869497990620230175">ඉක්මන් ගොනු</translation>
 <translation id="1871023081802165724">මාධ්‍ය වාදනය කරන්න</translation>
+<translation id="1871915835366697861">මෙම ක්‍රීඩාව සඳහා නොලැබේ</translation>
 <translation id="1879018240766558464">අප්‍රසිද්ධ කවුළු දැනට සහාය නොදක්වයි. වෙනත් යෙදුම් සුරකිනු ඇත.</translation>
 <translation id="1882814835921407042">ජංගම ජාලයක් නැත</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> වෙත කැඩපත් කරයි</translation>
@@ -1432,7 +1433,6 @@
 <translation id="6537924328260219877">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, දුරකථන බැටරිය <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ස්කෑන් කරන <ph name="FILENAME" /> බාගන්න</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> වෙත විකාශය කරමින්</translation>
-<translation id="6546062506073634094">අන්තර්ගතය සහ රූප පෙරදසුන් අනුව රූප සෙවීම</translation>
 <translation id="6555373427270923730">ලිපින තීරුවෙහි වෙබ් ලිපිනයක් ටයිප් කර, අනතුරුව <ph name="MODIFIER" /><ph name="KEY" /> ඔබන්න</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 නව ස්ථාපනය</translation>
@@ -1792,6 +1792,7 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> සහ <ph name="SECOND_PARENT_EMAIL" /> විසින් ගිණුම කළමනාකරණය කරයි</translation>
 <translation id="793716872548410480">ඔබගේ පසුරු පුවරුව බැලීමට <ph name="SHORTCUT_KEY_NAME" /> + V ඔබන්න. ඔබ පිටපත් කළ අවසන් අයිතම 5 ඔබගේ පසුරු පුවරුවට සුරකිනු ඇත.</translation>
 <translation id="7942349550061667556">රතු</translation>
+<translation id="7943516765291457328">අවට හොට්ස්පොට් සඳහා ස්කෑන් කිරීමට බ්ලූටූත් සක්‍රීය කරන්න</translation>
 <translation id="7944023924886109030">අද දින සියලු සිදුවීම් බලන්න</translation>
 <translation id="7945357288295809525">ප්‍රවේශ්‍යතා සැකසීම් පෙන්වන්න, "<ph name="ENABLED_FEATURES" />" සබල කර ඇත.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> හට ඔබේ <ph name="DEVICE_NAME" /> භාවිතා කිරීමට අවශ්‍යයි</translation>

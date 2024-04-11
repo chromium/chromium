@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">motýli</translation>
 <translation id="188114911237521550">Vypnout tmavý režim</translation>
-<translation id="188268299367474594">Vyberte si z dostupných APN</translation>
 <translation id="1885577615937958993">přetočit médium vpřed</translation>
 <translation id="1887850431809612466">Revize hardwaru</translation>
 <translation id="189221451253258459">neonově zelená</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Obrázek <ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Přesnost pohyblivé řádové čárky</translation>
 <translation id="2448312741937722512">Typ</translation>
-<translation id="2465272316171730950">Jsme na plné kapacitě. Vraťte se za chvíli.</translation>
 <translation id="2472215337771558851">Pomocí funkce Pomozte mi s psaním založené na Google AI můžete vytvořit koncept nebo vylepšit stávající text</translation>
 <translation id="2480572840229215612">krabi</translation>
 <translation id="248546197012830854">Zařízení je offline. Pokud chcete zobrazit obsah nápovědy, připojte se k síti Wi-Fi.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">zobrazit okna</translation>
 <translation id="2513396635448525189">Obrázek přihlášení</translation>
 <translation id="2517472476991765520">Skenovat</translation>
-<translation id="2520213071283358374">Použít tento APN</translation>
 <translation id="2521835766824839541">předchozí skladba</translation>
 <translation id="2526590354069164005">Plocha</translation>
 <translation id="253029298928638905">Restartování…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Maska podsítě</translation>
 <translation id="4454245904991689773">Uložit do</translation>
 <translation id="4456812688969919973">Tlačítko k uložení APN je nyní deaktivováno</translation>
-<translation id="4460905888685975163">Použití tohoto APN je teď zakázáno</translation>
 <translation id="4469288414739283461">Spořič obrazovky Plynoucí Země</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepodařilo se pingnout bránu jiné než výchozí sítě</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Název hostitele serveru</translation>
 <translation id="5089810972385038852">Stát/kraj</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">nahoru</translation>
 <translation id="5107243100836678918">Zkratka bez klávesy <ph name="META_KEY" /> může být v konfliktu se zkratkou některé aplikace. Pokud tuto zkratku chcete nadále používat, stiskněte ji znovu, nebo stiskněte novou klávesovou zkratku s klávesou <ph name="KEY" />. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Podobný význam:</translation>
 <translation id="5130848777448318809">poníci</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Změňte přiřazení výběrem jiné klávesy</translation>
 <translation id="714876143603641390">Připojení k síti LAN</translation>
 <translation id="7154020516215182599">Sdělte nám svůj názor nebo popište svůj problém. Pokud je to možné, uveďte postup, jak problém reprodukovat.</translation>
-<translation id="7155037718620478619">Vyhledat další APN</translation>
 <translation id="7155171745945906037">Stávající fotka z fotoaparátu nebo souboru</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Profilová fotka</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ poskytovatele</translation>
 <translation id="7882501334836096755">Veřejný klíč</translation>
+<translation id="78957024357676568">vlevo</translation>
 <translation id="7897043345768902965">chodník</translation>
 <translation id="7903695460270716054">Vybrat vybraná umělecká díla a obrázky</translation>
 <translation id="7915220255123750251">Spravovat nastavení názvů přístupových bodů sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Zbývající kapacita</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8079860070590459552">pole květin</translation>
-<translation id="8081553043098820199">Neplatné APN mohou způsobit deaktivaci mobilního připojení. Nastavujte pouze APN, které vám poskytl mobilní operátor nebo administrátor.</translation>
 <translation id="8082366717211101304">Z aplikací pro Android nelze přeložit záznamy DNS</translation>
 <translation id="8082644724189923105">zóna klávesnice</translation>
 <translation id="808894953321890993">Změnit heslo</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Používáte otevřenou, nezabezpečenou síť</translation>
 <translation id="811820734797650957">(Android) Pingnutí brány</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8132480444149501833">Požadovat počítadla návštěvnosti</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vybrat možnost <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Zdroj</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8312330582793120272">přehrát médium</translation>
-<translation id="8317819321190319496">Použití tohoto APN je teď povoleno</translation>
 <translation id="8318753676953949627">Žádné obrázky</translation>
 <translation id="8320910311642849813">les</translation>
 <translation id="8329018942023753850">aplikace kalkulačka</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Určeno automaticky</translation>
 <translation id="8420955526972171689">Testování a odstraňování problémů s hardwarem</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">dolů</translation>
 <translation id="8431300646573772016">Novinky v ChromeOS</translation>
 <translation id="843568408673868420">Připojení k internetu</translation>
 <translation id="844521431886043384">Není nastaven server DNS</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Zařízení je telefon.</translation>
 <translation id="8950424402482976779">nahoře</translation>
 <translation id="8954341524817067858">hory</translation>
+<translation id="8957423540740801332">vpravo</translation>
 <translation id="8960969673307890087">melouny</translation>
 <translation id="8961025972867871808">tučňáci</translation>
 <translation id="8968751544471797276">Rychlost nabíjení</translation>

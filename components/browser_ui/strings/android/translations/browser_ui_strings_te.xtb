@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">వెనుకకు వెళ్ళు</translation>
 <translation id="2546283357679194313">కుక్కీలు మరియు సైట్ డేటా</translation>
 <translation id="2550801787432930915">ధర తగ్గింపు కార్డ్</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 కుక్కీ బ్లాక్ చేయబడింది}other{# కుక్కీలు బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="2570922361219980984">ఈ పరికరానికి స్థానం యాక్సెస్ కూడా ఆఫ్ చేయబడింది. దీనిని <ph name="BEGIN_LINK" />Android సెట్టింగ్‌లు<ph name="END_LINK" />లో తిరిగి ఆన్ చేయండి.</translation>
 <translation id="257931822824936280">విస్తరింపబడింది - కుదించడానికి క్లిక్ చేయండి.</translation>
 <translation id="2586657967955657006">క్లిప్‌బోర్డ్</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">వెనుకకు జరుపు</translation>
 <translation id="8444433999583714703">మీ లొకేషన్‌ని యాక్సెస్ చేయడానికి <ph name="APP_NAME" />ని అనుమతించడానికి, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా లొకేషన్‌ని ఆన్ చేయండి.</translation>
 <translation id="8447861592752582886">పరికర అనుమతిని ఉపసంహరిస్తుంది</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 కుక్కీ ఉపయోగంలో ఉంది}other{# కుక్కీలు ఉపయోగంలో ఉన్నాయి}}</translation>
 <translation id="8487700953926739672">ఆఫ్‌లైన్‌లో అందుబాటు</translation>
 <translation id="848952951823693243">ఎల్లప్పుడూ మొబైల్ సైట్ కోసం రిక్వెస్ట్ చేయండి</translation>
 <translation id="8499083585497694743">మైక్రోఫోన్‌ను అన్‌మ్యూట్ చేయి</translation>

@@ -4537,7 +4537,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4403266582403435904">Po želji lahko preprosto obnovite podatke ali napravo zamenjate z drugo. Varnostne kopije so naložene v Google in šifrirane z geslom za račun Google otroka.</translation>
 <translation id="4403775189117163360">Izberi drugo mapo</translation>
 <translation id="4404136731284211429">Znova išči</translation>
-<translation id="4404619268534288383">Shranjevanje in sinhronizacija skupin zavihkov</translation>
 <translation id="4404843640767531781">Aplikacijo <ph name="APP_NAME" /> je blokiral starš. Če želiš uporabljati to aplikacijo, prosi starša za dovoljenje.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Premakni v …</translation>
@@ -5179,7 +5178,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4899696330053002588">Vsebuje oglase</translation>
 <translation id="490031510406860025">Ni dovoljeno na tem spletnem mestu</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – prepleteno</translation>
-<translation id="490056871160016482">Spletna mesta s to funkcijo zagotavljajo prostorno celozaslonsko izkušnjo ne glede na uporabniške poteze</translation>
 <translation id="4900652253009739885">Edinega stikala, dodeljenega dejanju »Izberi«, ni mogoče odstraniti. Pritisnite poljubno tipko, če želite narediti to: <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Razširite nedavno zaprto</translation>
 <translation id="4901309472892185668">Izberite stanje preizkusa za preizkus <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5504,7 +5502,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5162905305237671850">Naprava <ph name="DEVICE_TYPE" /> je blokirana</translation>
 <translation id="5163910114647549394">Zavihek je premaknjen na konec traku z zavihki.</translation>
 <translation id="5164530241085602114">Obvestila niso dovoljena za <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Samodejni preklop v celozaslonski način je dovoljen</translation>
 <translation id="516747639689914043">Protokol HTTP</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5171045022955879922">Poiščite ali vnesite URL</translation>
@@ -5806,7 +5803,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="541737483547792035">Povečanje zaslona</translation>
 <translation id="541822678830750798">Zahtevanje branja in spreminjanja tega spletnega mesta</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Omogoča shranjevanje in priklic skupin zavihkov. Z desnim gumbom kliknite skupino zavihkov, če jo želite shraniti. Prikličite skupino iz vrstice z zaznamki.</translation>
 <translation id="5420274697768050645">Zahtevanje gesla za odklepanje naprave za dodatno varnost</translation>
 <translation id="5420438158931847627">Določa ostrino besedila in slik</translation>
 <translation id="5420935737933866496">Kopiraj &amp;povezavo</translation>
@@ -6205,6 +6201,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5723967018671998714">Piškotki drugih spletnih mest so blokirani v anonimnem načinu</translation>
 <translation id="5725112283692663422">Pošljite povratne informacije o ustvarjanju teme z umetno inteligenco</translation>
 <translation id="5727728807527375859">Razširitve, aplikacije in teme lahko škodujejo računalniku. Ali ste prepričani, da želite nadaljevati?</translation>
+<translation id="5728072125198221967">Povezane Googlove storitve</translation>
 <translation id="5728290366864286776">Ta razširitev lahko bere in spreminja podatke o spletnem mestu ali pa se izvaja v ozadju</translation>
 <translation id="5728450728039149624">Možnosti zaklepanja zaslona Smart Lock</translation>
 <translation id="572914206753951782">V Chromebooku mora biti nameščena najnovejša različica. Nato znova zaženite Chromebook in poskusite znova.</translation>
@@ -8195,7 +8192,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7290242001003353852">Prijavna storitev, ki jo gosti <ph name="SAML_DOMAIN" />, dostopa do vaše kamere.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Brskalnik upravlja<ph name="END_LINK" /> vaša organizacija, vaš <ph name="BEGIN_LINK" />profil pa upravlja<ph name="END_LINK" /> domena <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Samodejni preklop v celozaslonski način ni dovoljen</translation>
 <translation id="7295614427631867477">Upoštevajte, da Android, Google Play in povezane aplikacije urejajo njihovi pravilniki za zbiranje in uporabo podatkov.</translation>
 <translation id="7296503797589217366">Izberite mapo <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Temno zelena</translation>
@@ -9742,7 +9738,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="84297032718407999">Odjavljeni boste čez <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Prikaz dotikov</translation>
 <translation id="843173223122814223">Ustvarite ozadja z umetno inteligenco</translation>
-<translation id="8432724317983466962">Za preklop v celozaslonski način je privzeto potrebna poteza uporabnika</translation>
 <translation id="8433186206711564395">Omrežne nastavitve</translation>
 <translation id="8434480141477525001">Vrata za odpravljanje napak NaCl</translation>
 <translation id="8436054240208929121">Prijavite se in vklopite sinhronizacijo, če želite, da Chrome predlaga skupine zavihkov in skrbi za organizacijo zavihkov</translation>

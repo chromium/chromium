@@ -4517,7 +4517,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4403266582403435904">Restauro të dhënat ose ndërro pajisjet në çdo kohë me lehtësi. Rezervimet ngarkohen në Google dhe enkriptohen duke përdorur fjalëkalimin e "Llogarisë së Google" të fëmijës tënd.</translation>
 <translation id="4403775189117163360">Zgjidh një dosje tjetër</translation>
 <translation id="4404136731284211429">Skano përsëri</translation>
-<translation id="4404619268534288383">Ruajtja dhe sinkronizimi i grupeve të skedave</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> është bllokuar nga prindi yt. Kërko leje nga prindi që ta përdorësh këtë aplikacion.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Zhvendos te…</translation>
@@ -5158,7 +5157,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4899696330053002588">Përmban reklama</translation>
 <translation id="490031510406860025">Nuk lejohet në këtë sajt</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - të gërshetuara</translation>
-<translation id="490056871160016482">Sajtet e përdorin këtë veçori për të ofruar përvoja gjithëpërfshirëse në ekran të plotë pavarësisht nga gjestet e përdoruesit</translation>
 <translation id="4900652253009739885">Nuk mund të hiqet çelësi i vetëm i caktuar për veprimin "Zgjidh". Shtyp një tast çfarëdo për veprimin "<ph name="RESPONSE" />".</translation>
 <translation id="4901154724271753917">Zgjero të mbyllurat së fundi</translation>
 <translation id="4901309472892185668">Zgjidh gjendjen e eksperimentit për eksperimentin <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5483,7 +5481,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> është bllokuar</translation>
 <translation id="5163910114647549394">Skeda u zhvendos në fund të shiritit të skedave</translation>
 <translation id="5164530241085602114">Njoftimet nuk lejohen për <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Lejohet që të kalojë automatikisht në ekran të plotë</translation>
 <translation id="516747639689914043">Protokolli i transportit Hypertext (HTTP)</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5171045022955879922">Kërko ose shkruaj URL-në</translation>
@@ -5785,7 +5782,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="541737483547792035">Zmadho ekranin</translation>
 <translation id="541822678830750798">Po kërkon të lexojë dhe të ndryshojë këtë sajt</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Aktivizon ruajtjen dhe rithirrjen e grupeve të skedave. Kliko me butonin djathtas te një grup skedash për ta ruajtur atë. Rithirr grupet nga shiriti i faqeshënuesve.</translation>
 <translation id="5420274697768050645">Kërko fjalëkalimin për të shkyçur pajisjen për më shumë siguri</translation>
 <translation id="5420438158931847627">Përcakton mprehtësinë e tekstit dhe imazheve</translation>
 <translation id="5420935737933866496">Kopjo &amp;lidhjen</translation>
@@ -6182,6 +6178,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5723967018671998714">Kukit e palëve të treta janë bllokuar në modalitetin "i fshehtë"</translation>
 <translation id="5725112283692663422">Dërgo komente për "Krijo temë me IA"</translation>
 <translation id="5727728807527375859">Shtesat, aplikacionet dhe temat mund ta dëmtojnë kompjuterin tënd. Je i sigurt se dëshiron të vazhdosh?</translation>
+<translation id="5728072125198221967">Shërbimet e lidhura të Google</translation>
 <translation id="5728290366864286776">Kjo shtesë mund të lexojë dhe të ndryshojë informacionet e sajtit apo të ekzekutohet në sfond</translation>
 <translation id="5728450728039149624">Opsionet e kyçjes së ekranit të Smart Lock</translation>
 <translation id="572914206753951782">Sigurohu që pajisja jote Chromebook ka versionin më të fundit. Më pas rinis pajisjen tënde Chromebook dhe provo përsëri</translation>
@@ -8165,7 +8162,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7290242001003353852">Ky shërbim identifikimi i strehuar nga <ph name="SAML_DOMAIN" />, ka qasje te kamera jote.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Shfletuesi yt menaxhohet<ph name="END_LINK" /> nga organizata jote dhe <ph name="BEGIN_LINK" />profili yt menaxhohet<ph name="END_LINK" /> nga <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Nuk lejohet që të kalosh automatikisht në ekran të plotë</translation>
 <translation id="7295614427631867477">Ki parasysh se Android, Play dhe aplikacionet shoqëruese drejtohen nga politikat e tyre të mbledhjes dhe të përdorimit të të dhënave.</translation>
 <translation id="7296503797589217366">Zgjidh dosjen "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="7297726121602187087">E gjelbër e errët</translation>
@@ -9710,7 +9706,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="84297032718407999">Do të dalësh për <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Shfaq trokitjet</translation>
 <translation id="843173223122814223">Krijo sfonde me inteligjencën artificiale</translation>
-<translation id="8432724317983466962">Kalimi në ekran të plotë kërkon një gjest të përdoruesit si parazgjedhje</translation>
 <translation id="8433186206711564395">Cilësimet e rrjetit</translation>
 <translation id="8434480141477525001">Porta e korrigjimit NaCl</translation>
 <translation id="8436054240208929121">Identifikohu dhe aktivizo sinkronizimin për të lejuar që Chrome të sugjerojë grupet e skedave dhe t'i mbajë skedat e tua të organizuara</translation>

@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Nazaj</translation>
 <translation id="2546283357679194313">Piškotki in podatki spletnih mest</translation>
 <translation id="2550801787432930915">Kartica z znižano ceno</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Blokiran je en piškotek}one{Blokiran je # piškotek}two{Blokirana sta # piškotka}few{Blokirani so # piškotki}other{Blokiranih je # piškotkov}}</translation>
 <translation id="2570922361219980984">Dostop do lokacije je tudi izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Razširjeno – kliknite, če želite strniti.</translation>
 <translation id="2586657967955657006">Odložišče</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Išči nazaj</translation>
 <translation id="8444433999583714703">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do lokacije, lokacijo vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Umik dovoljenja za dostop do naprave</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 piškotek v uporabi}one{# piškotek v uporabi}two{# piškotka v uporabi}few{# piškotki v uporabi}other{# piškotkov v uporabi}}</translation>
 <translation id="8487700953926739672">Na voljo brez povezave</translation>
 <translation id="848952951823693243">Vedno zahtevaj spletno mesto za mobilne naprave</translation>
 <translation id="8499083585497694743">Vklopi mikrofon</translation>

@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">ചിത്രശലഭങ്ങൾ</translation>
 <translation id="188114911237521550">ഡാർക്ക് മോഡ് ഓഫാക്കുക</translation>
-<translation id="188268299367474594">ലഭ്യമായ APN-കളിൽ നിന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1885577615937958993">മീഡിയ ഫാസ്റ്റ് ഫോർവേഡ് ചെയ്യുക</translation>
 <translation id="1887850431809612466">ഹാർഡ്‌വെയർ അവലോകനം</translation>
 <translation id="189221451253258459">നിയോൺ പച്ച</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />-ൽ <ph name="CURRENT_PAGE" />-ാമത്തെ ചിത്രം</translation>
 <translation id="2446553403094072641">ഫ്ലോട്ടിംഗ് പോയിന്റ് കൃത്യത</translation>
 <translation id="2448312741937722512">തരം</translation>
-<translation id="2465272316171730950">ഞങ്ങളുടെ പരമാവധി ശേഷിയിലെത്തി. അൽപ്പ സമയം കഴിഞ്ഞ് തിരികെ വരിക.</translation>
 <translation id="2472215337771558851">ഒരു ഡ്രാഫ്റ്റ് സൃഷ്ടിക്കാനോ നിലവിലുള്ള വർക്ക് പരിഷ്കരിക്കാനോ, Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന 'എന്നെ എഴുതാൻ സഹായിക്കൂ' ഉപയോഗിക്കുക</translation>
 <translation id="2480572840229215612">ഞണ്ടുകൾ</translation>
 <translation id="248546197012830854">ഉപകരണം ഓഫ്‌ലൈനാണ്. സഹായ ഉള്ളടക്കം കാണാൻ വൈഫൈ നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">വിൻഡോകൾ കാണിക്കുക</translation>
 <translation id="2513396635448525189">ലോഗിൻ ചിത്രം</translation>
 <translation id="2517472476991765520">സ്‌കാൻ ചെയ്യുക</translation>
-<translation id="2520213071283358374">ഈ APN ഉപയോഗിക്കുക</translation>
 <translation id="2521835766824839541">മുമ്പത്തെ ട്രാക്ക്</translation>
 <translation id="2526590354069164005">ഡെസ്ക്‌ടോപ്പ്</translation>
 <translation id="253029298928638905">റീസ്റ്റാർട്ട് ചെയ്യുന്നു…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">സബ്‌നെറ്റ് മാസ്‌ക്</translation>
 <translation id="4454245904991689773">ഇതിലേക്ക് സ്‌കാൻ ചെയ്ത് സംരക്ഷിക്കുക</translation>
 <translation id="4456812688969919973">APN സംരക്ഷിക്കുക ബട്ടൺ ഇപ്പോൾ പ്രവർത്തനരഹിതമാക്കി</translation>
-<translation id="4460905888685975163">'ഈ APN ഉപയോഗിക്കുക' ഇപ്പോൾ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു</translation>
 <translation id="4469288414739283461">എർത്ത് ഫ്ലോ സ്ക്രീൻ സേവർ</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4483049906298469269">നോൺ-ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">സെർവർ ഹോസ്റ്റ്‌നാമം</translation>
 <translation id="5089810972385038852">സ്റ്റേറ്റ്</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">മുകളിലേക്ക്</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> കീ ഇല്ലാത്ത കുറുക്കുവഴിയും മറ്റേതെങ്കിലും ആപ്പിന്റെ കുറുക്കുവഴികളും തമ്മിൽ മാറിപ്പോകാൻ ഇടയുണ്ട്. തുടർന്നും ഉപയോഗിക്കാൻ ഈ കുറുക്കുവഴിയിൽ അമർത്തുക, അല്ലെങ്കിൽ <ph name="KEY" /> കീ ഉപയോഗിക്കുന്ന പുതിയൊരു കുറുക്കുവഴിയിൽ അമർത്തുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">സമാനമായത്:</translation>
 <translation id="5130848777448318809">പോണികൾ</translation>
@@ -845,6 +842,8 @@
 <translation id="5946538341867151940">നിങ്ങൾ ഇതുവരെ കണക്റ്റ് ചെയ്‌തിട്ടില്ല. നിങ്ങളുടെ മൊബൈൽ സേവനദാതാവ് ഒരു ഇഷ്‌ടാനുസൃത APN നിർദ്ദേശിക്കുന്നുവെങ്കിൽ, "+ പുതിയ APN" തിരഞ്ഞെടുത്ത് APN വിവരങ്ങൾ നൽകുക</translation>
 <translation id="5947266287934282605">മാസത്തിലെ അവസാന ദിവസം ഈ ദിവസത്തിന് മുമ്പാണെങ്കിൽ, മാസത്തിന്റെ അവസാന ദിവസം ഡാറ്റ റീസെറ്റ് ചെയ്യും</translation>
 <translation id="5948460390109837040">നായകൾ</translation>
+<translation id="594989847980441553">AI ഉപയോഗിച്ച് ഒരു ചിത്രം സൃഷ്ടിക്കാൻ "സൃഷ്ടിക്കുക" തിരഞ്ഞെടുക്കുക.
+        All സൃഷ്ടിച്ച ചിത്രങ്ങൾ ഇവിടെ സ്വയമേവ ദൃശ്യമാകും.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">കോറൽ</translation>
 <translation id="5984145644188835034">ഡിഫോൾട്ട് വാൾപേപ്പർ</translation>
@@ -1064,7 +1063,6 @@
 <translation id="7147557737960578492">പുതിയൊരു കീ തിരഞ്ഞെടുത്ത് വീണ്ടും അസൈൻ ചെയ്യുക</translation>
 <translation id="714876143603641390">LAN കണക്റ്റിവിറ്റി</translation>
 <translation id="7154020516215182599">നിങ്ങളുടെ ഫീഡ്ബാക്ക് പങ്കിടുക അല്ലെങ്കിൽ പ്രശ്നം വിവരിക്കുക. കഴിയുമെങ്കിൽ, നിങ്ങളുടെ പ്രശ്നം പുനരാവിഷ്ക്കരിക്കാൻ ഘട്ടങ്ങൾ ഉൾപ്പെടുത്തുക.</translation>
-<translation id="7155037718620478619">കൂടുതൽ APN-കൾ കണ്ടെത്തുക</translation>
 <translation id="7155171745945906037">ക്യാമറയിൽ നിന്നോ ഫയലിൽ നിന്നോ ഉള്ള നിലവിലെ ഫോട്ടോ</translation>
 <translation id="7162487448488904999">ഗാലറി</translation>
 <translation id="7170236477717446850">പ്രൊഫൈൽ ചിത്രം</translation>
@@ -1194,6 +1192,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">പ്രൊവൈഡര്‍ തരം:</translation>
 <translation id="7882501334836096755">എല്ലാവർക്കുമായുള്ള കീ</translation>
+<translation id="78957024357676568">ഇടത്തേക്ക്</translation>
 <translation id="7897043345768902965">നടപ്പാത</translation>
 <translation id="7903695460270716054">ക്യുറേറ്റ് ചെയ്ത ആർട്ട്‌വർക്കും ചിത്രങ്ങളും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7915220255123750251">നെറ്റ്‌വർക്ക് APN ക്രമീകരണം മാനേജ് ചെയ്യുക. സെല്ലുലാർ നെറ്റ്‌വർക്കിനും ഇന്റർനെറ്റിനും ഇടയിൽ APN-കൾ കണക്ഷൻ സ്ഥാപിക്കുന്നു.</translation>
@@ -1223,7 +1222,6 @@
 <translation id="8075838845814659848">ശേഷിക്കുന്ന ചാർജ്</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8079860070590459552">പൂപ്പാടം</translation>
-<translation id="8081553043098820199">സാധുതയില്ലാത്ത APN-കൾ ഉപയോഗിച്ചാൽ നിങ്ങളുടെ മൊബൈൽ കണക്ഷൻ പ്രവർത്തനരഹിതമാകാം. നിങ്ങളുടെ മൊബൈൽ ദാതാവോ അഡ്‌മിനോ നൽകിയ APN-കൾ മാത്രം സജ്ജീകരിക്കുക.</translation>
 <translation id="8082366717211101304">Android ആപ്പുകളിൽ നിന്ന് DNS പരിഹരിക്കാനാകില്ല</translation>
 <translation id="8082644724189923105">കീബോർഡ് മേഖല</translation>
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
@@ -1231,6 +1229,7 @@
 <translation id="8104083085214006426">ഓപ്പണും സുരക്ഷിതമല്ലാത്തതുമായ നെറ്റ്‌വർക്ക് ആണ് നിങ്ങൾ ഉപയോഗിക്കുന്നത്</translation>
 <translation id="811820734797650957">(Android) ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാനാകും</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>
 <translation id="8132480444149501833">ട്രാഫിക് കൗണ്ടറുകൾ അഭ്യർത്ഥിക്കുക</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> തിരഞ്ഞെടുക്കുക</translation>
@@ -1256,7 +1255,6 @@
 <translation id="8294431847097064396">ഉറവിടം</translation>
 <translation id="8302368968391049045">HTTPS ഫയര്‍വാള്‍</translation>
 <translation id="8312330582793120272">മീഡിയ പ്ലേ ചെയ്യുക</translation>
-<translation id="8317819321190319496">'ഈ APN ഉപയോഗിക്കുക' ഇപ്പോൾ പ്രവർത്തനക്ഷമമാക്കിയിരിക്കുന്നു</translation>
 <translation id="8318753676953949627">ഇമേജുകളൊന്നുമില്ല</translation>
 <translation id="8320910311642849813">വനം</translation>
 <translation id="8329018942023753850">Calculator ആപ്പ്</translation>
@@ -1282,6 +1280,7 @@
 <translation id="8410244574650205435">സ്വയമേവ കണ്ടെത്തി</translation>
 <translation id="8420955526972171689">ഹാര്‍ഡ്‍വെയര്‍ പ്രശ്‌നങ്ങൾ കണ്ടെത്താൻ ടെസ്റ്റുകളും ട്രബിള്‍ഷൂട്ടിംഗും റൺ ചെയ്യുക</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">താഴേക്കുള്ള കീ</translation>
 <translation id="8431300646573772016">ChromeOS-ൽ പുതിയത്</translation>
 <translation id="843568408673868420">ഇന്റർനെറ്റ് കണക്റ്റിവിറ്റി</translation>
 <translation id="844521431886043384">DNS സജ്ജീകരിച്ചിട്ടില്ല</translation>
@@ -1372,6 +1371,7 @@
 <translation id="894617464444543719">ഉപകരണം ഒരു ഫോണാണ്.</translation>
 <translation id="8950424402482976779">മുകളിൽ</translation>
 <translation id="8954341524817067858">പർവ്വതങ്ങൾ</translation>
+<translation id="8957423540740801332">വലത്തേക്ക്</translation>
 <translation id="8960969673307890087">തണ്ണിമത്തനുകൾ</translation>
 <translation id="8961025972867871808">പെൻഗ്വിനുകൾ</translation>
 <translation id="8968751544471797276">ചാർജ് ചെയ്യൽ റേറ്റ്</translation>

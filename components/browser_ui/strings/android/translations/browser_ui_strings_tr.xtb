@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Geri dön</translation>
 <translation id="2546283357679194313">Çerezler ve site verileri</translation>
 <translation id="2550801787432930915">Fiyat düşüş kartı</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 çerez engellendi}other{# çerez engellendi}}</translation>
 <translation id="2570922361219980984">Konum erişimi bu cihaz için de kapalı. Konum erişimini <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ndan açın.</translation>
 <translation id="257931822824936280">Genişletildi - Daraltmak için tıklayın.</translation>
 <translation id="2586657967955657006">Pano</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Geriye doğru git</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> uygulamasının konumunuza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da konumu açın.</translation>
 <translation id="8447861592752582886">Cihaz iznini iptal et</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 çerez kullanımda}other{# çerez kullanımda}}</translation>
 <translation id="8487700953926739672">Çevrimdışı kullanılabilir</translation>
 <translation id="848952951823693243">Her zaman mobil siteyi iste</translation>
 <translation id="8499083585497694743">Mikrofonun sesini aç</translation>

@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">チョウ</translation>
 <translation id="188114911237521550">ダークモードをオフにする</translation>
-<translation id="188268299367474594">利用可能な APN から選択する</translation>
 <translation id="1885577615937958993">メディアを早送りする</translation>
 <translation id="1887850431809612466">ハードウェア リビジョン</translation>
 <translation id="189221451253258459">ネオングリーン</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">画像 <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">浮動小数点数精度</translation>
 <translation id="2448312741937722512">種類</translation>
-<translation id="2465272316171730950">処理能力の上限に達しています。しばらくしてからもう一度お試しください。</translation>
 <translation id="2472215337771558851">文書作成サポートを使用すると、Google AI の活用により文章の下書きを作成したり既存の文章を改良したりできます</translation>
 <translation id="2480572840229215612">カニ</translation>
 <translation id="248546197012830854">デバイスはオフラインです。ヘルプ コンテンツを表示するには、Wi-Fi ネットワークに接続してください。</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">ウィンドウを表示する</translation>
 <translation id="2513396635448525189">ログイン画像</translation>
 <translation id="2517472476991765520">スキャン</translation>
-<translation id="2520213071283358374">この APN を使用</translation>
 <translation id="2521835766824839541">前のトラック</translation>
 <translation id="2526590354069164005">デスクトップ</translation>
 <translation id="253029298928638905">再起動中…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">サブネット マスク</translation>
 <translation id="4454245904991689773">スキャンの保存先</translation>
 <translation id="4456812688969919973">[APN を保存] ボタンが無効になりました</translation>
-<translation id="4460905888685975163">[この APN を使用] が無効になりました</translation>
 <translation id="4469288414739283461">「地球の動き」のスクリーン セーバー</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">サーバーのホスト名</translation>
 <translation id="5089810972385038852">都道府県 / 州</translation>
 <translation id="5090362543162270857">IPsec（IKEv2）</translation>
+<translation id="5099354524039520280">上</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> キーを使わないショートカットは、一部のアプリのショートカットと競合する可能性があります。そのまま使用する場合は、このショートカットをもう一度押します。または、<ph name="KEY" /> キーを使用した新しいショートカットを押します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">類義語:</translation>
 <translation id="5130848777448318809">ポニー</translation>
@@ -845,6 +842,8 @@
 <translation id="5946538341867151940">まだ接続されていません。携帯通信会社がカスタム APN を推奨している場合は、[+ 新しい APN] を選択して APN 情報を入力します。</translation>
 <translation id="5947266287934282605">月の最終日がこの日より前の場合、データはその月の最終日にリセットされます</translation>
 <translation id="5948460390109837040">イヌ</translation>
+<translation id="594989847980441553">[作成] を選択すると AI により画像が作成されます。
+        作成された画像はすべて自動的にここに表示されます。</translation>
 <translation id="5972388717451707488">エンジンを更新</translation>
 <translation id="5975130252842127517">コーラル</translation>
 <translation id="5984145644188835034">デフォルトの壁紙</translation>
@@ -1064,7 +1063,6 @@
 <translation id="7147557737960578492">新しいキーを選択して割り当てなおす</translation>
 <translation id="714876143603641390">LAN 接続</translation>
 <translation id="7154020516215182599">フィードバックまたは問題の内容を記入します。可能な場合は、問題の再現手順もお知らせください。</translation>
-<translation id="7155037718620478619">その他の APN を確認</translation>
 <translation id="7155171745945906037">カメラやファイルに保存されている写真</translation>
 <translation id="7162487448488904999">ギャラリー</translation>
 <translation id="7170236477717446850">プロフィール写真</translation>
@@ -1194,12 +1192,14 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">プロバイダの種類</translation>
 <translation id="7882501334836096755">公開鍵</translation>
+<translation id="78957024357676568">左</translation>
 <translation id="7897043345768902965">通路</translation>
 <translation id="7903695460270716054">厳選されたアートワークや画像を選択できます</translation>
 <translation id="7915220255123750251">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。</translation>
 <translation id="7936303884198020182">ネームサーバーが見つかりませんでした</translation>
 <translation id="7942349550061667556">赤</translation>
 <translation id="7943235353293548836">PersistentKeepAlive 送信間隔</translation>
+<translation id="7943516765291457328">近くのアクセス ポイントをスキャンするには Bluetooth をオンにしてください</translation>
 <translation id="7944562637040950644">キーボード バックライトを切り替える</translation>
 <translation id="7953669802889559161">入力方法</translation>
 <translation id="7955587717700691983">Bluetooth キーボード</translation>
@@ -1223,7 +1223,6 @@
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="8076492880354921740">タブ</translation>
 <translation id="8079860070590459552">花畑</translation>
-<translation id="8081553043098820199">APN が無効な場合、モバイル接続が無効になることがあります。携帯通信会社または管理者から提供された APN のみを設定してください。</translation>
 <translation id="8082366717211101304">Android アプリから DNS を解決できません</translation>
 <translation id="8082644724189923105">キーボード ゾーン</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
@@ -1231,6 +1230,7 @@
 <translation id="8104083085214006426">保護されていないオープン ネットワークを使用しています</translation>
 <translation id="811820734797650957">（Android）ゲートウェイへの ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
+<translation id="8131740175452115882">確認</translation>
 <translation id="8132480444149501833">トラフィック カウンタをリクエスト</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> を選択</translation>
@@ -1256,7 +1256,6 @@
 <translation id="8294431847097064396">ソース</translation>
 <translation id="8302368968391049045">HTTPS ファイアウォール</translation>
 <translation id="8312330582793120272">メディアを再生する</translation>
-<translation id="8317819321190319496">[この APN を使用] が有効になりました</translation>
 <translation id="8318753676953949627">0 件の画像</translation>
 <translation id="8320910311642849813">森林</translation>
 <translation id="8329018942023753850">電卓アプリ</translation>
@@ -1282,6 +1281,7 @@
 <translation id="8410244574650205435">自動的に検出</translation>
 <translation id="8420955526972171689">ハードウェアの問題に関するテストとトラブルシューティングを行う</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">下</translation>
 <translation id="8431300646573772016">Chrome OS の最新情報</translation>
 <translation id="843568408673868420">インターネット接続</translation>
 <translation id="844521431886043384">DNS が設定されていません</translation>
@@ -1329,6 +1329,7 @@
 <translation id="8747900814994928677">変更を確認</translation>
 <translation id="8749478549112817787">カメラの背景</translation>
 <translation id="8755946156089753497">タワー</translation>
+<translation id="8756235582947991808">AI を使用した画像作成の方法と留意事項</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google フォトのアルバム</translation>
 <translation id="8775713578693478175">モデムの APN</translation>
@@ -1372,6 +1373,7 @@
 <translation id="894617464444543719">デバイスの種類はスマートフォンです。</translation>
 <translation id="8950424402482976779">上</translation>
 <translation id="8954341524817067858">山脈</translation>
+<translation id="8957423540740801332">右</translation>
 <translation id="8960969673307890087">スイカ</translation>
 <translation id="8961025972867871808">ペンギン</translation>
 <translation id="8968751544471797276">充電率</translation>

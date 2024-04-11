@@ -4525,7 +4525,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4403266582403435904">Saate igal ajal hõlpsasti andmeid taastada või seadmeid vahetada. Varukoopiad laaditakse Google'isse üles ja krüpteeritakse teie lapse Google'i konto parooliga.</translation>
 <translation id="4403775189117163360">Valige teine kaust</translation>
 <translation id="4404136731284211429">Skanni uuesti</translation>
-<translation id="4404619268534288383">Vahelehegruppide salvestamine ja sünkroonimine</translation>
 <translation id="4404843640767531781">Rakenduse <ph name="APP_NAME" /> blokeeris sinu vanem. Küsi vanemalt luba selle rakenduse kasutamiseks.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Teisalda asukohta …</translation>
@@ -5166,7 +5165,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4899696330053002588">Sisaldab reklaame</translation>
 <translation id="490031510406860025">Pole sellel saidil lubatud</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – ülereaskannimine</translation>
-<translation id="490056871160016482">Selle funktsiooni abil pakuvad saidid kaasahaaravat täisekraanil kasutuskogemust, mis ei sõltu kasutaja liigutustest.</translation>
 <translation id="4900652253009739885">Nupu „Vali“ jaoks määratud ainsat lülitit ei saa eemaldada. Vajutage mis tahes klahvi, et <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Laienda hiljuti suletud</translation>
 <translation id="4901309472892185668">Valige katse <ph name="EXPERIMENT_NAME" /> olek.</translation>
@@ -5491,7 +5489,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> on blokeeritud</translation>
 <translation id="5163910114647549394">Vaheleht teisaldati vahelehtede riba lõppu</translation>
 <translation id="5164530241085602114">Märguanded ei ole saidi <ph name="SITE" /> jaoks lubatud</translation>
-<translation id="5165989352025966137">Täisekraani automaatne aktiveerimine on lubatud</translation>
 <translation id="516747639689914043">Hüperteksti edastusprotokoll (HTTP)</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5171045022955879922">Otsige või sisestage URL</translation>
@@ -5793,7 +5790,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="541737483547792035">Ekraanikuva suurendamine</translation>
 <translation id="541822678830750798">Selle saidi lugemise ja muutmise õigus on taotlemisel</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Lubab vahelehegruppide salvestamise ja taastamise. Vahelehegrupi salvestamiseks tehke sellel paremklikk. Gruppe saate taastada järjehoidjariba kaudu.</translation>
 <translation id="5420274697768050645">Lisaturvalisuse jaoks küsitakse seadme avamiseks parooli</translation>
 <translation id="5420438158931847627">Määrab teksti ja piltide teravuse</translation>
 <translation id="5420935737933866496">Lingi &amp;kopeerimine</translation>
@@ -6190,6 +6186,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5723967018671998714">Kolmanda osapoole küpsisefailid on inkognito režiimis blokeeritud</translation>
 <translation id="5725112283692663422">Saatke tagasisidet teema loomise kohta AI-ga</translation>
 <translation id="5727728807527375859">Laiendid, rakendused ja teemad võivad teie arvutit kahjustada. Kas soovite kindlasti jätkata?</translation>
+<translation id="5728072125198221967">Lingitud Google’i teenused</translation>
 <translation id="5728290366864286776">See laiendus võib lugeda ja muuta saidi teavet või töötada taustal</translation>
 <translation id="5728450728039149624">Smart Locki ekraaniluku valikud</translation>
 <translation id="572914206753951782">Veenduge et teil oleks Chromebooki uusim versioon. Seejärel taaskäivitage Chromebook ja proovige uuesti.</translation>
@@ -8174,7 +8171,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7290242001003353852">See domeeni <ph name="SAML_DOMAIN" /> hostitud sisselogimisteenus pääseb teie kaamerale juurde.</translation>
 <translation id="7292067737327289208">Teie <ph name="BEGIN_LINK" />brauserit haldab<ph name="END_LINK" /> teie organisatsioon ja teie <ph name="BEGIN_LINK" />profiili haldab<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Täisekraani automaatne aktiveerimine pole lubatud</translation>
 <translation id="7295614427631867477">Pange tähele, et Androidi, Play ja seotud rakenduste puhul kehtivad nende enda andmete kogumise ja kasutamise eeskirjad.</translation>
 <translation id="7296503797589217366">Vali kaust <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Tumeroheline</translation>
@@ -9721,7 +9717,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="84297032718407999">Teid logitakse välja <ph name="LOGOUT_TIME_LEFT" /> pärast</translation>
 <translation id="8431190899827883166">Puudutuste kuvamine</translation>
 <translation id="843173223122814223">Looge AI abil taustasid</translation>
-<translation id="8432724317983466962">Vaikimisi nõutakse täisekraani aktiveerimiseks kasutaja liigutust.</translation>
 <translation id="8433186206711564395">Võrguseaded</translation>
 <translation id="8434480141477525001">NaCl silumisport</translation>
 <translation id="8436054240208929121">Logige sisse ja lülitage sisse sünkroonimine, et võimaldada Chrome'il soovitada vahelehegruppe ja hoida teie vahelehed organiseerituna</translation>

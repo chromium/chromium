@@ -4516,7 +4516,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4403266582403435904">Cambia de dispositivo o restablece los datos fácilmente en cualquier momento. Las copias de seguridad se encriptan con la contraseña de la Cuenta de Google de tu hijo o hija y se suben a Google.</translation>
 <translation id="4403775189117163360">Elegir otra carpeta</translation>
 <translation id="4404136731284211429">Volver a analizar</translation>
-<translation id="4404619268534288383">Guardar y sincronizar grupos de pestañas</translation>
 <translation id="4404843640767531781">Tu padre o madre bloquearon <ph name="APP_NAME" />. Si quieres usar esa app, pídeles permiso.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mover a…</translation>
@@ -5157,7 +5156,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4899696330053002588">Contiene anuncios</translation>
 <translation id="490031510406860025">No se permite en este sitio</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz (entrelazado)</translation>
-<translation id="490056871160016482">Los sitios usan esta función para ofrecer experiencias de pantalla completa envolvente, sin importar los gestos del usuario</translation>
 <translation id="4900652253009739885">No se puede quitar el único interruptor asignado a "Seleccionar". Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Expandir las pestañas cerradas recientemente</translation>
 <translation id="4901309472892185668">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5482,7 +5480,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5162905305237671850">Se bloqueó <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">Se movió la pestaña al final de la barra de pestañas</translation>
 <translation id="5164530241085602114">No se permiten notificaciones para <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Pueden entrar en el modo de pantalla completa automáticamente</translation>
 <translation id="516747639689914043">Protocolo de transferencia de hipertexto (HTTP)</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5171045022955879922">Buscar o escribir URL</translation>
@@ -5784,7 +5781,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="541737483547792035">Ampliar pantalla</translation>
 <translation id="541822678830750798">Solicitud para leer y modificar este sitio</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Permite guardar y recuperar grupos de pestañas. Haz clic con el botón derecho en un grupo de pestañas para guardarlo. Recupera grupos desde la barra de favoritos.</translation>
 <translation id="5420274697768050645">Solicitar la contraseña para desbloquear el dispositivo como medida adicional de seguridad</translation>
 <translation id="5420438158931847627">Determina la nitidez del texto y las imágenes</translation>
 <translation id="5420935737933866496">Copiar &amp;vínculo</translation>
@@ -6181,6 +6177,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5723967018671998714">En el modo Incógnito, se bloquean las cookies de terceros</translation>
 <translation id="5725112283692663422">Envía comentarios sobre Crear tema con IA</translation>
 <translation id="5727728807527375859">Las extensiones, las aplicaciones y los temas pueden dañar tu computadora. ¿Estás seguro de que deseas continuar?</translation>
+<translation id="5728072125198221967">Servicios de Google vinculados</translation>
 <translation id="5728290366864286776">Es posible que esta extensión lea y cambie la información del sitio, o se ejecute en segundo plano</translation>
 <translation id="5728450728039149624">Opciones del bloqueo de pantalla con Smart Lock</translation>
 <translation id="572914206753951782">Asegúrate de que la Chromebook tenga la versión más reciente. Luego, reiníciala y vuelve a intentarlo.</translation>
@@ -8165,7 +8162,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7290242001003353852">Este servicio de acceso, alojado por <ph name="SAML_DOMAIN" />, está accediendo a tu cámara.</translation>
 <translation id="7292067737327289208">Tu organización <ph name="BEGIN_LINK" />administra el navegador<ph name="END_LINK" /> y <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />administra tu perfil<ph name="END_LINK" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">No pueden entrar en el modo de pantalla completa automáticamente</translation>
 <translation id="7295614427631867477">Ten en cuenta que Android, Play y las apps asociadas se rigen por sus propias políticas de uso y recopilación de datos.</translation>
 <translation id="7296503797589217366">Seleccionar la carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verde oscuro</translation>
@@ -9712,7 +9708,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="84297032718407999">Saldrás de la cuenta en <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Mostrar presiones</translation>
 <translation id="843173223122814223">Crea fondos con IA</translation>
-<translation id="8432724317983466962">Para acceder a la pantalla completa, se requiere un gesto del usuario de forma predeterminada</translation>
 <translation id="8433186206711564395">Opciones de red</translation>
 <translation id="8434480141477525001">Puerto de depuración NaCl</translation>
 <translation id="8436054240208929121">Accede y activa la sincronización para que Chrome te sugiera grupos de pestañas y las mantenga organizadas</translation>

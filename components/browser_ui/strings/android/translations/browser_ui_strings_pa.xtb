@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">ਪਿੱਛੇ ਜਾਓ</translation>
 <translation id="2546283357679194313">ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ</translation>
 <translation id="2550801787432930915">ਕੀਮਤ ਵਿੱਚ ਗਿਰਾਵਟ ਵਾਲਾ ਕਾਰਡ</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 ਕੁਕੀ ਬਲਾਕ ਕੀਤੀ ਗਈ}one{# ਕੁਕੀ ਬਲਾਕ ਕੀਤੀ ਗਈ}other{# ਕੁਕੀਜ਼ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ}}</translation>
 <translation id="2570922361219980984">ਇਸ ਡੀਵਾਈਸ ਲਈ ਟਿਕਾਣਾ ਪਹੁੰਚ ਵੀ ਬੰਦ ਹੈ। ਇਸਨੂੰ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="257931822824936280">ਵਿਸਤ੍ਰਿਤ - ਸਮੇਟਣ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="2586657967955657006">ਕਲਿੱਪਬੋਰਡ</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">ਪਿੱਛੇ ਵੱਲ ਨੂੰ ਲੈ ਜਾਓ</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> ਨੂੰ ਆਪਣੇ ਟਿਕਾਣੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੇਣ ਲਈ, <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਟਿਕਾਣਾ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="8447861592752582886">ਡੀਵਾਈਸ 'ਤੇ ਪਹੁੰਚ ਦੀ ਇਜਾਜ਼ਤ ਰੱਦ ਕਰੋ</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 ਕੁਕੀ ਵਰਤੋਂ ਵਿੱਚ ਹੈ}one{# ਕੁਕੀ ਵਰਤੋਂ ਵਿੱਚ ਹੈ}other{# ਕੁਕੀਜ਼ ਵਰਤੋਂ ਵਿੱਚ ਹਨ}}</translation>
 <translation id="8487700953926739672">ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ</translation>
 <translation id="848952951823693243">ਹਮੇਸ਼ਾਂ ਮੋਬਾਈਲ ਸਾਈਟ ਦੀ ਬੇਨਤੀ ਕਰੋ</translation>
 <translation id="8499083585497694743">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਅਣਮਿਊਟ ਕਰੋ</translation>

@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">ফিরে যান</translation>
 <translation id="2546283357679194313">কুকিজ ও সাইট ডেটা</translation>
 <translation id="2550801787432930915">দাম কমা সংক্রান্ত কার্ড</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{১টি কুকি ব্লক করা হয়েছে}one{#টি কুকি ব্লক করা হয়েছে}other{#টি কুকি ব্লক করা হয়েছে}}</translation>
 <translation id="2570922361219980984">এই ডিভাইসেও লোকেশন অ্যাক্সেস বন্ধ আছে। চালু করতে <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> যান।</translation>
 <translation id="257931822824936280">প্রসারিত - সঙ্কুচিত করতে ক্লিক করুন৷</translation>
 <translation id="2586657967955657006">ক্লিপবোর্ড</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">পেছনে যান</translation>
 <translation id="8444433999583714703">তাছাড়া, যাতে <ph name="APP_NAME" /> আপনার লোকেশন অ্যাক্সেস করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও লোকেশন চালু করে দিন।</translation>
 <translation id="8447861592752582886">ডিভাইসের অনুমতি প্রত্যাহার করুন</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{১টি কুকি ব্যবহার করা হচ্ছে}one{#টি কুকি ব্যবহার করা হচ্ছে}other{#টি কুকি ব্যবহার করা হচ্ছে}}</translation>
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>
 <translation id="848952951823693243">সবসময় মোবাইল সাইটের অনুরোধ করুন</translation>
 <translation id="8499083585497694743">মাইক্রোফোন আনমিউট করুন</translation>

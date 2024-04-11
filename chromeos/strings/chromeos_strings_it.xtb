@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">farfalle</translation>
 <translation id="188114911237521550">Disattiva la modalità Buio</translation>
-<translation id="188268299367474594">Scegli tra gli APN disponibili</translation>
 <translation id="1885577615937958993">manda avanti velocemente i contenuti multimediali</translation>
 <translation id="1887850431809612466">Revisione hardware</translation>
 <translation id="189221451253258459">verde neon</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Immagine <ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precisione rappresentazione in virgola mobile</translation>
 <translation id="2448312741937722512">Tipo</translation>
-<translation id="2465272316171730950">Siamo al completo. Riprova tra poco.</translation>
 <translation id="2472215337771558851">Utilizza Aiutami a scrivere per creare una bozza o perfezionare il lavoro esistente con l'IA di Google integrata</translation>
 <translation id="2480572840229215612">granchi</translation>
 <translation id="248546197012830854">Il dispositivo è offline. Connettiti alla rete Wi-Fi per vedere i contenuti di assistenza.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">mostra finestre</translation>
 <translation id="2513396635448525189">Immagine di accesso</translation>
 <translation id="2517472476991765520">Scansiona</translation>
-<translation id="2520213071283358374">Utilizza questo APN</translation>
 <translation id="2521835766824839541">traccia precedente</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Riavvio in corso…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Salva scansioni in</translation>
 <translation id="4456812688969919973">Il pulsante Salva APN è ora disattivato</translation>
-<translation id="4460905888685975163">Il pulsante "Utilizza questo APN" è disattivato</translation>
 <translation id="4469288414739283461">Salvaschermo Flusso terrestre</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">impossibile eseguire il ping del gateway di rete non predefinito</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Nome host del server</translation>
 <translation id="5089810972385038852">Stato</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">su</translation>
 <translation id="5107243100836678918">La scorciatoia senza tasto <ph name="META_KEY" /> potrebbe essere in conflitto con la scorciatoia di alcune app. Premi di nuovo questa scorciatoia per continuare a utilizzarla oppure premine una nuova usando il tasto <ph name="KEY" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Sinonimi:</translation>
 <translation id="5130848777448318809">pony</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Riassegna selezionando un nuovo tasto</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
 <translation id="7154020516215182599">Condividi il tuo feedback o descrivi il problema. Se possibile, includi i passaggi per riprodurre il problema.</translation>
-<translation id="7155037718620478619">Scopri altri APN</translation>
 <translation id="7155171745945906037">Foto esistente da fotocamera o file</translation>
 <translation id="7162487448488904999">Galleria</translation>
 <translation id="7170236477717446850">Immagine del profilo</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo di provider</translation>
 <translation id="7882501334836096755">Chiave pubblica</translation>
+<translation id="78957024357676568">sinistra</translation>
 <translation id="7897043345768902965">passaggio pedonale</translation>
 <translation id="7903695460270716054">Scegli opere d'arte e immagini selezionate</translation>
 <translation id="7915220255123750251">Gestisci le impostazioni APN di rete. Gli APN stabiliscono una connessione tra una rete mobile e Internet.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Carica rimanente</translation>
 <translation id="8076492880354921740">Schede</translation>
 <translation id="8079860070590459552">un campo di fiori</translation>
-<translation id="8081553043098820199">Se gli APN non sono validi, la connessione mobile potrebbe essere disattivata. Imposta solo gli APN forniti dal tuo operatore mobile o dall'amministratore.</translation>
 <translation id="8082366717211101304">Impossibile risolvere la richiesta DNS da app Android</translation>
 <translation id="8082644724189923105">Zona tastiera</translation>
 <translation id="808894953321890993">Cambia password</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Stai usando una rete aperta e non protetta</translation>
 <translation id="811820734797650957">(Android) È possibile inviare un ping al gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Conferma</translation>
 <translation id="8132480444149501833">Richiedi contatori di traffico</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Seleziona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Origine</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8312330582793120272">riproduci i contenuti multimediali</translation>
-<translation id="8317819321190319496">Il pulsante "Utilizza questo APN" è attivo</translation>
 <translation id="8318753676953949627">Nessuna immagine</translation>
 <translation id="8320910311642849813">una foresta</translation>
 <translation id="8329018942023753850">app calcolatrice</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Rilevato automaticamente</translation>
 <translation id="8420955526972171689">Esegui test e risolvi problemi relativi all'hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">giù</translation>
 <translation id="8431300646573772016">Novità di ChromeOS</translation>
 <translation id="843568408673868420">Connessione a Internet</translation>
 <translation id="844521431886043384">DNS non configurato</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Il dispositivo è un telefono.</translation>
 <translation id="8950424402482976779">in alto</translation>
 <translation id="8954341524817067858">montagne</translation>
+<translation id="8957423540740801332">destra</translation>
 <translation id="8960969673307890087">angurie</translation>
 <translation id="8961025972867871808">pinguini</translation>
 <translation id="8968751544471797276">Velocità di ricarica</translation>

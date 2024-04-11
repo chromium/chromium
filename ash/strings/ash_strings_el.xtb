@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">Συσκευή USB-C (πίσω θύρα)</translation>
 <translation id="1869497990620230175">Γρήγορα αρχεία</translation>
 <translation id="1871023081802165724">Αναπαραγωγή μέσων</translation>
+<translation id="1871915835366697861">Δεν διατίθεται για αυτό το παιχνίδι</translation>
 <translation id="1879018240766558464">Προς το παρόν, τα παράθυρα για ανώνυμη περιήγηση δεν υποστηρίζονται. Οι άλλες εφαρμογές θα αποθηκευτούν.</translation>
 <translation id="1882814835921407042">Δεν υπάρχει δίκτυο κινητής τηλεφωνίας</translation>
 <translation id="1882897271359938046">Κατοπτρισμός σε <ph name="DISPLAY_NAME" /></translation>
@@ -1432,7 +1433,6 @@
 <translation id="6537924328260219877">Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Σάρωση του αρχείου <ph name="FILENAME" /> για λήψη</translation>
 <translation id="6542521951477560771">Μετάδοση στη συσκευή <ph name="RECEIVER_NAME" /></translation>
-<translation id="6546062506073634094">Αναζήτηση εικόνων κατά περιεχόμενο και προεπισκοπήσεις εικόνων</translation>
 <translation id="6555373427270923730">Πληκτρολογήστε μια διεύθυνση ιστού στη γραμμή διευθύνσεων και έπειτα πατήστε <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Νέα εγκατάσταση</translation>
@@ -1792,6 +1792,7 @@
 <translation id="79341161159229895">Ο λογαριασμός είναι διαχειριζόμενος από τους χρήστες <ph name="FIRST_PARENT_EMAIL" /> και <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Πιέστε <ph name="SHORTCUT_KEY_NAME" /> + V για να δείτε το πρόχειρο. Τα τελευταία 5 στοιχεία που αντιγράψατε αποθηκεύονται στο πρόχειρο.</translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
+<translation id="7943516765291457328">Ενεργοποιήστε το Bluetooth για να κάνετε σάρωση για σημεία πρόσβασης Wi-Fi σε κοντινή απόσταση</translation>
 <translation id="7944023924886109030">Εμφάνιση όλων των συμβάντων για σήμερα</translation>
 <translation id="7945357288295809525">Εμφάνιση ρυθμίσεων προσβασιμότητας, η λειτουργία <ph name="ENABLED_FEATURES" /> είναι ενεργοποιημένη.</translation>
 <translation id="7947798320695032612">Η εφαρμογή <ph name="APP_NAME" /> θέλει να χρησιμοποιήσει τη συσκευή <ph name="DEVICE_NAME" /></translation>

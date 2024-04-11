@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Επιστροφή</translation>
 <translation id="2546283357679194313">Cookie και δεδομένα ιστότοπου</translation>
 <translation id="2550801787432930915">Κάρτα πτώσης τιμής</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Αποκλείστηκε ένα cookie}other{Αποκλείστηκαν # cookie}}</translation>
 <translation id="2570922361219980984">Η πρόσβαση στην Τοποθεσία είναι απενεργοποιημένη επίσης γι' αυτήν τη συσκευή. Ενεργοποιήστε τη στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Αναπτυγμένη - Κάντε κλικ για σύμπτυξη</translation>
 <translation id="2586657967955657006">Πρόχειρο</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Αναζήτηση προς τα πίσω</translation>
 <translation id="8444433999583714703">Για να επιτρέψετε στην εφαρμογή <ph name="APP_NAME" /> να αποκτήσει πρόσβαση στην τοποθεσία σας, ενεργοποιήστε επίσης την τοποθεσία στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Ανάκληση άδειας συσκευής</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Χρησιμοποιείται 1 cookie}other{Χρησιμοποιούνται # cookie}}</translation>
 <translation id="8487700953926739672">Διαθέσιμο εκτός σύνδεσης</translation>
 <translation id="848952951823693243">Να ζητείται πάντα ιστότοπος για κινητά</translation>
 <translation id="8499083585497694743">Κατάργηση σίγασης μικροφώνου</translation>

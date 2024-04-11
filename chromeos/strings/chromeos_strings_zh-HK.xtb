@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">蝴蝶</translation>
 <translation id="188114911237521550">關閉暗光模式</translation>
-<translation id="188268299367474594">從可用的 APN 中選擇</translation>
 <translation id="1885577615937958993">向前快播媒體</translation>
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="189221451253258459">螢光綠色</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 張圖，總共有 <ph name="TOTAL_PAGES" /> 張</translation>
 <translation id="2446553403094072641">浮點準確性</translation>
 <translation id="2448312741937722512">類型</translation>
-<translation id="2465272316171730950">資源已用盡，請稍後再回來查看。</translation>
 <translation id="2472215337771558851">「幫我寫」功能採用 Google AI 技術，用來建立草稿或修正現有作品</translation>
 <translation id="2480572840229215612">螃蟹</translation>
 <translation id="248546197012830854">裝置已離線。連線至 Wi-Fi 網絡即可查看說明內容。</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">顯示視窗</translation>
 <translation id="2513396635448525189">登入圖片</translation>
 <translation id="2517472476991765520">掃瞄</translation>
-<translation id="2520213071283358374">使用此 APN</translation>
 <translation id="2521835766824839541">上一首歌</translation>
 <translation id="2526590354069164005">桌面電腦</translation>
 <translation id="253029298928638905">正在重新啟動…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">子網絡遮罩</translation>
 <translation id="4454245904991689773">掃瞄儲存位置</translation>
 <translation id="4456812688969919973">宜家停用咗「儲存 APN」掣</translation>
-<translation id="4460905888685975163">宜家停用咗「用呢個 APN」掣</translation>
 <translation id="4469288414739283461">地球動態螢幕保護程式</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">伺服器主機名稱</translation>
 <translation id="5089810972385038852">州</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">向上</translation>
 <translation id="5107243100836678918">使用快速鍵時如未按下<ph name="META_KEY" />鍵，可能會與部分應用程式的快速鍵發生衝突。再按下此快速鍵即可繼續使用，或按下<ph name="KEY" />鍵重新輸入快速鍵。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">近義詞：</translation>
 <translation id="5130848777448318809">小馬</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">選取新的按鍵即可重新指定</translation>
 <translation id="714876143603641390">LAN 連接性</translation>
 <translation id="7154020516215182599">請反映意見，或者描述問題。請儘量在描述中包含步驟，以便重現問題。</translation>
-<translation id="7155037718620478619">探索更多 APN</translation>
 <translation id="7155171745945906037">相機或檔案中的現有照片</translation>
 <translation id="7162487448488904999">媒體庫</translation>
 <translation id="7170236477717446850">個人檔案相片</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">供應商類型</translation>
 <translation id="7882501334836096755">公開金鑰</translation>
+<translation id="78957024357676568">向左</translation>
 <translation id="7897043345768902965">行人道</translation>
 <translation id="7903695460270716054">選擇精選藝術品和圖片</translation>
 <translation id="7915220255123750251">管理網絡 APN 設定。APN 會在流動網絡和互聯網之間建立連線。</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8079860070590459552">花海</translation>
-<translation id="8081553043098820199">無效的 APN 可能會導致流動網絡連線中斷。請只設定由流動服務供應商或管理員提供的 APN。</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>
 <translation id="8082644724189923105">鍵盤區域</translation>
 <translation id="808894953321890993">變更密碼</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">您正在使用開放且不安全的網絡</translation>
 <translation id="811820734797650957">(Android) 可連線偵測到閘道</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8131740175452115882">確定</translation>
 <translation id="8132480444149501833">要求流量計數器</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">揀「<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />」</translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">來源</translation>
 <translation id="8302368968391049045">HTTPS 防火牆</translation>
 <translation id="8312330582793120272">播媒體</translation>
-<translation id="8317819321190319496">宜家啟用咗「用呢個 APN」掣</translation>
 <translation id="8318753676953949627">沒有圖片</translation>
 <translation id="8320910311642849813">森林</translation>
 <translation id="8329018942023753850">計算機應用程式</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">已自動偵測</translation>
 <translation id="8420955526972171689">為硬件問題執行測試和解決疑難</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">向下</translation>
 <translation id="8431300646573772016">Chrome OS 的新功能</translation>
 <translation id="843568408673868420">互聯網連線</translation>
 <translation id="844521431886043384">DNS 未設定</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">裝置類型係手機。</translation>
 <translation id="8950424402482976779">頂部</translation>
 <translation id="8954341524817067858">山嶽</translation>
+<translation id="8957423540740801332">向右</translation>
 <translation id="8960969673307890087">西瓜</translation>
 <translation id="8961025972867871808">企鵝</translation>
 <translation id="8968751544471797276">充電率</translation>

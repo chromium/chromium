@@ -4510,7 +4510,6 @@
 <translation id="4403266582403435904">随时轻松恢复数据或更换设备。备份内容将上传到 Google 并使用您孩子的 Google 账号密码进行加密。</translation>
 <translation id="4403775189117163360">另选一个文件夹</translation>
 <translation id="4404136731284211429">重新扫描</translation>
-<translation id="4404619268534288383">标签页分组保存和同步</translation>
 <translation id="4404843640767531781">“<ph name="APP_NAME" />”已被您的家长禁用。请让您的家长授权您使用此应用。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移动到…</translation>
@@ -5151,7 +5150,6 @@
 <translation id="4899696330053002588">包含广告</translation>
 <translation id="490031510406860025">不允许在此网站上使用</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> 赫兹 - 隔行扫描</translation>
-<translation id="490056871160016482">无论用户手势如何，网站都会使用此功能来提供沉浸式全屏体验</translation>
 <translation id="4900652253009739885">这是为“选择”操作分配的唯一开关键，因此无法移除。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="4901154724271753917">展开“最近关闭的标签页”部分</translation>
 <translation id="4901309472892185668">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。</translation>
@@ -5476,7 +5474,6 @@
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> 已被禁用</translation>
 <translation id="5163910114647549394">此标签页已移至标签栏的末尾</translation>
 <translation id="5164530241085602114">不允许 <ph name="SITE" /> 传送通知</translation>
-<translation id="5165989352025966137">可以自动进入全屏模式</translation>
 <translation id="516747639689914043">超文本传输协议 (HTTP)</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5171045022955879922">搜索或输入网址</translation>
@@ -5778,7 +5775,6 @@
 <translation id="541737483547792035">放大屏幕</translation>
 <translation id="541822678830750798">请求读取和更改此网站</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">允许保存和找回标签页分组。右键点击某个标签页分组即可将其保存。可从书签栏中找回分组。</translation>
 <translation id="5420274697768050645">为了提升安全性，必须输入密码才能解锁设备</translation>
 <translation id="5420438158931847627">确定文字和图片的清晰度</translation>
 <translation id="5420935737933866496">复制链接(&amp;L)</translation>
@@ -6173,6 +6169,7 @@
 <translation id="5723967018671998714">已阻止无痕模式下的第三方 Cookie</translation>
 <translation id="5725112283692663422">发送有关“利用 AI 创建主题”的反馈</translation>
 <translation id="5727728807527375859">扩展功能、应用和主题背景可能会损害您的计算机。您确定要继续吗？</translation>
+<translation id="5728072125198221967">关联的 Google 服务</translation>
 <translation id="5728290366864286776">此扩展程序可能会读取和更改网站信息，或者在后台运行</translation>
 <translation id="5728450728039149624">Smart Lock 屏幕锁定选项</translation>
 <translation id="572914206753951782">确保您的 Chromebook 是最新版本。然后，重启 Chromebook 并重试。</translation>
@@ -8156,7 +8153,6 @@
 <translation id="7290242001003353852">这项由 <ph name="SAML_DOMAIN" /> 托管的登录服务正在使用您的摄像头。</translation>
 <translation id="7292067737327289208">您的<ph name="BEGIN_LINK" />浏览器<ph name="END_LINK" />由贵组织管理，您的<ph name="BEGIN_LINK" />个人资料<ph name="END_LINK" />由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">不得自动进入全屏模式</translation>
 <translation id="7295614427631867477">请注意，Android、Play 及相关应用受各自的数据收集和使用政策的约束。</translation>
 <translation id="7296503797589217366">选择“<ph name="FOLDER_TITLE" />”文件夹</translation>
 <translation id="7297726121602187087">深绿色</translation>
@@ -9703,7 +9699,6 @@
 <translation id="84297032718407999">您将在 <ph name="LOGOUT_TIME_LEFT" />后退出登录</translation>
 <translation id="8431190899827883166">显示点按操作反馈</translation>
 <translation id="843173223122814223">利用 AI 创建背景</translation>
-<translation id="8432724317983466962">默认情况下，需要通过用户手势才能进入全屏模式</translation>
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8434480141477525001">NaCl调试端口</translation>
 <translation id="8436054240208929121">登录账号并开启同步功能，以便 Chrome 提供标签页分组建议并使标签页井然有序</translation>

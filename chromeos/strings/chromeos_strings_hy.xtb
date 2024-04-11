@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">թիթեռներ</translation>
 <translation id="188114911237521550">Անջատել մուգ ռեժիմը</translation>
-<translation id="188268299367474594">Ընտրեք հասանելի APN-ներից</translation>
 <translation id="1885577615937958993">առաջ տալ մեդիաֆայլը</translation>
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
 <translation id="189221451253258459">նեոնային կանաչ</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Պատկեր <ph name="CURRENT_PAGE" />՝ <ph name="TOTAL_PAGES" />-ից</translation>
 <translation id="2446553403094072641">Լողացող կետի ճշգրտությունը</translation>
 <translation id="2448312741937722512">Տեսակ</translation>
-<translation id="2465272316171730950">Համակարգն այս պահին ծանրաբեռնված է։ Վերադարձեք մի փոքր ուշ։</translation>
 <translation id="2472215337771558851">Google AI տեխնոլոգիաների վրա հիմնված «Օգնիր ինձ գրել» գործառույթի միջոցով ստեղծեք սևագիր կամ հղկեք առկա տեքստը</translation>
 <translation id="2480572840229215612">խաչափառներ</translation>
 <translation id="248546197012830854">Սարքը միացած չէ ինտերնետին։ Միացեք Wi-Fi ցանցին՝ տեղեկատվական բովանդակություն տեսնելու համար։</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">ցուցադրել պատուհանները</translation>
 <translation id="2513396635448525189">Մուտքի պատկեր</translation>
 <translation id="2517472476991765520">Որոնել</translation>
-<translation id="2520213071283358374">Օգտագործել այս APN-ը</translation>
 <translation id="2521835766824839541">նախորդ կատարումը</translation>
 <translation id="2526590354069164005">Աշխատասեղան</translation>
 <translation id="253029298928638905">Վերագործարկում…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Ենթացանցի դիմակ</translation>
 <translation id="4454245904991689773">Պահել</translation>
 <translation id="4456812688969919973">«Պահել APN-ը» կոճակն անջատված է</translation>
-<translation id="4460905888685975163">Այս APN-ի օգտագործումն անջատված է</translation>
 <translation id="4469288414739283461">«երկիր մոլորակ» էկրանապահ</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Չհաջողվեց փինգ ուղարկել չկանխադրված ցանցի անցախուցին</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Սերվերի խնամորդի անուն</translation>
 <translation id="5089810972385038852">Նահանգ</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">վերև</translation>
 <translation id="5107243100836678918">Առանց «<ph name="META_KEY" />» ստեղնի դյուրանցումը կարող է հակասել որոշ հավելվածների դյուրանցումներին։ Կրկին սեղմեք այս դյուրանցումը՝ դրա օգտագործումը շարունակելու համար, կամ սեղմեք նոր դյուրանցում՝ օգտագործելով «<ph name="KEY" />» ստեղնը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Հոմանիշներ՝</translation>
 <translation id="5130848777448318809">պոնիներ</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Վերանշանակեք՝ ընտրելով նոր ստեղն</translation>
 <translation id="714876143603641390">LAN-ի կապ</translation>
 <translation id="7154020516215182599">Կիսվեք ձեր կարծիքով կամ նկարագրեք խնդիրը։ Հնարավորության դեպքում ավելացրեք քայլեր՝ խնդիրը վերարտադրելու համար։</translation>
-<translation id="7155037718620478619">Գտնել այլ APN-ներ</translation>
 <translation id="7155171745945906037">Առկա լուսանկար խցիկից կամ ֆայլից</translation>
 <translation id="7162487448488904999">Ցուցասրահ</translation>
 <translation id="7170236477717446850">Պրոֆիլի նկար</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Մատակարարի տեսակը</translation>
 <translation id="7882501334836096755">Բաց բանալի</translation>
+<translation id="78957024357676568">ձախ</translation>
 <translation id="7897043345768902965">ճեմուղի</translation>
 <translation id="7903695460270716054">Ընտրել առաջարկվող պաստառներ և պատկերներ</translation>
 <translation id="7915220255123750251">Կառավարեք ցանցի APN կարգավորումները։ APN-ները կապ են հաստատում բջջային ցանցի և համացանցի միջև։</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
 <translation id="8076492880354921740">Ներդիրներ</translation>
 <translation id="8079860070590459552">ծաղիկների դաշտ</translation>
-<translation id="8081553043098820199">Անվավեր APN-ները կարող են հանգեցնել բջջային կապի անջատման։ Ընտրեք միայն ձեր բջջային օպերատորի կամ ադմինիստրատորի կողմից տրամադրված APN-ները։</translation>
 <translation id="8082366717211101304">Չհաջողվեց փոխակերպել DNS-ը Android հավելվածներից</translation>
 <translation id="8082644724189923105">ստեղնաշարի գոտի</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Դուք օգտագործում եք բաց և ոչ անվտանգ ցանց</translation>
 <translation id="811820734797650957">Անցախուցը պատասխանում է փինգ հարցմանը (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8132480444149501833">Հայցել թրաֆիկի հաշվիչներ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Ընտրել «<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />» տարբերակը</translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Աղբյուր</translation>
 <translation id="8302368968391049045">HTTPS հրապատ</translation>
 <translation id="8312330582793120272">նվագարկել մեդիաֆայլը</translation>
-<translation id="8317819321190319496">Այս APN-ի օգտագործումը միացված է</translation>
 <translation id="8318753676953949627">Պատկերներ չկան</translation>
 <translation id="8320910311642849813">անտառ</translation>
 <translation id="8329018942023753850">հաշվիչ հավելված</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Ավտոմատ ճանաչում</translation>
 <translation id="8420955526972171689">Գործարկեք թեստեր և սարքակազմի հետ կապված խնդիրների վերացման գործընթացներ</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">ներքև</translation>
 <translation id="8431300646573772016">Ինչն է ChromeOS-ում նոր</translation>
 <translation id="843568408673868420">Ինտերնետ կապ</translation>
 <translation id="844521431886043384">DNS-ը կարգավորված չէ</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Սարքը հեռախոս է։</translation>
 <translation id="8950424402482976779">վերև</translation>
 <translation id="8954341524817067858">լեռներ</translation>
+<translation id="8957423540740801332">աջ</translation>
 <translation id="8960969673307890087">ձմերուկներ</translation>
 <translation id="8961025972867871808">պինգվիններ</translation>
 <translation id="8968751544471797276">Լիցքավորման արագությունը</translation>

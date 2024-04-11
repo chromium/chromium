@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Indietro</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
 <translation id="2550801787432930915">Scheda sul calo di prezzo</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie bloccato}other{# cookie bloccati}}</translation>
 <translation id="2570922361219980984">L'accesso alla posizione è disattivato anche per questo dispositivo. Attivalo nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Espanso. Fai clic per comprimere.</translation>
 <translation id="2586657967955657006">Appunti</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Posiziona indietro</translation>
 <translation id="8444433999583714703">Per consentire all'app <ph name="APP_NAME" /> di accedere alla tua posizione, devi attivare la posizione anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoca autorizzazione dispositivo</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie in uso}other{# cookie in uso}}</translation>
 <translation id="8487700953926739672">Disponibile offline</translation>
 <translation id="848952951823693243">Richiedi sempre sito mobile</translation>
 <translation id="8499083585497694743">Riattiva microfono</translation>

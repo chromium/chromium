@@ -247,7 +247,6 @@
 <translation id="1428729058023778569">Դուք տեսնում եք այս նախազգուշացումը, քանի որ կայքը չի աջակցում HTTPS-ը։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Ինքնակպչուն թաղանթ</translation>
 <translation id="1430915738399379752">Տպում</translation>
-<translation id="1431021750861456539">Ավտոմատ բացել լիաէկրան ռեժիմում</translation>
 <translation id="1432187715652018471">Էջը ծառայության մշակիչ է ուզում տեղադրել։</translation>
 <translation id="1432581352905426595">Կառավարել որոնման համակարգերը</translation>
 <translation id="1433225466058025572">Փորձեք նորից տեղափոխել ֆայլերը</translation>
@@ -2329,7 +2328,6 @@
     <ph name="LINE_BREAK" />
     Փորձեք կապվել ձեր համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="549333378215107354">Չափ 3</translation>
-<translation id="5501712702042287009">ավտոմատ բացել լիաէկրան ռեժիմում</translation>
 <translation id="550365051221576010">Լրացնել բոլոր տվյալները</translation>
 <translation id="5508443345185481044">Ֆոտոխցիկներ և տեսախցիկներ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2510,6 +2508,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Միացնել</translation>
 <translation id="5862579898803147654">Շեղջիչ 8</translation>
+<translation id="5863515189965725638">IBAN-ի փոփոխում</translation>
 <translation id="5863847714970149516">Հաջորդ էջում հնարավոր է ձեզնից գումար գանձելու փորձ արվի</translation>
 <translation id="5866257070973731571">Ավելացրեք հեռախոսահամար</translation>
 <translation id="5866898949289125849">Դուք դիտում եք ծրագրավորողի գործիքների էջը</translation>

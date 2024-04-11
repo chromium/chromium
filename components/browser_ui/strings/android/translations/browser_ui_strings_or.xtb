@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">ଫେରନ୍ତୁ</translation>
 <translation id="2546283357679194313">କୁକିସ୍ ଏବଂ ସାଇଟ୍ ଡାଟା</translation>
 <translation id="2550801787432930915">ମୂଲ୍ୟ ହ୍ରାସ କାର୍ଡ</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1ଟି କୁକୀ ବ୍ଲକ୍ କରାଯାଇଛି}other{#ଟି କୁକୀ ବ୍ଲକ୍ କରାଯାଇଛି}}</translation>
 <translation id="2570922361219980984">ଏହି ଡିଭାଇସ୍‌ ପାଇଁ ଲୋକେସନ୍‌ ଆକ୍ସେସ୍‌ ମଧ୍ୟ ବନ୍ଦ ଅଛି। ଏହାକୁ <ph name="BEGIN_LINK" />Android ସେଟିଂସ୍‌<ph name="END_LINK" />ରେ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="257931822824936280">ସଂପ୍ରସାରିତ - ସଙ୍କୁଚିତ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="2586657967955657006">କ୍ଲିପ୍‌ବୋର୍ଡ</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">ପଛକୁ ଫେରନ୍ତୁ</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" />କୁ ଆପଣଙ୍କ ଲୋକେସନ୍ ଆକ୍ସେସ୍ ଦେବା ପାଇଁ, <ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ ଲୋକେସନ୍ ମଧ୍ୟ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="8447861592752582886">ଡିଭାଇସ୍ ଅନୁମତି କାଢ଼ି ଦିଅନ୍ତୁ</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1ଟି କୁକୀ ବ୍ୟବହାର କରାଯାଉଛି}other{#ଟି କୁକୀ ବ୍ୟବହାର କରାଯାଉଛି}}</translation>
 <translation id="8487700953926739672">ଅଫ୍‍ଲାଇନ୍‌ରେ ଉପଲବ୍ଧ</translation>
 <translation id="848952951823693243">ସର୍ବଦା ମୋବାଇଲ ସାଇଟର ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="8499083585497694743">ମାଇକ୍ରୋଫୋନକୁ ଅନମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>

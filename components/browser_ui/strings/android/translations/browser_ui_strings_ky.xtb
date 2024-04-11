@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Артка кайтуу</translation>
 <translation id="2546283357679194313">Кукилер жана сайттын дайындары</translation>
 <translation id="2550801787432930915">Баасы арзандады картасы</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie файлы бөгөттөлдү}other{# cookie файлы бөгөттөлдү}}</translation>
 <translation id="2570922361219980984">Жайгашкан жерди аныктоо жөндөөсү бул түзмөктө өчүрүлгөн. Аны <ph name="BEGIN_LINK" />Android параметрлерине<ph name="END_LINK" /> өтүп, күйгүзүңүз.</translation>
 <translation id="257931822824936280">Жайылып көрсөтүлгөн – жыйнап коюу үчүн чыкылдатыңыз.</translation>
 <translation id="2586657967955657006">Алмашуу буфери</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Артка түрдүрүү</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> колдонмосуна жайгашкан жериңизге кирүүгө уруксат берүү үчүн, <ph name="BEGIN_LINK" />Android Параметрлеринен<ph name="END_LINK" /> жайгашкан жер кызматын күйгүзүңүз.</translation>
 <translation id="8447861592752582886">Түзмөккө болгон уруксатты жоюу</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie файлы колдонулууда}other{# cookie файлы колдонулууда}}</translation>
 <translation id="8487700953926739672">Оффлайнда жеткиликтүү</translation>
 <translation id="848952951823693243">Мобилдик сайт ар дайым суралсын</translation>
 <translation id="8499083585497694743">Микрофондун үнүн чыгаруу</translation>

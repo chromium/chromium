@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">glöynnod byw</translation>
 <translation id="188114911237521550">Diffodd y modd tywyll</translation>
-<translation id="188268299367474594">Dewiswch o'r APNs sydd ar gael</translation>
 <translation id="1885577615937958993">cyflymu cyfryngau</translation>
 <translation id="1887850431809612466">Adolygu caledwedd</translation>
 <translation id="189221451253258459">gwyrdd neon</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Llun <ph name="CURRENT_PAGE" /> o <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Cywirdeb pwynt rhydd</translation>
 <translation id="2448312741937722512">Math</translation>
-<translation id="2465272316171730950">Rydym yn llawn. Dewch yn ôl mewn ychydig.</translation>
 <translation id="2472215337771558851">Defnyddiwch Helpu fi i ysgrifennu i greu drafft neu fireinio gwaith sy'n bodoli eisoes, wedi'i bweru gan AI Google</translation>
 <translation id="2480572840229215612">crancod</translation>
 <translation id="248546197012830854">Mae'r ddyfais all-lein. Cysylltwch â rhwydwaith Wi-Fi i weld cynnwys cymorth.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">dangos ffenestri</translation>
 <translation id="2513396635448525189">Llun mewngofnodi</translation>
 <translation id="2517472476991765520">Sganio</translation>
-<translation id="2520213071283358374">Defnyddiwch yr APN hwn</translation>
 <translation id="2521835766824839541">trac blaenorol</translation>
 <translation id="2526590354069164005">Bwrdd gwaith</translation>
 <translation id="253029298928638905">Wrthi'n ailgychwyn...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Masg is-rwydwaith</translation>
 <translation id="4454245904991689773">Sganio i</translation>
 <translation id="4456812688969919973">Mae'r botwm Cadw APN bellach wedi'i analluogi</translation>
-<translation id="4460905888685975163">Mae defnyddio'r APN hwn bellach wedi'i analluogi</translation>
 <translation id="4469288414739283461">Arbedwr sgrîn llif y ddaear</translation>
 <translation id="4479639480957787382">Ether-rwyd</translation>
 <translation id="4483049906298469269">Wedi methu â phingio porth y rhwydwaith nad yw'n ddiofyn</translation>
@@ -1064,7 +1060,6 @@
 <translation id="7147557737960578492">Ailaseinio trwy ddewis bysell newydd</translation>
 <translation id="714876143603641390">Cysylltedd LAN</translation>
 <translation id="7154020516215182599">Rhannwch eich adborth neu disgrifiwch eich problem. Os yn bosib, cynhwyswch gamau i atgynhyrchu'ch problem.</translation>
-<translation id="7155037718620478619">Darganfod mwy o APNs</translation>
 <translation id="7155171745945906037">Llun presennol o'r camera neu ffeil</translation>
 <translation id="7162487448488904999">Oriel</translation>
 <translation id="7170236477717446850">Llun proffil</translation>
@@ -1194,6 +1189,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Math o ddarparwr</translation>
 <translation id="7882501334836096755">Allwedd gyhoeddus</translation>
+<translation id="78957024357676568">chwith</translation>
 <translation id="7897043345768902965">rhodfa</translation>
 <translation id="7903695460270716054">Dewiswch waith celf a lluniau sydd wedi'u curadu</translation>
 <translation id="7915220255123750251">Rheoli gosodiadau APN rhwydwaith. Mae APN yn sefydlu cysylltiad rhwng rhwydwaith cellog a'r rhyngrwyd.</translation>
@@ -1223,7 +1219,6 @@
 <translation id="8075838845814659848">Faint o fatri sy'n weddill</translation>
 <translation id="8076492880354921740">Tabiau</translation>
 <translation id="8079860070590459552">cae o flodau</translation>
-<translation id="8081553043098820199">Gallai APNs annilys achosi i'ch cysylltiad symudol gael ei analluogi. Gosodwch APNs a ddarperir gan eich darparwr symudol neu weinyddwr yn unig.</translation>
 <translation id="8082366717211101304">Methu â datrys DNS o apiau Android</translation>
 <translation id="8082644724189923105">parth bysellfwrdd</translation>
 <translation id="808894953321890993">Newid cyfrinair</translation>
@@ -1231,6 +1226,7 @@
 <translation id="8104083085214006426">Rydych yn defnyddio rhwydwaith agored anniogel</translation>
 <translation id="811820734797650957">Gall porth gael ei Bingio (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">Cadarnhau</translation>
 <translation id="8132480444149501833">Gwneud cais am Rifyddion Traffig</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Dewiswch <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1252,6 @@
 <translation id="8294431847097064396">Ffynhonnell</translation>
 <translation id="8302368968391049045">Wal Dân HTTPS</translation>
 <translation id="8312330582793120272">chwarae cyfryngau</translation>
-<translation id="8317819321190319496">Mae Defnyddio'r APN hwn bellach wedi'i alluogi</translation>
 <translation id="8318753676953949627">Dim Delweddau</translation>
 <translation id="8320910311642849813">coedwig</translation>
 <translation id="8329018942023753850">ap cyfrifiannell</translation>
@@ -1372,6 +1367,7 @@
 <translation id="894617464444543719">Mae'r ddyfais yn ffôn.</translation>
 <translation id="8950424402482976779">brig</translation>
 <translation id="8954341524817067858">mynyddoedd</translation>
+<translation id="8957423540740801332">dde</translation>
 <translation id="8960969673307890087">melonau dŵr</translation>
 <translation id="8961025972867871808">pengwiniaid</translation>
 <translation id="8968751544471797276">Cyfradd gwefru</translation>

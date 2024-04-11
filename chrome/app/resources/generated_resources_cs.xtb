@@ -4520,7 +4520,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4403266582403435904">Kdykoliv můžete snadno obnovit svá data nebo přejít na jiné zařízení. Zálohy se nahrávají do Googlu a šifrují pomocí hesla účtu Google dítěte.</translation>
 <translation id="4403775189117163360">Vybrat jinou složku</translation>
 <translation id="4404136731284211429">Znovu zkontrolovat</translation>
-<translation id="4404619268534288383">Ukládání a synchronizace skupin karet</translation>
 <translation id="4404843640767531781">Tvůj rodič aplikaci <ph name="APP_NAME" /> zablokoval. Pokud ji chceš používat, požádej rodiče o oprávnění.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Přesunout do…</translation>
@@ -5161,7 +5160,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4899696330053002588">Obsahuje reklamy</translation>
 <translation id="490031510406860025">Na tomto webu není povoleno</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – s prokládáním</translation>
-<translation id="490056871160016482">Weby tuto funkci používají k nabízení pohlcujících zážitků na celou obrazovku bez ohledu na uživatelská gesta</translation>
 <translation id="4900652253009739885">Jediný přepínač přiřazený k funkci výběru nelze odstranit. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
 <translation id="4901154724271753917">Rozbalit nedávno zavřené</translation>
 <translation id="4901309472892185668">Vyberte stav experimentální funkce <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5486,7 +5484,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5162905305237671850">Zařízení <ph name="DEVICE_TYPE" /> bylo zablokováno</translation>
 <translation id="5163910114647549394">Karta byla přesunuta na konec lišty karet</translation>
 <translation id="5164530241085602114">Oznámení webu <ph name="SITE" /> nejsou povolena</translation>
-<translation id="5165989352025966137">Povolení automaticky aktivovat režim celé obrazovky</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5171045022955879922">Vyhledávejte či zadejte URL</translation>
@@ -5788,7 +5785,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="541737483547792035">Zvětšení obrazovky</translation>
 <translation id="541822678830750798">Žádost o přečtení a změnu tohoto webu</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Umožňuje ukládání a obnovování skupin karet. Pokud kartu chcete uložit, klikněte na ni pravým tlačítkem. Skupiny můžete obnovit z lišty záložek.</translation>
 <translation id="5420274697768050645">Za účelem zvýšení ochrany bude při odemykání zařízení vyžadováno heslo</translation>
 <translation id="5420438158931847627">Určuje ostrost textu a obrázků</translation>
 <translation id="5420935737933866496">Kopírovat odkaz</translation>
@@ -6183,6 +6179,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5723967018671998714">Soubory cookie třetích stran jsou v anonymním režimu blokovány</translation>
 <translation id="5725112283692663422">Odeslat zpětnou vazbu k vytváření motiů pomocí umělé inteligence</translation>
 <translation id="5727728807527375859">Rozšíření, aplikace nebo motivy mohou poškodit váš počítač. Chcete pokračovat?</translation>
+<translation id="5728072125198221967">Propojené služby Google</translation>
 <translation id="5728290366864286776">Toto rozšíření může číst a měnit informace webů nebo běžet na pozadí</translation>
 <translation id="5728450728039149624">Možnosti zámku obrazovky Smart Lock</translation>
 <translation id="572914206753951782">Zkontrolujte, zda Chromebook máte aktualizovaný na nejnovější verzi. Poté Chromebook restartujte a zkuste to znovu.</translation>
@@ -8170,7 +8167,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7290242001003353852">Přihlašovací služba hostovaná doménou <ph name="SAML_DOMAIN" /> požádala o přístup ke kameře.</translation>
 <translation id="7292067737327289208">Váš <ph name="BEGIN_LINK" />prohlížeč spravuje<ph name="END_LINK" /> vaše organizace a váš <ph name="BEGIN_LINK" />profil spravuje<ph name="END_LINK" /> doména <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Není povoleno automaticky přejít na celou obrazovku</translation>
 <translation id="7295614427631867477">Upozorňujeme, že systém Android, služba Play a přidružené aplikace se řídí vlastními zásadami shromažďování a používání dat.</translation>
 <translation id="7296503797589217366">Vybrat složku <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Tmavě zelená</translation>
@@ -9716,7 +9712,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="84297032718407999">Za <ph name="LOGOUT_TIME_LEFT" /> budete odhlášeni</translation>
 <translation id="8431190899827883166">Zobrazovat klepnutí</translation>
 <translation id="843173223122814223">Vytvářejte pozadí pomocí AI</translation>
-<translation id="8432724317983466962">Ve výchozím nastavení je k aktivaci režimu celé obrazovky potřeba uživatelské gesto</translation>
 <translation id="8433186206711564395">Nastavení sítě</translation>
 <translation id="8434480141477525001">Port ladění klientu NaCl</translation>
 <translation id="8436054240208929121">Pokud chcete, aby vám Chrome navrhoval skupiny karet a uspořádával karty, přihlaste se a zapněte synchronizaci</translation>

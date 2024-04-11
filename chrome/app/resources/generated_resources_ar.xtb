@@ -3736,7 +3736,7 @@
 <translation id="3798449238516105146">الإصدار</translation>
 <translation id="3798632811625902122">يطلب جهاز البلوتوث "<ph name="DEVICE" />" الحصول على إذن للإقران.</translation>
 <translation id="3798670284305777884">سماعة (داخلية)</translation>
-<translation id="3799128412641261490">إعدادات "الوصول عبر مفتاح التحويل"</translation>
+<translation id="3799128412641261490">إعدادات "الوصول عبر مفتاح تحكّم"</translation>
 <translation id="3800828618615365228">‏بنود الخدمة الإضافية لكلٍّ من متصفّح Google Chrome ونظام التشغيل Chrome</translation>
 <translation id="3800898876950197674">للسماح بهذه الإضافة، يجب إدخال كلمة المرور.</translation>
 <translation id="3802486193901166966">لا تتطلّب هذه الإضافة أذونات خاصة ولا تمتلك أذونات إضافية للوصول إلى المواقع الإلكترونية.</translation>
@@ -4522,7 +4522,6 @@
 <translation id="4403266582403435904">‏يمكنك استعادة البيانات أو تبديل الأجهزة بسهولة متى شئت. يتم تحميل النُسخ الاحتياطية إلى Google وتشفيرها باستخدام كلمة مرور حساب طفلك على Google.</translation>
 <translation id="4403775189117163360">اختيار مجلد آخر</translation>
 <translation id="4404136731284211429">البحث مرة أخرى</translation>
-<translation id="4404619268534288383">حفظ مجموعات علامات التبويب ومزامنتها</translation>
 <translation id="4404843640767531781">حظَر أحد الوالدَين تطبيق <ph name="APP_NAME" />. يُرجى طلب الإذن لتتمكّن من استخدام هذا التطبيق مرة أخرى.</translation>
 <translation id="4405117686468554883">‏jpeg.* وjpg.* وpng.*</translation>
 <translation id="4405224443901389797">نقل إلى...</translation>
@@ -5163,7 +5162,6 @@
 <translation id="4899696330053002588">يتضمّن إعلانات</translation>
 <translation id="490031510406860025">الإضافات غير مسموح بها على هذا الموقع الإلكتروني.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> هرتز - متداخل</translation>
-<translation id="490056871160016482">تستخدم المواقع الإلكترونية هذه الميزة لتقديم تجربة غامرة بملء الشاشة، وذلك بغض النظر عن إيماءات المستخدم</translation>
 <translation id="4900652253009739885">تتعذّر إزالة مفتاح التحكّم الوحيد المخصَّص للإجراء "اختيار". اضغط على أي مفتاح من أجل <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">توسيع قائمة علامات التبويب التي تم إغلاقها مؤخرًا</translation>
 <translation id="4901309472892185668">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5488,7 +5486,6 @@
 <translation id="5162905305237671850">تم حظر جهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">تم نقل علامة التبويب إلى نهاية شريط علامات التبويب.</translation>
 <translation id="5164530241085602114">غير مسموح للموقع الإلكتروني <ph name="SITE" /> بإرسال إشعارات.</translation>
-<translation id="5165989352025966137">المواقع الإلكترونية المسموح لها بالدخول إلى وضع "ملء الشاشة" تلقائيًا</translation>
 <translation id="516747639689914043">‏بروتوكول نقل الروابط النصية (HTTP)</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5171045022955879922">‏البحث أو إدخال عنوان URL</translation>
@@ -5790,7 +5787,6 @@
 <translation id="541737483547792035">تكبير الشاشة</translation>
 <translation id="541822678830750798">تطلب الإضافة حاليًا الإذن بقراءة محتوى هذا الموقع الإلكتروني وتغييره.</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">تتيح هذه الميزة حفظ مجموعات علامات التبويب واستردادها. انقر بزر الماوس الأيمن على مجموعة علامات تبويب لحفظها. ويمكنك استرداد المجموعات من شريط الإشارات.</translation>
 <translation id="5420274697768050645">زيادة مستوى الأمان من خلال طلب كلمة المرور لفتح قفل الجهاز</translation>
 <translation id="5420438158931847627">تحدّد درجة حدة النص والصور</translation>
 <translation id="5420935737933866496">نسخ &amp;الرابط</translation>
@@ -6187,6 +6183,7 @@
 <translation id="5723967018671998714">يتم حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي.</translation>
 <translation id="5725112283692663422">إرسال ملاحظات عن ميزة إنشاء المظاهر باستخدام الذكاء الاصطناعي</translation>
 <translation id="5727728807527375859">قد تلحق الإضافات والتطبيقات والمظاهر الضرر بالكمبيوتر، فهل تريد بالتأكيد المتابعة؟</translation>
+<translation id="5728072125198221967">‏خدمات Google المرتبطة</translation>
 <translation id="5728290366864286776">يمكن لهذه الإضافة قراءة معلومات الموقع الإلكتروني أو يمكن أن تعمل في الخلفية.</translation>
 <translation id="5728450728039149624">‏خيارات قفل شاشة Smart Lock</translation>
 <translation id="572914206753951782">‏تأكَّد من تثبيت أحدث إصدار من نظام التشغيل على جهاز Chromebook. بعد ذلك، يُرجى إعادة تشغيل الجهاز وإعادة المحاولة.</translation>
@@ -8180,7 +8177,6 @@
 <translation id="7290242001003353852">تحاول خدمة تسجيل الدخول هذه، المُستضافة من قبل <ph name="SAML_DOMAIN" />، الدخول إلى الكاميرا.</translation>
 <translation id="7292067737327289208">تتولّى مؤسستك <ph name="BEGIN_LINK" />إدارة متصفِّحك<ph name="END_LINK" />، ويتولّى <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />إدارة ملفك الشخصي<ph name="END_LINK" />.</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">المواقع الإلكترونية غير المسموح لها بالدخول إلى وضع "ملء الشاشة" تلقائيًا</translation>
 <translation id="7295614427631867477">‏تجدر الإشارة إلى أن Android وPlay والتطبيقات المرتبطة بهما محكومة بسياسات الاستخدام وجمع البيانات.الخاصة بها.</translation>
 <translation id="7296503797589217366">اختيار المجلد "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="7297726121602187087">أخضر داكن</translation>
@@ -9139,7 +9135,7 @@
 <translation id="7988876720343145286">‏المزيد من إعدادات وأذونات Android</translation>
 <translation id="7990863024647916394">صوت <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">‏نقل بيانات شبكة Wi-Fi تلقائيًا من هاتف Android</translation>
-<translation id="7991296728590311172">إعدادات الوصول عبر مفتاح التحويل</translation>
+<translation id="7991296728590311172">إعدادات الوصول عبر مفتاح تحكّم</translation>
 <translation id="7992203134935383159">تركيب الكلام</translation>
 <translation id="7994515119120860317">ترجمة النص في الصورة باستخدام <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Webview</translation>
@@ -9727,7 +9723,6 @@
 <translation id="84297032718407999">سيتم تسجيل خروجك خلال <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="8431190899827883166">عرض النقرات</translation>
 <translation id="843173223122814223">إنشاء خلفيات باستخدام الذكاء الاصطناعي</translation>
-<translation id="8432724317983466962">تكون إيماءة المستخدِم مطلوبة تلقائيًا للدخول إلى وضع "ملء الشاشة"</translation>
 <translation id="8433186206711564395">إعدادات الشبكة</translation>
 <translation id="8434480141477525001">‏منفذ تصحيح أخطاء NaCl</translation>
 <translation id="8436054240208929121">‏يجب تسجيل الدخول وتفعيل المزامنة للسماح لمتصفّح Chrome باقتراح مجموعات لإضافة علامات تبويب إليها وتنظيمها.</translation>

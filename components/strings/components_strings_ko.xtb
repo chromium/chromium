@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">이 사이트에서 HTTPS를 지원하지 않기 때문에 경고가 표시되었습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">접착 필름</translation>
 <translation id="1430915738399379752">인쇄</translation>
-<translation id="1431021750861456539">자동 전체 화면</translation>
 <translation id="1432187715652018471">페이지에서 서비스 핸들러를 설치하려고 합니다.</translation>
 <translation id="1432581352905426595">검색엔진 관리</translation>
 <translation id="1433225466058025572">파일을 다시 이동해 보세요.</translation>
@@ -2318,7 +2317,6 @@
     <ph name="LINE_BREAK" />
     시스템 관리자에게 문의하세요.</translation>
 <translation id="549333378215107354">크기 3</translation>
-<translation id="5501712702042287009">자동 전체 화면</translation>
 <translation id="550365051221576010">모두 입력</translation>
 <translation id="5508443345185481044">카메라 및 캠코더</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">사용</translation>
 <translation id="5862579898803147654">스태커 8</translation>
+<translation id="5863515189965725638">IBAN 수정</translation>
 <translation id="5863847714970149516">방문하려는 페이지에서 금액을 청구할 수 있습니다.</translation>
 <translation id="5866257070973731571">전화번호 추가</translation>
 <translation id="5866898949289125849">개발자 도구 페이지를 보는 중입니다.</translation>

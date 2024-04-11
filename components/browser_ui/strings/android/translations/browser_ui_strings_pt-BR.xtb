@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Voltar</translation>
 <translation id="2546283357679194313">Cookies e dados do site</translation>
 <translation id="2550801787432930915">Card de redução no preço</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie bloqueado}one{# cookie bloqueado}other{# cookies bloqueados}}</translation>
 <translation id="2570922361219980984">O acesso ao local também está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Visualização expandida. Clique para recolher</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Voltar</translation>
 <translation id="8444433999583714703">Para permitir que o app <ph name="APP_NAME" /> acesse seu local, ative-o também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revogar permissão do dispositivo</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie em uso}one{# cookie em uso}other{# cookies em uso}}</translation>
 <translation id="8487700953926739672">Disponível off-line</translation>
 <translation id="848952951823693243">Sempre ver a versão para dispositivos móveis</translation>
 <translation id="8499083585497694743">Ativar microfone</translation>

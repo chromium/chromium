@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Zurück</translation>
 <translation id="2546283357679194313">Cookies und Websitedaten</translation>
 <translation id="2550801787432930915">Preissenkungskarte</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Ein Cookie blockiert}other{# Cookies blockiert}}</translation>
 <translation id="2570922361219980984">Der Standortzugriff ist für dieses Gerät ebenfalls deaktiviert. Du kannst ihn in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="257931822824936280">Maximiert – zum Minimieren klicken</translation>
 <translation id="2586657967955657006">Zwischenablage</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Zurück navigieren</translation>
 <translation id="8444433999583714703">Um <ph name="APP_NAME" /> Zugriff auf deinen Standort zu gewähren, musst du die Standortberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="8447861592752582886">Zugriffsberechtigung auf Gerät widerrufen</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 verwendeter Cookie}other{# verwendete Cookies}}</translation>
 <translation id="8487700953926739672">Offline verfügbar</translation>
 <translation id="848952951823693243">Mobile Website immer anfordern</translation>
 <translation id="8499083585497694743">Mikrofon einschalten</translation>

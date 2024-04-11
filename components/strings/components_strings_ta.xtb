@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">இந்தத் தளம் HTTPSஸை ஆதரிக்காததால் எச்சரிக்கை காட்டப்படுகிறது. <ph name="BEGIN_LEARN_MORE_LINK" />மேலும் அறிக<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">தானாக ஒட்டிக்கொள்ளும் ஃபிலிம்</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
-<translation id="1431021750861456539">தானியங்கு முழுத்திரை</translation>
 <translation id="1432187715652018471">சேவை ஹேண்ட்லரை இந்தப் பக்கம் நிறுவ விரும்புகிறது.</translation>
 <translation id="1432581352905426595">தேடல் இன்ஜின்களை நிர்வகி</translation>
 <translation id="1433225466058025572">ஃபைல்களை மீண்டும் நகர்த்த முயலவும்</translation>
@@ -2314,7 +2313,6 @@
     <ph name="LINE_BREAK" />
     உங்கள் சிஸ்டம் நிர்வாகியைத் தொடர்புகொள்ள முயலவும்.</translation>
 <translation id="549333378215107354">அளவு: 3</translation>
-<translation id="5501712702042287009">தானியங்கு முழுத்திரை</translation>
 <translation id="550365051221576010">அனைத்தையும் நிரப்பு</translation>
 <translation id="5508443345185481044">கேமராக்கள் &amp; கேம்கார்டர்கள்</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2495,6 +2493,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">இயக்கு</translation>
 <translation id="5862579898803147654">ஸ்டேக்கர் 8</translation>
+<translation id="5863515189965725638">IBANனைத் திருத்துதல்</translation>
 <translation id="5863847714970149516">அடுத்த பக்கத்தில் உங்களிடமிருந்து கட்டணம் வசூலிக்கப்படலாம்</translation>
 <translation id="5866257070973731571">மொபைல் எண்ணைச் சேர்க்கவும்</translation>
 <translation id="5866898949289125849">டெவெலப்பர் கருவிகள் பக்கத்தைப் பார்க்கிறீர்கள்</translation>

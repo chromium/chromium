@@ -243,7 +243,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1428729058023778569">You are seeing this warning because this site does not support HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Self-adhesive film</translation>
 <translation id="1430915738399379752">Print</translation>
-<translation id="1431021750861456539">Automatic fullscreen</translation>
 <translation id="1432187715652018471">page wants to install a service handler.</translation>
 <translation id="1432581352905426595">Manage search engines</translation>
 <translation id="1433225466058025572">Try moving your files again</translation>
@@ -2318,7 +2317,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <ph name="LINE_BREAK" />
     Try contacting your system administrator.</translation>
 <translation id="549333378215107354">Size 3</translation>
-<translation id="5501712702042287009">automatic fullscreen</translation>
 <translation id="550365051221576010">Fill everything</translation>
 <translation id="5508443345185481044">Cameras and camcorders</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2497,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5862579898803147654">Stacker 8</translation>
+<translation id="5863515189965725638">Edit IBAN</translation>
 <translation id="5863847714970149516">The page ahead may try to charge you money</translation>
 <translation id="5866257070973731571">Add Phone Number</translation>
 <translation id="5866898949289125849">You're viewing a developer tools page</translation>

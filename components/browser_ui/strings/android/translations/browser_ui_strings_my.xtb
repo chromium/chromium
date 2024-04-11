@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">နောက်သို့ ပြန်ရန်</translation>
 <translation id="2546283357679194313">ကူကီးများ နှင့် ဆိုက် ဒေတာ</translation>
 <translation id="2550801787432930915">လျှော့ဈေးကတ်</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{ကွတ်ကီး ၁ ခု ကို ပိတ်ထားသည်}other{ကွတ်ကီး # ခု ကို ပိတ်ထားသည်}}</translation>
 <translation id="2570922361219980984">ဤစက်ပစ္စည်းအတွက်လည်း တည်နေရာ အသုံးပြုခွင့်ကို ပိတ်ထားသည်။ <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် ၎င်းကို ဖွင့်ပါ။</translation>
 <translation id="257931822824936280">ချဲ့ထား၏ - ခေါက်သိမ်းရန် နှိပ်ပါ</translation>
 <translation id="2586657967955657006">ကလစ်ဘုတ်</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">နောက်ပြန်ရစ်ရန်</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> က သင့်တည်နေရာကို သုံးနိုင်ရန် <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း တည်နေရာကို ဖွင့်ပါ။</translation>
 <translation id="8447861592752582886">စက်ပစ္စည်းခွင့်ပြုချက်ကို ရုပ်သိမ်းပါ</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ကွတ်ကီးတစ်ခုကို သုံးနေသည်}other{အသုံးပြုနေသော ကွတ်ကီး # ခု}}</translation>
 <translation id="8487700953926739672">Offline ရနိုင်</translation>
 <translation id="848952951823693243">မိုဘိုင်းဝဘ်ဆိုက် အမြဲတောင်းဆိုပါ</translation>
 <translation id="8499083585497694743">မိုက်ခရိုဖုန်း ပြန်ဖွင့်ရန်</translation>

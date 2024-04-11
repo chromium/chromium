@@ -4516,7 +4516,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4403266582403435904">Wenn du deine Daten sicherst, kannst du diese jederzeit wiederherstellen – auch auf einem anderen Gerät. Sicherungen werden an Google gesendet und mit dem Passwort des Google-Kontos deines Kindes verschlüsselt.</translation>
 <translation id="4403775189117163360">Anderen Ordner wählen</translation>
 <translation id="4404136731284211429">Noch einmal scannen</translation>
-<translation id="4404619268534288383">Speichern und Synchronisieren von Tabgruppen</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> wurde von deinen Eltern blockiert. Bitte deine Eltern um Erlaubnis, diese App zu nutzen.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Verschieben nach…</translation>
@@ -5157,7 +5156,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4899696330053002588">Enthält Werbung</translation>
 <translation id="490031510406860025">Auf dieser Website nicht zugelassen</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz, Zeilensprung</translation>
-<translation id="490056871160016482">Websites verwenden diese Funktion, um eine immersive Vollbildnutzung unabhängig von Nutzergesten anzubieten</translation>
 <translation id="4900652253009739885">Der einzige Schalter, der „Auswählen“ zugewiesen ist, kann nicht entfernt werden. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="4901154724271753917">Kürzlich geschlossene Tabs maximieren</translation>
 <translation id="4901309472892185668">Wähle den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus.</translation>
@@ -5482,7 +5480,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> wurde blockiert</translation>
 <translation id="5163910114647549394">Tab wurde ans Ende der Tableiste verschoben</translation>
 <translation id="5164530241085602114">Benachrichtigungen für <ph name="SITE" /> nicht zulässig</translation>
-<translation id="5165989352025966137">Berechtigt, automatisch in den Vollbildmodus zu wechseln</translation>
 <translation id="516747639689914043">Hypertext Transfer Protocol (HTTP)</translation>
 <translation id="5170568018924773124">In Ordner zeigen</translation>
 <translation id="5171045022955879922">Suchen oder URL eingeben</translation>
@@ -5784,7 +5781,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="541737483547792035">Anzeige vergrößern</translation>
 <translation id="541822678830750798">Berechtigung zum Lesen und Ändern dieser Website wird angefordert</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Ermöglicht das Speichern und Wiederherstellen von Tabgruppen. Um eine Tabgruppe zu speichern, klicke mit der rechten Maustaste auf sie. Gespeicherte Gruppen lassen sich über die Lesezeichenleiste wiederherstellen.</translation>
 <translation id="5420274697768050645">Für zusätzliche Sicherheit beim Entsperren des Geräts nach dem Passwort fragen</translation>
 <translation id="5420438158931847627">Bestimmt die Schärfe von Text und Bildern</translation>
 <translation id="5420935737933866496">&amp;Link kopieren</translation>
@@ -6179,6 +6175,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5723967018671998714">Drittanbieter-Cookies sind im Inkognitomodus blockiert</translation>
 <translation id="5725112283692663422">Feedback zu „Design mit KI erstellen“ senden</translation>
 <translation id="5727728807527375859">Erweiterungen, Apps und Designs können deinen Computer beschädigen. Möchtest du den Vorgang wirklich fortsetzen?</translation>
+<translation id="5728072125198221967">Verknüpfte Google-Dienste</translation>
 <translation id="5728290366864286776">Diese Erweiterung kann Websiteinformationen lesen und ändern oder im Hintergrund ausgeführt werden</translation>
 <translation id="5728450728039149624">Optionen für die Smart Lock-Displaysperre</translation>
 <translation id="572914206753951782">Prüfe, ob auf deinem Chromebook die neueste Version installiert ist. Starte es dann neu und versuche es noch einmal.</translation>
@@ -8162,7 +8159,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7290242001003353852">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet und greift auf deine Kamera zu.</translation>
 <translation id="7292067737327289208">Dein <ph name="BEGIN_LINK" />Browser wird von deiner Organisation verwaltet<ph name="END_LINK" />, dein <ph name="BEGIN_LINK" />Profil<ph name="END_LINK" /> von <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Nicht berechtigt, automatisch in den Vollbildmodus zu wechseln</translation>
 <translation id="7295614427631867477">Hinweis: Unter Android, bei Google Play und in zugehörigen Apps gelten eigene Richtlinien für die Erhebung und Nutzung von Daten.</translation>
 <translation id="7296503797589217366">Ordner „<ph name="FOLDER_TITLE" />“ auswählen</translation>
 <translation id="7297726121602187087">Dunkelgrün</translation>
@@ -9709,7 +9705,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="84297032718407999">Du wirst in <ph name="LOGOUT_TIME_LEFT" /> abgemeldet</translation>
 <translation id="8431190899827883166">Fingertipps anzeigen</translation>
 <translation id="843173223122814223">Hintergründe mit KI erstellen</translation>
-<translation id="8432724317983466962">Für den Vollbildmodus ist standardmäßig eine Nutzergeste erforderlich</translation>
 <translation id="8433186206711564395">Netzwerkeinstellungen</translation>
 <translation id="8434480141477525001">NaCl-Debug-Port</translation>
 <translation id="8436054240208929121">Melde dich an und aktiviere die Synchronisierung, damit Chrome Tabgruppen vorschlagen kann und deine Tabs organisiert bleiben</translation>

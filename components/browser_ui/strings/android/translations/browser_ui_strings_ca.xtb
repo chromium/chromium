@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Torna</translation>
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
 <translation id="2550801787432930915">Targeta de baixada de preu</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 galeta bloquejada}other{# galetes bloquejades}}</translation>
 <translation id="2570922361219980984">L'accés a la ubicació també està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vista desplegada (feu clic per replegar-la)</translation>
 <translation id="2586657967955657006">Porta-retalls</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Retrocedeix</translation>
 <translation id="8444433999583714703">Perquè <ph name="APP_NAME" /> pugui accedir a la teva ubicació, també has d'activar-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoca el permís d'accés al dispositiu</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 galeta en ús}other{# galetes en ús}}</translation>
 <translation id="8487700953926739672">Disponible sense connexió</translation>
 <translation id="848952951823693243">Sol·licita sempre el lloc web per a mòbils</translation>
 <translation id="8499083585497694743">Deixa de silenciar el micròfon</translation>

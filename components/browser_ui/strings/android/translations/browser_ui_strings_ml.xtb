@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">പിന്നോട്ട് പോകുക</translation>
 <translation id="2546283357679194313">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
 <translation id="2550801787432930915">വിലക്കുറവ് കാർഡ്</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 കുക്കി ബ്ലോക്ക് ചെയ്തു}other{# കുക്കികൾ ബ്ലോക്ക് ചെയ്തു}}</translation>
 <translation id="2570922361219980984">ഈ ഉപകരണത്തിന്‍റെ ലൊക്കേഷൻ ആക്‌സസും ഓഫാണ്; <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> അത് ഓണാക്കുക.</translation>
 <translation id="257931822824936280">വിപുലീകരിച്ചത് - ചുരുക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="2586657967955657006">ക്ലിപ്പ്ബോർഡ്</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">പുറകിലേക്ക് സീക്കുചെയ്യുക</translation>
 <translation id="8444433999583714703">നിങ്ങളുടെ ലൊക്കേഷൻ ആക്‌സസ് ചെയ്യാൻ <ph name="APP_NAME" /> ആപ്പിനെ അനുവദിക്കുന്നതിന്, <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> ലൊക്കേഷൻ ഓണാക്കുക.</translation>
 <translation id="8447861592752582886">ഉപകരണ അനുമതി റദ്ദാക്കുക</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ഒരു കുക്കി ഉപയോഗത്തിലാണ്}other{# കുക്കികൾ ഉപയോഗത്തിലാണ്}}</translation>
 <translation id="8487700953926739672">ഓഫ്‌ലൈനില്‍ ലഭ്യമാണ്</translation>
 <translation id="848952951823693243">എല്ലായ്‌പ്പോഴും മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="8499083585497694743">മൈക്രോഫോൺ അൺമ്യൂട്ട് ചെയ്യുക</translation>

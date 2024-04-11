@@ -4521,7 +4521,6 @@
 <translation id="4403266582403435904">Вы можете легко восстановить данные или в любой момент перенести их на новое устройство. Резервные копии загружаются в Google и шифруются с помощью пароля аккаунта Google вашего ребенка.</translation>
 <translation id="4403775189117163360">Выбрать другую папку</translation>
 <translation id="4404136731284211429">Сканировать</translation>
-<translation id="4404619268534288383">Сохранение и синхронизация групп вкладок</translation>
 <translation id="4404843640767531781">Чтобы пользоваться приложением "<ph name="APP_NAME" />", требуется разрешение родителя.</translation>
 <translation id="4405117686468554883">*.JPEG, *.JPG, *.PNG</translation>
 <translation id="4405224443901389797">Переместить в…</translation>
@@ -5162,7 +5161,6 @@
 <translation id="4899696330053002588">Есть реклама</translation>
 <translation id="490031510406860025">Запрещено на этом сайте</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – чересстрочная развертка</translation>
-<translation id="490056871160016482">Эта функция влияет на то, могут ли сайты автоматически показывать контент в полноэкранном режиме.</translation>
 <translation id="4900652253009739885">Нельзя отменить назначение единственного переключателя для действия "Выбрать". Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Развернуть список недавно закрытых страниц</translation>
 <translation id="4901309472892185668">Выберите статус для эксперимента "<ph name="EXPERIMENT_NAME" />".</translation>
@@ -5487,7 +5485,6 @@
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" />: заблокировано</translation>
 <translation id="5163910114647549394">Вкладка перемещена в конец панели</translation>
 <translation id="5164530241085602114">Сайту <ph name="SITE" /> запрещено отправлять уведомления</translation>
-<translation id="5165989352025966137">Автоматическое открытие в полноэкранном режиме разрешено:</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5171045022955879922">Введите запрос или URL</translation>
@@ -5789,7 +5786,6 @@
 <translation id="541737483547792035">Экранная лупа</translation>
 <translation id="541822678830750798">Расширение запрашивает разрешение на просмотр и изменение этого сайта</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Разрешите сохранение группы вкладок и переход к ним. Чтобы сохранить группу вкладок, нажмите на нее правой кнопкой мыши. Для быстрого перехода к нужной группе используйте панель закладок.</translation>
 <translation id="5420274697768050645">В целях безопасности запрашивать пароль для разблокировки устройства</translation>
 <translation id="5420438158931847627">Определяет резкость текста и изображений.</translation>
 <translation id="5420935737933866496">&amp;Копировать ссылку</translation>
@@ -6186,6 +6182,7 @@
 <translation id="5723967018671998714">Сторонние файлы cookie заблокированы в режиме инкогнито</translation>
 <translation id="5725112283692663422">Оставить отзыв на функцию "Создание тем с помощью ИИ"</translation>
 <translation id="5727728807527375859">Расширения и темы могут причинить вред вашему компьютеру. Продолжить?</translation>
+<translation id="5728072125198221967">Связанные сервисы Google</translation>
 <translation id="5728290366864286776">Это расширение может читать и изменять информацию сайта или работать в фоновом режиме</translation>
 <translation id="5728450728039149624">Настроить блокировку экрана с помощью Smart Lock</translation>
 <translation id="572914206753951782">Убедитесь, что на Chromebook установлена последняя версия ОС. Затем перезапустите Chromebook и повторите попытку.</translation>
@@ -8176,7 +8173,6 @@
 <translation id="7290242001003353852">Сервису входа, размещенному в домене <ph name="SAML_DOMAIN" />, разрешен доступ к вашей камере.</translation>
 <translation id="7292067737327289208">Этим <ph name="BEGIN_LINK" />браузером управляет<ph name="END_LINK" /> ваша организация, а <ph name="BEGIN_LINK" />профилем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Автоматическое открытие в полноэкранном режиме запрещено:</translation>
 <translation id="7295614427631867477">Обратите внимание, что для Android, Google Play и связанных с ними приложений действуют их собственные правила по сбору и использованию данных.</translation>
 <translation id="7296503797589217366">Выбрать папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="7297726121602187087">Темно-зеленый</translation>
@@ -9722,7 +9718,6 @@
 <translation id="84297032718407999">Выход из системы произойдет через <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Визуальный отклик</translation>
 <translation id="843173223122814223">Создавайте фоновые изображения с помощью ИИ</translation>
-<translation id="8432724317983466962">По умолчанию переход в полноэкранный режим выполняется с помощью жеста.</translation>
 <translation id="8433186206711564395">Настройки сети</translation>
 <translation id="8434480141477525001">Порт отладки NaCl</translation>
 <translation id="8436054240208929121">Войдите в аккаунт и включите синхронизацию, чтобы получать рекомендации Chrome по группировке вкладок.</translation>

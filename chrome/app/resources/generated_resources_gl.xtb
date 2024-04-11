@@ -4521,7 +4521,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4403266582403435904">Restaura facilmente os datos ou cambia de dispositivo en calquera momento. As copias de seguranza cárganse en Google e encríptanse co contrasinal da Conta de Google do teu fillo ou filla.</translation>
 <translation id="4403775189117163360">Escoller un cartafol diferente</translation>
 <translation id="4404136731284211429">Buscar de novo</translation>
-<translation id="4404619268534288383">Gardar e sincronizar os grupos de pestanas</translation>
 <translation id="4404843640767531781">O teu pai ou nai bloqueou <ph name="APP_NAME" />. Pídelle permiso para utilizar esta aplicación.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg e *.png</translation>
 <translation id="4405224443901389797">Mover a…</translation>
@@ -5162,7 +5161,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4899696330053002588">Contén anuncios</translation>
 <translation id="490031510406860025">Non se permite neste sitio</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz: liñas entrelazadas</translation>
-<translation id="490056871160016482">Os sitios usan esta función para ofrecer experiencias envolventes de pantalla completa independentemente dos xestos do usuario</translation>
 <translation id="4900652253009739885">Non se pode quitar o único interruptor que ten asignada a acción Seleccionar. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Despregar as pestanas pechadas recentemente</translation>
 <translation id="4901309472892185668">Seleccionar estado do experimento <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5487,7 +5485,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5162905305237671850">Bloqueouse o <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">A pestana moveuse ao final da franxa de pestanas</translation>
 <translation id="5164530241085602114">Non se permiten notificacións para <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Permiso concedido para acceder ao modo de pantalla completa automaticamente</translation>
 <translation id="516747639689914043">Protocolo de Transferencia de Hipertexto (HTTP)</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5171045022955879922">Buscar ou escribir o URL</translation>
@@ -5789,7 +5786,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="541737483547792035">Ampliar pantalla</translation>
 <translation id="541822678830750798">Solicitando acceso para ler e cambiar este sitio</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Permite gardar e recuperar os grupos de pestanas. Fai clic co botón dereito nun grupo de pestanas para gardalo. Recupera grupos da barra de marcadores.</translation>
 <translation id="5420274697768050645">Solicita que se poña un contrasinal para desbloquear o dispositivo, o que aumenta a seguranza</translation>
 <translation id="5420438158931847627">Determina a nitidez do texto e das imaxes</translation>
 <translation id="5420935737933866496">Copiar &amp;ligazón</translation>
@@ -6184,6 +6180,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5723967018671998714">As cookies de terceiros bloquéanse no modo de incógnito</translation>
 <translation id="5725112283692663422">Envía comentarios sobre Crear un tema con IA</translation>
 <translation id="5727728807527375859">As extensións, aplicacións e temas poden danar o teu ordenador. Seguro que queres continuar?</translation>
+<translation id="5728072125198221967">Servizos de Google vinculados</translation>
 <translation id="5728290366864286776">Esta extensión poderá ler e cambiar a información do sitio ou executarse en segundo plano</translation>
 <translation id="5728450728039149624">Opcións de bloqueo de pantalla de Smart Lock</translation>
 <translation id="572914206753951782">Asegúrate de que o Chromebook teña instalado o software máis recente. Despois reiníciao e téntao de novo.</translation>
@@ -8166,7 +8163,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7290242001003353852">Este servizo de inicio de sesión, que está aloxado por <ph name="SAML_DOMAIN" />, está accedendo á túa cámara.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />O teu navegador está xestionado<ph name="END_LINK" /> pola túa organización e <ph name="BEGIN_LINK" />o teu perfil está xestionado<ph name="END_LINK" /> por <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Permiso denegado para acceder ao modo de pantalla completa automaticamente</translation>
 <translation id="7295614427631867477">Ten en conta que Android, Play e as aplicacións asociadas réxense polas súas propias políticas de recompilación e uso de datos.</translation>
 <translation id="7296503797589217366">Seleccionar o cartafol <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verde escuro</translation>
@@ -9712,7 +9708,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="84297032718407999">Pecharase a túa sesión dentro de <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Mostrar toques</translation>
 <translation id="843173223122814223">Crea fondos con IA</translation>
-<translation id="8432724317983466962">De forma predeterminada, para poder acceder á pantalla completa, é necesario un xesto do usuario</translation>
 <translation id="8433186206711564395">Configuración de rede</translation>
 <translation id="8434480141477525001">Porto de depuración NaCl</translation>
 <translation id="8436054240208929121">Se inicias sesión e activas a sincronización, Chrome pode suxerir grupos de pestanas para ter as pestanas organizadas</translation>

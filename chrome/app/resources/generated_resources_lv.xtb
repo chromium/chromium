@@ -4521,7 +4521,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4403266582403435904">Varat jebkurā laikā ērti atjaunot datus vai nomainīt ierīci. Dublējumi tiek augšupielādēti Google serveros un tiek šifrēti, izmantojot jūsu bērna Google konta paroli.</translation>
 <translation id="4403775189117163360">Izvēlēties citu mapi</translation>
 <translation id="4404136731284211429">Meklēt vēlreiz</translation>
-<translation id="4404619268534288383">Ciļņu grupu saglabāšana un sinhronizēšana</translation>
 <translation id="4404843640767531781">Lietotni <ph name="APP_NAME" /> bloķēja kāds no jūsu vecākiem. Lai izmantotu šo lietotni, lūdziet vecākiem piešķirt atļauju.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Pārvietot uz…</translation>
@@ -5162,7 +5161,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4899696330053002588">Ietver reklāmas</translation>
 <translation id="490031510406860025">Nav atļauts šajā vietnē</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz — rindpārlēces izvērse</translation>
-<translation id="490056871160016482">Šī funkcija tiek izmantota vietnēs, lai piedāvātu visaptverošu pilnekrāna pieredzi neatkarīgi no lietotāja žestiem.</translation>
 <translation id="4900652253009739885">Nevar noņemt vienīgo slēdzi, kas ir piešķirts darbībai “Atlasīt”. Nospiediet jebkuru taustiņu, lai veiktu darbību <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Izvērst nesen aizvērtās</translation>
 <translation id="4901309472892185668">Atlasiet eksperimenta <ph name="EXPERIMENT_NAME" /> statusu.</translation>
@@ -5487,7 +5485,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ierīce tika bloķēta</translation>
 <translation id="5163910114647549394">Cilne tika pārvietota uz ciļņu joslas beigām</translation>
 <translation id="5164530241085602114">Vietnei <ph name="SITE" /> nav atļauts rādīt paziņojumus.</translation>
-<translation id="5165989352025966137">Ir atļauts automātiski pāriet pilnekrāna režīmā.</translation>
 <translation id="516747639689914043">Hiperteksta transporta protokols (HTTP)</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5171045022955879922">Meklējiet vai ievadiet URL.</translation>
@@ -5789,7 +5786,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="541737483547792035">Ekrāna palielināšana</translation>
 <translation id="541822678830750798">Pieprasa atļauju lasīt un mainīt šo vietni…</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Tiek iespējota ciļņu grupu saglabāšana un atjaunošana. Lai saglabātu ciļņu grupu, noklikšķiniet uz tās ar peles labo pogu. Varat atjaunot grupas no grāmatzīmju joslas.</translation>
 <translation id="5420274697768050645">Lai iegūtu papildu drošību, atbloķējot ierīci, pieprasīt paroli</translation>
 <translation id="5420438158931847627">Regulē teksta un attēlu asumu</translation>
 <translation id="5420935737933866496">Kopēt &amp;saiti</translation>
@@ -6184,6 +6180,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5723967018671998714">Trešo pušu sīkfaili ir bloķēti inkognito režīmā</translation>
 <translation id="5725112283692663422">Sūtiet atsauksmes par funkciju “Motīva izveide, izmantojot MI”</translation>
 <translation id="5727728807527375859">Paplašinājumi, lietojumprogrammas un motīvi var kaitēt datoram. Vai tiešām vēlaties turpināt?</translation>
+<translation id="5728072125198221967">Saistītie Google pakalpojumi</translation>
 <translation id="5728290366864286776">Šis paplašinājums var lasīt un mainīt vietnes informāciju vai darboties fonā</translation>
 <translation id="5728450728039149624">Smart Lock ekrāna bloķēšanas iespējas</translation>
 <translation id="572914206753951782">Pārbaudiet, vai Chromebook datorā ir instalēta jaunākā versija. Pēc tam restartējiet Chromebook datoru un mēģiniet vēlreiz.</translation>
@@ -8171,7 +8168,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7290242001003353852">Šis domēnā <ph name="SAML_DOMAIN" /> mitinātais pierakstīšanās pakalpojums piekļūst jūsu kamerai.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Pārlūku pārvalda<ph name="END_LINK" /> jūsu organizācija, un jūsu <ph name="BEGIN_LINK" />profilu pārvalda<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Nav atļauts automātiski pāriet pilnekrāna režīmā.</translation>
 <translation id="7295614427631867477">Ņemiet vērā, ka operētājsistēmu Android, veikalu Play un saistītās lietotnes pārvalda atsevišķas datu vākšanas un lietošanas politikas.</translation>
 <translation id="7296503797589217366">Atlasīt mapi <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Tumši zaļa</translation>
@@ -9717,7 +9713,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="84297032718407999">Jūs tiksiet izrakstīts pēc šāda laika: <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Pieskārienu rādīšana</translation>
 <translation id="843173223122814223">Fonu izveide, izmantojot MI</translation>
-<translation id="8432724317983466962">Lai pārietu pilnekrāna režīmā, pēc noklusējuma ir nepieciešams lietotāja žests.</translation>
 <translation id="8433186206711564395">Tīkla iestatījumi</translation>
 <translation id="8434480141477525001">Native Client atkļūdošanas ports</translation>
 <translation id="8436054240208929121">Pierakstieties un ieslēdziet sinhronizāciju, lai Chrome varētu ieteikt ciļņu grupas un kārtot cilnes.</translation>

@@ -243,7 +243,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1428729058023778569">Je ziet deze waarschuwing omdat deze site geen HTTPS ondersteunt. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Zelfklevende folie</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
-<translation id="1431021750861456539">Automatisch volledig scherm</translation>
 <translation id="1432187715652018471">De pagina wil een servicehandler installeren.</translation>
 <translation id="1432581352905426595">Zoekmachines beheren</translation>
 <translation id="1433225466058025572">Probeer je bestanden opnieuw te verplaatsen</translation>
@@ -2313,7 +2312,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
     <ph name="LINE_BREAK" />
     Neem contact op met je systeembeheerder.</translation>
 <translation id="549333378215107354">Grootte 3</translation>
-<translation id="5501712702042287009">automatisch volledig scherm</translation>
 <translation id="550365051221576010">Alles invullen</translation>
 <translation id="5508443345185481044">Camera's en camcorders</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2494,6 +2492,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5862579898803147654">Stapeleenheid 8</translation>
+<translation id="5863515189965725638">IBAN bewerken</translation>
 <translation id="5863847714970149516">De komende pagina probeert misschien kosten in rekening te brengen</translation>
 <translation id="5866257070973731571">Telefoonnummer toevoegen</translation>
 <translation id="5866898949289125849">Je bekijkt een Developer Tools-pagina</translation>

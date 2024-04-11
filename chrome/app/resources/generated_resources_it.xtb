@@ -4519,7 +4519,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4403266582403435904">Ripristina i dati o cambia facilmente dispositivo in qualsiasi momento. Le copie di backup vengono caricate su Google e criptate mediante la password del tuo Account Google.</translation>
 <translation id="4403775189117163360">Scegli una cartella diversa</translation>
 <translation id="4404136731284211429">Analizza di nuovo</translation>
-<translation id="4404619268534288383">Salvataggio e sincronizzazione dei gruppi di schede</translation>
 <translation id="4404843640767531781">L'app <ph name="APP_NAME" /> è stata bloccata da un genitore. Chiedi al tuo genitore l'autorizzazione per poterla usare.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Sposta in…</translation>
@@ -5160,7 +5159,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4899696330053002588">Contiene annunci</translation>
 <translation id="490031510406860025">Non consentito su questo sito</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - interlacciata</translation>
-<translation id="490056871160016482">I siti usano questa funzionalità per offrire esperienze immersive a schermo intero indipendentemente dai gesti dell'utente</translation>
 <translation id="4900652253009739885">Impossibile rimuovere l'unico sensore assegnato a "Seleziona". Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Espandi schede chiuse di recente</translation>
 <translation id="4901309472892185668">Seleziona lo stato dell'esperimento <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5485,7 +5483,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> è stato bloccato</translation>
 <translation id="5163910114647549394">Scheda spostata alla fine della tabstrip</translation>
 <translation id="5164530241085602114">Notifiche non consentite per <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Possono attivare automaticamente la modalità a schermo intero</translation>
 <translation id="516747639689914043">HyperText Transfer Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5171045022955879922">Cerca o digita un URL</translation>
@@ -5787,7 +5784,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="541737483547792035">Ingrandisci lo schermo</translation>
 <translation id="541822678830750798">Richiesta di lettura e modifica del sito in corso…</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Consente di salvare e recuperare i gruppi di schede. Fai clic con il tasto destro del mouse su un gruppo di schede per salvarlo. Consente di recuperare i gruppi dalla barra dei preferiti.</translation>
 <translation id="5420274697768050645">Richiedi la password per sbloccare il dispositivo per maggiore sicurezza</translation>
 <translation id="5420438158931847627">Determina la nitidezza del testo e delle immagini</translation>
 <translation id="5420935737933866496">Copia &amp;link</translation>
@@ -6182,6 +6178,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5723967018671998714">I cookie di terze parti sono bloccati in modalità di navigazione in incognito</translation>
 <translation id="5725112283692663422">Invia feedback per Crea tema con l'IA</translation>
 <translation id="5727728807527375859">Estensioni, applicazioni e temi possono danneggiare il tuo computer. Continuare?</translation>
+<translation id="5728072125198221967">Servizi Google collegati</translation>
 <translation id="5728290366864286776">Questa estensione può leggere e modificare le informazioni dei siti o essere eseguita in background</translation>
 <translation id="5728450728039149624">Opzioni blocco schermo Smart Lock</translation>
 <translation id="572914206753951782">Assicurati che su Chromebook sia installata la versione più recente. Dopodiché riavvia Chromebook e riprova.</translation>
@@ -8165,7 +8162,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7290242001003353852">Questo servizio di accesso, ospitato da <ph name="SAML_DOMAIN" />, sta accedendo alla videocamera.</translation>
 <translation id="7292067737327289208">Il tuo <ph name="BEGIN_LINK" />browser è gestito<ph name="END_LINK" /> dalla tua organizzazione e il tuo <ph name="BEGIN_LINK" />profilo è gestito<ph name="END_LINK" /> da <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Siti non autorizzati ad attivare automaticamente la modalità a schermo intero</translation>
 <translation id="7295614427631867477">Tieni presente che Android, Play e le app associate sono regolati dalle loro norme di raccolta e utilizzo dei dati.</translation>
 <translation id="7296503797589217366">Seleziona cartella <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verde scuro</translation>
@@ -9712,7 +9708,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="84297032718407999">Verrai disconnesso tra <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="8431190899827883166">Mostra tocchi</translation>
 <translation id="843173223122814223">Crea sfondi con l'IA</translation>
-<translation id="8432724317983466962">L'attivazione della modalità a schermo intero richiede un gesto dell'utente per impostazione predefinita</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="8434480141477525001">Porta di debug NaCl</translation>
 <translation id="8436054240208929121">Accedi e attiva la sincronizzazione per consentire a Chrome di suggerire gruppi di schede e mantenere organizzate le schede</translation>
@@ -10474,7 +10469,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9011393886518328654">Note di rilascio</translation>
 <translation id="9012122671773859802">Sposta continuamente lo schermo quando il puntatore del mouse si muove</translation>
 <translation id="9012157139067635194">Pulisci</translation>
-<translation id="9012585441087414258">Protegge da siti, download ed estensioni noti per essere pericolosi. Se una pagina esegue operazioni sospette, vengono inviati URL e frammenti dei contenuti delle pagine a Google Navigazione sicura.</translation>
+<translation id="9012585441087414258">Protezione da siti, download ed estensioni noti per essere pericolosi. Se una pagina esegue operazioni sospette, vengono inviati URL e frammenti dei contenuti delle pagine a Google Navigazione sicura</translation>
 <translation id="9013037634206938463">Sono necessari <ph name="INSTALL_SIZE" /> di spazio libero per installare Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
 <translation id="9014206344398081366">Tutorial di ChromeVox</translation>
 <translation id="9014674417732091912">Spostato alla riga <ph name="ROW_NUMBER" /></translation>

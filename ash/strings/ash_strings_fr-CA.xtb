@@ -1431,7 +1431,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6537924328260219877">Force du signal : <ph name="SIGNAL_STRENGTH" />, pile du téléphone : <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Téléchargement en cours d'analyse : <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Diffusion sur <ph name="RECEIVER_NAME" /> en cours…</translation>
-<translation id="6546062506073634094">Recherche d'images par contenu et aperçus d'images</translation>
 <translation id="6555373427270923730">Entrez une adresse Web dans la barre d'adresse, puis appuyez sur <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nouvelle installation</translation>

@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Gå tilbage</translation>
 <translation id="2546283357679194313">Cookies og websitedata</translation>
 <translation id="2550801787432930915">Kort med prisfald</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie blev blokeret}one{# cookie blev blokeret}other{# cookies blev blokeret}}</translation>
 <translation id="2570922361219980984">Lokationsadgang er også deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Udvidet – klik for at skjule.</translation>
 <translation id="2586657967955657006">Udklipsholder</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Spol tilbage</translation>
 <translation id="8444433999583714703">Aktivér også lokation i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til din lokation.</translation>
 <translation id="8447861592752582886">Tilbagekald adgangstilladelsen til enheden</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie er i brug}one{# cookie er i brug}other{# cookies er i brug}}</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
 <translation id="848952951823693243">Anmod altid om mobilwebsite</translation>
 <translation id="8499083585497694743">Slå mikrofon til</translation>

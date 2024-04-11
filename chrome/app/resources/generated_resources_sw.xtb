@@ -4529,7 +4529,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4403266582403435904">Rejesha data au ubadilishe vifaa kwa urahisi wakati wowote. Nakala hupakiwa kwenye Google na kusimbwa kwa njia fiche kwa kutumia nenosiri la Akaunti ya Google ya mtoto wako.</translation>
 <translation id="4403775189117163360">Chagua folda tofauti</translation>
 <translation id="4404136731284211429">Changanua tena</translation>
-<translation id="4404619268534288383">Kuhifadhi na Kusawazisha Vikundi vya Vichupo</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> imezuiwa na mzazi wako. Mwombe mzazi wako ruhusa ya kutumia programu hii.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Hamishia kwenye…</translation>
@@ -5171,7 +5170,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4899696330053002588">Ina matangazo</translation>
 <translation id="490031510406860025">Hakiruhusiwi katika tovuti hii</translation>
 <translation id="490051679772058907">Hz <ph name="REFRESH_RATE" /> - imejumuishwa pamoja</translation>
-<translation id="490056871160016482">Tovuti hutumia kipengele hiki ili kutoa hali za skrini nzima ya kuvutia bila kujali miguso ya mtumiaji</translation>
 <translation id="4900652253009739885">Huwezi kuondoa swichi ya pekee iliyokabidhiwa kitendo cha “Chagua.” Bonyeza kitufe chochote ili <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Panua kichupo kilichofungwa hivi karibuni</translation>
 <translation id="4901309472892185668">Chagua hali ya jaribio la <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5496,7 +5494,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> imezuiwa</translation>
 <translation id="5163910114647549394">Kichupo kimewekwa mwishoni mwa ukanda wa vichupo</translation>
 <translation id="5164530241085602114">Umezuia arifa katika tovuti ya <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Zilizoruhusiwa kufungua skrini nzima kiotomatiki</translation>
 <translation id="516747639689914043">Itifaki ya Uhamishaji wa Maandishi yenye Viungo (HTTP)</translation>
 <translation id="5170568018924773124">Onyesha katika folda</translation>
 <translation id="5171045022955879922">Tafuta au charaza URL</translation>
@@ -5798,7 +5795,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="541737483547792035">Kuza skrini</translation>
 <translation id="541822678830750798">Kinaomba kisome na kibadilishe tovuti hii</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Huwezesha kuhifadhi na kuondoa vikundi vya vichupo. Bofya kulia kwenye kikundi cha kichupo ili ukihifadhi. Ondoa vikundi kwenye sehemu ya alamisho.</translation>
 <translation id="5420274697768050645">Weka nenosiri la kufungua kifaa ili kuimarisha usalama</translation>
 <translation id="5420438158931847627">Hubainisha ung'aavu wa maandishi na picha</translation>
 <translation id="5420935737933866496">Nakili Kiungo</translation>
@@ -6195,6 +6191,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5723967018671998714">Vidakuzi vya washirika wengine vimezuiwa katika Hali Fiche</translation>
 <translation id="5725112283692663422">Tuma maoni kuhusu kuunda mandhari kwa kutumia AI</translation>
 <translation id="5727728807527375859">Viendelezi, programu, na mandhari vinaweza kudhuru kompyuta yako. Je, una hakika unataka kuendelea?</translation>
+<translation id="5728072125198221967">Huduma za Google zilizounganishwa</translation>
 <translation id="5728290366864286776">Kiendelezi hiki kinaweza kusoma na kubadilisha maelezo yaliyo kwenye tovuti au kinaweza kutumika katika hali ya chinichini</translation>
 <translation id="5728450728039149624">Chaguo za kifunga skrini cha Smart Lock</translation>
 <translation id="572914206753951782">Hakikisha kuwa unatumia toleo jipya zaidi la Chromebook. Zima kisha uwashe Chromebook na ujaribu tena.</translation>
@@ -8179,7 +8176,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7290242001003353852">Huduma hii ya kuingia katika akaunti, inayopangishwa na <ph name="SAML_DOMAIN" />, ina idhini ya kufikia kamera yako.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Kivinjari chako kinadhibitiwa<ph name="END_LINK" /> na shirika lako na <ph name="BEGIN_LINK" />wasifu wako unadhibitiwa<ph name="END_LINK" /> na <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Zisizoruhusiwa kufungua skrini nzima kiotomatiki</translation>
 <translation id="7295614427631867477">Kumbuka kwamba Google Play, Android na programu zinazohusiana zinaongozwa na sera mahususi za ukusanyaji na utumiaji wa data.</translation>
 <translation id="7296503797589217366">Chagua folda ya <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Kijani kilichokolea</translation>
@@ -9727,7 +9723,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="84297032718407999">Utaondolewa kwenye akaunti baada ya <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Onyesha unapogusa</translation>
 <translation id="843173223122814223">Tayarisha mandharinyuma ukitumia AI</translation>
-<translation id="8432724317983466962">Hali ya kufungua skrini nzima huhitaji mguso wa mtumiaji kwa chaguomsingi</translation>
 <translation id="8433186206711564395">Mipangilio ya mtandao</translation>
 <translation id="8434480141477525001">Lango la Kutatua la NaCl</translation>
 <translation id="8436054240208929121">Ingia katika akaunti na uwashe usawazishaji ili uruhusu Chrome ipendekeze vikundi vya vichupo na ipange vichupo vyako</translation>

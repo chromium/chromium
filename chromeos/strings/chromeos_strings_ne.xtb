@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">पुतलीहरू</translation>
 <translation id="188114911237521550">अँध्यारो मोड अफ गर्नुहोस्</translation>
-<translation id="188268299367474594">उपलब्ध APN मध्येबाट छान्नुहोस्</translation>
 <translation id="1885577615937958993">"मिडिया फास्ट फर्वार्ड गर्नुहोस्" जनाउने आइकन</translation>
 <translation id="1887850431809612466">हार्डवेयरको पुनरावृत्ति</translation>
 <translation id="189221451253258459">नियोन ग्रिन</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> औँ फोटो</translation>
 <translation id="2446553403094072641">फ्लोटिङ पोइन्टको सटीकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
-<translation id="2465272316171730950">हामी अहिले तपाईंलाई मद्दत गर्न सक्दैनौँ। कृपया केही बेरपछि फेरि आउनुहोला।</translation>
 <translation id="2472215337771558851">Google को AI प्रविधियुक्त लेख्न मद्दत गर्ने सुविधा प्रयोग गरी ड्राफ्ट बनाउनुहोस् वा पहिले नै लेखिएको सामग्री परिष्कृत गर्नुहोस्</translation>
 <translation id="2480572840229215612">गँगटाहरू</translation>
 <translation id="248546197012830854">डिभाइस अफलाइन छ। मद्दतसम्बन्धी सामग्री हेर्न Wi-Fi नेटवर्कमा कनेक्ट गर्नुहोस्।</translation>
@@ -284,10 +282,9 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ओपल</translation>
 <translation id="2505327257735685095">हालको वालपेपर रिफ्रेस गर्नुहोस्</translation>
-<translation id="2512979179176933762">"विन्डोहरू देखाइऊन्" जनाउने आइकन</translation>
+<translation id="2512979179176933762">"विन्डोहरू देखाउनुहोस्" जनाउने आइकन</translation>
 <translation id="2513396635448525189">प्रोफाइल फोटो</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
-<translation id="2520213071283358374">यो APN प्रयोग गर्नुहोस्</translation>
 <translation id="2521835766824839541">"अघिल्लो ट्रयाक" जनाउने आइकन</translation>
 <translation id="2526590354069164005">डेस्कटप</translation>
 <translation id="253029298928638905">रिस्टार्ट गरिँदै छ...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">सबनेट मास्क</translation>
 <translation id="4454245904991689773">स्क्यान गरेर यहाँ सेभ गर्नुहोस्</translation>
 <translation id="4456812688969919973">"APN सेभ गर्नुहोस्" बटन अहिले अफ गरिएको छ</translation>
-<translation id="4460905888685975163">"यो APN प्रयोग गर्नुहोस्" बटन अहिले अफ गरिएको छ</translation>
 <translation id="4469288414739283461">अर्थ फ्लो स्क्रिन सेभर</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">नेटवर्कको डिफल्ट गेटवेका रूपमा सेट नगरिएको यस गेटवेलाई पिङ गर्न सकिएन</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">सर्भरको होस्टनाम</translation>
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">माथि</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> की समावेश नगरिएको सर्टकट केही एपको सर्टकटसँग जुध्न सक्छ। यो सर्टकट प्रयोग गरिराख्न उक्त सर्टकट फेरि थिच्नुहोस् वा <ph name="KEY" /> की प्रयोग गरेर नयाँ सर्टकट थिच्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">समानार्थक:</translation>
 <translation id="5130848777448318809">पोनीहरू</translation>
@@ -895,7 +892,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">कुनै पनि स्क्यानर उपलब्ध छैन</translation>
 <translation id="6232017090690406397">ब्याटरी</translation>
-<translation id="6234024205316847054">आउटलाइनहरू देखाइऊन्</translation>
+<translation id="6234024205316847054">आउटलाइनहरू देखाउनुहोस्</translation>
 <translation id="6235460611964961764">डेटा प्रयोग म्यानुअल तरिकाले रिसेट गर</translation>
 <translation id="6243280677745499710">हाल सेट गरिएको</translation>
 <translation id="6250316632541035980">बेकन र अन्डा</translation>
@@ -1066,7 +1063,6 @@
 <translation id="7147557737960578492">नयाँ की चयन गरेर फेरि असाइन गर्नुहोस्</translation>
 <translation id="714876143603641390">Lan कनेक्टिभिटी</translation>
 <translation id="7154020516215182599">आफ्नो प्रतिक्रिया दिनुहोस् वा आफ्ना समस्याका बारेमा वर्णन गर्नुहोस्। सम्भव भएमा, आफ्ना समस्याका बारेमा क्रमिक रूपमा वर्णन गर्नुहोस्।</translation>
-<translation id="7155037718620478619">थप APN का बारेमा जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="7155171745945906037">क्यामेरा वा फाइलको विद्यमान तस्बिर</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">प्रोफाइल तस्बिर</translation>
@@ -1169,16 +1165,6 @@
 <translation id="773153675489693198">साइकल काउन्ट</translation>
 <translation id="7746357909584236306">सम्पादन गर्न मिल्छ</translation>
 <translation id="7747039790905080783">अग्रिम रूपमा सेयर गरिएको की</translation>
-<translation id="7748162180830414915">आफ्ना AI फोटोहरू पर्सनलाइज गर्न कुनै थिम रोज्नुहोस् अनि अन्डरलाइन गरिएका शब्दहरू चयन गर्नुहोस्।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI फोटोका अझ धेरै अद्वितीय तथा विविधतायुक्त विकल्पहरू प्राप्त गर्न "मलाई कुनै प्रेरणादायी कुरा बताऊ" चयन गर्नुहोस्।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          तपाईंले AI प्रयोग गरी फोटो बनाउँदा फोटोहरू बनाउने र उत्पादनको गुणस्तर सुधार गर्ने प्रयोजनका लागि तपाईंको प्रम्प्ट <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google को गोपनीयता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />बमोजिम Google AI का सर्भरमा पठाइन्छ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          जेनेरेटिभ AI परीक्षणकै क्रममा छ, पूर्ण रूपमा तयार भइसकेको छैन र हाल सीमित रूपमा उपलब्ध छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7752963721013053477">डन टु डार्क - विशेष</translation>
 <translation id="7762130827864645708">तपाईंको पासवर्ड परिवर्तन गरिएको छ। कृपया अबदेखि नयाँ पासवर्ड प्रयोग गर्नुहोस्।</translation>
 <translation id="7763470514545477072">डोमेन सफिक्ससँग मिल्दोजुल्दो</translation>
@@ -1206,6 +1192,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">प्रदायकको प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक की</translation>
+<translation id="78957024357676568">बायाँ</translation>
 <translation id="7897043345768902965">वाकवे</translation>
 <translation id="7903695460270716054">छनौट गरिएका कलाकृति तथा फोटोहरू छनौट गर्नुहोस्</translation>
 <translation id="7915220255123750251">नेटवर्क APN सम्बन्धी सेटिङ मिलाउनुहोस्। APN ले मोबाइल नेटवर्क र इन्टरनेटबिचको कनेक्सन बनाउँछ।</translation>
@@ -1236,7 +1223,6 @@
 <translation id="8075838845814659848">बाँकी ब्याट्री</translation>
 <translation id="8076492880354921740">ट्याबहरू</translation>
 <translation id="8079860070590459552">फूलहरू फुलेको फाँट</translation>
-<translation id="8081553043098820199">अवैध APN प्रयोग गर्दा तपाईंको मोबाइल कनेक्सन डिसएबल हुन सक्छ। आफ्नो मोबाइल सेवा प्रदायक वा एड्मिनले उपलब्ध गराएका APN मात्र सेट गर्नुहोस्।</translation>
 <translation id="8082366717211101304">Android एपहरूबाट DNS समाधान गर्न सकिएन</translation>
 <translation id="8082644724189923105">किबोर्ड जोन</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
@@ -1244,6 +1230,7 @@
 <translation id="8104083085214006426">तपाईं खुला र असुरक्षित नेटवर्क प्रयोग गर्दै हुनुहुन्छ</translation>
 <translation id="811820734797650957">(Android) गेटवे पिङ गर्न सकिन्छ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
+<translation id="8131740175452115882">निश्चित</translation>
 <translation id="8132480444149501833">ट्राफिक काउन्टरसम्बन्धी जानकारी माग्दै अनुरोध पठाउनुहोस्</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चयन गर्नुहोस्</translation>
@@ -1269,7 +1256,6 @@
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8302368968391049045">HTTPS फायरवाल</translation>
 <translation id="8312330582793120272">"मिडिया प्ले गर्नुहोस्" जनाउने आइकन</translation>
-<translation id="8317819321190319496">"यो APN प्रयोग गर्नुहोस्" बटन अहिले अन गरिएको छ</translation>
 <translation id="8318753676953949627">कुनै पनि फोटो छैन</translation>
 <translation id="8320910311642849813">जङ्गल</translation>
 <translation id="8329018942023753850">"क्याल्कुलेटर एप" जनाउने आइकन</translation>
@@ -1295,6 +1281,7 @@
 <translation id="8410244574650205435">स्वतः पत्ता लगाइएको</translation>
 <translation id="8420955526972171689">हार्डवेयरसम्बन्धी समस्याहरू पत्ता लगाउन परीक्षण गर्नुहोस् र ती समस्या निवारण गर्नुहोस्</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">तल</translation>
 <translation id="8431300646573772016">ChromeOS मा नयाँ के छ</translation>
 <translation id="843568408673868420">इन्टरनेट कनेक्सन</translation>
 <translation id="844521431886043384">DNS सेट अप गरिएको छैन</translation>
@@ -1386,6 +1373,7 @@
 <translation id="894617464444543719">यो डिभाइस फोन हो।</translation>
 <translation id="8950424402482976779">सिरान</translation>
 <translation id="8954341524817067858">पहाडहरू</translation>
+<translation id="8957423540740801332">दायाँ</translation>
 <translation id="8960969673307890087">खर्बुजाहरू</translation>
 <translation id="8961025972867871808">पेन्गुइनहरू</translation>
 <translation id="8968751544471797276">चार्ज भइरहेको दर</translation>

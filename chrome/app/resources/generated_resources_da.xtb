@@ -4540,7 +4540,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4403266582403435904">Du kan til enhver tid nemt gendanne data eller skifte enhed. Backups uploades til Google og krypteres ved hjælp af adgangskoden til dit barns Google-konto.</translation>
 <translation id="4403775189117163360">Vælg en anden mappe</translation>
 <translation id="4404136731284211429">Scan igen</translation>
-<translation id="4404619268534288383">Gem og synkroniser fanegrupper</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> er blokeret af din forælder. Bed din forælder om at give dig tilladelse til at bruge denne app.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Flyt til…</translation>
@@ -5184,7 +5183,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4899696330053002588">Indeholder annoncer</translation>
 <translation id="490031510406860025">Ikke tilladt på dette website</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – sammenflettet</translation>
-<translation id="490056871160016482">Websites bruger denne funktion til at vise engagerende oplevelser i fuld skærm uafhængigt af brugernes bevægelser</translation>
 <translation id="4900652253009739885">Dette er den sidste kontakt, der er tildelt handlingen "Vælg", og den kan derfor ikke fjernes. Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Udvid senest lukkede</translation>
 <translation id="4901309472892185668">Vælg eksperimenttilstand for eksperimentet <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5509,7 +5507,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> er blevet blokeret</translation>
 <translation id="5163910114647549394">Fanen blev flyttet til slutningen af fanelinjen</translation>
 <translation id="5164530241085602114">Notifikationer er ikke tilladt for <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Har tilladelse til automatisk at åbne i fuld skærm</translation>
 <translation id="516747639689914043">Hypertext Transfer Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5171045022955879922">Søg, eller angiv webadresse</translation>
@@ -5811,7 +5808,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="541737483547792035">Forstør skærm</translation>
 <translation id="541822678830750798">Anmoder om tilladelse til at læse og ændre dette website</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Aktiverer lagring og tilbagekaldelse af fanegrupper. Højreklik på en fanegruppe for at gemme den. Tilbagekald grupper fra bogmærkelinjen.</translation>
 <translation id="5420274697768050645">Kræv adgangskode for at låse denne enhed op som ekstra beskyttelse</translation>
 <translation id="5420438158931847627">Bestemmer skarpheden af tekst og billeder</translation>
 <translation id="5420935737933866496">Kopiér &amp;link</translation>
@@ -6208,6 +6204,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5723967018671998714">Tredjepartscookies er blokeret i inkognitotilstand</translation>
 <translation id="5725112283692663422">Send feedback om Opret tema ved hjælp af AI</translation>
 <translation id="5727728807527375859">Udvidelser, programmer og temaer kan beskadige din computer. Er du sikker på, at du vil fortsætte?</translation>
+<translation id="5728072125198221967">Tilknyttede Google-tjenester</translation>
 <translation id="5728290366864286776">Denne udvidelse kan læse og ændre websiteoplysninger eller køre i baggrunden</translation>
 <translation id="5728450728039149624">Indstillinger for skærmlås i Smart Lock</translation>
 <translation id="572914206753951782">Sørg for, at din Chromebook kører den nyeste version. Genstart derefter din Chromebook, og prøv igen.</translation>
@@ -8195,7 +8192,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7290242001003353852">Denne logintjeneste, som hostes af <ph name="SAML_DOMAIN" />, har adgang til dit kamera.</translation>
 <translation id="7292067737327289208">Din <ph name="BEGIN_LINK" />browser administreres<ph name="END_LINK" /> af din organisation, og din <ph name="BEGIN_LINK" />profil administreres<ph name="END_LINK" /> af <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Har ikke tilladelse til automatisk at åbne i fuld skærm</translation>
 <translation id="7295614427631867477">Bemærk! Android, Play og tilknyttede apps er underlagt deres egne politikker for dataindsamling og brug.</translation>
 <translation id="7296503797589217366">Vælg mappen <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Mørkegrøn</translation>
@@ -9742,7 +9738,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="84297032718407999">Du logges ud om <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Vis tryk</translation>
 <translation id="843173223122814223">Opret baggrunde med AI</translation>
-<translation id="8432724317983466962">Åbning i fuld skærm kræver som standard en brugerbevægelse</translation>
 <translation id="8433186206711564395">Netværksindstillinger</translation>
 <translation id="8434480141477525001">NaCl-fejlretningsport</translation>
 <translation id="8436054240208929121">Log ind, og aktivér synkronisering, så Chrome kan foreslå fanegrupper og holde dine faner organiseret</translation>

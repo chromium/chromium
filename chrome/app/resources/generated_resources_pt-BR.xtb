@@ -4535,7 +4535,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4403266582403435904">Restaure dados ou troque de dispositivo com facilidade a qualquer momento. Os backups são enviados ao Google e criptografados usando a senha da Conta do Google da criança.</translation>
 <translation id="4403775189117163360">Escolher uma pasta diferente</translation>
 <translation id="4404136731284211429">Verificar novamente</translation>
-<translation id="4404619268534288383">Salvar e sincronizar grupos de guias</translation>
 <translation id="4404843640767531781">O app <ph name="APP_NAME" /> foi bloqueado pelo seu familiar responsável. É necessário pedir permissão para usá-lo.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mover para…</translation>
@@ -5177,7 +5176,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4899696330053002588">Contém anúncios</translation>
 <translation id="490031510406860025">Não permitido neste site</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz (entrelaçado)</translation>
-<translation id="490056871160016482">Os sites usam esse recurso para oferecer experiências imersivas em tela cheia, independentemente dos gestos do usuário</translation>
 <translation id="4900652253009739885">Não é possível remover o único interruptor atribuído à ação "Selecionar". Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="4901154724271753917">Mostrar guias fechadas recentemente</translation>
 <translation id="4901309472892185668">Selecione um estado para o experimento <ph name="EXPERIMENT_NAME" />.</translation>
@@ -5502,7 +5500,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5162905305237671850">O <ph name="DEVICE_TYPE" /> foi bloqueado</translation>
 <translation id="5163910114647549394">A guia foi movida para o fim da faixa de guias</translation>
 <translation id="5164530241085602114">Notificações não permitidas para <ph name="SITE" /></translation>
-<translation id="5165989352025966137">Com permissão para entrar no modo de tela cheia automaticamente</translation>
 <translation id="516747639689914043">Protocolo de transporte de hipertexto (HTTP)</translation>
 <translation id="5170568018924773124">Mostrar na pasta</translation>
 <translation id="5171045022955879922">Pesquisar ou digitar URL</translation>
@@ -5804,7 +5801,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="541737483547792035">Ampliação da tela</translation>
 <translation id="541822678830750798">Solicitando acesso de leitura e mudança para este site</translation>
 <translation id="5419405654816502573">Voice Match</translation>
-<translation id="5420061891386124792">Permite salvar e recuperar grupos de guias. Clique com o botão direito do mouse em um grupo de guias para salvá-lo. Recupere os grupos na barra de favoritos.</translation>
 <translation id="5420274697768050645">Pedir uma senha ao desbloquear o dispositivo para aumentar a segurança</translation>
 <translation id="5420438158931847627">Determina a nitidez de textos e imagens</translation>
 <translation id="5420935737933866496">Copiar link</translation>
@@ -6202,6 +6198,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5723967018671998714">Os cookies de terceiros são bloqueados no modo de navegação anônima</translation>
 <translation id="5725112283692663422">Enviar feedback sobre a página "Criar um tema com IA"</translation>
 <translation id="5727728807527375859">Extensões, aplicativos e temas podem danificar o seu computador. Você quer mesmo continuar?</translation>
+<translation id="5728072125198221967">Serviços do Google vinculados</translation>
 <translation id="5728290366864286776">Esta extensão pode ler e mudar as informações do site ou ser executada em segundo plano</translation>
 <translation id="5728450728039149624">Opções do bloqueio de tela do Smart Lock</translation>
 <translation id="572914206753951782">Verifique se o Chromebook está usando a versão mais recente. Em seguida, reinicie o Chromebook e tente de novo.</translation>
@@ -8188,7 +8185,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7290242001003353852">Este serviço de login, hospedado por <ph name="SAML_DOMAIN" />, está acessando sua câmara.</translation>
 <translation id="7292067737327289208">O <ph name="BEGIN_LINK" />navegador é gerenciado<ph name="END_LINK" /> pela sua organização, e seu <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" /> é gerenciado por <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7295305918366078219">Sem permissão para entrar no modo de tela cheia automaticamente</translation>
 <translation id="7295614427631867477">O Android, o Google Play e os apps associados são regidos pelas próprias políticas de uso e de coleta de dados.</translation>
 <translation id="7296503797589217366">Selecionar pasta <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verde-escuro</translation>
@@ -9735,7 +9731,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="84297032718407999">Você será desconectado em <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Mostrar toques</translation>
 <translation id="843173223122814223">Crie planos de fundo com IA</translation>
-<translation id="8432724317983466962">Entrar no modo de tela cheia exige um gesto do usuário por padrão</translation>
 <translation id="8433186206711564395">Configurações de rede</translation>
 <translation id="8434480141477525001">Porta de depuração de Cliente nativo</translation>
 <translation id="8436054240208929121">Faça login e ative a sincronização para que o Chrome sugira grupos de guias e mantenha suas guias organizadas</translation>

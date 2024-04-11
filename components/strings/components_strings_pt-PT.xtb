@@ -243,7 +243,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1428729058023778569">Está a ver este aviso porque o site não suporta HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Filme autoadesivo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
-<translation id="1431021750861456539">Ecrã inteiro automático</translation>
 <translation id="1432187715652018471">A página quer instalar um controlador de serviço.</translation>
 <translation id="1432581352905426595">Gerir motores de pesquisa</translation>
 <translation id="1433225466058025572">Tente mover os ficheiros novamente</translation>
@@ -380,6 +379,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="168693727862418163">Ocorreu um erro na validação desta política em relação ao respetivo esquema e a mesma será ignorada.</translation>
 <translation id="168841957122794586">O certificado do servidor contém uma chave criptográfica fraca.</translation>
 <translation id="1689333818294560261">Alcunha</translation>
+<translation id="1691425742011409472">bloqueio do ponteiro</translation>
 <translation id="1692622044604477956">Listagens de filmes e espetáculos de teatro</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> o Chrome elimina automaticamente os tópicos com mais de 4 semanas. À medida que navega, um tópico pode voltar a ser apresentado na lista. Também pode bloquear tópicos que não quer que o Chrome partilhe com sites e desativar os tópicos de anúncios em qualquer altura nas definições do Chrome.</translation>
 <translation id="1697532407822776718">O processo está concluído!</translation>
@@ -729,6 +729,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2337852623177822836">Definição controlada pelo gestor</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> quer sincronizar</translation>
 <translation id="2346319942568447007">Imagem que copiou</translation>
+<translation id="2349056830177284083">Bloqueio do teclado</translation>
 <translation id="2349957959687031096">Botão Abrir separador de navegação anónima; ative para abrir um novo separador de navegação anónima para navegar em privado</translation>
 <translation id="2350796302381711542">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links <ph name="PROTOCOL" />, em vez de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Câmara e microfone permitidos</translation>
@@ -945,6 +946,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">A ligação foi reposta.</translation>
 <translation id="2786008859124691917">Bicicletas e acessórios</translation>
+<translation id="2791955793407772554">Bloqueio do ponteiro</translation>
 <translation id="2792012897584536778">Os administradores deste dispositivo configuraram certificados de segurança que lhes podem permitir visualizar os conteúdos dos Websites visitados por si.</translation>
 <translation id="2794233252405721443">Site bloqueado</translation>
 <translation id="2794629552137076216">Vidro (revestido)</translation>
@@ -1082,6 +1084,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
             <ph name="LIST_ITEM" />Histórico de pesquisas<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Informações introduzidas em formulários<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Poupança</translation>
 <translation id="3103188521861412364">Ações e obrigações</translation>
 <translation id="3105172416063519923">ID de recurso:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Rever a configuração segura de DNS<ph name="END_LINK" /></translation>
@@ -1103,6 +1106,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3121994479408824897">Ir para <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiquetas (permanente)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> é agora o seu motor de pesquisa predefinido</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - Pesquisar <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">Serviços empresariais</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
 <translation id="3141641372357166056">Sem decisão sobre o consentimento</translation>
@@ -1299,6 +1303,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3493660662684070951">Camiões, carrinhas e SUVs</translation>
 <translation id="3495081129428749620">Procurar na página
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Salário</translation>
 <translation id="3497627066518778351">Consulte uma lista de dados de sites no dispositivo numa nova janela</translation>
 <translation id="3498215018399854026">Não conseguimos falar com o(a) seu (sua) pai/mãe de momento. Tente novamente.</translation>
 <translation id="350069200438440499">Nome do ficheiro:</translation>
@@ -1428,12 +1433,14 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3711895659073496551">Suspenso</translation>
 <translation id="3712006010833051684">Envelope n.º 10</translation>
 <translation id="3712624925041724820">Licenças esgotadas</translation>
+<translation id="3713277100229669269">Já pode ver as vantagens do cartão antes de pagar</translation>
 <translation id="371420189621607696">Competições de videojogos</translation>
 <translation id="3714633008798122362">calendário Web</translation>
 <translation id="3714780639079136834">Ativar os dados móveis ou o Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{O carregamento do ficheiro foi bloqueado}other{O carregamento de <ph name="FILE_COUNT" /> ficheiros foi bloqueado}}</translation>
 <translation id="3715545959749027023">Quando o Chrome sinaliza eventos de segurança, são enviados dados relevantes acerca dos eventos ao seu administrador. Estes podem incluir os URLs das páginas que visita no Chrome, os metadados ou os nomes de ficheiros, as falhas de sistema do navegador ou dos separadores e o nome de utilizador que usa para iniciar sessão nas aplicações baseadas na Web, no dispositivo e no Chrome.</translation>
 <translation id="3715597595485130451">Estabelecer ligação a redes Wi-Fi</translation>
+<translation id="3716622997181469465">bloqueio do teclado</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Rever a configuração do proxy, da firewall e de DNS<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Durante a atualização, não vai poder usar o seu dispositivo durante, no máximo, 10 minutos.</translation>
 <translation id="372429172604983730">As aplicações que podem causar este erro incluem antivírus, firewalls e software de filtragem Web ou proxy.</translation>
@@ -2318,7 +2325,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
     <ph name="LINE_BREAK" />
     Experimente contactar o gestor do sistema.</translation>
 <translation id="549333378215107354">Tamanho 3</translation>
-<translation id="5501712702042287009">ecrã inteiro automático</translation>
 <translation id="550365051221576010">Preencher todos os campos</translation>
 <translation id="5508443345185481044">Máquinas fotográficas e câmaras de vídeo</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2335,6 +2341,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5519696598216267194">Papel (perfurado)</translation>
 <translation id="5521782189689806907">Marcenaria</translation>
 <translation id="5523118979700054094">Nome da política</translation>
+<translation id="5523588073846127669">O comerciante não aceita este cartão virtual</translation>
 <translation id="5525755241743357906">O ficheiro foi copiado ou movido</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para personalizar as ferramentas de acessibilidade nas definições do ChromeOS</translation>
 <translation id="55293785478302737">Coser extremidade</translation>
@@ -2499,6 +2506,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5862579898803147654">Empilhador 8</translation>
+<translation id="5863515189965725638">Edite o IBAN</translation>
 <translation id="5863847714970149516">A próxima página pode tentar cobrar-lhe dinheiro</translation>
 <translation id="5866257070973731571">Adicionar número de telefone</translation>
 <translation id="5866898949289125849">Está a visualizar uma página de ferramentas para programadores</translation>
@@ -3516,6 +3524,7 @@ Detalhes adicionais:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" />: <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Personalize os tipos de letra e os respetivos tamanhos no Chrome</translation>
 <translation id="7752995774971033316">Não gerido</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - Conversar com <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Os separadores e as apps do Chrome são fechados quando a atualização é iniciada</translation>
 <translation id="7755287808199759310">O teu pai/a tua mãe pode desbloquear-te</translation>
 <translation id="7755624218968747854">Rolo principal</translation>
@@ -3714,6 +3723,7 @@ Detalhes adicionais:
 <translation id="81563721597823545">Equipamento de hóquei</translation>
 <translation id="8161095570253161196">Retomar navegação</translation>
 <translation id="8163866351304776260">Perfuração quádrupla à esquerda</translation>
+<translation id="8163998196788647716">Conta de transação</translation>
 <translation id="8164078261547504572">Quer receber emails quando os preços descerem?</translation>
 <translation id="8169175551046720804">Não é possível definir as chaves "<ph name="DATA_CONTROLS_KEYS" />" no mesmo dicionário</translation>
 <translation id="8175796834047840627">O Chrome está a disponibilizar a opção de guardar os seus cartões na sua Conta Google porque tem sessão iniciada. Pode alterar este comportamento nas definições.</translation>

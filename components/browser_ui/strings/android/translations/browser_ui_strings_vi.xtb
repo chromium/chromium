@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Quay lại</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
 <translation id="2550801787432930915">Thẻ thông báo giảm giá</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Đã chặn 1 cookie}other{Đã chặn # cookie}}</translation>
 <translation id="2570922361219980984">Quyền truy cập vị trí cũng đã bị tắt đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Đã mở rộng - nhấp để thu gọn.</translation>
 <translation id="2586657967955657006">Bảng nhớ tạm</translation>
@@ -292,7 +291,7 @@
 <translation id="5876056640971328065">Tạm dừng video</translation>
 <translation id="5884085660368669834">Lựa chọn ưu tiên cho trang web</translation>
 <translation id="5887687176710214216">Lần truy cập gần đây nhất: hôm qua</translation>
-<translation id="5916664084637901428">Bật</translation>
+<translation id="5916664084637901428">Đang bật</translation>
 <translation id="5922853908706496913">Đang chia sẻ màn hình của bạn</translation>
 <translation id="5922967540311291836">Chặn cookie của bên thứ ba:</translation>
 <translation id="5923512600150154850">Thao tác này sẽ xoá <ph name="DATASIZE" /> dữ liệu và cookie do các trang web lưu trữ.</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Tìm kiếm lùi</translation>
 <translation id="8444433999583714703">Để cho phép <ph name="APP_NAME" /> truy cập vào thông tin vị trí của bạn, hãy bật cả dịch vụ vị trí trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Thu hồi quyền truy cập thiết bị</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie đang được sử dụng}other{# cookie đang được sử dụng}}</translation>
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>
 <translation id="848952951823693243">Luôn yêu cầu trang web dành cho thiết bị di động</translation>
 <translation id="8499083585497694743">Bật micrô</translation>

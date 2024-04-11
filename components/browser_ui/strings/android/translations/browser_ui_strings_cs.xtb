@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Zpět</translation>
 <translation id="2546283357679194313">Soubory cookie a data webových stránek</translation>
 <translation id="2550801787432930915">Karta s poklesem ceny</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Byl zablokován 1 soubor cookie}few{Byly zablokovány # soubory cookie}many{Bylo zablokováno # souboru cookie}other{Bylo zablokováno # souborů cookie}}</translation>
 <translation id="2570922361219980984">Přístup k poloze je vypnut také v tomto zařízení. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozbaleno – kliknutím sbalíte</translation>
 <translation id="2586657967955657006">Schránka</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Přetočit dozadu</translation>
 <translation id="8444433999583714703">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit přístup ke své poloze, zapněte polohu také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Zrušit oprávnění zařízení</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Je používán 1 soubor cookie}few{Jsou používány # soubory cookie}many{Je používáno # souboru cookie}other{Je používáno # souborů cookie}}</translation>
 <translation id="8487700953926739672">Dostupné offline</translation>
 <translation id="848952951823693243">Vždy požadovat zobrazení na mobilu</translation>
 <translation id="8499083585497694743">Zapnout mikrofon</translation>

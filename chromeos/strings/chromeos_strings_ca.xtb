@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">papallones</translation>
 <translation id="188114911237521550">Desactiva el mode fosc</translation>
-<translation id="188268299367474594">Tria entre els APN disponibles</translation>
 <translation id="1885577615937958993">avança ràpidament el contingut multimèdia</translation>
 <translation id="1887850431809612466">Revisió de maquinari</translation>
 <translation id="189221451253258459">verd neó</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Imatge <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precisió de la coma flotant</translation>
 <translation id="2448312741937722512">Tipus</translation>
-<translation id="2465272316171730950">Estem al límit de la nostra capacitat. Torna d'aquí a una estona.</translation>
 <translation id="2472215337771558851">Utilitza Ajuda'm a escriure per crear un esborrany o definir millor el treball existent, amb la tecnologia de la IA de Google</translation>
 <translation id="2480572840229215612">crancs</translation>
 <translation id="248546197012830854">El dispositiu no té connexió. Connecta'l a la xarxa Wi-Fi per veure el contingut d'ajuda.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">mostra les finestres</translation>
 <translation id="2513396635448525189">Imatge d'inici de sessió</translation>
 <translation id="2517472476991765520">Escaneja</translation>
-<translation id="2520213071283358374">Utilitza aquest APN</translation>
 <translation id="2521835766824839541">pista anterior</translation>
 <translation id="2526590354069164005">Escriptori</translation>
 <translation id="253029298928638905">S'està reiniciant...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Màscara de subxarxa</translation>
 <translation id="4454245904991689773">Desa a</translation>
 <translation id="4456812688969919973">El botó Desa de l'APN ara està desactivat</translation>
-<translation id="4460905888685975163">Ara l'opció Utilitza aquest APN està desactivada</translation>
 <translation id="4469288414739283461">Estalvi de pantalla Moviment de la Terra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Nom d'amfitrió del servidor</translation>
 <translation id="5089810972385038852">Estat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">amunt</translation>
 <translation id="5107243100836678918">La drecera sense tecla de <ph name="META_KEY" /> pot entrar en conflicte amb la drecera d'alguna aplicació. Torna a prémer aquesta drecera per continuar utilitzant-la o prem-ne una altra mitjançant la tecla de <ph name="KEY" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Similars:</translation>
 <translation id="5130848777448318809">ponis</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Torna a assignar seleccionant una clau nova</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
 <translation id="7154020516215182599">Comparteix els teus suggeriments o descriu el problema. Si és possible, inclou els passos per reproduir el problema.</translation>
-<translation id="7155037718620478619">Descobreix més APN</translation>
 <translation id="7155171745945906037">Foto existent de la càmera o d'un fitxer</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Foto del perfil</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipus de proveïdor</translation>
 <translation id="7882501334836096755">Clau pública</translation>
+<translation id="78957024357676568">esquerra</translation>
 <translation id="7897043345768902965">passeig</translation>
 <translation id="7903695460270716054">Tria obres d'art i imatges seleccionades</translation>
 <translation id="7915220255123750251">Gestiona la configuració de l'APN de la xarxa. Els APN defineixen una connexió entre una xarxa mòbil i Internet.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="8076492880354921740">Pestanyes</translation>
 <translation id="8079860070590459552">un camp de flors</translation>
-<translation id="8081553043098820199">Els APN no vàlids poden fer que la teva connexió mòbil es desactivi. Configura només els APN que proporcioni el teu administrador o proveïdor de serveis per a mòbils.</translation>
 <translation id="8082366717211101304">No es pot resoldre el DNS des d'aplicacions d'Android</translation>
 <translation id="8082644724189923105">zona del teclat</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Estàs utilitzant una xarxa oberta i no segura</translation>
 <translation id="811820734797650957">(Android) Es pot fer ping a la passarel·la</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Confirma</translation>
 <translation id="8132480444149501833">Sol·licita els comptadors de trànsit</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Selecciona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Font</translation>
 <translation id="8302368968391049045">Tallafoc HTTPS</translation>
 <translation id="8312330582793120272">reprodueix el contingut multimèdia</translation>
-<translation id="8317819321190319496">Ara l'opció Utilitza aquest APN està activada</translation>
 <translation id="8318753676953949627">Cap imatge</translation>
 <translation id="8320910311642849813">un bosc</translation>
 <translation id="8329018942023753850">aplicació Calculadora</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Detectat automàticament</translation>
 <translation id="8420955526972171689">Executa proves i resol els problemes relacionats amb el maquinari</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">avall</translation>
 <translation id="8431300646573772016">Novetats de Chrome OS</translation>
 <translation id="843568408673868420">Connectivitat a Internet</translation>
 <translation id="844521431886043384">No s'ha configurat el DNS</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">El dispositiu és un telèfon.</translation>
 <translation id="8950424402482976779">superior</translation>
 <translation id="8954341524817067858">muntanyes</translation>
+<translation id="8957423540740801332">dreta</translation>
 <translation id="8960969673307890087">síndries</translation>
 <translation id="8961025972867871808">pingüins</translation>
 <translation id="8968751544471797276">Percentatge de càrrega</translation>

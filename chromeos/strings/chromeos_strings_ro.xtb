@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">fluturi</translation>
 <translation id="188114911237521550">Dezactivează modul întunecat</translation>
-<translation id="188268299367474594">Alege dintre APN-urile disponibile</translation>
 <translation id="1885577615937958993">derulează rapid conținutul media</translation>
 <translation id="1887850431809612466">Versiune hardware</translation>
 <translation id="189221451253258459">verde neon</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Imaginea <ph name="CURRENT_PAGE" /> din <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precizia virgulei mobile</translation>
 <translation id="2448312741937722512">Tipul</translation>
-<translation id="2465272316171730950">Suntem la capacitate maximă. Revino mai târziu.</translation>
 <translation id="2472215337771558851">Folosește funcția Ajută-mă să scriu pentru a crea o schiță sau a rafina lucrările existente, pe bază de Google AI</translation>
 <translation id="2480572840229215612">crabi</translation>
 <translation id="248546197012830854">Dispozitivul este offline. Conectează-te la rețeaua Wi-Fi pentru a vedea conținutul de ajutor.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">afișează ferestrele</translation>
 <translation id="2513396635448525189">Imagine de conectare</translation>
 <translation id="2517472476991765520">Scanează</translation>
-<translation id="2520213071283358374">Folosește acest APN</translation>
 <translation id="2521835766824839541">melodia anterioară</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Se repornește…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Mască de subrețea</translation>
 <translation id="4454245904991689773">Scanează către</translation>
 <translation id="4456812688969919973">Butonul Salvează APN-ul este dezactivat</translation>
-<translation id="4460905888685975163">Opțiunea Folosește acest APN este dezactivată</translation>
 <translation id="4469288414739283461">Screensaver Earth Flow</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Nume de gazdă server</translation>
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">sus</translation>
 <translation id="5107243100836678918">Comanda rapidă fără <ph name="META_KEY" /> poate intra în conflict cu comanda rapidă a unei aplicații. Introdu din nou comanda rapidă ca să o folosești în continuare sau introdu o nouă comandă rapidă care folosește tasta <ph name="KEY" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Sinonime:</translation>
 <translation id="5130848777448318809">ponei</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Reatribuie selectând o tastă nouă</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>
 <translation id="7154020516215182599">Trimite feedback sau descrie problema. Dacă este posibil, include pașii pentru reproducerea problemei.</translation>
-<translation id="7155037718620478619">Descoperă mai multe APN-uri</translation>
 <translation id="7155171745945906037">Fotografie existentă din camera foto sau din fișier</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Fotografie de profil</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tip furnizor</translation>
 <translation id="7882501334836096755">Cheie publică</translation>
+<translation id="78957024357676568">stânga</translation>
 <translation id="7897043345768902965">trotuar</translation>
 <translation id="7903695460270716054">Alege imagini recomandate</translation>
 <translation id="7915220255123750251">Gestionează setările APN ale rețelei. APN-urile stabilesc o conexiune între o rețea de date mobile și internet.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Nivel de încărcare rămas</translation>
 <translation id="8076492880354921740">File</translation>
 <translation id="8079860070590459552">câmp cu flori</translation>
-<translation id="8081553043098820199">APN-urile nevalide ar putea cauza dezactivarea conexiunii mobile. Setează doar APN-uri oferite de furnizorul de servicii de telefonie mobilă sau de administrator.</translation>
 <translation id="8082366717211101304">Nu se poate rezolva solicitarea DNS din aplicații pentru Android</translation>
 <translation id="8082644724189923105">zona tastaturii</translation>
 <translation id="808894953321890993">Schimbă parola</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Folosești o rețea deschisă și nesigură</translation>
 <translation id="811820734797650957">(Android) Gateway-ul acceptă testul de ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Confirmați</translation>
 <translation id="8132480444149501833">Solicită contoare de trafic</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Selectează <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Sursă</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8312330582793120272">redă conținutul media</translation>
-<translation id="8317819321190319496">Opțiunea Folosește acest APN este activată</translation>
 <translation id="8318753676953949627">Nicio imagine</translation>
 <translation id="8320910311642849813">pădure</translation>
 <translation id="8329018942023753850">aplicația calculator</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Detectat automat</translation>
 <translation id="8420955526972171689">Rulează teste și remediază erorile hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">jos</translation>
 <translation id="8431300646573772016">Noutăți în SO Chrome</translation>
 <translation id="843568408673868420">Conexiune la internet</translation>
 <translation id="844521431886043384">Sistemul DNS nu este configurat</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Dispozitivul este un telefon.</translation>
 <translation id="8950424402482976779">sus</translation>
 <translation id="8954341524817067858">munți</translation>
+<translation id="8957423540740801332">dreapta</translation>
 <translation id="8960969673307890087">pepeni verzi</translation>
 <translation id="8961025972867871808">pinguini</translation>
 <translation id="8968751544471797276">Rata de încărcare</translation>

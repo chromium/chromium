@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">परत जा</translation>
 <translation id="2546283357679194313">कुकीज आणि साइट डेटा</translation>
 <translation id="2550801787432930915">किमतीमधील घट दाखवणारे कार्ड</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{एक कुकी ब्लॉक केली}other{# कुकी ब्लॉक केल्या}}</translation>
 <translation id="2570922361219980984">या डिव्हाइसाठी स्थान अ‍ॅक्सेस देखील बंद आहे, <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
 <translation id="257931822824936280">विस्‍तृत केले - संकुचित करण्‍यासाठी क्‍लिक करा.</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">मागे शोधा</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> ला तुमचे स्थान अ‍ॅक्सेस करू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील स्थान सुरू करा.</translation>
 <translation id="8447861592752582886">डिव्हाइस परवानगी रद्द करा</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{एक कुकी वापरात आहे}other{# कुकी वापरात आहेत}}</translation>
 <translation id="8487700953926739672">ऑफलाइन उपलब्ध</translation>
 <translation id="848952951823693243">नेहमी मोबाइल साइटची विनंती करा</translation>
 <translation id="8499083585497694743">मायक्रोफोन अनम्यूट करा</translation>

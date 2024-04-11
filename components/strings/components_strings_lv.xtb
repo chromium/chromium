@@ -243,7 +243,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1428729058023778569">Šis brīdinājums tiek rādīts, jo šajā vietnē netiek atbalstīts HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="1429080515485835353">Pašlīmējoša plēve</translation>
 <translation id="1430915738399379752">Drukāt</translation>
-<translation id="1431021750861456539">Automātisks pilnekrāna režīms</translation>
 <translation id="1432187715652018471">lapa vēlas instalēt pakalpojumu apdarinātāju.</translation>
 <translation id="1432581352905426595">Pārvaldīt meklējumprogrammas</translation>
 <translation id="1433225466058025572">Mēģiniet vēlreiz pārvietot savus failus.</translation>
@@ -2317,7 +2316,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
     <ph name="LINE_BREAK" />
     Sazinieties ar sistēmas administratoru.</translation>
 <translation id="549333378215107354">3. izmērs</translation>
-<translation id="5501712702042287009">automātisks pilnekrāna režīms</translation>
 <translation id="550365051221576010">Aizpildīt visu</translation>
 <translation id="5508443345185481044">Kameras un videoierakstītāji</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2498,6 +2496,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Ieslēgt</translation>
 <translation id="5862579898803147654">8. izvades vieta</translation>
+<translation id="5863515189965725638">IBAN rediģēšana</translation>
 <translation id="5863847714970149516">Nākamajā lapā var tikt mēģināts pieprasīt naudu</translation>
 <translation id="5866257070973731571">Tālruņa numura pievienošana</translation>
 <translation id="5866898949289125849">Jūs skatāt izstrādātāja rīku lapu</translation>

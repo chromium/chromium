@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">Ово упозорење вам се приказује јер овај сајт не подржава HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Самолепљива фолија</translation>
 <translation id="1430915738399379752">Штампај</translation>
-<translation id="1431021750861456539">Аутоматски приказ преко целог екрана</translation>
 <translation id="1432187715652018471">Страница жели да инсталира обрађивача услуге.</translation>
 <translation id="1432581352905426595">Управљај претраживачима</translation>
 <translation id="1433225466058025572">Пробајте да поново преместите фајлове</translation>
@@ -380,6 +379,7 @@
 <translation id="168693727862418163">Валидација шеме ове вредности за смернице није успела и занемариће се.</translation>
 <translation id="168841957122794586">Сертификат сервера садржи слаб криптографски кључ.</translation>
 <translation id="1689333818294560261">Надимак</translation>
+<translation id="1691425742011409472">закључавање показивача</translation>
 <translation id="1692622044604477956">Листе филмова и репертоари биоскопа</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Како можете да управљате подацима:<ph name="END_BOLD" /> Chrome аутоматски брише теме старије од 4 недеље. Када наставите да прегледате, тема ће се можда поново појавити на листи. Можете и да блокирате теме које не желите да Chrome дели са сајтовима и да искључите теме огласа у било ком тренутку у подешавањима Chrome-а.</translation>
 <translation id="1697532407822776718">Спремни сте!</translation>
@@ -729,6 +729,7 @@
 <translation id="2337852623177822836">Подешавање контролише администратор</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> жели да се упари</translation>
 <translation id="2346319942568447007">Копирана слика</translation>
+<translation id="2349056830177284083">Закључавање тастатуре</translation>
 <translation id="2349957959687031096">Дугме Отвори картицу без архивирања, активирајте га да бисте отворили нову картицу без архивирања и прегледали приватно</translation>
 <translation id="2350796302381711542">Желите ли да дозволите да <ph name="HANDLER_HOSTNAME" /> отвара све <ph name="PROTOCOL" /> линкове за које сте до сада користили <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Камера и микрофон су дозвољени</translation>
@@ -945,6 +946,7 @@
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Веза је враћена на почетне вредности.</translation>
 <translation id="2786008859124691917">Бицикли и опрема</translation>
+<translation id="2791955793407772554">Закључавање показивача</translation>
 <translation id="2792012897584536778">Администратори овог уређаја су подесили безбедносне сертификате који могу да им омогуће да виде садржај веб-сајтова које посећујете.</translation>
 <translation id="2794233252405721443">Сајт је блокиран</translation>
 <translation id="2794629552137076216">Стакло (површина)</translation>
@@ -1103,6 +1105,7 @@
 <translation id="3121994479408824897">Иди на <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Налепнице (трајне)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> је сада ваш подразумевани претраживач</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> – Претражите ставку <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">Пословне услуге</translation>
 <translation id="3141093262818886744">Ипак отвори</translation>
 <translation id="3141641372357166056">Нема одлуке о сагласности</translation>
@@ -1428,12 +1431,14 @@
 <translation id="3711895659073496551">Искључи</translation>
 <translation id="3712006010833051684">Коверта бр. 10</translation>
 <translation id="3712624925041724820">Нема више лиценци</translation>
+<translation id="3713277100229669269">Сада можете да видите предности картица пре плаћања</translation>
 <translation id="371420189621607696">Такмичења у видео играма</translation>
 <translation id="3714633008798122362">веб календар</translation>
 <translation id="3714780639079136834">да укључите податке за мобилне уређаје или WiFi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Отпремање фајла је блокирано}one{Отпремање <ph name="FILE_COUNT" /> фајла је блокирано}few{Отпремање <ph name="FILE_COUNT" /> фајла је блокирано}other{Отпремање <ph name="FILE_COUNT" /> фајлова је блокирано}}</translation>
 <translation id="3715545959749027023">Када Chrome обележи безбедносне догађаје, релевантни подаци о догађајима се шаљу администратору. То може да обухвата URL-ове страница које посећујете у Chrome-у, називе или метаподатке фајлова, отказивања прегледача или картица и корисничко име које користите за пријављивање у апликације на вебу, на уређај и у Chrome.</translation>
 <translation id="3715597595485130451">Повезивање са WiFi мрежом</translation>
+<translation id="3716622997181469465">закључавање тастатуре</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />да проверите конфигурацију проксија, заштитног зида и DNS-а<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Током ажурирања нећете моћи да користите уређај највише 10 минута.</translation>
 <translation id="372429172604983730">Апликације које могу да доведу до ове грешке обухватају антивирусни софтвер, заштитни зид и веб-филтрирање или прокси софтвер.</translation>
@@ -2318,7 +2323,6 @@
     <ph name="LINE_BREAK" />
     Покушајте да се обратите администратору система.</translation>
 <translation id="549333378215107354">Величина 3</translation>
-<translation id="5501712702042287009">аутоматски приказ преко целог екрана</translation>
 <translation id="550365051221576010">Попуни све</translation>
 <translation id="5508443345185481044">Фото-апарати и камкордери</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2499,6 +2503,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Укључи</translation>
 <translation id="5862579898803147654">8. преграда за слагање</translation>
+<translation id="5863515189965725638">Измените IBAN</translation>
 <translation id="5863847714970149516">Следећа страница може да покуша да вам нешто наплати</translation>
 <translation id="5866257070973731571">Додајте број телефона</translation>
 <translation id="5866898949289125849">Прегледате страницу са алаткама за прогамере</translation>
@@ -3516,6 +3521,7 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Прилагодите величине и изглед фонтова у Chrome-у</translation>
 <translation id="7752995774971033316">Не управља</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> – Ћаскајте са услугом <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Chrome картице и апликације ће се затворити када ажурирање почне</translation>
 <translation id="7755287808199759310">Родитељ може да га одблокира за тебе</translation>
 <translation id="7755624218968747854">Примарни котур</translation>

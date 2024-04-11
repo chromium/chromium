@@ -243,7 +243,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1428729058023778569">Widzisz to ostrzeżenie, ponieważ ta witryna nie obsługuje HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Folia samoprzylepna</translation>
 <translation id="1430915738399379752">Drukuj</translation>
-<translation id="1431021750861456539">Automatyczny pełny ekran</translation>
 <translation id="1432187715652018471">Strona chce zainstalować moduł do obsługiwania usługi.</translation>
 <translation id="1432581352905426595">Zarządzaj wyszukiwarkami</translation>
 <translation id="1433225466058025572">Spróbuj przenieść pliki ponownie</translation>
@@ -2326,7 +2325,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
     <ph name="LINE_BREAK" />
     Skontaktuj się z administratorem systemu.</translation>
 <translation id="549333378215107354">Rozmiar 3</translation>
-<translation id="5501712702042287009">automatyczny pełny ekran</translation>
 <translation id="550365051221576010">Wypełnij wszystko</translation>
 <translation id="5508443345185481044">Aparaty fotograficzne i kamery</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2508,6 +2506,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="5862579898803147654">Układarka 8</translation>
+<translation id="5863515189965725638">Edytuj numer IBAN</translation>
 <translation id="5863847714970149516">Otwierana strona może próbować obciążyć Cię płatnością</translation>
 <translation id="5866257070973731571">Dodaj numer telefonu</translation>
 <translation id="5866898949289125849">To jest strona z narzędziami dla programistów</translation>

@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">您之所以会看到此警告，是因为该网站不支持 HTTPS。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">自粘薄膜</translation>
 <translation id="1430915738399379752">打印</translation>
-<translation id="1431021750861456539">自动全屏</translation>
 <translation id="1432187715652018471">此页面想安装一款服务处理程序。</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
 <translation id="1433225466058025572">尝试重新移动文件</translation>
@@ -2314,7 +2313,6 @@
     <ph name="LINE_BREAK" />
     请尝试与您的系统管理员联系。</translation>
 <translation id="549333378215107354">大小：3</translation>
-<translation id="5501712702042287009">自动全屏</translation>
 <translation id="550365051221576010">填充所有字段</translation>
 <translation id="5508443345185481044">相机与摄像机</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2495,6 +2493,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">启用</translation>
 <translation id="5862579898803147654">堆叠出纸器 8</translation>
+<translation id="5863515189965725638">修改 IBAN</translation>
 <translation id="5863847714970149516">即将进入的页面可能会向您收取费用</translation>
 <translation id="5866257070973731571">添加电话号码</translation>
 <translation id="5866898949289125849">您当前查看的是一个开发者工具页面</translation>

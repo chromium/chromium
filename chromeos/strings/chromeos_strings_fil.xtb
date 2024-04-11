@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">mga paruparo</translation>
 <translation id="188114911237521550">I-off ang dark mode</translation>
-<translation id="188268299367474594">Pumili mula sa mga available na APN</translation>
 <translation id="1885577615937958993">mag-fast forward ng media</translation>
 <translation id="1887850431809612466">Rebisyon ng hardware</translation>
 <translation id="189221451253258459">neon green</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Larawan <ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Katumpakan ng floating point</translation>
 <translation id="2448312741937722512">Uri</translation>
-<translation id="2465272316171730950">Puno kami ngayon. Bumalik sa loob ng ilang sandali.</translation>
 <translation id="2472215337771558851">Gamitin ang Tulungan akong magsulat para gumawa ng draft o magpino ng dati nang gawa, na pinapagana ng Google AI</translation>
 <translation id="2480572840229215612">mga alimango</translation>
 <translation id="248546197012830854">Offline ang device. Kumonekta sa Wi-Fi network para makita ang content ng tulong.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">ipakita ang mga window</translation>
 <translation id="2513396635448525189">Larawan sa pag-log in</translation>
 <translation id="2517472476991765520">I-scan</translation>
-<translation id="2520213071283358374">Gamitin ang APN na ito</translation>
 <translation id="2521835766824839541">nakaraang track</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Nagre-restart...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Pag-scan sa</translation>
 <translation id="4456812688969919973">Naka-disable na ang button na Mag-save ng APN</translation>
-<translation id="4460905888685975163">Naka-disable na ang Gamitin ang APN na ito</translation>
 <translation id="4469288414739283461">Screen saver na paggalaw ng mundo</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Hindi na-ping ang hindi default na network gateway</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Hostname ng server</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">pataas</translation>
 <translation id="5107243100836678918">Posibleng sumalungat sa shortcut ng ilang app ang shortcut na walang <ph name="META_KEY" /> key. Pindutin ulit ang shortcut na ito para ituloy ang paggamit nito, o pumindot ng bagong shortcut gamit ang <ph name="KEY" /> key. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Katulad:</translation>
 <translation id="5130848777448318809">mga pony</translation>
@@ -845,6 +842,8 @@
 <translation id="5946538341867151940">Hindi ka pa nakakonekta. Kung nagrerekomenda ang iyong mobile carrier ng custom na APN, ilagay ang impormasyon ng APN sa pamamagitan ng pagpili sa "+ Bagong APN"</translation>
 <translation id="5947266287934282605">Kung ang huling araw ng buwan ay bago ang araw na ito, mare-reset ang data sa huling araw ng buwan</translation>
 <translation id="5948460390109837040">mga aso</translation>
+<translation id="594989847980441553">Piliin ang "Gumawa" para gumawa ng larawan gamit ang AI.
+        Awtomatikong lalabas dito ang lahat ng ginawang larawan.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">coral</translation>
 <translation id="5984145644188835034">Default na Wallpaper</translation>
@@ -1064,7 +1063,6 @@
 <translation id="7147557737960578492">Magtalaga ulit sa pamamagitan ng pagpili ng bagong key</translation>
 <translation id="714876143603641390">Pagkakonekta sa Lan</translation>
 <translation id="7154020516215182599">Ibahagi ang iyong feedback o ilarawan ang isyu mo. Kung posible, magsama ng mga hakbang para gawan ng kopya ang iyong isyu.</translation>
-<translation id="7155037718620478619">Tumuklas pa ng mga APN</translation>
 <translation id="7155171745945906037">Kasalukuyang larawan mula sa camera o file</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Larawan sa profile</translation>
@@ -1194,12 +1192,14 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Uri ng provider</translation>
 <translation id="7882501334836096755">Pampublikong key</translation>
+<translation id="78957024357676568">pakaliwa</translation>
 <translation id="7897043345768902965">lakaran</translation>
 <translation id="7903695460270716054">Pumili ng na-curate na artwork at mga larawan</translation>
 <translation id="7915220255123750251">Pamahalaan ang mga setting ng APN ng network. Nagtatatag ang mga APN ng koneksyon sa pagitan ng isang cellular network at internet.</translation>
 <translation id="7936303884198020182">Walang nakitang name server</translation>
 <translation id="7942349550061667556">Pula</translation>
 <translation id="7943235353293548836">Persistent keepalive Interval</translation>
+<translation id="7943516765291457328">I-on ang Bluetooth para mag-scan ng mga kalapit na hotspot</translation>
 <translation id="7944562637040950644">i-toggle ang backlight ng keyboard</translation>
 <translation id="7953669802889559161">Mga Input</translation>
 <translation id="7955587717700691983">Bluetooth na keyboard</translation>
@@ -1223,7 +1223,6 @@
 <translation id="8075838845814659848">Natitirang pag-charge</translation>
 <translation id="8076492880354921740">Mga Tab</translation>
 <translation id="8079860070590459552">field ng mga bulaklak</translation>
-<translation id="8081553043098820199">Posibleng maging dahilan ng pagka-disable ng iyong koneksyon sa mobile ang mga invalid na APN. Itakda lang ang mga APN na ibinigay ng iyong mobile provider o administrator.</translation>
 <translation id="8082366717211101304">Hindi ma-resolve ang DNS mula sa mga Android app</translation>
 <translation id="8082644724189923105">zone ng keyboard</translation>
 <translation id="808894953321890993">Palitan ang password</translation>
@@ -1231,6 +1230,7 @@
 <translation id="8104083085214006426">Gumagamit ka ng bukas at hindi secure na network</translation>
 <translation id="811820734797650957">(Android) Puwedeng I-ping ang Gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8132480444149501833">Humiling ng Mga Traffic Counter</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Piliin ang <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1256,6 @@
 <translation id="8294431847097064396">Pinagmulan</translation>
 <translation id="8302368968391049045">Firewall ng HTTPS</translation>
 <translation id="8312330582793120272">mag-play ng media</translation>
-<translation id="8317819321190319496">Naka-enable na ang Gamitin ang APN na ito</translation>
 <translation id="8318753676953949627">Walang Larawan</translation>
 <translation id="8320910311642849813">gubat</translation>
 <translation id="8329018942023753850">calculator app</translation>
@@ -1282,6 +1281,7 @@
 <translation id="8410244574650205435">Awtomatikong na-detect</translation>
 <translation id="8420955526972171689">Magpatakbo ng mga pagsusuri at pag-troubleshoot para sa mga isyu sa hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">pababa</translation>
 <translation id="8431300646573772016">Ano'ng bago sa ChromeOS</translation>
 <translation id="843568408673868420">Koneksyon sa Internet</translation>
 <translation id="844521431886043384">Hindi naka-set up ang DNS</translation>
@@ -1329,6 +1329,7 @@
 <translation id="8747900814994928677">Kumpirmahin ang pagbabago</translation>
 <translation id="8749478549112817787">Background ng Camera</translation>
 <translation id="8755946156089753497">tore</translation>
+<translation id="8756235582947991808">Paano gumawa gamit ang AI at ilang bagay na dapat tandaan</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album sa Google Photos</translation>
 <translation id="8775713578693478175">Modem APN</translation>
@@ -1372,6 +1373,7 @@
 <translation id="894617464444543719">Telepono ang device.</translation>
 <translation id="8950424402482976779">itaas</translation>
 <translation id="8954341524817067858">kabundukan</translation>
+<translation id="8957423540740801332">pakanan</translation>
 <translation id="8960969673307890087">mga pakwan</translation>
 <translation id="8961025972867871808">mga penguin</translation>
 <translation id="8968751544471797276">Rate ng Pag-charge</translation>

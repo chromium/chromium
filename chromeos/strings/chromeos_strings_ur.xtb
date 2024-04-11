@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">تتلیاں</translation>
 <translation id="188114911237521550">تاریک وضع آف کریں</translation>
-<translation id="188268299367474594">‏دستیاب APNs میں سے انتخاب کریں</translation>
 <translation id="1885577615937958993">فاسٹ فارورڈ میڈیا</translation>
 <translation id="1887850431809612466">ہارڈ ویئر سے متعلق نظر ثانی</translation>
 <translation id="189221451253258459">نیون سبز</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> میں سے تصویر <ph name="CURRENT_PAGE" /></translation>
 <translation id="2446553403094072641">فلوٹنگ پوائنٹ کی درستگی</translation>
 <translation id="2448312741937722512">قسم</translation>
-<translation id="2465272316171730950">ہماری گنجائش ختم ہو گئی ہے۔ براہ کرم تھوڑی دیر میں واپس آجائیں۔</translation>
 <translation id="2472215337771558851">‏اGoogle AI سے تقویت یافتہ کے ساتھ ایک مسودہ تخلیق کرنے یا موجودہ کام کو بہتر بنانے کے لیے لکھنے میں میری مدد کریں کا استعمال کریں</translation>
 <translation id="2480572840229215612">کیکڑے</translation>
 <translation id="248546197012830854">‏آلہ آف لائن ہے۔ مدد کا مواد دیکھنے کے لیے Wi-Fi نیٹ ورک سے منسلک ہوں۔</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">ونڈوز دکھائیں</translation>
 <translation id="2513396635448525189">لاگ ان کی تصویر</translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
-<translation id="2520213071283358374">‏اس APN کو استعمال کریں</translation>
 <translation id="2521835766824839541">پچھلا ٹریک</translation>
 <translation id="2526590354069164005">ڈیسک ٹاپ</translation>
 <translation id="253029298928638905">ری سٹارٹ ہو رہا ہے...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">سب نیٹ ماسک</translation>
 <translation id="4454245904991689773">اس میں اسکین کریں</translation>
 <translation id="4456812688969919973">‏APN کو محفوظ کریں بٹن اب غیر فعال ہے</translation>
-<translation id="4460905888685975163">‏'اس APN کو استعمال کریں' بٹن ابھی غیر فعال ہے</translation>
 <translation id="4469288414739283461">ارتھ فلو اسکرین سیور</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">سرور کا میزبان نام</translation>
 <translation id="5089810972385038852">ریاست</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">اوپر</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> کی کلید کے بغیر شارٹ کٹ کچھ ایپ کے شارٹ کٹ سے متصادم ہو سکتا ہے۔ اس شارٹ کٹ کا استعمال جاری رکھنے کے لیے اسے دوبارہ دبائیں یا <ph name="KEY" /> کی کلید کا استعمال کرتے ہوئے نیا شارٹ کٹ دبائیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">ملتا جلتا:</translation>
 <translation id="5130848777448318809">پونیز</translation>
@@ -845,6 +842,8 @@
 <translation id="5946538341867151940">‏آپ ابھی تک منسلک نہیں ہیں۔ اگر آپ کا موبائل کیریئر حسب ضرورت APN تجویز کرتا ہے تو "New APN +" کو منتخب کر کے APN کی معلومات درج کریں۔</translation>
 <translation id="5947266287934282605">اگر مہینے کا آخری دن اس دن سے پہلے ہے، تو ڈیٹا کو مہینے کے آخری دن ری سیٹ کر دیا جائے گا</translation>
 <translation id="5948460390109837040">کتے</translation>
+<translation id="594989847980441553">‏AI کے ساتھ تصویر تخلیق کرنے کے لیے "تخلیق کریں" کو منتخب کریں۔
+        تمام تخلیق کردہ تصاویر خودکار طور پر یہاں ظاہر ہوں گی۔</translation>
 <translation id="5972388717451707488">انجن اپ ڈیٹ کریں</translation>
 <translation id="5975130252842127517">کورل</translation>
 <translation id="5984145644188835034">ڈیفالٹ وال پیپر</translation>
@@ -1064,7 +1063,6 @@
 <translation id="7147557737960578492">نئی کلید منتخب کرکے دوبارہ تفویض کریں</translation>
 <translation id="714876143603641390">‏Lan کنیکٹوٹی</translation>
 <translation id="7154020516215182599">اپنے تاثرات کا اشتراک کریں یا اپنے مسئلہ کی وضاحت کریں۔ اگر ممکن ہو تو اپنے مسئلے کو دوبارہ پیش کرنے کے لیے اقدامات شامل کریں۔</translation>
-<translation id="7155037718620478619">‏مزید APNs دریافت کریں</translation>
 <translation id="7155171745945906037">کیمرے یا فائل سے موجودہ تصویر</translation>
 <translation id="7162487448488904999">گیلری</translation>
 <translation id="7170236477717446850">پروفائل تصویر</translation>
@@ -1194,6 +1192,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">فراہم کنندہ کی قسم</translation>
 <translation id="7882501334836096755">عوامی کلید</translation>
+<translation id="78957024357676568">بائیں</translation>
 <translation id="7897043345768902965">پیدل راستہ</translation>
 <translation id="7903695460270716054">کیوریٹ کردہ آرٹ ورک اور تصاویر کا انتخاب کریں</translation>
 <translation id="7915220255123750251">‏نیٹ ورک APN کی ترتیبات کا نظم کریں۔ APNs سیلولر نیٹ ورک اور انٹرنیٹ کے درمیان رابطہ قائم کرتے ہیں۔</translation>
@@ -1223,7 +1222,6 @@
 <translation id="8075838845814659848">باقی چارج</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
 <translation id="8079860070590459552">پھولوں کا میدان</translation>
-<translation id="8081553043098820199">‏غلط APNs کی وجہ سے آپ کا موبائل کنکشن غیر فعال ہو سکتا ہے۔ صرف اپنے موبائل فراہم کنندہ یا منتظم کی طرف سے فراہم کردہ APNs کو سیٹ کریں۔</translation>
 <translation id="8082366717211101304">‏Android ایپس سے DNS کو حل نہیں کیا جا سکتا</translation>
 <translation id="8082644724189923105">کی بورڈ زون</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
@@ -1231,6 +1229,7 @@
 <translation id="8104083085214006426">آپ ایک اوپن اور غیر محفوظ نیٹ ورک استعمال کر رہے ہیں</translation>
 <translation id="811820734797650957">‏(Android) گیٹ وے کو پنگ کیا جا سکتا ہے</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
+<translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8132480444149501833">ٹریفک کاؤنٹرز کی درخواست کریں</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> منتخب کریں</translation>
@@ -1256,7 +1255,6 @@
 <translation id="8294431847097064396">ماخذ</translation>
 <translation id="8302368968391049045">‏HTTPS فائروال</translation>
 <translation id="8312330582793120272">میڈیا چلائیں</translation>
-<translation id="8317819321190319496">‏'اس APN کا استعمال کریں' بٹن اب فعال ہے</translation>
 <translation id="8318753676953949627">کوئی تصویر نہیں ہے</translation>
 <translation id="8320910311642849813">جنگل</translation>
 <translation id="8329018942023753850">کیلکولیٹر ایپ</translation>
@@ -1282,6 +1280,7 @@
 <translation id="8410244574650205435">خودکار طور پر پتہ لگایا گيا</translation>
 <translation id="8420955526972171689">ہارڈ ویئر کے مسائل کے لیے ٹیسٹس اور ٹربل شوٹنگ چلائیں</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">نیچے</translation>
 <translation id="8431300646573772016">‏ChromeOS میں نیا کیا ہے</translation>
 <translation id="843568408673868420">انٹرنیٹ کنیکٹویٹی</translation>
 <translation id="844521431886043384">‏DNS سیٹ اپ نہیں ہے</translation>
@@ -1372,6 +1371,7 @@
 <translation id="894617464444543719">آلہ ایک فون ہے۔</translation>
 <translation id="8950424402482976779">بالائی</translation>
 <translation id="8954341524817067858">پہاڑ</translation>
+<translation id="8957423540740801332">دایاں</translation>
 <translation id="8960969673307890087">تربوز</translation>
 <translation id="8961025972867871808">پینگوئنز</translation>
 <translation id="8968751544471797276">چارج ہونے کی شرح</translation>

@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">এই ছাইটটোৱে HTTPS সমৰ্থন নকৰে বাবে আপুনি এই সকীয়নিটো দেখা পাইছে। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">ছেল্ফ-এডহেছিভ ফিল্ম</translation>
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
-<translation id="1431021750861456539">স্বয়ংক্ৰিয় পূৰ্ণ স্ক্ৰীন</translation>
 <translation id="1432187715652018471">পৃষ্ঠাখনে এটা সেৱা হেণ্ডলাৰ ইনষ্টল কৰিব বিচাৰে।</translation>
 <translation id="1432581352905426595">সন্ধানৰ ইঞ্জিন পৰিচালনা কৰক</translation>
 <translation id="1433225466058025572">আপোনাৰ ফাইলসমূহ পুনৰ স্থানান্তৰ কৰি চাওক</translation>
@@ -1085,6 +1084,7 @@
             <ph name="LIST_ITEM" />সন্ধানৰ ইতিহাস<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />ফ’ৰ্মত দিয়া তথ্য<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">সঞ্চয়</translation>
 <translation id="3103188521861412364">ষ্টক আৰু বণ্ড</translation>
 <translation id="3105172416063519923">সম্পদৰ আইডি:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />সুৰক্ষিত DNS কনফিগাৰেশ্বন পৰীক্ষা কৰি থকা হৈছে<ph name="END_LINK" /></translation>
@@ -1300,6 +1300,7 @@
 <translation id="3487845404393360112">ট্ৰে’ ৪</translation>
 <translation id="3493660662684070951">ট্ৰাক, ভেন আৰু SUV</translation>
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" />ত বিচাৰক</translation>
+<translation id="3495818359064790343">দৰমহা</translation>
 <translation id="3497627066518778351">অন-ডিভাইচ ছাইটৰ ডেটাৰ এখন সূচী এখন নতুন ৱিণ্ড’ত পৰ্যালোচনা কৰক</translation>
 <translation id="3498215018399854026">আপোনাৰ অভিভাৱকৰ সৈতে এই মুহূৰ্তত আমি যোগাযোগ কৰিব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="350069200438440499">ফাইলৰ নাম:</translation>
@@ -2320,7 +2321,6 @@
     <ph name="LINE_BREAK" />
     আপোনাৰ ছিষ্টেমৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰি চাওক৷</translation>
 <translation id="549333378215107354">আকাৰ ৩</translation>
-<translation id="5501712702042287009">স্বয়ংক্ৰিয় পূৰ্ণ স্ক্ৰীন</translation>
 <translation id="550365051221576010">আটাইবোৰ পূৰ কৰক</translation>
 <translation id="5508443345185481044">কেমেৰা আৰু কেমকৰ্ডাৰ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2337,6 +2337,7 @@
 <translation id="5519696598216267194">কাগজ (আগতে পাঞ্চ কৰা)</translation>
 <translation id="5521782189689806907">কেবিনেট</translation>
 <translation id="5523118979700054094">নীতিৰ নাম</translation>
+<translation id="5523588073846127669">বণিকে এই ভাৰ্ছুৱেল কাৰ্ডখন গ্ৰহণ নকৰে</translation>
 <translation id="5525755241743357906">ফাইলটো প্ৰতিলিপি কৰা অথবা স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOSৰ ছেটিঙত আপোনাৰ সাধ্য সুবিধাৰ সঁজুলি ব্যক্তিগতকৰণ কৰিবলৈ টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="55293785478302737">কাষত চিলাওক</translation>
@@ -2501,6 +2502,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">অন কৰক</translation>
 <translation id="5862579898803147654">ষ্টেকাৰ ৮</translation>
+<translation id="5863515189965725638">IBANটো সম্পাদনা কৰক</translation>
 <translation id="5863847714970149516">পৰৱর্তী পৃষ্ঠাটোৱে আপোনাৰ পৰা মাচুল ল’বলৈ চেষ্টা কৰিব পাৰে</translation>
 <translation id="5866257070973731571">ফ'ন নম্বৰ যোগ কৰক</translation>
 <translation id="5866898949289125849">আপুনি বিকাশকৰ্তাৰ সঁজুলিৰ এটা পৃষ্ঠা চাই আছে</translation>
@@ -3717,6 +3719,7 @@
 <translation id="81563721597823545">হকীৰ সা-সৰঞ্জাম</translation>
 <translation id="8161095570253161196">ব্ৰাউজ কৰা অব্যাহত ৰাখক</translation>
 <translation id="8163866351304776260">বাওঁফালে চতুর্ভূজ আকাৰত পাঞ্চ কৰক</translation>
+<translation id="8163998196788647716">লেনদেন কৰি থকা একাউণ্ট</translation>
 <translation id="8164078261547504572">মূল্য কমিলে ইমেইল পাবলৈ বিচাৰেনে?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" কীসমূহ একেখন অভিধানত ছেট কৰিব নোৱাৰি</translation>
 <translation id="8175796834047840627">আপুনি ছাইন ইন কৰি থোৱাৰ বাবে Chromeএ আপোনাৰ Google একাউণ্টত আপোনাৰ কার্ডসমূহ ছেভ কৰাৰ সুবিধা দিছে। আপুনি ছেটিংসমূহ-ত এয়া সলনি কৰিব পাৰে।</translation>

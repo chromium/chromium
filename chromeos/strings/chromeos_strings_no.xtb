@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">sommerfugler</translation>
 <translation id="188114911237521550">Slå av mørk modus</translation>
-<translation id="188268299367474594">Velg blant tilgjengelige APN</translation>
 <translation id="1885577615937958993">spol medieinnhold fremover</translation>
 <translation id="1887850431809612466">Maskinvareversjon</translation>
 <translation id="189221451253258459">neongrønt</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">Bilde <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2465272316171730950">Det er ikke ledig kapasitet. Kom tilbake om en liten stund.</translation>
 <translation id="2472215337771558851">Bruk Hjelp meg å skrive til å lage utkast eller finjustere eksisterende tekst – basert på AI fra Google</translation>
 <translation id="2480572840229215612">krabber</translation>
 <translation id="248546197012830854">Enheten er uten nett. Koble til et wifi-nettverk for å se hjelpeinnhold.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">vis vinduer</translation>
 <translation id="2513396635448525189">Påloggingsbilde</translation>
 <translation id="2517472476991765520">Skann</translation>
-<translation id="2520213071283358374">Bruk dette APN-et</translation>
 <translation id="2521835766824839541">forrige spor</translation>
 <translation id="2526590354069164005">Skrivebordet</translation>
 <translation id="253029298928638905">Starter på nytt …</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Nettverksmaske</translation>
 <translation id="4454245904991689773">Skann til</translation>
 <translation id="4456812688969919973">Lagre APN-knappen er nå deaktivert</translation>
-<translation id="4460905888685975163">Bruk dette APN-et er nå deaktivert</translation>
 <translation id="4469288414739283461">Skjermsparer: Jordflyt</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Vertsnavn for tjener</translation>
 <translation id="5089810972385038852">Fylke/delstat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">opp</translation>
 <translation id="5107243100836678918">Hurtigtaster uten <ph name="META_KEY" />-tasten kan komme i konflikt med hurtigtastene i enkelte apper. Trykk på hurtigtasten en gang til for å fortsette å bruke den, eller trykk på en ny hurtigtast som inneholder <ph name="KEY" />-tasten. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Lignende:</translation>
 <translation id="5130848777448318809">ponnier</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Endre tilordningen ved å velge en ny tast</translation>
 <translation id="714876143603641390">LAN-tilkobling</translation>
 <translation id="7154020516215182599">Del tilbakemeldingen eller beskriv problemet. Ta med en fremgangsmåte for å gjenskape problemet om mulig.</translation>
-<translation id="7155037718620478619">Oppdag flere APN</translation>
 <translation id="7155171745945906037">Eksisterende bilde fra kamera eller fil</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7170236477717446850">Profilbilde</translation>
@@ -1194,12 +1190,14 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Leverandørtype</translation>
 <translation id="7882501334836096755">Offentlig nøkkel</translation>
+<translation id="78957024357676568">venstre</translation>
 <translation id="7897043345768902965">gangvei</translation>
 <translation id="7903695460270716054">Velg utvalgt grafikk og utvalgte bilder</translation>
 <translation id="7915220255123750251">Administrer APN-innstillingene for nettverket. APN oppretter en tilkobling mellom et mobilnettverk og internett.</translation>
 <translation id="7936303884198020182">Fant ingen navnetjenere</translation>
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7943235353293548836">Vedvarende keepalive-intervall</translation>
+<translation id="7943516765291457328">Slå på Bluetooth for å søke etter wifi-soner i nærheten</translation>
 <translation id="7944562637040950644">slå av/på tastaturets baklys</translation>
 <translation id="7953669802889559161">Inndatametoder</translation>
 <translation id="7955587717700691983">Bluetooth-tastatur</translation>
@@ -1223,7 +1221,6 @@
 <translation id="8075838845814659848">Gjenværende batteri</translation>
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8079860070590459552">blomstereng</translation>
-<translation id="8081553043098820199">Ugyldige APN kan føre til at mobiltilkoblingen blir deaktivert. Angi bare APN du har fått oppgitt av mobiloperatøren eller administratoren din.</translation>
 <translation id="8082366717211101304">Kan ikke foreta DNS-oppslag fra Android-apper</translation>
 <translation id="8082644724189923105">tastatursone</translation>
 <translation id="808894953321890993">Endre passord</translation>
@@ -1231,6 +1228,7 @@
 <translation id="8104083085214006426">Du bruker et åpent og usikret nettverk</translation>
 <translation id="811820734797650957">(Android) Gatewayen kan pinges</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Bekreft</translation>
 <translation id="8132480444149501833">Be om trafikktellere</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Velg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1254,6 @@
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8302368968391049045">HTTPS-brannmur</translation>
 <translation id="8312330582793120272">spill av medieinnhold</translation>
-<translation id="8317819321190319496">Bruk dette APN-et er nå aktivert</translation>
 <translation id="8318753676953949627">Ingen bilder</translation>
 <translation id="8320910311642849813">skog</translation>
 <translation id="8329018942023753850">kalkulator-appen</translation>
@@ -1282,6 +1279,7 @@
 <translation id="8410244574650205435">Identifisert automatisk</translation>
 <translation id="8420955526972171689">Kjør tester og feilsøking for maskinvareproblemer</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">ned</translation>
 <translation id="8431300646573772016">Dette er nytt i ChromeOS</translation>
 <translation id="843568408673868420">Internettilkobling</translation>
 <translation id="844521431886043384">DNS er ikke konfigurert</translation>
@@ -1329,6 +1327,7 @@
 <translation id="8747900814994928677">Bekreft endringen</translation>
 <translation id="8749478549112817787">Kamerabakgrunn</translation>
 <translation id="8755946156089753497">tårn</translation>
+<translation id="8756235582947991808">Slik lager du innhold med AI – og noen ting du bør huske på</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto-album</translation>
 <translation id="8775713578693478175">APN for modem</translation>
@@ -1372,6 +1371,7 @@
 <translation id="894617464444543719">Enheten er en telefon.</translation>
 <translation id="8950424402482976779">topp</translation>
 <translation id="8954341524817067858">fjell</translation>
+<translation id="8957423540740801332">høyre</translation>
 <translation id="8960969673307890087">vannmeloner</translation>
 <translation id="8961025972867871808">pingviner</translation>
 <translation id="8968751544471797276">Ladefrekvens</translation>

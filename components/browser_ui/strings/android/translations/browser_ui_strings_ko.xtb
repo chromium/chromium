@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">뒤로 이동</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="2550801787432930915">가격 인하 카드</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{쿠키 1개 차단됨}other{쿠키 #개 차단됨}}</translation>
 <translation id="2570922361219980984">이 기기의 위치 정보 액세스도 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="257931822824936280">펼쳐짐 - 접으려면 클릭</translation>
 <translation id="2586657967955657006">클립보드</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">뒤로 탐색</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" />에서 위치 정보에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 위치를 사용 설정하세요.</translation>
 <translation id="8447861592752582886">기기 액세스 권한 취소</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{쿠키 1개 사용 중}other{쿠키 #개 사용 중}}</translation>
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
 <translation id="848952951823693243">항상 모바일 사이트 요청</translation>
 <translation id="8499083585497694743">마이크 음소거 해제</translation>

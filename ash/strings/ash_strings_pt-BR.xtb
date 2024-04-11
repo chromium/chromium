@@ -1432,7 +1432,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6537924328260219877">intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, bateria do smartphone em <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Verificando o arquivo <ph name="FILENAME" /> para download</translation>
 <translation id="6542521951477560771">Transmitindo para <ph name="RECEIVER_NAME" /></translation>
-<translation id="6546062506073634094">Pesquisa de imagens por conteúdo e visualizações de imagens</translation>
 <translation id="6555373427270923730">Digite um endereço da Web na barra de endereço e pressione <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalação</translation>

@@ -226,6 +226,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1864454756846565995">USB-C-enhet (porten på baksiden)</translation>
 <translation id="1869497990620230175">Hurtigfiler</translation>
 <translation id="1871023081802165724">Spill av medieinnhold</translation>
+<translation id="1871915835366697861">Ikke tilgjengelig for dette spillet</translation>
 <translation id="1879018240766558464">Inkognitovinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
 <translation id="1882814835921407042">Ingen mobilnettverk</translation>
 <translation id="1882897271359938046">Speiler <ph name="DISPLAY_NAME" /></translation>
@@ -1432,7 +1433,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6537924328260219877">Signalstyrke <ph name="SIGNAL_STRENGTH" /> – telefonbatterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Nedlastingen skannes: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Caster til <ph name="RECEIVER_NAME" /></translation>
-<translation id="6546062506073634094">Bildesøk basert på innhold og bildeforhåndsvisninger</translation>
 <translation id="6555373427270923730">Skriv inn en nettadresse i adressefeltet, og trykk deretter på <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nylig installert</translation>
@@ -1792,6 +1792,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="79341161159229895">Kontoen er administrert av <ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Trykk på <ph name="SHORTCUT_KEY_NAME" /> + V for å se utklippstavlen. De siste fem elementene du har kopiert, er lagret på utklippstavlen.</translation>
 <translation id="7942349550061667556">Rød</translation>
+<translation id="7943516765291457328">Slå på Bluetooth for å søke etter wifi-soner i nærheten</translation>
 <translation id="7944023924886109030">Se alle hendelser for i dag</translation>
 <translation id="7945357288295809525">Vis tilgjengelighetsinnstillinger. «<ph name="ENABLED_FEATURES" />» er aktivert.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vil bruke <ph name="DEVICE_NAME" /></translation>

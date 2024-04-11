@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Visszalépés</translation>
 <translation id="2546283357679194313">Cookie-k és webhelyadatok</translation>
 <translation id="2550801787432930915">Árcsökkenést jelző kártya</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie letiltva}other{# cookie letiltva}}</translation>
 <translation id="2570922361219980984">A helyhozzáférés is ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="257931822824936280">Kibontva – kattintson az összecsukáshoz.</translation>
 <translation id="2586657967955657006">Vágólap</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Ugrás visszafelé</translation>
 <translation id="8444433999583714703">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a helyadatokhoz, a helyadatokat az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="8447861592752582886">Eszközengedély visszavonása</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie van használatban}other{# cookie van használatban}}</translation>
 <translation id="8487700953926739672">Offline elérhető</translation>
 <translation id="848952951823693243">Mindig a mobilwebhely kérése</translation>
 <translation id="8499083585497694743">Mikrofon némításának feloldása</translation>

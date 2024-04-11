@@ -243,7 +243,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1428729058023778569">Bu sayt HTTPS protokolda ishlamasligi uchun bu ogohlantiruv chiqarildi. <ph name="BEGIN_LEARN_MORE_LINK" />Batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Oʻzi yopishadigan plyonka</translation>
 <translation id="1430915738399379752">Chop etish</translation>
-<translation id="1431021750861456539">Avtomatik butun ekran</translation>
 <translation id="1432187715652018471">sahifa xizmatga ishlov beruvchi vosita oʻrnatishga urinmoqda.</translation>
 <translation id="1432581352905426595">Qidiruv tizimlarini boshqarish</translation>
 <translation id="1433225466058025572">Fayllarni qaytadan koʻchiring</translation>
@@ -2319,7 +2318,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 	<ph name="LINE_BREAK" />
 	Tarmoq administratori bilan bog‘lanib ko‘ring.</translation>
 <translation id="549333378215107354">Hajmi: 3</translation>
-<translation id="5501712702042287009">avtomatik butun ekran</translation>
 <translation id="550365051221576010">Barchasini kiritish</translation>
 <translation id="5508443345185481044">Kameralar va videokameralar</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2500,6 +2498,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Yoqish</translation>
 <translation id="5862579898803147654">Taxlovchi 8</translation>
+<translation id="5863515189965725638">IBAN raqamini tahrirlash</translation>
 <translation id="5863847714970149516">Bu sahifa sizdan pul talab qilishi mumkin</translation>
 <translation id="5866257070973731571">Telefon raqamini qo‘shing</translation>
 <translation id="5866898949289125849">Dasturchi vositalari sahifasidasiz</translation>

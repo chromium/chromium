@@ -243,7 +243,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1428729058023778569">Du ser denne advarselen fordi dette nettstedet ikke støtter HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Selvklebende film</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
-<translation id="1431021750861456539">Automatisk fullskjerm</translation>
 <translation id="1432187715652018471">siden vil installere en tjenestebehandler</translation>
 <translation id="1432581352905426595">Administrer søkemotorer</translation>
 <translation id="1433225466058025572">Prøv å flytte filene på nytt</translation>
@@ -1082,6 +1081,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
             <ph name="LIST_ITEM" />Søkelogg<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Informasjon du har lagt inn i skjemaer<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Sparekonto</translation>
 <translation id="3103188521861412364">Aksjer og obligasjoner</translation>
 <translation id="3105172416063519923">Ressurs-ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />å sjekke konfigurasjonen av sikker DNS<ph name="END_LINK" /></translation>
@@ -1299,6 +1299,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3493660662684070951">Varebiler, kassebiler og SUV-er</translation>
 <translation id="3495081129428749620">Finn på siden
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Lønn</translation>
 <translation id="3497627066518778351">Gjennomgå en liste over nettstedsdata i et nytt vindu</translation>
 <translation id="3498215018399854026">Vi kunne ikke nå foreldrene dine akkurat nå. Prøv på nytt.</translation>
 <translation id="350069200438440499">Filnavn:</translation>
@@ -2318,7 +2319,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
     <ph name="LINE_BREAK" />
     Prøv å kontakte systemadministratoren din.</translation>
 <translation id="549333378215107354">Størrelse 3</translation>
-<translation id="5501712702042287009">automatisk fullskjerm</translation>
 <translation id="550365051221576010">Fyll ut alt</translation>
 <translation id="5508443345185481044">Kameraer og videokameraer</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2335,6 +2335,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5519696598216267194">Papir (hullpapir)</translation>
 <translation id="5521782189689806907">Skapmøbler</translation>
 <translation id="5523118979700054094">Navn på retningslinje</translation>
+<translation id="5523588073846127669">Selgeren godtar ikke dette virtuelle kortet</translation>
 <translation id="5525755241743357906">En fil ble kopiert eller flyttet</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å gi tilgjengelighetsverktøyene dine personlig preg i ChromeOS-innstillingene</translation>
 <translation id="55293785478302737">Kantstifting</translation>
@@ -2499,6 +2500,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="5862579898803147654">Hylle 8</translation>
+<translation id="5863515189965725638">Endre IBAN-nummeret</translation>
 <translation id="5863847714970149516">Den neste siden kan prøve å belaste deg for penger</translation>
 <translation id="5866257070973731571">Legg til telefonnummer</translation>
 <translation id="5866898949289125849">Du ser på en side for utviklerverktøy</translation>
@@ -3714,6 +3716,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="81563721597823545">Hockeyutstyr</translation>
 <translation id="8161095570253161196">Gjenoppta surfingen</translation>
 <translation id="8163866351304776260">Fire hull venstre</translation>
+<translation id="8163998196788647716">Brukskonto</translation>
 <translation id="8164078261547504572">Vil du motta e-post når prisene går ned?</translation>
 <translation id="8169175551046720804">Nøklene «<ph name="DATA_CONTROLS_KEYS" />» kan ikke være angitt i samme ordliste</translation>
 <translation id="8175796834047840627">Chrome tilbyr å lagre kort i Google-kontoen din fordi du er logget på. Du kan endre dette i innstillingene.</translation>

@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">蝴蝶</translation>
 <translation id="188114911237521550">关闭深色模式</translation>
-<translation id="188268299367474594">从可用的 APN 中选择</translation>
 <translation id="1885577615937958993">让媒体快进</translation>
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="189221451253258459">荧光绿</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 张图片，共 <ph name="TOTAL_PAGES" /> 张</translation>
 <translation id="2446553403094072641">浮点准确性</translation>
 <translation id="2448312741937722512">类型</translation>
-<translation id="2465272316171730950">我们已达到容量上限。请稍后再回来查看。</translation>
 <translation id="2472215337771558851">使用 Google AI 赋能的“帮我写”功能撰写草稿或润色现有内容</translation>
 <translation id="2480572840229215612">螃蟹</translation>
 <translation id="248546197012830854">设备处于离线状态。您需要连接到 Wi-Fi 网络才能查看相关的帮助内容。</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">显示窗口</translation>
 <translation id="2513396635448525189">登录图片</translation>
 <translation id="2517472476991765520">扫描</translation>
-<translation id="2520213071283358374">使用此 APN</translation>
 <translation id="2521835766824839541">上一首</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="253029298928638905">正在重启…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">子网掩码</translation>
 <translation id="4454245904991689773">将扫描的文件保存至</translation>
 <translation id="4456812688969919973">APN“保存”按钮现已停用</translation>
-<translation id="4460905888685975163">“使用此 APN”现已停用</translation>
 <translation id="4469288414739283461">“地球的风景变化”屏保</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">服务器主机名</translation>
 <translation id="5089810972385038852">州/省/直辖市/自治区</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">向上</translation>
 <translation id="5107243100836678918">不含<ph name="META_KEY" />键的快捷键可能会与某个应用的快捷方式冲突。再次按此快捷键可继续使用它，也可按含有<ph name="KEY" />键的新快捷键。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">近义词：</translation>
 <translation id="5130848777448318809">小马</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">通过选择新键重新分配</translation>
 <translation id="714876143603641390">LAN 连接性</translation>
 <translation id="7154020516215182599">分享您的反馈或描述您的问题。如果可能的话，请附上重现问题的步骤。</translation>
-<translation id="7155037718620478619">发现更多 APN</translation>
 <translation id="7155171745945906037">相机或文件中的现有照片</translation>
 <translation id="7162487448488904999">媒体库</translation>
 <translation id="7170236477717446850">个人资料照片</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">提供商类型</translation>
 <translation id="7882501334836096755">公钥</translation>
+<translation id="78957024357676568">向左</translation>
 <translation id="7897043345768902965">人行道</translation>
 <translation id="7903695460270716054">选择精选艺术作品和图片</translation>
 <translation id="7915220255123750251">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">剩余电量</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8079860070590459552">花田</translation>
-<translation id="8081553043098820199">无效 APN 可能会导致您的移动网络连接被停用。请仅设置您的移动服务商或管理员提供的 APN。</translation>
 <translation id="8082366717211101304">无法从 Android 应用解析 DNS</translation>
 <translation id="8082644724189923105">键盘区域</translation>
 <translation id="808894953321890993">更改密码</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">您正在使用不安全的开放网络</translation>
 <translation id="811820734797650957">(Android) 可对网关执行 ping 操作</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">确认</translation>
 <translation id="8132480444149501833">请求流量计数器</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">选择 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">来源</translation>
 <translation id="8302368968391049045">HTTPS 防火墙</translation>
 <translation id="8312330582793120272">播放媒体内容</translation>
-<translation id="8317819321190319496">“使用此 APN”现已启用</translation>
 <translation id="8318753676953949627">无图片</translation>
 <translation id="8320910311642849813">森林</translation>
 <translation id="8329018942023753850">计算器应用</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">已自动检测</translation>
 <translation id="8420955526972171689">运行硬件测试以排查硬件问题</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">向下</translation>
 <translation id="8431300646573772016">Chrome 操作系统的新变化</translation>
 <translation id="843568408673868420">互联网连接</translation>
 <translation id="844521431886043384">未设置 DNS</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">设备类型是手机。</translation>
 <translation id="8950424402482976779">顶部</translation>
 <translation id="8954341524817067858">山</translation>
+<translation id="8957423540740801332">向右</translation>
 <translation id="8960969673307890087">西瓜</translation>
 <translation id="8961025972867871808">企鹅</translation>
 <translation id="8968751544471797276">充电速率</translation>

@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Врати се</translation>
 <translation id="2546283357679194313">Колачиња и податоци од сајтот</translation>
 <translation id="2550801787432930915">Картичка за намалување на цената</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 колаче е блокирано}one{# колаче е блокирано}other{# колачиња се блокирани}}</translation>
 <translation id="2570922361219980984">Пристапот до локацијата е исклучен и за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Проширено - кликни да се сокрие.</translation>
 <translation id="2586657967955657006">Табла со исечоци</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Барај поназад</translation>
 <translation id="8444433999583714703">За да овозможите <ph name="APP_NAME" /> да пристапува до вашата локација, вклучете ја дозволата за локацијата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Отповикај ја дозволата за пристап до уредот</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Се користи 1 колаче}one{Се користи # колаче}other{Се користат # колачиња}}</translation>
 <translation id="8487700953926739672">Достапно е исклучено од линија</translation>
 <translation id="848952951823693243">Секогаш барај сајт за мобилен</translation>
 <translation id="8499083585497694743">Вклучи го звукот на микрофонот</translation>

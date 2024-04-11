@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">ผีเสื้อ</translation>
 <translation id="188114911237521550">ปิดโหมดมืด</translation>
-<translation id="188268299367474594">เลือกจาก APN ที่พร้อมใช้งาน</translation>
 <translation id="1885577615937958993">กรอสื่อไปข้างหน้า</translation>
 <translation id="1887850431809612466">การแก้ไขฮาร์ดแวร์</translation>
 <translation id="189221451253258459">เขียวนีออน</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193">ภาพที่ <ph name="CURRENT_PAGE" /> จาก <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">ความแม่นยำของจุดลอยตัว</translation>
 <translation id="2448312741937722512">ประเภท</translation>
-<translation id="2465272316171730950">ระบบไม่ว่างดำเนินการ โปรดกลับมาใหม่ในภายหลัง</translation>
 <translation id="2472215337771558851">ใช้ฟีเจอร์ช่วยฉันเขียนเพื่อสร้างข้อความร่างหรือปรับแต่งงานที่มีอยู่ซึ่งทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="2480572840229215612">ปู</translation>
 <translation id="248546197012830854">อุปกรณ์ออฟไลน์อยู่ เชื่อมต่อกับเครือข่าย Wi-Fi เพื่อดูเนื้อหาช่วยเหลือ</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">แสดงหน้าต่าง</translation>
 <translation id="2513396635448525189">รูปภาพการเข้าสู่ระบบ</translation>
 <translation id="2517472476991765520">สแกน</translation>
-<translation id="2520213071283358374">ใช้ APN นี้</translation>
 <translation id="2521835766824839541">แทร็กก่อนหน้า</translation>
 <translation id="2526590354069164005">เดสก์ท็อป</translation>
 <translation id="253029298928638905">กำลังรีสตาร์ท…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">ซับเน็ตมาสก์</translation>
 <translation id="4454245904991689773">สแกนแล้วบันทึกไว้ใน</translation>
 <translation id="4456812688969919973">ปิดใช้ปุ่ม "บันทึก APN" แล้ว</translation>
-<translation id="4460905888685975163">ปิดใช้ปุ่ม "ใช้ APN นี้" แล้ว</translation>
 <translation id="4469288414739283461">ภาพพักหน้าจอการเคลื่อนที่ของโลก</translation>
 <translation id="4479639480957787382">อีเทอร์เน็ต</translation>
 <translation id="4483049906298469269">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายที่ไม่ใช่ค่าเริ่มต้นไม่สำเร็จ</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">ชื่อโฮสต์ของเซิร์ฟเวอร์</translation>
 <translation id="5089810972385038852">รัฐ</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">ขึ้น</translation>
 <translation id="5107243100836678918">แป้นพิมพ์ลัดที่ไม่มีแป้น<ph name="META_KEY" />อาจขัดแย้งกับแป้นพิมพ์ลัดของบางแอป กดแป้นพิมพ์ลัดนี้อีกครั้งเพื่อใช้ต่อไป หรือกดแป้นพิมพ์ลัดใหม่โดยใช้แป้น<ph name="KEY" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">คล้ายกัน:</translation>
 <translation id="5130848777448318809">ม้าแคระ</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">กำหนดใหม่โดยเลือกแป้นใหม่</translation>
 <translation id="714876143603641390">การเชื่อมต่อ LAN</translation>
 <translation id="7154020516215182599">แชร์ความคิดเห็นหรืออธิบายปัญหาของคุณ หากเป็นไปได้ ให้ระบุขั้นตอนต่างๆ เพื่อจำลองปัญหา</translation>
-<translation id="7155037718620478619">สำรวจ APN เพิ่มเติม</translation>
 <translation id="7155171745945906037">รูปภาพที่มีอยู่จากกล้องหรือไฟล์</translation>
 <translation id="7162487448488904999">แกลเลอรี</translation>
 <translation id="7170236477717446850">รูปโปรไฟล์</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ประเภทผู้ให้บริการ</translation>
 <translation id="7882501334836096755">คีย์สาธารณะ</translation>
+<translation id="78957024357676568">ซ้าย</translation>
 <translation id="7897043345768902965">ทางเท้า</translation>
 <translation id="7903695460270716054">เลือกงานศิลปะและรูปภาพที่ดูแลจัดการ</translation>
 <translation id="7915220255123750251">จัดการการตั้งค่า APN ของเครือข่าย APN จะเริ่มการเชื่อมต่อระหว่างเครือข่ายมือถือกับอินเทอร์เน็ต</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">การชาร์จที่เหลือ</translation>
 <translation id="8076492880354921740">แท็บ</translation>
 <translation id="8079860070590459552">ทุ่งดอกไม้</translation>
-<translation id="8081553043098820199">APN ที่ไม่ถูกต้องอาจทำให้การเชื่อมต่อมือถือของคุณถูกปิดใช้งาน ตั้งค่า APN ที่มาจากผู้ให้บริการเครือข่ายมือถือหรือผู้ดูแลระบบเท่านั้น</translation>
 <translation id="8082366717211101304">ไม่สามารถแปลง DNS จากแอป Android</translation>
 <translation id="8082644724189923105">โซนแป้นพิมพ์</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">คุณกำลังใช้เครือข่ายแบบเปิดที่ไม่ปลอดภัย</translation>
 <translation id="811820734797650957">(Android) ปิงเกตเวย์ได้</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">เลือก <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">แหล่งที่มา</translation>
 <translation id="8302368968391049045">ไฟร์วอลล์ HTTPS</translation>
 <translation id="8312330582793120272">เล่นสื่อ</translation>
-<translation id="8317819321190319496">เปิดใช้ปุ่ม "ใช้ APN นี้" แล้ว</translation>
 <translation id="8318753676953949627">ไม่มีภาพ</translation>
 <translation id="8320910311642849813">ป่า</translation>
 <translation id="8329018942023753850">แอปเครื่องคิดเลข</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">ตรวจพบโดยอัตโนมัติ</translation>
 <translation id="8420955526972171689">ทำการทดสอบและแก้ปัญหาเกี่ยวกับฮาร์ดแวร์</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">ลง</translation>
 <translation id="8431300646573772016">มีอะไรใหม่ใน Chrome OS</translation>
 <translation id="843568408673868420">การเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="844521431886043384">ไม่ได้ตั้งค่า DNS</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">อุปกรณ์เป็นโทรศัพท์</translation>
 <translation id="8950424402482976779">ด้านบน</translation>
 <translation id="8954341524817067858">ภูเขา</translation>
+<translation id="8957423540740801332">ด้านขวา</translation>
 <translation id="8960969673307890087">แตงโม</translation>
 <translation id="8961025972867871808">เพนกวิน</translation>
 <translation id="8968751544471797276">อัตราการชาร์จ</translation>

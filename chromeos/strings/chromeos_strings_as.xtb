@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">পখিলা</translation>
 <translation id="188114911237521550">গাঢ় ম’ড অফ কৰক</translation>
-<translation id="188268299367474594">উপলব্ধ APNসমূহৰ পৰা বাছনি কৰক</translation>
 <translation id="1885577615937958993">মিডিয়া ফাষ্ট ফৰৱাৰ্ড কৰক</translation>
 <translation id="1887850431809612466">হাৰ্ডৱেৰৰ পুনৰীক্ষণ</translation>
 <translation id="189221451253258459">নিয়ন সেউজীয়া</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />ৰ <ph name="CURRENT_PAGE" /> খন প্ৰতিচ্ছবি</translation>
 <translation id="2446553403094072641">ওপঙি থকা বিন্দুৰ সঠিকতা</translation>
 <translation id="2448312741937722512">প্রকাৰ</translation>
-<translation id="2465272316171730950">বৰ্তমান পাঠ সৃষ্টি কৰিব নোৱাৰি। অনুগ্ৰহ কৰি, অলপ সময়ৰ পাছত উভতি আহক।</translation>
 <translation id="2472215337771558851">এটা খচৰা সৃষ্টি কৰিবলৈ বা ইতিমধ্যে থকা কাম মসৃণ কৰিবলৈ হেল্প মী ৰাইট ব্যৱহাৰ কৰক, যিটো Google AIৰ দ্বাৰ সঞ্চালিত</translation>
 <translation id="2480572840229215612">কেঁকোৰা</translation>
 <translation id="248546197012830854">ডিভাইচটো অফলাইন হৈ আছে। সহায় বিষয়ক সমল চাবলৈ ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযুক্ত হওক।</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">ৱিণ্ড’ দেখুৱাওক</translation>
 <translation id="2513396635448525189">লগইনৰ প্ৰতিচ্ছবি</translation>
 <translation id="2517472476991765520">স্কেন কৰক</translation>
-<translation id="2520213071283358374">এই APNটো ব্যৱহাৰ কৰক</translation>
 <translation id="2521835766824839541">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="253029298928638905">ৰিষ্টাৰ্ট কৰি থকা হৈছে…</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">ছাবনেট মাস্ক</translation>
 <translation id="4454245904991689773">স্কেন কৰি ইয়াত ছেভ কৰক</translation>
 <translation id="4456812688969919973">এতিয়া APN ছেভ কৰাৰ বুটামটো এতিয়া অক্ষম কৰা হৈছে</translation>
-<translation id="4460905888685975163">এতিয়া APN ব্যৱহাৰ কৰাটো অক্ষম কৰা হৈছে</translation>
 <translation id="4469288414739283461">পৃথিৱীৰ প্ৰবাহৰ স্ক্ৰীন ছেভাৰ</translation>
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
@@ -1066,7 +1062,6 @@
 <translation id="7147557737960578492">এটা নতুন কী বাছনি কৰি পুনৰ আৱণ্টন কৰক</translation>
 <translation id="714876143603641390">LAN সংযোগ</translation>
 <translation id="7154020516215182599">আপোনাৰ মতামত পঠিয়াওক অথবা আপোনাৰ সমস্যাটো বৰ্ণনা কৰক। যদি সম্ভৱ, আপোনাৰ সমস্যাটোৰ পুনৰ সৃষ্টি কৰাৰ বাবে ল’বলগীয়া পদক্ষেপসমূহ বৰ্ণনা কৰক।</translation>
-<translation id="7155037718620478619">অধিক এপিএন বিচাৰি উলিয়াওক</translation>
 <translation id="7155171745945906037">কেমেৰা বা ফাইলৰ পৰা ইতিমধ্যে থকা ফট’</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">প্ৰ’ফাইলৰ চিত্ৰ</translation>
@@ -1196,12 +1191,14 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">প্ৰদানকাৰীৰ ধৰণ</translation>
 <translation id="7882501334836096755">ৰাজহুৱা চাবি</translation>
+<translation id="78957024357676568">বাওঁফালে</translation>
 <translation id="7897043345768902965">পদপথ</translation>
 <translation id="7903695460270716054">কিউৰেট কৰা শিল্পকৰ্ম আৰু ছবি বাছনি কৰক</translation>
 <translation id="7915220255123750251">নেটৱৰ্ক এপিএনৰ ছেটিং পৰিচালনা কৰক। এপিএনে চেলুলাৰ নেটৱৰ্ক আৰু ইণ্টাৰনেটৰ মাজত এটা সংযোগ স্থাপন কৰে।</translation>
 <translation id="7936303884198020182">ড’মেইন নাম থকা কোনো ছাৰ্ভাৰ পোৱা নগ'ল</translation>
 <translation id="7942349550061667556">ৰঙা</translation>
 <translation id="7943235353293548836">অবিৰত কীপএলাইভৰ অন্তৰাল</translation>
+<translation id="7943516765291457328">নিকটৱৰ্তী হটস্পট স্কেন কৰিবলৈ ব্লুটুথ অন কৰক</translation>
 <translation id="7944562637040950644">কীব’ৰ্ডৰ নেপথ্যৰ পোহৰ টগ’ল কৰক</translation>
 <translation id="7953669802889559161">ইনপুট</translation>
 <translation id="7955587717700691983">ব্লুটুথ কীব’ৰ্ড</translation>
@@ -1225,7 +1222,6 @@
 <translation id="8075838845814659848">বাকী থকা চাৰ্জ</translation>
 <translation id="8076492880354921740">টেব</translation>
 <translation id="8079860070590459552">ফুলৰ ময়দান</translation>
-<translation id="8081553043098820199">অমান্য APNসমূহে আপোনাৰ ম’বাইল সংযোগ অক্ষম কৰিব পাৰে। কেৱল আপোনাৰ ম’বাইল প্ৰদানকাৰী অথবা প্ৰশাসকে প্ৰদান কৰা APNসমূহহে ছেট কৰক।</translation>
 <translation id="8082366717211101304">Android এপৰ পৰা DNS সমাধান কৰিব নোৱাৰি</translation>
 <translation id="8082644724189923105">কীব’ৰ্ড জ’ন</translation>
 <translation id="808894953321890993">পাছৱৰ্ড সলনি কৰক</translation>
@@ -1233,6 +1229,7 @@
 <translation id="8104083085214006426">আপুনি এটা মুক্ত আৰু অসুৰক্ষিত নেটৱৰ্ক ব্যৱহাৰ কৰি আছে</translation>
 <translation id="811820734797650957">(Android) গে’টৱে’ পিং কৰিব পাৰি</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">নিশ্চিত কৰক</translation>
 <translation id="8132480444149501833">ট্ৰেফিক কাউণ্টাৰৰ অনুৰোধ কৰক</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> বাছনি কৰক <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1258,7 +1255,6 @@
 <translation id="8294431847097064396">উৎস</translation>
 <translation id="8302368968391049045">HTTPSৰ ফায়াৰৱাল</translation>
 <translation id="8312330582793120272">মিডিয়া প্লে’ কৰক</translation>
-<translation id="8317819321190319496">এতিয়া এইটো APN ব্যৱহাৰ কৰাটো সক্ষম কৰা হৈছে</translation>
 <translation id="8318753676953949627">কোনো প্ৰতিচ্ছবি নাই</translation>
 <translation id="8320910311642849813">অৰণ্য</translation>
 <translation id="8329018942023753850">কেলকুলেটৰ এপ্</translation>
@@ -1331,6 +1327,7 @@
 <translation id="8747900814994928677">সলনি কৰাটো নিশ্চিত কৰক</translation>
 <translation id="8749478549112817787">কেমেৰাৰ পটভূমি</translation>
 <translation id="8755946156089753497">টাৱাৰ</translation>
+<translation id="8756235582947991808">AIৰ জৰিয়তে কেনেকৈ সৃষ্টি কৰিব লাগে আৰু মনত ৰাখিবলগীয়া কেইটামান কথা</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photosৰ এলবাম</translation>
 <translation id="8775713578693478175">আধুনিক এপিএন</translation>
@@ -1374,6 +1371,7 @@
 <translation id="894617464444543719">ডিভাইচটো এটা ফ’ন।</translation>
 <translation id="8950424402482976779">একেবাৰে ওপৰলৈ</translation>
 <translation id="8954341524817067858">পৰ্বত</translation>
+<translation id="8957423540740801332">সোঁফালে</translation>
 <translation id="8960969673307890087">তৰমুজ</translation>
 <translation id="8961025972867871808">পেংগুইন</translation>
 <translation id="8968751544471797276">চাৰ্জিঙৰ হাৰ</translation>

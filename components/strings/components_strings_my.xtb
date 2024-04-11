@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">ဤဝဘ်ဆိုက်သည် HTTPS မပံ့ပိုးသည့်အတွက် ဤသတိပေးချက်ကို မြင်နေရခြင်းဖြစ်သည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">ကော်အသင့်ပါသည့် ဖလင်</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
-<translation id="1431021750861456539">အလိုအလျောက် ဖန်သားပြင်အပြည့်</translation>
 <translation id="1432187715652018471">စာမျက်နှာက ဝန်ဆောင်မှု စီမံသူအား ထည့်သွင်းလိုသည်။</translation>
 <translation id="1432581352905426595">ရှာဖွေမှုအင်ဂျင်များကို စီမံခန့်ခွဲရန်</translation>
 <translation id="1433225466058025572">သင့်ဖိုင်များကို ထပ်မံရွှေ့ကြည့်ပါ</translation>
@@ -2319,7 +2318,6 @@
     <ph name="LINE_BREAK" />
     သင့်စနစ်စီမံခန့်ခွဲသူကို ဆက်သွယ်ကြည့်ပါ။</translation>
 <translation id="549333378215107354">အရွယ်အစား ၃</translation>
-<translation id="5501712702042287009">အလိုအလျောက် ဖန်သားပြင်အပြည့်</translation>
 <translation id="550365051221576010">အားလုံးဖြည့်ရန်</translation>
 <translation id="5508443345185481044">ကင်မရာ၊ ဗီဒီယိုကင်မရာ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2500,6 +2498,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ဖွင့်ရန်</translation>
 <translation id="5862579898803147654">စီထည့်သည့်ပုံး ၈</translation>
+<translation id="5863515189965725638">IBAN ပြင်ဆင်ခြင်း</translation>
 <translation id="5863847714970149516">ယခုဖွင့်တော့မည့် စာမျက်နှာသည် သင့်ထံမှ ငွေကောက်ခံနိုင်ပါသည်</translation>
 <translation id="5866257070973731571">ဖုန်းနံပါတ် ထည့်ခြင်း</translation>
 <translation id="5866898949289125849">သင်သည် ဆော့ဖ်ဝဲအင်ဂျင်နီယာတူးလ်များ စာမျက်နှာကို ကြည့်နေသည်</translation>

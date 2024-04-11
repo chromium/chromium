@@ -179,7 +179,6 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">tauriņi</translation>
 <translation id="188114911237521550">Izslēgt tumšo režīmu</translation>
-<translation id="188268299367474594">Izvēlieties kādu no pieejamajiem APN</translation>
 <translation id="1885577615937958993">pārtīt multivides saturu uz priekšu</translation>
 <translation id="1887850431809612466">Aparatūras pārskatījums</translation>
 <translation id="189221451253258459">neona zaļa</translation>
@@ -274,7 +273,6 @@
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. no <ph name="TOTAL_PAGES" /> attēliem</translation>
 <translation id="2446553403094072641">Peldošā punkta precizitāte</translation>
 <translation id="2448312741937722512">Tips</translation>
-<translation id="2465272316171730950">Funkcija ir pārslogota. Lūdzu, atgriezieties pēc neilga brīža.</translation>
 <translation id="2472215337771558851">Lai izveidotu melnrakstu vai uzlabotu esošo darbu, izmantojiet funkciju “Palīdzība rakstīšanā”, ko nodrošina Google MI.</translation>
 <translation id="2480572840229215612">krabji</translation>
 <translation id="248546197012830854">Ierīce ir bezsaistē. Izveidojiet savienojumu ar Wi-Fi tīklu, lai skatītu palīdzības saturu.</translation>
@@ -287,7 +285,6 @@
 <translation id="2512979179176933762">rādīt logus</translation>
 <translation id="2513396635448525189">Pieteikšanās attēls</translation>
 <translation id="2517472476991765520">Meklēt</translation>
-<translation id="2520213071283358374">Izmantot šo APN</translation>
 <translation id="2521835766824839541">iepriekšējais ieraksts</translation>
 <translation id="2526590354069164005">Darbvirsma</translation>
 <translation id="253029298928638905">Notiek restartēšana...</translation>
@@ -592,7 +589,6 @@
 <translation id="4453205916657964690">Apakštīkla maska</translation>
 <translation id="4454245904991689773">Skenēto attēlu saglabāšanas vieta</translation>
 <translation id="4456812688969919973">APN saglabāšanas poga tagad ir atspējota</translation>
-<translation id="4460905888685975163">Poga “Izmantot šo APN” tagad ir atspējota</translation>
 <translation id="4469288414739283461">Ekrānsaudzētājs Zemes plūsma</translation>
 <translation id="4479639480957787382">tīkls Ethernet</translation>
 <translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
@@ -704,6 +700,7 @@
 <translation id="5088172560898466307">Servera nosaukums</translation>
 <translation id="5089810972385038852">Štats</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5099354524039520280">uz augšu</translation>
 <translation id="5107243100836678918">Īsinājumtaustiņi, kuros netiek izmantots taustiņš <ph name="META_KEY" />, var būt pretrunā ar noteiktas lietotnes īsinājumtaustiņiem. Vēlreiz nospiediet šos īsinājumtaustiņus, lai turpinātu tos lietot, vai nospiediet jaunus īsinājumtaustiņus, kuros izmantots taustiņš <ph name="KEY" />. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="5108781503443873320">Līdzīga nozīme:</translation>
 <translation id="5130848777448318809">poniji</translation>
@@ -1064,7 +1061,6 @@
 <translation id="7147557737960578492">Varat piešķirt atkārtoti, atlasot jaunu taustiņu.</translation>
 <translation id="714876143603641390">LAN savienojamība</translation>
 <translation id="7154020516215182599">Sniedziet atsauksmes vai aprakstiet problēmu. Ja iespējams, norādiet darbības, ko veicāt, kad radās problēma.</translation>
-<translation id="7155037718620478619">Atklāt citus APN</translation>
 <translation id="7155171745945906037">Esošs fotoattēls no kameras vai faila</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7170236477717446850">Profila attēls</translation>
@@ -1194,6 +1190,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Pakalpojumu sniedzēja veids</translation>
 <translation id="7882501334836096755">Publiskā atslēga</translation>
+<translation id="78957024357676568">pa kreisi</translation>
 <translation id="7897043345768902965">gājēju celiņš</translation>
 <translation id="7903695460270716054">Izvēlēties atlasītos mākslas darbus un attēlus</translation>
 <translation id="7915220255123750251">Pārvaldiet tīkla APN iestatījumus. APN izveido savienojumu starp mobilo tīklu un internetu.</translation>
@@ -1223,7 +1220,6 @@
 <translation id="8075838845814659848">Atlikusī akumulatora enerģija</translation>
 <translation id="8076492880354921740">Cilnes</translation>
 <translation id="8079860070590459552">ziedu lauks</translation>
-<translation id="8081553043098820199">Nederīgu APN dēļ var tikt atspējots jūsu mobilo sakaru savienojums. Iestatiet tikai sava mobilo sakaru operatora vai administratora nodrošinātos APN.</translation>
 <translation id="8082366717211101304">Nevar atrast DNS no Android lietotnēm</translation>
 <translation id="8082644724189923105">tastatūras zona</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
@@ -1231,6 +1227,7 @@
 <translation id="8104083085214006426">Jūs izmantojat atvērtu un nedrošu tīklu</translation>
 <translation id="811820734797650957">(Android) Vārteju var ehotestēt</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8132480444149501833">Pieprasīt datplūsmas skaitītājus</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Atlasīt <ph name="TOPIC_SOURCE" /> vienumu <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1256,7 +1253,6 @@
 <translation id="8294431847097064396">Avots</translation>
 <translation id="8302368968391049045">HTTPS ugunsmūris</translation>
 <translation id="8312330582793120272">atskaņot multivides saturu</translation>
-<translation id="8317819321190319496">Poga “Izmantot šo APN” tagad ir iespējota</translation>
 <translation id="8318753676953949627">Nav attēlu</translation>
 <translation id="8320910311642849813">mežs</translation>
 <translation id="8329018942023753850">lietotne Kalkulators</translation>
@@ -1282,6 +1278,7 @@
 <translation id="8410244574650205435">Noteikts automātiski</translation>
 <translation id="8420955526972171689">Veiciet aparatūras problēmu pārbaudes un novērsiet problēmas.</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">uz leju</translation>
 <translation id="8431300646573772016">Chrome OS jaunumi</translation>
 <translation id="843568408673868420">Interneta savienojamība</translation>
 <translation id="844521431886043384">DNS nav iestatīts</translation>
@@ -1372,6 +1369,7 @@
 <translation id="894617464444543719">Ierīce ir tālrunis.</translation>
 <translation id="8950424402482976779">augšā</translation>
 <translation id="8954341524817067858">kalni</translation>
+<translation id="8957423540740801332">pa labi</translation>
 <translation id="8960969673307890087">arbūzi</translation>
 <translation id="8961025972867871808">pingvīni</translation>
 <translation id="8968751544471797276">Uzlādes ātrums</translation>

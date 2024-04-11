@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
+<translation id="1533488253335887280">Jednostavan i siguran pristup zaporkama s početnog zaslona.</translation>
+<translation id="1590550141045148182">Otvorite ili zatvorite kartice prema želji.</translation>
+<translation id="2036020471903443693">Kartica će se prikvačiti pri dnu zaslona.</translation>
+<translation id="2984477737332162971">Idite na otvorene kartice.</translation>
+<translation id="3595188309555410362">Ako imate kartice koje se dulje nisu koristile, one će se premjestiti u odjeljak Neaktivne kartice.</translation>
+<translation id="3941788408634637840">Dodirnite Neaktivne kartice (ako je ta opcija dostupna).</translation>
+<translation id="3942215673032261195">Možete prikvačiti svoje omiljene web-lokacije kako biste im kasnije lako pristupali.</translation>
+<translation id="4196935312151003338">Na izborniku odaberite Prikvači karticu.</translation>
+<translation id="4497631794981705027">Dodirnite početni zaslon i zadržite pritisak.</translation>
+<translation id="463279609093232564">U gornjem lijevom kutu zaslona dodirnite +.</translation>
+<translation id="5604467549230434026">U okvir Widgeti za pretraživanje upišite Chrome.</translation>
+<translation id="5639067007765618198">Widget Google upravitelja zaporki</translation>
 <translation id="5922999516621365983">Povucite karticu ovamo da je zakačite.</translation>
 <translation id="5979837087407522202">Pretražite lozinke</translation>
+<translation id="6109989197058801417">Pritisnite i zadržite karticu koju želite prikvačiti.</translation>
+<translation id="639614003069108254">Odaberite Upravitelj zaporki, a zatim dodirnite Dodaj widget.</translation>
+<translation id="6905308710260460250">Prikvačene kartice</translation>
+<translation id="720206380500582061">Postavkama neaktivnih kartica upravljajte u odjeljku Postavke &gt; Kartice.</translation>
 <translation id="8077675488769462025">Neaktivne kartice</translation>
+<translation id="8602952180069641300">Pomaknite se do vrha odjeljka Kartice.</translation>
+<translation id="979990360845983227">Ne upotrebljava se 14 dana ili dulje</translation>
 </translationbundle>

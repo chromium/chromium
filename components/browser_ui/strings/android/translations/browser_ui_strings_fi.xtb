@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Takaisin</translation>
 <translation id="2546283357679194313">Evästeet ja sivustotiedot</translation>
 <translation id="2550801787432930915">Hinnanlaskukortti</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 eväste estetty}other{# evästettä estetty}}</translation>
 <translation id="2570922361219980984">Sijainti on poissa käytöstä myös tällä laitteella. Voit ottaa sen käyttöön <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Laajennettu – tiivistä klikkaamalla.</translation>
 <translation id="2586657967955657006">Leikepöytä</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Kelaa taaksepäin</translation>
 <translation id="8444433999583714703">Ota sijaintitiedot käyttöön myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn sijaintiisi.</translation>
 <translation id="8447861592752582886">Peru laitteen käyttöoikeus</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 eväste käytössä}other{# evästettä käytössä}}</translation>
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
 <translation id="848952951823693243">Pyydä aina mobiilisivustoa</translation>
 <translation id="8499083585497694743">Poista mikrofonin mykistys</translation>

@@ -243,7 +243,6 @@
 <translation id="1428729058023778569">ይህ ጣቢያ ኤችቲቲፒኤስ ስለማይደግፍ ይህን ማስጠንቀቂያ እያዩ ነው። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">በራስ የሚለጠፍ ፊልም</translation>
 <translation id="1430915738399379752">አትም</translation>
-<translation id="1431021750861456539">ራስ-ሰር ሙሉ ማያ</translation>
 <translation id="1432187715652018471">ገፅ የአገልግሎት ተቆጣጣሪን መጫን ይፈልጋል።</translation>
 <translation id="1432581352905426595">የፍለጋ ፕሮግራሞችን ያቀናብሩ</translation>
 <translation id="1433225466058025572">ፋይሎችዎን እንደገና ለማንቀሳቀስ ይሞክሩ</translation>
@@ -2317,7 +2316,6 @@
     <ph name="LINE_BREAK" />
     የእርስዎን የስርዓት አስተዳዳሪ ለማነጋገር ይሞክሩ።</translation>
 <translation id="549333378215107354">መጠን 3</translation>
-<translation id="5501712702042287009">ራስ-ሰር ሙሉ ማያ</translation>
 <translation id="550365051221576010">ሁሉንም ነገር ይሙሉ</translation>
 <translation id="5508443345185481044">ካሜራዎች እና ካምኮርደሮች</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2498,6 +2496,7 @@
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">አብራ</translation>
 <translation id="5862579898803147654">ቁልል 8</translation>
+<translation id="5863515189965725638">አይ ቢ ኤ ኤን ያርትዑ</translation>
 <translation id="5863847714970149516">ከፊት ያለው ገፅ እርስዎን ገንዘብ ለማስከፈል ሊሞክር ይችላል</translation>
 <translation id="5866257070973731571">ስልክ ቁጥር ያክሉ</translation>
 <translation id="5866898949289125849">እርስዎ የገንቢ መሣሪያዎች ገፅ እየተመለከቱ ነው</translation>

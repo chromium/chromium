@@ -94,7 +94,6 @@
 <translation id="2501278716633472235">Retour</translation>
 <translation id="2546283357679194313">Cookies et données des sites</translation>
 <translation id="2550801787432930915">Carte de baisse de prix</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie bloqué}one{# cookie bloqué}other{# cookies bloqués}}</translation>
 <translation id="2570922361219980984">L'accès à la position est également désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Développé – Cliquer pour réduire</translation>
 <translation id="2586657967955657006">Presse-papiers</translation>
@@ -458,7 +457,6 @@
 <translation id="8441146129660941386">Retour rapide</translation>
 <translation id="8444433999583714703">Pour autoriser <ph name="APP_NAME" /> à accéder à votre position, activez également la localisation dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Révoquer l'autorisation d'accès à l'appareil</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie est actuellement utilisé}one{# cookie est actuellement utilisé}other{# cookies sont actuellement utilisés}}</translation>
 <translation id="8487700953926739672">Disponible hors connexion</translation>
 <translation id="848952951823693243">Toujours demander le site mobile</translation>
 <translation id="8499083585497694743">Réactiver le micro</translation>
