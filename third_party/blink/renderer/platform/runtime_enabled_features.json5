@@ -1063,7 +1063,7 @@
     {
       // Explainer: https://drafts.csswg.org/css-values/#round-func
       name: "CSSSteppedValueFunctions",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSStickyContainerQueries",
