@@ -48,7 +48,6 @@ constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   CapabilityFetchCompletionCallback _completionCallback;
-  BOOL _restrictionCapabilityReceived;
   // Check that `onRestrictionCapabilityReceived` is called from the correct
   // sequence.
   SEQUENCE_CHECKER(_sequenceChecker);
@@ -120,7 +119,7 @@ constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
           accountInfo.capabilities
               .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
 
-  if (!_restrictionCapabilityReceived) {
+  if (!_completionCallback.is_null()) {
     __weak __typeof(self) weakSelf = self;
 
     if (base::FeatureList::IsEnabled(
@@ -153,7 +152,6 @@ constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
 - (void)onRestrictionCapabilityReceived:(Tribool)capability {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (capability != Tribool::kUnknown && !_completionCallback.is_null()) {
-    _restrictionCapabilityReceived = YES;
     // Stop listening to AccountInfo updates.
     _identityManagerObserver.reset();
     // Convert capability to boolean value.
