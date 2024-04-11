@@ -14,6 +14,18 @@ using DesktopScreenId = intptr_t;
 
 const DesktopScreenId kFullDesktopScreenId = -1;
 
+class DesktopResolution {
+ public:
+  DesktopResolution(gfx::Size dimensions, gfx::Vector2d dpi)
+      : dimensions_(dimensions), dpi_(dpi) {}
+  const gfx::Size dimensions() const { return dimensions_; }
+  const gfx::Vector2d dpi() const { return dpi_; }
+
+ private:
+  gfx::Size dimensions_;
+  gfx::Vector2d dpi_;
+};
+
 class DesktopLayout {
  public:
   DesktopLayout(std::optional<int64_t> screen_id,

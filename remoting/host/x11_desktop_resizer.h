@@ -7,16 +7,20 @@
 
 #include <string.h>
 
+#include <list>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "remoting/base/logging.h"
+#include "remoting/host/desktop_display_layout_util.h"
+#include "remoting/host/desktop_geometry.h"
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "remoting/host/linux/scoped_glib.h"
-#include "remoting/host/linux/x11_util.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/randr.h"
 
@@ -40,7 +44,6 @@ class ScreenResources {
   std::unique_ptr<x11::RandR::GetScreenResourcesCurrentReply> resources_;
 };
 
-// TODO(btriebw): Split this into a different file.
 class X11DesktopResizer {
  public:
   X11DesktopResizer();
@@ -48,15 +51,16 @@ class X11DesktopResizer {
   X11DesktopResizer& operator=(const X11DesktopResizer&) = delete;
   ~X11DesktopResizer();
 
-  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id);
-  std::list<ScreenResolution> GetSupportedResolutions(
-      const ScreenResolution& preferred,
-      webrtc::ScreenId screen_id);
-  void SetResolution(const ScreenResolution& resolution,
-                     webrtc::ScreenId screen_id);
-  void RestoreResolution(const ScreenResolution& original,
-                         webrtc::ScreenId screen_id);
-  void SetVideoLayout(const protocol::VideoLayout& layout);
+  DesktopResolution GetCurrentResolution(DesktopScreenId screen_id);
+  std::list<DesktopResolution> GetSupportedResolutions(
+      const DesktopResolution& preferred,
+      DesktopScreenId screen_id);
+  void SetResolution(const DesktopResolution& resolution,
+                     DesktopScreenId screen_id);
+  void RestoreResolution(const DesktopResolution& original,
+                         DesktopScreenId screen_id);
+  DesktopLayoutSet GetLayout();
+  void SetVideoLayout(const DesktopLayoutSet& layout);
 
  private:
   using OutputInfoList = std::vector<
@@ -64,16 +68,16 @@ class X11DesktopResizer {
 
   // Add a mode matching the specified resolution and switch to it.
   void SetResolutionForOutput(x11::RandR::Output output,
-                              const ScreenResolution& resolution);
+                              const DesktopResolution& resolution);
 
   // Removes the existing mode from the output and replaces it with the new
   // size. Returns the new mode ID, or None (0) on failure.
   x11::RandR::Mode UpdateMode(x11::RandR::Output output, int width, int height);
 
-  // Remove the specified mode from the output, and delete it. If the mode is
-  // in use, it is not deleted. |name| should be set to
-  // GetModeNameForOutput(output). The parameter is to avoid creating the mode
-  // name twice.
+  // Remove the specified mode from the output, and delete it. If the mode is in
+  // use, it is not deleted.
+  // |name| should be set to GetModeNameForOutput(output). The parameter is to
+  // avoid creating the mode name twice.
   void DeleteMode(x11::RandR::Output output, const std::string& name);
 
   // Updates the root window using the bounding box of the CRTCs, then
@@ -82,6 +86,9 @@ class X11DesktopResizer {
 
   // Gets a list of outputs that are not connected to any CRTCs.
   OutputInfoList GetDisabledOutputs();
+
+  // Gets current layout with context information.
+  std::vector<DesktopLayoutWithContext> GetLayoutWithContext();
 
   void RequestGnomeDisplayConfig();
   void OnGnomeDisplayConfigReceived(GnomeDisplayConfig config);

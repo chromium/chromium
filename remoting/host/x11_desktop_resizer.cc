@@ -16,20 +16,14 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/desktop_display_layout_util.h"
 #include "remoting/host/desktop_geometry.h"
 #include "remoting/host/linux/x11_util.h"
 #include "remoting/host/x11_crtc_resizer.h"
 #include "remoting/host/x11_display_util.h"
-#include "remoting/proto/control.pb.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
@@ -85,8 +79,8 @@ int PixelsToMillimeters(int pixels, int dpi) {
 
 // Returns a physical size in mm that will work well with GNOME's
 // automatic scale-selection algorithm.
-webrtc::DesktopSize CalculateSizeInMmForGnome(
-    const remoting::ScreenResolution& resolution) {
+gfx::Size CalculateSizeInMmForGnome(
+    const remoting::DesktopResolution& resolution) {
   int width_mm = PixelsToMillimeters(resolution.dimensions().width(),
                                      resolution.dpi().x());
   int height_mm = PixelsToMillimeters(resolution.dimensions().height(),
@@ -194,8 +188,8 @@ X11DesktopResizer::X11DesktopResizer()
 
 X11DesktopResizer::~X11DesktopResizer() = default;
 
-ScreenResolution X11DesktopResizer::GetCurrentResolution(
-    webrtc::ScreenId screen_id) {
+DesktopResolution X11DesktopResizer::GetCurrentResolution(
+    DesktopScreenId screen_id) {
   // Process pending events so that the connection setup data is updated
   // with the correct display metrics.
   if (has_randr_) {
@@ -207,30 +201,28 @@ ScreenResolution X11DesktopResizer::GetCurrentResolution(
   auto reply = randr_->GetMonitors({root_}).Sync();
   if (reply) {
     for (const auto& monitor : reply->monitors) {
-      if (static_cast<webrtc::ScreenId>(monitor.name) != screen_id) {
+      if (static_cast<DesktopScreenId>(monitor.name) != screen_id) {
         continue;
       }
-      gfx::Vector2d dpi = GetMonitorDpi(monitor);
-      return ScreenResolution(
-          webrtc::DesktopSize(monitor.width, monitor.height),
-          webrtc::DesktopVector(dpi.x(), dpi.y()));
+      return DesktopResolution(gfx::Size(monitor.width, monitor.height),
+                               GetMonitorDpi(monitor));
     }
   }
 
   LOG(ERROR) << "Cannot find current resolution for screen ID " << screen_id
              << ". Resolution of the default screen will be returned.";
 
-  ScreenResolution result(
-      webrtc::DesktopSize(connection_->default_screen().width_in_pixels,
-                          connection_->default_screen().height_in_pixels),
-      webrtc::DesktopVector(kDefaultDPI, kDefaultDPI));
+  DesktopResolution result(
+      gfx::Size(connection_->default_screen().width_in_pixels,
+                connection_->default_screen().height_in_pixels),
+      gfx::Vector2d(kDefaultDPI, kDefaultDPI));
   return result;
 }
 
-std::list<ScreenResolution> X11DesktopResizer::GetSupportedResolutions(
-    const ScreenResolution& preferred,
-    webrtc::ScreenId screen_id) {
-  std::list<ScreenResolution> result;
+std::list<DesktopResolution> X11DesktopResizer::GetSupportedResolutions(
+    const DesktopResolution& preferred,
+    DesktopScreenId screen_id) {
+  std::list<DesktopResolution> result;
   if (!has_randr_ || !is_virtual_session_) {
     return result;
   }
@@ -245,15 +237,14 @@ std::list<ScreenResolution> X11DesktopResizer::GetSupportedResolutions(
                    response->min_height, response->max_height);
     // Additionally impose a minimum size of 640x480, since anything smaller
     // doesn't seem very useful.
-    result.emplace_back(
-        webrtc::DesktopSize(std::max(640, width), std::max(480, height)),
-        preferred.dpi());
+    result.emplace_back(gfx::Size(std::max(640, width), std::max(480, height)),
+                        preferred.dpi());
   }
   return result;
 }
 
-void X11DesktopResizer::SetResolution(const ScreenResolution& resolution,
-                                      webrtc::ScreenId screen_id) {
+void X11DesktopResizer::SetResolution(const DesktopResolution& resolution,
+                                      DesktopScreenId screen_id) {
   if (!has_randr_ || !is_virtual_session_) {
     return;
   }
@@ -274,7 +265,7 @@ void X11DesktopResizer::SetResolution(const ScreenResolution& resolution,
   }
 
   for (const auto& monitor : reply->monitors) {
-    if (static_cast<webrtc::ScreenId>(monitor.name) != screen_id) {
+    if (static_cast<DesktopScreenId>(monitor.name) != screen_id) {
       continue;
     }
 
@@ -305,27 +296,24 @@ void X11DesktopResizer::SetResolution(const ScreenResolution& resolution,
   LOG(ERROR) << "Monitor " << screen_id << " not found.";
 }
 
-void X11DesktopResizer::RestoreResolution(const ScreenResolution& original,
-                                          webrtc::ScreenId screen_id) {
+void X11DesktopResizer::RestoreResolution(const DesktopResolution& original,
+                                          DesktopScreenId screen_id) {
   SetResolution(original, screen_id);
 }
 
-void X11DesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
+std::vector<DesktopLayoutWithContext>
+X11DesktopResizer::GetLayoutWithContext() {
   if (!has_randr_ || !is_virtual_session_) {
-    return;
+    return std::vector<DesktopLayoutWithContext>();
   }
 
-  // Grab the X server while we're changing the display resolution. This ensures
-  // that the display configuration doesn't change under our feet.
-  ScopedXGrabServer grabber(connection_);
-
   if (!resources_.Refresh(randr_, root_)) {
-    return;
+    return std::vector<DesktopLayoutWithContext>();
   }
 
   auto reply = randr_->GetMonitors({root_}).Sync();
   if (!reply) {
-    return;
+    return std::vector<DesktopLayoutWithContext>();
   }
 
   std::vector<DesktopLayoutWithContext> current_displays;
@@ -339,26 +327,38 @@ void X11DesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
           {.layout = ToVideoTrackLayout(monitor), .context = &monitor});
     }
   }
+  return current_displays;
+}
 
-  // Convert VideoLayout to DesktopLayoutSet.
-  DesktopLayoutSet desktop_layout;
-  for (const auto& video_track : layout.video_track()) {
-    desktop_layout.layouts.emplace_back(
-        video_track.screen_id(),
-        gfx::Rect(video_track.position_x(), video_track.position_y(),
-                  video_track.width(), video_track.height()),
-        gfx::Vector2d(video_track.x_dpi(), video_track.y_dpi()));
+DesktopLayoutSet X11DesktopResizer::GetLayout() {
+  DesktopLayoutSet result;
+  for (const auto& layout : GetLayoutWithContext()) {
+    result.layouts.emplace_back(layout.layout);
   }
+  return result;
+}
+
+void X11DesktopResizer::SetVideoLayout(const DesktopLayoutSet& layout) {
+  if (!has_randr_ || !is_virtual_session_) {
+    return;
+  }
+  // Grab the X server while we're changing the display resolution. This ensures
+  // that the display configuration doesn't change under our feet.
+  ScopedXGrabServer grabber(connection_);
+
+  std::vector<x11::RandR::MonitorInfo> monitor_infos;
+  std::vector<DesktopLayoutWithContext> current_displays =
+      GetLayoutWithContext();
+
   // TODO(yuweih): Verify that the layout is valid, e.g. no overlaps or gaps
   // between displays.
-  DisplayLayoutDiff diff =
-      CalculateDisplayLayoutDiff(current_displays, desktop_layout);
+  DisplayLayoutDiff diff = CalculateDisplayLayoutDiff(current_displays, layout);
 
   X11CrtcResizer resizer(resources_.get(), connection_);
   resizer.FetchActiveCrtcs();
 
-  // Add displays
   const std::vector<DesktopLayout>& new_layouts = diff.new_displays.layouts;
+  // Add displays
   if (!new_layouts.empty()) {
     auto outputs = GetDisabledOutputs();
     size_t i = 0u;
@@ -398,8 +398,9 @@ void X11DesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
       HOST_LOG << "Added display with crtc: " << base::to_underlying(crtc)
                << ", output: " << base::to_underlying(output);
     }
-    if (i < new_layouts.size()) {
-      LOG(WARNING) << "Failed to create " << (new_layouts.size() - i)
+    if (i < diff.new_displays.layouts.size()) {
+      LOG(WARNING) << "Failed to create "
+                   << (diff.new_displays.layouts.size() - i)
                    << " display(s) due to insufficient resources.";
     }
   }
@@ -451,7 +452,7 @@ void X11DesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
 
 void X11DesktopResizer::SetResolutionForOutput(
     x11::RandR::Output output,
-    const ScreenResolution& resolution) {
+    const DesktopResolution& resolution) {
   // Actually do the resize operation, preserving the current mode name. Note
   // that we have to detach the output from the mode in order to delete the
   // mode and re-create it with the new resolution. The output may also need to
@@ -488,12 +489,10 @@ void X11DesktopResizer::SetResolutionForOutput(
   }
 
   // Update |active_crtcs_| with new sizes and offsets.
-  resizer.UpdateActiveCrtcs(crtc, mode,
-                            gfx::Size(resolution.dimensions().width(),
-                                      resolution.dimensions().height()));
+  resizer.UpdateActiveCrtcs(crtc, mode, resolution.dimensions());
   UpdateRootWindow(resizer);
 
-  webrtc::DesktopSize size_mm = CalculateSizeInMmForGnome(resolution);
+  gfx::Size size_mm = CalculateSizeInMmForGnome(resolution);
   int width_mm = size_mm.width();
   int height_mm = size_mm.height();
   HOST_LOG << "Setting physical size in mm: " << width_mm << "x" << height_mm;
