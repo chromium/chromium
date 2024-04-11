@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_consumer.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_content.h"
+#import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mutator.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
@@ -46,6 +47,7 @@ class OtpInputDialogMediatorTest : public PlatformTest {
  protected:
   OtpInputDialogMediatorTest() {
     consumer_ = OCMProtocolMock(@protocol(OtpInputDialogConsumer));
+    delegate_ = OCMProtocolMock(@protocol(OtpInputDialogMediatorDelegate));
     CardUnmaskChallengeOption option = CardUnmaskChallengeOption(
         CardUnmaskChallengeOption::ChallengeOptionId("123"),
         autofill::CardUnmaskChallengeOptionType::kSmsOtp,
@@ -55,10 +57,11 @@ class OtpInputDialogMediatorTest : public PlatformTest {
         std::make_unique<autofill::CardUnmaskOtpInputDialogControllerImpl>(
             option, unmask_delegate_.GetWeakPtr());
     mediator_ = std::make_unique<OtpInputDialogMediator>(
-        model_controller_->GetImplWeakPtr());
+        model_controller_->GetImplWeakPtr(), delegate_);
   }
 
   id<OtpInputDialogConsumer> consumer_;
+  id<OtpInputDialogMediatorDelegate> delegate_;
   testing::NiceMock<MockOtpUnmaskDelegate> unmask_delegate_;
   std::unique_ptr<autofill::CardUnmaskOtpInputDialogControllerImpl>
       model_controller_;
@@ -97,8 +100,11 @@ TEST_F(OtpInputDialogMediatorTest, DidTapConfirmButton) {
 }
 
 TEST_F(OtpInputDialogMediatorTest, DidTapCancelButton) {
-  // TODO(crbug.com/324611313): Finish this test when the mediator delegate is
-  // added.
+  OCMExpect([delegate_ dismissDialog]);
+  EXPECT_CALL(unmask_delegate_,
+              OnUnmaskPromptClosed(/*user_closed_dialog=*/true));
+
+  [mediator_->AsMutator() didTapCancelButton];
 }
 
 TEST_F(OtpInputDialogMediatorTest, OnOtpInputChanges) {
@@ -109,4 +115,13 @@ TEST_F(OtpInputDialogMediatorTest, OnOtpInputChanges) {
   OCMExpect([consumer_ setConfirmButtonEnabled:YES]);
 
   [mediator_->AsMutator() onOtpInputChanges:@"123456"];
+}
+
+TEST_F(OtpInputDialogMediatorTest, Dismiss) {
+  OCMExpect([delegate_ dismissDialog]);
+  EXPECT_CALL(unmask_delegate_,
+              OnUnmaskPromptClosed(/*user_closed_dialog=*/true));
+
+  mediator_->Dismiss(/*show_confirmation_before_closing=*/false,
+                     /*user_closed_dialog=*/true);
 }

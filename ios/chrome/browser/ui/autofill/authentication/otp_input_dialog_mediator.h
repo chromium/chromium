@@ -13,6 +13,7 @@
 
 @protocol OtpInputDialogConsumer;
 @protocol OtpInputDialogMutator;
+@protocol OtpInputDialogMediatorDelegate;
 
 @class OtpInputDialogMutatorBridge;
 
@@ -25,9 +26,10 @@ class CardUnmaskOtpInputDialogControllerImpl;
 class OtpInputDialogMediator : public autofill::CardUnmaskOtpInputDialogView,
                                public OtpInputDialogMutatorBridgeTarget {
  public:
-  explicit OtpInputDialogMediator(
+  OtpInputDialogMediator(
       base::WeakPtr<autofill::CardUnmaskOtpInputDialogControllerImpl>
-          model_controller);
+          model_controller,
+      id<OtpInputDialogMediatorDelegate> delegate);
   OtpInputDialogMediator(const OtpInputDialogMediator&) = delete;
   OtpInputDialogMediator& operator=(const OtpInputDialogMediator&) = delete;
   ~OtpInputDialogMediator() override;
@@ -57,6 +59,8 @@ class OtpInputDialogMediator : public autofill::CardUnmaskOtpInputDialogView,
       model_controller_;
 
   __weak id<OtpInputDialogConsumer> consumer_;
+
+  __weak id<OtpInputDialogMediatorDelegate> delegate_;
 
   OtpInputDialogMutatorBridge* mutator_bridge_;
 

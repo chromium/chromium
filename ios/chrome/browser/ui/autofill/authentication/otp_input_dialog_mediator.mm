@@ -11,14 +11,16 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_consumer.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_content.h"
+#import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mutator.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mutator_bridge.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mutator_bridge_target.h"
 
 OtpInputDialogMediator::OtpInputDialogMediator(
     base::WeakPtr<autofill::CardUnmaskOtpInputDialogControllerImpl>
-        model_controller)
-    : model_controller_(model_controller) {
+        model_controller,
+    id<OtpInputDialogMediatorDelegate> delegate)
+    : model_controller_(model_controller), delegate_(delegate) {
   base::WeakPtr<OtpInputDialogMutatorBridgeTarget>
       mutator_bridge_target_weak_ptr(weak_ptr_factory_.GetWeakPtr());
   mutator_bridge_ = [[OtpInputDialogMutatorBridge alloc]
@@ -51,8 +53,7 @@ void OtpInputDialogMediator::Dismiss(bool show_confirmation_before_closing,
                                       show_confirmation_before_closing);
     model_controller_ = nullptr;
   }
-  // TODO(b/324611600): Invoked MediatorDelegate to close the view and terminate
-  // everything.
+  [delegate_ dismissDialog];
 }
 
 base::WeakPtr<autofill::CardUnmaskOtpInputDialogView>
@@ -69,8 +70,7 @@ void OtpInputDialogMediator::DidTapConfirmButton(
 }
 
 void OtpInputDialogMediator::DidTapCancelButton() {
-  // TODO(crbug.com/324611313): Handle this via the view presentation delegate
-  // to notify the coordinator.
+  [delegate_ dismissDialog];
 }
 
 void OtpInputDialogMediator::OnOtpInputChanges(

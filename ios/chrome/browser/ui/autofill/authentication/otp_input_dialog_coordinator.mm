@@ -12,10 +12,16 @@
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mediator.h"
+#import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
+
+@interface OtpInputDialogCoordinator () <OtpInputDialogMediatorDelegate>
+@end
 
 @implementation OtpInputDialogCoordinator {
   // A reference to the base view controller with UINavigationController type.
@@ -52,7 +58,7 @@
     CHECK(paymentsClient);
     _modelController = paymentsClient->GetOtpInputDialogModel();
     _mediator = std::make_unique<OtpInputDialogMediator>(
-        _modelController->GetImplWeakPtr());
+        _modelController->GetImplWeakPtr(), self);
   }
   return self;
 }
@@ -69,6 +75,15 @@
 
 - (void)stop {
   [_baseNavigationController popViewControllerAnimated:YES];
+}
+
+#pragma mark - OtpInputDialogMediatorDelegate
+
+- (void)dismissDialog {
+  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                         BrowserCoordinatorCommands);
+  [browserCoordinatorCommandsHandler dismissCardUnmaskAuthentication];
 }
 
 @end
