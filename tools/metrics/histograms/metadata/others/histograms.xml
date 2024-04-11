@@ -2219,8 +2219,8 @@ chromium-metrics-reviews@google.com.
   <owner>alemate@chromium.org</owner>
   <owner>cros-oac@chromium.org</owner>
   <summary>
-    Time from the moment sign in authentication is started until the first user
-    session UI elements are painted. (Chrome OS).
+    Time from the moment sign in authentication is started until the post login
+    animation finishes. (Chrome OS).
   </summary>
 </histogram>
 
@@ -2240,8 +2240,8 @@ chromium-metrics-reviews@google.com.
     Warning: this does not include the cryptohome authentication period, unlike
     BootTime.Login2.
 
-    TODO(b/328690294): we should have new metrics with the fix, and deprecate
-    this one.
+    TODO(b/323098858): deprecate this with Login4, once we have confirmed the
+    compositor animation waiting time is negligible.
   </summary>
 </histogram>
 
@@ -2263,7 +2263,8 @@ chromium-metrics-reviews@google.com.
     Warning: this does not include the cryptohome authentication period, unlike
     BootTime.Login2.
 
-    TODO(b/328690294): deprecate with BootTime.Login3.
+    TODO(b/323098858): deprecate this with Login3, once we have confirmed the
+    compositor animation waiting time is negligible.
   </summary>
 </histogram>
 
