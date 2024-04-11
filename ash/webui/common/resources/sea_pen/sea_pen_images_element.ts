@@ -27,7 +27,7 @@ import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenWallpaper} from '
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
-import {logSeaPenTemplateFeedback} from './sea_pen_metrics_logger.js';
+import {logSeaPenTemplateFeedback, logSeaPenThumbnailClicked} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_utils.js';
 
@@ -276,6 +276,10 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       this.cameraFeed_.width = item.clientWidth;
       this.cameraFeed_.height = item.clientHeight;
       this.cameraFeed_.style.display = 'block';
+    }
+
+    if (this.templateId in SeaPenTemplateId) {
+      logSeaPenThumbnailClicked(this.templateId as SeaPenTemplateId);
     }
 
     selectSeaPenWallpaper(

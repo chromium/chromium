@@ -7,6 +7,7 @@ import {isPersonalizationApp} from './sea_pen_utils.js';
 
 const enum HistogramName {
   SEA_PEN_TEMPLATE_SUBPAGE = 'Ash.SeaPen.Template',
+  SEA_PEN_THUMBNAIL_CLICKED = 'Ash.SeaPen.ThumbnailClicked',
   SEA_PEN_CREATE_BUTTON = 'Ash.SeaPen.CreateButton',
 }
 
@@ -47,4 +48,10 @@ export function logRecentImageActionMenuItemClick(
 export function logSeaPenVisited() {
   const appName = isPersonalizationApp() ? 'Wallpaper' : 'VcBackground';
   chrome.metricsPrivate.recordBoolean(`Ash.SeaPen.${appName}.Visited`, true);
+}
+
+export function logSeaPenThumbnailClicked(templateId: SeaPenTemplateId) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      HistogramName.SEA_PEN_THUMBNAIL_CLICKED, templateId,
+      SeaPenTemplateId.MAX_VALUE + 1);
 }
