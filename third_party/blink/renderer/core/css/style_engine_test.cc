@@ -4556,45 +4556,6 @@ TEST_F(StyleEngineContainerQueryTest,
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*a));
 }
 
-TEST_F(StyleEngineTest, UpdateStyleForOutOfFlow_TacticsCache) {
-  GetDocument().body()->setInnerHTML(R"HTML(
-    <style>
-      #anchored {
-        position: absolute;
-        width: 100px;
-        height: 100px;
-      }
-    </style>
-    <div id=anchored>Foo</div>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-
-  Element* anchored = GetDocument().getElementById(AtomicString("anchored"));
-  ASSERT_TRUE(anchored);
-
-  auto tactic =
-      TryTacticList{TryTactic::kFlipBlock, TryTactic::kNone, TryTactic::kNone};
-
-  GetStyleEngine().SetStatsEnabled(true);
-  StyleResolverStats* stats = GetStyleEngine().Stats();
-  ASSERT_TRUE(stats);
-  EXPECT_EQ(0u, stats->elements_styled);
-
-  GetStyleEngine().UpdateStyleForOutOfFlow(*anchored,
-                                           /* try_set */ nullptr, tactic,
-                                           /* anchor_evaluator */ nullptr);
-
-  EXPECT_EQ(1u, stats->elements_styled);
-
-  // The same call again should not recalc any elements.
-  GetStyleEngine().UpdateStyleForOutOfFlow(*anchored,
-                                           /* try_set */ nullptr, tactic,
-                                           /* anchor_evaluator */ nullptr);
-
-  EXPECT_EQ(1u, stats->elements_styled);
-}
-
 TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeWithAnchorQuery) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>

@@ -98,7 +98,7 @@ class CSSToLengthConversionDataTest : public PageTestBase {
         CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
         CSSToLengthConversionData::ContainerSizes(),
         CSSToLengthConversionData::AnchorData(
-            div, options.anchor_evaluator,
+            options.anchor_evaluator,
             /* position_anchor */ nullptr,
             /* inset_area_offsets */ std::nullopt),
         options.data_zoom.value_or(div->GetComputedStyle()->EffectiveZoom()),
@@ -554,7 +554,7 @@ TEST_F(CSSToLengthConversionDataTest, ContainerUnitsWithContainerName) {
       CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
       CSSToLengthConversionData::ContainerSizes(child),
       CSSToLengthConversionData::AnchorData(
-          child, nullptr,
+          nullptr,
           /* position_anchor */ nullptr,
           /* inset_area_offsets */ std::nullopt),
       child->GetComputedStyle()->EffectiveZoom(), flags);

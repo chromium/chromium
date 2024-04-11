@@ -52,12 +52,13 @@ using animation_test_helpers::CreateSimpleKeyframeEffectForTest;
 
 class StyleResolverTest : public PageTestBase {
  protected:
-  const ComputedStyle* StyleForId(const char* id) {
+  const ComputedStyle* StyleForId(
+      const char* id,
+      StyleRecalcContext style_recalc_context = {}) {
     Element* element = GetElementById(id);
-    StyleRecalcContext recalc_context;
-    recalc_context.old_style = element->GetComputedStyle();
+    style_recalc_context.old_style = element->GetComputedStyle();
     const auto* style = GetStyleEngine().GetStyleResolver().ResolveStyle(
-        element, recalc_context);
+        element, style_recalc_context);
     DCHECK(style);
     return style;
   }
@@ -1939,18 +1940,28 @@ TEST_P(ParameterizedStyleResolverTest, AnchorQueryResults) {
   // the AnchorResults.
   OutOfFlowData* out_of_flow_data = anchored->GetOutOfFlowData();
   ASSERT_TRUE(out_of_flow_data);
-  EXPECT_FALSE(out_of_flow_data->GetAnchorResults().IsEmpty());
+  AnchorResults& anchor_results = out_of_flow_data->GetAnchorResults();
+  EXPECT_FALSE(anchor_results.IsEmpty());
 
-  // Calls StyleResolver::ResolveStyle with a nullptr AnchorEvaluator.
-  const ComputedStyle* non_interleaved_style = StyleForId("anchored");
-  ASSERT_TRUE(non_interleaved_style);
+  const ComputedStyle* old_style = anchored->GetComputedStyle();
 
-  // Results should be the same as before, because we're fetching them
-  // from the AnchorResults on OutOfFlowData.
-  EXPECT_EQ("300px", ComputedValue("left", *non_interleaved_style));
-  EXPECT_EQ("450px", ComputedValue("top", *non_interleaved_style));
-  EXPECT_EQ("150px", ComputedValue("width", *non_interleaved_style));
-  EXPECT_EQ("100px", ComputedValue("height", *non_interleaved_style));
+  // Freshen the style using the previous results as the evaluator.
+  // We are using a copy, because UpdateStyleForOutOfFlow clears the results
+  // on the element's OutOfFlowData.
+  AnchorResults anchor_results_copy(anchor_results);
+  GetStyleEngine().UpdateStyleForOutOfFlow(
+      *anchored, /* try_set */ nullptr, kNoTryTactics,
+      /* anchor_evaluator */ &anchor_results_copy);
+
+  // We should have created a new ComputedStyle object with the same computed
+  // values as before.
+  const ComputedStyle* new_style = anchored->GetComputedStyle();
+  ASSERT_TRUE(new_style);
+  EXPECT_NE(old_style, new_style);
+  EXPECT_EQ("300px", ComputedValue("left", *new_style));
+  EXPECT_EQ("450px", ComputedValue("top", *new_style));
+  EXPECT_EQ("150px", ComputedValue("width", *new_style));
+  EXPECT_EQ("100px", ComputedValue("height", *new_style));
 }
 
 TEST_P(ParameterizedStyleResolverTest, NoCascadeLayers) {
@@ -3324,63 +3335,6 @@ TEST_P(ParameterizedStyleResolverTest, PositionTryPropertyValueChange_Cascade) {
   }
 }
 
-TEST_P(ParameterizedStyleResolverTest,
-       PositionFallback_PersistentPositionTrySet) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
-
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      @position-try --f1 { left: 100px; }
-      @position-try --f2 { top: 100px; }
-      #target {
-        position: absolute;
-        left: 400000px;
-        position-try-options: --f1, --f2;
-      }
-    </style>
-    <div id="target"></div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* target = GetElementById("target");
-  const ComputedStyle* style = target->GetComputedStyle();
-  ASSERT_TRUE(style);
-  EXPECT_EQ(Length::Fixed(100), GetLeft(*style));
-  EXPECT_EQ(Length::Auto(), GetTop(*style));
-  EXPECT_TRUE(target->GetOutOfFlowData() &&
-              target->GetOutOfFlowData()->GetTryPropertyValueSet());
-
-  // The set should be cleared when 'position-try-options' is cleared.
-  target->SetInlineStyleProperty(CSSPropertyID::kPositionTryOptions, "none");
-  UpdateAllLifecyclePhasesForTest();
-  style = target->GetComputedStyle();
-  EXPECT_EQ(Length::Fixed(400000), GetLeft(*style));
-  EXPECT_EQ(Length::Auto(), GetTop(*style));
-  EXPECT_FALSE(target->GetOutOfFlowData() &&
-               target->GetOutOfFlowData()->GetTryPropertyValueSet());
-
-  target->SetInlineStyleProperty(CSSPropertyID::kPositionTryOptions,
-                                 "--f1, --f2");
-  UpdateAllLifecyclePhasesForTest();
-  style = target->GetComputedStyle();
-  EXPECT_EQ(Length::Fixed(100), GetLeft(*style));
-  EXPECT_EQ(Length::Auto(), GetTop(*style));
-  EXPECT_TRUE(target->GetOutOfFlowData() &&
-              target->GetOutOfFlowData()->GetTryPropertyValueSet());
-
-  // The set should also be cleared when referencing a non-existent fallback.
-  target->SetInlineStyleProperty(CSSPropertyID::kPositionTryOptions,
-                                 "--unknown");
-  UpdateAllLifecyclePhasesForTest();
-  style = target->GetComputedStyle();
-  EXPECT_EQ(Length::Fixed(400000), GetLeft(*style));
-  EXPECT_EQ(Length::Auto(), GetTop(*style));
-  EXPECT_FALSE(target->GetOutOfFlowData() &&
-               target->GetOutOfFlowData()->GetTryPropertyValueSet());
-}
-
 TEST_P(ParameterizedStyleResolverTest, PositionTry_PaintInvalidation) {
   ScopedCSSAnchorPositioningForTest enabled(true);
   ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
@@ -3445,7 +3399,8 @@ TEST_P(ParameterizedStyleResolverTest, TrySet_Basic) {
   ASSERT_TRUE(try_set);
 
   div->EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
-  const ComputedStyle* try_style = StyleForId("div");
+  const ComputedStyle* try_style =
+      StyleForId("div", StyleRecalcContext{.is_interleaved_oof = true});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("20px", ComputedValue("left", *try_style));
   EXPECT_EQ("30px", ComputedValue("right", *try_style));
@@ -3476,7 +3431,8 @@ TEST_P(ParameterizedStyleResolverTest, TrySet_RevertLayer) {
   ASSERT_TRUE(try_set);
 
   div->EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
-  const ComputedStyle* try_style = StyleForId("div");
+  const ComputedStyle* try_style =
+      StyleForId("div", StyleRecalcContext{.is_interleaved_oof = true});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("10px", ComputedValue("left", *try_style));
   EXPECT_EQ("30px", ComputedValue("right", *try_style));
@@ -3507,7 +3463,8 @@ TEST_P(ParameterizedStyleResolverTest, TrySet_Revert) {
   ASSERT_TRUE(try_set);
 
   div->EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
-  const ComputedStyle* try_style = StyleForId("div");
+  const ComputedStyle* try_style =
+      StyleForId("div", StyleRecalcContext{.is_interleaved_oof = true});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("auto", ComputedValue("left", *try_style));
   EXPECT_EQ("30px", ComputedValue("right", *try_style));
@@ -3539,7 +3496,8 @@ TEST_P(ParameterizedStyleResolverTest, TrySet_NonAbsPos) {
   ASSERT_TRUE(try_set);
 
   div->EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
-  const ComputedStyle* try_style = StyleForId("div");
+  const ComputedStyle* try_style =
+      StyleForId("div", StyleRecalcContext{.is_interleaved_oof = true});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("10px", ComputedValue("left", *try_style));
   EXPECT_EQ("auto", ComputedValue("right", *try_style));
@@ -3574,7 +3532,8 @@ TEST_P(ParameterizedStyleResolverTest, TrySet_NonAbsPosDynamic) {
 
   div->SetInlineStyleProperty(CSSPropertyID::kPosition, "static");
   div->EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
-  const ComputedStyle* try_style = StyleForId("div");
+  const ComputedStyle* try_style =
+      StyleForId("div", StyleRecalcContext{.is_interleaved_oof = true});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("10px", ComputedValue("left", *try_style));
   EXPECT_EQ("auto", ComputedValue("right", *try_style));
@@ -3619,7 +3578,8 @@ TEST_P(ParameterizedStyleResolverTest, TryTacticsSet_Flip) {
   ASSERT_TRUE(try_tactics_set);
   div->EnsureOutOfFlowData().SetTryTacticsPropertyValueSet(try_tactics_set);
 
-  const ComputedStyle* try_style = StyleForId("div");
+  const ComputedStyle* try_style =
+      StyleForId("div", StyleRecalcContext{.is_interleaved_oof = true});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("200px", ComputedValue("left", *try_style));
   EXPECT_EQ("100px", ComputedValue("right", *try_style));

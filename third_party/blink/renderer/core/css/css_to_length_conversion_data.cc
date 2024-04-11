@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
-#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -295,19 +294,12 @@ std::optional<double> CSSToLengthConversionData::ContainerSizes::FindNamedSize(
 }
 
 CSSToLengthConversionData::AnchorData::AnchorData(
-    Element* anchored,
     AnchorEvaluator* evaluator,
     const ScopedCSSName* position_anchor,
     const std::optional<InsetAreaOffsets>& inset_area_offsets)
     : evaluator_(evaluator),
       position_anchor_(position_anchor),
-      inset_area_offsets_(inset_area_offsets) {
-  if (!evaluator_ && anchored) {
-    if (OutOfFlowData* out_of_flow_data = anchored->GetOutOfFlowData()) {
-      evaluator_ = &out_of_flow_data->GetAnchorResults();
-    }
-  }
-}
+      inset_area_offsets_(inset_area_offsets) {}
 
 CSSToLengthConversionData::CSSToLengthConversionData(
     WritingMode writing_mode,

@@ -396,6 +396,12 @@ void ElementRuleCollector::AddTryStyleProperties(
   if (!property_set) {
     return;
   }
+  if (!style_recalc_context_.is_interleaved_oof) {
+    // TODO(crbug.com/333608683): The anchor result cache is currently disabled
+    // for non-OOF recalcs to work around invalidation problems. See
+    // `ComputeAnchorEvaluator` in style_resolver_state.cc for more information.
+    return;
+  }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
       property_set, CascadeOrigin::kAuthor,
@@ -408,6 +414,12 @@ void ElementRuleCollector::AddTryStyleProperties(
 void ElementRuleCollector::AddTryTacticsStyleProperties(
     const CSSPropertyValueSet* property_set) {
   if (!property_set) {
+    return;
+  }
+  if (!style_recalc_context_.is_interleaved_oof) {
+    // TODO(crbug.com/333608683): The anchor result cache is currently disabled
+    // for non-OOF recalcs to work around invalidation problems. See
+    // `ComputeAnchorEvaluator` in style_resolver_state.cc for more information.
     return;
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);

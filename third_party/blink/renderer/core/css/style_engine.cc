@@ -3470,18 +3470,12 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
                                           const TryTacticList& tactic_list,
                                           AnchorEvaluator* anchor_evaluator) {
   // Note that we enter this function for any OOF element, not just those that
-  // use position-try-options. Therefore, it's important to return immediately
-  // without doing any work when `try_set` and `existing_try_set` both are
-  // nullptr.
+  // use position-try-options. Therefore, it's important to return without
+  // doing style recalc when anchor positioning features are not in use.
 
-  const CSSPropertyValueSet* existing_try_set = nullptr;
-  const CSSPropertyValueSet* existing_try_tactics_set = nullptr;
-
-  OutOfFlowData* out_of_flow_data = element.GetOutOfFlowData();
-  if (out_of_flow_data) {
-    existing_try_set = out_of_flow_data->GetTryPropertyValueSet();
-    existing_try_tactics_set =
-        out_of_flow_data->GetTryTacticsPropertyValueSet();
+  if (OutOfFlowData* out_of_flow_data = element.GetOutOfFlowData()) {
+    out_of_flow_data->SetTryPropertyValueSet(nullptr);
+    out_of_flow_data->SetTryTacticsPropertyValueSet(nullptr);
   }
 
   const CSSPropertyValueSet* try_tactics_set =
@@ -3489,11 +3483,11 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
 
   bool needs_update = false;
 
-  if (existing_try_set != try_set) {
+  if (try_set) {
     element.EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
     needs_update = true;
   }
-  if (existing_try_tactics_set != try_tactics_set) {
+  if (try_tactics_set) {
     element.EnsureOutOfFlowData().SetTryTacticsPropertyValueSet(
         try_tactics_set);
     needs_update = true;
@@ -3506,16 +3500,12 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
     needs_update = true;
   }
   if (element.ComputedStyleRef().HasAnchorFunctions()) {
-    AnchorResults& anchor_results =
-        element.EnsureOutOfFlowData().GetAnchorResults();
-    if (anchor_results.IsEmpty() ||
-        anchor_results.IsAnyResultDifferent(element.ComputedStyleRef(),
-                                            anchor_evaluator)) {
-      needs_update = true;
-    }
+    needs_update = true;
   }
 
   if (!needs_update) {
+    CHECK(!try_set);
+    CHECK(!try_tactics_set);
     return;
   }
 
@@ -3524,13 +3514,11 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
   // - The existing AnchorResults are immediately cleared, and
   // - The result of any Evaluate() call made will be stored
   //   in the AnchorResults.
+  //
+  // TODO(crbug.com/333608683): The results of ResultCachingAnchorEvaluator is
+  // currently not used outside of tests.
   ResultCachingAnchorEvaluator result_caching_anchor_evaluator(
       anchor_evaluator, element.EnsureOutOfFlowData().GetAnchorResults());
-
-  // The last seen `try_set` is persisted on Element, such that subsequent
-  // regular style recalcs can continue to include this set.
-  element.EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
-
   base::AutoReset<bool> pt_recalc(&in_position_try_style_recalc_, true);
 
   UpdateViewportSize();

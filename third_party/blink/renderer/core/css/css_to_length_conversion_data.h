@@ -251,8 +251,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
    public:
     AnchorData() = default;
-    AnchorData(Element* anchored,
-               AnchorEvaluator*,
+    AnchorData(AnchorEvaluator*,
                const ScopedCSSName* position_anchor,
                const std::optional<InsetAreaOffsets>&);
     AnchorEvaluator* GetEvaluator() const { return evaluator_; }
