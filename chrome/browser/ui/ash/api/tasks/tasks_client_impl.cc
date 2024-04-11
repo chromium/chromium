@@ -15,13 +15,24 @@
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "components/policy/content/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -41,6 +52,8 @@ using ::google_apis::tasks::ListTasksRequest;
 using ::google_apis::tasks::PatchTaskRequest;
 using ::google_apis::tasks::TaskRequestPayload;
 using ::google_apis::tasks::TaskStatus;
+
+constexpr char kTasksUrl[] = "https://tasks.google.com/";
 
 // Converts `raw_tasks` received from Google Tasks API to ash-friendly types.
 std::vector<std::unique_ptr<Task>> ConvertTasks(
@@ -101,13 +114,49 @@ TasksClientImpl::TasksFetchState::TasksFetchState() = default;
 TasksClientImpl::TasksFetchState::~TasksFetchState() = default;
 
 TasksClientImpl::TasksClientImpl(
+    Profile* profile,
     const TasksClientImpl::CreateRequestSenderCallback&
         create_request_sender_callback,
     net::NetworkTrafficAnnotationTag traffic_annotation_tag)
-    : create_request_sender_callback_(create_request_sender_callback),
+    : profile_(profile),
+      create_request_sender_callback_(create_request_sender_callback),
       traffic_annotation_tag_(traffic_annotation_tag) {}
 
 TasksClientImpl::~TasksClientImpl() = default;
+
+bool TasksClientImpl::IsDisabledByAdmin() const {
+  // 1) Check the pref.
+  const auto* const pref_service = profile_->GetPrefs();
+  if (!pref_service ||
+      !base::Contains(pref_service->GetList(
+                          prefs::kContextualGoogleIntegrationsConfiguration),
+                      prefs::kGoogleTasksIntegrationName)) {
+    return true;
+  }
+
+  // 2) Check if the Calendar app (home app for Tasks) is disabled by policy.
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+          profile_)) {
+    return true;
+  }
+  auto calendar_app_readiness = apps::Readiness::kUnknown;
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForOneApp(web_app::kGoogleCalendarAppId,
+                 [&calendar_app_readiness](const apps::AppUpdate& update) {
+                   calendar_app_readiness = update.Readiness();
+                 });
+  if (calendar_app_readiness == apps::Readiness::kDisabledByPolicy) {
+    return true;
+  }
+
+  // 3) Check if the Tasks URL is blocked by policy.
+  const auto* const policy_blocklist_service =
+      PolicyBlocklistFactory::GetForBrowserContext(profile_);
+  return !policy_blocklist_service ||
+         policy_blocklist_service->GetURLBlocklistState(GURL(kTasksUrl)) ==
+             policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+}
 
 const ui::ListModel<api::TaskList>* TasksClientImpl::GetCachedTaskLists() {
   // Note that this doesn't consider `task_lists_fetch_state_`, which means that
@@ -254,8 +303,7 @@ void TasksClientImpl::InvalidateCache() {
   }
 }
 
-void TasksClientImpl::OnGlanceablesBubbleClosed(
-    TasksClient::OnAllPendingCompletedTasksSavedCallback callback) {
+void TasksClientImpl::OnGlanceablesBubbleClosed(base::OnceClosure callback) {
   // TODO(b/324462272): We need to watch this. This could cause one client to
   // cancel the in-flight callbacks for requests sent by another client. This
   // could become an issue when we have multiple clients for one

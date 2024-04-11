@@ -625,33 +625,6 @@ TEST_P(DateTrayTest, RendersClassroomBubblesForActiveRoles) {
                                               ->GetClassName());
 }
 
-TEST_P(DateTrayTest, EmptyClientsFallbackToLegacyDateBubble) {
-  LeftClickOn(GetDateTray());
-  EXPECT_TRUE(IsBubbleShown());
-  EXPECT_TRUE(AreContentsViewShown());
-
-  if (!AreGlanceablesV2Enabled()) {
-    EXPECT_FALSE(GetGlanceableTrayBubble());
-    return;
-  }
-
-  // Remove glanceables clients and click on the date tray to close the bubble
-  // again.
-  RemoveGlanceablesClients();
-  LeftClickOn(GetDateTray());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsBubbleShown());
-  EXPECT_FALSE(AreContentsViewShown());
-  EXPECT_FALSE(GetGlanceableTrayBubble());
-
-  // Click on the date tray again, now, the unified system tray calendar view
-  // should show instead of the glanceables tray bubble.
-  LeftClickOn(GetDateTray());
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsBubbleShown());
-  EXPECT_TRUE(GetUnifiedSystemTray()->IsShowingCalendarView());
-  EXPECT_FALSE(GetGlanceableTrayBubble());
-}
-
 // TODO(crbug.com/331531344): This test is flaky.
 TEST_P(GlanceablesDateTrayTest,
        DISABLED_TrayBubbleUpdatesBoundsOnDisplayConfigurationUpdate) {

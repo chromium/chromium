@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 
 class Profile;
 
@@ -56,24 +55,6 @@ class GlanceablesKeyedService : public KeyedService {
   void Shutdown() override;
 
  private:
-  // Indicates whether, and why time management glanceables are enabled.
-  // Used as an enum in histograms, so the assigned values should not change.
-  // Note this should be kept in sync with
-  // `TimeManagementGlanceablesFeatureStatus` enum in
-  // tools/metrics/histograms/metadata/ash/enums.xml.
-  enum class GlanceablesStatus {
-    kDisabled = 0,
-    kDEPRECATED_EnabledForTrustedTesters = 1,
-    kEnabledByV2Flag = 2,
-    kEnabledByPrefBypass = 3,
-    kEnabledForFullLaunch = 4,
-    kMaxValue = kEnabledForFullLaunch
-  };
-
-  // Returns whether glanceables are enabled for the profile that owns the
-  // GlanceablesKeyedService.
-  GlanceablesStatus AreGlanceablesEnabled() const;
-
   // Helper method that creates a `google_apis::RequestSender` instance.
   // `scopes` - OAuth 2 scopes needed for a client.
   // `traffic_annotation_tag` - describes requests issued by a client (for more
@@ -82,18 +63,6 @@ class GlanceablesKeyedService : public KeyedService {
   std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
       const std::vector<std::string>& scopes,
       const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) const;
-
-  // Creates clients needed to communicate with different Google services, and
-  // registers them with glanceables v2 controller in ash.
-  void RegisterClients();
-
-  // Resets clients needed to communicate with different Google services, and
-  // clears any existing registrations with glanceables v2 controller in ash.
-  void ClearClients();
-
-  // Creates or clear clients that communicated with Google services, and
-  // notifies `ash/` about created clients for `account_id_`.
-  void UpdateRegistration();
 
   // The profile for which this keyed service was created.
   const raw_ptr<Profile> profile_;
@@ -109,9 +78,6 @@ class GlanceablesKeyedService : public KeyedService {
 
   // Instance of the `api::TasksClient` interface implementation.
   std::unique_ptr<api::TasksClientImpl> tasks_client_;
-
-  // The registrar used to watch prefs changes.
-  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace ash

@@ -14,6 +14,7 @@
 #include "ash/glanceables/tasks/glanceables_tasks_combobox_model.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
@@ -88,7 +89,7 @@ void GlanceablesController::NotifyGlanceablesBubbleClosed() {
       clients.second.classroom_client->OnGlanceablesBubbleClosed();
     }
     if (clients.second.tasks_client) {
-      clients.second.tasks_client->OnGlanceablesBubbleClosed();
+      clients.second.tasks_client->OnGlanceablesBubbleClosed(base::DoNothing());
     }
   }
 

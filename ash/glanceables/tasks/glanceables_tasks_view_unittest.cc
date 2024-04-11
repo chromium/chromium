@@ -87,7 +87,8 @@ class GlanceablesTasksViewTest : public AshTestBase {
     }
 
     // Simulate closing the glanceables bubble to cache the tasks.
-    fake_glanceables_tasks_client_->OnGlanceablesBubbleClosed();
+    fake_glanceables_tasks_client_->OnGlanceablesBubbleClosed(
+        base::DoNothing());
 
     // Recreate the tasks view to update the task views.
     view_ = widget_->SetContentsView(std::make_unique<GlanceablesTasksView>(

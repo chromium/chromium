@@ -30,7 +30,13 @@ class ASH_EXPORT TasksClient {
   // successfully, `task` points to the newly created or updated task, or
   // `nullptr` otherwise.
   using OnTaskSavedCallback = base::OnceCallback<void(const Task* task)>;
-  using OnAllPendingCompletedTasksSavedCallback = base::OnceClosure;
+
+  // Verifies if the Tasks integration is disabled by admin by checking:
+  // 1) if the integrations is not listed in
+  //    `prefs::kGoogleCalendarIntegrationName`,
+  // 2) if the Calendar web app (home app for Tasks) is disabled by policy,
+  // 3) if access to the Tasks web UI is blocked by policy.
+  virtual bool IsDisabledByAdmin() const = 0;
 
   // Returns the list model of the task list that was cached when the
   // glanceables was previously opened. Returns a nullptr if there is no cached
@@ -88,8 +94,7 @@ class ASH_EXPORT TasksClient {
 
   // Method called when the glanceables bubble UI closes. The client can use
   // this as a signal to invalidate cached tasks data.
-  virtual void OnGlanceablesBubbleClosed(
-      OnAllPendingCompletedTasksSavedCallback callback = base::DoNothing()) = 0;
+  virtual void OnGlanceablesBubbleClosed(base::OnceClosure callback) = 0;
 
   virtual ~TasksClient() = default;
 };

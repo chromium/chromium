@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/api/tasks/tasks_client_impl.h"
@@ -119,6 +120,7 @@ void ChromeTasksDelegate::UpdateClientForProfileSwitch(
     auto& client = clients_[account_id];
     if (!client) {
       client = std::make_unique<TasksClientImpl>(
+          ProfileHelper::Get()->GetProfileByAccountId(account_id),
           base::BindRepeating(&CreateRequestSenderForClient),
           kTrafficAnnotation);
     }

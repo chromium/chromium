@@ -141,7 +141,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
   }
 
   GlanceableTrayBubble* GetGlanceableTrayBubble() const {
-    return GetDateTray()->bubble_.get();
+    return GetDateTray()->glanceables_bubble_for_test();
   }
 
   api::FakeTasksClient* fake_glanceables_tasks_client() const {

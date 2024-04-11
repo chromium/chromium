@@ -37,9 +37,9 @@ class GlanceableTrayBubbleViewTest : public AshTestBase {
 
     // Ensures the `GlanceableTrayBubble` exists before getting `CalendarView`.
     date_tray->ShowGlanceableBubble(/*from_keyboard=*/false);
-    CHECK(date_tray->bubble_);
+    CHECK(date_tray->glanceables_bubble_for_test());
 
-    return date_tray->bubble_->GetCalendarView();
+    return date_tray->glanceables_bubble_for_test()->GetCalendarView();
   }
 
  private:

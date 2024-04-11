@@ -34,6 +34,7 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   int completed_task_count() { return completed_tasks_; }
 
   // TasksClient:
+  bool IsDisabledByAdmin() const override;
   const ui::ListModel<api::TaskList>* GetCachedTaskLists() override;
   void GetTaskLists(bool force_fetch, GetTaskListsCallback callback) override;
   const ui::ListModel<api::Task>* GetCachedTasksInTaskList(
@@ -55,8 +56,7 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   void InvalidateCache() override {}
   std::optional<base::Time> GetTasksLastUpdateTime(
       const std::string& task_list_id) const override;
-  void OnGlanceablesBubbleClosed(OnAllPendingCompletedTasksSavedCallback
-                                     callback = base::DoNothing()) override;
+  void OnGlanceablesBubbleClosed(base::OnceClosure callback) override;
 
   // Helper function for loading in pre-built `TaskList` objects.
   void AddTaskList(std::unique_ptr<TaskList> task_list_data);
@@ -85,6 +85,9 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   // Runs `pending_update_task_callbacks_` and returns their number.
   size_t RunPendingUpdateTaskCallbacks();
 
+  void set_is_disabled_by_admin(bool is_disabled_by_admin) {
+    is_disabled_by_admin_ = is_disabled_by_admin;
+  }
   void set_paused(bool paused) { paused_ = paused; }
   void set_paused_on_fetch(bool paused) { paused_on_fetch_ = paused; }
   void set_update_errors(bool update_errors) { update_errors_ = update_errors; }
@@ -150,6 +153,8 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   // The last time when the tasks were updated. This is manually set by
   // `SetTasksLastUpdateTime`.
   base::Time last_updated_time_;
+
+  bool is_disabled_by_admin_ = false;
 
   // If `false` - callbacks are executed immediately; if `true` - callbacks get
   // saved to the corresponding list and executed once

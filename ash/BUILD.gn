@@ -3572,6 +3572,7 @@ test("ash_unittests") {
     "game_dashboard/game_dashboard_test_base.h",
     "glanceables/classroom/glanceables_classroom_item_view_unittest.cc",
     "glanceables/classroom/glanceables_classroom_student_view_unittest.cc",
+    "glanceables/glanceables_unittest.cc",
     "glanceables/post_login_glanceables_metrics_recorder_unittest.cc",
     "glanceables/tasks/glanceables_task_view_unittest.cc",
     "glanceables/tasks/glanceables_tasks_combobox_model_unittest.cc",

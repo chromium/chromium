@@ -43,6 +43,10 @@ FakeTasksClient::FakeTasksClient()
 
 FakeTasksClient::~FakeTasksClient() = default;
 
+bool FakeTasksClient::IsDisabledByAdmin() const {
+  return is_disabled_by_admin_;
+}
+
 const ui::ListModel<api::TaskList>* FakeTasksClient::GetCachedTaskLists() {
   if (cached_task_lists_->item_count() == 0) {
     return nullptr;
@@ -144,8 +148,7 @@ std::optional<base::Time> FakeTasksClient::GetTasksLastUpdateTime(
   return last_updated_time_;
 }
 
-void FakeTasksClient::OnGlanceablesBubbleClosed(
-    TasksClient::OnAllPendingCompletedTasksSavedCallback callback) {
+void FakeTasksClient::OnGlanceablesBubbleClosed(base::OnceClosure callback) {
   ++bubble_closed_count_;
   RunPendingGetTaskListsCallbacks();
   RunPendingGetTasksCallbacks();

@@ -12,11 +12,14 @@
 
 #include "ash/api/tasks/tasks_client.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/models/list_model.h"
+
+class Profile;
 
 namespace base {
 class Time;
@@ -46,6 +49,7 @@ class TasksClientImpl : public TasksClient {
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
   TasksClientImpl(
+      Profile* profile,
       const CreateRequestSenderCallback& create_request_sender_callback,
       net::NetworkTrafficAnnotationTag traffic_annotation_tag);
   TasksClientImpl(const TasksClientImpl&) = delete;
@@ -53,6 +57,7 @@ class TasksClientImpl : public TasksClient {
   ~TasksClientImpl() override;
 
   // TasksClient:
+  bool IsDisabledByAdmin() const override;
   const ui::ListModel<api::TaskList>* GetCachedTaskLists() override;
   void GetTaskLists(bool force_fetch,
                     TasksClient::GetTaskListsCallback callback) override;
@@ -75,9 +80,7 @@ class TasksClientImpl : public TasksClient {
   void InvalidateCache() override;
   std::optional<base::Time> GetTasksLastUpdateTime(
       const std::string& task_list_id) const override;
-  void OnGlanceablesBubbleClosed(
-      TasksClient::OnAllPendingCompletedTasksSavedCallback callback =
-          base::DoNothing()) override;
+  void OnGlanceablesBubbleClosed(base::OnceClosure callback) override;
 
   using TaskListsRequestCallback =
       base::RepeatingCallback<void(const std::string& page_token)>;
@@ -241,6 +244,9 @@ class TasksClientImpl : public TasksClient {
 
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
+
+  // The profile for which this instance was created.
+  const raw_ptr<Profile> profile_;
 
   // Callback passed from `GlanceablesKeyedService` that creates
   // `request_sender_`.

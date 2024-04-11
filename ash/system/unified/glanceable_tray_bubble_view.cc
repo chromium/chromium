@@ -298,7 +298,8 @@ void GlanceableTrayBubbleView::InitializeContents() {
   auto* const tasks_client =
       Shell::Get()->glanceables_controller()->GetTasksClient();
   if (should_show_non_calendar_glanceables &&
-      features::IsGlanceablesTimeManagementTasksViewEnabled() && tasks_client) {
+      features::IsGlanceablesTimeManagementTasksViewEnabled() && tasks_client &&
+      !tasks_client->IsDisabledByAdmin()) {
     CHECK(!tasks_bubble_view_);
     auto* cached_list = tasks_client->GetCachedTaskLists();
     if (!cached_list) {

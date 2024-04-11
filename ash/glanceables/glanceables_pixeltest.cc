@@ -71,10 +71,6 @@ class GlanceablesPixelTest : public AshTestBase {
     return GetPrimaryShelf()->GetStatusAreaWidget()->date_tray();
   }
 
-  GlanceableTrayBubble* GetGlanceableTrayBubble() {
-    return GetDateTray()->bubble_.get();
-  }
-
   void OpenGlanceables() { LeftClickOn(GetDateTray()); }
 
  private:
@@ -94,7 +90,7 @@ TEST_F(GlanceablesPixelTest, Smoke) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "glanceables_smoke", /*revision_number=*/1,
-      GetGlanceableTrayBubble()->GetBubbleView()));
+      GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 }
 
 }  // namespace ash

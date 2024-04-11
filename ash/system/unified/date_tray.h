@@ -65,11 +65,12 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
   void ShowGlanceableBubble(bool from_keyboard);
   void HideGlanceableBubble();
 
+  GlanceableTrayBubble* glanceables_bubble_for_test() const {
+    return bubble_.get();
+  }
+
  private:
   friend class DateTrayTest;
-  friend class GlanceablesPixelTest;
-  friend class GlanceablesBrowserTest;
-  friend class GlanceableTrayBubbleViewTest;
 
   // Owned by the views hierarchy.
   raw_ptr<TimeTrayItemView> time_view_ = nullptr;
