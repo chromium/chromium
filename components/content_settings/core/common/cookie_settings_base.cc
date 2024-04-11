@@ -497,6 +497,30 @@ bool CookieSettingsBase::IsAllowedByTopLevelStorageAccessGrant(
                            /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
 }
 
+// Whether to consider the Deprecation Trial (DT) equivalent grants in Third
+// Party Cookie Deprecation (TPCD) Metadata entry over the deprecation trial
+// Tokens.
+//
+// Learn more about the Third-party cookie deprecation Grace Period here
+// https://developers.google.com/privacy-sandbox/3pcd/temporary-exceptions/third-party-deprecation-trial.
+bool IsTpcdDtGracePeriodEnforced(const SettingInfo& info) {
+  if (!base::FeatureList::IsEnabled(
+          net::features::kTpcdMetadataStagedRollback)) {
+    return false;
+  }
+
+  switch (info.metadata.tpcd_metadata_cohort()) {
+    case mojom::TpcdMetadataCohort::DEFAULT:
+    case mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF:
+      return false;
+    case mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON:
+      return true;
+  }
+
+  NOTREACHED_NORETURN() << "Invalid enum value: "
+                        << info.metadata.tpcd_metadata_cohort();
+}
+
 absl::variant<CookieSettingsBase::AllowAllCookies,
               CookieSettingsBase::AllowPartitionedCookies,
               CookieSettingsBase::BlockAllCookies>
@@ -539,18 +563,27 @@ CookieSettingsBase::DecideAccess(const GURL& url,
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByStorageAccess};
   }
+
   if (IsAllowedBy3pcdHeuristicsGrantsSettings(url, first_party_url,
                                               overrides)) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics};
   }
 
-  if (IsAllowedByTopLevel3pcdTrialSettings(first_party_url, overrides)) {
-    return AllowAllCookies{
-        ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD};
-  }
-  if (IsAllowedBy3pcdTrialSettings(url, first_party_url, overrides)) {
-    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowBy3PCD};
+  SettingInfo tpcd_metadata_info;
+  bool is_allowed_by_tpcd_metadata_grants =
+      IsAllowedBy3pcdMetadataGrantsSettings(url, first_party_url, overrides,
+                                            &tpcd_metadata_info);
+
+  if (!is_allowed_by_tpcd_metadata_grants ||
+      !IsTpcdDtGracePeriodEnforced(tpcd_metadata_info)) {
+    if (IsAllowedByTopLevel3pcdTrialSettings(first_party_url, overrides)) {
+      return AllowAllCookies{
+          ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD};
+    }
+    if (IsAllowedBy3pcdTrialSettings(url, first_party_url, overrides)) {
+      return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowBy3PCD};
+    }
   }
 
   // Enterprise Policies:
@@ -561,11 +594,9 @@ CookieSettingsBase::DecideAccess(const GURL& url,
   }
 
   // Chrome controlled mechanisms (ex. 3PCD Metadata Grants):
-  SettingInfo info;
-  if (IsAllowedBy3pcdMetadataGrantsSettings(url, first_party_url, overrides,
-                                            &info)) {
+  if (is_allowed_by_tpcd_metadata_grants) {
     return AllowAllCookies{TpcdMetadataSourceToAllowMechanism(
-        info.metadata.tpcd_metadata_rule_source())};
+        tpcd_metadata_info.metadata.tpcd_metadata_rule_source())};
   }
 
   if (is_explicit_setting) {

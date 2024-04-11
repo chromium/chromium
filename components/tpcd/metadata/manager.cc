@@ -4,16 +4,20 @@
 
 #include "components/tpcd/metadata/manager.h"
 
+#include <random>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "base/rand_util.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_enums.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_rules.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
-#include "components/tpcd/metadata/common/manager_base.h"
+#include "components/tpcd/metadata/metadata.pb.h"
 #include "components/tpcd/metadata/parser.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -99,10 +103,31 @@ void Manager::OnMetadataReady() {
         content_settings::RuleMetaData();
     rule_metadata.set_tpcd_metadata_rule_source(
         Parser::ToRuleSource(metadata_entry.source()));
-    // TODO(http://b/330759665): Get the cohort from the experiment
-    // picker/prefs.
-    rule_metadata.set_tpcd_metadata_cohort(
-        content_settings::mojom::TpcdMetadataCohort::DEFAULT);
+
+    if (!Parser::IsDtrpEligible(
+            Parser::ToRuleSource(metadata_entry.source())) ||
+        !base::FeatureList::IsEnabled(
+            net::features::kTpcdMetadataStagedRollback)) {
+      rule_metadata.set_tpcd_metadata_cohort(
+          content_settings::mojom::TpcdMetadataCohort::DEFAULT);
+    } else {
+      uint32_t elected_dtrp = metadata_entry.has_dtrp_override()
+                                  ? metadata_entry.dtrp_override()
+                                  : metadata_entry.dtrp();
+
+      base::RandomBitGenerator generator;
+      std::uniform_int_distribution<uint32_t> distribution(Parser::kMinDtrp + 1,
+                                                           Parser::kMaxDtrp);
+      uint32_t rand = distribution(generator);
+
+      auto cohort = rand <= elected_dtrp
+                        ? content_settings::mojom::TpcdMetadataCohort::
+                              GRACE_PERIOD_FORCED_OFF
+                        : content_settings::mojom::TpcdMetadataCohort::
+                              GRACE_PERIOD_FORCED_ON;
+
+      rule_metadata.set_tpcd_metadata_cohort(cohort);
+    }
 
     grants.emplace_back(primary_pattern, secondary_pattern, std::move(value),
                         /*source=*/std::string(), /*incognito=*/false,

@@ -248,8 +248,8 @@ void AddEntryToMetadata(Metadata& metadata,
                         const std::string& primary_pattern_spec,
                         const std::string& secondary_pattern_spec,
                         const std::string& source,
-                        const std::optional<int>& dtrp,
-                        const std::optional<int>& dtrp_override) {
+                        const std::optional<uint32_t>& dtrp,
+                        const std::optional<uint32_t>& dtrp_override) {
   MetadataEntry* me = metadata.add_metadata_entries();
   me->set_primary_pattern_spec(primary_pattern_spec);
   me->set_secondary_pattern_spec(secondary_pattern_spec);

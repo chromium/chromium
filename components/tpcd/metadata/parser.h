@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TPCD_METADATA_PARSER_H_
 #define COMPONENTS_TPCD_METADATA_PARSER_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
@@ -89,9 +90,9 @@ class Parser {
   static constexpr char const* kSourceCuj = "SOURCE_CUJ";
   static constexpr char const* kSourceGovEduTld = "SOURCE_GOV_EDU_TLD";
 
-  static const int kMinDtrp = 0;
-  static const int kMaxDtrp = 100;
-  static inline bool IsValidDtrp(const int& dtrp) {
+  static const uint32_t kMinDtrp = 0;
+  static const uint32_t kMaxDtrp = 100;
+  static inline bool IsValidDtrp(const uint32_t dtrp) {
     return kMinDtrp <= dtrp && dtrp <= kMaxDtrp;
   }
 
@@ -121,12 +122,13 @@ class Parser {
 };
 
 namespace helpers {
-void AddEntryToMetadata(Metadata& metadata,
-                        const std::string& primary_pattern_spec,
-                        const std::string& secondary_pattern_spec,
-                        const std::string& source = Parser::kSourceTest,
-                        const std::optional<int>& dtrp = std::nullopt,
-                        const std::optional<int>& dtrp_override = std::nullopt);
+void AddEntryToMetadata(
+    Metadata& metadata,
+    const std::string& primary_pattern_spec,
+    const std::string& secondary_pattern_spec,
+    const std::string& source = Parser::kSourceTest,
+    const std::optional<uint32_t>& dtrp = std::nullopt,
+    const std::optional<uint32_t>& dtrp_override = std::nullopt);
 }
 }  // namespace tpcd::metadata
 #endif  // COMPONENTS_TPCD_METADATA_PARSER_H_

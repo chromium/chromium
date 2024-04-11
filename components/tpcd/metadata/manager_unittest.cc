@@ -5,7 +5,9 @@
 #include "components/tpcd/metadata/manager.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <tuple>
 
 #include "base/run_loop.h"
@@ -192,6 +194,214 @@ TEST_P(ManagerTest, FireSyncCallback) {
   } else {
     EXPECT_EQ(manager->GetGrants().size(), 1u);
     run_loop.Run();
+  }
+}
+
+class ManagerCohortsTest
+    : public testing::Test,
+      public testing::WithParamInterface<std::tuple<bool, int32_t>> {
+ public:
+  ManagerCohortsTest() = default;
+  ~ManagerCohortsTest() override = default;
+
+  Parser* GetParser() {
+    if (!parser_) {
+      parser_ = std::make_unique<Parser>();
+    }
+    return parser_.get();
+  }
+
+  Manager* GetManager(GrantsSyncCallback callback = base::NullCallback()) {
+    if (!manager_) {
+      manager_ = std::make_unique<Manager>(GetParser(), callback);
+    }
+    return manager_.get();
+  }
+
+  bool IsTpcdMetadataStagedRollbackEnabled() { return std::get<0>(GetParam()); }
+  content_settings::mojom::TpcdMetadataRuleSource GetTpcdMetadataRuleSource() {
+    return static_cast<content_settings::mojom::TpcdMetadataRuleSource>(
+        std::get<1>(GetParam()));
+  }
+
+  std::string ToRuleSourceStr(
+      const content_settings::mojom::TpcdMetadataRuleSource& rule_source) {
+    switch (rule_source) {
+      case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED:
+        return Parser::kSourceUnspecified;
+      case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST:
+        return Parser::kSourceTest;
+      case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_1P_DT:
+        return Parser::kSource1pDt;
+      case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_3P_DT:
+        return Parser::kSource3pDt;
+      case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_DOGFOOD:
+        return Parser::kSourceDogFood;
+      case content_settings::mojom::TpcdMetadataRuleSource::
+          SOURCE_CRITICAL_SECTOR:
+        return Parser::kSourceCriticalSector;
+      case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_CUJ:
+        return Parser::kSourceCuj;
+      case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD:
+        return Parser::kSourceGovEduTld;
+    }
+  }
+
+ protected:
+  void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    enabled_features.push_back(net::features::kTpcdMetadataGrants);
+    enabled_features.push_back(
+        content_settings::features::kIndexedHostContentSettingsMap);
+
+    if (IsTpcdMetadataStagedRollbackEnabled()) {
+      enabled_features.push_back(net::features::kTpcdMetadataStagedRollback);
+    } else {
+      disabled_features.push_back(net::features::kTpcdMetadataStagedRollback);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  // Guarantees proper tear down of dependencies.
+  void TearDown() override {
+    delete manager_.release();
+    delete parser_.release();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<Parser> parser_;
+  std::unique_ptr<Manager> manager_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    ManagerCohortsTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Range<int32_t>(
+            static_cast<int32_t>(
+                content_settings::mojom::TpcdMetadataRuleSource::kMinValue),
+            static_cast<int32_t>(
+                content_settings::mojom::TpcdMetadataRuleSource::kMaxValue),
+            /*step=*/1)));
+
+TEST_P(ManagerCohortsTest, DTRP_Eligibility) {
+  const std::string primary_pattern_spec = "https://www.der.com";
+  const std::string secondary_pattern_spec = "https://www.foo.com";
+
+  Metadata metadata;
+  helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                              secondary_pattern_spec,
+                              ToRuleSourceStr(GetTpcdMetadataRuleSource()));
+  EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+  Manager* manager = GetManager();
+  GetParser()->ParseMetadata(metadata.SerializeAsString());
+
+  EXPECT_EQ(manager->GetGrants().size(), 1u);
+  EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
+            primary_pattern_spec);
+  EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
+            secondary_pattern_spec);
+
+  auto rule_source =
+      manager->GetGrants().front().metadata.tpcd_metadata_rule_source();
+  EXPECT_EQ(rule_source, GetTpcdMetadataRuleSource());
+
+  switch (GetTpcdMetadataRuleSource()) {
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_1P_DT:
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_3P_DT:
+      EXPECT_TRUE(Parser::IsDtrpEligible(rule_source));
+      break;
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_DOGFOOD:
+    case content_settings::mojom::TpcdMetadataRuleSource::
+        SOURCE_CRITICAL_SECTOR:
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_CUJ:
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD:
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST:
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED:
+      EXPECT_FALSE(Parser::IsDtrpEligible(rule_source));
+      break;
+  }
+}
+
+TEST_P(ManagerCohortsTest, DTRP_0Percent) {
+  const uint32_t dtrp_being_tested = 0;
+
+  const std::string primary_pattern_spec = "https://www.der.com";
+  const std::string secondary_pattern_spec = "https://www.foo.com";
+
+  Metadata metadata;
+  helpers::AddEntryToMetadata(
+      metadata, primary_pattern_spec, secondary_pattern_spec,
+      ToRuleSourceStr(GetTpcdMetadataRuleSource()), dtrp_being_tested);
+  EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+  Manager* manager = GetManager();
+  GetParser()->ParseMetadata(metadata.SerializeAsString());
+
+  EXPECT_EQ(manager->GetGrants().size(), 1u);
+  EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
+            primary_pattern_spec);
+  EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
+            secondary_pattern_spec);
+
+  auto rule_source =
+      manager->GetGrants().front().metadata.tpcd_metadata_rule_source();
+  EXPECT_EQ(rule_source, GetTpcdMetadataRuleSource());
+
+  auto picked_cohort =
+      manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+  if (IsTpcdMetadataStagedRollbackEnabled() &&
+      Parser::IsDtrpEligible(rule_source)) {
+    EXPECT_EQ(
+        picked_cohort,
+        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON);
+  } else {
+    EXPECT_EQ(picked_cohort,
+              content_settings::mojom::TpcdMetadataCohort::DEFAULT);
+  }
+}
+
+TEST_P(ManagerCohortsTest, DTRP_100Percent) {
+  const uint32_t dtrp_being_tested = 100;
+
+  const std::string primary_pattern_spec = "https://www.der.com";
+  const std::string secondary_pattern_spec = "https://www.foo.com";
+
+  Metadata metadata;
+  helpers::AddEntryToMetadata(
+      metadata, primary_pattern_spec, secondary_pattern_spec,
+      ToRuleSourceStr(GetTpcdMetadataRuleSource()), dtrp_being_tested);
+  EXPECT_EQ(metadata.metadata_entries_size(), 1);
+
+  Manager* manager = GetManager();
+  GetParser()->ParseMetadata(metadata.SerializeAsString());
+
+  EXPECT_EQ(manager->GetGrants().size(), 1u);
+  EXPECT_EQ(manager->GetGrants().front().primary_pattern.ToString(),
+            primary_pattern_spec);
+  EXPECT_EQ(manager->GetGrants().front().secondary_pattern.ToString(),
+            secondary_pattern_spec);
+
+  auto rule_source =
+      manager->GetGrants().front().metadata.tpcd_metadata_rule_source();
+  EXPECT_EQ(rule_source, GetTpcdMetadataRuleSource());
+
+  auto picked_cohort =
+      manager->GetGrants().front().metadata.tpcd_metadata_cohort();
+  if (IsTpcdMetadataStagedRollbackEnabled() &&
+      Parser::IsDtrpEligible(rule_source)) {
+    EXPECT_EQ(
+        picked_cohort,
+        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF);
+  } else {
+    EXPECT_EQ(picked_cohort,
+              content_settings::mojom::TpcdMetadataCohort::DEFAULT);
   }
 }
 
