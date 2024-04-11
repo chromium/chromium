@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -19,6 +22,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/constants.h"
 #else
@@ -173,4 +177,53 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,
   // Reset state.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, false);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, EnabledOnStartup) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
+#endif
+
+  // Make a testing profile so we can mimic prefs set before startup.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  std::unique_ptr<Profile> other_profile;
+  {
+    base::FilePath path =
+        profile_manager->user_data_dir().AppendASCII("test_profile");
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!base::PathExists(path)) {
+      ASSERT_TRUE(base::CreateDirectory(path));
+    }
+    other_profile =
+        Profile::CreateProfile(path, nullptr, Profile::CREATE_MODE_SYNCHRONOUS);
+  }
+  Profile* other_profile_ptr = other_profile.get();
+  profile_manager->RegisterTestingProfile(std::move(other_profile), true);
+
+  EnableScreenReader(true);
+
+  // Verify clean state.
+  Browser* other_profile_browser = CreateBrowser(other_profile_ptr);
+  content::WebContents* web_contents =
+      other_profile_browser->tab_strip_model()->GetActiveWebContents();
+  ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
+  EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kLabelImages));
+
+  // Simulate the pref being set prior to startup.
+  other_profile_ptr->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityImageLabelsEnabled, true);
+
+  // Now, simulate the initialization path which ordinarily gets called by
+  // ProfileManager on startup/profile creation.
+  AccessibilityLabelsService* a11y_labels_service =
+      AccessibilityLabelsServiceFactory::GetForProfile(other_profile_ptr);
+  a11y_labels_service->Init();
+
+  // Verify that tabs now get the mode. Open a new tab to avoid races for
+  // setting modes.
+  AddBlankTabAndShow(other_profile_browser);
+  web_contents =
+      other_profile_browser->tab_strip_model()->GetActiveWebContents();
+  ax_mode = web_contents->GetAccessibilityMode();
+  EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kLabelImages));
 }
