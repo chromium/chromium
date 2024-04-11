@@ -5,7 +5,7 @@
 import {beginLoadRecentSeaPenImagesAction, beginLoadSelectedImageAction, beginLoadSelectedRecentSeaPenImageAction, beginSearchSeaPenThumbnailsAction, beginSelectRecentSeaPenImageAction, beginSelectSeaPenThumbnailAction, endSelectRecentSeaPenImageAction, endSelectSeaPenThumbnailAction, getRecentSeaPenImages, getSeaPenStore, SeaPenState, SeaPenStoreAdapter, SeaPenStoreInterface, searchSeaPenThumbnails, selectRecentSeaPenImage, selectSeaPenWallpaper, setRecentSeaPenImagesAction, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setThumbnailResponseStatusCodeAction, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {filterAndFlattenState, typeCheck} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -71,6 +71,7 @@ suite('SeaPen reducers', () => {
               pendingSelected: null,
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
+              error: null,
             }),
           },
           {
@@ -89,6 +90,7 @@ suite('SeaPen reducers', () => {
               pendingSelected: null,
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
+              error: null,
             }),
           },
           {
@@ -107,6 +109,7 @@ suite('SeaPen reducers', () => {
               pendingSelected: null,
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
+              error: null,
             }),
           },
         ],
@@ -201,5 +204,88 @@ suite('SeaPen reducers', () => {
         ],
         personalizationStore.actions,
         'resets to original selected id after failure');
+  });
+
+  test('sets error after select thumbnail failure', async () => {
+    seaPenProvider.selectSeaPenThumbnailResponse =
+        Promise.resolve({success: false});
+
+    const thumbnail = {image: {url: ''}, id: 456};
+    await selectSeaPenWallpaper(thumbnail, seaPenProvider, seaPenStore);
+
+    assertDeepEquals(
+        [
+          beginLoadSelectedImageAction(),
+          beginSelectSeaPenThumbnailAction(thumbnail),
+          endSelectSeaPenThumbnailAction(thumbnail, false),
+          setSelectedRecentSeaPenImageAction(null),
+        ],
+        personalizationStore.actions, 'fails selecting the thumbnail');
+
+    assertDeepEquals(
+        [
+          null,
+          null,
+          loadTimeData.getString('seaPenErrorGeneric'),
+          loadTimeData.getString('seaPenErrorGeneric'),
+        ],
+        personalizationStore.states.map(state => state.wallpaper.seaPen.error),
+        'sets expected error state');
+
+    // Try and fail again.
+    const promise =
+        selectSeaPenWallpaper(thumbnail, seaPenProvider, seaPenStore);
+
+    // Error reset to null while attempting to select again.
+    assertEquals(null, personalizationStore.data.wallpaper.seaPen.error);
+
+    await promise;
+
+    // Error is visible again.
+    assertEquals(
+        loadTimeData.getString('seaPenErrorGeneric'),
+        personalizationStore.data.wallpaper.seaPen.error);
+  });
+
+  test('sets error after select recent image failure', async () => {
+    seaPenProvider.selectSeaPenRecentImageResponse =
+        Promise.resolve({success: false});
+
+    await selectRecentSeaPenImage(456, seaPenProvider, seaPenStore);
+
+    assertDeepEquals(
+        [
+          beginSelectRecentSeaPenImageAction(456),
+          beginLoadSelectedImageAction(),
+          beginLoadSelectedRecentSeaPenImageAction(),
+          endSelectRecentSeaPenImageAction(456, false),
+          setSelectedRecentSeaPenImageAction(null),
+        ],
+        personalizationStore.actions,
+        'expected actions when failing to select recent image');
+
+    assertDeepEquals(
+        [
+          null,
+          null,
+          null,
+          loadTimeData.getString('seaPenErrorGeneric'),
+          loadTimeData.getString('seaPenErrorGeneric'),
+        ],
+        personalizationStore.states.map(state => state.wallpaper.seaPen.error),
+        'expected error states set when failing to select recent image');
+
+    // Try and fail again.
+    const promise = selectRecentSeaPenImage(789, seaPenProvider, seaPenStore);
+
+    // Error reset to null while attempting to select again.
+    assertEquals(null, personalizationStore.data.wallpaper.seaPen.error);
+
+    await promise;
+
+    // Error is visible again.
+    assertEquals(
+        loadTimeData.getString('seaPenErrorGeneric'),
+        personalizationStore.data.wallpaper.seaPen.error);
   });
 });

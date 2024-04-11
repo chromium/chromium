@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {SeaPenImageId} from './constants.js';
 import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
@@ -208,6 +209,27 @@ function shouldShowSeaPenIntroductionDialogReducer(
   }
 }
 
+function errorReducer(state: string|null, action: SeaPenActions): string|null {
+  switch (action.name) {
+    case SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE:
+    case SeaPenActionName.END_SELECT_SEA_PEN_THUMBNAIL:
+      if (!action.success) {
+        // TODO(b/332743948) make error messages for this flow use manta status
+        // code.
+        return loadTimeData.getString('seaPenErrorGeneric');
+      }
+      return null;
+    case SeaPenActionName.BEGIN_SELECT_SEA_PEN_THUMBNAIL:
+    case SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE:
+    case SeaPenActionName.DISMISS_SEA_PEN_ERROR_ACTION:
+    case SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS:
+    case SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS:
+      return null;
+    default:
+      return state;
+  }
+}
+
 export function seaPenReducer(
     state: SeaPenState, action: SeaPenActions): SeaPenState {
   const newState = {
@@ -223,6 +245,7 @@ export function seaPenReducer(
     shouldShowSeaPenIntroductionDialog:
         shouldShowSeaPenIntroductionDialogReducer(
             state.shouldShowSeaPenIntroductionDialog, action),
+    error: errorReducer(state.error, action),
   };
   return newState;
 }

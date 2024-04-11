@@ -81,6 +81,13 @@
     top: 0;
     width: 100%;
   }
+
+  sea-pen-toast {
+    bottom: 16px;
+    left: 16px;
+    max-width: 380px;
+    position: fixed;
+  }
 </style>
 <div id="topContainer">
   <slot></slot>
@@ -118,4 +125,5 @@
   </template>
   <!-- Prevent the right margin from collapsing when window gets very narrow -->
   <div class="rightspacerbottom"></div>
+  <sea-pen-toast></sea-pen-toast>
 </div>

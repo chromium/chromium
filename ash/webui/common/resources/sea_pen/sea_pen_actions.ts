@@ -30,6 +30,7 @@ export enum SeaPenActionName {
   SET_SELECTED_RECENT_SEA_PEN_IMAGE = 'set_selected_recent_sea_pen_image',
   SET_SHOULD_SHOW_SEA_PEN_INTRODUCTION_DIALOG =
       'set_should_show_sea_pen_introduction_dialog',
+  DISMISS_SEA_PEN_ERROR_ACTION = 'dismiss_sea_pen_error',
 }
 
 export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
@@ -39,7 +40,8 @@ export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
     SetThumbnailResponseStatusCodeAction|SetSeaPenThumbnailsAction|
     SetRecentSeaPenImagesAction|SetRecentSeaPenImageDataAction|
     SetSelectedRecentSeaPenImageAction|BeginSelectSeaPenThumbnailAction|
-    EndSelectSeaPenThumbnailAction|SetShouldShowSeaPenIntroductionDialogAction;
+    EndSelectSeaPenThumbnailAction|SetShouldShowSeaPenIntroductionDialogAction|
+    DismissSeaPenErrorAction;
 
 export interface BeginSearchSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS;
@@ -265,4 +267,12 @@ export function setShouldShowSeaPenIntroductionDialogAction(
     name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_INTRODUCTION_DIALOG,
     shouldShowDialog,
   };
+}
+
+export interface DismissSeaPenErrorAction extends Action {
+  name: SeaPenActionName.DISMISS_SEA_PEN_ERROR_ACTION;
+}
+
+export function dismissSeaPenErrorAction(): DismissSeaPenErrorAction {
+  return {name: SeaPenActionName.DISMISS_SEA_PEN_ERROR_ACTION};
 }

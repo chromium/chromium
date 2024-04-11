@@ -4,7 +4,6 @@
 
 #include "ash/webui/common/sea_pen_resources.h"
 
-#include "ash/constants/ash_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -57,6 +56,7 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenIntroductionDialogCloseButton",
        IDS_SEA_PEN_INTRODUCTION_DIALOG_CLOSE_BUTTON},
 
+      {"seaPenDismissError", IDS_PERSONALIZATION_APP_DISMISS},
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},
   };
   source->AddLocalizedStrings(kLocalizedStrings);

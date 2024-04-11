@@ -45,6 +45,7 @@ build_webui_tests("build_webui_tests") {
     "sea_pen_router_element_test.ts",
     "sea_pen_template_query_element_test.ts",
     "sea_pen_templates_element_test.ts",
+    "sea_pen_toast_element_test.ts",
     "test_ambient_interface_provider.ts",
     "test_keyboard_backlight_interface_provider.ts",
     "test_personalization_store.ts",
@@ -68,10 +69,10 @@ build_webui_tests("build_webui_tests") {
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ash/webui/common/resources/sea_pen:build_ts",
     "//ash/webui/personalization_app/resources:build_ts",
     "//third_party/polymer/v3_0:library",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

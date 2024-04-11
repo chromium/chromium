@@ -11,6 +11,7 @@ import './sea_pen_recent_wallpapers_element.js';
 import './sea_pen_template_query_element.js';
 import './sea_pen_templates_element.js';
 import './sea_pen_introduction_dialog_element.js';
+import './sea_pen_toast_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
