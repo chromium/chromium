@@ -40,16 +40,22 @@ constexpr int kTabCountRounding = 6;
 
 PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
                            bool inside_screenshot)
-    : tab_count_(app_info.tab_count), inside_screenshot_(inside_screenshot) {
+    : app_id_(app_info.app_id),
+      tab_count_(app_info.tab_count),
+      inside_screenshot_(inside_screenshot) {
   SetBetweenChildSpacing(inside_screenshot_
                              ? pine::kScreenshotIconRowChildSpacing
                              : pine::kItemChildSpacing);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  SetID(pine::kItemViewID);
 
   auto* image_view = AddChildView(std::make_unique<PineAppImageView>(
-      app_info.app_id, inside_screenshot_ ? PineAppImageView::Type::kScreenshot
-                                          : PineAppImageView::Type::kItem));
+      app_id_,
+      inside_screenshot_ ? PineAppImageView::Type::kScreenshot
+                         : PineAppImageView::Type::kItem,
+      base::BindOnce(&PineItemView::UpdateTitle,
+                     weak_ptr_factory_.GetWeakPtr())));
   image_view->SetID(pine::kItemImageViewID);
 
   if (inside_screenshot_) {
@@ -71,23 +77,6 @@ PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
             .SetBetweenChildSpacing(pine::kScreenshotFaviconSpacing)
             .Build());
   } else {
-    apps::AppRegistryCache* cache =
-        apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
-            Shell::Get()->session_controller()->GetActiveAccountId());
-
-    // `title` will be the window title from the previous session stored in the
-    // full restore file. The title fetched from the app service would more
-    // accurate, but the app might not be installed yet. Browsers are always
-    // installed and `title` will be the active tab title fetched from session
-    // restore. `cache` might be null in a test environment.
-    // TODO(http://b/328830102): Title should be updated once app is installed.
-    std::string title = app_info.title;
-    if (cache && (title.empty() || !IsBrowserAppId(app_info.app_id))) {
-      cache->ForOneApp(
-          app_info.app_id,
-          [&title](const apps::AppUpdate& update) { title = update.Name(); });
-    }
-
     AddChildView(
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -95,13 +84,19 @@ PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
             .SetBetweenChildSpacing(kTitleFaviconSpacing)
             .AddChildren(
                 views::Builder<views::Label>()
+                    .CopyAddressTo(&title_label_view_)
                     .SetEnabledColorId(pine::kPineItemTextColorId)
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                    .SetText(base::UTF8ToUTF16(title))
-                    .CustomConfigure(base::BindOnce([](views::Label* label) {
-                      TypographyProvider::Get()->StyleLabel(
-                          TypographyToken::kCrosButton2, *label);
-                    })),
+                    .CustomConfigure(base::BindOnce(
+                        [](const base::WeakPtr<PineItemView> weak_this,
+                           views::Label* label) {
+                          TypographyProvider::Get()->StyleLabel(
+                              TypographyToken::kCrosButton2, *label);
+                          if (weak_this) {
+                            weak_this->UpdateTitle();
+                          }
+                        },
+                        weak_ptr_factory_.GetWeakPtr())),
                 views::Builder<views::BoxLayoutView>()
                     .CopyAddressTo(&favicon_container_view_)
                     .SetID(pine::kFaviconContainerViewID)
@@ -211,6 +206,26 @@ void PineItemView::OnAllFaviconsLoaded(
   if (needs_layout) {
     DeprecatedLayoutImmediately();
   }
+}
+
+void PineItemView::UpdateTitle() {
+  apps::AppRegistryCache* cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
+          Shell::Get()->session_controller()->GetActiveAccountId());
+
+  // `title` will be the window title from the previous session stored in the
+  // full restore file. The title fetched from the app service would more
+  // accurate, but the app might not be installed yet. Browsers are always
+  // installed and `title` will be the active tab title fetched from session
+  // restore. `cache` might be null in a test environment.
+  std::string title;
+  if (cache && (title.empty() || !IsBrowserAppId(app_id_))) {
+    cache->ForOneApp(app_id_, [&title](const apps::AppUpdate& update) {
+      title = update.Name();
+    });
+  }
+
+  title_label_view_->SetText(base::UTF8ToUTF16(title));
 }
 
 BEGIN_METADATA(PineItemView)

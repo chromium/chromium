@@ -80,7 +80,8 @@ PineScreenshotIconRowView::PineScreenshotIconRowView(
 
     for (int i = 0; i < num_icon; i++) {
       auto image_view = std::make_unique<PineAppImageView>(
-          apps_infos[i].app_id, PineAppImageView::Type::kScreenshot);
+          apps_infos[i].app_id, PineAppImageView::Type::kScreenshot,
+          base::DoNothing());
       image_view->SetID(pine::kScreenshotImageViewID);
       AddChildView(std::move(image_view));
     }

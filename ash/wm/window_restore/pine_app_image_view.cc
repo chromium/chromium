@@ -55,8 +55,10 @@ int GetIconSizeForType(const PineAppImageView::Type type) {
 
 }  // namespace
 
-PineAppImageView::PineAppImageView(const std::string& app_id, const Type type)
-    : app_id_(app_id), type_(type) {
+PineAppImageView::PineAppImageView(const std::string& app_id,
+                                   const Type type,
+                                   base::OnceClosure ready_callback)
+    : app_id_(app_id), type_(type), ready_callback_(std::move(ready_callback)) {
   SetImageSize(GetImageSizeForType(type_));
   SetPreferredSize(GetPreferredSizeForType(type_));
 
@@ -97,6 +99,10 @@ void PineAppImageView::OnAppUpdate(const apps::AppUpdate& update) {
     delegate->GetIconForAppId(update.AppId(), GetIconSizeForType(type_),
                               base::BindOnce(&PineAppImageView::GetIconCallback,
                                              weak_ptr_factory_.GetWeakPtr()));
+
+    // Run any callbacks that also need to occur after the app is installed
+    // (e.g., updating the app title).
+    std::move(ready_callback_).Run();
 
     // We no longer need to observe after installation.
     app_registry_cache_observer_.Reset();

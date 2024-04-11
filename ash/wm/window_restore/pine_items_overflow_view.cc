@@ -113,7 +113,8 @@ PineItemsOverflowView::PineItemsOverflowView(
     views::BoxLayoutView* row_view =
         bottom_row_view ? bottom_row_view : top_row_view;
     auto image_view = std::make_unique<PineAppImageView>(
-        apps_infos[i].app_id, PineAppImageView::Type::kOverflow);
+        apps_infos[i].app_id, PineAppImageView::Type::kOverflow,
+        base::DoNothing());
     image_view->SetID(pine::kOverflowImageViewID);
     row_view->AddChildView(std::move(image_view));
   }

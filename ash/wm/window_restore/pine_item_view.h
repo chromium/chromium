@@ -12,7 +12,7 @@
 #include "ui/views/layout/box_layout_view.h"
 
 namespace views {
-class ImageView;
+class Label;
 }
 
 namespace ash {
@@ -33,7 +33,7 @@ class ASH_EXPORT PineItemView : public views::BoxLayoutView {
   PineItemView& operator=(const PineItemView&) = delete;
   ~PineItemView() override;
 
-  views::ImageView* image_view() { return image_view_; }
+  const views::Label* title_label_view() const { return title_label_view_; }
 
   base::WeakPtr<PineItemView> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -46,6 +46,10 @@ class ASH_EXPORT PineItemView : public views::BoxLayoutView {
 
   void OnAllFaviconsLoaded(const std::vector<gfx::ImageSkia>& favicons);
 
+  // Updates the title label on creation, and if/when the app is updated.
+  void UpdateTitle();
+
+  const std::string app_id_;
   const size_t tab_count_;
 
   // True if this represents the browser window and its favicons inside the
@@ -53,7 +57,7 @@ class ASH_EXPORT PineItemView : public views::BoxLayoutView {
   const bool inside_screenshot_;
 
   // Owned by views hierarchy.
-  raw_ptr<views::ImageView> image_view_;
+  raw_ptr<views::Label> title_label_view_;
   raw_ptr<views::BoxLayoutView> favicon_container_view_;
 
   base::CancelableTaskTracker cancelable_favicon_task_tracker_;

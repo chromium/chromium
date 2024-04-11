@@ -15,7 +15,8 @@ namespace ash {
 // TODO(hewer): Update description when default icon is added.
 // Displays the icon of the given app if available, and observes the
 // `AppRegistryCache` to update the icon after it has been marked as ready
-// (installed).
+// (installed). `ready_callback` is run after the given `app_id` has been
+// marked as "ready" by the `AppRegistryCache`.
 class ASH_EXPORT PineAppImageView : public views::ImageView,
                                     public apps::AppRegistryCache::Observer {
   METADATA_HEADER(PineAppImageView, views::ImageView)
@@ -24,7 +25,9 @@ class ASH_EXPORT PineAppImageView : public views::ImageView,
   // Determines the styling of the view, based on where it is used.
   enum class Type { kItem, kScreenshot, kOverflow };
 
-  PineAppImageView(const std::string& app_id, const Type type);
+  PineAppImageView(const std::string& app_id,
+                   const Type type,
+                   base::OnceClosure ready_callback);
   PineAppImageView(const PineAppImageView&) = delete;
   PineAppImageView& operator=(const PineAppImageView&) = delete;
   ~PineAppImageView() override;
@@ -40,6 +43,9 @@ class ASH_EXPORT PineAppImageView : public views::ImageView,
 
   const std::string app_id_;
   const Type type_;
+
+  // Called by `OnAppUpdate()` if the app is marked as "ready".
+  base::OnceClosure ready_callback_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

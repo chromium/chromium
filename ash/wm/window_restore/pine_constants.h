@@ -87,6 +87,7 @@ enum ViewID : int {
   kFaviconContainerViewID,
   kPreviewContainerViewID,
   kItemImageViewID,
+  kItemViewID,
 };
 
 }  // namespace ash::pine

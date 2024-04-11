@@ -781,7 +781,8 @@ TEST_F(PineAppIconTest, UpdateAfterSessionStarted) {
   data->apps_infos.emplace_back(test_id, "TEST_TITLE");
   StartPineOverviewSession(std::move(data));
 
-  // The image view should show the default app icon before installation.
+  // Before installation, the image view should show the default app icon, and
+  // the title should be empty.
   const PineAppImageView* image_view = views::AsViewClass<PineAppImageView>(
       GetContentsView()->GetViewByID(pine::kItemImageViewID));
   ASSERT_TRUE(image_view);
@@ -790,25 +791,33 @@ TEST_F(PineAppIconTest, UpdateAfterSessionStarted) {
                                          gfx::Image(test_icon),
                                          /*max_deviation=*/0));
 
+  const PineItemView* item_view = views::AsViewClass<PineItemView>(
+      GetContentsView()->GetViewByID(pine::kItemViewID));
+  ASSERT_TRUE(item_view);
+  ASSERT_TRUE(item_view->title_label_view());
+  EXPECT_TRUE(item_view->title_label_view()->GetText().empty());
+
   // Update the test delegate to return a valid icon the next time one is
   // requested.
   GetTestSavedDeskDelegate()->set_default_app_icon(test_icon);
 
   // Using the existing app ID, mark the app as ready, so `app_image_view` will
-  // update with the new image.
+  // update with the new image. Also provide a new title for the app.
   apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kWeb, test_id);
   app->readiness = apps::Readiness::kReady;
+  app->name = "UPDATED_TITLE";
   std::vector<apps::AppPtr> registry_deltas;
   registry_deltas.push_back(std::move(app));
   registry_cache_.OnAppsForTesting(std::move(registry_deltas),
                                    apps::AppType::kWeb,
                                    /*should_notify_initialized=*/false);
 
-  // The image view should now show our test image.
+  // The image and title should now be valid.
   EXPECT_FALSE(image_view->GetImage().isNull());
   EXPECT_TRUE(gfx::test::AreImagesClose(gfx::Image(image_view->GetImage()),
                                         gfx::Image(test_icon),
                                         /*max_deviation=*/0));
+  EXPECT_EQ(item_view->title_label_view()->GetText(), u"UPDATED_TITLE");
 }
 
 }  // namespace ash
