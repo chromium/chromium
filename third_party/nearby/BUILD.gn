@@ -292,8 +292,6 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/bluetooth_classic.cc",
     "src/connections/implementation/mediums/bluetooth_radio.cc",
     "src/connections/implementation/mediums/mediums.cc",
-    "src/connections/implementation/mediums/multiplex/multiplex_frames.cc",
-    "src/connections/implementation/mediums/multiplex/multiplex_output_stream.cc",
     "src/connections/implementation/mediums/webrtc.cc",
     "src/connections/implementation/mediums/wifi_direct.cc",
     "src/connections/implementation/mediums/wifi_hotspot.cc",
@@ -315,8 +313,6 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/bluetooth_radio.h",
     "src/connections/implementation/mediums/lost_entity_tracker.h",
     "src/connections/implementation/mediums/mediums.h",
-    "src/connections/implementation/mediums/multiplex/multiplex_frames.h",
-    "src/connections/implementation/mediums/multiplex/multiplex_output_stream.h",
     "src/connections/implementation/mediums/webrtc.h",
     "src/connections/implementation/mediums/wifi_direct.h",
     "src/connections/implementation/mediums/wifi_hotspot.h",
@@ -327,7 +323,6 @@ source_set("connections_implementation_mediums") {
     ":connections_implementation_flags",
     ":connections_implementation_mediums_webrtc",
     ":connections_types",
-    ":multiplex_frames_proto",
     ":platform_base",
     ":platform_base_cancellation_flag",
     ":platform_base_util",
@@ -342,7 +337,6 @@ source_set("connections_implementation_mediums") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("connections_implementation_mediums_utils") {
   public_configs = [
     ":nearby_include_config",
@@ -367,7 +361,6 @@ source_set("connections_implementation_mediums_utils") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("connections_implementation_mediums_webrtc_data_types") {
   public_configs = [
     ":nearby_include_config",
@@ -386,7 +379,6 @@ source_set("connections_implementation_mediums_webrtc_data_types") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
 source_set("connections_implementation_mediums_webrtc") {
   public_configs = [
     ":nearby_include_config",
@@ -1245,12 +1237,6 @@ proto_library("error_code_enums_proto") {
 proto_library("ble_frames_proto") {
   proto_in_dir = "src"
   sources = [ "${proto_in_dir}/proto/mediums/ble_frames.proto" ]
-  proto_out_dir = "third_party/nearby"
-}
-
-proto_library("multiplex_frames_proto") {
-  proto_in_dir = "src"
-  sources = [ "${proto_in_dir}/proto/mediums/multiplex_frames.proto" ]
   proto_out_dir = "third_party/nearby"
 }
 
