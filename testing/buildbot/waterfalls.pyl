@@ -6240,7 +6240,7 @@
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'devtools_gtests',
-          'isolated_scripts': 'devtools_webkit_isolated_scripts',
+          'isolated_scripts': 'devtools_web_isolated_scripts',
         },
       },
       'DevTools Linux Fastbuild': {
@@ -6250,7 +6250,7 @@
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'devtools_gtests',
-          'isolated_scripts': 'devtools_webkit_isolated_scripts',
+          'isolated_scripts': 'devtools_web_isolated_scripts',
         },
       },
     },
@@ -7062,7 +7062,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'devtools_browser_tests_suite',
-          'isolated_scripts': 'devtools_webkit_isolated_scripts',
+          'isolated_scripts': 'devtools_web_isolated_scripts',
         },
       },
       'devtools_frontend_linux_blink_light_rel_fastbuild': {
@@ -7071,7 +7071,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'devtools_browser_tests_suite',
-          'isolated_scripts': 'devtools_webkit_isolated_scripts',
+          'isolated_scripts': 'devtools_web_isolated_scripts',
         },
       },
       'devtools_frontend_linux_blink_rel': {
@@ -7079,7 +7079,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-          'isolated_scripts': 'devtools_webkit_isolated_scripts',
+          'isolated_scripts': 'devtools_web_isolated_scripts',
         },
       },
     }
