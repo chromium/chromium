@@ -375,28 +375,40 @@ TEST(CookieInclusionStatusTest, ValidateExclusionAndWarningFromWire) {
       exclusion_reasons, warning_reasons));
 }
 
-TEST(CookieInclusionStatusTest, ExcludedByUserPreferences) {
+TEST(CookieInclusionStatusTest, ExcludedByUserPreferencesOrTPCD) {
   CookieInclusionStatus status =
       CookieInclusionStatus::MakeFromReasonsForTesting(
           {CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES});
-  EXPECT_TRUE(status.ExcludedByUserPreferences());
+  EXPECT_TRUE(status.ExcludedByUserPreferencesOrTPCD());
+
+  status = CookieInclusionStatus::MakeFromReasonsForTesting({
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
+  });
+  EXPECT_TRUE(status.ExcludedByUserPreferencesOrTPCD());
+
+  status = CookieInclusionStatus::MakeFromReasonsForTesting({
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
+      CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
+  });
+  EXPECT_TRUE(status.ExcludedByUserPreferencesOrTPCD());
 
   status = CookieInclusionStatus::MakeFromReasonsForTesting({
       CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
       CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE,
   });
-  EXPECT_FALSE(status.ExcludedByUserPreferences());
+  EXPECT_FALSE(status.ExcludedByUserPreferencesOrTPCD());
 
   status = CookieInclusionStatus::MakeFromReasonsForTesting({
       CookieInclusionStatus::ExclusionReason::
           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
   });
-  EXPECT_FALSE(status.ExcludedByUserPreferences());
+  EXPECT_FALSE(status.ExcludedByUserPreferencesOrTPCD());
 
   status = CookieInclusionStatus::MakeFromReasonsForTesting({
       CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE,
   });
-  EXPECT_FALSE(status.ExcludedByUserPreferences());
+  EXPECT_FALSE(status.ExcludedByUserPreferencesOrTPCD());
 }
 
 }  // namespace net

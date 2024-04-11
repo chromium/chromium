@@ -14,10 +14,10 @@ class RenderFrameHostImpl;
 struct CookieAccessDetails;
 
 // Sorts cookies into allowed (cookies that were included for the access
-// attempt) and blocked (cookies that were excluded solely because they were
-// blocked by the user's preferences). Cookies that are excluded independently
-// of the user's cookie blocking settings are not included in either of the
-// outputs.
+// attempt) and blocked (cookies that were excluded because they were
+// blocked by the user's preferences or 3PCD). Cookies that are excluded
+// independently of the user's cookie blocking settings are not included in
+// either of the outputs.
 void SplitCookiesIntoAllowedAndBlocked(
     const network::mojom::CookieAccessDetailsPtr& cookie_details,
     CookieAccessDetails* allowed,

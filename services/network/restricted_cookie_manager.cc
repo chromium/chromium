@@ -674,7 +674,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   for (const auto& cookie_and_access_result : excluded_cookies) {
     if (!cookie_and_access_result.access_result.status.ShouldWarn() &&
         !cookie_and_access_result.access_result.status
-             .ExcludedByUserPreferences()) {
+             .ExcludedByUserPreferencesOrTPCD()) {
       continue;
     }
 

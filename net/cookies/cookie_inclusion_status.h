@@ -417,11 +417,9 @@ class NET_EXPORT CookieInclusionStatus {
       ExemptionReason exemption = ExemptionReason::kNone,
       bool use_literal = false);
 
-  // Returns true if the cookie was excluded because of user preferences.
-  // HasOnlyExclusionReason(EXCLUDE_USER_PREFERENCES) will not return true for
-  // third-party cookies blocked in sites in the same First-Party Set. See
-  // https://crbug.com/1366868.
-  bool ExcludedByUserPreferences() const;
+  // Returns true if the cookie was excluded because of user preferences or
+  // 3PCD.
+  bool ExcludedByUserPreferencesOrTPCD() const;
 
   void ResetForTesting() {
     exclusion_reasons_.reset();

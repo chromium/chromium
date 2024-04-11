@@ -433,15 +433,13 @@ CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
   return status;
 }
 
-// TODO(shuuran): Consolidate reasons in this method.
-bool CookieInclusionStatus::ExcludedByUserPreferences() const {
+bool CookieInclusionStatus::ExcludedByUserPreferencesOrTPCD() const {
   if (HasOnlyExclusionReason(ExclusionReason::EXCLUDE_USER_PREFERENCES) ||
       HasOnlyExclusionReason(ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
     return true;
   }
   return exclusion_reasons_.count() == 2 &&
-         (exclusion_reasons_[ExclusionReason::EXCLUDE_USER_PREFERENCES] ||
-          exclusion_reasons_[ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT]) &&
+         exclusion_reasons_[ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT] &&
          exclusion_reasons_
              [ExclusionReason::
                   EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET];
