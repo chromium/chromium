@@ -94,10 +94,14 @@ function ensure_user_dir {
 
 # Build command arguments
 function build_args {
+  LACROS_ADDITIONAL_ARGS="\
+--gpu-sandbox-start-early####\
+--disable-features=OzoneBubblesUsePlatformWidgets"
+
   ARGS="--user-data-dir=${USER_DATA_DIR} \
     --enable-wayland-server --ash-debug-shortcuts --overview-button-for-tests \
     --enable-ui-devtools --ash-dev-shortcuts --login-manager \
-    --lacros-chrome-additional-args=--gpu-sandbox-start-early \
+    --lacros-chrome-additional-args=${LACROS_ADDITIONAL_ARGS} \
     --login-profile=user --lacros-mojo-socket-for-testing=$LACROS_SOCK_FILE \
     --ash-host-window-bounds=${DISPLAY_CONFIG} \
     --enable-features=${FEATURES} \
