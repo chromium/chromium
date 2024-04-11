@@ -2923,7 +2923,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ClientSideMtu" units="bytes"
-    expires_after="2024-04-03">
+    expires_after="2025-04-10">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3670,7 +3670,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.MtuProbesSent" units="units"
-    expires_after="2024-04-03">
+    expires_after="2025-04-10">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4159,12 +4159,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ServerSideMtu" units="bytes"
-    expires_after="2023-11-19">
+    expires_after="2025-04-10">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The largest packet which the client received from the server during the
-    session.
+    session. Warning: this histogram was expired from 2023-11-19 to 2024-04-11;
+    data may be missing.
   </summary>
 </histogram>
 
