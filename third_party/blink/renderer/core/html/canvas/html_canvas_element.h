@@ -361,10 +361,6 @@ class CORE_EXPORT HTMLCanvasElement final
                            const double& quality,
                            SourceDrawingBuffer) const;
 
-  // Returns true if the canvas' context type is inherited from
-  // ImageBitmapRenderingContextBase.
-  bool HasImageBitmapContext() const;
-
   // Returns the transparent image resource for this canvas.
   scoped_refptr<StaticBitmapImage> GetTransparentImage();
 

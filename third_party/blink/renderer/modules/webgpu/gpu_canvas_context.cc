@@ -158,8 +158,9 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
 
 bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer) {
-  if (!swap_buffers_)
+  if (!swap_buffers_) {
     return false;
+  }
 
   if (Host()->ResourceProvider() &&
       Host()->ResourceProvider()->Size() != swap_buffers_->Size()) {
@@ -168,6 +169,9 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
 
   CanvasResourceProvider* resource_provider =
       Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  if (!resource_provider) {
+    return false;
+  }
 
   return CopyRenderingResultsFromDrawingBuffer(resource_provider,
                                                source_buffer);
