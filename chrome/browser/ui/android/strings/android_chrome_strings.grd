@@ -2243,6 +2243,14 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_REVIEW_DATA" desc="Title for link to https://chrome.google.com/sync Dashboard to manage sync data.">
         Review your synced data
       </message>
+      <!-- TODO(b/326574743): Revisit string and mark it as translatable.-->
+      <message name="IDS_SIGNIN_REVIEW_DATA_TITLE" desc="Title for link to https://chrome.google.com/sync Dashboard to manage sync data." translateable="false">
+        Data in your account
+      </message>
+      <!-- TODO(b/326574743): Revisit string and mark it as translatable.-->
+      <message name="IDS_SIGNIN_REVIEW_DATA_SUMMARY" desc="Summary for link to https://chrome.google.com/sync Dashboard to manage sync data." translateable="false">
+        Review your account data
+      </message>
       <message name="IDS_SYNC_PASSPHRASE_TYPE_TITLE" desc="Title of sync passphrase type dialog. [CHAR_LIMIT=24]">
         Encryption
       </message>

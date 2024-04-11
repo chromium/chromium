@@ -247,11 +247,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 findPreference(PREF_ADVANCED_CATEGORY).setVisible(true);
             }
 
-            Preference reviewSyncData = findPreference(PREF_SYNC_REVIEW_DATA);
-            reviewSyncData.setOnPreferenceClickListener(
-                    SyncSettingsUtils.toOnClickListener(
-                            this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
-
             mSyncTypeCheckBoxPreferencesMap = new HashMap<>();
             mSyncTypeCheckBoxPreferencesMap.put(
                     UserSelectableType.AUTOFILL, findPreference(PREF_SYNC_AUTOFILL));
@@ -315,6 +310,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mSyncEncryption = findPreference(PREF_ENCRYPTION);
         mSyncEncryption.setOnPreferenceClickListener(
                 SyncSettingsUtils.toOnClickListener(this, this::onSyncEncryptionClicked));
+
+        Preference reviewSyncData = findPreference(PREF_SYNC_REVIEW_DATA);
+        reviewSyncData.setOnPreferenceClickListener(
+                SyncSettingsUtils.toOnClickListener(
+                        this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
     }
 
     @Override

@@ -61,4 +61,9 @@ found in the LICENSE file.
         android:key="encryption"
         android:title="@string/sync_encryption"/>
 
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="sync_review_data"
+        android:title="@string/signin_review_data_title"
+        android:summary="@string/signin_review_data_summary"/>
+
 </PreferenceScreen>
