@@ -112,8 +112,9 @@ void AnchorElementMetricsSender::
 void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
     const HTMLAnchorElement& anchor_element) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
-  Document* top_document = GetTopDocument(anchor_element);
-  if (!anchor_element.Href().ProtocolIsInHTTPFamily() || !top_document ||
+  Document* top_document = GetSupplementable();
+  CHECK(top_document);
+  if (!anchor_element.Href().ProtocolIsInHTTPFamily() ||
       !top_document->Url().ProtocolIsInHTTPFamily() ||
       !anchor_element.GetDocument().Url().ProtocolIsInHTTPFamily()) {
     return;
@@ -122,7 +123,7 @@ void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
     return;
   }
   base::TimeDelta navigation_start_to_click =
-      clock_->NowTicks() - NavigationStart(anchor_element);
+      clock_->NowTicks() - NavigationStart();
   auto click = mojom::blink::AnchorElementClick::New(
       AnchorElementId(anchor_element), anchor_element.Href(),
       navigation_start_to_click);
@@ -276,14 +277,13 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
   RegisterForLifecycleNotifications();
 }
 
-base::TimeTicks AnchorElementMetricsSender::NavigationStart(
-    const HTMLAnchorElement& element) {
+base::TimeTicks AnchorElementMetricsSender::NavigationStart() const {
   if (mock_navigation_start_for_testing_.has_value()) {
     return mock_navigation_start_for_testing_.value();
   }
 
-  Document* top_document = GetTopDocument(element);
-  DCHECK(top_document);
+  const Document* top_document = GetSupplementable();
+  CHECK(top_document);
 
   return top_document->Loader()->GetTiming().NavigationStart();
 }
@@ -326,7 +326,7 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
       element_timing.pointer_over_timer_ = clock_->NowTicks();
 
       base::TimeDelta navigation_start_to_pointer_over =
-          clock_->NowTicks() - NavigationStart(element);
+          clock_->NowTicks() - NavigationStart();
       auto msg = mojom::blink::AnchorElementPointerOver::New(
           anchor_id, navigation_start_to_pointer_over);
 
@@ -354,7 +354,7 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
     }
 
     base::TimeDelta navigation_start_to_pointer_down =
-        clock_->NowTicks() - NavigationStart(element);
+        clock_->NowTicks() - NavigationStart();
     auto msg = mojom::blink::AnchorElementPointerDown::New(
         anchor_id, navigation_start_to_pointer_down);
     metrics_host_->ReportAnchorElementPointerDown(std::move(msg));
@@ -395,7 +395,7 @@ void AnchorElementMetricsSender::EnqueueEnteredViewport(
   timing_stats.entered_viewport_should_be_enqueued_ = false;
 
   base::TimeDelta time_entered_viewport =
-      clock_->NowTicks() - NavigationStart(element);
+      clock_->NowTicks() - NavigationStart();
   auto msg = mojom::blink::AnchorElementEnteredViewport::New(
       anchor_id, time_entered_viewport);
   entered_viewport_messages_.push_back(std::move(msg));

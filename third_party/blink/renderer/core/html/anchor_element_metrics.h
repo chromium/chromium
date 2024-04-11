@@ -10,12 +10,7 @@
 
 namespace blink {
 
-class Document;
 class HTMLAnchorElement;
-
-// Returns the document of the main frame of the frame tree containing `anchor`.
-// This could be null if `anchor` is in an out-of-process iframe.
-Document* GetTopDocument(const HTMLAnchorElement& anchor);
 
 uint32_t AnchorElementId(const HTMLAnchorElement& element);
 

@@ -135,7 +135,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   void SetShouldSkipUpdateDelays(bool should_skip_for_testing);
 
-  base::TimeTicks NavigationStart(const HTMLAnchorElement& element);
+  base::TimeTicks NavigationStart() const;
 
   void RegisterForLifecycleNotifications();
 
