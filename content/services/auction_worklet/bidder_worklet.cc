@@ -1968,6 +1968,10 @@ void BidderWorklet::OnGenerateBidClientDestroyed(
   // can be safely cancelled.
   if (!IsReadyToGenerateBid(*task)) {
     CleanUpBidTaskOnUserThread(task);
+    // GenerateBidIfReady is never called so make sure to close out this trace
+    // event.
+    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "wait_generate_bid_deps",
+                                    task->trace_id);
   } else {
     // Otherwise, there should be a pending V8 call. Try to cancel that, but if
     // it already started, it will just run and invoke the GenerateBidClient's
