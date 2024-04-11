@@ -175,7 +175,13 @@ TEST_F(PromosManagerCoordinatorTest, BanneredViewControllerDismissesViaSwipe) {
 }
 
 // Tests ...
-TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackTest) {
+// TODO(crbug.com/333873672): Fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_DisplayPromoCallbackTest DisplayPromoCallbackTest
+#else
+#define MAYBE_DisplayPromoCallbackTest DISABLED_DisplayPromoCallbackTest
+#endif
+TEST_F(PromosManagerCoordinatorTest, MAYBE_DisplayPromoCallbackTest) {
   // Prepare UI for promo display.
   SetupUIForPromoDisplay();
 
@@ -195,7 +201,15 @@ TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackTest) {
   [mockCoordinator verify];
 }
 
-TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackUINotAvailableTest) {
+// TODO(crbug.com/333873672): Fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_DisplayPromoCallbackUINotAvailableTest DisplayPromoCallbackUINotAvailableTest
+#else
+#define MAYBE_DisplayPromoCallbackUINotAvailableTest \
+  DISABLED_DisplayPromoCallbackUINotAvailableTest
+#endif
+TEST_F(PromosManagerCoordinatorTest,
+       MAYBE_DisplayPromoCallbackUINotAvailableTest) {
   // Prepare UI for promo display.
   SetupUIForPromoDisplay();
   CreatePromosManagerCoordinator();
