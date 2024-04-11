@@ -114,9 +114,7 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
 }
 
 void AutoEnrollmentCheckScreen::HideImpl() {
-  if (NetworkHandler::IsInitialized()) {
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
-  }
+  ClearState();
 }
 
 bool AutoEnrollmentCheckScreen::MaybeSkip(WizardContext& context) {
