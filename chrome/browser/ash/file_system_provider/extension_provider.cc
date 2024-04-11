@@ -33,7 +33,7 @@ namespace {
 
 // Timeout before an onMountRequested request is considered as stale and hence
 // aborted.
-constexpr base::TimeDelta kDefaultMountTimeout = base::Minutes(5);
+constexpr base::TimeDelta kDefaultMountTimeout = base::Minutes(10);
 
 extensions::file_system_provider::ServiceWorkerLifetimeManager*
 GetServiceWorkerLifetimeManager(Profile* profile) {
