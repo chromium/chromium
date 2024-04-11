@@ -58,6 +58,8 @@
         <title>svg1-title</title>
       </svg>
     </div>
+
+    <img data-dump title="title" alt="" src='resources/cake.png'>
   `, 'Tests name sources in images and figures.');
 
   var dumpAccessibilityNodesBySelectorAndCompleteTest =

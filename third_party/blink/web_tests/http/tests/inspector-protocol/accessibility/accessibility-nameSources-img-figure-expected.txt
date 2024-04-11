@@ -704,4 +704,51 @@ Tests name sources in images and figures.
         value : image
     }
 }
+{
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 99
+    }
+    domNode : img
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : alt
+                type : attribute
+            }
+            [3] : {
+                attribute : title
+                attributeValue : {
+                    type : string
+                    value : title
+                }
+                type : attribute
+                value : {
+                    type : computedString
+                    value : title
+                }
+            }
+        ]
+        type : computedString
+        value : title
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : image
+    }
+}
 

@@ -6408,7 +6408,7 @@ String AXNodeObject::NativeTextAlternative(
       name_sources->push_back(NameSource(*found_text_alternative, kAltAttr));
       name_sources->back().type = name_from;
     }
-    if (!alt.empty() && !alt.IsNull()) {
+    if (!alt.empty()) {
       text_alternative = alt;
       if (name_sources) {
         NameSource& source = name_sources->back();
@@ -6541,7 +6541,7 @@ String AXNodeObject::NativeTextAlternative(
       name_sources->push_back(NameSource(*found_text_alternative, kAltAttr));
       name_sources->back().type = name_from;
     }
-    if (!alt.IsNull()) {
+    if (!alt.empty()) {
       text_alternative = alt;
       if (name_sources) {
         NameSource& source = name_sources->back();
@@ -6773,7 +6773,7 @@ String AXNodeObject::GetSavedTextAlternativeFromNameSource(
   }
 
   for (NameSource& name_source : *name_sources) {
-    if (name_source.text.IsNull() || name_source.superseded) {
+    if (name_source.text.empty() || name_source.superseded) {
       continue;
     }
 
