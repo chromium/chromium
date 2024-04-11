@@ -3626,17 +3626,17 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       ElementsAre(
           EqualsFieldByFieldFillingSuggestion(
               PopupItemId::kCreditCardFieldByFieldFilling,
+              server_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale()),
+              CREDIT_CARD_EXP_MONTH, Suggestion::Guid(server_card.guid()),
+              {{Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_MONTH_SUGGESTION_LABEL))}}),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kCreditCardFieldByFieldFilling,
               server_card.GetInfo(CREDIT_CARD_EXP_2_DIGIT_YEAR, app_locale()),
               CREDIT_CARD_EXP_2_DIGIT_YEAR,
               Suggestion::Guid(server_card.guid()),
               {{Suggestion::Text(l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_YEAR_SUGGESTION_LABEL))}}),
-          EqualsFieldByFieldFillingSuggestion(
-              PopupItemId::kCreditCardFieldByFieldFilling,
-              server_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale()),
-              CREDIT_CARD_EXP_MONTH, Suggestion::Guid(server_card.guid()),
-              {{Suggestion::Text(l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_MONTH_SUGGESTION_LABEL))}})));
+                  IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_YEAR_SUGGESTION_LABEL))}})));
 }
 
 // Verify that manual fallback credit card suggestions are not filtered.

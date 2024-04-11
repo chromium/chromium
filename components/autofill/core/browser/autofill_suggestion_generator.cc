@@ -631,6 +631,15 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
   cc_expiration.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_DATE_SUGGESTION_LABEL))});
 
+  Suggestion cc_expiration_month(
+      credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale),
+      PopupItemId::kCreditCardFieldByFieldFilling);
+  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+  cc_expiration_month.payload = Suggestion::Guid(credit_card.guid());
+  cc_expiration_month.field_by_field_filling_type_used = CREDIT_CARD_EXP_MONTH;
+  cc_expiration_month.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_MONTH_SUGGESTION_LABEL))});
+
   Suggestion cc_expiration_year(
       credit_card.GetInfo(CREDIT_CARD_EXP_2_DIGIT_YEAR, app_locale),
       PopupItemId::kCreditCardFieldByFieldFilling);
@@ -641,17 +650,8 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
   cc_expiration_year.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_YEAR_SUGGESTION_LABEL))});
 
-  Suggestion cc_expiration_month(
-      credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale),
-      PopupItemId::kCreditCardFieldByFieldFilling);
-  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
-  cc_expiration_month.payload = Suggestion::Guid(credit_card.guid());
-  cc_expiration_month.field_by_field_filling_type_used = CREDIT_CARD_EXP_MONTH;
-  cc_expiration_month.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_MONTH_SUGGESTION_LABEL))});
-
-  cc_expiration.children.push_back(std::move(cc_expiration_year));
   cc_expiration.children.push_back(std::move(cc_expiration_month));
+  cc_expiration.children.push_back(std::move(cc_expiration_year));
   suggestion.children.push_back(std::move(cc_expiration));
 }
 
