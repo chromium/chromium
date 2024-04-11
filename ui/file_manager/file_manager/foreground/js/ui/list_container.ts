@@ -89,6 +89,20 @@ export class ListContainer {
     this.table.list.id = 'file-list';
     this.grid.setAttribute('role', 'listbox');
     this.grid.id = 'file-list';
+
+    // Ensure the list and grid are marked ARIA single select for save as.
+    if (type === DialogType.SELECT_SAVEAS_FILE) {
+      const list = table.querySelector('#file-list');
+      list?.setAttribute('aria-multiselectable', 'false');
+      grid.setAttribute('aria-multiselectable', 'false');
+    }
+  }
+
+  /**
+   * Avoid adding event listeners in the constructor because the ListContainer
+   * isn't fully usable until setCurrentListType() is called.
+   */
+  private addEventListeners_() {
     this.element.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.element.addEventListener('keypress', this.onKeyPress_.bind(this));
     this.element.addEventListener(
@@ -107,13 +121,6 @@ export class ListContainer {
         setTimeout(() => this.allowContextMenuByTouch_ = false);
       }
     });
-
-    // Ensure the list and grid are marked ARIA single select for save as.
-    if (type === DialogType.SELECT_SAVEAS_FILE) {
-      const list = table.querySelector('#file-list');
-      list?.setAttribute('aria-multiselectable', 'false');
-      grid.setAttribute('aria-multiselectable', 'false');
-    }
   }
 
   get currentView(): FileTable|FileGrid {
@@ -159,6 +166,8 @@ export class ListContainer {
   setCurrentListType(listType: ListType) {
     assert(this.dataModel);
     assert(this.selectionModel);
+
+    this.addEventListeners_();
 
     this.startBatchUpdates();
     this.currentListType = listType;
