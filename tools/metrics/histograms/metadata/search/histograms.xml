@@ -1149,26 +1149,34 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineListedInPromoDialog"
-    enum="OmniboxSearchEngineType" expires_after="M81">
+    enum="OmniboxSearchEngineType" expires_after="M130">
 <!-- Name completed by histogram_suffixes name="SearchEnginePromoOrdering" and name="SearchEnginePromoDeviceType" -->
 
   <owner>yusufo@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
   <summary>
     The search engines listed in the options for search engine promo. This is an
     Android specific dialog prompting the user to pick a default search engine.
     The dialog was shown on a device that had Chrome before it was first
     introduced.
+
+    Warning: this histogram was expired from M81 to M124; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Search.SearchEngineSelectionInPromoDialog"
-    enum="OmniboxSearchEngineType" expires_after="M81">
+    enum="OmniboxSearchEngineType" expires_after="M130">
+<!-- Name completed by histogram_suffixes name="SearchEnginePromoDeviceType" -->
+
   <owner>yusufo@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
   <summary>
     The search engine selected by the user from the search engine promo. This is
     an Android specific dialog prompting the user to pick a default search
     engine. The dialog was shown on a device that had Chrome before it was first
     introduced.
+
+    Warning: this histogram was expired from M81 to M124; data may be missing.
   </summary>
 </histogram>
 
