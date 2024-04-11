@@ -890,6 +890,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // Make sure that the long pressed cell is selected before initiating a drag
   // from it.
   [self.mutator addToSelectionItemID:draggedItem];
+  [self reconfigureItem:draggedItem];
   return [self.dragDropHandler allSelectedDragItems];
 }
 
@@ -1784,9 +1785,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self.mutator userTappedOnItemID:itemIdentifier];
   if (_mode == TabGridModeSelection) {
     // Reconfigure the item.
-    GridSnapshot* snapshot = self.diffableDataSource.snapshot;
-    [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];
-    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+    [self reconfigureItem:itemIdentifier];
   }
 
   switch (itemIdentifier.type) {
@@ -1915,6 +1914,13 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                      cornerRadius:kGridCellCornerRadius +
                                                   margin]];
   }
+}
+
+// Reconfigures `itemIdentifier`.
+- (void)reconfigureItem:(GridItemIdentifier*)itemIdentifier {
+  GridSnapshot* snapshot = self.diffableDataSource.snapshot;
+  [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 @end
