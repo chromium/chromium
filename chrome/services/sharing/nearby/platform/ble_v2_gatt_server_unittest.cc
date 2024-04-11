@@ -261,4 +261,27 @@ TEST_F(
             read_result->get_error_code());
 }
 
+TEST_F(BleV2GattServerTest, Stop) {
+  auto fake_gatt_service = std::make_unique<bluetooth::FakeGattService>();
+  fake_gatt_service->SetCreateCharacteristicResult(/*success=*/true);
+
+  base::RunLoop run_loop;
+  bool fake_gatt_service_destroyed = false;
+  fake_gatt_service->SetOnDestroyedCallback(base::BindLambdaForTesting([&]() {
+    fake_gatt_service_destroyed = true;
+    run_loop.Quit();
+  }));
+
+  fake_adapter_->SetCreateLocalGattServiceResult(
+      /*gatt_service=*/std::move(fake_gatt_service));
+  CallCreateCharacteristic(
+      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*expected_success=*/true);
+
+  // Expect the underlying objects to have been destroyed.
+  ble_v2_gatt_server_->Stop();
+  run_loop.Run();
+  EXPECT_TRUE(fake_gatt_service_destroyed);
+}
+
 }  // namespace nearby::chrome

@@ -14,7 +14,11 @@ namespace bluetooth {
 
 FakeGattService::FakeGattService() = default;
 
-FakeGattService::~FakeGattService() = default;
+FakeGattService::~FakeGattService() {
+  if (on_destroyed_callback_) {
+    std::move(on_destroyed_callback_).Run();
+  }
+}
 
 void FakeGattService::CreateCharacteristic(
     const device::BluetoothUUID& characteristic_uuid,
