@@ -225,32 +225,41 @@ void MessagePumpForUI::DoRunLoop() {
   // Summary: none of the above classes is starved, and sent messages has twice
   // the chance of being processed (i.e., reduced service time).
 
+  wakeup_state_ = WakeupState::kRunning;
+
   for (;;) {
     // If we do any work, we may create more messages etc., and more work may
     // possibly be waiting in another task group.  When we (for example)
     // ProcessNextWindowsMessage(), there is a good chance there are still more
     // messages waiting.  On the other hand, when any of these methods return
     // having done no work, then it is pretty unlikely that calling them again
-    // quickly will find any work to do.  Finally, if they all say they had no
+    // quickly will find any work to do. Finally, if they all say they had no
     // work, then it is a good time to consider sleeping (waiting) for more
     // work.
 
     nested_state_ = NestedState::kNone;
+    bool more_work_is_plausible = false;
 
-    bool more_work_is_plausible = ProcessNextWindowsMessage();
-    // We can end up in native loops which allow application tasks outside of
-    // DoWork() when Windows calls back a Win32 message window owned by some
-    // Chromium code.
-    nested_state_ = NestedState::kNone;
-
-    if (run_state_->should_quit)
-      break;
+    if (!g_ui_pump_improvements_win ||
+        wakeup_state_ != WakeupState::kApplicationTask) {
+      more_work_is_plausible |= ProcessNextWindowsMessage();
+      // We can end up in native loops which allow application tasks outside of
+      // DoWork() when Windows calls back a Win32 message window owned by some
+      // Chromium code.
+      nested_state_ = NestedState::kNone;
+      if (run_state_->should_quit) {
+        break;
+      }
+    }
 
     Delegate::NextWorkInfo next_work_info = run_state_->delegate->DoWork();
     nested_state_ = NestedState::kNone;
+    wakeup_state_ = WakeupState::kRunning;
     more_work_is_plausible |= next_work_info.is_immediate();
-    if (run_state_->should_quit)
+
+    if (run_state_->should_quit) {
       break;
+    }
 
     if (installed_native_timer_) {
       // As described in ScheduleNativeTimer(), the native timer is only
@@ -269,8 +278,9 @@ void MessagePumpForUI::DoRunLoop() {
     // reinstalling a native timer.
     DCHECK_EQ(nested_state_, NestedState::kNone);
     DCHECK(!installed_native_timer_);
-    if (run_state_->should_quit)
+    if (run_state_->should_quit) {
       break;
+    }
 
     if (more_work_is_plausible)
       continue;
@@ -298,26 +308,34 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
     base::debug::Alias(&delay);
     base::debug::Alias(&wait_flags);
     DWORD result;
-    bool awakened_for_task = false;
-    bool awakened_for_native = false;
     if (g_ui_pump_improvements_win) {
       HANDLE event_handle = event_.handle();
       result = MsgWaitForMultipleObjectsEx(1, &event_handle, delay, QS_ALLINPUT,
                                            wait_flags);
       DPCHECK(WAIT_FAILED != result);
-      awakened_for_task = (result == WAIT_OBJECT_0);
-      awakened_for_native = (result == WAIT_OBJECT_0 + 1);
+      if (result == WAIT_OBJECT_0) {
+        wakeup_state_ = WakeupState::kApplicationTask;
+      } else if (result == WAIT_OBJECT_0 + 1) {
+        wakeup_state_ = WakeupState::kNative;
+      } else {
+        wakeup_state_ = WakeupState::kInactive;
+      }
     } else {
       result = MsgWaitForMultipleObjectsEx(0, nullptr, delay, QS_ALLINPUT,
                                            wait_flags);
       DPCHECK(WAIT_FAILED != result);
-      // It can't be known whether the pump woke to process a task until the
-      // queue is peeked.
-      awakened_for_native = (result == WAIT_OBJECT_0);
+      if (result == WAIT_OBJECT_0) {
+        wakeup_state_ = WakeupState::kNative;
+      } else {
+        wakeup_state_ = WakeupState::kInactive;
+      }
     }
-    if (awakened_for_task) {
+
+    if (wakeup_state_ == WakeupState::kApplicationTask) {
+      // This can only be reached when the pump woke up via `event_`. In that
+      // case, tasks are prioritized over native.
       return;
-    } else if (awakened_for_native) {
+    } else if (wakeup_state_ == WakeupState::kNative) {
       // A WM_* message is available.
       // If a parent child relationship exists between windows across threads
       // then their thread inputs are implicitly attached.
@@ -344,8 +362,9 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
         MSG msg;
         TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("base"),
                      "MessagePumpForUI::WaitForWork PeekMessage");
-        if (::PeekMessage(&msg, nullptr, 0, 0, PM_NOREMOVE))
+        if (::PeekMessage(&msg, nullptr, 0, 0, PM_NOREMOVE)) {
           return;
+        }
       }
 
       // We know there are no more messages for this thread because PeekMessage
@@ -353,6 +372,7 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
       // message.
       wait_flags = 0;
     } else {
+      DCHECK_EQ(wakeup_state_, WakeupState::kInactive);
       last_wakeup_was_spurious = true;
       TRACE_EVENT_INSTANT(
           "base", "MessagePumpForUI::WaitForWork Spurious Wakeup",

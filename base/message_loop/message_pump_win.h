@@ -206,6 +206,17 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
     kNestedNativeLoopAnnounced
   } nested_state_ = NestedState::kNone;
 
+  enum class WakeupState {
+    kApplicationTask,
+    kNative,
+    kRunning,
+    kInactive,
+  };
+  // Used to keep track of what the pump knows about the state of its work
+  // sources at wakeup for the experiment 'UIPumpImprovementsWin'. Its value is
+  // `kInactive` at construction, but set to `kRunning` on entry to DoRunLoop().
+  WakeupState wakeup_state_ = WakeupState::kInactive;
+
   ObserverList<Observer>::Unchecked observers_;
 };
 
