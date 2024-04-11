@@ -18245,6 +18245,21 @@
             ]
         }
     ],
+    "SnackbarUseLegacyDismissalBehavior": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SnackbarUseLegacyDismissalBehavior"
+                    ]
+                }
+            ]
+        }
+    ],
     "SnapshotInSwift": [
         {
             "platforms": [
