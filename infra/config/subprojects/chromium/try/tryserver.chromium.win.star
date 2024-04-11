@@ -113,8 +113,6 @@ try_.builder(
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
-        # TODO(b/333068134): remove after the bug is fixed.
-        "luci.buildbucket.backend_alt": 0,
     },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
@@ -499,8 +497,6 @@ try_.gpu.optional_tests_builder(
     os = os.WINDOWS_DEFAULT,
     # default is 6 in _gpu_optional_tests_builder()
     execution_timeout = 5 * time.hour,
-    # TODO(b/333068134): remove after the bug is fixed.
-    experiments = {"luci.buildbucket.backend_alt": 0},
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
