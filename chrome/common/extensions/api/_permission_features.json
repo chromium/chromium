@@ -528,6 +528,14 @@
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F", // Login screen APIs in-session test extension
       "8ECFC754A70BE499325FA4BB705E62EFEEC1BC80"  // b/314208017
     ]
+  }, {
+    "channel": "stable",
+    "extension_types": ["platform_app"],
+    "location": "policy",
+    "platforms": ["chromeos", "lacros"],
+    "allowlist": [
+      "ECD28F2B60BDB3B4E566D6C60BD88BE0774044C1"  // b/314208017
+    ]
   }],
   "loginScreenStorage": [{
     "channel": "stable",
