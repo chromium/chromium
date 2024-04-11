@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_view_controller.h"
@@ -68,6 +69,20 @@
   _viewController.mutator = nil;
   _viewController = nil;
   _contextualPanelEntrypointFullscreenUIUpdater = nullptr;
+}
+
+#pragma mark ContextualPanelEntrypointMediatorDelegate
+
+- (BOOL)canShowLargeContextualPanelEntrypoint:
+    (ContextualPanelEntrypointMediator*)mediator {
+  return [self.delegate canShowLargeContextualPanelEntrypoint:self];
+}
+
+- (void)setLocationBarLabelCenteredBetweenContent:
+            (ContextualPanelEntrypointMediator*)mediator
+                                         centered:(BOOL)centered {
+  [self.delegate setLocationBarLabelCenteredBetweenContent:self
+                                                  centered:centered];
 }
 
 @end

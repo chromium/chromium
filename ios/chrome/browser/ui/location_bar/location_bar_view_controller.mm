@@ -304,6 +304,17 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 }
 
+- (BOOL)canShowLargeContextualPanelEntrypoint {
+  // TODO(crbug.com/330701617): Add actual checks when implementing badge view
+  // loud moment blocking (check might need to be in the actual view).
+  return !self.locationBarSteadyView.hidden;
+}
+
+- (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
+  [self.locationBarSteadyView
+      setLocationBarLabelCenteredBetweenContent:centered];
+}
+
 #pragma mark - LocationBarAnimatee
 
 - (void)offsetTextFieldToMatchSteadyView {

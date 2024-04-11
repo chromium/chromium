@@ -11,6 +11,11 @@
 // Notify the mutator that the entrypoint was tapped.
 - (void)entrypointTapped;
 
+// Sets the location label of the location bar centered relative to the content
+// around it when centered is passed as YES. Otherwise, resets it to the
+// "absolute" center.
+- (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_ENTRYPOINT_UI_CONTEXTUAL_PANEL_ENTRYPOINT_MUTATOR_H_

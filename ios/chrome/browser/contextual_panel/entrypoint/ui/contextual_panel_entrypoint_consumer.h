@@ -24,6 +24,12 @@ struct ContextualPanelItemConfiguration;
 // Notify the consumer to show the entrypoint.
 - (void)showEntrypoint;
 
+// Notify the consumer to transition to the large entrypoint for a loud moment.
+- (void)transitionToLargeEntrypoint;
+
+// Notify the consumer to transition back to the small entrypoint.
+- (void)transitionToSmallEntrypoint;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_ENTRYPOINT_UI_CONTEXTUAL_PANEL_ENTRYPOINT_CONSUMER_H_

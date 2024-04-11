@@ -53,6 +53,11 @@
 // Sets whether the contents are centered or aligned to the leading side.
 - (void)setCentered:(BOOL)centered;
 
+// Sets the location label of the location bar centered relative to the content
+// around it when centered is passed as YES. Otherwise, resets it to the
+// "absolute" center.
+- (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
+
 // The tappable button representing the location bar.
 @property(nonatomic, strong) UIButton* locationButton;
 // The label displaying the current location URL.

@@ -146,7 +146,16 @@ const CGFloat kLeadingMargin = 20;
 #pragma mark - LocationBarSteadyView
 
 @implementation LocationBarSteadyView {
-  NSLayoutConstraint* _xConstraint;
+  // The different X anchor constraints that can apply to the location label at
+  // a given time.
+  NSLayoutConstraint* _xStickToLeadingSideConstraint;
+  NSLayoutConstraint* _xAbsoluteCenteredConstraint;
+  NSLayoutConstraint* _xRelativeToContentCenteredConstraint;
+
+  // LayoutGuide centered between the contents at the edges of the location bar.
+  // (i.e. the layout guide will push towards the trailing side when the
+  // entrypoint is present on the leading edge.)
+  UILayoutGuide* _centeredBetweenLocationBarContentsLayoutGuide;
 
   // The trailing view that is hidden by default, shown for highlight mode.
   UIView* _trailingButtonSpotlightView;
@@ -271,10 +280,34 @@ const CGFloat kLeadingMargin = 20;
                       constraintEqualToAnchor:self.bottomAnchor],
                 ]]];
 
-    // Make the label gravitate towards the center of the view.
-    _xConstraint = [_locationContainerView.centerXAnchor
+    // Setup the layout guide centered between the contents of the location bar.
+    _centeredBetweenLocationBarContentsLayoutGuide =
+        [[UILayoutGuide alloc] init];
+    [_locationButton
+        addLayoutGuide:_centeredBetweenLocationBarContentsLayoutGuide];
+    [NSLayoutConstraint activateConstraints:@[
+      [_centeredBetweenLocationBarContentsLayoutGuide.leadingAnchor
+          constraintEqualToAnchor:_badgesContainerStackView.trailingAnchor],
+      [_centeredBetweenLocationBarContentsLayoutGuide.trailingAnchor
+          constraintEqualToAnchor:_trailingButton.leadingAnchor],
+    ]];
+
+    // Different possible X anchors for the location label container.
+    _xStickToLeadingSideConstraint = [_locationContainerView.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor
+                       constant:kLeadingMargin];
+    _xStickToLeadingSideConstraint.priority = UILayoutPriorityDefaultHigh;
+
+    _xAbsoluteCenteredConstraint = [_locationContainerView.centerXAnchor
         constraintEqualToAnchor:self.centerXAnchor];
-    _xConstraint.priority = UILayoutPriorityDefaultHigh;
+    _xAbsoluteCenteredConstraint.priority = UILayoutPriorityDefaultHigh;
+
+    _xRelativeToContentCenteredConstraint = [_locationContainerView
+                                                 .centerXAnchor
+        constraintEqualToAnchor:_centeredBetweenLocationBarContentsLayoutGuide
+                                    .centerXAnchor];
+    _xRelativeToContentCenteredConstraint.priority =
+        UILayoutPriorityDefaultHigh - 1;
 
     _locationContainerViewLeadingAnchorConstraint =
         [_locationContainerView.leadingAnchor
@@ -304,7 +337,7 @@ const CGFloat kLeadingMargin = 20;
       [_trailingButton.widthAnchor constraintEqualToConstant:kButtonSize],
       [_trailingButton.heightAnchor constraintEqualToConstant:kButtonSize],
       _trailingButtonTrailingAnchorConstraint,
-      _xConstraint,
+      _xAbsoluteCenteredConstraint,
       _locationContainerViewLeadingAnchorConstraint,
       [_trailingButtonSpotlightView.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor],
@@ -478,17 +511,39 @@ const CGFloat kLeadingMargin = 20;
 }
 
 - (void)setCentered:(BOOL)centered {
-  _xConstraint.active = NO;
   if (centered) {
-    _xConstraint = [_locationContainerView.centerXAnchor
-        constraintEqualToAnchor:self.centerXAnchor];
+    _xStickToLeadingSideConstraint.active = NO;
+    // If the location label is currently being centered relative to content
+    // around it, don't activate the following constraint (absolute centering).
+    _xAbsoluteCenteredConstraint.active =
+        !_xRelativeToContentCenteredConstraint.active;
   } else {
-    _xConstraint = [_locationContainerView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor
-                       constant:kLeadingMargin];
+    _xAbsoluteCenteredConstraint.active = NO;
+    _xStickToLeadingSideConstraint.active = YES;
   }
-  _xConstraint.priority = UILayoutPriorityDefaultHigh;
-  _xConstraint.active = YES;
+
+  // Call this in case the font was previously made smaller by the large
+  // Contextual Panel entrypoint.
+  _locationLabel.font = [self locationLabelFont];
+}
+
+- (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
+  // Early return if the label is already justified to the leading edge, or if
+  // the Contextual Panel entrypoint is not being shown.
+  if (_xStickToLeadingSideConstraint.active ||
+      (centered && _contextualPanelEntrypointView.hidden)) {
+    return;
+  }
+
+  if (centered) {
+    _xAbsoluteCenteredConstraint.active = NO;
+    _xRelativeToContentCenteredConstraint.active = YES;
+    _locationLabel.font = [self locationLabelSmallerFont];
+  } else {
+    _xRelativeToContentCenteredConstraint.active = NO;
+    _xAbsoluteCenteredConstraint.active = YES;
+    _locationLabel.font = [self locationLabelFont];
+  }
 }
 
 #pragma mark - UIResponder
@@ -562,9 +617,16 @@ const CGFloat kLeadingMargin = 20;
   }
 }
 
-// Returns the font size for the location label.
+// Returns the normal font size for the location label.
 - (UIFont*)locationLabelFont {
   return LocationBarSteadyViewFont(
+      self.traitCollection.preferredContentSizeCategory);
+}
+
+// Returns the smaller font size for the location label, used when a large
+// Contextual Panel entrypoint is present.
+- (UIFont*)locationLabelSmallerFont {
+  return SmallLocationBarSteadyViewFont(
       self.traitCollection.preferredContentSizeCategory);
 }
 

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator_delegate.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
@@ -84,12 +85,14 @@ namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
 }  // namespace
 
-@interface LocationBarCoordinator () <LoadQueryCommands,
-                                      LocationBarViewControllerDelegate,
-                                      LocationBarConsumer,
-                                      LocationBarSteadyViewConsumer,
-                                      OmniboxControllerDelegate,
-                                      URLDragDataSource> {
+@interface LocationBarCoordinator () <
+    ContextualPanelEntrypointCoordinatorDelegate,
+    LoadQueryCommands,
+    LocationBarViewControllerDelegate,
+    LocationBarConsumer,
+    LocationBarSteadyViewConsumer,
+    OmniboxControllerDelegate,
+    URLDragDataSource> {
   // API endpoint for omnibox.
   std::unique_ptr<WebLocationBarImpl> _locationBar;
   // Observer that updates `viewController` for fullscreen events.
@@ -208,11 +211,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       didMoveToParentViewController:self.viewController];
   self.viewController.offsetProvider = [self.omniboxCoordinator offsetProvider];
 
-  if (IsContextualPanelEnabled()) {
+  if (!isIncognito && IsContextualPanelEnabled()) {
     self.contextualPanelEntrypointCoordinator =
         [[ContextualPanelEntrypointCoordinator alloc]
             initWithBaseViewController:self.viewController
                                browser:self.browser];
+    self.contextualPanelEntrypointCoordinator.delegate = self;
     [self.contextualPanelEntrypointCoordinator start];
 
     [self.viewController
@@ -281,6 +285,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
 
   [self.contextualPanelEntrypointCoordinator stop];
+  self.contextualPanelEntrypointCoordinator.delegate = nil;
   self.contextualPanelEntrypointCoordinator = nil;
 
   // The popup has to be destroyed before the location bar.
@@ -495,6 +500,19 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)displayContextualPanelEntrypointView:(BOOL)display {
   [self.contextualPanelEntrypointCoordinator.viewController
       displayEntrypointView:display];
+}
+
+#pragma mark - ContextualPanelEntrypointCoordinatorDelegate
+
+- (BOOL)canShowLargeContextualPanelEntrypoint:
+    (ContextualPanelEntrypointCoordinator*)coordinator {
+  return [self.viewController canShowLargeContextualPanelEntrypoint];
+}
+
+- (void)setLocationBarLabelCenteredBetweenContent:
+            (ContextualPanelEntrypointCoordinator*)coordinator
+                                         centered:(BOOL)centered {
+  [self.viewController setLocationBarLabelCenteredBetweenContent:centered];
 }
 
 #pragma mark - LocationBarConsumer

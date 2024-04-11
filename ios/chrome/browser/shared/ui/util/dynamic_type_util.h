@@ -11,6 +11,11 @@
 // Specific cases utils
 // ********************
 
+// The normal font for the LocationBarSteadyView.
 UIFont* LocationBarSteadyViewFont(UIContentSizeCategory currentCategory);
+
+// A smaller category font for the LocationBarSteadyView for use when the large
+// Contextual Panel entrypoint is being shown in the location bar.
+UIFont* SmallLocationBarSteadyViewFont(UIContentSizeCategory currentCategory);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_DYNAMIC_TYPE_UTIL_H_

@@ -131,6 +131,15 @@
 // Sets `enabled` of the share button.
 - (void)setShareButtonEnabled:(BOOL)enabled;
 
+// Whether the location bar is currently in a state where the large Contextual
+// Panel entrypoint can be shown (i.e. it is not hidden).
+- (BOOL)canShowLargeContextualPanelEntrypoint;
+
+// Sets the location label of the location bar centered relative to the content
+// around it when centered is passed as YES. Otherwise, resets it to the
+// "absolute" center.
+- (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_VIEW_CONTROLLER_H_

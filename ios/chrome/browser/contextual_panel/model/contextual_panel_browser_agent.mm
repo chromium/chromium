@@ -35,6 +35,7 @@ ContextualPanelBrowserAgent::GetEntrypointConfiguration() {
       base::SysNSStringToUTF8(kDownTrendSymbol);
   sample_configuration_.image_type =
       ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
+  sample_configuration_.entrypoint_message = "See price history";
   sample_configuration_.accessibility_label = "Just a test entrypoint.";
   return sample_configuration_.AsWeakPtr();
 }

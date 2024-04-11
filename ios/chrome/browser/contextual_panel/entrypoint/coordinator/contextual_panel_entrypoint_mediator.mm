@@ -6,6 +6,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/timer.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_browser_agent.h"
@@ -19,6 +20,13 @@
 @implementation ContextualPanelEntrypointMediator {
   // ContextualPanelBrowserAgent to retrieve entrypoint configurations.
   raw_ptr<ContextualPanelBrowserAgent> _contextualPanelBrowserAgent;
+
+  // Timer keeping track of when to transition to a large entrypoint.
+  std::unique_ptr<base::OneShotTimer> _transitionToLargeEntrypointTimer;
+
+  // Timer to keep track of when to return to a small entrypoint after having
+  // transitioned to a large entrypoint.
+  std::unique_ptr<base::OneShotTimer> _transitionToSmallEntrypointTimer;
 }
 
 - (instancetype)initWithBrowserAgent:
@@ -40,6 +48,11 @@
   // Do something.
 }
 
+- (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
+  [self.delegate setLocationBarLabelCenteredBetweenContent:self
+                                                  centered:centered];
+}
+
 #pragma mark - ContextualPanelCommands
 
 - (void)showContextualPanelEntrypoint {
@@ -48,9 +61,36 @@
 
   [self.consumer setEntrypointConfig:config];
   [self.consumer showEntrypoint];
+
+  if (![self.delegate canShowLargeContextualPanelEntrypoint:self]) {
+    return;
+  }
+
+  // Start timers if we can show the large entrypoint.
+  __weak ContextualPanelEntrypointMediator* weakSelf = self;
+
+  // TODO(crbug.com/330702363): Make amount of time Finchable.
+  _transitionToLargeEntrypointTimer = std::make_unique<base::OneShotTimer>();
+  _transitionToLargeEntrypointTimer->Start(
+      FROM_HERE, base::Seconds(3), base::BindOnce(^{
+        if (![weakSelf.delegate
+                canShowLargeContextualPanelEntrypoint:weakSelf]) {
+          return;
+        }
+
+        [weakSelf.consumer transitionToLargeEntrypoint];
+      }));
+
+  _transitionToSmallEntrypointTimer = std::make_unique<base::OneShotTimer>();
+  _transitionToSmallEntrypointTimer->Start(
+      FROM_HERE, base::Seconds(8), base::BindOnce(^{
+        [weakSelf.consumer transitionToSmallEntrypoint];
+      }));
 }
 
 - (void)hideContextualPanelEntrypoint {
+  _transitionToLargeEntrypointTimer = nullptr;
+  _transitionToSmallEntrypointTimer = nullptr;
   [self.consumer hideEntrypoint];
 }
 
