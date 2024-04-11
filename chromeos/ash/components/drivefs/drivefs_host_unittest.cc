@@ -185,6 +185,9 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
 
   void PersistMachineRootID(const std::string& id) override {}
 
+  void PersistNotification(
+      mojom::DriveFsNotificationPtr notification) override {}
+
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const AccountId account_id_;
   mojo::PendingRemote<mojom::DriveFsBootstrap> pending_bootstrap_;

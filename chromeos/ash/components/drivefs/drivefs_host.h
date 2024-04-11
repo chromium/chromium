@@ -106,6 +106,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
         mojom::DriveFsDelegate::ConnectToExtensionCallback callback) = 0;
     virtual const std::string GetMachineRootID() = 0;
     virtual void PersistMachineRootID(const std::string& id) = 0;
+    virtual void PersistNotification(
+        mojom::DriveFsNotificationPtr notification) = 0;
   };
 
   DriveFsHost(const base::FilePath& profile_path,

@@ -255,6 +255,8 @@ class DriveFsSessionForTest : public DriveFsSession {
       mojom::DriveFsDelegate::GetMachineRootIDCallback callback) override {}
   void PersistMachineRootID(const std::string& id) override {}
   void OnMirrorSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {}
+  void OnNotificationReceived(
+      mojom::DriveFsNotificationPtr notification) override {}
 };
 
 class DriveFsSessionTest : public ::testing::Test,

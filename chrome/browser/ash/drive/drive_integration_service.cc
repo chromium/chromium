@@ -50,6 +50,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
+#include "chromeos/ash/components/drivefs/mojom/notifications.mojom.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
@@ -585,6 +586,24 @@ class DriveIntegrationService::DriveFsHolder
     profile_->GetPrefs()->SetString(prefs::kDriveFsMirrorSyncMachineRootId, id);
   }
 
+  void PersistNotification(
+      drivefs::mojom::DriveFsNotificationPtr notification) override {
+    if (!ash::features::IsDriveFsMirroringEnabled()) {
+      return;
+    }
+    switch (notification->which()) {
+      case drivefs::mojom::DriveFsNotification::Tag::kMirrorDownloadDeleted:
+        persisted_notification_
+            [drivefs::mojom::DriveFsNotification::Tag::kMirrorDownloadDeleted]
+                .emplace_back(
+                    notification->get_mirror_download_deleted()->parent_title);
+        break;
+      case drivefs::mojom::DriveFsNotification::Tag::kUnknown:
+        LOG(ERROR) << "unknown notification received";
+        break;
+    }
+  }
+
   const raw_ptr<Profile> profile_;
   const raw_ptr<drivefs::DriveFsHost::MountObserver> mount_observer_;
 
@@ -599,6 +618,10 @@ class DriveIntegrationService::DriveFsHolder
   mojo::Remote<crosapi::mojom::DriveFsNativeMessageHostBridge>
       native_message_host_bridge_;
   base::OnceClosure pending_connect_to_extension_request_;
+  // Notification received from DriveFS which requires persistence.
+  std::unordered_map<drivefs::mojom::DriveFsNotification::Tag,
+                     std::vector<std::string>>
+      persisted_notification_;
 };
 
 DriveIntegrationService::DriveIntegrationService(

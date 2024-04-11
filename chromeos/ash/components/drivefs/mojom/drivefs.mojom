@@ -5,6 +5,8 @@
 module drivefs.mojom;
 
 import "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom";
+import "chromeos/ash/components/drivefs/mojom/notifications.mojom";
+
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
@@ -273,6 +275,9 @@ interface DriveFsDelegate {
     string app_id,
     array<string> scopes) => (AccessTokenStatus status,
                               AccessToken? access_token);
+
+  // Invoked when a notification of interest is sent from DriveFS.
+  OnNotificationReceived(DriveFsNotification notification);
 };
 
 [Extensible]
