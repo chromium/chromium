@@ -59,7 +59,7 @@ void SetUpTailoredConsumerWithType(id<TailoredPromoConsumer> consumer,
   consumer.subtitleString = subtitle;
 
   consumer.primaryActionString =
-      GetNSString(IDS_IOS_DEFAULT_BROWSER_TAILORED_PRIMARY_BUTTON_TEXT);
+      GetNSString(IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
   consumer.secondaryActionString =
-      GetNSString(IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT);
+      GetNSString(IDS_IOS_DEFAULT_BROWSER_PROMO_SECONDARY_BUTTON_TEXT);
 }

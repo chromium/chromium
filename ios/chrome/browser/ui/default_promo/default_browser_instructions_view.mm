@@ -186,7 +186,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   alertScreen.titleString =
       l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT);
   alertScreen.primaryActionString = l10n_util ::GetNSString(
-      IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_PRIMARY_BUTTON_TEXT);
+      IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
   alertScreen.imageHasFixedSize = YES;
   alertScreen.showDismissBarButton = NO;
   alertScreen.titleTextStyle = UIFontTextStyleTitle2;
@@ -223,12 +223,12 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
   if (hasDissmissButton) {
     alertScreen.secondaryActionString = l10n_util::GetNSString(
-        IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SECONDARY_BUTTON_TEXT);
+        IDS_IOS_DEFAULT_BROWSER_PROMO_SECONDARY_BUTTON_TEXT);
   }
 
   if (hasRemindMeLater) {
     alertScreen.tertiaryActionString = l10n_util::GetNSString(
-        IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TERTIARY_BUTTON_TEXT);
+        IDS_IOS_DEFAULT_BROWSER_PROMO_TERTIARY_BUTTON_TEXT);
   }
 
   [self addSubview:alertScreen.view];

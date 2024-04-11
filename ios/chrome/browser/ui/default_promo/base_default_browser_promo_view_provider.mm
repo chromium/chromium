@@ -167,9 +167,9 @@ using l10n_util::GetNSString;
   self.promoViewController.subtitleString = [self promoSubtitle];
 
   self.promoViewController.primaryActionString =
-      GetNSString(IDS_IOS_DEFAULT_BROWSER_TAILORED_PRIMARY_BUTTON_TEXT);
+      GetNSString(IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
   self.promoViewController.secondaryActionString =
-      GetNSString(IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT);
+      GetNSString(IDS_IOS_DEFAULT_BROWSER_PROMO_SECONDARY_BUTTON_TEXT);
 }
 
 // Records that a default browser promo has been shown.

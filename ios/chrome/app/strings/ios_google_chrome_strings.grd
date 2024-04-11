@@ -245,23 +245,11 @@
 
         Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_DESCRIPTION" desc="Description of the default browser promotion modal. [iOS only]">
-        To make Chrome your default browser, open Settings. Tap Default Browser App, and then select Chrome.
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_HALF_SCREEN_PROMO_SUBTITLE_TEXT" desc="Subtitle for the default browser video half screen promo. [iOS only]">
-        Automatically use Chrome when you tap links in messages, documents, and other apps.
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_HALF_SCREEN_PROMO_TITLE_TEXT" desc="Title for the default browser video promo. [iOS only]">
-        Open Chrome From Any App
-      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
           To make Chrome your default:
   1. Open Settings
   2. Tap Default Browser App
   3. Select Chrome.
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE_CTA_EXPERIMENT" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
-        You can now use Chrome any time you tap on links in messages, documents, and other apps.
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_DESCRIPTION" desc="Description for the non-modal default browser promotion banner">
         Open Chrome anytime you tap on links in other apps
@@ -281,17 +269,8 @@
       <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_STAY_SAFE_TITLE" desc="Title of the 'Stay safe' default browser promotion modal. [iOS only]">
         Stay Safe With Google Chrome
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_SWITCH" desc="Title of the default browser promotion modal. [iOS only]">
-        Switch to Chrome
-      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_APP_SETTINGS" desc="Text in the default browser video the app settings. [iOS only]">
         Chrome Settings
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_STEP_2" desc="Text of the row indicating the second step of the instruction to set Chrome as default browser [iOS only]">
-        Tap "Chrome" then "Default Browser App."
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_STEP_3" desc="Text of the row indicating the third step of the instruction to set Chrome as default browser [iOS only]">
-        Select "Chrome."
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT" desc="Subtitle for the default browser video promo. [iOS only]">
         Open Chrome Settings in iOS, then tap on "Default Browser App" and select Chrome.

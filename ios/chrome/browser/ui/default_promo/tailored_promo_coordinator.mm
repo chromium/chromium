@@ -10,7 +10,6 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_string_util.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_util.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"

@@ -1235,14 +1235,14 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DATA_NOT_UPLOADED_DIALOG_TITLE" desc="Title of a dialog that is shown when the user starts to sign out; the user chooses to sync some or all data types, but some data hasn't been saved in their Google Account yet (for example, if there was an error). This string precedes the body text 'Some of your Chrome data hasn't been saved to your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.', and the user can choose to tap on the buttons 'Cancel' or 'Delete and Sign Out'. If the user chooses to continue to sign out, then any of their data (such as bookmarks, passwords, history, settings, and more) that isn't saved in their account will be deleted. The tone should be helpful and instructive. [iOS only]">
         Some Data Isn't Saved Yet
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_HALF_SCREEN_PROMO_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to the video default promo [iOS only]">
-        Show Me How
+      <message name="IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to iOS settings, where they can change the default browser. Used in the default browser promos [iOS only]">
+        Go to Settings…
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_HALF_SCREEN_PROMO_SECONDARY_BUTTON_TEXT" desc="Text of button that will dismiss the half screen default browser promo [iOS only]">
-        No, Thanks
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT" desc="Text of secondary button that will dismiss the default browser modal promo UI [iOS only]">
+      <message name="IDS_IOS_DEFAULT_BROWSER_PROMO_SECONDARY_BUTTON_TEXT" desc="Text of secondary button that will dismiss the default browser modal promo UI [iOS only]">
         No Thanks
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_PROMO_TERTIARY_BUTTON_TEXT" desc="Text of button that will snooze/remind the user later about the default browser promo [iOS only]">
+        Remind Me Later
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_ALL_TABS_TITLE" desc="Text of title for 'All your tabs' tailored default browser promo [iOS only]">
         All Your Tabs In One Browser
@@ -1253,23 +1253,8 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IPADOS_TITLE" desc="Text of title for 'Built for iPadOS' tailored default browser promo [iPadOS only]">
         Built for iPadOS
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to settings, where they can change the default browser. Used in tailored default browser promo [iOS only]">
-        Switch in Settings…
-      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP" desc="Text in the default browser video promo indicating the default browser app in the chrome settings to set a default browser. [iOS only]">
         Default Browser App
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to iOS settings, where they can change the default browser. Used in the video default browser promo [iOS only]">
-        Go to Settings…
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SECONDARY_BUTTON_TEXT" desc="Text of button that will dismiss the video default browser promo [iOS only]">
-        No, Thanks
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_STEP_1" desc="Text of the row indicating the first step of the instruction to set Chrome as default browser [iOS only]">
-        Open "Settings."
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TERTIARY_BUTTON_TEXT" desc="Text of button that will snooze/remind the user later about the video default browser promo [iOS only]">
-        Remind Me Later
       </message>
       <message name="IDS_IOS_DEFAULT_NON_MODAL_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to Chrome or iOS settings where they can change the default browser. Used in the non-modal default browser promo [iOS only]">
         Set…

@@ -245,23 +245,11 @@
 
         Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_DESCRIPTION" desc="Description of the default browser promotion modal. [iOS only]">
-        To make Chromium your default browser, open Settings. Tap Default Browser App, and then select Chromium.
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_HALF_SCREEN_PROMO_SUBTITLE_TEXT" desc="Chromium version of the subtitle for the default browser half screen promo. [iOS only]">
-        Automatically use Chromium when you tap links in messages, documents, and other apps.
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_HALF_SCREEN_PROMO_TITLE_TEXT" desc="Chromium version of the title for the default browser half screen promo. [iOS only]">
-        Open Chromium From Any App
-      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
         To make Chromium your default:
 1. Open Settings
 2. Tap Default Browser App
 3. Select Chromium.
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE_CTA_EXPERIMENT" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
-        You can now use Chromium any time you tap on links in messages, documents, and other apps.
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_DESCRIPTION" desc="Description for the non-modal default browser promotion banner">
         Open Chromium anytime you tap on links in other apps
@@ -281,17 +269,8 @@
       <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_STAY_SAFE_TITLE" desc="Chromium version of the title for the 'Stay safe' default browser promotion modal. [iOS only]">
         Stay Safe With Chromium
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_SWITCH" desc="Title of the default browser promotion modal. [iOS only]">
-        Switch to Chromium
-      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_APP_SETTINGS" desc="Chromium version of Text in the default browser video the app settings. [iOS only]">
         Chromium Settings
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_STEP_2" desc="Chromium version of the text of the row indicating the second step of the instruction to set Chrome as default browser [iOS only]">
-        Tap "Chromium" then "Default Browser App."
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_STEP_3" desc="Chromium version of the text of the row indicating the third step of the instruction to set Chrome as default browser [iOS only]">
-        Select "Chromium."
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT" desc="Chromium version of the subtitle for the default browser video promo. [iOS only]">
         Open Chromium Settings in iOS, then tap on "Default Browser App" and select Chromium.
