@@ -862,10 +862,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // dragged.
     return @[];
   }
+  GridItemIdentifier* draggedItem =
+      [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
   if (_mode != TabGridModeSelection) {
     UIDragItem* dragItem;
-    _draggedItemIdentifier =
-        [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+    _draggedItemIdentifier = draggedItem;
     switch (_draggedItemIdentifier.type) {
       case GridItemType::Tab:
         dragItem = [self.dragDropHandler
@@ -888,7 +889,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Make sure that the long pressed cell is selected before initiating a drag
   // from it.
-  [self.mutator addToSelectionItemID:_draggedItemIdentifier];
+  [self.mutator addToSelectionItemID:draggedItem];
   return [self.dragDropHandler allSelectedDragItems];
 }
 
