@@ -193,7 +193,14 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {
 
 // Searches for '1 + 1', checks the top result is '2', and inserts it
 // into a web input field.
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertMath) {
+// TODO: crbug.com/40240570 - Re-enable once MSan stops failing on Rust-side
+// allocations.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SearchAndInsertMath DISABLED_SearchAndInsertMath
+#else
+#define MAYBE_SearchAndInsertMath SearchAndInsertMath
+#endif
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, MAYBE_SearchAndInsertMath) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =

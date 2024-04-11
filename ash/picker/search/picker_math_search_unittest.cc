@@ -15,11 +15,21 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::VariantWith;
 
-TEST(PickerMathSearchTest, NoResult) {
+// TODO: crbug.com/40240570 - Re-enable once MSan stops failing on Rust-side
+// allocations.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PickerMathSearchTest DISABLED_PickerMathSearchTest
+#else
+#define MAYBE_PickerMathSearchTest PickerMathSearchTest
+#endif
+
+// This test passes MSan as it does not allocate on the Rust side. However, we
+// should still disable this in case `fend_core` starts allocating on this test.
+TEST(MAYBE_PickerMathSearchTest, NoResult) {
   EXPECT_FALSE(PickerMathSearch(u"abc").has_value());
 }
 
-TEST(PickerMathSearchTest, OnePlusOneEqualsTwo) {
+TEST(MAYBE_PickerMathSearchTest, OnePlusOneEqualsTwo) {
   EXPECT_THAT(
       PickerMathSearch(u"1 + 1"),
       Optional(Property(
