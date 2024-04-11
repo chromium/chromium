@@ -105,6 +105,18 @@ source_set("features") {
   ]
 }
 
+source_set("infobar_delegate") {
+  sources = [
+    "enhanced_safe_browsing_infobar_delegate.h",
+    "enhanced_safe_browsing_infobar_delegate.mm",
+  ]
+
+  deps = [
+    "//components/infobars/core",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true

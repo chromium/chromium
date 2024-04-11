@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/parcel_tracking/parcel_tracking_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/password_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/permissions/permissions_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/safe_browsing/enhanced_safe_browsing_infobar_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/sync_error/sync_error_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/tab_pickup/tab_pickup_infobar_banner_overlay_mediator.h"
@@ -66,6 +67,7 @@
     [SyncErrorInfobarBannerOverlayMediator class],
     [TabPickupBannerOverlayMediator class],
     [ParcelTrackingBannerOverlayMediator class],
+    [EnhancedSafeBrowsingBannerOverlayMediator class],
   ];
 }
 
@@ -246,6 +248,9 @@
       break;
     case InfobarType::kInfobarTypeParcelTracking:
       mediatorClass = [ParcelTrackingBannerOverlayMediator class];
+      break;
+    case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
+      mediatorClass = [EnhancedSafeBrowsingBannerOverlayMediator class];
       break;
     default:
       NOTREACHED_NORETURN() << "Received unsupported infobarType.";

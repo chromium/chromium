@@ -34,6 +34,7 @@ source_set("coordinators") {
     "//ios/chrome/browser/ui/overlays/infobar_banner/parcel_tracking",
     "//ios/chrome/browser/ui/overlays/infobar_banner/passwords",
     "//ios/chrome/browser/ui/overlays/infobar_banner/permissions",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/safe_browsing",
     "//ios/chrome/browser/ui/overlays/infobar_banner/save_card",
     "//ios/chrome/browser/ui/overlays/infobar_banner/sync_error",
     "//ios/chrome/browser/ui/overlays/infobar_banner/tab_pickup",
