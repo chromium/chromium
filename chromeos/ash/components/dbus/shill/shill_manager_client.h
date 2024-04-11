@@ -46,10 +46,49 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     uint32_t download_rate_kbits;
   };
 
+  // Represents the priority for the requested WiFi interface. This is used to
+  // solve the WiFi concurrency issue in the platform.
+  enum WifiConcurrencyPriority {
+    // Opportunistic requests; nice-to-have but don’t directly impact the user.
+    kPriority0 = 0,
+
+    // Background requests; not triggered by direct user input.
+    // Make-before-break STA+STA concurrency would have priority 1. Android ref:
+    // https://source.android.com/docs/core/connect/wifi-sta-sta-concurrency,
+    // Chrome OS does not currently support this.
+    kPriority1 = 1,
+
+    // Foreground requests with potential fallback media. I.e. functionality is
+    // still possible without the interface, but is degraded in some way. A
+    // Wi-Fi Direct request via the Nearby Share application would have
+    // priority 2. Station Wi-Fi could be downgraded to this priority when we
+    // have connectivity over Ethernet or Cellular.
+    kPriority2 = 2,
+
+    // Foreground requests which are required for user-requested functionality.
+    // A hypothetical tethering request from a non OS-native application would
+    // have priority 3.
+    kPriority3 = 3,
+
+    // Requests from OS-native applications like network settings that enable
+    // user use-cases. This is the default priority for Station Wi-Fi.
+    kPriority4 = 4,
+
+    // User-initiated requests in which the user has been explicitly informed
+    // that some Wi-Fi functionality may stop working, and agreed to start the
+    // interface anyway. A Tethering request from the network dialog has
+    // priority 5.
+    kPriority5 = 5,
+  };
+
   struct CreateP2PGroupParameter {
+    CreateP2PGroupParameter(
+        const std::optional<std::string> ssid,
+        const std::optional<std::string> passphrase,
+        const std::optional<uint32_t> frequency,
+        const std::optional<WifiConcurrencyPriority> priority);
     CreateP2PGroupParameter(const std::optional<std::string> ssid,
-                            const std::optional<std::string> passphrase,
-                            const std::optional<uint32_t> frequency);
+                            const std::optional<std::string> passphrase);
 
     ~CreateP2PGroupParameter();
 
@@ -63,12 +102,17 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
 
     // P2P group's frequency.
     std::optional<uint32_t> frequency;
+
+    // Priority of the WiFi P2P interface
+    std::optional<WifiConcurrencyPriority> priority;
   };
 
   struct ConnectP2PGroupParameter {
-    ConnectP2PGroupParameter(const std::string ssid,
-                             const std::string passphrase,
-                             const std::optional<uint32_t> frequency);
+    ConnectP2PGroupParameter(
+        const std::string ssid,
+        const std::string passphrase,
+        const std::optional<uint32_t> frequency,
+        const std::optional<WifiConcurrencyPriority> priority);
     ~ConnectP2PGroupParameter();
 
     // SSID of the group to join.
@@ -79,6 +123,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
 
     // Frequency of the group.
     std::optional<uint32_t> frequency;
+
+    // Priority of the WiFi P2P interface
+    std::optional<WifiConcurrencyPriority> priority;
   };
 
   // Interface for setting up devices, services, and technologies for testing.

@@ -127,11 +127,7 @@ void WifiP2PController::CreateWifiP2PGroup(const std::string& ssid,
                                            WifiP2PGroupCallback callback) {
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ShillManagerClient::Get()->CreateP2PGroup(
-      ShillManagerClient::CreateP2PGroupParameter{
-          ssid,
-          passphrase,
-          /*frequency=*/std::nullopt,
-      },
+      ShillManagerClient::CreateP2PGroupParameter{ssid, passphrase},
       base::BindOnce(&WifiP2PController::OnCreateOrConnectP2PGroupSuccess,
                      weak_ptr_factory_.GetWeakPtr(), /*create_group=*/true,
                      std::move(callback_split.first)),
@@ -271,6 +267,7 @@ void WifiP2PController::ConnectToWifiP2PGroup(const std::string& ssid,
           ssid,
           passphrase,
           frequency,
+          /*priority=*/std::nullopt,
       },
       base::BindOnce(&WifiP2PController::OnCreateOrConnectP2PGroupSuccess,
                      weak_ptr_factory_.GetWeakPtr(), /*create_group=*/false,

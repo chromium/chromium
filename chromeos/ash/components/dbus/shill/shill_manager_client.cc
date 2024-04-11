@@ -26,8 +26,20 @@ namespace ash {
 ShillManagerClient::CreateP2PGroupParameter::CreateP2PGroupParameter(
     const std::optional<std::string> ssid,
     const std::optional<std::string> passphrase,
-    const std::optional<uint32_t> frequency)
-    : ssid(ssid), passphrase(passphrase), frequency(frequency) {}
+    const std::optional<uint32_t> frequency,
+    const std::optional<WifiConcurrencyPriority> priority)
+    : ssid(ssid),
+      passphrase(passphrase),
+      frequency(frequency),
+      priority(priority) {}
+
+ShillManagerClient::CreateP2PGroupParameter::CreateP2PGroupParameter(
+    const std::optional<std::string> ssid,
+    const std::optional<std::string> passphrase)
+    : ssid(ssid),
+      passphrase(passphrase),
+      frequency(std::nullopt),
+      priority(std::nullopt) {}
 
 ShillManagerClient::CreateP2PGroupParameter::~CreateP2PGroupParameter() =
     default;
@@ -35,8 +47,12 @@ ShillManagerClient::CreateP2PGroupParameter::~CreateP2PGroupParameter() =
 ShillManagerClient::ConnectP2PGroupParameter::ConnectP2PGroupParameter(
     const std::string ssid,
     const std::string passphrase,
-    const std::optional<uint32_t> frequency)
-    : ssid(ssid), passphrase(passphrase), frequency(frequency) {}
+    const std::optional<uint32_t> frequency,
+    const std::optional<WifiConcurrencyPriority> priority)
+    : ssid(ssid),
+      passphrase(passphrase),
+      frequency(frequency),
+      priority(priority) {}
 
 ShillManagerClient::ConnectP2PGroupParameter::~ConnectP2PGroupParameter() =
     default;
@@ -256,18 +272,21 @@ class ShillManagerClientImpl : public ShillManagerClient {
     dbus::MessageWriter writer(&method_call);
 
     base::Value::Dict properties;
+    properties.Set(shill::kP2PDevicePriority,
+                   create_group_argument.priority.has_value()
+                       ? create_group_argument.priority.value()
+                       : WifiConcurrencyPriority::kPriority2);
     if (create_group_argument.ssid.has_value()) {
-      properties.Set(shill::kP2PGroupInfoSSIDProperty,
-                     create_group_argument.ssid.value());
+      properties.Set(shill::kP2PDeviceSSID, create_group_argument.ssid.value());
     }
 
     if (create_group_argument.passphrase.has_value()) {
-      properties.Set(shill::kP2PGroupInfoPassphraseProperty,
+      properties.Set(shill::kP2PDevicePassphrase,
                      create_group_argument.passphrase.value());
     }
 
     if (create_group_argument.frequency.has_value()) {
-      properties.Set(shill::kP2PGroupInfoFrequencyProperty,
+      properties.Set(shill::kP2PDeviceFrequency,
                      static_cast<int>(create_group_argument.frequency.value()));
     }
 
@@ -285,11 +304,13 @@ class ShillManagerClientImpl : public ShillManagerClient {
     dbus::MessageWriter writer(&method_call);
 
     base::Value::Dict properties;
-    properties.Set(shill::kP2PGroupInfoSSIDProperty,
-                   connect_group_argument.ssid);
-    properties.Set(shill::kP2PGroupInfoPassphraseProperty,
+    properties.Set(shill::kP2PDeviceSSID, connect_group_argument.ssid);
+    properties.Set(shill::kP2PDevicePassphrase,
                    connect_group_argument.passphrase);
-
+    properties.Set(shill::kP2PDevicePriority,
+                   connect_group_argument.priority.has_value()
+                       ? connect_group_argument.priority.value()
+                       : WifiConcurrencyPriority::kPriority2);
     if (connect_group_argument.frequency.has_value()) {
       properties.Set(
           shill::kP2PGroupInfoFrequencyProperty,
