@@ -327,7 +327,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     PriceNotificationsTabHelper::CreateForWebState(web_state);
   }
 
-  if (IsContextualPanelEnabled()) {
+  if (!is_off_the_record && IsContextualPanelEnabled()) {
     ContextualPanelModelService* model_service =
         ContextualPanelModelServiceFactory::GetForBrowserState(
             ChromeBrowserState::FromBrowserState(browser_state));
