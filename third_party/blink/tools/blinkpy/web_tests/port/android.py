@@ -60,6 +60,11 @@ class AndroidPort(linux.LinuxPort):
                 self._filesystem.join(self.web_tests_dir(), 'SlowTests')
             ]))
 
+    def default_child_processes(self):
+        # Test against a single device by default to avoid timeouts
+        return 1
+
+
 # product constants used by the wpt runner.
 ANDROID_WEBVIEW = 'android_webview'
 CHROME_ANDROID = 'chrome_android'
