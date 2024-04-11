@@ -81,6 +81,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest,
   RunTestAtPath("fake_print_preview_page_handler_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest,
+                       PrintPreviewCrosAppControllerTest) {
+  RunTestAtPath("print_preview_cros_app_controller_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, PrintPreviewCrosAppTest) {
   RunTestAtPath("print_preview_cros_app_test.js");
 }

@@ -22,6 +22,7 @@ build_webui("build") {
     "js/destination_dropdown_controller.ts",
     "js/destination_row_controller.ts",
     "js/destination_select_controller.ts",
+    "js/print_preview_cros_app_controller.ts",
     "js/summary_panel_controller.ts",
     "js/fakes/fake_destination_provider.ts",
     "js/fakes/fake_print_preview_page_handler.ts",

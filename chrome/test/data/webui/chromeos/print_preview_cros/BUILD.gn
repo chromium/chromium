@@ -25,6 +25,7 @@ build_webui_tests("build_webui_tests") {
     "event_utils_test.ts",
     "fake_destination_provider_test.ts",
     "fake_print_preview_page_handler_test.ts",
+    "print_preview_cros_app_controller_test.ts",
     "print_preview_cros_app_test.ts",
     "print_ticket_manager_test.ts",
     "summary_panel_controller_test.ts",

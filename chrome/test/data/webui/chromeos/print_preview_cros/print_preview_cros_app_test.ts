@@ -9,17 +9,32 @@ import {assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('PrintPreviewCrosApp', () => {
+  let element: PrintPreviewCrosAppElement;
+
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    element = document.createElement(PrintPreviewCrosAppElement.is) as
+        PrintPreviewCrosAppElement;
+    assertTrue(!!element);
+    document.body.append(element);
+  });
+
+  teardown(() => {
+    element.remove();
   });
 
   // Verify the print-preview-cros-app element can be rendered.
   test('element renders', () => {
-    const element = document.createElement(PrintPreviewCrosAppElement.is) as
-        PrintPreviewCrosAppElement;
-    assertTrue(!!element);
-    document.body.append(element);
     assertTrue(
         isVisible(element), `Should display ${PrintPreviewCrosAppElement.is}`);
+  });
+
+  // Verify print-preview-cros element has a controller configured.
+  test('has element controller', async () => {
+    const controller = element.getControllerForTesting();
+    assertTrue(
+        !!controller,
+        `${PrintPreviewCrosAppElement.is} should have controller configured`);
   });
 });

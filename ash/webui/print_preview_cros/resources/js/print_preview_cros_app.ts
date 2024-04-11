@@ -9,6 +9,7 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './print_preview_cros_app.html.js';
+import {PrintPreviewCrosAppController} from './print_preview_cros_app_controller.js';
 
 /**
  * @fileoverview
@@ -25,9 +26,15 @@ export class PrintPreviewCrosAppElement extends PolymerElement {
     return getTemplate();
   }
 
+  private controller = new PrintPreviewCrosAppController();
+
   override ready(): void {
     super.ready();
     ColorChangeUpdater.forDocument().start();
+  }
+
+  getControllerForTesting(): PrintPreviewCrosAppController {
+    return this.controller;
   }
 }
 
