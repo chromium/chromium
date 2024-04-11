@@ -75,6 +75,7 @@ build_webui("build") {
     "google_apps/google_apps_metrics_proxy.ts",
     "landing_view_proxy.ts",
     "navigation_mixin.ts",
+    "navigation_mixin_lit.ts",
     "ntp_background/ntp_background_metrics_proxy.ts",
     "ntp_background/ntp_background_proxy.ts",
     "router.ts",
@@ -88,13 +89,17 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "landing_view.css",
     "shared/action_link_style.css",
+    "shared/action_link_style_lit.css",
     "shared/animations.css",
+    "shared/animations_lit.css",
     "shared/chooser_shared.css",
     "shared/navi_colors.css",
     "shared/navi_colors_lit.css",
     "shared/onboarding_background.css",
     "shared/splash_pages_shared.css",
+    "shared/splash_pages_shared_lit.css",
     "shared/step_indicator.css",
   ]
 
