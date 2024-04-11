@@ -41,12 +41,19 @@ bool InitializeIpczNodeForProcess(const IpczNodeOptions& options) {
   g_options = options;
   const IpczCreateNodeFlags flags =
       options.is_broker ? IPCZ_CREATE_NODE_AS_BROKER : IPCZ_NO_FLAGS;
+  std::vector<IpczFeature> enabled_features;
+  if (options.enable_memv2) {
+    enabled_features.push_back(IPCZ_FEATURE_MEM_V2);
+  }
   const IpczCreateNodeOptions create_options = {
       .size = sizeof(create_options),
 
       // TODO(https://crbug.com/1380476): Enable parcel data allocation capacity
       // to be expanded.
       .memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY,
+
+      .enabled_features = enabled_features.data(),
+      .num_enabled_features = enabled_features.size(),
   };
   IpczResult result = GetIpczAPI().CreateNode(&ipcz_driver::kDriver, flags,
                                               &create_options, &g_node);

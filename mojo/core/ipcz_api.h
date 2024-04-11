@@ -22,6 +22,7 @@ MOJO_SYSTEM_IMPL_EXPORT IpczHandle GetIpczNode();
 struct IpczNodeOptions {
   bool is_broker;
   bool use_local_shared_memory_allocation;
+  bool enable_memv2;
 };
 MOJO_SYSTEM_IMPL_EXPORT bool InitializeIpczNodeForProcess(
     const IpczNodeOptions& options = {});

@@ -50,6 +50,8 @@ std::atomic<bool> g_mojo_ipcz_enabled{false};
 std::atomic<bool> g_mojo_ipcz_enabled{true};
 #endif
 
+bool g_enable_memv2 = false;
+
 std::optional<std::string> GetMojoIpczEnvVar() {
   std::string value;
   auto env = base::Environment::Create();
@@ -104,6 +106,8 @@ void InitFeatures() {
   } else {
     g_mojo_ipcz_enabled.store(false, std::memory_order_release);
   }
+
+  g_enable_memv2 = base::FeatureList::IsEnabled(kMojoIpczMemV2);
 }
 
 void EnableMojoIpcz() {
@@ -128,6 +132,7 @@ void Init(const Configuration& configuration) {
         .use_local_shared_memory_allocation =
             configuration.is_broker_process ||
             configuration.force_direct_shared_memory_allocation,
+        .enable_memv2 = g_enable_memv2,
     }));
     MojoEmbedderSetSystemThunks(GetMojoIpczImpl());
   } else {

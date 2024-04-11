@@ -39,5 +39,9 @@ BASE_FEATURE(kMojoIpcz, "MojoIpcz", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMojoIpcz, "MojoIpcz", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kMojoIpczMemV2,
+             "MojoIpczMemV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace core
 }  // namespace mojo
