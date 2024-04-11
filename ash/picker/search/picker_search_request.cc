@@ -70,6 +70,12 @@ PickerSearchRequest::PickerSearchRequest(
         query, category,
         base::BindRepeating(&PickerSearchRequest::HandleCrosSearchResults,
                             weak_ptr_factory_.GetWeakPtr()));
+
+    if (!category.has_value() || category == PickerCategory::kDriveFiles) {
+      drive_search_timeout_timer_.Start(
+          FROM_HERE, kDriveSearchTimeout, this,
+          &PickerSearchRequest::OnDriveSearchTimeout);
+    }
   }
 
   if (!category.has_value() || category == PickerCategory::kClipboard) {
@@ -166,6 +172,10 @@ void PickerSearchRequest::HandleCrosSearchResults(
           /*has_more_results=*/!is_category_specific_search_);
       break;
     case AppListSearchResultType::kDriveSearch: {
+      if (!drive_search_timeout_timer_.IsRunning()) {
+        return;
+      }
+
       if (cros_search_start_.has_value()) {
         base::TimeDelta elapsed = base::TimeTicks::Now() - *cros_search_start_;
         base::UmaHistogramTimes("Ash.Picker.Search.DriveProvider.QueryTime",
@@ -178,6 +188,7 @@ void PickerSearchRequest::HandleCrosSearchResults(
 
       HandleSearchSourceResults(PickerSearchSource::kDrive, std::move(results),
                                 /*has_more_results=*/files_to_remove > 0);
+      drive_search_timeout_timer_.Stop();
       break;
     }
     case AppListSearchResultType::kFileSearch: {
@@ -292,6 +303,11 @@ void PickerSearchRequest::HandleClipboardSearchResults(
 
   // Clipboard results are never truncated.
   HandleSearchSourceResults(PickerSearchSource::kClipboard, std::move(results),
+                            /*has_more_results=*/false);
+}
+
+void PickerSearchRequest::OnDriveSearchTimeout() {
+  HandleSearchSourceResults(PickerSearchSource::kDrive, {},
                             /*has_more_results=*/false);
 }
 

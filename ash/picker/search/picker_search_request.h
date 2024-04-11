@@ -53,6 +53,7 @@ class ASH_EXPORT PickerSearchRequest {
 
   static constexpr base::TimeDelta kGifDebouncingDelay =
       base::Milliseconds(200);
+  static constexpr base::TimeDelta kDriveSearchTimeout = base::Seconds(1);
 
  private:
   void StartGifSearch(const std::string& query);
@@ -70,6 +71,8 @@ class ASH_EXPORT PickerSearchRequest {
   void HandleDateSearchResults(std::vector<PickerSearchResult> results);
   void HandleMathSearchResults(std::optional<PickerSearchResult> result);
   void HandleClipboardSearchResults(std::vector<PickerSearchResult> results);
+
+  void OnDriveSearchTimeout();
 
   bool is_category_specific_search_;
   const raw_ref<PickerClient> client_;
@@ -89,6 +92,8 @@ class ASH_EXPORT PickerSearchRequest {
   std::optional<base::TimeTicks> clipboard_search_start_;
 
   PickerSearchDebouncer gif_search_debouncer_;
+
+  base::OneShotTimer drive_search_timeout_timer_;
 
   base::WeakPtrFactory<PickerSearchRequest> weak_ptr_factory_{this};
 };

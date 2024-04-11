@@ -639,6 +639,71 @@ TEST_F(PickerSearchRequestTest, DoesNotTruncateResultsFromDriveOnlySearch) {
        ash::PickerSearchResult::Text(u"4.jpg")});
 }
 
+TEST_F(PickerSearchRequestTest, SendsEmptyDriveResultsOnTimeout) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kDrive, IsEmpty(),
+                   /*has_more_results=*/false))
+      .Times(1);
+
+  PickerSearchRequest request(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+  task_environment().FastForwardBy(PickerSearchRequest::kDriveSearchTimeout);
+}
+
+TEST_F(PickerSearchRequestTest, IgnoresDriveResultsAfterTimeout) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kDrive, IsEmpty(),
+                   /*has_more_results=*/false))
+      .Times(1);
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kDrive, Not(IsEmpty()), _))
+      .Times(0);
+
+  PickerSearchRequest request(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+  task_environment().FastForwardBy(PickerSearchRequest::kDriveSearchTimeout);
+  client().cros_search_callback().Run(
+      ash::AppListSearchResultType::kDriveSearch,
+      {ash::PickerSearchResult::Text(u"1.jpg")});
+}
+
+TEST_F(PickerSearchRequestTest, CancelsTimeoutTimerOnReceivingDriveResults) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kDrive,
+                   ElementsAre(Property(
+                       "data", &PickerSearchResult::data,
+                       VariantWith<PickerSearchResult::TextData>(Field(
+                           "text", &PickerSearchResult::TextData::primary_text,
+                           u"1.jpg")))),
+                   /*has_more_results=*/false))
+      .Times(1);
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kDrive, IsEmpty(), _))
+      .Times(0);
+
+  PickerSearchRequest request(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+  client().cros_search_callback().Run(
+      ash::AppListSearchResultType::kDriveSearch,
+      {ash::PickerSearchResult::Text(u"1.jpg")});
+  task_environment().FastForwardBy(PickerSearchRequest::kDriveSearchTimeout);
+}
+
 TEST_F(PickerSearchRequestTest, RecordsDriveMetrics) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
