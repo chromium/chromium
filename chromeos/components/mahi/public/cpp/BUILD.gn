@@ -23,6 +23,9 @@ component("cpp") {
     "//chromeos/constants",
     "//chromeos/crosapi/mojom",
     "//chromeos/strings:strings_grit",
+    "//components/account_id",
+    "//components/user_manager",
+    "//google_apis",
     "//ui/base",
     "//ui/color",
     "//ui/gfx",
@@ -30,5 +33,8 @@ component("cpp") {
   ]
   if (is_chromeos_ash) {
     deps += [ "//ash/constants" ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
   }
 }

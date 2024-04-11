@@ -52,6 +52,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
@@ -939,8 +940,7 @@ void InjectBrowserInitParams(
 
   params->is_cros_mall_enabled = chromeos::features::IsCrosMallEnabled();
 
-  params->is_mahi_enabled = chromeos::features::IsMahiEnabled() &&
-                            ash::switches::IsMahiSecretKeyMatched();
+  params->is_mahi_enabled = chromeos::features::IsMahiEnabled();
 
   params->is_container_app_preinstall_enabled =
       chromeos::features::IsContainerAppPreinstallEnabled();
@@ -980,6 +980,9 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
   params->is_current_user_ephemeral = IsCurrentUserEphemeral();
   params->enable_lacros_tts_support =
       tts_crosapi_util::ShouldEnableLacrosTtsSupport();
+
+  params->is_mahi_supported_with_correct_feature_key =
+      chromeos::MahiManager::IsSupportedWithCorrectFeatureKey();
 }
 
 mojom::BrowserInitParamsPtr GetBrowserInitParams(

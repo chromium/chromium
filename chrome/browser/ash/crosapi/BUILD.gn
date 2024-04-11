@@ -374,6 +374,7 @@ source_set("crosapi") {
     "//chromeos/components/firewall_hole",
     "//chromeos/components/in_session_auth",
     "//chromeos/components/kiosk",
+    "//chromeos/components/mahi/public/cpp",
     "//chromeos/components/mgs",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/remote_apps/mojom",

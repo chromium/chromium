@@ -1164,8 +1164,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 85
-// Next id: 85
+// Next version: 86
+// Next id: 86
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1651,6 +1651,11 @@ struct BrowserInitParams {
   // If true, Orca will use l10n strings, otherwise, en-us strings are used.
   [MinVersion=84]
   bool is_orca_use_l10n_strings_enabled@84;
+
+  // Set to true if the Mahi feature is supported and the feature key check has
+  // been satisfied.
+  [MinVersion=85]
+  bool is_mahi_supported_with_correct_feature_key@85;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams
@@ -1660,8 +1665,8 @@ struct BrowserInitParams {
 // BrowserInitParams which is already available is by ash-chrome at
 // that time. The rest is passed after login via this structure.
 //
-// Next version: 2
-// Next id: 20
+// Next version: 3
+// Next id: 21
 [Stable]
 struct BrowserPostLoginParams {
   // Type of the ash-chrome session at the browser startup time.
@@ -1747,6 +1752,11 @@ struct BrowserPostLoginParams {
   // Tells lacros whether the currently logged in user is ephemeral.
   [MinVersion=1]
   bool is_current_user_ephemeral@19;
+
+  // Set to true if the Mahi feature is supported and the feature key check has
+  // been satisfied.
+  [MinVersion=2]
+  bool is_mahi_supported_with_correct_feature_key@20;
 };
 
 // Parameters to specify OpenUrl behavior.
