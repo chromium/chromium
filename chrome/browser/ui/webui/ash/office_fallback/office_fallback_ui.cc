@@ -41,7 +41,6 @@ OfficeFallbackUI::OfficeFallbackUI(content::WebUI* web_ui)
        IDS_OFFICE_FALLBACK_OPEN_IN_BASIC_EDITOR},
   };
   source->AddLocalizedStrings(kStrings);
-  source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kOfficeFallbackResources, kOfficeFallbackResourcesSize),
