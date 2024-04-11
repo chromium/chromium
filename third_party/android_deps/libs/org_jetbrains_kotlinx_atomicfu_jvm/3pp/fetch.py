@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='atomicfu-jvm',
                          file_ext='jar',
                          patch_version='cr1',
-                         version_override='0.23.2',
+                         version_override=None,
                          version_filter=None)
 
 
