@@ -97,6 +97,12 @@ const base::FeatureParam<int>
     kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds{
         &features::kNewTabPageTriggerForPrerender2,
         "preconnect_start_delay_on_mouse_hover_ms", 100};
+const base::FeatureParam<bool> kPrerenderNewTabPageOnMousePressedTrigger{
+    &features::kNewTabPageTriggerForPrerender2,
+    "prerender_new_tab_page_on_mouse_pressed_trigger", false};
+const base::FeatureParam<bool> kPrerenderNewTabPageOnMouseHoverTrigger{
+    &features::kNewTabPageTriggerForPrerender2,
+    "prerender_new_tab_page_on_mouse_hover_trigger", false};
 
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kNoPreReadMainDll);

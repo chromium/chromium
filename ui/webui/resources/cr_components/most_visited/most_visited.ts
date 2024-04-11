@@ -250,7 +250,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private mediaEventTracker_: EventTracker;
   private eventTracker_: EventTracker;
   private boundOnDocumentKeyDown_: (e: KeyboardEvent) => void;
-  private preloadingTimer_: undefined|ReturnType<typeof setTimeout>;
+  private prerenderTimer_: undefined|ReturnType<typeof setTimeout>;
   private preconnectTimer_: undefined|ReturnType<typeof setTimeout>;
 
   private get tileElements_() {
@@ -850,14 +850,18 @@ export class MostVisitedElement extends MostVisitedElementBase {
       return;
     }
 
-    if (loadTimeData.getBoolean('prerenderEnabled') &&
+    if (loadTimeData.getBoolean('prerenderOnHoverEnabled') &&
         loadTimeData.getInteger('prerenderStartTimeThreshold') >= 0) {
-      this.preloadingTimer_ = setTimeout(() => {
+      this.prerenderTimer_ = setTimeout(() => {
         this.pageHandler_.prerenderMostVisitedTile(e.model.item, true);
       }, loadTimeData.getInteger('prerenderStartTimeThreshold'));
     }
 
-    if (loadTimeData.getBoolean('prerenderEnabled') &&
+    // Preconnect is intended to be run on mouse hover when prerender is
+    // enabled, so it is allowed regardless of prerenderOnHoverEnabled or
+    // prerenderOnPressEnabled.
+    if ((loadTimeData.getBoolean('prerenderOnHoverEnabled') ||
+         loadTimeData.getBoolean('prerenderOnPressEnabled')) &&
         loadTimeData.getInteger('preconnectStartTimeThreshold') >= 0) {
       this.preconnectTimer_ = setTimeout(() => {
         this.pageHandler_.preconnectMostVisitedTile(e.model.item);
@@ -871,7 +875,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       return;
     }
 
-    if (loadTimeData.getBoolean('prerenderEnabled')) {
+    if (loadTimeData.getBoolean('prerenderOnPressEnabled')) {
       this.pageHandler_.prerenderMostVisitedTile(e.model.item, false);
     }
   }
@@ -882,11 +886,18 @@ export class MostVisitedElement extends MostVisitedElementBase {
       return;
     }
 
-    if (this.preloadingTimer_) {
-      clearTimeout(this.preloadingTimer_);
+    if (this.prerenderTimer_) {
+      clearTimeout(this.prerenderTimer_);
     }
 
-    this.pageHandler_.cancelPrerender();
+    if (this.preconnectTimer_) {
+      clearTimeout(this.preconnectTimer_);
+    }
+
+    if (loadTimeData.getBoolean('prerenderOnHoverEnabled') ||
+        loadTimeData.getBoolean('prerenderOnPressEnabled')) {
+      this.pageHandler_.cancelPrerender();
+    }
   }
 
   private onUndoClick_() {

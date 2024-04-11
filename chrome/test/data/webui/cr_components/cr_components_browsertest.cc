@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/browser_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
@@ -172,11 +173,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, Theming) {
   RunTest("cr_components/most_visited_test.js", "runMochaSuite('Theming');");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, Prerendering) {
-  RunTest("cr_components/most_visited_test.js",
-          "runMochaSuite('Prerendering');");
-}
-
 typedef WebUIMochaBrowserTest CrComponentsThemeColorPickerTest;
 IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeColor) {
   set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
@@ -200,4 +196,25 @@ IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeHueSliderDialog) {
   set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
   RunTest("cr_components/theme_color_picker/theme_hue_slider_dialog_test.js",
           "mocha.run()");
+}
+
+class CrComponentsPrerenderTest : public CrComponentsMostVisitedTest {
+ protected:
+  CrComponentsPrerenderTest() {
+    const std::map<std::string, std::string> params = {
+        {"prerender_start_delay_on_mouse_hover_ms", "0"},
+        {"preconnect_start_delay_on_mouse_hover_ms", "0"},
+        {"prerender_new_tab_page_on_mouse_pressed_trigger", "true"},
+        {"prerender_new_tab_page_on_mouse_hover_trigger", "true"}};
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kNewTabPageTriggerForPrerender2, params);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CrComponentsPrerenderTest, Prerendering) {
+  RunTest("cr_components/most_visited_test.js",
+          "runMochaSuite('Prerendering');");
 }
