@@ -798,6 +798,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.SurfaceAggregator.ExcessPixelsClipped"
+    units="pixels" expires_after="2024-09-15">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Record the number of excess pixels for the output rect that would not be
+    visible due to the parent root clip. This is logged once per frame.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.SurfaceAggregator.Has{Type}PerFrame"
     enum="Boolean" expires_after="2024-09-01">
   <owner>magchen@chromium.org</owner>
@@ -835,6 +845,16 @@ chromium-metrics-reviews@google.com.
 
     Warning: This metric does not include reports from clients with
     low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.SurfaceAggregator.RenderPassDamageType"
+    enum="RenderPassDamage" expires_after="2024-09-01">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Record the damage type for an aggregate render pass based on clipping by the
+    root. This is logged once per frame.
   </summary>
 </histogram>
 

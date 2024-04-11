@@ -49,6 +49,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/overlay_transform_utils.h"
 
 namespace viz {
@@ -143,6 +144,19 @@ struct MaskFilterInfoExt {
 };
 
 namespace {
+
+// Enum used for UMA histogram. These enum values must not be changed or
+// reused.
+enum class RenderPassDamage {
+  // Clipping at the root does not make the damage smaller than the output rect.
+  kOutputRect = 0,
+  // Clipping at the root will clip the render pass and make it smaller than
+  // output rect.
+  kRootClipped = 1,
+  //  Full output rect damage was forced for this render pass.
+  kForceFullOutputRect = 2,
+  kMaxValue = kForceFullOutputRect,
+};
 
 // Used for determine when to treat opacity close to 1.f as opaque. The value is
 // chosen to be smaller than 1/255.
@@ -322,7 +336,7 @@ void UpdateNeedsRedraw(
       resolved_pass.current_persistent_data().parent_clip_rect;
   current_parent_clip_rect.Union(dest_root_target_clip_rect.value());
 
-  // Get the parent_clip_rect from the preious frame;
+  // Get the parent_clip_rect from the previous frame;
   auto& previous_parent_clip_rect =
       resolved_pass.previous_persistent_data().parent_clip_rect;
 
@@ -1710,6 +1724,33 @@ void SurfaceAggregator::SetRenderPassDamageRect(
           cc::MathUtil::ProjectEnclosingClippedRect(inverse_transform,
                                                     root_damage_rect_);
       copy_pass->damage_rect.Intersect(damage_rect_in_render_pass_space);
+
+      if (metrics_subsampler_.ShouldSample(0.001)) {
+        gfx::Rect root_clip_in_render_pass_space =
+            cc::MathUtil::ProjectEnclosingClippedRect(
+                inverse_transform,
+                resolved_pass.previous_persistent_data().parent_clip_rect);
+
+        // The 'root_clip_in_render_pass_space' will now be a subrect of the
+        // 'output rect'.
+        root_clip_in_render_pass_space.Intersect(copy_pass->output_rect);
+
+        bool is_output_rect =
+            root_clip_in_render_pass_space == copy_pass->output_rect;
+
+        UMA_HISTOGRAM_ENUMERATION(
+            " Compositing.SurfaceAggregator.RenderPassDamageType",
+            is_output_rect ? RenderPassDamage::kOutputRect
+                           : RenderPassDamage::kRootClipped);
+
+        const auto render_pass_overdamage =
+            copy_pass->output_rect.size().Area64() -
+            root_clip_in_render_pass_space.size().Area64();
+
+        UMA_HISTOGRAM_COUNTS_10M(
+            "Compositing.SurfaceAggregator.ExcessPixelsClipped",
+            render_pass_overdamage);
+      }
     }
 
     // For unembeded render passes, their damages were not added to the
@@ -1720,6 +1761,10 @@ void SurfaceAggregator::SetRenderPassDamageRect(
     if (resolved_pass.IsUnembedded() && can_skip_render_pass) {
       copy_pass->damage_rect.Union(resolved_pass.aggregation().added_damage);
     }
+  } else if (metrics_subsampler_.ShouldSample(0.001)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        " Compositing.SurfaceAggregator.RenderPassDamageType",
+        RenderPassDamage::kForceFullOutputRect);
   }
 }
 

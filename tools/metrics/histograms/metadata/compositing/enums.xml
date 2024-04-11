@@ -120,6 +120,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="No, mask candidate rejected by DRM"/>
 </enum>
 
+<enum name="RenderPassDamage">
+  <int value="0" label="Output rect">
+    Clipping at the root does not make the damage smaller than the output rect.
+  </int>
+  <int value="1" label="Clipped by root">
+    Clipping at the root will clip the render pass and make it smaller than
+    output rect.
+  </int>
+  <int value="2" label="Force full output rect">
+    Full output rect damage was forced for this render pass.
+  </int>
+</enum>
+
 <enum name="ToggleFrameRateCase">
   <int value="0" label="No video"/>
   <int value="1" label="Frame rate toggling supported by the platfrom"/>
