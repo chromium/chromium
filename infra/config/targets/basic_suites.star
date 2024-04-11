@@ -4349,9 +4349,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "minidump_uploader_tests",
     tests = {
-        "minidump_uploader_test": targets.legacy_test_config(
-            experiment_percentage = 100,
-        ),
+        "minidump_uploader_test": targets.legacy_test_config(),
     },
 )
 

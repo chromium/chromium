@@ -4657,9 +4657,7 @@
     },
 
     'minidump_uploader_tests': {
-      'minidump_uploader_test': {
-        'experiment_percentage': 100,
-      },
+      'minidump_uploader_test': {},
     },
 
     'model_validation_tests_suite': {
