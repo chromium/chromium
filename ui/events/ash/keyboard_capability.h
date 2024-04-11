@@ -198,10 +198,7 @@ class KeyboardCapability : public InputDeviceEventObserver {
     // Handling for all keyboards that support supplying a custom layout
     // via sysfs attribute (aka Vivaldi). See crbug.com/1076241
     kKbdTopRowLayoutCustom = 5,
-
-    // TODO(dpad@, b/329475925)
-    kKbdTopRowLayoutSplitModifiers = 6,
-    kKbdTopRowLayoutMax = kKbdTopRowLayoutSplitModifiers
+    kKbdTopRowLayoutMax = kKbdTopRowLayoutCustom
   };
 
   struct KeyboardInfo {
@@ -360,9 +357,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // `DeviceType` to determine if it's a ChromeOS keyboard.
   bool IsChromeOSKeyboard(int device_id) const;
 
-  // Returns whether or not the given keyboard is a split modifier keyboard.
-  bool IsSplitModifierKeyboard(const KeyboardDevice& keyboard) const;
-
   // Gets the corresponding function key for the given `action_key` on the
   // given `keyboard`.
   std::optional<KeyboardCode> GetCorrespondingFunctionKey(
@@ -377,6 +371,8 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   const std::vector<TopRowActionKey>* GetTopRowActionKeys(
       const KeyboardDevice& keyboard);
+
+  void SetBoardNameForTesting(const std::string& board_name);
 
   const base::flat_map<int, KeyboardInfo>& keyboard_info_map() const {
     return keyboard_info_map_;
@@ -396,6 +392,9 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Whether or not to disable "trimming" which means the `keyboard_info_map_`
   // will not remove entries when they are disconnected.
   bool should_disable_trimming_ = false;
+
+  // Board name of the current ChromeOS device.
+  std::string board_name_;
 };
 
 }  // namespace ui

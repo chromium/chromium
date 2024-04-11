@@ -29,6 +29,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "device/udev_linux/scoped_udev.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/event_rewriter_ash.h"
@@ -73,6 +74,9 @@ const int kCustomNullScanCode = 0xC0000;
 // Hotrod controller vendor/product ids.
 const int kHotrodRemoteVendorId = 0x0471;
 const int kHotrodRemoteProductId = 0x21cc;
+
+constexpr auto kRightAltBlocklist =
+    base::MakeFixedFlatSet<std::string_view>({"eve", "nocturne", "atlas"});
 
 constexpr char kLayoutProperty[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kCustomTopRowLayoutAttribute[] = "function_row_physmap";
@@ -467,8 +471,6 @@ std::vector<TopRowActionKey> IdentifyTopRowActionKeys(
           std::begin(kLayoutWilcoDrallionTopRowActionKeys),
           std::end(kLayoutWilcoDrallionTopRowActionKeys));
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
-    case KeyboardCapability::KeyboardTopRowLayout::
-        kKbdTopRowLayoutSplitModifiers:
       return IdentifyCustomTopRowActionKeys(scan_code_to_evdev_key_converter,
                                             keyboard, top_row_scan_codes);
   }
@@ -491,9 +493,10 @@ bool HasExternalKeyboardConnected() {
 
 }  // namespace
 
-KeyboardCapability::KeyboardCapability() {
-  scan_code_to_evdev_key_converter_ =
-      base::BindRepeating(&ConvertScanCodeToEvdevKey);
+KeyboardCapability::KeyboardCapability()
+    : scan_code_to_evdev_key_converter_(
+          base::BindRepeating(&ConvertScanCodeToEvdevKey)),
+      board_name_(base::SysInfo::HardwareModelName()) {
   DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
@@ -589,7 +592,6 @@ std::optional<KeyboardCode> KeyboardCapability::GetMappedFKeyIfExists(
       }
       break;
     case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
-    case KeyboardTopRowLayout::kKbdTopRowLayoutSplitModifiers:
       // TODO(zhangwenyu): Handle custom vivaldi layout.
       return std::nullopt;
   }
@@ -650,7 +652,6 @@ bool KeyboardCapability::HasLauncherButton(
     case KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
     case KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
     case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
-    case KeyboardTopRowLayout::kKbdTopRowLayoutSplitModifiers:
       return true;
   }
 }
@@ -795,12 +796,6 @@ const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
       scan_code_to_evdev_key_converter_, keyboard, keyboard_info.device_type,
       keyboard_info.top_row_layout, keyboard_info.top_row_scan_codes);
 
-  if (ash::features::IsSplitKeyboardRefactorEnabled() &&
-      IsInternalKeyboard(keyboard)) {
-    keyboard_info.top_row_layout =
-        KeyboardTopRowLayout::kKbdTopRowLayoutSplitModifiers;
-  }
-
   // If we are unable to identify the device, erase the entry from the map.
   if (keyboard_info.device_type == DeviceType::kDeviceUnknown) {
     keyboard_info_map_.erase(keyboard.id);
@@ -938,8 +933,15 @@ const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(
 bool KeyboardCapability::HasAssistantKey(const KeyboardDevice& keyboard) const {
   // Some external keyboards falsely claim to have assistant keys. However, this
   // can be trusted for internal + ChromeOS external keyboards.
-  return keyboard.has_assistant_key && IsChromeOSKeyboard(keyboard.id) &&
-         !IsSplitModifierKeyboard(keyboard);
+  if (ash::features::IsSplitKeyboardRefactorEnabled()) {
+    return false;
+  }
+
+  if (HasRightAltKey(keyboard)) {
+    return false;
+  }
+
+  return keyboard.has_assistant_key && IsChromeOSKeyboard(keyboard.id);
 }
 
 bool KeyboardCapability::HasAssistantKeyOnAnyKeyboard() const {
@@ -959,7 +961,13 @@ bool KeyboardCapability::HasCapsLockKey(const KeyboardDevice& keyboard) const {
 }
 
 bool KeyboardCapability::HasFunctionKey(const KeyboardDevice& keyboard) const {
-  return IsSplitModifierKeyboard(keyboard);
+  if (ash::features::IsSplitKeyboardRefactorEnabled()) {
+    return true;
+  }
+
+  return ash::features::IsModifierSplitEnabled() &&
+         keyboard.type == InputDeviceType::INPUT_DEVICE_INTERNAL &&
+         keyboard.has_function_key;
 }
 
 bool KeyboardCapability::HasFunctionKey(int device_id) const {
@@ -972,18 +980,17 @@ bool KeyboardCapability::HasFunctionKey(int device_id) const {
 }
 
 bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
-  return IsSplitModifierKeyboard(keyboard);
-}
+  if (ash::features::IsSplitKeyboardRefactorEnabled()) {
+    return true;
+  }
 
-bool KeyboardCapability::IsSplitModifierKeyboard(
-    const KeyboardDevice& keyboard) const {
-  const auto* keyboard_info = GetKeyboardInfo(keyboard);
-  if (!keyboard_info) {
+  if (kRightAltBlocklist.contains(board_name_)) {
     return false;
   }
 
-  return keyboard_info->top_row_layout ==
-         KeyboardTopRowLayout::kKbdTopRowLayoutSplitModifiers;
+  return ash::features::IsModifierSplitEnabled() &&
+         keyboard.type == InputDeviceType::INPUT_DEVICE_INTERNAL &&
+         keyboard.has_assistant_key;
 }
 
 void KeyboardCapability::OnDeviceListsComplete() {
@@ -1097,6 +1104,10 @@ bool KeyboardCapability::IsChromeOSKeyboard(int device_id) const {
   const auto device_type = GetDeviceType(device_id);
   return device_type == DeviceType::kDeviceInternalKeyboard ||
          device_type == DeviceType::kDeviceExternalChromeOsKeyboard;
+}
+
+void KeyboardCapability::SetBoardNameForTesting(const std::string& board_name) {
+  board_name_ = board_name;
 }
 
 }  // namespace ui

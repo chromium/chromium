@@ -5,9 +5,12 @@
 #include "ui/events/ash/keyboard_capability.h"
 
 #include <linux/input-event-codes.h>
+
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -15,8 +18,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -81,31 +86,6 @@ InputDeviceType EXTERNAL_BLUETOOTH = InputDeviceType::INPUT_DEVICE_BLUETOOTH;
 // For INPUT_DEVICE_UNKNOWN type, we treat it as external keyboard.
 InputDeviceType EXTERNAL_UNKNOWN = InputDeviceType::INPUT_DEVICE_UNKNOWN;
 
-const DeviceCapabilities kSplitModifiersKeyboard = {
-    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
-    /* name */ "AT Translated Set 2 keyboard",
-    /* phys */ "isa0060/serio0/input0",
-    /* uniq */ "",
-    /* bustype */ "0011",
-    /* vendor */ "0001",
-    /* product */ "0001",
-    /* version */ "ab83",
-    /* prop */ "0",
-    /* ev */ "120013",
-    /* key */
-    "88 0 0 0 0 0 402000000 3003078f800d001 feffffdfffefffff fffffffffffffffe",
-    /* rel */ "0",
-    /* abs */ "0",
-    /* msc */ "10",
-    /* sw */ "0",
-    /* led */ "7",
-    /* ff */ "0",
-    /* abs_axis */ nullptr,
-    /* abs_axis_count */ 0,
-    /* kbd_function_row_physmap */ "",
-    /* kbd_top_row_layout */ "6",
-};
-
 struct KeyEventTestData {
   // All currently connected keyboards' connection type, e.g.
   // INPUT_DEVICE_INTERNAL.
@@ -127,11 +107,11 @@ KeyboardDevice KeyboardDeviceFromCapabilities(
   EventDeviceInfo device_info = {};
   CapabilitiesToDeviceInfo(capabilities, &device_info);
   return KeyboardDevice{
-      KeyboardDevice(device_id, device_info.device_type(), device_info.name(),
-                     device_info.phys(), base::FilePath(capabilities.path),
-                     device_info.vendor_id(), device_info.product_id(),
-                     device_info.version()),
-      device_info.HasKeyEvent(KEY_ASSISTANT)};
+      InputDevice(device_id, device_info.device_type(), device_info.name(),
+                  device_info.phys(), base::FilePath(capabilities.path),
+                  device_info.vendor_id(), device_info.product_id(),
+                  device_info.version()),
+      device_info.HasKeyEvent(KEY_ASSISTANT), device_info.HasKeyEvent(KEY_FN)};
 }
 
 std::optional<uint32_t> GetEvdevKeyCodeForScanCode(const base::ScopedFD& fd,
@@ -224,10 +204,10 @@ class FakeDeviceManager {
 
 }  // namespace
 
-class KeyboardCapabilityTest : public testing::Test {
+class KeyboardCapabilityTestBase : public testing::Test {
  public:
-  KeyboardCapabilityTest() = default;
-  ~KeyboardCapabilityTest() override = default;
+  KeyboardCapabilityTestBase() = default;
+  ~KeyboardCapabilityTestBase() override = default;
 
   void SetUp() override {
     keyboard_capability_ = std::make_unique<KeyboardCapability>(
@@ -264,9 +244,33 @@ class KeyboardCapabilityTest : public testing::Test {
   std::unique_ptr<KeyboardCapability> keyboard_capability_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
   std::vector<KeyboardDevice> fake_keyboard_devices_;
+  base::AutoReset<bool> modifier_split_reset_ =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
 };
 
-TEST_F(KeyboardCapabilityTest, TestIsSixPackKey) {
+class KeyboardCapabilityTest : public KeyboardCapabilityTestBase,
+                               public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    modifier_split_feature_list_ =
+        std::make_unique<base::test::ScopedFeatureList>();
+    if (GetParam()) {
+      modifier_split_feature_list_->InitAndEnableFeature(
+          ash::features::kModifierSplit);
+    } else {
+      modifier_split_feature_list_->InitAndDisableFeature(
+          ash::features::kModifierSplit);
+    }
+    KeyboardCapabilityTestBase::SetUp();
+  }
+
+ protected:
+  std::unique_ptr<base::test::ScopedFeatureList> modifier_split_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, KeyboardCapabilityTest, testing::Bool());
+
+TEST_P(KeyboardCapabilityTest, TestIsSixPackKey) {
   for (const auto& [key_code, _] : kSixPackKeyToSearchSystemKeyMap) {
     EXPECT_TRUE(keyboard_capability_->IsSixPackKey(key_code));
   }
@@ -279,7 +283,7 @@ TEST_F(KeyboardCapabilityTest, TestIsSixPackKey) {
   EXPECT_FALSE(keyboard_capability_->IsSixPackKey(KeyboardCode::VKEY_A));
 }
 
-TEST_F(KeyboardCapabilityTest, TestGetMappedFKeyIfExists) {
+TEST_P(KeyboardCapabilityTest, TestGetMappedFKeyIfExists) {
   KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/"fake_Keyboard");
@@ -343,7 +347,7 @@ TEST_F(KeyboardCapabilityTest, TestGetMappedFKeyIfExists) {
                    .has_value());
 }
 
-TEST_F(KeyboardCapabilityTest, TestHasLauncherButton) {
+TEST_P(KeyboardCapabilityTest, TestHasLauncherButton) {
   // Add a non-layout2 keyboard.
   KeyboardDevice fake_keyboard1(
       /*id=*/kDeviceId1, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
@@ -379,7 +383,7 @@ TEST_F(KeyboardCapabilityTest, TestHasLauncherButton) {
   EXPECT_TRUE(keyboard_capability_->HasLauncherButtonOnAnyKeyboard());
 }
 
-TEST_F(KeyboardCapabilityTest, TestHasSixPackKey) {
+TEST_P(KeyboardCapabilityTest, TestHasSixPackKey) {
   // Add an internal keyboard.
   KeyboardDevice fake_keyboard1(
       /*id=*/1, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
@@ -403,7 +407,7 @@ TEST_F(KeyboardCapabilityTest, TestHasSixPackKey) {
   EXPECT_TRUE(keyboard_capability_->HasSixPackOnAnyKeyboard());
 }
 
-TEST_F(KeyboardCapabilityTest, TestRemoveDevicesFromList) {
+TEST_P(KeyboardCapabilityTest, TestRemoveDevicesFromList) {
   const KeyboardDevice input_device1 = AddFakeKeyboardInfoToKeyboardCapability(
       kDeviceId1, kEveKeyboard,
       KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
@@ -424,7 +428,7 @@ TEST_F(KeyboardCapabilityTest, TestRemoveDevicesFromList) {
   ASSERT_EQ(0u, keyboard_capability_->keyboard_info_map().size());
 }
 
-TEST_F(KeyboardCapabilityTest, TestIdentifyRevenKeyboard) {
+TEST_P(KeyboardCapabilityTest, TestIdentifyRevenKeyboard) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kRevenBranding);
 
@@ -439,7 +443,7 @@ TEST_F(KeyboardCapabilityTest, TestIdentifyRevenKeyboard) {
             keyboard_capability_->GetDeviceType(internal_keyboard));
 }
 
-TEST_F(KeyboardCapabilityTest, TestIsTopRowKey) {
+TEST_P(KeyboardCapabilityTest, TestIsTopRowKey) {
   for (const auto& [key_code, _] : kLayout1TopRowKeyToFKeyMap) {
     EXPECT_TRUE(keyboard_capability_->IsTopRowKey(key_code));
   }
@@ -454,7 +458,7 @@ TEST_F(KeyboardCapabilityTest, TestIsTopRowKey) {
   EXPECT_FALSE(keyboard_capability_->IsTopRowKey(KeyboardCode::VKEY_A));
 }
 
-TEST_F(KeyboardCapabilityTest, TestHasGlobeKey) {
+TEST_P(KeyboardCapabilityTest, TestHasGlobeKey) {
   KeyboardDevice bluetooth_keyboard(
       /*id=*/1, /*type=*/InputDeviceType::INPUT_DEVICE_BLUETOOTH,
       /*name=*/"Keyboard1");
@@ -515,7 +519,7 @@ TEST_F(KeyboardCapabilityTest, TestHasGlobeKey) {
   EXPECT_TRUE(keyboard_capability_->HasGlobeKey(bluetooth_keyboard_drallion));
 }
 
-TEST_F(KeyboardCapabilityTest, TestHasCalculatorKey) {
+TEST_P(KeyboardCapabilityTest, TestHasCalculatorKey) {
   KeyboardDevice internal_keyboard(
       /*id=*/1, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/"Keyboard1");
@@ -533,7 +537,7 @@ TEST_F(KeyboardCapabilityTest, TestHasCalculatorKey) {
   EXPECT_TRUE(keyboard_capability_->HasCalculatorKey(external_keyboard));
 }
 
-TEST_F(KeyboardCapabilityTest, TestHasBrowserSearchKey) {
+TEST_P(KeyboardCapabilityTest, TestHasBrowserSearchKey) {
   KeyboardDevice internal_keyboard(
       /*id=*/1, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/"Keyboard1");
@@ -551,7 +555,7 @@ TEST_F(KeyboardCapabilityTest, TestHasBrowserSearchKey) {
   EXPECT_TRUE(keyboard_capability_->HasBrowserSearchKey(external_keyboard));
 }
 
-TEST_F(KeyboardCapabilityTest, TestHasMediaKeys) {
+TEST_P(KeyboardCapabilityTest, TestHasMediaKeys) {
   KeyboardDevice internal_keyboard(
       /*id=*/1, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/"Keyboard1");
@@ -569,7 +573,7 @@ TEST_F(KeyboardCapabilityTest, TestHasMediaKeys) {
   EXPECT_TRUE(keyboard_capability_->HasMediaKeys(external_keyboard));
 }
 
-TEST_F(KeyboardCapabilityTest, TestHasHelpKey) {
+TEST_P(KeyboardCapabilityTest, TestHasHelpKey) {
   KeyboardDevice internal_keyboard(
       /*id=*/1, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/"Keyboard1");
@@ -587,7 +591,7 @@ TEST_F(KeyboardCapabilityTest, TestHasHelpKey) {
   EXPECT_TRUE(keyboard_capability_->HasHelpKey(external_keyboard));
 }
 
-TEST_F(KeyboardCapabilityTest, TestHasSettingsKey) {
+TEST_P(KeyboardCapabilityTest, TestHasSettingsKey) {
   KeyboardDevice internal_keyboard(
       /*id=*/1, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/"Keyboard1");
@@ -605,7 +609,7 @@ TEST_F(KeyboardCapabilityTest, TestHasSettingsKey) {
   EXPECT_TRUE(keyboard_capability_->HasSettingsKey(external_keyboard));
 }
 
-class ModifierKeyTest : public KeyboardCapabilityTest,
+class ModifierKeyTest : public KeyboardCapabilityTestBase,
                         public testing::WithParamInterface<
                             std::tuple<DeviceCapabilities,
                                        KeyboardCapability::DeviceType,
@@ -623,26 +627,12 @@ INSTANTIATE_TEST_SUITE_P(
                                  KeyboardCapability::DeviceType,
                                  KeyboardCapability::KeyboardTopRowLayout,
                                  std::vector<mojom::ModifierKey>>>{
-        {kEveKeyboard,
-         KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
-         KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2,
-         {mojom::ModifierKey::kBackspace, mojom::ModifierKey::kControl,
-          mojom::ModifierKey::kMeta, mojom::ModifierKey::kEscape,
-          mojom::ModifierKey::kAlt, mojom::ModifierKey::kAssistant}},
         {kDrobitKeyboard,
          KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
          KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom,
          {mojom::ModifierKey::kBackspace, mojom::ModifierKey::kControl,
           mojom::ModifierKey::kMeta, mojom::ModifierKey::kEscape,
           mojom::ModifierKey::kAlt}},
-        {kSplitModifiersKeyboard,
-         KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
-         KeyboardCapability::KeyboardTopRowLayout::
-             kKbdTopRowLayoutSplitModifiers,
-         {mojom::ModifierKey::kBackspace, mojom::ModifierKey::kControl,
-          mojom::ModifierKey::kMeta, mojom::ModifierKey::kEscape,
-          mojom::ModifierKey::kAlt, mojom::ModifierKey::kFunction,
-          mojom::ModifierKey::kRightAlt}},
         {kLogitechKeyboardK120,
          KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard,
          KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1,
@@ -676,83 +666,153 @@ TEST_P(ModifierKeyTest, TestGetModifierKeys) {
   EXPECT_EQ(expected_modifier_keys, modifier_keys);
 }
 
-class KeyEventTest : public KeyboardCapabilityTest,
-                     public testing::WithParamInterface<KeyEventTestData> {};
+TEST_P(KeyboardCapabilityTest, TestGetModifierKeysForSplitModifierKeyboard) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(ash::features::kModifierSplit);
+
+  const KeyboardDevice test_keyboard = AddFakeKeyboardInfoToKeyboardCapability(
+      kDeviceId1, kSplitModifierKeyboard,
+      KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
+      KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom);
+  auto modifier_keys = keyboard_capability_->GetModifierKeys(test_keyboard);
+
+  std::vector<mojom::ModifierKey> expected_modifier_keys = {
+      mojom::ModifierKey::kBackspace, mojom::ModifierKey::kControl,
+      mojom::ModifierKey::kMeta,      mojom::ModifierKey::kEscape,
+      mojom::ModifierKey::kAlt,       mojom::ModifierKey::kFunction,
+      mojom::ModifierKey::kRightAlt};
+  base::ranges::sort(expected_modifier_keys);
+  base::ranges::sort(modifier_keys);
+  EXPECT_EQ(expected_modifier_keys, modifier_keys);
+}
+
+TEST_P(KeyboardCapabilityTest, TestGetModifierKeysForEveKeyboard) {
+  keyboard_capability_->SetBoardNameForTesting("eve");
+
+  const KeyboardDevice test_keyboard = AddFakeKeyboardInfoToKeyboardCapability(
+      kDeviceId1, kEveKeyboard,
+      KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
+      KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2);
+  auto modifier_keys = keyboard_capability_->GetModifierKeys(test_keyboard);
+
+  std::vector<mojom::ModifierKey> expected_modifier_keys = {
+      mojom::ModifierKey::kBackspace, mojom::ModifierKey::kControl,
+      mojom::ModifierKey::kMeta,      mojom::ModifierKey::kEscape,
+      mojom::ModifierKey::kAlt,       mojom::ModifierKey::kAssistant};
+  base::ranges::sort(expected_modifier_keys);
+  base::ranges::sort(modifier_keys);
+  EXPECT_EQ(expected_modifier_keys, modifier_keys);
+}
+
+class KeyEventTest
+    : public KeyboardCapabilityTestBase,
+      public testing::WithParamInterface<std::tuple<bool, KeyEventTestData>> {
+ public:
+  void SetUp() override {
+    modifier_split_feature_list_ =
+        std::make_unique<base::test::ScopedFeatureList>();
+    if (std::get<0>(GetParam())) {
+      modifier_split_feature_list_->InitAndEnableFeature(
+          ash::features::kModifierSplit);
+    } else {
+      modifier_split_feature_list_->InitAndDisableFeature(
+          ash::features::kModifierSplit);
+    }
+    KeyboardCapabilityTestBase::SetUp();
+  }
+
+ protected:
+  base::AutoReset<bool> modifier_split_reset_ =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+  std::unique_ptr<base::test::ScopedFeatureList> modifier_split_feature_list_;
+};
 
 // Tests that given the keyboard connection type and layout type, check if this
 // keyboard has a specific key event.
 INSTANTIATE_TEST_SUITE_P(
     All,
     KeyEventTest,
-    testing::ValuesIn(std::vector<KeyEventTestData>{
-        // Testing top row keys.
-        {{INTERNAL},
-         {kKbdTopRowLayout1Tag},
-         VKEY_BROWSER_FORWARD,
-         {true},
-         true},
-        {{EXTERNAL_BLUETOOTH}, {kKbdTopRowLayout1Tag}, VKEY_ZOOM, {true}, true},
-        {{EXTERNAL_USB},
-         {kKbdTopRowLayout1Tag},
-         VKEY_MEDIA_PLAY_PAUSE,
-         {false},
-         false},
-        {{INTERNAL},
-         {kKbdTopRowLayout2Tag},
-         VKEY_BROWSER_FORWARD,
-         {false},
-         false},
-        {{EXTERNAL_UNKNOWN},
-         {kKbdTopRowLayout2Tag},
-         VKEY_MEDIA_PLAY_PAUSE,
-         {true},
-         true},
-        {{INTERNAL}, {kKbdTopRowLayoutWilcoTag}, VKEY_ZOOM, {true}, true},
-        {{EXTERNAL_BLUETOOTH},
-         {kKbdTopRowLayoutDrallionTag},
-         VKEY_BRIGHTNESS_UP,
-         {true},
-         true},
-        {{INTERNAL, EXTERNAL_BLUETOOTH},
-         {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
-         VKEY_BROWSER_FORWARD,
-         {true, false},
-         true},
-        {{INTERNAL, EXTERNAL_BLUETOOTH},
-         {kKbdTopRowLayout2Tag, kKbdTopRowLayout2Tag},
-         VKEY_BROWSER_FORWARD,
-         {false, false},
-         false},
-        {{INTERNAL, EXTERNAL_USB, EXTERNAL_BLUETOOTH},
-         {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag, kKbdTopRowLayoutWilcoTag},
-         VKEY_VOLUME_UP,
-         {true, true, true},
-         true},
+    testing::Combine(
+        testing::Bool(),
+        testing::ValuesIn(std::vector<KeyEventTestData>{
+            // Testing top row keys.
+            {{INTERNAL},
+             {kKbdTopRowLayout1Tag},
+             VKEY_BROWSER_FORWARD,
+             {true},
+             true},
+            {{EXTERNAL_BLUETOOTH},
+             {kKbdTopRowLayout1Tag},
+             VKEY_ZOOM,
+             {true},
+             true},
+            {{EXTERNAL_USB},
+             {kKbdTopRowLayout1Tag},
+             VKEY_MEDIA_PLAY_PAUSE,
+             {false},
+             false},
+            {{INTERNAL},
+             {kKbdTopRowLayout2Tag},
+             VKEY_BROWSER_FORWARD,
+             {false},
+             false},
+            {{EXTERNAL_UNKNOWN},
+             {kKbdTopRowLayout2Tag},
+             VKEY_MEDIA_PLAY_PAUSE,
+             {true},
+             true},
+            {{INTERNAL}, {kKbdTopRowLayoutWilcoTag}, VKEY_ZOOM, {true}, true},
+            {{EXTERNAL_BLUETOOTH},
+             {kKbdTopRowLayoutDrallionTag},
+             VKEY_BRIGHTNESS_UP,
 
-        // Testing six pack keys.
-        {{INTERNAL}, {kKbdTopRowLayout1Tag}, VKEY_INSERT, {false}, false},
-        {{EXTERNAL_USB}, {kKbdTopRowLayout1Tag}, VKEY_INSERT, {true}, true},
-        {{INTERNAL, EXTERNAL_BLUETOOTH},
-         {kKbdTopRowLayout1Tag, kKbdTopRowLayoutWilcoTag},
-         VKEY_HOME,
-         {false, true},
-         true},
+             {true},
+             true},
+            {{INTERNAL, EXTERNAL_BLUETOOTH},
+             {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
+             VKEY_BROWSER_FORWARD,
+             {true, false},
+             true},
+            {{INTERNAL, EXTERNAL_BLUETOOTH},
+             {kKbdTopRowLayout2Tag, kKbdTopRowLayout2Tag},
+             VKEY_BROWSER_FORWARD,
+             {false, false},
+             false},
+            {{INTERNAL, EXTERNAL_USB, EXTERNAL_BLUETOOTH},
+             {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag,
+              kKbdTopRowLayoutWilcoTag},
+             VKEY_VOLUME_UP,
+             {true, true, true},
+             true},
 
-        // Testing other keys.
-        {{INTERNAL}, {kKbdTopRowLayout1Tag}, VKEY_LEFT, {true}, true},
-        {{EXTERNAL_BLUETOOTH},
-         {kKbdTopRowLayout2Tag},
-         VKEY_ESCAPE,
-         {true},
-         true},
-        {{EXTERNAL_UNKNOWN}, {kKbdTopRowLayoutWilcoTag}, VKEY_A, {true}, true},
-        {{INTERNAL}, {kKbdTopRowLayoutDrallionTag}, VKEY_2, {true}, true},
-    }));
+            // Testing six pack keys.
+            {{INTERNAL}, {kKbdTopRowLayout1Tag}, VKEY_INSERT, {false}, false},
+            {{EXTERNAL_USB}, {kKbdTopRowLayout1Tag}, VKEY_INSERT, {true}, true},
+            {{INTERNAL, EXTERNAL_BLUETOOTH},
+             {kKbdTopRowLayout1Tag, kKbdTopRowLayoutWilcoTag},
+             VKEY_HOME,
+             {false, true},
+             true},
+
+            // Testing other keys.
+            {{INTERNAL}, {kKbdTopRowLayout1Tag}, VKEY_LEFT, {true}, true},
+            {{EXTERNAL_BLUETOOTH},
+             {kKbdTopRowLayout2Tag},
+             VKEY_ESCAPE,
+             {true},
+             true},
+            {{EXTERNAL_UNKNOWN},
+             {kKbdTopRowLayoutWilcoTag},
+             VKEY_A,
+             {true},
+             true},
+            {{INTERNAL}, {kKbdTopRowLayoutDrallionTag}, VKEY_2, {true}, true},
+        })));
 
 TEST_P(KeyEventTest, TestHasKeyEvent) {
   auto [keyboard_connection_types, keyboard_layout_types, key_code,
         expected_has_key_event, expected_has_key_event_on_any_keyboard] =
-      GetParam();
+      std::get<1>(GetParam());
 
   fake_keyboard_manager_->RemoveAllDevices();
   for (size_t i = 0; i < keyboard_layout_types.size(); i++) {
@@ -777,7 +837,7 @@ TEST_P(KeyEventTest, TestHasKeyEvent) {
   }
 }
 
-TEST_F(KeyboardCapabilityTest, TestHasAssistantKey) {
+TEST_P(KeyboardCapabilityTest, TestHasAssistantKey) {
   // Add a fake kEveKeyboard keyboard, which has the assistant key.
   const KeyboardDevice test_keyboard_1 =
       AddFakeKeyboardInfoToKeyboardCapability(
@@ -785,10 +845,25 @@ TEST_F(KeyboardCapabilityTest, TestHasAssistantKey) {
           KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
           KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2);
 
+  keyboard_capability_->SetBoardNameForTesting("eve");
   EXPECT_TRUE(keyboard_capability_->HasAssistantKey(test_keyboard_1));
 
-  // Add a fake kDrallionKeyboard keyboard, which does not have the assistant
-  // key.
+  keyboard_capability_->SetBoardNameForTesting("nocturne");
+  EXPECT_TRUE(keyboard_capability_->HasAssistantKey(test_keyboard_1));
+
+  keyboard_capability_->SetBoardNameForTesting("atlas");
+  EXPECT_TRUE(keyboard_capability_->HasAssistantKey(test_keyboard_1));
+
+  keyboard_capability_->SetBoardNameForTesting("anything_else");
+  EXPECT_EQ(!GetParam(),
+            keyboard_capability_->HasAssistantKey(test_keyboard_1));
+
+  // Reset board back to eve to test that device identification works as
+  // expected in the false case.
+  keyboard_capability_->SetBoardNameForTesting("eve");
+
+  // Add a fake kDrallionKeyboard keyboard, which does not have the
+  // assistant key.
   const KeyboardDevice test_keyboard_2 =
       AddFakeKeyboardInfoToKeyboardCapability(
           kDeviceId1, kDrallionKeyboard,
@@ -798,7 +873,7 @@ TEST_F(KeyboardCapabilityTest, TestHasAssistantKey) {
   EXPECT_FALSE(keyboard_capability_->HasAssistantKey(test_keyboard_2));
 }
 
-TEST_F(KeyboardCapabilityTest, IdentifyKeyboardUnspecified) {
+TEST_P(KeyboardCapabilityTest, IdentifyKeyboardUnspecified) {
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_INTERNAL,
                               "Internal Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(input_device,
@@ -811,7 +886,7 @@ TEST_F(KeyboardCapabilityTest, IdentifyKeyboardUnspecified) {
   EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
 }
 
-TEST_F(KeyboardCapabilityTest, IdentifyKeyboardInvalidLayoutTag) {
+TEST_P(KeyboardCapabilityTest, IdentifyKeyboardInvalidLayoutTag) {
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_INTERNAL,
                               "Internal Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(input_device,
@@ -825,7 +900,7 @@ TEST_F(KeyboardCapabilityTest, IdentifyKeyboardInvalidLayoutTag) {
               keyboard_capability_->GetTopRowScanCodes(input_device)->empty());
 }
 
-TEST_F(KeyboardCapabilityTest, IdentifyKeyboardInvalidCustomLayout) {
+TEST_P(KeyboardCapabilityTest, IdentifyKeyboardInvalidCustomLayout) {
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_INTERNAL,
                               "Internal Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(
@@ -838,7 +913,7 @@ TEST_F(KeyboardCapabilityTest, IdentifyKeyboardInvalidCustomLayout) {
   EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
 }
 
-TEST_F(KeyboardCapabilityTest, IdentifyKeyboardLayout1External) {
+TEST_P(KeyboardCapabilityTest, IdentifyKeyboardLayout1External) {
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_UNKNOWN,
                               "External Chrome Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout1Tag,
@@ -851,7 +926,7 @@ TEST_F(KeyboardCapabilityTest, IdentifyKeyboardLayout1External) {
   EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
 }
 
-TEST_F(KeyboardCapabilityTest, IdentifyKeyboardLayout2External) {
+TEST_P(KeyboardCapabilityTest, IdentifyKeyboardLayout2External) {
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_UNKNOWN,
                               "External Chrome Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout2Tag,
@@ -864,7 +939,7 @@ TEST_F(KeyboardCapabilityTest, IdentifyKeyboardLayout2External) {
   EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
 }
 
-TEST_F(KeyboardCapabilityTest, IdentifyKeyboardCustomLayout) {
+TEST_P(KeyboardCapabilityTest, IdentifyKeyboardCustomLayout) {
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_INTERNAL,
                               "Internal Custom Layout Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(input_device,
@@ -889,7 +964,7 @@ TEST_F(KeyboardCapabilityTest, IdentifyKeyboardCustomLayout) {
   }
 }
 
-TEST_F(KeyboardCapabilityTest, IdentifyKeyboardWilcoTopRowLayout) {
+TEST_P(KeyboardCapabilityTest, IdentifyKeyboardWilcoTopRowLayout) {
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_INTERNAL,
                               "Internal Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(input_device,
@@ -903,7 +978,7 @@ TEST_F(KeyboardCapabilityTest, IdentifyKeyboardWilcoTopRowLayout) {
   EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
 }
 
-TEST_F(KeyboardCapabilityTest, IdentifyKeyboardDrallionTopRowLayout) {
+TEST_P(KeyboardCapabilityTest, IdentifyKeyboardDrallionTopRowLayout) {
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_INTERNAL,
                               "Internal Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(input_device,
@@ -917,7 +992,7 @@ TEST_F(KeyboardCapabilityTest, IdentifyKeyboardDrallionTopRowLayout) {
   EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
 }
 
-TEST_F(KeyboardCapabilityTest, TopRowLayout1) {
+TEST_P(KeyboardCapabilityTest, TopRowLayout1) {
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_INTERNAL,
                               "Internal Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout1Tag,
@@ -945,7 +1020,7 @@ TEST_F(KeyboardCapabilityTest, TopRowLayout1) {
   }
 }
 
-TEST_F(KeyboardCapabilityTest, TopRowLayout2) {
+TEST_P(KeyboardCapabilityTest, TopRowLayout2) {
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_INTERNAL,
                               "Internal Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout2Tag,
@@ -973,7 +1048,7 @@ TEST_F(KeyboardCapabilityTest, TopRowLayout2) {
   }
 }
 
-TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
+TEST_P(KeyboardCapabilityTest, TopRowLayoutWilco) {
   KeyboardDevice wilco_device(kDeviceId1, INPUT_DEVICE_INTERNAL,
                               "Internal Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(wilco_device,
@@ -1016,7 +1091,7 @@ TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
   }
 }
 
-TEST_F(KeyboardCapabilityTest, NullTopRowDescriptor) {
+TEST_P(KeyboardCapabilityTest, NullTopRowDescriptor) {
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_BLUETOOTH,
                               "External Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(input_device,
@@ -1029,11 +1104,11 @@ TEST_F(KeyboardCapabilityTest, NullTopRowDescriptor) {
 }
 
 class TopRowLayoutCustomTest
-    : public KeyboardCapabilityTest,
+    : public KeyboardCapabilityTestBase,
       public testing::WithParamInterface<std::vector<TopRowActionKey>> {
  public:
   void SetUp() override {
-    KeyboardCapabilityTest::SetUp();
+    KeyboardCapabilityTestBase::SetUp();
     top_row_action_keys_ = GetParam();
     custom_layout_string_.clear();
 
