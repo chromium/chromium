@@ -661,7 +661,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
       *chrome_client_, *agent_group_scheduler_, Data(),
       WTF::BindOnce(&SVGImage::NotifyAsyncLoadCompleted,
                     weak_ptr_factory_.GetWeakPtr()),
-      settings_to_use);
+      settings_to_use, IsolatedSVGDocumentHost::ProcessingMode::kAnimated);
 
   if (!RootElement())
     return kSizeUnavailable;

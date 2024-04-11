@@ -82,7 +82,8 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
     AgentGroupScheduler& agent_group_scheduler,
     scoped_refptr<const SharedBuffer> data,
     base::OnceClosure async_load_callback,
-    const Settings* inherited_settings)
+    const Settings* inherited_settings,
+    ProcessingMode processing_mode)
     : async_load_callback_(std::move(async_load_callback)) {
   // The isolated document will fire events (and the default C++ handlers run)
   // but doesn't actually allow scripts to run so it's fine to call into it. We
@@ -105,6 +106,14 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
     if (inherited_settings) {
       CopySettingsFrom(settings, *inherited_settings);
     }
+
+    // If "secure static mode" is requested, set the animation policy to "no
+    // animation". This will disable SMIL and image animations.
+    if (processing_mode == ProcessingMode::kStatic) {
+      settings.SetImageAnimationPolicy(
+          mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
+    }
+
     chrome_client.InitAnimationTimer(page->GetPageScheduler()
                                          ->GetAgentGroupScheduler()
                                          .CompositorTaskRunner());

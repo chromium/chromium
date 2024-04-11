@@ -46,11 +46,17 @@ class Settings;
 class IsolatedSVGDocumentHost final
     : public GarbageCollected<IsolatedSVGDocumentHost> {
  public:
+  // https://svgwg.org/svg2-draft/conform.html#processing-modes
+  enum class ProcessingMode {
+    kStatic,    // Corresponds to "secure static mode".
+    kAnimated,  // Corresponds to "secure animated mode".
+  };
   IsolatedSVGDocumentHost(SVGImageChromeClient&,
                           AgentGroupScheduler&,
                           scoped_refptr<const SharedBuffer>,
                           base::OnceClosure async_load_callback,
-                          const Settings*);
+                          const Settings*,
+                          ProcessingMode);
   ~IsolatedSVGDocumentHost();
 
   void Shutdown();
