@@ -7490,6 +7490,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
 
   <!-- Extended Updates Dialog -->
+  <!-- TODO(b/324297162): Finalize strings and translate -->
   <message name="IDS_EXTENDED_UPDATES_DIALOG_DIALOG_HEADING" desc="Dialog heading of the Extended Updates Dialog" translateable="false">
     Turn on extended updates
   </message>
@@ -7513,6 +7514,21 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
   <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_CONFIRM_BUTTON" desc="Confirm button label of the confirmation popup in the Extended Updates Dialog" translateable="false">
     Confirm &amp; turn on
+  </message>
+
+  <!-- Extended Updates Notification -->
+  <!-- TODO(b/324297162): Finalize strings and translate -->
+  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_TITLE" desc="Notification title that informs users about availability of extended updates." translateable="false">
+    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is eligible for extended updates
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_MESSAGE" desc="Notification message that informs users about availability of extended updates." translateable="false">
+    Automatic security and software updates have been paused. You can extend updates for 2 years, but some functionality will be limited.
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_SETUP_BUTTON" desc="Setup button in the notification message that informs users about availability of extended updates." translateable="false">
+    Set up
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_NOTIFICATION_LEARN_MORE_BUTTON" desc="Learn more button in the notification message that informs users about availability of extended updates." translateable="false">
+    Learn more
   </message>
 
 </grit-part>

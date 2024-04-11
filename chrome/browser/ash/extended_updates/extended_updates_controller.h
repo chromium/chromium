@@ -7,6 +7,11 @@
 
 #include <compare>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -64,8 +69,16 @@ class ExtendedUpdatesController {
   // The caller should check for eligibility before calling this.
   bool OptIn(content::BrowserContext* context);
 
+  // Called when EolInfo is fetched.
+  virtual void OnEolInfo(content::BrowserContext* context,
+                         const UpdateEngineClient::EolInfo& eol_info);
+
+  void SetClockForTesting(base::Clock* clock);
+
  protected:
   ExtendedUpdatesController();
+
+  void MaybeShowNotification(base::WeakPtr<content::BrowserContext> context);
 
  private:
   friend class ScopedExtendedUpdatesController;
@@ -79,6 +92,14 @@ class ExtendedUpdatesController {
 
   // Returns true if the user has the ability to opt in the device.
   bool HasOptInAbility(ownership::OwnerSettingsService* owner_settings);
+
+  bool ShouldShowNotification(content::BrowserContext* context);
+
+  void ShowNotification(content::BrowserContext* context);
+
+  raw_ptr<base::Clock> clock_ = nullptr;
+
+  base::WeakPtrFactory<ExtendedUpdatesController> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <compare>
 #include <optional>
 #include <string>
 
@@ -35,6 +36,8 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) UpdateEngineClient
 
   // Holds information related to end-of-life.
   struct EolInfo {
+    auto operator<=>(const EolInfo&) const = default;
+
     // The End of Life date. |eol_date.is_null()| will be true to signify an
     // invalid value. More than one classes will use this UpdateEngineClient, so
     // this field is used to maintain consistency instead of converting the End

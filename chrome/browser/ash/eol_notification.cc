@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/eol_incentive_util.h"
+#include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -99,12 +100,18 @@ void EolNotification::CheckEolInfo() {
 }
 
 void EolNotification::OnEolInfo(UpdateEngineClient::EolInfo eol_info) {
-  // Do not show warning Eol notification if invalid |eol_info.eol_date|.
-  if (eol_info.eol_date.is_null())
+  MaybeShowEolNotification(eol_info.eol_date);
+
+  ExtendedUpdatesController::Get()->OnEolInfo(profile_, eol_info);
+}
+
+void EolNotification::MaybeShowEolNotification(base::Time eol_date) {
+  // Do not show warning Eol notification if invalid |eol_date|.
+  if (eol_date.is_null()) {
     return;
+  }
 
   const base::Time now = clock_->Now();
-  const base::Time eol_date = eol_info.eol_date;
   const base::Time prev_eol_date =
       profile_->GetPrefs()->GetTime(prefs::kEndOfLifeDate);
 

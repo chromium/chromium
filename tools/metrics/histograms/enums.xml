@@ -27842,6 +27842,7 @@ Called by update_net_error_codes.py.-->
   <int value="179" label="Scanning DLC"/>
   <int value="180" label="Growth Framework"/>
   <int value="181" label="Audio Selection"/>
+  <int value="182" label="Extended Updates Available"/>
 </enum>
 
 <enum name="NQEObservationSource">

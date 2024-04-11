@@ -9,6 +9,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/extended_updates/test/mock_extended_updates_controller.h"
+#include "chrome/browser/ash/extended_updates/test/scoped_extended_updates_controller.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -20,6 +22,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -61,6 +64,7 @@ class EolNotificationTest : public BrowserWithTestWindowTest,
   void TearDown() override {
     eol_notification_.reset();
     tester_.reset();
+    fake_update_engine_client_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
     ConciergeClient::Shutdown();
     UpdateEngineClient::Shutdown();
@@ -86,7 +90,7 @@ class EolNotificationTest : public BrowserWithTestWindowTest,
   bool SuppressFirstWarningEnabled() { return GetParam(); }
 
  protected:
-  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient> fake_update_engine_client_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<EolNotification> eol_notification_;
   std::unique_ptr<base::SimpleTestClock> clock_;
@@ -319,6 +323,29 @@ TEST_P(EolNotificationTest, TestBackwardsCompatibilityFinalUpdateAlreadyShown) {
   CheckEolInfo();
   auto notification = tester_->GetNotification("chrome://product_eol");
   ASSERT_FALSE(notification);
+}
+
+TEST_P(EolNotificationTest, TestOnEolInfoCallsExtendedUpdatesController) {
+  SetCurrentTimeToUtc("10 October 2024");
+
+  base::Time eol_date, extended_date;
+  ASSERT_TRUE(base::Time::FromUTCString("25 December 2025", &eol_date));
+  ASSERT_TRUE(base::Time::FromUTCString("8 June 2024", &extended_date));
+  const UpdateEngineClient::EolInfo eol_info{
+      .eol_date = eol_date,
+      .extended_date = extended_date,
+      .extended_opt_in_required = true,
+  };
+  fake_update_engine_client_->set_eol_info(eol_info);
+
+  ::testing::StrictMock<MockExtendedUpdatesController> mock_controller;
+  EXPECT_CALL(mock_controller, OnEolInfo(profile(), eol_info)).Times(1);
+
+  ScopedExtendedUpdatesController scoped_controller(&mock_controller);
+
+  CheckEolInfo();
+  auto notification = tester_->GetNotification("chrome://product_eol");
+  EXPECT_FALSE(notification);
 }
 
 class EolIncentiveNotificationTest : public EolNotificationTest {

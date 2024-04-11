@@ -194,7 +194,8 @@ enum class NotificationCatalogName {
   kDocumentScanning = 179,
   kGrowthFramework = 180,
   kAudioSelection = 181,
-  kMaxValue = kAudioSelection
+  kExtendedUpdatesAvailable = 182,
+  kMaxValue = kExtendedUpdatesAvailable
 };
 
 // A living catalog that registers system nudges.
