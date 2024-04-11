@@ -36,6 +36,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
+
+bool operator==(const ProtoFetcherStatus& a, const ProtoFetcherStatus& b) {
+  return a.state() == b.state();
+}
+
 namespace {
 
 using ::base::BindOnce;
@@ -764,6 +769,52 @@ TEST_P(ProtoFetcherTest, MustBeStoppedBeforeRestarting) {
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
 }
 
+class StatusFetcherTest : public ProtoFetcherTest {
+ protected:
+  MOCK_METHOD(void, OnStatus, (const ProtoFetcherStatus&));
+};
+
+// Tests a default flow, where an empty (default) proto is received.
+TEST_P(StatusFetcherTest, StatusFetcherReportsSuccess) {
+  MakePrimaryAccountAvailable();
+  SetAutomaticIssueOfAccessTokens();
+
+  EXPECT_CALL(*this, OnStatus(ProtoFetcherStatus::Ok())).Times(1);
+
+  StatusFetcher fetcher(
+      *identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(), /* payload= */ "",
+      GetConfig(), /* args= */ {},
+      base::BindOnce(
+          &StatusFetcherTest_StatusFetcherReportsSuccess_Test::OnStatus,
+          base::Unretained(this)));
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  SimulateDefaultResponseForPendingRequest(0);
+}
+
+// Tests an error flow.
+TEST_P(StatusFetcherTest, StatusFetcherReportsFailure) {
+  MakePrimaryAccountAvailable();
+  SetAutomaticIssueOfAccessTokens();
+
+  EXPECT_CALL(
+      *this,
+      OnStatus(ProtoFetcherStatus::HttpStatusOrNetError(net::HTTP_BAD_REQUEST)))
+      .Times(1);
+
+  StatusFetcher fetcher(
+      *identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(), /* payload= */ "",
+      GetConfig(), /* args= */ {},
+      base::BindOnce(
+          &StatusFetcherTest_StatusFetcherReportsFailure_Test::OnStatus,
+          base::Unretained(this)));
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  SimulateResponseForPendingRequestWithTransientError(0);
+}
+
 // Instead of /0, /1... print human-readable description of the test: status of
 // the retrying feature followed by http method.
 std::string PrettyPrintFetcherTestCaseName(
@@ -783,6 +834,14 @@ std::string PrettyPrintFetcherTestCaseName(
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ProtoFetcherTest,
+                         testing::Values(kTestGetConfig,
+                                         kTestPostConfig,
+                                         kTestRetryConfig,
+                                         kTestGetConfigWithoutMetrics),
+                         &PrettyPrintFetcherTestCaseName);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         StatusFetcherTest,
                          testing::Values(kTestGetConfig,
                                          kTestPostConfig,
                                          kTestRetryConfig,

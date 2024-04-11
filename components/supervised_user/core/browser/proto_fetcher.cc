@@ -483,6 +483,32 @@ std::optional<std::string> AbstractProtoFetcher::GetRequestPayload() const {
   return payload_;
 }
 
+StatusFetcher::StatusFetcher(
+    signin::IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::string_view payload,
+    const FetcherConfig& fetcher_config,
+    const FetcherConfig::PathArgs& args,
+    Callback callback)
+    : AbstractProtoFetcher(identity_manager,
+                           url_loader_factory,
+                           payload,
+                           fetcher_config,
+                           args),
+      callback_(std::move(callback)) {}
+StatusFetcher::~StatusFetcher() = default;
+
+void StatusFetcher::OnError(const ProtoFetcherStatus& status) {
+  OnStatus(status);
+}
+void StatusFetcher::OnResponse(std::unique_ptr<std::string> response_body) {
+  OnStatus(ProtoFetcherStatus::Ok());
+}
+void StatusFetcher::OnStatus(const ProtoFetcherStatus& status) {
+  RecordMetrics(status);
+  std::move(callback_).Run(status);
+}
+
 std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

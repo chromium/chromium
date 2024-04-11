@@ -353,6 +353,32 @@ class TypedProtoFetcher : public AbstractProtoFetcher {
   Callback callback_;
 };
 
+// Overlay over ProtoFetcher that only cares about status of the response.
+// Every instance of Fetcher is disposable and should be
+// used only once.
+class StatusFetcher : public AbstractProtoFetcher {
+ public:
+  using Callback = base::OnceCallback<void(const ProtoFetcherStatus&)>;
+
+  StatusFetcher() = delete;
+  StatusFetcher(
+      signin::IdentityManager& identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::string_view payload,
+      const FetcherConfig& fetcher_config,
+      const FetcherConfig::PathArgs& args,
+      Callback callback);
+  ~StatusFetcher() override;
+
+ protected:
+  void OnError(const ProtoFetcherStatus& status) override;
+  void OnResponse(std::unique_ptr<std::string> response_body) override;
+
+ private:
+  void OnStatus(const ProtoFetcherStatus& status);
+  Callback callback_;
+};
+
 // Use instance of ProtoFetcher to create fetch process which is
 // unstarted yet.
 template <typename Response>
