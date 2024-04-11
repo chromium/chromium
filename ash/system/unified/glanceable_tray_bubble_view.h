@@ -88,6 +88,9 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   // initialization and when the `calendar_view_` height changes.
   void ClipScrollViewHeight(int screen_max_height) const;
 
+  // Creates `time_management_container_view_` if needed.
+  void MaybeCreateTimeManagementContainer();
+
   const raw_ptr<Shelf> shelf_;
 
   // Whether the bubble view has been initialized.

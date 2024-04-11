@@ -95,6 +95,7 @@ class TimeManagementContainer : public views::FlexLayoutView {
 BEGIN_METADATA(TimeManagementContainer)
 END_METADATA
 
+// TODO(b/333770880): Remove `ContainerView`.
 // The view that parents glanceable bubbles. It's a flex layout view that
 // propagates child preferred size changes to the tray bubble view and the
 // container bounds changes to the bubble view.
@@ -221,6 +222,7 @@ GlanceableTrayBubbleView::~GlanceableTrayBubbleView() {
 void GlanceableTrayBubbleView::InitializeContents() {
   CHECK(!initialized_);
 
+  // TODO(b/333770880): Remove `scroll_view_`.
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled));
   scroll_view_->SetPaintToLayer();
@@ -382,12 +384,11 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
   }
 
   // Adds classroom bubble before `calendar_view_`.
-  auto* const scroll_contents = scroll_view_->contents();
-  const auto calendar_view_index =
-      base::ranges::find(scroll_contents->children(), calendar_view_) -
-      scroll_contents->children().begin();
-  classroom_bubble_student_view_ = scroll_contents->AddChildViewAt(
-      std::make_unique<GlanceablesClassroomStudentView>(), calendar_view_index);
+  MaybeCreateTimeManagementContainer();
+  classroom_bubble_student_view_ =
+      time_management_container_view_->AddChildView(
+          std::make_unique<GlanceablesClassroomStudentView>());
+  UpdateBubble();
 
   AdjustChildrenFocusOrder();
 }
@@ -400,9 +401,7 @@ void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
   }
 
   // Add tasks bubble before everything.
-  time_management_container_view_ =
-      AddChildViewAt(std::make_unique<TimeManagementContainer>(), 0);
-  box_layout()->SetFlexForView(time_management_container_view_, 1);
+  MaybeCreateTimeManagementContainer();
   tasks_bubble_view_ = time_management_container_view_->AddChildView(
       std::make_unique<GlanceablesTasksView>(task_lists));
   UpdateBubble();
@@ -445,27 +444,21 @@ void GlanceableTrayBubbleView::OnGlanceablesContainerHeightChanged(
 void GlanceableTrayBubbleView::AdjustChildrenFocusOrder() {
   const bool is_calendar_for_glanceables =
       features::IsGlanceablesV2CalendarViewEnabled();
+  auto* default_focused_child = GetChildrenFocusList().front().get();
 
   // Make sure the view that contains calendar is the first in the focus list of
   // glanceable views. Depending on whether GlanceablesV2CalendarView is
-  // enabled, the nearest common ancestor of the calendar view and other
-  // glanceables is `this`, or `scroll_view_->contents()`.
+  // enabled, `calendar_view_` could be either under `calendar_container_` or
+  // `scroll_view_`. Note that `calendar_view_` is the only view that could be
+  // created under `scroll_view_`.
   if (is_calendar_for_glanceables) {
-    auto* default_focused_child = GetChildrenFocusList().front().get();
     if (default_focused_child != calendar_container_) {
       calendar_container_->InsertBeforeInFocusList(default_focused_child);
     }
   } else {
-    auto* default_focused_child =
-        scroll_view_->contents()->GetChildrenFocusList().front().get();
-    if (default_focused_child != calendar_view_) {
-      calendar_view_->InsertBeforeInFocusList(default_focused_child);
+    if (default_focused_child != scroll_view_) {
+      scroll_view_->InsertBeforeInFocusList(default_focused_child);
     }
-  }
-
-  if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
-    time_management_container_view_->InsertAfterInFocusList(
-        calendar_container_);
   }
 }
 
@@ -492,6 +485,14 @@ void GlanceableTrayBubbleView::ClipScrollViewHeight(
 
   scroll_view_->ClipHeightTo(0, screen_max_height - calendar_view_->height() -
                                     kMarginBetweenGlanceables);
+}
+
+void GlanceableTrayBubbleView::MaybeCreateTimeManagementContainer() {
+  if (!time_management_container_view_) {
+    time_management_container_view_ =
+        AddChildViewAt(std::make_unique<TimeManagementContainer>(), 0);
+    box_layout()->SetFlexForView(time_management_container_view_, 1);
+  }
 }
 
 BEGIN_METADATA(GlanceableTrayBubbleView)

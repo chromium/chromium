@@ -94,7 +94,8 @@ constexpr size_t kMaxAssignments = 3;
 
 constexpr auto kEmptyListLabelMargins = gfx::Insets::TLBR(24, 0, 32, 0);
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
-constexpr auto kViewInteriorMargins = gfx::Insets::TLBR(16, 16, 0, 16);
+constexpr auto kViewInteriorMargins = gfx::Insets::TLBR(12, 12, 12, 12);
+constexpr auto kFooterMargins = gfx::Insets::TLBR(12, 2, 0, 0);
 
 std::u16string GetAssignmentListName(size_t index) {
   CHECK(index >= 0 || index < kStudentAssignmentsListTypeOrdered.size());
@@ -137,7 +138,7 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
 }  // namespace
 
 GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
-    : GlanceableTrayChildBubble(/*use_glanceables_container_style=*/true),
+    : GlanceableTrayChildBubble(/*use_glanceables_container_style=*/false),
       shown_time_(base::Time::Now()) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(kViewInteriorMargins)
@@ -207,6 +208,7 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
                           base::Unretained(this))));
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleListFooter));
+  list_footer_view_->SetVisible(false);
 
   SelectedAssignmentListChanged(/*initial_update=*/true);
 }
@@ -380,6 +382,7 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
   const bool is_list_empty = shown_assignments == 0;
   empty_list_label_->SetVisible(is_list_empty);
   list_footer_view_->SetVisible(!is_list_empty);
+  list_footer_view_->SetProperty(views::kMarginsKey, kFooterMargins);
 
   list_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_GLANCEABLES_CLASSROOM_SELECTED_LIST_ACCESSIBLE_NAME, list_name));
@@ -406,7 +409,7 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
 
   if (initial_update) {
     RecordClassromInitialLoadTime(
-        /* first_occurrence=*/controller->bubble_shown_count() == 1,
+        /*first_occurrence=*/controller->bubble_shown_count() == 1,
         base::TimeTicks::Now() - controller->last_bubble_show_time());
   } else {
     RecordClassroomChangeLoadTime(

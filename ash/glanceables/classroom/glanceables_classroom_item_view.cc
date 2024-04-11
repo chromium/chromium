@@ -55,21 +55,24 @@ namespace {
 
 // Styles for the whole `GlanceablesClassroomItemView`.
 constexpr int kFocusRingCornerRadius = 14;
+constexpr auto kClassroomItemMargin = gfx::Insets::VH(4, 0);
 
 // Styles for the icon view.
 constexpr int kIconViewBackgroundRadius = 12;
-constexpr auto kIconViewMargin = gfx::Insets::TLBR(2, 0, 0, 4);
+constexpr auto kIconViewMargin = gfx::Insets::TLBR(0, 0, 0, 12);
 constexpr auto kIconViewPreferredSize =
     gfx::Size(kIconViewBackgroundRadius * 2, kIconViewBackgroundRadius * 2);
 constexpr int kIconSize = 16;
 
 // Styles for the assignment labels.
-constexpr int kAssignmentBetweenLabelsSpacing = 4;
-constexpr auto kAssignmentLabelsInsets =
-    gfx::Insets::VH(kAssignmentBetweenLabelsSpacing, 8);
+constexpr int kAssignmentBetweenLabelsSpacing = 2;
+constexpr auto kAssignmentLabelsMargin = gfx::Insets::TLBR(2, 0, 0, 16);
+constexpr auto kAssignmentCourseWorkTypography = TypographyToken::kCrosButton2;
+constexpr auto kAssignmentCourseTypography = TypographyToken::kCrosAnnotation1;
 
 // Styles for the container containing due date and time labels.
-constexpr auto kDueLabelsMargin = gfx::Insets::VH(0, 16);
+constexpr auto kDueLabelsMargin = gfx::Insets::TLBR(2, 0, 0, 4);
+constexpr auto kDueLabelsTypography = TypographyToken::kCrosAnnotation1;
 
 constexpr char kDayOfWeekFormatterPattern[] = "EEE";      // "Wed"
 constexpr char kMonthAndDayFormatterPattern[] = "MMM d";  // "Feb 28"
@@ -134,7 +137,7 @@ std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
       .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
       .SetBetweenChildSpacing(kAssignmentBetweenLabelsSpacing)
-      .SetProperty(views::kMarginsKey, kAssignmentLabelsInsets)
+      .SetProperty(views::kMarginsKey, kAssignmentLabelsMargin)
       .SetProperty(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -145,18 +148,18 @@ std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
                         GlanceablesViewId::kClassroomItemCourseWorkTitleLabel))
                     .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
                     .SetFontList(typography_provider->ResolveTypographyToken(
-                        TypographyToken::kCrosButton2))
+                        kAssignmentCourseWorkTypography))
                     .SetLineHeight(typography_provider->ResolveLineHeight(
-                        TypographyToken::kCrosButton2)))
+                        kAssignmentCourseWorkTypography)))
       .AddChild(views::Builder<views::Label>()
                     .SetText(base::UTF8ToUTF16(assignment->course_title))
                     .SetID(base::to_underlying(
                         GlanceablesViewId::kClassroomItemCourseTitleLabel))
                     .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
                     .SetFontList(typography_provider->ResolveTypographyToken(
-                        TypographyToken::kCrosAnnotation1))
+                        kAssignmentCourseTypography))
                     .SetLineHeight(typography_provider->ResolveLineHeight(
-                        TypographyToken::kCrosAnnotation1)))
+                        kAssignmentCourseTypography)))
       .Build();
 }
 
@@ -169,6 +172,7 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kEnd)
+      .SetBetweenChildSpacing(kAssignmentBetweenLabelsSpacing)
       .SetProperty(views::kMarginsKey, kDueLabelsMargin)
       .AddChild(views::Builder<views::Label>()
                     .SetText(due_date)
@@ -176,18 +180,20 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
                         GlanceablesViewId::kClassroomItemDueDateLabel))
                     .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
                     .SetFontList(typography_provider->ResolveTypographyToken(
-                        TypographyToken::kCrosAnnotation1))
+                        kDueLabelsTypography))
+                    // Use the course work line height to align with the
+                    // assignment labels.
                     .SetLineHeight(typography_provider->ResolveLineHeight(
-                        TypographyToken::kCrosAnnotation1)))
+                        kAssignmentCourseWorkTypography)))
       .AddChild(views::Builder<views::Label>()
                     .SetText(due_time)
                     .SetID(base::to_underlying(
                         GlanceablesViewId::kClassroomItemDueTimeLabel))
                     .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
                     .SetFontList(typography_provider->ResolveTypographyToken(
-                        TypographyToken::kCrosAnnotation1))
+                        kDueLabelsTypography))
                     .SetLineHeight(typography_provider->ResolveLineHeight(
-                        TypographyToken::kCrosAnnotation1)))
+                        kDueLabelsTypography)))
       .Build();
 }
 
@@ -201,6 +207,7 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  SetProperty(views::kMarginsKey, kClassroomItemMargin);
   std::vector<std::u16string> a11y_description_parts{
       base::UTF8ToUTF16(assignment->course_title)};
 

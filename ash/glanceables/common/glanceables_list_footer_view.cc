@@ -51,14 +51,18 @@ class SeeAllButton : public views::LabelButton {
                 ? u""
                 : l10n_util::GetStringUTF16(
                       IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL));
-    SetCallback(std::move(on_see_all_pressed));
-    SetID(base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton));
-    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
+    // TODO(b/333770880): Revisit this to see if it can be refactored.
     if (stable_launch) {
       // Explicitly set an empty border to replace the border created by default
       // in LabelButton.
       SetBorder(views::CreateEmptyBorder(0));
+    } else {
+      SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(2, 2)));
     }
+
+    SetCallback(std::move(on_see_all_pressed));
+    SetID(base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton));
+    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
     SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,

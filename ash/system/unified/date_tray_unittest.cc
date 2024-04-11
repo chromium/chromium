@@ -614,10 +614,15 @@ TEST_P(DateTrayTest, RendersClassroomBubblesForActiveRoles) {
   ASSERT_TRUE(scroll_view);
   EXPECT_EQ(scroll_view->contents()->children().size(), 1u);
 
-  // Classroom student bubble is added.
+  // Classroom student bubble is added in TimeManagementContainer.
   glanceables_classroom_client()->RespondToPendingIsStudentRoleEnabledCallbacks(
       true);
-  EXPECT_EQ(scroll_view->contents()->children().size(), 2u);
+  EXPECT_EQ(scroll_view->contents()->children().size(), 1u);
+  EXPECT_STREQ("TimeManagementContainer", GetGlanceableTrayBubble()
+                                              ->GetBubbleView()
+                                              ->children()
+                                              .at(0)
+                                              ->GetClassName());
 }
 
 TEST_P(DateTrayTest, EmptyClientsFallbackToLegacyDateBubble) {
