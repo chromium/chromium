@@ -328,6 +328,10 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeElu(*op.get_elu()));
       break;
     }
+    case mojom::Operation::Tag::kGather: {
+      ASSIGN_OR_RETURN(operator_offset, SerializeGather(*op.get_gather()));
+      break;
+    }
     case mojom::Operation::Tag::kGemm: {
       ASSIGN_OR_RETURN(operator_offset, SerializeGemm(*op.get_gemm()));
       break;
@@ -379,8 +383,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("batchNormalization is not implemented");
     case mojom::Operation::Tag::kExpand:
       return base::unexpected("expand is not implemented");
-    case mojom::Operation::Tag::kGather:
-      return base::unexpected("gather is not implemented");
     case mojom::Operation::Tag::kGru:
       return base::unexpected("gru is not implemented");
     case mojom::Operation::Tag::kGruCell:
@@ -987,6 +989,51 @@ auto GraphBuilder::SerializeElu(const mojom::Elu& elu)
   }
   return SerializeUnaryOperation(::tflite::BuiltinOperator_ELU,
                                  elu.input_operand_id, elu.output_operand_id);
+}
+
+auto GraphBuilder::SerializeGather(const mojom::Gather& gather)
+    -> base::expected<OperatorOffset, std::string> {
+  // The WebNN indices must be one of type uint32 or int64, but TFLite indices
+  // need int32 or int64 type, so a cast operation need to be inserted before
+  // Gather if indices data type is uint32.
+  int32_t indices_tensor_index =
+      operand_to_index_map_.at(gather.indices_operand_id);
+  const mojom::Operand& indices_operand = GetOperand(gather.indices_operand_id);
+  if (indices_operand.data_type == mojom::Operand::DataType::kUint32) {
+    ASSIGN_OR_RETURN(const std::vector<int32_t> signed_indices_dimensions,
+                     ToSignedDimensions(indices_operand.dimensions));
+    indices_tensor_index = base::checked_cast<int32_t>(tensors_.size());
+    tensors_.emplace_back(::tflite::CreateTensor(
+        builder_, builder_.CreateVector<int32_t>(signed_indices_dimensions),
+        ::tflite::TensorType_INT64));
+
+    operators_.emplace_back(SerializeCastOperation(
+        operand_to_index_map_.at(gather.indices_operand_id),
+        /*input_tensor_type=*/::tflite::TensorType_UINT32, indices_tensor_index,
+        /*output_tensor_type=*/::tflite::TensorType_INT64));
+  } else {
+    CHECK_EQ(indices_operand.data_type, mojom::Operand::DataType::kInt64);
+  }
+
+  // The WebNN axis option is uint32 data type, but TFLite axis needs int32
+  // type, so the axis need to be validated here to not overflow.
+  auto checked_axis = base::MakeCheckedNum<int32_t>(gather.axis);
+  if (!checked_axis.IsValid()) {
+    return base::unexpected("The axis in gather operation is too large.");
+  }
+  const auto gather_options =
+      ::tflite::CreateGatherOptions(builder_, checked_axis.ValueOrDie());
+
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_GATHER);
+  const std::array<int32_t, 2> op_inputs = {
+      operand_to_index_map_.at(gather.input_operand_id), indices_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(gather.output_operand_id)};
+  return ::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs),
+      ::tflite::BuiltinOptions_GatherOptions, gather_options.Union());
 }
 
 auto GraphBuilder::SerializeGemm(const mojom::Gemm& gemm)

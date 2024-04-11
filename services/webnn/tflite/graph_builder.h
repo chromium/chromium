@@ -159,6 +159,8 @@ class GraphBuilder final {
       const mojom::ElementWiseUnary& op);
   base::expected<OperatorOffset, std::string> SerializeElu(
       const mojom::Elu& elu);
+  base::expected<OperatorOffset, std::string> SerializeGather(
+      const mojom::Gather& gather);
   base::expected<OperatorOffset, std::string> SerializeGemm(
       const mojom::Gemm& gemm);
   OperatorOffset SerializeHardSwish(const mojom::HardSwish& hard_swish);

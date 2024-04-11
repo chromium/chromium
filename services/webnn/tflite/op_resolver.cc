@@ -68,6 +68,10 @@ OpResolver::OpResolver() {
              ::tflite::ops::builtin::Register_FULLY_CONNECTED(),
              /* min_version = */ 1,
              /* max_version = */ 9);
+  AddBuiltin(::tflite::BuiltinOperator_GATHER,
+             ::tflite::ops::builtin::Register_GATHER(),
+             /* min_version = */ 1,
+             /* max_version = */ 3);
   AddBuiltin(::tflite::BuiltinOperator_GREATER,
              ::tflite::ops::builtin::Register_GREATER(),
              /* min_version = */ 1,
