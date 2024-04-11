@@ -42,6 +42,13 @@ message RequestSafetyCheck {
   repeated SafetyCategoryThreshold safety_category_thresholds = 2;
 }
 
+message RawOutputCheck {
+  // How to generate input for the text safety check.
+  // Should be written against a google.protobuf.StringValue proto with the raw
+  // output.
+  repeated SubstitutedString input_template = 1;
+}
+
 message FeatureTextSafetyConfiguration {
   // The feature this configuration pertains to.
   optional ModelExecutionFeature feature = 1;
@@ -55,4 +62,7 @@ message FeatureTextSafetyConfiguration {
 
   // Safety checks to run on the feature request message.
   repeated RequestSafetyCheck request_check = 4;
+
+  // Configures the checks to run on raw model output.
+  optional RawOutputCheck raw_output_check = 5;
 }

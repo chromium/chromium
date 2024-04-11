@@ -70,6 +70,13 @@ class SafetyConfig final {
       int check_idx,
       const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
 
+  // Whether this config has a special raw output check.
+  bool HasRawOutputCheck() const;
+
+  // Get the input for the raw output check.
+  std::optional<SubstitutionResult> GetRawOutputCheckInput(
+      const std::string&) const;
+
  private:
   std::optional<proto::FeatureTextSafetyConfiguration> proto_;
 };
@@ -236,7 +243,10 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     proto::OnDeviceModelServiceResponse* MutableLoggedResponse();
 
     // Adds an execution info for the text safety model based on `this`.
-    void AddTextSafetyExecutionLogging(bool is_unsafe);
+    void AddTextSafetyExecutionLogging(
+        const std::string& text,
+        const on_device_model::mojom::SafetyInfoPtr& safety_info,
+        bool is_unsafe);
 
     // Resets all state related to a request.
     void ResetRequestState();
@@ -288,7 +298,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void OnSessionTimedOut();
 
   // Sends `current_response_` to the client.
-  void SendResponse(ResponseType response_type);
+  void SendResponse(ResponseType response_type,
+                    const std::string& safety_check_text);
 
   void DestroyOnDeviceStateAndFallbackToRemote(ExecuteModelResult result);
 
@@ -313,6 +324,15 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Begins request execution (leads to OnResponse/OnComplete).
   void BeginRequestExecution(on_device_model::mojom::InputOptionsPtr options);
+
+  // Called to run the text safety remote fallback. Will invoke completion
+  // callback when done.
+  void RunRawOutputSafetyCheck();
+
+  // Called when output safety check completes.
+  void OnRawOutputSafetyResult(
+    std::string safety_check_text,
+    on_device_model::mojom::SafetyInfoPtr safety_info);
 
   // Callback invoked when the text safety remote fallback response comes back.
   // Will invoke the session's completion callback and destroy state.

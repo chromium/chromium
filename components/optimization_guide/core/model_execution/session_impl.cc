@@ -24,6 +24,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 
 namespace optimization_guide {
@@ -506,9 +507,10 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
     }
   }
 
-  if (features::ShouldUseTextSafetyRemoteFallbackForEligibleFeatures()) {
-    // If using remote text safety fallback, we will not be streaming. Do not
-    // process partial responses.
+  if (features::ShouldUseTextSafetyRemoteFallbackForEligibleFeatures() ||
+      on_device_state_->opts.safety_cfg.HasRawOutputCheck()) {
+    // If using remote text safety fallback, or an explicit output check,
+    // we will not be streaming. Do not process partial responses.
     return;
   }
 
@@ -522,7 +524,7 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
   // if there are text safety scores to evaluate.
   if (!on_device_state_->opts.safety_cfg.IsMissingSafetyInfo(
           chunk_provided_safety_info)) {
-    SendResponse(ResponseType::kPartial);
+    SendResponse(ResponseType::kPartial, on_device_state_->current_response);
   }
 }
 
@@ -539,6 +541,14 @@ void SessionImpl::OnComplete(
       time_to_completion.InMilliseconds());
   on_device_state_->opts.model_client->OnResponseCompleted();
 
+  if (on_device_state_->opts.safety_cfg.HasRawOutputCheck()) {
+    // The stream should be complete, but explicitly reset the receiver to
+    // avoid any async surprises from misbehaving remote.
+    on_device_state_->receiver.reset();
+    RunRawOutputSafetyCheck();
+    return;
+  }
+
   if (on_device_state_->opts.safety_cfg.IsMissingSafetyInfo(
           !!summary->safety_info)) {
     on_device_state_->receiver.ReportBadMessage(
@@ -552,7 +562,30 @@ void SessionImpl::OnComplete(
   if (summary->safety_info) {
     on_device_state_->current_safety_info = std::move(summary->safety_info);
   }
-  SendResponse(ResponseType::kComplete);
+  SendResponse(ResponseType::kComplete, on_device_state_->current_response);
+}
+
+void SessionImpl::RunRawOutputSafetyCheck() {
+  auto check_input = on_device_state_->opts.safety_cfg.GetRawOutputCheckInput(
+    on_device_state_->current_response);
+  if (!check_input) {
+    // This mostly likely means a malformed safety config.
+    DestroyOnDeviceStateAndFallbackToRemote(
+        ExecuteModelResult::kFailedConstructingMessage);
+    return;
+  }
+  on_device_state_->opts.model_client->GetModelRemote()->ClassifyTextSafety(
+      check_input->input_string,
+      base::BindOnce(&SessionImpl::OnRawOutputSafetyResult,
+                     on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
+                     check_input->input_string));
+}
+
+void SessionImpl::OnRawOutputSafetyResult(
+    std::string safety_check_text,
+    on_device_model::mojom::SafetyInfoPtr safety_info) {
+  on_device_state_->current_safety_info = std::move(safety_info);
+  SendResponse(ResponseType::kComplete, safety_check_text);
 }
 
 on_device_model::mojom::Session& SessionImpl::GetOrCreateSession() {
@@ -614,7 +647,9 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
   }
 }
 
-void SessionImpl::SendResponse(ResponseType response_type) {
+void SessionImpl::SendResponse(
+    ResponseType response_type,
+    const std::string& safety_check_text) {
   on_device_state_->timer_for_first_response.Stop();
 
   proto::OnDeviceModelServiceResponse* logged_response =
@@ -641,7 +676,9 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   const bool is_unsafe = on_device_state_->opts.safety_cfg.IsUnsafeText(
       on_device_state_->current_safety_info);
   if (is_unsafe || is_complete) {
-    on_device_state_->AddTextSafetyExecutionLogging(is_unsafe);
+    on_device_state_->AddTextSafetyExecutionLogging(
+      safety_check_text, on_device_state_->current_safety_info,
+      is_unsafe);
   }
   if (is_unsafe || is_unsupported_language) {
     if (on_device_state_->histogram_logger) {
@@ -934,6 +971,19 @@ bool SafetyConfig::IsRequestUnsafe(
          HasUnsafeScores(thresholds, safety_info);
 }
 
+bool SafetyConfig::HasRawOutputCheck() const {
+  return proto_ && proto_->has_raw_output_check();
+}
+
+std::optional<SubstitutionResult> SafetyConfig::GetRawOutputCheckInput(
+    const std::string& raw_output) const {
+  proto::StringValue message;
+  message.set_value(raw_output);
+  return CreateSubstitutions(message,
+                             proto_->raw_output_check().input_template());
+
+}
+
 SessionImpl::OnDeviceState::OnDeviceState(OnDeviceOptions&& options,
                                           SessionImpl* session)
     : opts(std::move(options)),
@@ -956,8 +1006,11 @@ SessionImpl::OnDeviceState::MutableLoggedResponse() {
       ->mutable_on_device_model_service_response();
 }
 
-void SessionImpl::OnDeviceState::AddTextSafetyExecutionLogging(bool is_unsafe) {
-  if (!current_safety_info) {
+void SessionImpl::OnDeviceState::AddTextSafetyExecutionLogging(
+        const std::string& text,
+        const on_device_model::mojom::SafetyInfoPtr& safety_info,
+        bool is_unsafe) {
+  if (!safety_info) {
     return;
   }
 
@@ -968,11 +1021,11 @@ void SessionImpl::OnDeviceState::AddTextSafetyExecutionLogging(bool is_unsafe) {
                                 ->add_execution_infos();
   ts_execution_info->mutable_request()
       ->mutable_text_safety_model_request()
-      ->set_text(current_response);
+      ->set_text(text);
   auto* ts_resp = ts_execution_info->mutable_response()
                       ->mutable_text_safety_model_response();
-  *ts_resp->mutable_scores() = {current_safety_info->class_scores.begin(),
-                                current_safety_info->class_scores.end()};
+  *ts_resp->mutable_scores() = {safety_info->class_scores.begin(),
+                                safety_info->class_scores.end()};
   ts_resp->set_is_unsafe(is_unsafe);
 }
 
