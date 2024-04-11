@@ -264,10 +264,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   const DrawQuad* CanPassBeDrawnDirectly(
       const AggregatedRenderPass* pass) override;
 
-  const DrawQuad* CanPassBeDrawnDirectlyInternal(
-      const AggregatedRenderPass* pass,
-      bool* is_directly_drawable_with_single_rpdq);
-
   void DrawDelegatedInkTrail() override;
 
   // Get a color filter that converts from |src| color space to |dst| color

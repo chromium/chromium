@@ -226,12 +226,6 @@ const base::FeatureParam<int> kNumPendingFrames{&kVSyncAlignedPresent,
                                                 "PendingFrames", 2};
 #endif
 
-// Allow SkiaRenderer to skip drawing render passes that contain a single
-// RenderPassDrawQuad.
-BASE_FEATURE(kAllowBypassRenderPassQuads,
-             "AllowBypassRenderPassQuads",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
              "AllowUndamagedNonrootRenderPassToSkip",
              base::FEATURE_DISABLED_BY_DEFAULT);
