@@ -371,7 +371,8 @@ class FakeDrmDevice : public DrmDevice {
 
   // There is a circular reference between DrmDevice and
   // HardwareDisplayPlaneManager, as described in https://crbug.com/40263526.
-  // This function can be used to break the cycle in unittests.
+  // This function can be used to break the cycle in unittests. It must be
+  // called after any associated ScreenManager has been destroyed.
   void ResetPlaneManagerForTesting();
 
   // When CommitProperties has been called with a PageFlipRequest, FakeDrmDevice
