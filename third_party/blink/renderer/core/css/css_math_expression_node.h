@@ -188,8 +188,6 @@ class CORE_EXPORT CSSMathExpressionNode
            Category() == kCalcIntrinsicSize;
   }
 
-  virtual bool InvolvesAnchorQueries() const { return IsAnchorQuery(); }
-
   // Returns the unit type of the math expression *without doing any type
   // conversion* (e.g., 1px + 1em needs type conversion to resolve).
   // Returns |UnitType::kUnknown| if type conversion is required.
@@ -199,6 +197,7 @@ class CORE_EXPORT CSSMathExpressionNode
   void SetIsNestedCalc() { is_nested_calc_ = true; }
 
   bool HasComparisons() const { return has_comparisons_; }
+  bool HasAnchorFunctions() const { return has_anchor_functions_; }
   bool IsScopedValue() const { return !needs_tree_scope_population_; }
 
   const CSSMathExpressionNode& EnsureScopedValue(
@@ -229,14 +228,18 @@ class CORE_EXPORT CSSMathExpressionNode
       const TryTacticTransform&,
       const WritingDirectionMode&) const = 0;
 
+  virtual bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const = 0;
+
   virtual void Trace(Visitor* visitor) const {}
 
  protected:
   CSSMathExpressionNode(CalculationResultCategory category,
                         bool has_comparisons,
+                        bool has_anchor_functions,
                         bool needs_tree_scope_population)
       : category_(category),
         has_comparisons_(has_comparisons),
+        has_anchor_functions_(has_anchor_functions),
         needs_tree_scope_population_(needs_tree_scope_population) {
     DCHECK_NE(category, kCalcOther);
   }
@@ -251,6 +254,7 @@ class CORE_EXPORT CSSMathExpressionNode
   CalculationResultCategory category_;
   bool is_nested_calc_ = false;
   bool has_comparisons_;
+  bool has_anchor_functions_;
   bool needs_tree_scope_population_;
 };
 
@@ -281,6 +285,10 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
       const TryTacticTransform&,
       const WritingDirectionMode&) const final {
     return this;
+  }
+
+  bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final {
+    return false;
   }
 
   bool IsZero() const final;
@@ -347,6 +355,10 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
       const TryTacticTransform&,
       const WritingDirectionMode&) const final {
     return this;
+  }
+
+  bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final {
+    return false;
   }
 
   bool IsZero() const final { return false; }
@@ -440,6 +452,10 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
       const TryTacticTransform&,
       const WritingDirectionMode&) const final {
     return this;
+  }
+
+  bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final {
+    return false;
   }
 
   bool IsZero() const final { return false; }
@@ -617,7 +633,6 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
   bool HasPercentage() const final;
   bool InvolvesLayout() const final;
-  bool InvolvesAnchorQueries() const final;
 
   String CSSTextAsClamp() const;
 
@@ -643,6 +658,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
       LogicalAxis,
       const TryTacticTransform&,
       const WritingDirectionMode&) const final;
+  bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final;
   void Trace(Visitor* visitor) const final;
 
 #if DCHECK_IS_ON()
@@ -707,6 +723,9 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
       const TryTacticTransform& transform,
       const WritingDirectionMode& mode) const final {
     return this;
+  }
+  bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final {
+    return false;
   }
 
   CSSValueID GetValue() const { return size_feature_->GetValueID(); }
@@ -837,6 +856,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
       LogicalAxis,
       const TryTacticTransform&,
       const WritingDirectionMode&) const final;
+  bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final;
 
  protected:
   double ComputeDouble(const CSSLengthResolver&) const final;

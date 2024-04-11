@@ -99,8 +99,23 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   bool Equals(const CSSMathFunctionValue& other) const;
 
   bool HasComparisons() const { return expression_->HasComparisons(); }
-  bool InvolvesAnchorQueries() const {
-    return expression_->InvolvesAnchorQueries();
+
+  // True if this value has anchor() or anchor-size() somewhere within
+  // the math expression (regardless of the validity of those functions).
+  //
+  // https://drafts.csswg.org/css-anchor-position-1/#anchor-pos
+  // https://drafts.csswg.org/css-anchor-position-1/#anchor-size-fn
+  bool HasAnchorFunctions() const { return expression_->HasAnchorFunctions(); }
+
+  // Checks if any anchor() or anchor-size() functions, when evaluated, would
+  // cause the declaration holding this value to become invalid at
+  // computed-value time.
+  //
+  // https://drafts.csswg.org/css-anchor-position-1/#anchor-valid
+  // https://drafts.csswg.org/css-anchor-position-1/#anchor-size-valid
+  bool HasInvalidAnchorFunctions(
+      const CSSLengthResolver& length_resolver) const {
+    return expression_->HasInvalidAnchorFunctions(length_resolver);
   }
 
   const CSSValue& PopulateWithTreeScope(const TreeScope*) const;

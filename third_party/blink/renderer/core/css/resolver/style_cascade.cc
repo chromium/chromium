@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_invalid_variable_value.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
@@ -94,6 +95,20 @@ const TreeScope& TreeScopeAt(const MatchResult& result, uint32_t position) {
       result.GetMatchedProperties()[matched_properties_index];
   DCHECK_EQ(properties.types_.origin, CascadeOrigin::kAuthor);
   return result.ScopeFromTreeOrder(properties.types_.tree_order);
+}
+
+const CSSValue* EnsureScopedValue(const Document& document,
+                                  const MatchResult& match_result,
+                                  CascadePriority priority,
+                                  const CSSValue* value) {
+  CascadeOrigin origin = priority.GetOrigin();
+  const TreeScope* tree_scope{nullptr};
+  if (origin == CascadeOrigin::kAuthor) {
+    tree_scope = &TreeScopeAt(match_result, priority.GetPosition());
+  } else if (origin == CascadeOrigin::kAuthorPresentationalHint) {
+    tree_scope = &document;
+  }
+  return &value->EnsureScopedValue(tree_scope);
 }
 
 PropertyHandle ToPropertyHandle(const CSSProperty& property,
@@ -371,10 +386,11 @@ const CSSValue* StyleCascade::Resolve(StyleResolverState& state,
   // satisfy the API.
   CascadeResolver resolver(CascadeFilter(), /* generation */ 0);
 
-  // The origin is relevant for 'revert'. We pick kAuthor arbitrarily,
-  // but the behavior would be the same for any non-animated origin.
-  // (It always becomes 'unset').
-  CascadeOrigin origin = CascadeOrigin::kAuthor;
+  // The origin is relevant for 'revert', but since the cascade map
+  // is empty, there will be nothing to revert to regardless of the origin
+  // We use kNone, because kAuthor (etc) imply that the `value` originates
+  // from a location on the `MatchResult`, which is not the case.
+  CascadeOrigin origin = CascadeOrigin::kNone;
 
   return cascade.Resolve(name, value, origin, resolver);
 }
@@ -824,14 +840,8 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   value = Resolve(property, *value, *priority, origin, resolver);
   DCHECK(IsA<CustomProperty>(property) || !value->IsUnparsedDeclaration());
   DCHECK(!value->IsPendingSubstitutionValue());
-  const TreeScope* tree_scope{nullptr};
-  if (origin == CascadeOrigin::kAuthor) {
-    tree_scope = &TreeScopeAt(match_result_, priority->GetPosition());
-  } else if (origin == CascadeOrigin::kAuthorPresentationalHint) {
-    tree_scope = &GetDocument();
-  }
-  StyleBuilder::ApplyPhysicalProperty(property, state_,
-                                      value->EnsureScopedValue(tree_scope));
+  value = EnsureScopedValue(GetDocument(), match_result_, *priority, value);
+  StyleBuilder::ApplyPhysicalProperty(property, state_, *value);
 }
 
 void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,
@@ -1000,6 +1010,9 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
     } else {
       return &auto_base_select_pair->First();
     }
+  }
+  if (const auto* v = DynamicTo<CSSMathFunctionValue>(value)) {
+    return ResolveMathFunction(property, *v, priority);
   }
 
   resolver.CollectFlags(property, origin);
@@ -1244,6 +1257,60 @@ const CSSValue* StyleCascade::ResolveFlipRevert(const CSSFlipRevertValue& value,
       /* from_property */ to_property.PropertyID(), unflipped,
       value.Transform(), state_.StyleBuilder().GetWritingDirection());
   return flipped;
+}
+
+// Math functions can become invalid at computed-value time. Currently, this
+// is only possible for invalid anchor*() functions.
+//
+// https://drafts.csswg.org/css-anchor-position-1/#anchor-valid
+// https://drafts.csswg.org/css-anchor-position-1/#anchor-size-valid
+const CSSValue* StyleCascade::ResolveMathFunction(
+    const CSSProperty& property,
+    const CSSMathFunctionValue& math_value,
+    CascadePriority priority) {
+  if (!math_value.HasAnchorFunctions()) {
+    return &math_value;
+  }
+
+  auto anchor_mode = [](const CSSProperty& property) {
+    switch (property.PropertyID()) {
+      case CSSPropertyID::kTop:
+        return AnchorEvaluator::Mode::kTop;
+      case CSSPropertyID::kRight:
+        return AnchorEvaluator::Mode::kRight;
+      case CSSPropertyID::kBottom:
+        return AnchorEvaluator::Mode::kBottom;
+      case CSSPropertyID::kLeft:
+        return AnchorEvaluator::Mode::kLeft;
+      case CSSPropertyID::kWidth:
+      case CSSPropertyID::kHeight:
+      case CSSPropertyID::kMinWidth:
+      case CSSPropertyID::kMinHeight:
+      case CSSPropertyID::kMaxWidth:
+      case CSSPropertyID::kMaxHeight:
+        return AnchorEvaluator::Mode::kSize;
+      default:
+        return AnchorEvaluator::Mode::kNone;
+    }
+  };
+
+  const CSSLengthResolver& length_resolver = state_.CssToLengthConversionData();
+
+  // Calling HasInvalidAnchorFunctions evaluates the anchor*() functions
+  // inside the CSSMathFunctionValue. Evaluating anchor*() requires that we
+  // have the correct AnchorEvaluator::Mode, so we need to set that just like
+  // we do for during e.g. Left::ApplyValue, Right::ApplyValue, etc.
+  AnchorScope anchor_scope(anchor_mode(property),
+                           length_resolver.GetAnchorEvaluator());
+  // HasInvalidAnchorFunctions actually evaluates any anchor*() queries
+  // within the CSSMathFunctionValue, and this requires the TreeScope to
+  // be populated.
+  const auto* scoped_math_value = To<CSSMathFunctionValue>(
+      EnsureScopedValue(GetDocument(), match_result_, priority, &math_value));
+  if (scoped_math_value->HasInvalidAnchorFunctions(length_resolver)) {
+    return cssvalue::CSSUnsetValue::Create();
+  }
+  return scoped_math_value;
 }
 
 scoped_refptr<CSSVariableData> StyleCascade::ResolveVariableData(

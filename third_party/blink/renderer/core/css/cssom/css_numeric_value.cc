@@ -337,7 +337,7 @@ CSSNumericValue* CSSNumericValue::parse(
 CSSNumericValue* CSSNumericValue::FromCSSValue(const CSSPrimitiveValue& value) {
   if (value.IsCalculated()) {
     const auto& math_function = To<CSSMathFunctionValue>(value);
-    if (math_function.InvolvesAnchorQueries()) {
+    if (math_function.HasAnchorFunctions()) {
       return nullptr;
     }
     return CalcToNumericValue(*math_function.ExpressionNode());

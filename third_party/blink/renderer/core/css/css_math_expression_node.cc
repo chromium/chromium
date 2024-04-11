@@ -768,10 +768,10 @@ CSSMathExpressionNumericLiteral* CSSMathExpressionNumericLiteral::Create(
 
 CSSMathExpressionNumericLiteral::CSSMathExpressionNumericLiteral(
     const CSSNumericLiteralValue* value)
-    : CSSMathExpressionNode(
-          UnitCategory(value->GetType()),
-          false /* has_comparisons*/,
-          false /* needs_tree_scope_population*/),
+    : CSSMathExpressionNode(UnitCategory(value->GetType()),
+                            false /* has_comparisons*/,
+                            false /* has_anchor_functions*/,
+                            false /* needs_tree_scope_population*/),
       value_(value) {
   if (!value_->IsNumber() && CanEagerlySimplify(this)) {
     // "If root is a dimension that is not expressed in its canonical unit, and
@@ -1077,6 +1077,7 @@ CSSMathExpressionIdentifierLiteral::CSSMathExpressionIdentifierLiteral(
     AtomicString identifier)
     : CSSMathExpressionNode(UnitCategory(CSSPrimitiveValue::UnitType::kIdent),
                             false /* has_comparisons*/,
+                            false /* has_anchor_unctions*/,
                             false /* needs_tree_scope_population*/),
       identifier_(std::move(identifier)) {}
 
@@ -1167,6 +1168,7 @@ CSSMathExpressionKeywordLiteral::CSSMathExpressionKeywordLiteral(
     CSSMathOperator op)
     : CSSMathExpressionNode(DetermineKeywordCategory(keyword, op),
                             false /* has_comparisons*/,
+                            false /* has_anchor_unctions*/,
                             false /* needs_tree_scope_population*/),
       keyword_(keyword),
       operator_(op) {}
@@ -1813,6 +1815,7 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
     : CSSMathExpressionNode(
           category,
           left_side->HasComparisons() || right_side->HasComparisons(),
+          left_side->HasAnchorFunctions() || right_side->HasAnchorFunctions(),
           !left_side->IsScopedValue() || !right_side->IsScopedValue()),
       operands_({left_side, right_side}),
       operator_(op) {}
@@ -1853,19 +1856,20 @@ bool CSSMathExpressionOperation::InvolvesLayout() const {
   return false;
 }
 
-bool CSSMathExpressionOperation::InvolvesAnchorQueries() const {
-  for (const CSSMathExpressionNode* operand : operands_) {
-    if (operand->InvolvesAnchorQueries()) {
+static bool AnyOperandHasComparisons(
+    CSSMathExpressionOperation::Operands& operands) {
+  for (const CSSMathExpressionNode* operand : operands) {
+    if (operand->HasComparisons()) {
       return true;
     }
   }
   return false;
 }
 
-static bool AnyOperandHasComparisons(
+static bool AnyOperandHasAnchorFunctions(
     CSSMathExpressionOperation::Operands& operands) {
   for (const CSSMathExpressionNode* operand : operands) {
-    if (operand->HasComparisons()) {
+    if (operand->HasAnchorFunctions()) {
       return true;
     }
   }
@@ -1889,6 +1893,7 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
     : CSSMathExpressionNode(
           category,
           IsComparison(op) || AnyOperandHasComparisons(operands),
+          AnyOperandHasAnchorFunctions(operands),
           AnyOperandNeedsTreeScopePopulation(operands)),
       operands_(std::move(operands)),
       operator_(op) {}
@@ -1898,6 +1903,7 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
     CSSMathOperator op)
     : CSSMathExpressionNode(category,
                             IsComparison(op),
+                            false /*has_anchor_functions*/,
                             false),
       operator_(op) {}
 
@@ -2600,6 +2606,16 @@ const CSSMathExpressionNode* CSSMathExpressionOperation::TransformAnchors(
   return this;
 }
 
+bool CSSMathExpressionOperation::HasInvalidAnchorFunctions(
+    const CSSLengthResolver& length_resolver) const {
+  for (const CSSMathExpressionNode* op : operands_) {
+    if (op->HasInvalidAnchorFunctions(length_resolver)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 #if DCHECK_IS_ON()
 bool CSSMathExpressionOperation::InvolvesPercentageComparisons() const {
   if (IsMinOrMax() && Category() == kCalcPercent && operands_.size() > 1u) {
@@ -2653,6 +2669,7 @@ CSSMathExpressionContainerFeature::CSSMathExpressionContainerFeature(
     const CSSCustomIdentValue* container_name)
     : CSSMathExpressionNode(CalculationResultCategory::kCalcLength,
                             /*has_comparisons =*/false,
+                            /*has_anchor_functions =*/false,
                             /*needs_tree_scope_population =*/true),
       size_feature_(size_feature),
       container_name_(container_name) {
@@ -2722,6 +2739,7 @@ CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
     : CSSMathExpressionNode(
           AnchorQueryCategory(fallback),
           false /* has_comparisons */,
+          true /* has_anchor_functions */,
           (anchor_specifier && !anchor_specifier->IsScopedValue()) ||
               (fallback && !fallback->IsScopedValue())),
       type_(type),
@@ -2752,7 +2770,9 @@ double CSSMathExpressionAnchorQuery::ComputeDouble(
     return px.value();
   }
 
-  return fallback_ ? fallback_->ComputeLength<double>(length_resolver) : 0;
+  // We should have checked HasInvalidAnchorFunctions() before entering here.
+  CHECK(fallback_);
+  return fallback_->ComputeLength<double>(length_resolver);
 }
 
 String CSSMathExpressionAnchorQuery::CustomCSSText() const {
@@ -2843,10 +2863,10 @@ CSSMathExpressionAnchorQuery::ToCalculationExpression(
 
   if (std::optional<LayoutUnit> px = EvaluateQuery(query, length_resolver)) {
     result = Length::Fixed(px.value());
-  } else if (fallback_) {
-    result = fallback_->ConvertToLength(length_resolver);
   } else {
-    result = Length::Fixed(0);
+    // We should have checked HasInvalidAnchorFunctions() before entering here.
+    CHECK(fallback_);
+    result = fallback_->ConvertToLength(length_resolver);
   }
 
   return result.AsCalculationValue()->GetOrCreateExpression();
@@ -3027,6 +3047,31 @@ const CSSMathExpressionNode* CSSMathExpressionAnchorQuery::TransformAnchors(
 
   // No transformation.
   return this;
+}
+
+bool CSSMathExpressionAnchorQuery::HasInvalidAnchorFunctions(
+    const CSSLengthResolver& length_resolver) const {
+  AnchorQuery query = ToQuery(length_resolver);
+  std::optional<LayoutUnit> px = EvaluateQuery(query, length_resolver);
+
+  if (px.has_value()) {
+    return false;
+  }
+
+  // We need to take the fallback. However, if there is no fallback,
+  // then we are invalid at computed-value time [1].
+  // [1] // https://drafts.csswg.org/css-anchor-position-1/#anchor-valid
+
+  if (fallback_) {
+    if (auto* math_fallback =
+            DynamicTo<CSSMathFunctionValue>(fallback_.Get())) {
+      // The fallback itself may also contain invalid anchor*() functions.
+      return math_fallback->HasInvalidAnchorFunctions(length_resolver);
+    }
+    return false;
+  }
+
+  return true;
 }
 
 void CSSMathExpressionAnchorQuery::Trace(Visitor* visitor) const {

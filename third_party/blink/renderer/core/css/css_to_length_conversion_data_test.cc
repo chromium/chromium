@@ -378,7 +378,6 @@ TEST_F(CSSToLengthConversionDataTest, AnchorFunction) {
 
   CSSPropertyID right = CSSPropertyID::kRight;
 
-  EXPECT_FLOAT_EQ(60.0f, ConvertPx(data, "anchor(left)", right));
   EXPECT_FLOAT_EQ(60.0f, ConvertPx(data, "anchor(--a left)", right));
   EXPECT_FLOAT_EQ(2.0f, ConvertPx(data, "calc(anchor(--a left) / 30)", right));
 }
@@ -392,7 +391,6 @@ TEST_F(CSSToLengthConversionDataTest, AnchorFunctionFallback) {
 
   CSSPropertyID right = CSSPropertyID::kRight;
 
-  EXPECT_FLOAT_EQ(0.0f, ConvertPx(data, "anchor(left)", right));
   EXPECT_FLOAT_EQ(42.0f, ConvertPx(data, "anchor(--a left, 42px)", right));
   EXPECT_FLOAT_EQ(
       52.0f, ConvertPx(data, "anchor(--a left, calc(42px + 10px))", right));
@@ -424,7 +422,6 @@ TEST_F(CSSToLengthConversionDataTest, AnchorSizeFunctionFallback) {
 
   CSSPropertyID width = CSSPropertyID::kWidth;
 
-  EXPECT_FLOAT_EQ(0.0f, ConvertPx(data, "anchor-size(width)", width));
   EXPECT_FLOAT_EQ(42.0f,
                   ConvertPx(data, "anchor-size(--a width, 42px)", width));
   EXPECT_FLOAT_EQ(
@@ -448,7 +445,7 @@ TEST_F(CSSToLengthConversionDataTest, AnchorWithinOtherFunction) {
   EXPECT_EQ(ConvertLength(data, "calc(10px + 42%)", right),
             ConvertLength(data, "calc(anchor(--a left, 10px) + 42%)", right));
   EXPECT_EQ(ConvertLength(data, "calc(0px + 42%)", right),
-            ConvertLength(data, "calc(anchor(--a left) + 42%)", right));
+            ConvertLength(data, "calc(anchor(--a left, 0px) + 42%)", right));
   EXPECT_EQ(ConvertLength(data, "min(10px, 42%)", right),
             ConvertLength(data, "min(anchor(--a left, 10px), 42%)", right));
   EXPECT_EQ(ConvertLength(data, "min(10px, 42%)", right),
