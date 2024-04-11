@@ -67,6 +67,9 @@ GuardedPageAllocator::OutOfMemoryCallback CreateOomCallback(
     return base::DoNothing();
   }
 
+  // N.B. we call `FactoryGet()` here to avoid doing it inside the
+  // callback body, which could result in re-entrancy issues.
+  // See https://crbug.com/331729344 for details.
   const std::string histogram_name =
       base::StrCat({"Security.GwpAsan.AllocatorOom.", allocator_name, ".",
                     process_str.value()});
