@@ -179,7 +179,7 @@ bool StructTraits<
   if (!data.ReadValue(&value)) {
     return false;
   }
-  out->value = std::move(value);
+  out->set_value(std::move(value));
   if (!data.ReadSelectedText(&out->selected_text)) {
     return false;
   }

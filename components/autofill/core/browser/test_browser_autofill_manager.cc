@@ -133,7 +133,7 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
     for (size_t i = 0; i < expected_submitted_field_types_.size(); ++i) {
       SCOPED_TRACE(base::StringPrintf(
           "Field %d with value %s", static_cast<int>(i),
-          base::UTF16ToUTF8(submitted_form->field(i)->value).c_str()));
+          base::UTF16ToUTF8(submitted_form->field(i)->value()).c_str()));
       const FieldTypeSet& possible_types =
           submitted_form->field(i)->possible_types();
       EXPECT_EQ(expected_submitted_field_types_[i].size(),

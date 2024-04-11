@@ -1509,7 +1509,7 @@ void AutofillAgent::JavaScriptChangedValue(const WebFormControlElement& element,
                                      form_util::GetFieldRendererId(element),
                                      &FormFieldData::renderer_id);
         it != provisionally_saved_form()->fields.end()) {
-      it->value = element.Value().Utf16();
+      it->set_value(element.Value().Utf16());
       it->is_autofilled = element.IsAutofilled();
     }
   }

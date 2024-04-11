@@ -118,12 +118,12 @@ void IbanManager::SendIbanSuggestions(
     OnSuggestionsReturnedCallback on_suggestions_returned) {
   // If the input box content equals any of the available IBANs, then
   // assume the IBAN has been filled, and don't show any suggestions.
-  if (!field.value.empty() &&
-      base::Contains(ibans, field.value, &Iban::value)) {
+  if (!field.value().empty() &&
+      base::Contains(ibans, field.value(), &Iban::value)) {
     return;
   }
 
-  FilterIbansToSuggest(field.value, ibans);
+  FilterIbansToSuggest(field.value(), ibans);
 
   if (ibans.empty()) {
     return;

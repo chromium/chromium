@@ -99,7 +99,7 @@ bool AreChangePasswordFieldsEmpty(const FormData& form_data,
   const std::u16string& confirmation_password =
       parsed_form.confirmation_password_element;
   for (const auto& field : form_data.fields) {
-    if (!field.value.empty() &&
+    if (!field.value().empty() &&
         (field.name == new_password ||
          (!old_password.empty() && field.name == old_password) ||
          (!confirmation_password.empty() &&
@@ -644,7 +644,7 @@ void PasswordManager::OnPasswordFormCleared(
       manager->GetSubmittedForm()->new_password_element_renderer_id;
   auto it = base::ranges::find(form_data.fields, new_password_field_id,
                                &autofill::FormFieldData::renderer_id);
-  if (it != form_data.fields.end() && it->value.empty()) {
+  if (it != form_data.fields.end() && it->value().empty()) {
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
     OnLoginSuccessful();
@@ -950,7 +950,7 @@ void PasswordManager::UpdateStateOnUserInput(
 
   if (!util::CanFieldBeConsideredAsSingleUsername(
           field.name_attribute, field.id_attribute, field.label) ||
-      !util::CanValueBeConsideredAsSingleUsername(field.value)) {
+      !util::CanValueBeConsideredAsSingleUsername(field.value())) {
     return;
   }
 

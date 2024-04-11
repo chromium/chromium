@@ -1496,9 +1496,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
                                                 nullptr);
 
   // Simulate user changed non-pre-filled field value.
-  form_structure.field(0)->value = u"John";
+  form_structure.field(0)->set_value(u"John");
   // Simulate user changed pre-filled field value.
-  form_structure.field(2)->value = u"changed@example.com";
+  form_structure.field(2)->set_value(u"changed@example.com");
 
   // Sets `initial_value_changed` on `form_structure::fields_`.
   form_structure.RetrieveFromCache(

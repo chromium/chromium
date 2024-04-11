@@ -342,8 +342,9 @@ bool PasswordFormManager::IsEqualToSubmittedForm(
   // the submitted form.
   if (!parsed_submitted_form_->username_value.empty()) {
     for (const auto& field : form.fields) {
-      if (field.value == parsed_submitted_form_->username_value)
+      if (field.value() == parsed_submitted_form_->username_value) {
         return true;
+      }
     }
   }
   return false;
@@ -695,7 +696,7 @@ void PasswordFormManager::UpdateStateOnUserInput(
       });
   if (modified_field == mutable_observed_form()->fields.end())
     return;
-  modified_field->value = field_value;
+  modified_field->set_value(field_value);
 
   if (!HasGeneratedPassword())
     return;
@@ -1120,7 +1121,7 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
   // The parameters are coming from the renderer and can't be trusted.
   if (it == form_data.fields.end())
     return;
-  it->value = password;
+  it->set_value(password);
   auto [parsed_form, username_detection_method] =
       ParseFormAndMakeLogging(form_data, FormDataParser::Mode::kSaving);
   if (!parsed_form) {

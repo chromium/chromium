@@ -1031,7 +1031,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   // triggering field's value.
   const std::u16string field_value_for_filtering =
       trigger_source != AutofillSuggestionTriggerSource::kManualFallbackAddress
-          ? trigger_field.value
+          ? trigger_field.value()
           : u"";
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest = GetProfilesToSuggest(
@@ -1384,7 +1384,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
       trigger_field, trigger_field_type,
       /*suppress_disused_cards=*/
-      SanitizeCreditCardFieldValue(trigger_field.value).empty() &&
+      SanitizeCreditCardFieldValue(trigger_field.value()).empty() &&
           trigger_source !=
               AutofillSuggestionTriggerSource::kManualFallbackPayments,
       /*prefix_match=*/!is_manual_fallback_for_non_credit_card_field,
@@ -1636,7 +1636,7 @@ std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
   }
   std::vector<CreditCard> cards_to_suggest;
   std::u16string field_contents =
-      base::i18n::ToLower(SanitizeCreditCardFieldValue(trigger_field.value));
+      base::i18n::ToLower(SanitizeCreditCardFieldValue(trigger_field.value()));
   for (const CreditCard* credit_card : available_cards) {
     std::u16string suggested_value =
         credit_card->GetInfo(trigger_field_type, personal_data().app_locale());

@@ -204,7 +204,7 @@ auto IsWithinAutofillLimits() {
 }
 
 auto HasValue(std::string_view value) {
-  return Field(&FormFieldData::value, base::ASCIIToUTF16(value));
+  return Property(&FormFieldData::value, base::ASCIIToUTF16(value));
 }
 
 }  // namespace

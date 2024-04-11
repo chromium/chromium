@@ -1942,7 +1942,8 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
   EXPECT_EQ(field.id_attribute, u"my-id");
   EXPECT_EQ(field.name_attribute, u"my-name");
   EXPECT_EQ(field.css_classes, u"my-class");
-  EXPECT_EQ(field.value, u"\n            This is the textContent!\n         ");
+  EXPECT_EQ(field.value(),
+            u"\n            This is the textContent!\n         ");
 }
 
 TEST_F(FormAutofillUtilsTest, FindFormForContentEditableAbridgedSuccess) {
@@ -1970,9 +1971,9 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableAbridgedSuccess) {
   EXPECT_EQ(field.name_attribute, u"my-name");
   EXPECT_EQ(field.css_classes, u"my-class");
   // Only extract 1024 characters from the div.
-  EXPECT_EQ(field.value.length(), 1024u);
+  EXPECT_EQ(field.value().length(), 1024u);
   EXPECT_EQ(
-      field.value,
+      field.value(),
       u"3."
       u"14159265358979323846264338327950288419716939937510582097494459230781640"
       u"62862089986280348253421170679821480865132823066470938446095505822317253"

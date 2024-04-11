@@ -2064,7 +2064,7 @@ void WebFormControlElementToFormField(
     }
   }
 
-  field->value = std::move(value).substr(0, kMaxStringLength);
+  field->set_value(std::move(value).substr(0, kMaxStringLength));
   field->selected_text =
       element.SelectedText().Utf16().substr(0, kMaxSelectedTextLength);
 
@@ -2085,7 +2085,7 @@ void WebFormControlElementToFormField(
     // deemed acceptable.
     if (field->form_control_type == FormControlType::kInputPassword ||
         !ScriptModifiedUsernameOrCreditCardNumberAcceptable(
-            field->value, user_input, *field_data_manager)) {
+            field->value(), user_input, *field_data_manager)) {
       field->user_input = user_input.substr(0, kMaxStringLength);
     }
   }
@@ -2208,8 +2208,9 @@ std::optional<FormData> FindFormForContentEditable(
   // inserts whitespace at the right places and it ignores "display:none"
   // subtrees), but is significantly more expensive because it triggers a
   // layout.
-  field.value = content_editable.TextContentAbridged(kMaxStringLength).Utf16();
-  DCHECK_LE(field.value.length(), kMaxStringLength);
+  field.set_value(
+      content_editable.TextContentAbridged(kMaxStringLength).Utf16());
+  DCHECK_LE(field.value().length(), kMaxStringLength);
   field.selected_text =
       content_editable.SelectedText().Utf16().substr(0, kMaxSelectedTextLength);
   return form;

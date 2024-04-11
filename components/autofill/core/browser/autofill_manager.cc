@@ -372,7 +372,7 @@ void AutofillManager::OnTextFieldDidChange(const FormData& form,
                             bounding_box, timestamp)
                 .Then(NotifyObserversCallback(
                     &Observer::OnAfterTextFieldDidChange, form.global_id(),
-                    field.global_id(), field.value)));
+                    field.global_id(), field.value())));
 }
 
 void AutofillManager::OnTextFieldDidScroll(const FormData& form,

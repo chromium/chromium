@@ -24,7 +24,7 @@ struct FormTypesTestCase {
 
 autofill::FormFieldData CreateFieldWithValue(std::u16string value) {
   FormFieldData field;
-  field.value = value;
+  field.set_value(value);
   return field;
 }
 

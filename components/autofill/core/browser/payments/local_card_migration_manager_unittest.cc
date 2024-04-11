@@ -128,11 +128,11 @@ class LocalCardMigrationManagerTest : public testing::Test {
                           std::string_view expiration_year,
                           std::string_view cvc) {
     DCHECK(credit_card_form.fields.size() >= 5);
-    credit_card_form.fields[0].value = ASCIIToUTF16(name_on_card);
-    credit_card_form.fields[1].value = ASCIIToUTF16(card_number);
-    credit_card_form.fields[2].value = ASCIIToUTF16(expiration_month);
-    credit_card_form.fields[3].value = ASCIIToUTF16(expiration_year);
-    credit_card_form.fields[4].value = ASCIIToUTF16(cvc);
+    credit_card_form.fields[0].set_value(ASCIIToUTF16(name_on_card));
+    credit_card_form.fields[1].set_value(ASCIIToUTF16(card_number));
+    credit_card_form.fields[2].set_value(ASCIIToUTF16(expiration_month));
+    credit_card_form.fields[3].set_value(ASCIIToUTF16(expiration_year));
+    credit_card_form.fields[4].set_value(ASCIIToUTF16(cvc));
   }
 
   void AddLocalCreditCard(TestPersonalDataManager& personal_data,

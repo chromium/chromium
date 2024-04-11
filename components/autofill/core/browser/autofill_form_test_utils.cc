@@ -115,7 +115,7 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
     ff.name = *fd.name;
   }
   if (fd.value) {
-    ff.value = *fd.value;
+    ff.set_value(*fd.value);
   }
   if (fd.placeholder) {
     ff.placeholder = *fd.placeholder;

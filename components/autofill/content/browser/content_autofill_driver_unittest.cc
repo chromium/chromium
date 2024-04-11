@@ -84,7 +84,7 @@ const char kAppLocale[] = "en-US";
 MATCHER(EqualsFillData, "") {
   FormFieldData lhs_field = std::get<0>(arg);
   FormFieldData::FillData rhs_field = std::get<1>(arg);
-  return lhs_field.value == rhs_field.value &&
+  return lhs_field.value() == rhs_field.value &&
          lhs_field.renderer_id == rhs_field.renderer_id &&
          lhs_field.host_form_id == rhs_field.host_form_id &&
          lhs_field.section == rhs_field.section &&
@@ -714,7 +714,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   url::Origin triggered_origin;
   for (FormFieldData& field : address_form().fields) {
     field.origin = triggered_origin;
-    field.value = u"dummy_value";
+    field.set_value(u"dummy_value");
   }
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
@@ -737,11 +737,11 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   url::Origin triggered_origin;
   for (FormFieldData& field : address_form().fields) {
     field.origin = triggered_origin;
-    field.value = u"dummy_value";
+    field.set_value(u"dummy_value");
   }
   ASSERT_TRUE(base::ranges::all_of(
       address_form().fields,
-      [](const FormFieldData& field) { return !field.value.empty(); }));
+      [](const FormFieldData& field) { return !field.value().empty(); }));
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFormAction(

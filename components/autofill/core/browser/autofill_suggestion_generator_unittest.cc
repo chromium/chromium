@@ -2215,7 +2215,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
   // Create a triggering field those value prefix-matches `profile1`, but not
   // `profile2`.
   FormFieldData triggering_field;
-  triggering_field.value = profile1.GetRawInfo(NAME_FIRST);
+  triggering_field.set_value(profile1.GetRawInfo(NAME_FIRST));
   ASSERT_FALSE(profile2.GetRawInfo(NAME_FIRST)
                    .starts_with(profile1.GetRawInfo(NAME_FIRST)));
 
@@ -3645,7 +3645,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   personal_data().AddServerCreditCard(CreateServerCard());
 
   FormFieldData field_data;
-  field_data.value = u"$$$";
+  field_data.set_value(u"$$$");
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;

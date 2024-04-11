@@ -107,8 +107,8 @@ std::ostream& FormForestTestApi::PrintForm(std::ostream& os,
     if (!field.name_attribute.empty()) {
       os << prefix << "    Name " << field.name_attribute << std::endl;
     }
-    if (!field.value.empty()) {
-      os << prefix << "    Value " << field.value << std::endl;
+    if (!field.value().empty()) {
+      os << prefix << "    Value " << field.value() << std::endl;
     }
     if (!field.label.empty()) {
       os << prefix << "    Label "

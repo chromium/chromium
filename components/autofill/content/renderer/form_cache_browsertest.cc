@@ -434,7 +434,7 @@ void FillAndCheckState(
     FormFieldData* value_to_fill = FindFieldByName(
         values_to_fill, field_to_fill.element->NameForAutofill());
     ASSERT_TRUE(value_to_fill != nullptr);
-    value_to_fill->value = field_to_fill.value;
+    value_to_fill->set_value(field_to_fill.value);
     value_to_fill->is_autofilled = true;
   }
 

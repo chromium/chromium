@@ -233,7 +233,7 @@ void AddKeys(int profile, const std::set<AutocompleteKey>& keys) {
   for (const AutocompleteKey& key : keys) {
     FormFieldData field;
     field.name = key.name();
-    field.value = key.value();
+    field.set_value(key.value());
     form_fields.push_back(field);
   }
 

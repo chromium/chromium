@@ -635,10 +635,10 @@ TEST_F(PasswordGenerationAgentTest, EditingTest) {
   ASSERT_TRUE(fake_driver_.form_data_maybe_submitted().has_value());
   EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
                             "first_password"),
-              testing::Field(&FormFieldData::value, edited_password));
+              testing::Property(&FormFieldData::value, edited_password));
   EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
                             "second_password"),
-              testing::Field(&FormFieldData::value, edited_password));
+              testing::Property(&FormFieldData::value, edited_password));
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
 
@@ -654,10 +654,10 @@ TEST_F(PasswordGenerationAgentTest, EditingTest) {
   ASSERT_TRUE(fake_driver_.form_data_maybe_submitted().has_value());
   EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
                             "first_password"),
-              testing::Field(&FormFieldData::value, std::u16string()));
+              testing::Property(&FormFieldData::value, std::u16string()));
   EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
                             "second_password"),
-              testing::Field(&FormFieldData::value, std::u16string()));
+              testing::Property(&FormFieldData::value, std::u16string()));
 }
 
 TEST_F(PasswordGenerationAgentTest, EditingEventsTest) {

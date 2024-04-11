@@ -3755,7 +3755,7 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
 
   [[nodiscard]] static auto HasNameValue(const NameValue& nv) {
     return AllOf(Field("name", &FormFieldData::name, nv.name),
-                 Field("value", &FormFieldData::value, nv.value));
+                 Property("value", &FormFieldData::value, nv.value));
   }
 
   [[nodiscard]] static auto HasExpectedValues() {
@@ -3776,7 +3776,7 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
       const NameValueUserInput& nvu) {
     return AllOf(
         Field("name", &FormFieldData::name, nvu.name),
-        Field("value", &FormFieldData::value, nvu.value),
+        Property("value", &FormFieldData::value, nvu.value),
         Field("user_input", &FormFieldData::user_input, nvu.user_input));
   }
 

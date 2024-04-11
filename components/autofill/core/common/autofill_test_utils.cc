@@ -106,7 +106,7 @@ FormData CreateFormDataForFrame(FormData form, LocalFrameToken frame_token) {
 
 FormData WithoutValues(FormData form) {
   for (FormFieldData& field : form.fields) {
-    field.value = u"";
+    field.set_value(u"");
   }
   return form;
 }
@@ -142,7 +142,7 @@ FormFieldData CreateTestFormField(std::string_view label,
   field.renderer_id = MakeFieldRendererId();
   field.label = base::UTF8ToUTF16(label);
   field.name = base::UTF8ToUTF16(name);
-  field.value = base::UTF8ToUTF16(value);
+  field.set_value(base::UTF8ToUTF16(value));
   field.form_control_type = type;
   field.is_focusable = true;
   return field;

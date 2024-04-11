@@ -149,8 +149,8 @@ class AutofillShadowPredictionMetricsTest : public AutofillMetricsBaseTest,
 TEST_F(AutofillShadowPredictionMetricsTest,
        SubmissionWithoutShadowPredictions) {
   FormData form = GetFormWith2Fields(autofill_client_->form_origin());
-  form.fields[0].value = u"Elvis Aaron Presley";  // A known `NAME_FULL`.
-  form.fields[1].value = u"buddy@gmail.com";      // A known `EMAIL_ADDRESS`.
+  form.fields[0].set_value(u"Elvis Aaron Presley");  // A known `NAME_FULL`.
+  form.fields[1].set_value(u"buddy@gmail.com");      // A known `EMAIL_ADDRESS`.
 
   std::vector<FieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS};
   std::vector<FieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
@@ -179,8 +179,8 @@ TEST_F(AutofillShadowPredictionMetricsTest,
 TEST_F(AutofillShadowPredictionMetricsTest,
        SubmissionWithAgreeingShadowPredictions) {
   FormData form = GetFormWith2Fields(autofill_client_->form_origin());
-  form.fields[0].value = u"Elvis Aaron Presley";  // A known `NAME_FULL`.
-  form.fields[1].value = u"buddy@gmail.com";      // A known `EMAIL_ADDRESS`.
+  form.fields[0].set_value(u"Elvis Aaron Presley");  // A known `NAME_FULL`.
+  form.fields[1].set_value(u"buddy@gmail.com");      // A known `EMAIL_ADDRESS`.
 
   std::vector<FieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
 
@@ -216,8 +216,8 @@ TEST_F(AutofillShadowPredictionMetricsTest, CompareHeuristicsAndServer) {
   constexpr HeuristicSource source = HeuristicSource::kDefault;
 
   FormData form = GetFormWith2Fields(autofill_client_->form_origin());
-  form.fields[0].value = u"Elvis Aaron Presley";  // A known `NAME_FULL`.
-  form.fields[1].value = u"buddy@gmail.com";      // A known `EMAIL_ADDRESS`.
+  form.fields[0].set_value(u"Elvis Aaron Presley");  // A known `NAME_FULL`.
+  form.fields[1].set_value(u"buddy@gmail.com");      // A known `EMAIL_ADDRESS`.
 
   std::vector<FieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
 

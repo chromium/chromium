@@ -190,7 +190,7 @@ TEST_F(FastCheckoutTriggerValidatorTest,
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_FieldHasValue_ReturnsFalse) {
-  field_.value = u"value";
+  field_.set_value(u"value");
   EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kFailureFieldNotEmpty);
 }
 

@@ -281,7 +281,8 @@ struct FormFieldData {
   // depending on the `form_control_type`.
   // Truncated at `kMaxStringLength`.
   // TODO(crbug.com/1501362): Extract the value of contenteditables on iOS.
-  std::u16string value;
+  const std::u16string& value() const { return value_; }
+  void set_value(std::u16string value) { value_ = std::move(value); }
 
   // The selected text, or the empty string if no text is selected.
   // Truncated at `50 * kMaxStringLength`.
@@ -417,6 +418,9 @@ struct FormFieldData {
   // should be filled even though it is already considered autofilled OR
   // user modified.
   bool force_override = false;
+
+ private:
+  std::u16string value_;
 };
 
 // Structure containing necessary information to be sent from the browser to the
@@ -495,7 +499,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
   do {                                                                         \
     EXPECT_EQ(expected.label, actual.label);                                   \
     EXPECT_EQ(expected.name, actual.name);                                     \
-    EXPECT_EQ(expected.value, actual.value);                                   \
+    EXPECT_EQ(expected.value(), actual.value());                               \
     EXPECT_EQ(expected.form_control_type, actual.form_control_type);           \
     EXPECT_EQ(expected.autocomplete_attribute, actual.autocomplete_attribute); \
     EXPECT_EQ(expected.parsed_autocomplete, actual.parsed_autocomplete);       \

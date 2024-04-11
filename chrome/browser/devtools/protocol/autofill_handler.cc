@@ -270,7 +270,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
         field_id_to_form_field_data.find(autofill_field->global_id());
     const std::u16string filled_value =
         filled_field_iterator != field_id_to_form_field_data.end()
-            ? filled_field_iterator->second->value
+            ? filled_field_iterator->second->value()
             : u"";
     filled_fields_to_be_sent_to_devtools->push_back(
         protocol::Autofill::FilledField::Create()

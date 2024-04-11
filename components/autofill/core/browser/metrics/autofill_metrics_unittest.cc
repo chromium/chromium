@@ -4925,9 +4925,9 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
        CreateTestFormField("Phone", "phone", "", FormControlType::kInputText)});
 
   FormData filled_form = empty_form;
-  filled_form.fields[0].value = u"Elvis Aaron Presley";
-  filled_form.fields[1].value = u"theking@gmail.com";
-  filled_form.fields[2].value = u"12345678901";
+  filled_form.fields[0].set_value(u"Elvis Aaron Presley");
+  filled_form.fields[1].set_value(u"theking@gmail.com");
+  filled_form.fields[2].set_value(u"12345678901");
 
   // Fill additional form.
   FormData second_form = empty_form;
@@ -4937,10 +4937,10 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
       "Second Phone", "second_phone", "", FormControlType::kInputText));
 
   // Fill the field values for form submission.
-  second_form.fields[0].value = u"Elvis Aaron Presley";
-  second_form.fields[1].value = u"theking@gmail.com";
-  second_form.fields[2].value = u"12345678901";
-  second_form.fields[3].value = u"51512345678";
+  second_form.fields[0].set_value(u"Elvis Aaron Presley");
+  second_form.fields[1].set_value(u"theking@gmail.com");
+  second_form.fields[2].set_value(u"12345678901");
+  second_form.fields[3].set_value(u"51512345678");
 
   // Expect only form load metrics to be logged if the form is submitted without
   // user interaction.
@@ -5945,7 +5945,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
 TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
   FormData form = CreateForm({CreateTestFormField(
       "", "", "", FormControlType::kInputPassword, "one-time-code")});
-  form.fields[0].value = u"123456";
+  form.fields[0].set_value(u"123456");
 
   {
     base::HistogramTester histogram_tester;
@@ -6185,9 +6185,9 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
       auto index_it = type_to_index.find(fill_type);
       ASSERT_NE(index_it, type_to_index.end());
       FormFieldData& field = form_.fields[index_it->second];
-      field.value = fill_type != CREDIT_CARD_VERIFICATION_CODE
-                        ? fill_data().credit_card.GetRawInfo(fill_type)
-                        : fill_data().cvc;
+      field.set_value(fill_type != CREDIT_CARD_VERIFICATION_CODE
+                          ? fill_data().credit_card.GetRawInfo(fill_type)
+                          : fill_data().cvc);
       field.is_autofilled = is_autofilled;
       field.properties_mask = (field.properties_mask & ~kUserTyped) |
                               (is_user_typed ? kUserTyped : 0);

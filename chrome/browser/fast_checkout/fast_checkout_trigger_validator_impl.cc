@@ -72,7 +72,7 @@ FastCheckoutTriggerOutcome FastCheckoutTriggerValidatorImpl::ShouldRun(
   }
 
   // Trigger only on empty fields.
-  if (!field.value.empty()) {
+  if (!field.value().empty()) {
     LogAutofillInternals("not triggered because field was not empty.");
     return FastCheckoutTriggerOutcome::kFailureFieldNotEmpty;
   }

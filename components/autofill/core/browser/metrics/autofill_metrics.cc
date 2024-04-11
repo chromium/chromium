@@ -505,8 +505,9 @@ FieldType GetActualFieldType(const FieldTypeSet& possible_types,
 // only_fill_when_focused set to true.
 bool DuplicatedFilling(const FormStructure& form, const AutofillField& field) {
   for (const auto& form_field : form) {
-    if (field.value == form_field->value && form_field->is_autofilled)
+    if (field.value() == form_field->value() && form_field->is_autofilled) {
       return true;
+    }
   }
   return false;
 }
@@ -1188,11 +1189,11 @@ void AutofillMetrics::LogOverallPredictionQualityMetrics(
 void AutofillMetrics::LogEmailFieldPredictionMetrics(
     const AutofillField& field) {
   // If the field has no value, there is no need to record any of the metrics.
-  if (field.value.empty()) {
+  if (field.value().empty()) {
     return;
   }
 
-  bool is_valid_email = IsValidEmailAddress(field.value);
+  bool is_valid_email = IsValidEmailAddress(field.value());
   bool is_email_prediction = field.Type().GetStorableType() == EMAIL_ADDRESS;
 
   if (is_email_prediction) {

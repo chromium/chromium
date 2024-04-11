@@ -488,12 +488,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   // AutofillHandler::OnFillOrPreviewDataModelForm() to obtain the type
   // predictions.
   auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->field(0)->value = u"";
+  form_structure->field(0)->set_value(u"");
   form_structure->field(0)->set_server_predictions(
       {test::CreateFieldPrediction(NAME_FULL)});
   form_structure->field(0)->SetHtmlType(HtmlFieldType::kName,
                                         HtmlFieldMode::kShipping);
-  form_structure->field(1)->value = u"";
+  form_structure->field(1)->set_value(u"");
   form_structure->field(1)->set_server_predictions(
       {test::CreateFieldPrediction(NAME_FULL)});
   form_structure->field(1)->SetHtmlType(HtmlFieldType::kUnspecified,
@@ -552,13 +552,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
                         std::string(FieldTypeToDeveloperRepresentationString(
                             af->Type().GetStorableType()))));
     // Note: we read the value from `FormFieldData`.
-    EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16("value", ffd->value));
+    EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16("value", ffd->value()));
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16(
                         "frameId",
                         base::UTF8ToUTF16(
                             main_frame()->GetDevToolsFrameToken().ToString())));
     EXPECT_THAT(ff,
-                Not(FilledFieldHasAttributeWithValue16("value", af->value)));
+                Not(FilledFieldHasAttributeWithValue16("value", af->value())));
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue(
                     "htmlType", std::string(autofill::FormControlTypeToString(

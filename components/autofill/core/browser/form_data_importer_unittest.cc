@@ -1319,7 +1319,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_BadEmail) {
 
   // Change the value of the email field.
   ASSERT_EQ(form_structure->field(2)->Type().GetStorableType(), EMAIL_ADDRESS);
-  form_structure->field(2)->value = u"bogus";
+  form_structure->field(2)->set_value(u"bogus");
 
   // Verify that there was no import.
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
@@ -1598,7 +1598,7 @@ TEST_F(FormDataImporterTest,
   FormData hidden_second_form = form_data;
   for (FormFieldData& field : hidden_second_form.fields) {
     // Reset the values and make the field non focusable.
-    field.value = u"";
+    field.set_value(u"");
     field.is_focusable = false;
   }
 
@@ -4351,7 +4351,7 @@ TEST_F(FormDataImporterTest,
        GetObservedFieldValues_SkipFieldsFilledWithFallback) {
   AutofillField field;
   field.SetTypeTo(AutofillType(NAME_FIRST));
-  field.value = u"First";
+  field.set_value(u"First");
   const AutofillField* field_ptr = &field;
 
   base::flat_map<FieldType, std::u16string> observed_field_types =
@@ -4380,7 +4380,7 @@ class FormDataImporterTest_ExtractCreditCardFromForm
                  Mode mode = Mode::kDefaultValue) {
     AutofillField& f = test_api(form_).PushField();
     f.set_server_predictions({test::CreateFieldPrediction(field_type)});
-    f.value = std::move(value);
+    f.set_value(std::move(value));
     f.is_autofilled = mode == Mode::kAutofilled;
     f.is_user_edited = mode == Mode::kUserEdited;
   }

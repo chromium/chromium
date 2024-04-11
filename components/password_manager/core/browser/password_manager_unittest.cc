@@ -317,7 +317,7 @@ void SanitizeFormData(FormData* form) {
   form->main_frame_origin = url::Origin();
   for (FormFieldData& field : form->fields) {
     field.label.clear();
-    field.value = u"";
+    field.set_value(u"");
     field.autocomplete_attribute.clear();
     field.options.clear();
     field.placeholder.clear();
@@ -525,7 +525,7 @@ class PasswordManagerTestBase : public testing::Test {
     field.name = u"Email";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
-    field.value = u"googleuser";
+    field.set_value(u"googleuser");
     field.form_control_type = autofill::FormControlType::kInputText;
     field.renderer_id = FieldRendererId(2);
     form_data.fields.push_back(field);
@@ -533,7 +533,7 @@ class PasswordManagerTestBase : public testing::Test {
     field.name = u"Passwd";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
-    field.value = u"p4ssword";
+    field.set_value(u"p4ssword");
     field.form_control_type = autofill::FormControlType::kInputPassword;
     field.renderer_id = FieldRendererId(3);
     form_data.fields.push_back(field);
@@ -644,7 +644,7 @@ class PasswordManagerTestBase : public testing::Test {
     FormFieldData password_field;
     password_field.name = form.password_element;
     password_field.id_attribute = form.password_element;
-    password_field.value = form.password_value;
+    password_field.set_value(form.password_value);
     password_field.form_control_type =
         autofill::FormControlType::kInputPassword;
     password_field.renderer_id = FieldRendererId(2);
@@ -653,7 +653,7 @@ class PasswordManagerTestBase : public testing::Test {
     FormFieldData captcha_field;
     captcha_field.name = u"captcha_element";
     captcha_field.id_attribute = captcha_field.name;
-    captcha_field.value = u"captcha_value";
+    captcha_field.set_value(u"captcha_value");
     captcha_field.form_control_type = autofill::FormControlType::kInputText;
     captcha_field.renderer_id = FieldRendererId(3);
     form.form_data.fields.push_back(captcha_field);
@@ -691,7 +691,7 @@ class PasswordManagerTestBase : public testing::Test {
     search_field.name = u"search_bar";
     search_field.name_attribute = search_field.name;
     search_field.id_attribute = search_field.name_attribute;
-    search_field.value = u"search_field_value";
+    search_field.set_value(u"search_field_value");
 
     search_field.form_control_type = autofill::FormControlType::kInputText;
     search_field.renderer_id = FieldRendererId(62);
@@ -713,7 +713,7 @@ class PasswordManagerTestBase : public testing::Test {
     FormFieldData name_field;
     name_field.name = u"name";
     name_field.id_attribute = name_field.name;
-    name_field.value = u"Name";
+    name_field.set_value(u"Name");
     name_field.form_control_type = autofill::FormControlType::kInputText;
     name_field.renderer_id = FieldRendererId(2);
     form.form_data.fields.push_back(name_field);
@@ -721,7 +721,7 @@ class PasswordManagerTestBase : public testing::Test {
     FormFieldData surname_field;
     surname_field.name = form.username_element;
     surname_field.id_attribute = surname_field.name;
-    surname_field.value = form.username_value;
+    surname_field.set_value(form.username_value);
     surname_field.form_control_type = autofill::FormControlType::kInputText;
     surname_field.renderer_id = FieldRendererId(3);
     form.form_data.fields.push_back(surname_field);
@@ -729,7 +729,7 @@ class PasswordManagerTestBase : public testing::Test {
     FormFieldData password_field;
     password_field.name = form.password_element;
     password_field.id_attribute = form.password_element;
-    password_field.value = form.password_value;
+    password_field.set_value(form.password_value);
     password_field.form_control_type =
         autofill::FormControlType::kInputPassword;
     password_field.renderer_id = FieldRendererId(4);
@@ -751,7 +751,7 @@ class PasswordManagerTestBase : public testing::Test {
     FormFieldData field;
     field.name = form.username_element;
     field.id_attribute = field.name;
-    field.value = form.username_value;
+    field.set_value(form.username_value);
     field.form_control_type = autofill::FormControlType::kInputText;
     field.renderer_id = FieldRendererId(2);
     field.autocomplete_attribute = "cc-name";
@@ -759,7 +759,7 @@ class PasswordManagerTestBase : public testing::Test {
 
     field.name = form.password_element;
     field.id_attribute = field.name;
-    field.value = form.password_value;
+    field.set_value(form.password_value);
     field.form_control_type = autofill::FormControlType::kInputPassword;
     field.renderer_id = FieldRendererId(3);
     field.autocomplete_attribute = "cc-number";
@@ -855,7 +855,7 @@ TEST_P(PasswordManagerTest, GeneratedPasswordFormSubmitEmptyStore) {
 
   std::vector<FormData> observed;
   FormData form_data(MakeSignUpFormData());
-  const std::u16string username = form_data.fields[0].value;
+  const std::u16string username = form_data.fields[0].value();
   observed.push_back(form_data);
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
@@ -866,7 +866,7 @@ TEST_P(PasswordManagerTest, GeneratedPasswordFormSubmitEmptyStore) {
                                         generated_password);
   task_environment_.RunUntilIdle();
   EXPECT_THAT(store_->stored_passwords(), SizeIs(1));
-  form_data.fields[1].value = generated_password;
+  form_data.fields[1].set_value(generated_password);
   OnPasswordFormSubmitted(form_data);
 
   // The user should not need to confirm saving as they have already given
@@ -896,8 +896,8 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
       .WillRepeatedly(Return(true));
 
   FormData form_data = MakeSimpleFormData();
-  std::u16string username = form_data.fields[0].value;
-  std::u16string generated_password = form_data.fields[1].value + u"1";
+  std::u16string username = form_data.fields[0].value();
+  std::u16string generated_password = form_data.fields[1].value() + u"1";
   FieldRendererId username_element = form_data.fields[0].renderer_id;
   FieldRendererId generation_element = form_data.fields[1].renderer_id;
 
@@ -915,7 +915,7 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
       store_->stored_passwords(),
       ElementsAre(Pair(GetSignonRealm(form_data.url),
                        ElementsAre(FormUsernamePasswordAre(
-                           form_data.fields[0].value, generated_password)))));
+                           form_data.fields[0].value(), generated_password)))));
 
   // Test when the user is changing the generated password, presaved credential
   // is updated.
@@ -927,7 +927,7 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
       store_->stored_passwords(),
       ElementsAre(Pair(GetSignonRealm(form_data.url),
                        ElementsAre(FormUsernamePasswordAre(
-                           form_data.fields[0].value, generated_password)))));
+                           form_data.fields[0].value(), generated_password)))));
 
   // Test when the user is changing the username, presaved credential is
   // updated.
@@ -1287,7 +1287,8 @@ TEST_P(PasswordManagerTest, DontSaveAlreadySavedCredential) {
   PasswordForm incomplete_match(form);
   incomplete_match.password_value =
       form.password_value.substr(0, form.password_value.length() - 1);
-  incomplete_match.form_data.fields[1].value = incomplete_match.password_value;
+  incomplete_match.form_data.fields[1].set_value(
+      incomplete_match.password_value);
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, ShowManualFallbackForSaving(_, false, true))
       .WillOnce(MoveArg<0>((&form_manager_to_save)));
@@ -1340,7 +1341,7 @@ TEST_P(PasswordManagerTest, DoNotSaveWhenUserDeletesPassword) {
   // The user deletes the password, no manuall fallback should be shown.
   PasswordForm empty_password_form(form);
   empty_password_form.password_value.clear();
-  empty_password_form.form_data.fields[1].value = u"";
+  empty_password_form.form_data.fields[1].set_value(u"");
   EXPECT_CALL(client_, ShowManualFallbackForSaving).Times(0);
   EXPECT_CALL(client_, HideManualFallbackForSaving);
   manager()->OnInformAboutUserInput(&driver_, empty_password_form.form_data);
@@ -1368,7 +1369,7 @@ TEST_P(PasswordManagerTest, DoNotSaveOnChromeSignInForm) {
       .WillRepeatedly(Return(false));
   // The user is typing a credential. No fallback should be available.
   FormData typed_credentials(form_data);
-  typed_credentials.fields[1].value = u"pw";
+  typed_credentials.fields[1].set_value(u"pw");
   EXPECT_CALL(client_, ShowManualFallbackForSaving).Times(0);
   manager()->OnInformAboutUserInput(&driver_, form_data);
 
@@ -1798,7 +1799,7 @@ TEST_P(PasswordManagerTest, LoginFormReappearance) {
   form_data_after_navigation.url =
       GURL("https://accounts.google.com/login/error?redirect_after_login");
   for (auto& field : form_data_after_navigation.fields)
-    field.value = u"";
+    field.set_value(u"");
   observed.push_back(form_data_after_navigation);
 
   // A PasswordForm appears, and is visible in the layout:
@@ -1836,7 +1837,7 @@ TEST_P(PasswordManagerTest, ChangePasswordFormReappearance) {
   form_data_after_navigation.url =
       GURL("https://accounts.google.com/login/error?redirect_after_login");
   for (auto& field : form_data_after_navigation.fields)
-    field.value = u"";
+    field.set_value(u"");
   observed.push_back(form_data_after_navigation);
 
   // Reappeared change password form is a signal of a possibly successful
@@ -2087,10 +2088,10 @@ TEST_P(PasswordManagerTest, AttemptedSavePasswordSameOriginInsecureScheme) {
   FormFieldData& username_field = insecure_form.form_data.fields[0];
   username_field.name = insecure_form.username_element;
   insecure_form.username_value = u"compromised_user";
-  username_field.value = insecure_form.username_value;
+  username_field.set_value(insecure_form.username_value);
   insecure_form.password_value = u"C0mpr0m1s3d_P4ss";
   FormFieldData& password_field = insecure_form.form_data.fields[1];
-  password_field.value = insecure_form.password_value;
+  password_field.set_value(insecure_form.password_value);
   insecure_form.url = GURL("http://example.com/home");
   insecure_form.action = GURL("http://example.com/home");
   insecure_form.form_data.url = insecure_form.url;
@@ -2149,7 +2150,7 @@ TEST_P(PasswordManagerTest, AttemptedSavePasswordSameOriginInsecureScheme) {
 TEST_P(PasswordManagerTest, DoNotSaveWithEmptyNewPasswordAndNonemptyPassword) {
   std::vector<FormData> observed;
   FormData form_data(MakeSimpleFormData());
-  ASSERT_FALSE(form_data.fields[1].value.empty());
+  ASSERT_FALSE(form_data.fields[1].value().empty());
   FormFieldData field;
   field.name = u"new_password_element";
   field.id_attribute = field.name;
@@ -2177,7 +2178,7 @@ TEST_P(PasswordManagerTest, DoNotSaveWithEmptyNewPasswordAndNonemptyPassword) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(form_manager_to_save);
-  EXPECT_EQ(form_data.fields[1].value,
+  EXPECT_EQ(form_data.fields[1].value(),
             form_manager_to_save->GetPendingCredentials().password_value);
 }
 
@@ -2439,7 +2440,7 @@ TEST_P(PasswordManagerTest, PasswordGeneration_FailedSubmission) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
-                                        form_data.fields[1].value);
+                                        form_data.fields[1].value());
   task_environment_.RunUntilIdle();
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(store_->stored_passwords().empty());
@@ -2473,14 +2474,14 @@ TEST_P(PasswordManagerTest, PasswordGenerationPasswordEdited_FailedSubmission) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
-                                        form_data.fields[1].value);
+                                        form_data.fields[1].value());
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(store_->stored_passwords().empty());
   PasswordForm form = store_->stored_passwords().begin()->second[0];
 
   // Simulate user editing and submitting a different password. Verify that
   // the edited password is the one that is saved.
-  form_data.fields[1].value = u"different_password";
+  form_data.fields[1].set_value(u"different_password");
   OnPasswordFormSubmitted(form_data);
 
   // Do not save generated password when the password form reappears.
@@ -2514,12 +2515,12 @@ TEST_P(PasswordManagerTest,
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
-                                        form_data.fields[1].value);
+                                        form_data.fields[1].value());
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(store_->stored_passwords().empty());
 
   // Simulate user removing generated password and adding a new one.
-  form_data.fields[1].value = u"different_password";
+  form_data.fields[1].set_value(u"different_password");
   manager()->OnPasswordNoLongerGenerated(&driver_, form_data);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(store_->IsEmpty());
@@ -2551,12 +2552,12 @@ TEST_P(PasswordManagerTest,
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
-                                        form_data.fields[1].value);
+                                        form_data.fields[1].value());
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(store_->stored_passwords().empty());
 
   // Simulate user removing generated password and adding a new one.
-  form_data.fields[1].value = u"different_password";
+  form_data.fields[1].set_value(u"different_password");
   manager()->OnPasswordNoLongerGenerated(&driver_, form_data);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(store_->IsEmpty());
@@ -2587,11 +2588,11 @@ TEST_P(PasswordManagerTest, PasswordGenerationUsernameChanged) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
-                                        form_data.fields[1].value);
+                                        form_data.fields[1].value());
 
   // Simulate user changing the username, without ever completely
   // deleting the password.
-  form_data.fields[0].value = u"new_username";
+  form_data.fields[0].set_value(u"new_username");
   OnPasswordFormSubmitted(form_data);
   task_environment_.RunUntilIdle();
 
@@ -2605,8 +2606,8 @@ TEST_P(PasswordManagerTest, PasswordGenerationUsernameChanged) {
 
   ASSERT_THAT(store_->stored_passwords(), SizeIs(1));
   PasswordForm form = store_->stored_passwords().begin()->second[0];
-  EXPECT_EQ(form_data.fields[0].value, form.username_value);
-  EXPECT_EQ(form_data.fields[1].value, form.password_value);
+  EXPECT_EQ(form_data.fields[0].value(), form.username_value);
+  EXPECT_EQ(form_data.fields[1].value(), form.password_value);
 }
 
 TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword) {
@@ -2670,7 +2671,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword_NoFormManager) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
-                                        form_data.fields[1].value);
+                                        form_data.fields[1].value());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(store_->stored_passwords().empty());
   histogram_tester.ExpectUniqueSample(
@@ -2809,9 +2810,9 @@ TEST_P(PasswordManagerTest, AutofillingOfAffiliatedCredentials) {
 
   PasswordForm filled_form(observed_form);
   filled_form.username_value = android_form.username_value;
-  filled_form.form_data.fields[0].value = filled_form.username_value;
+  filled_form.form_data.fields[0].set_value(filled_form.username_value);
   filled_form.password_value = android_form.password_value;
-  filled_form.form_data.fields[1].value = filled_form.password_value;
+  filled_form.form_data.fields[1].set_value(filled_form.password_value);
   OnPasswordFormSubmitted(filled_form.form_data);
 
   PasswordForm saved_notified_form;
@@ -2854,9 +2855,9 @@ TEST_P(PasswordManagerTest, UpdatePasswordOfAffiliatedCredential) {
 
   PasswordForm filled_form(observed_form);
   filled_form.username_value = android_form.username_value;
-  filled_form.form_data.fields[0].value = filled_form.username_value;
+  filled_form.form_data.fields[0].set_value(filled_form.username_value);
   filled_form.password_value = u"new_password";
-  filled_form.form_data.fields[1].value = filled_form.password_value;
+  filled_form.form_data.fields[1].set_value(filled_form.password_value);
   OnPasswordFormSubmitted(filled_form.form_data);
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
@@ -2886,7 +2887,7 @@ TEST_P(PasswordManagerTest, ClearedFieldsSuccessCriteria) {
   PasswordForm form(MakeFormWithOnlyNewPasswordField());
   form.username_element.clear();
   form.username_value.clear();
-  form.form_data.fields[0].value = u"";
+  form.form_data.fields[0].set_value(u"");
   std::vector<FormData> observed = {form.form_data};
 
   // Emulate page load.
@@ -2899,7 +2900,7 @@ TEST_P(PasswordManagerTest, ClearedFieldsSuccessCriteria) {
   OnPasswordFormSubmitted(form.form_data);
 
   // JavaScript cleared field values.
-  observed[0].fields[1].value = u"";
+  observed[0].fields[1].set_value(u"");
 
   // Check success of the submission.
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
@@ -2919,7 +2920,7 @@ TEST_P(PasswordManagerTest, NotSavingSyncPasswordHash_NoUsername) {
   std::vector<FormData> observed;
   FormData form_data(MakeSimpleGAIAFormData());
   // Simulate that no username is found.
-  form_data.fields[0].value = u"";
+  form_data.fields[0].set_value(u"");
   observed.push_back(form_data);
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
@@ -2982,7 +2983,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSaving) {
   // The username of the stored form is different, there should be save bubble.
   PasswordForm new_form = form;
   new_form.username_value = u"another_username";
-  new_form.form_data.fields[0].value = new_form.username_value;
+  new_form.form_data.fields[0].set_value(new_form.username_value);
   EXPECT_CALL(client_, ShowManualFallbackForSaving(_, false, false))
       .WillOnce(MoveArg<0>(&form_manager_to_save));
   manager()->OnInformAboutUserInput(&driver_, new_form.form_data);
@@ -3221,8 +3222,8 @@ TEST_P(PasswordManagerTest, ProcessingNormalFormSubmission) {
     task_environment_.RunUntilIdle();
 
     auto submitted_form_data = form_data;
-    submitted_form_data.fields[0].value = u"username";
-    submitted_form_data.fields[1].value = u"password1";
+    submitted_form_data.fields[0].set_value(u"username");
+    submitted_form_data.fields[1].set_value(u"password1");
 
     OnPasswordFormSubmitted(submitted_form_data);
     EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
@@ -3263,8 +3264,8 @@ TEST_P(PasswordManagerTest, ProcessingOtherSubmissionTypes) {
   manager()->OnInformAboutUserInput(&driver_, form_data);
 
   auto submitted_form_data = form_data;
-  submitted_form_data.fields[0].value = u"username";
-  submitted_form_data.fields[1].value = u"strong_password";
+  submitted_form_data.fields[0].set_value(u"username");
+  submitted_form_data.fields[1].set_value(u"strong_password");
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword)
@@ -3286,8 +3287,8 @@ TEST_P(PasswordManagerTest, SubmittedGaiaFormWithoutVisiblePasswordField) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
 
-  form_data.fields[0].value = u"username";
-  form_data.fields[1].value = u"password";
+  form_data.fields[0].set_value(u"username");
+  form_data.fields[1].set_value(u"password");
   form_data.fields[1].is_focusable = false;
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
@@ -3349,7 +3350,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSavingNewParser) {
   // The username of the stored form is different, there should be save bubble.
   PasswordForm new_form = form;
   new_form.username_value = u"another_username";
-  new_form.form_data.fields[0].value = new_form.username_value;
+  new_form.form_data.fields[0].set_value(new_form.username_value);
   EXPECT_CALL(client_, ShowManualFallbackForSaving(_, false, false))
       .WillOnce(MoveArg<0>(&form_manager_to_save));
   manager()->OnInformAboutUserInput(&driver_, new_form.form_data);
@@ -3369,8 +3370,8 @@ TEST_P(PasswordManagerTest, NoSavePromptWhenPasswordManagerDisabled) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
 
   auto submitted_form_data = form_data;
-  submitted_form_data.fields[0].value = u"username";
-  submitted_form_data.fields[1].value = u"strong_password";
+  submitted_form_data.fields[0].set_value(u"username");
+  submitted_form_data.fields[1].set_value(u"strong_password");
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
   manager()->OnDynamicFormSubmission(&driver_,
@@ -3387,8 +3388,8 @@ TEST_P(PasswordManagerTest, NoSavePromptForNotPasswordForm) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
 
   auto submitted_form_data = form_data;
-  submitted_form_data.fields[0].value = u"text";
-  submitted_form_data.fields[1].value = u"1234";
+  submitted_form_data.fields[0].set_value(u"text");
+  submitted_form_data.fields[1].set_value(u"1234");
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
   manager()->OnDynamicFormSubmission(&driver_,
@@ -3786,9 +3787,9 @@ TEST_P(PasswordManagerTest, CreatePasswordFormManagerOnSaving) {
   auto submitted_form = form;
   submitted_form.form_data.renderer_id.value() += 1000;
   submitted_form.username_value = u"username1";
-  submitted_form.form_data.fields[0].value = submitted_form.username_value;
+  submitted_form.form_data.fields[0].set_value(submitted_form.username_value);
   submitted_form.password_value = u"password1";
-  submitted_form.form_data.fields[1].value = submitted_form.password_value;
+  submitted_form.form_data.fields[1].set_value(submitted_form.password_value);
 
   OnPasswordFormSubmitted(submitted_form.form_data);
   EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
@@ -3835,11 +3836,11 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnNonPasswordForm) {
   store_->AddLogin(saved_match);
   PasswordForm non_password_form(MakeSimpleForm());
   non_password_form.username_value = u"+1 650 000 000";  // Phone number.
-  non_password_form.form_data.fields[0].value =
-      non_password_form.username_value;
+  non_password_form.form_data.fields[0].set_value(
+      non_password_form.username_value);
   non_password_form.password_value = u"379 390";  // One time SMS code.
-  non_password_form.form_data.fields[1].value =
-      non_password_form.password_value;
+  non_password_form.form_data.fields[1].set_value(
+      non_password_form.password_value);
   non_password_form.form_data.fields[1].id_attribute = u"one-time-code";
   non_password_form.only_for_fallback = true;
 
@@ -3940,7 +3941,7 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnOtpFormWithoutUsername) {
   one_time_code_form.form_data.url = one_time_code_form.url;
   FormFieldData field;
   field.name_attribute = one_time_code_form.password_element;
-  field.value = one_time_code_form.password_value;
+  field.set_value(one_time_code_form.password_value);
   field.form_control_type = autofill::FormControlType::kInputPassword;
   one_time_code_form.form_data.fields.push_back(field);
 
@@ -3996,8 +3997,8 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnOtpFormWithUsername) {
   one_time_code_form.only_for_fallback = true;
   one_time_code_form.password_value = u"379 390";
   one_time_code_form.password_element = u"one-time-code";
-  one_time_code_form.form_data.fields[1].value =
-      one_time_code_form.password_value;
+  one_time_code_form.form_data.fields[1].set_value(
+      one_time_code_form.password_value);
   one_time_code_form.form_data.fields[1].name_attribute =
       one_time_code_form.password_element;
 
@@ -4059,7 +4060,7 @@ TEST_P(PasswordManagerTest, StartLeakDetection) {
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(*check_instance,
               Start(LeakDetectionInitiator::kSignInCheck, form_data.url,
-                    form_data.fields[0].value, form_data.fields[1].value));
+                    form_data.fields[0].value(), form_data.fields[1].value()));
   EXPECT_CALL(*weak_factory, TryCreateLeakCheck)
       .WillOnce(Return(ByMove(std::move(check_instance))));
 
@@ -4224,7 +4225,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
 
   // Simulate that the user typed a password and submitted the password form.
   const std::u16string password = u"newpassword";
-  password_form.form_data.fields[0].value = password;
+  password_form.form_data.fields[0].set_value(password);
   OnPasswordFormSubmitted(password_form.form_data);
 
   // Simulate successful submission and expect a save prompt.
@@ -4275,7 +4276,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSignUpFormWithIntermediaryFields) {
   // User enters OTP.
   manager()->OnUserModifiedNonPasswordField(
       &driver_, intermediary_form.form_data.fields[0].renderer_id,
-      /*value=*/intermediary_form.form_data.fields[0].value,
+      /*value=*/intermediary_form.form_data.fields[0].value(),
       /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/true);
 
@@ -4297,13 +4298,13 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSignUpFormWithIntermediaryFields) {
 
   manager()->OnUserModifiedNonPasswordField(
       &driver_, password_form.form_data.fields[0].renderer_id,
-      /*value=*/password_form.form_data.fields[0].value,
+      /*value=*/password_form.form_data.fields[0].value(),
       /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
 
   manager()->OnUserModifiedNonPasswordField(
       &driver_, password_form.form_data.fields[1].renderer_id,
-      /*value=*/password_form.form_data.fields[1].value,
+      /*value=*/password_form.form_data.fields[1].value(),
       /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
 
@@ -4369,7 +4370,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSignInFormWithIntermediaryFields) {
   // User enters OTP.
   manager()->OnUserModifiedNonPasswordField(
       &driver_, intermediary_form.form_data.fields[0].renderer_id,
-      /*value=*/intermediary_form.form_data.fields[0].value,
+      /*value=*/intermediary_form.form_data.fields[0].value(),
       /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/true);
 
@@ -4457,7 +4458,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingOnPasswordFormWithCaptcha) {
   // User enters CAPTCHA.
   manager()->OnUserModifiedNonPasswordField(
       &driver_, password_form.form_data.fields[1].renderer_id,
-      /*value=*/password_form.form_data.fields[1].value,
+      /*value=*/password_form.form_data.fields[1].value(),
       /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
 
@@ -4516,7 +4517,7 @@ TEST_P(PasswordManagerTest,
   // User enters OTP.
   manager()->OnUserModifiedNonPasswordField(
       &driver_, intermediary_form.form_data.fields[0].renderer_id,
-      /*value=*/intermediary_form.form_data.fields[0].value,
+      /*value=*/intermediary_form.form_data.fields[0].value(),
       /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/true);
 
@@ -4546,12 +4547,12 @@ TEST_P(PasswordManagerTest,
   // Simulate user modifying the text fields inside password form.
   manager()->OnUserModifiedNonPasswordField(
       &driver_, signup_form.form_data.fields[0].renderer_id,
-      /*value=*/signup_form.form_data.fields[0].value,
+      /*value=*/signup_form.form_data.fields[0].value(),
       /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
   manager()->OnUserModifiedNonPasswordField(
       &driver_, signup_form.form_data.fields[1].renderer_id,
-      /*value=*/signup_form.form_data.fields[1].value,
+      /*value=*/signup_form.form_data.fields[1].value(),
       /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
 
@@ -4674,7 +4675,7 @@ TEST_P(PasswordManagerTest,
   // User enters something to search bar.
   manager()->OnUserModifiedNonPasswordField(
       &driver_, search_bar.fields[0].renderer_id,
-      /*value=*/search_bar.fields[0].value,
+      /*value=*/search_bar.fields[0].value(),
       /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
 
@@ -4745,7 +4746,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
   // the password form.
   const std::u16string password = u"newpassword";
   ASSERT_TRUE(saved_form.password_value != password);
-  password_form.form_data.fields[0].value = password;
+  password_form.form_data.fields[0].set_value(password);
   OnPasswordFormSubmitted(password_form.form_data);
 
   // Simulate successful submission and expect a prompt.
@@ -4851,7 +4852,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowCacheSizeFromFinchParam) {
   // Simulate user modifying the text fields inside password form.
   manager()->OnUserModifiedNonPasswordField(
       &driver_, password_form.form_data.fields[0].renderer_id,
-      /*value=*/password_form.form_data.fields[0].value,
+      /*value=*/password_form.form_data.fields[0].value(),
       /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
 
@@ -5066,7 +5067,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
       autofill::FormControlType::kInputPassword;
   old_password_field.renderer_id = FieldRendererId(2);
   old_password_field.name = u"oldpass";
-  old_password_field.value = u"oldpass";
+  old_password_field.set_value(u"oldpass");
   form_data.fields.push_back(old_password_field);
 
   FormFieldData new_password_field;
@@ -5091,9 +5092,9 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
       manager()->form_managers().front()->votes_uploader();
   ASSERT_TRUE(votes_uploader);
 
-  form_data.fields[0].value = u"oldpass";
-  form_data.fields[1].value = u"newpass";
-  form_data.fields[2].value = u"newpass";
+  form_data.fields[0].set_value(u"oldpass");
+  form_data.fields[1].set_value(u"newpass");
+  form_data.fields[2].set_value(u"newpass");
 
   manager()->OnInformAboutUserInput(&driver_, form_data);
 
@@ -5122,7 +5123,7 @@ TEST_P(PasswordManagerTest,
   password_field.form_control_type = autofill::FormControlType::kInputPassword;
   password_field.renderer_id = FieldRendererId(1);
   password_field.name = u"one-time-code";
-  password_field.value = u"123456";
+  password_field.set_value(u"123456");
   form_data.fields.push_back(password_field);
 
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
@@ -5153,7 +5154,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
       autofill::FormControlType::kInputPassword;
   old_password_field.renderer_id = FieldRendererId(2);
   old_password_field.name = kEmptyName;
-  old_password_field.value = u"oldpass";
+  old_password_field.set_value(u"oldpass");
   form_data.fields.push_back(old_password_field);
 
   FormFieldData new_password_field;
@@ -5167,8 +5168,8 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
-  form_data.fields[0].value = u"oldpass";
-  form_data.fields[1].value = u"newpass";
+  form_data.fields[0].set_value(u"oldpass");
+  form_data.fields[1].set_value(u"newpass");
 
   manager()->OnInformAboutUserInput(&driver_, form_data);
 
@@ -5197,7 +5198,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
         autofill::FormControlType::kInputPassword;
     old_password_field.renderer_id = FieldRendererId(1);
     old_password_field.name = u"oldpass";
-    old_password_field.value = u"oldpass";
+    old_password_field.set_value(u"oldpass");
     form_data.fields.push_back(old_password_field);
 
     FormFieldData new_password_field;
@@ -5218,16 +5219,16 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
     manager()->OnPasswordFormsParsed(&driver_, {form_data});
     task_environment_.RunUntilIdle();
 
-    form_data.fields[0].value = u"oldpass";
-    form_data.fields[1].value = u"newpass";
-    form_data.fields[2].value = u"newpass";
+    form_data.fields[0].set_value(u"oldpass");
+    form_data.fields[1].set_value(u"newpass");
+    form_data.fields[2].set_value(u"newpass");
 
     manager()->OnInformAboutUserInput(&driver_, form_data);
 
-    form_data.fields[0].value = std::u16string();
-    form_data.fields[2].value = std::u16string();
+    form_data.fields[0].set_value(std::u16string());
+    form_data.fields[2].set_value(std::u16string());
     if (new_password_field_was_cleared)
-      form_data.fields[1].value = std::u16string();
+      form_data.fields[1].set_value(std::u16string());
 
     std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
     if (new_password_field_was_cleared) {
@@ -5262,7 +5263,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
         autofill::FormControlType::kInputPassword;
     old_password_field.renderer_id = FieldRendererId(1);
     old_password_field.name = kEmptyName;
-    old_password_field.value = u"oldpass";
+    old_password_field.set_value(u"oldpass");
     form_data.fields.push_back(old_password_field);
 
     FormFieldData new_password_field;
@@ -5276,14 +5277,14 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
     manager()->OnPasswordFormsParsed(&driver_, {form_data});
     task_environment_.RunUntilIdle();
 
-    form_data.fields[0].value = u"oldpass";
-    form_data.fields[1].value = u"newpass";
+    form_data.fields[0].set_value(u"oldpass");
+    form_data.fields[1].set_value(u"newpass");
 
     manager()->OnInformAboutUserInput(&driver_, form_data);
 
-    form_data.fields[0].value = u"";
+    form_data.fields[0].set_value(u"");
     if (new_password_field_was_cleared)
-      form_data.fields[1].value = u"";
+      form_data.fields[1].set_value(u"");
 
     std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
     if (new_password_field_was_cleared) {
@@ -5312,7 +5313,7 @@ TEST_P(PasswordManagerTest, IsFormManagerPendingPasswordUpdate) {
 
   // The user updates the password.
   FormData updated_data(form.form_data);
-  updated_data.fields[1].value = u"new_password";
+  updated_data.fields[1].set_value(u"new_password");
   manager()->OnInformAboutUserInput(&driver_, updated_data);
   EXPECT_TRUE(manager()->IsFormManagerPendingPasswordUpdate());
 
@@ -5742,14 +5743,14 @@ TEST_P(PasswordManagerWithOtpVariationsTest,
     one_time_code_form.username_element = test_form_username_element_;
     FormFieldData username_field;
     username_field.name = test_form_username_element_;
-    username_field.value = one_time_code_form_username_value;
+    username_field.set_value(one_time_code_form_username_value);
     username_field.form_control_type = autofill::FormControlType::kInputText;
     username_field.renderer_id = FieldRendererId(1);
     one_time_code_form.form_data.fields.push_back(username_field);
   }
 
   FormFieldData otp_field;
-  otp_field.value = test_form_otp_value_;
+  otp_field.set_value(test_form_otp_value_);
   otp_field.form_control_type = autofill::FormControlType::kInputPassword;
   otp_field.renderer_id = FieldRendererId(2);
   one_time_code_form.form_data.fields.push_back(otp_field);

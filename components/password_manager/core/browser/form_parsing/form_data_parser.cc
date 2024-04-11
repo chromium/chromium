@@ -183,7 +183,7 @@ bool IsProbablyNotUsername(const std::u16string& s) {
 
 // Returns |user_input| if it is not empty, |value| otherwise.
 const std::u16string& GetFieldValue(const FormFieldData& field) {
-  return field.user_input.empty() ? field.value : field.user_input;
+  return field.user_input.empty() ? field.value() : field.user_input;
 }
 
 // A helper struct that is used to capture significant fields to be used for
@@ -242,8 +242,8 @@ struct SignificantFields {
         password = passwords[0];
         break;
       case 2:
-        if (!passwords[0]->value.empty() &&
-            passwords[0]->value == passwords[1]->value) {
+        if (!passwords[0]->value().empty() &&
+            passwords[0]->value() == passwords[1]->value()) {
           // Two identical non-empty passwords: assume we are seeing a new
           // password with a confirmation. This can be either a sign-up form or
           // a password change form that does not ask for the old password.
@@ -264,19 +264,19 @@ struct SignificantFields {
         // If there are more than 3 passwords it is not very clear what this
         // form it is. Consider only the first 3 passwords in such case as a
         // best-effort solution.
-        if (!passwords[0]->value.empty() &&
-            passwords[0]->value == passwords[1]->value &&
-            passwords[0]->value == passwords[2]->value) {
+        if (!passwords[0]->value().empty() &&
+            passwords[0]->value() == passwords[1]->value() &&
+            passwords[0]->value() == passwords[2]->value()) {
           // All passwords are the same. Assume that the first field is the
           // current password.
           password = passwords[0];
-        } else if (passwords[1]->value == passwords[2]->value) {
+        } else if (passwords[1]->value() == passwords[2]->value()) {
           // New password is the duplicated one, and comes second; or empty form
           // with at least 3 password fields.
           password = passwords[0];
           new_password = passwords[1];
           confirmation_password = passwords[2];
-        } else if (passwords[0]->value == passwords[1]->value) {
+        } else if (passwords[0]->value() == passwords[1]->value()) {
           // It is strange that the new password comes first, but trust more
           // which fields are duplicated than the ordering of fields. Assume
           // that any password fields after the new password contain sensitive
@@ -750,7 +750,7 @@ const FormFieldData* FindUsernameFieldBaseHeuristics(
     if (!focusable_username && it->field->is_focusable) {
       focusable_username = it->field;
     }
-    if (stored_usernames.contains(base::i18n::ToLower(it->field->value))) {
+    if (stored_usernames.contains(base::i18n::ToLower(it->field->value()))) {
       return it->field;
     }
   }
@@ -1124,7 +1124,7 @@ FormDataParser::ParseAndReturnUsernameDetection(
                                     processed_fields, username_max);
       if (username_field_by_context &&
           !(mode == FormDataParser::Mode::kSaving &&
-            username_field_by_context->value.empty())) {
+            username_field_by_context->value().empty())) {
         significant_fields.username = username_field_by_context;
         if (method == UsernameDetectionMethod::kNoUsernameDetected ||
             method == UsernameDetectionMethod::kBaseHeuristic) {

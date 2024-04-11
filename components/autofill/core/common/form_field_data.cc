@@ -103,7 +103,7 @@ bool DeserializeSection1(base::PickleIterator* iter,
                  iter->ReadUInt64(&field_data->max_length) &&
                  iter->ReadBool(&field_data->is_autofilled);
   if (success) {
-    field_data->value = std::move(value);
+    field_data->set_value(std::move(value));
     // Form control types are serialized as strings for legacy reasons.
     // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
     // (de)serialize form control types? Remove it or migrate it to the enum
@@ -355,7 +355,7 @@ FormFieldData::FillData::FillData() = default;
 FormFieldData::FillData::~FillData() = default;
 
 FormFieldData::FillData::FillData(const FormFieldData& field)
-    : value(field.value),
+    : value(field.value()),
       renderer_id(field.renderer_id),
       host_form_id(field.host_form_id),
       section(field.section),
@@ -424,7 +424,7 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   pickle->WriteInt(kFormFieldDataPickleVersion);
   pickle->WriteString16(field_data.label);
   pickle->WriteString16(field_data.name);
-  pickle->WriteString16(field_data.value);
+  pickle->WriteString16(field_data.value());
   pickle->WriteString(FormControlTypeToString(field_data.form_control_type));
   // We don't serialize the `parsed_autocomplete`. See http://crbug.com/1353392.
   pickle->WriteString(field_data.autocomplete_attribute);
@@ -583,24 +583,20 @@ bool DeserializeFormFieldData(base::PickleIterator* iter,
 
 std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
   return os << "label='" << field.label << "' "
-            << "unique_Id=" << field.global_id() << " "
-            << "origin='" << field.origin.Serialize() << "' "
-            << "name='" << field.name << "' "
-            << "id_attribute='" << field.id_attribute << "' "
-            << "name_attribute='" << field.name_attribute << "' "
-            << "value='" << field.value << "' "
-            << "control='" << field.form_control_type << "' "
-            << "autocomplete='" << field.autocomplete_attribute << "' "
+            << "unique_Id=" << field.global_id() << " " << "origin='"
+            << field.origin.Serialize() << "' " << "name='" << field.name
+            << "' " << "id_attribute='" << field.id_attribute << "' "
+            << "name_attribute='" << field.name_attribute << "' " << "value='"
+            << field.value() << "' " << "control='" << field.form_control_type
+            << "' " << "autocomplete='" << field.autocomplete_attribute << "' "
             << "parsed_autocomplete='"
             << (field.parsed_autocomplete
                     ? field.parsed_autocomplete->ToString()
                     : "")
-            << "' "
-            << "placeholder='" << field.placeholder << "' "
-            << "max_length=" << field.max_length << " "
-            << "css_classes='" << field.css_classes << "' "
-            << "autofilled=" << field.is_autofilled << " "
-            << "check_status=" << field.check_status << " "
+            << "' " << "placeholder='" << field.placeholder << "' "
+            << "max_length=" << field.max_length << " " << "css_classes='"
+            << field.css_classes << "' " << "autofilled=" << field.is_autofilled
+            << " " << "check_status=" << field.check_status << " "
             << "is_focusable=" << field.is_focusable << " "
             << "should_autocomplete=" << field.should_autocomplete << " "
             << "role=" << field.role << " "
@@ -641,7 +637,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   buffer << Tr{} << "Is focusable:" << field.is_focusable;
   buffer << Tr{} << "Is enabled:" << field.is_enabled;
   buffer << Tr{} << "Is readonly:" << field.is_readonly;
-  buffer << Tr{} << "Is empty:" << (field.value.empty() ? "Yes" : "No");
+  buffer << Tr{} << "Is empty:" << (field.value().empty() ? "Yes" : "No");
   buffer << CTag{"table"};
   return buffer;
 }

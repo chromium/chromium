@@ -23,12 +23,12 @@ FormData CreateSigninFormData(const GURL& url, const char* username) {
   FormFieldData field;
   field.name = u"username_element";
   field.form_control_type = autofill::FormControlType::kInputText;
-  field.value = ASCIIToUTF16(username);
+  field.set_value(ASCIIToUTF16(username));
   form.fields.push_back(field);
 
   field.name = u"password_element";
   field.form_control_type = autofill::FormControlType::kInputPassword;
-  field.value = u"strong_pw";
+  field.set_value(u"strong_pw");
   form.fields.push_back(field);
   return form;
 }

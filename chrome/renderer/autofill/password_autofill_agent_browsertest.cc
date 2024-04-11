@@ -355,8 +355,9 @@ void SetElementReadOnly(WebInputElement& element, bool read_only) {
 bool FormHasFieldWithValue(const autofill::FormData& form,
                            const std::u16string& value) {
   for (const auto& field : form.fields) {
-    if (field.value == value)
+    if (field.value() == value) {
       return true;
+    }
     if (field.user_input == value)
       return true;
   }

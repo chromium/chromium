@@ -79,7 +79,7 @@ auto Equals(const FormFieldData& exp) {
       Field("origin", &FormFieldData::origin, exp.origin),
       Field("form_control_type", &FormFieldData::form_control_type,
             exp.form_control_type),
-      Field("value", &FormFieldData::value, exp.value),
+      Property("value", &FormFieldData::value, exp.value()),
       Field("label", &FormFieldData::label, exp.label),
       Field("host_form_signature", &FormFieldData::host_form_signature,
             exp.host_form_signature));
@@ -161,13 +161,13 @@ FormData WithValues(FormData& form, Profile profile = Profile(0)) {
   CHECK_GT(form.fields.size() / 6, 0u);
   for (size_t i = 0; i < form.fields.size() / 6; ++i) {
     std::bitset<6> bitset(profile.value() + i);
-    form.fields[6 * i + 0].value = bitset.test(0) ? u"Jane" : u"John";
-    form.fields[6 * i + 1].value = bitset.test(1) ? u"Doe" : u"Average";
-    form.fields[6 * i + 2].value =
-        bitset.test(2) ? u"4444333322221111" : u"4444444444444444";
-    form.fields[6 * i + 3].value = bitset.test(3) ? u"01" : u"12";
-    form.fields[6 * i + 4].value = bitset.test(4) ? u"2083" : u"2087";
-    form.fields[6 * i + 5].value = bitset.test(5) ? u"123" : u"456";
+    form.fields[6 * i + 0].set_value(bitset.test(0) ? u"Jane" : u"John");
+    form.fields[6 * i + 1].set_value(bitset.test(1) ? u"Doe" : u"Average");
+    form.fields[6 * i + 2].set_value(bitset.test(2) ? u"4444333322221111"
+                                                    : u"4444444444444444");
+    form.fields[6 * i + 3].set_value(bitset.test(3) ? u"01" : u"12");
+    form.fields[6 * i + 4].set_value(bitset.test(4) ? u"2083" : u"2087");
+    form.fields[6 * i + 5].set_value(bitset.test(5) ? u"123" : u"456");
   }
   return form;
 }
@@ -1544,10 +1544,10 @@ TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
       WithValues(GetMockedForm("child2"), Profile(2))};
   // Clear sensitive fields: the credit card number (field index 2) and CVC
   // (field index 5) in the two main-origin forms.
-  expectation[0].fields[2].value = u"";
-  expectation[0].fields[5].value = u"";
-  expectation[1].fields[2].value = u"";
-  expectation[1].fields[5].value = u"";
+  expectation[0].fields[2].set_value(u"");
+  expectation[0].fields[5].set_value(u"");
+  expectation[1].fields[2].set_value(u"");
+  expectation[1].fields[5].set_value(u"");
   EXPECT_THAT(GetRendererFormsOfBrowserForm("main", Origin(kIframeUrl),
                                             FieldTypeMap("main")),
               UnorderedArrayEquals(expectation));

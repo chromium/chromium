@@ -90,7 +90,7 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_Refill) {
   AddFormFilling(/*is_refill=*/false);
 
   // Modify the first name filling to simulate a refill.
-  filled_fields_[0].value = u"some-other-first-name";
+  filled_fields_[0].set_value(u"some-other-first-name");
   FieldGlobalId last_name_id = AddNewFieldFilling(
       "last name", "last name", "some-other-last-name",
       FormControlType::kInputText, NAME_LAST, /*is_autofilled=*/true);

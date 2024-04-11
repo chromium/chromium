@@ -660,7 +660,7 @@ void AutofillControllerTest::SetUpKeyValueData() {
   std::vector<FormFieldData> values;
   FormFieldData fieldData;
   fieldData.name = u"greeting";
-  fieldData.value = u"Bonjour";
+  fieldData.set_value(u"Bonjour");
   values.push_back(fieldData);
   web_data_service->AddFormFields(values);
 

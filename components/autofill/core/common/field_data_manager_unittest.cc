@@ -19,7 +19,7 @@ class FieldDataManagerTest : public testing::Test {
   void SetUp() override {
     FormFieldData field1;
     field1.id_attribute = u"name1";
-    field1.value = u"first";
+    field1.set_value(u"first");
     field1.form_control_type = FormControlType::kInputText;
     field1.renderer_id = FieldRendererId(1);
     control_elements_.push_back(field1);
@@ -40,7 +40,7 @@ TEST_F(FieldDataManagerTest, UpdateFieldDataMap) {
   const scoped_refptr<FieldDataManager> field_data_manager =
       base::MakeRefCounted<FieldDataManager>();
   field_data_manager->UpdateFieldDataMap(control_elements_[0].renderer_id,
-                                         control_elements_[0].value,
+                                         control_elements_[0].value(),
                                          FieldPropertiesFlags::kUserTyped);
   const FieldRendererId id(control_elements_[0].renderer_id);
   EXPECT_TRUE(field_data_manager->HasFieldData(id));
@@ -57,7 +57,7 @@ TEST_F(FieldDataManagerTest, UpdateFieldDataMap) {
   EXPECT_EQ(mask, field_data_manager->GetFieldPropertiesMask(id));
 
   field_data_manager->UpdateFieldDataMap(control_elements_[1].renderer_id,
-                                         control_elements_[1].value,
+                                         control_elements_[1].value(),
                                          FieldPropertiesFlags::kAutofilled);
   EXPECT_EQ(FieldPropertiesFlags::kNoFlags,
             field_data_manager->GetFieldPropertiesMask(
@@ -86,7 +86,7 @@ TEST_F(FieldDataManagerTest, UpdateFieldDataMapWithNullValue) {
   EXPECT_EQ(mask, field_data_manager->GetFieldPropertiesMask(id));
 
   field_data_manager->UpdateFieldDataMap(control_elements_[0].renderer_id,
-                                         control_elements_[0].value,
+                                         control_elements_[0].value(),
                                          FieldPropertiesFlags::kAutofilled);
   EXPECT_EQ(u"first", field_data_manager->GetUserInput(id));
 }
@@ -95,7 +95,7 @@ TEST_F(FieldDataManagerTest, FindMatchedValue) {
   const scoped_refptr<FieldDataManager> field_data_manager =
       base::MakeRefCounted<FieldDataManager>();
   field_data_manager->UpdateFieldDataMap(control_elements_[0].renderer_id,
-                                         control_elements_[0].value,
+                                         control_elements_[0].value(),
                                          FieldPropertiesFlags::kUserTyped);
   EXPECT_TRUE(field_data_manager->FindMatchedValue(u"first_element"));
   EXPECT_FALSE(field_data_manager->FindMatchedValue(u"second_element"));

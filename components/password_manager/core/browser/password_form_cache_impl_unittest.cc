@@ -58,8 +58,8 @@ class PasswordFormCacheTest : public testing::Test {
     // Fill values into the fields to save the form.
     FormData filled_form = form;
     EXPECT_EQ(filled_form.fields.size(), 2u);
-    filled_form.fields[0].value = u"username";
-    filled_form.fields[1].value = u"password";
+    filled_form.fields[0].set_value(u"username");
+    filled_form.fields[1].set_value(u"password");
     form_manager->ProvisionallySave(
         filled_form, &driver(),
         base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>(

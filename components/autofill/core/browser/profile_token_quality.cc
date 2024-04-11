@@ -166,7 +166,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     possible_observations.emplace_back(
         stored_type,
         Observation{.type = base::to_underlying(GetObservationTypeFromField(
-                        field, form_data.fields[i].value, other_profiles,
+                        field, form_data.fields[i].value(), other_profiles,
                         pdm.app_locale())),
                     .form_hash = hash});
   }

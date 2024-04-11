@@ -283,7 +283,7 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        TryToShowTouchToFillFailsForPaymentMethodIfFieldHasValue) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  form_.fields[0].value = u"Initial value";
+  form_.fields[0].set_value(u"Initial value");
 
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
@@ -414,7 +414,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   // Set credit card value.
   // TODO(crbug/1428904): Retrieve the card number field by name here.
   ASSERT_EQ(form_.fields[1].name, u"cardnumber");
-  form_.fields[1].value = u"411111111111";
+  form_.fields[1].set_value(u"411111111111");
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);
@@ -432,7 +432,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   // Set card expiration year.
   // TODO(crbug/1428904): Retrieve the card expiry year field by name here.
   ASSERT_EQ(form_.fields[3].name, u"ccyear");
-  form_.fields[3].value = u"2023";
+  form_.fields[3].set_value(u"2023");
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/true);
@@ -496,7 +496,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
        TryToShowTouchToFillToleratesFormattingCharacters) {
-  form_.fields[0].value = u"____-____-____-____";
+  form_.fields[0].set_value(u"____-____-____-____");
 
   TryToShowTouchToFill(/*expected_success=*/true);
   histogram_tester_.ExpectBucketCount(

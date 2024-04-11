@@ -157,7 +157,7 @@ TEST_F(AutofillAgentTests,
   field.name = u"number";
   field.name_attribute = field.name;
   field.id_attribute = u"number";
-  field.value = u"number_value";
+  field.set_value(u"number_value");
   field.is_autofilled = true;
   field.renderer_id = FieldRendererId(2);
   form.fields.push_back(field);
@@ -165,7 +165,7 @@ TEST_F(AutofillAgentTests,
   field.name = u"name";
   field.name_attribute = field.name;
   field.id_attribute = u"name";
-  field.value = u"name_value";
+  field.set_value(u"name_value");
   field.is_autofilled = true;
   field.renderer_id = FieldRendererId(3);
   form.fields.push_back(field);
@@ -173,7 +173,7 @@ TEST_F(AutofillAgentTests,
   field.name = u"expiry_month";
   field.name_attribute = field.name;
   field.id_attribute = u"expiry_month";
-  field.value = u"01";
+  field.set_value(u"01");
   field.is_autofilled = false;
   field.renderer_id = FieldRendererId(4);
   form.fields.push_back(field);
@@ -181,7 +181,7 @@ TEST_F(AutofillAgentTests,
   field.name = u"unknown";
   field.name_attribute = field.name;
   field.id_attribute = u"unknown";
-  field.value = u"";
+  field.set_value(u"");
   field.is_autofilled = true;
   field.renderer_id = FieldRendererId(5);
   form.fields.push_back(field);
@@ -208,7 +208,7 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
   field.name = u"number";
   field.name_attribute = field.name;
   field.id_attribute = u"number";
-  field.value = u"number_value";
+  field.set_value(u"number_value");
   field.is_autofilled = true;
   field.renderer_id = FieldRendererId(2);
 
@@ -235,7 +235,7 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
   field.name = u"number";
   field.name_attribute = field.name;
   field.id_attribute = u"number";
-  field.value = u"number_value";
+  field.set_value(u"number_value");
   field.is_autofilled = true;
   field.renderer_id = FieldRendererId(2);
 
@@ -266,7 +266,7 @@ TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
   field.name = u"number";
   field.name_attribute = field.name;
   field.id_attribute = u"number";
-  field.value = u"number_value";
+  field.set_value(u"number_value");
   field.is_autofilled = true;
   field.renderer_id = FieldRendererId(2);
 

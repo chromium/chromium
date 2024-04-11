@@ -410,7 +410,7 @@ void AutofillProviderAndroid::OnTextFieldDidScroll(
 
   // TODO(crbug.com/1478934): Investigate whether the update of the value
   // is needed - why would it have changed?
-  form_->OnFormFieldDidChange(field_info.index, field.value);
+  form_->OnFormFieldDidChange(field_info.index, field.value());
 
   field_info.bounds = ToClientAreaBound(bounding_box);
   bridge_->OnTextFieldDidScroll(field_info);
@@ -505,7 +505,7 @@ void AutofillProviderAndroid::MaybeFireFormFieldDidChange(
     return;
   }
   // Propagate the changed values to Java.
-  form_->OnFormFieldDidChange(field_info.index, field.value);
+  form_->OnFormFieldDidChange(field_info.index, field.value());
   field_info.bounds = ToClientAreaBound(bounding_box);
   bridge_->OnFormFieldDidChange(field_info);
 }

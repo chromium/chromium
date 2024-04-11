@@ -420,8 +420,8 @@ TEST_F(MerchantPromoCodeManagerTest, PrefixMatched) {
   SuggestionsContext context;
   context.form_structure = &form_structure;
   AddPromoCodeFocusedFieldToSuggestionsContext(&context);
-  test_field_.value = base::ASCIIToUTF16(SetUpPromoCodeOffer(
-      last_committed_origin_url, GURL("https://offer-details-url.com/")));
+  test_field_.set_value(base::ASCIIToUTF16(SetUpPromoCodeOffer(
+      last_committed_origin_url, GURL("https://offer-details-url.com/"))));
 
   // The field contains the promo code already, so check that we do not return
   // suggestions to the handler.

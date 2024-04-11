@@ -415,11 +415,11 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   FormData form_data;
 
   FormFieldData username_field;
-  username_field.value = prefilled_username;
+  username_field.set_value(prefilled_username);
   username_field.renderer_id = username_field_renderer_id;
 
   FormFieldData other_field;
-  other_field.value = u"some_field";
+  other_field.set_value(u"some_field");
   other_field.renderer_id = FieldRendererId(3234);
 
   form_data.fields = {other_field, username_field};
@@ -427,7 +427,7 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   VotesUploader votes_uploader(&client_, true);
   votes_uploader.StoreInitialFieldValues(form_data);
 
-  form_data.fields.at(1).value = u"user entered value";
+  form_data.fields.at(1).set_value(u"user entered value");
   FormStructure form_structure(form_data);
 
   PasswordForm password_form;

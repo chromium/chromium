@@ -468,7 +468,7 @@ void FillNonTypedOrFilledPropertiesMasks(std::vector<FormFieldData>* fields,
     for (const auto& [field_id, field_data] : manager.field_data_map()) {
       const std::optional<std::u16string>& value = field_data.first;
       FieldPropertiesMask properties = field_data.second;
-      if ((properties & kFilledOrTyped) && value == field.value) {
+      if ((properties & kFilledOrTyped) && value == field.value()) {
         field.properties_mask |= properties & kFilledOrTyped;
         break;
       }
@@ -550,7 +550,7 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
       continue;
 
     if (username_index != i && password_index != i &&
-        form_data.fields[i].value.empty()) {
+        form_data.fields[i].value().empty()) {
       return mojom::SubmissionReadinessState::kEmptyFields;
     }
     number_of_visible_elements++;

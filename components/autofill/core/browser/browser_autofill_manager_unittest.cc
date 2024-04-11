@@ -523,7 +523,7 @@ void ExpectFilledField(const char* expected_label,
   SCOPED_TRACE(expected_label);
   EXPECT_EQ(UTF8ToUTF16(expected_label), field.label);
   EXPECT_EQ(UTF8ToUTF16(expected_name), field.name);
-  EXPECT_EQ(UTF8ToUTF16(expected_value), field.value);
+  EXPECT_EQ(UTF8ToUTF16(expected_value), field.value());
   EXPECT_EQ(expected_form_control_type, field.form_control_type);
 }
 
@@ -2347,7 +2347,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   FormsSeen({form});
 
   FormFieldData field = form.fields[1];
-  field.value = u"       ";
+  field.set_value(u"       ");
   GetAutofillSuggestions(form, field);
 
   // Test that we sent the right values to the external delegate.
@@ -2369,7 +2369,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   FormsSeen({form});
 
   FormFieldData field = form.fields[1];
-  field.value = u"____-____-____-____";
+  field.set_value(u"____-____-____-____");
   GetAutofillSuggestions(form, field);
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
@@ -2390,7 +2390,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   FormsSeen({form});
 
   FormFieldData field = form.fields[1];
-  field.value = std::u16string({0x200E, 0x200F});
+  field.set_value(std::u16string({0x200E, 0x200F}));
   GetAutofillSuggestions(form, field);
 
   // Test that we sent the right values to the external delegate.
@@ -2420,7 +2420,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   FormsSeen({form});
 
   FormFieldData field = form.fields[1];
-  field.value = u"5255-66__-____-____";
+  field.set_value(u"5255-66__-____-____");
   GetAutofillSuggestions(form, field);
 
   // Test that we sent the right value to the external delegate.
@@ -2678,7 +2678,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   FormFieldData field = form.fields[1];
-  field.value = u"12345678";
+  field.set_value(u"12345678");
   GetAutofillSuggestions(form, field);
 
   external_delegate()->CheckNoSuggestions(field.global_id());
@@ -2800,7 +2800,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Query with name prefix for card0 returns card0.
   {
     FormFieldData field = form.fields[0];
-    field.value = u"B";
+    field.set_value(u"B");
     GetAutofillSuggestions(form, field);
 
     external_delegate()->CheckSuggestions(
@@ -2816,7 +2816,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Query with name prefix for card1 returns card1.
   {
     FormFieldData field = form.fields[0];
-    field.value = u"Cl";
+    field.set_value(u"Cl");
     GetAutofillSuggestions(form, field);
 
     external_delegate()->CheckSuggestions(
@@ -2831,7 +2831,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Query with name prefix for card2 returns card2.
   {
     FormFieldData field = form.fields[0];
-    field.value = u"Jo";
+    field.set_value(u"Jo");
     GetAutofillSuggestions(form, field);
 
     external_delegate()->CheckSuggestions(
@@ -3154,7 +3154,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
   GetAutofillSuggestions(form, field);
 
   // Simulate user typing into field (due to the ablation we would not fill).
-  field.value = u"Unknown User";
+  field.set_value(u"Unknown User");
   browser_autofill_manager_->OnTextFieldDidChange(form, field, gfx::RectF(),
                                                   base::TimeTicks::Now());
 
@@ -3374,7 +3374,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
 
   FormFieldData& field = form.fields[0];
   field.is_autofilled = true;
-  field.value = u"Elvis";
+  field.set_value(u"Elvis");
   GetAutofillSuggestions(form, field);
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
@@ -3763,11 +3763,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   // Michael will be overridden with Elvis because Autofill is triggered from
   // the first field.
-  form.fields[0].value = u"Michael";
+  form.fields[0].set_value(u"Michael");
   form.fields[0].properties_mask |= kUserTyped;
 
   // Jackson will be preserved, only override the first field.
-  form.fields[2].value = u"Jackson";
+  form.fields[2].set_value(u"Jackson");
   form.fields[2].properties_mask |= kUserTyped;
 
   // Fill the address data.
@@ -4111,7 +4111,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
 
   FormFieldData field = form.fields[0];
   // Simulate editing the first field.
-  field.value = u"Michael";
+  field.set_value(u"Michael");
   browser_autofill_manager_->OnTextFieldDidChange(form, field, gfx::RectF(),
                                                   base::TimeTicks::Now());
 
@@ -4995,7 +4995,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   FormData form = CreateTestAddressFormData();
   FormFieldData* addr1_field = form.FindFieldByName(u"addr1");
   ASSERT_TRUE(addr1_field != nullptr);
-  addr1_field->value = u"Enter your address";
+  addr1_field->set_value(u"Enter your address");
 
   FormsSeen({form});
 
@@ -5003,7 +5003,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   FormData response_data =
       FillAutofillFormDataAndGetResults(form, *addr1_field, kElvisProfileGuid);
   // Set the address field's value back to the default value.
-  response_data.fields[3].value = u"Enter your address";
+  response_data.fields[3].set_value(u"Enter your address");
 
   // Simulate form submission. The profile should not be updated with the
   // meaningless default value of the street address field.
@@ -5027,7 +5027,7 @@ void DoTestFormSubmittedControlWithDefaultValue(
   FormFieldData* state_field = form.FindFieldByName(u"state");
   ASSERT_TRUE(state_field != nullptr);
   state_field->form_control_type = form_control_type;
-  state_field->value = base::UTF8ToUTF16(GetElvisAddressFillData().state);
+  state_field->set_value(base::UTF8ToUTF16(GetElvisAddressFillData().state));
 
   test->FormsSeen({form});
 
@@ -5040,9 +5040,9 @@ void DoTestFormSubmittedControlWithDefaultValue(
       ->ClearFields({ADDRESS_HOME_STATE});
   test->FormSubmitted(response_data);
   // Expect that the profile was updated with the value of the state select.
-  EXPECT_EQ(state_field->value, test->personal_data()
-                                    .GetProfileByGUID(kElvisProfileGuid)
-                                    ->GetRawInfo(ADDRESS_HOME_STATE));
+  EXPECT_EQ(state_field->value(), test->personal_data()
+                                      .GetProfileByGUID(kElvisProfileGuid)
+                                      ->GetRawInfo(ADDRESS_HOME_STATE));
 }
 
 // Test that we save form data when a <select> in the form contains the
@@ -5157,7 +5157,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Once the form is cached, fill the values.
   EXPECT_EQ(form.fields.size(), expected_values.size());
   for (size_t i = 0; i < expected_values.size(); i++) {
-    form.fields[i].value = expected_values[i];
+    form.fields[i].set_value(expected_values[i]);
   }
 
   browser_autofill_manager_->SetExpectedSubmittedFieldTypes(expected_types);
@@ -5245,9 +5245,9 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
 
   // The fields are edited after calling FormsSeen on them. This is because
   // default values are not used for upload comparisons.
-  form.fields[0].value = u"Elvis";
-  form.fields[1].value = u"Presley";
-  form.fields[2].value = u"theking@gmail.com";
+  form.fields[0].set_value(u"Elvis");
+  form.fields[1].set_value(u"Presley");
+  form.fields[2].set_value(u"theking@gmail.com");
   // Simulate editing a field.
   browser_autofill_manager_->OnTextFieldDidChange(
       form, form.fields.front(), gfx::RectF(), base::TimeTicks::Now());
@@ -5295,9 +5295,9 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
 
   // The fields are edited after calling FormsSeen on them. This is because
   // default values are not used for upload comparisons.
-  form.fields[0].value = u"Elvis";
-  form.fields[1].value = u"Presley";
-  form.fields[2].value = u"theking@gmail.com";
+  form.fields[0].set_value(u"Elvis");
+  form.fields[1].set_value(u"Presley");
+  form.fields[2].set_value(u"theking@gmail.com");
   // Simulate editing a field.
   browser_autofill_manager_->OnTextFieldDidChange(
       form, form.fields.front(), gfx::RectF(), base::TimeTicks::Now());
@@ -5345,9 +5345,9 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
   browser_autofill_manager_->SetExpectedObservedSubmission(false);
 
   // Form was autofilled with user data.
-  form.fields[0].value = u"Elvis";
-  form.fields[1].value = u"Presley";
-  form.fields[2].value = u"theking@gmail.com";
+  form.fields[0].set_value(u"Elvis");
+  form.fields[1].set_value(u"Presley");
+  form.fields[2].set_value(u"theking@gmail.com");
   browser_autofill_manager_->OnDidFillAutofillFormData(form,
                                                        base::TimeTicks::Now());
 
@@ -5423,7 +5423,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Verify whether suggestions are populated correctly for one of the middle
   // credit card number fields when filled partially.
   FormFieldData number_field = form.fields[3];
-  number_field.value = u"901";
+  number_field.set_value(u"901");
 
   // Get the suggestions for already filled credit card |number_field|.
   GetAutofillSuggestions(form, number_field);
@@ -5485,13 +5485,13 @@ TEST_F(BrowserAutofillManagerTest, DontOfferToSavePaymentsCard) {
   // Manually fill out |form| so we can use it in OnFormSubmitted.
   for (auto& field : form.fields) {
     if (field.name == u"cardnumber")
-      field.value = u"4012888888881881";
+      field.set_value(u"4012888888881881");
     else if (field.name == u"nameoncard")
-      field.value = u"John H Dillinger";
+      field.set_value(u"John H Dillinger");
     else if (field.name == u"ccmonth")
-      field.value = u"01";
+      field.set_value(u"01");
     else if (field.name == u"ccyear")
-      field.value = u"2017";
+      field.set_value(u"2017");
   }
 
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
@@ -6710,7 +6710,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
                   Suggestion::Icon::kNoIcon, PopupItemId::kMixedFormMessage)});
 
   // Pretend user started typing and make sure we no longer set suggestions.
-  form.fields[0].value = u"Michael";
+  form.fields[0].set_value(u"Michael");
   form.fields[0].properties_mask |= kUserTyped;
   GetAutofillSuggestions(form, form.fields[0]);
   external_delegate()->CheckNoSuggestions(form.fields[0].global_id());
@@ -7312,8 +7312,8 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
 
   void SimulateOverrideFieldByJavaScript(size_t field_index,
                                          const std::u16string& new_value) {
-    std::u16string old_value = fill_data_.fields[field_index].value;
-    fill_data_.fields[field_index].value = new_value;
+    std::u16string old_value = fill_data_.fields[field_index].value();
+    fill_data_.fields[field_index].set_value(new_value);
     browser_autofill_manager_->OnJavaScriptChangedAutofilledValue(
         fill_data_, fill_data_.fields[field_index], old_value);
   }
@@ -7395,7 +7395,7 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
   }
 
   void SimulateTypingFirstNameIntoFirstField() {
-    form_.fields[0].value = u"Elvis";
+    form_.fields[0].set_value(u"Elvis");
     browser_autofill_manager_->OnTextFieldDidChange(
         form_, form_.fields[0], gfx::RectF(), base::TimeTicks::Now());
   }
@@ -7431,7 +7431,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
   // 3. Simulate typing into second field
-  form_.fields[1].value = u"Presley";
+  form_.fields[1].set_value(u"Presley");
   browser_autofill_manager_->OnTextFieldDidChange(
       form_, form_.fields[1], gfx::RectF(), base::TimeTicks::Now());
 
@@ -7736,7 +7736,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   // First, note the field with the empty value.
   FormsSeen({form});
   // Then fill in the dummy plus address.
-  form.fields[0].value = base::UTF8ToUTF16(kDummyPlusAddress);
+  form.fields[0].set_value(base::UTF8ToUTF16(kDummyPlusAddress));
 
   // Submit the form, capturing it as it is passed to the autocomplete history
   // manager. The first field should not be autocomplete eligible.

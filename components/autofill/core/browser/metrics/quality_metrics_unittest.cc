@@ -902,14 +902,15 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   // The `FormFieldData::label_source` of the fields is set manually, since
   // this test doesn't run label inference.
   FormFieldData name_field;
-  name_field.value = profile.GetInfo(NAME_FULL, personal_data().app_locale());
+  name_field.set_value(
+      profile.GetInfo(NAME_FULL, personal_data().app_locale()));
   name_field.label_source = FormFieldData::LabelSource::kUnknown;
   FormFieldData street_field;
-  street_field.value = u"unknown";
+  street_field.set_value(u"unknown");
   street_field.label_source = FormFieldData::LabelSource::kForId;
   FormFieldData country_field;
-  country_field.value =
-      profile.GetInfo(ADDRESS_HOME_COUNTRY, personal_data().app_locale());
+  country_field.set_value(
+      profile.GetInfo(ADDRESS_HOME_COUNTRY, personal_data().app_locale()));
   country_field.label_source = FormFieldData::LabelSource::kLabelTag;
   const FormData form = CreateForm({name_field, street_field, country_field});
   autofill_manager().AddSeenForm(
@@ -957,7 +958,7 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessPrecisionMetric) {
   // email).
   {
     base::HistogramTester histogram_tester;
-    form.fields[2].value = u"notemailtext";
+    form.fields[2].set_value(u"notemailtext");
     FillTestProfile(form);
     SubmitForm(form);
 
@@ -968,7 +969,7 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessPrecisionMetric) {
   // Check that the metric is not recorded for empty values.
   {
     base::HistogramTester histogram_tester;
-    form.fields[2].value = u"";
+    form.fields[2].set_value(u"");
     FillTestProfile(form);
     SubmitForm(form);
     histogram_tester.ExpectTotalCount(precision_histogram, 0);
@@ -1021,7 +1022,7 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessRecallMetric) {
   // Check that the metric is not recorded for empty values.
   {
     base::HistogramTester histogram_tester;
-    form.fields[2].value = u"";
+    form.fields[2].set_value(u"");
     FillTestProfile(form);
     SubmitForm(form);
     histogram_tester.ExpectTotalCount(precision_histogram, 0);

@@ -110,7 +110,7 @@ TEST_F(FormFieldDataAndroidTest, OnFormFieldDidChange) {
   EXPECT_CALL(bridge(), UpdateValue(kSampleValue));
   field_android.OnFormFieldDidChange(kSampleValue);
   EXPECT_FALSE(field.is_autofilled);
-  EXPECT_EQ(field.value, kSampleValue);
+  EXPECT_EQ(field.value(), kSampleValue);
 }
 
 // Tests that updating the field visibility calls the Java bridge and also

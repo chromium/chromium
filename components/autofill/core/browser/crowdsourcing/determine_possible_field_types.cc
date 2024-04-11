@@ -26,7 +26,7 @@ AutofillField* FindFirstFieldWithValue(const FormStructure& form_structure,
                                        const std::u16string& value) {
   for (const auto& field : form_structure) {
     std::u16string trimmed_value;
-    base::TrimWhitespace(field->value, base::TRIM_ALL, &trimmed_value);
+    base::TrimWhitespace(field->value(), base::TRIM_ALL, &trimmed_value);
     if (trimmed_value == value) {
       return field.get();
     }
@@ -82,7 +82,7 @@ AutofillField* HeuristicallyFindCVCFieldForUpload(
     DCHECK_EQ(1u, type_set.size());
 
     std::u16string trimmed_value;
-    base::TrimWhitespace(field->value, base::TRIM_ALL, &trimmed_value);
+    base::TrimWhitespace(field->value(), base::TRIM_ALL, &trimmed_value);
 
     // Skip the field if it can be confused with a expiration year.
     if (!found_explicit_expiration_year_field &&
@@ -138,7 +138,7 @@ void FindAndSetPossibleFieldTypesForField(
   std::u16string value;
   // Note: in case of a <select><option value="A">B</option></select>, the
   // `field.value` stores "B".
-  base::TrimWhitespace(field.value, base::TRIM_ALL, &value);
+  base::TrimWhitespace(field.value(), base::TRIM_ALL, &value);
 
   for (const AutofillProfile& profile : profiles) {
     profile.GetMatchingTypes(value, app_locale, &matching_types);

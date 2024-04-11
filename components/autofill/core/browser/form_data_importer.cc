@@ -494,7 +494,7 @@ FormDataImporter::GetAddressObservedFieldValues(
   // Go through each |form| field and attempt to constitute a valid profile.
   for (const AutofillField* const field : section_fields) {
     std::u16string value;
-    base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
+    base::TrimWhitespace(field->value(), base::TRIM_ALL, &value);
 
     // If we don't know the type of the field, or the user hasn't entered any
     // information into the field, then skip it.
@@ -1005,7 +1005,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
 
     FieldType field_type = autofill_type.GetStorableType();
 
-    std::u16string value_view = field->value;
+    std::u16string value_view = field->value();
     std::u16string_view user_input_view =
         base::TrimWhitespace(field->user_input, base::TRIM_ALL);
     if (base::FeatureList::IsEnabled(
@@ -1065,7 +1065,7 @@ FormDataImporter::ExtractCreditCardFromFormRelaxed(const FormStructure& form) {
                                           const AutofillField& field) {
     // The value of interest is `field->value` or `field->user_input`.
     std::u16string_view value_view =
-        base::TrimWhitespace(field.value, base::TRIM_ALL);
+        base::TrimWhitespace(field.value(), base::TRIM_ALL);
     std::u16string_view user_input_view =
         base::TrimWhitespace(field.user_input, base::TRIM_ALL);
     if (!user_input_view.empty() &&
@@ -1151,14 +1151,14 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
   Iban candidate_iban;
 
   for (const auto& field : form) {
-    if (!field->IsFieldFillable() || field->value.empty()) {
+    if (!field->IsFieldFillable() || field->value().empty()) {
       continue;
     }
 
     AutofillType autofill_type = field->Type();
     if (autofill_type.GetStorableType() == IBAN_VALUE &&
-        Iban::IsValid(field->value)) {
-      candidate_iban.SetInfo(autofill_type, field->value, app_locale_);
+        Iban::IsValid(field->value())) {
+      candidate_iban.SetInfo(autofill_type, field->value(), app_locale_);
       break;
     }
   }

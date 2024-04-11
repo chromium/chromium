@@ -35,7 +35,7 @@ bool IsFieldFocusableAndEmpty(const FormData& received_form,
   // value, not the original value.
   const FormFieldData* form_field = received_form.FindFieldByGlobalId(field_id);
   return form_field && form_field->IsFocusable() &&
-         SanitizedFieldIsEmpty(form_field->value);
+         SanitizedFieldIsEmpty(form_field->value());
 }
 
 }  // namespace
@@ -330,7 +330,7 @@ bool TouchToFillDelegateAndroidImpl::HasAnyAutofilledFields(
 bool TouchToFillDelegateAndroidImpl::IsFillingPerfect(
     const FormStructure& submitted_form) const {
   return base::ranges::all_of(submitted_form, [](const auto& field) {
-    return field->value.empty() || field->is_autofilled;
+    return field->value().empty() || field->is_autofilled;
   });
 }
 
@@ -348,7 +348,7 @@ bool TouchToFillDelegateAndroidImpl::IsFormPrefilled(const FormData& form) {
                               FieldType::CREDIT_CARD_NUMBER) {
       return false;
     }
-    return !SanitizedFieldIsEmpty(field.value);
+    return !SanitizedFieldIsEmpty(field.value());
   });
 }
 

@@ -110,7 +110,7 @@ class AutofillMetricsBaseTest {
   void SimulateUserChangedTextField(const FormData& form,
                                     FormFieldData& field,
                                     base::TimeTicks timestamp = {}) {
-    SimulateUserChangedTextFieldTo(form, field, field.value + u"_changed",
+    SimulateUserChangedTextFieldTo(form, field, field.value() + u"_changed",
                                    timestamp);
   }
 
@@ -123,9 +123,9 @@ class AutofillMetricsBaseTest {
                                       const std::u16string& new_value,
                                       base::TimeTicks timestamp = {}) {
     // Assert that the field is actually set to a different value.
-    ASSERT_NE(field.value, new_value);
+    ASSERT_NE(field.value(), new_value);
     field.is_autofilled = false;
-    field.value = new_value;
+    field.set_value(new_value);
     autofill_manager().OnTextFieldDidChange(form, field, gfx::RectF(),
                                             timestamp);
   }

@@ -189,7 +189,7 @@ void CheckField(const std::vector<FormFieldData>& fields,
   EXPECT_EQ(element_name, field_it->name);
 
   std::u16string expected_value =
-      field_it->user_input.empty() ? field_it->value : field_it->user_input;
+      field_it->user_input.empty() ? field_it->value() : field_it->user_input;
 
   if (element_value)
     EXPECT_EQ(expected_value, *element_value);
@@ -203,7 +203,7 @@ testing::Message DescribeFormData(const FormData& form_data) {
   for (const FormFieldData& field : form_data.fields) {
     result << "type="
            << autofill::FormControlTypeToString(field.form_control_type)
-           << ", name=" << field.name << ", value=" << field.value
+           << ", name=" << field.name << ", value=" << field.value()
            << ", unique id=" << field.renderer_id.value() << "\n";
   }
   return result;
@@ -251,7 +251,7 @@ void CheckAllValuesUnique(const AlternativeElementVector& v) {
 FormFieldData CreateField(FormControlType type, std::u16string value) {
   FormFieldData field;
   field.form_control_type = type;
-  field.value = std::move(value);
+  field.set_value(std::move(value));
   field.renderer_id = autofill::test::MakeFieldRendererId();
   return field;
 }
@@ -310,9 +310,9 @@ class FormParserTest : public testing::Test {
       field.is_readonly = field_description.is_readonly;
       field.properties_mask = field_description.properties_mask;
       if (field_description.value == kNonimportantValue) {
-        field.value = StampUniqueSuffix(u"value");
+        field.set_value(StampUniqueSuffix(u"value"));
       } else {
-        field.value = field_description.value;
+        field.set_value(field_description.value);
       }
       if (field_description.autocomplete_attribute)
         field.autocomplete_attribute = field_description.autocomplete_attribute;

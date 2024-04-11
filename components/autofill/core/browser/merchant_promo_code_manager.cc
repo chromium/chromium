@@ -146,7 +146,7 @@ void MerchantPromoCodeManager::SendPromoCodeSuggestions(
   // If the input box content equals any of the available promo codes, then
   // assume the promo code has been filled, and don't show any suggestions.
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
-    if (field.value == base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
+    if (field.value() == base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
       std::move(on_suggestions_returned).Run(field.global_id(), {});
       return;
     }

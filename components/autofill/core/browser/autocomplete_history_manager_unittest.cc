@@ -135,7 +135,7 @@ TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
   FormFieldData valid_cc;
   valid_cc.label = u"Credit Card";
   valid_cc.name = u"ccnum";
-  valid_cc.value = u"4012888888881881";
+  valid_cc.set_value(u"4012888888881881");
   valid_cc.properties_mask |= kUserTyped;
   valid_cc.form_control_type = FormControlType::kInputText;
   form.fields.push_back(valid_cc);
@@ -159,7 +159,7 @@ TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
   FormFieldData invalid_cc;
   invalid_cc.label = u"Credit Card";
   invalid_cc.name = u"ccnum";
-  invalid_cc.value = u"4580123456789012";
+  invalid_cc.set_value(u"4580123456789012");
   invalid_cc.properties_mask |= kUserTyped;
   invalid_cc.form_control_type = FormControlType::kInputText;
   form.fields.push_back(invalid_cc);
@@ -180,7 +180,7 @@ TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
   FormFieldData ssn;
   ssn.label = u"Social Security Number";
   ssn.name = u"ssn";
-  ssn.value = u"078-05-1120";
+  ssn.set_value(u"078-05-1120");
   ssn.properties_mask |= kUserTyped;
   ssn.form_control_type = FormControlType::kInputText;
   form.fields.push_back(ssn);
@@ -202,7 +202,7 @@ TEST_F(AutocompleteHistoryManagerTest, SearchField) {
   FormFieldData search_field;
   search_field.label = u"Search";
   search_field.name = u"search";
-  search_field.value = u"my favorite query";
+  search_field.set_value(u"my favorite query");
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
@@ -223,7 +223,7 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
   FormFieldData search_field;
   search_field.label = u"Search";
   search_field.name = u"search";
-  search_field.value = u"my favorite query";
+  search_field.set_value(u"my favorite query");
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
@@ -247,7 +247,7 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   // Empty value.
   search_field.label = u"Search";
   search_field.name = u"search";
-  search_field.value = u"";
+  search_field.set_value(u"");
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
@@ -255,7 +255,7 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   // Single whitespace.
   search_field.label = u"Search2";
   search_field.name = u"other search";
-  search_field.value = u" ";
+  search_field.set_value(u" ");
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
@@ -263,7 +263,7 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   // Multiple whitespaces.
   search_field.label = u"Search3";
   search_field.name = u"other search";
-  search_field.value = u"      ";
+  search_field.set_value(u"      ");
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
@@ -288,7 +288,7 @@ TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
   FormFieldData field;
   field.label = u"Something esoteric";
   field.name = u"esoterica";
-  field.value = u"a truly esoteric value, I assure you";
+  field.set_value(u"a truly esoteric value, I assure you");
   field.properties_mask |= kUserTyped;
   field.form_control_type = FormControlType::kInputText;
   field.should_autocomplete = false;
@@ -313,7 +313,7 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
   FormFieldData search_field;
   search_field.label = u"Search";
   search_field.name = u"search";
-  search_field.value = u"my favorite query";
+  search_field.set_value(u"my favorite query");
   search_field.properties_mask |= kUserTyped;
   search_field.form_control_type = FormControlType::kInputSearch;
   form.fields.push_back(search_field);
@@ -338,7 +338,7 @@ TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
   FormFieldData search_field;
   search_field.label = u"Search";
   search_field.name = u"search";
-  search_field.value = u"my favorite query";
+  search_field.set_value(u"my favorite query");
   search_field.form_control_type = FormControlType::kInputSearch;
   search_field.properties_mask |= kUserTyped;
   search_field.is_focusable = false;
@@ -363,7 +363,7 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
   FormFieldData field;
   field.label = u"Something esoteric";
   field.name = u"esoterica";
-  field.value = u"a truly esoteric value, I assure you";
+  field.set_value(u"a truly esoteric value, I assure you");
   field.properties_mask |= kUserTyped;
   field.form_control_type = FormControlType::kInputText;
   field.role = FormFieldData::RoleAttribute::kPresentation;
@@ -461,7 +461,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
@@ -491,7 +491,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Only expect a call when the name is not filtered out.
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .Times(0);
 
@@ -515,7 +515,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Only expect a call when the name is not filtered out.
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .Times(0);
 
@@ -545,7 +545,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Expect a call because the name is not filtered.
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
@@ -576,7 +576,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Expect a call because the name is not filtered.
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
@@ -605,7 +605,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
@@ -635,13 +635,13 @@ TEST_F(AutocompleteHistoryManagerTest,
   int mocked_db_query_id = 100;
 
   std::vector<AutocompleteEntry> expected_values = {
-      GetAutocompleteEntry(test_field_.name, test_field_.value)};
+      GetAutocompleteEntry(test_field_.name, test_field_.value())};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
@@ -674,7 +674,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
@@ -720,7 +720,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
@@ -765,7 +765,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values_second);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id_first))
       .WillOnce(Return(mocked_db_query_id_second));
@@ -815,7 +815,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate a request for autocomplete suggestions.
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
@@ -857,7 +857,7 @@ TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
   int mocked_db_query_id = 100;
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
+              GetFormValuesForElementName(test_field_.name, test_field_.value(),
                                           _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 

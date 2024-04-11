@@ -82,18 +82,18 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
       field.form_control_type == FormControlType::kTextArea ||
       field.form_control_type == FormControlType::kContentEditable ||
       IsInAutofillSuggestionsDisabledExperiment()) {
-    SendSuggestions({}, QueryHandler(field.global_id(), field.value,
+    SendSuggestions({}, QueryHandler(field.global_id(), field.value(),
                                      std::move(on_suggestions_returned)));
     return true;
   }
 
   if (profile_database_) {
     auto query_handle = profile_database_->GetFormValuesForElementName(
-        field.name, field.value, kMaxAutocompleteMenuItems, this);
+        field.name, field.value(), kMaxAutocompleteMenuItems, this);
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
-        {query_handle, QueryHandler(field.global_id(), field.value,
+        {query_handle, QueryHandler(field.global_id(), field.value(),
                                     std::move(on_suggestions_returned))});
     return true;
   }
@@ -298,13 +298,13 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
   // We don't want to save a trimmed string, but we want to make sure that the
   // value is neither empty nor only whitespaces.
   bool is_value_valid = base::ranges::any_of(
-      field.value, std::not_fn(base::IsUnicodeWhitespace<char16_t>));
+      field.value(), std::not_fn(base::IsUnicodeWhitespace<char16_t>));
   return is_value_valid && IsMeaningfulFieldName(field.name) &&
          !field.name.empty() && field.IsTextInputElement() &&
          !field.IsPasswordInputElement() &&
          field.form_control_type != FormControlType::kInputNumber &&
-         field.should_autocomplete && !IsValidCreditCardNumber(field.value) &&
-         !IsSSN(field.value) &&
+         field.should_autocomplete && !IsValidCreditCardNumber(field.value()) &&
+         !IsSSN(field.value()) &&
          (field.properties_mask & kUserTyped || field.is_focusable) &&
          field.role != FormFieldData::RoleAttribute::kPresentation;
 }

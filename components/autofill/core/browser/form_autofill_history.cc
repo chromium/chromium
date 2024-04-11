@@ -77,7 +77,7 @@ void FormAutofillHistory::AddFormFillEntry(
                  .field_filling_entries
                  .emplace(field->global_id(),
                           FieldFillingEntry(
-                              field->value, field->is_autofilled,
+                              field->value(), field->is_autofilled,
                               autofill_field->autofill_source_profile_guid(),
                               autofill_field->autofilled_type()))
                  .second;

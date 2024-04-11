@@ -95,7 +95,7 @@ SubmissionReadinessState CalculateSubmissionReadiness(
     }
 
     if (username_index != i && password_index != i &&
-        form_data.fields[i].value.empty()) {
+        form_data.fields[i].value().empty()) {
       return SubmissionReadinessState::kEmptyFields;
     }
     number_of_visible_elements++;

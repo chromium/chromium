@@ -53,7 +53,7 @@ class ProfileTokenQualityTest : public testing::Test {
                       size_t field_index,
                       std::u16string new_value) {
     FormFieldData& field = form.fields[field_index];
-    field.value = std::move(new_value);
+    field.set_value(std::move(new_value));
     bam_.OnTextFieldDidChange(form, field, gfx::RectF(),
                               base::TimeTicks::Now());
   }

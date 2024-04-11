@@ -1290,7 +1290,7 @@ TEST_F(FormStructureTestImpl, HeuristicsSample6) {
 
   field.label = std::u16string();
   field.name = u"Submit";
-  field.value = u"continue";
+  field.set_value(u"continue");
   field.form_control_type = FormControlType::kInputText;
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);

@@ -599,7 +599,7 @@ PasswordForm ConvertToPasswordForm(
   PasswordForm password_form;
   for (const auto& field : fields) {
     FormFieldData form_field;
-    form_field.value = ASCIIToUTF16(field.value);
+    form_field.set_value(ASCIIToUTF16(field.value));
     form_field.user_input = ASCIIToUTF16(field.user_input);
 
     if (field.user_typed)

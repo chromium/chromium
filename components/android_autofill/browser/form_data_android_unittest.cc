@@ -192,7 +192,7 @@ TEST_F(FormDataAndroidTest, SimilarFormAs_Fields) {
 
   // Forms with similar fields are similar.
   f = af.form();
-  f.fields.front().value = f.fields.front().value + u"x";
+  f.fields.front().set_value(f.fields.front().value() + u"x");
   EXPECT_TRUE(af.SimilarFormAs(f));
 
   // Forms with fields that are not similar, are not similar either.
@@ -280,7 +280,7 @@ TEST_F(FormDataAndroidTest, GetSimilarFieldIndex) {
   size_t index = 100;
   // Value is not part of a field similarity check, so this field is similar to
   // af.form().fields[1].
-  f.fields[1].value = u"some value";
+  f.fields[1].set_value(u"some value");
   EXPECT_TRUE(af.GetSimilarFieldIndex(f.fields[1], &index));
   EXPECT_EQ(index, 1u);
 
@@ -305,7 +305,7 @@ TEST_F(FormDataAndroidTest, OnFormFieldDidChange) {
   EXPECT_CALL(*field_bridges()[0], UpdateValue).Times(0);
   EXPECT_CALL(*field_bridges()[1], UpdateValue(kNewValue));
   form_android.OnFormFieldDidChange(1, kNewValue);
-  EXPECT_EQ(form_android.form().fields[1].value, kNewValue);
+  EXPECT_EQ(form_android.form().fields[1].value(), kNewValue);
 }
 
 // Tests that the calls to update field types are propagated to the fields.

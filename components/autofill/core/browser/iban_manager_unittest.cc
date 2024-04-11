@@ -234,7 +234,7 @@ TEST_F(IbanManagerTest,
       SetUpLocalIban("CH56 0483 5012 3456 7800 9", kNickname_1));
 
   AutofillField test_field;
-  test_field.value = u"CH5604835012345678009";
+  test_field.set_value(u"CH5604835012345678009");
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // The field contains value matches existing IBAN already, so check that we do
@@ -259,7 +259,7 @@ TEST_F(IbanManagerTest,
   Suggestion iban_suggestion_3 = SetUpFooterManagePaymentMethods();
 
   AutofillField test_field;
-  test_field.value = u"CH";
+  test_field.set_value(u"CH");
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Setting up mock to verify that the handler is returned a list of
@@ -281,7 +281,7 @@ TEST_F(IbanManagerTest,
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       test_field, autofill_client_, mock_callback.Get(), context));
 
-  test_field.value = u"CH5604";
+  test_field.set_value(u"CH5604");
 
   // Setting up mock to verify that the handler is returned only one
   // IBAN-based suggestion whose prefix matches `prefix_`. Only one of the two
@@ -300,7 +300,7 @@ TEST_F(IbanManagerTest,
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       test_field, autofill_client_, mock_callback.Get(), context));
 
-  test_field.value = u"AB56";
+  test_field.set_value(u"AB56");
 
   // Verify that the handler is not triggered because no IBAN suggestions match
   // the given prefix.
@@ -331,7 +331,7 @@ TEST_F(IbanManagerTest,
   Suggestion footer_suggestion = SetUpFooterManagePaymentMethods();
 
   AutofillField test_field;
-  test_field.value = u"CH";
+  test_field.set_value(u"CH");
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Expect that a list of IBAN suggestions whose prefixes match input field is
@@ -371,7 +371,7 @@ TEST_F(IbanManagerTest,
   Suggestion footer_suggestion = SetUpFooterManagePaymentMethods();
 
   AutofillField test_field;
-  test_field.value = u"CH567";
+  test_field.set_value(u"CH567");
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Expect that only one of the two IBANs should stay because the other will be
@@ -433,7 +433,7 @@ TEST_F(
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       test_field, autofill_client_, mock_callback.Get(), context));
 
-  test_field.value = u"AB567";
+  test_field.set_value(u"AB567");
 
   // Expect that all server IBANs are returned because the count of input
   // character is less than `kFieldLengthLimitOnServerIbanSuggestion`.
@@ -475,7 +475,7 @@ TEST_F(
   Suggestion footer_suggestion = SetUpFooterManagePaymentMethods();
 
   AutofillField test_field;
-  test_field.value = u"AB5678";
+  test_field.set_value(u"AB5678");
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Expect that no suggestions are returned because length of input field
@@ -539,7 +539,7 @@ TEST_F(IbanManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
   SetUpLocalIban(test::kIbanValue, kNickname_0);
 
   AutofillField test_field;
-  test_field.value = std::u16string(test::kIbanValue16);
+  test_field.set_value(std::u16string(test::kIbanValue16));
   // Set the field type to any type than "IBAN_VALUE".
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(
       test_field, CREDIT_CARD_VERIFICATION_CODE);
@@ -693,7 +693,7 @@ TEST_F(IbanManagerTest, Metrics_NoSuggestionShown) {
   AutofillField test_field;
   // Input a prefix that does not have any matching IBAN value so that no IBAN
   // suggestions will be shown.
-  test_field.value = u"XY";
+  test_field.set_value(u"XY");
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   MockSuggestionsReturnedCallback mock_callback;

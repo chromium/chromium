@@ -33,10 +33,11 @@ auto FormField(
     const std::string& name,
     const std::string& value = "",
     FormControlType form_control_type = FormControlType::kInputText) {
-  return AllOf(Field("name", &FormFieldData::name, base::UTF8ToUTF16(name)),
-               Field("value", &FormFieldData::value, base::UTF8ToUTF16(value)),
-               Field("form_control_type", &FormFieldData::form_control_type,
-                     form_control_type));
+  return AllOf(
+      Field("name", &FormFieldData::name, base::UTF8ToUTF16(name)),
+      Property("value", &FormFieldData::value, base::UTF8ToUTF16(value)),
+      Field("form_control_type", &FormFieldData::form_control_type,
+            form_control_type));
 }
 
 auto FormWithFields(auto matcher) {

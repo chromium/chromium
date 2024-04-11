@@ -33,7 +33,7 @@ bool IsValidOption(const SelectOption& option) {
 
 bool IsValidFormFieldData(const FormFieldData& field) {
   return IsValidString16(field.label) && IsValidString16(field.name) &&
-         IsValidString16(field.value) &&
+         IsValidString16(field.value()) &&
          base::to_underlying(field.form_control_type) >=
              base::to_underlying(FormControlType::kMinValue) &&
          base::to_underlying(field.form_control_type) <=

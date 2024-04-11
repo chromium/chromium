@@ -76,11 +76,11 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
       if (first_field_with_same_value == -1) {
         first_field_with_same_value = static_cast<int>(i);
       } else {
-        result.fields[i].value =
-            result.fields[first_field_with_same_value].value;
+        result.fields[i].set_value(
+            result.fields[first_field_with_same_value].value());
       }
     } else if (!force_empty_value) {
-      result.fields[i].value = ConsumeU16String(provider);
+      result.fields[i].set_value(ConsumeU16String(provider));
     }
   }
 

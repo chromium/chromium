@@ -410,7 +410,7 @@ AutofillType AutofillField::Type() const {
 }
 
 bool AutofillField::IsEmpty() const {
-  return value.empty();
+  return value().empty();
 }
 
 FieldSignature AutofillField::GetFieldSignature() const {

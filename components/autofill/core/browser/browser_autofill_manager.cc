@@ -240,7 +240,7 @@ void LogValuePatternsMetric(const FormData& form) {
       continue;
     }
     std::u16string value;
-    base::TrimWhitespace(field.value, base::TRIM_ALL, &value);
+    base::TrimWhitespace(field.value(), base::TRIM_ALL, &value);
     if (value.empty()) {
       continue;
     }
@@ -625,7 +625,7 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
 
   bool is_card_number_field =
       autofill_field->Type().GetStorableType() == CREDIT_CARD_NUMBER &&
-      base::ContainsOnlyChars(CreditCard::StripSeparators(field.value),
+      base::ContainsOnlyChars(CreditCard::StripSeparators(field.value()),
                               u"0123456789");
 
   if (!is_card_number_field) {
@@ -637,7 +637,7 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
   }
 
   static const int kShowScanCreditCardMaxValueLength = 6;
-  return field.value.size() <= kShowScanCreditCardMaxValueLength;
+  return field.value().size() <= kShowScanCreditCardMaxValueLength;
 }
 
 bool BrowserAutofillManager::ShouldShowCardsFromAccountOption(
@@ -801,7 +801,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     }
     if (plus_address_delegate &&
         plus_address_delegate->IsPlusAddress(
-            base::UTF16ToUTF8(autofill_field->value))) {
+            base::UTF16ToUTF8(autofill_field->value()))) {
       // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
       // Note that the feature is experimental, and `plus_address_delegate`
       // will be null if the feature is not enabled (it's disabled by default).
@@ -1030,7 +1030,7 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
   // If the user types into the same field multiple times, repeated
   // TypingFieldLogEvents are coalesced.
   autofill_field->AppendLogEventIfNotRepeated(TypingFieldLogEvent{
-      .has_value_after_typing = ToOptionalBoolean(!field.value.empty())});
+      .has_value_after_typing = ToOptionalBoolean(!field.value().empty())});
 
   UpdatePendingForm(form);
 
@@ -1737,7 +1737,7 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
   LOG_AF(change) << "Old value structure: '"
                  << StructureOfString(old_value.substr(0, 80)) << "'" << Br{};
   LOG_AF(change) << "New value structure: '"
-                 << StructureOfString(field.value.substr(0, 80)) << "'";
+                 << StructureOfString(field.value().substr(0, 80)) << "'";
   LOG_AF(log_manager()) << LoggingScope::kWebsiteModifiedFieldValue
                         << LogMessage::kJavaScriptChangedAutofilledValue << Br{}
                         << Tag{"table"} << Tr{} << GetFieldNumber()
@@ -1758,7 +1758,7 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
   // We are interested in reporting the events where JavaScript resets an
   // autofilled value immediately after filling. For a reset, the value
   // needs to be empty.
-  if (!field.value.empty()) {
+  if (!field.value().empty()) {
     return;
   }
 
@@ -2471,7 +2471,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
       AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
     *suggestions = client().GetPlusAddressDelegate()->GetSuggestions(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
-        client().IsOffTheRecord(), field.value, trigger_source);
+        client().IsOffTheRecord(), field.value(), trigger_source);
     return;
   }
 
@@ -2565,7 +2565,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
       std::vector<Suggestion> plus_address_suggestions =
           client().GetPlusAddressDelegate()->GetSuggestions(
               client().GetLastCommittedPrimaryMainFrameOrigin(),
-              client().IsOffTheRecord(), field.value, trigger_source);
+              client().IsOffTheRecord(), field.value(), trigger_source);
       suggestions->insert(
           suggestions->cbegin(),
           std::make_move_iterator(plus_address_suggestions.begin()),
@@ -2676,7 +2676,7 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
       std::optional<AlternativeStateNameMap::CanonicalStateName>
           canonical_state_name_from_text =
               AlternativeStateNameMap::GetCanonicalStateName(
-                  base::UTF16ToUTF8(country_code), field->value);
+                  base::UTF16ToUTF8(country_code), field->value());
 
       if (canonical_state_name_from_text &&
           canonical_state_name_from_text.value() ==

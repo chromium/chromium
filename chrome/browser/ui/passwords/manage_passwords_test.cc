@@ -307,7 +307,7 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager(
   fetcher_.NotifyFetchCompleted();
 
   autofill::FormData submitted_form = observed_form;
-  submitted_form.fields[1].value = u"new_password";
+  submitted_form.fields[1].set_value(u"new_password");
   form_manager->ProvisionallySave(
       submitted_form, &driver_,
       base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>(

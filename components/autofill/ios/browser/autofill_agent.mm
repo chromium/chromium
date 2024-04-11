@@ -115,7 +115,7 @@ void GetFormField(autofill::FormFieldData* field,
     // Any value set will cause the BrowserAutofillManager to filter suggestions
     // (only show suggestions that begin the same as the current value) with the
     // effect that one only suggestion would be returned; the value itself.
-    field->value = std::u16string();
+    field->set_value(std::u16string());
   }
 }
 
@@ -552,11 +552,12 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   base::Value::Dict fieldsData;
   for (const auto& field : form.fields) {
     // Skip empty fields and those that are not autofilled.
-    if (field.value.empty() || !field.is_autofilled)
+    if (field.value().empty() || !field.is_autofilled) {
       continue;
+    }
 
     base::Value::Dict fieldData;
-    fieldData.Set("value", field.value);
+    fieldData.Set("value", field.value());
     fieldData.Set("section", field.section.ToString());
     fieldsData.Set(NumberToString(field.renderer_id.value()),
                    std::move(fieldData));

@@ -487,7 +487,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         // the `value` represents the initial value found at page load and needs
         // to be preserved.
         if (!field->IsSelectOrSelectListElement()) {
-          field->value = cached_field->value;
+          field->set_value(cached_field->value());
         }
         break;
       case RetrieveFromCacheReason::kFormImport:
@@ -498,11 +498,11 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         // Since a website can prefill country and state values based on
         // GeoIP, we want to hold on to these values.
         const bool same_value_as_on_page_load =
-            field->value == cached_field->value;
+            field->value() == cached_field->value();
         const bool had_type =
             cached_field->Type().GetStorableType() > FieldType::UNKNOWN_TYPE ||
             !cached_field->possible_types().empty();
-        if (!cached_field->value.empty() &&
+        if (!cached_field->value().empty() &&
             !field->IsSelectOrSelectListElement() && had_type) {
           field->set_initial_value_changed(!same_value_as_on_page_load);
         }
@@ -511,7 +511,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
             field->server_type() != ADDRESS_HOME_STATE;
         if (!field->IsSelectOrSelectListElement() &&
             same_value_as_on_page_load && field_is_neither_state_nor_country) {
-          field->value = std::u16string();
+          field->set_value(std::u16string());
         }
         break;
     }

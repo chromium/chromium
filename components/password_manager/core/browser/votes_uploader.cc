@@ -831,9 +831,10 @@ void VotesUploader::SetKnownValueFlag(
   // If we are updating a password, the known value is the old password, not
   // the new one.
   for (auto& field : *form) {
-    if (field->value.empty())
+    if (field->value().empty()) {
       continue;
-    if (known_username == field->value || known_password == field->value) {
+    }
+    if (known_username == field->value() || known_password == field->value()) {
       field->properties_mask |= autofill::FieldPropertiesFlags::kKnownValue;
     }
   }
@@ -929,8 +930,8 @@ VotesUploader::GeneratePasswordAttributesMetadata(
 void VotesUploader::StoreInitialFieldValues(
     const autofill::FormData& observed_form) {
   for (const auto& field : observed_form.fields) {
-    if (!field.value.empty()) {
-      initial_values_.insert(std::make_pair(field.renderer_id, field.value));
+    if (!field.value().empty()) {
+      initial_values_.insert(std::make_pair(field.renderer_id, field.value()));
     }
   }
 }

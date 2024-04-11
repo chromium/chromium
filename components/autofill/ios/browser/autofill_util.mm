@@ -302,7 +302,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
     field_data->label = base::UTF8ToUTF16(*label);
   }
   if (const std::string* value = field.FindString("value")) {
-    field_data->value = base::UTF8ToUTF16(*value);
+    field_data->set_value(base::UTF8ToUTF16(*value));
   }
   field_data->is_autofilled =
       field.FindBool("is_autofilled").value_or(field_data->is_autofilled);

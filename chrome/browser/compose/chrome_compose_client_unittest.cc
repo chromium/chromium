@@ -1306,7 +1306,7 @@ TEST_F(ChromeComposeClientTest, TestCloseUIAtChromeCompose) {
 // properly removed.
 TEST_F(ChromeComposeClientTest, TestOpenDialogWithTruncatedSelectedText) {
   std::u16string input(u".🦄🦄🦄");
-  field_data().value = input;
+  field_data().set_value(input);
   SetSelectionWithTruncation(input, 6);
   ShowDialogAndBindMojo();
 
@@ -1320,7 +1320,7 @@ TEST_F(ChromeComposeClientTest, TestOpenDialogWithTruncatedSelectedText) {
 // Tests that opening the dialog with user selected text will return that text
 // when the WebUI requests initial state.
 TEST_F(ChromeComposeClientTest, TestOpenDialogWithSelectedText) {
-  field_data().value = u"user selected text";
+  field_data().set_value(u"user selected text");
   SetSelection(u"selected text");
   ShowDialogAndBindMojo();
 
@@ -1336,7 +1336,7 @@ TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
   ShowDialogAndBindMojo();
   page_handler()->SaveWebUIState("web ui state");
 
-  field_data().value = u"user selected text";
+  field_data().set_value(u"user selected text");
   SetSelection(u"selected text");
   ShowDialogAndBindMojo();
 
@@ -1858,7 +1858,7 @@ TEST_F(ChromeComposeClientTest, FirstRunCloseDialogHistogramTest) {
 
   // Show the FRE dialog and end the session by re-opening with selection.
   ShowDialogAndBindMojo();
-  field_data().value = u"user selected text";
+  field_data().set_value(u"user selected text");
   SetSelection(u"selected text");
   ShowDialogAndBindMojo();
   histograms().ExpectBucketCount(
@@ -2538,7 +2538,7 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityNewSessionWithSelectedText) {
   EXPECT_TRUE(compose_future.Take());  // Reset future for second compose call.
 
   // Start a new session with selected text.
-  field_data().value = u"user selected text";
+  field_data().set_value(u"user selected text");
   SetSelection(u"selected text");
   ShowDialogAndBindMojo();
 

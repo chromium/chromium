@@ -71,7 +71,7 @@ void FormFieldDataAndroid::UpdateFromJava() {
 }
 
 void FormFieldDataAndroid::OnFormFieldDidChange(std::u16string_view value) {
-  field_->value = std::u16string(value);
+  field_->set_value(std::u16string(value));
   field_->is_autofilled = false;
   bridge_->UpdateValue(value);
 }
