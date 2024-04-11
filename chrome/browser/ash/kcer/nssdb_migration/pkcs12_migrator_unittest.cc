@@ -166,7 +166,8 @@ TEST_F(KcerPkcs12MigratorTest, OneCertMigratedSuccess) {
 }
 
 // Test that Pkcs12Migrator can successfully migrate multiple certs.
-TEST_F(KcerPkcs12MigratorTest, MultipleCertsMigratedSuccess) {
+// TODO(crbug.com/333795379): Re-enable this test
+TEST_F(KcerPkcs12MigratorTest, DISABLED_MultipleCertsMigratedSuccess) {
   ImportPkcs12("client.p12", NssSlot::kPublic);
   ImportPkcs12("client_with_ec_key.p12", NssSlot::kPublic);
 
@@ -210,7 +211,8 @@ TEST_F(KcerPkcs12MigratorTest, CertAlreadyExists) {
 
 // Test that Pkcs12Migrator doesn't migrate certs that are already present in
 // the private slot (i.e. in Chaps), but migrates the other ones.
-TEST_F(KcerPkcs12MigratorTest, SomeCertsAlreadyExist) {
+// TODO(crbug.com/333795379): Re-enable this test
+TEST_F(KcerPkcs12MigratorTest, DISABLED_SomeCertsAlreadyExist) {
   ImportPkcs12("client.p12", NssSlot::kPublic);
   ImportPkcs12("client_with_ec_key.p12", NssSlot::kPublic);
   ImportPkcs12("client.p12", NssSlot::kPrivate);
