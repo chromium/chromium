@@ -113,8 +113,8 @@ class Config {
                                         llvm::StringRef ns_name,
                                         RecordInfo* info,
                                         RecordInfo::TemplateArgs* args) {
-    return name == "TraceWrapperV8Reference" &&
-           VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
+    return name == "TracedReference" &&
+           VerifyNamespaceAndArgCount("v8", 1, ns_name, info, args);
   }
 
   static bool IsWTFCollection(llvm::StringRef name) {
