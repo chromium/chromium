@@ -417,6 +417,13 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                                             Profile* profile,
                                             bool enable_voice_search,
                                             bool enable_lens_search) {
+  // Embedders which are served from chrome-untrusted:// URLs should override
+  // this to false. The chrome.timeTicks capability that the metrics reporter
+  // depends on is not defined in chrome-untrusted environments and attempting
+  // to use it will lead to a renderer process crash. See
+  // http://g/chrome-webui/haW6I9yt-uA/38ckX-aGAgAJ for details.
+  source->AddBoolean("reportMetrics", true);
+
   static constexpr webui::LocalizedString kStrings[] = {
       {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
       {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},

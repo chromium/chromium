@@ -274,24 +274,26 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   private onResultRepaint_() {
-    const metricsReporter = MetricsReporterImpl.getInstance();
-    metricsReporter.measure('CharTyped')
-        .then(duration => {
-          metricsReporter.umaReportTime(CHAR_TYPED_TO_PAINT, duration);
-        })
-        .then(() => {
-          metricsReporter.clearMark('CharTyped');
-        })
-        .catch(() => {});  // Fail silently if 'CharTyped' is not marked.
+    if (loadTimeData.getBoolean('reportMetrics')) {
+      const metricsReporter = MetricsReporterImpl.getInstance();
+      metricsReporter.measure('CharTyped')
+          .then(duration => {
+            metricsReporter.umaReportTime(CHAR_TYPED_TO_PAINT, duration);
+          })
+          .then(() => {
+            metricsReporter.clearMark('CharTyped');
+          })
+          .catch(() => {});  // Fail silently if 'CharTyped' is not marked.
 
-    metricsReporter.measure('ResultChanged')
-        .then(duration => {
-          metricsReporter.umaReportTime(RESULT_CHANGED_TO_PAINT, duration);
-        })
-        .then(() => {
-          metricsReporter.clearMark('ResultChanged');
-        })
-        .catch(() => {});  // Fail silently if 'ResultChanged' is not marked.
+      metricsReporter.measure('ResultChanged')
+          .then(duration => {
+            metricsReporter.umaReportTime(RESULT_CHANGED_TO_PAINT, duration);
+          })
+          .then(() => {
+            metricsReporter.clearMark('ResultChanged');
+          })
+          .catch(() => {});  // Fail silently if 'ResultChanged' is not marked.
+    }
 
     // Update the list of selectable match elements.
     this.selectableMatchElements_ =

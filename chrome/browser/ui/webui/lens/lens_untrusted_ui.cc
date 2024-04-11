@@ -67,6 +67,7 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   // Add required resources for the searchbox.
   SearchboxHandler::SetupWebUIDataSource(html_source,
                                          Profile::FromWebUI(web_ui));
+  html_source->AddBoolean("reportMetrics", false);
 
   // Set request filter for loading the screenshot on the page.
   html_source->SetRequestFilter(

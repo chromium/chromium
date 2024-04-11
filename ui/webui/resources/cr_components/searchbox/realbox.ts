@@ -409,14 +409,16 @@ export class RealboxElement extends RealboxElementBase {
     // 'CharTyped' mark already exists, there's a pending typed character for
     // which the results have not been painted yet. In that case, keep the
     // earlier mark.
-    const charTyped = !this.isDeletingInput_ && !!inputValue.trim();
-    const metricsReporter = MetricsReporterImpl.getInstance();
-    if (charTyped) {
-      if (!metricsReporter.hasLocalMark('CharTyped')) {
-        metricsReporter.mark('CharTyped');
+    if (loadTimeData.getBoolean('reportMetrics')) {
+      const charTyped = !this.isDeletingInput_ && !!inputValue.trim();
+      const metricsReporter = MetricsReporterImpl.getInstance();
+      if (charTyped) {
+        if (!metricsReporter.hasLocalMark('CharTyped')) {
+          metricsReporter.mark('CharTyped');
+        }
+      } else {
+        metricsReporter.clearMark('CharTyped');
       }
-    } else {
-      metricsReporter.clearMark('CharTyped');
     }
 
     if (inputValue.trim()) {
@@ -459,9 +461,11 @@ export class RealboxElement extends RealboxElementBase {
       // If 'CharTyped' mark already exists, there's a pending typed character
       // for which the results have not been painted yet. In that case, keep the
       // earlier mark.
-      const metricsReporter = MetricsReporterImpl.getInstance();
-      if (!metricsReporter.hasLocalMark('CharTyped')) {
-        metricsReporter.mark('CharTyped');
+      if (loadTimeData.getBoolean('reportMetrics')) {
+        const metricsReporter = MetricsReporterImpl.getInstance();
+        if (!metricsReporter.hasLocalMark('CharTyped')) {
+            metricsReporter.mark('CharTyped');
+        }
       }
 
       this.queryAutocomplete_(this.lastInput_.text);
