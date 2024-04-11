@@ -73,7 +73,8 @@ export class SearchAndAssistantSettingsCardElement extends
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set<Setting>([Setting.kPreferredSearchEngine]),
+        value: () => new Set<Setting>(
+            [Setting.kPreferredSearchEngine, Setting.kMahiOnOff]),
       },
 
       isRevampWayfindingEnabled_: {
@@ -92,6 +93,7 @@ export class SearchAndAssistantSettingsCardElement extends
               searchEngine: 'os-settings:explore',
               assistant: 'os-settings:assistant',
               contentRecommendations: 'os-settings:content-recommend',
+              mahi: 'os-settings:mahi',
             };
           }
 
@@ -99,6 +101,7 @@ export class SearchAndAssistantSettingsCardElement extends
             searchEngine: '',
             assistant: '',
             contentRecommendations: '',
+            mahi: '',
           };
         },
       },

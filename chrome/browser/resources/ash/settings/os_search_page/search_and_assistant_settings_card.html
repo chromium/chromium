@@ -49,9 +49,11 @@
   <template is="dom-if" if="[[isMahiEnabled_]]">
     <settings-toggle-button id="mahiToggle"
         class="hr"
+        icon="[[rowIcons_.mahi]]"
         pref="{{prefs.settings.mahi_enabled}}"
         label="$i18n{enableMahi}"
         sub-label="$i18n{enableMahiDesc}"
+        deep-link-focus-id$="[[Setting.kMahiOnOff]]"
         >
     </settings-toggle-button>
   </template>

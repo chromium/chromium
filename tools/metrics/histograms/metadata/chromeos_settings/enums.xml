@@ -234,6 +234,7 @@ chromium-metrics-reviews@google.com.
   <int value="609" label="Search: Quick Answers Definition"/>
   <int value="610" label="Search: Quick Answers Translation"/>
   <int value="611" label="Search: Quick Answers Unit Conversion"/>
+  <int value="612" label="Mahi: On/Off"/>
   <int value="700" label="Manage Android Preferences"/>
   <int value="701" label="Remove Play Store"/>
   <int value="702" label="Turn On Play Store"/>

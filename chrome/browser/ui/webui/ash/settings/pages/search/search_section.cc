@@ -376,6 +376,7 @@ void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   if (!IsQuickAnswersSupported()) {
     generator->RegisterTopLevelSetting(mojom::Setting::kPreferredSearchEngine);
   }
+  generator->RegisterTopLevelSetting(mojom::Setting::kMahiOnOff);
 
   // Search.
   generator->RegisterTopLevelSubpage(

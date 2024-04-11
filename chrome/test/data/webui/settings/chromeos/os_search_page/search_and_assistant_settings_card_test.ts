@@ -9,7 +9,7 @@
  * both enabled and disabled.
  */
 
-import {OsSettingsRoutes, Router, routes, SearchAndAssistantSettingsCardElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {OsSettingsRoutes, Router, routes, SearchAndAssistantSettingsCardElement, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -90,6 +90,7 @@ suite('<search-and-assistant-settings-card>', () => {
       assertNull(searchAndAssistantSettingsCard.shadowRoot!.querySelector(
           '#mahiToggle'));
     });
+
     test('Mahi toggle reflects pref value', () => {
       loadTimeData.overrideValues({
         isMahiEnabled: true,
@@ -119,6 +120,26 @@ suite('<search-and-assistant-settings-card>', () => {
       assertFalse(mahiToggle.checked);
       assertFalse(searchAndAssistantSettingsCard.get(
           'prefs.settings.mahi_enabled.value'));
+    });
+
+    test('Mahi Toggle is deep linkable', async () => {
+      createSearchAndAssistantCard();
+
+      const setting = settingMojom.Setting.kMahiOnOff;
+      const params = new URLSearchParams();
+      params.append('settingId', setting.toString());
+      Router.getInstance().navigateTo(defaultRoute, params);
+
+      const deepLinkElement =
+          searchAndAssistantSettingsCard.shadowRoot!.querySelector<HTMLElement>(
+              '#mahiToggle');
+      assertTrue(!!deepLinkElement);
+
+      await waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement,
+          searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+          `Element should be focused for settingId=${setting}.'`);
     });
   });
 
