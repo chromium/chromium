@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,7 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -41,7 +41,8 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
@@ -50,6 +51,8 @@ import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -72,7 +75,8 @@ import java.util.Set;
         shadows = {
             SearchActivityUnitTest.ShadowSearchActivityUtils.class,
             SearchActivityUnitTest.ShadowWebContentsFactory.class,
-            SearchActivityUnitTest.ShadowTabBuilder.class
+            SearchActivityUnitTest.ShadowProfileManager.class,
+            SearchActivityUnitTest.ShadowTabBuilder.class,
         })
 public class SearchActivityUnitTest {
     private static final OmniboxLoadUrlParams LOAD_URL_PARAMS_SIMPLE =
@@ -131,6 +135,27 @@ public class SearchActivityUnitTest {
         }
     }
 
+    @Implements(ProfileManager.class)
+    public static class ShadowProfileManager {
+        public static Profile sProfile;
+
+        static void setProfile(Profile profile) {
+            sProfile = profile;
+            ProfileManager.onProfileAdded(profile);
+            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        }
+
+        @Implementation
+        public static boolean isInitialized() {
+            return sProfile != null;
+        }
+
+        @Implementation
+        public static Profile getLastUsedRegularProfile() {
+            return sProfile;
+        }
+    }
+
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public @Rule JniMocker mJniMocker = new JniMocker();
     private @Mock TestSearchActivityUtils mUtils;
@@ -140,7 +165,8 @@ public class SearchActivityUnitTest {
     private @Mock WebContents mWebContents;
     private @Mock Tab mTab;
     private @Mock SearchActivity.SearchActivityDelegate mDelegate;
-    private @Spy ObservableSupplierImpl<Profile> mProfileSupplier;
+    private ObservableSupplier<Profile> mProfileSupplier;
+    private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
     private ActivityController<SearchActivity> mController;
     private SearchActivity mActivity;
@@ -162,9 +188,11 @@ public class SearchActivityUnitTest {
         mJniMocker.mock(TemplateUrlServiceFactoryJni.TEST_HOOKS, mTemplateUrlFactoryJni);
         doReturn(mTemplateUrlSvc).when(mTemplateUrlFactoryJni).getTemplateUrlService(any());
 
-        mActivity.setProfileSupplierForTesting(mProfileSupplier);
+        mProfileSupplier = mActivity.getProfileSupplierForTesting();
+
         SearchActivity.setDelegateForTests(mDelegate);
         mActivity.setActivityUsableForTesting(true);
+        mProfileProviderSupplier = mActivity.createProfileProvider();
 
         ShadowSearchActivityUtils.sMockUtils = mUtils;
         ShadowWebContentsFactory.sMockWebContents = mWebContents;
@@ -177,7 +205,6 @@ public class SearchActivityUnitTest {
         FirstRunStatus.setFirstRunFlowComplete(false);
         IdentityServicesProvider.setInstanceForTests(null);
         TemplateUrlServiceFactory.setInstanceForTesting(null);
-        mActivity.setProfileSupplierForTesting(null);
     }
 
     @Test
@@ -293,7 +320,7 @@ public class SearchActivityUnitTest {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
         doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
         doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
-        mProfileSupplier.set(mProfile);
+        ShadowProfileManager.setProfile(mProfile);
 
         mActivity.handleNewIntent(new Intent());
 
@@ -518,7 +545,7 @@ public class SearchActivityUnitTest {
     public void finishNativeInitialization_stopActivityWhenSearchEnginePromoCanceled() {
         doNothing().when(mActivity).finishDeferredInitialization();
 
-        mProfileSupplier.set(mProfile);
+        ShadowProfileManager.setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
         ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
@@ -536,7 +563,7 @@ public class SearchActivityUnitTest {
     public void finishNativeInitialization_stopActivityWhenSearchEnginePromoFailed() {
         doNothing().when(mActivity).finishDeferredInitialization();
 
-        mProfileSupplier.set(mProfile);
+        ShadowProfileManager.setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
         ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
@@ -554,7 +581,7 @@ public class SearchActivityUnitTest {
     public void finishNativeInitialization_resumeActivityAfterSearchEnginePromoCleared() {
         doNothing().when(mActivity).finishDeferredInitialization();
 
-        mProfileSupplier.set(mProfile);
+        ShadowProfileManager.setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
         ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
@@ -572,7 +599,7 @@ public class SearchActivityUnitTest {
     public void finishNativeInitialization_abortIfActivityTerminated() {
         doNothing().when(mActivity).finishDeferredInitialization();
 
-        mProfileSupplier.set(mProfile);
+        ShadowProfileManager.setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
         ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
@@ -619,5 +646,26 @@ public class SearchActivityUnitTest {
         view.performClick();
         assertTrue(mActivity.isActivityFinishingOrDestroyed());
         assertTrue(mActivity.isFinishing());
+    }
+
+    @Test
+    public void createProfileProvider_tracksProfileManager() {
+        assertNull(mProfileSupplier.get());
+        ShadowProfileManager.setProfile(mProfile);
+        assertEquals(mProfile, mProfileSupplier.get());
+    }
+
+    @Test
+    public void createProfileProvider_throwsWhenCreatingIncognitoProfile() {
+        ShadowProfileManager.setProfile(mProfile);
+        assertThrows(
+                IllegalStateException.class,
+                () -> mProfileProviderSupplier.get().getOffTheRecordProfile(false));
+        assertThrows(
+                IllegalStateException.class,
+                () -> mProfileProviderSupplier.get().getOffTheRecordProfile(true));
+        assertThrows(
+                IllegalStateException.class,
+                () -> mProfileProviderSupplier.get().hasOffTheRecordProfile());
     }
 }

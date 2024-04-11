@@ -23,6 +23,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -155,7 +156,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private SnackbarManager mSnackbarManager;
     private Tab mTab;
-    private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     protected final UnownedUserDataSupplier<InsetObserver> mInsetObserverViewSupplier =
             new InsetObserverSupplier();
 
@@ -688,7 +689,7 @@ public class SearchActivity extends AsyncInitializationActivity
         return mLocationBarUiOverrides;
     }
 
-    void setProfileSupplierForTesting(ObservableSupplierImpl<Profile> supplier) {
-        mProfileSupplier = supplier;
+    /* package */ ObservableSupplier getProfileSupplierForTesting() {
+        return mProfileSupplier;
     }
 }
