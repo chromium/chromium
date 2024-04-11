@@ -1012,10 +1012,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   switch (page) {
     case TabGridPageIncognitoTabs:
       DCHECK_GT(self.incognitoBrowser->GetWebStateList()->count(), 0);
+      self.activePage = page;
       activeBrowser = self.incognitoBrowser;
       break;
     case TabGridPageRegularTabs:
       DCHECK_GT(self.regularBrowser->GetWebStateList()->count(), 0);
+      self.activePage = page;
       activeBrowser = self.regularBrowser;
       break;
     case TabGridPageRemoteTabs:
