@@ -224,10 +224,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
                        QueryAndUploadBothIncludeFieldsWithAutocompleteOff) {
   // Seed some test Autofill profile data, as upload requests are only made when
   // there is local data available to use as a baseline.
-  PdmChangeWaiter personal_data_observer(browser()->profile());
-  PersonalDataManagerFactory::GetForProfile(browser()->profile())
-      ->AddProfile(test::GetFullProfile());
-  personal_data_observer.Wait();
+  AddTestProfile(browser()->profile(), test::GetFullProfile());
 
   // Load the test page. Expect a query request upon loading the page.
   SetUrlContent("/test.html", R"(

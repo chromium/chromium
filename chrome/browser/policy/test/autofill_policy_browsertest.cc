@@ -67,9 +67,8 @@ class AutofillPolicyTest : public PolicyTest {
     if (personal_data_manager()->GetProfiles().size() != 0u) {
       return testing::AssertionFailure() << "Should be empty profile.";
     }
-    autofill::PdmChangeWaiter observer(browser()->profile());
-    personal_data_manager()->AddProfile(autofill::test::GetFullProfile());
-    observer.Wait();
+    autofill::AddTestProfile(browser()->profile(),
+                             autofill::test::GetFullProfile());
     expected_suggestions_["name"] = u"John H. Doe";
     expected_suggestions_["street-address"] = u"666 Erebus St., Apt 8";
     expected_suggestions_["postal-code"] = u"91111";

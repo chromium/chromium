@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,68 +29,36 @@ static PersonalDataManager* GetPersonalDataManager(Profile* profile) {
   return PersonalDataManagerFactory::GetForProfile(profile);
 }
 
-PdmChangeWaiter::PdmChangeWaiter(Profile* base_profile)
-    : base_profile_(base_profile) {
-  obs_.Observe(GetPersonalDataManager(base_profile_));
-}
-
-PdmChangeWaiter::~PdmChangeWaiter() = default;
-
-void PdmChangeWaiter::OnPersonalDataChanged() {
-  if (run_loop_.running()) {
-    run_loop_.Quit();
-  }
-  alerted_ = true;
-}
-
-void PdmChangeWaiter::Wait() {
-  if (!alerted_) {
-    run_loop_.Run();
-  }
-  obs_.Reset();
-}
-
 void AddTestProfile(Profile* base_profile, const AutofillProfile& profile) {
-  PdmChangeWaiter observer(base_profile);
-  GetPersonalDataManager(base_profile)->AddProfile(profile);
-
-  // AddProfile is asynchronous. Wait for it to finish before continuing the
-  // tests.
-  observer.Wait();
+  PersonalDataManager* pdm = GetPersonalDataManager(base_profile);
+  PersonalDataChangedWaiter waiter(*pdm);
+  pdm->address_data_manager().AddProfile(profile);
+  std::move(waiter).Wait();
 }
 
 void AddTestCreditCard(Profile* base_profile, const CreditCard& card) {
-  PdmChangeWaiter observer(base_profile);
-  GetPersonalDataManager(base_profile)->AddCreditCard(card);
-
-  // AddCreditCard is asynchronous. Wait for it to finish before continuing the
-  // tests.
-  observer.Wait();
+  PersonalDataManager* pdm = GetPersonalDataManager(base_profile);
+  PersonalDataChangedWaiter waiter(*pdm);
+  pdm->payments_data_manager().AddCreditCard(card);
+  std::move(waiter).Wait();
 }
 
 void AddTestServerCreditCard(Profile* base_profile, const CreditCard& card) {
-  PdmChangeWaiter observer(base_profile);
-
-  test_api(GetPersonalDataManager(base_profile)->payments_data_manager())
-      .AddServerCreditCard(card);
-
-  // AddServerCreditCard is asynchronous. Wait for it to finish before
-  // continuing the tests.
-  observer.Wait();
+  PersonalDataManager* pdm = GetPersonalDataManager(base_profile);
+  PersonalDataChangedWaiter waiter(*pdm);
+  test_api(pdm->payments_data_manager()).AddServerCreditCard(card);
+  std::move(waiter).Wait();
 }
 
 void AddTestAutofillData(Profile* base_profile,
                          const AutofillProfile& profile,
                          const CreditCard& card) {
   AddTestProfile(base_profile, profile);
-  PdmChangeWaiter observer(base_profile);
-  GetPersonalDataManager(base_profile)->AddCreditCard(card);
-  observer.Wait();
+  AddTestCreditCard(base_profile, card);
 }
 
 void WaitForPersonalDataChange(Profile* base_profile) {
-  PdmChangeWaiter observer(base_profile);
-  observer.Wait();
+  PersonalDataChangedWaiter(*GetPersonalDataManager(base_profile)).Wait();
 }
 
 void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
