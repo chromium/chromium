@@ -299,6 +299,7 @@ class AnchoredNudgeManagerImpl::AnchorViewWidgetObserver
     // Make sure the nudge bubble no longer observes the anchor view.
     anchored_nudge_->SetAnchorView(nullptr);
     anchor_view_->GetWidget()->RemoveObserver(this);
+    active_widget_ = nullptr;
     anchor_view_ = nullptr;
     anchored_nudge_ = nullptr;
     anchored_nudge_manager_->Cancel(id);
