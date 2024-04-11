@@ -19,8 +19,8 @@ BASE_FEATURE(kRunOnMainThread,
              "RunPerformanceManagerOnMainThread",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRunOnDedicatedThreadPoolThread,
-             "RunOnDedicatedThreadPoolThread",
+BASE_FEATURE(kRunOnMainThreadSync,
+             "RunPerformanceManagerOnMainThreadSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)

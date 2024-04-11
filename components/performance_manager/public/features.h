@@ -15,16 +15,16 @@
 
 namespace performance_manager::features {
 
-// If enabled the PM runs on the main (UI) thread. Incompatible with
-// kRunOnDedicatedThreadPoolThread.
+// If enabled the PM runs on the main (UI) thread. Cannot be enabled
+// simultaneously with `kRunOnMainThreadSync`.
 BASE_DECLARE_FEATURE(kRunOnMainThread);
 
-// If enabled the PM runs on a single ThreadPool thread that isn't shared with
-// any other task runners. It will be named "Performance Manager" in traces.
-// This makes it easy to identify tasks running on the PM sequence, but may not
-// perform as well as a shared sequence, which is the default. Incompatible with
-// kRunOnMainThread.
-BASE_DECLARE_FEATURE(kRunOnDedicatedThreadPoolThread);
+// If enabled, the PM runs on the main (UI) thread *and* tasks posted to the PM
+// TaskRunner from the main (UI) thread run synchronously. Cannot be enabled
+// simultaneously with `kRunOnMainThread`. This is a standalone feature rather
+// than a param on `kRunOnMainThreadSync` because accessing the state of a
+// `base::Feature` is faster than accessing the state of a `base::FeatureParam`.
+BASE_DECLARE_FEATURE(kRunOnMainThreadSync);
 
 #if !BUILDFLAG(IS_ANDROID)
 

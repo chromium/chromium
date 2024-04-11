@@ -119,17 +119,22 @@ class TestSiteDataRecorderHeuristics final : public SiteDataRecorderHeuristics {
   }
 };
 
-// Tests SiteDataCacheFacade with different values of the
-// "RunPerformanceManagerOnMainThread" feature.
+struct PMThreadingConfiguration {
+  bool run_on_main_thread;
+  bool run_on_main_thread_sync;
+};
+
+// Tests SiteDataCacheFacade in different threading configurations.
 class SiteDataCacheFacadeBrowserTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<PMThreadingConfiguration> {
   using Super = InProcessBrowserTest;
 
  protected:
   SiteDataCacheFacadeBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kRunOnMainThread,
-                                              GetParam());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kRunOnMainThread, GetParam().run_on_main_thread},
+         {features::kRunOnMainThreadSync, GetParam().run_on_main_thread_sync}});
   }
 
   void SetUpOnMainThread() override {
@@ -244,9 +249,18 @@ class SiteDataCacheFacadeBrowserTest
   std::optional<ClearSiteDataOnProfileDestroyed> clear_site_data_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SiteDataCacheFacadeBrowserTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SiteDataCacheFacadeBrowserTest,
+    ::testing::Values(
+        PMThreadingConfiguration{.run_on_main_thread = false,
+                                 .run_on_main_thread_sync = false},
+
+        PMThreadingConfiguration{.run_on_main_thread = true,
+                                 .run_on_main_thread_sync = false},
+
+        PMThreadingConfiguration{.run_on_main_thread = false,
+                                 .run_on_main_thread_sync = true}));
 
 // TODO(crbug.com/330771327): This test is consistently failing across multiple
 // builders. Pre-test: Sets up state before the main test by writing some

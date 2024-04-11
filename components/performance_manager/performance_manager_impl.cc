@@ -12,12 +12,18 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/task/delayed_task_handle.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
+#include "base/time/time.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -61,6 +67,104 @@ constexpr base::TaskTraits kPMTaskTraits = {
 scoped_refptr<base::SequencedTaskRunner> GetUITaskRunner() {
   return content::GetUIThreadTaskRunner({kPmTaskPriority});
 }
+
+// A `TaskRunner` which runs callbacks synchronously when they're posted with no
+// delay from the UI thread, or posts to the UI thread otherwise.
+//
+// Note: The UI thread `TaskRunner` is obtained from `GetUITaskRunner()` in each
+// method called, rather than being cached in a member, to ensure that the
+// correct `TaskRunner` is used across tests that run in the same process.
+// `GetUIThreadTaskRunner()` is not known to be costly.
+class TaskRunnerWithSynchronousRunOnUIThread
+    : public base::SequencedTaskRunner {
+ public:
+  static scoped_refptr<base::SequencedTaskRunner> GetInstance() {
+    static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
+        instance(
+            base::MakeRefCounted<TaskRunnerWithSynchronousRunOnUIThread>());
+    return *instance;
+  }
+
+  TaskRunnerWithSynchronousRunOnUIThread() = default;
+
+  bool PostDelayedTask(const base::Location& from_here,
+                       base::OnceClosure task,
+                       base::TimeDelta delay) override {
+    auto task_runner = GetUITaskRunner();
+    if (task_runner->RunsTasksInCurrentSequence() && delay.is_zero()) {
+      std::move(task).Run();
+      return true;
+    }
+    return task_runner->PostDelayedTask(from_here, std::move(task), delay);
+  }
+
+  bool PostNonNestableDelayedTask(const base::Location& from_here,
+                                  base::OnceClosure task,
+                                  base::TimeDelta delay) override {
+    auto task_runner = GetUITaskRunner();
+    if (task_runner->RunsTasksInCurrentSequence() && delay.is_zero()) {
+      std::move(task).Run();
+      return true;
+    }
+    return task_runner->PostNonNestableDelayedTask(from_here, std::move(task),
+                                                   delay);
+  }
+
+  base::DelayedTaskHandle PostCancelableDelayedTask(
+      base::subtle::PostDelayedTaskPassKey pass_key,
+      const base::Location& from_here,
+      base::OnceClosure task,
+      base::TimeDelta delay) override {
+    // There is no call to this method on the Performance Manager `TaskRunner`.
+    //
+    // All callers are annotated with `base::subtle::PostDelayedTaskPassKey`. In
+    // most cases, it's trivial to verify that they don't target this
+    // `TaskRunner`. To confirm that no calls are made via timers defined in
+    // base/timer/timer.cc, we manually verified that no `TaskRunner` obtained
+    // from `PerformanceManager(Impl)::GetTaskRunner()` is passed to
+    // `base::TimerBase::SetTaskRunner()`.
+    NOTREACHED_NORETURN();
+  }
+
+  base::DelayedTaskHandle PostCancelableDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey pass_key,
+      const base::Location& from_here,
+      base::OnceClosure task,
+      base::TimeTicks delayed_run_time,
+      base::subtle::DelayPolicy delay_policy) override {
+    // There is no call to this method on the Performance Manager `TaskRunner`.
+    //
+    // See notes in `PostCancelableDelayedTask`.
+    NOTREACHED_NORETURN();
+  }
+
+  bool PostDelayedTaskAt(base::subtle::PostDelayedTaskPassKey pass_key,
+                         const base::Location& from_here,
+                         base::OnceClosure task,
+                         base::TimeTicks delayed_run_time,
+                         base::subtle::DelayPolicy delay_policy) override {
+    // There is no call to this method on the Performance Manager `TaskRunner`.
+    //
+    // See notes in `PostCancelableDelayedTask`.
+    NOTREACHED_NORETURN();
+  }
+
+  bool RunOrPostTask(base::subtle::RunOrPostTaskPassKey,
+                     const base::Location& from_here,
+                     base::OnceClosure task) override {
+    // There is no call to this method on the Performance Manager `TaskRunner`.
+    // The only call is in ipc/ipc_mojo_bootstrap.cc and it's trivial to verify
+    // that it doesn't target this `TaskRunner`.
+    NOTREACHED_NORETURN();
+  }
+
+  bool RunsTasksInCurrentSequence() const override {
+    return GetUITaskRunner()->RunsTasksInCurrentSequence();
+  }
+
+ private:
+  ~TaskRunnerWithSynchronousRunOnUIThread() override = default;
+};
 
 }  // namespace
 
@@ -251,8 +355,7 @@ PerformanceManagerImpl::PerformanceManagerImpl() {
 scoped_refptr<base::SequencedTaskRunner>
 PerformanceManagerImpl::GetTaskRunner() {
   if (base::FeatureList::IsEnabled(features::kRunOnMainThread)) {
-    CHECK(!base::FeatureList::IsEnabled(
-        features::kRunOnDedicatedThreadPoolThread));
+    CHECK(!base::FeatureList::IsEnabled(features::kRunOnMainThreadSync));
     // Used the cached runner, if available. This prevents doing repeated
     // lookups.
     if (g_performance_manager)
@@ -266,15 +369,11 @@ PerformanceManagerImpl::GetTaskRunner() {
     // |g_performance_manager| while it was alive.
     return GetUITaskRunner();
   }
-  if (base::FeatureList::IsEnabled(features::kRunOnDedicatedThreadPoolThread)) {
-    CHECK(!base::FeatureList::IsEnabled(features::kRunOnMainThread));
-    // Use a dedicated thread so that all tasks on the PM sequence can be
-    // identified in traces.
-    static base::LazyThreadPoolSingleThreadTaskRunner task_runner =
-        LAZY_THREAD_POOL_SINGLE_THREAD_TASK_RUNNER_INITIALIZER(
-            kPMTaskTraits, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-    return task_runner.Get();
+
+  if (base::FeatureList::IsEnabled(features::kRunOnMainThreadSync)) {
+    return TaskRunnerWithSynchronousRunOnUIThread::GetInstance();
   }
+
   static base::LazyThreadPoolSequencedTaskRunner
       performance_manager_task_runner =
           LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(kPMTaskTraits);
@@ -397,11 +496,6 @@ void PerformanceManagerImpl::BatchDeleteNodesImpl(
 void PerformanceManagerImpl::OnStartImpl(GraphImplCallback on_start) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!g_performance_manager);
-
-  if (base::FeatureList::IsEnabled(features::kRunOnDedicatedThreadPoolThread)) {
-    // This should be the first task that runs on the dedicated thread.
-    base::PlatformThread::SetName("Performance Manager");
-  }
 
   g_performance_manager = this;
   graph_.SetUp();
