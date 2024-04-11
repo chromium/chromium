@@ -61,6 +61,7 @@ class BrowserSyncedWindowDelegate;
 class BrowserLocationBarModelDelegate;
 class BrowserLiveTabContext;
 class BrowserWindow;
+class BrowserWindowFeatures;
 class ExclusiveAccessManager;
 class FindBarController;
 class LocationBarModel;
@@ -120,6 +121,10 @@ enum class BrowserClosingStatus {
   kDeniedUnloadHandlersNeedTime
 };
 
+// An instance of this class represents a single browser window on Desktop. All
+// features that are scoped to a browser window should have lifetime semantics
+// scoped to an instance of this class, usually via direct or indirect ownership
+// of a std::unique_ptr. See BrowserWindowFeatures and TabFeatures.
 class Browser : public TabStripModelObserver,
                 public WebContentsCollection::Observer,
                 public content::WebContentsDelegate,
@@ -1436,6 +1441,8 @@ class Browser : public TabStripModelObserver,
 #endif
 
   int force_show_bookmark_bar_flags_ = ForceShowBookmarkBarFlag::kNone;
+
+  std::unique_ptr<BrowserWindowFeatures> features_;
 
   // The following factory is used for chrome update coalescing.
   base::WeakPtrFactory<Browser> chrome_updater_factory_{this};

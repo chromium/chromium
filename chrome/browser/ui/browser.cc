@@ -110,6 +110,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -573,6 +574,8 @@ Browser::Browser(const CreateParams& params)
   }
 
   BrowserList::AddBrowser(this);
+  features_ = BrowserWindowFeatures::CreateBrowserWindowFeatures();
+  features_->Init(this);
 }
 
 Browser::~Browser() {

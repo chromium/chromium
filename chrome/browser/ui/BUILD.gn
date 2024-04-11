@@ -1145,6 +1145,8 @@ static_library("ui") {
       "browser_view_prefs.cc",
       "browser_view_prefs.h",
       "browser_window.h",
+      "browser_window_features.cc",
+      "browser_window_features.h",
       "browser_window_state.cc",
       "browser_window_state.h",
       "chrome_pages.cc",
