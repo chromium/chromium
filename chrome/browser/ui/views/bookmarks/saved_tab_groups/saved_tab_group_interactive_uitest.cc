@@ -164,6 +164,16 @@ class SavedTabGroupInteractiveTest
     });
   }
 
+  StepBuilder CheckIfSavedGroupIsPinned(tab_groups::TabGroupId group_id,
+                                        bool is_pinned) {
+    return Do([=]() {
+      const SavedTabGroupKeyedService* const service =
+          SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+
+      EXPECT_EQ(is_pinned, service->model()->Get(group_id)->is_pinned());
+    });
+  }
+
   StepBuilder SaveGroupViaModel(const tab_groups::TabGroupId local_group) {
     return Do([=]() {
       SavedTabGroupKeyedService* const service =
@@ -274,6 +284,51 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId));
 }
 
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest, UnpinGroupFromButtonMenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Ensure no tab groups save buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      // Ensure the tab group is pinned.
+      CheckIfSavedGroupIsPinned(group_id, /*is_pinned=*/true),
+      // Click the tab group header to close the menu.
+      FlushEvents(), HoverTabGroupHeader(group_id),
+      ClickMouse(ui_controls::LEFT), FinishTabstripAnimations(),
+      // Press the enter/return key on the button to open the context menu.
+      WithElement(kSavedTabGroupButtonElementId,
+                  [](ui::TrackedElement* el) {
+                    const ui::KeyEvent event(
+                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
+                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
+                        base::TimeTicks(), /*is_char=*/false);
+
+                    AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
+                  }),
+      // Flush events and select the unpin group menu item.
+      EnsurePresent(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+      FlushEvents(),
+      SelectMenuItem(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+      FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId),
+      // Ensure the tab group is unpinned.
+      CheckIfSavedGroupIsPinned(group_id, /*is_pinned=*/false));
+}
+
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        ContextMenuShowForEverythingMenuTabGroupItem) {
   if (!IsV2UIEnabled()) {
@@ -303,6 +358,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
             event_generator.ClickRightButton();
           }),
       WaitForShow(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      WaitForShow(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
       WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem));
 }
 

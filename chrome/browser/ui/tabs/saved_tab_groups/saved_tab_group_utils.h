@@ -27,6 +27,7 @@ class SavedTabGroupUtils {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteGroupMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoveGroupToNewWindowMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleGroupPinStateMenuItem);
 
   SavedTabGroupUtils() = delete;
   SavedTabGroupUtils(const SavedTabGroupUtils&) = delete;
@@ -44,6 +45,12 @@ class SavedTabGroupUtils {
   // Delete the `saved_group`.
   static void DeleteSavedTabGroup(Browser* browser,
                                   const SavedTabGroup* saved_group,
+                                  int event_flags);
+
+  // Pin the saved tab group if it's unpinned, or unpin the saved tab group if
+  // it's pinned.
+  static void ToggleGroupPinState(Browser* browser,
+                                  base::Uuid id,
                                   int event_flags);
 
   // Create the the context menu model for a saved tab group button or a saved
