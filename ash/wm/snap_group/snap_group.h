@@ -18,6 +18,8 @@ class Window;
 
 namespace ash {
 
+class ScopedOverviewHideWindows;
+
 // Takes over snap group management after the creation in `SplitViewController`.
 // Observes window and window state changes. Implements the
 // `LayoutDividerController` interface to allow synchronized resizing of the
@@ -110,12 +112,19 @@ class SnapGroup : public aura::WindowObserver,
   // `primary_snap_ratio`.
   void ApplyPrimarySnapRatio(float primary_snap_ratio);
 
+  // Hides scoped windows in a snap group in partial overview, restores their
+  // visibility when partial overview ends.
+  void OnOverviewModeStarting();
+  void OnOverviewModeEnding();
+
   // Within a snap group, the divider appears as a widget positioned between the
   // two snapped windows. It serves a dual purpose: signifying the group
   // connection and enabling simultaneous resizing of both windows. In terms of
   // stacking order, `snap_group_divider_` is the bottom-most transient child of
   // the top-most window of the two windows.
   SplitViewDivider snap_group_divider_;
+
+  std::unique_ptr<ScopedOverviewHideWindows> hide_windows_in_partial_overview_;
 
   // The primary snapped window in the group.
   raw_ptr<aura::Window> window1_;

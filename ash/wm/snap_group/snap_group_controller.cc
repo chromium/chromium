@@ -15,6 +15,7 @@
 #include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -239,12 +240,32 @@ void SnapGroupController::RestoreTopmostSnapGroup() {
 }
 
 void SnapGroupController::OnOverviewModeStarting() {
+  if (display::Screen::GetScreen()->InTabletMode()) {
+    return;
+  }
+
   for (const auto& snap_group : snap_groups_) {
+    snap_group->OnOverviewModeStarting();
     snap_group->HideDivider();
   }
 }
 
+void SnapGroupController::OnOverviewModeEnding(
+    OverviewSession* overview_session) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
+    return;
+  }
+
+  for (const auto& snap_group : snap_groups_) {
+    snap_group->OnOverviewModeEnding();
+  }
+}
+
 void SnapGroupController::OnOverviewModeEndingAnimationComplete(bool canceled) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
+    return;
+  }
+
   for (const auto& snap_group : snap_groups_) {
     snap_group->ShowDivider();
   }

@@ -43,6 +43,7 @@
 #include "ash/wm/overview/overview_group_item.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
+#include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -4657,6 +4658,49 @@ TEST_F(SnapGroupTest, MultipleSnapGroupsRecall) {
   EXPECT_EQ(divider_position1, w1->GetBoundsInScreen().width());
   EXPECT_EQ(divider_position1 + kSplitviewDividerShortSideLength,
             w2->GetBoundsInScreen().x());
+}
+
+// Tests that the snap groups will be hidden with two snapped window invisible
+// in partial Overview. The visibility of the two snapped windows in snap group
+// will be restored on overview ended. It only applies to partial Overview, the
+// snap group will still be visible in full Overview.
+TEST_F(SnapGroupTest, DoNotShowSnapGroupsInPartialOverview) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  std::unique_ptr<aura::Window> w3(
+      CreateAppWindow(gfx::Rect(200, 200, 200, 200)));
+
+  // Snap `w4` to start the partial Overview and verify that the snap group will
+  // not show.
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+  SnapOneTestWindow(w4.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kOneThirdSnapRatio);
+  ASSERT_TRUE(IsInOverviewSession());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(overview_grid->window_list().size(), 1u);
+  EXPECT_FALSE(w1->IsVisible());
+  EXPECT_FALSE(w2->IsVisible());
+
+  // The visibility of the snapped windows in a snap group will be restored on
+  // Overview exit.
+  OverviewController::Get()->EndOverview(OverviewEndAction::kKeyEscapeOrBack);
+  EXPECT_TRUE(w1->IsVisible());
+  EXPECT_TRUE(w2->IsVisible());
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Start normal Overview and verify that snap group will show.
+  OverviewController::Get()->StartOverview(
+      OverviewStartAction::kOverviewButton);
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(overview_grid->window_list().size(), 3u);
+  EXPECT_TRUE(w1->IsVisible());
+  EXPECT_TRUE(w2->IsVisible());
 }
 
 // Tests that when dragging a window to 'snap replace' a visible window in a
