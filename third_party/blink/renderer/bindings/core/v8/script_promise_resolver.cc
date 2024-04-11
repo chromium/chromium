@@ -46,13 +46,8 @@ ScriptPromiseResolverBase::ScriptPromiseResolverBase(
                     .ToLocalChecked()),
       state_(kPending),
       script_state_(script_state),
-      exception_context_(exception_context) {
-  if (!GetExecutionContext()) {
-    state_ = kDone;
-    resolver_.Reset();
-  }
-  script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
-}
+      exception_context_(exception_context),
+      script_url_(GetCurrentScriptUrl(script_state->GetIsolate())) {}
 
 ScriptPromiseResolverBase::~ScriptPromiseResolverBase() = default;
 
