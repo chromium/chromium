@@ -1779,7 +1779,7 @@ void BrowserThemePack::GenerateWindowControlButtonColor(ImageCache* images) {
   if (bg_img_it != images->end())
     bg_image = bg_img_it->second.AsImageSkia();
 
-  SkColor button_bg_color;
+  SkColor button_bg_color = SK_ColorTRANSPARENT;
   SkAlpha button_bg_alpha = SK_AlphaTRANSPARENT;
   if (GetColor(TP::COLOR_CONTROL_BUTTON_BACKGROUND, &button_bg_color))
     button_bg_alpha = SkColorGetA(button_bg_color);
