@@ -517,7 +517,8 @@ void NavigationURLLoaderImpl::Start() {
               url_loader_factory::ContentClientParams(
                   browser_context_, frame_tree_node->current_frame_host(),
                   frame_tree_node->current_frame_host()->GetProcess()->GetID(),
-                  url::Origin(), ukm::SourceIdObj::FromInt64(ukm_source_id_),
+                  resource_request_->request_initiator.value_or(url::Origin()),
+                  ukm::SourceIdObj::FromInt64(ukm_source_id_),
                   /*bypass_redirect_checks=*/nullptr,
                   frame_tree_node->navigation_request()->GetNavigationId(),
                   GetUIThreadTaskRunner(
