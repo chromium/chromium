@@ -300,7 +300,7 @@ TYPED_TEST_SUITE(V4L2FlatVideoDecoderTest,
 // Verifies that V4L2Stateful/StatelessVideoDecoder::Initialize() fails when
 // called with an unsupported codec profile.
 TYPED_TEST(V4L2FlatVideoDecoderTest, UnsupportedVideoCodec) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   MockVideoDecoderMixinClient mock_client;
 
   auto decoder =
@@ -324,7 +324,7 @@ TYPED_TEST(V4L2FlatVideoDecoderTest, UnsupportedVideoCodec) {
 // Verifies that V4L2Stateful/StatelessVideoDecoder::Initialize() fails after
 // the limit of created instances exceeds the threshold.
 TYPED_TEST(V4L2FlatVideoDecoderTest, TooManyDecoderInstances) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   ::testing::NiceMock<MockVideoDecoderMixinClient> mock_client;
   const auto supported_config = TestVideoConfig::Normal(VideoCodec::kH264);
 
