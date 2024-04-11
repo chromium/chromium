@@ -45,6 +45,7 @@
 
 namespace blink {
 
+class AnchorPositionScrollData;
 class BlockBreakToken;
 class ColumnSpannerPath;
 class ConstraintSpace;
@@ -1245,6 +1246,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // See StickyPositionScrollingConstraints::constraining_rect.
   PhysicalRect ComputeStickyConstrainingRect() const;
 
+  AnchorPositionScrollData* GetAnchorPositionScrollData() const;
   bool NeedsAnchorPositionScrollAdjustment() const;
   PhysicalOffset AnchorPositionScrollTranslationOffset() const;
 

@@ -3895,6 +3895,14 @@ void LocalFrame::CheckPositionAnchorsForCssVisibilityChanges() {
   }
 }
 
+void LocalFrame::CheckPositionAnchorsForChainedVisibilityChanges() {
+  if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
+    return;
+  }
+  AnchorPositionVisibilityObserver::UpdateForChainedAnchorVisibility(
+      scroll_snapshot_clients_);
+}
+
 bool LocalFrame::IsSameOrigin() {
   const SecurityOrigin* security_origin =
       GetSecurityContext()->GetSecurityOrigin();

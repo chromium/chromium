@@ -98,8 +98,10 @@ enum class LayerPositionVisibility : uint8_t {
   kAnchorsIntersectionVisible = 1,
   // anchors-visible, anchor CSS visibility.
   kAnchorsCssVisible = 1 << 1,
+  // anchors-visible, chained anchor visibility.
+  kChainedAnchorsVisible = 1 << 2,
   // no-overflow.
-  kNoOverflow = 1 << 2,
+  kNoOverflow = 1 << 3,
 };
 
 // PaintLayer is an old object that handles lots of unrelated operations.
@@ -751,7 +753,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned static_inline_edge_ : 2;
   unsigned static_block_edge_ : 2;
 
-  unsigned invisible_for_position_visibility_ : 3 = 0;
+  unsigned invisible_for_position_visibility_ : 4 = 0;
   unsigned descendant_needs_check_position_visibility_ : 1 = false;
 
 #if DCHECK_IS_ON()

@@ -4242,32 +4242,32 @@ PhysicalRect LayoutBox::ComputeStickyConstrainingRect() const {
   return constraining_rect;
 }
 
-bool LayoutBox::NeedsAnchorPositionScrollAdjustment() const {
+AnchorPositionScrollData* LayoutBox::GetAnchorPositionScrollData() const {
   if (Element* element = DynamicTo<Element>(GetNode())) {
-    return element->GetAnchorPositionScrollData() &&
-           element->GetAnchorPositionScrollData()->NeedsScrollAdjustment();
+    return element->GetAnchorPositionScrollData();
+  }
+  return nullptr;
+}
+
+bool LayoutBox::NeedsAnchorPositionScrollAdjustment() const {
+  if (auto* data = GetAnchorPositionScrollData()) {
+    return data->NeedsScrollAdjustment();
   }
   return false;
 }
 
 bool LayoutBox::AnchorPositionScrollAdjustmentAfectedByViewportScrolling()
     const {
-  if (Element* element = DynamicTo<Element>(GetNode())) {
-    if (AnchorPositionScrollData* data =
-            element->GetAnchorPositionScrollData()) {
-      return data->NeedsScrollAdjustment() &&
-             data->IsAffectedByViewportScrolling();
-    }
+  if (auto* data = GetAnchorPositionScrollData()) {
+    return data->NeedsScrollAdjustment() &&
+           data->IsAffectedByViewportScrolling();
   }
   return false;
 }
 
 PhysicalOffset LayoutBox::AnchorPositionScrollTranslationOffset() const {
-  if (Element* element = DynamicTo<Element>(GetNode())) {
-    if (AnchorPositionScrollData* data =
-            element->GetAnchorPositionScrollData()) {
-      return data->TranslationAsPhysicalOffset();
-    }
+  if (auto* data = GetAnchorPositionScrollData()) {
+    return data->TranslationAsPhysicalOffset();
   }
   return PhysicalOffset();
 }

@@ -2328,6 +2328,11 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
       break;
   }
 
+  // This must be after all other updates for position-visibility.
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+    frame_view.frame_->CheckPositionAnchorsForChainedVisibilityChanges();
+  });
+
   // Once we exit the ResizeObserver / IntersectionObserver loop above, we need
   // to clear the resize observer limits so that next time we run this, we can
   // deliver more observations.

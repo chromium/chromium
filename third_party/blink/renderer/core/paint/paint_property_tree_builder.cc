@@ -809,7 +809,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
     if (NeedsAnchorPositionScrollTranslation(object_)) {
       const auto& box = To<LayoutBox>(object_);
       const AnchorPositionScrollData& anchor_position_scroll_data =
-          *To<Element>(box.GetNode())->GetAnchorPositionScrollData();
+          *box.GetAnchorPositionScrollData();
       gfx::Vector2dF translation_offset =
           -anchor_position_scroll_data.AccumulatedAdjustment();
       TransformPaintPropertyNode::State state{

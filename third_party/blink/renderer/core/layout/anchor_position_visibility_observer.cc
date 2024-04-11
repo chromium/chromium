@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -51,6 +52,7 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
   } else {
     SetLayerInvisible(LayerPositionVisibility::kAnchorsIntersectionVisible,
                       false);
+    SetLayerInvisible(LayerPositionVisibility::kChainedAnchorsVisible, false);
   }
 }
 
@@ -68,6 +70,63 @@ void AnchorPositionVisibilityObserver::UpdateForCssAnchorVisibility() {
     }
   }
   SetLayerInvisible(LayerPositionVisibility::kAnchorsCssVisible, invisible);
+}
+
+void AnchorPositionVisibilityObserver::UpdateForChainedAnchorVisibility(
+    const HeapHashSet<WeakMember<ScrollSnapshotClient>>& clients) {
+  HeapVector<Member<AnchorPositionVisibilityObserver>>
+      observers_with_chained_anchor;
+  for (auto& client : clients) {
+    if (auto* scroll_data = DynamicTo<AnchorPositionScrollData>(client.Get())) {
+      if (auto* observer = scroll_data->GetAnchorPositionVisibilityObserver()) {
+        observer->SetLayerInvisible(
+            LayerPositionVisibility::kChainedAnchorsVisible, false);
+        if (scroll_data->DefaultAnchorHasChainedAnchor()) {
+          observers_with_chained_anchor.push_back(observer);
+        }
+      }
+    }
+  }
+  for (auto& observer : observers_with_chained_anchor) {
+    observer->SetLayerInvisible(
+        LayerPositionVisibility::kChainedAnchorsVisible,
+        observer->IsInvisibleForChainedAnchorVisibility());
+  }
+}
+
+bool AnchorPositionVisibilityObserver::IsInvisibleForChainedAnchorVisibility()
+    const {
+  DCHECK(anchored_element_->GetAnchorPositionScrollData()
+             ->DefaultAnchorHasChainedAnchor());
+  if (!anchor_element_ || !anchor_element_->GetLayoutObject()) {
+    return false;
+  }
+  for (auto* layer = anchor_element_->GetLayoutObject()->EnclosingLayer();
+       layer; layer = layer->Parent()) {
+    if (auto* box = layer->GetLayoutBox()) {
+      if (auto* chained_data = box->GetAnchorPositionScrollData()) {
+        // `layer` is a chained anchor.
+        if (auto* chained_layer = box->Layer()) {
+          // UpdateForChainedAnchorVisibility() has cleared the invisible flag
+          // for LayerPositionVisibility::kChainedAnchorsVisible, so if any
+          // invisible flag is set, we are sure it's up-to-date.
+          if (chained_layer->InvisibleForPositionVisibility()) {
+            return true;
+          }
+        }
+        if (auto* chained_observer =
+                chained_data->GetAnchorPositionVisibilityObserver();
+            chained_observer && chained_data->DefaultAnchorHasChainedAnchor()) {
+          // If the chained anchor's visibility also depends on other chained
+          // anchors, check visibility recursively.
+          if (chained_observer->IsInvisibleForChainedAnchorVisibility()) {
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
 }
 
 void AnchorPositionVisibilityObserver::SetLayerInvisible(

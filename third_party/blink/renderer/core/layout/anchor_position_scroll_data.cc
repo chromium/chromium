@@ -121,19 +121,20 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
       }
     }
     if (const auto* box = DynamicTo<LayoutBox>(container)) {
-      if (box->NeedsAnchorPositionScrollAdjustment()) {
-        // Add accumulated offset from chained anchor-positioned element.
-        // If the data of that element is not up-to-date, when it's updated,
-        // we'll schedule needed update according to the type of the change.
-        result.adjustment_container_ids.push_back(
-            CompositorElementIdFromUniqueObjectId(
-                box->UniqueId(), CompositorElementIdNamespace::
-                                     kAnchorPositionScrollTranslation));
-        result.accumulated_adjustment +=
-            gfx::Vector2dF(To<Element>(box->GetNode())
-                               ->GetAnchorPositionScrollData()
-                               ->ComputeDefaultAnchorAdjustmentData()
-                               .accumulated_adjustment);
+      if (auto* data = box->GetAnchorPositionScrollData()) {
+        result.has_chained_anchor = true;
+        if (data->NeedsScrollAdjustment()) {
+          // Add accumulated offset from chained anchor-positioned element.
+          // If the data of that element is not up-to-date, when it's updated,
+          // we'll schedule needed update according to the type of the change.
+          result.adjustment_container_ids.push_back(
+              CompositorElementIdFromUniqueObjectId(
+                  box->UniqueId(), CompositorElementIdNamespace::
+                                       kAnchorPositionScrollTranslation));
+          result.accumulated_adjustment +=
+              gfx::Vector2dF(data->ComputeDefaultAnchorAdjustmentData()
+                                 .accumulated_adjustment);
+        }
       }
     }
   }

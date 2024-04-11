@@ -116,6 +116,13 @@ class AnchorPositionScrollData
     return position_visibility_observer_;
   }
 
+  // Whether the default anchor or any ancestor of the default anchor (until
+  // the container of the `anchored_element_`, not included) is also anchor
+  // positioned.
+  bool DefaultAnchorHasChainedAnchor() const {
+    return default_anchor_adjustment_data_.has_chained_anchor;
+  }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -154,6 +161,8 @@ class AnchorPositionScrollData
     // documentation there for their meanings.
     bool needs_scroll_adjustment_in_x = false;
     bool needs_scroll_adjustment_in_y = false;
+
+    bool has_chained_anchor = false;
   };
 
   AdjustmentData ComputeAdjustmentContainersData(
