@@ -115,6 +115,9 @@ JNI_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_MI36SGcd(
     jobject obj,
     jobject convertedObj,
     jobjectArray objects,
+    jobject nestedInterface,
+    jobject view,
+    jobject context,
     jobjectArray convertedObjects);
 
 

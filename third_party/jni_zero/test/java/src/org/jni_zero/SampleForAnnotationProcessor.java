@@ -72,12 +72,19 @@ class SampleForAnnotationProcessor {
                 Object obj,
                 @JniType("jni_zero::tests::CPPClass") Object convertedObj,
                 Object[] objects,
+                MyClass.SecondNestedInterface nestedInterface,
+                View view,
+                Context context,
                 @JniType("std::vector<jni_zero::tests::CPPClass>") Object[] convertedObjects);
 
         Throwable returnThrowable();
+
         Throwable[] returnThrowables();
+
         Class returnClass();
+
         Class[] returnClasses();
+
         String returnString();
 
         @JniType("std::string")

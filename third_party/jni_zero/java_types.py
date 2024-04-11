@@ -375,9 +375,7 @@ class TypeResolver:
       if name in (clazz.name, clazz.nested_name):
         return clazz
 
-    # Is it from an import? (e.g. referecing Class from import pkg.Class;
-    # note that referencing an inner class Inner from import pkg.Class.Inner
-    # is not supported).
+    # Is it from an import? (e.g. referencing Class from import pkg.Class).
     for clazz in self.imports:
       if name in (clazz.name, clazz.nested_name):
         return clazz

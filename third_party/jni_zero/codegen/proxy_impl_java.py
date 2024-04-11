@@ -22,7 +22,7 @@ def Generate(jni_obj, *, gen_jni_class, script_name, per_file_natives=False):
   interface_name = jni_obj.proxy_interface.name_with_dots
   gen_jni = gen_jni_class.name
   type_resolver = java_types.TypeResolver(proxy_class)
-  type_resolver.imports = list(jni_obj.type_resolver.imports)
+  type_resolver.imports = jni_obj.GetClassesToBeImported()
 
   sb = []
   sb.append(f"""\
@@ -31,18 +31,23 @@ def Generate(jni_obj, *, gen_jni_class, script_name, per_file_natives=False):
 //
 package {jni_obj.java_class.class_without_prefix.package_with_dots};
 
-import org.jni_zero.CheckDiscard;
-import org.jni_zero.JniStaticTestMocker;
-import org.jni_zero.NativeLibraryLoadedStatus;
-""")
-  if not per_file_natives:
-    sb.append(f"""\
-import {gen_jni_class.full_name_with_dots};
 """)
 
-  # Copy over all imports (some will be unused, but oh well).
+  import_classes = {
+      'org.jni_zero.CheckDiscard', 'org.jni_zero.JniStaticTestMocker',
+      'org.jni_zero.NativeLibraryLoadedStatus'
+  }
+  if not per_file_natives:
+    import_classes.add(gen_jni_class.full_name_with_dots)
+
   for c in type_resolver.imports:
-    sb.append(f'import {c.full_name_with_dots};\n')
+    if c.is_nested:
+      # We will refer to all nested classes by OuterClass.InnerClass. We do this
+      # to reduce risk of naming collisions.
+      c = c.get_outer_class()
+    import_classes.add(c.full_name_with_dots)
+  for c in sorted(import_classes):
+    sb.append(f'import {c};\n')
 
   if not per_file_natives:
     sb.append('\n@CheckDiscard("crbug.com/993421")')

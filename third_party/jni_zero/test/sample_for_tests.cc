@@ -186,6 +186,12 @@ static ScopedJavaLocalRef<jthrowable> JNI_SampleForTests_GetThrowable(
   return ScopedJavaLocalRef<jthrowable>();
 }
 
+static ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetMap(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& arg0) {
+  return ScopedJavaLocalRef<jobject>();
+}
+
 }  // namespace tests
 }  // namespace jni_zero
 
@@ -260,6 +266,9 @@ static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
     const JavaParamRef<jobject>& obj,
     jni_zero::tests::CPPClass& convertedObj,
     const JavaParamRef<jobjectArray>& objs,
+    const JavaParamRef<jobject>& nestedInterface,
+    const JavaParamRef<jobject>& view,
+    const JavaParamRef<jobject>& context,
     std::vector<jni_zero::tests::CPPClass>& convertedObjs) {}
 
 static ScopedJavaLocalRef<jthrowable>

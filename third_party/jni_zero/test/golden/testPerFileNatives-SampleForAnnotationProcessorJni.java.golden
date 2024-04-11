@@ -3,16 +3,13 @@
 //
 package org.jni_zero;
 
+import android.content.Context;
+import android.view.View;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniStaticTestMocker;
 import org.jni_zero.NativeLibraryLoadedStatus;
-import android.content.Context;
-import android.view.View;
+import org.jni_zero.SampleForAnnotationProcessor;
 import org.stubs.MyClass;
-import org.stubs.MyClass.FirstNestedInterface;
-import org.stubs.MyClass.SecondNestedInterface;
-import org.stubs.MyInterface;
-import java.util.ArrayList;
 
 class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Natives {
   private static SampleForAnnotationProcessor.Natives testInstance;
@@ -152,10 +149,10 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
   private static native int[] nativeTestAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools);
 
   @Override
-  public void testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, SampleForAnnotationProcessor.TestStruct tStruct, SampleForAnnotationProcessor.TestStruct[] structs, Object obj, Object convertedObj, Object[] objects, Object[] convertedObjects) {
-    nativeTestSpecialTypes(clazz, classes, throwable, throwables, string, strings, convertedString, convertedStrings, optionalString, tStruct, structs, obj, convertedObj, objects, convertedObjects);
+  public void testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, SampleForAnnotationProcessor.TestStruct tStruct, SampleForAnnotationProcessor.TestStruct[] structs, Object obj, Object convertedObj, Object[] objects, MyClass.SecondNestedInterface nestedInterface, View view, Context context, Object[] convertedObjects) {
+    nativeTestSpecialTypes(clazz, classes, throwable, throwables, string, strings, convertedString, convertedStrings, optionalString, tStruct, structs, obj, convertedObj, objects, nestedInterface, view, context, convertedObjects);
   }
-  private static native void nativeTestSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Object tStruct, Object[] structs, Object obj, Object convertedObj, Object[] objects, Object[] convertedObjects);
+  private static native void nativeTestSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Object tStruct, Object[] structs, Object obj, Object convertedObj, Object[] objects, Object nestedInterface, Object view, Object context, Object[] convertedObjects);
 
   public static SampleForAnnotationProcessor.Natives get() {
     NativeLibraryLoadedStatus.checkLoaded();

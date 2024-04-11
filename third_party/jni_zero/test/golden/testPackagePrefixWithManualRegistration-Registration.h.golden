@@ -137,6 +137,9 @@ JNI_BOUNDARY_EXPORT void
     jobject obj,
     jobject convertedObj,
     jobjectArray objects,
+    jobject nestedInterface,
+    jobject view,
+    jobject context,
     jobjectArray convertedObjects);
 
 
@@ -228,7 +231,7 @@ static const JNINativeMethod kMethods_this_is_a_package_prefix_org_jni_1zero_GEN
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1testAllPrimitives)
         },
     { "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes",
-        "(Ljava/lang/Class;[Ljava/lang/Class;Ljava/lang/Throwable;[Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/Object;)V",
+        "(Ljava/lang/Class;[Ljava/lang/Class;Ljava/lang/Throwable;[Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)V",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes)
         },
 

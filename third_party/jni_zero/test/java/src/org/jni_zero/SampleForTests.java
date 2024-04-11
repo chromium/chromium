@@ -308,7 +308,11 @@ class SampleForTests {
 
         // Test jclass and jthrowable, as well as generics.
         Class<Map<String, String>> getClass(Class<Map<String, String>> arg0);
+
         Throwable getThrowable(Throwable arg0);
+
+        // Test Map.
+        Map<String, String> getMap(Map<String, String> arg0);
 
         // Similar to nativeDestroy above, this will cast nativeCPPClass into pointer of CPPClass
         // type and call its Method member function. Replace "CPPClass" with your particular class

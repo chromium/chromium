@@ -97,6 +97,9 @@ JNI_BOUNDARY_EXPORT void Java_J_N_MomokuWo(
     jobject obj,
     jobject convertedObj,
     jobjectArray objects,
+    jobject nestedInterface,
+    jobject view,
+    jobject context,
     jobjectArray convertedObjects);
 
 

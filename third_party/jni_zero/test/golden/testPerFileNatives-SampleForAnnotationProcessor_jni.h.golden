@@ -351,6 +351,9 @@ static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
     const jni_zero::JavaParamRef<jobject>& obj,
     jni_zero::tests::CPPClass& convertedObj,
     const jni_zero::JavaParamRef<jobjectArray>& objects,
+    const jni_zero::JavaParamRef<jobject>& nestedInterface,
+    const jni_zero::JavaParamRef<jobject>& view,
+    const jni_zero::JavaParamRef<jobject>& context,
     std::vector<jni_zero::tests::CPPClass>& convertedObjects);
 
 JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeTestSpecialTypes(
@@ -370,6 +373,9 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni_nati
     jobject obj,
     jobject convertedObj,
     jobjectArray objects,
+    jobject nestedInterface,
+    jobject view,
+    jobject context,
     jobjectArray convertedObjects) {
   std::string convertedString_converted = jni_zero::FromJniType<std::string, jstring>(
       env,
@@ -402,6 +408,9 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni_nati
       jni_zero::JavaParamRef<jobject>(env, obj),
       convertedObj_converted,
       jni_zero::JavaParamRef<jobjectArray>(env, objects),
+      jni_zero::JavaParamRef<jobject>(env, nestedInterface),
+      jni_zero::JavaParamRef<jobject>(env, view),
+      jni_zero::JavaParamRef<jobject>(env, context),
       convertedObjects_converted);
 }
 

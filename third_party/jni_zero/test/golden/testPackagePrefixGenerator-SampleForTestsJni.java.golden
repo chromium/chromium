@@ -3,16 +3,13 @@
 //
 package org.jni_zero;
 
+import android.graphics.Rect;
+import java.util.Map;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniStaticTestMocker;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import this.is.a.package.prefix.org.jni_zero.GEN_JNI;
-import android.graphics.Rect;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import this.is.a.package.prefix.org.jni_zero.SampleForTests;
 
 @CheckDiscard("crbug.com/993421")
 public class SampleForTestsJni implements SampleForTests.Natives {
@@ -55,6 +52,11 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   @Override
   public float getFloatFunction() {
     return (float) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getFloatFunction();
+  }
+
+  @Override
+  public Map getMap(Map arg0) {
+    return (Map) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getMap(arg0);
   }
 
   @Override

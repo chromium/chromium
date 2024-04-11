@@ -4,9 +4,9 @@
 package org.jni_zero;
 
 import org.jni_zero.CheckDiscard;
+import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniStaticTestMocker;
 import org.jni_zero.NativeLibraryLoadedStatus;
-import org.jni_zero.GEN_JNI;
 
 @CheckDiscard("crbug.com/993421")
 class SampleUniqueAnnotationsJni implements SampleUniqueAnnotations.Natives {

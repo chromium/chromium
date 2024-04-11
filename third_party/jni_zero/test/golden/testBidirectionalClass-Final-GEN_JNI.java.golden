@@ -23,6 +23,8 @@ public class GEN_JNI {
     public static native double org_jni_1zero_SampleForTests_getDoubleFunction(Object caller);
       // Hashed name: Java_J_N_MvEgj8y2
     public static native float org_jni_1zero_SampleForTests_getFloatFunction();
+      // Hashed name: Java_J_N_Mz4j2yc1
+    public static native Object org_jni_1zero_SampleForTests_getMap(Object arg0);
       // Hashed name: Java_J_N_MyJgrTgs
     public static native Object org_jni_1zero_SampleForTests_getNonPODDatatype(Object caller);
       // Hashed name: Java_J_N_MOUT8MuQ

@@ -115,6 +115,9 @@ JNI_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_MI36SGcd(
     jobject obj,
     jobject convertedObj,
     jobjectArray objects,
+    jobject nestedInterface,
+    jobject view,
+    jobject context,
     jobjectArray convertedObjects);
 
 
@@ -162,7 +165,7 @@ static const JNINativeMethod kMethods_this_is_a_package_prefix_J_N[] = {
     { "MtvkX0TV", "(I[IJ[JS[SC[CB[BD[DF[FZ[Z)[I",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MtvkX0TV) },
     { "MI36SGcd",
-        "(Ljava/lang/Class;[Ljava/lang/Class;Ljava/lang/Throwable;[Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;[Ljava/lang/Object;)V",
+        "(Ljava/lang/Class;[Ljava/lang/Class;Ljava/lang/Throwable;[Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)V",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MI36SGcd) },
 
 };

@@ -13,6 +13,7 @@ public class GEN_JNI {
   public static native Class org_jni_1zero_SampleForTests_getClass(Class arg0);
   public static native double org_jni_1zero_SampleForTests_getDoubleFunction(Object caller);
   public static native float org_jni_1zero_SampleForTests_getFloatFunction();
+  public static native Object org_jni_1zero_SampleForTests_getMap(Object arg0);
   public static native Object org_jni_1zero_SampleForTests_getNonPODDatatype(Object caller);
   public static native Throwable org_jni_1zero_SampleForTests_getThrowable(Throwable arg0);
   public static native long org_jni_1zero_SampleForTests_init(Object caller, String param, byte[] bytes, Object convertedType);

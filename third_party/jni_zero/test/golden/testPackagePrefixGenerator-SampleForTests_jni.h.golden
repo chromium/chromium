@@ -120,6 +120,21 @@ JNI_BOUNDARY_EXPORT jfloat Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_
 }
 
 // Forward declaration. To be implemented by the including .cc file.
+static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetMap(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& arg0);
+
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1getMap(
+    JNIEnv* env,
+    jclass jcaller,
+    jobject arg0) {
+  auto ret = JNI_SampleForTests_GetMap(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, arg0));
+  return ret.Release();
+}
+
+// Forward declaration. To be implemented by the including .cc file.
 static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetNonPODDatatype(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& caller);

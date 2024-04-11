@@ -107,6 +107,13 @@ class NativeMethod:
   def proxy_params(self):
     return self.proxy_signature.param_list
 
+  @property
+  def param_types(self):
+    return self.signature.param_types
+
+  @property
+  def proxy_param_types(self):
+    return self.proxy_signature.param_types
 
 class CalledByNative:
   """Describes a Java method that is called from C++"""
@@ -240,6 +247,21 @@ class JniObject:
   @property
   def non_proxy_natives(self):
     return [n for n in self.natives if not n.is_proxy]
+
+  def GetClassesToBeImported(self):
+    classes = set()
+    for p in self.proxy_natives:
+      for t in list(p.param_types) + [p.return_type]:
+        class_obj = t.java_class
+        if class_obj is None:
+          # Primitive types will be None.
+          continue
+        if class_obj.full_name_with_slashes.startswith('java/lang/'):
+          # java.lang** are never imported.
+          continue
+        classes.add(class_obj)
+
+    return sorted(classes)
 
   def RemoveTestOnlyNatives(self):
     self.natives = [n for n in self.natives if not n.is_test_only]
@@ -520,9 +542,7 @@ def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
       # write a stubbed version of the class if it's imported by another class.
       for jni_obj in jni_objs:
         placeholders = collections.defaultdict(list)
-        for java_class in jni_obj.type_resolver.imports:
-          # java.** are not separate deps and can be assumed to be available in
-          # any compile and thus we do not need to create placeholders for them.
+        for java_class in jni_obj.GetClassesToBeImported():
           if java_class.full_name_with_slashes.startswith('java/'):
             continue
           # TODO(mheikal): handle more than 1 nesting layer.

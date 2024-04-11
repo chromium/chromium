@@ -97,20 +97,23 @@ JNI_BOUNDARY_EXPORT void Java_J_N_MomokuWo(
     jobject obj,
     jobject convertedObj,
     jobjectArray objects,
+    jobject nestedInterface,
+    jobject view,
+    jobject context,
     jobjectArray convertedObjects);
 
 
-JNI_BOUNDARY_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRARRAROOAOOOAOA(
+JNI_BOUNDARY_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRARRAROOAOOOAOOOOA(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num, jclass class_param1, jobjectArray class_array_param1, jthrowable throwable_param1, jobjectArray throwable_array_param1, jstring string_param1, jobjectArray string_array_param1, jstring string_param2, jobjectArray string_array_param2, jstring string_param3, jobject object_param1, jobjectArray object_array_param1, jobject object_param2, jobject object_param3, jobjectArray object_array_param2, jobjectArray object_array_param3) {
+    jint switch_num, jclass class_param1, jobjectArray class_array_param1, jthrowable throwable_param1, jobjectArray throwable_array_param1, jstring string_param1, jobjectArray string_array_param1, jstring string_param2, jobjectArray string_array_param2, jstring string_param3, jobject object_param1, jobjectArray object_array_param1, jobject object_param2, jobject object_param3, jobjectArray object_array_param2, jobject object_param4, jobject object_param5, jobject object_param6, jobjectArray object_array_param3) {
         switch (switch_num) {
           
           case 0:
-            return Java_J_N_MomokuWo(env, jcaller, class_param1, class_array_param1, throwable_param1, throwable_array_param1, string_param1, string_array_param1, string_param2, string_array_param2, string_param3, object_param1, object_array_param1, object_param2, object_param3, object_array_param2, object_array_param3);
+            return Java_J_N_MomokuWo(env, jcaller, class_param1, class_array_param1, throwable_param1, throwable_array_param1, string_param1, string_array_param1, string_param2, string_array_param2, string_param3, object_param1, object_array_param1, object_param2, object_param3, object_array_param2, object_param4, object_param5, object_param6, object_array_param3);
           
           default:
-            JNI_ZERO_ELOG("J_N_resolve_1for_1void_1LLATTARRARRAROOAOOOAOA was called with an invalid switch number: %d", switch_num);
+            JNI_ZERO_ELOG("J_N_resolve_1for_1void_1LLATTARRARRAROOAOOOAOOOOA was called with an invalid switch number: %d", switch_num);
             JNI_ZERO_DCHECK(false);
             return;
         }
