@@ -467,6 +467,7 @@ try_.builder(
         "ci/Mac13 Tests (dbg)",
     ],
     gn_args = "ci/Mac Builder (dbg)",
+    cpu = cpu.ARM64,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
