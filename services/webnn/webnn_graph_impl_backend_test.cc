@@ -349,6 +349,7 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeSingleOperatorConcat",
       "BuildAndComputeConcatWithConstants",
       "BuildAndComputeSingleOperatorClamp",
+      "BuildAndComputeSingleOperatorSoftsign",
       "BuildAndComputeSingleOperatorRelu",
       "BuildAndComputeSingleOperatorTranspose",
       "BuildAndComputeGraphWithTwoTranspose",

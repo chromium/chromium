@@ -100,6 +100,7 @@ constexpr char kOpClipTypeName[] = "clip";
 constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpReluTypeName[] = "relu";
+constexpr char kOpSoftsignTypeName[] = "softsign";
 constexpr char kOpTransposeTypeName[] = "transpose";
 // Elementwise binary operators.
 constexpr char kOpAddTypeName[] = "add";
@@ -561,6 +562,11 @@ GraphBuilder::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForRelu(*operation->get_relu(), block));
         break;
       }
+      case mojom::Operation::Tag::kSoftsign: {
+        RETURN_IF_ERROR(
+            AddOperationForSoftsign(*operation->get_softsign(), block));
+        break;
+      }
       case mojom::Operation::Tag::kTranspose: {
         RETURN_IF_ERROR(
             AddOperationForTranspose(*operation->get_transpose(), block));
@@ -593,7 +599,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kSlice:
       case mojom::Operation::Tag::kSoftmax:
       case mojom::Operation::Tag::kSoftplus:
-      case mojom::Operation::Tag::kSoftsign:
       case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTanh:
       case mojom::Operation::Tag::kTriangular:
@@ -1000,6 +1005,30 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForRelu(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpReluTypeName);
+
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSoftsign(
+    const mojom::Softsign& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+
+  static constexpr auto kSupportedSoftsignOpsTypes =
+      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+          {CoreML::Specification::MILSpec::DataType::FLOAT16,
+           CoreML::Specification::MILSpec::DataType::FLOAT32});
+  if (!kSupportedSoftsignOpsTypes.contains(input_operand_info.mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpSoftsignTypeName);
 
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
