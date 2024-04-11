@@ -61,9 +61,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
 
   // PlatformWindowDelegate:
   void OnClosed() override;
-  void OnWindowStateChanged(
-      ui::PlatformWindowState old_window_show_state,
-      ui::PlatformWindowState new_window_show_state) override;
+  void OnWindowStateChanged(ui::PlatformWindowState old_state,
+                            ui::PlatformWindowState new_state) override;
   void OnFullscreenTypeChanged(ui::PlatformFullscreenType old_type,
                                ui::PlatformFullscreenType new_type) override;
   void OnOverviewModeChanged(bool in_overview) override;

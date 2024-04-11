@@ -144,13 +144,11 @@ void DesktopWindowTreeHostLacros::OnClosed() {
 }
 
 void DesktopWindowTreeHostLacros::OnWindowStateChanged(
-    ui::PlatformWindowState old_window_show_state,
-    ui::PlatformWindowState new_window_show_state) {
-  DesktopWindowTreeHostPlatform::OnWindowStateChanged(old_window_show_state,
-                                                      new_window_show_state);
-  GetContentWindow()->SetProperty(
-      chromeos::kWindowStateTypeKey,
-      ToChromeosWindowStateType(new_window_show_state));
+    ui::PlatformWindowState old_state,
+    ui::PlatformWindowState new_state) {
+  DesktopWindowTreeHostPlatform::OnWindowStateChanged(old_state, new_state);
+  GetContentWindow()->SetProperty(chromeos::kWindowStateTypeKey,
+                                  ToChromeosWindowStateType(new_state));
 
   UpdateWindowHints();
 }

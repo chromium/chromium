@@ -123,25 +123,23 @@ void BrowserDesktopWindowTreeHostLacros::UnlockMouse(aura::Window* window) {
 }
 
 void BrowserDesktopWindowTreeHostLacros::OnWindowStateChanged(
-    ui::PlatformWindowState old_window_show_state,
-    ui::PlatformWindowState new_window_show_state) {
-  DesktopWindowTreeHostLacros::OnWindowStateChanged(old_window_show_state,
-                                                    new_window_show_state);
+    ui::PlatformWindowState old_state,
+    ui::PlatformWindowState new_state) {
+  DesktopWindowTreeHostLacros::OnWindowStateChanged(old_state, new_state);
 
-  bool fullscreen_changed =
-      ui::IsPlatformWindowStateFullscreen(new_window_show_state) ||
-      ui::IsPlatformWindowStateFullscreen(old_window_show_state);
-  if (old_window_show_state != new_window_show_state && fullscreen_changed) {
+  bool fullscreen_changed = ui::IsPlatformWindowStateFullscreen(new_state) ||
+                            ui::IsPlatformWindowStateFullscreen(old_state);
+  if (old_state != new_state && fullscreen_changed) {
     // Update WindowPinTypeKey before triggering BrowserView::ProcessFullscreen.
-    if (IsPinned(old_window_show_state)) {
-      CHECK(!IsPinned(new_window_show_state));
+    if (IsPinned(old_state)) {
+      CHECK(!IsPinned(new_state));
       desktop_native_widget_aura_->GetNativeWindow()->SetProperty(
           lacros::kWindowPinTypeKey, chromeos::WindowPinType::kNone);
-    } else if (IsPinned(new_window_show_state)) {
-      CHECK(!IsPinned(old_window_show_state));
+    } else if (IsPinned(new_state)) {
+      CHECK(!IsPinned(old_state));
       desktop_native_widget_aura_->GetNativeWindow()->SetProperty(
           lacros::kWindowPinTypeKey,
-          new_window_show_state == ui::PlatformWindowState::kPinnedFullscreen
+          new_state == ui::PlatformWindowState::kPinnedFullscreen
               ? chromeos::WindowPinType::kPinned
               : chromeos::WindowPinType::kTrustedPinned);
     }
