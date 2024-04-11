@@ -788,6 +788,13 @@ public final class ChromePreferenceKeys {
             "org.chromium.chrome.browser.tabmodel.TabPersistentStore."
                     + "HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION";
 
+    public static final String TAB_DECLUTTER_ARCHIVE_ENABLED = "Chrome.Tab.ArchiveEnabled";
+    public static final String TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS =
+            "Chrome.Tab.ArchiveTimeDeltaHours";
+    public static final String TAB_DECLUTTER_AUTO_DELETE_ENABLED =
+            "Chrome.Tab.ArchiveAutoDeleteEnabled";
+    public static final String TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS =
+            "Chrome.Tab.ArchiveAutoDeleteTimeDeltaHours";
     public static final String TAB_ID_MANAGER_NEXT_ID =
             "org.chromium.chrome.browser.tab.TabIdManager.NEXT_ID";
 
@@ -1010,6 +1017,10 @@ public final class ChromePreferenceKeys {
                 SWAA_TIMESTAMP,
                 SWAA_STATUS,
                 TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS,
+                TAB_DECLUTTER_ARCHIVE_ENABLED,
+                TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS,
+                TAB_DECLUTTER_AUTO_DELETE_ENABLED,
+                TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
                 UMA_ON_POSTCREATE_COUNTER,
                 UMA_ON_RESUME_COUNTER,
