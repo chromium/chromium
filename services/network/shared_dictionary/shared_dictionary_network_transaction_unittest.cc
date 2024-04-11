@@ -1231,16 +1231,29 @@ std::string ToString(ProtocolCheckProtocolTestCase protocol) {
   }
 }
 
-enum class ProtocolCheckFeatureTestCase {
+enum class ProtocolCheckHttp1TestCase {
   kAllowHttp1,
   kDoNotAllowHttp1,
 };
-std::string ToString(ProtocolCheckFeatureTestCase feature) {
+std::string ToString(ProtocolCheckHttp1TestCase feature) {
   switch (feature) {
-    case ProtocolCheckFeatureTestCase::kAllowHttp1:
+    case ProtocolCheckHttp1TestCase::kAllowHttp1:
       return "AllowHttp1";
-    case ProtocolCheckFeatureTestCase::kDoNotAllowHttp1:
+    case ProtocolCheckHttp1TestCase::kDoNotAllowHttp1:
       return "DoNotAllowHttp1";
+  }
+}
+
+enum class ProtocolCheckHttp2TestCase {
+  kAllowHttp2,
+  kDoNotAllowHttp2,
+};
+std::string ToString(ProtocolCheckHttp2TestCase feature) {
+  switch (feature) {
+    case ProtocolCheckHttp2TestCase::kAllowHttp2:
+      return "AllowHttp2";
+    case ProtocolCheckHttp2TestCase::kDoNotAllowHttp2:
+      return "DoNotAllowHttp2";
   }
 }
 
@@ -1260,7 +1273,8 @@ std::string ToString(ProtocolCheckHostTestCase host_type) {
 class SharedDictionaryNetworkTransactionProtocolCheckTest
     : public SharedDictionaryNetworkTransactionTest,
       public testing::WithParamInterface<
-          std::tuple<ProtocolCheckFeatureTestCase,
+          std::tuple<ProtocolCheckHttp1TestCase,
+                     ProtocolCheckHttp2TestCase,
                      ProtocolCheckProtocolTestCase,
                      ProtocolCheckHostTestCase>> {
  public:
@@ -1273,6 +1287,13 @@ class SharedDictionaryNetworkTransactionProtocolCheckTest
     } else {
       disabled_features.push_back(
           network::features::kCompressionDictionaryTransportOverHttp1);
+    }
+    if (AllowHttp2()) {
+      enabled_features.push_back(
+          network::features::kCompressionDictionaryTransportOverHttp2);
+    } else {
+      disabled_features.push_back(
+          network::features::kCompressionDictionaryTransportOverHttp2);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -1306,19 +1327,37 @@ class SharedDictionaryNetworkTransactionProtocolCheckTest
 
  private:
   bool AllowHttp1() const {
-    return std::get<0>(GetParam()) == ProtocolCheckFeatureTestCase::kAllowHttp1;
+    return std::get<0>(GetParam()) == ProtocolCheckHttp1TestCase::kAllowHttp1;
+  }
+  bool AllowHttp2() const {
+    return std::get<1>(GetParam()) == ProtocolCheckHttp2TestCase::kAllowHttp2;
+  }
+  bool IsHttp1() const {
+    return std::get<2>(GetParam()) == ProtocolCheckProtocolTestCase::kHttp1;
   }
   bool IsHttp2() const {
-    return std::get<1>(GetParam()) == ProtocolCheckProtocolTestCase::kHttp2;
+    return std::get<2>(GetParam()) == ProtocolCheckProtocolTestCase::kHttp2;
   }
   bool IsHttp3() const {
-    return std::get<1>(GetParam()) == ProtocolCheckProtocolTestCase::kHttp3;
+    return std::get<2>(GetParam()) == ProtocolCheckProtocolTestCase::kHttp3;
   }
   bool IsLocalHost() const {
-    return std::get<2>(GetParam()) == ProtocolCheckHostTestCase::kLocalHost;
+    return std::get<3>(GetParam()) == ProtocolCheckHostTestCase::kLocalHost;
   }
   bool ShuoldUseDictionary() const {
-    return AllowHttp1() || IsLocalHost() || IsHttp2() || IsHttp3();
+    if (AllowHttp1()) {
+      if (AllowHttp2()) {
+        return true;
+      } else {
+        return IsLocalHost() || IsHttp1() || IsHttp3();
+      }
+    } else {
+      if (AllowHttp2()) {
+        return IsLocalHost() || IsHttp2() || IsHttp3();
+      } else {
+        return IsLocalHost() || IsHttp3();
+      }
+    }
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1328,20 +1367,24 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SharedDictionaryNetworkTransactionProtocolCheckTest,
     ::testing::Combine(
-        ::testing::Values(ProtocolCheckFeatureTestCase::kAllowHttp1,
-                          ProtocolCheckFeatureTestCase::kDoNotAllowHttp1),
+        ::testing::Values(ProtocolCheckHttp1TestCase::kAllowHttp1,
+                          ProtocolCheckHttp1TestCase::kDoNotAllowHttp1),
+        ::testing::Values(ProtocolCheckHttp2TestCase::kAllowHttp2,
+                          ProtocolCheckHttp2TestCase::kDoNotAllowHttp2),
         ::testing::Values(ProtocolCheckProtocolTestCase::kHttp1,
                           ProtocolCheckProtocolTestCase::kHttp2,
                           ProtocolCheckProtocolTestCase::kHttp3),
         ::testing::Values(ProtocolCheckHostTestCase::kLocalHost,
                           ProtocolCheckHostTestCase::kNonLocalhost)),
-    [](const testing::TestParamInfo<std::tuple<ProtocolCheckFeatureTestCase,
+    [](const testing::TestParamInfo<std::tuple<ProtocolCheckHttp1TestCase,
+                                               ProtocolCheckHttp2TestCase,
                                                ProtocolCheckProtocolTestCase,
                                                ProtocolCheckHostTestCase>>&
            info) {
       return ToString(std::get<0>(info.param)) + "_" +
              ToString(std::get<1>(info.param)) + "_" +
-             ToString(std::get<2>(info.param));
+             ToString(std::get<2>(info.param)) + "_" +
+             ToString(std::get<3>(info.param));
     });
 
 TEST_P(SharedDictionaryNetworkTransactionProtocolCheckTest, Basic) {
@@ -1349,9 +1392,11 @@ TEST_P(SharedDictionaryNetworkTransactionProtocolCheckTest, Basic) {
       base::MakeRefCounted<DummySharedDictionaryStorage>(
           std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
 
-  net::MockTransaction new_mock_transaction = CreateMockTransaction();
+  // Reset `scoped_mock_transaction_` to use the custom ScopedMockTransaction.
+  scoped_mock_transaction_.reset();
+  net::ScopedMockTransaction new_mock_transaction(CreateMockTransaction());
 
-  net::MockHttpRequest request(*scoped_mock_transaction_);
+  net::MockHttpRequest request(new_mock_transaction);
   SharedDictionaryNetworkTransaction transaction(manager,
                                                  CreateNetworkTransaction());
   transaction.SetIsSharedDictionaryReadAllowedCallback(

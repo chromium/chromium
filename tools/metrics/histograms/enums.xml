@@ -17126,6 +17126,8 @@ from previous Chrome versions.
   <int value="-1775842908" label="EnableOAuthIpp:disabled"/>
   <int value="-1774921110" label="ServiceWorkerStaticRouter:enabled"/>
   <int value="-1774818943" label="VrWebInputEditing:enabled"/>
+  <int value="-1774392993"
+      label="CompressionDictionaryTransportOverHttp2:disabled"/>
   <int value="-1774290918" label="webview-shadow-dom-fenced-frames"/>
   <int value="-1773925297" label="TimedHtmlParserBudget:disabled"/>
   <int value="-1773078316" label="DragDropTabTearing:enabled"/>
@@ -20554,6 +20556,8 @@ from previous Chrome versions.
   <int value="-241065111" label="BackForwardTransitions:disabled"/>
   <int value="-241061180" label="NotificationImageDrag:enabled"/>
   <int value="-240531943" label="ContextualSearchRankerQuery:disabled"/>
+  <int value="-240481438"
+      label="CompressionDictionaryTransportOverHttp2:enabled"/>
   <int value="-239616243" label="HighDynamicRange:enabled"/>
   <int value="-239176328" label="BluetoothAggressiveAppearanceFilter:enabled"/>
   <int value="-238717837" label="CellularUseSecondEuicc:disabled"/>

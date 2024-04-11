@@ -2482,6 +2482,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-compression-dictionary-transport-allow-http2",
+    "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-compression-dictionary-transport-backend",
     "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
     "expiry_milestone": 130

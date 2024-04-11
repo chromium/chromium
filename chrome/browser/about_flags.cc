@@ -10176,6 +10176,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          network::features::kCompressionDictionaryTransportOverHttp1)},
 
+    {"enable-compression-dictionary-transport-allow-http2",
+     flag_descriptions::kCompressionDictionaryTransportOverHttp2Name,
+     flag_descriptions::kCompressionDictionaryTransportOverHttp2Description,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         network::features::kCompressionDictionaryTransportOverHttp2)},
+
     {"enable-compression-dictionary-transport-require-known-root-cert",
      flag_descriptions::kCompressionDictionaryTransportRequireKnownRootCertName,
      flag_descriptions::

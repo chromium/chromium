@@ -534,6 +534,9 @@ extern const char kCompressionDictionaryTransportBackendDescription[];
 extern const char kCompressionDictionaryTransportOverHttp1Name[];
 extern const char kCompressionDictionaryTransportOverHttp1Description[];
 
+extern const char kCompressionDictionaryTransportOverHttp2Name[];
+extern const char kCompressionDictionaryTransportOverHttp2Description[];
+
 extern const char kCompressionDictionaryTransportRequireKnownRootCertName[];
 extern const char
     kCompressionDictionaryTransportRequireKnownRootCertDescription[];

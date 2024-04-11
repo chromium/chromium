@@ -236,13 +236,20 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          network::features::kCompressionDictionaryTransportOverHttp1) &&
-      negotiated_protocol_ != net::kProtoHTTP2 &&
-      negotiated_protocol_ != net::kProtoQUIC &&
-      !net::IsLocalhost(request_url)) {
-    shared_dictionary_.reset();
-    return;
+  if (!net::IsLocalhost(request_url)) {
+    if (!base::FeatureList::IsEnabled(
+            network::features::kCompressionDictionaryTransportOverHttp1) &&
+        negotiated_protocol_ != net::kProtoHTTP2 &&
+        negotiated_protocol_ != net::kProtoQUIC) {
+      shared_dictionary_.reset();
+      return;
+    }
+    if (!base::FeatureList::IsEnabled(
+            network::features::kCompressionDictionaryTransportOverHttp2) &&
+        negotiated_protocol_ == net::kProtoHTTP2) {
+      shared_dictionary_.reset();
+      return;
+    }
   }
   if (base::FeatureList::IsEnabled(
           network::features::

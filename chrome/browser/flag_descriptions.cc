@@ -901,6 +901,12 @@ const char kCompressionDictionaryTransportOverHttp1Description[] =
     "When this is enabled, Chromium can use stored shared dictionaries even "
     "when the connection is using HTTP/1 for non-localhost requests.";
 
+const char kCompressionDictionaryTransportOverHttp2Name[] =
+    "Compression dictionary transport over HTTP/2";
+const char kCompressionDictionaryTransportOverHttp2Description[] =
+    "When this is enabled, Chromium can use stored shared dictionaries even "
+    "when the connection is using HTTP/2 for non-localhost requests.";
+
 const char kCompressionDictionaryTransportRequireKnownRootCertName[] =
     "Compression dictionary transport require knwon root cert";
 const char kCompressionDictionaryTransportRequireKnownRootCertDescription[] =

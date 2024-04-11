@@ -162,6 +162,8 @@ BASE_DECLARE_FEATURE(kCompressionDictionaryTransport);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kCompressionDictionaryTransportOverHttp1);
 COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kCompressionDictionaryTransportOverHttp2);
+COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kCompressionDictionaryTransportRequireKnownRootCert);
 
 // Enables visibility aware network service resource scheduler. When enabled,
