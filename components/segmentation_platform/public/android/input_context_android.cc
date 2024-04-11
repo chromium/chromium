@@ -59,6 +59,14 @@ void ConvertAndAddToInputContext(
   }
 }
 
+void JavaGURLArrayToGURLVector(
+    JNIEnv* env,
+    const base::android::JavaRef<jobjectArray>& j_gurls,
+    std::vector<GURL>* ret) {
+  *ret = jni_zero::ConvertArray<std::vector<GURL>>::FromJniType<jobject>(
+      env, j_gurls);
+}
+
 static void JavaLongArrayToBaseTimeVector(
     JNIEnv* env,
     const base::android::JavaRef<jlongArray>& java_values,
@@ -127,7 +135,7 @@ void InputContextAndroid::FromJavaParams(
   ConvertAndAddToInputContext(env, input_context, jint64_keys, jint64_values,
                               base::android::JavaLongArrayToInt64Vector);
   ConvertAndAddToInputContext(env, input_context, jurl_keys, jurl_values,
-                              url::GURLAndroid::JavaGURLArrayToGURLVector);
+                              JavaGURLArrayToGURLVector);
 }
 
 static void JNI_InputContext_FillNative(

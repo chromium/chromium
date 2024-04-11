@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -327,17 +328,17 @@ public class OptimizationGuideBridge implements Destroyable {
 
         void canApplyOptimization(
                 long nativeOptimizationGuideBridge,
-                GURL url,
+                @JniType("GURL") GURL url,
                 int optimizationType,
                 OptimizationGuideCallback callback);
 
         void canApplyOptimizationOnDemand(
                 long nativeOptimizationGuideBridge,
-                GURL[] urls,
+                @JniType("std::vector<GURL>") GURL[] urls,
                 int[] optimizationTypes,
                 int requestContext,
                 OnDemandOptimizationGuideCallback callback,
-                byte[] requestContextMetadata);
+                @JniType("jni_zero::ByteArrayView") byte[] requestContextMetadata);
 
         void onNewPushNotification(long nativeOptimizationGuideBridge, byte[] encodedNotification);
 

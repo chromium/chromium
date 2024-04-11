@@ -83,23 +83,6 @@ std::unique_ptr<GURL> GURLAndroid::ToNativeGURL(
   return std::make_unique<GURL>(ret);
 }
 
-// TODO(agrieve): Replace with @JniType("std::vector<GURL>")
-void GURLAndroid::JavaGURLArrayToGURLVector(
-    JNIEnv* env,
-    const base::android::JavaRef<jobjectArray>& array,
-    std::vector<GURL>* out) {
-  DCHECK(out);
-  DCHECK(out->empty());
-  if (!array)
-    return;
-  size_t len = SafeGetArrayLength(env, array);
-  for (size_t i = 0; i < len; ++i) {
-    ScopedJavaLocalRef<jobject> j_gurl(
-        env, static_cast<jobject>(env->GetObjectArrayElement(array.obj(), i)));
-    out->push_back(*ToNativeGURL(env, j_gurl));
-  }
-}
-
 // static
 ScopedJavaLocalRef<jobject> GURLAndroid::FromNativeGURL(JNIEnv* env,
                                                         const GURL& gurl) {

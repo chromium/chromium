@@ -26,10 +26,6 @@ class COMPONENT_EXPORT(URL) GURLAndroid {
   static base::android::ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfGURLs(
       JNIEnv* env,
       base::span<base::android::ScopedJavaLocalRef<jobject>> v);
-  static void JavaGURLArrayToGURLVector(
-      JNIEnv* env,
-      const base::android::JavaRef<jobjectArray>& gurl_array,
-      std::vector<GURL>* out);
 };
 
 }  // namespace url

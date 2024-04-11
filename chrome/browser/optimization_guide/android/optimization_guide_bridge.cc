@@ -228,11 +228,11 @@ void OptimizationGuideBridge::RegisterOptimizationTypes(
 
 void OptimizationGuideBridge::CanApplyOptimization(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_gurl,
+    GURL& url,
     jint optimization_type,
     const JavaParamRef<jobject>& java_callback) {
   optimization_guide_keyed_service_->CanApplyOptimization(
-      *url::GURLAndroid::ToNativeGURL(env, java_gurl),
+      url,
       static_cast<optimization_guide::proto::OptimizationType>(
           optimization_type),
       base::BindOnce(&OnOptimizationGuideDecision,
@@ -241,23 +241,18 @@ void OptimizationGuideBridge::CanApplyOptimization(
 
 void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
     JNIEnv* env,
-    const JavaParamRef<jobjectArray>& java_gurls,
+    std::vector<GURL>& urls,
     const JavaParamRef<jintArray>& optimization_types,
     jint request_context,
     const JavaParamRef<jobject>& java_callback,
-    jbyteArray request_context_metadata_serialized) {
-  // Convert GURLs to native.
-  std::vector<GURL> urls;
-  url::GURLAndroid::JavaGURLArrayToGURLVector(env, java_gurls, &urls);
-
-  int bytes_length = env->GetArrayLength(request_context_metadata_serialized);
-  jbyte* bytes =
-      env->GetByteArrayElements(request_context_metadata_serialized, nullptr);
+    jni_zero::ByteArrayView& request_context_metadata_serialized) {
   proto::RequestContextMetadata request_context_metadata_deserialized;
-  request_context_metadata_deserialized.ParseFromArray(bytes, bytes_length);
+  request_context_metadata_deserialized.ParseFromArray(
+      request_context_metadata_serialized.data(),
+      request_context_metadata_serialized.size());
   std::optional<optimization_guide::proto::RequestContextMetadata>
       request_context_metadata =
-          (env->GetArrayLength(request_context_metadata_serialized) == 0)
+          request_context_metadata_serialized.empty()
               ? std::nullopt
               : std::make_optional(request_context_metadata_deserialized);
 
