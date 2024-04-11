@@ -1982,6 +1982,7 @@ interface Element : Node
     method getElementsByClassName
     method getElementsByTagName
     method getElementsByTagNameNS
+    method getHTML
     method getInnerHTML
     method hasAttribute
     method hasAttributeNS
@@ -4373,10 +4374,12 @@ interface HTMLTemplateElement : HTMLElement
     getter shadowRootClonable
     getter shadowRootDelegatesFocus
     getter shadowRootMode
+    getter shadowRootSerializable
     method constructor
     setter shadowRootClonable
     setter shadowRootDelegatesFocus
     setter shadowRootMode
+    setter shadowRootSerializable
 interface HTMLTextAreaElement : HTMLElement
     attribute @@toStringTag
     getter autocomplete
@@ -8418,12 +8421,14 @@ interface ShadowRoot : DocumentFragment
     getter onslotchange
     getter pictureInPictureElement
     getter pointerLockElement
+    getter serializable
     getter slotAssignment
     getter styleSheets
     method constructor
     method elementFromPoint
     method elementsFromPoint
     method getAnimations
+    method getHTML
     method getInnerHTML
     method getSelection
     method setHTMLUnsafe
@@ -8431,6 +8436,7 @@ interface ShadowRoot : DocumentFragment
     setter fullscreenElement
     setter innerHTML
     setter onslotchange
+    setter serializable
 interface SharedWorker : EventTarget
     attribute @@toStringTag
     getter onerror

@@ -1482,8 +1482,9 @@
       // This is the "new" version of getHTML() used for declarative shadow
       // DOM, and this version will replace the deprecated getInnerHTML(), which
       // is enabled by the ElementGetInnerHTML feature.
+      // Shipped in M125, flag can be removed in M127.
       name: "ElementGetHTML",
-      status: "experimental",
+      status: "stable",
     },
     {
       // This is the "old" version of getInnerHTML() used for declarative shadow
