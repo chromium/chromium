@@ -2422,7 +2422,7 @@ Style notes:
         Key shortcuts, tips for using device, and more
       </message>
       <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_IMAGES_TOOLTIP" desc="The tooltip text of the images menu item in the search category filter menu that shows what search results the category includes.">
-        Image search by content and image previews
+        Search for text within images and see image previews
       </message>
       <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_PLAYSTORE_TOOLTIP" desc="The tooltip text of the playstore menu item in the search category filter menu that shows what search results the category includes.">
         Available apps from the Play Store
