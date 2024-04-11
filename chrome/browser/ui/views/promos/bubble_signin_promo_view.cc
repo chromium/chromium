@@ -99,7 +99,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
           profiles::GetPlaceholderAvatarIconResourceID());
     }
     signin_button_pointer = std::make_unique<BubbleSignInPromoSignInButtonView>(
-        account, account_icon, std::move(callback),
+        account, account_icon, std::move(callback), access_point,
         /*use_account_name_as_title=*/true);
   }
 

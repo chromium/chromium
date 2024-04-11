@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -16,6 +16,8 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
+
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kBubbleSignInPromoSignInButtonHasCallback);
 
 // Sign-in button view used by Sign in promos that presents the
 // account information (avatar image and email) and allows the user to
@@ -32,12 +34,17 @@ class BubbleSignInPromoSignInButtonView : public views::View {
       views::Button::PressedCallback callback,
       ui::ButtonStyle button_style);
 
+  // Add a callback function to the sign in button.
+  void AddCallbackToSignInButton(views::MdTextButton* text_button,
+                                 views::Button::PressedCallback callback);
+
   // Creates a sign-in button personalized with the data from |account|.
   // |callback| is called every time the user interacts with this button.
   BubbleSignInPromoSignInButtonView(const AccountInfo& account_info,
-                                  const gfx::Image& account_icon,
-                                  views::Button::PressedCallback callback,
-                                  bool use_account_name_as_title = false);
+                                    const gfx::Image& account_icon,
+                                    views::Button::PressedCallback callback,
+                                    signin_metrics::AccessPoint access_point,
+                                    bool use_account_name_as_title = false);
   BubbleSignInPromoSignInButtonView(const BubbleSignInPromoSignInButtonView&) =
       delete;
   BubbleSignInPromoSignInButtonView& operator=(
@@ -48,6 +55,9 @@ class BubbleSignInPromoSignInButtonView : public views::View {
 
  private:
   const std::optional<AccountInfo> account_;
+
+  base::WeakPtrFactory<BubbleSignInPromoSignInButtonView> weak_ptr_factory_{
+      this};
 };
 
 BEGIN_VIEW_BUILDER(, BubbleSignInPromoSignInButtonView, views::View)

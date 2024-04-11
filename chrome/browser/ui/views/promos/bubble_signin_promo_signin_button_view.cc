@@ -20,9 +20,17 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+
+namespace {
+
+constexpr base::TimeDelta kDoubleClickSignInPreventionDelay =
+    base::Seconds(0.5);
+
+}  // namespace
 
 BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
     views::Button::PressedCallback callback,
@@ -46,6 +54,7 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
     const AccountInfo& account,
     const gfx::Image& account_icon,
     views::Button::PressedCallback callback,
+    signin_metrics::AccessPoint access_point,
     bool use_account_name_as_title)
     : account_(account) {
   DCHECK(!account_icon.IsEmpty());
@@ -65,6 +74,7 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
       std::make_unique<BadgedProfilePhoto>(
           BadgedProfilePhoto::BADGE_TYPE_SYNC_OFF, account_icon),
       card_title, base::ASCIIToUTF16(account_->email));
+  raw_ptr<views::MdTextButton> text_button = nullptr;
 
   if (orientation == views::BoxLayout::Orientation::kHorizontal) {
     button_layout->set_cross_axis_alignment(
@@ -79,18 +89,50 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
                        .SetBorder(std::unique_ptr<views::Border>(nullptr))
                        .SetEnabled(false),
                    views::Builder<views::MdTextButton>()
-                       .SetCallback(std::move(callback))
                        .SetText(l10n_util::GetStringUTF16(
                            IDS_PROFILES_DICE_SIGNIN_BUTTON))
-                       .SetStyle(ui::ButtonStyle::kProminent))
+                       .SetStyle(ui::ButtonStyle::kProminent)
+                       .CopyAddressTo(&text_button))
       .BuildChildren();
 
+  // If the promo is triggered from an autofill bubble, ignore any interaction
+  // with the sign in button at first, because the button for an autofill data
+  // save is in the same place as the button for performing a direct sign in
+  // with an existing account. If a user double clicked on the save button, it
+  // would therefore sign them in directly. The delayed adding of the callback
+  // to the button avoids that.
+  bool disable_first =
+      access_point == signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE;
+
+  if (disable_first) {
+    // Add the callback to the button after the delay.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &BubbleSignInPromoSignInButtonView::AddCallbackToSignInButton,
+            weak_ptr_factory_.GetWeakPtr(), text_button, std::move(callback)),
+        kDoubleClickSignInPreventionDelay);
+  } else {
+    AddCallbackToSignInButton(text_button, std::move(callback));
+  }
+
   SetProperty(views::kElementIdentifierKey, kPromoSignInButton);
+}
+
+void BubbleSignInPromoSignInButtonView::AddCallbackToSignInButton(
+    views::MdTextButton* text_button,
+    views::Button::PressedCallback callback) {
+  text_button->SetCallback(std::move(callback));
+
+  // Triggers an event for testing.
+  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+      kBubbleSignInPromoSignInButtonHasCallback, this);
 }
 
 BubbleSignInPromoSignInButtonView::
     ~BubbleSignInPromoSignInButtonView() = default;
 
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kBubbleSignInPromoSignInButtonHasCallback);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BubbleSignInPromoSignInButtonView,
                                       kPromoSignInButton);
 
