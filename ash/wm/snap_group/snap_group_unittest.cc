@@ -2483,6 +2483,26 @@ TEST_F(SnapGroupTest, DisplayScaleChange) {
   }
 }
 
+// Tests that when rotating display, the bounds of the snapped windows and
+// divider will be adjusted properly.
+TEST_F(SnapGroupTest, DisplayRotation) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SplitViewDivider* divider = snap_group_divider();
+  ASSERT_TRUE(divider->divider_widget());
+
+  auto* display_manager = Shell::Get()->display_manager();
+  for (auto rotation :
+       {display::Display::ROTATE_270, display::Display::ROTATE_180,
+        display::Display::ROTATE_90, display::Display::ROTATE_0}) {
+    display_manager->SetDisplayRotation(
+        WindowTreeHostManager::GetPrimaryDisplayId(), rotation,
+        display::Display::RotationSource::USER);
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), divider);
+  }
+}
+
 // Tests that the split view divider will be stacked on top of both windows in
 // the snap group and that on a third window activated the split view divider
 // will be stacked below the newly activated window.
