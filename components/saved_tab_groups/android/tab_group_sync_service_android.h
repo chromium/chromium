@@ -27,10 +27,6 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
 
   ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  void RemoveGroup(JNIEnv* env,
-                   const JavaParamRef<jobject>& j_caller,
-                   jint j_group_id);
-
   // TabGroupSyncService::Observer overrides.
   void OnInitialized() override;
   void OnTabGroupAdded(const SavedTabGroup& group,
@@ -39,14 +35,78 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                          TriggerSource source) override;
   void OnTabGroupRemoved(const LocalTabGroupID& local_id) override;
 
+  // Mutation methods (Java -> native).
+  // Mutator methods that result in group metadata mutation.
+  ScopedJavaLocalRef<jstring> CreateGroup(JNIEnv* env,
+                                          const JavaParamRef<jobject>& j_caller,
+                                          jint j_group_id);
+
+  void RemoveGroup(JNIEnv* env,
+                   const JavaParamRef<jobject>& j_caller,
+                   jint j_group_id);
+
+  void UpdateVisualData(JNIEnv* env,
+                        const JavaParamRef<jobject>& j_caller,
+                        jint j_group_id,
+                        const JavaParamRef<jstring>& j_title,
+                        jint j_color);
+
+  // Mutator methods that result in tab metadata mutation.
+  void AddTab(JNIEnv* env,
+              const JavaParamRef<jobject>& j_caller,
+              jint j_group_id,
+              jint j_tab_id,
+              const JavaParamRef<jstring>& j_title,
+              const JavaParamRef<jobject>& j_url,
+              jint j_position);
+
+  void UpdateTab(JNIEnv* env,
+                 const JavaParamRef<jobject>& j_caller,
+                 jint j_group_id,
+                 jint j_tab_id,
+                 const JavaParamRef<jstring>& j_title,
+                 const JavaParamRef<jobject>& j_url,
+                 jint j_position);
+
+  void RemoveTab(JNIEnv* env,
+                 const JavaParamRef<jobject>& j_caller,
+                 jint j_group_id,
+                 jint j_tab_id);
+
+  // Accessor methods.
+  ScopedJavaLocalRef<jobjectArray> GetAllGroupIds(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& j_caller);
+
+  ScopedJavaLocalRef<jobject> GetGroupBySyncGroupId(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& j_caller,
+      const JavaParamRef<jstring>& j_sync_group_id);
+
+  ScopedJavaLocalRef<jobject> GetGroupByLocalGroupId(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& j_caller,
+      jint j_group_id);
+
+  // Book-keeping methods to maintain in-memory mapping of sync and local IDs.
+  void UpdateLocalTabGroupId(JNIEnv* env,
+                             const JavaParamRef<jobject>& j_caller,
+                             const JavaParamRef<jstring>& j_sync_id,
+                             jint j_local_id);
+  void UpdateLocalTabId(JNIEnv* env,
+                        const JavaParamRef<jobject>& j_caller,
+                        jint j_group_id,
+                        const JavaParamRef<jstring>& j_sync_tab_id,
+                        jint j_local_tab_id);
+
  private:
   // A reference to the Java counterpart of this class.  See
   // TabGroupSyncServiceImpl.java.
   ScopedJavaGlobalRef<jobject> java_obj_;
 
-  // Not owned. This is safe because the JNI bridge is destroyed and the native
-  // pointer in Java is cleared whenever TabGroupSyncService is destroyed. Hence
-  // there will be no subsequent unsafe calls to native.
+  // Not owned. This is safe because the JNI bridge is destroyed and the
+  // native pointer in Java is cleared whenever TabGroupSyncService is
+  // destroyed. Hence there will be no subsequent unsafe calls to native.
   raw_ptr<TabGroupSyncService> tab_group_sync_service_;
 };
 

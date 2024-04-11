@@ -49,6 +49,18 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
         mNativePtr = 0;
     }
 
+    @CalledByNative
+    private void onInitialized() {}
+
+    @CalledByNative
+    private void onTabGroupAdded(SavedTabGroup group) {}
+
+    @CalledByNative
+    private void onTabGroupUpdated(SavedTabGroup group) {}
+
+    @CalledByNative
+    private void onTabGroupRemoved(int localId) {}
+
     @NativeMethods
     interface Natives {
         void removeGroup(
