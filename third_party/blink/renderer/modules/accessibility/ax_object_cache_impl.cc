@@ -4255,7 +4255,7 @@ void AXObjectCacheImpl::SectionOrRegionRoleMaybeChangedWithCleanLayout(
 
   // Require <section> or role="region" markup.
   if (!element->HasTagName(html_names::kSectionTag) &&
-      ax_object->RawAriaRole() != ax::mojom::blink::Role::kRegion) {
+      ax_object->DetermineRawAriaRole() != ax::mojom::blink::Role::kRegion) {
     return;
   }
 
@@ -4286,7 +4286,7 @@ void AXObjectCacheImpl::TableCellRoleMaybeChanged(Node* node) {
 void AXObjectCacheImpl::HandleRoleMaybeChangedWithCleanLayout(Node* node) {
   if (AXObject* obj = GetOrCreate(node)) {
     // If role would stay the same, do nothing.
-    if (obj->RoleValue() == obj->DetermineAccessibilityRole()) {
+    if (obj->RoleValue() == obj->DetermineRoleValue()) {
       return;
     }
 
@@ -5977,7 +5977,7 @@ const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
   ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
   ScopedFreezeAXCache scoped_freeze_cache(*this);
   AXObject* obj = Get(node);
-  return AXObject::ARIARoleName(obj ? obj->ComputeFinalRoleForSerialization()
+  return AXObject::AriaRoleName(obj ? obj->ComputeFinalRoleForSerialization()
                                     : ax::mojom::blink::Role::kUnknown);
 }
 

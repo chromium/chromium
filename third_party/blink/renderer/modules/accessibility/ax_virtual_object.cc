@@ -110,8 +110,8 @@ String AXVirtualObject::TextAlternative(
                              &found_text_alternative);
 }
 
-ax::mojom::blink::Role AXVirtualObject::DetermineAccessibilityRole() {
-  aria_role_ = DetermineAriaRoleAttribute();
+ax::mojom::blink::Role AXVirtualObject::DetermineRoleValue() {
+  aria_role_ = DetermineAriaRole();
 
   if (aria_role_ != ax::mojom::blink::Role::kUnknown)
     return aria_role_;
@@ -119,7 +119,7 @@ ax::mojom::blink::Role AXVirtualObject::DetermineAccessibilityRole() {
   return NativeRoleIgnoringAria();
 }
 
-ax::mojom::blink::Role AXVirtualObject::AriaRoleAttribute() const {
+ax::mojom::blink::Role AXVirtualObject::RawAriaRole() const {
   return aria_role_;
 }
 

@@ -456,7 +456,7 @@ static ARIARoleMap* CreateARIARoleMap() {
 }
 
 // The role name vector contains only ARIA roles, and no internal roles.
-static Vector<AtomicString>* CreateARIARoleNameVector() {
+static Vector<AtomicString>* CreateAriaRoleNameVector() {
   Vector<AtomicString>* role_name_vector = new Vector<AtomicString>(kNumRoles);
   role_name_vector->Fill(g_null_atom, kNumRoles);
 
@@ -718,7 +718,7 @@ void AXObject::Init(AXObject* parent) {
   // The role must be determined immediately.
   // Note: in order to avoid reentrancy, the role computation cannot use the
   // ParentObject(), although it can use the DOM parent.
-  role_ = DetermineAccessibilityRole();
+  role_ = DetermineRoleValue();
 #if DCHECK_IS_ON()
   DCHECK(IsValidRole(role_)) << "Illegal " << role_ << " for\n"
                              << GetNode() << '\n'
@@ -1621,8 +1621,7 @@ void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
   // Expose StringAttribute::kRole, which is used for the xml-roles object
   // attribute. Prefer the raw ARIA role attribute value, otherwise, the ARIA
   // equivalent role is used, if it is a role that is exposed in xml-roles.
-  const AtomicString& role_str =
-      GetRoleAttributeStringForObjectAttribute(node_data);
+  const AtomicString& role_str = GetRoleStringForSerialization(node_data);
   TruncateAndAddStringAttribute(
       node_data, ax::mojom::blink::StringAttribute::kRole, role_str);
 }
@@ -2522,7 +2521,7 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
     if (IsA<HTMLSelectElement>(listbox_candidate->GetNode()))
       return nullptr;
     // Require an ARIA role on the next sibling.
-    if (!ui::IsComboBoxContainer(listbox_candidate->AriaRoleAttribute())) {
+    if (!ui::IsComboBoxContainer(listbox_candidate->RawAriaRole())) {
       return nullptr;
     }
     // Naming a listbox within a composite combobox widget is not part of a
@@ -2540,7 +2539,7 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
   return listbox_candidate;
 }
 
-const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute(
+const AtomicString& AXObject::GetRoleStringForSerialization(
     ui::AXNodeData* node_data) {
   // All ARIA roles are exposed in xml-roles.
   if (const AtomicString& role_str =
@@ -2559,7 +2558,7 @@ const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute(
     // Landmarks are the only roles exposed in xml-roles, matching Firefox.
     return g_null_atom;
   }
-  return ARIARoleName(landmark_role);
+  return AriaRoleName(landmark_role);
 }
 
 void AXObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
@@ -2736,7 +2735,7 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   // if it is a child of a landmark disallowed element, UNLESS it has
   // an accessible name.
   if (role_ == ax::mojom::blink::Role::kComplementary &&
-      AriaRoleAttribute() != ax::mojom::blink::Role::kComplementary) {
+      RawAriaRole() != ax::mojom::blink::Role::kComplementary) {
     if (IsDescendantOfLandmarkDisallowedElement() &&
         !IsNameFromAuthorAttribute()) {
       return ax::mojom::blink::Role::kGenericContainer;
@@ -2762,9 +2761,9 @@ ax::mojom::blink::Role AXObject::RoleValue() const {
 bool AXObject::IsARIATextField() const {
   if (IsAtomicTextField())
     return false;  // Native role supercedes the ARIA one.
-  return AriaRoleAttribute() == ax::mojom::blink::Role::kTextField ||
-         AriaRoleAttribute() == ax::mojom::blink::Role::kSearchBox ||
-         AriaRoleAttribute() == ax::mojom::blink::Role::kTextFieldWithComboBox;
+  return RawAriaRole() == ax::mojom::blink::Role::kTextField ||
+         RawAriaRole() == ax::mojom::blink::Role::kSearchBox ||
+         RawAriaRole() == ax::mojom::blink::Role::kTextFieldWithComboBox;
 }
 
 bool AXObject::IsButton() const {
@@ -4207,13 +4206,12 @@ bool AXObject::LastKnownIsIncludedInTreeValue() const {
          LastKnownIsIgnoredButIncludedInTreeValue();
 }
 
-ax::mojom::blink::Role AXObject::DetermineAccessibilityRole() {
+ax::mojom::blink::Role AXObject::DetermineRoleValue() {
 #if DCHECK_IS_ON()
   base::AutoReset<bool> reentrancy_protector(&is_computing_role_, true);
   DCHECK(!IsDetached());
-  // Check parent object to work around circularity issues during
-  // AXObject::Init (DetermineAccessibilityRole is called there but before
-  // the parent is set).
+  // Check parent object to work around circularity issues during AXObject::Init
+  // (DetermineRoleValue is called there but before the parent is set).
   if (CachedParentObject()) {
     DCHECK(GetDocument());
     DCHECK(GetDocument()->Lifecycle().GetState() >=
@@ -4382,8 +4380,9 @@ bool AXObject::IsSubWidget() const {
       // inside an ARIA 1.1 role of "table", should not be selectable. We may
       // need to create separate role enums for grid cells vs table cells
       // to implement this.
-      if (AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown)
+      if (RawAriaRole() != ax::mojom::blink::Role::kUnknown) {
         return true;
+      }
 
       // Otherwise it's only a subwidget if it's in a grid or treegrid,
       // not in a table.
@@ -5211,7 +5210,7 @@ bool AXObject::HasAriaAttribute(bool does_undo_role_presentation) const {
 
   // A role is considered an ARIA attribute.
   if (!does_undo_role_presentation &&
-      AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown) {
+      RawAriaRole() != ax::mojom::blink::Role::kUnknown) {
     return true;
   }
 
@@ -5366,11 +5365,11 @@ AXRestriction AXObject::Restriction() const {
   return kRestrictionNone;
 }
 
-ax::mojom::blink::Role AXObject::AriaRoleAttribute() const {
+ax::mojom::blink::Role AXObject::RawAriaRole() const {
   return ax::mojom::blink::Role::kUnknown;
 }
 
-ax::mojom::blink::Role AXObject::RawAriaRole() const {
+ax::mojom::blink::Role AXObject::DetermineRawAriaRole() const {
   const AtomicString& aria_role =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole);
   if (aria_role.IsNull() || aria_role.empty())
@@ -5378,8 +5377,8 @@ ax::mojom::blink::Role AXObject::RawAriaRole() const {
   return AriaRoleStringToRoleEnum(aria_role);
 }
 
-ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
-  ax::mojom::blink::Role role = RawAriaRole();
+ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
+  ax::mojom::blink::Role role = DetermineRawAriaRole();
 
   if ((role == ax::mojom::blink::Role::kForm ||
        role == ax::mojom::blink::Role::kRegion) &&
@@ -7889,9 +7888,9 @@ ax::mojom::blink::Role AXObject::ButtonRoleType() const {
 }
 
 // static
-const AtomicString& AXObject::ARIARoleName(ax::mojom::blink::Role role) {
+const AtomicString& AXObject::AriaRoleName(ax::mojom::blink::Role role) {
   static const Vector<AtomicString>* aria_role_name_vector =
-      CreateARIARoleNameVector();
+      CreateAriaRoleNameVector();
 
   return aria_role_name_vector->at(static_cast<wtf_size_t>(role));
 }
@@ -7912,8 +7911,9 @@ const String AXObject::RoleName(ax::mojom::blink::Role role,
                                 bool* is_internal) {
   if (is_internal)
     *is_internal = false;
-  if (const auto& role_name = ARIARoleName(role))
+  if (const auto& role_name = AriaRoleName(role)) {
     return role_name.GetString();
+  }
 
   if (is_internal)
     *is_internal = true;

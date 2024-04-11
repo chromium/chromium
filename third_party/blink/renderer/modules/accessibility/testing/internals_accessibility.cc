@@ -43,11 +43,11 @@ WTF::String InternalsAccessibility::getComputedRole(Internals&,
                                                     const Element* element) {
   AXObject* ax_object = GetAXObject(element);
   if (!ax_object || ax_object->AccessibilityIsIgnored()) {
-    return AXObject::ARIARoleName(ax::mojom::Role::kNone);
+    return AXObject::AriaRoleName(ax::mojom::Role::kNone);
   }
 
   ax::mojom::blink::Role role = ax_object->ComputeFinalRoleForSerialization();
-  return AXObject::ARIARoleName(role);
+  return AXObject::AriaRoleName(role);
 }
 
 }  // namespace blink

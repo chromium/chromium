@@ -748,8 +748,9 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIncludeObject;
 
   // Anything with an explicit ARIA role should be included.
-  if (AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown)
+  if (RawAriaRole() != ax::mojom::blink::Role::kUnknown) {
     return kIncludeObject;
+  }
 
   // Anything with CSS alt should be included.
   // Descendants are pruned: IsRelevantPseudoElementDescendant() returns false.
@@ -1314,7 +1315,7 @@ ax::mojom::blink::Role AXNodeObject::DetermineTableCellRole() const {
 }
 
 unsigned AXNodeObject::ColumnCount() const {
-  if (AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown) {
+  if (RawAriaRole() != ax::mojom::blink::Role::kUnknown) {
     return AXObject::ColumnCount();
   }
 
@@ -1326,7 +1327,7 @@ unsigned AXNodeObject::ColumnCount() const {
 }
 
 unsigned AXNodeObject::RowCount() const {
-  if (AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown) {
+  if (RawAriaRole() != ax::mojom::blink::Role::kUnknown) {
     return AXObject::RowCount();
   }
 
@@ -2281,7 +2282,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   return RoleFromLayoutObjectOrNode();
 }
 
-ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
+ax::mojom::blink::Role AXNodeObject::DetermineRoleValue() {
 #if DCHECK_IS_ON()
   base::AutoReset<bool> reentrancy_protector(&is_computing_role_, true);
 #endif
@@ -2294,7 +2295,7 @@ ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
 
   native_role_ = NativeRoleIgnoringAria();
 
-  aria_role_ = DetermineAriaRoleAttribute();
+  aria_role_ = DetermineAriaRole();
 
   return aria_role_ == ax::mojom::blink::Role::kUnknown ? native_role_
                                                         : aria_role_;
@@ -2343,8 +2344,9 @@ static Element* SiblingWithAriaRole(String role, Node* node) {
 }
 
 Element* AXNodeObject::MenuItemElementForMenu() const {
-  if (AriaRoleAttribute() != ax::mojom::blink::Role::kMenu)
+  if (RawAriaRole() != ax::mojom::blink::Role::kMenu) {
     return nullptr;
+  }
 
   return SiblingWithAriaRole("menuitem", GetNode());
 }
@@ -2394,7 +2396,7 @@ bool AXNodeObject::IsControl() const {
 
   auto* element = DynamicTo<Element>(node);
   return ((element && element->IsFormControlElement()) ||
-          AXObject::IsARIAControl(AriaRoleAttribute()));
+          AXObject::IsARIAControl(RawAriaRole()));
 }
 
 bool AXNodeObject::IsAutofillAvailable() const {
@@ -3912,7 +3914,7 @@ bool AXNodeObject::ValueForRange(float* out_value) const {
   // - scrollbar, slider : half way between aria-valuemin and aria-valuemax
   // - separator : 50
   // - spinbutton : 0
-  switch (AriaRoleAttribute()) {
+  switch (RawAriaRole()) {
     case ax::mojom::blink::Role::kScrollBar:
     case ax::mojom::blink::Role::kSlider: {
       float min_value, max_value;
@@ -3965,7 +3967,7 @@ bool AXNodeObject::MaxValueForRange(float* out_value) const {
   // In ARIA 1.1, default value of scrollbar, separator and slider
   // for aria-valuemax were changed to 100. This change was made for
   // progressbar in ARIA 1.2.
-  switch (AriaRoleAttribute()) {
+  switch (RawAriaRole()) {
     case ax::mojom::blink::Role::kMeter:
     case ax::mojom::blink::Role::kProgressIndicator:
     case ax::mojom::blink::Role::kScrollBar:
@@ -4001,7 +4003,7 @@ bool AXNodeObject::MinValueForRange(float* out_value) const {
   // In ARIA 1.1, default value of scrollbar, separator and slider
   // for aria-valuemin were changed to 0. This change was made for
   // progressbar in ARIA 1.2.
-  switch (AriaRoleAttribute()) {
+  switch (RawAriaRole()) {
     case ax::mojom::blink::Role::kMeter:
     case ax::mojom::blink::Role::kProgressIndicator:
     case ax::mojom::blink::Role::kScrollBar:
@@ -4046,7 +4048,7 @@ bool AXNodeObject::StepValueForRange(float* out_value) const {
     return std::isfinite(*out_value);
   }
 
-  switch (AriaRoleAttribute()) {
+  switch (RawAriaRole()) {
     case ax::mojom::blink::Role::kScrollBar:
     case ax::mojom::blink::Role::kSplitter:
     case ax::mojom::blink::Role::kSlider: {
@@ -4270,7 +4272,7 @@ String AXNodeObject::SlowGetValueForControlIncludingContentEditable(
   return GetValueForControl();
 }
 
-ax::mojom::blink::Role AXNodeObject::AriaRoleAttribute() const {
+ax::mojom::blink::Role AXNodeObject::RawAriaRole() const {
   return aria_role_;
 }
 
@@ -5719,11 +5721,10 @@ bool AXNodeObject::CanHaveChildren() const {
     case ax::mojom::blink::Role::kSplitter:
     case ax::mojom::blink::Role::kSwitch:
     case ax::mojom::blink::Role::kTab:
-      DCHECK(!result) << "Expected to disallow children for:"
-                      << "\n* Node: " << GetNode()
-                      << "\n* Layout Object: " << GetLayoutObject()
+      DCHECK(!result) << "Expected to disallow children for:" << "\n* Node: "
+                      << GetNode() << "\n* Layout Object: " << GetLayoutObject()
                       << "\n* Native role: " << native_role_
-                      << "\n* Aria role: " << AriaRoleAttribute();
+                      << "\n* Aria role: " << RawAriaRole();
       break;
     case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kPopUpButton:

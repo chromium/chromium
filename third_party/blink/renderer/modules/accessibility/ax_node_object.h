@@ -81,7 +81,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   AXObjectInclusion ShouldIncludeBasedOnSemantics(
       IgnoredReasons* = nullptr) const;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-  ax::mojom::blink::Role DetermineAccessibilityRole() override;
+  ax::mojom::blink::Role DetermineRoleValue() override;
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
   void AlterSliderOrSpinButtonValue(bool increase);
   AXObject* ActiveDescendant() override;
@@ -221,7 +221,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                              bool recursive) const override;
 
   // ARIA attributes.
-  ax::mojom::blink::Role AriaRoleAttribute() const final;
+  ax::mojom::blink::Role RawAriaRole() const final;
   void AriaDescribedbyElements(AXObjectVector&) const override;
   void AriaOwnsElements(AXObjectVector&) const override;
   void Dropeffects(

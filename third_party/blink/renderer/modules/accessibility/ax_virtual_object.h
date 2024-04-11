@@ -35,9 +35,9 @@ class MODULES_EXPORT AXVirtualObject : public AXObject {
                          AXRelatedObjectVector*,
                          NameSources*) const override;
   Document* GetDocument() const override;
-  ax::mojom::blink::Role DetermineAccessibilityRole() override;
+  ax::mojom::blink::Role DetermineRoleValue() override;
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
-  ax::mojom::blink::Role AriaRoleAttribute() const override;
+  ax::mojom::blink::Role RawAriaRole() const override;
 
  private:
   Member<AccessibleNode> accessible_node_;
