@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/scoped_iphone_portrait_only/iphone_portrait_only_manager.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
-@class AppState;
 class ChromeBrowserState;
 @class CommandDispatcher;
 @class SceneState;
