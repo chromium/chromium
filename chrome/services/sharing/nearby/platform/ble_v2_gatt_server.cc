@@ -202,12 +202,9 @@ absl::Status BleV2GattServer::NotifyCharacteristicChanged(
 }
 
 void BleV2GattServer::Stop() {
-  VLOG(1) << __func__;
-
-  // Clearing the `uuid_to_gatt_service_map_` destroys all `GattService`s owned
-  // by `BleV2GattServer`, which also includes destroying their underlying
-  // `GattService` Mojo remotes.
-  uuid_to_gatt_service_map_.clear();
+  // TODO(b/311430390): Implement to call on the Mojo remote to stop the GATT
+  // server.
+  NOTIMPLEMENTED();
 }
 
 BleV2GattServer::GattService::GattService() = default;
