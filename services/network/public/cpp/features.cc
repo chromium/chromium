@@ -486,4 +486,10 @@ BASE_FEATURE(kAvoidResourceRequestCopies,
              "AvoidResourceRequestCopies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Document-Isolation-Policy (DIP).
+// https://github.com/explainers-by-googlers/document-isolation-policy
+BASE_FEATURE(kDocumentIsolationPolicy,
+             "DocumentIsolationPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

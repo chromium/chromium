@@ -433,6 +433,8 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
                      rhs->cross_origin_embedder_policy));
   CHECK(mojo::Equals(adjusted_lhs->cross_origin_opener_policy,
                      rhs->cross_origin_opener_policy));
+  CHECK(mojo::Equals(adjusted_lhs->document_isolation_policy,
+                     rhs->document_isolation_policy));
   CHECK(mojo::Equals(adjusted_lhs->origin_agent_cluster,
                      rhs->origin_agent_cluster));
   CHECK(mojo::Equals(adjusted_lhs->accept_ch, rhs->accept_ch));

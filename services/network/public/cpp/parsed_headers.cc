@@ -23,6 +23,7 @@
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy_parser.h"
 #include "services/network/public/cpp/cross_origin_opener_policy_parser.h"
+#include "services/network/public/cpp/document_isolation_policy_parser.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/link_header_parser.h"
 #include "services/network/public/cpp/no_vary_search_header_parser.h"
@@ -50,6 +51,11 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
       ParseCrossOriginEmbedderPolicy(*headers);
   parsed_headers->cross_origin_opener_policy =
       ParseCrossOriginOpenerPolicy(*headers);
+
+  if (base::FeatureList::IsEnabled(features::kDocumentIsolationPolicy)) {
+    parsed_headers->document_isolation_policy =
+        ParseDocumentIsolationPolicy(*headers);
+  }
 
   std::string origin_agent_cluster;
   headers->GetNormalizedHeader("Origin-Agent-Cluster", &origin_agent_cluster);

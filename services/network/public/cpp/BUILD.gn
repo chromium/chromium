@@ -70,6 +70,8 @@ component("cpp") {
     "data_pipe_to_source_stream.h",
     "devtools_observer_util.cc",
     "devtools_observer_util.h",
+    "document_isolation_policy_parser.cc",
+    "document_isolation_policy_parser.h",
     "empty_url_loader_client.cc",
     "empty_url_loader_client.h",
     "features.cc",
@@ -323,6 +325,27 @@ component("cross_origin_embedder_policy") {
   defines = [ "IS_NETWORK_CPP_CROSS_ORIGIN_IMPL" ]
 }
 
+# This component is separate from cpp_base as it is a dependency of
+# //services/network/public/mojom:url_loader_base.
+component("document_isolation_policy") {
+  sources = [
+    "document_isolation_policy.cc",
+    "document_isolation_policy.h",
+    "document_isolation_policy_mojom_traits.cc",
+    "document_isolation_policy_mojom_traits.h",
+  ]
+
+  deps = [
+    "//base",
+    "//mojo/public/mojom/base",
+    "//services/network/public/mojom:url_loader_base_shared",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  defines = [ "IS_NETWORK_CPP_DOCUMENT_ISOLATION_IMPL" ]
+}
+
 # This component is separate from `:cpp_base` to avoid a circular dependency as
 # its needed by :attribution_traits.
 component("attribution") {
@@ -448,6 +471,7 @@ component("cpp_base") {
     ":cookies_mojom_support",
     ":crash_keys",
     ":cross_origin_embedder_policy",
+    ":document_isolation_policy",
     ":ip_address_mojom_support",
     ":network_param_mojom_support",
     ":proxy_config_mojom_support",
@@ -552,6 +576,7 @@ source_set("tests") {
     "default_credentials_mojom_traits_unittest.cc",
     "devtools_observer_unittest.cc",
     "digitally_signed_mojom_traits_unittest.cc",
+    "document_isolation_policy_parser_unittest.cc",
     "empty_url_loader_client_unittest.cc",
     "file_enumeration_entry_mojom_traits_unittest.cc",
     "first_party_sets_mojom_traits_unittest.cc",

@@ -465,6 +465,7 @@ mojom("url_loader_base") {
     "cross_origin_opener_policy.mojom",
     "data_pipe_getter.mojom",
     "devtools_observer.mojom",
+    "document_isolation_policy.mojom",
     "early_hints.mojom",
     "encoded_body_length.mojom",
     "fetch_api.mojom",
@@ -582,6 +583,17 @@ mojom("url_loader_base") {
         },
       ]
       traits_headers = [ "//services/network/public/cpp/cross_origin_opener_policy_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.DocumentIsolationPolicy"
+          cpp = "::network::DocumentIsolationPolicy"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/document_isolation_policy_mojom_traits.h" ]
+      traits_deps =
+          [ "//services/network/public/cpp:document_isolation_policy" ]
     },
     {
       types = [

@@ -198,6 +198,8 @@ extern const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTopLevelTrial;
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kAvoidResourceRequestCopies);
 
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDocumentIsolationPolicy);
+
 }  // namespace features
 }  // namespace network
 
