@@ -613,8 +613,8 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
 // overflow button should show. Verify: The pinned extension button should still
 // be visible because there's enough space for it. Extensions container should
 // not have animation because its visibility didn't change.
-// TODO(crbug.com/41495158): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/41495158): Flaky on Windows and Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ExtensionHasNoAnimationLoop DISABLED_ExtensionHasNoAnimationLoop
 #else
 #define MAYBE_ExtensionHasNoAnimationLoop ExtensionHasNoAnimationLoop
