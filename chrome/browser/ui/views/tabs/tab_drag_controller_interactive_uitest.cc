@@ -2019,7 +2019,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(browser()->window()->GetNativeWindow())
           .work_area();
-  browser()->window()->SetBounds(work_area);
+  ui_test_utils::SetAndWaitForBounds(*browser(), work_area);
   const gfx::Rect initial_bounds(browser()->window()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
