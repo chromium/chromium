@@ -272,10 +272,13 @@ SharedImageFactory::SharedImageFactory(
   bool use_gl =
       !is_for_display_compositor_ || gr_context_type_ == GrContextType::kGL;
   if (use_gl) {
+    // On Windows readback is slower with GLTextureImageBacking than
+    // D3DImageBacking so prefer D3DImageBacking for software GMBs.
+    bool supports_cpu_upload = !BUILDFLAG(IS_WIN);
     auto gl_texture_backing_factory =
         std::make_unique<GLTextureImageBackingFactory>(
             gpu_preferences, workarounds, feature_info.get(),
-            context_state_->progress_reporter());
+            context_state_->progress_reporter(), supports_cpu_upload);
     factories_.push_back(std::move(gl_texture_backing_factory));
   }
 
@@ -291,6 +294,14 @@ SharedImageFactory::SharedImageFactory(
         context_state_->GetGLFormatCaps());
     d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));
+  }
+  {
+    auto gl_texture_backing_factory =
+        std::make_unique<GLTextureImageBackingFactory>(
+            gpu_preferences, workarounds, feature_info.get(),
+            context_state_->progress_reporter(),
+            /*supports_cpu_upload=*/true);
+    factories_.push_back(std::move(gl_texture_backing_factory));
   }
 #endif  // BUILDFLAG(IS_WIN)
 
