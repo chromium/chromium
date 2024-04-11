@@ -678,7 +678,25 @@ void TabSearchPageHandler::SetUserFeedback(
   }
 }
 
-void TabSearchPageHandler::ShowUI() {
+void TabSearchPageHandler::NotifyOrganizationUIReadyToShow() {
+  organization_ready_to_show_ = true;
+  MaybeShowUI();
+}
+
+void TabSearchPageHandler::NotifySearchUIReadyToShow() {
+  search_ready_to_show_ = true;
+  MaybeShowUI();
+}
+
+void TabSearchPageHandler::MaybeShowUI() {
+  Profile* const profile = Profile::FromWebUI(web_ui_);
+  bool organization_enabled =
+      TabOrganizationUtils::GetInstance()->IsEnabled(profile) &&
+      organization_service_;
+  if ((organization_enabled && !organization_ready_to_show_) ||
+      !search_ready_to_show_) {
+    return;
+  }
   auto embedder = webui_controller_->embedder();
   if (embedder)
     embedder->ShowUI();

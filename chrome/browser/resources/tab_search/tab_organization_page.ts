@@ -174,7 +174,8 @@ export class TabOrganizationPageElement extends PolymerElement {
 
   private setState_(state: TabOrganizationState) {
     const changedState = this.state_ !== state;
-    this.classList.toggle('changed-state', changedState);
+    const wasInitializing = this.state_ === TabOrganizationState.kInitializing;
+    this.classList.toggle('changed-state', changedState && !wasInitializing);
     this.classList.toggle(
         'from-not-started', this.state_ === TabOrganizationState.kNotStarted);
     this.classList.toggle(
@@ -198,6 +199,9 @@ export class TabOrganizationPageElement extends PolymerElement {
       this.$.results.addEventListener('animationend', () => {
         this.$.results.focusInput();
       }, {once: true});
+    }
+    if (wasInitializing) {
+      this.apiProxy_.notifyOrganizationUiReadyToShow();
     }
   }
 

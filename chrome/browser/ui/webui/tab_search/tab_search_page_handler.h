@@ -99,7 +99,8 @@ class TabSearchPageHandler
   void SetUserFeedback(int32_t session_id,
                        int32_t organization_id,
                        tab_search::mojom::UserFeedback feedback) override;
-  void ShowUI() override;
+  void NotifyOrganizationUIReadyToShow() override;
+  void NotifySearchUIReadyToShow() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -156,6 +157,9 @@ class TabSearchPageHandler
     raw_ptr<TabStripModel> tab_strip_model;
     int index;
   };
+
+  // Show the UI if all tabs are ready to be shown.
+  void MaybeShowUI();
 
   tab_search::mojom::ProfileDataPtr CreateProfileData();
 
@@ -226,6 +230,11 @@ class TabSearchPageHandler
 
   // Tracks whether a session restart is currently in progress.
   bool restarting_ = false;
+
+  // Tracks whether each tab within the UI is ready to be shown. The bubble
+  // will only be shown once all tabs are ready.
+  bool organization_ready_to_show_ = false;
+  bool search_ready_to_show_ = false;
 
   // Listened TabOrganization sessions.
   std::vector<raw_ptr<TabOrganizationSession, VectorExperimental>>

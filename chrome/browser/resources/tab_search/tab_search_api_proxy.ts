@@ -64,7 +64,9 @@ export interface TabSearchApiProxy {
   setUserFeedback(
       sessionId: number, organizationId: number, feedback: UserFeedback): void;
 
-  showUi(): void;
+  notifyOrganizationUiReadyToShow(): void;
+
+  notifySearchUiReadyToShow(): void;
 }
 
 export class TabSearchApiProxyImpl implements TabSearchApiProxy {
@@ -178,8 +180,12 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.setUserFeedback(sessionId, organizationId, feedback);
   }
 
-  showUi() {
-    this.handler.showUI();
+  notifyOrganizationUiReadyToShow() {
+    this.handler.notifyOrganizationUIReadyToShow();
+  }
+
+  notifySearchUiReadyToShow() {
+    this.handler.notifySearchUIReadyToShow();
   }
 
   static getInstance(): TabSearchApiProxy {

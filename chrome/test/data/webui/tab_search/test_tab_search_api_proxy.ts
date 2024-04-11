@@ -35,7 +35,8 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'openHelpPage',
       'openSyncSettings',
       'setUserFeedback',
-      'showUi',
+      'notifyOrganizationUiReadyToShow',
+      'notifySearchUiReadyToShow',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -133,8 +134,12 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
     this.methodCalled('setUserFeedback', [feedback]);
   }
 
-  showUi() {
-    this.methodCalled('showUi');
+  notifyOrganizationUiReadyToShow() {
+    this.methodCalled('notifyOrganizationUiReadyToShow');
+  }
+
+  notifySearchUiReadyToShow() {
+    this.methodCalled('notifySearchUiReadyToShow');
   }
 
   getCallbackRouter() {

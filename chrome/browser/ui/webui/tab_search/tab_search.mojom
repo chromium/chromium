@@ -268,8 +268,13 @@ interface PageHandler {
                   int32 organization_id,
                   UserFeedback feedback);
 
-  // Notify the backend that the UI is ready to be shown.
-  ShowUI();
+  // Notify the backend that the Organization UI is ready to be shown. The
+  // surface will only be shown once both Organization and Search are ready.
+  NotifyOrganizationUIReadyToShow();
+
+  // Notify the backend that the Search UI is ready to be shown. The
+  // surface will only be shown once both Organization and Search are ready.
+  NotifySearchUIReadyToShow();
 };
 
 // WebUI-side handler for requests from the browser.
