@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -40,6 +39,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -55,7 +55,13 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/41496906): Tests temporarily disabled for automotive. They should be
 // re-enabled once the new sign-in flow is implemented for automotive.
-@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+// TODO(crbug.com/332854339,crubg.com/333608711): Figure out why the tests are failing on one
+// specific bot and fix them. This restriction is just temporary in order to avoid entirely
+// disabling the tests.
+@Restriction({
+    DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES
+})
 public class UpgradePromoIntegrationTest {
     @Rule(order = 0)
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
@@ -74,7 +80,6 @@ public class UpgradePromoIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug/333111201")
     public void testWithExistingAccount_refuseSignin() {
         launchActivity();
 
@@ -90,7 +95,6 @@ public class UpgradePromoIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug/333111201")
     public void testWithExistingAccount_signIn_refuseHistorySync() {
         launchActivity();
 
@@ -114,7 +118,6 @@ public class UpgradePromoIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug/333111201")
     public void testWithExistingAccount_signIn_acceptHistorySync() {
         launchActivity();
 
@@ -157,7 +160,6 @@ public class UpgradePromoIntegrationTest {
     // There is an issue causing {@link Activity.setRequestedOrientation} to throw an exception in
     // Android 8 which was fixed in Android 8.1. See b/70718000 for example.
     @MinAndroidSdkLevel(Build.VERSION_CODES.O_MR1)
-    @DisabledTest(message = "crbug/333608711")
     public void testScreenRotation() {
         launchActivity();
 
