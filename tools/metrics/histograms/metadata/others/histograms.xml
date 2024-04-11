@@ -8072,6 +8072,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.AsyncInitialization.Result" enum="Boolean"
+    expires_after="2024-08-04">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    Whether or not OSCrypt Async manages to fully initialize the keyring during
+    browser process initialization. Recorded once per browser start, if OSCrypt
+    Async completes the initialization attempt before the browser shuts down.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AsyncInitialization.Time" units="ms"
+    expires_after="2024-08-04">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The amount of time, in ms, that it takes for OSCrypt Async to complete the
+    attempt to initialize the keyring during browser process initialization.
+    Recorded once per browser start, if the OSCrypt Async completes the
+    initialization attempt before the browser shuts down.
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.BackendUsage" enum="LinuxPasswordStoreUsage"
     expires_after="2024-09-22">
   <owner>cfroussios@chromium.org</owner>

@@ -13,8 +13,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
@@ -471,6 +473,8 @@ class BrowserProcessImpl : public BrowserProcess,
       application_breadcrumbs_logger_;
 
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::optional<base::CallbackListSubscription>
+      os_crypt_async_init_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
