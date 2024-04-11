@@ -32,6 +32,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
     : SceneLayer(env, jobj),
       tab_strip_layer_(cc::slim::SolidColorLayer::Create()),
       scrollable_strip_layer_(cc::slim::Layer::Create()),
+      group_indicator_layer_(cc::slim::Layer::Create()),
       new_tab_button_(cc::slim::UIResourceLayer::Create()),
       new_tab_button_background_(cc::slim::UIResourceLayer::Create()),
       left_fade_(cc::slim::UIResourceLayer::Create()),
@@ -54,10 +55,13 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   right_padding_layer_->SetIsDrawable(true);
 
   // When the ScrollingStripStacker is used, the new tab button and tabs scroll,
-  // while the incognito button and left/ride fade stay fixed. Put the new tab
-  // button and tabs in a separate layer placed visually below the others.
+  // while the incognito button and left/right fade stay fixed. Put the new tab
+  // button and tabs in a separate layer placed visually below the others. Put
+  // tab group indicators in a separate layer placed visually below the tabs.
+  group_indicator_layer_->SetIsDrawable(true);
   scrollable_strip_layer_->SetIsDrawable(true);
   tab_strip_layer_->SetIsDrawable(true);
+  tab_strip_layer_->AddChild(group_indicator_layer_);
   tab_strip_layer_->AddChild(scrollable_strip_layer_);
 
   tab_strip_layer_->AddChild(left_fade_);
@@ -148,6 +152,9 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
   float scrollable_strip_height = height - top_padding;
   scrollable_strip_layer_->SetBounds(gfx::Size(width, scrollable_strip_height));
   scrollable_strip_layer_->SetPosition(gfx::PointF(0, top_padding));
+
+  group_indicator_layer_->SetBounds(gfx::Size(width, scrollable_strip_height));
+  group_indicator_layer_->SetPosition(gfx::PointF(0, top_padding));
 
   // Content tree should not be affected by tab strip scene layer visibility.
   if (content_tree_)
@@ -544,7 +551,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   // Set bottom indicator properties.
   float bottom_indicator_x = x;
   float bottom_indicator_y =
-      scrollable_strip_layer_->bounds().height() - bottom_indicator_height;
+      group_indicator_layer_->bounds().height() - bottom_indicator_height;
   if (l10n_util::IsLayoutRtl()) {
     bottom_indicator_x -= (bottom_indicator_width - width);
   }
@@ -585,7 +592,7 @@ TabStripSceneLayer::GetNextGroupTitleLayer() {
       cc::slim::SolidColorLayer::Create();
   layer->SetIsDrawable(true);
   group_title_layers_.push_back(layer);
-  scrollable_strip_layer_->AddChild(layer);
+  group_indicator_layer_->AddChild(layer);
   return layer;
 }
 
@@ -599,7 +606,7 @@ TabStripSceneLayer::GetNextGroupBottomLayer() {
       cc::slim::SolidColorLayer::Create();
   layer->SetIsDrawable(true);
   group_bottom_layers_.push_back(layer);
-  scrollable_strip_layer_->InsertChild(layer, 0);
+  group_indicator_layer_->AddChild(layer);
   return layer;
 }
 
