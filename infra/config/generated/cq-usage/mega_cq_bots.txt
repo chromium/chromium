@@ -95,6 +95,7 @@ chromium/try/linux-dawn-intel-exp-rel
 chromium/try/linux-dawn-rel
 chromium/try/linux-dcheck-off-rel
 chromium/try/linux-extended-tracing-rel
+chromium/try/linux-full-remote-rel
 chromium/try/linux-gcc-rel
 chromium/try/linux-lacros-asan-lsan-rel
 chromium/try/linux-lacros-dbg

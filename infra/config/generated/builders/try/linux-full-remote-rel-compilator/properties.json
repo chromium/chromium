@@ -1,0 +1,4 @@
+{
+  "builder_group": "tryserver.chromium.linux",
+  "recipe": "chromium/compilator"
+}

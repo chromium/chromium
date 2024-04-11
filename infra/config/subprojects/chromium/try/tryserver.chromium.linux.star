@@ -5,10 +5,11 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "os", "reclient", "siso")
+load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "try_")
-load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
 
 try_.defaults.set(
@@ -386,6 +387,26 @@ try_.compilator_builder(
     name = "linux-rel-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
     main_list_view = "try",
+)
+
+try_.orchestrator_builder(
+    name = "linux-full-remote-rel",
+    description_html = "Experimental " + linkify_builder("try", "linux-rel", "chromium") + " builder with more kinds of remote actions. e.g. remote linking",
+    mirrors = builder_config.copy_from("linux-rel"),
+    gn_args = "try/linux-rel",
+    compilator = "linux-full-remote-rel-compilator",
+    contact_team_email = "chrome-build-team@google.com",
+    siso_configs = ["builder", "remote-library-link", "remote-exec-link"],
+    tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
+)
+
+try_.compilator_builder(
+    name = "linux-full-remote-rel-compilator",
+    # TODO: compilator_builder doesn't need description_html as it's automatically generated.
+    description_html = "Compilator for linux-full-remote-rel",
+    contact_team_email = "chrome-build-team@google.com",
 )
 
 # TODO(crbug.com/1394755): Remove this builder after burning down failures

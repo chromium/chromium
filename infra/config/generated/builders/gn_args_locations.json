@@ -775,6 +775,7 @@
     "linux-exp-msan-fyi-rel": "try/linux-exp-msan-fyi-rel/gn-args.json",
     "linux-extended-tracing-rel": "try/linux-extended-tracing-rel/gn-args.json",
     "linux-fieldtrial-rel": "try/linux-fieldtrial-rel/gn-args.json",
+    "linux-full-remote-rel": "try/linux-full-remote-rel/gn-args.json",
     "linux-gcc-rel": "try/linux-gcc-rel/gn-args.json",
     "linux-headless-shell-rel": "try/linux-headless-shell-rel/gn-args.json",
     "linux-js-code-coverage": "try/linux-js-code-coverage/gn-args.json",

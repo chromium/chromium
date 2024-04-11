@@ -20,4 +20,6 @@ build/win-build-perf-developer
 ci/Deterministic Linux
 ci/Deterministic Linux (dbg)
 ci/linux-win-cross-rel
+try/linux-full-remote-rel
+try/linux-full-remote-rel-compilator
 try/linux-win-cross-rel
