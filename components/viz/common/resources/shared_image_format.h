@@ -270,7 +270,7 @@ class SinglePlaneFormat {
   static constexpr SharedImageFormat kETC1 =
       SharedImageFormat(mojom::SingleplanarFormat::ETC1);
   static constexpr SharedImageFormat kR_8 =
-      SharedImageFormat(mojom::SingleplanarFormat::RED_8);
+      SharedImageFormat(mojom::SingleplanarFormat::R_8);
   static constexpr SharedImageFormat kRG_88 =
       SharedImageFormat(mojom::SingleplanarFormat::RG_88);
   static constexpr SharedImageFormat kLUMINANCE_F16 =
@@ -278,17 +278,17 @@ class SinglePlaneFormat {
   static constexpr SharedImageFormat kRGBA_F16 =
       SharedImageFormat(mojom::SingleplanarFormat::RGBA_F16);
   static constexpr SharedImageFormat kR_16 =
-      SharedImageFormat(mojom::SingleplanarFormat::R16_EXT);
+      SharedImageFormat(mojom::SingleplanarFormat::R_16);
   static constexpr SharedImageFormat kRG_1616 =
-      SharedImageFormat(mojom::SingleplanarFormat::RG16_EXT);
+      SharedImageFormat(mojom::SingleplanarFormat::RG_1616);
   static constexpr SharedImageFormat kRGBX_8888 =
       SharedImageFormat(mojom::SingleplanarFormat::RGBX_8888);
   static constexpr SharedImageFormat kBGRX_8888 =
       SharedImageFormat(mojom::SingleplanarFormat::BGRX_8888);
   static constexpr SharedImageFormat kRGBA_1010102 =
-      SharedImageFormat(mojom::SingleplanarFormat::RGBX_1010102);
+      SharedImageFormat(mojom::SingleplanarFormat::RGBA_1010102);
   static constexpr SharedImageFormat kBGRA_1010102 =
-      SharedImageFormat(mojom::SingleplanarFormat::BGRX_1010102);
+      SharedImageFormat(mojom::SingleplanarFormat::BGRA_1010102);
   static constexpr SharedImageFormat kR_F16 =
       SharedImageFormat(mojom::SingleplanarFormat::R_F16);
 

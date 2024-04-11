@@ -400,9 +400,9 @@ bool SharedImageFormat::HasAlpha() const {
     switch (singleplanar_format()) {
       case mojom::SingleplanarFormat::RGBA_8888:
       case mojom::SingleplanarFormat::RGBA_4444:
-      case mojom::SingleplanarFormat::RGBX_1010102:
+      case mojom::SingleplanarFormat::RGBA_1010102:
       case mojom::SingleplanarFormat::BGRA_8888:
-      case mojom::SingleplanarFormat::BGRX_1010102:
+      case mojom::SingleplanarFormat::BGRA_1010102:
       case mojom::SingleplanarFormat::ALPHA_8:
       case mojom::SingleplanarFormat::RGBA_F16:
       case mojom::SingleplanarFormat::NV12A_LEGACY:
@@ -452,21 +452,21 @@ int SharedImageFormat::BitsPerPixel() const {
     case mojom::SingleplanarFormat::RGBA_8888:
     case mojom::SingleplanarFormat::RGBX_8888:
     case mojom::SingleplanarFormat::BGRX_8888:
-    case mojom::SingleplanarFormat::RGBX_1010102:
-    case mojom::SingleplanarFormat::BGRX_1010102:
-    case mojom::SingleplanarFormat::RG16_EXT:
+    case mojom::SingleplanarFormat::RGBA_1010102:
+    case mojom::SingleplanarFormat::BGRA_1010102:
+    case mojom::SingleplanarFormat::RG_1616:
       return 32;
     case mojom::SingleplanarFormat::RGBA_4444:
     case mojom::SingleplanarFormat::RGB_565:
     case mojom::SingleplanarFormat::LUMINANCE_F16:
     case mojom::SingleplanarFormat::R_F16:
-    case mojom::SingleplanarFormat::R16_EXT:
+    case mojom::SingleplanarFormat::R_16:
     case mojom::SingleplanarFormat::BGR_565:
     case mojom::SingleplanarFormat::RG_88:
       return 16;
     case mojom::SingleplanarFormat::ALPHA_8:
     case mojom::SingleplanarFormat::LUMINANCE_8:
-    case mojom::SingleplanarFormat::RED_8:
+    case mojom::SingleplanarFormat::R_8:
       return 8;
     case mojom::SingleplanarFormat::ETC1:
       return 4;
