@@ -308,6 +308,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 ctx = ctx.createCredentialProtectedStorageContext();
             }
 
+            try (ScopedSysTraceEvent e2 =
+                    ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.initCommandLine")) {
+                // This may take ~20 ms only on userdebug devices.
+                CommandLineUtil.initCommandLine();
+            }
+
             // WebView needs to make sure to always use the wrapped application context.
             ctx = ClassLoaderContextWrapperFactory.get(ctx);
             ContextUtils.initApplicationContext(ctx);
@@ -341,12 +347,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             mAwInit.setUpResourcesOnBackgroundThread(packageId, ctx);
 
             AndroidXProcessGlobalConfig.extractConfigFromApp(application.getClassLoader());
-
-            try (ScopedSysTraceEvent e2 =
-                    ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.initCommandLine")) {
-                // This may take ~20 ms only on userdebug devices.
-                CommandLineUtil.initCommandLine();
-            }
 
             boolean multiProcess = webViewDelegate.isMultiProcessEnabled();
             if (multiProcess) {
