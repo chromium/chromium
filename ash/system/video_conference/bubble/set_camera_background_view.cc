@@ -253,11 +253,18 @@ class RecentlyUsedBackgroundView : public views::View {
       image = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
           kSetCameraBackgroundViewRadius, image);
 
-      AddChildView(std::make_unique<RecentlyUsedImageButton>(
-          image, images_info[i].metadata, kRecentlyUsedImageButtonId[i],
-          base::BindRepeating(&RecentlyUsedBackgroundView::OnImageButtonClicked,
-                              weak_factory_.GetWeakPtr(), i,
-                              images_info[i].basename)));
+      auto recently_used_image_button =
+          std::make_unique<RecentlyUsedImageButton>(
+              image, images_info[i].metadata, kRecentlyUsedImageButtonId[i],
+              base::BindRepeating(
+                  &RecentlyUsedBackgroundView::OnImageButtonClicked,
+                  weak_factory_.GetWeakPtr(), i, images_info[i].basename));
+      // If background replace is applied, then set first image as selected.
+      if (i == 0 &&
+          GetCameraEffectsController()->GetCameraEffects()->replace_enabled) {
+        recently_used_image_button->SetSelected(true);
+      }
+      AddChildView(std::move(recently_used_image_button));
     }
 
     // Because this is async, we need to update the ui when all images are
