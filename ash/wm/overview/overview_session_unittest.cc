@@ -11018,6 +11018,31 @@ TEST_F(OakTest, DisplayChange) {
   EXPECT_EQ(display_bounds3, wallpaper_view_layer->bounds());
 }
 
+// Tests that when rotating display, the bounds of the clip wallpaper will be
+// adjusted properly.
+TEST_F(OakTest, DisplayRotation) {
+  UpdateDisplay("900x600");
+  auto* wallpaper_widget_controller =
+      Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
+  auto* wallpaper_view_layer =
+      wallpaper_widget_controller->wallpaper_view()->layer();
+  auto* wallpaper_underlay_layer =
+      wallpaper_widget_controller->wallpaper_underlay_layer();
+  auto* display_manager = Shell::Get()->display_manager();
+
+  for (auto rotation :
+       {display::Display::ROTATE_270, display::Display::ROTATE_180,
+        display::Display::ROTATE_90, display::Display::ROTATE_0}) {
+    display_manager->SetDisplayRotation(
+        WindowTreeHostManager::GetPrimaryDisplayId(), rotation,
+        display::Display::RotationSource::USER);
+    const gfx::Rect display_bounds(
+        GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
+    EXPECT_EQ(display_bounds, wallpaper_underlay_layer->bounds());
+    EXPECT_TRUE(display_bounds.Contains(wallpaper_view_layer->bounds()));
+  }
+}
+
 // Verifies that wallpaper clipping and underlay layer visibility update
 // properly on multiple displays during overview transitions.
 TEST_F(OakTest, MultiDisplayTest) {
