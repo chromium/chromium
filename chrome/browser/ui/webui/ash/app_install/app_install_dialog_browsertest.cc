@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, NoAppError) {
 
   content::WebContents* web_contents = GetWebContentsFromDialog();
 
-  EXPECT_EQ(GetTitle(web_contents), "Could not download app data");
+  EXPECT_EQ(GetTitle(web_contents), "Can't install this app");
   EXPECT_EQ(GetActionButton(web_contents), "Try again");
 }
 

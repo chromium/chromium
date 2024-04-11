@@ -7474,7 +7474,10 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     App is already installed
   </message>
   <message name="IDS_APP_INSTALL_DIALOG_NO_APP_DATA_TITLE" desc="Title shown in the app install dialog when there is no app data.">
-    Could not download app data
+    Can't install this app
+  </message>
+  <message name="IDS_APP_INSTALL_DIALOG_NO_APP_DATA_DESCRIPTION" desc="Description shown in the app install dialog when there is no app data.">
+    Couldn't download app data. Try Again.
   </message>
   <message name="IDS_APP_INSTALL_DIALOG_TRY_AGAIN_BUTTON_LABEL" desc="Button label in the app install dialog that opens the app that was just installed.">
     Try again

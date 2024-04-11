@@ -32,6 +32,12 @@ interface StateData {
     iconIdQuery: string,
     labelId: string,
   };
+  content?: {
+    disabled?: boolean,
+  };
+  errorMessage?: {
+    enabled?: boolean, textId: string,
+  };
   actionButton: {
     disabled?: boolean, labelId: string, handler: (event: MouseEvent) => void,
     handleOnce?: boolean, iconIdQuery: string,
@@ -120,7 +126,14 @@ class AppInstallDialogElement extends HTMLElement {
       [DialogState.NO_DATA]: {
         title: {
           iconIdQuery: '#title-icon-error',
-          labelId: 'noAppData',
+          labelId: 'noAppDataTitle',
+        },
+        content: {
+          disabled: true,
+        },
+        errorMessage: {
+          enabled: true,
+          textId: 'noAppDataDescription',
         },
         actionButton: {
           labelId: 'tryAgain',
@@ -151,16 +164,11 @@ class AppInstallDialogElement extends HTMLElement {
     assert(cancelButton);
     cancelButton.addEventListener('click', this.onCancelButtonClick.bind(this));
 
-    const contentCard = this.$<HTMLElement>('#content-card');
-    contentCard.style.visibility = 'hidden';
-
     try {
       const dialogArgs = await this.proxy.handler.getDialogArgs();
       if (!dialogArgs.args) {
         return DialogState.NO_DATA;
       }
-
-      contentCard.style.visibility = 'visible';
 
       const nameElement = this.$<HTMLParagraphElement>('#name');
       assert(nameElement);
@@ -252,6 +260,16 @@ class AppInstallDialogElement extends HTMLElement {
     this.$<HTMLElement>(data.title.iconIdQuery).style.display = 'block';
     this.$<HTMLElement>('#title').textContent =
         loadTimeData.getString(data.title.labelId);
+
+    const contentCard = this.$<HTMLElement>('#content-card')!;
+    contentCard.style.display = data.content?.disabled ? 'none' : 'block';
+
+    const errorMessage = this.$<HTMLElement>('#error-message')!;
+    errorMessage.style.display = data.errorMessage?.enabled ? 'block' : 'none';
+    if (data.errorMessage) {
+      errorMessage.textContent =
+          loadTimeData.getString(data.errorMessage.textId);
+    }
 
     const actionButton = this.$<Button>('.action-button')!;
     assert(actionButton);

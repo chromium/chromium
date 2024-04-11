@@ -213,6 +213,7 @@ base::WeakPtr<AppInstallDialog> AppInstallDialog::GetWeakPtr() {
 }
 
 namespace {
+constexpr int kNoAppDataHeight = 228;
 constexpr int kMinimumDialogHeight = 282;
 constexpr int kDescriptionContainerWidth = 408;
 constexpr int kDescriptionLineHeight = 18;
@@ -222,9 +223,10 @@ constexpr int kDividerHeight = 1;
 }  // namespace
 
 void AppInstallDialog::GetDialogSize(gfx::Size* size) const {
-  int height = kMinimumDialogHeight;
+  int height = 0;
 
   if (dialog_args_) {
+    height += kMinimumDialogHeight;
     // TODO(b/329515116): Adjust height for long URLs that wrap multiple
     // lines.
     if (dialog_args_->description.length()) {
@@ -253,6 +255,8 @@ void AppInstallDialog::GetDialogSize(gfx::Size* size) const {
       // The description padding is there even when there is no description.
       height += kDescriptionVerticalPadding;
     }
+  } else {
+    height += kNoAppDataHeight;
   }
 
   size->SetSize(SystemWebDialogDelegate::kDialogWidth, height);

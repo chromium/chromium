@@ -42,7 +42,8 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
       {"appInstalled", IDS_APP_INSTALL_DIALOG_APP_INSTALLED_TITLE},
       {"appAlreadyInstalled",
        IDS_APP_INSTALL_DIALOG_APP_ALREADY_INSTALLED_TITLE},
-      {"noAppData", IDS_APP_INSTALL_DIALOG_NO_APP_DATA_TITLE},
+      {"noAppDataTitle", IDS_APP_INSTALL_DIALOG_NO_APP_DATA_TITLE},
+      {"noAppDataDescription", IDS_APP_INSTALL_DIALOG_NO_APP_DATA_DESCRIPTION},
       {"tryAgain", IDS_APP_INSTALL_DIALOG_TRY_AGAIN_BUTTON_LABEL},
       {"failedInstall", IDS_APP_INSTALL_DIALOG_FAILED_INSTALL_TITLE},
   };
