@@ -6,9 +6,9 @@ desc: |-
 
   If this policy is left unset the default label, either "Work" or "School" will be used.
 
-  If this policy is set to "Label the profile as Work (1)", the "Work" label will be used.
+  If this policy is set to "Label the profile as Work (0)", the "Work" label will be used.
 
-  If this policy is set to "Label the profile as School (2)", the "School" label will be used.
+  If this policy is set to "Label the profile as School (1)", the "School" label will be used.
 
   This policy will be overridden by the <ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME">CustomProfileLabel</ph> policy if that policy is set.
 example_value: 0
