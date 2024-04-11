@@ -21,21 +21,19 @@
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "components/user_manager/user_manager.h"
 // TODO(crbug.com/1488697): Remove circular dependency.
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"  // nogncheck
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"  // nogncheck
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "components/user_manager/user_manager.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -70,14 +68,6 @@ AppInstallResult InstallWebAppWithBrowserInstallDialog(
   web_app_provider_bridge->ScheduleNavigateAndTriggerInstallDialog(
       install_url, origin_url, is_renderer_initiated);
   return AppInstallResult::kUnknown;
-}
-
-// TODO(b/330414871): AppInstallService shouldn't know about publisher specific
-// logic, remove the generation of app_ids.
-std::string GetAppId(const PackageId& package_id) {
-  CHECK_EQ(package_id.package_type(), PackageType::kWeb);
-  // data->package_id.identifier() is the manifest ID for web apps.
-  return web_app::GenerateAppIdFromManifestId(GURL(package_id.identifier()));
 }
 
 void RecordInstallResult(AppInstallSurface surface, AppInstallResult result) {
@@ -116,12 +106,6 @@ void AppInstallServiceAsh::InstallApp(
 
   if (!CanUserInstall()) {
     RecordInstallResult(surface, AppInstallResult::kUserTypeNotPermitted);
-    std::move(callback).Run();
-    return;
-  }
-
-  if (MaybeLaunchApp(package_id)) {
-    RecordInstallResult(surface, AppInstallResult::kAppAlreadyInstalled);
     std::move(callback).Run();
     return;
   }
@@ -181,29 +165,6 @@ bool AppInstallServiceAsh::CanUserInstall() const {
     return false;
   }
 
-  return true;
-}
-
-bool AppInstallServiceAsh::MaybeLaunchApp(const PackageId& package_id) {
-  AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(&*profile_);
-  if (!proxy) {
-    return false;
-  }
-  std::optional<std::string> app_id;
-  proxy->AppRegistryCache().ForEachApp(
-      [&app_id, package_id](const apps::AppUpdate& update) {
-        if (!app_id.has_value() && apps_util::IsInstalled(update.Readiness()) &&
-            update.InstallerPackageId() == package_id) {
-          app_id = update.AppId();
-        }
-      });
-
-  if (!app_id.has_value()) {
-    return false;
-  }
-
-  proxy->Launch(app_id.value(), /*event_flags=*/0,
-                LaunchSource::kFromInstaller);
   return true;
 }
 
@@ -280,29 +241,25 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
         if (const auto* web_app_data =
                 absl::get_if<WebAppInstallData>(&data->app_type_data)) {
           if (ash::app_install::AppInstallDialog::IsEnabled()) {
-            ash::app_install::mojom::DialogArgsPtr args =
-                ash::app_install::mojom::DialogArgs::New();
-            args->url = web_app_data->document_url;
-            args->name = data->name;
-            args->description = data->description;
-            args->icon_url = data->icon ? data->icon->url : GURL::EmptyGURL();
+            std::vector<ash::app_install::mojom::ScreenshotPtr> screenshots;
             for (auto& screenshot : data->screenshots) {
               auto dialog_screenshot =
                   ash::app_install::mojom::Screenshot::New();
               dialog_screenshot->url = screenshot.url;
               dialog_screenshot->size = gfx::Size(screenshot.width_in_pixels,
                                                   screenshot.height_in_pixels);
-              args->screenshots.push_back(std::move(dialog_screenshot));
+              screenshots.push_back(std::move(dialog_screenshot));
             }
 
-            webapps::AppId expected_app_id = GetAppId(data->package_id);
             base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
                 ash::app_install::AppInstallDialog::CreateDialog();
             dialog->ShowApp(
-                &*profile_, parent, std::move(args),
+                &*profile_, parent, expected_package_id, data->name,
+                web_app_data->document_url, data->description,
+                data->icon ? data->icon->url : GURL::EmptyGURL(),
                 data->icon ? data->icon->width_in_pixels : 0,
                 data->icon ? data->icon->is_masking_allowed : false,
-                expected_app_id,
+                std::move(screenshots),
                 base::BindOnce(&AppInstallServiceAsh::InstallIfDialogAccepted,
                                weak_ptr_factory_.GetWeakPtr(), surface,
                                expected_package_id, std::move(data).value(),
@@ -381,15 +338,14 @@ void AppInstallServiceAsh::ProcessInstallResult(
     return;
   }
   if (install_success) {
-    std::string app_id = GetAppId(expected_package_id);
-    dialog->SetInstallSucceeded(&app_id);
+    dialog->SetInstallSucceeded();
     std::move(callback).Run();
-  } else {
-    dialog->SetInstallFailed(base::BindOnce(
-        &AppInstallServiceAsh::InstallIfDialogAccepted,
-        weak_ptr_factory_.GetWeakPtr(), surface, expected_package_id,
-        std::move(data), dialog, std::move(callback)));
+    return;
   }
+  dialog->SetInstallFailed(base::BindOnce(
+      &AppInstallServiceAsh::InstallIfDialogAccepted,
+      weak_ptr_factory_.GetWeakPtr(), surface, expected_package_id,
+      std::move(data), dialog, std::move(callback)));
 }
 
 }  // namespace apps

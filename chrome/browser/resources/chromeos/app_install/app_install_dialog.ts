@@ -22,6 +22,7 @@ enum DialogState {
   INSTALL = 'install',
   INSTALLING = 'installing',
   INSTALLED = 'installed',
+  ALREADY_INSTALLED = 'already_installed',
   NO_DATA = 'no_data',
   FAILED_INSTALL = 'failed_install',
 }
@@ -53,7 +54,7 @@ class AppInstallDialogElement extends HTMLElement {
   }
 
   private proxy = BrowserProxy.getInstance();
-  private initPromise: Promise<boolean>;
+  private initialStatePromise: Promise<DialogState>;
   private dialogStateDataMap: Record<DialogState, StateData>;
 
   constructor() {
@@ -63,7 +64,7 @@ class AppInstallDialogElement extends HTMLElement {
     const fragment = template.content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(fragment);
 
-    this.initPromise = this.initContent();
+    this.initialStatePromise = this.initContent();
 
     this.dialogStateDataMap = {
       [DialogState.INSTALL]: {
@@ -96,6 +97,18 @@ class AppInstallDialogElement extends HTMLElement {
         title: {
           iconIdQuery: '#title-icon-installed',
           labelId: 'appInstalled',
+        },
+        actionButton: {
+          labelId: 'openApp',
+          handler: () => this.onOpenAppButtonClick(),
+          iconIdQuery: '#action-icon-open-app',
+        },
+        cancelButtonLabelId: 'close',
+      },
+      [DialogState.ALREADY_INSTALLED]: {
+        title: {
+          iconIdQuery: '#title-icon-installed',
+          labelId: 'appAlreadyInstalled',
         },
         actionButton: {
           labelId: 'openApp',
@@ -144,7 +157,7 @@ class AppInstallDialogElement extends HTMLElement {
     try {
       const dialogArgs = await this.proxy.handler.getDialogArgs();
       if (!dialogArgs.args) {
-        return false;
+        return DialogState.NO_DATA;
       }
 
       contentCard.style.visibility = 'visible';
@@ -177,10 +190,12 @@ class AppInstallDialogElement extends HTMLElement {
             .setAttribute('auto-src', dialogArgs.args.screenshots[0].url.url);
       }
 
-      return true;
+      return dialogArgs.args.isAlreadyInstalled ?
+          DialogState.ALREADY_INSTALLED :
+          DialogState.INSTALL;
     } catch (e) {
       console.error(`Unable to get dialog arguments . Error: ${e}.`);
-      return false;
+      return DialogState.NO_DATA;
     }
   }
 
@@ -193,9 +208,7 @@ class AppInstallDialogElement extends HTMLElement {
   }
 
   async connectedCallback(): Promise<void> {
-    const initSuccess = await this.initPromise;
-    this.changeDialogState(
-        initSuccess ? DialogState.INSTALL : DialogState.NO_DATA);
+    this.changeDialogState(await this.initialStatePromise);
   }
 
   private onCancelButtonClick(): void {

@@ -40,10 +40,9 @@ enum class AppInstallResult {
   kAppProviderNotAvailable = 4,
   kAppTypeNotSupported = 5,
   kInstallParametersInvalid = 6,
-  kAppAlreadyInstalled = 7,
-  kInstallDialogNotAccepted = 8,
-  kAppTypeInstallFailed = 9,
-  kUserTypeNotPermitted = 10,
+  kInstallDialogNotAccepted = 7,
+  kAppTypeInstallFailed = 8,
+  kUserTypeNotPermitted = 9,
   kMaxValue = kUserTypeNotPermitted,
 };
 

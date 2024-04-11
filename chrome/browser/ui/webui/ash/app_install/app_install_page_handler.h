@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_PAGE_HANDLER_H_
 
-#include <string>
-
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,7 +30,7 @@ class AppInstallPageHandler : public mojom::PageHandler {
   explicit AppInstallPageHandler(
       Profile* profile,
       mojom::DialogArgsPtr args,
-      std::string expected_app_id,
+      apps::PackageId package_id,
       base::OnceCallback<void(bool accepted)> dialog_accepted_callback,
       CloseDialogCallback close_dialog_callback,
       base::OnceClosure try_again_callback,
@@ -43,7 +42,7 @@ class AppInstallPageHandler : public mojom::PageHandler {
   ~AppInstallPageHandler() override;
 
   void OnInstallComplete(
-      const std::string* app_id,
+      bool success,
       std::optional<base::OnceCallback<void(bool accepted)>> retry_callback);
 
   // mojom::PageHandler:
@@ -56,13 +55,12 @@ class AppInstallPageHandler : public mojom::PageHandler {
  private:
   raw_ptr<Profile> profile_;
   mojom::DialogArgsPtr dialog_args_;
-  std::string expected_app_id_;
+  apps::PackageId package_id_;
   base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
   InstallAppCallback install_app_callback_;
   CloseDialogCallback close_dialog_callback_;
   base::OnceClosure try_again_callback_;
   mojo::Receiver<mojom::PageHandler> receiver_;
-  std::string app_id_;
 
   base::WeakPtrFactory<AppInstallPageHandler> weak_ptr_factory_{this};
 };

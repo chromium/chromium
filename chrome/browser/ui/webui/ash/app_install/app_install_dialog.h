@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "ui/views/native_window_tracker.h"
 
 namespace ash::app_install {
@@ -33,10 +34,14 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   void ShowApp(
       Profile* profile,
       gfx::NativeWindow parent,
-      mojom::DialogArgsPtr args,
+      apps::PackageId package_id,
+      std::string app_name,
+      GURL app_url,
+      std::string app_description,
+      GURL icon_url,
       int icon_width,
       bool is_icon_maskable,
-      std::string expected_app_id,
+      std::vector<mojom::ScreenshotPtr> screenshots,
       base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
 
   // Displays the dialog with an error message that there's no app info.
@@ -51,7 +56,7 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   // Callers must call one of SetInstallSucceeded or SetInstallFailed once the
   // install has finished, passing in the app_id if the installation succeeded
   // or a callback to retry the install if it failed.
-  void SetInstallSucceeded(const std::string* app_id);
+  void SetInstallSucceeded();
   void SetInstallFailed(base::OnceCallback<void(bool accepted)> retry_callback);
 
   void OnDialogShown(content::WebUI* webui) override;
@@ -73,8 +78,8 @@ class AppInstallDialog : public SystemWebDialogDelegate {
 
   base::WeakPtr<Profile> profile_;
   gfx::NativeWindow parent_;
+  apps::PackageId package_id_;
   mojom::DialogArgsPtr dialog_args_;
-  std::string expected_app_id_;
 
   std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
   std::unique_ptr<apps::AlmanacIconCache> icon_cache_;

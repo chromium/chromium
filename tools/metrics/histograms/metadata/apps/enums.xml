@@ -56,10 +56,9 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kAppProviderNotAvailable"/>
   <int value="5" label="kAppTypeNotSupported"/>
   <int value="6" label="kInstallParametersInvalid"/>
-  <int value="7" label="kAppAlreadyInstalled"/>
-  <int value="8" label="kInstallDialogNotAccepted"/>
-  <int value="9" label="kAppTypeInstallFailed"/>
-  <int value="10" label="kUserTypeNotPermitted"/>
+  <int value="7" label="kInstallDialogNotAccepted"/>
+  <int value="8" label="kAppTypeInstallFailed"/>
+  <int value="9" label="kUserTypeNotPermitted"/>
 </enum>
 
 <enum name="AppListAppCollections">

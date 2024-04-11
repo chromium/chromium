@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PACKAGE_ID_UTIL_H_
 
 #include <optional>
+#include <string>
 
 #include "build/chromeos_buildflags.h"
 
@@ -28,6 +29,10 @@ std::optional<apps::PackageId> GetPackageIdForApp(
     Profile* profile,
     const apps::AppUpdate& update);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+std::optional<std::string> GetAppWithPackageId(
+    Profile* profile,
+    const apps::PackageId& package_id);
 
 }  // namespace apps_util
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_UI_H_
 
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "content/public/browser/webui_config.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -27,12 +28,12 @@ class AppInstallDialogUI : public ui::MojoWebDialogUI,
   ~AppInstallDialogUI() override;
 
   void SetDialogArgs(mojom::DialogArgsPtr args);
-  void SetExpectedAppId(std::string expected_app_id);
+  void SetPackageId(apps::PackageId package_id);
   void SetDialogCallback(
       base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
   void SetTryAgainCallback(base::OnceClosure try_again_callback);
   void SetInstallComplete(
-      const std::string* app_id,
+      bool success,
       std::optional<base::OnceCallback<void(bool accepted)>> retry_callback);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
@@ -51,7 +52,7 @@ class AppInstallDialogUI : public ui::MojoWebDialogUI,
   void CloseDialog();
 
   mojom::DialogArgsPtr dialog_args_;
-  std::string expected_app_id_;
+  apps::PackageId package_id_;
   base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
   base::OnceClosure try_again_callback_;
   std::unique_ptr<AppInstallPageHandler> page_handler_;

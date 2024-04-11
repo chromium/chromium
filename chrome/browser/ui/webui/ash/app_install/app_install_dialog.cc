@@ -11,6 +11,7 @@
 #include "ash/style/typography.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -58,10 +59,14 @@ AppInstallDialog::~AppInstallDialog() = default;
 void AppInstallDialog::ShowApp(
     Profile* profile,
     gfx::NativeWindow parent,
-    mojom::DialogArgsPtr args,
+    apps::PackageId package_id,
+    std::string app_name,
+    GURL app_url,
+    std::string app_description,
+    GURL icon_url,
     int icon_width,
     bool is_icon_maskable,
-    std::string expected_app_id,
+    std::vector<mojom::ScreenshotPtr> screenshots,
     base::OnceCallback<void(bool accepted)> dialog_accepted_callback) {
   profile_ = profile->GetWeakPtr();
 
@@ -70,24 +75,27 @@ void AppInstallDialog::ShowApp(
   }
   parent_ = std::move(parent);
 
-  expected_app_id_ = std::move(expected_app_id);
-  dialog_accepted_callback_ = std::move(dialog_accepted_callback);
+  package_id_ = std::move(package_id);
+  dialog_args_ = ash::app_install::mojom::DialogArgs::New();
+  dialog_args_->url = std::move(app_url);
+  dialog_args_->name = std::move(app_name);
+  dialog_args_->description = base::UTF16ToUTF8(gfx::TruncateString(
+      base::UTF8ToUTF16(app_description), webapps::kMaximumDescriptionLength,
+      gfx::CHARACTER_BREAK));
+  dialog_args_->icon_url = std::move(icon_url);
 
   // Filter out portrait screenshots.
-  std::vector<mojom::ScreenshotPtr> filtered_screenshots;
-  for (const auto& screenshot : args->screenshots) {
-    if (screenshot->size.width() >= screenshot->size.height() &&
-        screenshot->size.width() != 0) {
-      filtered_screenshots.push_back(screenshot.Clone());
-    }
-  }
-  args->screenshots = std::move(filtered_screenshots);
+  dialog_args_->screenshots = std::move(screenshots);
+  std::erase_if(dialog_args_->screenshots,
+                [](const mojom::ScreenshotPtr& screenshot) {
+                  return screenshot->size.width() < screenshot->size.height() ||
+                         screenshot->size.width() == 0;
+                });
 
-  args->description = base::UTF16ToUTF8(gfx::TruncateString(
-      base::UTF8ToUTF16(args->description), webapps::kMaximumDescriptionLength,
-      gfx::CHARACTER_BREAK));
+  dialog_args_->is_already_installed =
+      apps_util::GetAppWithPackageId(&*profile_, package_id_).has_value();
 
-  dialog_args_ = std::move(args);
+  dialog_accepted_callback_ = std::move(dialog_accepted_callback);
 
   icon_cache_ =
       std::make_unique<apps::AlmanacIconCache>(profile_.get()->GetProfileKey());
@@ -134,16 +142,17 @@ void AppInstallDialog::OnLoadIcon(apps::IconValuePtr icon_value) {
   this->RepositionNearTopOf(parent);
 }
 
-void AppInstallDialog::SetInstallSucceeded(const std::string* app_id) {
+void AppInstallDialog::SetInstallSucceeded() {
   if (dialog_ui_) {
-    dialog_ui_->SetInstallComplete(app_id, std::nullopt);
+    dialog_ui_->SetInstallComplete(/*success=*/true, std::nullopt);
   }
 }
 
 void AppInstallDialog::SetInstallFailed(
     base::OnceCallback<void(bool accepted)> retry_callback) {
   if (dialog_ui_) {
-    dialog_ui_->SetInstallComplete(nullptr, std::move(retry_callback));
+    dialog_ui_->SetInstallComplete(/*success=*/false,
+                                   std::move(retry_callback));
   }
 }
 
@@ -154,7 +163,7 @@ void AppInstallDialog::OnDialogShown(content::WebUI* webui) {
   SystemWebDialogDelegate::OnDialogShown(webui);
   dialog_ui_ = static_cast<AppInstallDialogUI*>(webui->GetController());
   dialog_ui_->SetDialogArgs(dialog_args_.Clone());
-  dialog_ui_->SetExpectedAppId(std::move(expected_app_id_));
+  dialog_ui_->SetPackageId(package_id_);
   dialog_ui_->SetDialogCallback(std::move(dialog_accepted_callback_));
   dialog_ui_->SetTryAgainCallback(std::move(try_again_callback_));
 }

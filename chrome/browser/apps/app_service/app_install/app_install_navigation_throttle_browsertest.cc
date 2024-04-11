@@ -211,24 +211,6 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", true, 1);
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", false, 0);
 #endif
-
-  // Test whether already installed apps launch instead of going through the
-  // install flow again.
-  if (crosapi::AshSupportsCapabilities({"b/326167458"})) {
-    base::test::RepeatingTestFuture<apps::AppLaunchParams> future;
-    web_app::WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
-        future.GetCallback());
-
-    // Open install-app URI again.
-    EXPECT_TRUE(content::ExecJs(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        base::StringPrintf(
-            "window.open('almanac://install-app?package_id=%s');",
-            package_id.ToString().c_str())));
-
-    // This should launch the app instead of triggering installation.
-    EXPECT_EQ(future.Take().app_id, app_id);
-  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

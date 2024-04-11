@@ -82,27 +82,27 @@ void OnManifestFetchedShowCrosDialog(
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
-  ash::app_install::mojom::DialogArgsPtr args =
-      ash::app_install::mojom::DialogArgs::New();
-  args->url = web_app_info->start_url.GetWithEmptyPath();
-  args->name = base::UTF16ToUTF8(web_app_info->title);
-  args->description = base::UTF16ToUTF8(web_app_info->description);
   apps::IconInfo icon = GetIcon(web_app_info->manifest_icons);
-  args->icon_url = icon.url;
+
+  std::vector<ash::app_install::mojom::ScreenshotPtr> dialog_screenshots;
   for (const auto& screenshot : screenshots) {
     auto dialog_screenshot = ash::app_install::mojom::Screenshot::New();
     dialog_screenshot->url = GURL(webui::GetBitmapDataUrl(screenshot.image));
     dialog_screenshot->size =
         gfx::Size(screenshot.image.width(), screenshot.image.height());
-    args->screenshots.push_back(std::move(dialog_screenshot));
+    dialog_screenshots.push_back(std::move(dialog_screenshot));
   }
 
   dialog_handle->ShowApp(
       profile, initiator_web_contents->GetTopLevelNativeWindow(),
-      std::move(args),
+      apps::PackageId(apps::PackageType::kWeb,
+                      web_app_info->manifest_id.spec()),
+      base::UTF16ToUTF8(web_app_info->title),
+      web_app_info->start_url.GetWithEmptyPath(),
+      base::UTF16ToUTF8(web_app_info->description), icon.url,
       icon.square_size_px.has_value() ? icon.square_size_px.value() : 0,
       icon.purpose == apps::IconInfo::Purpose::kMaskable,
-      web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id),
+      std::move(dialog_screenshots),
       base::BindOnce(
           [](std::unique_ptr<WebAppInstallInfo> web_app_info,
              WebAppInstallationAcceptanceCallback web_app_acceptance_callback,
@@ -119,7 +119,7 @@ void OnWebAppInstalledFromCrosDialog(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   if (webapps::IsSuccess(code)) {
-    dialog_handle->SetInstallSucceeded(&app_id);
+    dialog_handle->SetInstallSucceeded();
   } else {
     // If we receive an error code, there's a chance the dialog was never shown,
     // so we need to clean it up to avoid a memory leak.

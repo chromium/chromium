@@ -9,12 +9,15 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace ash::app_install {
 
@@ -27,6 +30,14 @@ int64_t ToLong(web_app::WebAppInstallStatus web_app_install_status) {
 }
 
 bool g_auto_accept_for_testing = false;
+
+// TODO(b/330414871): AppInstallService shouldn't know about publisher specific
+// logic, remove the generation of app_ids.
+std::string GetAppId(const apps::PackageId& package_id) {
+  CHECK_EQ(package_id.package_type(), apps::PackageType::kWeb);
+  // data->package_id.identifier() is the manifest ID for web apps.
+  return web_app::GenerateAppIdFromManifestId(GURL(package_id.identifier()));
+}
 
 }  // namespace
 
@@ -43,14 +54,14 @@ void AppInstallPageHandler::SetAutoAcceptForTesting(bool auto_accept) {
 AppInstallPageHandler::AppInstallPageHandler(
     Profile* profile,
     mojom::DialogArgsPtr args,
-    std::string expected_app_id,
+    apps::PackageId package_id,
     base::OnceCallback<void(bool accepted)> dialog_accepted_callback,
     CloseDialogCallback close_dialog_callback,
     base::OnceClosure try_again_callback,
     mojo::PendingReceiver<mojom::PageHandler> pending_page_handler)
     : profile_{profile},
       dialog_args_{std::move(args)},
-      expected_app_id_(expected_app_id),
+      package_id_{std::move(package_id)},
       dialog_accepted_callback_{std::move(dialog_accepted_callback)},
       close_dialog_callback_{std::move(close_dialog_callback)},
       try_again_callback_{std::move(try_again_callback)},
@@ -81,7 +92,9 @@ void AppInstallPageHandler::CloseDialog() {
           std::move(cros_events::AppDiscovery_Browser_AppInstallDialogResult()
                         .SetWebAppInstallStatus(
                             ToLong(web_app::WebAppInstallStatus::kCancelled))
-                        .SetAppId(expected_app_id_)));
+                        // TODO(b/333643533): This should be using
+                        // AppDiscoveryMetrics::GetAppStringToRecord().
+                        .SetAppId(GetAppId(package_id_))));
     }
     std::move(dialog_accepted_callback_).Run(false);
   }
@@ -101,7 +114,9 @@ void AppInstallPageHandler::InstallApp(InstallAppCallback callback) {
         std::move(cros_events::AppDiscovery_Browser_AppInstallDialogResult()
                       .SetWebAppInstallStatus(
                           ToLong(web_app::WebAppInstallStatus::kAccepted))
-                      .SetAppId(expected_app_id_)));
+                      // TODO(b/333643533): This should be using
+                      // AppDiscoveryMetrics::GetAppStringToRecord().
+                      .SetAppId(GetAppId(package_id_))));
   }
 
   install_app_callback_ = std::move(callback);
@@ -109,32 +124,28 @@ void AppInstallPageHandler::InstallApp(InstallAppCallback callback) {
 }
 
 void AppInstallPageHandler::OnInstallComplete(
-    const std::string* app_id,
+    bool success,
     std::optional<base::OnceCallback<void(bool accepted)>> retry_callback) {
-  if (app_id) {
-    app_id_ = *app_id;
-    // OnInstallComplete must not be called with an 'app_id' if the expected app
-    // was not able to be installed. The app_id must match also the expected app
-    // id.
-    CHECK_EQ(*app_id, expected_app_id_);
-  } else {
+  if (!success) {
     CHECK(retry_callback.has_value());
     dialog_accepted_callback_ = std::move(retry_callback.value());
   }
   if (install_app_callback_) {
-    std::move(install_app_callback_).Run(/*success=*/app_id);
+    std::move(install_app_callback_).Run(success);
   }
 }
 
 void AppInstallPageHandler::LaunchApp() {
-  if (app_id_.empty()) {
+  std::optional<std::string> app_id =
+      apps_util::GetAppWithPackageId(&*profile_, package_id_);
+  if (!app_id.has_value()) {
     mojo::ReportBadMessage("Unable to launch app without an app_id.");
     return;
   }
   base::RecordAction(
       base::UserMetricsAction("ChromeOS.AppInstallDialog.AppLaunched"));
   apps::AppServiceProxyFactory::GetForProfile(profile_)->Launch(
-      app_id_, ui::EF_NONE, apps::LaunchSource::kFromInstaller);
+      app_id.value(), ui::EF_NONE, apps::LaunchSource::kFromInstaller);
 }
 
 void AppInstallPageHandler::TryAgain() {

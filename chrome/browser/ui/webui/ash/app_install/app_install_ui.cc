@@ -40,6 +40,8 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
       {"appDetails", IDS_APP_INSTALL_DIALOG_APP_DETAILS_TEXT},
       {"installingApp", IDS_APP_INSTALL_DIALOG_INSTALLING_APP_TITLE},
       {"appInstalled", IDS_APP_INSTALL_DIALOG_APP_INSTALLED_TITLE},
+      {"appAlreadyInstalled",
+       IDS_APP_INSTALL_DIALOG_APP_ALREADY_INSTALLED_TITLE},
       {"noAppData", IDS_APP_INSTALL_DIALOG_NO_APP_DATA_TITLE},
       {"tryAgain", IDS_APP_INSTALL_DIALOG_TRY_AGAIN_BUTTON_LABEL},
       {"failedInstall", IDS_APP_INSTALL_DIALOG_FAILED_INSTALL_TITLE},
@@ -69,8 +71,8 @@ void AppInstallDialogUI::SetDialogArgs(mojom::DialogArgsPtr args) {
   dialog_args_ = std::move(args);
 }
 
-void AppInstallDialogUI::SetExpectedAppId(std::string expected_app_id) {
-  expected_app_id_ = expected_app_id;
+void AppInstallDialogUI::SetPackageId(apps::PackageId package_id) {
+  package_id_ = std::move(package_id);
 }
 
 void AppInstallDialogUI::SetDialogCallback(
@@ -84,12 +86,12 @@ void AppInstallDialogUI::SetTryAgainCallback(
 }
 
 void AppInstallDialogUI::SetInstallComplete(
-    const std::string* app_id,
+    bool success,
     std::optional<base::OnceCallback<void(bool accepted)>> retry_callback) {
   if (!page_handler_) {
     return;
   }
-  page_handler_->OnInstallComplete(app_id, std::move(retry_callback));
+  page_handler_->OnInstallComplete(success, std::move(retry_callback));
 }
 
 void AppInstallDialogUI::BindInterface(
@@ -110,7 +112,7 @@ void AppInstallDialogUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<AppInstallPageHandler>(
       Profile::FromWebUI(web_ui()), std::move(dialog_args_),
-      std::move(expected_app_id_), std::move(dialog_accepted_callback_),
+      std::move(package_id_), std::move(dialog_accepted_callback_),
       base::BindOnce(&AppInstallDialogUI::CloseDialog, base::Unretained(this)),
       std::move(try_again_callback_), std::move(receiver));
 }

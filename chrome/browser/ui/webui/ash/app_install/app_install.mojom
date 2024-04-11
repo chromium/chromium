@@ -8,15 +8,17 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 struct DialogArgs {
-  url.mojom.Url url;
-
   string name;
+
+  url.mojom.Url url;
 
   string description;
 
   url.mojom.Url icon_url;
 
   array<Screenshot> screenshots;
+
+  bool is_already_installed;
 };
 
 struct Screenshot {
