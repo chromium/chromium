@@ -517,7 +517,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // value (GetValue() calls back though the preference service to
   // actually get the value.).
   const base::Value* GetPreferenceValue(base::StringPiece path) const;
-  const base::Value* GetPreferenceValueChecked(base::StringPiece path) const;
 
   const scoped_refptr<PrefRegistry> pref_registry_;
 

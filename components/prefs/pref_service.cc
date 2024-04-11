@@ -321,7 +321,7 @@ bool PrefService::IsUserModifiablePreference(
 
 const base::Value& PrefService::GetValue(base::StringPiece path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return *GetPreferenceValueChecked(path);
+  return *GetPreferenceValue(path);
 }
 
 const base::Value::Dict& PrefService::GetDict(base::StringPiece path) const {
@@ -591,7 +591,7 @@ PrefService::Preference::Preference(const PrefService* service,
       pref_service_(service) {}
 
 const base::Value* PrefService::Preference::GetValue() const {
-  return pref_service_->GetPreferenceValueChecked(name_);
+  return pref_service_->GetPreferenceValue(name_);
 }
 
 const base::Value* PrefService::Preference::GetRecommendedValue() const {
@@ -679,13 +679,6 @@ const base::Value* PrefService::GetPreferenceValue(
   // other store has a valid value+type).
   CHECK_EQ(found_value->type(), default_type);
   return found_value;
-}
-
-const base::Value* PrefService::GetPreferenceValueChecked(
-    base::StringPiece path) const {
-  const base::Value* value = GetPreferenceValue(path);
-  DCHECK(value) << "Trying to read an unregistered pref: " << path;
-  return value;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
