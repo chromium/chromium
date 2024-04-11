@@ -642,12 +642,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     scoped_refptr<TexturePassthrough> texture;
   };
 
-  // Tracked viewport and scissor state for surface offset
-  GLint viewport_[4] = {0, 0, 0, 0};
-  GLint scissor_[4] = {0, 0, 0, 0};
-  gfx::Vector2d GetSurfaceDrawOffset() const;
-  void ApplySurfaceDrawOffset();
-
   // Use a limit that is at least ANGLE's IMPLEMENTATION_MAX_ACTIVE_TEXTURES
   // constant
   static constexpr size_t kMaxTextureUnits = 64;

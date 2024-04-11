@@ -167,8 +167,7 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<raw_ptr<ImageContextImpl, VectorExperimental>> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
-      base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
-      std::optional<gfx::Rect> draw_rectangle);
+      base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb);
   void ScheduleOutputSurfaceAsOverlay(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane&
           output_surface_plane);
@@ -222,10 +221,6 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
           image_contexts);
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays);
-
-  void SetEnableDCLayers(bool enable);
-
-  void SetGpuVSyncEnabled(bool enabled);
 
   void SetVSyncDisplayID(int64_t display_id);
 

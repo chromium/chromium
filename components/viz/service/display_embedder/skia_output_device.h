@@ -151,12 +151,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
                        OutputSurfaceFrame frame) = 0;
   virtual bool EnsureMinNumberOfBuffers(size_t n);
 
-  // Set the rectangle that will be drawn into on the surface.
-  virtual bool SetDrawRectangle(const gfx::Rect& draw_rectangle);
-
-  // Enable or disable DC layers. Must be called before DC layers are scheduled.
-  virtual void SetEnableDCLayers(bool enabled);
-
   virtual void SetVSyncDisplayID(int64_t display_id) {}
 
   // Whether the output device's primary plane is an overlay. This returns true

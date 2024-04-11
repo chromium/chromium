@@ -335,30 +335,6 @@ void SkiaOutputSurfaceImpl::BindToClient(OutputSurfaceClient* client) {
   client_ = client;
 }
 
-void SkiaOutputSurfaceImpl::SetDrawRectangle(const gfx::Rect& draw_rectangle) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(capabilities().supports_dc_layers);
-
-  if (has_set_draw_rectangle_for_frame_)
-    return;
-
-  // TODO(kylechar): Add a check that |draw_rectangle| is the full size of the
-  // framebuffer the next time this is called after Reshape().
-
-  draw_rectangle_.emplace(draw_rectangle);
-  has_set_draw_rectangle_for_frame_ = true;
-}
-
-void SkiaOutputSurfaceImpl::SetEnableDCLayers(bool enable) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(capabilities().supports_dc_layers);
-
-  auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SetEnableDCLayers,
-                             base::Unretained(impl_on_gpu_.get()), enable);
-  EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
-                 /*need_framebuffer=*/false);
-}
-
 void SkiaOutputSurfaceImpl::EnsureBackbuffer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // impl_on_gpu_ is released on the GPU thread by a posted task from
@@ -406,9 +382,6 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
       << "SkColorType is invalid for buffer format_index: " << format_index;
 
   sk_color_space_ = params.color_space.ToSkColorSpace();
-
-  // SetDrawRectangle() will need to be called at the new size.
-  has_set_draw_rectangle_for_frame_ = false;
 
   if (use_damage_area_from_skia_output_device_) {
     damage_of_current_buffer_ = gfx::Rect(size_);
@@ -772,8 +745,6 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
          ((!frame.sub_buffer_rect || !frame.sub_buffer_rect->IsEmpty()) ==
           current_buffer_modified_));
 
-  has_set_draw_rectangle_for_frame_ = false;
-
   // If current_buffer_modified_ is false, it means SkiaRenderer doesn't draw
   // anything for current frame. So this SwapBuffer() must be a empty swap, so
   // the previous buffer will be used for this frame.
@@ -970,16 +941,14 @@ void SkiaOutputSurfaceImpl::EndPaint(
   if (current_paint_->mailbox().IsZero()) {
     // Draw on the root render pass.
     current_buffer_modified_ = true;
-    auto task =
-        base::BindOnce(&SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame,
-                       base::Unretained(impl_on_gpu_.get()), std::move(ddl),
-                       std::move(overdraw_ddl), std::move(graphite_recording),
-                       std::move(images_in_current_paint_),
-                       resource_sync_tokens_, std::move(on_finished),
-                       std::move(return_release_fence_cb), draw_rectangle_);
+    auto task = base::BindOnce(
+        &SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame,
+        base::Unretained(impl_on_gpu_.get()), std::move(ddl),
+        std::move(overdraw_ddl), std::move(graphite_recording),
+        std::move(images_in_current_paint_), resource_sync_tokens_,
+        std::move(on_finished), std::move(return_release_fence_cb));
     EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                    /*make_current=*/true, /*need_framebuffer=*/true);
-    draw_rectangle_.reset();
   } else {
     auto task = base::BindOnce(
         &SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,

@@ -178,15 +178,6 @@ bool SkiaOutputDevice::EnsureMinNumberOfBuffers(size_t n) {
   return false;
 }
 
-bool SkiaOutputDevice::SetDrawRectangle(const gfx::Rect& draw_rectangle) {
-  NOTREACHED();
-  return false;
-}
-
-void SkiaOutputDevice::SetEnableDCLayers(bool enable) {
-  NOTREACHED();
-}
-
 bool SkiaOutputDevice::IsPrimaryPlaneOverlay() const {
   return false;
 }

@@ -72,7 +72,6 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
                int sample_count,
                float device_scale_factor,
                gfx::OverlayTransform transform) override;
-  bool SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;

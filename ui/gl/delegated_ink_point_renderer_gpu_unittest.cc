@@ -121,7 +121,6 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
     // Create the swap chain
     constexpr gfx::Size window_size(100, 100);
     EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-    EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
   }
 
   void TearDown() override {

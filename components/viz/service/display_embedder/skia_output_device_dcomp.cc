@@ -337,8 +337,8 @@ void SkiaOutputDeviceDComp::Present(const std::optional<gfx::Rect>& update_rect,
                                     OutputSurfaceFrame frame) {
   StartSwapBuffers({});
 
-  // The |update_rect| is ignored because SetDrawRectangle specified the area to
-  // be swapped.
+  // The |update_rect| is ignored because the SharedImage backing already
+  // knows the area to be swapped.
   presenter_->Present(
       base::BindOnce(&SkiaOutputDeviceDComp::OnPresentFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(frame), size_),
@@ -508,10 +508,6 @@ bool SkiaOutputDeviceDComp::Reshape(const SkImageInfo& image_info,
   size_ = size;
 
   return true;
-}
-
-bool SkiaOutputDeviceDComp::SetDrawRectangle(const gfx::Rect& draw_rectangle) {
-  return presenter_->SetDrawRectangle(draw_rectangle);
 }
 
 SkSurface* SkiaOutputDeviceDComp::BeginPaint(

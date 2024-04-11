@@ -217,12 +217,6 @@ bool DirectCompositionSurfaceWin::SupportsDCLayers() const {
   return true;
 }
 
-bool DirectCompositionSurfaceWin::SupportsProtectedVideo() const {
-  // TODO(magchen): Check the gpu driver date (or a function) which we know this
-  // new support is enabled.
-  return DirectCompositionOverlaysSupported();
-}
-
 bool DirectCompositionSurfaceWin::SetDrawRectangle(const gfx::Rect& rect) {
   return root_surface_->SetDrawRectangle(rect);
 }

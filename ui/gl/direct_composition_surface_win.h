@@ -6,6 +6,7 @@
 #define UI_GL_DIRECT_COMPOSITION_SURFACE_WIN_H_
 
 #include <windows.h>
+
 #include <d3d11.h>
 #include <dcomp.h>
 #include <wrl/client.h>
@@ -19,6 +20,7 @@
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/child_window_win.h"
+#include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/vsync_thread_win.h"
@@ -86,31 +88,30 @@ class GL_EXPORT DirectCompositionSurfaceWin
                                 gfx::FrameData data) override;
   gfx::VSyncProvider* GetVSyncProvider() override;
   void SetVSyncEnabled(bool enabled) override;
-  bool SetEnableDCLayers(bool enable) override;
   gfx::SurfaceOrigin GetOrigin() const override;
   bool SupportsPostSubBuffer() override;
   bool OnMakeCurrent(GLContext* context) override;
-  bool SupportsDCLayers() const override;
-  bool SupportsProtectedVideo() const override;
-  bool SetDrawRectangle(const gfx::Rect& rect) override;
-  gfx::Vector2d GetDrawOffset() const override;
-  // This schedules an overlay plane to be displayed on the next SwapBuffers
-  // or PostSubBuffer call. Overlay planes must be scheduled before every swap
-  // to remain in the layer tree. This surface's backbuffer doesn't have to be
-  // scheduled with ScheduleDCLayer, as it's automatically placed in the layer
-  // tree at z-order 0.
-  void ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) override;
   void SetFrameRate(float frame_rate) override;
 
   // VSyncObserver implementation.
   void OnVSync(base::TimeTicks vsync_time, base::TimeDelta interval) override;
 
-  bool SupportsDelegatedInk() override;
+  bool SetEnableDCLayers(bool enable);
+  bool SupportsDCLayers() const;
+  bool SetDrawRectangle(const gfx::Rect& rect);
+  gfx::Vector2d GetDrawOffset() const;
+  // This schedules an overlay plane to be displayed on the next SwapBuffers
+  // or PostSubBuffer call. Overlay planes must be scheduled before every swap
+  // to remain in the layer tree. This surface's backbuffer doesn't have to be
+  // scheduled with ScheduleDCLayer, as it's automatically placed in the layer
+  // tree at z-order 0.
+  void ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);
+  bool SupportsDelegatedInk();
   void SetDelegatedInkTrailStartPoint(
-      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata);
   void InitDelegatedInkPointRendererReceiver(
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
-          pending_receiver) override;
+          pending_receiver);
 
   HWND window() const { return child_window_.window(); }
 

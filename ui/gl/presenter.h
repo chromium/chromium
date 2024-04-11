@@ -145,7 +145,6 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   virtual void PreserveChildSurfaceControls() {}
 
 #if BUILDFLAG(IS_WIN)
-  virtual bool SetDrawRectangle(const gfx::Rect& rect) = 0;
   virtual bool SupportsDelegatedInk() = 0;
   virtual void SetDelegatedInkTrailStartPoint(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {}

@@ -5,23 +5,12 @@
 #ifndef UI_GL_GL_SURFACE_H_
 #define UI_GL_GL_SURFACE_H_
 
-#include <optional>
-#include <vector>
-
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/frame_data.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/overlay_priority_hint.h"
-#include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/surface_origin.h"
 #include "ui/gfx/swap_result.h"
@@ -44,16 +33,12 @@
 #endif
 
 namespace gfx {
-namespace mojom {
-class DelegatedInkPointRenderer;
-}  // namespace mojom
 class ColorSpace;
 class VSyncProvider;
 }  // namespace gfx
 
 namespace gl {
 
-struct DCLayerOverlayParams;
 class GLContext;
 class EGLTimestampClient;
 
@@ -202,12 +187,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // default. Does nothing if vsync cannot be changed.
   virtual void SetVSyncEnabled(bool enabled);
 
-  virtual void ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);
-
-  // Enables or disables DC layers, returning success. If failed, it is possible
-  // that the context is no longer current.
-  virtual bool SetEnableDCLayers(bool enable);
-
   virtual bool IsSurfaceless() const;
 
   virtual gfx::SurfaceOrigin GetOrigin() const;
@@ -216,21 +195,9 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // the next buffer may be 2 frames old.
   virtual bool BuffersFlipped() const;
 
-  virtual bool SupportsDCLayers() const;
-
-  virtual bool SupportsProtectedVideo() const;
-
   // Returns true if we are allowed to adopt a size different from the
   // platform's proposed surface size.
   virtual bool SupportsOverridePlatformSize() const;
-
-  // Set the rectangle that will be drawn into on the surface, returning
-  // success. If failed, it is possible that the context is no longer current.
-  virtual bool SetDrawRectangle(const gfx::Rect& rect);
-
-  // This is the amount by which the scissor and viewport rectangles should be
-  // offset.
-  virtual gfx::Vector2d GetDrawOffset() const;
 
   // Support for eglGetFrameTimestamps.
   virtual bool SupportsSwapTimestamps() const;
@@ -253,13 +220,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   virtual bool IsCurrent();
 
   static bool ExtensionsContain(const char* extensions, const char* name);
-
-  virtual bool SupportsDelegatedInk();
-  virtual void SetDelegatedInkTrailStartPoint(
-      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {}
-  virtual void InitDelegatedInkPointRendererReceiver(
-      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
-          pending_receiver);
 
   // This should be called at most once at GPU process startup time.
   static void SetForcedGpuPreference(GpuPreference gpu_preference);

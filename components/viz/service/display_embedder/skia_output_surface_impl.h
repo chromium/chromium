@@ -92,8 +92,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // OutputSurface implementation:
   gpu::SurfaceHandle GetSurfaceHandle() const override;
   void BindToClient(OutputSurfaceClient* client) override;
-  void SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
-  void SetEnableDCLayers(bool enable) override;
   void EnsureBackbuffer() override;
   void DiscardBackbuffer() override;
   void Reshape(const ReshapeParams& params) override;
@@ -439,9 +437,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       graphite_cache_controller_;
   skgpu::graphite::Volatile graphite_use_volatile_promise_images_ =
       skgpu::graphite::Volatile::kYes;
-
-  bool has_set_draw_rectangle_for_frame_ = false;
-  std::optional<gfx::Rect> draw_rectangle_;
 
   bool should_measure_next_post_task_ = false;
 

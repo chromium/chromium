@@ -37,8 +37,6 @@ class FakeSoftwareOutputSurface : public OutputSurface {
   void BindToClient(OutputSurfaceClient* client) override;
   void EnsureBackbuffer() override {}
   void DiscardBackbuffer() override {}
-  void SetDrawRectangle(const gfx::Rect& rect) override;
-  void SetEnableDCLayers(bool enabled) override;
   void Reshape(const ReshapeParams& params) override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
   bool IsDisplayedAsOverlayPlane() const override;

@@ -47,8 +47,6 @@ class GL_EXPORT DCompPresenter : public Presenter,
     bool disable_vp_scaling = false;
     bool disable_vp_super_resolution = false;
     bool force_dcomp_triple_buffer_video_swap_chain = false;
-    size_t max_pending_frames = 2;
-    bool use_angle_texture_offset = false;
     bool no_downscaled_overlay_promotion = false;
   };
 
@@ -59,14 +57,12 @@ class GL_EXPORT DCompPresenter : public Presenter,
 
   void Destroy();
   gfx::VSyncProvider* GetVSyncProvider();
-  bool SupportsProtectedVideo() const;
 
   // Presenter implementation.
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
-  bool SetDrawRectangle(const gfx::Rect& rect) override;
   bool SupportsViewporter() const override;
   // This schedules an overlay plane to be displayed on the next SwapBuffers
   // or PostSubBuffer call. Overlay planes must be scheduled before every swap
@@ -139,7 +135,6 @@ class GL_EXPORT DCompPresenter : public Presenter,
 
   // Queue of pending presentation callbacks.
   base::circular_deque<PendingFrame> pending_frames_;
-  const size_t max_pending_frames_;
 
   std::vector<std::unique_ptr<DCLayerOverlayParams>> pending_overlays_;
 

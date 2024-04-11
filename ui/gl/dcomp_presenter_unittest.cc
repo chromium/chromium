@@ -548,7 +548,6 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
 TEST_F(DCompPresenterTest, NoBackgroundColorSurfaceForNonColorOverlays) {
   const gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   auto root_surface =
       CreateParamsFromImage(CreateDCompSurface(window_size, SkColors::kBlack));
@@ -566,7 +565,6 @@ TEST_F(DCompPresenterTest, NoBackgroundColorSurfaceForNonColorOverlays) {
 TEST_F(DCompPresenterTest, BackgroundColorSurfaceTrim) {
   const gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   const DCLayerTree* layer_tree = presenter_->GetLayerTreeForTesting();
 
@@ -608,7 +606,6 @@ TEST_F(DCompPresenterTest, BackgroundColorSurfaceTrim) {
 TEST_F(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
   const gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   std::vector<SkColor4f> colors = {SkColors::kRed, SkColors::kGreen};
   std::vector<IDCompositionSurface*> surfaces_frame1(2, nullptr);
@@ -736,7 +733,6 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     const gfx::Size window_size(100, 100);
 
     EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-    EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
     InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
@@ -812,7 +808,6 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     EXPECT_TRUE(gfx::Rect(window_size).Contains(root_surface_hole));
 
     EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-    EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
     auto root_surface = CreateParamsFromImage(
         CreateDCompSurface(window_size, kRootSurfaceInitialColor,
@@ -1000,7 +995,6 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
 
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
@@ -1148,7 +1142,6 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
 
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
@@ -1320,7 +1313,6 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
@@ -1425,7 +1417,6 @@ TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
 
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
@@ -1567,7 +1558,6 @@ TEST_F(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
 TEST_F(DCompPresenterPixelTest, BackgroundColorSurfaceReuse) {
   const gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   SkColor4f colors[] = {
       SkColors::kRed,    SkColors::kGreen, SkColors::kBlue,
@@ -1646,7 +1636,6 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
 
   void ResizeWindow(const gfx::Size& window_size) {
     EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-    EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
     window_size_ = window_size;
   }
 
@@ -2219,7 +2208,6 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
 
   constexpr gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   constexpr gfx::Size texture_size(50, 50);
 

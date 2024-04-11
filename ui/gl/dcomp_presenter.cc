@@ -29,7 +29,6 @@ DCompPresenter::PendingFrame& DCompPresenter::PendingFrame::operator=(
 
 DCompPresenter::DCompPresenter(const Settings& settings)
     : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      max_pending_frames_(settings.max_pending_frames),
       layer_tree_(std::make_unique<DCLayerTree>(
           settings.disable_nv12_dynamic_textures,
           settings.disable_vp_auto_hdr,
@@ -123,19 +122,6 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
 
   std::move(completion_callback)
       .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK));
-}
-
-bool DCompPresenter::SupportsProtectedVideo() const {
-  // TODO(magchen): Check the gpu driver date (or a function) which we know this
-  // new support is enabled.
-  return DirectCompositionOverlaysSupported();
-}
-
-bool DCompPresenter::SetDrawRectangle(const gfx::Rect& rect) {
-  // Do not create query for empty damage so that 3D engine is not used when
-  // only presenting video in overlay.
-  create_query_this_frame_ = !rect.IsEmpty();
-  return true;
 }
 
 bool DCompPresenter::SupportsViewporter() const {

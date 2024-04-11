@@ -52,14 +52,6 @@ void FakeSoftwareOutputSurface::SwapBuffersAck() {
   client_->DidReceivePresentationFeedback({now, base::TimeDelta(), 0});
 }
 
-void FakeSoftwareOutputSurface::SetDrawRectangle(const gfx::Rect& rect) {
-  NOTREACHED();
-}
-
-void FakeSoftwareOutputSurface::SetEnableDCLayers(bool enabled) {
-  NOTREACHED();
-}
-
 void FakeSoftwareOutputSurface::BindToClient(OutputSurfaceClient* client) {
   DCHECK(client);
   DCHECK(!client_);

@@ -834,8 +834,6 @@ void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
   // BindFramebufferToTexture().
   if (is_root && !output_surface_->capabilities().renderer_allocates_images) {
     BindFramebufferToOutputSurface();
-    if (output_surface_->capabilities().supports_dc_layers)
-      output_surface_->SetDrawRectangle(current_frame()->root_damage_rect);
     InitializeViewport(current_frame(), render_pass->output_rect,
                        gfx::Rect(current_frame()->device_viewport_size),
                        current_frame()->device_viewport_size);

@@ -34,7 +34,6 @@ gl::DCompPresenter::Settings CreatDCompPresenterSettings(
       workarounds.disable_vp_super_resolution;
   settings.force_dcomp_triple_buffer_video_swap_chain =
       workarounds.force_dcomp_triple_buffer_video_swap_chain;
-  settings.use_angle_texture_offset = true;
   return settings;
 }
 }  // namespace
