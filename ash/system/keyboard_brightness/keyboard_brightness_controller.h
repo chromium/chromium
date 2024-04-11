@@ -5,8 +5,11 @@
 #ifndef ASH_SYSTEM_KEYBOARD_BRIGHTNESS_KEYBOARD_BRIGHTNESS_CONTROLLER_H_
 #define ASH_SYSTEM_KEYBOARD_BRIGHTNESS_KEYBOARD_BRIGHTNESS_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
@@ -15,14 +18,14 @@ namespace ash {
 class ASH_EXPORT KeyboardBrightnessController
     : public KeyboardBrightnessControlDelegate {
  public:
-  KeyboardBrightnessController() = default;
+  KeyboardBrightnessController();
 
   // Disallow copy and move.
   KeyboardBrightnessController(const KeyboardBrightnessController&) = delete;
   KeyboardBrightnessController& operator=(const KeyboardBrightnessController&) =
       delete;
 
-  ~KeyboardBrightnessController() override = default;
+  ~KeyboardBrightnessController() override;
 
  private:
   // Overridden from KeyboardBrightnessControlDelegate:
@@ -32,6 +35,9 @@ class ASH_EXPORT KeyboardBrightnessController
   void HandleSetKeyboardBrightness(double percent, bool gradual) override;
   void HandleGetKeyboardBrightness(
       base::OnceCallback<void(std::optional<double>)> callback) override;
+  void OnReceiveHasKeyboardBacklight(std::optional<bool> has_backlight);
+
+  base::WeakPtrFactory<KeyboardBrightnessController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

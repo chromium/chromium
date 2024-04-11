@@ -2017,6 +2017,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Keyboard.HasBacklight" enum="Boolean"
+    expires_after="2025-03-29">
+  <owner>longbowei@google.com</owner>
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records whether the keyboard has a backlight. This state is determined once
+    per boot and the metric is also recorded only once per boot.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.KeyPermissionsManager.Migration"
     enum="KeyPermissionsManagerMigrationStatus" expires_after="2024-09-01">
   <owner>omorsi@google.com</owner>
