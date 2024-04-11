@@ -381,7 +381,7 @@
 <translation id="2921219216347069551">पृष्ठ साझेदारी गर्न सकिदैन</translation>
 <translation id="2923448633003185837">टाँस्नुहोस् र जानुहोस्</translation>
 <translation id="292639812446257861">नपढिएको भनी चिन्ह लगाउनुहोस्</translation>
-<translation id="2931440415625410757">निर्देशनहरू देखाइऊन्</translation>
+<translation id="2931440415625410757">निर्देशनहरू देखाउनुहोस्</translation>
 <translation id="2952246431280799028">ठेगानामा टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="2952278131021475699">लेन्स क्यामेरा प्रयोग गरी खोज्ने सुविधा</translation>
 <translation id="2956733177489514605">आफ्ना पासवर्ड र थप कुराहरू सिंक गर्न Google खातामार्फत साइन इन गर्नुहोस्।</translation>
@@ -533,7 +533,7 @@
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
 <translation id="380329542618494757">नाम</translation>
 <translation id="3803696231112616155">यो साइट अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
-<translation id="3808311849069021992">सर्च इन्जिनसम्बन्धी विवरणहरू देखाइऊन्</translation>
+<translation id="3808311849069021992">सर्च इन्जिनसम्बन्धी विवरणहरू देखाउनुहोस्</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
 <translation id="3818045793209708987">यो प्याकेज ट्र्याक गर्न छाडिएको छ</translation>
 <translation id="3818293389945649617">अर्को भेट्टाउनुहोस्</translation>
@@ -698,7 +698,7 @@
 <translation id="469300482518076788">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="4697071790493980729">कुनै पनि परिणाम फेला परेन</translation>
 <translation id="470337593714520080">{count,plural, =1{आफ्नो Google खातामा एउटा बुकमार्क सेभ गर्नुहोस्}other{आफ्नो Google खातामा {count} वटा बुकमार्क सेभ गर्नुहोस्}}</translation>
-<translation id="470966556546083668">सिंक गर्ने सुविधा अन नगरियोस्</translation>
+<translation id="470966556546083668">सिंक गर्ने सुविधा अन नगर्नुहोस्</translation>
 <translation id="4711809265250406889">अन भएका बेला</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} र थप एउटा साइट}other{{website_1}, {website_2} र थप {more_count} वटा साइट}}</translation>
 <translation id="4737560986434232178">हालसालै खोलिएका ट्याबहरू खोज्नुहोस्</translation>

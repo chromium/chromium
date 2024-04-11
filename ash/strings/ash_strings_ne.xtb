@@ -316,7 +316,7 @@
 <translation id="2339073806695260576">टिपोट गर्न, स्क्रिनसट खिच्न, लेजर पोइन्टर वा म्याग्निफाइङ्ग ग्लासको प्रयोग गर्न सेल्फमा रहेको स्टाइलस बटनमा ट्याप गर्नुहोस्।</translation>
 <translation id="2341729377289034582">ठाडो अवस्थामा लक गरियो</translation>
 <translation id="2345226652884463045">सम्पादन गर्नु पर्ने टेक्स्ट चयन गर्न इन्टर की वा खोज बटन + स्पेस की थिच्नुहोस्</translation>
-<translation id="2349785431103945039">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट प्रयोग गर्न मोबाइल नेटवर्कमा कनेक्ट गर्नुहोस्।</translation>
+<translation id="2349785431103945039">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। हटस्पट प्रयोग गर्न मोबाइल नेटवर्कमा कनेक्ट गर्नुहोस्।</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> भाषा डिभाइसभित्रै प्रोसेस गरिन्छ र उक्त भाषा अफलाइन प्रयोग गर्न मिल्छ। तपाईं "सेटिङ &gt; सर्वसुलभता" मा गई स्पिच-टु-टेक्स्ट सुविधाको भाषा बदल्न सक्नुहुन्छ।</translation>
 <translation id="2352467521400612932">स्टाइलस सम्बन्धी सेटिङहरू</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> लाई सक्रिय बनाउँदै</translation>
@@ -470,7 +470,7 @@
 <translation id="3009178788565917040">निर्गत</translation>
 <translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
 <translation id="301282384882049174">तपाईंका एड्मिनले सेयर गरेका टेम्पलेट</translation>
-<translation id="301584155502740476">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट अफ छ।</translation>
+<translation id="301584155502740476">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। हटस्पट अफ छ।</translation>
 <translation id="3018135054368884502">मिडिया फास्ट फर्वार्ड गर्नुहोस्</translation>
 <translation id="3033545621352269033">अन</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> मा संयोजन गर्नुहोस्</translation>
@@ -779,7 +779,7 @@
 <translation id="4190143678693626113">Chromebook बाट आफ्नो फोनमा पठाइएका टेक्स्ट म्यासेजहरूको द्रुत रूपमा जवाफ दिएर समयको बचत गर्नुहोस्</translation>
 <translation id="4190780880566297084">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया तथा एपहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
 <translation id="4192112279662688596">वा</translation>
-<translation id="4193857202545160520">क्लिक र किबोर्डका सर्टकटहरू देखाइऊन्</translation>
+<translation id="4193857202545160520">क्लिक र किबोर्डका सर्टकटहरू देखाउनुहोस्</translation>
 <translation id="4193969623755915875">"<ph name="NEW_SHORTCUT" />" प्रयोग गरेर एक्स्प्लोर एपमा "मद्दत" पेज खोल्नुहोस्।</translation>
 <translation id="4195579532193195633">हालको संस्करण <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">तपाइँले छोड्नुभएको स्थान देखि जारी राख्नुहोस्</translation>
@@ -828,7 +828,7 @@
 <translation id="4333628967105022692">एकभन्दा बढी प्रयोगकर्ताहरू साइन इन अवस्थामा हुँदा Lacros ले काम गर्दैन।</translation>
 <translation id="4338109981321384717">म्याग्निफाइङ्ग ग्लास</translation>
 <translation id="4351244548802238354">सम्बाद बन्द गर्नुहोस्</translation>
-<translation id="4356872429719185452">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट अन हुँदै छ।</translation>
+<translation id="4356872429719185452">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। हटस्पट अन हुँदै छ।</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  रेकर्ड गरिँदै छ</translation>
 <translation id="4371348193907997655">कास्टका सेटिङहरू</translation>
 <translation id="4375482231364171368">एड्रेस बारमा खोज्नुहोस्</translation>
@@ -957,7 +957,7 @@
 <translation id="4864369630010738180">साइन इन गरिँदै...</translation>
 <translation id="4864648187878336334">डेस्क १५</translation>
 <translation id="4868492592575313542">सक्रिय गरियो</translation>
-<translation id="4871905435473761992">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। तपाईंको मोबाइल नेटवर्कमा हटस्पट प्रयोग गर्न मिल्दैन।</translation>
+<translation id="4871905435473761992">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। तपाईंको मोबाइल नेटवर्कमा हटस्पट प्रयोग गर्न मिल्दैन।</translation>
 <translation id="4872237917498892622">Alt+खोज्नुहोस् वा Shift</translation>
 <translation id="4872852897273142380">बुकमार्क बारमा फोकस गर्नुहोस् वा बुकमार्क बार हाइलाइट गर्नुहोस् (बुकमार्क बार देखाइएको छ भने)</translation>
 <translation id="4881323000405981760">इफेक्टहरू Linux एपहरूमा प्रयोग गर्न मिल्दैन</translation>
@@ -1037,7 +1037,7 @@
 <translation id="5168753792967365150">Google Tasks मा सम्पादन गर्नुहोस्</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="5176318573511391780">स्क्रिनको केही भागको भिडियो रेकर्ड गर्नुहोस्</translation>
-<translation id="5187627942836026988">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। तपाईंको एड्मिनले हटस्पट ब्लक गर्नुभएको छ।</translation>
+<translation id="5187627942836026988">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। तपाईंको एड्मिनले हटस्पट ब्लक गर्नुभएको छ।</translation>
 <translation id="5197255632782567636">इन्टरनेट</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> वटा कार्यक्रम</translation>
 <translation id="5198715732953550718">नयाँ फोल्डर सिर्जना गर्न <ph name="MOVED_APP_NAME" /> <ph name="IN_PLACE_APP" /> सँग समायोजन गरियो</translation>
@@ -1470,7 +1470,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकेन्ड</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एउटा अङ्क बाँकी छ}other{# वटा अङ्क बाँकी छन्}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> डाउनलोड गर्ने कार्य केही समयका लागि रोकिएको छ</translation>
-<translation id="6874854809828346832">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट अन छ।</translation>
+<translation id="6874854809828346832">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। हटस्पट अन छ।</translation>
 <translation id="6878400149835617132">सर्टकट निष्क्रिय पारियो</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{एउटा एप}other{# वटा एप}}</translation>
 <translation id="6883768636838842873">की सर्टकट, डिभाइस प्रयोग गर्न सिकाउने सुझाव र थप कुराहरू</translation>
@@ -1481,7 +1481,7 @@
 <translation id="6912841030378044227">एड्रेस बारमा फोकस गर्नुहोस्</translation>
 <translation id="6912901278692845878">एप चलाउने तरिकाका बारेमा संक्षिप्त जानकारी</translation>
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="692135145298539227">मेटाइयोस्</translation>
+<translation id="692135145298539227">मेटाउनुहोस्</translation>
 <translation id="6929081673585394903">सेटिङ देखाउनुहोस्</translation>
 <translation id="6931576957638141829">यसमा सेभ गर्नुहोस्</translation>
 <translation id="6942518653766415536">रेकर्डिङको फर्म्याटसम्बन्धी मेनु</translation>
@@ -1670,7 +1670,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{१ सूचना}other{# सूचनाहरू}}</translation>
 <translation id="7723703419796509666">डेभलपर टुल कन्सोल देखाउनुहोस् वा लुकाउनुहोस्</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
-<translation id="7725108879223146004">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट अफ हुँदै छ।</translation>
+<translation id="7725108879223146004">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। हटस्पट अफ हुँदै छ।</translation>
 <translation id="7726391492136714301">आफ्नो फोनका सूचना तथा एपहरू हेर्नुहोस्</translation>
 <translation id="7727952505535211425">एड्रेस बारमा हालिएको वेबसाइट नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="7742327441377685481">कुनै पनि सूचना छैन</translation>
