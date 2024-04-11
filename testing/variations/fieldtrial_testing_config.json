@@ -4587,29 +4587,6 @@
             ]
         }
     ],
-    "ContentSettingsIndex": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240207",
-                    "enable_features": [
-                        "HostIndexedMetadataGrants",
-                        "IndexedHostContentSettingsMap"
-                    ]
-                }
-            ]
-        }
-    ],
     "CookieAccessDetailsNotificationDeDuping": [
         {
             "platforms": [

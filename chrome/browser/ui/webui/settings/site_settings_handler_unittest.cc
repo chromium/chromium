@@ -5889,13 +5889,13 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
           ContentSettingsType::CLIENT_HINTS);
   EXPECT_EQ(2U, client_hints_settings.size());
 
-  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[2]),
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
             client_hints_settings.at(0).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             client_hints_settings.at(0).secondary_pattern);
   EXPECT_EQ(client_hints_dictionary, client_hints_settings.at(0).setting_value);
 
-  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[2]),
             client_hints_settings.at(1).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             client_hints_settings.at(1).secondary_pattern);
@@ -5964,14 +5964,14 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
           ContentSettingsType::REDUCED_ACCEPT_LANGUAGE);
   EXPECT_EQ(2U, accept_language_settings.size());
 
-  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[2]),
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
             accept_language_settings.at(0).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             accept_language_settings.at(0).secondary_pattern);
   EXPECT_EQ(accept_language_dictionary,
             accept_language_settings.at(0).setting_value);
 
-  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[2]),
             accept_language_settings.at(1).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             accept_language_settings.at(1).secondary_pattern);
@@ -6041,14 +6041,14 @@ TEST_F(SiteSettingsHandlerTest, ClearDurableStorage) {
   // wildcard '*' set to BLOCK. Here, we expect 2 but we put 3.
   EXPECT_EQ(3U, settings.size());
 
-  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[2]),
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
             settings.at(0).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             settings.at(0).secondary_pattern);
   EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
             settings.at(0).setting_value);
 
-  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[2]),
             settings.at(1).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             settings.at(1).secondary_pattern);

@@ -31,7 +31,7 @@ void RuleMetaData::SetExpirationAndLifetime(base::Time expiration,
 }
 
 bool RuleMetaData::IsExpired(base::Clock* clock) const {
-  return !expiration().is_null() && expiration() < clock->Now();
+  return !expiration().is_null() && expiration() <= clock->Now();
 }
 
 bool RuleMetaData::operator==(const RuleMetaData& other) const = default;

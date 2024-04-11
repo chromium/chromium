@@ -57,7 +57,7 @@ ContentSettingsForOneType Manager::GetGrants() const {
 
   if (absl::holds_alternative<content_settings::HostIndexedContentSettings>(
           grants_)) {
-    ManagerBase::GetContentSettingForOneType(
+    return ManagerBase::GetContentSettingForOneType(
         absl::get<content_settings::HostIndexedContentSettings>(grants_));
   }
 
