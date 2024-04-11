@@ -616,8 +616,7 @@ bool GraphBuilder::SerializeModel() {
   std::fstream model_file(ml_package_dir()
                               .Append(kMlPackageDataDir)
                               .Append(kMlPackageModelFileName)
-                              .value()
-                              .c_str(),
+                              .value(),
                           std::ios::out | std::ios::binary);
   bool result = ml_model_.SerializeToOstream(&model_file);
   UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelWrite",
