@@ -398,10 +398,17 @@ void OnDialogChoiceReceived(
     // This can occur when the user logs out of the session. However,
     // since there could be other unknown causes, leave a log.
     LOG(ERROR) << "Empty user response";
-    LogOneDriveMetricsAfterFallback(
-        fallback_reason,
-        ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback,
-        std::move(cloud_open_metrics));
+    if (IsWebDriveOfficeTask(task)) {
+      LogGoogleDriveMetricsAfterFallback(
+          fallback_reason,
+          ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback,
+          std::move(cloud_open_metrics));
+    } else if (IsOpenInOfficeTask(task)) {
+      LogOneDriveMetricsAfterFallback(
+          fallback_reason,
+          ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback,
+          std::move(cloud_open_metrics));
+    }
   }
 }
 

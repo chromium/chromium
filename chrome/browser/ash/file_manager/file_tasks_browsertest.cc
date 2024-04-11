@@ -206,6 +206,30 @@ void ConvertExpectation(const Expectation& test,
   }
 }
 
+// The Office Fallback Dialog only exists when the is_chrome_branded GN flag set
+// because otherwise QuickOffice is not installed.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+content::WebContents* GetWebContentsFromOfficeFallbackAndWaitForDialog() {
+  ash::SystemWebDialogDelegate* dialog =
+      ash::SystemWebDialogDelegate::FindInstance(
+          chrome::kChromeUIOfficeFallbackURL);
+  EXPECT_TRUE(dialog);
+  content::WebUI* webui = dialog->GetWebUIForTest();
+  EXPECT_TRUE(webui);
+  content::WebContents* web_contents = webui->GetWebContents();
+  EXPECT_TRUE(web_contents);
+
+  // Wait until the DOM element actually exists at office-fallback.
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return content::EvalJs(web_contents,
+                           "!!document.querySelector('office-fallback')")
+        .ExtractBool();
+  }));
+
+  return web_contents;
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 // Auxiliary class for abstracting over differences between the crosapi and
 // non-crosapi test variants.
 class TestController {
@@ -1496,6 +1520,63 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
       ash::cloud_upload::kDriveErrorMetricName,
       ash::cloud_upload::OfficeDriveOpenErrors::kSuccess, 1);
 }
+
+// Tests that when the fallback dialog closes unexpectedly, a Cancel TaskResult
+// is logged.
+IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackClosesUnexpectedly) {
+  // Add test file to fake DriveFs.
+  SetUpTest();
+
+  // Disable the setup flow for office files because we want the office
+  // fallback dialog to run instead.
+  SetWordFileHandlerToFilesSWA(profile(), kActionIdWebDriveOfficeWord);
+
+  const TaskDescriptor web_drive_office_task = CreateWebDriveOfficeTask();
+  std::vector<storage::FileSystemURL> file_urls{drive_test_file_url_};
+
+  // Watch for dialog URL chrome://office-fallback.
+  GURL expected_dialog_URL(chrome::kChromeUIOfficeFallbackURL);
+  content::TestNavigationObserver navigation_observer_dialog(
+      expected_dialog_URL);
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  // Launches the office fallback dialog as the system is offline.
+  base::test::TestFuture<TaskResult, std::string> executed_future;
+  ExecuteFileTask(profile(), web_drive_office_task, file_urls,
+                  executed_future.GetCallback());
+  ASSERT_EQ(executed_future.Get<0>(), TaskResult::kOpened);
+
+  // Wait for office fallback dialog to open.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  // Get the web contents of chrome://office-fallback to be able to check that
+  // the dialog exists.
+  content::WebContents* web_contents =
+      GetWebContentsFromOfficeFallbackAndWaitForDialog();
+
+  // Close the dialog with no user response and wait for the dialog to close.
+  content::WebContentsDestroyedWatcher watcher(web_contents);
+  ash::SystemWebDialogDelegate* dialog =
+      ash::SystemWebDialogDelegate::FindInstance(
+          chrome::kChromeUIOfficeFallbackURL);
+  EXPECT_TRUE(dialog);
+  dialog->Close();
+
+  watcher.Wait();
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kNumberOfFilesToOpenWithGoogleDriveMetric, 1, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kOffline, 1);
+}
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Test that ExecuteFileTask() will open a DriveFs office file with a web Drive
@@ -2074,21 +2155,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
   // Get the web contents of the fallback dialog.
-  ash::SystemWebDialogDelegate* dialog =
-      ash::SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUIOfficeFallbackURL);
-  EXPECT_TRUE(dialog);
-  content::WebUI* webui = dialog->GetWebUIForTest();
-  EXPECT_TRUE(webui);
-  content::WebContents* web_contents = webui->GetWebContents();
-  EXPECT_TRUE(web_contents);
-
-  // Wait until the DOM element actually exists at office-fallback.
-  EXPECT_TRUE(base::test::RunUntil([&] {
-    return content::EvalJs(web_contents,
-                           "!!document.querySelector('office-fallback')")
-        .ExtractBool();
-  }));
+  content::WebContents* web_contents =
+      GetWebContentsFromOfficeFallbackAndWaitForDialog();
 
   EXPECT_TRUE(content::ExecJs(web_contents,
                               "document.querySelector('office-fallback')"
