@@ -23,6 +23,17 @@
 #include "content/public/common/url_constants.h"
 
 namespace ash {
+namespace {
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+constexpr int kEnUSResourceIds[] = {IDR_MAKO_ORCA_HTML, IDR_MAKO_PRIVACY_HTML,
+                                    IDR_MAKO_ORCA_JS,
+                                    IDR_MAKO_ORCA_TRANSLATION_EN_JS};
+#else
+constexpr int kEnUSResourceIds[] = {IDR_MAKO_ORCA_HTML, IDR_MAKO_PRIVACY_HTML,
+                                    IDR_MAKO_ORCA_JS, IDR_MAKO_ORCA_EN};
+#endif
+} // namespace
 
 MakoUntrustedUIConfig::MakoUntrustedUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme, ash::kChromeUIMakoHost) {}
@@ -47,9 +58,24 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
   // Setup the data source
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIMakoURL);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kOrcaResources, kOrcaResourcesSize),
-      IDR_MAKO_ORCA_HTML);
+
+  base::span<const webui::ResourcePath> orca_resources =
+      base::make_span(kOrcaResources, kOrcaResourcesSize);
+
+  // TODO: b:333625296 - Add tests for this conditional behavior
+  if (chromeos::features::IsOrcaUseL10nStringsEnabled()) {
+    webui::SetupWebUIDataSource(source, orca_resources, IDR_MAKO_ORCA_HTML);
+  } else {
+    std::vector<webui::ResourcePath> orca_en_us_resources;
+    std::copy_if(orca_resources.begin(), orca_resources.end(),
+                 std::back_inserter(orca_en_us_resources),
+                 [](const webui::ResourcePath& resource_path) {
+                   return base::Contains(kEnUSResourceIds, resource_path.id);
+                 });
+    webui::SetupWebUIDataSource(source, base::make_span(orca_en_us_resources),
+                                IDR_MAKO_ORCA_HTML);
+  }
+
   source->SetDefaultResource(IDR_MAKO_ORCA_HTML);
 
   // Setup additional CSP overrides
