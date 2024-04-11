@@ -13,11 +13,11 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from '//resources/js/assert.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './voice_selection_menu.html.js';
-
 
 export interface VoiceSelectionMenuElement {
   $: {
@@ -170,6 +170,47 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
         voicePlayingWhenMenuOpened: this.voicePlayingWhenMenuOpened_,
       },
     }));
+  }
+
+  private onVoiceMenuKeyDown_(e: KeyboardEvent) {
+    const currentElement = e.target as HTMLElement;
+    assert(currentElement, 'no key target');
+    const targetIsVoiceOption =
+        (currentElement.classList.contains('dropdown-voice-selection-button')) ?
+        true :
+        false;
+    const targetIsPreviewButton = (currentElement.id === 'play-icon' ||
+                                   currentElement.id === 'pause-icon') ?
+        true :
+        false;
+    // For voice options, only handle the right arrow - everything else is
+    // default
+    if (targetIsVoiceOption && !['ArrowRight'].includes(e.key)) {
+      return;
+    }
+    // For a voice preview, handle up, down and left arrows
+    if (targetIsPreviewButton &&
+        !['ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      return;
+    }
+    // When the menu first opens, the target is the whole menu.
+    // In that case, use default behavior.
+    if (!targetIsVoiceOption && !targetIsPreviewButton) return;
+
+    e.preventDefault();
+
+    if (targetIsVoiceOption) {
+      // From a voice option, go to whichever preview button is visible
+      // There are 'play-icon' and 'pause-icon' preview buttons, and
+      // only one is visible at a time. The one that's visible has style
+      // display-true, so use that to directly select the right button
+      const visiblePreviewButton =
+          currentElement.querySelector<HTMLElement>('.display-true');
+      assert(visiblePreviewButton, 'can\'t find preview button');
+      visiblePreviewButton!.focus();
+    } else {  // Voice preview button - go to voice entry
+      currentElement.parentElement!.focus();
+    }
   }
 }
 

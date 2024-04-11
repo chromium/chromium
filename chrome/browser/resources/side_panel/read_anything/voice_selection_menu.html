@@ -82,7 +82,7 @@
 <!-- TODO(b/333785012): Add initial-counts to the dom-repeats here. -->
 <cr-lazy-render id="voiceSelectionMenu">
   <template>
-    <cr-action-menu on-close="onClose_">
+    <cr-action-menu on-close="onClose_" on-keydown="onVoiceMenuKeyDown_">
       <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
         <div data-test-id$="group-[[stringToHtmlTestId_(item.language)]]">
           <span class="dropdown-line lang-group-title">
@@ -91,7 +91,7 @@
 
           <template is="dom-repeat" items="[[item.voices]]">
             <button data-test-id$="[[item.id]]"
-              class="dropdown-line dropdown-voice-selection-button"
+              class="dropdown-item dropdown-voice-selection-button"
               on-click="onVoiceSelectClick_">
               <span class="voice-name">
                 <iron-icon id="check-mark"
