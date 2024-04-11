@@ -311,6 +311,17 @@ void Adapter::CreateLocalGattService(
       /*gatt_service=*/std::move(pending_gatt_service_remote));
 }
 
+void Adapter::IsLeScatternetDualRoleSupported(
+    IsLeScatternetDualRoleSupportedCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS)
+  std::move(callback).Run(base::Contains(
+      adapter_->GetSupportedRoles(),
+      device::BluetoothAdapter::BluetoothRole::kCentralPeripheral));
+#else
+  std::move(callback).Run(/*is_supported=*/false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 void Adapter::AdapterPresentChanged(device::BluetoothAdapter* adapter,
                                     bool present) {
   for (auto& observer : observers_)

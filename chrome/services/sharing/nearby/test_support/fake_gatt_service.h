@@ -15,6 +15,7 @@ class FakeGattService : public mojom::GattService {
  public:
   using ValueCallback = base::OnceCallback<void(
       bluetooth::mojom::LocalCharacteristicReadResultPtr)>;
+
   FakeGattService();
   FakeGattService(const FakeGattService&) = delete;
   FakeGattService& operator=(const FakeGattService&) = delete;

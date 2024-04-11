@@ -271,10 +271,21 @@ interface Adapter {
   // Creates a local GATT service corresponding to |service_id|, and
   // communicates events to the |observer|. This call is only expected to be
   // used to create a local GATT service that does not exist at |service_id|.
+  // Callers should first consult |IsLeScatternetDualRoleSupported()| before
+  // calling this method to determine if a GATT service can be safely started on
+  // the local device.
   [Sync]
   CreateLocalGattService(UUID service_id,
        pending_remote<GattServiceObserver> observer)
       => (pending_remote<GattService> gatt_service);
+
+  // Retrieves the status of whether or not the LE Scatternet Dual Role
+  // (simultaneous use of the LE peripheral and central roles) is supported on
+  // the Adapter. If |is_supported| is true, then callers can call
+  // |CreateLocalGattService()| without being concerned about performance or
+  // stability issues.
+  [Sync]
+  IsLeScatternetDualRoleSupported() => (bool is_supported);
 };
 
 // Listener on Bluetooth events. Register as an observer via AddObserver().

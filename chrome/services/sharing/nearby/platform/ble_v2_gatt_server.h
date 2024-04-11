@@ -67,7 +67,6 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
       OnLocalCharacteristicReadCallback callback) override;
 
   std::unique_ptr<BluetoothAdapter> bluetooth_adapter_;
-
   base::flat_map<Uuid, std::unique_ptr<GattService>> uuid_to_gatt_service_map_;
   mojo::SharedRemote<bluetooth::mojom::Adapter> adapter_remote_;
   mojo::Receiver<bluetooth::mojom::GattServiceObserver> gatt_service_observer_{

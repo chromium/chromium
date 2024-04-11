@@ -611,6 +611,29 @@ TEST_F(AdapterTest, TestCreateRfcommServiceInsecurely_Success) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+TEST_F(AdapterTest, TestIsLeScatternetDualRoleSupported_Suppported) {
+  std::vector<device::BluetoothAdapter::BluetoothRole> roles{
+      device::BluetoothAdapter::BluetoothRole::kCentralPeripheral};
+  ON_CALL(*mock_bluetooth_adapter_, GetSupportedRoles())
+      .WillByDefault(Return(roles));
+
+  base::test::TestFuture<bool> future;
+  adapter_->IsLeScatternetDualRoleSupported(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(AdapterTest, TestIsLeScatternetDualRoleSupported_NotSupported) {
+  std::vector<device::BluetoothAdapter::BluetoothRole> roles{
+      device::BluetoothAdapter::BluetoothRole::kCentral,
+      device::BluetoothAdapter::BluetoothRole::kPeripheral};
+  ON_CALL(*mock_bluetooth_adapter_, GetSupportedRoles())
+      .WillByDefault(Return(roles));
+
+  base::test::TestFuture<bool> future;
+  adapter_->IsLeScatternetDualRoleSupported(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
 TEST_F(AdapterTest, TestMetricsOnShutdown_NoPendingConnects) {
   base::HistogramTester histogram_tester;
   adapter_.reset();

@@ -247,6 +247,13 @@ void FakeAdapter::SetShouldAdvertisementRegistrationSucceed(
       should_advertisement_registration_succeed;
 }
 
+void FakeAdapter::IsLeScatternetDualRoleSupported(
+    IsLeScatternetDualRoleSupportedCallback callback) {
+  // TODO(b/311430390): Implement when BleV2Medium calls
+  // IsLeScatternetDualRoleSupported() on the Adapter Mojo Remote.
+  NOTIMPLEMENTED();
+}
+
 void FakeAdapter::SetShouldDiscoverySucceed(bool should_discovery_succeed) {
   should_discovery_succeed_ = should_discovery_succeed;
 }

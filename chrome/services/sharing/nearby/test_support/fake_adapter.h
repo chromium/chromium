@@ -52,6 +52,8 @@ class FakeAdapter : public mojom::Adapter {
       const device::BluetoothUUID& service_id,
       mojo::PendingRemote<mojom::GattServiceObserver> observer,
       CreateLocalGattServiceCallback callback) override;
+  void IsLeScatternetDualRoleSupported(
+      IsLeScatternetDualRoleSupportedCallback callback) override;
 
   void SetAdvertisementDestroyedCallback(base::OnceClosure callback);
   const std::vector<uint8_t>* GetRegisteredAdvertisementServiceData(

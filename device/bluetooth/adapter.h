@@ -68,6 +68,8 @@ class Adapter : public mojom::Adapter,
       const device::BluetoothUUID& service_id,
       mojo::PendingRemote<mojom::GattServiceObserver> observer,
       CreateLocalGattServiceCallback callback) override;
+  void IsLeScatternetDualRoleSupported(
+      IsLeScatternetDualRoleSupportedCallback callback) override;
 
   // device::BluetoothAdapter::Observer overrides:
   void AdapterPresentChanged(device::BluetoothAdapter* adapter,

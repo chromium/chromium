@@ -192,6 +192,10 @@ export class TestAdapter extends TestBrowserProxy {
     return {result: null};
   }
 
+  async isLeScatternetDualRoleSupported() {
+    return false;
+  }
+
   setTestConnectResult(connectResult) {
     this.connectResult_ = connectResult;
   }
