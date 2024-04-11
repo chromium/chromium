@@ -6,7 +6,7 @@
 
 namespace user_education {
 
-DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleAnchorBoundsChangedEvent);
-DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleNextButtonClickedEvent);
+DEFINE_EXPORTED_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleAnchorBoundsChangedEvent);
+DEFINE_EXPORTED_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleNextButtonClickedEvent);
 
 }  // namespace user_education

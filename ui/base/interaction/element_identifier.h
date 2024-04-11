@@ -106,7 +106,7 @@ struct ElementIdentifierImpl {
 
 class ElementTracker;
 
-// Holds a globally-unqiue, value-typed identifier from a set of identifiers
+// Holds a globally-unique, value-typed identifier from a set of identifiers
 // which can be declared in any static scope.
 //
 // This type is comparable and supports operator bool and negation, where
@@ -128,22 +128,19 @@ class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
 
   constexpr bool operator!() const { return !handle_; }
 
-  constexpr bool operator==(const ElementIdentifier& other) const {
-    return handle_ == other.handle_;
-  }
+  constexpr bool operator==(const ElementIdentifier& other) const = default;
 
-  constexpr bool operator!=(const ElementIdentifier& other) const {
-    return handle_ != other.handle_;
-  }
-
-  constexpr bool operator<(const ElementIdentifier& other) const {
+  // TODO(crbug.com/333028921): Operator < cannot be constexpr because memory
+  // order of Impl objects is not strictly known at compile time. Fix this...
+  // somehow? Possibilities include compile-time hashing of identifier string.
+  bool operator<(const ElementIdentifier& other) const {
     return handle_ < other.handle_;
   }
 
   // Retrieves the element name, or the empty string if none.
   std::string GetName() const;
 
-  // Retrieve a known ElementIdentifer by name. An ElementIdentifier is *known*
+  // Retrieve a known ElementIdentifier by name. An ElementIdentifier is *known*
   // if a TrackedElement has been created with the id, or if the value of the
   // identifier has been serialized using GetRawValue() or GetName().
   static ElementIdentifier FromName(const char* name);
@@ -261,10 +258,26 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 }  // namespace ui
 
 // Declaring identifiers outside a scope:
+//
+// Note: if you need to use the identifier outside the current component, use
+// DECLARE/DEFINE_EXPORTED_... below.
 
 // Use this code in the .h file to declare a new identifier.
-#define DECLARE_ELEMENT_IDENTIFIER_VALUE(IdentifierName) \
-  DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(, IdentifierName)
+#define DECLARE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                     \
+  extern const ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
+  inline constexpr ui::ElementIdentifier IdentifierName(                     \
+      &IdentifierName##Provider)
+
+// Use this code in the .cc file to define a new identifier.
+#define DEFINE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                \
+  const ui::internal::ElementIdentifierImpl IdentifierName##Provider { \
+    #IdentifierName                                                    \
+  }
+
+// Declaring identifiers that can be used in other components:
+//
+// Note: unlike other declarations, this identifier will not be constexpr in
+// most cases.
 
 // Use this code in the .h file to declare a new exported identifier.
 #define DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ExportName, IdentifierName) \
@@ -272,11 +285,11 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
       IdentifierName##Provider;                                               \
   ExportName extern const ui::ElementIdentifier IdentifierName
 
-// Use this code in the .cc file to define a new identifier.
-#define DEFINE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                   \
-  constexpr ui::internal::ElementIdentifierImpl IdentifierName##Provider{ \
-      #IdentifierName};                                                   \
-  constexpr ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
+// Use this code in the .cc file to define a new exported identifier.
+#define DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(IdentifierName)      \
+  const ui::internal::ElementIdentifierImpl IdentifierName##Provider{ \
+      #IdentifierName};                                               \
+  const ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
 
 // Declaring identifiers in a class:
 
@@ -284,7 +297,7 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 // identifier that is scoped to your class.
 #define DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(IdentifierName)               \
   static const ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
-  static constexpr ui::ElementIdentifier IdentifierName {                    \
+  static constexpr ui::ElementIdentifier IdentifierName {             \
     &IdentifierName##Provider                                                \
   }
 

@@ -305,12 +305,21 @@ class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
 // your public header file and the DEFINE in corresponding .cc file. For local
 // values to be used in tests, use DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE()
 // defined below instead.
+//
+// Note: if you need to use the identifier outside the current component, use
+// DECLARE/DEFINE_EXPORTED_... below.
 #define DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
   DECLARE_ELEMENT_IDENTIFIER_VALUE(EventName)
-#define DECLARE_EXPORTED_CUSTOM_ELEMENT_EVENT_TYPE(ExportName, EventName) \
-  DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ExportName, EventName)
 #define DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
   DEFINE_ELEMENT_IDENTIFIER_VALUE(EventName)
+
+// Macros for declaring custom element event types that can be accessed in other
+// components. Put the DECLARE call in your public header file and the DEFINE
+// call in the corresponding .cc file.
+#define DECLARE_EXPORTED_CUSTOM_ELEMENT_EVENT_TYPE(ExportName, EventName) \
+  DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ExportName, EventName)
+#define DEFINE_EXPORTED_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
+  DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(EventName)
 
 // Macros for declaring custom class element event type. Put the DECLARE call in
 // your .h file in your class declaration, and the DEFINE in the corresponding
