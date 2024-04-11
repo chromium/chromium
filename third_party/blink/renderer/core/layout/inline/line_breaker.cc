@@ -733,6 +733,7 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
   hyphen_index_.reset();
   has_any_hyphens_ = false;
   resume_block_in_inline_in_same_flow_ = false;
+  may_have_ruby_overhang_ = false;
 
   // Use 'text-indent' as the initial position. This lets tab positions to align
   // regardless of 'text-indent'.
@@ -3048,6 +3049,10 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
   column_result->text_offset.end = annotation_line_list[0].EndTextOffset();
   column_result->should_create_line_box = true;
   column_result->can_break_after = CanBreakAfterRubyColumn(*column_result);
+
+  if (base_line_info.Width() < ruby_size) {
+    may_have_ruby_overhang_ = true;
+  }
   return column_result;
 }
 

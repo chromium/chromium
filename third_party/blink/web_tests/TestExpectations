@@ -7167,9 +7167,6 @@ crbug.com/332068449 [ Mac ] external/wpt/focus/cross-origin-ancestor-activeeleme
 crbug.com/330761492 external/wpt/html/editing/the-hidden-attribute/beforematch-scroll-to-text-fragment.html [ Failure Pass ]
 
 # RubyLineBreakable
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/block-ruby-002.html [ Crash ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/block-ruby-003.html [ Crash ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/block-ruby-004.html [ Crash ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/br-clear-all-002.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/empty-ruby-text-container-abs.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/empty-ruby-text-container-float.html [ Crash ]
@@ -7185,13 +7182,6 @@ crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-bidi-003.html
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-float-handling-001.html [ Crash Failure ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-intra-level-whitespace-001.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-line-breaking-002.html [ Failure ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-text-combine-upright-001a.html [ Crash ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-text-combine-upright-001b.html [ Crash ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-text-combine-upright-002a.html [ Crash ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Crash ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-with-floats-001.html [ Crash ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-with-floats-002.html [ Crash ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-with-floats-003.html [ Crash ]
 crbug.com/324111880 virtual/ruby-lb/fast/ruby/after-doesnt-crash.html [ Crash Failure ]
 crbug.com/324111880 virtual/ruby-lb/fast/ruby/base-shorter-than-text.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/fast/ruby/before-doesnt-crash.html [ Crash Failure ]

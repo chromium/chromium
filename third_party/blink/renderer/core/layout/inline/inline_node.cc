@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/inline/initial_letter_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_items_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_text_auto_space.h"
@@ -1797,6 +1798,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
     const LineBreaker::MaxSizeCache& max_size_cache;
     FloatsMaxSize* floats;
     bool is_after_break = true;
+    wtf_size_t annotation_nesting_level = 0;
 
     explicit MaxSizeFromMinSize(const InlineItemsData& items_data,
                                 const LineBreaker::MaxSizeCache& max_size_cache,
@@ -1812,7 +1814,14 @@ static LayoutUnit ComputeContentSize(InlineNode node,
     void AddTextUntil(const InlineItem* end) {
       DCHECK(end);
       for (; next_item != end; ++next_item) {
-        if (next_item->Type() == InlineItem::kText && next_item->Length()) {
+        if (next_item->Type() == InlineItem::kOpenTag &&
+            next_item->GetLayoutObject()->IsInlineRubyText()) {
+          ++annotation_nesting_level;
+        } else if (next_item->Type() == InlineItem::kCloseTag &&
+                   next_item->GetLayoutObject()->IsInlineRubyText()) {
+          --annotation_nesting_level;
+        } else if (next_item->Type() == InlineItem::kText &&
+                   next_item->Length() && annotation_nesting_level == 0) {
           DCHECK(next_item->TextShapeResult());
           const ShapeResult& shape_result = *next_item->TextShapeResult();
           position += shape_result.SnappedWidth().ClampNegativeToZero();
@@ -1858,6 +1867,17 @@ static LayoutUnit ComputeContentSize(InlineNode node,
         is_after_break = false;
       }
 
+      ComputeFromMinSizeInternal(line_info);
+
+      // Compute the forced break after all results were handled, because
+      // when close tags appear after a forced break, they are included in
+      // the line, and they may have inline sizes. crbug.com/991320.
+      if (line_info.HasForcedBreak()) {
+        ForceLineBreak(line_info);
+      }
+    }
+
+    void ComputeFromMinSizeInternal(const LineInfo& line_info) {
       for (const InlineItemResult& result : line_info.Results()) {
         const InlineItem& item = *result.item;
         if (item.Type() == InlineItem::kText) {
@@ -1893,13 +1913,12 @@ static LayoutUnit ComputeContentSize(InlineNode node,
             continue;
           }
         }
+        if (item.Type() == InlineItem::kOpenRubyColumn && result.ruby_column) {
+          ComputeFromMinSizeInternal(result.ruby_column->base_line);
+          continue;
+        }
         position += result.inline_size;
       }
-      // Compute the forced break after all results were handled, because
-      // when close tags appear after a forced break, they are included in
-      // the line, and they may have inline sizes. crbug.com/991320.
-      if (line_info.HasForcedBreak())
-        ForceLineBreak(line_info);
     }
   };
 
@@ -1974,7 +1993,8 @@ static LayoutUnit ComputeContentSize(InlineNode node,
           // `box-decoration-break: clone` clones box decorations to each
           // fragment (line) that we cannot compute max-content from
           // min-content.
-          !line_breaker.HasClonedBoxDecorations();
+          !line_breaker.HasClonedBoxDecorations() &&
+          !line_breaker.MayHaveRubyOverhang();
       if (can_compute_max_size_from_min_size)
         max_size_from_min_size.ComputeFromMinSize(line_info);
     } else {
