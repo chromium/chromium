@@ -25,6 +25,7 @@ constexpr char kPrepareForUpdateSessionIdKey[] = "session_id";
 constexpr char kPrepareForUpdateAdvertisingIdKey[] = "advertising_id";
 constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
     "secondary_shared_secret";
+constexpr char kPrepareForUpdateDidTransferWifiKey[] = "did_transfer_wifi";
 
 }  // namespace
 
@@ -56,6 +57,7 @@ class SessionContextTest : public testing::Test {
 };
 
 TEST_F(SessionContextTest, GetPrepareForUpdateInfo) {
+  session_context_->SetDidTransferWifi(true);
   base::Value::Dict prepare_for_update_info =
       session_context_->GetPrepareForUpdateInfo();
   EXPECT_FALSE(prepare_for_update_info.empty());
@@ -67,6 +69,8 @@ TEST_F(SessionContextTest, GetPrepareForUpdateInfo) {
   EXPECT_EQ(GetSecondarySharedSecretString(),
             *prepare_for_update_info.FindString(
                 kPrepareForUpdateSecondarySharedSecretKey));
+  EXPECT_EQ(true, *prepare_for_update_info.FindBool(
+                      kPrepareForUpdateDidTransferWifiKey));
 }
 
 TEST_F(SessionContextTest, ResumeAfterUpdate) {
@@ -74,6 +78,7 @@ TEST_F(SessionContextTest, ResumeAfterUpdate) {
 
   // The bootstrap controller expects this pref to be set if resuming after an
   // update.
+  session_context_->SetDidTransferWifi(true);
   GetLocalState()->SetDict(prefs::kResumeQuickStartAfterRebootInfo,
                            session_context_->GetPrepareForUpdateInfo());
 
@@ -98,6 +103,7 @@ TEST_F(SessionContextTest, ResumeAfterUpdate) {
   EXPECT_TRUE(GetLocalState()
                   ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
                   .empty());
+  EXPECT_TRUE(session_context_->did_transfer_wifi());
 }
 
 TEST_F(SessionContextTest, CancelResume) {

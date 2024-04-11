@@ -299,7 +299,7 @@ void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
 void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
     std::optional<mojom::WifiCredentials> credentials) {
   CHECK_EQ(status_.step, Step::REQUESTING_WIFI_CREDENTIALS);
-
+  session_context_.SetDidTransferWifi(true);
   if (credentials.has_value()) {
     UpdateStatus(/*step=*/Step::WIFI_CREDENTIALS_RECEIVED,
                  /*payload=*/credentials.value());
@@ -443,6 +443,7 @@ void TargetDeviceBootstrapController::OnAuthCodeReceived(
             UpdateStatus(/*step=*/Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS,
                          /*payload=*/gaia_creds);
             is_error = false;
+            session_context_.SetDidSetUpGaia(true);
           },
           [&](SecondDeviceAuthBroker::
                   AuthCodeAdditionalChallengesOnTargetResponse res) {

@@ -62,6 +62,12 @@ class SessionContext {
   // reboots.
   base::Value::Dict GetPrepareForUpdateInfo();
 
+  bool did_transfer_wifi() const { return did_transfer_wifi_; }
+  bool did_set_up_gaia() const { return did_set_up_gaia_; }
+
+  void SetDidTransferWifi(bool did_transfer_wifi);
+  void SetDidSetUpGaia(bool did_set_up_gaia);
+
  private:
   void PopulateRandomSessionContext();
   // When Quick Start is automatically resumed after the target device updates,
@@ -75,6 +81,8 @@ class SessionContext {
   SharedSecret shared_secret_;
   SharedSecret secondary_shared_secret_;
   bool is_resume_after_update_ = false;
+  bool did_transfer_wifi_ = false;
+  bool did_set_up_gaia_ = false;
 };
 
 }  // namespace ash::quick_start

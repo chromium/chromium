@@ -26,6 +26,7 @@ constexpr char kPrepareForUpdateSessionIdKey[] = "session_id";
 constexpr char kPrepareForUpdateAdvertisingIdKey[] = "advertising_id";
 constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
     "secondary_shared_secret";
+constexpr char kPrepareForUpdateDidTransferWifiKey[] = "did_transfer_wifi";
 
 bool ShouldResumeAfterUpdate() {
   const base::Value::Dict& maybe_info =
@@ -89,7 +90,21 @@ base::Value::Dict SessionContext::GetPrepareForUpdateInfo() {
       kPrepareForUpdateSecondarySharedSecretKey,
       base::Base64Encode(secondary_shared_secret_bytes));
 
+  // We persist the bit representing completion of the Wi-Fi transfer, but Gaia
+  // account setup happens after any updates are installed, so there is no need
+  // to persist the Gaia account setup bit.
+  prepare_for_update_info.Set(kPrepareForUpdateDidTransferWifiKey,
+                              did_transfer_wifi_);
+
   return prepare_for_update_info;
+}
+
+void SessionContext::SetDidTransferWifi(bool did_transfer_wifi) {
+  did_transfer_wifi_ = did_transfer_wifi;
+}
+
+void SessionContext::SetDidSetUpGaia(bool did_set_up_gaia) {
+  did_set_up_gaia_ = did_set_up_gaia;
 }
 
 void SessionContext::PopulateRandomSessionContext() {
@@ -100,6 +115,8 @@ void SessionContext::PopulateRandomSessionContext() {
   advertising_id_ = AdvertisingId();
   crypto::RandBytes(shared_secret_);
   crypto::RandBytes(secondary_shared_secret_);
+  did_transfer_wifi_ = false;
+  did_set_up_gaia_ = false;
 }
 
 void SessionContext::FetchPersistedSessionContext() {
@@ -129,6 +146,12 @@ void SessionContext::FetchPersistedSessionContext() {
       session_info.FindString(kPrepareForUpdateSecondarySharedSecretKey);
   CHECK(secondary_shared_secret_str);
   DecodeSharedSecret(*secondary_shared_secret_str);
+
+  std::optional<bool> did_transfer_wifi =
+      session_info.FindBool(kPrepareForUpdateDidTransferWifiKey);
+  CHECK(did_transfer_wifi.has_value());
+  did_transfer_wifi_ = did_transfer_wifi.value();
+
   prefs->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
 }
 

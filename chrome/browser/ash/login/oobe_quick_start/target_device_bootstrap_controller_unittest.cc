@@ -489,6 +489,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
   EXPECT_EQ(fake_observer_->last_status.step, Step::WIFI_CREDENTIALS_RECEIVED);
   EXPECT_TRUE(absl::holds_alternative<mojom::WifiCredentials>(
       fake_observer_->last_status.payload));
+  EXPECT_TRUE(GetSessionContext()->did_transfer_wifi());
   histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, true,
                                       1);
 }
@@ -684,6 +685,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   const auto gaia_creds =
       absl::get<TargetDeviceBootstrapController::GaiaCredentials>(payload);
   EXPECT_EQ(gaia_creds.auth_code, kTestAuthCode);
+  EXPECT_TRUE(GetSessionContext()->did_set_up_gaia());
 
   histogram_tester_.ExpectBucketCount(kGaiaTransferAttemptedName, true, 1);
 }
