@@ -383,4 +383,9 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
     private boolean isSurfacePolishEnabled() {
         return ChromeFeatureList.sSurfacePolish.isEnabled();
     }
+
+    @Override
+    public void openInvitationModal(String invitationId) {
+        assert false;
+    }
 }

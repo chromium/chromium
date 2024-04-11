@@ -467,4 +467,15 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
     }
+
+    /**
+     * Open the invitation modal on top of the tab switcher view when an invitation intent is
+     * intercepted.
+     *
+     * @param invitationId The id of the invitation.
+     */
+    public void openInvitationModal(String invitationId) {
+        if (mTabGridDialogCoordinator == null) return;
+        mTabGridDialogCoordinator.hideDialog(true);
+    }
 }

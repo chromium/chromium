@@ -239,7 +239,7 @@ class TabGridDialogViewBinder {
             viewHolder.toolbarView.setColorIconOnClickListener(
                     model.get(COLOR_ICON_CLICK_LISTENER));
         } else if (IS_SHARE_SHEET_VISIBLE == propertyKey) {
-            if (!model.get(IS_SHARE_SHEET_VISIBLE)) {
+            if (!model.get(IS_SHARE_SHEET_VISIBLE) && model.get(IS_DIALOG_VISIBLE)) {
                 // Fit the scrim to the TabGridDialog again after the bottom sheet visibility
                 // changes.
                 viewHolder.dialogView.refreshScrim();

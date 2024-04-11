@@ -517,4 +517,16 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         mHandler.removeCallbacks(mHardCleanupRunnable);
         mHandler.removeCallbacks(mDestroyCoordinatorRunnable);
     }
+
+    /**
+     * Open the invitation modal on top of the tab switcher view when an invitation intent is
+     * intercepted.
+     *
+     * @param invitationId The id of the invitation.
+     */
+    public void openInvitationModal(String invitationId) {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.openInvitationModal(invitationId);
+    }
 }

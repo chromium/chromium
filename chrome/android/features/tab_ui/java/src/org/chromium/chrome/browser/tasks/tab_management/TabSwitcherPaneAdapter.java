@@ -84,4 +84,9 @@ public class TabSwitcherPaneAdapter implements TabSwitcher {
     public void refreshTabList() {
         mTabSwitcherPane.showAllTabs();
     }
+
+    @Override
+    public void openInvitationModal(String invitationId) {
+        mTabSwitcherPane.openInvitationModal(invitationId);
+    }
 }

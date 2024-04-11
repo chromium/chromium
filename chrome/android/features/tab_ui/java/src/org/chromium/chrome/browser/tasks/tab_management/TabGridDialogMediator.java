@@ -385,6 +385,11 @@ public class TabGridDialogMediator
     void hideDialog(boolean showAnimation) {
         if (!mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE)) return;
 
+        if (mModel.get(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE)) {
+            // TODO(b/333776074): Close the ShareSheet without causing a crash at accessibility
+            // important restoration.
+        }
+
         if (mSnackbarManager != null) {
             mSnackbarManager.dismissSnackbars(TabGridDialogMediator.this);
         }

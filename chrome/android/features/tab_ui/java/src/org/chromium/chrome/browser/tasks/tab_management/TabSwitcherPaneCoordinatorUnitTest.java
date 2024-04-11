@@ -202,6 +202,24 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mIsVisibleSupplier.set(true);
     }
 
+    DialogController showTabGridDialogWithTabs() {
+        ViewStub dialogStub = new ViewStub(mActivity);
+        mCoordinatorView.addView(dialogStub);
+        dialogStub.setId(R.id.tab_grid_dialog_stub);
+
+        DialogController controller = mCoordinator.getTabGridDialogControllerForTesting();
+        MockTab tab = MockTab.createAndInitialize(/* id= */ 1, mProfile);
+        tab.setIsInitialized(true);
+        int index = 0;
+        mTabModel.addTab(
+                tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        when(mTabModelFilter.indexOf(tab)).thenReturn(index);
+        when(mTabModelFilter.getTabAt(index)).thenReturn(tab);
+        controller.resetWithListOfTabs(Collections.singletonList(tab));
+
+        return controller;
+    }
+
     @After
     public void tearDown() {
         mCoordinator.destroy();
@@ -260,24 +278,13 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testTabGridDialogVisibilitySupplier() {
-        ViewStub dialogStub = new ViewStub(mActivity);
-        mCoordinatorView.addView(dialogStub);
-        dialogStub.setId(R.id.tab_grid_dialog_stub);
 
         Supplier<Boolean> tabGridDialogVisibilitySupplier =
                 mCoordinator.getTabGridDialogVisibilitySupplier();
 
         assertFalse(tabGridDialogVisibilitySupplier.get());
 
-        DialogController controller = mCoordinator.getTabGridDialogControllerForTesting();
-        MockTab tab = MockTab.createAndInitialize(/* id= */ 1, mProfile);
-        tab.setIsInitialized(true);
-        int index = 0;
-        mTabModel.addTab(
-                tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        when(mTabModelFilter.indexOf(tab)).thenReturn(index);
-        when(mTabModelFilter.getTabAt(index)).thenReturn(tab);
-        controller.resetWithListOfTabs(Collections.singletonList(tab));
+        DialogController controller = showTabGridDialogWithTabs();
         assertTrue(tabGridDialogVisibilitySupplier.get());
 
         controller.hideDialog(false);
@@ -360,5 +367,20 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         assertEquals(0, recyclerView.getAdapter().getItemCount());
         // Don't assert on the actual child count, robolectric isn't removing the child view for
         // some reason.
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.DATA_SHARING_ANDROID
+    })
+    public void testOpenInvitationModal() {
+        DialogController controller = showTabGridDialogWithTabs();
+
+        assertTrue(controller.isVisible());
+
+        mCoordinator.openInvitationModal("");
+        assertFalse(controller.isVisible());
     }
 }

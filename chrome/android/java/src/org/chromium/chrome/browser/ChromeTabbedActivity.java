@@ -4033,12 +4033,19 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 IntentUtils.safeGetBooleanExtra(
                                 intent, DataSharingNotificationManager.DATA_SHARING_EXTRA, false)
                         && IntentHandler.wasIntentSenderChrome(intent);
-        if (shouldShowTabSwitcher && !isInOverviewMode()) {
+        if (shouldShowTabSwitcher) {
             // TODO(haileywang): Close the tab grid dialog when showing tab switcher from this path.
             TabModelUtils.runOnTabStateInitialized(
                     getTabModelSelectorSupplier().get(),
                     (tabModelSelectorReturn) -> {
-                        showOverview(StartSurfaceState.SHOWING_TABSWITCHER);
+                        if (!isInOverviewMode()) {
+                            showOverview(StartSurfaceState.SHOWING_TABSWITCHER);
+                        }
+                        if (mTabSwitcherSupplier.hasValue()) {
+                            // TODO(b/332961197): Add the actual invitation id obtained from url
+                            // intent.
+                            mTabSwitcherSupplier.get().openInvitationModal("");
+                        }
                     });
         }
     }

@@ -618,4 +618,9 @@ public class TabSwitcherCoordinator
     private TabSwitcherMessageManager getMessageManager() {
         return mMessageManager;
     }
+
+    @Override
+    public void openInvitationModal(String invitationId) {
+        return;
+    }
 }
