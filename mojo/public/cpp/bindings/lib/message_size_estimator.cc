@@ -14,24 +14,24 @@ MessageSizeEstimator::MessageSizeEstimator() = default;
 MessageSizeEstimator::~MessageSizeEstimator() = default;
 
 void MessageSizeEstimator::EnablePredictiveAllocation(uint32_t message_name) {
-  if (message_name >= samples_.size()) {
-    samples_.resize(message_name + 1);
-  }
-  samples_[message_name].emplace(kSampleSize);
-  samples_[message_name]->AddSample(0);
+  auto [it, _] = samples_.insert(
+      {message_name, std::make_unique<SlidingWindow>(kSampleSize)});
+  it->second->AddSample(0);
 }
 
 size_t MessageSizeEstimator::EstimatePayloadSize(uint32_t message_name) const {
-  if (message_name < samples_.size() && samples_[message_name]) {
-    return samples_[message_name]->Max();
+  auto it = samples_.find(message_name);
+  if (it != samples_.end()) {
+    return it->second->Max();
   }
   return 0;
 }
 
 void MessageSizeEstimator::TrackPayloadSize(uint32_t message_name,
                                             size_t size) {
-  if (message_name < samples_.size() && samples_[message_name]) {
-    samples_[message_name]->AddSample(size);
+  auto it = samples_.find(message_name);
+  if (it != samples_.end()) {
+    it->second->AddSample(size);
   }
 }
 

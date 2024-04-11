@@ -8,10 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <optional>
-#include <vector>
-
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/moving_window.h"
 
 namespace mojo::internal {
@@ -40,7 +38,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageSizeEstimator {
  private:
   using SlidingWindow = base::MovingMax<size_t>;
 
-  std::vector<std::optional<SlidingWindow>> samples_;
+  base::flat_map<uint32_t, std::unique_ptr<SlidingWindow>> samples_;
 };
 
 }  // namespace mojo::internal
