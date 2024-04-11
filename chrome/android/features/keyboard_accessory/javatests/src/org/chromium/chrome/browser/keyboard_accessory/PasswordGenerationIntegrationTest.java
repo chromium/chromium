@@ -44,12 +44,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
-import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
-import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBackend;
-import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBackendFactoryImpl;
 import org.chromium.chrome.browser.password_manager.FakePasswordSyncControllerDelegateFactoryImpl;
-import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
-import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.password_manager.PasswordSyncControllerDelegateFactory;
@@ -62,7 +58,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.messages.MessagesTestHelper;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -120,21 +115,7 @@ public class PasswordGenerationIntegrationTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        FakePasswordManagerBackendSupportHelper fakePasswordManagerBackend =
-                new FakePasswordManagerBackendSupportHelper();
-        fakePasswordManagerBackend.setBackendPresent(true);
-        PasswordManagerBackendSupportHelper.setInstanceForTesting(fakePasswordManagerBackend);
-        PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
-                new FakePasswordStoreAndroidBackendFactoryImpl());
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ((FakePasswordStoreAndroidBackend)
-                                    PasswordStoreAndroidBackendFactory.getInstance()
-                                            .createBackend())
-                            .setSyncingAccount(
-                                    AccountUtils.createAccountFromName(
-                                            SigninTestRule.TEST_ACCOUNT_EMAIL));
-                });
+        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
         PasswordSyncControllerDelegateFactory.setFactoryInstanceForTesting(
                 new FakePasswordSyncControllerDelegateFactoryImpl());
 

@@ -23,10 +23,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
-import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBackendFactoryImpl;
-import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
-import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -204,12 +201,7 @@ public class BrowsingDataTest {
     public void testLocalAndAccountPasswordsDeleted() throws Exception {
         // Set up a syncing user with one password in each store.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
-                new FakePasswordStoreAndroidBackendFactoryImpl());
-        FakePasswordManagerBackendSupportHelper fakePasswordManagerBackend =
-                new FakePasswordManagerBackendSupportHelper();
-        fakePasswordManagerBackend.setBackendPresent(true);
-        PasswordManagerBackendSupportHelper.setInstanceForTesting(fakePasswordManagerBackend);
+        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
         PasswordStoreBridge bridge =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> new PasswordStoreBridge());
         TestThreadUtils.runOnUiThreadBlocking(

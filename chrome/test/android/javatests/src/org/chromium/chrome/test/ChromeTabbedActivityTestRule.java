@@ -25,6 +25,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -106,12 +107,15 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
     }
 
     /**
-     * Starts the Main activity using the passed intent, and using the specified URL.
-     * This method waits for DEFERRED_STARTUP to fire as well as a subsequent
-     * idle-sync of the main looper thread, and the initial tab must either
-     * complete its load or it must crash before this method will return.
+     * Starts the Main activity using the passed intent, and using the specified URL. This method
+     * waits for DEFERRED_STARTUP to fire as well as a subsequent idle-sync of the main looper
+     * thread, and the initial tab must either complete its load or it must crash before this method
+     * will return.
      */
     public void startMainActivityFromIntent(Intent intent, String url) {
+        // Sets up password store. This fakes the Google Play Services password store for
+        // integration tests.
+        PasswordManagerTestHelper.setUpGmsCoreFakeBackends();
         prepareUrlIntent(intent, url);
         startActivityCompletely(intent);
         if (!getActivity().isInOverviewMode()) {

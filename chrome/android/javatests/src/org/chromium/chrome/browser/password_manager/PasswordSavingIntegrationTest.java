@@ -37,7 +37,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.messages.MessagesTestHelper;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -83,25 +82,8 @@ public class PasswordSavingIntegrationTest {
 
     @Before
     public void setup() throws Exception {
-        FakePasswordManagerBackendSupportHelper fakePasswordManagerBackend =
-                new FakePasswordManagerBackendSupportHelper();
-        fakePasswordManagerBackend.setBackendPresent(true);
-        PasswordManagerBackendSupportHelper.setInstanceForTesting(fakePasswordManagerBackend);
-        PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
-                new FakePasswordStoreAndroidBackendFactoryImpl());
-        runOnUiThreadBlocking(
-                () -> {
-                    ((FakePasswordStoreAndroidBackend)
-                                    PasswordStoreAndroidBackendFactory.getInstance()
-                                            .createBackend())
-                            .setSyncingAccount(
-                                    AccountUtils.createAccountFromName(
-                                            SigninTestRule.TEST_ACCOUNT_EMAIL));
-                });
-        PasswordSyncControllerDelegateFactory.setFactoryInstanceForTesting(
-                new FakePasswordSyncControllerDelegateFactoryImpl());
-
         mActivityTestRule.startMainActivityOnBlankPage();
+        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
         PasswordManagerTestUtilsBridge.disableServerPredictions();
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
