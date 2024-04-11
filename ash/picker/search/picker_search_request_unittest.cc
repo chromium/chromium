@@ -907,6 +907,26 @@ TEST_F(PickerSearchRequestTest, RecordsDateMetricsOnlyOnce) {
   histogram.ExpectTotalCount("Ash.Picker.Search.DateProvider.QueryTime", 1);
 }
 
+TEST_F(PickerSearchRequestTest, PublishesDateResultsWhenDateCategorySelected) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kDate, _, /*has_more_results=*/_))
+      .Times(1);
+  // Fast forward the clock to a Sunday (day_of_week = 0).
+  base::Time::Exploded exploded;
+  task_environment().GetMockClock()->Now().LocalExplode(&exploded);
+  task_environment().AdvanceClock(base::Days(7 - exploded.day_of_week));
+  task_environment().GetMockClock()->Now().LocalExplode(&exploded);
+  ASSERT_EQ(0, exploded.day_of_week);
+
+  PickerSearchRequest request(
+      u"next Friday", PickerCategory::kDatesTimes,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+}
+
 TEST_F(PickerSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
   EXPECT_CALL(client(),
               StartCrosSearch(Eq(u"ant"), Eq(PickerCategory::kLinks), _))

@@ -81,6 +81,12 @@ PickerSearchRequest::PickerSearchRequest(
         query);
   }
 
+  if (!category.has_value() || category == PickerCategory::kDatesTimes) {
+    date_search_start_ = base::TimeTicks::Now();
+    // Date results is currently synchronous.
+    HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
+  }
+
   // These searches do not have category-specific search.
   if (!category.has_value()) {
     gif_search_debouncer_.RequestSearch(
@@ -90,10 +96,6 @@ PickerSearchRequest::PickerSearchRequest(
     emoji_search_start_ = base::TimeTicks::Now();
     // Emoji search is currently synchronous.
     HandleEmojiSearchResults(emoji_search_->SearchEmoji(utf8_query));
-
-    date_search_start_ = base::TimeTicks::Now();
-    // Date results is currently synchronous.
-    HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
 
     // Math results is currently synchronous.
     HandleMathSearchResults(PickerMathSearch(query));
