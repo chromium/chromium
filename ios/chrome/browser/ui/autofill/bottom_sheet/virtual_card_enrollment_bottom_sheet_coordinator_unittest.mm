@@ -13,14 +13,19 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/virtual_card_enrollment_callbacks.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 // Tests the SetUpListView and subviews.
 class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
@@ -69,10 +74,16 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
 
     model_.enrollment_fields.virtual_card_enrollment_source =
         autofill::VirtualCardEnrollmentSource::kDownstream;
+
+    application_commands_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:application_commands_
+                     forProtocol:@protocol(ApplicationCommands)];
+
     coordinator_ = [[VirtualCardEnrollmentBottomSheetCoordinator alloc]
-           initWithUIModel:model_
-        baseViewController:window_.rootViewController
-                   browser:browser_.get()];
+             initWithUIModel:model_
+          baseViewController:window_.rootViewController
+                     browser:browser_.get()];
   }
 
  protected:
@@ -86,6 +97,7 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
+  id<ApplicationCommands> application_commands_;
   UIWindow* window_;
   VirtualCardEnrollmentBottomSheetCoordinator* coordinator_;
   autofill::VirtualCardEnrollUiModel model_;
@@ -144,6 +156,22 @@ TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, LogsCancelledMetric) {
       autofill::VirtualCardEnrollmentBubbleResult::
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED,
       /*expected_count=*/1);
+
+  [coordinator_ stop];
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, OpensNewTabForLinks) {
+  [coordinator_ start];
+  CrURL* url = [[CrURL alloc]
+      initWithNSURL:[NSURL URLWithString:@"https://example.test"]];
+
+  OCMExpect([application_commands_
+      openURLInNewTab:[OCMArg checkWithBlock:^(OpenNewTabCommand* command) {
+        return command.URL == url.gurl;
+      }]]);
+
+  [coordinator_ didTapLinkURL:url text:nil];
 
   [coordinator_ stop];
   task_environment_.RunUntilIdle();

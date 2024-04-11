@@ -3,18 +3,20 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
+
 #import "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_link_coordinator.h"
-#import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_link_coordinator_delegate.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_view_controller.h"
 
 @interface VirtualCardEnrollmentBottomSheetCoordinator () <
-    VirtualCardEnrollmentBottomSheetDelegate,
-    BottomSheetLinkCoordinatorDelegate>
+    VirtualCardEnrollmentBottomSheetDelegate>
 
 @property(nonatomic, strong) VirtualCardEnrollmentBottomSheetMediator* mediator;
 @property(nonatomic, strong)
@@ -33,7 +35,10 @@
   std::optional<autofill::VirtualCardEnrollmentCallbacks> callbacks_;
   Browser* browser_;
   ChromeBrowserState* browser_state_;
-  BottomSheetLinkCoordinator* bottom_sheet_link_coordinator_;
+
+  // Opening links on the enrollment bottom sheet is delegated to this
+  // dispatcher.
+  __weak id<ApplicationCommands> dispatcher_;
 }
 
 @synthesize mediator;
@@ -52,6 +57,8 @@
             ->GetVirtualCardEnrollmentCallbacks();
     self->browser_ = browser;
     self->browser_state_ = self.browser->GetBrowserState();
+    self->dispatcher_ = HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                                           ApplicationCommands);
   }
   return self;
 }
@@ -109,22 +116,15 @@
 }
 
 - (void)didTapLinkURL:(CrURL*)url text:(NSString*)text {
-  bottom_sheet_link_coordinator_ = [[BottomSheetLinkCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                             url:url
-                           title:text];
-  bottom_sheet_link_coordinator_.delegate = self;
-  [bottom_sheet_link_coordinator_ start];
+  [dispatcher_
+      openURLInNewTab:[OpenNewTabCommand
+                          commandWithURLFromChrome:url.gurl
+                                       inIncognito:self.browser
+                                                       ->GetBrowserState()
+                                                       ->IsOffTheRecord()]];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-}
-
-#pragma mark - BottomSheetLinkCoordinatorDelegate
-
-- (void)dismissBottomSheetLinkCoordinator {
-  [bottom_sheet_link_coordinator_ stop];
 }
 
 #pragma mark - Private

@@ -130,7 +130,6 @@ source_set("virtual_card_enrollment_bottom_sheet_coordinator") {
     "virtual_card_enrollment_bottom_sheet_coordinator.mm",
   ]
   deps = [
-    ":bottom_sheet_link_coordinator",
     ":virtual_card_enrollment_bottom_sheet_consumer",
     ":virtual_card_enrollment_bottom_sheet_delegate",
     ":virtual_card_enrollment_bottom_sheet_mediator",
@@ -138,10 +137,12 @@ source_set("virtual_card_enrollment_bottom_sheet_coordinator") {
     "//components/autofill/core/browser",
     "//ios/chrome/browser/autofill/model/bottom_sheet:bottom_sheet",
     "//ios/chrome/browser/autofill/model/bottom_sheet:virtual_card_enrollment_callbacks",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator:chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state:browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public:public",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -158,13 +159,16 @@ source_set("virtual_card_enrollment_bottom_sheet_coordinator_unittest") {
     "//components/autofill/core/browser:browser",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/bottom_sheet:virtual_card_enrollment_callbacks",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test:test_support",
     "//ios/web/public",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 
