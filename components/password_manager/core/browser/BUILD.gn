@@ -81,6 +81,7 @@ static_library("browser") {
     "password_check_referrer_android.h",
     "password_counter.cc",
     "password_counter.h",
+    "password_cross_domain_confirmation_popup_controller.h",
     "password_feature_manager.h",
     "password_feature_manager_impl.cc",
     "password_feature_manager_impl.h",

@@ -29,6 +29,14 @@
 #include "components/sync/service/sync_service.h"
 #include "net/cert/cert_status_flags.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "base/i18n/rtl.h"
+#include "components/password_manager/core/browser/password_cross_domain_confirmation_popup_controller.h"
+#include "ui/gfx/geometry/rect_f.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 class PrefService;
 
 namespace affiliations {
@@ -494,6 +502,18 @@ class PasswordManagerClient {
 
   // Refreshes password manager settings stored in prefs.
   virtual void RefreshPasswordManagerSettingsIfNeeded() const;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+  // Creates and show the cross domain confirmation popup.
+  virtual std::unique_ptr<PasswordCrossDomainConfirmationPopupController>
+  ShowCrossDomainConfirmationPopup(const gfx::RectF& element_bounds,
+                                   base::i18n::TextDirection text_direction,
+                                   const GURL& domain,
+                                   const std::u16string& password_origin,
+                                   base::OnceClosure confirmation_callback) = 0;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace password_manager

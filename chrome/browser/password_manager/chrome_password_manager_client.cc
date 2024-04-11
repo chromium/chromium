@@ -41,6 +41,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
@@ -1083,6 +1084,32 @@ void ChromePasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded()
       ->RequestSettingsFromBackend();
 #endif
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+std::unique_ptr<
+    password_manager::PasswordCrossDomainConfirmationPopupController>
+ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(
+    const gfx::RectF& element_bounds,
+    base::i18n::TextDirection text_direction,
+    const GURL& domain,
+    const std::u16string& password_origin,
+    base::OnceClosure confirmation_callback) {
+  gfx::Rect client_area = web_contents()->GetContainerBounds();
+  gfx::RectF element_bounds_in_screen_space =
+      element_bounds + client_area.OffsetFromOrigin();
+  auto controller =
+      cross_domain_confirmation_popup_factory_for_testing_
+          ? cross_domain_confirmation_popup_factory_for_testing_.Run()
+          : std::make_unique<
+                PasswordCrossDomainConfirmationPopupControllerImpl>(
+                web_contents());
+
+  controller->Show(element_bounds_in_screen_space, text_direction, domain,
+                   password_origin, std::move(confirmation_callback));
+
+  return controller;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ChromePasswordManagerClient::AutomaticGenerationAvailable(
     const autofill::password_generation::PasswordGenerationUIData& ui_data) {

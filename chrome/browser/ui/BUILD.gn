@@ -745,6 +745,13 @@ static_library("ui") {
     deps += [ "//chrome/browser/vr:vr_base" ]
   }
 
+  if (is_win || is_linux || is_mac || is_chromeos) {
+    sources += [
+      "passwords/password_cross_domain_confirmation_popup_controller_impl.cc",
+      "passwords/password_cross_domain_confirmation_popup_controller_impl.h",
+    ]
+  }
+
   if (is_win || is_android || is_linux || is_chromeos) {
     sources += [
       "webui/sandbox/sandbox_internals_ui.cc",
@@ -754,8 +761,6 @@ static_library("ui") {
 
   if (is_win || is_linux || is_mac || is_chromeos_ash) {
     sources += [
-      "passwords/password_cross_domain_confirmation_popup_controller.cc",
-      "passwords/password_cross_domain_confirmation_popup_controller.h",
       "passwords/password_cross_domain_confirmation_popup_view.h",
       "webui/connectors_internals/connectors_internals_page_handler.cc",
       "webui/connectors_internals/connectors_internals_page_handler.h",
