@@ -15,9 +15,9 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {clearBody} from './utils.js';
+import {clearBody} from '../utils.js';
 
-suite('ApnSubpageTest', () => {
+suite('<apn-subpage>', () => {
   let apnSubpage: ApnSubpageElement;
   let mojoApi_: FakeNetworkConfig;
 

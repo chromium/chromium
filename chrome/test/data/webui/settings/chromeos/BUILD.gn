@@ -19,9 +19,6 @@ mojom("test_api_mojom") {
 
 build_webui_tests("build") {
   files = [
-    "apn_detail_dialog_test.ts",
-    "apn_subpage_test.ts",
-    "cellular_roaming_toggle_button_test.ts",
     "fake_canvas_context.ts",
     "fake_input_method_private.ts",
     "fake_language_settings_private.ts",
@@ -123,7 +120,10 @@ build_webui_tests("build") {
     "guest_os/guest_os_shared_usb_devices_test.ts",
     "guest_os/test_guest_os_browser_proxy.ts",
 
+    "internet_page/apn_detail_dialog_test.ts",
+    "internet_page/apn_subpage_test.ts",
     "internet_page/cellular_networks_list_test.ts",
+    "internet_page/cellular_roaming_toggle_button_test.ts",
     "internet_page/cellular_setup_dialog_test.ts",
     "internet_page/esim_install_error_dialog_test.ts",
     "internet_page/esim_remove_profile_dialog_test.ts",

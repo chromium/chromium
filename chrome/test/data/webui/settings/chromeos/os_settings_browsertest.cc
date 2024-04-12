@@ -171,14 +171,6 @@ class OSSettingsMochaTestAppParentalControlsEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevampEnabled, ApnSubpage) {
-  RunSettingsTest("apn_subpage_test.js");
-}
-
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, ApnDetailDialog) {
-  RunSettingsTest("apn_detail_dialog_test.js");
-}
-
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppLanguageSelectionDialog) {
   RunSettingsTest(
       "common/app_language_selection_dialog/"
@@ -202,10 +194,6 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppManagementManagedApps) {
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppManagementToggleRow) {
   RunSettingsTest("app_management/toggle_row_test.js");
-}
-
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, CellularRoamingToggleButton) {
-  RunSettingsTest("cellular_roaming_toggle_button_test.js");
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, ControlledButton) {
@@ -707,8 +695,13 @@ IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralAndSplitEnabled,
   RunSettingsTest("device_page/stylus_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, EsimRemoveProfileDialog) {
-  RunSettingsTest("internet_page/esim_remove_profile_dialog_test.js");
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevampEnabled,
+                       InternetPageApnSubpage) {
+  RunSettingsTest("internet_page/apn_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, InternetPageApnDetailDialog) {
+  RunSettingsTest("internet_page/apn_detail_dialog_test.js");
 }
 
 class OSSettingsMochaTestApnAndHotspotAndPasspointEnabled
@@ -739,8 +732,18 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
   RunSettingsTest("internet_page/cellular_networks_list_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       InternetPageCellularRoamingToggleButton) {
+  RunSettingsTest("internet_page/cellular_roaming_toggle_button_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageCellularSetupDialog) {
   RunSettingsTest("internet_page/cellular_setup_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       InternetPageEsimRemoveProfileDialog) {
+  RunSettingsTest("internet_page/esim_remove_profile_dialog_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, GuestOsSharedPaths) {

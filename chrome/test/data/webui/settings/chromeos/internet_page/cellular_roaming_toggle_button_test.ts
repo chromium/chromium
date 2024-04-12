@@ -16,7 +16,7 @@ import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_confi
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-suite('CellularRoamingToggleButton', () => {
+suite('<cellular-roaming-toggle-button>', () => {
   let cellularRoamingToggleButton: CellularRoamingToggleButtonElement;
   let mojoApi_: FakeNetworkConfig;
 
