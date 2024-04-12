@@ -43,6 +43,20 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Showing double foreign tiles"/>
 </enum>
 
+<enum name="ModulePosition">
+  <int value="0" label="1st module"/>
+  <int value="1" label="2nd module"/>
+  <int value="2" label="3rd module"/>
+  <int value="3" label="4th module"/>
+  <int value="4" label="5th module"/>
+</enum>
+
+<enum name="ModuleType">
+  <int value="0" label="Sinlge tab module"/>
+  <int value="1" label="Price change module"/>
+  <int value="2" label="Tab resumption module"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

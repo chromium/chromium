@@ -27209,11 +27209,6 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="ResponseReceived"/>
 </enum>
 
-<enum name="ModuleType">
-  <int value="0" label="Sinlge tab module"/>
-  <int value="1" label="Price change module"/>
-</enum>
-
 <enum name="ModuleTypeOnStartAndNTP">
   <int value="0" label="Most visited tiles"/>
   <int value="1" label="Omnibox"/>

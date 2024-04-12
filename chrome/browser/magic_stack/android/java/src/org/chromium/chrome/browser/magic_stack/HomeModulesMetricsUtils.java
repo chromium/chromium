@@ -21,9 +21,13 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 public class HomeModulesMetricsUtils {
     @VisibleForTesting static final String HISTOGRAM_OS_PREFIX = "MagicStack.Clank.";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK = ".Module.Click";
+    @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE = ".Module.";
 
     @VisibleForTesting
-    static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK_WITH_POSITION = ".Module.Click.";
+    static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK_WITH_POSITION = ".Click";
+
+    @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_BUILD = ".Build";
+    static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION = ".Impression";
 
     @VisibleForTesting
     static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION = ".Module.TopImpressionV2";
@@ -76,8 +80,6 @@ public class HomeModulesMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE = "Settings.TurnOffModule";
 
-    @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_BUILD = ".Module.Build.";
-
     private static final String HOME_MODULES_SHOW_ALL_MODULES_PARAM = "show_all_modules";
     public static final BooleanCachedFieldTrialParameter HOME_MODULES_SHOW_ALL_MODULES =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -127,9 +129,16 @@ public class HomeModulesMetricsUtils {
      *
      * @param hostSurface The type of the host surface of the magic stack.
      * @param moduleType The type of module.
+     * @param modulePosition The position of the module on the recyclerview.
      */
-    public static void recordModuleShown(@HostSurface int hostSurface, @ModuleType int moduleType) {
+    public static void recordModuleShown(
+            @HostSurface int hostSurface, @ModuleType int moduleType, int modulePosition) {
         recordUma(hostSurface, moduleType, HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION);
+        recordUmaWithPosition(
+                hostSurface,
+                HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION,
+                moduleType,
+                modulePosition);
     }
 
     /**
@@ -296,7 +305,7 @@ public class HomeModulesMetricsUtils {
     public static void recordModuleClicked(
             @HostSurface int hostSurface, @ModuleType int moduleType, int modulePosition) {
         recordUma(hostSurface, moduleType, HISTOGRAM_MAGIC_STACK_MODULE_CLICK);
-        recordUma(
+        recordUmaWithPosition(
                 hostSurface,
                 HISTOGRAM_MAGIC_STACK_MODULE_CLICK_WITH_POSITION,
                 moduleType,
@@ -313,7 +322,8 @@ public class HomeModulesMetricsUtils {
      */
     public static void recordModuleBuiltPosition(
             @HostSurface int hostSurface, @ModuleType int moduleType, int modulePosition) {
-        recordUma(hostSurface, HISTOGRAM_MAGIC_STACK_MODULE_BUILD, moduleType, modulePosition);
+        recordUmaWithPosition(
+                hostSurface, HISTOGRAM_MAGIC_STACK_MODULE_BUILD, moduleType, modulePosition);
     }
 
     /**
@@ -333,7 +343,7 @@ public class HomeModulesMetricsUtils {
                 HISTOGRAM_OS_PREFIX + umaName, moduleType, ModuleType.NUM_ENTRIES);
     }
 
-    private static void recordUma(
+    private static void recordUmaWithPosition(
             @HostSurface int hostSurface,
             String umaName,
             @ModuleType int moduleType,
@@ -342,12 +352,12 @@ public class HomeModulesMetricsUtils {
         StringBuilder builder = new StringBuilder();
         builder.append(HISTOGRAM_OS_PREFIX);
         builder.append(BrowserUiUtils.getHostName(hostSurface));
-        builder.append(umaName);
+        builder.append(HISTOGRAM_MAGIC_STACK_MODULE);
         builder.append(getModuleName(moduleType));
-        builder.append(".");
-        builder.append(modulePosition);
+        builder.append(umaName);
         String name = builder.toString();
-        RecordHistogram.recordCount1MHistogram(name, 1);
+        RecordHistogram.recordEnumeratedHistogram(
+                name, modulePosition, HomeModulesCoordinator.MAXIMUM_MODULE_SIZE);
     }
 
     private static void recordUma(

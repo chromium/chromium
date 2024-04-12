@@ -24,10 +24,17 @@ public class HomeModulesMetricsUtilsUnitTest {
     public void testRecordModuleShown() {
         @HostSurface int hostSurface = HostSurface.START_SURFACE;
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
+        int modulePosition = 2;
         String histogramName = "MagicStack.Clank.StartSurface.Module.TopImpressionV2";
+        String histogramNameWithPosition =
+                "MagicStack.Clank.StartSurface.Module.SingleTab.Impression";
 
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, moduleType);
-        HomeModulesMetricsUtils.recordModuleShown(hostSurface, moduleType);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(histogramName, moduleType)
+                        .expectIntRecord(histogramNameWithPosition, modulePosition)
+                        .build();
+        HomeModulesMetricsUtils.recordModuleShown(hostSurface, moduleType, modulePosition);
         histogramWatcher.assertExpected();
     }
 
@@ -174,12 +181,12 @@ public class HomeModulesMetricsUtilsUnitTest {
         int modulePosition = 2;
 
         String histogramName = "MagicStack.Clank.StartSurface.Module.Click";
-        String histogramNameWithPosition = "MagicStack.Clank.StartSurface.Module.Click.SingleTab.2";
+        String histogramNameWithPosition = "MagicStack.Clank.StartSurface.Module.SingleTab.Click";
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(histogramName, moduleType)
-                        .expectIntRecords(histogramNameWithPosition, 1)
+                        .expectIntRecords(histogramNameWithPosition, modulePosition)
                         .build();
         HomeModulesMetricsUtils.recordModuleClicked(hostSurface, moduleType, modulePosition);
         histogramWatcher.assertExpected();
@@ -222,11 +229,12 @@ public class HomeModulesMetricsUtilsUnitTest {
     public void testRecordModuleBuiltPosition() {
         @HostSurface int hostSurface = HostSurface.START_SURFACE;
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
-        int modulePosition = 0;
+        int modulePosition = 2;
 
-        String histogramName = "MagicStack.Clank.StartSurface.Module.Build.SingleTab.0";
+        String histogramName = "MagicStack.Clank.StartSurface.Module.SingleTab.Build";
 
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, 1);
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, modulePosition);
         HomeModulesMetricsUtils.recordModuleBuiltPosition(hostSurface, moduleType, modulePosition);
         histogramWatcher.assertExpected();
     }

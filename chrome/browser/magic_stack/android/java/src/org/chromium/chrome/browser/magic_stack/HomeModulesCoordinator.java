@@ -43,6 +43,7 @@ import java.util.Set;
 
 /** Root coordinator which is responsible for showing modules on home surfaces. */
 public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCallback {
+    public static int MAXIMUM_MODULE_SIZE = 5;
     private final ModuleDelegateHost mModuleDelegateHost;
     private HomeModulesMediator mMediator;
     private final HomeModulesRecyclerView mRecyclerView;
@@ -393,7 +394,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                     mHomeModulesContextMenuManager.createContextMenu(
                             contextMenu, view, moduleProvider);
                 });
-        HomeModulesMetricsUtils.recordModuleShown(getHostSurfaceType(), moduleType);
+        int position = mMediator.findModuleIndexInRecyclerView(moduleType, mAdapter.getItemCount());
+        HomeModulesMetricsUtils.recordModuleShown(getHostSurfaceType(), moduleType, position);
     }
 
     /**
