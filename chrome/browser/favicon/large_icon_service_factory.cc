@@ -20,7 +20,7 @@
 #include "ui/gfx/favicon_size.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #endif
 
 namespace {

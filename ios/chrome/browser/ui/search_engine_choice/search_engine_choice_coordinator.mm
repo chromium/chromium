@@ -6,7 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/time/time.h"
-#import "components/search_engines/search_engine_choice_utils.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"

@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
 
 #include "base/functional/callback_forward.h"
-#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 
 SearchEngineChoiceHandler::SearchEngineChoiceHandler(
     mojo::PendingReceiver<search_engine_choice::mojom::PageHandler> receiver,

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 
 #import "base/strings/utf_string_conversions.h"
-#import "components/search_engines/search_engine_choice_utils.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/template_url.h"
 #import "ui/base/resource/resource_bundle.h"
 

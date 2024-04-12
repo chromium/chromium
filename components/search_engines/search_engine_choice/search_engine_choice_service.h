@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/country_codes/country_codes.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 
 namespace policy {
 class PolicyService;

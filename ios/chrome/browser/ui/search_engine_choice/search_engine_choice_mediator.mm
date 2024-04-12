@@ -12,7 +12,7 @@
 #import "components/search_engines/choice_made_location.h"
 #import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#import "components/search_engines/search_engine_choice_utils.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_observer.h"
