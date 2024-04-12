@@ -103,6 +103,7 @@ void GlanceablesKeyedService::Shutdown() {
   }
   classroom_client_.reset();
   tasks_client_.reset();
+  identity_manager_ = nullptr;
 }
 
 std::unique_ptr<google_apis::RequestSender>
