@@ -97,7 +97,8 @@ void BirchWeatherProvider::FetchWeather() {
   Shell::Get()
       ->ambient_controller()
       ->ambient_backend_controller()
-      ->FetchWeather(base::BindOnce(&BirchWeatherProvider::OnWeatherInfoFetched,
+      ->FetchWeather("chromeos-system-ui",
+                     base::BindOnce(&BirchWeatherProvider::OnWeatherInfoFetched,
                                     weak_factory_.GetWeakPtr()));
 }
 

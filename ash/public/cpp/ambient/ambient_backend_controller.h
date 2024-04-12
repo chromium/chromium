@@ -146,7 +146,11 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
                                       OnSettingsAndAlbumsFetchedCallback) = 0;
 
   // Fetch the weather information.
-  virtual void FetchWeather(FetchWeatherCallback) = 0;
+  // `weather_client_id` - the weather client ID that should be passed to the
+  // weather request, use nullopt to use the default weather client ID (used
+  // for ambient mode).
+  virtual void FetchWeather(std::optional<std::string> weather_client_id,
+                            FetchWeatherCallback callback) = 0;
 
   // Get stock photo urls to cache in advance in case Ambient mode is started
   // without internet access.

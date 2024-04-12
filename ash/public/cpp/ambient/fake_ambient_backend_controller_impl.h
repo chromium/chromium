@@ -40,7 +40,8 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
       int banner_height,
       int num_albums,
       OnSettingsAndAlbumsFetchedCallback callback) override;
-  void FetchWeather(FetchWeatherCallback callback) override;
+  void FetchWeather(std::optional<std::string> weather_client_id,
+                    FetchWeatherCallback callback) override;
   const std::array<const char*, 2>& GetBackupPhotoUrls() const override;
   std::array<const char*, 2> GetTimeOfDayVideoPreviewImageUrls(
       AmbientVideo video) const override;
