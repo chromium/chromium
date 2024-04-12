@@ -7762,6 +7762,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.SplitViewOverviewSession.SelectedWindowIndex" units="int"
+    expires_after="2024-10-30">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Records the index of the selected window in partial overview. Starts
+    indexing at 0.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit.{TabletOrClamshell}"
     enum="Boolean" expires_after="2024-10-30">
@@ -7774,6 +7785,17 @@ chromium-metrics-reviews@google.com.
     false otherwise.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.SplitViewOverviewSession.WindowListSize" units="int"
+    expires_after="2024-10-30">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Records the total number of windows in partial overview when a window is
+    selected.
+  </summary>
 </histogram>
 
 <histogram

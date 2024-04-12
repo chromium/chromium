@@ -2852,6 +2852,8 @@ component("ash") {
     "wm/snap_group/snap_group_constants.h",
     "wm/snap_group/snap_group_controller.cc",
     "wm/snap_group/snap_group_controller.h",
+    "wm/snap_group/snap_group_metrics.cc",
+    "wm/snap_group/snap_group_metrics.h",
     "wm/splitview/auto_snap_controller.cc",
     "wm/splitview/auto_snap_controller.h",
     "wm/splitview/faster_split_view.cc",

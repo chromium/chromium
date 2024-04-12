@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/scoped_float_container_stacker.h"
+#include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_types.h"
@@ -478,12 +479,18 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
                  RootWindowController::ForWindow(item_->GetWindow())
                      ->split_view_overview_session();
              split_view_overview_session) {
-    // If `SplitViewOverviewSession` is active, let it handle the autosnap.
+    // If `SplitViewOverviewSession` is active, activate the window;
+    // `AutoSnapController` will handle the autosnap.
+    RecordPartialOverviewMetrics(item_);
     overview_session_->SelectWindow(event_source_item_);
     item_ = nullptr;
     event_source_item_ = nullptr;
   } else if (split_view_controller->CanSnapWindow(
                  item_->GetWindow(), chromeos::kDefaultSnapRatio)) {
+    // Used for overview items that are being dragged to snap. Since the
+    // window is already activated, `AutoSnapController::OnWindowActivating()`
+    // will not work above.
+    RecordPartialOverviewMetrics(item_);
     SnapWindow(split_view_controller,
                split_state == SplitViewController::State::kPrimarySnapped
                    ? SnapPosition::kSecondary

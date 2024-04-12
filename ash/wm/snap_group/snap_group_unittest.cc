@@ -52,6 +52,7 @@
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/splitview/faster_split_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -1919,6 +1920,47 @@ TEST_F(FasterSplitScreenTest, NoCrashWhenDraggingSnappedWindowToEdge) {
 
   VerifySplitViewOverviewSession(window1.get());
   EXPECT_TRUE(WindowState::Get(window1.get())->is_dragged());
+}
+
+TEST_F(FasterSplitScreenTest, RecordWindowIndexAndCount) {
+  // Start partial overview with 1 window in overview.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  // Select `w2` which is the only window.
+  ClickOverviewItem(GetEventGenerator(), w2.get());
+  histogram_tester_.ExpectBucketCount(kPartialOverviewSelectedWindowIndex,
+                                      /*index=*/0,
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(kPartialOverviewWindowListSize,
+                                      /*size=*/1, /*expected_count=*/1);
+  MaximizeToClearTheSession(w2.get());
+
+  // Start partial overview with 2 windows in overview.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  // Select `w2` which is the 2nd mru window.
+  ClickOverviewItem(GetEventGenerator(), w2.get());
+  histogram_tester_.ExpectBucketCount(kPartialOverviewSelectedWindowIndex,
+                                      /*index=*/1,
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(kPartialOverviewWindowListSize,
+                                      /*size=*/2, /*expected_count=*/1);
+  MaximizeToClearTheSession(w2.get());
+
+  // Start partial overview with 3 windows in overview.
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  // Select `w3` which is the 3rd mru window.
+  ClickOverviewItem(GetEventGenerator(), w3.get());
+  histogram_tester_.ExpectBucketCount(kPartialOverviewSelectedWindowIndex,
+                                      /*index=*/2,
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(kPartialOverviewWindowListSize,
+                                      /*size=*/3, /*expected_count=*/1);
 }
 
 // -----------------------------------------------------------------------------
