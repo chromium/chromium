@@ -121,7 +121,11 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
     [self registerForTraitChanges:@[ UITraitVerticalSizeClass.self ]
                        withAction:@selector(updateViews)];
   }
-
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(hideSnapshotsIfNeeded)
+             name:UIKeyboardDidShowNotification
+           object:nil];
   // To force display the keyboard when the view is shown.
   [_tabGroupTextField becomeFirstResponder];
 }
@@ -428,11 +432,16 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   } else {
     [self regularConfiguration];
   }
-
   [self.view layoutIfNeeded];
-  if ([_snapshotsContainer superview] &&
-      _snapshotsContainer.frame.size.height < 40) {
-    [_snapshotsContainer removeFromSuperview];
+  [self hideSnapshotsIfNeeded];
+}
+
+// Hides the snapshots container if it is too small.
+- (void)hideSnapshotsIfNeeded {
+  if (_snapshotsContainer.frame.size.height < 60) {
+    [_snapshotsContainer setHidden:YES];
+  } else {
+    [_snapshotsContainer setHidden:NO];
   }
 }
 
