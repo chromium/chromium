@@ -162,8 +162,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 136
-// Next method id: 138
+// Next version: 137
+// Next method id: 139
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -731,6 +731,11 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=36] BindResourceManager@41(
       pending_receiver<ResourceManager> receiver);
+
+  // Binds the search controller factory for creating search controllers.
+  // Added in M125.
+  [MinVersion=136] BindSearchControllerFactory@138(
+      pending_remote<SearchControllerFactory> remote);
 
   // Binds the search controller which send queries from ash to lacros.
   // Added in M99.

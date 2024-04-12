@@ -5679,6 +5679,8 @@ static_library("browser") {
       "lacros/lacros_prefs.h",
       "lacros/lacros_url_handling.cc",
       "lacros/lacros_url_handling.h",
+      "lacros/launcher_search/search_controller_factory_lacros.cc",
+      "lacros/launcher_search/search_controller_factory_lacros.h",
       "lacros/launcher_search/search_controller_lacros.cc",
       "lacros/launcher_search/search_controller_lacros.h",
       "lacros/metrics_reporting_observer.cc",

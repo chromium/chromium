@@ -34,6 +34,8 @@ using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::Pointee;
 
+// TODO: b/326147929 - Share this code with `crosapi::SearchControllerAsh` unit
+// tests (and possibly `app_list::OmniboxLacrosProvider` unit tests too).
 class TestMojomSearchController : public mojom::SearchController {
  public:
   mojo::PendingRemote<mojom::SearchController> BindToRemote() {

@@ -22,9 +22,13 @@ class BookmarkModel;
 
 namespace crosapi {
 
-// Returns a bitmask of the AutocompleteProvider types to be used by Launcher
-// search.
+// Returns a bitmask of `AutocompleteProvider::Type` for Launcher's
+// `SearchController`.
 int ProviderTypes();
+
+// Returns a bitmask of `AutocompleteProvider::Type` for Picker's
+// `SearchController`.
+int ProviderTypesPicker(bool bookmarks, bool history, bool open_tabs);
 
 // Returns the UI page transition that corresponds to the given crosapi page
 // transition.

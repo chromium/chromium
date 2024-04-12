@@ -52,6 +52,7 @@ class ClipboardHistoryLacros;
 class DebugInterfaceLacros;
 class DeskProfilesLacros;
 class SearchControllerLacros;
+class SearchControllerFactoryLacros;
 class TaskManagerLacros;
 class WebAppProviderBridgeLacros;
 class WebPageInfoProviderLacros;
@@ -115,6 +116,10 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles search queries from ash-chrome.
   std::unique_ptr<crosapi::SearchControllerLacros> search_controller_;
+
+  // Handles creating SearchControllers (above) from ash-chrome.
+  std::unique_ptr<crosapi::SearchControllerFactoryLacros>
+      search_controller_factory_;
 
   // Handles task manager crosapi from ash for sending lacros tasks to ash.
   std::unique_ptr<crosapi::TaskManagerLacros> task_manager_provider_;

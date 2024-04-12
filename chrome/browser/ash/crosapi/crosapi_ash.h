@@ -128,6 +128,7 @@ class RemotingAsh;
 class ResourceManagerAsh;
 class ScreenAIDownloaderAsh;
 class ScreenManagerAsh;
+class SearchControllerFactoryAsh;
 class SearchProviderAsh;
 class SelectFileAsh;
 class SharesheetAsh;
@@ -373,6 +374,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ScreenAIDownloader> receiver) override;
   void BindScreenManager(
       mojo::PendingReceiver<mojom::ScreenManager> receiver) override;
+  void BindSearchControllerFactory(
+      mojo::PendingRemote<mojom::SearchControllerFactory> remote) override;
   void BindSearchControllerRegistry(
       mojo::PendingReceiver<mojom::SearchControllerRegistry> receiver) override;
   void BindSelectFile(
@@ -590,6 +593,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ScreenManagerAsh* screen_manager_ash() { return screen_manager_ash_.get(); }
 
+  SearchControllerFactoryAsh* search_controller_factory_ash() {
+    return search_controller_factory_ash_.get();
+  }
+
   SearchProviderAsh* search_provider_ash() {
     return search_provider_ash_.get();
   }
@@ -745,6 +752,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
+  std::unique_ptr<SearchControllerFactoryAsh> search_controller_factory_ash_;
   std::unique_ptr<SearchProviderAsh> search_provider_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<SharesheetAsh> sharesheet_ash_;

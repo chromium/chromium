@@ -44,6 +44,7 @@
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_file_system_provider.h"
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
+#include "chrome/browser/lacros/launcher_search/search_controller_factory_lacros.h"
 #include "chrome/browser/lacros/launcher_search/search_controller_lacros.h"
 #include "chrome/browser/lacros/multitask_menu_nudge_delegate_lacros.h"
 #include "chrome/browser/lacros/net/network_change_manager_bridge.h"
@@ -225,6 +226,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   search_controller_ = std::make_unique<crosapi::SearchControllerLacros>(
       crosapi::ProviderTypes());
   search_controller_->RegisterWithAsh();
+  search_controller_factory_ =
+      std::make_unique<crosapi::SearchControllerFactoryLacros>();
   task_manager_provider_ = std::make_unique<crosapi::TaskManagerLacros>();
   web_page_info_provider_ =
       std::make_unique<crosapi::WebPageInfoProviderLacros>();

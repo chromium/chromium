@@ -213,6 +213,22 @@ interface SearchControllerRegistry {
       pending_remote<SearchController> search_controller);
 };
 
+// Interface to construct `SearchController` instances. Implemented in lacros.
+//
+// This interface is currently under construction until we can determine a
+// suitable API for all `SearchController` users.
+//
+// Next min method ID: 1
+[Stable, Uuid="cc869735-ba36-434e-9535-b82fea3c256c"]
+interface SearchControllerFactory {
+  // Creates a new `SearchController` for Picker.
+  CreateSearchControllerPicker@0(
+      pending_receiver<SearchController> controller,
+      bool bookmarks,
+      bool history,
+      bool open_tabs);
+};
+
 // Interface implemented by result objects to receive asynchronously-updated
 // data for one search result.
 // Next min method ID: 1

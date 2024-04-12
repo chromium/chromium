@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
+#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/picker/picker_file_suggester.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
@@ -90,14 +91,6 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentDriveFiles(
                                                          std::move(file.url)));
   }
   return results;
-}
-
-int GetAllAutocompleteProviderTypes() {
-  return AutocompleteProvider::TYPE_BOOKMARK |
-         AutocompleteProvider::TYPE_HISTORY_QUICK |
-         AutocompleteProvider::TYPE_HISTORY_URL |
-         AutocompleteProvider::TYPE_HISTORY_FUZZY |
-         AutocompleteProvider::TYPE_OPEN_TAB;
 }
 
 std::unique_ptr<app_list::SearchProvider> CreateDriveSearchProvider(
@@ -334,8 +327,8 @@ void PickerClientImpl::GetSuggestedLinkResults(
   if (zero_state_links_search_engine_ == nullptr) {
     zero_state_links_search_engine_ =
         std::make_unique<app_list::SearchEngine>(profile_);
-    zero_state_links_search_engine_->AddProvider(
-        CreateOmniboxProvider(GetAllAutocompleteProviderTypes()));
+    zero_state_links_search_engine_->AddProvider(CreateOmniboxProvider(
+        /*bookmarks=*/true, /*history=*/true, /*open_tabs=*/true));
   }
 
   zero_state_links_search_engine_->StartSearch(
@@ -370,8 +363,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
   profile_ = profile;
 
   search_engine_ = std::make_unique<app_list::SearchEngine>(profile_);
-  search_engine_->AddProvider(
-      CreateOmniboxProvider(GetAllAutocompleteProviderTypes()));
+  search_engine_->AddProvider(CreateOmniboxProvider(
+      /*bookmarks=*/true, /*history=*/true, /*open_tabs=*/true));
   search_engine_->AddProvider(CreateFileSearchProvider(profile_));
   search_engine_->AddProvider(CreateDriveSearchProvider(profile_));
 
@@ -381,7 +374,9 @@ void PickerClientImpl::SetProfile(Profile* profile) {
 }
 
 std::unique_ptr<app_list::SearchProvider>
-PickerClientImpl::CreateOmniboxProvider(int provider_types) {
+PickerClientImpl::CreateOmniboxProvider(bool bookmarks,
+                                        bool history,
+                                        bool open_tabs) {
   if (crosapi::browser_util::IsLacrosEnabled()) {
     // TODO: b/326147929 - Add autocomplete provider types for the Lacros
     // provider.
@@ -390,7 +385,8 @@ PickerClientImpl::CreateOmniboxProvider(int provider_types) {
         app_list::OmniboxLacrosProvider::GetSingletonControllerCallback());
   } else {
     return std::make_unique<app_list::OmniboxProvider>(
-        profile_, &app_list_controller_delegate_, provider_types);
+        profile_, &app_list_controller_delegate_,
+        crosapi::ProviderTypesPicker(bookmarks, history, open_tabs));
   }
 }
 
@@ -413,7 +409,8 @@ PickerClientImpl::CreateSearchProviderForCategory(
                   << static_cast<int>(category);
       return nullptr;
     case ash::PickerCategory::kLinks:
-      return CreateOmniboxProvider(GetAllAutocompleteProviderTypes());
+      return CreateOmniboxProvider(/*bookmarks=*/true, /*history=*/true,
+                                   /*open_tabs=*/true);
     case ash::PickerCategory::kDriveFiles:
       return CreateDriveSearchProvider(profile_);
     case ash::PickerCategory::kLocalFiles:

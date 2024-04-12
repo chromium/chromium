@@ -25,6 +25,55 @@ TEST(SearchUtilTest, ProviderTypes) {
   EXPECT_TRUE(types & AutocompleteProvider::TYPE_OPEN_TAB);
 }
 
+TEST(SearchUtilTest, ProviderTypesPickerAll) {
+  const int types = ProviderTypesPicker(/*bookmarks=*/true, /*history=*/true,
+                                        /*open_tabs=*/true);
+
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_BOOKMARK);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_FUZZY);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_QUICK);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_URL);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_OPEN_TAB);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
+}
+
+TEST(SearchUtilTest, ProviderTypesPickerBookmarks) {
+  const int types = ProviderTypesPicker(/*bookmarks=*/true, /*history=*/false,
+                                        /*open_tabs=*/false);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_BOOKMARK);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_FUZZY);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_QUICK);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_URL);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_OPEN_TAB);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
+}
+
+TEST(SearchUtilTest, ProviderTypesPickerHistory) {
+  const int types = ProviderTypesPicker(/*bookmarks=*/false, /*history=*/true,
+                                        /*open_tabs=*/false);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_BOOKMARK);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_FUZZY);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_QUICK);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_URL);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_OPEN_TAB);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
+}
+
+TEST(SearchUtilTest, ProviderTypesPickerOpenTab) {
+  const int types = ProviderTypesPicker(/*bookmarks=*/false, /*history=*/false,
+                                        /*open_tabs=*/true);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_BOOKMARK);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_FUZZY);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_QUICK);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_URL);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_OPEN_TAB);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
+}
+
 // Tests result conversion for a default answer result.
 TEST(SearchUtilTest, CreateAnswerResult) {
   AutocompleteMatch match;

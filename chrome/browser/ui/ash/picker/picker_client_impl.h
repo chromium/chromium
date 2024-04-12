@@ -118,8 +118,8 @@ class PickerClientImpl
   void SetProfileByUser(const user_manager::User* user);
   void SetProfile(Profile* profile);
 
-  std::unique_ptr<app_list::SearchProvider> CreateOmniboxProvider(
-      int provider_types);
+  std::unique_ptr<app_list::SearchProvider>
+  CreateOmniboxProvider(bool bookmarks, bool history, bool open_tabs);
   std::unique_ptr<app_list::SearchProvider> CreateSearchProviderForCategory(
       ash::PickerCategory category);
 
