@@ -115,6 +115,9 @@ class DataProtectionNavigationObserver
 
   bool is_from_cache_ = false;
 
+  // Screenshots are allowed unless explicitly blocked.
+  bool allow_screenshot_ = true;
+
   // The verdict corresponding to `watermark_text_` if it is populated. Used for
   // reporting.
   std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response_;

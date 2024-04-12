@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/data_controls/rules_service.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
@@ -77,6 +78,10 @@ void OnDoLookupComplete(
     return;
   }
 
+  // TODO: This function runs after data protections that come from data
+  // controls have already been saved in page user data.  This means RT UTL
+  // lookup results will override data controls when the protections they
+  // control overlap.  Is that right?
   DataProtectionPageUserData::UpdateRTLookupResponse(
       GetPageFromWebContents(web_contents.get()), identifier,
       std::move(rt_lookup_response));
@@ -149,6 +154,13 @@ void LogVerdictSource(
   base::UmaHistogramEnumeration(kURLVerdictSourceHistogram, verdict_source);
 }
 
+bool IsScreenshotAllowedByDataControls(content::BrowserContext* context,
+                                       const GURL& url) {
+  auto* rules =
+      data_controls::RulesServiceFactory::GetForBrowserContext(context);
+  return rules ? !rules->BlockScreenshots(url) : true;
+}
+
 }  // namespace
 
 // static
@@ -204,7 +216,12 @@ void DataProtectionNavigationObserver::GetDataProtectionSettings(
     return;
   }
 
+  GURL url = web_contents->GetLastCommittedURL();
   std::string identifier = GetIdentifier(profile);
+
+  DataProtectionPageUserData::UpdateScreenshotState(
+      GetPageFromWebContents(web_contents), identifier,
+      IsScreenshotAllowedByDataControls(profile, url));
 
   auto* lookup_service =
       g_lookup_service
@@ -231,7 +248,9 @@ void DataProtectionNavigationObserver::GetDataProtectionSettings(
     DoLookup(lookup_service, web_contents->GetLastCommittedURL(),
              GetIdentifier(profile), std::move(lookup_callback), web_contents);
   } else {
-    std::move(callback).Run(UrlSettings::None());
+    ud = GetUserData(web_contents);
+    DCHECK(ud);
+    std::move(callback).Run(ud->settings());
   }
 }
 
@@ -254,6 +273,8 @@ DataProtectionNavigationObserver::DataProtectionNavigationObserver(
   DCHECK(lookup_service_);
 
   identifier_ = GetIdentifier(web_contents->GetBrowserContext());
+  allow_screenshot_ = IsScreenshotAllowedByDataControls(
+      web_contents->GetBrowserContext(), navigation_handle.GetURL());
 
   // When serving from cache, we expect to find a page user data. So this code
   // skips the call to DoLookup() to prevent an unneeded network request.
@@ -285,6 +306,11 @@ void DataProtectionNavigationObserver::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!is_from_cache_);
+
+  allow_screenshot_ = allow_screenshot_ && IsScreenshotAllowedByDataControls(
+      navigation_handle->GetWebContents()->GetBrowserContext(),
+      navigation_handle->GetURL());
+
   DoLookup(
       lookup_service_, navigation_handle->GetURL(),
       GetIdentifier(navigation_handle->GetWebContents()->GetBrowserContext()),
@@ -322,7 +348,14 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
     LogVerdictSource(URLVerdictSource::kPageUserData);
     RunPendingNavigationCallback(web_contents(),
                                  std::move(pending_navigation_callback_));
-  } else if (rt_lookup_response_) {
+    return;
+  }
+
+  DataProtectionPageUserData::UpdateScreenshotState(
+      GetPageFromWebContents(navigation_handle->GetWebContents()), identifier_,
+      allow_screenshot_);
+
+  if (rt_lookup_response_.get()) {
     LogVerdictSource(URLVerdictSource::kCachedLookupResult);
     OnDoLookupComplete(web_contents()->GetWeakPtr(),
                        std::move(pending_navigation_callback_), identifier_,

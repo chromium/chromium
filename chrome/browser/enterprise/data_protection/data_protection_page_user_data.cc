@@ -38,10 +38,30 @@ void DataProtectionPageUserData::UpdateRTLookupResponse(
     // the lookup response.
     ud->set_rt_lookup_response(std::move(rt_lookup_response));
     ud->UpdateWatermarkStringInSettings(identifier);
+
+    // TODO: Check response for screenshot protection and set as needed.
     return;
   }
 
+  // TODO: Check response for screenshot protection and initialize UrlSettings
+  // as needed before passing to CreateForPage().
   CreateForPage(page, identifier, UrlSettings(), std::move(rt_lookup_response));
+}
+
+// static
+void DataProtectionPageUserData::UpdateScreenshotState(
+    content::Page& page,
+    const std::string& identifier,
+    bool allow) {
+  auto* ud = GetForPage(page);
+  if (ud) {
+    ud->settings_.allow_screenshots = allow;
+    return;
+  }
+
+  UrlSettings settings;
+  settings.allow_screenshots = allow;
+  CreateForPage(page, identifier, settings, nullptr);
 }
 
 DataProtectionPageUserData::DataProtectionPageUserData(

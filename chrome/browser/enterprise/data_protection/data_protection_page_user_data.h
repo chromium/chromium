@@ -46,6 +46,14 @@ class DataProtectionPageUserData
       const std::string& identifier,
       std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response);
 
+  // Sets whether screenshots are allowed for the page of the WebContents'
+  // primary main RFH.  During navigations this should only be called after the
+  // page is ready to be committed, otherwise the state will be saved to an
+  // intermediate Page.
+  static void UpdateScreenshotState(content::Page& page,
+                                    const std::string& identifier,
+                                    bool allow);
+
   ~DataProtectionPageUserData() override;
 
   const UrlSettings& settings() { return settings_; }

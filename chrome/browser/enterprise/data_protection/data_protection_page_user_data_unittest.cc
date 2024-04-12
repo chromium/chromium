@@ -124,4 +124,18 @@ TEST_F(DataProtectionPageUserDataTest, UpdateRTLookupResponse) {
   ASSERT_NE(ud->settings().watermark_text.find("second"), std::string::npos);
 }
 
+TEST_F(DataProtectionPageUserDataTest, UpdateScreenshotState) {
+  content::Page& page = web_contents_->GetPrimaryPage();
+  enterprise_data_protection::DataProtectionPageUserData::UpdateScreenshotState(
+      page, std::string(), false);
+  auto* ud =
+      enterprise_data_protection::DataProtectionPageUserData::GetForPage(page);
+  ASSERT_FALSE(ud->settings().allow_screenshots);
+
+  enterprise_data_protection::DataProtectionPageUserData::UpdateScreenshotState(
+      page, std::string(), true);
+  ud = enterprise_data_protection::DataProtectionPageUserData::GetForPage(page);
+  ASSERT_TRUE(ud->settings().allow_screenshots);
+}
+
 }  // namespace enterprise_data_protection

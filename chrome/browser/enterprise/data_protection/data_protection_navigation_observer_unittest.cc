@@ -4,7 +4,11 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 
+#include <map>
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -17,6 +21,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/data_controls/features.h"
+#include "components/enterprise/data_controls/test_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/policy_types.h"
@@ -46,26 +52,29 @@ content::Page& GetPageFromWebContents(content::WebContents* web_contents) {
 }
 
 safe_browsing::RTLookupResponse::ThreatInfo GetTestThreatInfo(
-    std::string watermark_text,
+    std::optional<std::string> watermark_text,
     int64_t timestamp_seconds) {
-  safe_browsing::MatchedUrlNavigationRule::WatermarkMessage wm;
-  wm.set_watermark_message(watermark_text);
-  wm.mutable_timestamp()->set_seconds(timestamp_seconds);
-
   safe_browsing::RTLookupResponse::ThreatInfo threat_info;
   threat_info.set_verdict_type(
       safe_browsing::RTLookupResponse::ThreatInfo::SAFE);
   safe_browsing::MatchedUrlNavigationRule* matched_url_navigation_rule =
       threat_info.mutable_matched_url_navigation_rule();
-  *matched_url_navigation_rule->mutable_watermark_message() = wm;
+  if (watermark_text.has_value()) {
+    safe_browsing::MatchedUrlNavigationRule::WatermarkMessage wm;
+    wm.set_watermark_message(*watermark_text);
+    wm.mutable_timestamp()->set_seconds(timestamp_seconds);
+    *matched_url_navigation_rule->mutable_watermark_message() = wm;
+  }
+
   return threat_info;
 }
 
-safe_browsing::RTLookupResponse CreateWatermarkResponse() {
+safe_browsing::RTLookupResponse CreateWatermarkResponse(
+    std::optional<std::string> watermark_text) {
   safe_browsing::RTLookupResponse response;
   safe_browsing::RTLookupResponse::ThreatInfo* new_threat_info =
       response.add_threat_info();
-  *new_threat_info = GetTestThreatInfo("custom_message", 1709181364);
+  *new_threat_info = GetTestThreatInfo(std::move(watermark_text), 1709181364);
   return response;
 }
 
@@ -83,8 +92,15 @@ class FakeRealTimeUrlLookupService
     // Create custom threat info instance. The DataProtectionNavigationObserver
     // does not care whether the verdict came from the verdict cache or from an
     // actual lookup request, as long as it gets a verdict back.
+    std::optional<std::string> watermark_text;
+    if (url_to_watermark_.count(url) > 0) {
+      watermark_text = url_to_watermark_[url];
+    } else {
+      watermark_text = "custom_message";
+    }
+
     auto response = std::make_unique<safe_browsing::RTLookupResponse>(
-        CreateWatermarkResponse());
+        CreateWatermarkResponse(std::move(watermark_text)));
 
     callback_task_runner->PostTask(
         FROM_HERE,
@@ -112,9 +128,15 @@ class FakeRealTimeUrlLookupService
     is_rt_lookup_successful_ = successful;
   }
 
+  void SetWatermaktTextForURL(const GURL& url,
+                              std::optional<std::string> watermark_text) {
+    url_to_watermark_[url] = std::move(watermark_text);
+  }
+
  private:
   base::OnceClosure on_start_lookup_complete_;
   bool is_rt_lookup_successful_ = true;
+  std::map<GURL, std::optional<std::string>> url_to_watermark_;
 };
 
 class DataProtectionNavigationObserverTest
@@ -124,6 +146,9 @@ class DataProtectionNavigationObserverTest
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+
+    scoped_features_.InitAndEnableFeature(
+        data_controls::kEnableDesktopDataControls);
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -183,6 +208,7 @@ class DataProtectionNavigationObserverTest
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_features_;
   FakeRealTimeUrlLookupService lookup_service_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
@@ -198,7 +224,7 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
       /*event_result*/ "EVENT_RESULT_ALLOWED",
       /*profile_user_name*/ "test-user@chromium.org",
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*rt_lookup_response*/ CreateWatermarkResponse());
+      /*rt_lookup_response*/ CreateWatermarkResponse("custom_message"));
 
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://test"), web_contents()->GetPrimaryMainFrame());
@@ -247,6 +273,60 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
             std::string::npos);
 }
 
+TEST_F(DataProtectionNavigationObserverTest,
+       TestScreenshotUpdated_DataControls) {
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+  data_controls::SetDataControls(profile()->GetPrefs(), {R"(
+        {
+          "name":"block",
+          "rule_id":"1234",
+          "sources":{"urls":["example.com"]},
+          "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
+        }
+      )"});
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com"), web_contents()->GetPrimaryMainFrame());
+
+  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
+  // this is called by BrowserView. So we simply call Start() and manually
+  // construct the class using the navigation handle that is provided once
+  // Start() is called.
+  simulator->Start();
+  content::NavigationHandle* navigation_handle =
+      simulator->GetNavigationHandle();
+  base::test::TestFuture<const UrlSettings&> future;
+
+  base::test::TestFuture<void> future_lookup_complete;
+  // The screenshot protection comes from data controls and not the lookup,
+  // even when the lookup fails.
+  lookup_service_.set_is_rt_lookup_successful(false);
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+
+  // The DataProtectionNavigationObserver needs to be constructed using
+  // CreateForNavigationHandle to allow for proper lifetime management of the
+  // object, since we call DeleteForNavigationHandle() in our
+  // DidFinishNavigation() override.
+  enterprise_data_protection::DataProtectionNavigationObserver::
+      CreateForNavigationHandle(*navigation_handle, &lookup_service_,
+                                navigation_handle->GetWebContents(),
+                                future.GetCallback());
+  EXPECT_TRUE(future_lookup_complete.Wait());
+
+  // Call DidFinishNavigation() navigation, which should invoke our callback.
+  simulator->Commit();
+
+  EXPECT_FALSE(future.Get().allow_screenshots);
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(user_data->settings(), future.Get());
+}
+
 // An invalid watermark response generates no report.
 TEST_F(DataProtectionNavigationObserverTest, InvalidResponse_NoReport) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
@@ -269,10 +349,6 @@ TEST_F(DataProtectionNavigationObserverTest, InvalidResponse_NoReport) {
   lookup_service_.set_on_start_lookup_complete(
       future_lookup_complete.GetCallback());
 
-  // The DataProtectionNavigationObserver needs to be constructed using
-  // CreateForNavigationHandle to allow for proper lifetime management of the
-  // object, since we call DeleteForNavigationHandle() in our
-  // DidFinishNavigation() override.
   enterprise_data_protection::DataProtectionNavigationObserver::
       CreateForNavigationHandle(*navigation_handle, &lookup_service_,
                                 navigation_handle->GetWebContents(),
@@ -334,29 +410,131 @@ TEST_F(DataProtectionNavigationObserverTest, GetDataProtectionSettings) {
       future.GetCallback());
   EXPECT_NE(future.Get().watermark_text.find("custom_message"),
             std::string::npos);
+  EXPECT_TRUE(future.Get().allow_screenshots);  // Default is true.
 
   // Value should be cached.
   auto* user_data = DataProtectionPageUserData::GetForPage(
       GetPageFromWebContents(web_contents()));
   ASSERT_TRUE(user_data);
-  EXPECT_NE(user_data->settings().watermark_text.find("custom_message"),
+  EXPECT_EQ(user_data->settings(), future.Get());
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
+       GetDataProtectionSettings_DC_BlockScreenshot) {
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+  DataProtectionNavigationObserver::SetLookupServiceForTesting(
+      &lookup_service_);
+  data_controls::SetDataControls(profile()->GetPrefs(), {R"(
+        {
+          "name":"block",
+          "rule_id":"1234",
+          "sources":{"urls":["example.com"]},
+          "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
+        }
+      )"});
+
+  SetContents(CreateTestWebContents());
+  NavigateAndCommit(GURL("https://example.com"));
+
+  base::test::TestFuture<const UrlSettings&> future;
+  DataProtectionNavigationObserver::GetDataProtectionSettings(
+      Profile::FromBrowserContext(browser_context()), web_contents(),
+      future.GetCallback());
+  EXPECT_NE(future.Get().watermark_text.find("custom_message"),
             std::string::npos);
+  EXPECT_FALSE(future.Get().allow_screenshots);
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(user_data->settings(), future.Get());
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
+       GetDataProtectionSettings_DC_BlockScreenshot_Redirect) {
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+  DataProtectionNavigationObserver::SetLookupServiceForTesting(
+      &lookup_service_);
+  data_controls::SetDataControls(profile()->GetPrefs(), {R"(
+        {
+          "name":"block",
+          "rule_id":"1234",
+          "sources":{"urls":["redirect.com"]},
+          "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
+        }
+      )"});
+
+  lookup_service_.SetWatermaktTextForURL(GURL("https://example.com"),
+                                         std::nullopt);
+  lookup_service_.SetWatermaktTextForURL(GURL("https://redirect.com"),
+                                         std::nullopt);
+
+  SetContents(CreateTestWebContents());
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com"), web_contents()->GetPrimaryMainFrame());
+  simulator->Start();
+  content::NavigationHandle* navigation_handle =
+      simulator->GetNavigationHandle();
+  base::test::TestFuture<const UrlSettings&> navigation_future;
+
+  const GURL kRedirectUrl = GURL("https://redirect.com");
+
+  // Do initial navigation request which allows screenshots.
+  {
+    base::test::TestFuture<void> future_lookup_complete;
+    lookup_service_.set_on_start_lookup_complete(
+        future_lookup_complete.GetCallback());
+    enterprise_data_protection::DataProtectionNavigationObserver::
+        CreateForNavigationHandle(*navigation_handle, &lookup_service_,
+                                  navigation_handle->GetWebContents(),
+                                  navigation_future.GetCallback());
+    EXPECT_TRUE(future_lookup_complete.Wait());
+  }
+
+  // Redirect to a URL that should not allow screenshots.
+  {
+    base::test::TestFuture<void> future_lookup_complete;
+    lookup_service_.set_on_start_lookup_complete(
+        future_lookup_complete.GetCallback());
+    simulator->Redirect(kRedirectUrl);
+    EXPECT_TRUE(future_lookup_complete.Wait());
+  }
+
+  simulator->Commit();
+  EXPECT_TRUE(navigation_future.Wait());
+
+  // The result of the above should be that
+  // screenshots are not allowed.
+  base::test::TestFuture<const UrlSettings&> get_settings_future;
+  DataProtectionNavigationObserver::GetDataProtectionSettings(
+      Profile::FromBrowserContext(browser_context()), web_contents(),
+      get_settings_future.GetCallback());
+  EXPECT_FALSE(get_settings_future.Get().allow_screenshots);
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(user_data->settings(), get_settings_future.Get());
 }
 
 namespace {
 
 struct WatermarkStringParams {
   WatermarkStringParams(std::string identifier,
-                        std::string custom_message,
+                        std::optional<std::string> custom_message,
                         int64_t timestamp_seconds,
                         std::string expected)
       : identifier(identifier),
-        custom_message(custom_message),
+        custom_message(std::move(custom_message)),
         timestamp_seconds(timestamp_seconds),
         expected(expected) {}
 
   std::string identifier;
-  std::string custom_message;
+  std::optional<std::string> custom_message;
   int64_t timestamp_seconds;
   std::string expected;
 };
@@ -383,7 +561,11 @@ INSTANTIATE_TEST_SUITE_P(
         WatermarkStringParams("example@email.com",
                               "",
                               1709181364,
-                              "example@email.com\n2024-02-29T04:36:04.000Z")));
+                              "example@email.com\n2024-02-29T04:36:04.000Z"),
+        WatermarkStringParams("example@email.com",
+                              std::nullopt,
+                              1709181364,
+                              "")));
 
 TEST_P(DataProtectionWatermarkStringTest,
        TestGetWatermarkStringFromThreatInfo) {
