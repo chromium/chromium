@@ -4,22 +4,20 @@
 
 /*
  * A mapping of Chromium contributors to their affiliations over time.
+ *
  * Chromium.org accounts are presumed to be affiliated with Google unless
  * listed otherwise. Most non-Google Chromium contributors prefer to use their
  * organization's e-mail address in commit logs for maximum clarity.
+ *
  * People contributing in an individual capacity can list either the domain of
  * their personal e-mail address, or the string "Individual".
  * The string "Undisclosed" can be used to override the default assumption
  * for the account without specifying any affiliation.
+ *
+ * Emails must be sorted alphabetically.
  * Affilitions must be sorted from most recent to least recent.
  */
 {
-  "yoavweiss@chromium.org": {
-    affiliations: [
-      { start: "2024-01-07", domain: "shopify.com"},
-      { start: "2018-10-01", domain: "google.com"},
-    ]
-  },
   "cavalcantii@chromium.org": {
     affiliations: [
       { start: "2022-05-03", domain: "intel.com" },
@@ -32,9 +30,9 @@
       { start: "2019-05-01", domain: "microsoft.com" },
     ]
   },
-  "pfeldman@chromium.org": {
+  "kzar@chromium.org": {
     affiliations: [
-      { start: "2019-05-01", domain: "microsoft.com" },
+      { start: "2021-11-29", domain: "kzar.co.uk" },
     ]
   },
   "marshall@chromium.org": {
@@ -42,19 +40,9 @@
       { start: "2010-03-09", domain: "gmail.com" },
     ]
   },
-  "weidongliu@chromium.org": {
+  "pfeldman@chromium.org": {
     affiliations: [
-      { start: "2020-07-10", domain: "tencent.com" },
-    ]
-  },
-  "zenye@chromium.org": {
-    affiliations: [
-      { start: "2019-09-26", domain: "microsoft.com" },
-    ]
-  },
-  "kzar@chromium.org": {
-    affiliations: [
-      { start: "2021-11-29", domain: "kzar.co.uk" },
+      { start: "2019-05-01", domain: "microsoft.com" },
     ]
   },
   "seokho@chromium.org": {
@@ -68,12 +56,27 @@
       { start: "2014-01-10", domain: "samsung.com" },
     ]
   },
-  "yoav@yoav.ws": {
+  "yoavweiss@chromium.org": {
     affiliations: [
-      { start: "2012-09-01", domain: "yoav.ws"},
-      { start: "2015-01-05", domain: "akamai.com"},
+      { start: "2024-01-07", domain: "shopify.com"},
       { start: "2018-10-01", domain: "google.com"},
     ]
   },
+  "yoav@yoav.ws": {
+    affiliations: [
+      { start: "2018-10-01", domain: "google.com"},
+      { start: "2015-01-05", domain: "akamai.com"},
+      { start: "2012-09-01", domain: "yoav.ws"},
+    ]
+  },
+  "weidongliu@chromium.org": {
+    affiliations: [
+      { start: "2020-07-10", domain: "tencent.com" },
+    ]
+  },
+  "zenye@chromium.org": {
+    affiliations: [
+      { start: "2019-09-26", domain: "microsoft.com" },
+    ]
+  },
 }
-
