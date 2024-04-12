@@ -707,6 +707,14 @@ export class SettingsPaymentsSectionElement extends
       this.paymentsManager_.bulkDeleteAllCvcs();
     }
     this.showBulkRemoveCvcConfirmationDialog_ = false;
+
+    // Focus on the CVC storage toggle, post deletion of CVCs for voice reader
+    // correctness.
+    const cvcStorageToggle =
+        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#cvcStorageToggle');
+    assert(cvcStorageToggle);
+    cvcStorageToggle.focus();
   }
 
   /**
@@ -728,6 +736,17 @@ export class SettingsPaymentsSectionElement extends
    */
   private onCardBenefitsSublabelLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(GOOGLE_PAY_HELP_URL);
+  }
+
+  /**
+   * Get the CVC storage toggle aria label for a11y voice readers.
+   * @returns CVC storage aria label.
+   */
+  private getCvcStorageAriaLabel_(): string {
+    const card = this.creditCards.find(cc => !!cc.cvc);
+    return this.i18n(
+        card === undefined ? 'enableCvcStorageAriaLabelForNoCvcSaved' :
+                             'enableCvcStorageLabel');
   }
 }
 

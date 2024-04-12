@@ -562,8 +562,11 @@ suite('PaymentsSection', function() {
 
     assertTrue(!!cvcStorageToggle);
     assertEquals(
-        cvcStorageToggle.subLabelWithLink.toString(),
-        loadTimeData.getString('enableCvcStorageSublabel'));
+        loadTimeData.getString('enableCvcStorageSublabel'),
+        cvcStorageToggle.subLabelWithLink.toString());
+    assertEquals(
+        loadTimeData.getString('enableCvcStorageAriaLabelForNoCvcSaved'),
+        cvcStorageToggle.ariaLabel);
   });
 
   test('verifyCvcStorageToggleSublabelWithDeletionIsShown', async function() {
@@ -583,8 +586,11 @@ suite('PaymentsSection', function() {
 
     assertTrue(!!cvcStorageToggle);
     assertEquals(
-        cvcStorageToggle.subLabelWithLink.toString(),
-        loadTimeData.getString('enableCvcStorageDeleteDataSublabel'));
+        loadTimeData.getString('enableCvcStorageDeleteDataSublabel'),
+        cvcStorageToggle.subLabelWithLink.toString());
+    assertEquals(
+        loadTimeData.getString('enableCvcStorageLabel'),
+        cvcStorageToggle.ariaLabel);
   });
 
   test(

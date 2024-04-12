@@ -46,6 +46,7 @@
 <template is="dom-if" if="[[cvcStorageAvailable_]]">
   <settings-toggle-button id="cvcStorageToggle"
         no-extension-indicator label="$i18n{enableCvcStorageLabel}"
+        aria-label="[[getCvcStorageAriaLabel_(creditCards)]]"
         sub-label-with-link="[[getCvcStorageSublabel_(creditCards)]]"
         disabled="[[!prefs.autofill.credit_card_enabled.value]]"
         on-sub-label-link-clicked="onBulkRemoveCvcClick_"

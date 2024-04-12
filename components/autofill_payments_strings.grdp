@@ -1109,6 +1109,9 @@
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_LABEL" desc="Label for the payments settings page toggle that enables the user to store and use CVC for payments autofill." formatter_data="android_java">
     Save security codes
   </message>
+  <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_ARIA_LABEL_FOR_NO_CVC_SAVED" desc="Label for the payments settings page toggle that enables the user to store and use CVC for payments autofill.">
+    Save security codes, no security codes currently saved
+  </message>
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_SUBLABEL" desc="Sublabel for the payments settings page toggle that enables the user to store and use CVC for payments autofill." formatter_data="android_java">
     Check out faster when your CVCs are saved
   </message>
