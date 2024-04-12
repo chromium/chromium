@@ -395,14 +395,6 @@ class PersonalDataManager : public KeyedService,
     return auto_accept_address_imports_for_testing_;
   }
 
-  void set_test_addresses(std::vector<AutofillProfile> test_addresses) {
-    test_addresses_ = test_addresses;
-  }
-
-  const std::vector<AutofillProfile>& test_addresses() const {
-    return test_addresses_;
-  }
-
   AlternativeStateNameMapUpdater*
   get_alternative_state_name_map_updater_for_testing() {
     return alternative_state_name_map_updater_.get();
@@ -469,9 +461,6 @@ class PersonalDataManager : public KeyedService,
 
   // The sync service this instances uses. Must outlive this instance.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
-
-  // Test addresses used to allow developers to test their forms.
-  std::vector<AutofillProfile> test_addresses_;
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};

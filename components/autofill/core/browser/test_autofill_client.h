@@ -527,6 +527,15 @@ class TestAutofillClientTemplate : public T {
   bool IsLastQueriedField(FieldGlobalId field_id) override { return true; }
 #endif
 
+  void set_test_addresses(
+      std::vector<AutofillProfile> test_addresses) override {
+    test_addresses_ = std::move(test_addresses);
+  }
+
+  base::span<const AutofillProfile> GetTestAddresses() const override {
+    return test_addresses_;
+  }
+
   void SetPrefs(std::unique_ptr<PrefService> prefs) {
     prefs_ = std::move(prefs);
   }
@@ -554,7 +563,6 @@ class TestAutofillClientTemplate : public T {
       std::unique_ptr<TestStrikeDatabase> test_strike_database) {
     test_strike_database_ = std::move(test_strike_database);
   }
-
 
   void set_test_form_data_importer(
       std::unique_ptr<FormDataImporter> form_data_importer) {
@@ -804,6 +812,9 @@ class TestAutofillClientTemplate : public T {
   // respectively.
   bool mandatory_reauth_opt_in_prompt_was_shown_ = false;
   bool mandatory_reauth_opt_in_prompt_was_reshown_ = false;
+
+  // Test addresses used to allow developers to test their forms.
+  std::vector<AutofillProfile> test_addresses_;
 
   std::vector<std::string> migration_card_selection_;
 

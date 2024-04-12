@@ -274,4 +274,11 @@ AutofillClient::GetPopupScreenLocation() const {
   return std::nullopt;
 }
 
+void AutofillClient::set_test_addresses(
+    std::vector<AutofillProfile> test_addresses) {}
+
+base::span<const AutofillProfile> AutofillClient::GetTestAddresses() const {
+  return {};
+}
+
 }  // namespace autofill

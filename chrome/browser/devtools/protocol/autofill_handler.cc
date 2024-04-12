@@ -210,8 +210,7 @@ void AutofillHandler::SetAddresses(
   static_cast<autofill::BrowserAutofillManager&>(
       autofill_driver->GetAutofillManager())
       .client()
-      .GetPersonalDataManager()
-      ->set_test_addresses(test_address_for_countries);
+      .set_test_addresses(test_address_for_countries);
   std::move(callback)->sendSuccess();
 }
 

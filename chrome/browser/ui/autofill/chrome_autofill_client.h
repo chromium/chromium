@@ -139,9 +139,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   FastCheckoutClient* GetFastCheckoutClient() override;
   std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
-
   void ShowAutofillSettings(FillingProduct main_filling_product) override;
-
   void ShowUnmaskAuthenticatorSelectionDialog(
       const std::vector<CardUnmaskChallengeOption>& challenge_options,
       base::OnceCallback<void(const std::string&)>
@@ -258,6 +256,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   base::WeakPtr<AutofillPopupController> popup_controller_for_testing() {
     return popup_controller_;
   }
+  void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
+  base::span<const AutofillProfile> GetTestAddresses() const override;
 #if defined(UNIT_TEST)
   void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
   void SetAutofillFieldPromoControllerManualFallbackForTesting(
@@ -329,6 +329,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
 #endif
   std::unique_ptr<AutofillFieldPromoController>
       autofill_field_promo_controller_manual_fallback_;
+  // Test addresses used to allow developers to test their forms.
+  std::vector<AutofillProfile> test_addresses_;
 };
 
 }  // namespace autofill

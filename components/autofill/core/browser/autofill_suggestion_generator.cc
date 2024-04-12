@@ -1217,7 +1217,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
   // Add devtools test addresses suggestion if it exists. A suggestion will
   // exist if devtools is open and therefore test addresses were set.
   if (std::optional<Suggestion> test_addresses_suggestion =
-          GetSuggestionForTestAddresses(personal_data().test_addresses(),
+          GetSuggestionForTestAddresses(autofill_client_->GetTestAddresses(),
                                         app_locale)) {
     suggestions.insert(suggestions.begin(),
                        std::move(*test_addresses_suggestion));

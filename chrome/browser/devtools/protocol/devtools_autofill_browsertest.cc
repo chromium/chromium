@@ -306,10 +306,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, SetAddresses) {
 
   SendCommandSync("Autofill.setAddresses", std::move(params));
 
-  std::vector<autofill::AutofillProfile> res = main_autofill_manager()
-                                                   .client()
-                                                   .GetPersonalDataManager()
-                                                   ->test_addresses();
+  base::span<const autofill::AutofillProfile> res =
+      main_autofill_manager().client().GetTestAddresses();
   ASSERT_EQ(res.size(), 2u);
   ASSERT_EQ(
       res[0].GetAddress().GetRawInfo(autofill::FieldType::ADDRESS_HOME_LINE1),

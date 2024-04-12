@@ -1286,4 +1286,14 @@ std::unique_ptr<AutofillManager> ChromeAutofillClient::CreateManager(
       &driver, g_browser_process->GetApplicationLocale());
 }
 
+void ChromeAutofillClient::set_test_addresses(
+    std::vector<AutofillProfile> test_addresses) {
+  test_addresses_ = std::move(test_addresses);
+}
+
+base::span<const AutofillProfile> ChromeAutofillClient::GetTestAddresses()
+    const {
+  return test_addresses_;
+}
+
 }  // namespace autofill

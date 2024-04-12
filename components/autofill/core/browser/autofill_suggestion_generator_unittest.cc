@@ -3138,7 +3138,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 TEST_F(AutofillSuggestionGeneratorTest, TestAddressSuggestion) {
   AutofillProfile profile = test::GetFullProfile();
-  personal_data().set_test_addresses({profile});
+  autofill_client()->set_test_addresses({profile});
   std::vector<Suggestion> suggestions =
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles(

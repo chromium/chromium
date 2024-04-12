@@ -825,6 +825,14 @@ class AutofillClient {
 
   // Notifies the IPH code that the manual fallback feature was used.
   virtual void NotifyAutofillManualFallbackUsed();
+
+  // Stores test addresses provided by devtools and used to help developers
+  // debug their forms with a list of well formatted addresses. Differently from
+  // other `AutofillProfile`s/addresses, this list is stored in the client,
+  // instead of the `PersonalDataManager`.
+  virtual void set_test_addresses(std::vector<AutofillProfile> test_addresses);
+
+  virtual base::span<const AutofillProfile> GetTestAddresses() const;
 };
 
 }  // namespace autofill
