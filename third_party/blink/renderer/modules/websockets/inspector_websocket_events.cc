@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
+namespace {
 
 void AddCommonData(ExecutionContext* execution_context,
                    uint64_t identifier,
@@ -31,6 +32,8 @@ void AddCommonData(ExecutionContext* execution_context,
         << "WebSocket is available only in Window and WorkerGlobalScope";
   }
 }
+
+} // namespace
 
 void InspectorWebSocketCreateEvent::Data(perfetto::TracedValue context,
                                          ExecutionContext* execution_context,
