@@ -184,6 +184,7 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
       searchbox::mojom::OmniboxPopupSelectionPtr old_selection,
       searchbox::mojom::OmniboxPopupSelectionPtr selection) override {}
   void SetInputText(const std::string& input_text) override {}
+  void SetThumbnail(const std::string& thumbnail_url) override {}
   mojo::PendingRemote<searchbox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();
   }

@@ -16,6 +16,10 @@
     width: var(--cr-realbox-width);
   }
 
+  :host([show-thumbnail_]) {
+    --cr-realbox-thumbnail-icon-offset: 24px;
+  }
+
   :host([realbox-chrome-refresh-theming][dropdown-is-visible]) {
     --cr-realbox-shadow: 0 0 12px 4px var(--color-realbox-shadow)
   }
@@ -96,7 +100,7 @@
     height: 100%;
     outline: none;
     padding-inline-end: calc(var(--cr-realbox-voice-icon-offset) + var(--cr-realbox-icon-width) + var(--cr-realbox-inner-icon-margin));
-    padding-inline-start: 52px;
+    padding-inline-start: calc(52px + var(--cr-realbox-thumbnail-icon-offset, 0px));
     position: relative;
     width: 100%;
   }
@@ -277,13 +281,23 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  #thumbnailContainer {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    left: 40px;
+    z-index: 101;
+    align-content: center;
+    outline: none;
+  }
 </style>
 <div id="inputWrapper" on-focusout=onInputWrapperFocusout_
     on-keydown="onInputWrapperKeydown_">
   <input id="input" class="truncate" type="search" autocomplete="off"
       spellcheck="false" aria-live="[[inputAriaLive_]]" role="combobox"
       aria-expanded="[[dropdownIsVisible]]" aria-controls="matches"
-      placeholder="[[i18n('searchBoxHint')]]" on-copy="onInputCutCopy_"
+      placeholder="[[placeholderText_]]" on-copy="onInputCutCopy_"
       on-cut="onInputCutCopy_" on-focus="onInputFocus_"
       on-input="onInputInput_" on-keydown="onInputKeydown_"
       on-keyup="onInputKeyup_" on-mousedown="onInputMouseDown_"
@@ -292,6 +306,14 @@
   <cr-realbox-icon id="icon" match="[[selectedMatch_]]"
       default-icon="[[realboxIcon_]]" in-searchbox>
   </cr-realbox-icon>
+  <template is="dom-if" if="[[showThumbnail_]]">
+    <div id="thumbnailContainer">
+      <cr-realbox-thumbnail id="thumbnail" thumbnail-url_="[[thumbnailUrl_]]"
+          on-remove-thumbnail-click="onRemoveThumbnailClick_"
+          tabindex="-1">
+      </cr-realbox-thumbnail>
+    </div>
+  </template>
   <template is="dom-if" if="[[realboxChromeRefreshTheming]]">
     <template is="dom-if" if="[[realboxVoiceSearchEnabled_]]">
       <div class="realbox-icon-button-container voice">

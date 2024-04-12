@@ -24,6 +24,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'deleteAutocompleteMatch',
       'executeAction',
       'onNavigationLikely',
+      'onThumbnailRemoved',
       'openAutocompleteMatch',
       'queryAutocomplete',
       'stopAutocomplete',
@@ -84,6 +85,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   onNavigationLikely(
       line: number, url: Url, navigationPredictor: NavigationPredictor) {
     this.methodCalled('onNavigationLikely', {line, url, navigationPredictor});
+  }
+
+  onThumbnailRemoved() {
+    this.methodCalled('onThumbnailRemoved', {});
   }
 
   queryAutocomplete(input: String16, preventInlineAutocomplete: boolean) {

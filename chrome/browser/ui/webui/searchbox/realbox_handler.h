@@ -95,9 +95,12 @@ class RealboxHandler : public SearchboxHandler {
       const GURL& url,
       omnibox::mojom::NavigationPredictor navigation_predictor) override;
   void PopupElementSizeChanged(const gfx::Size& size) override;
+  void OnThumbnailRemoved() override;
 
   // Invoked by LensOverlayController.
   void SetInputText(const std::string& input_text);
+  // Invoked by LensOverlayController.
+  void SetThumbnail(const std::string& thumbnail_url);
   // Invoked by OmniboxEditModel when selection changes.
   void UpdateSelection(OmniboxPopupSelection old_selection,
                        OmniboxPopupSelection selection);

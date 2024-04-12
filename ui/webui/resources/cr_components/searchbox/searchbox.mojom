@@ -173,6 +173,8 @@ interface PageHandler {
                 bool shift_key);
   // Called when the popup results view element size is changed.
   PopupElementSizeChanged(gfx.mojom.Size size);
+  // Notifies browser that thumbnail has been removed.
+  OnThumbnailRemoved();
 };
 
 // WebUI-side handler for requests from the browser.
@@ -185,4 +187,6 @@ interface Page {
                   OmniboxPopupSelection selection);
   // Called to set searchbox input.
   SetInputText(string input);
+  // Sets searchbox thumbnail.
+  SetThumbnail(string thumbnail_url);
 };

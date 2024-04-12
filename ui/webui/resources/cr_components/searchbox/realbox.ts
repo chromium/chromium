@@ -4,6 +4,7 @@
 
 import './realbox_dropdown.js';
 import './realbox_icon.js';
+import './realbox_thumbnail.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
@@ -115,6 +116,13 @@ export class RealboxElement extends RealboxElementBase {
         reflectToAttribute: true,
       },
 
+      /** Whether the Google Lens icon should be visible in the searchbox. */
+      realboxLensSearchEnabled: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxLensSearch'),
+        reflectToAttribute: true,
+      },
+
       realboxChromeRefreshTheming: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('realboxCr23Theming'),
@@ -173,6 +181,11 @@ export class RealboxElement extends RealboxElementBase {
         value: false,
       },
 
+      placeholderText_: {
+        type: String,
+        computed: `computePlaceholderText_(showThumbnail_)`,
+      },
+
       /** Realbox default icon (i.e., Google G icon or the search loupe). */
       realboxIcon_: {
         type: String,
@@ -212,6 +225,17 @@ export class RealboxElement extends RealboxElementBase {
         value: -1,
       },
 
+      showThumbnail_: {
+        type: Boolean,
+        computed: `computeShowThumbnail_(thumbnailUrl_)`,
+        reflectToAttribute: true,
+      },
+
+      thumbnailUrl_: {
+        type: String,
+        value: '',
+      },
+
       /** The value of the input element's 'aria-live' attribute. */
       inputAriaLive_: {
         type: String,
@@ -239,6 +263,7 @@ export class RealboxElement extends RealboxElementBase {
   hasSecondarySide: boolean;
   isDark: boolean;
   matchSearchbox: boolean;
+  realboxLensSearchEnabled: boolean;
   realboxChromeRefreshTheming: boolean;
   realboxSteadyStateShadow: boolean;
   private inputAriaLive_: string;
@@ -247,17 +272,21 @@ export class RealboxElement extends RealboxElementBase {
   private lastInput_: Input;
   private lastQueriedInput_: string|null;
   private pastedInInput_: boolean;
+  private placeholderText_: string;
   private realboxIcon_: string;
   private realboxVoiceSearchEnabled_: boolean;
   private realboxLensSearchEnabled_: boolean;
   private result_: AutocompleteResult|null;
   private selectedMatch_: AutocompleteMatch|null;
   private selectedMatchIndex_: number;
+  private showThumbnail_: boolean;
+  private thumbnailUrl_: string;
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
   private inputTextChangedListenerId_: number|null = null;
+  private thumbnailChangedListenerId_: number|null = null;
 
   constructor() {
     performance.mark('realbox-creation-start');
@@ -278,6 +307,9 @@ export class RealboxElement extends RealboxElementBase {
     this.inputTextChangedListenerId_ =
         this.callbackRouter_.setInputText.addListener(
             this.onSetInputText_.bind(this));
+    this.thumbnailChangedListenerId_ =
+        this.callbackRouter_.setThumbnail.addListener(
+            this.onSetThumbnail_.bind(this));
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
@@ -289,6 +321,8 @@ export class RealboxElement extends RealboxElementBase {
         this.autocompleteResultChangedListenerId_);
     assert(this.inputTextChangedListenerId_);
     this.callbackRouter_.removeListener(this.inputTextChangedListenerId_);
+    assert(this.thumbnailChangedListenerId_);
+    this.callbackRouter_.removeListener(this.thumbnailChangedListenerId_);
     canShowSecondarySideMediaQueryList.removeEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
@@ -356,6 +390,10 @@ export class RealboxElement extends RealboxElementBase {
 
   private onSetInputText_(inputText: string) {
     this.$.input.setAttribute('value', inputText);
+  }
+
+  private onSetThumbnail_(thumbnailUrl: string) {
+    this.thumbnailUrl_ = thumbnailUrl;
   }
 
   //============================================================================
@@ -528,11 +566,13 @@ export class RealboxElement extends RealboxElementBase {
     const KEYDOWN_HANDLED_KEYS = [
       'ArrowDown',
       'ArrowUp',
+      'Backspace',
       'Delete',
       'Enter',
       'Escape',
       'PageDown',
       'PageUp',
+      'Tab',
     ];
     if (!KEYDOWN_HANDLED_KEYS.includes(e.key)) {
       return;
@@ -540,6 +580,41 @@ export class RealboxElement extends RealboxElementBase {
 
     if (e.defaultPrevented) {
       // Ignore previously handled events.
+      return;
+    }
+
+    if (this.showThumbnail_) {
+      const thumbnail =
+          this.shadowRoot!.querySelector<HTMLElement>('cr-realbox-thumbnail');
+      if (thumbnail === this.shadowRoot!.activeElement) {
+        if (e.key === 'Backspace' || e.key === 'Enter') {
+          // Remove thumbnail, focus input, and notify browser.
+          this.thumbnailUrl_ = '';
+          this.$.input.focus();
+          this.pageHandler_.onThumbnailRemoved();
+          e.preventDefault();
+        } else if (e.key === 'Tab') {
+          this.$.input.focus();
+          e.preventDefault();
+        } else if (
+            this.dropdownIsVisible &&
+            (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+          // If the dropdown is visible, arrowing up and down unfocuses the
+          // thumbnail and follows standard arrow up/down behavior (selects
+          // the next/previous match).
+          this.$.input.focus();
+        }
+      } else if (
+          this.$.input.selectionStart === 0 &&
+          this.$.input.selectionEnd === 0 && e.key === 'Backspace' &&
+          this.$.input === this.shadowRoot!.activeElement) {
+        // Backspacing the thumbnail results in the thumbnail being focused.
+        thumbnail?.focus();
+        e.preventDefault();
+      }
+    }
+
+    if (e.key === 'Backspace' || e.key === 'Tab') {
       return;
     }
 
@@ -672,6 +747,13 @@ export class RealboxElement extends RealboxElementBase {
     this.dispatchEvent(new Event('open-lens-search'));
   }
 
+  private onRemoveThumbnailClick_() {
+    /* Remove thumbnail, focus input, and notify browser. */
+    this.thumbnailUrl_ = '';
+    this.$.input.focus();
+    this.pageHandler_.onThumbnailRemoved();
+  }
+
   //============================================================================
   // Helpers
   //============================================================================
@@ -681,6 +763,14 @@ export class RealboxElement extends RealboxElementBase {
       return null;
     }
     return this.result_.matches[this.selectedMatchIndex_] || null;
+  }
+
+  private computeShowThumbnail_(): boolean {
+    return !!this.thumbnailUrl_;
+  }
+
+  private computePlaceholderText_(): string {
+    return this.showThumbnail_ ? '' : this.i18n('searchBoxHint');
   }
 
   /**

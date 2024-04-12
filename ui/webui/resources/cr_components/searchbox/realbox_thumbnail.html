@@ -1,0 +1,63 @@
+<style include="cr-icons">
+  :host {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    width: 32px;
+    outline: none;
+  }
+
+  #container {
+    align-items: center;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  #image {
+    display: initial;
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+  }
+
+  .overlay {
+    position: absolute;
+    z-index: 101;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    display: none;
+  }
+
+  :host(:hover) .overlay,
+  :host(:focus-visible) .overlay {
+    display: flex;
+  }
+
+  /* TODO(b/328294049): Switch color token once UX direction is set. */
+  :host(:focus-visible) #container {
+    box-shadow: 0 0 0 3px var(--color-realbox-answer-icon-background);
+  }
+
+  #remove {
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    color: white;
+    background-color: transparent;
+  }
+  </style>
+<div id="container">
+  <img id="image" src="[[thumbnailUrl_]]"></img>
+  <div class="overlay">
+    <cr-icon-button id="remove" class="action-icon icon-clear"
+        on-click="onRemoveButtonClick_" aria-label="[[removeButtonAriaLabel_]]">
+    </cr-icon-button>
+  </div>
+</div>

@@ -438,6 +438,12 @@ void RealboxHandler::OnNavigationLikely(
   }
 }
 
+void RealboxHandler::OnThumbnailRemoved() {
+  if (lens_searchbox_client_) {
+    lens_searchbox_client_->OnThumbnailRemoved();
+  }
+}
+
 void RealboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
   webui_size_ = size;
   for (OmniboxWebUIPopupChangeObserver& observer : observers_) {
@@ -516,6 +522,10 @@ searchbox::mojom::SelectionLineState ConvertLineState(
 
 void RealboxHandler::SetInputText(const std::string& input_text) {
   page_->SetInputText(input_text);
+}
+
+void RealboxHandler::SetThumbnail(const std::string& thumbnail_url) {
+  page_->SetThumbnail(thumbnail_url);
 }
 
 void RealboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,

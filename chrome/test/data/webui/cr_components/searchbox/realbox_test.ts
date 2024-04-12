@@ -2434,4 +2434,94 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(realbox.$.input.value, 'Hello');
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
   });
+
+  //============================================================================
+  // Test Thumbnails
+  //============================================================================
+  test('thumbnail appears on page call from browser', async () => {
+    assertTrue(
+        realbox.$.inputWrapper.querySelector('#thumbnailContainer') === null);
+    testProxy.callbackRouterRemote.setThumbnail('foo.png');
+    await waitAfterNextRender(realbox);
+    assertTrue(
+        realbox.$.inputWrapper.querySelector('#thumbnailContainer') !== null);
+  });
+
+  test('thumbnail clicked deletion', async () => {
+    testProxy.callbackRouterRemote.setThumbnail('foo.png');
+    await waitAfterNextRender(realbox);
+    const thumbnail = realbox.$.inputWrapper.querySelector('#thumbnail');
+    assertTrue(thumbnail !== null);
+    const thumbnailRemoveButton =
+        thumbnail.shadowRoot!.querySelector<HTMLElement>('#remove');
+    assertTrue(thumbnailRemoveButton !== null);
+    thumbnailRemoveButton.click();
+    await waitAfterNextRender(realbox);
+    const thumbnailContainer =
+        realbox.$.inputWrapper.querySelector<HTMLElement>(
+            '#thumbnailContainer');
+    assertTrue(thumbnailContainer !== null);
+    // Thumbnail remove button click should remove thumbnail, focus input,
+    // and notify browser.
+    assertStyle(thumbnailContainer, 'display', 'none');
+    assertEquals(realbox.$.input, getDeepActiveElement());
+    await testProxy.handler.whenCalled('onThumbnailRemoved');
+    assertEquals(1, testProxy.handler.getCallCount('onThumbnailRemoved'));
+  });
+
+  test('thumbnail keyboard deletion', async () => {
+    realbox.$.input.value = '';
+    testProxy.callbackRouterRemote.setThumbnail('foo.png');
+    await waitAfterNextRender(realbox);
+    const thumbnail = realbox.$.inputWrapper.querySelector('#thumbnail');
+    assertTrue(thumbnail !== null);
+    realbox.$.input.focus();
+    realbox.$.inputWrapper.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Backspace',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await waitAfterNextRender(realbox);
+    // First backspace should focus the thumbnail
+    assertEquals(thumbnail, getDeepActiveElement());
+    realbox.$.inputWrapper.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Backspace',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await waitAfterNextRender(realbox);
+    const thumbnailContainer =
+        realbox.$.inputWrapper.querySelector<HTMLElement>(
+            '#thumbnailContainer');
+    assertTrue(thumbnailContainer !== null);
+    // When thumbnail is focused, a backspace should delete the thumbnail,
+    // focus input, and notify browser.
+    assertStyle(thumbnailContainer, 'display', 'none');
+    assertEquals(realbox.$.input, getDeepActiveElement());
+    await testProxy.handler.whenCalled('onThumbnailRemoved');
+    assertEquals(1, testProxy.handler.getCallCount('onThumbnailRemoved'));
+  });
+
+  test('keyboard deletion with non-empty input', async () => {
+    testProxy.callbackRouterRemote.setThumbnail('foo.png');
+    await waitAfterNextRender(realbox);
+    const thumbnail = realbox.$.inputWrapper.querySelector('#thumbnail');
+    assertTrue(thumbnail !== null);
+    realbox.$.input.value = 'hi';
+    realbox.$.input.focus();
+    // Cursor is at the end of the input.
+    assertEquals(realbox.$.input.selectionStart, 2);
+    const backspaceEvent = new KeyboardEvent('keydown', {
+      key: 'Backspace',
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+    });
+    realbox.$.input.dispatchEvent(backspaceEvent);
+    // Checking the input value after a backspace event doesn't work
+    // so check the default behavior occurs (deleting a character).
+    assertFalse(backspaceEvent.defaultPrevented);
+  });
 });
