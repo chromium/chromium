@@ -143,15 +143,6 @@ uint32_t RTCEncodedVideoFrame::timestamp() const {
   return delegate_->RtpTimestamp();
 }
 
-void RTCEncodedVideoFrame::setTimestamp(uint32_t timestamp,
-                                        ExceptionState& exception_state) {
-  String error_message;
-  if (!delegate_->SetRtpTimestamp(timestamp, error_message)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidModificationError, error_message);
-  }
-}
-
 DOMArrayBuffer* RTCEncodedVideoFrame::data() const {
   if (!frame_data_) {
     frame_data_ = delegate_->CreateDataBuffer();

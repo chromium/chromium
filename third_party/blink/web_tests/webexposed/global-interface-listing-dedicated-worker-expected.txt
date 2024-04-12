@@ -1757,7 +1757,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method getMetadata
 [Worker]     method setMetadata
-[Worker]     method setTimestamp
 [Worker]     method toString
 [Worker]     setter data
 [Worker] interface RTCEncodedVideoFrame
@@ -1768,7 +1767,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method getMetadata
 [Worker]     method setMetadata
-[Worker]     method setTimestamp
 [Worker]     method toString
 [Worker]     setter data
 [Worker] interface ReadableByteStreamController

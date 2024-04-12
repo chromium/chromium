@@ -173,15 +173,6 @@ void RTCEncodedAudioFrame::setData(DOMArrayBuffer* data) {
   frame_data_ = data;
 }
 
-void RTCEncodedAudioFrame::setTimestamp(uint32_t timestamp,
-                                        ExceptionState& exception_state) {
-  String error_message;
-  if (!delegate_->SetRtpTimestamp(timestamp, error_message)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot setTimestamp: " + error_message);
-  }
-}
-
 String RTCEncodedAudioFrame::toString() const {
   StringBuilder sb;
   sb.Append("RTCEncodedAudioFrame{rtpTimestamp: ");

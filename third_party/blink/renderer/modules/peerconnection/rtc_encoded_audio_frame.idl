@@ -14,8 +14,6 @@
     attribute ArrayBuffer data;
     RTCEncodedAudioFrameMetadata getMetadata();
     stringifier;
-  [RuntimeEnabled=RTCEncodedFrameSetMetadata, Measure, RaisesException] void
-  setTimestamp(unsigned long timestamp);
   [RuntimeEnabled=RTCEncodedFrameSetMetadata, Measure, RaisesException]
   void setMetadata(RTCEncodedAudioFrameMetadata metadata);
 };

@@ -22,7 +22,5 @@ enum RTCEncodedVideoFrameType {
     RTCEncodedVideoFrameMetadata getMetadata();
     [RuntimeEnabled=RTCEncodedFrameSetMetadata, Measure, RaisesException]
     void setMetadata(RTCEncodedVideoFrameMetadata metadata);
-    [RuntimeEnabled=RTCEncodedFrameSetMetadata, Measure, RaisesException] void
-    setTimestamp(unsigned long timestamp);
     stringifier;
 };

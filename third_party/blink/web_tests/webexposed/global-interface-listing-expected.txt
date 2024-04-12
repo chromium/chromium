@@ -7658,7 +7658,6 @@ interface RTCEncodedAudioFrame
     method constructor
     method getMetadata
     method setMetadata
-    method setTimestamp
     method toString
     setter data
 interface RTCEncodedVideoFrame
@@ -7669,7 +7668,6 @@ interface RTCEncodedVideoFrame
     method constructor
     method getMetadata
     method setMetadata
-    method setTimestamp
     method toString
     setter data
 interface RTCError : DOMException
