@@ -628,7 +628,7 @@ void AmbientController::OnUserActivity(const ui::Event* event) {
 
 void AmbientController::OnKeyEvent(ui::KeyEvent* event) {
   // Prevent dispatching key press event to the login UI.
-  event->StopPropagation();
+  MaybeStopUiEventPropagation(event);
   // |DismissUI| only on |ET_KEY_PRESSED|. Otherwise it won't be possible to
   // start the preview by pressing "enter" key. It'll be cancelled immediately
   // on |ET_KEY_RELEASED|.
@@ -648,7 +648,7 @@ void AmbientController::OnMouseEvent(ui::MouseEvent* event) {
 
   // Prevent dispatching mouse event to the windows behind screen saver.
   // Let move event pass through, so that it clears hover states.
-  event->StopPropagation();
+  MaybeStopUiEventPropagation(event);
   if (event->IsAnyButton()) {
     DismissUI();
   }
@@ -657,7 +657,7 @@ void AmbientController::OnMouseEvent(ui::MouseEvent* event) {
 
 void AmbientController::OnTouchEvent(ui::TouchEvent* event) {
   // Prevent dispatching touch event to the windows behind screen saver.
-  event->StopPropagation();
+  MaybeStopUiEventPropagation(event);
   DismissUI();
 }
 
@@ -1342,6 +1342,16 @@ void AmbientController::OnReadyStateChanged(bool is_ready) {
   // In case the ready state changes on the login/lock screen we should re-show
   // the ambient mode.
   OnLoginLockStateChanged(GetLockScreenState());
+}
+
+void AmbientController::MaybeStopUiEventPropagation(ui::Event* event) {
+  // If ambient resources are still be loading and the UI has not started
+  // rendering yet (which is usually just a few seconds), UI events such as
+  // key presses should still be propagated to the current UI (ex: the lock
+  // screen).
+  if (IsShowing()) {
+    event->StopPropagation();
+  }
 }
 
 }  // namespace ash

@@ -294,6 +294,8 @@ class ASH_EXPORT AmbientController
   // this will return the `sign_in_pref_change_registrar_`.
   PrefChangeRegistrar* GetActivePrefChangeRegistrar();
 
+  void MaybeStopUiEventPropagation(ui::Event* event);
+
   AmbientViewDelegateImpl delegate_{this};
   AmbientUiModel ambient_ui_model_;
 
