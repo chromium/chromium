@@ -204,6 +204,13 @@ def __use_large_b289968566(ctx, step_config):
         # use_siso = true
         "./obj/content/test/content_browsertests__library/interest_group_browsertest.o",
         "./obj/content/test/content_browsertests__library/prerender_browsertest.o",
+        # Fallback happens with the following args.gn
+        # (linux-build-perf-developer, win-build-perf-developer)
+        # is_component_build = true
+        # is_debug = true
+        # symbol_level = 2
+        # use_siso = true
+        "./obj/content/browser/browser/render_process_host_impl.o",
     ]
     if runtime.os == "windows":
         exit137_list = [obj.removesuffix(".o") + ".obj" for obj in exit137_list if obj.startswith("./obj/")]
