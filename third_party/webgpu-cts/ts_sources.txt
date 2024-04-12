@@ -381,8 +381,10 @@ src/webgpu/shader/execution/expression/expression.ts
 src/webgpu/shader/execution/expression/precedence.spec.ts
 src/webgpu/shader/execution/expression/access/array/index.spec.ts
 src/webgpu/shader/execution/expression/access/matrix/index.spec.ts
+src/webgpu/shader/execution/expression/access/structure/index.spec.ts
 src/webgpu/shader/execution/expression/access/vector/components.spec.ts
 src/webgpu/shader/execution/expression/access/vector/index.spec.ts
+src/webgpu/shader/execution/expression/binary/af_data.ts
 src/webgpu/shader/execution/expression/binary/af_addition.cache.ts
 src/webgpu/shader/execution/expression/binary/binary.ts
 src/webgpu/shader/execution/expression/binary/af_addition.spec.ts
@@ -787,7 +789,7 @@ src/webgpu/shader/validation/expression/call/builtin/reverseBits.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/round.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/saturate.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/select.spec.ts
-src/webgpu/shader/validation/expression/call/builtin/shader_stage_utils.ts
+src/webgpu/shader/validation/expression/call/builtin/shader_builtin_utils.ts
 src/webgpu/shader/validation/expression/call/builtin/sign.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sin.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sinh.spec.ts
@@ -867,6 +869,7 @@ src/webgpu/shader/validation/types/alias.spec.ts
 src/webgpu/shader/validation/types/array.spec.ts
 src/webgpu/shader/validation/types/atomics.spec.ts
 src/webgpu/shader/validation/types/matrix.spec.ts
+src/webgpu/shader/validation/types/ref.spec.ts
 src/webgpu/shader/validation/types/struct.spec.ts
 src/webgpu/shader/validation/types/textures.spec.ts
 src/webgpu/shader/validation/types/vector.spec.ts
