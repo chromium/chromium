@@ -395,6 +395,20 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
   [self.consumer moveItem:item beforeItem:nextItem];
 }
 
+- (void)updateConsumerItemForWebState:(web::WebState*)webState {
+  WebStateList* webStateList = self.webStateList;
+  int index = webStateList->GetIndexOfWebState(webState);
+  const TabGroup* group = webStateList->GetGroupOfWebStateAt(index);
+  GridItemIdentifier* item;
+  if (group) {
+    item = [GridItemIdentifier groupIdentifier:group
+                              withWebStateList:webStateList];
+  } else {
+    item = [GridItemIdentifier tabIdentifier:webState];
+  }
+  [self.consumer replaceItem:item withReplacementItem:item];
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
@@ -644,11 +658,6 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
 
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
   [self updateConsumerItemForWebState:webState];
-}
-
-- (void)updateConsumerItemForWebState:(web::WebState*)webState {
-  GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
-  [self.consumer replaceItem:item withReplacementItem:item];
 }
 
 #pragma mark - SnapshotStorageObserver

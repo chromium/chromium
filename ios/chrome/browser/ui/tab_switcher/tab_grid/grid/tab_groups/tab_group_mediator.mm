@@ -148,6 +148,12 @@
   [self.consumer moveItem:item beforeItem:nextItem];
 }
 
+// Overrides the parent as there is only tab cells.
+- (void)updateConsumerItemForWebState:(web::WebState*)webState {
+  GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
+  [self.consumer replaceItem:item withReplacementItem:item];
+}
+
 #pragma mark - TabCollectionDragDropHandler override
 
 // Overrides the parent as the given destination index do not take into account
