@@ -196,6 +196,8 @@ VideoPlaneController::VideoPlaneController(
       have_screen_res_(false),
       screen_res_(0, 0),
       graphics_plane_res_(graphics_resolution),
+      coordinates_(VideoPlane::GetCoordinates ? VideoPlane::GetCoordinates()
+                                              : VideoPlane::kScreen),
       have_video_plane_geometry_(false),
       video_plane_display_rect_(0, 0),
       video_plane_transform_(VideoPlane::TRANSFORM_NONE),
@@ -220,6 +222,13 @@ void VideoPlaneController::SetGeometryFromMediaType(
 void VideoPlaneController::SetGeometryInternal(
     const gfx::RectF& gfx_display_rect,
     VideoPlane::Transform transform) {
+  if (!thread_checker_.CalledOnValidThread()) {
+    media_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&VideoPlaneController::SetGeometryInternal,
+                                  weak_factory_.GetWeakPtr(), gfx_display_rect,
+                                  transform));
+    return;
+  }
   const RectF display_rect(gfx_display_rect.x(), gfx_display_rect.y(),
                            gfx_display_rect.width(), gfx_display_rect.height());
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -293,8 +302,11 @@ void VideoPlaneController::MaybeRunSetGeometry() {
   DCHECK(graphics_plane_res_.width != 0 && graphics_plane_res_.height != 0);
 
   RectF scaled_rect = video_plane_display_rect_;
-  if (graphics_plane_res_.width != screen_res_.width ||
-      graphics_plane_res_.height != screen_res_.height) {
+  // Note that graphics coordinates do not need to be scaled, since the received
+  // values are already in those coordinates.
+  if (coordinates_ != VideoPlane::Coordinates::kGraphics &&
+      (graphics_plane_res_.width != screen_res_.width ||
+       graphics_plane_res_.height != screen_res_.height)) {
     float sx =
         static_cast<float>(screen_res_.width) / graphics_plane_res_.width;
     float sy =
@@ -312,7 +324,9 @@ void VideoPlaneController::MaybeRunSetGeometry() {
 }
 
 bool VideoPlaneController::HaveDataForSetGeometry() const {
-  return have_screen_res_ && have_video_plane_geometry_;
+  const bool screen_res_set_or_unnecessary =
+      have_screen_res_ || (coordinates_ == VideoPlane::Coordinates::kGraphics);
+  return screen_res_set_or_unnecessary && have_video_plane_geometry_;
 }
 
 void VideoPlaneController::ClearVideoPlaneGeometry() {

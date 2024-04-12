@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//chromecast/chromecast.gni")
+import("//testing/test.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 
 buildflag_header("buildflags") {
@@ -121,5 +122,28 @@ cast_source_set("monotonic_clock") {
     ":buildflags",
     "//base",
     "//chromecast/media/api:api",
+  ]
+}
+
+test("video_plane_controller_test") {
+  # Note: we include the video plane controller header and cc files directly to
+  # avoid pulling in a dependency that defines CastMediaShlib functions. The
+  # relevant shlib functions need to be defined in the test code so that a mock
+  # VideoPlane can be used.
+  sources = [
+    "video_plane_controller.cc",
+    "video_plane_controller.h",
+    "video_plane_controller_test.cc",
+  ]
+  deps = [
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/public",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
   ]
 }
