@@ -15,8 +15,8 @@ MagnifierE2ETest = class extends E2ETestBase {
   }
 
   async getNextMagnifierBounds() {
-    return new Promise(resolve => {
-      const listener = magnifierBounds => {
+    return new Promise((resolve) => {
+      const listener = (magnifierBounds) => {
         chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
             listener);
         resolve(magnifierBounds);
@@ -31,6 +31,7 @@ MagnifierE2ETest = class extends E2ETestBase {
     super.testGenCppIncludes();
     GEN(`
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "ui/accessibility/accessibility_features.h"
     `);
   }
 
@@ -44,6 +45,11 @@ MagnifierE2ETest = class extends E2ETestBase {
             true);
       `);
     super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['features::kAccessibilityMagnifierFollowsSts']};
   }
 };
 
@@ -97,7 +103,7 @@ AX_TEST_F(
   `;
       const root = await this.runWithLoadedTree(site);
       // Enable docked magnifier.
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         chrome.accessibilityFeatures.dockedMagnifier.set(
             {value: true}, resolve);
       });
@@ -114,11 +120,12 @@ AX_TEST_F(
       const rect = await getNextMagnifierLocation();
 
       // Validate rect from magnifier is rect of banana.
-      const bananaNode =
-          root.find({role: RoleType.TREE_ITEM, attributes: {name: 'Banana'}});
+      const bananaNode = root.find({
+        role: RoleType.TREE_ITEM,
+        attributes: {name: 'Banana'},
+      });
       assertTrue(RectUtil.equal(rect, bananaNode.location));
     });
-
 
 // Flaky: http://crbug.com/1171750
 AX_TEST_F(
@@ -167,7 +174,7 @@ TEST_F(
         const magnifier = accessibilityCommon.getMagnifierForTest();
         magnifier.setIsInitializingForTest(false);
 
-        const moveMenuSelectionAssertBounds = async targetBounds => {
+        const moveMenuSelectionAssertBounds = async (targetBounds) => {
           // Send arrow up key.
           chrome.accessibilityPrivate.sendSyntheticKeyEvent({
             type:
@@ -176,8 +183,8 @@ TEST_F(
           });
 
           // Verify new magnifier bounds include |targetBounds|.
-          await new Promise(resolve => {
-            const boundsChangedListener = newBounds => {
+          await new Promise((resolve) => {
+            const boundsChangedListener = (newBounds) => {
               if (RectUtil.contains(newBounds, targetBounds)) {
                 chrome.accessibilityPrivate.onMagnifierBoundsChanged
                     .removeListener(boundsChangedListener);
@@ -198,12 +205,16 @@ TEST_F(
 
         // Wait for Chrome menu to open.
         await new Promise(
-            resolve => desktop.addEventListener(
+            (resolve) => desktop.addEventListener(
                 chrome.automation.EventType.MENU_START, resolve, false));
 
         // Move menu selection to end of menu, and await new magnifier bounds.
-        await moveMenuSelectionAssertBounds(
-            {left: 650, top: 450, width: 0, height: 0});
+        await moveMenuSelectionAssertBounds({
+          left: 650,
+          top: 450,
+          width: 0,
+          height: 0,
+        });
       });
     });
 
@@ -214,7 +225,7 @@ AX_TEST_F('MagnifierE2ETest', 'IgnoresRootNodeFocus', async function() {
   magnifier.setIsInitializingForTest(false);
 
   chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
-      newBounds => {
+      (newBounds) => {
         throw new Error(
             'Magnifier did not ignore focus change on document load - ' +
             'moved to following location: ' + JSON.stringify(newBounds));
@@ -222,7 +233,7 @@ AX_TEST_F('MagnifierE2ETest', 'IgnoresRootNodeFocus', async function() {
 
   // Wait seven seconds to verify magnifier successfully ignored focus on root
   // node.
-  await new Promise(resolve => setTimeout(resolve, 7000));
+  await new Promise((resolve) => setTimeout(resolve, 7000));
 });
 
 // TODO(crbug.com/1295685): Test is flaky.
@@ -239,8 +250,8 @@ AX_TEST_F(
         }, 500);
 
         // Verify new magnifier bounds include |targetBounds|.
-        await new Promise(resolve => {
-          const boundsChangedListener = newBounds => {
+        await new Promise((resolve) => {
+          const boundsChangedListener = (newBounds) => {
             if (RectUtil.contains(newBounds, targetBounds)) {
               chrome.accessibilityPrivate.onMagnifierBoundsChanged
                   .removeListener(boundsChangedListener);
@@ -282,15 +293,15 @@ AX_TEST_F('MagnifierE2ETest', 'OnCaretBoundsChanged', async function() {
   const input = root.find({role: RoleType.TEXT_FIELD});
   input.doDefault();
 
-  const typeWordsAssertBounds = async targetBounds => {
+  const typeWordsAssertBounds = async (targetBounds) => {
     // Type words in the input field to move the text caret forward.
     const id = setInterval(() => {
       button.doDefault();
     }, 500);
 
     // Verify new magnifier bounds include |targetBounds|.
-    await new Promise(resolve => {
-      const boundsChangedListener = newBounds => {
+    await new Promise((resolve) => {
+      const boundsChangedListener = (newBounds) => {
         if (RectUtil.contains(newBounds, targetBounds)) {
           chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
               boundsChangedListener);
@@ -313,7 +324,6 @@ AX_TEST_F('MagnifierE2ETest', 'OnCaretBoundsChanged', async function() {
   await typeWordsAssertBounds({left: 1200, top: 100, width: 0, height: 0});
 });
 
-
 TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
   this.newCallback(async () => {
     // Disable focus following for full screen magnifier, and verify prefs and
@@ -333,3 +343,83 @@ TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
     assertTrue(magnifier.shouldFollowFocus());
   })();
 });
+
+TEST_F(
+    'MagnifierE2ETest', 'ScreenMagnifierSelectToSpeakFollowingPref',
+    function() {
+      this.newCallback(async () => {
+        // Disable select to speak following for full screen magnifier, and
+        // verify prefs and state.
+        await this.setPref(
+            Magnifier.Prefs.SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING,
+            false);
+        magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+        assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
+        assertFalse(magnifier.shouldFollowStsFocus());
+
+        // Enable select to speak following for full screen magnifier, and
+        // verify prefs and state.
+        await this.setPref(
+            Magnifier.Prefs.SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING,
+            true);
+        magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+        assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
+        assertTrue(magnifier.shouldFollowStsFocus());
+      })();
+    });
+
+TEST_F(
+    'MagnifierE2ETest', 'FullscreenMagnifierDoesNotFollowStsWhenPrefOff',
+    function() {
+      this.newCallback(async () => {
+        // Disable select to speak following for full screen magnifier, and
+        // verify prefs and state.
+        await this.setPref(
+            Magnifier.Prefs.SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING,
+            false);
+        magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+        assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
+        assertFalse(magnifier.shouldFollowStsFocus());
+
+        let count = 0;
+        chrome.accessibilityPrivate.moveMagnifierToRect = () => (count += 1);
+        assertEquals(count, 0);
+        magnifier.onSelectToSpeakFocusChanged_({
+          left: 2,
+          top: 4,
+          width: 5,
+          height: 7,
+        });
+        assertEquals(count, 0);
+      })();
+    });
+
+TEST_F(
+    'MagnifierE2ETest', 'FullscreenMagnifierFollowsStsWhenPrefOn', function() {
+      this.newCallback(async () => {
+        // Disable select to speak following for full screen magnifier, and
+        // verify prefs and state.
+        await this.setPref(
+            Magnifier.Prefs.SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING,
+            true);
+        magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+        assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
+        assertTrue(magnifier.shouldFollowStsFocus());
+
+        let count = 0;
+        chrome.accessibilityPrivate.moveMagnifierToRect = () => (count += 1);
+        magnifier.lastMouseMovedTime_ = undefined;
+        assertEquals(count, 0);
+        magnifier.onSelectToSpeakFocusChanged_({
+          left: 2,
+          top: 4,
+          width: 5,
+          height: 7,
+        });
+        assertEquals(count, 1);
+      })();
+    });

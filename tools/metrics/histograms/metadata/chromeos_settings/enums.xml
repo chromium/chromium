@@ -357,6 +357,7 @@ chromium-metrics-reviews@google.com.
   <int value="1542" label="Mouse Keys: Max Speed"/>
   <int value="1543" label="Mouse Keys: Left Handed"/>
   <int value="1544" label="Caret blink rate"/>
+  <int value="1545" label="Magnifier follows select to speak words"/>
   <int value="1600" label="Powerwash"/>
   <int value="1601" label="Sanitize ChromeOS"/>
   <int value="1700" label="Change Chrome Channel"/>

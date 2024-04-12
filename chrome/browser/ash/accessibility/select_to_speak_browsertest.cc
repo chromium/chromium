@@ -652,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithMagnifierFollowing,
-                       FullscreenMagnifierFollowsTextBounds) {
+                       FullscreenMagnifierFollowsTextBoundsWhenPrefOn) {
   sm_.send_word_events_and_wait_to_finish(true);
   Profile* profile = AccessibilityManager::Get()->profile();
   // Turn off navigation controls as focus on these buttons changes magnifier
@@ -663,6 +663,10 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithMagnifierFollowing,
   profile->GetPrefs()->SetBoolean(
       prefs::kAccessibilitySelectToSpeakNavigationControls, false);
 
+  // Set magnifier following STS Pref on
+  profile->GetPrefs()->SetBoolean(prefs::kAccessibilityMagnifierFollowsSts,
+                                  true);
+
   std::string text = "Read me first!";
   std::string second_text = "Read me last!";
   LoadURLAndSelectToSpeak(
@@ -671,8 +675,8 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithMagnifierFollowing,
                          text.c_str(), second_text.c_str()));
   SelectNodeWithText(text);
 
-  // Set magnifier scale to something quite so that the initial bounds of the
-  // text are not within the magnifier bounds.
+  // Set magnifier scale to something quite big so that the initial bounds of
+  // the text are not within the magnifier bounds.
   profile->GetPrefs()->SetDouble(prefs::kAccessibilityScreenMagnifierScale,
                                  8.0);
 

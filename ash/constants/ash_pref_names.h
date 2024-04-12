@@ -457,6 +457,10 @@ inline constexpr char kAccessibilityScreenMagnifierEnabled[] =
 // is enabled.
 inline constexpr char kAccessibilityScreenMagnifierFocusFollowingEnabled[] =
     "settings.a11y.screen_magnifier_focus_following";
+// A boolean pref which determines whether the magnifiers should follow
+// select to speak focus changes.
+inline constexpr char kAccessibilityMagnifierFollowsSts[] =
+    "settings.a11y.screen_magnifier_select_to_speak_focus_following";
 // An integer pref which indicates the mouse following mode for screen
 // magnifier. This maps to AccessibilityController::MagnifierMouseFollowingMode.
 inline constexpr char kAccessibilityScreenMagnifierMouseFollowingMode[] =

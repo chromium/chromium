@@ -25,13 +25,9 @@ export class Magnifier {
   private screenMagnifierFocusFollowing_: boolean|undefined;
   /**
    * Whether Select to Speak focus following is enabled or not.
-   * TODO(b/259363112): This should be based on a pref but is currently
-   * always true; when the feature flag AccessibilityMagnifierFollowsSts
-   * is turned on then STS focus events will be sent from
-   * chrome.accessibilityCommon, and when the flag is off then events will
-   * not be sent, so magnifier will never notice them.
+   * settings.a11y.screen_magnifier_select_to_speak_focus_following preference.
    */
-  private screenMagnifierStsFollowing_ = true;
+  private screenMagnifierFollowsSts_ = true;
   /**
    * Whether magnifier is current initializing, and so should ignore
    * focus updates.
@@ -204,8 +200,9 @@ export class Magnifier {
         case Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING:
           this.screenMagnifierFocusFollowing_ = Boolean(pref.value);
           break;
-        // TODO(b/259363112): Update screenMagnifierStsFollowing_ when pref is
-        // available.
+        case Magnifier.Prefs.SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING:
+          this.screenMagnifierFollowsSts_ = Boolean(pref.value);
+          break;
         default:
           return;
       }
@@ -228,7 +225,7 @@ export class Magnifier {
   }
 
   shouldFollowStsFocus(): boolean {
-    return Boolean(!this.isInitializing_ && this.screenMagnifierStsFollowing_);
+    return Boolean(!this.isInitializing_ && this.screenMagnifierFollowsSts_);
   }
 
   /**
@@ -345,7 +342,9 @@ export namespace Magnifier {
   /** Preferences that are configurable for Magnifier. */
   export enum Prefs {
     SCREEN_MAGNIFIER_FOCUS_FOLLOWING =
-        'settings.a11y.screen_magnifier_focus_following'
+        'settings.a11y.screen_magnifier_focus_following',
+    SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING =
+        'settings.a11y.screen_magnifier_select_to_speak_focus_following'
   }
 
   /**

@@ -17841,6 +17841,7 @@ from previous Chrome versions.
   <int value="-1467877366" label="OptimizationGuideModelExecution:enabled"/>
   <int value="-1467856474" label="MaxUnthrottledTimeoutNestingLevel:disabled"/>
   <int value="-1467839547" label="ContextMenuShopWithGoogleLens:disabled"/>
+  <int value="-1467806640" label="kAccessibilityMagnifierFollowsSts:disabled"/>
   <int value="-1467642274" label="KeyboardShortcutViewer:disabled"/>
   <int value="-1467332609" label="tab-management-experiment-type-anise"/>
   <int value="-1467027479" label="GlobalMediaControlsCrOSUpdatedUI:enabled"/>
@@ -18632,6 +18633,7 @@ from previous Chrome versions.
   <int value="-1125840399" label="ViewsBrowserWindows:enabled"/>
   <int value="-1125133283" label="disable-threaded-scrolling"/>
   <int value="-1124684239" label="LensEnableImageTranslate:enabled"/>
+  <int value="-1124173285" label="kAccessibilityMagnifierFollowsSts:enabled"/>
   <int value="-1124129866" label="FedCmSkipWellKnownForSameSite:enabled"/>
   <int value="-1123824206" label="ArcS2Idle:enabled"/>
   <int value="-1123054362" label="MicrosoftOfficeWebAppExperiment:enabled"/>
