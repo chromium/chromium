@@ -25,14 +25,8 @@ void AutofillImageFetcherImpl::FetchImagesForURLs(
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_urls;
-  for (const auto& url : card_art_urls) {
-    java_urls.emplace_back(url::GURLAndroid::FromNativeGURL(env, url));
-  }
-
-  Java_AutofillImageFetcher_prefetchImages(
-      env, GetOrCreateJavaImageFetcher(),
-      url::GURLAndroid::ToJavaArrayOfGURLs(env, java_urls));
+  Java_AutofillImageFetcher_prefetchImages(env, GetOrCreateJavaImageFetcher(),
+                                           card_art_urls);
 }
 
 base::android::ScopedJavaLocalRef<jobject>

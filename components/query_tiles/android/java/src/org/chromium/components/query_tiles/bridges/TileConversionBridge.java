@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
@@ -26,12 +27,12 @@ public class TileConversionBridge {
     @CalledByNative
     private static QueryTile createTileAndMaybeAddToList(
             @Nullable List<QueryTile> list,
-            String tileId,
-            String displayTitle,
-            String accessibilityText,
-            String queryText,
-            GURL[] urls,
-            String[] searchParams,
+            @JniType("std::string") String tileId,
+            @JniType("std::string") String displayTitle,
+            @JniType("std::string") String accessibilityText,
+            @JniType("std::string") String queryText,
+            @JniType("std::vector<const GURL*>") GURL[] urls,
+            @JniType("std::vector<std::string>") String[] searchParams,
             List<QueryTile> children) {
         QueryTile tile =
                 new QueryTile(

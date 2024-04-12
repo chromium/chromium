@@ -144,7 +144,7 @@ void HistoryClustersBridge::ClustersQueryDone(
                   env, visit.annotated_visit.url_row.url()),
               visit.annotated_visit.visit_row.visit_time.ToInternalValue(),
               base::android::ToJavaLongArray(env, duplicated_visit_timestamps),
-              url::GURLAndroid::ToJavaArrayOfGURLs(env, duplicated_visit_urls));
+              duplicated_visit_urls);
       cluster_visits.push_back(j_cluster_visit);
     }
     base::Time visit_time;

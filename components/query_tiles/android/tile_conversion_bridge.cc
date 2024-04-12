@@ -14,9 +14,6 @@
 
 namespace query_tiles {
 
-using base::android::ConvertUTF8ToJavaString;
-using base::android::ToJavaArrayOfStrings;
-
 ScopedJavaLocalRef<jobject> CreateJavaTileAndMaybeAddToList(
     JNIEnv* env,
     ScopedJavaLocalRef<jobject> jlist,
@@ -27,17 +24,13 @@ ScopedJavaLocalRef<jobject> CreateJavaTileAndMaybeAddToList(
   for (const auto& subtile : tile.sub_tiles)
     CreateJavaTileAndMaybeAddToList(env, jchildren, *subtile.get());
 
-  std::vector<ScopedJavaLocalRef<jobject>> urls;
+  std::vector<const GURL*> urls;
   for (const ImageMetadata& image : tile.image_metadatas)
-    urls.push_back(url::GURLAndroid::FromNativeGURL(env, image.url));
+    urls.push_back(&image.url);
 
   return Java_TileConversionBridge_createTileAndMaybeAddToList(
-      env, jlist, ConvertUTF8ToJavaString(env, tile.id),
-      ConvertUTF8ToJavaString(env, tile.display_text),
-      ConvertUTF8ToJavaString(env, tile.accessibility_text),
-      ConvertUTF8ToJavaString(env, tile.query_text),
-      url::GURLAndroid::ToJavaArrayOfGURLs(env, urls),
-      ToJavaArrayOfStrings(env, tile.search_params), jchildren);
+      env, jlist, tile.id, tile.display_text, tile.accessibility_text,
+      tile.query_text, urls, tile.search_params, jchildren);
 }
 
 ScopedJavaLocalRef<jobject> TileConversionBridge::CreateJavaTiles(

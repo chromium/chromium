@@ -183,8 +183,7 @@ void AttributionOsLevelManagerAndroid::Register(
         }
         case Registrar::kOs: {
           Java_AttributionOsLevelManager_registerAttributionSource(
-              env, jobj_, request_id,
-              url::GURLAndroid::ToJavaArrayOfGURLs(env, registration_urls),
+              env, jobj_, request_id, registration_urls,
               input_event->input_event);
           break;
         }
@@ -241,10 +240,8 @@ void AttributionOsLevelManagerAndroid::ClearData(
 
   Java_AttributionOsLevelManager_deleteRegistrations(
       env, jobj_, request_id, delete_begin.InMillisecondsSinceUnixEpoch(),
-      delete_end.InMillisecondsSinceUnixEpoch(),
-      url::GURLAndroid::ToJavaArrayOfGURLs(env, j_origins),
-      base::android::ToJavaArrayOfStrings(
-          env, std::vector<std::string>(domains.begin(), domains.end())),
+      delete_end.InMillisecondsSinceUnixEpoch(), j_origins,
+      std::vector<std::string>(domains.begin(), domains.end()),
       GetDeletionMode(delete_rate_limit_data), GetMatchBehavior(mode));
 }
 

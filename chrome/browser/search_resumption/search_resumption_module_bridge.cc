@@ -57,18 +57,16 @@ SearchResumptionModuleBridge::~SearchResumptionModuleBridge() = default;
 void SearchResumptionModuleBridge::OnSuggestionsReceived(
     std::vector<QuerySuggestion> suggestions) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  std::vector<std::u16string> titles;
+  std::vector<const std::u16string*> titles;
   titles.reserve(suggestions.size());
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> urls;
+  std::vector<const GURL*> urls;
   urls.reserve(suggestions.size());
   for (const auto& suggestion : suggestions) {
-    titles.push_back(suggestion.query);
-    urls.push_back(
-        url::GURLAndroid::FromNativeGURL(env, suggestion.destination_url));
+    titles.push_back(&suggestion.query);
+    urls.push_back(&suggestion.destination_url);
   }
-  Java_SearchResumptionModuleBridge_onSuggestionsReceived(
-      env, java_object_, base::android::ToJavaArrayOfStrings(env, titles),
-      url::GURLAndroid::ToJavaArrayOfGURLs(env, urls));
+  Java_SearchResumptionModuleBridge_onSuggestionsReceived(env, java_object_,
+                                                          titles, urls);
 }
 
 static jlong JNI_SearchResumptionModuleBridge_Create(

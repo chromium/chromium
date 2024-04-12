@@ -28,6 +28,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -293,7 +294,7 @@ public class AttributionOsLevelManager {
                             .RegisterSourceOptIn.class)
     @CalledByNative
     private void registerAttributionSource(
-            int requestId, GURL[] registrationUrls, MotionEvent event) {
+            int requestId, @JniType("std::vector") GURL[] registrationUrls, MotionEvent event) {
         if (!supportsAttribution()) {
             onRegistrationCompleted(
                     requestId,
@@ -401,8 +402,8 @@ public class AttributionOsLevelManager {
             int requestId,
             long startMs,
             long endMs,
-            GURL[] origins,
-            String[] domains,
+            @JniType("std::vector") GURL[] origins,
+            @JniType("std::vector<std::string>") String[] domains,
             int deletionMode,
             int matchBehavior) {
         if (!supportsAttribution()) {

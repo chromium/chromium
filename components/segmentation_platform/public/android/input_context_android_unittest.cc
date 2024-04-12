@@ -108,7 +108,8 @@ TEST_F(InputContextAndroidTest, FromJavaParams) {
   base::android::ScopedJavaLocalRef<jobjectArray> java_url_keys =
       base::android::ToJavaArrayOfStrings(jni_env, url_keys);
   base::android::ScopedJavaLocalRef<jobjectArray> java_url_values =
-      url::GURLAndroid::ToJavaArrayOfGURLs(jni_env, url_values);
+      jni_zero::ConvertArray<std::vector<base::android::ScopedJavaLocalRef<
+          jobject>>>::ToJniType(jni_env, url_values, jni_zero::g_object_class);
 
   segmentation_platform::InputContextAndroid::FromJavaParams(
       jni_env, reinterpret_cast<intptr_t>(native_input_context.get()),

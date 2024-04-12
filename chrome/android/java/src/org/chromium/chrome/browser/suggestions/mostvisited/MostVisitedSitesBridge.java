@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.suggestions.mostvisited;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -132,14 +133,17 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
      * Parameters guaranteed to be non-null.
      *
      * @param titles Array of most visited url page titles.
-     * @param urls Array of most visited URLs, including popular URLs if
-     *             available and necessary (i.e. there aren't enough most
-     *             visited URLs).
+     * @param urls Array of most visited URLs, including popular URLs if available and necessary
+     *     (i.e. there aren't enough most visited URLs).
      * @param sources For each tile, the {@code TileSource} that generated the tile.
      */
     @CalledByNative
     private void onURLsAvailable(
-            String[] titles, GURL[] urls, int[] sections, int[] titleSources, int[] sources) {
+            @JniType("std::vector<std::u16string>") String[] titles,
+            @JniType("std::vector") GURL[] urls,
+            @JniType("std::vector") int[] sections,
+            @JniType("std::vector") int[] titleSources,
+            @JniType("std::vector") int[] sources) {
         // Don't notify observer if we've already been destroyed.
         if (mNativeMostVisitedSitesBridge == 0) return;
 
@@ -151,13 +155,13 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
     }
 
     /**
-     * This is called when a previously uncached icon has been fetched.
-     * Parameters guaranteed to be non-null.
+     * This is called when a previously uncached icon has been fetched. Parameters guaranteed to be
+     * non-null.
      *
      * @param siteUrl URL of site with newly-cached icon.
      */
     @CalledByNative
-    private void onIconMadeAvailable(GURL siteUrl) {
+    private void onIconMadeAvailable(@JniType("GURL") GURL siteUrl) {
         // Don't notify observer if we've already been destroyed.
         if (mNativeMostVisitedSitesBridge != 0) {
             mWrappedObserver.onIconMadeAvailable(siteUrl);

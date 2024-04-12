@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -41,10 +42,11 @@ public class AutofillImageFetcher {
 
     /**
      * Fetches images for the passed in URLs and stores them in cache.
+     *
      * @param urls The URLs to fetch the images.
      */
     @CalledByNative
-    void prefetchImages(GURL[] urls) {
+    void prefetchImages(@JniType("base::span<const GURL>") GURL[] urls) {
         Context context = ContextUtils.getApplicationContext();
 
         for (GURL url : urls) {

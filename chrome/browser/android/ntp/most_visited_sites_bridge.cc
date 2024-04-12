@@ -17,8 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/MostVisitedSitesBridge_jni.h"
-#include "chrome/android/chrome_jni_headers/MostVisitedSites_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
@@ -32,15 +30,15 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/android/gurl_android.h"
 
+// Must appear after gurl_android.h
+#include "chrome/android/chrome_jni_headers/MostVisitedSitesBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/MostVisitedSites_jni.h"
+
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
-using base::android::ToJavaArrayOfStrings;
-using base::android::ToJavaIntArray;
-using base::android::ToJavaLongArray;
 using ntp_tiles::MostVisitedSites;
 using ntp_tiles::NTPTilesVector;
 using ntp_tiles::SectionType;
@@ -171,17 +169,13 @@ void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
     }
   }
   Java_MostVisitedSitesBridge_onURLsAvailable(
-      env, observer_, ToJavaArrayOfStrings(env, titles),
-      url::GURLAndroid::ToJavaArrayOfGURLs(env, urls),
-      ToJavaIntArray(env, section_types),
-      ToJavaIntArray(env, title_sources), ToJavaIntArray(env, sources));
+      env, observer_, titles, urls, section_types, title_sources, sources);
 }
 
 void MostVisitedSitesBridge::JavaObserver::OnIconMadeAvailable(
     const GURL& site_url) {
   JNIEnv* env = AttachCurrentThread();
-  Java_MostVisitedSitesBridge_onIconMadeAvailable(
-      env, observer_, url::GURLAndroid::FromNativeGURL(env, site_url));
+  Java_MostVisitedSitesBridge_onIconMadeAvailable(env, observer_, site_url);
 }
 
 MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile)

@@ -57,9 +57,9 @@ void PrepareTabs(
     JNIEnv* env,
     TabIterator& it,
     const sessions::TabRestoreService::Entries::const_iterator& current_entry,
-    std::vector<int>& ids,
+    std::vector<int32_t>& ids,
     std::vector<int64_t>& timestamps,
-    std::vector<std::u16string>& titles,
+    std::vector<const std::u16string*>& titles,
     std::vector<ScopedJavaLocalRef<jobject>>& urls,
     std::vector<std::optional<base::Token>>& group_ids) {
   while (it.CurrentEntry() == current_entry) {
@@ -68,7 +68,7 @@ void PrepareTabs(
         tab.navigations.at(tab.current_navigation_index);
     ids.push_back(tab.id.id());
     timestamps.push_back(tab.timestamp.InMillisecondsSinceUnixEpoch());
-    titles.push_back(current_navigation.title());
+    titles.push_back(&current_navigation.title());
     urls.push_back(url::GURLAndroid::FromNativeGURL(
         env, current_navigation.virtual_url()));
     group_ids.push_back(tab.group
@@ -99,9 +99,9 @@ void JNI_RecentlyClosedBridge_AddGroupToEntries(
     const sessions::TabRestoreService::Entries::const_iterator& current_entry,
     const sessions::TabRestoreService::Group& group,
     const JavaRef<jobject>& jentries) {
-  std::vector<int> ids;
+  std::vector<int32_t> ids;
   std::vector<int64_t> timestamps;
-  std::vector<std::u16string> titles;
+  std::vector<const std::u16string*> titles;
   std::vector<ScopedJavaLocalRef<jobject>> urls;
   std::vector<std::optional<base::Token>> group_ids;
 
@@ -115,11 +115,8 @@ void JNI_RecentlyClosedBridge_AddGroupToEntries(
 
   Java_RecentlyClosedBridge_addGroupToEntries(
       env, jentries, group.id.id(),
-      group.timestamp.InMillisecondsSinceUnixEpoch(),
-      ConvertUTF16ToJavaString(env, group.visual_data.title()),
-      ToJavaIntArray(env, ids), ToJavaLongArray(env, timestamps),
-      ToJavaArrayOfStrings(env, titles),
-      url::GURLAndroid::ToJavaArrayOfGURLs(env, urls),
+      group.timestamp.InMillisecondsSinceUnixEpoch(), group.visual_data.title(),
+      ids, timestamps, titles, urls,
       TokenAndroid::ToJavaArrayOfTokens(env, group_ids));
 }
 
@@ -131,7 +128,7 @@ void JNI_RecentlyClosedBridge_AddBulkEventToEntries(
     const JavaRef<jobject>& jentries) {
   std::vector<int> ids;
   std::vector<int64_t> timestamps;
-  std::vector<std::u16string> titles;
+  std::vector<const std::u16string*> titles;
   std::vector<ScopedJavaLocalRef<jobject>> urls;
   std::vector<std::optional<base::Token>> per_tab_group_ids;
 
@@ -145,23 +142,21 @@ void JNI_RecentlyClosedBridge_AddBulkEventToEntries(
               per_tab_group_ids);
 
   std::vector<std::optional<base::Token>> group_ids;
-  std::vector<std::u16string> group_titles;
+  std::vector<const std::u16string*> group_titles;
 
   const size_t group_count = window.tab_groups.size();
   group_ids.reserve(group_count);
   group_titles.reserve(group_count);
   for (const auto& tab_group : window.tab_groups) {
     group_ids.push_back(tab_group.first.token());
-    group_titles.push_back(tab_group.second.title());
+    group_titles.push_back(&tab_group.second.title());
   }
 
   Java_RecentlyClosedBridge_addBulkEventToEntries(
       env, jentries, window.id.id(),
       window.timestamp.InMillisecondsSinceUnixEpoch(),
-      TokenAndroid::ToJavaArrayOfTokens(env, group_ids),
-      ToJavaArrayOfStrings(env, group_titles), ToJavaIntArray(env, ids),
-      ToJavaLongArray(env, timestamps), ToJavaArrayOfStrings(env, titles),
-      url::GURLAndroid::ToJavaArrayOfGURLs(env, urls),
+      TokenAndroid::ToJavaArrayOfTokens(env, group_ids), group_titles, ids,
+      timestamps, titles, urls,
       TokenAndroid::ToJavaArrayOfTokens(env, per_tab_group_ids));
 }
 

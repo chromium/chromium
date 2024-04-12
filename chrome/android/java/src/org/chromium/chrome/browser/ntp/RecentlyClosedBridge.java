@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Token;
@@ -66,11 +67,11 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             List<RecentlyClosedEntry> entries,
             int id,
             long groupTimestamp,
-            String groupTitle,
-            int[] tabIds,
-            long[] tabTimestamps,
-            String[] tabTitles,
-            GURL[] tabUrls,
+            @JniType("std::u16string") String groupTitle,
+            @JniType("std::vector<int32_t>") int[] tabIds,
+            @JniType("std::vector<int64_t>") long[] tabTimestamps,
+            @JniType("std::vector<const std::u16string*>") String[] tabTitles,
+            @JniType("std::vector") GURL[] tabUrls,
             Token[] tabGroupIds) {
         RecentlyClosedGroup group = new RecentlyClosedGroup(id, groupTimestamp, groupTitle);
 
@@ -85,11 +86,11 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             int id,
             long eventTimestamp,
             Token[] tabGroupIds,
-            String[] groupTitles,
-            int[] tabIds,
-            long[] tabTimestamps,
-            String[] tabTitles,
-            GURL[] tabUrls,
+            @JniType("std::vector<const std::u16string*>") String[] groupTitles,
+            @JniType("std::vector<int32_t>") int[] tabIds,
+            @JniType("std::vector<int64_t>") long[] tabTimestamps,
+            @JniType("std::vector<const std::u16string*>") String[] tabTitles,
+            @JniType("std::vector") GURL[] tabUrls,
             Token[] perTabTabGroupIds) {
         RecentlyClosedBulkEvent event = new RecentlyClosedBulkEvent(id, eventTimestamp);
 
