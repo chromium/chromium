@@ -889,20 +889,20 @@ GetGraphicsTabletMetadataList() {
           {{0xeeee, 0xeeee},
            {mojom::CustomizationRestriction::kAllowCustomizations,
             mojom::GraphicsTabletButtonConfig::kNoConfig}},
+          // Wacom One Pen Tablet S
+          {{0x0531, 0x0100},
+           {mojom::CustomizationRestriction::kAllowCustomizations,
+            mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly}},
+          // Wacom One Pen tablet M
+          {{0x0531, 0x0102},
+           {mojom::CustomizationRestriction::kAllowCustomizations,
+            mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly}},
           // One by Wacom S
           {{0x056a, 0x037a},
            {mojom::CustomizationRestriction::kAllowCustomizations,
             mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly}},
           // One by Wacom M
           {{0x056a, 0x0301},
-           {mojom::CustomizationRestriction::kAllowCustomizations,
-            mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly}},
-          // Wacom One Pen Tablet S
-          {{0x056a, 0x0100},
-           {mojom::CustomizationRestriction::kAllowCustomizations,
-            mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly}},
-          // Wacom One pen tablet M
-          {{0x056a, 0x0102},
            {mojom::CustomizationRestriction::kAllowCustomizations,
             mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly}},
           // Wacom One Pen Display 11
