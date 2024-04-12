@@ -94,7 +94,6 @@ component("compositor") {
   public_deps = [ "//cc" ]
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc/animation",
     "//cc/paint",

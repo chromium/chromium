@@ -47,7 +47,6 @@ component("sql") {
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//third_party/sqlite",
   ]
 

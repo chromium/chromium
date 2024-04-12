@@ -237,7 +237,6 @@ component("browser") {
   deps = [
     "//base",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//components/crash/core/common:crash_key",
     "//components/file_access:file_access",

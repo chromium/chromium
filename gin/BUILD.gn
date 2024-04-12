@@ -105,7 +105,6 @@ component("gin") {
     "//v8",
   ]
   deps = [
-    "//base/third_party/dynamic_annotations",
     "//third_party/abseil-cpp:absl",
     "//tools/v8_context_snapshot:buildflags",
   ]

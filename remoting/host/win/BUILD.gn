@@ -421,7 +421,6 @@ shared_library("remoting_core") {
     "//base",
     "//base:base_static",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//build/win:default_exe_manifest",
     "//ipc",

@@ -4,7 +4,6 @@
 //base/allocator/partition_allocator/src/partition_alloc
 //base/numerics
 //base/third_party/double_conversion
-//base/third_party/dynamic_annotations
 //build
 //build/android
 //build/config

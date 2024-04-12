@@ -128,7 +128,6 @@ component("media") {
   deps = [
     "//base",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//cc/paint",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/common",

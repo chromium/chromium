@@ -37,7 +37,6 @@ static_library("usb") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//device/base",

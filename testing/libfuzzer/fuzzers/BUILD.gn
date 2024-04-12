@@ -474,7 +474,6 @@ if (!is_win) {
       ":command_buffer_lpm_fuzzer_proto",
       "//base",
       "//base/test:test_support",
-      "//base/third_party/dynamic_annotations",
       "//build:chromeos_buildflags",
       "//components/viz/common:shared_image_format",
       "//components/viz/test:test_support",  # TODO: huge; is there something

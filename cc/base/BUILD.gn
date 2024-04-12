@@ -54,7 +54,6 @@ cc_component("base") {
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//skia",
     "//ui/base:features",
     "//ui/gfx/animation",

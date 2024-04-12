@@ -186,7 +186,6 @@ source_set("app_list") {
     "//ash/style",
     "//base",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//cc/paint",
     "//chromeos",
     "//chromeos/ash/components/feature_usage",

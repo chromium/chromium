@@ -40,7 +40,6 @@ component("message_center") {
     deps += [
       ":message_center_vector_icons",
       "//base:i18n",
-      "//base/third_party/dynamic_annotations",
       "//components/url_formatter",
       "//skia",
       "//ui/accessibility",

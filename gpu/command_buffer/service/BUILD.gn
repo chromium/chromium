@@ -77,7 +77,6 @@ target(link_target_type, "service_sources") {
   ]
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//gpu/command_buffer/client:client_sources",
     "//gpu/config:config_sources",
     "//gpu/ipc/common:ipc_common_sources",
@@ -381,7 +380,6 @@ target(link_target_type, "gles2_sources") {
     ":disk_cache_proto",
     ":service",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//components/crash/core/common",

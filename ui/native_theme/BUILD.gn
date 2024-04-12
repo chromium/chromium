@@ -91,7 +91,6 @@ component("native_theme") {
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc/paint",
     "//ui/base",

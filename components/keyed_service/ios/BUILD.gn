@@ -15,7 +15,6 @@ source_set("ios") {
   public_deps = [ "//base" ]
 
   deps = [
-    "//base/third_party/dynamic_annotations",
     "//components/keyed_service/core",
     "//ios/web",
   ]

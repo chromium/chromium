@@ -527,7 +527,6 @@ static_library("test_support") {
   deps = [
     ":content_test_mojo_bindings",
     ":web_ui_mojo_test_resources",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc:test_support",
     "//components/attribution_reporting:mojom",
@@ -2958,7 +2957,6 @@ test("content_unittests") {
     "//base/allocator:buildflags",
     "//base/test:proto_test_support",
     "//base/test:test_support",
-    "//base/third_party/dynamic_annotations",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//cc",

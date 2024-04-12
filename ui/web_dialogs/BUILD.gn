@@ -17,7 +17,6 @@ component("web_dialogs") {
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//content/public/browser",
     "//content/public/common",
     "//skia",

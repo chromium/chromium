@@ -170,7 +170,6 @@ source_set("tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//components/system_cpu:test_support",
     "//components/variations",

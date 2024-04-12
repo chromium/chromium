@@ -29,7 +29,6 @@ if (!is_android) {
 
     deps = [
       "//base",
-      "//base/third_party/dynamic_annotations",
       "//mojo/public/cpp/bindings",
     ]
 

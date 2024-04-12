@@ -274,7 +274,6 @@ source_set("automation_client_lib") {
     ":embed_mobile_devices_in_cpp",
     ":embed_user_data_dir_in_cpp",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
     "//chrome/common:non_code_constants",
     "//chrome/common:version_header",
@@ -356,7 +355,6 @@ source_set("lib") {
   deps = [
     ":automation_client_lib",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//chrome/common:constants",

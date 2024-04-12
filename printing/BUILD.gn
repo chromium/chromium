@@ -204,7 +204,6 @@ component("printing") {
   deps = [
     "//base",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//printing/mojom",
     "//skia",

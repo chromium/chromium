@@ -63,7 +63,7 @@ component("crypto") {
     "user_verifying_key.h",
   ]
 
-  deps = [ "//base/third_party/dynamic_annotations" ]
+  deps = []
 
   public_deps = [
     ":buildflags",

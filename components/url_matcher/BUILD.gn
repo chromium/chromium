@@ -23,7 +23,6 @@ component("url_matcher") {
 
   public_deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//components/google/core/common",
     "//components/url_formatter",
     "//net",

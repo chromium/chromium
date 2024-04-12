@@ -27,7 +27,6 @@ component("content") {
   ]
 
   deps = [
-    "//base/third_party/dynamic_annotations",
     "//components/pref_registry",
     "//content/public/browser",
     "//content/public/common",

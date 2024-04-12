@@ -20,7 +20,6 @@ source_set("native_test_support") {
     ":native_test_jni",
     "//base",
     "//base/test:test_support",
-    "//base/third_party/dynamic_annotations",
     "//testing/gtest",
   ]
 }

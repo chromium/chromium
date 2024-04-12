@@ -462,7 +462,6 @@ cc_component("cc") {
   ]
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//components/miracle_parameter/common",
     "//components/viz/client",
@@ -649,7 +648,6 @@ cc_test_static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//base/third_party/dynamic_annotations",
     "//cc/paint",
     "//components/ukm",
     "//components/ukm:test_support",

@@ -171,7 +171,6 @@ source_set("cronet_static") {
     ":cronet_jni_registration",
     ":request_context_config_proto",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//components/cronet:cronet_common",
     "//components/cronet:cronet_version_header",
     "//components/cronet:metrics_util",

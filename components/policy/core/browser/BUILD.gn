@@ -77,7 +77,6 @@ source_set("internal") {
 
   public_deps = [ "//base" ]
   deps = [
-    "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//components/google/core/common",

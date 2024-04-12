@@ -142,7 +142,6 @@ component("events_base") {
 
   deps = [
     ":dom_keycode_converter",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
   ]
 
@@ -283,7 +282,6 @@ component("events") {
   deps = [
     ":dom_keycode_converter",
     ":gesture_detection",
-    "//base/third_party/dynamic_annotations",
     "//skia",
     "//ui/base:features",
     "//ui/gfx",
@@ -484,7 +482,6 @@ component("gesture_detection") {
   deps = [
     ":events_base",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//ui/base:features",
     "//ui/display",

@@ -502,7 +502,6 @@ component("base") {
     "//base",
     "//base:base_static",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//build:blink_buildflags",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",

@@ -296,7 +296,6 @@ static_library("content_shell_lib") {
     ":shell_controller_mojom",
     "//base",
     "//base:base_static",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc/base",
     "//components/cdm/renderer",

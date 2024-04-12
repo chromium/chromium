@@ -17,7 +17,6 @@ static_library("calendar") {
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//components/signin/public/identity_manager",
     "//crypto",
     "//google_apis:google_apis",

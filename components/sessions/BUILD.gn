@@ -40,7 +40,6 @@ if (!is_ios) {
 
     deps = [
       "//base",
-      "//base/third_party/dynamic_annotations",
       "//content/public/common",
       "//ui/base",
       "//url",

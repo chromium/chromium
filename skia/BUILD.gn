@@ -490,7 +490,6 @@ component("skia") {
     ":skia_opts",
     ":skia_switches",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//third_party/libpng",
     "//third_party/libwebp",
     "//third_party/libwebp:libwebp_webp",

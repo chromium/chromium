@@ -221,7 +221,6 @@ component("shared_impl") {
   ]
 
   deps = [
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//components/nacl/common:buildflags",
     "//device/gamepad/public/cpp:shared_with_blink",

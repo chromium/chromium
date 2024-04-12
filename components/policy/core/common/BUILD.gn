@@ -234,7 +234,6 @@ source_set("internal") {
 
   deps = [
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//components/account_id",
     "//components/enterprise/common:strings",

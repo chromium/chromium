@@ -30,7 +30,6 @@ source_set("encoder") {
 
   deps = [
     ":vpx_codec",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//remoting/base:base",
     "//remoting/proto",
@@ -91,7 +90,6 @@ source_set("decoder") {
   deps = [
     ":vpx_codec",
     "//base:base",
-    "//base/third_party/dynamic_annotations",
     "//remoting/base:base",
     "//remoting/proto",
     "//remoting/protocol:session_config",
@@ -114,7 +112,6 @@ source_set("vpx_codec") {
 
   deps = [
     "//base:base",
-    "//base/third_party/dynamic_annotations",
     "//remoting/proto",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",

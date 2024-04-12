@@ -3097,7 +3097,6 @@ component("ash") {
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
     "//cc",
     "//cc/debug",

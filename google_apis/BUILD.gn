@@ -177,7 +177,6 @@ component("google_apis") {
 
   deps = [
     ":proto",
-    "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//crypto",
