@@ -37,6 +37,7 @@ public class PageAppMenuFacility extends StationFacility<PageStation> {
         NewTabPageStation destination =
                 NewTabPageStation.newBuilder()
                         .initFrom(mStation)
+                        .withIncognito(false)
                         .withIsOpeningTab(true)
                         .withIsSelectingTab(true)
                         .build();
@@ -45,12 +46,13 @@ public class PageAppMenuFacility extends StationFacility<PageStation> {
     }
 
     /** Selects "New Incognito tab" from the app menu. */
-    public IncognitoNewTabPageStation openNewIncognitoTab() {
+    public NewTabPageStation openNewIncognitoTab() {
         recheckActiveConditions();
 
-        IncognitoNewTabPageStation destination =
-                IncognitoNewTabPageStation.newBuilder()
+        NewTabPageStation destination =
+                NewTabPageStation.newBuilder()
                         .initFrom(mStation)
+                        .withIncognito(true)
                         .withIsOpeningTab(true)
                         .withIsSelectingTab(true)
                         .build();
