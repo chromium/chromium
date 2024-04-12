@@ -253,15 +253,6 @@ class ASH_EXPORT TabletModeController
     TABLET_MODE_INTERVAL_ACTIVE
   };
 
-  // Tracks whether we are in the process of entering or exiting tablet mode.
-  // Used for logging histogram metrics.
-  enum class State {
-    kInClamshellMode,
-    kEnteringTabletMode,
-    kInTabletMode,
-    kExitingTabletMode,
-  };
-
   // Turn the always tablet mode window manager on or off.
   void SetTabletModeEnabledInternal(bool should_enable);
 
