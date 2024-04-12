@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_COMMERCE_CORE_COMPARE_CLUSTER_MANAGER_H_
 #define COMPONENTS_COMMERCE_CORE_COMPARE_CLUSTER_MANAGER_H_
 
+#include <map>
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "components/commerce/core/commerce_types.h"
 #include "url/gurl.h"
 
 namespace commerce {
+struct CandidateProduct;
 
 // Class for clustering product information.
 class ClusterManager {
@@ -53,9 +57,7 @@ class ClusterManager {
   GetOpenUrlInfosCallback get_open_url_infos_cb_;
 
   // A map storing info of candidate products, keyed by product page URL.
-  // TODO(qinmin): change ProductInfo to another structure for finding
-  // related products.
-  std::map<GURL, ProductInfo> candidate_product_map_;
+  std::map<GURL, std::unique_ptr<CandidateProduct>> candidate_product_map_;
 
   base::WeakPtrFactory<ClusterManager> weak_ptr_factory_{this};
 };
