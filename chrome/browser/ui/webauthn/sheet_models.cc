@@ -1976,7 +1976,8 @@ std::u16string AuthenticatorGpmOnboardingSheetModel::GetStepTitle() const {
 
 std::u16string AuthenticatorGpmOnboardingSheetModel::GetStepDescription()
     const {
-  return u"";
+  return u"This passkey will be saved to Google Password Manager for "
+         u"username@gmail.com. Learn more about passkeys. (UNTRANSLATED)";
 }
 
 bool AuthenticatorGpmOnboardingSheetModel::IsCancelButtonVisible() const {
