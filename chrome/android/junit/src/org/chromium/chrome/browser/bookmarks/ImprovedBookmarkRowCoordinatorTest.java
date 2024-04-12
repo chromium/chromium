@@ -315,6 +315,17 @@ public class ImprovedBookmarkRowCoordinatorTest {
                         BookmarkRowDisplayPref.VISUAL));
         assertEquals(mFavicon, model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE).get());
 
+        model = mCoordinator.createBasePropertyModel(bookmarkModel.getMobileFolderId());
+        assertTrue(model.get(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK));
+        assertFalse(
+                mCoordinator.shouldShowImagesForBookmark(
+                        bookmarkModel.getBookmarkById(bookmarkModel.getMobileFolderId()),
+                        BookmarkRowDisplayPref.VISUAL));
+        assertEquals(
+                new Pair<>(null, null),
+                model.get(ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES).get());
+        assertEquals(2, model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
+
         model = mCoordinator.createBasePropertyModel(accountBookmarkId);
         assertFalse(model.get(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK));
     }

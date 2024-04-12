@@ -133,14 +133,13 @@ public class ImprovedBookmarkRowCoordinator {
     private void resolveImagesForBookmark(PropertyModel propertyModel, BookmarkItem item) {
         final @BookmarkRowDisplayPref int displayPref =
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
-        boolean useImages = shouldShowImagesForBookmark(item, displayPref);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
-                item.isFolder() && useImages
+                item.isFolder() && displayPref == BookmarkRowDisplayPref.VISUAL
                         ? ImageVisibility.FOLDER_DRAWABLE
                         : ImageVisibility.DRAWABLE);
 
-        if (item.isFolder() && useImages) {
+        if (item.isFolder() && displayPref == BookmarkRowDisplayPref.VISUAL) {
             populateVisualFolderProperties(propertyModel, item);
         } else if (item.isFolder()) {
             propertyModel.set(
@@ -164,7 +163,7 @@ public class ImprovedBookmarkRowCoordinator {
                             set(
                                     BookmarkUtils.getFolderIcon(
                                             mContext, item.getId(), mBookmarkModel, displayPref));
-                        } else if (useImages) {
+                        } else if (shouldShowImagesForBookmark(item, displayPref)) {
                             mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                                     item, this::set);
                         } else {
@@ -210,6 +209,10 @@ public class ImprovedBookmarkRowCoordinator {
                 drawablesSupplier);
     }
 
+    /**
+     * Returns whether images should be shown for a given bookmark, which is true if the user has
+     * selected the visual display preference and the bookmark is synced with google.
+     */
     boolean shouldShowImagesForBookmark(
             BookmarkItem item, @BookmarkRowDisplayPref int displayPref) {
         // Local bookmarks shouldn't get images, even if they're cached. This is only relevant when
@@ -221,6 +224,10 @@ public class ImprovedBookmarkRowCoordinator {
         return displayPref == BookmarkRowDisplayPref.VISUAL;
     }
 
+    /**
+     * Returns whether images should be shown for a given folder, which is true if the user has
+     * selected the visual display preference and the folder is synced with google.
+     */
     boolean shouldShowImagesForFolder(BookmarkId folder) {
         BookmarkId rootNodeId = mBookmarkModel.getRootFolderId();
         BookmarkId desktopNodeId = mBookmarkModel.getDesktopFolderId();
