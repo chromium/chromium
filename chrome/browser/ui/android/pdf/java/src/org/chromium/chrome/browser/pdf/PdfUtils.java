@@ -14,7 +14,9 @@ import androidx.annotation.Nullable;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContentUriUtils;
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -28,6 +30,7 @@ import java.util.Locale;
 public class PdfUtils {
     // TODO(shuyng): add this to android_chrome_strings.grd once the UX spec is finalized.
     static final String PDF_PAGE_TITLE = "PDF";
+    private static final String TAG = "PdfUtils";
     private static final String PDF_EXTENSION = "pdf";
     private static boolean sShouldOpenPdfInlineForTesting;
 
@@ -119,5 +122,29 @@ public class PdfUtils {
 
     static void setShouldOpenPdfInlineForTesting(boolean shouldOpenPdfInlineForTesting) {
         sShouldOpenPdfInlineForTesting = shouldOpenPdfInlineForTesting;
+    }
+
+    // TODO(shuyng): Update to getPdfDocumentRequest once API becomes available.
+    static Uri getContentUri(String pdfFilePath) {
+        Uri uri = Uri.parse(pdfFilePath);
+        String scheme = uri.getScheme();
+        Uri generatedUri;
+        try {
+            if (UrlConstants.CONTENT_SCHEME.equals(scheme)) {
+                // TODO(shuyng): Use Uri to build PdfDocumentRequest.
+                generatedUri = uri;
+            } else if (UrlConstants.FILE_SCHEME.equals(scheme)) {
+                // TODO(shuyng): Use File object to build PdfDocumentRequest.
+                generatedUri = Uri.EMPTY;
+            } else {
+                // TODO(shuyng): Use Uri to build PdfDocumentRequest.
+                File file = new File(pdfFilePath);
+                generatedUri = ChromeFileProvider.generateUri(file);
+            }
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Couldn't generate URI for pdf file: " + e);
+            generatedUri = null;
+        }
+        return generatedUri;
     }
 }

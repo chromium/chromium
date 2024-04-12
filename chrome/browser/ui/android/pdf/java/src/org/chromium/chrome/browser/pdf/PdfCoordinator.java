@@ -5,15 +5,22 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 
 /** The class responsible for setting up PdfPage. */
 public class PdfCoordinator {
+    private static final String TAG = "PdfCoordinator";
     private final View mView;
+    private final FragmentManager mFragmentManager;
     private int mFragmentContainerViewId;
     private String mPdfFilePath;
     private boolean mPdfIsDownloaded;
@@ -45,6 +52,7 @@ public class PdfCoordinator {
         View fragmentContainerView = mView.findViewById(R.id.pdf_fragment_container);
         mFragmentContainerViewId = View.generateViewId();
         fragmentContainerView.setId(mFragmentContainerViewId);
+        mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         setPdfFilePath(filepath);
         setPdfIsDownloaded(isPdfDownloaded());
     }
@@ -91,8 +99,13 @@ public class PdfCoordinator {
         if (mView.getParent() == null) {
             return;
         }
-        // TODO: load file with PdfViewer.
-        mIsPdfLoaded = true;
+        Uri pdfUri = PdfUtils.getContentUri(mPdfFilePath);
+        if (pdfUri != null) {
+            // TODO: load file with PdfViewer.
+            mIsPdfLoaded = true;
+        } else {
+            Log.e(TAG, "Pdf uri is null.");
+        }
     }
 
     private boolean isPdfDownloaded() {

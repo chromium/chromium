@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,13 +28,13 @@ import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class PdfPageUnitTest {
-
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -67,12 +68,14 @@ public class PdfPageUnitTest {
         doReturn(mMarginSupplier).when(mMockNativePageHost).createDefaultMarginSupplier();
         PdfUtils.setShouldOpenPdfInlineForTesting(true);
         mPdfInfo = new PdfInfo();
+        ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
     }
 
     @After
     public void tearDown() throws Exception {
         PdfUtils.setShouldOpenPdfInlineForTesting(false);
         mCloseableMocks.close();
+        ChromeFileProvider.setGeneratedUriForTesting(null);
     }
 
     @Test
