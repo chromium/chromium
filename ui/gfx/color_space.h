@@ -140,6 +140,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
     SMPTE240M,
     YCOCG,
     BT2020_NCL,
+    // TODO(crbug.com/333906350): Remove BT2020_CL matrix as it is unreachable.
     BT2020_CL,
     YDZDX,
     GBR,

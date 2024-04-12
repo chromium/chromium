@@ -1203,6 +1203,26 @@ bool ColorSpace::ToSkYUVColorSpace(int bit_depth, SkYUVColorSpace* out) const {
       }
       return false;
 
+    case MatrixID::FCC:
+      *out = range_ == RangeID::FULL ? kFCC_Full_SkYUVColorSpace
+                                     : kFCC_Limited_SkYUVColorSpace;
+      return true;
+
+    case MatrixID::SMPTE240M:
+      *out = range_ == RangeID::FULL ? kSMPTE240_Full_SkYUVColorSpace
+                                     : kSMPTE240_Limited_SkYUVColorSpace;
+      return true;
+
+    case MatrixID::YDZDX:
+      *out = range_ == RangeID::FULL ? kYDZDX_Full_SkYUVColorSpace
+                                     : kYDZDX_Limited_SkYUVColorSpace;
+      return true;
+
+    case MatrixID::GBR:
+      *out = range_ == RangeID::FULL ? kGBR_Full_SkYUVColorSpace
+                                     : kGBR_Limited_SkYUVColorSpace;
+      return true;
+
     case MatrixID::YCOCG:
       if (bit_depth == 8) {
         *out = range_ == RangeID::FULL ? kYCgCo_8bit_Full_SkYUVColorSpace

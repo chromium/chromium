@@ -468,15 +468,17 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGB) {
   }
 }
 
-TEST_F(VideoResourceUpdaterTest, SoftwareFrameYDZDX) {
+// TOOD(crbug.com/333906350): Remove this test once BT2020_CL matrix from
+// gfx::ColorSpace is also removed.
+TEST_F(VideoResourceUpdaterTest, SoftwareFrameBT2020CL) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   scoped_refptr<VideoFrame> video_frame = CreateTestYUVVideoFrame();
   video_frame->set_color_space(gfx::ColorSpace(
       gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
-      gfx::ColorSpace::MatrixID::YDZDX, gfx::ColorSpace::RangeID::LIMITED));
+      gfx::ColorSpace::MatrixID::BT2020_CL, gfx::ColorSpace::RangeID::LIMITED));
 
   // We should always get `VideoFrameResourceType::YUV` since Skia doesn't
-  // support YDZDX color spaces.
+  // support BT2020_CL matrix color spaces.
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);

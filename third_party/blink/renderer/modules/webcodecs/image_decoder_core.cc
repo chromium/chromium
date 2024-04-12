@@ -76,6 +76,38 @@ gfx::ColorSpace YUVColorSpaceToGfxColorSpace(
       return gfx::ColorSpace(primary_id, transfer_id,
                              gfx::ColorSpace::MatrixID::BT2020_NCL,
                              gfx::ColorSpace::RangeID::LIMITED);
+    case kFCC_Full_SkYUVColorSpace:
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::FCC,
+                             gfx::ColorSpace::RangeID::FULL);
+    case kFCC_Limited_SkYUVColorSpace:
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::FCC,
+                             gfx::ColorSpace::RangeID::LIMITED);
+    case kSMPTE240_Full_SkYUVColorSpace:
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::SMPTE240M,
+                             gfx::ColorSpace::RangeID::FULL);
+    case kSMPTE240_Limited_SkYUVColorSpace:
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::SMPTE240M,
+                             gfx::ColorSpace::RangeID::LIMITED);
+    case kYDZDX_Full_SkYUVColorSpace:
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::YDZDX,
+                             gfx::ColorSpace::RangeID::FULL);
+    case kYDZDX_Limited_SkYUVColorSpace:
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::YDZDX,
+                             gfx::ColorSpace::RangeID::LIMITED);
+    case kGBR_Full_SkYUVColorSpace:
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::GBR,
+                             gfx::ColorSpace::RangeID::FULL);
+    case kGBR_Limited_SkYUVColorSpace:
+      return gfx::ColorSpace(primary_id, transfer_id,
+                             gfx::ColorSpace::MatrixID::GBR,
+                             gfx::ColorSpace::RangeID::LIMITED);
     case kYCgCo_8bit_Full_SkYUVColorSpace:
     case kYCgCo_10bit_Full_SkYUVColorSpace:
     case kYCgCo_12bit_Full_SkYUVColorSpace:
@@ -89,7 +121,6 @@ gfx::ColorSpace YUVColorSpaceToGfxColorSpace(
                              gfx::ColorSpace::MatrixID::YCOCG,
                              gfx::ColorSpace::RangeID::LIMITED);
     case kIdentity_SkYUVColorSpace:
-    default:
       NOTREACHED();
       return gfx::ColorSpace();
   };
