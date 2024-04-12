@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -288,14 +288,36 @@ void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {
     return;
   }
 
-  PrefService* local_state = g_browser_process->local_state();
-  if (show && local_state->FindPreference(prefs::kDefaultBrowserFirstShownTime)
-                  ->IsDefaultValue()) {
-    local_state->SetTime(prefs::kDefaultBrowserFirstShownTime,
-                         base::Time::Now());
+  if (show) {
+    PrefService* local_state = g_browser_process->local_state();
+    base::TimeDelta app_menu_remaining_duration;
+    if (local_state->FindPreference(prefs::kDefaultBrowserFirstShownTime)
+            ->IsDefaultValue()) {
+      local_state->SetTime(prefs::kDefaultBrowserFirstShownTime,
+                           base::Time::Now());
+      app_menu_remaining_duration =
+          features::kDefaultBrowserAppMenuDuration.Get();
+    } else {
+      base::Time first_shown_time =
+          local_state->GetTime(prefs::kDefaultBrowserFirstShownTime);
+      // There is a chance the remaining duration is negative due to time
+      // passing since `ShouldShowAppMenuPrompt()` was last checked, so clamp to
+      // >= 0.
+      app_menu_remaining_duration =
+          std::max(features::kDefaultBrowserAppMenuDuration.Get() -
+                       (base::Time::Now() - first_shown_time),
+                   base::Microseconds(0));
+    }
+
+    app_menu_prompt_dismiss_timer_.Start(
+        FROM_HERE, app_menu_remaining_duration, base::BindOnce([]() {
+          UpdatePrefsForDismissedPrompt(
+              BrowserList::GetInstance()->GetLastActive()->profile());
+          DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts();
+        }));
+  } else {
+    app_menu_prompt_dismiss_timer_.Stop();
   }
-  // TODO(crbug.com/333597133): if (show), add timer that dismisses all prompts
-  // and calls UpdatePrefsForDismissedPrompt after the remaining show time.
 
   show_app_menu_prompt_ = show;
   for (auto& obs : observers_) {

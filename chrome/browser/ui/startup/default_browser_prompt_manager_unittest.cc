@@ -279,7 +279,8 @@ TEST_F(DefaultBrowserPromptManagerTest, AppMenuFeatureParamFalse) {
 
 TEST_F(DefaultBrowserPromptManagerTest, ShowAppMenuFirstTime) {
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
-      {{features::kShowDefaultBrowserAppMenuChip.name, "true"}});
+      {{features::kShowDefaultBrowserAppMenuChip.name, "true"},
+       {features::kDefaultBrowserAppMenuDuration.name, "1d"}});
   ASSERT_TRUE(local_state()
                   ->FindPreference(prefs::kDefaultBrowserFirstShownTime)
                   ->IsDefaultValue());
@@ -288,6 +289,18 @@ TEST_F(DefaultBrowserPromptManagerTest, ShowAppMenuFirstTime) {
   EXPECT_TRUE(manager()->get_show_app_menu_prompt());
   EXPECT_EQ(base::Time::Now(),
             local_state()->GetTime(prefs::kDefaultBrowserFirstShownTime));
+
+  task_environment()->FastForwardBy(base::Days(1) - base::Microseconds(1));
+  EXPECT_TRUE(manager()->get_show_app_menu_prompt());
+
+  task_environment()->FastForwardBy(base::Microseconds(1));
+  EXPECT_FALSE(manager()->get_show_app_menu_prompt());
+  EXPECT_TRUE(local_state()
+                  ->FindPreference(prefs::kDefaultBrowserFirstShownTime)
+                  ->IsDefaultValue());
+  EXPECT_EQ(base::Time::Now(),
+            local_state()->GetTime(prefs::kDefaultBrowserLastDeclinedTime));
+  EXPECT_EQ(1, local_state()->GetInteger(prefs::kDefaultBrowserDeclinedCount));
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, DoNotShowIfPromptsShouldNotBeReshown) {
@@ -306,15 +319,26 @@ TEST_F(DefaultBrowserPromptManagerTest, DoNotShowIfPromptsShouldNotBeReshown) {
 TEST_F(DefaultBrowserPromptManagerTest, KeepShowingIfFirstShownTimeIsRecent) {
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kShowDefaultBrowserAppMenuChip.name, "true"},
-       {features::kDefaultBrowserAppMenuDuration.name, "1s"}});
-  local_state()->SetTime(
-      prefs::kDefaultBrowserFirstShownTime,
-      base::Time::Now() - base::Seconds(1) + base::Microseconds(1));
+       {features::kDefaultBrowserAppMenuDuration.name, "2d"}});
+  local_state()->SetTime(prefs::kDefaultBrowserFirstShownTime,
+                         base::Time::Now() - base::Days(1));
   local_state()->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
   local_state()->ClearPref(prefs::kDefaultBrowserDeclinedCount);
   manager()->MaybeResetAppMenuPromptPrefs(profile());
   manager()->MaybeShowPrompt();
   EXPECT_TRUE(manager()->get_show_app_menu_prompt());
+
+  task_environment()->FastForwardBy(base::Days(1) - base::Microseconds(1));
+  EXPECT_TRUE(manager()->get_show_app_menu_prompt());
+
+  task_environment()->FastForwardBy(base::Microseconds(1));
+  EXPECT_FALSE(manager()->get_show_app_menu_prompt());
+  EXPECT_TRUE(local_state()
+                  ->FindPreference(prefs::kDefaultBrowserFirstShownTime)
+                  ->IsDefaultValue());
+  EXPECT_EQ(base::Time::Now(),
+            local_state()->GetTime(prefs::kDefaultBrowserLastDeclinedTime));
+  EXPECT_EQ(1, local_state()->GetInteger(prefs::kDefaultBrowserDeclinedCount));
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, StopShowingIfFirstShownTimeTooOld) {

@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -122,6 +123,8 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   bool show_app_menu_prompt_ = false;
   bool show_app_menu_item_ = false;
   base::ObserverList<Observer> observers_;
+
+  base::OneShotTimer app_menu_prompt_dismiss_timer_;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_MANAGER_H_
