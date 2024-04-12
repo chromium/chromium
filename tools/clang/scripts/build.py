@@ -938,9 +938,6 @@ def main():
   lit_excludes = []
   if sys.platform.startswith('linux'):
     lit_excludes += [
-        # See SANITIZER_OVERRIDE_INTERCEPTORS above: We disable crypt_r()
-        # interception, so its tests can't pass.
-        '^SanitizerCommon-(a|l|m|ub|t)san-x86_64-Linux :: Linux/crypt_r.cpp$',
         # fstat and sunrpc tests fail due to sysroot/host mismatches
         # (crbug.com/1459187).
         '^MemorySanitizer-.* f?stat(at)?(64)?.cpp$',
