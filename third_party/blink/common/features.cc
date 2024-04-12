@@ -2490,10 +2490,22 @@ BASE_FEATURE(kWebAppManifestLockScreen,
              "WebAppManifestLockScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabling this flag bypasses additional buffering when using the Web Audio
+// API, which may reduce audio output latency but may also increase the
+// probability of an audio glitch.
+BASE_FEATURE(kWebAudioBypassOutputBuffering,
+             "WebAudioBypassOutputBuffering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allow OnRenderError callback to propagate in WebAudio
 BASE_FEATURE(kWebAudioHandleOnRenderError,
              "WebAudioHandleOnRenderError",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Update echo cancellation output device on SetSinkID.
+BASE_FEATURE(kWebAudioSetSinkEchoCancellation,
+             "WebAudioSetSinkEchoCancellation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A server-side switch for the output device (sink) selection in Web Audio API.
 // This enables the selection via the AudioContext constructor and also via
@@ -2501,13 +2513,6 @@ BASE_FEATURE(kWebAudioHandleOnRenderError,
 BASE_FEATURE(kWebAudioSinkSelection,
              "kWebAudioSinkSelection",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabling this flag bypasses additional buffering when using the Web Audio
-// API, which may reduce audio output latency but may also increase the
-// probability of an audio glitch.
-BASE_FEATURE(kWebAudioBypassOutputBuffering,
-             "WebAudioBypassOutputBuffering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 /// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
 // The feature is disabled on Android for WebView API issue discussed at

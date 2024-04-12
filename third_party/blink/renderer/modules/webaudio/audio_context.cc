@@ -53,10 +53,6 @@ namespace blink {
 
 namespace {
 
-BASE_FEATURE(kWebAudioSetSinkEchoCancellation,
-             "WebAudioSetSinkEchoCancellation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Number of AudioContexts still alive.  It's incremented when an
 // AudioContext is created and decremented when the context is closed.
 unsigned hardware_context_count = 0;
@@ -1053,7 +1049,8 @@ void AudioContext::NotifySetSinkIdIsDone(
   sink_descriptor_ = pending_sink_descriptor;
   if (sink_descriptor_.Type() ==
           WebAudioSinkDescriptor::AudioSinkType::kAudible &&
-      base::FeatureList::IsEnabled(kWebAudioSetSinkEchoCancellation)) {
+      base::FeatureList::IsEnabled(
+          features::kWebAudioSetSinkEchoCancellation)) {
     // Note: in order to not break echo cancellation of PeerConnection audio, we
     // are heavily relying on the fact that setSinkId() path of AudioContext is
     // not triggered unless the sink ID is explicitly specified. It assumes we
