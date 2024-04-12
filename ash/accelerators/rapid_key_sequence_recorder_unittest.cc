@@ -99,6 +99,39 @@ TEST_F(RapidKeySequenceRecorderTest, RightShiftTappedTwice) {
       "ChromeOS.Inputs.DoubleTapLeftShiftDuration", 0);
 }
 
+TEST_F(RapidKeySequenceRecorderTest, RightShiftOtherKeyPressedTogether) {
+  const auto press_other_key_event =
+      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
+                   ui::EF_NONE, GetNowTimestamp());
+  const auto release_other_key_event =
+      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A,
+                   ui::EF_NONE, GetNowTimestamp());
+  const auto release_shift_key_event =
+      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_RSHIFT,
+                   ui::DomCode::SHIFT_RIGHT, ui::EF_NONE, GetNowTimestamp());
+
+  rapid_key_sequence_recorder_->OnPrerewriteKeyInputEvent(
+      press_other_key_event);
+  AdvanceClock(base::Milliseconds(50));
+  rapid_key_sequence_recorder_->OnPrerewriteKeyInputEvent(RightShiftKeyEvent());
+  AdvanceClock(base::Milliseconds(50));
+  rapid_key_sequence_recorder_->OnPrerewriteKeyInputEvent(
+      release_other_key_event);
+  AdvanceClock(base::Milliseconds(50));
+  rapid_key_sequence_recorder_->OnPrerewriteKeyInputEvent(
+      release_shift_key_event);
+  rapid_key_sequence_recorder_->OnPrerewriteKeyInputEvent(RightShiftKeyEvent());
+  AdvanceClock(base::Milliseconds(50));
+  rapid_key_sequence_recorder_->OnPrerewriteKeyInputEvent(
+      release_shift_key_event);
+  // Right shift metric should not be recorded.
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.DoubleTapRightShiftDuration", 0);
+  // Left shift metric should not be recorded.
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.DoubleTapLeftShiftDuration", 0);
+}
+
 TEST_F(RapidKeySequenceRecorderTest, AlternatingShiftLocations) {
   // RightShift then LeftShift:
   rapid_key_sequence_recorder_->OnPrerewriteKeyInputEvent(RightShiftKeyEvent());

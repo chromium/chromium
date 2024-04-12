@@ -68,12 +68,22 @@ void RapidKeySequenceRecorder::Initialize() {
 
 void RapidKeySequenceRecorder::OnPrerewriteKeyInputEvent(
     const ui::KeyEvent& key_event) {
-  if (key_event.type() == ui::ET_KEY_RELEASED || key_event.is_repeat()) {
+  const bool same_key_pressed_again =
+      key_event.code() == last_dom_code_pressed_;
+
+  if (key_event.type() == ui::ET_KEY_RELEASED) {
+    // Reset last_dom_code_pressed_ to NONE to avoid other key
+    // pressed in the middle of pressing shift key triggers metrics record.
+    if (!same_key_pressed_again) {
+      last_dom_code_pressed_ = ui::DomCode::NONE;
+    }
     return;
   }
 
-  const bool same_key_pressed_again =
-      key_event.code() == last_dom_code_pressed_;
+  if (key_event.is_repeat()) {
+    return;
+  }
+
   const bool is_shift = key_event.code() == ui::DomCode::SHIFT_LEFT ||
                         key_event.code() == ui::DomCode::SHIFT_RIGHT;
   last_dom_code_pressed_ = key_event.code();
