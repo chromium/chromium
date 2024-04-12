@@ -783,17 +783,18 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
         // workspace will handle the app restore from user's workspace copy.
         // Otherwise if safe mode is on, floating workspace will only emit
         // notification and then delegate the actual work to full restore.
-        if (!ash::floating_workspace_util::ShouldHandleRestartRestore()) {
-          // If FullRestoreService is available for the profile (i.e. the full
-          // restore feature is enabled and the profile is a regular user
-          // profile), defer the browser launching to FullRestoreService code.
-          auto* full_restore_service =
-              ash::full_restore::FullRestoreService::GetForProfile(
-                  profile_to_open);
-          if (full_restore_service) {
-            full_restore_service->LaunchBrowserWhenReady();
-            return;
-          }
+        if (ash::floating_workspace_util::ShouldHandleRestartRestore()) {
+          return;
+        }
+        // If FullRestoreService is available for the profile (i.e. the full
+        // restore feature is enabled and the profile is a regular user
+        // profile), defer the browser launching to FullRestoreService code.
+        auto* full_restore_service =
+            ash::full_restore::FullRestoreService::GetForProfile(
+                profile_to_open);
+        if (full_restore_service) {
+          full_restore_service->LaunchBrowserWhenReady();
+          return;
         }
       }
 #endif
