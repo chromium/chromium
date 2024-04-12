@@ -216,6 +216,9 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         static_cast<views::MdTextButton*>(button_row_children[button_index++]);
     ASSERT_TRUE(cancel_button);
     EXPECT_EQ(cancel_button->GetText(), u"Cancel");
+    EXPECT_EQ(cancel_button->GetStyle(), expect_continue_button
+                                             ? ui::ButtonStyle::kTonal
+                                             : ui::ButtonStyle::kDefault);
 
     if (expect_continue_button) {
       views::MdTextButton* continue_button =

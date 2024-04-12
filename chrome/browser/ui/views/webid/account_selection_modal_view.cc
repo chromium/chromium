@@ -236,7 +236,10 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
               &AccountSelectionViewBase::Observer::OnCloseButtonClicked,
               base::Unretained(observer_)),
           l10n_util::GetStringUTF16(IDS_CANCEL));
-  cancel_button->SetStyle(ui::ButtonStyle::kDefault);
+  // When a continue button is present, the cancel button should be more
+  // prominent (Tonal) to align with common practice.
+  cancel_button->SetStyle(continue_callback ? ui::ButtonStyle::kTonal
+                                            : ui::ButtonStyle::kDefault);
   cancel_button->SetAppearDisabledInInactiveWidget(true);
   button_container->AddChildView(std::move(cancel_button));
 
