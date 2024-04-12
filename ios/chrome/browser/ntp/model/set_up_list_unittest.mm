@@ -211,17 +211,14 @@ TEST_F(SetUpListTest, SignInSyncReactsToAccountChanges) {
   BuildSetUpList();
   ExpectListToInclude(SetUpListItemType::kSignInSync, YES);
   EXPECT_EQ(GetItemState(SetUpListItemType::kSignInSync),
-            SetUpListItemState::kCompleteNotInList);
+            SetUpListItemState::kCompleteInList);
 
   SetItemState(SetUpListItemType::kSignInSync,
-               SetUpListItemState::kCompleteInList);
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kSignInSync, YES);
-  EXPECT_EQ(GetItemState(SetUpListItemType::kSignInSync),
-            SetUpListItemState::kCompleteNotInList);
-
+               SetUpListItemState::kCompleteNotInList);
   BuildSetUpList();
   ExpectListToNotInclude(SetUpListItemType::kSignInSync);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kSignInSync),
+            SetUpListItemState::kCompleteNotInList);
 }
 
 // Tests that the SetUpList uses the correct criteria when including the
@@ -235,17 +232,14 @@ TEST_F(SetUpListTest, BuildListWithDefaultBrowser) {
   BuildSetUpList();
   ExpectListToInclude(SetUpListItemType::kDefaultBrowser, YES);
   EXPECT_EQ(GetItemState(SetUpListItemType::kDefaultBrowser),
-            SetUpListItemState::kCompleteNotInList);
+            SetUpListItemState::kCompleteInList);
 
   SetItemState(SetUpListItemType::kDefaultBrowser,
-               SetUpListItemState::kCompleteInList);
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kDefaultBrowser, YES);
-  EXPECT_EQ(GetItemState(SetUpListItemType::kDefaultBrowser),
-            SetUpListItemState::kCompleteNotInList);
-
+               SetUpListItemState::kCompleteNotInList);
   BuildSetUpList();
   ExpectListToNotInclude(SetUpListItemType::kDefaultBrowser);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kDefaultBrowser),
+            SetUpListItemState::kCompleteNotInList);
 }
 
 // Tests that the SetUpList uses the correct criteria when including the
@@ -259,17 +253,14 @@ TEST_F(SetUpListTest, BuildListWithAutofill) {
   BuildSetUpList();
   ExpectListToInclude(SetUpListItemType::kAutofill, YES);
   EXPECT_EQ(GetItemState(SetUpListItemType::kAutofill),
-            SetUpListItemState::kCompleteNotInList);
+            SetUpListItemState::kCompleteInList);
 
   SetItemState(SetUpListItemType::kAutofill,
-               SetUpListItemState::kCompleteInList);
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kAutofill, YES);
-  EXPECT_EQ(GetItemState(SetUpListItemType::kAutofill),
-            SetUpListItemState::kCompleteNotInList);
-
+               SetUpListItemState::kCompleteNotInList);
   BuildSetUpList();
   ExpectListToNotInclude(SetUpListItemType::kAutofill);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kAutofill),
+            SetUpListItemState::kCompleteNotInList);
 }
 
 // Tests that the SetUpList uses the correct criteria when including the
@@ -284,17 +275,14 @@ TEST_F(SetUpListTest, BuildListWithNotifications_Tips) {
   BuildSetUpList();
   ExpectListToInclude(SetUpListItemType::kNotifications, YES);
   EXPECT_EQ(GetItemState(SetUpListItemType::kNotifications),
-            SetUpListItemState::kCompleteNotInList);
+            SetUpListItemState::kCompleteInList);
 
   SetItemState(SetUpListItemType::kNotifications,
-               SetUpListItemState::kCompleteInList);
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kNotifications, YES);
-  EXPECT_EQ(GetItemState(SetUpListItemType::kNotifications),
-            SetUpListItemState::kCompleteNotInList);
-
+               SetUpListItemState::kCompleteNotInList);
   BuildSetUpList();
   ExpectListToNotInclude(SetUpListItemType::kNotifications);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kNotifications),
+            SetUpListItemState::kCompleteNotInList);
 }
 
 // Tests that the SetUpList uses the correct criteria when including the
@@ -313,17 +301,14 @@ TEST_F(SetUpListTest, BuildListWithNotifications_Content) {
   BuildSetUpList();
   ExpectListToInclude(SetUpListItemType::kNotifications, YES);
   EXPECT_EQ(GetItemState(SetUpListItemType::kNotifications),
-            SetUpListItemState::kCompleteNotInList);
+            SetUpListItemState::kCompleteInList);
 
   SetItemState(SetUpListItemType::kNotifications,
-               SetUpListItemState::kCompleteInList);
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kNotifications, YES);
-  EXPECT_EQ(GetItemState(SetUpListItemType::kNotifications),
-            SetUpListItemState::kCompleteNotInList);
-
+               SetUpListItemState::kCompleteNotInList);
   BuildSetUpList();
   ExpectListToNotInclude(SetUpListItemType::kNotifications);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kNotifications),
+            SetUpListItemState::kCompleteNotInList);
 }
 
 // Tests that the SetUpList uses the correct criteria when including the

@@ -381,7 +381,21 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (NSArray<SetUpListItemViewData*>*)setUpListItems {
   NSMutableArray<SetUpListItemViewData*>* items = [[NSMutableArray alloc] init];
+  // Add items that are not complete yet.
   for (SetUpListItem* model in _setUpList.items) {
+    if (model.complete) {
+      continue;
+    }
+    SetUpListItemViewData* item =
+        [[SetUpListItemViewData alloc] initWithType:model.type
+                                           complete:model.complete];
+    [items addObject:item];
+  }
+  // Add items that are complete to the end.
+  for (SetUpListItem* model in _setUpList.items) {
+    if (!model.complete) {
+      continue;
+    }
     SetUpListItemViewData* item =
         [[SetUpListItemViewData alloc] initWithType:model.type
                                            complete:model.complete];
