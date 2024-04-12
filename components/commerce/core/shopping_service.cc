@@ -219,7 +219,14 @@ ShoppingService::ShoppingService(
       std::make_unique<ProductSpecificationsServerProxy>(
           account_checker_.get(), identity_manager, url_loader_factory);
 
-  cluster_manager_ = std::make_unique<ClusterManager>();
+  if (account_checker_ &&
+      IsProductSpecificationsEnabled(account_checker_.get())) {
+    cluster_manager_ = std::make_unique<ClusterManager>(
+        base::BindRepeating(&ShoppingService::GetProductInfoForUrl,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindRepeating(&ShoppingService::GetUrlInfosForActiveWebWrappers,
+                            base::Unretained(this)));
+  }
 }
 
 AccountChecker* ShoppingService::GetAccountChecker() {
@@ -233,7 +240,9 @@ void ShoppingService::WebWrapperCreated(WebWrapper* web) {
 void ShoppingService::DidNavigatePrimaryMainFrame(WebWrapper* web) {
   HandleDidNavigatePrimaryMainFrameForProductInfo(web);
   HandleDidNavigatePrimaryMainFrameForPriceInsightsInfo(web);
-  cluster_manager_->DidNavigatePrimaryMainFrame(web->GetLastCommittedURL());
+  if (cluster_manager_) {
+    cluster_manager_->DidNavigatePrimaryMainFrame(web->GetLastCommittedURL());
+  }
 }
 
 void ShoppingService::HandleDidNavigatePrimaryMainFrameForProductInfo(
@@ -278,7 +287,9 @@ void ShoppingService::HandleDidNavigatePrimaryMainFrameForProductInfo(
 void ShoppingService::DidNavigateAway(WebWrapper* web, const GURL& from_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   commerce_info_cache_.RemoveRef(web->GetLastCommittedURL());
-  cluster_manager_->DidNavigateAway(web->GetLastCommittedURL(), from_url);
+  if (cluster_manager_) {
+    cluster_manager_->DidNavigateAway(from_url);
+  }
 }
 
 void ShoppingService::DidStopLoading(WebWrapper* web) {
@@ -496,7 +507,9 @@ void ShoppingService::WebWrapperDestroyed(WebWrapper* web) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   open_web_wrappers_.erase(web);
   commerce_info_cache_.RemoveRef(web->GetLastCommittedURL());
-  cluster_manager_->WebWrapperDestroyed(web->GetLastCommittedURL());
+  if (cluster_manager_) {
+    cluster_manager_->WebWrapperDestroyed(web->GetLastCommittedURL());
+  }
 }
 
 void ShoppingService::UpdateProductInfoCache(

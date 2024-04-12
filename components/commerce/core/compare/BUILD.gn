@@ -33,7 +33,10 @@ source_set("compare") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "product_specifications_server_proxy_unittest.cc" ]
+  sources = [
+    "cluster_manager_unittest.cc",
+    "product_specifications_server_proxy_unittest.cc",
+  ]
 
   deps = [
     ":compare",
@@ -41,6 +44,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/commerce/core:account_checker",
     "//components/commerce/core:account_checker_test_support",
+    "//components/commerce/core:commerce_types",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:pref_names",
     "//components/endpoint_fetcher:endpoint_fetcher",
