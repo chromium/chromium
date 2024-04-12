@@ -5,7 +5,7 @@
 import 'chrome-untrusted://compose/app.js';
 
 import type {ComposeAppElement} from 'chrome-untrusted://compose/app.js';
-import {Length, Tone, UserFeedback} from 'chrome-untrusted://compose/compose.mojom-webui.js';
+import { StyleModifier, UserFeedback } from 'chrome-untrusted://compose/compose.mojom-webui.js';
 import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.js';
 import {ComposeStatus} from 'chrome-untrusted://compose/compose_enums.mojom-webui.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -93,7 +93,7 @@ suite('ComposeApp', function() {
     app.$.submitButton.click();
     await mockResponse();
 
-    app.$.lengthMenu.value = `${Length.kShorter}`;
+    app.$.lengthMenu.value = `${StyleModifier.kLonger}`;
     app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
 
     await testProxy.whenCalled('rewrite');
@@ -108,7 +108,7 @@ suite('ComposeApp', function() {
     app.$.submitButton.click();
     await mockResponse();
 
-    app.$.toneMenu.value = `${Tone.kCasual}`;
+    app.$.toneMenu.value = `${StyleModifier.kCasual}`;
     app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
 
     await testProxy.whenCalled('rewrite');
@@ -141,8 +141,8 @@ suite('ComposeApp', function() {
       },
       webuiState: JSON.stringify({
         input: 'my old input',
-        selectedLength: Number(Length.kLonger),
-        selectedTone: Number(Tone.kCasual),
+        selectedLength: Number(StyleModifier.kUnset),
+        selectedTone: Number(StyleModifier.kUnset),
       }),
       feedback: UserFeedback.kUserFeedbackUnspecified,
     });

@@ -580,7 +580,7 @@ TEST_F(ChromeComposeClientTest, TestComposeServerAndOnDeviceResponses) {
                 /*provided_by_on_device=*/true));
           })));
 
-  page_handler()->Rewrite(nullptr);
+  page_handler()->Rewrite(compose::mojom::StyleModifier::kRetry);
 
   // Simulate insert call from Compose dialog.
   page_handler()->AcceptComposeResult(base::NullCallback());
@@ -1052,7 +1052,7 @@ TEST_F(ChromeComposeClientTest, TestComposeSetTriggeredFromModifierOnError) {
                             optimization_guide::proto::LogAiDataRequest>(),
                         nullptr)));
           })));
-  page_handler()->Rewrite(nullptr);
+  page_handler()->Rewrite(compose::mojom::StyleModifier::kRetry);
 
   result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kServerError, result->status);
@@ -2791,7 +2791,7 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Cucumbers", result->result);
 
-  page_handler()->Rewrite(nullptr);
+  page_handler()->Rewrite(compose::mojom::StyleModifier::kRetry);
   result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Tomatoes", result->result);
@@ -2890,8 +2890,7 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Cucumbers", result->result);
 
-  page_handler()->Rewrite(
-      compose::mojom::StyleModifiers::NewTone(compose::mojom::Tone::kFormal));
+  page_handler()->Rewrite(compose::mojom::StyleModifier::kFormal);
   result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Tomatoes", result->result);
@@ -2902,8 +2901,7 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
       "Compose.Server.Request.Reason",
       compose::ComposeRequestReason::kToneFormalRequest, 1);
 
-  page_handler()->Rewrite(
-      compose::mojom::StyleModifiers::NewTone(compose::mojom::Tone::kCasual));
+  page_handler()->Rewrite(compose::mojom::StyleModifier::kCasual);
   result = test_future.Take();
   histograms().ExpectBucketCount(
       compose::kComposeRequestReason,
@@ -3009,8 +3007,7 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Cucumbers", result->result);
 
-  page_handler()->Rewrite(compose::mojom::StyleModifiers::NewLength(
-      compose::mojom::Length::kLonger));
+  page_handler()->Rewrite(compose::mojom::StyleModifier::kLonger);
   result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Tomatoes", result->result);
@@ -3021,8 +3018,7 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
       "Compose.Server.Request.Reason",
       compose::ComposeRequestReason::kLengthElaborateRequest, 1);
 
-  page_handler()->Rewrite(compose::mojom::StyleModifiers::NewLength(
-      compose::mojom::Length::kShorter));
+  page_handler()->Rewrite(compose::mojom::StyleModifier::kShorter);
   result = test_future.Take();
   histograms().ExpectBucketCount(
       compose::kComposeRequestReason,

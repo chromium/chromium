@@ -16,25 +16,13 @@ interface ComposeSessionUntrustedPageHandlerFactory {
       pending_remote<ComposeUntrustedDialog> dialog);
 };
 
-// Configuration parameter used in compose requests.
-enum Tone {
+enum StyleModifier {
   kUnset,
   kFormal,
   kCasual,
-};
-
-// Configuration parameter used in compose requests.
-enum Length {
-  kUnset,
-  kShorter,
   kLonger,
-};
-
-// Configuration parameters used in rewrite requests, specifying how the
-// response should be changed.
-union StyleModifiers {
-  Tone tone;
-  Length length;
+  kShorter,
+  kRetry,
 };
 
 // The response to compose requests. `result` is only valid if `status`
@@ -132,9 +120,9 @@ interface ComposeSessionUntrustedPageHandler {
   Compose(string input, bool edited);
 
   // Asks the Browser to rewrite the last response. `style` specifies how the
-  // response should be changed. A null `style` requests a rewrite without
+  // response should be changed.
   // changes to the tone or length.
-  Rewrite(StyleModifiers? style);
+  Rewrite(StyleModifier style);
 
   // Asks the browser to track an edit input action for logging purposes.
   LogEditInput();

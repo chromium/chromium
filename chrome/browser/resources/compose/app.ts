@@ -26,8 +26,8 @@ import {Debouncer, microTask, PolymerElement, timeOut} from '//resources/polymer
 
 import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
-import type {ComposeResponse, ComposeState, ComposeUntrustedDialogCallbackRouter, ConfigurableParams, PartialComposeResponse, StyleModifiers} from './compose.mojom-webui.js';
-import {CloseReason, Length, Tone, UserFeedback} from './compose.mojom-webui.js';
+import type {ComposeResponse, ComposeState, ComposeUntrustedDialogCallbackRouter, ConfigurableParams, PartialComposeResponse} from './compose.mojom-webui.js';
+import {CloseReason, StyleModifier, UserFeedback} from './compose.mojom-webui.js';
 import type {ComposeApiProxy} from './compose_api_proxy.js';
 import {ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeStatus} from './compose_enums.mojom-webui.js';
@@ -40,8 +40,8 @@ export interface ComposeAppState {
   editedInput?: string;
   input: string;
   isEditingSubmittedInput?: boolean;
-  selectedLength?: Length;
-  selectedTone?: Tone;
+  selectedLength?: StyleModifier;
+  selectedTone?: StyleModifier;
 }
 
 export interface ComposeAppElement {
@@ -73,6 +73,7 @@ export interface ComposeAppElement {
     textarea: ComposeTextareaElement,
     lengthMenu: HTMLSelectElement,
     toneMenu: HTMLSelectElement,
+    modifierMenu: HTMLSelectElement,
     resultText: ComposeResultTextElement,
     feedbackButtons: CrFeedbackButtonsElement,
   };
@@ -87,6 +88,7 @@ enum TriggerElement {
   SUBMIT_INPUT,  // For initial input or editing input.
   TONE,
   LENGTH,
+  MODIFIER,
   REFRESH
 }
 
@@ -108,6 +110,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
       enableAnimations: {
         type: Boolean,
         value: loadTimeData.getBoolean('enableAnimations'),
+        reflectToAttribute: true,
+      },
+      enableUIRefinements: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableRefinedUi'),
         reflectToAttribute: true,
       },
       feedbackState_: {
@@ -152,11 +159,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
       },
       selectedLength_: {
         type: Number,
-        value: Length.kUnset,
+        value: StyleModifier.kUnset,
       },
       selectedTone_: {
         type: Number,
-        value: Tone.kUnset,
+        value: StyleModifier.kUnset,
       },
       showMainAppDialog_: {
         type: Boolean,
@@ -189,16 +196,16 @@ export class ComposeAppElement extends ComposeAppElementBase {
         value: () => {
           return [
             {
-              value: Length.kUnset,
+              value: StyleModifier.kUnset,
               label: loadTimeData.getString('lengthMenuTitle'),
               isDefault: true,
             },
             {
-              value: Length.kShorter,
+              value: StyleModifier.kShorter,
               label: loadTimeData.getString('shorterOption'),
             },
             {
-              value: Length.kLonger,
+              value: StyleModifier.kLonger,
               label: loadTimeData.getString('longerOption'),
             },
           ];
@@ -209,17 +216,49 @@ export class ComposeAppElement extends ComposeAppElementBase {
         value: () => {
           return [
             {
-              value: Tone.kUnset,
+              value: StyleModifier.kUnset,
               label: loadTimeData.getString('toneMenuTitle'),
               isDefault: true,
             },
             {
-              value: Tone.kCasual,
+              value: StyleModifier.kCasual,
               label: loadTimeData.getString('casualToneOption'),
             },
             {
-              value: Tone.kFormal,
+              value: StyleModifier.kFormal,
               label: loadTimeData.getString('formalToneOption'),
+            },
+          ];
+        },
+      },
+      modifierOptions_: {
+        type: Array,
+        value: () => {
+          return [
+            {
+              value: StyleModifier.kUnset,
+              label: loadTimeData.getString('modifierMenuTitle'),
+              isDefault: true,
+            },
+            {
+              value: StyleModifier.kFormal,
+              label: loadTimeData.getString('formalToneOption'),
+            },
+            {
+              value: StyleModifier.kCasual,
+              label: loadTimeData.getString('casualToneOption'),
+            },
+            {
+              value: StyleModifier.kLonger,
+              label: loadTimeData.getString('longerOption'),
+            },
+            {
+              value: StyleModifier.kShorter,
+              label: loadTimeData.getString('shorterOption'),
+            },
+            {
+              value: StyleModifier.kRetry,
+              label: loadTimeData.getString('retryOption'),
             },
           ];
         },
@@ -235,10 +274,12 @@ export class ComposeAppElement extends ComposeAppElementBase {
     ];
   }
 
+  enableAnimations: boolean;
+  enableUiRefinements: boolean;
+
   private animator_: ComposeAppAnimator;
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
   private bodyResizeObserver_: ResizeObserver;
-  enableAnimations: boolean;
   private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeUntrustedDialogCallbackRouter =
       this.apiProxy_.getRouter();
@@ -259,8 +300,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private saveAppStateDebouncer_: Debouncer;
   private scrollCheckDebouncer_: Debouncer;
   private updateResultCompleteDebouncer_: Debouncer;
-  private selectedLength_: Length;
-  private selectedTone_: Tone;
+  private selectedLength_: StyleModifier;
+  private selectedTone_: StyleModifier;
   private textSelected_: boolean;
   private submitted_: boolean;
   private undoEnabled_: boolean;
@@ -276,6 +317,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     ColorChangeUpdater.forDocument().start();
     this.animator_ = new ComposeAppAnimator(
         this, loadTimeData.getBoolean('enableAnimations'));
+    this.enableUiRefinements = loadTimeData.getBoolean('enableRefinedUi');
     this.getInitialState_();
     this.router_.responseReceived.addListener((response: ComposeResponse) => {
       this.composeResponseReceived_(response);
@@ -368,8 +410,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
       if (composeState.webuiState) {
         const appState: ComposeAppState = JSON.parse(composeState.webuiState);
         this.input_ = appState.input;
-        this.selectedLength_ = appState.selectedLength ?? Length.kUnset;
-        this.selectedTone_ = appState.selectedTone ?? Tone.kUnset;
+        this.selectedLength_ = appState.selectedLength ?? StyleModifier.kUnset;
+        this.selectedTone_ = appState.selectedTone ?? StyleModifier.kUnset;
         if (appState.isEditingSubmittedInput) {
           this.isEditingSubmittedInput_ = appState.isEditingSubmittedInput;
           this.editedInput_ = appState.editedInput!;
@@ -477,7 +519,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onRefresh_() {
-    this.rewrite_(/*style=*/ null);
+    this.rewrite_(StyleModifier.kRetry);
     this.lastTriggerElement_ = TriggerElement.REFRESH;
   }
 
@@ -509,8 +551,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
     const editTextareaHeight = this.$.editTextarea.offsetHeight;
     this.isEditingSubmittedInput_ = false;
     this.input_ = this.editedInput_;
-    this.selectedLength_ = Length.kUnset;
-    this.selectedTone_ = Tone.kUnset;
+    this.selectedLength_ = StyleModifier.kUnset;
+    this.selectedTone_ = StyleModifier.kUnset;
     this.animator_.transitionFromEditingToLoading(bodyHeight);
     this.$.textarea.transitionToReadonly(editTextareaHeight);
     this.$.editTextarea.transitionToReadonly(editTextareaHeight);
@@ -534,15 +576,26 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onLengthChanged_() {
-    this.selectedLength_ = Number(this.$.lengthMenu.value) as Length;
-    this.rewrite_(/*style=*/ {length: this.selectedLength_});
+    this.selectedLength_ = Number(this.$.lengthMenu.value) as StyleModifier;
+    this.rewrite_(this.selectedLength_);
     this.lastTriggerElement_ = TriggerElement.LENGTH;
   }
 
   private onToneChanged_() {
-    this.selectedTone_ = Number(this.$.toneMenu.value) as Tone;
-    this.rewrite_(/*style=*/ {tone: this.selectedTone_});
+    this.selectedTone_ = Number(this.$.toneMenu.value) as StyleModifier;
+    this.rewrite_(this.selectedTone_);
     this.lastTriggerElement_ = TriggerElement.TONE;
+  }
+
+  private onModifierChanged_() {
+    const selectedModifier =
+      Number(this.$.modifierMenu.value) as StyleModifier;
+    this.rewrite_(selectedModifier);
+    this.lastTriggerElement_ = TriggerElement.MODIFIER;
+    // Immediately clear the selection after triggering a rewrite. A selected
+    // index of 0 corresponds to the default value, which is disabled and cannot
+    // be selected in the dialog.
+    this.$.modifierMenu.selectedIndex = 0;
   }
 
   private onFooterClick_(e: Event) {
@@ -587,7 +640,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.apiProxy_.compose(this.input_, inputEdited);
   }
 
-  private rewrite_(style: StyleModifiers|null) {
+  private rewrite_(style: StyleModifier) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
     const bodyHeight = this.$.body.offsetHeight;
@@ -645,6 +698,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         break;
       case TriggerElement.TONE:
         this.$.toneMenu.focus({preventScroll: true});
+        break;
+      case TriggerElement.MODIFIER:
+        this.$.modifierMenu.focus({ preventScroll: true });
+        break;
     }
   }
 
@@ -762,10 +819,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
 
     const state: ComposeAppState = {input: this.input_};
-    if (this.selectedLength_ !== Length.kUnset) {
+    if (this.selectedLength_ !== StyleModifier.kUnset) {
       state.selectedLength = this.selectedLength_;
     }
-    if (this.selectedTone_ !== Tone.kUnset) {
+    if (this.selectedTone_ !== StyleModifier.kUnset) {
       state.selectedTone = this.selectedTone_;
     }
     if (this.isEditingSubmittedInput_) {
@@ -820,8 +877,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     if (state.webuiState) {
       const appState: ComposeAppState = JSON.parse(state.webuiState);
       this.input_ = appState.input;
-      this.selectedLength_ = appState.selectedLength ?? Length.kUnset;
-      this.selectedTone_ = appState.selectedTone ?? Tone.kUnset;
+      // TODO(b/333985071): Remove modifier tracking when ComposeUiRefinement
+      // flag is removed.
+      this.selectedLength_ = appState.selectedLength ?? StyleModifier.kUnset;
+      this.selectedTone_ = appState.selectedTone ?? StyleModifier.kUnset;
     }
   }
 

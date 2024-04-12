@@ -8,7 +8,7 @@ import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_f
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {ComposeAppElement, ComposeAppState} from 'chrome-untrusted://compose/app.js';
 import type {ComposeState} from 'chrome-untrusted://compose/compose.mojom-webui.js';
-import {CloseReason, Length, Tone, UserFeedback} from 'chrome-untrusted://compose/compose.mojom-webui.js';
+import { CloseReason, StyleModifier, UserFeedback } from 'chrome-untrusted://compose/compose.mojom-webui.js';
 import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.js';
 import {ComposeStatus} from 'chrome-untrusted://compose/compose_enums.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -164,7 +164,7 @@ suite('ComposeApp', () => {
     const args = await testProxy.whenCalled('rewrite');
     await mockResponse('Refreshed output.');
 
-    assertEquals(null, args);
+    assertEquals(StyleModifier.kRetry, args);
 
     // Verify UI has updated with refreshed results.
     assertFalse(isVisible(app.$.loading));
@@ -485,8 +485,8 @@ suite('ComposeApp', () => {
       },
       webuiState: JSON.stringify({
         input: 'initial input',
-        selectedLength: Number(Length.kUnset),
-        selectedTone: Number(Tone.kUnset),
+        selectedLength: Number(StyleModifier.kUnset),
+        selectedTone: Number(StyleModifier.kUnset),
       }),
       feedback: UserFeedback.kUserFeedbackPositive,
     });
@@ -585,15 +585,6 @@ suite('ComposeApp', () => {
     await flushTasks();
     testProxy.resetResolver('compose');
 
-    // Mock changing length and tone to verify they are unset after editing
-    // the input.
-    app.$.lengthMenu.value = `${Length.kShorter}`;
-    app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
-    app.$.toneMenu.value = `${Tone.kCasual}`;
-    app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
-    await flushTasks();
-    testProxy.resetResolver('compose');
-
     // Mock clicking edit in the textarea and verify new textarea shows.
     app.$.textarea.dispatchEvent(
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
@@ -637,13 +628,13 @@ suite('ComposeApp', () => {
     assertEquals(
         2, app.$.lengthMenu.querySelectorAll('option:not([disabled])').length);
 
-    app.$.lengthMenu.value = `${Length.kShorter}`;
+    app.$.lengthMenu.value = `${StyleModifier.kShorter}`;
     app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
 
     const args = await testProxy.whenCalled('rewrite');
     await mockResponse();
 
-    assertEquals(Length.kShorter, args.length);
+    assertEquals(StyleModifier.kShorter, args);
 
     testProxy.resetResolver('rewrite');
 
@@ -651,13 +642,13 @@ suite('ComposeApp', () => {
     assertEquals(
         2, app.$.toneMenu.querySelectorAll('option:not([disabled])').length);
 
-    app.$.toneMenu.value = `${Tone.kCasual}`;
+    app.$.toneMenu.value = `${StyleModifier.kCasual}`;
     app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
 
     const args2 = await testProxy.whenCalled('rewrite');
     await mockResponse();
 
-    assertEquals(Tone.kCasual, args2.tone);
+    assertEquals(StyleModifier.kCasual, args2);
   });
 
   test('Undo', async () => {
@@ -684,8 +675,8 @@ suite('ComposeApp', () => {
       },
       webuiState: JSON.stringify({
         input: 'my old input',
-        selectedLength: Number(Length.kLonger),
-        selectedTone: Number(Tone.kCasual),
+        selectedLength: Number(StyleModifier.kLonger),
+        selectedTone: Number(StyleModifier.kCasual),
       }),
       feedback: UserFeedback.kUserFeedbackPositive,
     });
@@ -703,8 +694,9 @@ suite('ComposeApp', () => {
     assertTrue(isVisible(appWithUndo.$.resultContainer));
     assertStringContains(
         appWithUndo.$.resultText.$.root.innerText, 'some undone result');
-    assertEquals(Length.kLonger, Number(appWithUndo.$.lengthMenu.value));
-    assertEquals(Tone.kCasual, Number(appWithUndo.$.toneMenu.value));
+    assertEquals(
+      StyleModifier.kLonger, Number(appWithUndo.$.lengthMenu.value));
+    assertEquals(StyleModifier.kCasual, Number(appWithUndo.$.toneMenu.value));
     assertEquals(
         CrFeedbackOption.THUMBS_UP,
         appWithUndo.$.feedbackButtons.selectedOption);

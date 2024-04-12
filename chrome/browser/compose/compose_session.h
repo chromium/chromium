@@ -101,7 +101,7 @@ class ComposeSession
   // Requests a rewrite the last response. `style` specifies how the response
   // should be changed. An empty `style` without a tone or length requests a
   // rewrite without changes to the tone or length.
-  void Rewrite(compose::mojom::StyleModifiersPtr style) override;
+  void Rewrite(compose::mojom::StyleModifier style) override;
 
   // Tracks that there was a user action to edit the input in the current
   // session in `session_events`.

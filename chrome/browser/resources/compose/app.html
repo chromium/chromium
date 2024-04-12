@@ -413,6 +413,7 @@
   .dialog[hidden],
   .footer[hidden],
   .result-container[hidden],
+  .md-select[hidden],
   #loading[hidden],
   #editContainer[hidden] {
     display: none;
@@ -508,7 +509,8 @@
           <div id="resultOptions"
               inert$="[[!outputComplete_]]">
             <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
-                aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
+                aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_"
+                hidden="[[enableUIRefinements]]">
               <template is="dom-repeat" items="[[lengthOptions_]]">
                 <option value="[[item.value]]" disabled$="[[item.isDefault]]"
                     selected$="[[item.isDefault]]">
@@ -517,7 +519,8 @@
               </template>
             </select>
             <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
-                aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_">
+                aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_"
+                hidden="[[enableUIRefinements]]">
               <template is="dom-repeat" items="[[toneOptions_]]">
                 <option value="[[item.value]]" disabled$="[[item.isDefault]]"
                     selected$="[[item.isDefault]]">
@@ -525,7 +528,17 @@
                 </option>
               </template>
             </select>
-
+            <select class="md-select" id="modifierMenu" 
+              value="[[selectedModifier_]]" 
+              aria-label="$i18n{modifierMenuTitle}"
+              on-change="onModifierChanged_" hidden="[[!enableUIRefinements]]">
+              <template is="dom-repeat" items="[[modifierOptions_]]">
+                <option value="[[item.value]]" disabled$="[[item.isDefault]]" 
+                  selected$="[[item.isDefault]]">
+                  [[item.label]]
+                </option>
+              </template>
+            </select>
             <div class="icon-buttons-row">
               <cr-icon-button id="undoButton" iron-icon="compose:undo"
                 title="$i18n{undo}"  disabled="[[!undoEnabled_]]"
@@ -587,7 +600,7 @@
         <span hidden="[[!hasPermissionDeniedResponse_(response_)]]"
           >$i18nRaw{errorPermissionDenied}</span>
       </div>
-      <cr-button id="errorGoBackButton" class="action-button" 
+      <cr-button id="errorGoBackButton" class="action-button"
         on-click="onErrorGoBackButton_"
         hidden="[[!isBackFromErrorAvailable_(response_)]]">
         <iron-icon aria-hidden="true" slot="prefix-icon" icon="compose:undo">

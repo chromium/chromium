@@ -99,7 +99,13 @@
 
   <!-- Result dialog -->
   <message name="IDS_COMPOSE_EDIT" desc="Label shown on hover and read by screen-readers for button that allows user to edit their input.">
-  Edit your input
+    Edit your input
+  </message>
+  <message name="IDS_COMPOSE_MODIFIERS_MENU_TITLE" desc="Title for options to select a style modifier to apply on returned text.">
+    Refine
+  </message>
+  <message name="IDS_COMPOSE_MENU_RETRY_OPTION" desc="Option title to regenerate the text result without modifiers.">
+    Retry
   </message>
   <message name="IDS_COMPOSE_MENU_LENGTH_TITLE" desc="Title for options to select the length of returned text.">
     Length

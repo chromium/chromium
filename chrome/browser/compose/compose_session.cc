@@ -351,34 +351,43 @@ void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
   MakeRequest(std::move(request), request_reason, is_input_edited);
 }
 
-void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style) {
+void ComposeSession::Rewrite(compose::mojom::StyleModifier style) {
   compose::ComposeRequestReason request_reason;
 
   optimization_guide::proto::ComposeRequest request;
-  if (style && style->is_tone()) {
-    request.mutable_rewrite_params()->set_tone(
-        optimization_guide::proto::ComposeTone(style->get_tone()));
-    if (style->get_tone() == compose::mojom::Tone::kFormal) {
+  switch (style) {
+    case compose::mojom::StyleModifier::kFormal:
+      request.mutable_rewrite_params()->set_tone(
+          optimization_guide::proto::ComposeTone::COMPOSE_FORMAL);
       session_events_.formal_count++;
       request_reason = compose::ComposeRequestReason::kToneFormalRequest;
-    } else {
+      break;
+    case compose::mojom::StyleModifier::kCasual:
+      request.mutable_rewrite_params()->set_tone(
+          optimization_guide::proto::ComposeTone::COMPOSE_INFORMAL);
       session_events_.casual_count++;
       request_reason = compose::ComposeRequestReason::kToneCasualRequest;
-    }
-  } else if (style && style->is_length()) {
-    request.mutable_rewrite_params()->set_length(
-        optimization_guide::proto::ComposeLength(style->get_length()));
-    if (style->get_length() == compose::mojom::Length::kLonger) {
-      session_events_.lengthen_count++;
-      request_reason = compose::ComposeRequestReason::kLengthElaborateRequest;
-    } else {
+      break;
+    case compose::mojom::StyleModifier::kShorter:
+      request.mutable_rewrite_params()->set_length(
+          optimization_guide::proto::ComposeLength::COMPOSE_SHORTER);
       session_events_.shorten_count++;
       request_reason = compose::ComposeRequestReason::kLengthShortenRequest;
-    }
-  } else {
-    request.mutable_rewrite_params()->set_regenerate(true);
-    session_events_.regenerate_count++;
-    request_reason = compose::ComposeRequestReason::kRetryRequest;
+      break;
+    case compose::mojom::StyleModifier::kLonger:
+      request.mutable_rewrite_params()->set_length(
+          optimization_guide::proto::ComposeLength::COMPOSE_LONGER);
+      session_events_.lengthen_count++;
+      request_reason = compose::ComposeRequestReason::kLengthElaborateRequest;
+      break;
+    case compose::mojom::StyleModifier::kUnset:
+      // TODO: kUnset is not reachable, but a `request_reason` must be set to
+      //  satisfy the compiler
+    case compose::mojom::StyleModifier::kRetry:
+      request.mutable_rewrite_params()->set_regenerate(true);
+      session_events_.regenerate_count++;
+      request_reason = compose::ComposeRequestReason::kRetryRequest;
+      break;
   }
   request.mutable_rewrite_params()->set_previous_response(
       most_recent_ok_state_->mojo_state()->response->result);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CloseReason, ComposeState, OpenMetadata, StyleModifiers, UserFeedback} from './compose.mojom-webui.js';
+import type { CloseReason, ComposeState, OpenMetadata, StyleModifier, UserFeedback } from './compose.mojom-webui.js';
 import {ComposeClientUntrustedPageHandlerRemote, ComposeSessionUntrustedPageHandlerFactory, ComposeSessionUntrustedPageHandlerRemote, ComposeUntrustedDialogCallbackRouter} from './compose.mojom-webui.js';
 
 /** @interface */
@@ -12,7 +12,7 @@ export interface ComposeApiProxy {
   completeFirstRun(): void;
   closeUi(reason: CloseReason): void;
   compose(input: string, edited: boolean): void;
-  rewrite(style: StyleModifiers|null): void;
+  rewrite(style: StyleModifier | null): void;
   logEditInput(): void;
   getRouter(): ComposeUntrustedDialogCallbackRouter;
   openBugReportingLink(): void;
@@ -78,7 +78,7 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
     this.composeSessionPageHandler.compose(input, edited);
   }
 
-  rewrite(style: StyleModifiers|null): void {
+  rewrite(style: StyleModifier): void {
     this.composeSessionPageHandler.rewrite(style);
   }
 

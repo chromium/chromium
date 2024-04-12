@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CloseReason, ComposeState, OpenMetadata, StyleModifiers} from 'chrome-untrusted://compose/compose.mojom-webui.js';
+import type { CloseReason, ComposeState, OpenMetadata, StyleModifier } from 'chrome-untrusted://compose/compose.mojom-webui.js';
 import {ComposeUntrustedDialogCallbackRouter, UserFeedback} from 'chrome-untrusted://compose/compose.mojom-webui.js';
 import type {ComposeApiProxy} from 'chrome-untrusted://compose/compose_api_proxy.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
@@ -85,7 +85,7 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
     this.methodCalled('compose', {input, edited});
   }
 
-  rewrite(style: StyleModifiers): void {
+  rewrite(style: StyleModifier): void {
     this.methodCalled('rewrite', style);
   }
 
