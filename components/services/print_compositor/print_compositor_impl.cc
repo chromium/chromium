@@ -27,7 +27,7 @@
 #include "third_party/skia/include/core/SkDocument.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
-#include "third_party/skia/src/utils/SkMultiPictureDocument.h"
+#include "third_party/skia/include/docs/SkMultiPictureDocument.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -379,7 +379,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
 
   // Read in content and convert it into pdf.
   SkMemoryStream stream(serialized_content.data(), serialized_content.size());
-  int page_count = SkMultiPictureDocumentReadPageCount(&stream);
+  int page_count = SkMultiPictureDocument::ReadPageCount(&stream);
   if (!page_count) {
     DLOG(ERROR) << "CompositePages: No page is read.";
     return mojom::PrintCompositor::Status::kContentFormatError;
@@ -387,7 +387,8 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
 
   std::vector<SkDocumentPage> pages(page_count);
   SkDeserialProcs procs = DeserializationProcs(&subframes, &typefaces_);
-  if (!SkMultiPictureDocumentRead(&stream, pages.data(), page_count, &procs)) {
+  if (!SkMultiPictureDocument::Read(&stream, pages.data(), page_count,
+                                    &procs)) {
     DLOG(ERROR) << "CompositePages: Page reading failed.";
     return mojom::PrintCompositor::Status::kContentFormatError;
   }

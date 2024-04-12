@@ -29,9 +29,7 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkStream.h"
-// Note that headers in third_party/skia/src are fragile.  This is
-// an experimental, fragile, and diagnostic-only document type.
-#include "third_party/skia/src/utils/SkMultiPictureDocument.h"
+#include "third_party/skia/include/docs/SkMultiPictureDocument.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -214,7 +212,7 @@ bool MetafileSkia::FinishDocument() {
     case mojom::SkiaDocumentType::kMSKP:
       SkSerialProcs procs = SerializationProcs(&data_->subframe_content_info,
                                                data_->typeface_content_info);
-      doc = SkMakeMultiPictureDocument(&stream, &procs);
+      doc = SkMultiPictureDocument::Make(&stream, &procs);
       // It is safe to use base::Unretained(this) because the callback
       // is only used by `canvas` in the following loop which has shorter
       // lifetime than `this`.

@@ -66,11 +66,9 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/docs/SkMultiPictureDocument.h"
 #include "third_party/skia/include/docs/SkXPSDocument.h"
 #include "third_party/skia/include/encode/SkPngEncoder.h"
-// Note that headers in third_party/skia/src are fragile.  This is
-// an experimental, fragile, and diagnostic-only document type.
-#include "third_party/skia/src/utils/SkMultiPictureDocument.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -731,7 +729,7 @@ void GpuBenchmarking::SetRasterizeOnlyVisibleContent() {
 
 namespace {
 sk_sp<SkDocument> make_multipicturedocument(SkWStream* stream) {
-  return SkMakeMultiPictureDocument(stream);
+  return SkMultiPictureDocument::Make(stream);
 }
 }  // namespace
 void GpuBenchmarking::PrintPagesToSkPictures(v8::Isolate* isolate,
