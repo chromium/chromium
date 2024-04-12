@@ -52,16 +52,17 @@ MantaServiceFactory::BuildServiceInstanceForBrowserContext(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   Profile* const profile = Profile::FromBrowserContext(context);
-  std::string chrome_version;
+  std::string chrome_version, locale;
   if (PrefService* pref_service = profile->GetPrefs()) {
     chrome_version = pref_service->GetString(prefs::kProfileCreatedByVersion);
+    locale = pref_service->GetString(language::prefs::kApplicationLocale);
   }
 
   return std::make_unique<MantaService>(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       IdentityManagerFactory::GetForProfile(profile), is_demo_mode,
-      chrome_version);
+      chrome_version, locale);
 }
 
 }  // namespace manta

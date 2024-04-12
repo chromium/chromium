@@ -38,8 +38,7 @@ class FakeSnapperProvider : public SnapperProvider, public FakeBaseProvider {
       signin::IdentityManager* identity_manager)
       : BaseProvider(test_url_loader_factory,
                      identity_manager,
-                     /*is_demo_mode=*/false,
-                     /*chrome_version=*/std::string()),
+                     /*is_demo_mode=*/false),
         SnapperProvider(test_url_loader_factory, identity_manager),
         FakeBaseProvider(test_url_loader_factory, identity_manager) {}
 };

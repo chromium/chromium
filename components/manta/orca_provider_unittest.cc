@@ -40,12 +40,12 @@ class FakeOrcaProvider : public OrcaProvider, public FakeBaseProvider {
       signin::IdentityManager* identity_manager)
       : BaseProvider(test_url_loader_factory,
                      identity_manager,
-                     /*is_demo_mode=*/false,
-                     /*chrome_version=*/std::string()),
+                     /*is_demo_mode=*/false),
         OrcaProvider(test_url_loader_factory,
                      identity_manager,
                      /*is_demo_mode=*/false,
-                     /*chrome_version=*/std::string()),
+                     /*chrome_version=*/std::string(),
+                     /*locale=*/std::string()),
         FakeBaseProvider(test_url_loader_factory, identity_manager) {}
 };
 

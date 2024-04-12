@@ -25,10 +25,12 @@ BaseProvider::BaseProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     bool is_demo_mode,
-    const std::string& chrome_version)
+    const std::string& chrome_version,
+    const std::string& locale)
     : url_loader_factory_(url_loader_factory),
       is_demo_mode_(is_demo_mode),
-      chrome_version_(chrome_version) {
+      chrome_version_(chrome_version),
+      locale_(locale) {
   // Guest mode and demo mode also have valid identity_manager instance, so it's
   // OK to CHECK here.
   CHECK(identity_manager);
@@ -60,8 +62,15 @@ void BaseProvider::RequestInternal(
   // Add additional info to the request proto.
   auto* client_info = request.mutable_client_info();
   client_info->set_client_type(manta::proto::ClientInfo::CHROME);
-  client_info->mutable_chrome_client_info()->set_chrome_version(
-      chrome_version_);
+
+  if (!chrome_version_.empty()) {
+    client_info->mutable_chrome_client_info()->set_chrome_version(
+        chrome_version_);
+  }
+
+  if (!locale_.empty()) {
+    client_info->mutable_chrome_client_info()->set_locale(locale_);
+  }
 
   std::string serialized_request;
   request.SerializeToString(&serialized_request);

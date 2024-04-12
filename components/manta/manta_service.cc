@@ -9,15 +9,17 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/account_id/account_id.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/manta/mahi_provider.h"
-#include "components/manta/orca_provider.h"
-#include "components/manta/snapper_provider.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/constants/chromeos_features.h"  // nogncheck
+#include "components/manta/mahi_provider.h"
+#include "components/manta/orca_provider.h"
+#include "components/manta/snapper_provider.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace manta {
 
@@ -40,11 +42,13 @@ MantaService::MantaService(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     signin::IdentityManager* identity_manager,
     bool is_demo_mode,
-    const std::string& chrome_version)
+    const std::string& chrome_version,
+    const std::string& locale)
     : shared_url_loader_factory_(shared_url_loader_factory),
       identity_manager_(identity_manager),
       is_demo_mode_(is_demo_mode),
-      chrome_version_(chrome_version) {}
+      chrome_version_(chrome_version),
+      locale_(locale) {}
 
 MantaService::~MantaService() = default;
 
@@ -80,9 +84,12 @@ std::unique_ptr<OrcaProvider> MantaService::CreateOrcaProvider() {
   if (!identity_manager_) {
     return nullptr;
   }
-  return std::make_unique<OrcaProvider>(shared_url_loader_factory_,
-                                        identity_manager_, is_demo_mode_,
-                                        chrome_version_);
+  return std::make_unique<OrcaProvider>(
+      shared_url_loader_factory_, identity_manager_, is_demo_mode_,
+      chrome_version_,
+      /*locale=*/
+      chromeos::features::IsOrcaUseL10nStringsEnabled() ? locale_
+                                                        : std::string());
 }
 
 std::unique_ptr<SnapperProvider> MantaService::CreateSnapperProvider() {

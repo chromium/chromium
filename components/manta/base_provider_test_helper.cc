@@ -29,8 +29,7 @@ FakeBaseProvider::FakeBaseProvider(
     signin::IdentityManager* identity_manager)
     : BaseProvider(url_loader_factory,
                    identity_manager,
-                   /*is_demo_mode=*/false,
-                   /*chrome_version=*/"") {}
+                   /*is_demo_mode=*/false) {}
 
 FakeBaseProvider::~FakeBaseProvider() = default;
 

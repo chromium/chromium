@@ -19,17 +19,6 @@ component("manta") {
     "manta_status.h",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "mahi_provider.cc",
-      "mahi_provider.h",
-      "orca_provider.cc",
-      "orca_provider.h",
-      "snapper_provider.cc",
-      "snapper_provider.h",
-    ]
-  }
-
   defines = [ "IS_MANTA_IMPL" ]
 
   deps = [
@@ -42,6 +31,18 @@ component("manta") {
     "//components/signin/public/identity_manager",
     "//net",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "mahi_provider.cc",
+      "mahi_provider.h",
+      "orca_provider.cc",
+      "orca_provider.h",
+      "snapper_provider.cc",
+      "snapper_provider.h",
+    ]
+    deps += [ "//chromeos/constants:constants" ]
+  }
 }
 
 source_set("unit_tests") {

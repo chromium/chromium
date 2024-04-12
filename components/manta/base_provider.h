@@ -29,7 +29,8 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
       bool is_demo_mode,
-      const std::string& chrome_version);
+      const std::string& chrome_version = std::string(),
+      const std::string& locale = std::string());
 
   BaseProvider(const BaseProvider&) = delete;
   BaseProvider& operator=(const BaseProvider&) = delete;
@@ -81,6 +82,7 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
   // Useful client info for particular providers.
   const bool is_demo_mode_;
   const std::string chrome_version_;
+  const std::string locale_;
 };
 
 }  // namespace manta

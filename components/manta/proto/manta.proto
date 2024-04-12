@@ -32,6 +32,8 @@ message ClientInfo {
 
 message ChromeClientInfo {
   optional string chrome_version = 1;
+  optional string locale = 4;
+  reserved 2, 3;
 }
 
 enum ImageResolution {

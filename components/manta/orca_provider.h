@@ -36,7 +36,8 @@ class COMPONENT_EXPORT(MANTA) OrcaProvider : virtual public BaseProvider {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
       bool is_demo_mode,
-      const std::string& chrome_version);
+      const std::string& chrome_version,
+      const std::string& locale);
 
   OrcaProvider(const OrcaProvider&) = delete;
   OrcaProvider& operator=(const OrcaProvider&) = delete;
