@@ -155,6 +155,14 @@ class ReadAnythingAppModel {
     return page_finished_loading_for_data_collection_;
   }
 
+  bool page_finished_loading() const {
+    return page_finished_loading_;
+  }
+
+  void set_page_finished_loading(bool value) {
+    page_finished_loading_ = value;
+  }
+
   const ukm::SourceId& active_ukm_source_id() const {
     return active_ukm_source_id_;
   }
@@ -478,6 +486,9 @@ class ReadAnythingAppModel {
   // webpage. We record the result of the distill() call for this entire
   // webpage, so we only make the call once the webpage finished loading.
   bool page_finished_loading_for_data_collection_ = false;
+
+  // Whether the webpage has finished loading or not.
+  bool page_finished_loading_ = false;
 
   // Read Aloud state
 

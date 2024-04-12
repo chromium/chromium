@@ -397,6 +397,9 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 
   if (model_.requires_distillation()) {
     Distill();
+    if (model_.is_empty() && IsGoogleDocs() && model_.page_finished_loading()) {
+      ExecuteJavaScript("chrome.readingMode.showEmpty();");
+    }
   }
 
   if (model_.image_to_update_node_id() != ui::kInvalidAXNodeID) {
@@ -437,6 +440,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // distillation request.
   model_.ClearPendingUpdates();
   model_.set_requires_distillation(false);
+  model_.set_page_finished_loading(false);
 
   ExecuteJavaScript("chrome.readingMode.showLoading();");
 
@@ -525,7 +529,12 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   }
 
   if (model_.is_empty()) {
-    ExecuteJavaScript("chrome.readingMode.showEmpty();");
+    // For Google Docs, the initial AXTree may be empty while the document is
+    // loading. Therefore, to avoid displaying an empty side panel, wait for
+    // Google Docs to finish loading.
+    if (!IsGoogleDocs() || model_.page_finished_loading()) {
+      ExecuteJavaScript("chrome.readingMode.showEmpty();");
+    }
     if (IsGoogleDocs()) {
       base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
                                     ReadAnythingEmptyState::kEmptyStateShown);
@@ -935,11 +944,31 @@ std::string ReadAnythingAppController::GetTextContent(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if ((ax_node->GetTextContentUTF8()).empty() && IsGoogleDocs()) {
-    // For Google Docs, we distill text from the aria-labels of annotated
-    // canvas's rect elements. Therefore, we need to explicitly read the name
-    // attribute to get the text.
-    return GetNameAttributeText(ax_node);
+  // For Google Docs, because the content is rendered in canvas, we distill
+  // text from the "Annotated Canvas"
+  // (https://sites.google.com/corp/google.com/docs-canvas-migration/home)
+  // instead of the HTML.
+  if (IsGoogleDocs()) {
+    // With 'Annotated Canvas', text is stored within the aria-labels of SVG
+    // elements. To retrieve this text, we need to access the 'name' attribute
+    // of these elements.
+    if ((ax_node->GetTextContentUTF8()).empty()) {
+      std::string nodeText = GetNameAttributeText(ax_node);
+      if (!nodeText.empty()) {
+        // Add a space between the text of two annotated canvas elements.
+        // Otherwise, there is no space separating two lines of text.
+        return nodeText + " ";
+      }
+    } else {
+      // We ignore all text in the HTML. These text are either from comments or
+      // from off-screen divs that contain hidden information information that
+      // only is intended for screen readers and braille support. These are not
+      // actual text in the doc.
+      // TODO(b/324143642): Reading Mode handles Doc comments.
+      if (ax_node->GetRole() == ax::mojom::Role::kStaticText) {
+        return "";
+      }
+    }
   }
   return ax_node->GetTextContentUTF8();
 }
@@ -975,8 +1004,8 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
   const char* url =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl).c_str();
 
-  // Prevent XSS from href attribute, which could be set to a script instead of
-  // a valid website.
+  // Prevent XSS from href attribute, which could be set to a script instead
+  // of a valid website.
   if (url::FindAndCompareScheme(url, static_cast<int>(strlen(url)), "http",
                                 nullptr) ||
       url::FindAndCompareScheme(url, static_cast<int>(strlen(url)), "https",
@@ -1068,8 +1097,8 @@ const std::string ReadAnythingAppController::GetDisplayNameForLocale(
 }
 
 const std::string& ReadAnythingAppController::GetLanguageCodeForSpeech() const {
-  // TODO(crbug.com/1474951): Instead of returning the default browser language
-  // we should use the page language.
+  // TODO(crbug.com/1474951): Instead of returning the default browser
+  // language we should use the page language.
   return model_.default_language_code();
 }
 
@@ -1122,10 +1151,10 @@ void ReadAnythingAppController::OnScroll(bool on_selection) const {
 
 void ReadAnythingAppController::OnLinkClicked(ui::AXNodeID ax_node_id) const {
   DCHECK_NE(model_.active_tree_id(), ui::AXTreeIDUnknown());
-  // Prevent link clicks while distillation is in progress, as it means that the
-  // tree may have changed in an unexpected way.
-  // TODO(crbug.com/1266555): Consider how to show this in a more user-friendly
-  // way.
+  // Prevent link clicks while distillation is in progress, as it means that
+  // the tree may have changed in an unexpected way.
+  // TODO(crbug.com/1266555): Consider how to show this in a more
+  // user-friendly way.
   if (model_.distillation_in_progress()) {
     return;
   }
@@ -1232,10 +1261,10 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
                                                   ui::AXNodeID focus_node_id,
                                                   int focus_offset) const {
   DCHECK_NE(model_.active_tree_id(), ui::AXTreeIDUnknown());
-  // Prevent link clicks while distillation is in progress, as it means that the
-  // tree may have changed in an unexpected way.
-  // TODO(crbug.com/1266555): Consider how to show this in a more user-friendly
-  // way.
+  // Prevent link clicks while distillation is in progress, as it means that
+  // the tree may have changed in an unexpected way.
+  // TODO(crbug.com/1266555): Consider how to show this in a more
+  // user-friendly way.
   if (model_.distillation_in_progress()) {
     return;
   }
@@ -1262,9 +1291,9 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   // range of text to be selected, including non-text nodes. This can cause
   // inconsistencies in how the selection is handled. e.g. the focus node can
   // be before the anchor node and set to a non-text node, which can cause
-  // page_handler_->OnSelectionChange to be incorrectly triggered, resulting in
-  // a failing DCHECK. Therefore, return early if this happens.
-  // This check does not apply to pdfs.
+  // page_handler_->OnSelectionChange to be incorrectly triggered, resulting
+  // in a failing DCHECK. Therefore, return early if this happens. This check
+  // does not apply to pdfs.
   if (!model_.is_pdf() && (!focus_node->IsText() || !anchor_node->IsText())) {
     return;
   }

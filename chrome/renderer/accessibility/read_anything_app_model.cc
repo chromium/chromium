@@ -766,6 +766,7 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
     switch (event.event_type) {
       case ax::mojom::Event::kLoadComplete:
         requires_distillation_ = true;
+        page_finished_loading_ = true;
         if (features::IsDataCollectionModeForScreen2xEnabled()) {
           page_finished_loading_for_data_collection_ = true;
         }

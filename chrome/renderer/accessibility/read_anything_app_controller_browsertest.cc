@@ -905,6 +905,44 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithSelection) {
 }
 
 TEST_F(ReadAnythingAppControllerTest,
+       GetTextContent_IgoreStaticTextIfGoogleDocs) {
+  std::string text_content = "Hello";
+  std::string more_text_content = "world";
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  SetUpdateTreeID(&update, id_1);
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.role = ax::mojom::Role::kStaticText;
+  node1.SetNameChecked(text_content);
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.role = ax::mojom::Role::kStaticText;
+  node2.SetNameExplicitlyEmpty();
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.AddStringAttribute(
+      ax::mojom::StringAttribute::kUrl,
+      "https://docs.google.com/document/d/"
+      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
+      "edit?ouid=103677288878638916900&usp=docs_home&ths=true");
+  root.child_ids = {node1.id, node2.id};
+  root.role = ax::mojom::Role::kParagraph;
+  update.root_id = root.id;
+  update.nodes = {root, node1, node2};
+
+  AccessibilityEventReceived({update});
+  EXPECT_TRUE(IsUrlInformationSet(id_1));
+  OnAXTreeDistilled({});
+  OnActiveAXTreeIDChanged(id_1);
+  EXPECT_TRUE(IsGoogleDocs());
+  EXPECT_EQ("", GetTextContent(2));
+  EXPECT_EQ("", GetTextContent(3));
+}
+
+TEST_F(ReadAnythingAppControllerTest,
        GetTextContent_UseNameAttributeTextIfGoogleDocs) {
   std::string text_content = "Hello";
   std::string more_text_content = "world";
@@ -936,9 +974,9 @@ TEST_F(ReadAnythingAppControllerTest,
   OnAXTreeDistilled({});
   OnActiveAXTreeIDChanged(id_1);
   EXPECT_TRUE(IsGoogleDocs());
-  EXPECT_EQ("Hello world", GetTextContent(1));
-  EXPECT_EQ(text_content, GetTextContent(2));
-  EXPECT_EQ(more_text_content, GetTextContent(3));
+  EXPECT_EQ("Hello world ", GetTextContent(1));
+  EXPECT_EQ(text_content + " ", GetTextContent(2));
+  EXPECT_EQ(more_text_content + " ", GetTextContent(3));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
