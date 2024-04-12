@@ -8,7 +8,10 @@
 #import <UIKit/UIKit.h>
 
 // Accessibility identifier for the tab group creation view.
-extern NSString* const kCreateTabGroupIdentifier;
+extern NSString* const kCreateTabGroupViewIdentifier;
+extern NSString* const kCreateTabGroupTextFieldIdentifier;
+extern NSString* const kCreateTabGroupCreateButtonIdentifier;
+extern NSString* const kCreateTabGroupCancelButtonIdentifier;
 
 // Timing constants for the animations of the TabGroup presentation/dismissal.
 extern const CGFloat kTabGroupPresentationDuration;
