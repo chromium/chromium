@@ -74,7 +74,7 @@ class SingleClientPlusAddressSyncTest
  public:
   SingleClientPlusAddressSyncTest() : SyncTest(SINGLE_CLIENT) {
     features_.InitWithFeatures(
-        /*enabled_features=*/{plus_addresses::features::kFeature,
+        /*enabled_features=*/{plus_addresses::features::kPlusAddressesEnabled,
                               syncer::kSyncPlusAddress},
         /*disabled_features=*/{});
   }

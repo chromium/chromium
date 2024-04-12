@@ -442,7 +442,8 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
   // `plus_address_webdata_service_` is null on iOS WebView.
   if (!disabled_types.Has(syncer::PLUS_ADDRESS) &&
       plus_address_webdata_service_ &&
-      base::FeatureList::IsEnabled(plus_addresses::features::kFeature) &&
+      base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled) &&
       base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
     controllers.push_back(std::make_unique<syncer::ModelTypeController>(
         syncer::PLUS_ADDRESS,

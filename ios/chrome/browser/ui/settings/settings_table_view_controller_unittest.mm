@@ -510,7 +510,8 @@ TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
 // Verifies that the plus address option isn't shown when disabled.
 TEST_F(SettingsTableViewControllerTest, NoPlusAddressesByDefault) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(plus_addresses::features::kFeature);
+  features.InitAndDisableFeature(
+      plus_addresses::features::kPlusAddressesEnabled);
 
   CreateController();
   CheckController();

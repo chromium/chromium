@@ -44,7 +44,7 @@ class PlusAddressCreationViewAndroidBrowserTest : public AndroidBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList features_{features::kFeature};
+  base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
   profiles::testing::ScopedProfileSelectionsForFactoryTesting
       override_profile_selections_;
 };

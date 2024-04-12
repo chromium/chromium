@@ -74,7 +74,7 @@ class PlusAddressCreationControllerAndroidEnabledTest
   }
 
  protected:
-  base::test::ScopedFeatureList features_{features::kFeature};
+  base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
   // Ensures that the feature is known to be enabled, such that
   // `PlusAddressServiceFactory` doesn't bail early with a null return.
   profiles::testing::ScopedProfileSelectionsForFactoryTesting
@@ -305,7 +305,7 @@ class PlusAddressCreationControllerAndroidDisabledTest
     : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    features_.InitAndDisableFeature(features::kFeature);
+    features_.InitAndDisableFeature(features::kPlusAddressesEnabled);
     ChromeRenderViewHostTestHarness::SetUp();
     PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
         browser_context(),

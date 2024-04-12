@@ -86,7 +86,7 @@ class PlusAddressHttpClientRequests : public ::testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
     features_.InitAndEnableFeatureWithParameters(
-        features::kFeature,
+        features::kPlusAddressesEnabled,
         {{features::kEnterprisePlusAddressServerUrl.name, kServerBaseUrl},
          {features::kEnterprisePlusAddressOAuthScope.name, kTestScope}});
     identity_test_env_.MakePrimaryAccountAvailable(
@@ -609,7 +609,7 @@ TEST(PlusAddressHttpClient, ChecksUrlParamIsValidGurl) {
   std::string server_url = "https://foo.com/";
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeatureWithParameters(
-      features::kFeature,
+      features::kPlusAddressesEnabled,
       {{features::kEnterprisePlusAddressServerUrl.name, server_url}});
   PlusAddressHttpClientImpl client(
       identity_test_env.identity_manager(),
@@ -623,7 +623,7 @@ TEST(PlusAddressHttpClient, RejectsNonUrlStrings) {
   signin::IdentityTestEnvironment identity_test_env;
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeatureWithParameters(
-      features::kFeature,
+      features::kPlusAddressesEnabled,
       {{features::kEnterprisePlusAddressServerUrl.name, "kirubeldotcom"}});
   PlusAddressHttpClientImpl client(
       identity_test_env.identity_manager(),
@@ -636,7 +636,7 @@ class PlusAddressAuthToken : public ::testing::Test {
   PlusAddressAuthToken() {
     // Init the feature param to add `kTestScope_` to GetUnconsentedOAuth2Scopes
     features_.InitAndEnableFeatureWithParameters(
-        features::kFeature,
+        features::kPlusAddressesEnabled,
         {{features::kEnterprisePlusAddressOAuthScope.name, kTestScope}});
     InitClient();
   }
@@ -785,7 +785,7 @@ class PlusAddressHttpClientNullServerUrl : public PlusAddressHttpClientRequests 
   PlusAddressHttpClientNullServerUrl() {
     // Disable feature plus_addresses, which should also set `server_url_` to
     // `nullopt`.
-    scoped_feature_list_.InitAndDisableFeature(features::kFeature);
+    scoped_feature_list_.InitAndDisableFeature(features::kPlusAddressesEnabled);
     InitClient();
   }
 

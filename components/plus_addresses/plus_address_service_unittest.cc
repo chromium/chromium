@@ -169,7 +169,8 @@ TEST_F(PlusAddressServiceTest, DefaultSupportsPlusAddressesState) {
 TEST_F(PlusAddressServiceTest, SupportsPlusAddressNoServer) {
   // Enable the feature, but do not provide a server URL, which indicates no
   // suggestion should be shown.
-  base::test::ScopedFeatureList scoped_feature_list{features::kFeature};
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kPlusAddressesEnabled};
   InitService();
   EXPECT_FALSE(service().SupportsPlusAddresses(kNoSubdomainOrigin,
                                                /*is_off_the_record=*/false));
@@ -230,7 +231,7 @@ class PlusAddressServiceRequestsTest : public PlusAddressServiceTest {
         kCreatePlusAddressEndpoint(
             kServerUrl.Resolve(kServerCreatePlusAddressEndpoint).spec()) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFeature, GetFieldTrialParams());
+        features::kPlusAddressesEnabled, GetFieldTrialParams());
     identity_env().MakeAccountAvailable(kSigninAccount,
                                         {signin::ConsentLevel::kSignin});
     identity_env().SetAutomaticIssueOfAccessTokens(true);
@@ -453,7 +454,8 @@ class PlusAddressHttpForbiddenResponseTest
     base::FieldTrialParams params =
         PlusAddressServiceRequestsTest::GetFieldTrialParams();
     params[features::kDisableForForbiddenUsers.name] = "true";
-    features_.InitAndEnableFeatureWithParameters(features::kFeature, params);
+    features_.InitAndEnableFeatureWithParameters(
+        features::kPlusAddressesEnabled, params);
   }
 
  private:
@@ -487,7 +489,7 @@ TEST_F(PlusAddressHttpForbiddenResponseTest,
        RepeatedHttpForbiddenFromConfirmWithDisabledParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kFeature,
+      features::kPlusAddressesEnabled,
       PlusAddressServiceRequestsTest::GetFieldTrialParams());
 
   const std::string kPlusAddress = "plus+remote@plus.plus";
@@ -574,8 +576,8 @@ class PlusAddressServicePolling : public PlusAddressServiceRequestsTest {
     base::FieldTrialParams params =
         PlusAddressServiceRequestsTest::GetFieldTrialParams();
     params["sync-with-server"] = "true";
-    feature_list_.InitAndEnableFeatureWithParameters(features::kFeature,
-                                                     params);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPlusAddressesEnabled, params);
     InitService();
   }
 
@@ -613,12 +615,13 @@ TEST_F(PlusAddressServicePolling,
        DisableForForbiddenUsers_Enabled_404sDontDisableFeature) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kFeature, {
-                              {"server-url", kServerUrl.spec()},
-                              {"oauth-scope", "scope.example"},
-                              {"sync-with-server", "true"},
-                              {"disable-for-forbidden-users", "true"},
-                          });
+      features::kPlusAddressesEnabled,
+      {
+          {"server-url", kServerUrl.spec()},
+          {"oauth-scope", "scope.example"},
+          {"sync-with-server", "true"},
+          {"disable-for-forbidden-users", "true"},
+      });
   InitService();
 
   EXPECT_TRUE(service().is_enabled());
@@ -633,12 +636,13 @@ TEST_F(PlusAddressServicePolling,
        DisableForForbiddenUsers_Enabled_403sDisableFeature) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kFeature, {
-                              {"server-url", kServerUrl.spec()},
-                              {"oauth-scope", "scope.example"},
-                              {"sync-with-server", "true"},
-                              {"disable-for-forbidden-users", "true"},
-                          });
+      features::kPlusAddressesEnabled,
+      {
+          {"server-url", kServerUrl.spec()},
+          {"oauth-scope", "scope.example"},
+          {"sync-with-server", "true"},
+          {"disable-for-forbidden-users", "true"},
+      });
   InitService();
 
   EXPECT_TRUE(service().is_enabled());
@@ -774,7 +778,7 @@ TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
 class PlusAddressServiceDisabledTest : public PlusAddressServiceTest {
  protected:
   PlusAddressServiceDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kFeature);
+    scoped_feature_list_.InitAndDisableFeature(features::kPlusAddressesEnabled);
     InitService();
   }
 
@@ -797,7 +801,7 @@ class PlusAddressServiceEnabledTest : public PlusAddressServiceTest {
  public:
   PlusAddressServiceEnabledTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFeature,
+        features::kPlusAddressesEnabled,
         {{features::kEnterprisePlusAddressServerUrl.name, "mattwashere"}});
     InitService();
   }
@@ -830,7 +834,7 @@ TEST_F(PlusAddressServiceEnabledTest, ExcludedSitesAreNotSupported) {
                                       {signin::ConsentLevel::kSignin});
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kFeature,
+      features::kPlusAddressesEnabled,
       {{features::kEnterprisePlusAddressServerUrl.name, "mattwashere"},
        {features::kPlusAddressExcludedSites.name,
         "exclude.co.th,forbidden.com"}});
@@ -922,7 +926,7 @@ class PlusAddressServiceSignoutTest : public PlusAddressServiceTest {
  public:
   PlusAddressServiceSignoutTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFeature,
+        features::kPlusAddressesEnabled,
         {{features::kEnterprisePlusAddressServerUrl.name, "mattwashere"},
          {features::kEnterprisePlusAddressOAuthScope.name, "scope.example"}});
     secondary_account_ = identity_env().MakeAccountAvailable(
@@ -1008,8 +1012,9 @@ class PlusAddressSuggestionsTest : public PlusAddressServiceTest {
  public:
   PlusAddressSuggestionsTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFeature, {{"server-url", "https://server.example"},
-                             {"oauth-scope", "scope.example"}});
+        features::kPlusAddressesEnabled,
+        {{"server-url", "https://server.example"},
+         {"oauth-scope", "scope.example"}});
     identity_env().MakePrimaryAccountAvailable("plus@plus.plus",
                                                signin::ConsentLevel::kSignin);
     identity_env().SetAutomaticIssueOfAccessTokens(true);
@@ -1155,7 +1160,7 @@ TEST_F(PlusAddressSuggestionsTest,
 // Tests that no suggestions are returned when plus address are disabled.
 TEST_F(PlusAddressSuggestionsTest, NoSuggestionsWhenDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kFeature);
+  feature_list.InitAndDisableFeature(features::kPlusAddressesEnabled);
 
   EXPECT_THAT(service().GetSuggestions(
                   url::Origin::Create(GURL("https://foo.coom")),

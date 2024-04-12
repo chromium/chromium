@@ -515,7 +515,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [model addItem:[self privacyDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
-  if (base::FeatureList::IsEnabled(plus_addresses::features::kFeature)) {
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled)) {
     _plusAddressesItem = [self plusAddressesItem];
     [model addItem:_plusAddressesItem
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];

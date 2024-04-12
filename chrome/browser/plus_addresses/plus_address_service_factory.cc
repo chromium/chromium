@@ -33,7 +33,8 @@ PlusAddressServiceFactory* PlusAddressServiceFactory::GetInstance() {
 /* static */
 ProfileSelections PlusAddressServiceFactory::CreateProfileSelections() {
   // Feature not enabled? Don't create any service instances.
-  if (!base::FeatureList::IsEnabled(plus_addresses::features::kFeature)) {
+  if (!base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled)) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
   // Otherwise, exclude system accounts and guest accounts, otherwise use one

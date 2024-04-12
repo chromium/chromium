@@ -266,7 +266,7 @@ bool PlusAddressService::is_enabled() const {
       account_is_forbidden_.has_value() && account_is_forbidden_.value()) {
     return false;
   }
-  return base::FeatureList::IsEnabled(features::kFeature) &&
+  return base::FeatureList::IsEnabled(features::kPlusAddressesEnabled) &&
          (features::kEnterprisePlusAddressServerUrl.Get() != "") &&
          identity_manager_ != nullptr &&
          // Note that having a primary account implies that account's email will

@@ -878,7 +878,7 @@ class PlusAddressContextMenuManagerTest
     // TODO(b/327562692): Create and use a `PlusAddressTestEnvironment`.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{plus_addresses::features::kFeature,
+        {{plus_addresses::features::kPlusAddressesEnabled,
           {{plus_addresses::features::kEnterprisePlusAddressServerUrl.name,
             "https://foo.bar"},
            {plus_addresses::features::kPlusAddressExcludedSites.name,

@@ -23,26 +23,27 @@ constexpr char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
 }  // namespace
 
 // Controls the enabled/disabled state of the experimental feature.
-BASE_FEATURE(kFeature,
+BASE_FEATURE(kPlusAddressesEnabled,
              "PlusAddressesEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope{
-    &kFeature, kEnterprisePlusAddressOAuthScopeName, ""};
+    &kPlusAddressesEnabled, kEnterprisePlusAddressOAuthScopeName, ""};
 const base::FeatureParam<std::string> kEnterprisePlusAddressServerUrl{
-    &kFeature, kEnterprisePlusAddressServerUrlName, ""};
+    &kPlusAddressesEnabled, kEnterprisePlusAddressServerUrlName, ""};
 const base::FeatureParam<bool> kSyncWithEnterprisePlusAddressServer{
-    &kFeature, kSyncWithEnterprisePlusAddressServerName, false};
+    &kPlusAddressesEnabled, kSyncWithEnterprisePlusAddressServerName, false};
 const base::FeatureParam<base::TimeDelta> kEnterprisePlusAddressTimerDelay{
-    &kFeature, kEnterprisePlusAddressTimerDelayName, base::Hours(24)};
+    &kPlusAddressesEnabled, kEnterprisePlusAddressTimerDelayName,
+    base::Hours(24)};
 const base::FeatureParam<std::string> kPlusAddressManagementUrl{
-    &kFeature, kPlusAddressManagementUrlName, ""};
+    &kPlusAddressesEnabled, kPlusAddressManagementUrlName, ""};
 const base::FeatureParam<std::string> kPlusAddressExcludedSites{
-    &kFeature, kPlusAddressExcludedSitesName, ""};
+    &kPlusAddressesEnabled, kPlusAddressExcludedSitesName, ""};
 const base::FeatureParam<std::string> kPlusAddressErrorReportUrl{
-    &kFeature, kPlusAddressErrorReportUrlName, ""};
+    &kPlusAddressesEnabled, kPlusAddressErrorReportUrlName, ""};
 const base::FeatureParam<bool> kDisableForForbiddenUsers{
-    &kFeature, kDisableForForbiddenUsersName, false};
+    &kPlusAddressesEnabled, kDisableForForbiddenUsersName, false};
 
 BASE_FEATURE(kPlusAddressFallbackFromContextMenu,
              "PlusAddressFallbackFromContextMenu",
