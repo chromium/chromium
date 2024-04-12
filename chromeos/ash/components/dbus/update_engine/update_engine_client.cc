@@ -464,6 +464,9 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     }
 
     VLOG(1) << "Eol date received: " << status.eol_date();
+    VLOG(1) << "Extended date received: " << status.extended_date();
+    VLOG(1) << "Extended opt in received: "
+            << status.extended_opt_in_required();
 
     EolInfo eol_info;
     if (status.eol_date() > 0) {
