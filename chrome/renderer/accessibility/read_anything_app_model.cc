@@ -1421,6 +1421,17 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
       use_paragraph = true;
       possible_new_position =
           new_position->CreateNextParagraphStartPosition(movement_options);
+
+      // If after switching to use the paragraph position, the position is
+      // in a null position, go ahead and return the null position so
+      // speech can terminate properly. Otherwise, speech may get caught
+      // in an infinite loop of searching for another item to speak when
+      // there's no text left. This happens when the final node to be spoken
+      // in the content is followed by an invalid character that causes
+      // CreatenextSentenceStartPosition to repeatedly return the same thing.
+      if (possible_new_position->IsNullPosition()) {
+        return ui::AXNodePosition::AXPosition::CreateNullPosition();
+      }
     }
 
     // If the new position is still the same as the old position after trying
@@ -1430,8 +1441,7 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
     if (possible_new_position->GetAnchor() && new_position->GetAnchor() &&
         (possible_new_position->GetAnchor()->id() ==
          new_position->GetAnchor()->id())) {
-      possible_new_position =
-          ui::AXNodePosition::AXPosition::CreateNullPosition();
+      return ui::AXNodePosition::AXPosition::CreateNullPosition();
     }
 
     if (!possible_new_position->GetAnchor()) {
