@@ -74,6 +74,11 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/skbitmap_operations.h"
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/common/features.h"
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
 namespace extensions {
 
 namespace developer = api::developer_private;
@@ -610,6 +615,8 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
       (disable_reasons & disable_reason::DISABLE_PERMISSIONS_INCREASE) != 0;
   info->disable_reasons.parent_disabled_permissions =
       supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs()) &&
+      !supervised_user::
+          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
       !profile->GetPrefs()->GetBoolean(
           prefs::kSupervisedUserExtensionsMayRequestPermissions) &&
       (custodian_approval_required || permissions_increase);
