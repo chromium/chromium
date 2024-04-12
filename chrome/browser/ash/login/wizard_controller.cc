@@ -146,6 +146,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
@@ -2954,14 +2955,9 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
 
 void WizardController::UpdateStatusAreaVisibilityForScreen(
     OobeScreenId screen_id) {
-  if (screen_id == WelcomeView::kScreenId) {
-    // Hide the status area initially; it only appears after OOBE first
-    // animates in. Keep it visible if the user goes back to the existing
-    // welcome screen.
-    GetLoginDisplayHost()->SetStatusAreaVisible(
-        screen_manager_->HasScreen(WelcomeView::kScreenId));
-  } else {
-    GetLoginDisplayHost()->SetStatusAreaVisible(
+  // SystemTrayClientImpl::Get() can be nullptr in unit tests.
+  if (SystemTrayClientImpl::Get()) {
+    SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(
         !ShouldHideStatusArea(screen_id));
   }
 }

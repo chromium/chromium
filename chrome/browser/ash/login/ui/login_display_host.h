@@ -115,9 +115,6 @@ class LoginDisplayHost {
   // call the instance will be gone.
   virtual void FinalizeImmediately() = 0;
 
-  // Toggles status area visibility.
-  virtual void SetStatusAreaVisible(bool visible) = 0;
-
   // Starts out-of-box-experience flow or shows other screen handled by
   // Wizard controller i.e. camera, recovery.
   // One could specify start screen with `first_screen`.

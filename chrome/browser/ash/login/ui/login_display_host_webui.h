@@ -72,7 +72,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   content::WebContents* GetOobeWebContents() const override;
   WebUILoginView* GetWebUILoginView() const override;
   void OnFinalize() override;
-  void SetStatusAreaVisible(bool visible) override;
   void StartWizard(OobeScreenId first_screen) override;
   WizardController* GetWizardController() override;
   void OnStartUserAdding() override;

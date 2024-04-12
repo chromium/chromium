@@ -92,9 +92,6 @@ class WebUILoginView : public views::View,
   // Called when WebUI is being shown after being initilized hidden.
   void OnPostponedShow();
 
-  // Toggles status area visibility.
-  void SetStatusAreaVisible(bool visible);
-
   // Sets whether keyboard events can be forwarded from the WebUI and the system
   // tray is available.
   void SetKeyboardEventsAndSystemTrayEnabled(bool enabled);

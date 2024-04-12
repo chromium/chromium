@@ -413,10 +413,6 @@ void LoginDisplayHostMojo::OnFinalize() {
   ShutdownDisplayHost();
 }
 
-void LoginDisplayHostMojo::SetStatusAreaVisible(bool visible) {
-  SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(visible);
-}
-
 void LoginDisplayHostMojo::StartWizard(OobeScreenId first_screen) {
   EnsureOobeDialogLoaded();
   OobeUI* oobe_ui = GetOobeUI();
@@ -450,7 +446,7 @@ void LoginDisplayHostMojo::OnStartUserAdding() {
 
   CreateExistingUserController();
 
-  SetStatusAreaVisible(true);
+  SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(/*visible=*/true);
   existing_user_controller_->Init(
       user_manager::UserManager::Get()->GetUsersAllowedForMultiProfile());
 }

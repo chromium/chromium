@@ -253,10 +253,6 @@ void WebUILoginView::OnPostponedShow() {
   OnLoginPromptVisible();
 }
 
-void WebUILoginView::SetStatusAreaVisible(bool visible) {
-  SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(visible);
-}
-
 void WebUILoginView::SetKeyboardEventsAndSystemTrayEnabled(bool enabled) {
   forward_keyboard_event_ = enabled;
 

@@ -52,6 +52,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/ui/ash/auth/cryptohome_pin_engine.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
@@ -301,7 +302,7 @@ void LoginDisplayHostCommon::StartSignInScreen() {
 
   // Enable status area after starting sign-in screen, as it may depend on the
   // UI being visible.
-  SetStatusAreaVisible(true);
+  SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(/*visible=*/true);
 }
 
 void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
@@ -311,7 +312,7 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAttemptToLaunch);
 
-  SetStatusAreaVisible(false);
+  SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(/*visible=*/false);
 
   // Wait for the `CrosSettings` to become either trusted or permanently
   // untrusted.
@@ -327,7 +328,7 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
     // If the `CrosSettings` are permanently untrusted, refuse to launch a
     // single-app kiosk mode session.
     LOG(ERROR) << "Login >> Refusing to launch single-app kiosk mode.";
-    SetStatusAreaVisible(true);
+    SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(/*visible=*/true);
     return;
   }
 

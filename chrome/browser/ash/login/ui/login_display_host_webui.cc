@@ -542,13 +542,6 @@ void LoginDisplayHostWebUI::OnFinalize() {
   }
 }
 
-void LoginDisplayHostWebUI::SetStatusAreaVisible(bool visible) {
-  status_area_saved_visibility_ = visible;
-  if (login_view_) {
-    login_view_->SetStatusAreaVisible(status_area_saved_visibility_);
-  }
-}
-
 void LoginDisplayHostWebUI::OnOobeConfigurationChanged() {
   waiting_for_configuration_ = false;
   OobeConfiguration::Get()->RemoveObserver(this);
@@ -917,7 +910,6 @@ void LoginDisplayHostWebUI::ShowWebUI() {
   VLOG(1) << "Login WebUI >> Show already initialized UI";
   login_window_->Show();
   login_view_->GetWebContents()->Focus();
-  login_view_->SetStatusAreaVisible(status_area_saved_visibility_);
   login_view_->OnPostponedShow();
 
   if (oobe_load_timer_.has_value()) {
