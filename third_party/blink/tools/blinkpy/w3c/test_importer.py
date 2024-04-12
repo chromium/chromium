@@ -775,8 +775,9 @@ class TestImporter:
         for directory, bug in bugs_by_dir.items():
             assert bug.issue_id, bug
             failures = notifier.new_failures_by_directory[directory]
-            for path, target_lines in failures.exp_by_file.items():
+            for path_from_root, target_lines in failures.exp_by_file.items():
                 for target_line in target_lines:
+                    path = self.finder.path_from_chromium_base(path_from_root)
                     # It's possible that the expectation added previously no
                     # longer exists in its current form (e.g., might be
                     # consolidated with similar lines).

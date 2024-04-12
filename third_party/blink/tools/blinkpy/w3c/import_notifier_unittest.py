@@ -389,8 +389,8 @@ class ImportNotifierTest(unittest.TestCase):
                          {'external/wpt/foo'})
         failures = self.notifier.new_failures_by_directory['external/wpt/foo']
         self.assertEqual(set(failures.exp_by_file),
-                         {MOCK_WEB_TESTS + 'TestExpectations'})
-        lines = failures.exp_by_file[MOCK_WEB_TESTS + 'TestExpectations']
+                         {RELATIVE_WEB_TESTS + 'TestExpectations'})
+        lines = failures.exp_by_file[RELATIVE_WEB_TESTS + 'TestExpectations']
         self.assertEqual([line.to_string() for line in lines], [
             'crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Failure ]',
             'crbug.com/12345 [ Win ] external/wpt/foo/bar.html [ Timeout ]',
@@ -463,18 +463,20 @@ class ImportNotifierTest(unittest.TestCase):
             run_command_fn=mock_run_command)
 
         failures = self.notifier.new_failures_by_directory['external/wpt/foo']
-        failures.exp_by_file[MOCK_WEB_TESTS + 'TestExpectations'].append(
+        failures.exp_by_file[RELATIVE_WEB_TESTS + 'TestExpectations'].append(
             typ_types.Expectation('crbug.com/12345',
                                   'external/wpt/foo/baz.html',
-                                  results={typ_types.ResultType.Failure}))
+                                  results={typ_types.ResultType.Failure},
+                                  lineno=100))
         failures = self.notifier.new_failures_by_directory['external/wpt/bar']
-        failures.exp_by_file[MOCK_WEB_TESTS + 'TestExpectations'].append(
+        failures.exp_by_file[RELATIVE_WEB_TESTS + 'TestExpectations'].append(
             typ_types.Expectation('crbug.com/12345',
                                   'external/wpt/bar/baz.html',
-                                  results={typ_types.ResultType.Failure}))
+                                  results={typ_types.ResultType.Failure},
+                                  lineno=200))
 
         bugs = self.notifier.create_bugs_from_new_failures(
-            CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345))
+            CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345, 4))
 
         # Only one directory has WPT-NOTIFY enabled.
         self.assertEqual(set(bugs), {'external/wpt/foo'})
@@ -486,8 +488,11 @@ class ImportNotifierTest(unittest.TestCase):
         self.assertEqual(
             bug.title, '[WPT] New failures introduced in '
             'external/wpt/foo by import https://crrev.com/c/12345')
-        self.assertIn('crbug.com/12345 external/wpt/foo/baz.html [ Failure ]',
-                      bug.description.splitlines())
+        self.assertIn(
+            'crbug.com/12345 external/wpt/foo/baz.html [ Failure ]: '
+            'https://crrev.com/c/12345/4/'
+            'third_party/blink/web_tests/TestExpectations#100',
+            bug.description.splitlines())
         checks_url = ('See ' + CHECKS_URL_TEMPLATE + ' for details.').format(
             '12345', '1')
         self.assertIn(checks_url, bug.description.splitlines())
@@ -503,7 +508,7 @@ class ImportNotifierTest(unittest.TestCase):
     def test_file_bug_without_owners(self):
         """A bug should be filed, even without OWNERS next to DIR_METADATA."""
         failures = self.notifier.new_failures_by_directory['external/wpt/foo']
-        failures.exp_by_file[MOCK_WEB_TESTS + 'TestExpectations'].append(
+        failures.exp_by_file[RELATIVE_WEB_TESTS + 'TestExpectations'].append(
             typ_types.Expectation('crbug.com/12345',
                                   'external/wpt/foo/baz.html',
                                   results={typ_types.ResultType.Failure}))
@@ -513,7 +518,7 @@ class ImportNotifierTest(unittest.TestCase):
                                'read_dir_metadata',
                                return_value=dir_metadata):
             bugs = self.notifier.create_bugs_from_new_failures(
-                CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345))
+                CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345, 4))
 
         self.assertEqual(set(bugs), {'external/wpt/foo'})
         bug = bugs['external/wpt/foo']
@@ -525,7 +530,7 @@ class ImportNotifierTest(unittest.TestCase):
 
     def test_no_bugs_filed_in_dry_run(self):
         failures = self.notifier.new_failures_by_directory['external/wpt/foo']
-        failures.exp_by_file[MOCK_WEB_TESTS + 'TestExpectations'].append(
+        failures.exp_by_file[RELATIVE_WEB_TESTS + 'TestExpectations'].append(
             typ_types.Expectation('crbug.com/12345',
                                   'external/wpt/foo/baz.html',
                                   results={typ_types.ResultType.Failure}))
@@ -535,19 +540,19 @@ class ImportNotifierTest(unittest.TestCase):
                                'read_dir_metadata',
                                return_value=dir_metadata):
             bugs = self.notifier.create_bugs_from_new_failures(
-                CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345))
+                CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345, 4))
         self.notifier.file_bugs(bugs, dry_run=True)
         self.buganizer_client.NewIssue.assert_not_called()
 
     def test_file_bugs_with_best_effort(self):
         """Failing to file a bug should not prevent additional attempts."""
         failures = self.notifier.new_failures_by_directory['external/wpt/foo']
-        failures.exp_by_file[MOCK_WEB_TESTS + 'TestExpectations'].append(
+        failures.exp_by_file[RELATIVE_WEB_TESTS + 'TestExpectations'].append(
             typ_types.Expectation('crbug.com/12345',
                                   'external/wpt/foo/baz.html',
                                   results={typ_types.ResultType.Failure}))
         failures = self.notifier.new_failures_by_directory['external/wpt/bar']
-        failures.exp_by_file[MOCK_WEB_TESTS + 'TestExpectations'].append(
+        failures.exp_by_file[RELATIVE_WEB_TESTS + 'TestExpectations'].append(
             typ_types.Expectation('crbug.com/12345',
                                   'external/wpt/bar/baz.html',
                                   results={typ_types.ResultType.Failure}))
@@ -557,7 +562,7 @@ class ImportNotifierTest(unittest.TestCase):
                                'read_dir_metadata',
                                return_value=dir_metadata):
             bugs = self.notifier.create_bugs_from_new_failures(
-                CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345))
+                CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345, 4))
         self.assertEqual(len(bugs), 2)
 
         self.buganizer_client.NewIssue.side_effect = BuganizerError
@@ -579,7 +584,7 @@ class DirectoryFailuresTest(unittest.TestCase):
                 'platform/linux/external/wpt/foo/bar-expected.txt'),
         ])
         self.assertEqual(
-            str(failures),
+            failures.format_for_description(CLRevisionID(56789, 3)),
             textwrap.dedent("""\
                 external/wpt/foo/bar.html new failing tests: https://crrev.com/c/12345/3/third_party/blink/web_tests/external/wpt/foo/bar-expected.txt
                 [ Linux ] external/wpt/foo/bar.html new failing tests: https://crrev.com/c/12345/3/third_party/blink/web_tests/platform/linux/external/wpt/foo/bar-expected.txt
@@ -587,17 +592,19 @@ class DirectoryFailuresTest(unittest.TestCase):
 
     def test_directory_failures_to_str_new_expectation(self):
         failures = DirectoryFailures({
-            MOCK_WEB_TESTS + 'TestExpectations': [
+            RELATIVE_WEB_TESTS + 'TestExpectations': [
                 typ_types.Expectation('crbug.com/12345',
                                       'external/wpt/foo/bar.html', {'Linux'},
-                                      {typ_types.ResultType.Failure}),
+                                      {typ_types.ResultType.Failure},
+                                      lineno=100),
                 typ_types.Expectation(test='external/wpt/foo/baz.html',
-                                      results={typ_types.ResultType.Failure}),
+                                      results={typ_types.ResultType.Failure},
+                                      lineno=200),
             ],
         })
         self.assertEqual(
-            str(failures),
+            failures.format_for_description(CLRevisionID(56789, 3)),
             textwrap.dedent("""\
-                crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Failure ]
-                external/wpt/foo/baz.html [ Failure ]
+                crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Failure ]: https://crrev.com/c/56789/3/third_party/blink/web_tests/TestExpectations#100
+                external/wpt/foo/baz.html [ Failure ]: https://crrev.com/c/56789/3/third_party/blink/web_tests/TestExpectations#200
                 """))

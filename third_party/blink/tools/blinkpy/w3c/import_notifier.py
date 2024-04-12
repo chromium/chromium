@@ -14,6 +14,7 @@ import re
 import typing
 from collections import defaultdict
 from dataclasses import dataclass, field
+from pathlib import PurePath
 from typing import (
     List,
     Mapping,
@@ -119,7 +120,7 @@ class ImportNotifier:
         self.examine_new_test_expectations(import_rev)
         wpt_range = CommitRange(wpt_start_rev, wpt_end_rev)
         bugs = self.create_bugs_from_new_failures(wpt_range,
-                                                  CLRevisionID(cl.number))
+                                                  cl.current_revision_id)
         filed_bugs = self.file_bugs(bugs, dry_run)
         if filed_bugs:
             cl.post_comment(
@@ -254,7 +255,7 @@ class ImportNotifier:
                 directory = self.find_directory_for_bug(line.test)
                 if directory:
                     failures = self.new_failures_by_directory[directory]
-                    failures.exp_by_file[abs_changed_file].append(line)
+                    failures.exp_by_file[changed_file].append(line)
 
     def _read_exp_lines(self, path: str,
                         ref: str) -> List[typ_types.Expectation]:
@@ -275,17 +276,19 @@ class ImportNotifier:
             wpt_range: The imported WPT revision range. The start is exclusive
                 (i.e., the last imported revision) and the end is inclusive
                 (i.e., the current imported reivision).
-            cl_revision: Issue number of the imported CL.
+            cl_revision: Issue number and patchset of the imported CL.
 
         Returns:
             A map from a WPT directory to its corresponding issue to file.
         """
+        assert cl_revision.patchset, cl_revision
+        cl_revision_no_ps = CLRevisionID(cl_revision.issue)
         checks_url = CHECKS_URL_TEMPLATE.format(cl_revision.issue, '1')
         imported_commits = self.local_wpt.commits_in_range(*wpt_range)
         bugs = {}
         for directory, failures in self.new_failures_by_directory.items():
             summary = '[WPT] New failures introduced in {} by import {}'.format(
-                directory, cl_revision)
+                directory, cl_revision_no_ps)
 
             full_directory = self.host.filesystem.join(
                 self.finder.web_tests_dir(), directory)
@@ -306,8 +309,8 @@ class ImportNotifier:
 
             prologue = ('WPT import {} introduced new failures in {}:\n\n'
                         'List of new failures:\n'.format(
-                            cl_revision, directory))
-            failure_list = str(failures)
+                            cl_revision_no_ps, directory))
+            failure_list = failures.format_for_description(cl_revision)
             checks = '\nSee {} for details.\n'.format(checks_url)
 
             expectations_statement = (
@@ -466,9 +469,12 @@ class DirectoryFailures:
         default_factory=lambda: defaultdict(list))
     baseline_failures: List[BaselineFailure] = field(default_factory=list)
 
-    def __str__(self) -> str:
+    def format_for_description(self, cl_revision: CLRevisionID) -> str:
+        assert cl_revision.patchset, cl_revision
         lines = [str(failure) for failure in self.baseline_failures]
         for path in sorted(self.exp_by_file):
             for exp in self.exp_by_file[path]:
-                lines.append(exp.to_string())
+                path_for_url = PurePath(path).as_posix()
+                url = f'{cl_revision}/{path_for_url}#{exp.lineno}'
+                lines.append(f'{exp.to_string()}: {url}')
         return '\n'.join(lines) + '\n'
