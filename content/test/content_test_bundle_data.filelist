@@ -6751,6 +6751,8 @@ data/loader/image-taint.html
 data/loader/reload_test.html
 data/loader/simple_frame.html
 data/local_storage.html
+data/location_equals_about_srcdoc_script.html
+data/location_equals_about_srcdoc_script.html.mock-http-headers
 data/lock_screen/simple.html
 data/locks/dedicated_worker.js
 data/locks/locks.html

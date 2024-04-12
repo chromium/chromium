@@ -4238,6 +4238,72 @@ class NavigationRequestPrerenderBrowserTest
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
 };
 
+// Make sure if a main frame page served with a COOP header attempts to navigate
+// itself to about:srcdoc that we handle it correctly.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       CoopWithMainframeAboutSrcdocNavigation) {
+  std::unique_ptr<net::EmbeddedTestServer> https_server =
+      std::make_unique<net::EmbeddedTestServer>(
+          net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->AddDefaultHandlers(GetTestDataFilePath());
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+  ASSERT_TRUE(https_server->Start());
+
+  GURL url(https_server->GetURL("a.test",
+                                "/location_equals_about_srcdoc_script.html"));
+
+  // Navigate to a document that sets COOP and immediately navigates the
+  // mainframe to about:srcdoc.
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+  // Since the redirect to about:srcdoc in the page's script is expected to
+  // fail, use EXPECT_FALSE here.
+  EXPECT_FALSE(NavigateToURL(shell(), url));
+  navigation_observer.Wait();
+
+  // Verify that the second navigation was attempted and failed.
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_INVALID_URL, navigation_observer.last_net_error_code());
+  EXPECT_EQ(GURL(url::kAboutSrcdocURL),
+            navigation_observer.last_navigation_url());
+}
+
+// Same as CoopWithMainframeAboutSrcdocNavigation above, except instead of a
+// single, redirected navigation, we get two distinct navigations in this case.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       CoopWithMainframeAboutSrcdocNavigation2) {
+  std::unique_ptr<net::EmbeddedTestServer> https_server =
+      std::make_unique<net::EmbeddedTestServer>(
+          net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->AddDefaultHandlers(GetTestDataFilePath());
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+  ASSERT_TRUE(https_server->Start());
+
+  GURL url(https_server->GetURL("a.test",
+                                "/set-header?"
+                                "cross-origin-opener-policy: same-origin"));
+
+  // Navigate to a document that sets COOP.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  content::RenderFrameHostImpl* main_frame =
+      static_cast<content::RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin,
+            main_frame->cross_origin_opener_policy().value);
+
+  // Navigate main frame to about:srcdoc.
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(main_frame, "location = 'about:srcdoc';"));
+  navigation_observer.Wait();
+
+  // Verify that the second navigation was attempted and failed.
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_INVALID_URL, navigation_observer.last_net_error_code());
+  EXPECT_EQ(GURL(url::kAboutSrcdocURL),
+            navigation_observer.last_navigation_url());
+}
+
 IN_PROC_BROWSER_TEST_F(NavigationRequestPrerenderBrowserTest,
                        CoopCoepCheckWithPrerender) {
   GURL url(
