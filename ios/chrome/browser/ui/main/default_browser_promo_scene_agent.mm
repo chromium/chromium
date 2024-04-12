@@ -92,6 +92,16 @@
   }
 }
 
+// Register Generic Default Browser promo and otherwise, deregister.
+- (void)updateGenericPromoRegistration {
+  if (!IsChromeLikelyDefaultBrowser()) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::DefaultBrowser);
+  } else {
+    self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
+  }
+}
+
 - (BOOL)isSignedIn {
   ChromeBrowserState* browserState =
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser
@@ -141,14 +151,7 @@
     [self updateAllTabsPromoRegistration];
     [self updateMadeForIOSPromoRegistration];
     [self updateStaySafePromoRegistration];
-
-    if (ShouldRegisterPromoWithPromoManager(self.signedIn)) {
-      self.promosManager->RegisterPromoForSingleDisplay(
-          promos_manager::Promo::DefaultBrowser);
-    } else {
-      self.promosManager->DeregisterPromo(
-          promos_manager::Promo::DefaultBrowser);
-    }
+    [self updateGenericPromoRegistration];
 
     [self notifyFETSigninStatus];
   }

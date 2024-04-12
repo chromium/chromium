@@ -22,10 +22,9 @@
 #pragma mark - PromoProtocol
 
 - (PromoConfig)config {
-  return PromoConfig(promos_manager::Promo::DefaultBrowser,
-                     &feature_engagement::kIPHiOSPromoDefaultBrowserFeature,
-                     @[ [[ImpressionLimit alloc] initWithLimit:4
-                                                    forNumDays:365] ]);
+  return PromoConfig(
+      promos_manager::Promo::DefaultBrowser,
+      &feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature);
 }
 
 @end

@@ -123,26 +123,6 @@ TEST_F(DefaultBrowserUtilsTest, LogInterestingActivityEach) {
   EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs));
 }
 
-// Tests most recent interest type.
-TEST_F(DefaultBrowserUtilsTest, MostRecentInterestDefaultPromoType) {
-  DefaultPromoType type = MostRecentInterestDefaultPromoType(NO);
-  EXPECT_EQ(type, DefaultPromoTypeGeneral);
-
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-  type = MostRecentInterestDefaultPromoType(NO);
-  EXPECT_EQ(type, DefaultPromoTypeAllTabs);
-  type = MostRecentInterestDefaultPromoType(YES);
-  EXPECT_NE(type, DefaultPromoTypeAllTabs);
-
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
-  type = MostRecentInterestDefaultPromoType(NO);
-  EXPECT_EQ(type, DefaultPromoTypeStaySafe);
-
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
-  type = MostRecentInterestDefaultPromoType(NO);
-  EXPECT_EQ(type, DefaultPromoTypeMadeForIOS);
-}
-
 // Tests cooldown between fullscreen promos with cooldown refactor disabled and
 // no recent non-modal promo interaction.
 TEST_F(DefaultBrowserUtilsTest, FullscreenPromoCoolDownRefactorDisabled) {

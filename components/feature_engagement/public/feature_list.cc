@@ -121,7 +121,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPromoWhatsNewFeature,
     &kIPHiOSPromoPostRestoreFeature,
     &kIPHiOSPromoCredentialProviderExtensionFeature,
-    &kIPHiOSPromoDefaultBrowserFeature,
     &kIPHiOSPromoDefaultBrowserReminderFeature,
     &kIPHiOSPromoOmniboxPositionFeature,
     &kIPHiOSNewTabToolbarItemFeature,

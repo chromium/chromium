@@ -260,11 +260,6 @@ bool IsChromePotentiallyNoLongerDefaultBrowser(int likelyDefaultInterval,
 // default browser for the passed `type`. Returns false otherwise.
 bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type);
 
-// Returns the most recent promo the user showed interest in. Defaults to
-// DefaultPromoTypeGeneral if no interest is found. If `skipAllTabsPromo` is
-// true, this type of promo will be ignored.
-DefaultPromoType MostRecentInterestDefaultPromoType(BOOL skipAllTabsPromo);
-
 // Return YES if the user has seen a full screen promo recently, and shouldn't
 // see another one.
 bool UserInFullscreenPromoCooldown();
@@ -279,18 +274,6 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
 
 // Returns the impression limit for the non-modal default browser promo.
 int GetNonModalDefaultBrowserPromoImpressionLimit();
-
-// Return true if the default browser promo should be registered with the promo
-// manager to display a default browser promo.
-bool ShouldRegisterPromoWithPromoManager(bool is_signed_in);
-
-// Returns true if it was determined that the user is eligible for a
-// tailored promo.
-bool IsTailoredPromoEligibleUser(bool is_signed_in);
-
-// Returns true if it was determined that the user is eligible for the
-// general promo.
-bool IsGeneralPromoEligibleUser(bool is_signed_in);
 
 // Returns true if it was determined that the user is eligible for the
 // post restore default browser promo.

@@ -31,9 +31,6 @@
 @property(nonatomic, strong)
     VideoDefaultBrowserPromoCoordinator* videoDefaultPromoCoordinator;
 
-// Coordinator that manages the tailored promo modals.
-@property(nonatomic, strong) TailoredPromoCoordinator* tailoredPromoCoordinator;
-
 // Feature engagement tracker reference.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
 
@@ -62,32 +59,7 @@
     return;
   }
 
-  // Bypass the all of the triggering criteria if enabled.
-  if (ShouldForceDefaultPromoType()) {
-    [self showPromo:ForceDefaultPromoType()];
-    return;
-  }
-
-  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    [self showPromo:DefaultPromoTypeVideo];
-    return;
-  }
-
-  if (self.promoWasFromRemindMeLater) {
-    [self showPromo:DefaultPromoTypeVideo];
-    return;
-  }
-
-  BOOL isSignedIn = [self isSignedIn];
-
-  // Tailored promos take priority over general promo.
-  if (IsTailoredPromoEligibleUser(isSignedIn)) {
-    // Should only show tailored promos
-    [self showPromo:MostRecentInterestDefaultPromoType(!isSignedIn)];
-    return;
-  }
-
-  [self showPromo:DefaultPromoTypeVideo];
+  [self showVideoPromo];
 }
 
 - (void)stop {
@@ -97,9 +69,6 @@
         feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature);
   }
   self.videoDefaultPromoCoordinator = nil;
-
-  [self.tailoredPromoCoordinator stop];
-  self.tailoredPromoCoordinator = nil;
 
   [self.promosUIHandler promoWasDismissed];
   self.promosUIHandler = nil;
@@ -122,36 +91,6 @@
 
 #pragma mark - private
 
-- (BOOL)isSignedIn {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  DCHECK(authService);
-  DCHECK(authService->initialized());
-  return authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-}
-
-- (void)showPromo:(DefaultPromoType)promoType {
-  switch (promoType) {
-    case DefaultPromoTypeStaySafe:
-      [self showTailoredPromoWithType:DefaultPromoTypeStaySafe];
-      break;
-    case DefaultPromoTypeMadeForIOS:
-      [self showTailoredPromoWithType:DefaultPromoTypeMadeForIOS];
-      break;
-    case DefaultPromoTypeAllTabs:
-      [self showTailoredPromoWithType:DefaultPromoTypeAllTabs];
-      break;
-    case DefaultPromoTypeGeneral:
-    case DefaultPromoTypeVideo:
-      [self showVideoPromo];
-      break;
-  }
-
-  // Used for testing only.
-  [DefaultBrowserPromoManager showPromoForTesting:promoType];
-}
-
 - (void)showVideoPromo {
   self.videoDefaultPromoCoordinator =
       [[VideoDefaultBrowserPromoCoordinator alloc]
@@ -164,16 +103,9 @@
       !self.promoWasFromRemindMeLater;
   self.videoDefaultPromoCoordinator.showRemindMeLater = showRemindMeLater;
   [self.videoDefaultPromoCoordinator start];
-}
 
-- (void)showTailoredPromoWithType:(DefaultPromoType)type {
-  DCHECK(!self.tailoredPromoCoordinator);
-  self.tailoredPromoCoordinator = [[TailoredPromoCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                            type:type];
-  self.tailoredPromoCoordinator.handler = self;
-  [self.tailoredPromoCoordinator start];
+  // Used for testing only.
+  [DefaultBrowserPromoManager showPromoForTesting:DefaultPromoTypeVideo];
 }
 
 @end

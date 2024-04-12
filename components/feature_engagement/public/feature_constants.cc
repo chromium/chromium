@@ -484,9 +484,6 @@ BASE_FEATURE(kIPHiOSPromoPostRestoreFeature,
 BASE_FEATURE(kIPHiOSPromoCredentialProviderExtensionFeature,
              "IPH_iOSPromoCredentialProviderExtension",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSPromoDefaultBrowserFeature,
-             "IPH_iOSPromoDefaultBrowser",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoDefaultBrowserReminderFeature,
              "IPH_iOSPromoDefaultBrowserReminder",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -531,13 +528,13 @@ BASE_FEATURE(kIPHiOSDockingPromoRemindMeLaterFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoAllTabsFeature,
              "IPH_iOSPromoAllTabs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoMadeForIOSFeature,
              "IPH_iOSPromoMadeForIOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoStaySafeFeature,
              "IPH_iOSPromoStaySafe",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSSwipeBackForwardFeature,
              "IPH_iOSSwipeBackForward",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -549,7 +546,7 @@ BASE_FEATURE(kIPHiOSPostDefaultAbandonmentPromoFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoGenericDefaultBrowserFeature,
              "IPH_iOSPromoGenericDefaultBrowser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSOverflowMenuCustomizationFeature,
              "IPH_iOSOverflowMenuCustomization",
              base::FEATURE_ENABLED_BY_DEFAULT);

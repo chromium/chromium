@@ -92,19 +92,22 @@ TEST_F(DefaultBrowserFeatureEngagementTest, DefaultBrowserBasicTest) {
 
   // Promo shouldn't trigger because the preconditions are not satistfied.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoDefaultBrowserFeature));
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
 
+  // Make sure the preconditions are satisfied.
+  tracker->NotifyEvent("generic_default_browser_promo_conditions_met");
   // Promos can be displayed only after Chrome opened 7 times.
   SatisfyChromeOpenCondition(tracker.get());
 
   // The promo should trigger because all the preconditions are now satisfied.
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoDefaultBrowserFeature));
-  tracker->Dismissed(feature_engagement::kIPHiOSPromoDefaultBrowserFeature);
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature);
 
   // It shouldn't trigger the second time.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoDefaultBrowserFeature));
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
 }
 
 // Basic test for the All Tabs default browser promo.
@@ -324,7 +327,7 @@ TEST_F(DefaultBrowserFeatureEngagementTest, DefaultBrowserGroupTest) {
 
   // Promo shouldn't trigger because the preconditions are not satistfied.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoDefaultBrowserFeature));
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
 
   // Make sure the preconditions are satisfied for the Stay Safe promo.
   tracker->NotifyEvent("stay_safe_promo_conditions_met");
@@ -397,7 +400,7 @@ TEST_F(DefaultBrowserFeatureEngagementTest,
 
   // Promo shouldn't trigger because the group preconditions are not satistfied.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoDefaultBrowserFeature));
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
 
   // Make sure the group preconditions are satisfied.
   SatisfyChromeOpenCondition(tracker.get());

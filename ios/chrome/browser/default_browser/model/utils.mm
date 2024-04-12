@@ -128,13 +128,6 @@ constexpr base::TimeDelta kMaximumTimeBetweenValidURLPastes = base::Days(7);
 constexpr base::TimeDelta kTriggerCriteriaExperimentStatExpiration =
     base::Days(14);
 
-// List of DefaultPromoType considered by MostRecentInterestDefaultPromoType.
-const DefaultPromoType kDefaultPromoTypes[] = {
-    DefaultPromoTypeStaySafe,
-    DefaultPromoTypeAllTabs,
-    DefaultPromoTypeMadeForIOS,
-};
-
 // Returns maximum number of past event timestamps to record.
 size_t GetMaxPastTimestampsToRecord() {
   if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
@@ -780,31 +773,6 @@ bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType promo_type) {
   return !times.empty();
 }
 
-DefaultPromoType MostRecentInterestDefaultPromoType(
-    BOOL skip_all_tabs_promo_type) {
-  DefaultPromoType most_recent_event_type = DefaultPromoTypeGeneral;
-  base::Time most_recent_event_time = base::Time::Min();
-
-  for (DefaultPromoType promo_type : kDefaultPromoTypes) {
-    // Ignore DefaultPromoTypeAllTabs if the extra requirements are not met.
-    if (promo_type == DefaultPromoTypeAllTabs && skip_all_tabs_promo_type) {
-      continue;
-    }
-
-    std::vector<base::Time> times = LoadTimestampsForPromoType(promo_type);
-    if (times.empty()) {
-      continue;
-    }
-
-    const base::Time last_time_for_type = times.back();
-    if (last_time_for_type >= most_recent_event_time) {
-      most_recent_event_type = promo_type;
-      most_recent_event_time = last_time_for_type;
-    }
-  }
-  return most_recent_event_type;
-}
-
 bool UserInFullscreenPromoCooldown() {
   // Sets the last fullscreen promo interaction to the same value as the last
   // non-modal promo interaction if the latter is more recent. This is
@@ -874,53 +842,6 @@ int GetNonModalDefaultBrowserPromoImpressionLimit() {
   }
 
   return limit;
-}
-
-bool ShouldRegisterPromoWithPromoManager(bool is_signed_in) {
-  if (ShouldForceDefaultPromoType()) {
-    return YES;
-  }
-
-  // Consider showing the default browser promo if chrome is not likely set as
-  // default browser.
-  if (IsChromeLikelyDefaultBrowser()) {
-    return NO;
-  }
-
-  // If in trigger criteria experiment, then show default browser promo skipping
-  // further checks.
-  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    return YES;
-  }
-
-  // Consider showing the default browser promo if (1) the user has not seen a
-  // default browser promo too recently, (2) the user is eligible for either the
-  // tailored or generic default browser promo.
-  return !UserInFullscreenPromoCooldown() &&
-         (IsTailoredPromoEligibleUser(is_signed_in) ||
-          IsGeneralPromoEligibleUser(is_signed_in));
-}
-
-bool IsTailoredPromoEligibleUser(bool is_signed_in) {
-  bool is_all_tabs_promo_eligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs) &&
-      is_signed_in;
-  bool is_eligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS) ||
-      is_all_tabs_promo_eligible ||
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe);
-
-  if (!is_eligible) {
-    return false;
-  }
-
-  return !HasUserInteractedWithTailoredFullscreenPromoBefore();
-}
-
-bool IsGeneralPromoEligibleUser(bool is_signed_in) {
-  return !HasUserInteractedWithFullscreenPromoBefore() &&
-         (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
-          is_signed_in);
 }
 
 bool IsPostRestoreDefaultBrowserEligibleUser() {

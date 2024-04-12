@@ -191,7 +191,6 @@ BASE_DECLARE_FEATURE(kIPHiOSPromoAppStoreFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoWhatsNewFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoPostRestoreFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoCredentialProviderExtensionFeature);
-BASE_DECLARE_FEATURE(kIPHiOSPromoDefaultBrowserFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoDefaultBrowserReminderFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoOmniboxPositionFeature);
 BASE_DECLARE_FEATURE(kIPHiOSNewTabToolbarItemFeature);

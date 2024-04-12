@@ -24,7 +24,7 @@ class PromosManagerFeatureEngagementTest : public PlatformTest {
     return {
         &feature_engagement::kIPHiOSPromoAppStoreFeature,
         &feature_engagement::kIPHiOSPromoWhatsNewFeature,
-        &feature_engagement::kIPHiOSPromoDefaultBrowserFeature,
+        &feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature,
         &feature_engagement::kIPHiOSPromoOmniboxPositionFeature,
         &feature_engagement::kIPHiOSDockingPromoFeature,
     };

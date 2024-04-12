@@ -181,26 +181,10 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
   FakeStartupInformation* startup_information_;
 };
 
-// Tests that DefaultBrowser was registered with the promo manager when a
-// condition is met for a tailored promo.
-TEST_F(DefaultBrowserPromoSceneAgentTest,
-       TestPromoRegistrationLikelyInterestedTailored) {
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-  SignIn();
-
-  // Verify registration for default browser promo.
-  VerifyPromoRegistration({promos_manager::Promo::DefaultBrowser});
-
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-}
-
-// Tests that DefaultBrowser was registered with the promo manager when the
-// condition is met for a default promo.
+// Tests that DefaultBrowser was registered with the promo manager when user is
+// likely not a default browser user.
 TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestPromoRegistrationLikelyInterestedDefault) {
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
-  SignIn();
-
   // Verify registration for default browser promo.
   VerifyPromoRegistration({promos_manager::Promo::DefaultBrowser});
 
@@ -215,32 +199,6 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 
   // All promos should be deregistered.
   VerifyAllDeregistration();
-
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-}
-
-// Tests that DefaultBrowser was not registered to the promo manager because the
-// user previously interacted with a default browser tailored fullscreen promo.
-TEST_F(DefaultBrowserPromoSceneAgentTest,
-       TestInteractedTailoredPromoNoPromoRegistration) {
-  SignIn();
-  LogUserInteractionWithTailoredFullscreenPromo();
-
-  // Default Browser promo shouldn't be registered.
-  VerifyPromoDeregistration({promos_manager::Promo::DefaultBrowser});
-
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-}
-
-// Tests that DefaultBrowser was not registered to the promo manager because the
-// user previously interacted with a default browser fullscreen promo.
-TEST_F(DefaultBrowserPromoSceneAgentTest,
-       TestInteractedDefaultPromoNoPromoRegistration) {
-  SignIn();
-  LogUserInteractionWithFullscreenPromo();
-
-  // Default Browser promo shouldn't be registered.
-  VerifyPromoDeregistration({promos_manager::Promo::DefaultBrowser});
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }

@@ -59,31 +59,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     return config;
   }
 
-  if (kIPHiOSPromoDefaultBrowserFeature.name == feature->name) {
-    // Should trigger at most 4 times in a year, and only after Chrome has
-    // been opened 7 or more times.
-    config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
-    config->used =
-        EventConfig("default_browser_promo_used", Comparator(ANY, 0), 365, 365);
-    if (base::FeatureList::IsEnabled(kDefaultBrowserEligibilitySlidingWindow)) {
-      // Impression limits are currently being enforced on the registration side
-      // of the promo manager on iOS, therefore this promo will not be showing
-      // biweekly as this config may suggest.
-      // TODO(b/302111496): Fix this config to have impression limits be
-      // enforced solely by the FET.
-      config->trigger = EventConfig("default_browser_promo_trigger",
-                                    Comparator(EQUAL, 0), 14, 365);
-    } else {
-      config->trigger = EventConfig("default_browser_promo_trigger",
-                                    Comparator(LESS_THAN, 4), 365, 365);
-    }
-    return config;
-  }
-
   if (kIPHiOSPromoGenericDefaultBrowserFeature.name == feature->name) {
     config = FeatureConfig();
     config->valid = true;
