@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_PAINT_OP_BUFFER_SERIALIZER_H_
 #define CC_PAINT_PAINT_OP_BUFFER_SERIALIZER_H_
 
+#include <concepts>
 #include <memory>
 #include <vector>
 
@@ -93,14 +94,19 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
                                  const std::vector<size_t>* offsets);
   // Returns whether serialization of |op| succeeded and we need to serialize
   // the next PaintOp in the PaintOpBuffer.
+  template<typename F>
+  requires std::same_as<F, float>
   bool WillSerializeNextOp(const PaintOp& op,
                            SkCanvas* canvas,
                            const PlaybackParams& params,
-                           float alpha);
+                           F alpha);
+  template<typename F>
+  requires std::same_as<F, float>
   bool SerializeOpWithFlags(SkCanvas* canvas,
                             const PaintOpWithFlags& flags_op,
                             const PlaybackParams& params,
-                            float alpha);
+                            F alpha);
+
   ALWAYS_INLINE bool SerializeOp(SkCanvas* canvas,
                                  const PaintOp& op,
                                  const PaintFlags* flags_to_serialize,
