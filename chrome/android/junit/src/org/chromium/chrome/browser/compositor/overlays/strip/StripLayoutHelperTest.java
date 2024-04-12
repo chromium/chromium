@@ -2373,7 +2373,7 @@ public class StripLayoutHelperTest {
         verify(mTabGroupModelFilter)
                 .mergeTabsToGroup(eq(thirdTab.getId()), eq(oldSecondTabId), eq(true));
         mStripLayoutHelper.maybeMergeToGroupForTabGroupIndicators(
-                -expectedThreshold - 1, 2, false, expectedThreshold);
+                -expectedThreshold - 1, 2, false, expectedThreshold, groupTitle);
         assertEquals(
                 "Bottom indicator end width is incorrect",
                 expectedEndWidth,
@@ -2644,6 +2644,88 @@ public class StripLayoutHelperTest {
         return (tabWidth - TAB_OVERLAP_WIDTH) * tabCount
                 + groupTitle.getWidth()
                 - StripLayoutHelper.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testGroupTitleSlidingAnimation_MergeToGroup_TabGroupIndicators() {
+        // Mock 5 tabs. Group the first two tabs.
+        initializeTest(false, false, true, 0, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        groupTabs(1, 3);
+        int firstTabId = tabs[0].getId();
+        int secondTabId = tabs[1].getId();
+
+        // Assert: first view should be group title.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[1] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[1]);
+
+        // Start reorder mode on first tab. Drag between tabs in group.
+        // 70 = (80(halfTabWidth) - 28(tabOverlapWidth)) * 0.53(ReorderOverlapSwitchPercentage).
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+        float dragDistance = 70f;
+        float startX = mStripLayoutHelper.getLastReorderXForTesting();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
+
+        // Verify interacting tab was merged into group.
+        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(firstTabId), eq(secondTabId), eq(true));
+
+        // assert: verify group title sliding animation is running immediately when tab merge into
+        // group through group title.
+        assertTrue(mStripLayoutHelper.getGroupTitleSlidingForTesting());
+
+        // Assert: verify bottom indicator width correctly updated.
+        float expectedEndWidth =
+                calculateExpectedBottomIndicatorWidth(tabs[0].getWidth(), 2, groupTitle);
+        assertEquals(
+                "Bottom indicator end width is incorrect",
+                expectedEndWidth,
+                (groupTitle).getBottomIndicatorWidth(),
+                EPSILON);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testGroupTitleSlidingAnimation_dragOutOfGroup_TabGroupIndicators() {
+        // Mock 5 tabs. Group the first two tabs.
+        initializeTest(false, false, true, 0, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        groupTabs(1, 3);
+        int secondTabId = tabs[1].getId();
+
+        // Assert: first view should be group title.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[1] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[1]);
+
+        // Start reorder mode on first tab. Drag between tabs in group.
+        // 38 = ((80(halfTabWidth) - 28(tabOverlapWidth)) * 0.53(ReorderOverlapSwitchPercentage)) *
+        // 0.53.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(1);
+        float dragDistance = -38f - groupTitle.getWidth();
+        float startX = mStripLayoutHelper.getLastReorderXForTesting();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
+
+        // Verify interacting tab was moved out of group.
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(secondTabId, false);
+
+        // assert: verify group title sliding animation is running immediately when tab move out of
+        // group through group title.
+        assertTrue(mStripLayoutHelper.getGroupTitleSlidingForTesting());
+
+        // Assert: verify bottom indicator width correctly updated.
+        float expectedEndWidth =
+                calculateExpectedBottomIndicatorWidth(tabs[0].getWidth(), 2, groupTitle);
+        assertEquals(
+                "Bottom indicator end width is incorrect",
+                expectedEndWidth,
+                (groupTitle).getBottomIndicatorWidth(),
+                EPSILON);
     }
 
     @Test

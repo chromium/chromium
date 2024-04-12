@@ -2702,6 +2702,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     private int findStripViewIndexForStripTab(int curIndexInStripTab) {
+        if (curIndexInStripTab == TabModel.INVALID_TAB_INDEX) {
+            return TabModel.INVALID_TAB_INDEX;
+        }
         assert curIndexInStripTab < mStripTabs.length;
         StripLayoutTab curTab = mStripTabs[curIndexInStripTab];
         if (mStripViews == null || curTab == null) return TabModel.INVALID_TAB_INDEX;
@@ -3098,8 +3101,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // Animate bottom indicator when merging a new tab into group.
         if (groupTitle != null) {
-            List<Animator> animators =
-                    getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(groupTitle, false);
+            List<Animator> animators = new ArrayList<>();
+            animators.add(
+                    getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(groupTitle, false, false));
             startAnimationList(animators, null);
         }
 
@@ -3636,23 +3640,31 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      * @param threshold the drag distance threshold to determine whether a tab is moving out of the
      *     tab group.
+     * @param interactingGroupTitle The title of the tab group the tab is dragging past, which
+     *     occurs when a tab is being dragged to merge into or move out of the tab group through
+     *     group title.
      * @return The new index for the interacting tab if it has been removed from its tab group and
      *     the INVALID_TAB_INDEX otherwise.
      */
     private int maybeMoveOutOfGroupForTabGroupIndicators(
-            float offset, int curIndex, boolean towardEnd, float threshold) {
+            float offset,
+            int curIndex,
+            boolean towardEnd,
+            float threshold,
+            StripLayoutGroupTitle interactingGroupTitle) {
         // If past threshold, trigger reorder.
         if (Math.abs(offset) > threshold) {
             final int tabId = mInteractingTab.getId();
 
-            // Get the interacting group title.
+            // Get the target group title.
             Tab destinationTab = getTabById(mStripTabs[curIndex].getId());
-            StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(destinationTab.getRootId());
+            StripLayoutGroupTitle targetGroupTitle = findGroupTitle(destinationTab.getRootId());
 
-            // Animate the bottom indicator when moving a tab out of the group.
-            List<Animator> animators =
-                    getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(groupTitle, true);
-            startAnimationList(animators, null);
+            // Run indicator animations.
+            if (targetGroupTitle != null) {
+                runIndicatorAnimationForMergeOrMoveOutOfGroup(
+                        targetGroupTitle, interactingGroupTitle, curIndex, true, towardEnd);
+            }
 
             mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
             RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
@@ -3671,7 +3683,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param curIndex The index of the interacting tab.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      * @return The new index for the interacting tab if it has been moved into a neighboring tab
-     *         group and the INVALID_TAB_INDEX otherwise.
+     *     group and the INVALID_TAB_INDEX otherwise.
      */
     private int maybeMergeToGroup(float offset, int curIndex, boolean towardEnd) {
         // 1. Only attempt to merge if hovering a group for a valid amount of time.
@@ -3719,12 +3731,19 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      * @param threshold the drag distance threshold to determine whether a tab is merging into the
      *     tab group.
+     * @param interactingGroupTitle The title of the tab group the tab is dragging past, which
+     *     occurs when a tab is being dragged to merge into or move out of the tab group through
+     *     group title.
      * @return The new index for the interacting tab if it has been moved into a neighboring tab
      *     group and the INVALID_TAB_INDEX otherwise.
      */
     @VisibleForTesting
     protected int maybeMergeToGroupForTabGroupIndicators(
-            float offset, int curIndex, boolean towardEnd, float threshold) {
+            float offset,
+            int curIndex,
+            boolean towardEnd,
+            float threshold,
+            StripLayoutGroupTitle interactingGroupTitle) {
         if (Math.abs(offset) < threshold) {
             return TabModel.INVALID_TAB_INDEX;
         }
@@ -3733,15 +3752,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         int direction = towardEnd ? 1 : -1;
         StripLayoutTab destTab = mStripTabs[curIndex + direction];
 
-        // Get the interacting group title.
+        // Get the target group title.
         Tab destinationTab = getTabById(destTab.getId());
-        StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(destinationTab.getRootId());
+        StripLayoutGroupTitle targetGroupTitle = findGroupTitle(destinationTab.getRootId());
 
-        // Animate bottom indicator when merging a new tab into group.
-        List<Animator> animators =
-                getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(groupTitle, false);
-        startAnimationList(animators, null);
-
+        // Run indicator animations.
+        if (targetGroupTitle != null) {
+            runIndicatorAnimationForMergeOrMoveOutOfGroup(
+                    targetGroupTitle, interactingGroupTitle, curIndex, false, towardEnd);
+        }
         mTabGroupModelFilter.mergeTabsToGroup(mInteractingTab.getId(), destTab.getId(), true);
 
         RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");
@@ -3749,26 +3768,69 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return curIndex;
     }
 
-    private List<Animator> getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(
-            StripLayoutGroupTitle groupTitle, boolean isMovingOutOfGroup) {
+    private AnimatorListener getGroupTitleSlidingAnimatorListener() {
+        return new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mGroupTitleSliding = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mGroupTitleSliding = false;
+            }
+        };
+    }
+
+    private void runIndicatorAnimationForMergeOrMoveOutOfGroup(
+            StripLayoutGroupTitle targetGroupTitle,
+            StripLayoutGroupTitle interactingGroupTitle,
+            int curIndex,
+            boolean isMovingOutOfGroup,
+            boolean towardEnd) {
+        List<Animator> animators = new ArrayList();
+
+        // Add the group title swapping animation if the tab is merging into or moving out of tab
+        // group through group title.
+        boolean throughGroupTitle = interactingGroupTitle != null;
+        AnimatorListener groupTitleAnimListener = null;
+        if (throughGroupTitle) {
+            animators.add(
+                    getReorderStripViewAnimatorForTabGroupIndicator(
+                            mInteractingTab.getId(), curIndex, towardEnd, true));
+            groupTitleAnimListener = getGroupTitleSlidingAnimatorListener();
+        }
+
+        // Add bottom indicator animation.
+        animators.add(
+                getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(
+                        targetGroupTitle, isMovingOutOfGroup, throughGroupTitle));
+
+        startAnimationList(animators, groupTitleAnimListener);
+    }
+
+    private Animator getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(
+            StripLayoutGroupTitle groupTitle,
+            boolean isMovingOutOfGroup,
+            boolean throughGroupTitle) {
         // Calculate the initial width and the target width for the bottom indicator.
         float tabWidth = mCachedTabWidth - mTabOverlapWidth;
         float startWidth =
                 calculateBottomIndicatorWidth(groupTitle, getNumOfTabsInGroup(groupTitle));
         float endWidth = isMovingOutOfGroup ? startWidth - tabWidth : startWidth + tabWidth;
 
-        // Animate the bottom indicator.
-        List<Animator> animators = new ArrayList<>();
-        animators.add(
+        // Bottom indicator animation.
+        int animDuration = throughGroupTitle ? ANIM_TAB_MOVE_MS : ANIM_TAB_SLIDE_OUT_MS;
+        Animator animator =
                 CompositorAnimator.ofFloatProperty(
                         mUpdateHost.getAnimationHandler(),
                         groupTitle,
                         StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
                         startWidth,
                         endWidth,
-                        ANIM_TAB_SLIDE_OUT_MS));
+                        animDuration);
 
-        return animators;
+        return animator;
     }
 
     private int updateHoveringOverGroup(float offset, int curIndex, boolean towardEnd) {
@@ -3911,19 +3973,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         boolean isDraggingInteractWithGroup =
                 towardEnd ? isDraggingEndInteractWithGroup : isDraggingStartInteractWithGroup;
 
-        int direction = towardEnd ? 1 : -1;
         float tabGroupDragThreshold =
                 isDraggingInteractWithGroup
                         ? calculateTabGroupThreshold(curIndex, isInGroup, towardEnd)
                         : 0.f;
         StripLayoutGroupTitle interactingGroupTitle =
                 isDraggingInteractWithGroup ? getInteractingGroupTitle(curIndex, towardEnd) : null;
-        boolean draggingToAnotherGroup =
-                isDraggingThroughGroupTitleToAnotherGroup(
-                        curIndex, curIndex + direction, towardEnd);
 
-        // TODO(crbug.com/331978481) Refactor by moving the TabGroupIndicators code to a new method
-        //  and simplify it.
         if (isDraggingInteractWithGroup) {
             if (ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
                 if (isInGroup) {
@@ -3931,13 +3987,21 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     // group for tab group indicators.
                     destIndex =
                             maybeMoveOutOfGroupForTabGroupIndicators(
-                                    offset, curIndex, towardEnd, tabGroupDragThreshold);
+                                    offset,
+                                    curIndex,
+                                    towardEnd,
+                                    tabGroupDragThreshold,
+                                    interactingGroupTitle);
                 } else {
                     // 2.b. Reorder immediately when tab is dragged past threshold for tab group
                     // indicators.
                     destIndex =
                             maybeMergeToGroupForTabGroupIndicators(
-                                    offset, curIndex, towardEnd, tabGroupDragThreshold);
+                                    offset,
+                                    curIndex,
+                                    towardEnd,
+                                    tabGroupDragThreshold,
+                                    interactingGroupTitle);
                 }
             } else {
                 if (isInGroup) {
@@ -3982,12 +4046,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             mHoveringOverGroup = false;
 
             // 3.b. Swap the tabs or stripView when interacting with group title.
-            if (ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
-                    && interactingGroupTitle != null
-                    && !draggingToAnotherGroup) {
-                reorderStripViewForTabGroupIndicator(
-                        mInteractingTab.getId(), curIndex, towardEnd, true);
-            } else {
+            if (!ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
+                    || interactingGroupTitle == null) {
                 reorderTab(mInteractingTab.getId(), curIndex, destIndex, true);
                 mModel.moveTab(mInteractingTab.getId(), destIndex);
             }
@@ -4007,8 +4067,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             if (isDraggingInteractWithGroup) {
                 // Account for group title offset.
                 if (ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
-                        && interactingGroupTitle != null
-                        && !draggingToAnotherGroup) {
+                        && interactingGroupTitle != null) {
                     float groupTitleWidth = interactingGroupTitle.getWidth();
                     offset += MathUtils.flipSignIf((groupTitleWidth), shouldFlip);
                 } else {
@@ -4087,17 +4146,25 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private StripLayoutGroupTitle getInteractingGroupTitle(
             int curIndexInStripTab, boolean towardEnd) {
         int curIndexInStripView = findStripViewIndexForStripTab(curIndexInStripTab);
+        if (curIndexInStripView == TabModel.INVALID_TAB_INDEX) {
+            return null;
+        }
         if (towardEnd) {
             if (curIndexInStripView == mStripViews.length - 1) {
                 return null;
             }
-            return mStripViews[curIndexInStripView + 1] instanceof StripLayoutGroupTitle groupTitle
+            // The drag is interacting with group title when 1. curTab is not is group and 2. the
+            // next view is a group title.
+            return !isStripTabInTabGroup(mStripTabs[curIndexInStripTab])
+                            && mStripViews[curIndexInStripView + 1]
+                                    instanceof StripLayoutGroupTitle groupTitle
                     ? groupTitle
                     : null;
         } else {
             if (curIndexInStripView == 0) {
                 return null;
             }
+            // The drag is interacting with group title when the previous view is a group title.
             return mStripViews[curIndexInStripView - 1] instanceof StripLayoutGroupTitle groupTitle
                     ? groupTitle
                     : null;
@@ -4131,28 +4198,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         } else {
             return dragInThreshold;
         }
-    }
-
-    /**
-     * This method determines whether a grouped tab is being dragged to merge to another group
-     * through group title indicator.
-     *
-     * @param curIndex The index of the interacting tab.
-     * @param adjIndex The index of the interacting tab is being dragged into.
-     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
-     * @return Whether a grouped tab is being dragged to merge to another group through group title
-     *     indicator.
-     */
-    private boolean isDraggingThroughGroupTitleToAnotherGroup(
-            int curIndex, int adjIndex, boolean towardEnd) {
-        if (!towardEnd || adjIndex < 0 || adjIndex >= mStripTabs.length) {
-            return false;
-        }
-        StripLayoutTab curTab = mStripTabs[curIndex];
-        StripLayoutTab adjTab = mStripTabs[adjIndex];
-        return isStripTabInTabGroup(curTab)
-                && isStripTabInTabGroup(adjTab)
-                && getStripTabRootId(curTab) != getStripTabRootId(adjTab);
     }
 
     private float adjustXForTabDrop(float x) {
@@ -4285,42 +4330,46 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      * @param animate Whether to animate the view swapping.
      */
-    private void reorderStripViewForTabGroupIndicator(
+    private Animator getReorderStripViewAnimatorForTabGroupIndicator(
             int id, int oldIndex, boolean towardEnd, boolean animate) {
         int direction = towardEnd ? 1 : -1;
         int oldIndexInStripView = findStripViewIndexForStripTab(oldIndex);
+        assert oldIndexInStripView != TabModel.INVALID_TAB_INDEX;
+
         boolean isLeftMost = oldIndexInStripView == 0;
         boolean isRightMost = oldIndexInStripView >= mStripViews.length - 1;
 
         StripLayoutTab tab = findTabById(id);
-        if (tab == null || (isLeftMost && !towardEnd) || (isRightMost && towardEnd)) return;
+        if (tab == null || (isLeftMost && !towardEnd) || (isRightMost && towardEnd)) return null;
 
         int newIndexInStripView = oldIndexInStripView + direction;
 
         // 1. If the view is already at the right spot, don't do anything.
         int index = findIndexForTab(id);
         int curIndexInStripView = findStripViewIndexForStripTab(index);
-        if (curIndexInStripView == newIndexInStripView) return;
+        assert curIndexInStripView != TabModel.INVALID_TAB_INDEX;
+
+        if (curIndexInStripView == newIndexInStripView) return null;
 
         // 2. Check if it's the view we are dragging, but we have an old source index.  Ignore in
         // this case because we probably just already moved it.
         if (mInReorderMode
                 && curIndexInStripView != oldIndexInStripView
                 && tab == mInteractingTab) {
-            return;
+            return null;
         }
 
+        CompositorAnimator animator = null;
         // 3. Animate if necessary.
         if (animate && !mAnimationsDisabledForTesting) {
-
             final float flipWidth = mCachedTabWidth - mTabOverlapWidth;
             final float animationLength =
                     MathUtils.flipSignIf(direction * flipWidth, !LocalizationUtils.isLayoutRtl());
 
             finishAnimationsAndPushTabUpdates();
-            ArrayList<Animator> slideAnimationList = new ArrayList<>();
+
             StripLayoutView slideView = mStripViews[newIndexInStripView];
-            CompositorAnimator animator =
+            animator =
                     CompositorAnimator.ofFloatProperty(
                             mUpdateHost.getAnimationHandler(),
                             slideView,
@@ -4328,29 +4377,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                             slideView.getDrawX(),
                             slideView.getDrawX() + animationLength,
                             ANIM_TAB_MOVE_MS);
-            slideAnimationList.add(animator);
-
-            mGroupTitleSliding = true;
-            startAnimationList(
-                    slideAnimationList,
-                    new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            mGroupTitleSliding = false;
-                        }
-                    });
         }
 
         // 4. Swap the views.
-        moveElement(mStripViews, curIndexInStripView, newIndexInStripView);
-        if (!mMovingGroup) {
-            // When tab groups are moved, each tab is moved one-by-one. During this process, the
-            // invariant that tab groups must be contiguous is temporarily broken, so we suppress
-            // rebuilding until the entire group is moved. See https://crbug.com/329318567.
-            // TODO(crbug.com/329335086): Investigate reordering (with #moveElement) instead of
-            // rebuilding here.
-            rebuildStripViews();
+        if (!isRightMost && towardEnd) {
+            newIndexInStripView += 1;
         }
+        moveElement(mStripViews, curIndexInStripView, newIndexInStripView);
+        return animator;
     }
 
     private void handleReorderAutoScrolling(long time) {
@@ -4715,6 +4749,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     Animator getRunningAnimatorForTesting() {
         return mRunningAnimator;
+    }
+
+    /**
+     * @return Whether group title sliding animation is running.
+     */
+    boolean getGroupTitleSlidingForTesting() {
+        return mGroupTitleSliding;
     }
 
     void setRunningAnimatorForTesting(Animator animator) {
