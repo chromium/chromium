@@ -1169,7 +1169,17 @@ IdpNetworkRequestManager::CreateUncredentialedResourceRequest(
     const GURL& target_url,
     bool send_origin,
     bool follow_redirects) const {
+  // We want this to be unique, so we append a random string.
+  static constexpr char kFedCmSchemeForIsolationKey[] = "fedcm-9c0367b4";
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
+
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(kFedCmSchemeForIsolationKey);
+  GURL target_url_for_isolation_info =
+      target_url.ReplaceComponents(replacements);
+  url::Origin target_origin_for_isolation_info =
+      url::Origin::Create(target_url_for_isolation_info);
 
   resource_request->url = target_url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -1191,8 +1201,9 @@ IdpNetworkRequestManager::CreateUncredentialedResourceRequest(
   }
   resource_request->request_initiator = url::Origin();
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
-  resource_request->trusted_params->isolation_info =
-      net::IsolationInfo::CreateTransient();
+  resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, relying_party_origin_,
+      target_origin_for_isolation_info, net::SiteForCookies());
   DCHECK(client_security_state_);
   resource_request->trusted_params->client_security_state =
       client_security_state_.Clone();
