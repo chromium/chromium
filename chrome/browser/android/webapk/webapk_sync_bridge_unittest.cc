@@ -1013,7 +1013,7 @@ TEST_F(WebApkSyncBridgeTest, GetData) {
     }
 
     base::RunLoop run_loop;
-    sync_bridge().GetData(
+    sync_bridge().GetDataForCommit(
         std::move(storage_keys),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<syncer::DataBatch> data_batch) {

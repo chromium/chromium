@@ -191,11 +191,13 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
   }
 
   void OnCommitDataLoaded() {
-    ASSERT_TRUE(data_callback_) << "GetData() wasn't called before";
+    ASSERT_TRUE(data_callback_) << "GetDataForCommit() wasn't called before";
     std::move(data_callback_).Run();
   }
 
-  base::OnceClosure GetDataCallback() { return std::move(data_callback_); }
+  base::OnceClosure GetDataForCommitCallback() {
+    return std::move(data_callback_);
+  }
 
   void SetInitialSyncState(
       sync_pb::ModelTypeState::InitialSyncState initial_sync_state) {
@@ -209,7 +211,8 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
     db_->set_model_type_state(model_type_state);
   }
 
-  // Expect a GetData call in the future and return its data immediately.
+  // Expect a GetDataForCommit() call in the future and return its data
+  // immediately.
   void ExpectSynchronousDataCallback() { synchronous_data_callback_ = true; }
 
   int merge_call_count() const { return merge_call_count_; }
@@ -245,12 +248,12 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
         std::move(metadata_change_list), std::move(entity_changes));
   }
 
-  void GetData(StorageKeyList keys, DataCallback callback) override {
+  void GetDataForCommit(StorageKeyList keys, DataCallback callback) override {
     if (synchronous_data_callback_) {
       synchronous_data_callback_ = false;
-      FakeModelTypeSyncBridge::GetData(keys, std::move(callback));
+      FakeModelTypeSyncBridge::GetDataForCommit(keys, std::move(callback));
     } else {
-      FakeModelTypeSyncBridge::GetData(
+      FakeModelTypeSyncBridge::GetDataForCommit(
           keys, base::BindOnce(&TestModelTypeSyncBridge::CaptureDataCallback,
                                base::Unretained(this), std::move(callback)));
     }
@@ -296,11 +299,12 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
   int get_storage_key_call_count_ = 0;
   int commit_failures_count_ = 0;
 
-  // Stores the data callback between GetData() and OnCommitDataLoaded().
+  // Stores the data callback between GetDataForCommit()() and
+  // OnCommitDataLoaded().
   base::OnceClosure data_callback_;
 
-  // Whether to return GetData results synchronously. Overrides the default
-  // callback capture behavior if set to true.
+  // Whether to return GetDataForCommit() results synchronously. Overrides the
+  // default callback capture behavior if set to true.
   bool synchronous_data_callback_ = false;
 
   CommitAttemptFailedBehavior commit_attempt_failed_behaviour_ =
@@ -842,8 +846,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldLoadDataForPendingCommit) {
   OnCommitDataLoaded();
   EXPECT_EQ(2U, worker()->GetNumPendingCommits());
   worker()->VerifyNthPendingCommit(0, {GetPrefHash(kKey1)}, {specifics8});
-  // GetData was launched as a result of GetLocalChanges call(). Since all data
-  // are in memory, the 2nd pending commit should be empty.
+  // GetDataForCommit() was launched as a result of GetLocalChanges call().
+  // Since all data are in memory, the 2nd pending commit should be empty.
   worker()->VerifyNthPendingCommit(1, {}, {});
 
   // Put, connect, data.
@@ -851,7 +855,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldLoadDataForPendingCommit) {
   InitializeToMetadataLoaded();
   EntitySpecifics specifics10 = WritePrefItem(bridge(), kKey1, kValue2);
   OnSyncStarting();
-  EXPECT_FALSE(bridge()->GetDataCallback());
+  EXPECT_FALSE(bridge()->GetDataForCommitCallback());
   EXPECT_EQ(1U, worker()->GetNumPendingCommits());
   worker()->VerifyNthPendingCommit(0, {GetPrefHash(kKey1)}, {specifics10});
 
@@ -873,8 +877,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldLoadDataForPendingCommit) {
   OnCommitDataLoaded();
   EXPECT_EQ(2U, worker()->GetNumPendingCommits());
   worker()->VerifyNthPendingCommit(0, {GetPrefHash(kKey1)}, {kEmptySpecifics});
-  // GetData was launched as a result of GetLocalChanges call(). Since all data
-  // are in memory, the 2nd pending commit should be empty.
+  // GetDataForCommit() was launched as a result of GetLocalChanges call().
+  // Since all data are in memory, the 2nd pending commit should be empty.
   worker()->VerifyNthPendingCommit(1, {}, {});
 
   // Delete, connect, data.
@@ -882,7 +886,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldLoadDataForPendingCommit) {
   InitializeToMetadataLoaded();
   bridge()->DeleteItem(kKey1);
   OnSyncStarting();
-  EXPECT_FALSE(bridge()->GetDataCallback());
+  EXPECT_FALSE(bridge()->GetDataForCommitCallback());
   EXPECT_EQ(1U, worker()->GetNumPendingCommits());
   worker()->VerifyNthPendingCommit(0, {GetPrefHash(kKey1)}, {kEmptySpecifics});
 }
@@ -2566,7 +2570,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   type_processor()->GetLocalChanges(
       INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
   EXPECT_EQ(0U, commit_request.size());
-  EXPECT_TRUE(bridge()->GetDataCallback().is_null());
+  EXPECT_TRUE(bridge()->GetDataForCommitCallback().is_null());
 
   // The processor should not report orphan again in UMA.
   histogram_tester.ExpectBucketCount(
@@ -2601,7 +2605,7 @@ TEST_F(
 
   // Make the bridge pass the data back to the processor. Because the entity is
   // already deleted in the processor, no further orphan gets reported.
-  std::move(bridge()->GetDataCallback()).Run();
+  std::move(bridge()->GetDataForCommitCallback()).Run();
   histogram_tester.ExpectTotalCount("Sync.ModelTypeOrphanMetadata.GetData",
                                     /*count=*/0);
 
@@ -2639,7 +2643,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 
   // Make the bridge pass the data back to the processor. Because the entity is
   // already deleted in the processor, no further orphan gets reported.
-  std::move(bridge()->GetDataCallback()).Run();
+  std::move(bridge()->GetDataForCommitCallback()).Run();
   histogram_tester.ExpectTotalCount("Sync.ModelTypeOrphanMetadata.GetData",
                                     /*count=*/0);
 

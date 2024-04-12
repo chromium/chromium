@@ -34,8 +34,8 @@ std::optional<ModelError> StubModelTypeSyncBridge::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void StubModelTypeSyncBridge::GetData(StorageKeyList storage_keys,
-                                      DataCallback callback) {}
+void StubModelTypeSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                               DataCallback callback) {}
 
 void StubModelTypeSyncBridge::GetAllDataForDebugging(DataCallback callback) {}
 

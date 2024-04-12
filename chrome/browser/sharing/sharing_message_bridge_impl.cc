@@ -144,8 +144,8 @@ SharingMessageBridgeImpl::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void SharingMessageBridgeImpl::GetData(StorageKeyList storage_keys,
-                                       DataCallback callback) {
+void SharingMessageBridgeImpl::GetDataForCommit(StorageKeyList storage_keys,
+                                                DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& storage_key : storage_keys) {

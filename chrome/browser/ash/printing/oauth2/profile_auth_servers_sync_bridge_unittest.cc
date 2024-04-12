@@ -230,7 +230,7 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
   EXPECT_EQ(uris, (std::vector{uri_2_, uri_3_}));
 }
 
-TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, GetData) {
+TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, GetDataForCommit) {
   CreateBridge();
   EXPECT_CALL(mock_observer_,
               OnProfileAuthorizationServersUpdate(std::set{uri_1u_, uri_2u_},
@@ -241,7 +241,7 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, GetData) {
   base::MockOnceCallback<void(std::unique_ptr<syncer::DataBatch> data_batch)>
       callback;
   EXPECT_CALL(callback, Run).WillOnce(MoveArg(&output));
-  bridge_->GetData({uri_1_, uri_3_}, callback.Get());
+  bridge_->GetDataForCommit({uri_1_, uri_3_}, callback.Get());
 
   ASSERT_TRUE(output);
   std::vector<syncer::KeyAndData> data;

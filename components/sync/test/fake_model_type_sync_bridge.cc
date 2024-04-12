@@ -280,8 +280,8 @@ void FakeModelTypeSyncBridge::ApplyMetadataChangeList(
   in_memory_mcl->TransferChangesTo(&db_mcl);
 }
 
-void FakeModelTypeSyncBridge::GetData(StorageKeyList keys,
-                                      DataCallback callback) {
+void FakeModelTypeSyncBridge::GetDataForCommit(StorageKeyList keys,
+                                               DataCallback callback) {
   if (error_next_) {
     error_next_ = false;
     change_processor()->ReportError({FROM_HERE, "boom"});

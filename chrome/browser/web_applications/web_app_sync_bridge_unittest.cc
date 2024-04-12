@@ -348,7 +348,7 @@ TEST_F(WebAppSyncBridgeTest, GetData) {
       storage_keys.push_back(id_and_web_app.first);
 
     base::RunLoop run_loop;
-    sync_bridge().GetData(
+    sync_bridge().GetDataForCommit(
         std::move(storage_keys),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<syncer::DataBatch> data_batch) {

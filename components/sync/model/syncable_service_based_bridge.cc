@@ -283,8 +283,8 @@ SyncableServiceBasedBridge::ApplyIncrementalSyncChanges(
   return syncable_service_->ProcessSyncChanges(FROM_HERE, sync_change_list);
 }
 
-void SyncableServiceBasedBridge::GetData(StorageKeyList storage_keys,
-                                         DataCallback callback) {
+void SyncableServiceBasedBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                                  DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(store_);
   store_->ReadData(

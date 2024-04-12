@@ -397,8 +397,8 @@ const WebApkProto* WebApkSyncBridge::GetWebApkByAppId(
   return GetAppById(registry_, app_id);
 }
 
-void WebApkSyncBridge::GetData(StorageKeyList storage_keys,
-                               DataCallback callback) {
+void WebApkSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                        DataCallback callback) {
   auto data_batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const webapps::AppId& app_id : storage_keys) {

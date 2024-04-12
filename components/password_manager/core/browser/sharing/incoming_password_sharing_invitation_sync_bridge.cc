@@ -99,7 +99,7 @@ IncomingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void IncomingPasswordSharingInvitationSyncBridge::GetData(
+void IncomingPasswordSharingInvitationSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys,
     DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

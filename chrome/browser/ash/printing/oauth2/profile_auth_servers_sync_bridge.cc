@@ -253,8 +253,8 @@ ProfileAuthServersSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void ProfileAuthServersSyncBridge::GetData(StorageKeyList storage_keys,
-                                           DataCallback callback) {
+void ProfileAuthServersSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                                    DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& key : storage_keys) {
     if (base::Contains(servers_uris_, key)) {

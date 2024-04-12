@@ -124,8 +124,8 @@ SecurityEventSyncBridgeImpl::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void SecurityEventSyncBridgeImpl::GetData(StorageKeyList storage_keys,
-                                          DataCallback callback) {
+void SecurityEventSyncBridgeImpl::GetDataForCommit(StorageKeyList storage_keys,
+                                                   DataCallback callback) {
   store_->ReadData(
       storage_keys,
       base::BindOnce(&SecurityEventSyncBridgeImpl::OnReadData,

@@ -283,8 +283,8 @@ PrintersSyncBridge::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void PrintersSyncBridge::GetData(StorageKeyList storage_keys,
-                                 DataCallback callback) {
+void PrintersSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                          DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   {
     base::AutoLock lock(data_lock_);

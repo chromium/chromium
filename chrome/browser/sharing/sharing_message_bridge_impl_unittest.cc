@@ -158,7 +158,8 @@ TEST_F(SharingMessageBridgeTest, ShouldInvokeCallbackOnSuccess) {
   histogram_tester.ExpectUniqueSample("Sync.SharingMessage.CommitResult",
                                       SharingMessageCommitError::NONE, 1);
 
-  // Check that GetData doesn't return anything after successful commit.
+  // Check that GetDataForCommit() doesn't return anything after successful
+  // commit.
   base::MockCallback<syncer::ModelTypeSyncBridge::DataCallback> data_callback;
   std::unique_ptr<DataBatch> data_batch;
   EXPECT_CALL(data_callback, Run(_))
@@ -166,7 +167,7 @@ TEST_F(SharingMessageBridgeTest, ShouldInvokeCallbackOnSuccess) {
         data_batch = std::move(batch);
       });
 
-  bridge()->GetData({storage_key}, data_callback.Get());
+  bridge()->GetDataForCommit({storage_key}, data_callback.Get());
   ASSERT_THAT(data_batch, NotNull());
   EXPECT_FALSE(data_batch->HasNext());
 }
@@ -325,7 +326,7 @@ TEST_F(SharingMessageBridgeTest, ShouldReturnUnsyncedData) {
 
   // Add another one invalid storage key.
   storage_key_list.push_back("invalid_storage_key");
-  bridge()->GetData(std::move(storage_key_list), data_callback.Get());
+  bridge()->GetDataForCommit(std::move(storage_key_list), data_callback.Get());
   ASSERT_THAT(data_batch, NotNull());
   storage_key_to_payload = ExtractStorageKeyAndPayloads(std::move(data_batch));
   EXPECT_THAT(storage_key_to_payload,
