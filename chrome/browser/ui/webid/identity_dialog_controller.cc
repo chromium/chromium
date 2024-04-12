@@ -110,7 +110,7 @@ void IdentityDialogController::ShowLoadingDialog(
 void IdentityDialogController::OnLoginToIdP(const GURL& idp_config_url,
                                             const GURL& idp_login_url) {
   CHECK(on_login_);
-  std::move(on_login_).Run(idp_config_url, idp_login_url);
+  on_login_.Run(idp_config_url, idp_login_url);
 }
 
 void IdentityDialogController::OnMoreDetails() {

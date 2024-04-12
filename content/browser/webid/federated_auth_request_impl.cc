@@ -1682,9 +1682,9 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       rp_mode_, new_account_idp,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     /*can_append_hints=*/false),
+      base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          /*can_append_hints=*/false),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountsDisplayed,
@@ -1846,9 +1846,9 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
       idp_info->metadata,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     /*can_append_hints=*/true));
+      base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          /*can_append_hints=*/true));
 
   // ShowFailureDialog() may have completed the request synchronously, in which
   // case `fedcm_metrics_` is reset, and hence we did not really show any

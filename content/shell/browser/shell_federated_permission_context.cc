@@ -103,6 +103,10 @@ void ShellFederatedPermissionContext::RemoveEmbargoForAutoReauthn(
 
 void ShellFederatedPermissionContext::AddIdpSigninStatusObserver(
     IdpSigninStatusObserver* observer) {
+  if (idp_signin_status_observer_list_.HasObserver(observer)) {
+    return;
+  }
+
   idp_signin_status_observer_list_.AddObserver(observer);
 }
 

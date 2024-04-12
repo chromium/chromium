@@ -155,6 +155,8 @@ class MockFedCmModalDialogView : public FedCmModalDialogView {
       observer->OnPopupWindowDestroyed();
     }
   }
+
+  MOCK_METHOD(void, ResizeAndFocusPopupWindow, (), (override));
 };
 
 // Test FedCmAccountSelectionView which uses TestAccountSelectionView.
@@ -1253,6 +1255,9 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccount) {
   observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
+  // Bubble does not remain visible.
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
   // Emulate user completing the sign-in flow and IdP prompts closing the
   // pop-up window and sending new accounts.
   controller->CloseModalDialog();
@@ -1316,6 +1321,9 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountModal) {
   observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
+  // Modal remains visible.
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
   // Emulate user completing the sign-in flow and IdP prompts closing the
   // pop-up window and sending new accounts.
   controller->CloseModalDialog();
@@ -1357,6 +1365,71 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountModal) {
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId, kAccountId2));
+}
+
+// Test user triggering the use another account flow twice in a modal, without
+// closing the pop-up from the first use another account flow.
+TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountTwiceModal) {
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  // Emulate the user clicking "use another account button".
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+
+  // Modal remains visible.
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
+  // Emulate the user clicking "use another account button" again. This should
+  // not crash.
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+}
+
+// Test user triggering the use another account flow twice in a modal, with
+// closing the pop-up from the first use another account flow.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       UseAnotherAccountCloseThenReopenModal) {
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  // Emulate the user clicking "use another account button".
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+
+  // Modal remains visible.
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
+  // Emulate user closing the pop-up window.
+  controller->OnPopupWindowDestroyed();
+
+  // Modal remains visible.
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
+  // Emulate the user clicking "use another account button" again. This should
+  // not crash.
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
 }
 
 // Tests that the error dialog can be shown.

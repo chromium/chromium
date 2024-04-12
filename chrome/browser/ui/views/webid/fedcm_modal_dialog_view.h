@@ -51,9 +51,11 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   ~FedCmModalDialogView() override;
 
   // Shows a modal dialog of |url|. The |url| is commonly but not limited to a
-  // URL which allows the user to sign in with an identity provider.
+  // URL which allows the user to sign in with an identity provider. Virtual for
+  // testing purposes.
   virtual content::WebContents* ShowPopupWindow(const GURL& url);
   virtual void ClosePopupWindow();
+  virtual void ResizeAndFocusPopupWindow();
 
   // content::WebContentsObserver
   void WebContentsDestroyed() override;

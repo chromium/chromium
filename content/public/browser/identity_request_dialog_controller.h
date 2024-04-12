@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "content/public/browser/identity_request_account.h"
@@ -115,8 +116,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   using DismissCallback =
       base::OnceCallback<void(DismissReason dismiss_reason)>;
   using LoginToIdPCallback =
-      base::OnceCallback<void(const GURL& /*idp_config_url*/,
-                              GURL /*idp_login_url*/)>;
+      base::RepeatingCallback<void(const GURL& /*idp_config_url*/,
+                                   GURL /*idp_login_url*/)>;
   using MoreDetailsCallback = base::OnceCallback<void()>;
   using AccountsDisplayedCallback = base::OnceCallback<void()>;
 

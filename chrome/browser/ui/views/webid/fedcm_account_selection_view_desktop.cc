@@ -676,14 +676,19 @@ void FedCmAccountSelectionView::OnMoreDetails(const ui::Event& event) {
 
 content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
     const GURL& url) {
-  if (!popup_window_) {
+  if (popup_window_) {
+    // TODO(crbug.com/324052630): Support add account with multi IDP API. An add
+    // account pop-up of a different IDP might be open, so this might need to
+    // load the new IDP's login URL.
+    popup_window_->ResizeAndFocusPopupWindow();
+  } else {
     popup_window_ = std::make_unique<FedCmModalDialogView>(
         delegate_->GetWebContents(), this);
   }
 
-  // The loading modal should not be hidden when the pop-up window is displayed
-  // for better UX.
-  if (GetSheetType() != SheetType::LOADING) {
+  // The modal should not be hidden when the pop-up window is displayed for
+  // better UX.
+  if (GetDialogType() != DialogType::MODAL) {
     // TODO(crbug.com/331166928): This is only null in one test. Fix the test to
     // match production.
     if (input_protector_) {
@@ -692,6 +697,14 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
     if (GetDialogWidget()) {
       GetDialogWidget()->Hide();
     }
+  }
+
+  // The modal should not be dismissed if it a use other account pop-up, which
+  // can only be triggered from an account selection sheet.
+  if (GetDialogType() == DialogType::MODAL &&
+      GetSheetType() == SheetType::ACCOUNT_SELECTION) {
+    notify_delegate_of_dismiss_ = false;
+    return popup_window_->ShowPopupWindow(url);
   }
 
   // If this happens after ShowVerifyingSheet, notify_delegate_of_dismiss_ may
@@ -731,6 +744,8 @@ void FedCmAccountSelectionView::CloseModalDialog() {
 }
 
 void FedCmAccountSelectionView::OnPopupWindowDestroyed() {
+  popup_window_.reset();
+
   if (!notify_delegate_of_dismiss_) {
     return;
   }
