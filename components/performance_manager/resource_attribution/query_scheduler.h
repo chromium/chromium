@@ -29,7 +29,7 @@ class ContextCollection;
 
 namespace resource_attribution::internal {
 
-struct QueryParams;
+class QueryParams;
 
 // QueryScheduler keeps track of all queries for a particular resource type and
 // owns the machinery that performs measurements.
@@ -58,6 +58,11 @@ class QueryScheduler
   // Decreases the query count for all resource types and contexts referenced in
   // `query_params` and deletes `query_params`.
   void RemoveScopedQuery(std::unique_ptr<QueryParams> query_params);
+
+  // Notifies the scheduler that a scoped query will begin repeatedly requesting
+  // results. The query now needs a QueryId to track what results it has
+  // received.
+  void StartRepeatingQuery(QueryParams* query_params);
 
   // Requests the latest results for the given `query_params`, and passes them
   // to `callback`.

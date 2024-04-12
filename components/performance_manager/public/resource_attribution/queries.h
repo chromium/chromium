@@ -24,7 +24,7 @@
 namespace resource_attribution {
 
 namespace internal {
-struct QueryParams;
+class QueryParams;
 class QueryScheduler;
 }
 

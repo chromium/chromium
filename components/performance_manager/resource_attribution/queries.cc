@@ -38,6 +38,11 @@ void RemoveScopedQueryFromScheduler(std::unique_ptr<QueryParams> query_params,
   scheduler->RemoveScopedQuery(std::move(query_params));
 }
 
+void StartRepeatingQueryInScheduler(QueryParams* query_params,
+                                    QueryScheduler* scheduler) {
+  scheduler->StartRepeatingQuery(query_params);
+}
+
 void RequestResultsFromScheduler(
     QueryParams* query_params,
     base::OnceCallback<void(const QueryResultMap&)> callback,
@@ -192,6 +197,10 @@ void ScopedResourceUsageQuery::RemoveObserver(QueryResultObserver* observer) {
 
 void ScopedResourceUsageQuery::Start(base::TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Unretained is safe because the destructor passes `params_` to the scheduler
+  // sequence to delete.
+  QueryScheduler::CallWithScheduler(base::BindOnce(
+      &StartRepeatingQueryInScheduler, base::Unretained(params_.get())));
   throttled_timer_->StartTimer(delay, params_.get(), observer_list_);
 }
 
@@ -276,10 +285,7 @@ void QueryBuilder::QueryOnce(
 
 QueryBuilder QueryBuilder::Clone() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Clone the parameter contents to a newly-allocated QueryParams with the copy
-  // constructor.
-  auto cloned_params = std::make_unique<QueryParams>(*params_);
-  return QueryBuilder(std::move(cloned_params));
+  return QueryBuilder(params_->Clone());
 }
 
 QueryParams* QueryBuilder::GetParamsForTesting() const {

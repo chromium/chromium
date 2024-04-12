@@ -10,8 +10,15 @@ QueryParams::QueryParams() = default;
 
 QueryParams::~QueryParams() = default;
 
-QueryParams::QueryParams(const QueryParams& other) = default;
+QueryParams::QueryParams(QueryParams&& other) = default;
 
-QueryParams& QueryParams::operator=(const QueryParams& other) = default;
+QueryParams& QueryParams::operator=(QueryParams&& other) = default;
+
+std::unique_ptr<QueryParams> QueryParams::Clone() const {
+  auto cloned_params = std::make_unique<QueryParams>();
+  cloned_params->resource_types = resource_types;
+  cloned_params->contexts = contexts;
+  return cloned_params;
+}
 
 }  // namespace resource_attribution::internal
