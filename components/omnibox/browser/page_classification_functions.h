@@ -8,6 +8,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace omnibox {
+
 // Return true, if supplied page classification is a new tab page.
 bool IsNTPPage(::metrics::OmniboxEventProto::PageClassification classification);
 
@@ -19,6 +20,11 @@ bool IsSearchResultsPage(
 // search results page.
 bool IsOtherWebPage(
     ::metrics::OmniboxEventProto::PageClassification classification);
+
+// Return true, if supplied page classification is a Lens searchbox.
+bool IsLensSearchbox(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_PAGE_CLASSIFICATION_FUNCTIONS_H_

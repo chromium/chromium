@@ -65,6 +65,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/query_tile_provider.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
@@ -1727,6 +1728,12 @@ bool AutocompleteController::ShouldRunProvider(
     AutocompleteProvider* provider) const {
   if (!provider) {
     return false;
+  }
+
+  // Only a subset of providers are run for the Lens searchboxes.
+  if (omnibox::IsLensSearchbox(input_.current_page_classification())) {
+    // TODO(b/328293996): Enable ZeroSuggestProvider.
+    return provider->type() == AutocompleteProvider::TYPE_SEARCH;
   }
 
   if (input_.InKeywordMode()) {

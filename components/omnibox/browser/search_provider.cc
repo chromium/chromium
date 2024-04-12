@@ -311,9 +311,11 @@ void SearchProvider::Start(const AutocompleteInput& input,
 
   input_ = input;
 
-  // Don't search the query history database for on-focus inputs; these inputs
-  // should only be used to warm up the suggest server.
-  if (!input.IsZeroSuggest()) {
+  // Don't search the history database for on-focus inputs or lens searchboxes.
+  // On-focus inputs should only be used to warm up the suggest server; and Lens
+  // searchboxes do not show suggestions from the history database.
+  if (!input.IsZeroSuggest() &&
+      !omnibox::IsLensSearchbox(input_.current_page_classification())) {
     DoHistoryQuery(minimal_changes);
     // Answers needs scored history results before any suggest query has been
     // started, since the query for answer-bearing results needs additional

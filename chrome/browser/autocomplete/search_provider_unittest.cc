@@ -301,6 +301,9 @@ class BaseSearchProviderTest : public testing::Test,
   void RunTillProviderDone();
 
   // Invokes Start on provider_, then runs all pending tasks.
+  void QueryForInput(const AutocompleteInput& input);
+
+  // Invokes Start on provider_, then runs all pending tasks.
   void QueryForInput(const std::u16string& text,
                      bool prevent_inline_autocomplete,
                      bool prefer_keyword);
@@ -493,19 +496,23 @@ void BaseSearchProviderTest::RunTillProviderDone() {
   run_loop.Run();
 }
 
-void BaseSearchProviderTest::QueryForInput(const std::u16string& text,
-                                           bool prevent_inline_autocomplete,
-                                           bool prefer_keyword) {
+void BaseSearchProviderTest::QueryForInput(const AutocompleteInput& input) {
   // Start a query.
-  AutocompleteInput input(text, metrics::OmniboxEventProto::OTHER,
-                          ChromeAutocompleteSchemeClassifier(profile_.get()));
-  input.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
-  input.set_prefer_keyword(prefer_keyword);
   provider_->Start(input, false);
 
   // RunUntilIdle so that the task scheduled by SearchProvider to create the
   // URLFetchers runs.
   base::RunLoop().RunUntilIdle();
+}
+
+void BaseSearchProviderTest::QueryForInput(const std::u16string& text,
+                                           bool prevent_inline_autocomplete,
+                                           bool prefer_keyword) {
+  AutocompleteInput input(text, metrics::OmniboxEventProto::OTHER,
+                          ChromeAutocompleteSchemeClassifier(profile_.get()));
+  input.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
+  input.set_prefer_keyword(prefer_keyword);
+  QueryForInput(input);
 }
 
 void BaseSearchProviderTest::QueryForInputAndSetWYTMatch(
@@ -688,6 +695,48 @@ TEST_F(SearchProviderTest, QueryDefaultProvider) {
   EXPECT_TRUE(term1_match.allowed_to_be_default_match);
   // The what you typed match should be too, of course.
   EXPECT_TRUE(wyt_match.allowed_to_be_default_match);
+}
+
+// Make sure we do NOT query history for the default provider. However a
+// URLFetcher is created for the default provider suggest results.
+TEST_F(SearchProviderTest, QueryDefaultProvider_LensSearchbox) {
+  std::u16string term = term1_.substr(0, term1_.length() - 1);
+  AutocompleteInput input(term,
+                          metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX,
+                          ChromeAutocompleteSchemeClassifier(profile_.get()));
+  QueryForInput(input);
+
+  // Make sure the default provider's suggest service was queried.
+  std::string expected_url(
+      default_t_url_->suggestions_url_ref().ReplaceSearchTerms(
+          TemplateURLRef::SearchTermsArgs(term),
+          TemplateURLServiceFactory::GetForProfile(profile_.get())
+              ->search_terms_data()));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(expected_url));
+
+  // Tell the SearchProvider the Suggest request is done.
+  test_url_loader_factory_.AddResponse(
+      expected_url,
+      "[\"term\",[\"term2\"],[],[],{\"google:suggestrelevance\":[10],"
+      "\"google:verbatimrelevance\":0}]");
+
+  // Run until the SearchProvider is done.
+  RunTillProviderDone();
+
+  // Make sure the SearchProvider does NOT have a history result for "term1".
+  AutocompleteMatch term1_match;
+  EXPECT_FALSE(FindMatchWithContents(term1_, &term1_match));
+
+  // Make sure the SearchProvider has a Suggest result for "term2".
+  AutocompleteMatch term2_match;
+  EXPECT_TRUE(FindMatchWithContents(u"term2", &term2_match));
+
+  // Make sure the SearchProvider has a what you typed match.
+  AutocompleteMatch wyt_match;
+  EXPECT_TRUE(FindMatchWithContents(u"term", &wyt_match));
+
+  // The "term2" match should be more relevant than the what you typed match.
+  EXPECT_GT(term2_match.relevance, wyt_match.relevance);
 }
 
 // Make sure we get a query-what-you-typed result from the default search

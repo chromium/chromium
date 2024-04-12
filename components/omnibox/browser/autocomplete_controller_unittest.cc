@@ -2120,3 +2120,51 @@ TEST_F(AutocompleteControllerTest,
         << AutocompleteProvider::TypeToString(provider->type());
   }
 }
+
+TEST_F(AutocompleteControllerTest, ShouldRunProvider_LensSearchbox) {
+  // Run all providers except open tab provider.
+  std::set<AutocompleteProvider::Type> excluded_provider_types = {
+      AutocompleteProvider::TYPE_OPEN_TAB};
+  controller_.input_ = AutocompleteInput(
+      u"a", 1u, metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+  for (auto& provider : controller_.providers()) {
+    EXPECT_NE(controller_.ShouldRunProvider(provider.get()),
+              excluded_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+
+  // For Lens searchboxes, run search provider only.
+  std::set<AutocompleteProvider::Type> expected_provider_types = {
+      AutocompleteProvider::TYPE_SEARCH};
+
+  controller_.input_ = AutocompleteInput(
+      u"a", 1u, metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX,
+      TestSchemeClassifier());
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+
+  controller_.input_ = AutocompleteInput(
+      u"a", 1u, metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX,
+      TestSchemeClassifier());
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+
+  controller_.input_ = AutocompleteInput(
+      u"a", 1u, metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX,
+      TestSchemeClassifier());
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+}
