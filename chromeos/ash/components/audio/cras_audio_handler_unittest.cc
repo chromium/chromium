@@ -6341,4 +6341,164 @@ TEST_P(
       /*expected_count=*/1);
 }
 
+// Tests audio selection performance metrics of system not switching output
+// device are fired when hot plugging an unpreferred device.
+TEST_P(
+    CrasAudioHandlerTest,
+    AudioSelectionPerformanceSystemNotSwitchingOutput_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Set up initial audio devices.
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalSpeaker},
+      /*expected_active_input_node=*/nullptr,
+      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/false);
+
+  // Plug a HDMI output device. Expect active device remains unchanged as
+  // internal speaker.
+  AudioNodeList audio_nodes;
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
+
+  AudioNode hdmi_output = GenerateAudioNode(kHDMIOutput);
+  audio_nodes.push_back(hdmi_output);
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_EQ(0, test_observer_->active_output_node_changed_count());
+  AudioDevice active_output;
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kInternalSpeaker->id, active_output.id);
+  EXPECT_EQ(kInternalSpeaker->id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  // At this moment, system has seen the device set of internal speaker and HDMI
+  // output, and the preferable device is internal speaker.
+  // Unplug HDMI output device.
+  audio_nodes.clear();
+  audio_nodes.push_back(internal_speaker);
+  ChangeAudioNodes(audio_nodes);
+
+  // No audio selection performance metrics are fired.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      AudioDeviceMetricsHandler::AudioSelectionEvents::kSystemNotSwitchOutput,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      AudioDeviceMetricsHandler::AudioSelectionEvents::
+          kSystemNotSwitchOutputNonChromeRestart,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      /*expected_count=*/0);
+
+  // Plug HDMI output device. Expect active device remains unchanged. Expect
+  // audio selection performance metric of system not switching device is fired.
+  audio_nodes.push_back(hdmi_output);
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_EQ(0, test_observer_->active_output_node_changed_count());
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kInternalSpeaker->id, active_output.id);
+  EXPECT_EQ(kInternalSpeaker->id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      AudioDeviceMetricsHandler::AudioSelectionEvents::kSystemNotSwitchOutput,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      AudioDeviceMetricsHandler::AudioSelectionEvents::
+          kSystemNotSwitchOutputNonChromeRestart,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      /*expected_count=*/2);
+}
+
+// Tests audio selection performance metrics of system not switching input
+// device are fired when hot plugging an unpreferred device.
+TEST_P(
+    CrasAudioHandlerTest,
+    AudioSelectionPerformanceSystemNotSwitchingInput_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Set up initial audio devices.
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalMic},
+      /*expected_active_input_node=*/kInternalMic,
+      /*expected_active_output_node=*/nullptr,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/false);
+
+  // Plug a USB input device. Expect active device remains unchanged as
+  // internal mic.
+  AudioNodeList audio_nodes;
+  AudioNode internal_mic = GenerateAudioNode(kInternalMic);
+  internal_mic.active = true;
+  audio_nodes.push_back(internal_mic);
+
+  AudioNode usb_input = GenerateAudioNode(kUSBMic1);
+  audio_nodes.push_back(usb_input);
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_EQ(0, test_observer_->active_input_node_changed_count());
+  AudioDevice active_input;
+  EXPECT_TRUE(cras_audio_handler_->GetPrimaryActiveInputDevice(&active_input));
+  EXPECT_EQ(kInternalMic->id, active_input.id);
+  EXPECT_EQ(kInternalMic->id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // At this moment, system has seen the device set of internal mic and HDMI
+  // output, and the preferable device is internal mic.
+  // Unplug HDMI output device.
+  audio_nodes.clear();
+  audio_nodes.push_back(internal_mic);
+  ChangeAudioNodes(audio_nodes);
+
+  // No audio selection performance metrics are fired.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      AudioDeviceMetricsHandler::AudioSelectionEvents::kSystemNotSwitchInput,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      AudioDeviceMetricsHandler::AudioSelectionEvents::
+          kSystemNotSwitchInputNonChromeRestart,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      /*expected_count=*/0);
+
+  // Plug the USB input device. Expect active device remains unchanged. Expect
+  // audio selection performance metric of system not switching device is fired.
+  audio_nodes.push_back(usb_input);
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_EQ(0, test_observer_->active_input_node_changed_count());
+  EXPECT_TRUE(cras_audio_handler_->GetPrimaryActiveInputDevice(&active_input));
+  EXPECT_EQ(kInternalMic->id, active_input.id);
+  EXPECT_EQ(kInternalMic->id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      AudioDeviceMetricsHandler::AudioSelectionEvents::kSystemNotSwitchInput,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      AudioDeviceMetricsHandler::AudioSelectionEvents::
+          kSystemNotSwitchInputNonChromeRestart,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionPerformance,
+      /*expected_count=*/2);
+}
+
 }  // namespace ash

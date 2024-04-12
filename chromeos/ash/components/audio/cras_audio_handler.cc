@@ -2856,9 +2856,21 @@ void CrasAudioHandler::HandleHotPlugDeviceWithNotification(
 
   if (!preferred_device.has_value()) {
     // The device set was not seen. Show notification to let user make decision.
+    // Early return here since below metrics are not supposed to be recorded.
     should_show_notification_ = true;
     return;
   }
+
+  // Only record system switch decision metrics when the set of devices is seen
+  // but the system decides to not switch to it. Do not record if this set of
+  // device is not seen and notification is shown. Because the system
+  // technically does not make any decisions but let users make the decision.
+  audio_device_metrics_handler_.MaybeRecordSystemSwitchDecisionAndContext(
+      /*is_input=*/hotplug_device.is_input,
+      /*has_alternative_device=*/hotplug_device.is_input
+          ? has_alternative_input_
+          : has_alternative_output_,
+      /*is_switched=*/false, audio_devices_, previous_audio_devices_);
 
   // If the preferred device is not the hot plug device and also not the
   // currently activated device, do not switch but keep the currently active
