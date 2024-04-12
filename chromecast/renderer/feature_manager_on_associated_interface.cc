@@ -33,15 +33,7 @@ void FeatureManagerOnAssociatedInterface::ConfigureFeaturesInternal() {
     } else {
       LOG(ERROR) << __func__ << " failed to receive valid app_id";
     }
-    bool allow_insecure_content = false;
-    std::optional<bool> allow_insecure_content_received =
-        feature->config.FindBool(feature::kKeyAllowInsecureContent);
-    if (allow_insecure_content_received) {
-      allow_insecure_content = *allow_insecure_content_received;
-    } else {
-      LOG(ERROR) << __func__
-                 << " failed to receive valid allow_insecure_content";
-    }
+    bool allow_insecure_content = true;
     // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
     new CastContentSettingsClient(render_frame(), app_id,
                                   allow_insecure_content);

@@ -17,8 +17,6 @@ extern const char kEnableTrackControlAppRendererFeatureUse[];
 extern const char kEnablePlayready[];
 
 extern const char kKeyAppId[];
-// Insecure content is allowed for the app.
-extern const char kKeyAllowInsecureContent[];
 
 // If dev mode is enabled, kDevModeOrigin will be set with origin url
 extern const char kEnableDevMode[];

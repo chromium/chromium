@@ -22,7 +22,6 @@ const char kEnableAssistantMessagePipe[] = "enable_assistant_message_pipe";
 const char kEnableDemoStandaloneMode[] = "enable_demo_standalone_mode";
 
 const char kKeyAppId[] = "app_id";
-const char kKeyAllowInsecureContent[] = "allow_insecure_content";
 
 const char kCastCoreRendererFeatures[] = "cast_core_renderer_features";
 const char kCastCoreEnforceFeaturePermissions[] =
