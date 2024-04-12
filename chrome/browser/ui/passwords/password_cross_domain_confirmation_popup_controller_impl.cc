@@ -52,7 +52,9 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
   content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
   popup_hide_helper_.emplace(
       web_contents(), rfh->GetGlobalId(),
-      autofill::AutofillPopupHideHelper::HidingParams{},
+      autofill::AutofillPopupHideHelper::HidingParams{
+          .hide_on_web_contents_lost_focus = false,
+      },
       /*hiding_callback=*/
       base::BindRepeating(
           &PasswordCrossDomainConfirmationPopupControllerImpl::Hide,
@@ -92,6 +94,11 @@ base::i18n::TextDirection
 PasswordCrossDomainConfirmationPopupControllerImpl::GetElementTextDirection()
     const {
   return text_direction_;
+}
+
+void PasswordCrossDomainConfirmationPopupControllerImpl::DidGetUserInteraction(
+    const blink::WebInputEvent&) {
+  HideImpl();
 }
 
 void PasswordCrossDomainConfirmationPopupControllerImpl::HideImpl() {

@@ -53,6 +53,9 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
             const std::u16string& password_origin,
             base::OnceClosure confirmation_callback) override;
 
+  // content::WebContentsObserver:
+  void DidGetUserInteraction(const blink::WebInputEvent& event) override;
+
   void set_view_factory_for_testing(ViewFactoryForTesting factory) {
     view_factory_for_testing_ = std::move(factory);
   }

@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 
 namespace password_manager {
 namespace {
@@ -197,6 +198,17 @@ TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
   // This hiding is handled by `autofill::AutofillPopupHideHelper` and this test
   // basically tests integration with it.
   NavigateAndCommit(GURL("example.com"));
+
+  ::testing::Mock::VerifyAndClearExpectations(last_created_view());
+}
+
+TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
+       PopupIsHiddenOnUserInteraction) {
+  Show();
+  ASSERT_NE(last_created_view(), nullptr);
+  EXPECT_CALL(*last_created_view(), Hide);
+
+  controller().DidGetUserInteraction(blink::SyntheticWebTouchEvent());
 
   ::testing::Mock::VerifyAndClearExpectations(last_created_view());
 }
