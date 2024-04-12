@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -343,6 +344,17 @@ base::FilePath SessionControllerClientImpl::GetProfilePath(
   }
 
   return user_profile->GetPath();
+}
+
+bool SessionControllerClientImpl::IsEligibleForSeaPen(
+    const AccountId& account_id) {
+  Profile* const user_profile =
+      multi_user_util::GetProfileFromAccountId(account_id);
+  if (!user_profile) {
+    return false;
+  }
+
+  return ash::personalization_app::IsEligibleForSeaPen(user_profile);
 }
 
 bool SessionControllerClientImpl::IsEnterpriseManaged() const {

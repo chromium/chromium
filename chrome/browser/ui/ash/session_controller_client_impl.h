@@ -92,6 +92,7 @@ class SessionControllerClientImpl
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
   base::FilePath GetProfilePath(const AccountId& account_id) override;
+  bool IsEligibleForSeaPen(const AccountId& account_id) override;
   bool IsEnterpriseManaged() const override;
   std::optional<int> GetExistingUsersCount() const override;
 

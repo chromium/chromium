@@ -328,6 +328,11 @@ base::FilePath TestSessionControllerClient::GetProfilePath(
   return base::FilePath("/profile/path").Append(account_id.GetUserEmail());
 }
 
+bool TestSessionControllerClient::IsEligibleForSeaPen(
+    const AccountId& account_id) {
+  return is_eligible_for_background_replace_;
+}
+
 bool TestSessionControllerClient::IsEnterpriseManaged() const {
   return is_enterprise_managed_;
 }

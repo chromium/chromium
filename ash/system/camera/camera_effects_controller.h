@@ -178,6 +178,10 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // in the sysui or webui.
   static constexpr int kImageAsIconWidth = 512;
 
+  bool is_eligible_for_background_replace() const {
+    return is_eligible_for_background_replace_;
+  }
+
  private:
   // AutozoomObserver:
   void OnAutozoomControlEnabledChanged(bool enabled) override;
@@ -238,6 +242,8 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // Used to bypass the CameraHalDispatcherImpl::SetCameraEffects for
   // testing purpose.
   bool in_testing_mode_ = false;
+
+  bool is_eligible_for_background_replace_ = false;
 
   // Directory that stores the camera background images.
   base::FilePath camera_background_img_dir_;

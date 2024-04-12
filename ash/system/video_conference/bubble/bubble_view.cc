@@ -174,7 +174,7 @@ void BubbleView::AddedToWidget() {
         std::make_unique<SetValueEffectsView>(controller_));
   }
 
-  if (features::IsVcBackgroundReplaceEnabled()) {
+  if (GetCameraEffectsController()->is_eligible_for_background_replace()) {
     set_camera_background_view_ = scroll_contents_view->AddChildView(
         std::make_unique<SetCameraBackgroundView>(this, controller_.get()));
     set_camera_background_view_->SetVisible(
@@ -192,7 +192,8 @@ bool BubbleView::CanActivate() const {
 }
 
 void BubbleView::SetBackgroundReplaceUiVisible(bool visible) {
-  CHECK(features::IsVcBackgroundReplaceEnabled() && set_camera_background_view_)
+  CHECK(GetCameraEffectsController()->is_eligible_for_background_replace() &&
+        set_camera_background_view_)
       << "Can't show set_camera_background_view before it is constructed.";
 
   views::AsViewClass<SetCameraBackgroundView>(set_camera_background_view_)

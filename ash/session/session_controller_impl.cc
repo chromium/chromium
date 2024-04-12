@@ -325,6 +325,11 @@ base::FilePath SessionControllerImpl::GetProfilePath(
   return client_ ? client_->GetProfilePath(account_id) : base::FilePath();
 }
 
+bool SessionControllerImpl::IsEligibleForSeaPen(
+    const AccountId& account_id) const {
+  return client_ ? client_->IsEligibleForSeaPen(account_id) : false;
+}
+
 PrefService* SessionControllerImpl::GetPrimaryUserPrefService() const {
   const UserSession* session = GetPrimaryUserSession();
   return session ? GetUserPrefServiceForUser(session->user_info.account_id)

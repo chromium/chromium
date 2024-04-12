@@ -568,6 +568,10 @@ void CameraEffectsController::GetBackgroundImageInfo(
 // Set the `camera_background_img_dir_` when the `account_id` becomes active.
 void CameraEffectsController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
+  is_eligible_for_background_replace_ =
+      features::IsVcBackgroundReplaceEnabled() &&
+      Shell::Get()->session_controller()->IsEligibleForSeaPen(account_id);
+
   const base::FilePath profile_path =
       Shell::Get()->session_controller()->GetProfilePath(account_id);
   CHECK(!profile_path.empty())
@@ -583,6 +587,11 @@ void CameraEffectsController::OnActiveUserSessionChanged(
     SetCameraEffects(GetEffectsConfigFromPref(), /*is_initialization*/ true,
                      base::DoNothing());
   }
+
+  // If any effects have controls the user can access, this will create the
+  // effects UI and register `CameraEffectsController`'s `VcEffectsDelegate`
+  // interface.
+  InitializeEffectControls();
 }
 
 void CameraEffectsController::OnActiveUserPrefServiceChanged(
@@ -603,10 +612,6 @@ void CameraEffectsController::OnActiveUserPrefServiceChanged(
     SetCameraEffects(GetEffectsConfigFromPref(), /*is_initialization*/ true,
                      base::DoNothing());
   }
-  // If any effects have controls the user can access, this will create the
-  // effects UI and register `CameraEffectsController`'s `VcEffectsDelegate`
-  // interface.
-  InitializeEffectControls();
 }
 
 std::optional<int> CameraEffectsController::GetEffectState(
@@ -655,7 +660,7 @@ void CameraEffectsController::OnEffectControlActivated(
 
       // Only change the SetCameraBackgroundView visibility if background
       // replace is enabled; otherwise the view is null.
-      if (features::IsVcBackgroundReplaceEnabled()) {
+      if (is_eligible_for_background_replace_) {
         SetBackgroundReplaceUiVisible(false);
       }
 
@@ -884,7 +889,7 @@ CameraEffectsController::GetEffectsConfigFromPref() {
   effects->blur_enabled = blur_state.second;
   effects->blur_level = blur_state.first;
 
-  if (features::IsVcBackgroundReplaceEnabled()) {
+  if (is_eligible_for_background_replace_) {
     effects->replace_enabled =
         pref_change_registrar_->prefs()->GetBoolean(prefs::kBackgroundReplace);
     if (effects->replace_enabled) {
@@ -913,7 +918,7 @@ void CameraEffectsController::SetEffectsConfigToPref(
                                                    new_config->blur_enabled));
   }
 
-  if (features::IsVcBackgroundReplaceEnabled()) {
+  if (is_eligible_for_background_replace_) {
     if (new_config->replace_enabled != current_effects_->replace_enabled) {
       pref_change_registrar_->prefs()->SetBoolean(prefs::kBackgroundReplace,
                                                   new_config->replace_enabled);
@@ -983,7 +988,7 @@ void CameraEffectsController::InitializeEffectControls() {
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL,
         video_conference::BubbleViewID::kBackgroundBlurFullButton);
 
-    if (features::IsVcBackgroundReplaceEnabled()) {
+    if (is_eligible_for_background_replace_) {
       AddBackgroundBlurStateToEffect(
           effect.get(), kAiImageIcon,
           /*state_value=*/BackgroundBlurPrefValue::kImage,

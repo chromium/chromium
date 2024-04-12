@@ -19,6 +19,7 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
@@ -195,7 +196,9 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
     return camera_effects_controller_;
   }
 
-  FakeVideoConferenceTrayController* controller() { return controller_.get(); }
+  FakeVideoConferenceTrayController* tray_controller() {
+    return controller_.get();
+  }
 
   base::FilePath GetFileInBackgroundRunDir() {
     base::FileEnumerator enumerator(camera_background_run_dir_,
@@ -440,7 +443,7 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurMetricsRecord) {
   state.has_camera_permission = true;
   state.has_microphone_permission = true;
   state.is_capturing_screen = true;
-  controller()->UpdateWithMediaState(state);
+  tray_controller()->UpdateWithMediaState(state);
 
   auto* vc_tray = StatusAreaWidgetTestHelper::GetStatusAreaWidget()
                       ->video_conference_tray();
@@ -853,6 +856,31 @@ TEST_F(CameraEffectsControllerTest, GetBackgroundImageInfo) {
         EXPECT_FALSE(info.has_value());
       }));
   task_environment()->RunUntilIdle();
+}
+
+TEST_F(CameraEffectsControllerTest, NotEligibleForSeaPen) {
+  // Set is_eligible_for_background_replace to false so that the image button
+  // will not be constructed.
+  GetSessionControllerClient()->set_is_eligible_for_background_replace(false);
+  SimulateUserLogin(kTestAccount);
+
+  // Update media status to make the video conference tray visible.
+  VideoConferenceMediaState state;
+  state.has_media_app = true;
+  state.has_camera_permission = true;
+  state.has_microphone_permission = true;
+  state.is_capturing_screen = true;
+  tray_controller()->UpdateWithMediaState(state);
+
+  auto effects = VideoConferenceTrayController::Get()
+                     ->GetEffectsManager()
+                     .GetSetValueEffects();
+
+  EXPECT_EQ(effects.size(), 1u);
+  EXPECT_EQ(effects[0]->label_text(), u"Background");
+  // Verify that only three states are constructed; the forth one is the image
+  // button.
+  EXPECT_EQ(effects[0]->GetNumStates(), 3);
 }
 
 }  // namespace ash

@@ -147,6 +147,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
   base::FilePath GetProfilePath(const AccountId& account_id) override;
+  bool IsEligibleForSeaPen(const AccountId& account_id) override;
   bool IsEnterpriseManaged() const override;
   std::optional<int> GetExistingUsersCount() const override;
 
@@ -159,6 +160,11 @@ class TestSessionControllerClient : public SessionControllerClient {
 
   void set_is_enterprise_managed(bool is_enterprise_managed) {
     is_enterprise_managed_ = is_enterprise_managed;
+  }
+
+  void set_is_eligible_for_background_replace(
+      bool is_eligible_for_background_replace) {
+    is_eligible_for_background_replace_ = is_eligible_for_background_replace;
   }
 
   void set_existing_users_count(int existing_users_count) {
@@ -183,6 +189,8 @@ class TestSessionControllerClient : public SessionControllerClient {
   bool should_show_lock_screen_ = false;
 
   bool is_enterprise_managed_ = false;
+
+  bool is_eligible_for_background_replace_ = true;
 
   int existing_users_count_ = 0;
 
