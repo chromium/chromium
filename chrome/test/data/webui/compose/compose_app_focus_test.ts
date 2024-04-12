@@ -37,6 +37,7 @@ suite('ComposeApp', function() {
       result: 'some response',
       undoAvailable: false,
       redoAvailable: false,
+      providedByUser: false,
       onDeviceEvaluationUsed: false,
       triggeredFromModifier,
     });
@@ -127,6 +128,7 @@ suite('ComposeApp', function() {
         status: ComposeStatus.kOk,
         undoAvailable: true,
         redoAvailable: false,
+        providedByUser: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -138,6 +140,7 @@ suite('ComposeApp', function() {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         redoAvailable: false,
+        providedByUser: false,
         result: 'some undone result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,

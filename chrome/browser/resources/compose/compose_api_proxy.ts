@@ -24,10 +24,10 @@ export interface ComposeApiProxy {
   requestInitialState(): Promise<OpenMetadata>;
   saveWebuiState(state: string): void;
   showUi(): void;
-  revertToMostRecentOkState(): Promise<(ComposeState | null)>;
+  recoverFromErrorState(): Promise<(ComposeState | null)>;
   undo(): Promise<(ComposeState | null)>;
-  editResult(newText: string): void;
   redo(): Promise<(ComposeState | null)>;
+  editResult(newText: string): Promise<boolean>;
 }
 
 export class ComposeApiProxyImpl implements ComposeApiProxy {
@@ -129,13 +129,14 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
         composeState => composeState.lastState);
   }
 
-  revertToMostRecentOkState(): Promise<(ComposeState | null)> {
-    return this.composeSessionPageHandler.revertToMostRecentOkState().then(
-        composeState => composeState.mostRecentOkState);
+  recoverFromErrorState(): Promise<(ComposeState | null)> {
+    return this.composeSessionPageHandler.recoverFromErrorState().then(
+        composeState => composeState.stateBeforeError);
   }
 
-  editResult(newResult: string) {
-    this.composeSessionPageHandler.editResult(newResult);
+  editResult(newResult: string): Promise<boolean> {
+    return this.composeSessionPageHandler.editResult(newResult).then(
+        res => res.isEdited);
   }
 
   redo(): Promise<(ComposeState | null)> {

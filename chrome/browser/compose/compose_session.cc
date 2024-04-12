@@ -139,6 +139,11 @@ class ComposeState {
     is_user_edited_ = true;
   }
 
+  void UnsetUserEdited() {
+    original_response_ = "";
+    is_user_edited_ = false;
+  }
+
   void SetMojoState(compose::mojom::ComposeStatePtr mojo_state) {
     mojo_state_ = std::move(mojo_state);
   }
@@ -225,15 +230,17 @@ ComposeSession::ComposeSession(
   }
 }
 
-// TODO(b/325341815): Currently, the last response state is the same as the
-// state at `history_current_index_` and this implementation is the same as
-// CurrentState(). When editable results is added, this method must be updated
-// to find the last response state in the history if the state at
-// `history_current_index_` is an edited result.
 base::optional_ref<ComposeState> ComposeSession::LastResponseState() {
   if (history_.empty() || history_current_index_ >= history_.size() ||
       !history_[history_current_index_]) {
     return std::nullopt;
+  }
+
+  if (history_[history_current_index_]->is_user_edited()) {
+    // The state at `history_current_index_` is an edited result, so the last
+    // response state directly precedes it in `history_`.
+    CHECK_GT(history_current_index_, 0u);
+    return *history_[history_current_index_ - 1];
   }
 
   return *history_[history_current_index_];
@@ -342,7 +349,7 @@ void ComposeSession::Bind(
   dialog_remote_.Bind(std::move(dialog));
 }
 
-// TODO(b/f3213db859d47): Add histogram test for Sessions triggering CancelEdit.
+// TODO(b/300974056): Add histogram test for Sessions triggering CancelEdit.
 void ComposeSession::LogCancelEdit() {
   session_events_.did_click_cancel_on_edit = true;
 }
@@ -640,6 +647,7 @@ void ComposeSession::ModelExecutionComplete(
   ui_response->status = compose::mojom::ComposeStatus::kOk;
   ui_response->result = response->output();
   ui_response->on_device_evaluation_used = result.provided_by_on_device;
+  ui_response->provided_by_user = false;
   // TODO(b/333944734): Remove undo_available and redo_available from
   // ComposeState.
   ui_response->undo_available = !history_.empty();
@@ -740,18 +748,17 @@ void ComposeSession::AcceptComposeResult(
   std::move(success_callback).Run(true);
 }
 
-void ComposeSession::RevertToMostRecentOkState(
-    RevertToMostRecentOkStateCallback callback) {
-  // RevertToMostRecentOkState can only be called if a valid state exists to
-  // return to.
-  CHECK(LastResponseState().has_value());
-  if (!LastResponseState()->IsMojoValid()) {
+void ComposeSession::RecoverFromErrorState(
+    RecoverFromErrorStateCallback callback) {
+  // Should only be called if there is a state to return to.
+  CHECK(CurrentState().has_value());
+  if (!CurrentState()->IsMojoValid()) {
     // Gracefully fail if we find an invalid state.
     std::move(callback).Run(nullptr);
     return;
   }
 
-  active_mojo_state_ = LastResponseState()->mojo_state()->Clone();
+  active_mojo_state_ = CurrentState()->mojo_state()->Clone();
 
   std::move(callback).Run(active_mojo_state_->Clone());
 }
@@ -897,9 +904,8 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
 
   // Save feedback to the last state associated with a valid response.
   last_response_state->mojo_state()->feedback = feedback;
-
-  // Add to current_state_ in case of coming back to a saved state, as
-  // RequestInitialState() returns current_state_.
+  // Update `active_mojo_state_`, as it is returned by RequestInitialState()
+  // when resuming a saved session.
   if (active_mojo_state_->response) {
     active_mojo_state_->feedback = feedback;
   }
@@ -907,33 +913,61 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
       OptimizationFeedbackFromComposeFeedback(feedback);
 
   // Apply feedback to the last saved state with a valid response.
-  if (last_response_state->modeling_log_entry()) {
-    optimization_guide::proto::ComposeQuality* quality =
-        last_response_state->modeling_log_entry()
-            ->quality_data<optimization_guide::ComposeFeatureTypeMap>();
-    if (quality) {
-      quality->set_user_feedback(user_feedback);
+  optimization_guide::proto::ComposeQuality* quality =
+      last_response_state->modeling_log_entry()
+          ->quality_data<optimization_guide::ComposeFeatureTypeMap>();
+  if (quality) {
+    quality->set_user_feedback(user_feedback);
+  }
+  if (feedback == compose::mojom::UserFeedback::kUserFeedbackNegative) {
+    session_events_.has_thumbs_down = true;
+    if (CanShowFeedbackPage()) {
+      // Open the Feedback Page for a thumbs down using current request log.
+      std::string feedback_id = last_response_state->modeling_log_entry()
+                                    ->log_ai_data_request()
+                                    ->model_execution_info()
+                                    .execution_id();
+      OpenFeedbackPage(feedback_id);
     }
-    if (feedback == compose::mojom::UserFeedback::kUserFeedbackNegative) {
-      session_events_.has_thumbs_down = true;
-      if (CanShowFeedbackPage()) {
-        // Open the Feedback Page for a thumbs down using current request log.
-        std::string feedback_id = last_response_state->modeling_log_entry()
-                                      ->log_ai_data_request()
-                                      ->model_execution_info()
-                                      .execution_id();
-        OpenFeedbackPage(feedback_id);
-      }
-    } else if (feedback ==
-               compose::mojom::UserFeedback::kUserFeedbackPositive) {
-      session_events_.has_thumbs_up = true;
-    }
+  } else if (feedback == compose::mojom::UserFeedback::kUserFeedbackPositive) {
+    session_events_.has_thumbs_up = true;
   }
 }
 
-void ComposeSession::EditResult(const std::string& new_result) {
-  // TODO(b/333084626): empty stub, re-implement with dependent editable
-  // results changes.
+void ComposeSession::EditResult(const std::string& new_result,
+                                EditResultCallback callback) {
+  // If there is no change in result text resulting from the edit, do nothing.
+  if (new_result == CurrentState()->mojo_state()->response->result) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Update the active state to reflect a new edit.
+  active_mojo_state_->response->result = new_result;
+  active_mojo_state_->response->undo_available = true;
+  active_mojo_state_->response->redo_available = false;
+  active_mojo_state_->response->provided_by_user = true;
+  active_mojo_state_->feedback =
+      compose::mojom::UserFeedback::kUserFeedbackUnspecified;
+
+  if (CurrentState()->is_user_edited()) {
+    // The current state being edited is an edit itself. In this case, update
+    // its result text instead of saving a new state.
+    EraseForwardStatesInHistory();
+    CurrentState()->mojo_state()->response->result = new_result;
+  } else {
+    // The current state being edited is a server response - save the edit as a
+    // new ComposeState.
+    CurrentState()->mojo_state()->response->redo_available = true;
+
+    // Add a new ComposeState to `history_` to represent the new result edit.
+    auto new_state =
+        std::make_unique<ComposeState>(nullptr, active_mojo_state_.Clone());
+    new_state->SetUserEdited(CurrentState()->mojo_state()->response->result);
+
+    AddNewResponseToHistory(std::move(new_state));
+  }
+  std::move(callback).Run(true);
 }
 
 void ComposeSession::InitializeWithText(const std::optional<std::string>& text,

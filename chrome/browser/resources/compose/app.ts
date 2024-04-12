@@ -183,6 +183,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: Boolean,
         value: false,
       },
+      feedbackEnabled_: {
+        type: Boolean,
+        value: false,
+      },
       responseText_: {
         type: String,
         computed: 'getResponseText_(response_, partialResponse_)',
@@ -311,12 +315,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private submitted_: boolean;
   private undoEnabled_: boolean;
   private redoEnabled_: boolean;
+  private feedbackEnabled_: boolean;
   private userHasModifiedState_: boolean = false;
   private lastTriggerElement_: TriggerElement;
   private outputComplete_: boolean = true;
   private hasOutput_: boolean = false;
   private displayedText_: string;
   private responseText_: string;
+  private userResponseText_: string|undefined;
 
   constructor() {
     super();
@@ -335,7 +341,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private getResponseText_(): TextInput {
-    if (this.response_) {
+    if (this.userResponseText_ !== undefined) {
+      return {
+        text: this.userResponseText_,
+        isPartial: false,
+        streamingEnabled: false,
+      };
+    } else if (this.response_) {
       return {
         text: this.response_.status === ComposeStatus.kOk ?
             this.response_.result.trim() :
@@ -412,6 +424,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.response_ = composeState.response;
         this.undoEnabled_ = Boolean(this.response_?.undoAvailable);
         this.redoEnabled_ = Boolean(this.response_?.redoAvailable);
+        this.feedbackEnabled_ = Boolean(!this.response_?.providedByUser);
       }
 
       if (composeState.webuiState) {
@@ -641,6 +654,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.$.body.scrollTop = 0;
     this.loading_ = true;
     this.animator_.transitionInLoading();
+    this.userResponseText_ = undefined;
     this.response_ = null;
     this.partialResponse_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
@@ -654,6 +668,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     const resultHeight = this.$.resultContainer.offsetHeight;
     this.$.body.scrollTop = 0;
     this.loading_ = true;
+    this.userResponseText_ = undefined;
     this.response_ = null;
     this.partialResponse_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
@@ -679,6 +694,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
       }
     }
 
+    this.userResponseText_ = undefined;
     const loadingHeight = this.$.loading.offsetHeight;
     this.loading_ = false;
     this.undoEnabled_ = this.response_.undoAvailable;
@@ -716,6 +732,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.response_ = response;
     this.redoEnabled_ = false;
+    this.feedbackEnabled_ = true;
   }
 
   private partialComposeResponseReceived_(partialResponse:
@@ -779,6 +796,18 @@ export class ComposeAppElement extends ComposeAppElementBase {
         loadTimeData.getBoolean('enableOnDeviceDogfoodFooter');
   }
 
+  private showDefaultResultFooter_(): boolean {
+    return !(Boolean(this.response_?.onDeviceEvaluationUsed) &&
+             loadTimeData.getBoolean('enableOnDeviceDogfoodFooter')) &&
+        !this.enableUiRefinements;
+  }
+
+  private showRefinementsResultFooter_(): boolean {
+    return !(Boolean(this.response_?.onDeviceEvaluationUsed) &&
+             loadTimeData.getBoolean('enableOnDeviceDogfoodFooter')) &&
+        this.enableUiRefinements;
+  }
+
   private undoButtonIcon_(): string {
     return this.enableUiRefinements ? 'compose:undo' : 'compose:mvpUndo';
   }
@@ -818,6 +847,18 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return Boolean(
         this.response_?.status === ComposeStatus.kFiltered &&
         this.response_?.triggeredFromModifier);
+  }
+
+  private onResultEdit_(e: CustomEvent<string>) {
+    this.userResponseText_ = e.detail;
+    this.apiProxy_.editResult(this.userResponseText_).then(isEdited => {
+      if (isEdited) {
+        this.undoEnabled_ = true;
+        this.redoEnabled_ = false;
+        this.feedbackEnabled_ = false;
+        this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
+      }
+    });
   }
 
   private saveComposeAppState_() {
@@ -866,7 +907,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private async onErrorGoBackButton_() {
     try {
-      const state = await this.apiProxy_.revertToMostRecentOkState();
+      const state = await this.apiProxy_.recoverFromErrorState();
       // This button should only be enabled following application of a modifier,
       // which ensures a previous state to revert to.
       assert(state);
@@ -902,6 +943,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private updateWithNewState_(state: ComposeState) {
     // Restore the dialog to the given state.
+    this.feedbackEnabled_ = !(state.response?.providedByUser);
+    this.userResponseText_ =
+        this.feedbackEnabled_ ? undefined : state.response?.result;
     this.response_ = state.response;
     this.partialResponse_ = undefined;
     this.undoEnabled_ = Boolean(state.response?.undoAvailable);

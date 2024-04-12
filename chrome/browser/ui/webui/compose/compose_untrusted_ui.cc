@@ -62,6 +62,8 @@ webui::SetupWebUIDataSource(
       {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
       {"onDeviceUsedFooter", IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED},
       {"resultFooter", IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER},
+      {"refinementsResultFooter",
+       IDS_COMPOSE_REFINEMENTS_EXPERIMENTAL_DISCLAIMER_FOOTER},
       {"dogfoodFooter", IDS_COMPOSE_FOOTER_FISHFOOD},
       {"insertButton", IDS_COMPOSE_INSERT_BUTTON},
       {"replaceButton", IDS_COMPOSE_REPLACE_BUTTON},

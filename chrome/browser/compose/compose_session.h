@@ -119,8 +119,7 @@ class ComposeSession
 
   // Revert from a server error to the last state with a kOk status and valid
   // response text.
-  void RevertToMostRecentOkState(
-      RevertToMostRecentOkStateCallback callback) override;
+  void RecoverFromErrorState(RecoverFromErrorStateCallback callback) override;
 
   // Undo to the previous saved state in the history.
   void Undo(UndoCallback callback) override;
@@ -151,8 +150,12 @@ class ComposeSession
   // Saves the user feedback supplied form the UI to include in quality logs.
   void SetUserFeedback(compose::mojom::UserFeedback feedback) override;
 
-  // Edits the result from the model.
-  void EditResult(const std::string& new_result) override;
+  // Edits the result from the model. Callback returns true if the edit text
+  // `new_result` is different from the result text.
+  void EditResult(const std::string& new_result,
+                  EditResultCallback callback) override;
+
+  void PrintCurrentHistoryState();
 
   // Non-ComposeSessionUntrustedPageHandler Methods
 
@@ -265,6 +268,8 @@ class ComposeSession
   // `offset` from the current index if `offset` is specified, if it exists.
   base::optional_ref<ComposeState> CurrentState(int offset = 0);
 
+  // Returns a reference to the ComposeState with a server response at or
+  // directly preceding `history_current_index`, if it exists.
   base::optional_ref<ComposeState> LastResponseState();
 
   // Outlives `this`.
@@ -285,7 +290,7 @@ class ComposeSession
       most_recent_error_log_;
 
   // Tracks the position of the current state in the history. This index is only
-  // valid when `state_history_` is non-empty.
+  // valid when `history_` is non-empty.
   size_t history_current_index_ = 0;
   // The saved states that can be navigated between through Undo and Redo.
   std::vector<std::unique_ptr<ComposeState>> history_;

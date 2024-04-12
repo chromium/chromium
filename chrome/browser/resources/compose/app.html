@@ -413,6 +413,18 @@
     gap:45px;
   }
 
+<if expr="is_win">
+  :host([enable-ui-refinements]) #resultFooter {
+    gap: 22px;
+  }
+</if>
+
+<if expr="is_linux">
+  :host([enable-ui-refinements]) #resultFooter {
+    gap: 15px;
+  }
+</if>
+
   .footer-text {
     display: flex;
     align-items: start;
@@ -422,6 +434,18 @@
     font-size: 11px;
     line-height: 16px;
   }
+
+<if expr="is_win">
+  :host([enable-ui-refinements]) .footer-text {
+    gap: 4px;
+  }
+</if>
+
+<if expr="is_linux">
+  :host([enable-ui-refinements]) .footer-text {
+    gap: 2px;
+  }
+</if>
 
   :host-context([chrome-refresh-2023]) .footer-text {
     color: var(--color-compose-dialog-foreground-subtle);
@@ -588,7 +612,8 @@
             <compose-result-text id="resultText" text-input="[[responseText_]]"
               is-output-complete="{{outputComplete_}}"
               has-output="{{hasOutput_}}"
-              has-partial-output="{{hasPartialOutput_}}">
+              has-partial-output="{{hasPartialOutput_}}"
+              on-result-edit="onResultEdit_">
             </compose-result-text>
           </div>
           <div id="resultOptionsContainer">
@@ -683,12 +708,16 @@
           </b>
           <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
               >$i18nRaw{dogfoodFooter}</span>
-          <span hidden="[[showOnDeviceDogfoodFooter_(response_)]]"
+          <span hidden="[[!showDefaultResultFooter_(response_, enableUiRefinements)]]"
               >$i18nRaw{resultFooter}</span>
+          <span
+            hidden="[[!showRefinementsResultFooter_(response_, enableUiRefinements)]]"
+            >$i18nRaw{refinementsResultFooter}</span>
         </div>
         <cr-feedback-buttons id="feedbackButtons"
             on-selected-option-changed="onFeedbackSelectedOptionChanged_"
-            selected-option="[[feedbackState_]]">
+            selected-option="[[feedbackState_]]"
+            disabled$="[[!feedbackEnabled_]]">
         </cr-feedback-buttons>
       </div>
       <cr-button id="acceptButton" class="action-button" on-click="onAccept_">

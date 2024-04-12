@@ -46,6 +46,7 @@ suite('ComposeApp', () => {
       status: status,
       undoAvailable: false,
       redoAvailable: false,
+      providedByUser: false,
       result,
       onDeviceEvaluationUsed,
       triggeredFromModifier,
@@ -309,6 +310,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         redoAvailable: false,
+        providedByUser: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -327,6 +329,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: true,
         redoAvailable: false,
+        providedByUser: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -352,6 +355,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         redoAvailable: false,
+        providedByUser: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -372,6 +376,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         redoAvailable: false,
+        providedByUser: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -479,12 +484,13 @@ suite('ComposeApp', () => {
   });
 
   test('GoBackFromError', async () => {
-    testProxy.setMostRecentOkResponse({
+    testProxy.setResponseBeforeError({
       hasPendingRequest: false,
       response: {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         redoAvailable: false,
+        providedByUser: false,
         result: 'initial result text',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -509,7 +515,7 @@ suite('ComposeApp', () => {
     assertTrue(isVisible(app.$.errorGoBackButton));
 
     app.$.errorGoBackButton.click();
-    await testProxy.whenCalled('revertToMostRecentOkState');
+    await testProxy.whenCalled('recoverFromErrorState');
     await flushTasks();
 
     // UI is updated to the mocked last ok response.
@@ -666,6 +672,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: true,
         redoAvailable: false,
+        providedByUser: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -677,6 +684,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         redoAvailable: false,
+        providedByUser: false,
         result: 'some undone result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -720,6 +728,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         redoAvailable: true,
+        providedByUser: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -731,6 +740,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         redoAvailable: false,
+        providedByUser: false,
         result: 'some future result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,

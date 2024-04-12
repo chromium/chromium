@@ -34,6 +34,9 @@ struct ComposeResponse {
   bool undo_available;
   // Whether redo is possible to a later state before this response.
   bool redo_available;
+  // True if the result stored in this response came from a user edit and false
+  // if it came from the server.
+  bool provided_by_user;
   // Whether the response was generated on-device.
   bool on_device_evaluation_used;
   // Whether the request producing this response came from a modifier action.
@@ -155,10 +158,10 @@ interface ComposeSessionUntrustedPageHandler {
   // an undoable state may exist, but the call failed due to the broken pipe.
   Undo() => (ComposeState? last_state);
 
-  // Asks the native handler to revert to and return the last state with a kOk
-  // status and valid response text. A null return means that there is no such
+  // Asks the native handler to revert to and return the saved state directly
+  // preceding a filtered error state. A null return means that there is no such
   // valid state. No-op on rejected promise.
-  RevertToMostRecentOkState() => (ComposeState? most_recent_ok_state);
+  RecoverFromErrorState() => (ComposeState? state_before_error);
 
   // Asks the native handler to move to and return the `next_state` in the saved
   // state history. This represents the state that the user saw previous to the
@@ -185,8 +188,9 @@ interface ComposeSessionUntrustedPageHandler {
   SetUserFeedback(UserFeedback feedback);
 
   // Tells the native handler that the user has updated the compose results
-  // to the new result.
-  EditResult(string new_result);
+  // to `new_result`. `is_edited` indicates whether the result text was
+  // changed by the edit.
+  EditResult(string new_result) => (bool is_edited);
 };
 
 // Interface for calls from the untrusted Compose dialog JS into the Browser

@@ -38,7 +38,7 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
       new ComposeUntrustedDialogCallbackRouter();
   remote = this.router_.$.bindNewPipeAndPassRemote();
   private undoResponse_: ComposeState|null = null;
-  private mostRecentOkResponse_: ComposeState|null = null;
+  private responseBeforeError_: ComposeState|null = null;
   private redoResponse_: ComposeState|null = null;
 
   constructor() {
@@ -58,7 +58,7 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
       'setUserFeedback',
       'showUi',
       'undo',
-      'revertToMostRecentOkState',
+      'recoverFromErrorState',
       'editResult',
       'redo',
     ]);
@@ -100,9 +100,14 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
     return Promise.resolve(this.undoResponse_);
   }
 
-  revertToMostRecentOkState(): Promise<(ComposeState | null)> {
-    this.methodCalled('revertToMostRecentOkState');
-    return Promise.resolve(this.mostRecentOkResponse_);
+  recoverFromErrorState(): Promise<(ComposeState | null)> {
+    this.methodCalled('recoverFromErrorState');
+    return Promise.resolve(this.responseBeforeError_);
+  }
+
+  editResult(result: string): Promise<boolean> {
+    this.methodCalled('editResult', result);
+    return Promise.resolve(false);
   }
 
   redo(): Promise<(ComposeState | null)> {
@@ -158,8 +163,8 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
     this.undoResponse_ = state;
   }
 
-  setMostRecentOkResponse(state: ComposeState|null) {
-    this.mostRecentOkResponse_ = state;
+  setResponseBeforeError(state: ComposeState|null) {
+    this.responseBeforeError_ = state;
   }
 
   setRedoResponse(state: ComposeState|null) {
@@ -168,9 +173,5 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
 
   showUi() {
     this.methodCalled('showUi');
-  }
-
-  editResult(result: string) {
-    this.methodCalled('editResult', result);
   }
 }

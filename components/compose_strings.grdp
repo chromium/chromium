@@ -198,6 +198,10 @@
     This is an experimental AI writing aid and won't always get it right.
     <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_COMPOSE_REFINEMENTS_EXPERIMENTAL_DISCLAIMER_FOOTER" desc="Disclaimer privacy footer text for used in the result dialog when the UI refinements feature is enabled.">
+    This experimental AI tool won't always be right. To improve it, your content is sent to Google.
+    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED" desc="A footer indicating that on-device evaluation was used." translateable="false">
     On-device evaluation used.
   </message>
