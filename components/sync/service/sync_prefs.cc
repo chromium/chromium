@@ -221,6 +221,12 @@ bool SyncPrefs::IsInitialSyncFeatureSetupComplete() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+bool SyncPrefs::IsExplicitBrowserSignin() const {
+  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+             switches::ExplicitBrowserSigninPhase::kFull) &&
+         pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void SyncPrefs::SetInitialSyncFeatureSetupComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

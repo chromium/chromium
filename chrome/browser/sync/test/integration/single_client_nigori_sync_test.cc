@@ -2266,7 +2266,8 @@ class SingleClientNigoriWithWebApiExplicitParamTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{switches::kUnoDesktop};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiExplicitParamTest,

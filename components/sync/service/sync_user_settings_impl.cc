@@ -56,12 +56,12 @@ int GetCurrentMajorProductVersion() {
 
 // Checks if the AUTOFILL_WALLET_CREDENTIAL should be ignored if it is the only
 // encrypted datatype.
-bool ShouldAutofillWalletCredentialBeIgnoredIfOnlyEncryptedType() {
+bool ShouldAutofillWalletCredentialBeIgnoredIfOnlyEncryptedType(
+    const SyncPrefs& prefs) {
   // Explicit sign-in to the browser via native UI, making this scenario an edge
   // case as more features will usually be enabled, including PASSWORDS. Thus,
   // AUTOFILL_WALLET_CREDENTIAL is not the only active encrypted type.
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
+  if (prefs.IsExplicitBrowserSignin()) {
     return false;
   }
   // Similar to above: more features will usually be enabled, including
@@ -438,7 +438,7 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
   ModelTypeSet preferred_types = GetPreferredDataTypes();
   const ModelTypeSet encrypted_types = GetEncryptedDataTypes();
   DCHECK(encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
-  if (ShouldAutofillWalletCredentialBeIgnoredIfOnlyEncryptedType()) {
+  if (ShouldAutofillWalletCredentialBeIgnoredIfOnlyEncryptedType(*prefs_)) {
     // Remove AUTOFILL_WALLET_CREDENTIAL from the set to avoid that the
     // function returns true for the case where the set ONLY includes
     // AUTOFILL_WALLET_CREDENTIAL. This feature alone is not sufficient to
