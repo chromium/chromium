@@ -609,6 +609,9 @@ void GameDashboardContext::MaybeShowWelcomeDialog() {
   welcome_dialog_view->StartTimer(
       base::BindOnce(&GameDashboardContext::OnWelcomeDialogTimerCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
+  // Once the dialog is shown, add an announcement for screen readers since the
+  // dialog only shows for a short amount of time.
+  welcome_dialog_view->AnnounceForAccessibility();
 }
 
 void GameDashboardContext::MaybeUpdateWelcomeDialogBounds() {

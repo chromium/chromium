@@ -30,6 +30,10 @@ class ASH_EXPORT GameDashboardWelcomeDialog : public views::FlexLayoutView {
   // specified by `kDialogDuration` has elapsed.
   void StartTimer(base::OnceClosure on_complete);
 
+  // Sends an accessibility specific announcement for the screen reader. If the
+  // screen reader isn't enabled, the announcement is automatically ignored.
+  void AnnounceForAccessibility();
+
  private:
   // Adds a stacked title/sub-label and an icon as a row to the welcome dialog.
   void AddTitleAndIconRow();

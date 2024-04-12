@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -84,6 +85,15 @@ void GameDashboardWelcomeDialog::StartTimer(base::OnceClosure on_complete) {
   DCHECK(on_complete) << "OnceClosure must be passed to determine what to do "
                          "when the timer completes.";
   timer_.Start(FROM_HERE, kDialogDuration, std::move(on_complete));
+}
+
+void GameDashboardWelcomeDialog::AnnounceForAccessibility() {
+  GetViewAccessibility().AnnounceAlert(l10n_util::GetStringFUTF16(
+      IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_A11Y_ANNOUNCEMENT,
+      l10n_util::GetStringUTF16(
+          Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()
+              ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
+              : IDS_ASH_SHORTCUT_MODIFIER_SEARCH)));
 }
 
 // Creates a primary container that holds separate sub-containers for the text

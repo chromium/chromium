@@ -7744,6 +7744,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_SHORTCUT" desc="The text displayed in the welcome dialog to show how to toggle the Game Dashboard.">
         Press <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> + g at anytime
       </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_A11Y_ANNOUNCEMENT" desc="The announcement spoken by the screen reader when the welcome dialog is shown on screen.">
+        Game Dashboard available. Press <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> + Shift + Escape, then <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> + g anytime to open
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_A11Y_LABEL" desc="The a11y label for the welcome dialog. Spoken by screen readers when the welcome dialog is a11y focused but not visually rendered.">
         Welcome dialog
       </message>
