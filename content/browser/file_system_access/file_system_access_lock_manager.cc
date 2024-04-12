@@ -73,8 +73,8 @@ class Lock {
                     parent_lock_->InPendingSubtree()) {}
 
   virtual ~Lock() {
-    CHECK(frame_id_lock_handles_.empty());
     CHECK(pending_callbacks_.empty());
+    CHECK(frame_id_lock_handles_.empty());
   }
 
   Lock(Lock const&) = delete;
@@ -262,30 +262,27 @@ class Lock {
       // If we are an Evicting subroot, then we must destroy ourselves through
       // the `pending_lock` that owns us.
       Lock* pending_lock = parent_lock_->GetChild(path_);
+      bool in_pending_subtree = InPendingSubtree();
+      CHECK(!in_pending_subtree || !IsPendingSubroot());
 
-      if (InPendingSubtree()) {
-        CHECK(IsPendingSubroot());
+      // `RemoveEvictingSubrootLock` will destroy `this`.
+      pending_lock->RemoveEvictingSubrootLock();
 
-        // When we are in a Pending Subtree, then we've been evicted before our
-        // `evicting_subroot_lock_` has been evicted. The `pending_lock_` still
-        // has to wait on our `evicting_subroot_lock_` to be evicted before it
-        // can be promoted. So replace ourselves in `pending_lock` with our
-        // `evicting_subroot_lock_`.
+      if (in_pending_subtree) {
+        return;
+      }
 
-        // `SetEvictingSubrootLock` will destroy `this`. `pending_lock` uniquely
-        // owns `this` as its evicting subroot `Lock`, so setting a new one will
-        // destroy `this`.
-        pending_lock->SetEvictingSubrootLock(std::move(evicting_subroot_lock_));
-      } else if (pending_lock->InEvictingSubtree()) {
+      if (pending_lock->InEvictingSubtree()) {
         // If the pending lock is in an Evicting subtree, then it should be
         // evicted.
 
-        // `EvictPendingSubtree` will destroy `this`.
         pending_lock->EvictPendingSubtree();
-      } else {
-        // `PromotePendingToTaken` will destroy `this`.
-        pending_lock->PromotePendingToTaken();
+        return;
       }
+
+      // This was the last Evicting Lock that needed to be destroyed to promote
+      // the `pending_lock`.
+      pending_lock->PromotePendingToTaken();
     }
   }
 
@@ -293,12 +290,22 @@ class Lock {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(InPendingSubtree());
 
+    if (evicting_subroot_lock_) {
+      evicting_subroot_lock_->EvictPendingSubtree();
+    }
+
+    // Take `pending_callbacks_` in case `this` is destroyed before we can use
+    // it.
     auto pending_callbacks = std::move(pending_callbacks_);
 
-    // Will destroy `this` if this its an ancestor Lock since ancestors are
-    // owned by their children, and we're destroying all the children.
-    for (auto& [_path, child] : child_locks_) {
-      // Destroys `child`.
+    // Will destroy `this` if this is an ancestor Lock since ancestors are owned
+    // by their children, and we're destroying all the children.
+    for (auto child_locks_iter = child_locks_.begin();
+         child_locks_iter != child_locks_.end();) {
+      // The child will be destroyed so increase the iterator before continuing.
+      auto& [_path, child] = *(child_locks_iter++);
+
+      // Destroys `child` and possibly `this`.
       child->EvictPendingSubtree();
     }
 
@@ -313,14 +320,26 @@ class Lock {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(InPendingSubtree());
 
+    if (evicting_subroot_lock_) {
+      evicting_subroot_lock_->EvictPendingSubtree();
+    }
     is_pending_ = false;
-    evicting_subroot_lock_ = nullptr;
-    for (auto& [_path, child] : child_locks_) {
+
+    // Take `pending_callbacks_` in case `this` is destroyed before we can use
+    // it.
+    auto pending_callbacks = std::move(pending_callbacks_);
+
+    for (auto child_locks_iter = child_locks_.begin();
+         child_locks_iter != child_locks_.end();) {
+      // The child may be destroyed so increase the iterator before continuing.
+      auto& [_path, child] = *(child_locks_iter++);
+
+      // May destroy `this` if none of the leaves' `pending_callbacks` keep
+      // their `LockHandle` alive.
       child->PromotePendingToTaken();
     }
-    auto pending_callbacks = std::move(pending_callbacks_);
     for (auto& pending_callback : pending_callbacks) {
-      // May destroy `this` if none of the pending_callbacks keep their
+      // May destroy `this` if none of the `pending_callbacks` keep their
       // `LockHandle` alive.
       std::move(pending_callback).Run();
     }
@@ -357,11 +376,22 @@ class Lock {
     is_pending_ = true;
     evicting_subroot_lock_ = std::move(evicting_subroot_lock);
 
-    // If our `evicting_subroot_lock_` is Pending, then evict it. It will
-    // replace itself with its own `evicting_subroot_lock_`.
-    if (evicting_subroot_lock_->InPendingSubtree()) {
+    // If our `evicting_subroot_lock_` has its own `evicting_subroot_lock_`,
+    // then replace the former with the latter.
+    auto next_evicting_subroot_lock =
+        evicting_subroot_lock_->TakeEvictingSubrootLock();
+    if (next_evicting_subroot_lock) {
+      // Destroys `evicting_subroot_lock_`.
       evicting_subroot_lock_->EvictPendingSubtree();
+      evicting_subroot_lock_ = std::move(next_evicting_subroot_lock);
     }
+  }
+
+  void RemoveEvictingSubrootLock() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(evicting_subroot_lock_);
+
+    evicting_subroot_lock_ = nullptr;
   }
 
   std::unique_ptr<Lock> TakeEvictingSubrootLock() {
