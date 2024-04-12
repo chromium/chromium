@@ -80,20 +80,17 @@ extern const char kCrashHandlerSwitch[];
 // Updates the updater.
 extern const char kUpdateSwitch[];
 
-// Installs the updater.
+// Installs the updater. Takes an optional argument for the meta installer tag.
+// The tag is a string of arguments, separated by a delimiter (in this case, the
+// delimiter is `&`). The tag is typically embedded in the program image of the
+// metainstaller, but for testing purposes, the tag could be passed directly as
+// a command line argument. The tag is currently encoded as an ASCII string.
 extern const char kInstallSwitch[];
-extern const char kRuntimeSwitch[];
+
 extern const char kEulaRequiredSwitch[];
 
 // Specifies that this is an OEM install in audit mode.
 extern const char kOemSwitch[];
-
-// Contains the meta installer tag. The tag is a string of arguments, separated
-// by a delimiter (in this case, the delimiter is =). The tag is typically
-// embedded in the program image of the metainstaller, but for testing purposes,
-// the tag could be passed directly as a command line argument. The tag is
-// currently encoded as a ASCII string.
-extern const char kTagSwitch[];
 
 // The --installerdata=file.dat switch is passed to an installer if an
 // installdataindex is specified in the tag or if installerdata is passed in via

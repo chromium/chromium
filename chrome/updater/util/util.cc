@@ -180,9 +180,7 @@ TagParsingResult& TagParsingResult::operator=(const TagParsingResult&) =
 
 TagParsingResult GetTagArgsForCommandLine(
     const base::CommandLine& command_line) {
-  std::string tag = command_line.HasSwitch(kTagSwitch)
-                        ? command_line.GetSwitchValueASCII(kTagSwitch)
-                    : command_line.HasSwitch(kInstallSwitch)
+  std::string tag = command_line.HasSwitch(kInstallSwitch)
                         ? command_line.GetSwitchValueASCII(kInstallSwitch)
                         : command_line.GetSwitchValueASCII(kHandoffSwitch);
   if (tag.empty()) {

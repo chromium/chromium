@@ -2,7 +2,7 @@
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
   <?define Copyright = '$(var.ProductOriginalVersionString) Copyright $(var.ProductBuildYear) $(var.CompanyFullName)'?>
   <?define UpdateKeyPath = 'SOFTWARE\$(var.CompanyName)\Update'?>
-  <?define InstallCommandBase='--silent --tag=[ProductTag] --installsource enterprisemsi[OptOmahaArgs]'?>
+  <?define InstallCommandBase='--silent --install=[ProductTag] --installsource=enterprisemsi[OptOmahaArgs]'?>
 
   <Product
     Id='$(var.MsiProductId)'

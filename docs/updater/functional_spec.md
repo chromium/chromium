@@ -243,23 +243,22 @@ Depending on the scope, the updater is installed at:
 The updater's functionality is split between several processes. The mode of a
 process is determined by command-line arguments:
 
-*   --install [--app-id=...]
+*   --install[=tag] [--app-id=...]
     *   Install and activate this version of the updater if there is no active
         updater.
+        *   If a tag argument is specified instead of `--app-id`, this supplies
+            the install metadata needed when installing an application.
+            Typically, a tagged metainstaller invokes the updater with the tag.
+            For example: `--install="appguid=foo&appname=Foo&needsadmin=False"`.
     *   --app-id=...
         *   Also install the given application.
-    *   --tag=...
-        *   Supplies the install metadata needed when installing an
-            application. Typically, a tagged metainstaller invokes the updater
-            with this command line argument.
-        *   If --tag is specified, --install is assumed.
-    *   --handoff=...
-        *   As --tag.
+    *   --handoff[=tag]
+        *   A tag argument can be specified, similar to `--install`.
     *   --appargs="appguid=...&installerdata=..."
         * Allows extra data (`installerdata`) to be communicated to the
           application installer. One per application.
         * `appguid` must be the first arg followed by the `installerdata`. The
-          same `appguid` must appear in `tag` value or `handoff` value.
+          same `appguid` must appear in `--install=` or `--handoff=`.
         * This is an alternative to using `installdataindex` in the tag. Where
           `installdataindex` selects from a pre-defined set of `installerdata`
           options, this value specifies the exact `installerdata` to use.
@@ -773,9 +772,9 @@ If this untagged MSI installer is run as-is, it will run the updater
 metainstaller with the following parameters:
 ```
 --silent
---tag=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=GoogleChromeBeta&
-      needsAdmin=True&brand=GCEA
---installsource enterprisemsi
+--install=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
+      appname=GoogleChromeBeta&needsAdmin=True&brand=GCEA
+--installsource=enterprisemsi
 --appargs=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
           installerdata=%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D
 ```
@@ -796,8 +795,8 @@ If this tagged MSI installer is run, it will run the updater metainstaller with
 the following parameters:
 ```
 --silent
---tag=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=Google%20Chrome%20
-      Beta&needsAdmin=True&brand=GGLL
+--install=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
+      appname=Google%20Chrome%20Beta&needsAdmin=True&brand=GGLL
 --installsource enterprisemsi
 --appargs=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
           installerdata=%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D
@@ -994,7 +993,7 @@ install.
 
 For example, here is a command line for the Updater on Windows that includes:
 ```
-UpdaterSetup.exe --install --tag="appguid=YourAppID&needsadmin=False"
+UpdaterSetup.exe --install="appguid=YourAppID&needsadmin=False"
 ```
 
 In this case, the updater client understands that the application installer

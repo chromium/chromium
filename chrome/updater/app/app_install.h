@@ -78,8 +78,7 @@ class AppInstall : public App {
 
   void RegisterUpdater();
 
-  // Handles the --tag and --app-id command line arguments, and triggers
-  // installing of the corresponding application if either argument is present.
+  // Installs an application if the `app_id_` is valid.
   void MaybeInstallApp();
 
   // Bound to the main sequence.
