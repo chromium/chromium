@@ -903,37 +903,10 @@ bool CreateWinHardLink(const FilePath& to_file, const FilePath& from_file) {
                           nullptr);
 }
 
+// TODO(rkc): Work out if we want to handle NTFS junctions here or not, handle
+// them if we do decide to.
 bool IsLink(const FilePath& file_path) {
-  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-
-  // Opens the file or directory specified by file_path for querying attributes.
-  // No access rights are requested (FILE_READ_ATTRIBUTES), as we're only
-  // interested in the attributes. The file share mode allows other processes to
-  // read, write, and delete the file while we have it open. The flags
-  // FILE_FLAG_BACKUP_SEMANTICS and FILE_FLAG_OPEN_REPARSE_POINT are used to
-  // ensure we can open directories and work with reparse points, respectively.
-  //
-  // NOTE: In future, we can consider using GetFileInformationByName(...)
-  // instead.
-  win::ScopedHandle file(
-      ::CreateFile(file_path.value().c_str(), FILE_READ_ATTRIBUTES,
-                   FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                   /*lpSecurityAttributes=*/nullptr, OPEN_EXISTING,
-                   FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
-                   /*hTemplateFile=*/nullptr));
-
-  if (!file.is_valid()) {
-    return false;
-  }
-
-  FILE_ATTRIBUTE_TAG_INFO attr_taginfo;
-  if (!::GetFileInformationByHandleEx(file.get(), FileAttributeTagInfo,
-                                      &attr_taginfo, sizeof(attr_taginfo))) {
-    return false;
-  }
-
-  return (attr_taginfo.FileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) &&
-         (attr_taginfo.ReparseTag == IO_REPARSE_TAG_SYMLINK);
+  return false;
 }
 
 bool GetFileInfo(const FilePath& file_path, File::Info* results) {
