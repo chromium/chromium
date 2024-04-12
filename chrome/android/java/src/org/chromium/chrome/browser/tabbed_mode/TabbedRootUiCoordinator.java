@@ -671,6 +671,21 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+            Runnable onDialogAcceptedRunnable =
+                    () -> {
+                        if (!mTabModelSelectorSupplier.get().isIncognitoSelected()) {
+                            TabSwitcher regularTabSwitcher = mTabSwitcherSupplier.get();
+                            if (regularTabSwitcher != null) {
+                                regularTabSwitcher.refreshTabList();
+                            }
+                        } else {
+                            TabSwitcher incognitoTabSwitcher = mIncognitoTabSwitcherSupplier.get();
+                            if (incognitoTabSwitcher != null) {
+                                incognitoTabSwitcher.refreshTabList();
+                            }
+                        }
+                    };
+
             // TODO(b/330598024): Introduce an alternative method of observing changes to a tab
             // group's color than refreshing the list through a runnable.
             TabModelUtils.runOnTabStateInitialized(
@@ -683,11 +698,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                                 mActivity,
                                                 mModalDialogManagerSupplier.get(),
                                                 tabModelSelector,
-                                                () -> {
-                                                    if (mTabSwitcherSupplier.get() != null) {
-                                                        mTabSwitcherSupplier.get().refreshTabList();
-                                                    }
-                                                });
+                                                onDialogAcceptedRunnable);
                     });
         }
 
