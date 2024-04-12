@@ -115,7 +115,11 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
 
 - (void)enterPendingState {
   self.tableView.allowsSelection = NO;
-  self.navigationItem.rightBarButtonItem.enabled = NO;
+  UIActivityIndicatorView* activityIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  [activityIndicator startAnimating];
+  self.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc] initWithCustomView:activityIndicator];
 }
 
 #pragma mark - UITableViewDelegate
