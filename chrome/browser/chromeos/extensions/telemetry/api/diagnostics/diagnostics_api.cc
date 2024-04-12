@@ -510,16 +510,9 @@ void OsDiagnosticsCreateRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  cx_diag::CreateRoutineArgumentsUnion args_union;
-  if (!cx_diag::CreateRoutineArgumentsUnion::Populate(
-          params->args.additional_properties, args_union)) {
-    RespondWithError("Routine arguments are invalid.");
-    return;
-  }
-
   std::optional<crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr>
       mojo_arg = converters::diagnostics::ConvertRoutineArgumentsUnion(
-          std::move(args_union));
+          std::move(params->args));
   if (!mojo_arg.has_value()) {
     RespondWithError("Routine arguments are invalid.");
     return;
@@ -724,16 +717,9 @@ void OsDiagnosticsIsRoutineArgumentSupportedFunction::RunIfAllowed() {
     return;
   }
 
-  cx_diag::CreateRoutineArgumentsUnion args_union;
-  if (!cx_diag::CreateRoutineArgumentsUnion::Populate(
-          params->args.additional_properties, args_union)) {
-    RespondWithError("Routine arguments are invalid.");
-    return;
-  }
-
   std::optional<crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr>
       mojo_arg = converters::diagnostics::ConvertRoutineArgumentsUnion(
-          std::move(args_union));
+          std::move(params->args));
   if (!mojo_arg.has_value()) {
     RespondWithError("Routine arguments are invalid.");
     return;

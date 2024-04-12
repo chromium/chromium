@@ -392,7 +392,7 @@ namespace os.diagnostics {
   };
 
   // This is a union type. Exactly one field should be set.
-  dictionary CreateRoutineArgumentsUnion {
+  [ignoreAdditionalProperties] dictionary CreateRoutineArgumentsUnion {
     CreateMemoryRoutineArguments? memory;
     CreateVolumeButtonRoutineArguments? volumeButton;
     CreateFanRoutineArguments? fan;
@@ -537,23 +537,15 @@ namespace os.diagnostics {
     // Checks whether a certain routine arguments (expected to be of type
     // `CreateRoutineArgumentsUnion`) is supported on the platform. Exactly one
     // routine should be set in `CreateRoutineArgumentsUnion`.
-    //
-    // Use `object` instead of `CreateRoutineArgumentsUnion` as the type of
-    // `args` to handle unrecognized routine name caused by version skew between
-    // the extenion and the browser.
     static void isRoutineArgumentSupported(
-        object args,
+        CreateRoutineArgumentsUnion args,
         RoutineSupportStatusInfoCallback callback);
 
     // Create a routine with routine arguments (expected to be of type
     // `CreateRoutineArgumentsUnion`). Exactly one routine should be set in
     // `CreateRoutineArgumentsUnion`.
-    //
-    // Use `object` instead of `CreateRoutineArgumentsUnion` as the type of
-    // `args` to handle unrecognized routine name caused by version skew between
-    // the extenion and the browser.
     static void createRoutine(
-        object args,
+        CreateRoutineArgumentsUnion args,
         CreateRoutineCallback callback);
 
     // Starts execution of a routine. This can only be expected to work after

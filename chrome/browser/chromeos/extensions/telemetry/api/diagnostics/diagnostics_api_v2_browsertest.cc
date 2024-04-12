@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.isRoutineArgumentSupported({
               memory: {
-                maxTestingMemKib: "more",
+                maxTestingMemKib: -1,
               },
             }),
             'Error: Routine arguments are invalid.'
@@ -248,6 +248,24 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateRoutineSuccessWithUnrecognizedRoutineName) {
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function createUnrecognizedRoutine() {
+        const result = await chrome.os.diagnostics.createRoutine({
+          newRoutine: {},
+        });
+
+        chrome.test.assertTrue(result !== undefined);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        CreateRoutineParseArgumentsError) {
   OpenAppUiAndMakeItSecure();
 
@@ -257,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.createRoutine({
               memory: {
-                maxTestingMemKib: "more",
+                maxTestingMemKib: -1,
               },
             }),
             'Error: Routine arguments are invalid.'
