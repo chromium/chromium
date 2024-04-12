@@ -34,6 +34,8 @@ DataBuffer::DataBuffer(const uint8_t* data, int data_size)
   data_ = std::make_unique<uint8_t[]>(buffer_size_);
   memcpy(data_.get(), data, data_size_);
 }
+DataBuffer::DataBuffer(DataBufferType data_buffer_type)
+    : is_end_of_stream_(data_buffer_type == DataBufferType::kEndOfStream) {}
 
 DataBuffer::~DataBuffer() = default;
 
@@ -46,6 +48,6 @@ scoped_refptr<DataBuffer> DataBuffer::CopyFrom(const uint8_t* data, int size) {
 
 // static
 scoped_refptr<DataBuffer> DataBuffer::CreateEOSBuffer() {
-  return base::WrapRefCounted(new DataBuffer(NULL, 0));
+  return base::WrapRefCounted(new DataBuffer(DataBufferType::kEndOfStream));
 }
 }  // namespace media

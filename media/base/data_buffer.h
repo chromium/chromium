@@ -89,17 +89,17 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
     data_size_ = data_size;
   }
 
-  // If there's no data in this buffer, it represents end of stream.
-  bool end_of_stream() const { return data_ == NULL; }
+  bool end_of_stream() const { return is_end_of_stream_; }
 
  protected:
   friend class base::RefCountedThreadSafe<DataBuffer>;
+  enum class DataBufferType { kNormal, kEndOfStream };
 
   // Allocates buffer of size |data_size|, copies [data,data+data_size) to
   // the allocated buffer and sets data size to |data_size|.
-  //
-  // If |data| is null an end of stream buffer is created.
   DataBuffer(const uint8_t* data, int data_size);
+
+  explicit DataBuffer(DataBufferType data_buffer_type);
 
   virtual ~DataBuffer();
 
@@ -110,6 +110,7 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   std::unique_ptr<uint8_t[]> data_;
   int buffer_size_;
   int data_size_;
+  const bool is_end_of_stream_ = false;
 };
 
 }  // namespace media
