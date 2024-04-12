@@ -108,7 +108,8 @@ void MahiPanelWidget::NotifyRefreshAvailabilityChanged(bool available) {
 
 void MahiPanelWidget::SendQuestion(const std::u16string& question,
                                    bool current_panel_content) {
-  ui_controller_.SendQuestion(question, current_panel_content);
+  ui_controller_.SendQuestion(question, current_panel_content,
+                              MahiUiController::QuestionSource::kMenuView);
 }
 
 void MahiPanelWidget::OnViewVisibilityChanged(views::View* observed_view,

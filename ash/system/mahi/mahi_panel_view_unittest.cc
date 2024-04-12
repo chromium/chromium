@@ -47,6 +47,7 @@ namespace {
 // Aliases ---------------------------------------------------------------------
 
 using chromeos::MahiResponseStatus;
+using ::testing::_;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -979,14 +980,6 @@ TEST_F(MahiPanelViewTest, AnswerLoadingAnimation) {
 // iterating all possible errors.
 TEST_F(MahiPanelViewTest, FailToGetAnswer) {
   for (MahiResponseStatus error : GetMahiErrors()) {
-    if (error == MahiResponseStatus::kInappropriate ||
-        error == MahiResponseStatus::kLowQuota) {
-      // `kInappropriate` introduced by a question is presented in the Q&A view,
-      // verified in its own test. `kLowQuota` triggers a warning verified in
-      // its own test.
-      continue;
-    }
-
     // Config the mock mahi manager to return answer with an `error` asyncly.
     base::test::TestFuture<void> answer_waiter;
     EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
@@ -998,7 +991,8 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
                                          std::move(callback));
             });
 
-    SubmitTestQuestion();
+    const std::u16string question(u"A question that brings errors");
+    SubmitTestQuestion(question);
 
     Mock::VerifyAndClearExpectations(&mock_mahi_manager());
 
@@ -1026,8 +1020,21 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
     CHECK(error_status_label);
     EXPECT_TRUE(error_status_label->GetText().empty());
 
-    // Wait until an answer is loaded with an error. Verify views' visibility.
+    // Wait until an answer is loaded with an error.
     ASSERT_TRUE(answer_waiter.Wait());
+
+    if (error == MahiResponseStatus::kInappropriate ||
+        error == MahiResponseStatus::kLowQuota) {
+      // `kInappropriate` introduced by a question is presented in the Q&A view,
+      // verified in its own test. `kLowQuota` triggers a warning not presented
+      // in the `error_status_view`.
+      EXPECT_FALSE(error_status_view->GetVisible());
+      EXPECT_TRUE(question_answer_view->GetVisible());
+      EXPECT_FALSE(summary_outlines_section->GetVisible());
+      CreatePanelWidget();
+      continue;
+    }
+
     EXPECT_FALSE(question_answer_view->GetVisible());
     EXPECT_FALSE(question_answer_view->GetViewByID(
         mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
@@ -1039,6 +1046,27 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
         error_status_label->GetText(),
         l10n_util::GetStringUTF16(mahi_utils::GetErrorStatusViewTextId(error)));
 
+    const auto* const retry_link =
+        panel_view()->GetViewByID(mahi_constants::kErrorStatusRetryLink);
+    ASSERT_TRUE(retry_link);
+    EXPECT_EQ(retry_link->GetVisible(),
+              mahi_utils::CalculateRetryLinkVisible(error));
+
+    if (retry_link->GetVisible()) {
+      // Click the `retry_link`. The mock mahi manager should be asked about the
+      // same question.
+      views::test::RunScheduledLayout(widget());
+      GetEventGenerator()->MoveMouseTo(
+          retry_link->GetBoundsInScreen().CenterPoint());
+      EXPECT_CALL(mock_mahi_manager(),
+                  AnswerQuestion(question, /*current_panel_content=*/true,
+                                 /*callback=*/_));
+      EXPECT_CALL(mock_mahi_manager(), GetOutlines).Times(0);
+      EXPECT_CALL(mock_mahi_manager(), GetSummary).Times(0);
+      GetEventGenerator()->ClickLeftButton();
+      Mock::VerifyAndClear(&mock_mahi_manager());
+    }
+
     CreatePanelWidget();
   }
 }
@@ -1047,11 +1075,6 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
 // iterating all possible errors.
 TEST_F(MahiPanelViewTest, FailToGetOutlines) {
   for (MahiResponseStatus error : GetMahiErrors()) {
-    if (error == MahiResponseStatus::kLowQuota) {
-      // `kLowQuota` triggers a warning verified in its own test.
-      continue;
-    }
-
     // Config the mock mahi manager to return outlines with an `error` asyncly.
     base::test::TestFuture<void> outlines_waiter;
     EXPECT_CALL(mock_mahi_manager(), GetOutlines)
@@ -1086,8 +1109,17 @@ TEST_F(MahiPanelViewTest, FailToGetOutlines) {
     CHECK(error_status_label);
     EXPECT_TRUE(error_status_label->GetText().empty());
 
-    // Wait until outlines are loaded with an error. Verify views' visibility.
+    // Wait until outlines are loaded with an error.
     ASSERT_TRUE(outlines_waiter.Wait());
+
+    if (error == MahiResponseStatus::kLowQuota) {
+      // `kLowQuota` triggers a warning not presented in `error_status_view`.
+      EXPECT_FALSE(error_status_view->GetVisible());
+      EXPECT_FALSE(question_answer_view->GetVisible());
+      EXPECT_TRUE(summary_outlines_section->GetVisible());
+      continue;
+    }
+
     EXPECT_FALSE(question_answer_view->GetVisible());
     EXPECT_FALSE(summary_outlines_section->GetVisible());
     EXPECT_TRUE(error_status_view->GetVisible());
@@ -1096,6 +1128,25 @@ TEST_F(MahiPanelViewTest, FailToGetOutlines) {
     EXPECT_EQ(
         error_status_label->GetText(),
         l10n_util::GetStringUTF16(mahi_utils::GetErrorStatusViewTextId(error)));
+
+    const auto* const retry_link =
+        panel_view()->GetViewByID(mahi_constants::kErrorStatusRetryLink);
+    ASSERT_TRUE(retry_link);
+    EXPECT_EQ(retry_link->GetVisible(),
+              mahi_utils::CalculateRetryLinkVisible(error));
+
+    if (retry_link->GetVisible()) {
+      // Click the `retry_link`. The mock mahi manager should be requested for a
+      // summary and outlines again.
+      views::test::RunScheduledLayout(widget());
+      GetEventGenerator()->MoveMouseTo(
+          retry_link->GetBoundsInScreen().CenterPoint());
+      EXPECT_CALL(mock_mahi_manager(), GetSummary);
+      EXPECT_CALL(mock_mahi_manager(), GetOutlines);
+      EXPECT_CALL(mock_mahi_manager(), AnswerQuestion).Times(0);
+      GetEventGenerator()->ClickLeftButton();
+      Mock::VerifyAndClear(&mock_mahi_manager());
+    }
   }
 }
 
@@ -1103,11 +1154,6 @@ TEST_F(MahiPanelViewTest, FailToGetOutlines) {
 // all possible errors.
 TEST_F(MahiPanelViewTest, FailToGetSummary) {
   for (MahiResponseStatus error : GetMahiErrors()) {
-    if (error == MahiResponseStatus::kLowQuota) {
-      // `kLowQuota` triggers a warning verified in its own test.
-      continue;
-    }
-
     // Config the mock mahi manager to return a summary with an `error` asyncly.
     base::test::TestFuture<void> summary_waiter;
     EXPECT_CALL(mock_mahi_manager(), GetSummary)
@@ -1142,8 +1188,17 @@ TEST_F(MahiPanelViewTest, FailToGetSummary) {
     CHECK(error_status_label);
     EXPECT_TRUE(error_status_label->GetText().empty());
 
-    // Wait until the summary is loaded with an error. Verify views' visibility.
+    // Wait until the summary is loaded with an error.
     ASSERT_TRUE(summary_waiter.Wait());
+
+    if (error == MahiResponseStatus::kLowQuota) {
+      // `kLowQuota` triggers a warning not presented in `error_status_view`.
+      EXPECT_FALSE(error_status_view->GetVisible());
+      EXPECT_FALSE(question_answer_view->GetVisible());
+      EXPECT_TRUE(summary_outlines_section->GetVisible());
+      continue;
+    }
+
     EXPECT_FALSE(question_answer_view->GetVisible());
     EXPECT_FALSE(summary_outlines_section->GetVisible());
     EXPECT_TRUE(error_status_view->GetVisible());
@@ -1152,6 +1207,25 @@ TEST_F(MahiPanelViewTest, FailToGetSummary) {
     EXPECT_EQ(
         error_status_label->GetText(),
         l10n_util::GetStringUTF16(mahi_utils::GetErrorStatusViewTextId(error)));
+
+    const auto* const retry_link =
+        panel_view()->GetViewByID(mahi_constants::kErrorStatusRetryLink);
+    ASSERT_TRUE(retry_link);
+    EXPECT_EQ(retry_link->GetVisible(),
+              mahi_utils::CalculateRetryLinkVisible(error));
+
+    if (retry_link->GetVisible()) {
+      // Click the `retry_link`. The mock mahi manager should be requested for a
+      // summary and outlines again.
+      views::test::RunScheduledLayout(widget());
+      GetEventGenerator()->MoveMouseTo(
+          retry_link->GetBoundsInScreen().CenterPoint());
+      EXPECT_CALL(mock_mahi_manager(), GetSummary);
+      EXPECT_CALL(mock_mahi_manager(), GetOutlines);
+      EXPECT_CALL(mock_mahi_manager(), AnswerQuestion).Times(0);
+      GetEventGenerator()->ClickLeftButton();
+      Mock::VerifyAndClear(&mock_mahi_manager());
+    }
   }
 }
 

@@ -205,7 +205,9 @@ DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::ErrorBubble)
 namespace ash {
 
 MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
-    : MahiUiController::Delegate(ui_controller) {
+    : MahiUiController::Delegate(ui_controller), ui_controller_(ui_controller) {
+  CHECK(ui_controller);
+
   SetOrientation(views::LayoutOrientation::kVertical);
   SetInteriorMargin(kQuestionAnswerInteriorMargin);
   SetIgnoreDefaultMainAxisMargins(true);
@@ -243,11 +245,13 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
     case MahiUiUpdateType::kContentsRefreshInitiated:
       RemoveAllChildViews();
       return;
-    case MahiUiUpdateType::kErrorReceived:
+    case MahiUiUpdateType::kErrorReceived: {
       RemoveLoadingAnimatedImage();
 
       // Creates `error_bubble_` if having an inappropriate question error.
-      if (update.GetError() == chromeos::MahiResponseStatus::kInappropriate) {
+      const MahiUiError& error = update.GetError();
+      if (error.origin_state == VisibilityState::kQuestionAndAnswer &&
+          error.status == chromeos::MahiResponseStatus::kInappropriate) {
         if (error_bubble_) {
           LOG(ERROR) << "Tried to add a new error bubble when there is an "
                         "existing one.";
@@ -265,6 +269,7 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
                 .Build());
       }
       return;
+    }
     case MahiUiUpdateType::kQuestionPosted: {
       AddChildView(CreateQuestionAnswerRow(update.GetQuestion(),
                                            /*is_question=*/true));
@@ -295,10 +300,19 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
 
       return;
     }
+    case MahiUiUpdateType::kQuestionReAsked: {
+      const MahiQuestionParams& question_params =
+          update.GetReAskQuestionParams();
+      ui_controller_->SendQuestion(question_params.question,
+                                   question_params.current_panel_content,
+                                   MahiUiController::QuestionSource::kRetry);
+      return;
+    }
     case MahiUiUpdateType::kOutlinesLoaded:
     case MahiUiUpdateType::kRefreshAvailabilityUpdated:
     case MahiUiUpdateType::kSummaryLoaded:
     case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
+    case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
       return;
   }
 }

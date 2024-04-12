@@ -47,6 +47,18 @@ class ASH_EXPORT MahiUiController {
     base::ScopedObservation<MahiUiController, Delegate> observation_{this};
   };
 
+  // Lists question sources.
+  enum class QuestionSource {
+    // From the Mahi menu view.
+    kMenuView,
+
+    // From the Mahi panel view.
+    kPanel,
+
+    // From the retry button.
+    kRetry,
+  };
+
   MahiUiController();
   MahiUiController(const MahiUiController&) = delete;
   MahiUiController& operator=(const MahiUiController&) = delete;
@@ -65,9 +77,20 @@ class ASH_EXPORT MahiUiController {
   // navigates to the summary view.
   void RefreshContents();
 
+  // Retries the operation associated with `origin_state`.
+  // If `origin_state` is `VisibilityState::kQuestionAndAnswer`, re-asks the
+  // question.
+  // If `origin_state` is `VisibilityState::kSummaryAndOutlines`, regenerates
+  // the summary & outlines.
+  // NOTE: `origin_state` should not be `VisibilityState::kError`.
+  void Retry(VisibilityState origin_state);
+
   // Sends `question` to the backend. `current_panel_content` determines if the
   // `question` is regarding the current content displayed on the panel.
-  void SendQuestion(const std::u16string& question, bool current_panel_content);
+  // `source` indicates where `question` is posted.
+  void SendQuestion(const std::u16string& question,
+                    bool current_panel_content,
+                    QuestionSource source);
 
   // Sends requests to the backend to update summary and outlines.
   // `delegates_` will be notified of the updated summary and outlines when
@@ -75,9 +98,7 @@ class ASH_EXPORT MahiUiController {
   void UpdateSummaryAndOutlines();
 
  private:
-  // Handles the error indicated by `status`. `status` cannot be
-  // `chromeos::MahiResponseStatus::kSuccess`.
-  void HandleErrorStatus(chromeos::MahiResponseStatus status);
+  void HandleError(const MahiUiError& error);
 
   // Notifies `delegates_` of `update`.
   void NotifyUiUpdate(const MahiUiUpdate& update);
@@ -101,6 +122,11 @@ class ASH_EXPORT MahiUiController {
   VisibilityState visibility_state_ = VisibilityState::kSummaryAndOutlines;
 
   base::ObserverList<Delegate> delegates_;
+
+  // Indicates the params of the most recent question.
+  // Set when the controller receives a request to send a question.
+  // Reset when the content is refreshed.
+  std::optional<MahiQuestionParams> most_recent_question_params_;
 
   base::WeakPtrFactory<MahiUiController> weak_ptr_factory_{this};
 };

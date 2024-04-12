@@ -7,9 +7,13 @@
 #include <memory>
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_ui_update.h"
 #include "ash/system/mahi/mahi_utils.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -23,6 +27,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 
@@ -56,7 +61,8 @@ class ErrorContentsView : public views::FlexLayoutView,
                           public MahiUiController::Delegate {
  public:
   explicit ErrorContentsView(MahiUiController* ui_controller)
-      : MahiUiController::Delegate(ui_controller) {
+      : MahiUiController::Delegate(ui_controller),
+        ui_controller_(ui_controller) {
     // TODO(http://b/319731862): Set the image when the image resource is ready.
     views::Builder<views::FlexLayoutView>(this)
         .SetBorder(views::CreateEmptyBorder(kContentsPaddings))
@@ -81,7 +87,14 @@ class ErrorContentsView : public views::FlexLayoutView,
                 .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
                 .SetID(mahi_constants::ViewId::kErrorStatusLabel)
                 .SetMultiLine(true)
-                .SetMaximumWidth(kLabelMaximumWidth))
+                .SetMaximumWidth(kLabelMaximumWidth),
+            views::Builder<views::Link>()
+                .CopyAddressTo(&retry_link_)
+                .SetForceUnderline(false)
+                .SetID(mahi_constants::ViewId::kErrorStatusRetryLink)
+                .SetText(l10n_util::GetStringUTF16(
+                    IDS_ASH_MAHI_RETRY_LINK_LABEL_TEXT))
+                .SetVisible(false))
         .BuildChildren();
   }
 
@@ -100,22 +113,40 @@ class ErrorContentsView : public views::FlexLayoutView,
 
   void OnUpdated(const MahiUiUpdate& update) override {
     switch (update.type()) {
-      case MahiUiUpdateType::kErrorReceived:
+      case MahiUiUpdateType::kErrorReceived: {
+        const MahiUiError& error = update.GetError();
         error_status_text_->SetText(l10n_util::GetStringUTF16(
-            mahi_utils::GetErrorStatusViewTextId(update.GetError())));
+            mahi_utils::GetErrorStatusViewTextId(error.status)));
+
+        retry_link_->SetVisible(
+            mahi_utils::CalculateRetryLinkVisible(error.status));
+        retry_link_->SetCallback(retry_link_->GetVisible()
+                                     ? base::BindRepeating(
+                                           [](MahiUiController* controller,
+                                              VisibilityState origin_state) {
+                                             controller->Retry(origin_state);
+                                           },
+                                           ui_controller_, error.origin_state)
+                                     : base::RepeatingClosure());
         return;
+      }
       case MahiUiUpdateType::kAnswerLoaded:
       case MahiUiUpdateType::kContentsRefreshInitiated:
       case MahiUiUpdateType::kOutlinesLoaded:
       case MahiUiUpdateType::kQuestionPosted:
+      case MahiUiUpdateType::kQuestionReAsked:
       case MahiUiUpdateType::kRefreshAvailabilityUpdated:
       case MahiUiUpdateType::kSummaryLoaded:
       case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
+      case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
         return;
     }
   }
 
+  const raw_ptr<MahiUiController> ui_controller_;
+
   raw_ptr<views::Label> error_status_text_ = nullptr;
+  raw_ptr<views::Link> retry_link_ = nullptr;
 };
 
 }  // namespace

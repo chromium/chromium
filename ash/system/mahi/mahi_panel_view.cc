@@ -691,9 +691,11 @@ void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
       return;
     case MahiUiUpdateType::kOutlinesLoaded:
     case MahiUiUpdateType::kQuestionPosted:
+    case MahiUiUpdateType::kQuestionReAsked:
     case MahiUiUpdateType::kRefreshAvailabilityUpdated:
     case MahiUiUpdateType::kSummaryLoaded:
     case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
+    case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
       return;
   }
 }
@@ -730,7 +732,8 @@ void MahiPanelView::OnSendButtonPressed() {
     send_button_->SetEnabled(false);
 
     ui_controller_->SendQuestion(std::u16string(trimmed_text),
-                                 /*current_panel_content=*/true);
+                                 /*current_panel_content=*/true,
+                                 MahiUiController::QuestionSource::kPanel);
     question_textfield_->SetText(std::u16string());
     base::UmaHistogramEnumeration(
         mahi_constants::kMahiButtonClickHistogramName,

@@ -4,7 +4,9 @@
 
 #include "ash/system/mahi/mahi_ui_controller.h"
 
+#include "ash/system/mahi/mahi_ui_update.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/views/view.h"
 
@@ -54,12 +56,39 @@ void MahiUiController::NotifyRefreshAvailabilityChanged(bool available) {
 }
 
 void MahiUiController::RefreshContents() {
+  most_recent_question_params_.reset();
   NavigateToSummaryOutlinesSection();
   NotifyUiUpdate(MahiUiUpdate(MahiUiUpdateType::kContentsRefreshInitiated));
 }
 
+void MahiUiController::Retry(VisibilityState origin_state) {
+  switch (origin_state) {
+    case VisibilityState::kQuestionAndAnswer:
+      if (most_recent_question_params_) {
+        SetVisibilityStateAndNotifyUiUpdate(
+            origin_state, MahiUiUpdate(MahiUiUpdateType::kQuestionReAsked,
+                                       *most_recent_question_params_));
+      } else {
+        LOG(ERROR) << "Tried to re-ask a non-existing question";
+      }
+      return;
+    case VisibilityState::kSummaryAndOutlines:
+      SetVisibilityStateAndNotifyUiUpdate(
+          origin_state,
+          MahiUiUpdate(MahiUiUpdateType::kSummaryAndOutlinesReloaded));
+      return;
+    case VisibilityState::kError:
+      NOTREACHED_NORETURN();
+  }
+}
+
 void MahiUiController::SendQuestion(const std::u16string& question,
-                                    bool current_panel_content) {
+                                    bool current_panel_content,
+                                    QuestionSource source) {
+  if (source != QuestionSource::kRetry) {
+    most_recent_question_params_.emplace(question, current_panel_content);
+  }
+
   // Display the Q&A section.
   SetVisibilityStateAndNotifyUiUpdate(
       VisibilityState::kQuestionAndAnswer,
@@ -78,10 +107,8 @@ void MahiUiController::UpdateSummaryAndOutlines() {
       &MahiUiController::OnOutlinesLoaded, weak_ptr_factory_.GetWeakPtr()));
 }
 
-void MahiUiController::HandleErrorStatus(chromeos::MahiResponseStatus status) {
-  CHECK(HasError(status));
-
-  if (status == chromeos::MahiResponseStatus::kLowQuota) {
+void MahiUiController::HandleError(const MahiUiError& error) {
+  if (error.status == chromeos::MahiResponseStatus::kLowQuota) {
     // TODO(http://b/319731862): Add the low quota warning toast.
     return;
   }
@@ -89,9 +116,9 @@ void MahiUiController::HandleErrorStatus(chromeos::MahiResponseStatus status) {
   // The presentation of the inappropriate error during
   // `State::kQuestionAndAnswer` should be embedded into the Q&A view instead
   // of a separate view.
-  const MahiUiUpdate update(MahiUiUpdateType::kErrorReceived, status);
-  if (status == chromeos::MahiResponseStatus::kInappropriate &&
-      visibility_state_ == VisibilityState::kQuestionAndAnswer) {
+  const MahiUiUpdate update(MahiUiUpdateType::kErrorReceived, error);
+  if (error.status == chromeos::MahiResponseStatus::kInappropriate &&
+      error.origin_state == VisibilityState::kQuestionAndAnswer) {
     NotifyUiUpdate(update);
     return;
   }
@@ -125,7 +152,8 @@ void MahiUiController::SetVisibilityStateAndNotifyUiUpdate(
 void MahiUiController::OnAnswerLoaded(std::optional<std::u16string> answer,
                                       chromeos::MahiResponseStatus status) {
   if (HasError(status)) {
-    HandleErrorStatus(status);
+    HandleError(MahiUiError(
+        status, /*origin_state=*/VisibilityState::kQuestionAndAnswer));
     return;
   }
 
@@ -144,7 +172,8 @@ void MahiUiController::OnOutlinesLoaded(
     std::vector<chromeos::MahiOutline> outlines,
     chromeos::MahiResponseStatus status) {
   if (HasError(status)) {
-    HandleErrorStatus(status);
+    HandleError(MahiUiError(
+        status, /*origin_state=*/VisibilityState::kSummaryAndOutlines));
     return;
   }
 
@@ -154,7 +183,8 @@ void MahiUiController::OnOutlinesLoaded(
 void MahiUiController::OnSummaryLoaded(std::u16string summary_text,
                                        chromeos::MahiResponseStatus status) {
   if (HasError(status)) {
-    HandleErrorStatus(status);
+    HandleError(MahiUiError(
+        status, /*origin_state=*/VisibilityState::kSummaryAndOutlines));
     return;
   }
 

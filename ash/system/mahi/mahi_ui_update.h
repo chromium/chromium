@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <optional>
+#include <string>
 #include <variant>
 #include <vector>
 
@@ -45,6 +46,9 @@ enum class MahiUiUpdateType {
   // A question is posted by user.
   kQuestionPosted,
 
+  // A question is re-asked by user.
+  kQuestionReAsked,
+
   // The content refresh availability changes.
   kRefreshAvailabilityUpdated,
 
@@ -53,18 +57,53 @@ enum class MahiUiUpdateType {
 
   // A summary is loaded with a success.
   kSummaryLoaded,
+
+  // The summary and outlines are requested to reload.
+  kSummaryAndOutlinesReloaded,
+};
+
+// Contains the params required to send a question to the Mahi backend.
+struct MahiQuestionParams {
+  MahiQuestionParams(const std::u16string& question,
+                     bool current_panel_content);
+  MahiQuestionParams(const MahiQuestionParams&) = delete;
+  MahiQuestionParams& operator=(const MahiQuestionParams&) = delete;
+  ~MahiQuestionParams();
+
+  const std::u16string question;
+
+  // Determines if the `question` is regarding the current content displayed on
+  // the panel.
+  const bool current_panel_content;
+};
+
+// Describes a Mahi UI error, including its origin and status.
+struct MahiUiError {
+  MahiUiError(chromeos::MahiResponseStatus status,
+              VisibilityState origin_state);
+  MahiUiError(const MahiUiError&) = delete;
+  MahiUiError& operator=(const MahiUiError&) = delete;
+  ~MahiUiError();
+
+  // The error status. NOTE: `status` should not be
+  // `chromeos::MahiResponseStatus::kSuccess`.
+  const chromeos::MahiResponseStatus status;
+
+  // Indicates the `VisibilityState` where `status` comes from.
+  const VisibilityState origin_state;
 };
 
 // Indicates a change that triggers a visible update on the Mahi UI.
 class MahiUiUpdate {
  public:
   explicit MahiUiUpdate(MahiUiUpdateType type);
-  MahiUiUpdate(MahiUiUpdateType type, chromeos::MahiResponseStatus payload);
   MahiUiUpdate(MahiUiUpdateType type, bool payload);
 
   // NOTE: `MahiUiUpdate` caches the const reference to `payload`, not a copy.
   // The class user has the duty to ensure the original `payload` object
   // outlives the `MahiUiUpdate` instance.
+  MahiUiUpdate(MahiUiUpdateType type, const MahiUiError& payload);
+  MahiUiUpdate(MahiUiUpdateType type, const MahiQuestionParams& payload);
   MahiUiUpdate(MahiUiUpdateType type, const std::u16string& payload);
   MahiUiUpdate(MahiUiUpdateType type,
                const std::vector<chromeos::MahiOutline>& payload);
@@ -79,7 +118,7 @@ class MahiUiUpdate {
 
   // Returns the error from `payload`.
   // NOTE: This function should be called only if `type` is `kErrorReceived`.
-  chromeos::MahiResponseStatus GetError() const;
+  const MahiUiError& GetError() const;
 
   // Returns the outlines from `payload`.
   // NOTE: This function should be called only if `type` is `kOutlinesLoaded`.
@@ -88,6 +127,10 @@ class MahiUiUpdate {
   // Returns the question from `payload`.
   // NOTE: This function should be called only if `type` is `kQuestionPosted`.
   const std::u16string& GetQuestion() const;
+
+  // Returns the params required to re-ask a question.
+  // NOTE: This function should be called only if `type` is `kQuestionReAsked`.
+  const MahiQuestionParams& GetReAskQuestionParams() const;
 
   // Returns the refresh availability from `payload`.
   // NOTE: This function should be called only if `type` is
@@ -112,12 +155,15 @@ class MahiUiUpdate {
   // For `kErrorReceived`, `payload` is an error;
   // For `kOutlinesLoaded`, `payload` is an array of outlines;
   // For `kQuestionPosted`, `payload` is a question;
+  // For `kQuestionReAsked`, `payload` is a question params struct;
   // For `kRefreshAvailabilityUpdated`, `payload` is a boolean;
   // For `kSummaryAndOutlinesSectionNavigated`, `payload` is `std::nullopt`;
-  // For `kSummaryLoaded`, `payload` is a summary.
+  // For `kSummaryLoaded`, `payload` is a summary;
+  // For `kSummaryAndOutlinesReloaded`, `payload` is `std::nullopt`.
   using PayloadType = std::variant<
       std::reference_wrapper<const std::u16string>,
-      chromeos::MahiResponseStatus,
+      std::reference_wrapper<const MahiQuestionParams>,
+      std::reference_wrapper<const MahiUiError>,
       std::reference_wrapper<const std::vector<chromeos::MahiOutline>>,
       bool>;
   const std::optional<PayloadType> payload_;

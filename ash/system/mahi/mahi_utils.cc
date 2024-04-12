@@ -10,6 +10,22 @@
 
 namespace ash::mahi_utils {
 
+bool CalculateRetryLinkVisible(chromeos::MahiResponseStatus error) {
+  switch (error) {
+    case chromeos::MahiResponseStatus::kCantFindOutputData:
+    case chromeos::MahiResponseStatus::kContentExtractionError:
+    case chromeos::MahiResponseStatus::kInappropriate:
+    case chromeos::MahiResponseStatus::kUnknownError:
+      return true;
+    case chromeos::MahiResponseStatus::kQuotaLimitHit:
+    case chromeos::MahiResponseStatus::kResourceExhausted:
+      return false;
+    case chromeos::MahiResponseStatus::kLowQuota:
+    case chromeos::MahiResponseStatus::kSuccess:
+      NOTREACHED_NORETURN();
+  }
+}
+
 int GetErrorStatusViewTextId(chromeos::MahiResponseStatus error) {
   switch (error) {
     case chromeos::MahiResponseStatus::kCantFindOutputData:

@@ -13,6 +13,11 @@ enum class MahiResponseStatus;
 
 namespace ash::mahi_utils {
 
+// Returns the retry link's target visible for `error`.
+// NOTE: This function should be called only if the `error` should be presented
+// on `MahiErrorStatusView`.
+ASH_EXPORT bool CalculateRetryLinkVisible(chromeos::MahiResponseStatus error);
+
 // Returns the text ID of the `error` description on `MahiErrorStatusView`.
 // NOTE: This function should be called only if the `error` should be presented
 // on `MahiErrorStatusView`.

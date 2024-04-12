@@ -41,6 +41,8 @@ class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView,
 
   void RemoveLoadingAnimatedImage();
 
+  const raw_ptr<MahiUiController> ui_controller_;
+
   // Tracks the bubble that presents the error introduced by the most recent
   // question. The bubble is created when the error occurs and is destroyed when
   // the user asks a new question.

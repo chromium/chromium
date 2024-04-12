@@ -5219,6 +5219,9 @@ No devices connected.
       <message name="IDS_ASH_MAHI_ERROR_STATUS_LABEL_RESOURCE_EXHAUSTED" translateable="false" desc="Text indicates that the service resource has been exhausted">
         Can't use right now. Try again later.
       </message>
+      <message name="IDS_ASH_MAHI_RETRY_LINK_LABEL_TEXT" desc="Text for the link that user can retry their previous Mahi request">
+        Try again
+      </message>
 
       <!-- Multi-profiles intro dialog -->
       <message name="IDS_ASH_MULTIPROFILES_INTRO_HEADLINE" desc="Describes which feature multi-profiles intro dialog presents.">

@@ -43,6 +43,7 @@ enum ViewId {
   kRefreshButton,
   kErrorStatusView,
   kErrorStatusLabel,
+  kErrorStatusRetryLink,
   kQuestionAnswerErrorImage,
   kQuestionAnswerErrorLabel,
 };

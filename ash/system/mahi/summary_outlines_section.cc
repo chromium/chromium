@@ -9,6 +9,7 @@
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_animation_utils.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_ui_update.h"
 #include "ash/system/mahi/resources/grit/mahi_resources.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -149,6 +150,7 @@ bool SummaryOutlinesSection::GetViewVisibility(VisibilityState state) const {
 void SummaryOutlinesSection::OnUpdated(const MahiUiUpdate& update) {
   switch (update.type()) {
     case MahiUiUpdateType::kContentsRefreshInitiated:
+    case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
       LoadSummaryAndOutlines();
       return;
     case MahiUiUpdateType::kOutlinesLoaded:
@@ -160,6 +162,7 @@ void SummaryOutlinesSection::OnUpdated(const MahiUiUpdate& update) {
     case MahiUiUpdateType::kAnswerLoaded:
     case MahiUiUpdateType::kErrorReceived:
     case MahiUiUpdateType::kQuestionPosted:
+    case MahiUiUpdateType::kQuestionReAsked:
     case MahiUiUpdateType::kRefreshAvailabilityUpdated:
     case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
       return;

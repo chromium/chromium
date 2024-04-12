@@ -226,8 +226,10 @@ void RefreshBannerView::OnUpdated(const MahiUiUpdate& update) {
     case MahiUiUpdateType::kAnswerLoaded:
     case MahiUiUpdateType::kOutlinesLoaded:
     case MahiUiUpdateType::kQuestionPosted:
+    case MahiUiUpdateType::kQuestionReAsked:
     case MahiUiUpdateType::kSummaryLoaded:
     case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
+    case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
       return;
   }
 }

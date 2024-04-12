@@ -4,10 +4,30 @@
 
 #include "ash/system/mahi/mahi_ui_update.h"
 
+#include <variant>
+
 #include "base/check_op.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 
 namespace ash {
+
+// MahiQuestionParams ----------------------------------------------------------
+
+MahiQuestionParams::MahiQuestionParams(const std::u16string& question,
+                                       bool current_panel_content)
+    : question(question), current_panel_content(current_panel_content) {}
+
+MahiQuestionParams::~MahiQuestionParams() = default;
+
+// MahiUiError -----------------------------------------------------------------
+
+MahiUiError::MahiUiError(chromeos::MahiResponseStatus status,
+                         VisibilityState origin_state)
+    : status(status), origin_state(origin_state) {
+  CHECK_NE(status, chromeos::MahiResponseStatus::kSuccess);
+}
+
+MahiUiError::~MahiUiError() = default;
 
 // MahiUiUpdate ----------------------------------------------------------------
 
@@ -16,13 +36,18 @@ MahiUiUpdate::MahiUiUpdate(MahiUiUpdateType type)
   CheckTypeMatchesPayload();
 }
 
-MahiUiUpdate::MahiUiUpdate(MahiUiUpdateType type,
-                           chromeos::MahiResponseStatus payload)
+MahiUiUpdate::MahiUiUpdate(MahiUiUpdateType type, bool payload)
     : type_(type), payload_(payload) {
   CheckTypeMatchesPayload();
 }
 
-MahiUiUpdate::MahiUiUpdate(MahiUiUpdateType type, bool payload)
+MahiUiUpdate::MahiUiUpdate(MahiUiUpdateType type, const MahiUiError& payload)
+    : type_(type), payload_(payload) {
+  CheckTypeMatchesPayload();
+}
+
+MahiUiUpdate::MahiUiUpdate(MahiUiUpdateType type,
+                           const MahiQuestionParams& payload)
     : type_(type), payload_(payload) {
   CheckTypeMatchesPayload();
 }
@@ -45,9 +70,9 @@ const std::u16string& MahiUiUpdate::GetAnswer() const {
   return std::get<std::reference_wrapper<const std::u16string>>(*payload_);
 }
 
-chromeos::MahiResponseStatus MahiUiUpdate::GetError() const {
+const MahiUiError& MahiUiUpdate::GetError() const {
   CHECK_EQ(type_, MahiUiUpdateType::kErrorReceived);
-  return std::get<chromeos::MahiResponseStatus>(*payload_);
+  return std::get<std::reference_wrapper<const MahiUiError>>(*payload_);
 }
 
 const std::vector<chromeos::MahiOutline>& MahiUiUpdate::GetOutlines() const {
@@ -60,6 +85,11 @@ const std::vector<chromeos::MahiOutline>& MahiUiUpdate::GetOutlines() const {
 const std::u16string& MahiUiUpdate::GetQuestion() const {
   CHECK_EQ(type_, MahiUiUpdateType::kQuestionPosted);
   return std::get<std::reference_wrapper<const std::u16string>>(*payload_);
+}
+
+const MahiQuestionParams& MahiUiUpdate::GetReAskQuestionParams() const {
+  CHECK_EQ(type_, MahiUiUpdateType::kQuestionReAsked);
+  return std::get<std::reference_wrapper<const MahiQuestionParams>>(*payload_);
 }
 
 bool MahiUiUpdate::GetRefreshAvailability() const {
@@ -85,9 +115,8 @@ void MahiUiUpdate::CheckTypeMatchesPayload() {
       break;
     case MahiUiUpdateType::kErrorReceived:
       CHECK(payload_.has_value());
-      CHECK(std::holds_alternative<chromeos::MahiResponseStatus>(*payload_));
-      CHECK_NE(std::get<chromeos::MahiResponseStatus>(*payload_),
-               chromeos::MahiResponseStatus::kSuccess);
+      CHECK(std::holds_alternative<std::reference_wrapper<const MahiUiError>>(
+          *payload_));
       break;
     case MahiUiUpdateType::kOutlinesLoaded:
       CHECK(payload_.has_value());
@@ -101,6 +130,11 @@ void MahiUiUpdate::CheckTypeMatchesPayload() {
           std::holds_alternative<std::reference_wrapper<const std::u16string>>(
               *payload_));
       break;
+    case MahiUiUpdateType::kQuestionReAsked:
+      CHECK(payload_.has_value());
+      CHECK(std::holds_alternative<
+            std::reference_wrapper<const MahiQuestionParams>>(*payload_));
+      break;
     case MahiUiUpdateType::kRefreshAvailabilityUpdated:
       CHECK(payload_.has_value());
       CHECK(std::holds_alternative<bool>(*payload_));
@@ -113,6 +147,9 @@ void MahiUiUpdate::CheckTypeMatchesPayload() {
       CHECK(
           std::holds_alternative<std::reference_wrapper<const std::u16string>>(
               *payload_));
+      break;
+    case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
+      CHECK(!payload_.has_value());
       break;
   }
 }

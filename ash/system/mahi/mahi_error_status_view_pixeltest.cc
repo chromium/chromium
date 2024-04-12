@@ -70,7 +70,7 @@ TEST_F(MahiErrorStatusViewPixelTest, Basics) {
           mahi_constants::ViewId::kErrorStatusView);
   ASSERT_TRUE(error_status_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "basics", /*revision_number=*/2, error_status_view));
+      "basics", /*revision_number=*/3, error_status_view));
 }
 
 }  // namespace ash
