@@ -93,6 +93,7 @@
                 "customizationId": {"type": "string", "optional": true, "description": "Customization ID"},
                 "homeProvider" : {"type": "string", "optional": true, "description": "Home provider which is used by the cellular device"},
                 "hwid": {"type": "string", "optional": true, "description": "Hardware ID"},
+                "deviceRequisition": {"type": "string", "optional": true, "description": "OEM Device Requisition set in VPD"},
                 "isMeetDevice": {"type": "boolean", "optional": true, "description": "True if Chrome is built with is_cfm build flag"},
                 "initialLocale" : {"type": "string", "optional": true, "description": "Initial locale for the device"},
                 "isOwner" : {"type": "boolean", "optional": true, "description": "True if current logged in user is device owner"},

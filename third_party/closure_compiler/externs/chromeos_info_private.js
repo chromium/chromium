@@ -102,6 +102,7 @@ chrome.chromeosInfoPrivate.AssistantStatus = {
  *   customizationId: (string|undefined),
  *   homeProvider: (string|undefined),
  *   hwid: (string|undefined),
+ *   deviceRequisition: (string|undefined),
  *   isMeetDevice: (boolean|undefined),
  *   initialLocale: (string|undefined),
  *   isOwner: (boolean|undefined),

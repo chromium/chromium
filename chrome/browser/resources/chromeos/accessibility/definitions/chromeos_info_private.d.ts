@@ -75,6 +75,7 @@ declare namespace chrome {
       customizationId?: string,
       homeProvider?: string,
       hwid?: string,
+      deviceRequisition?: string,
       isMeetDevice?: boolean,
       initialLocale?: string,
       isOwner?: boolean,
