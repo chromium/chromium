@@ -40,11 +40,9 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
     case PickerCategory::kTitleCase:
       return kPickerTitleCaseIcon;
     case PickerCategory::kCapsOn:
-      // TODO: b/322926823 - Use correct icons.
-      return kSystemTrayCapsLockIcon;
+      return kPickerCapsLockOnIcon;
     case PickerCategory::kCapsOff:
-      // TODO: b/322926823 - Use correct icons.
-      return kSystemTrayCapsLockIcon;
+      return kPickerCapsLockOffIcon;
   }
 }
 
