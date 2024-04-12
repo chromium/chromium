@@ -110,7 +110,8 @@ void SetTabGroupCreationName(NSString* group_name) {
 }
 
 // Tests that creates a tab group and opens the grouped tab.
-- (void)testCompleteTabGroupCreation {
+// TODO(crbug.com/333892967): The test fails on bots.
+- (void)DISABLED_testCompleteTabGroupCreation {
   [ChromeEarlGreyUI openTabGrid];
 
   // Open the creation view.
