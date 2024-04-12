@@ -647,6 +647,11 @@ class PermissionUmaUtil {
       OsScreen screen,
       OsScreenAction action);
 
+  static void RecordElementAnchoredBubbleVariantUMA(
+      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+          requests,
+      ElementAnchoredBubbleVariant variant);
+
   // Record UMAs related to the Android "Missing permissions" infobar.
   static void RecordMissingPermissionInfobarShouldShow(
       bool should_show,

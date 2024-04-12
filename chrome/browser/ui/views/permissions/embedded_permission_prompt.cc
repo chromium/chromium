@@ -191,11 +191,17 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     case Variant::kAsk:
       prompt_view = new EmbeddedPermissionPromptAskView(
           browser(), weak_factory_.GetWeakPtr());
+      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
+          delegate()->Requests(),
+          permissions::ElementAnchoredBubbleVariant::ASK);
       break;
     case Variant::kPreviouslyGranted:
       if (first_prompt) {
         prompt_view = new EmbeddedPermissionPromptPreviouslyGrantedView(
             browser(), weak_factory_.GetWeakPtr());
+        permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
+            delegate()->Requests(),
+            permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED);
       } else {
         delegate()->FinalizeCurrentRequests();
         return;
@@ -204,10 +210,16 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     case Variant::kPreviouslyDenied:
       prompt_view = new EmbeddedPermissionPromptPreviouslyDeniedView(
           browser(), weak_factory_.GetWeakPtr());
+      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
+          delegate()->Requests(),
+          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_DENIED);
       break;
     case Variant::kOsPrompt:
       prompt_view = new EmbeddedPermissionPromptShowSystemPromptView(
           browser(), weak_factory_.GetWeakPtr());
+      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
+          delegate()->Requests(),
+          permissions::ElementAnchoredBubbleVariant::OS_PROMPT);
 // This view has no buttons, so the OS level prompt should be triggered at the
 // same time as the |EmbeddedPermissionPromptShowSystemPromptView|.
 #if BUILDFLAG(IS_MAC)
@@ -217,16 +229,25 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     case Variant::kOsSystemSettings:
       prompt_view = new EmbeddedPermissionPromptSystemSettingsView(
           browser(), weak_factory_.GetWeakPtr());
+      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
+          delegate()->Requests(),
+          permissions::ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS);
       break;
     case Variant::kAdministratorGranted:
       prompt_view = new EmbeddedPermissionPromptPolicyView(
           browser(), weak_factory_.GetWeakPtr(),
           /*is_permission_allowed=*/true);
+      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
+          delegate()->Requests(),
+          permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_GRANTED);
       break;
     case Variant::kAdministratorDenied:
       prompt_view = new EmbeddedPermissionPromptPolicyView(
           browser(), weak_factory_.GetWeakPtr(),
           /*is_permission_allowed=*/false);
+      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
+          delegate()->Requests(),
+          permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED);
       break;
     case Variant::kUninitialized:
       NOTREACHED();

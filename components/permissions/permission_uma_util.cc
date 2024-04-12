@@ -1811,6 +1811,23 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
       action);
 }
 
+void PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    ElementAnchoredBubbleVariant variant) {
+  CHECK(!requests.empty());
+
+  RequestTypeForUma type =
+      GetUmaValueForRequestType(requests[0]->request_type());
+  if (requests.size() > 1) {
+    type = RequestTypeForUma::MULTIPLE;
+  }
+
+  base::UmaHistogramEnumeration("Permissions.Prompt." +
+                                    GetPermissionRequestString(type) +
+                                    ".ElementAnchoredBubble.Variant",
+                                variant);
+}
+
 // static
 void PermissionUmaUtil::RecordCrossOriginFrameActionAndPolicyConfiguration(
     ContentSettingsType content_settings_type,

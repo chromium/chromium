@@ -902,6 +902,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.Variant"
+    enum="ElementAnchoredBubbleVariant" expires_after="2025-06-30">
+  <owner>hkamila@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records which screen was shown to the user as part of an
+    ElementAnchoredBubble permission prompt. Multiple screens can be shown
+    sequentially as part of the same prompt. Is recorded when the screen is
+    shown.
+  </summary>
+  <token key="PermissionType">
+    <variant name="AR"/>
+    <variant name="AudioAndVideoCapture"/>
+    <variant name="AudioCapture"/>
+    <variant name="Geolocation"/>
+    <variant name="VideoCapture"/>
+  </token>
+</histogram>
+
+<histogram
     name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.{OsScreen}.OsScreenAction"
     enum="OsScreenAction" expires_after="2025-02-16">
   <owner>hkamila@chromium.org</owner>
