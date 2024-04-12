@@ -1193,12 +1193,6 @@
       name: "DeclarativeShadowDOMSerializable",
       status: "stable",
     },
-    {
-      // This is a killswitch (enabled by *enabling* the feature) for the
-      // removal of the IDL reflection of the old 'shadowroot' attribute.
-      // This should be removed in M124 (Feb 20, 2024) assuming no issues.
-      name: "DeprecatedTemplateShadowRoot",
-    },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.

@@ -1151,17 +1151,6 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "template-shadowroot-enabled",
-    "owners": ["masonf@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/shadow-dom/declarative",
-      "shadow-dom/template-shadowroot-reflection.html"
-    ],
-    "args": ["--enable-blink-features=DeprecatedTemplateShadowRoot"],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "gethtml-disabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux"],

@@ -35,15 +35,6 @@
 ] interface HTMLTemplateElement : HTMLElement {
     readonly attribute DocumentFragment content;
 
-    // This is the deprecated and removed IDL for `shadowRoot`, which was used
-    // by the old declarative shadow DOM proposal. Note that it was only used
-    // for feature detection - this override of `shadowRoot` returns the same
-    // thing as HTMLElement's `shadowRoot` attribute. For safety, it is here,
-    // guarded by a runtime flag, in case of compat problems.
-    // TODO(crbug.com/1396384) Eventually remove this.
-    [ImplementedAs=OpenShadowRoot, RuntimeEnabled=DeprecatedTemplateShadowRoot]
-    readonly attribute ShadowRoot? shadowRoot;
-
     // These are the declarative Shadow DOM IDL attributes, which reflect the
     // equivalent content attributes. Note that these are just the reflections
     // of HTMLTemplateElement's attribute, which isn't a common use case: in
