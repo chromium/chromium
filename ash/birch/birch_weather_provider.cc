@@ -94,10 +94,13 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
 }
 
 void BirchWeatherProvider::FetchWeather() {
+  const bool prefer_prod_endpoint = base::GetFieldTrialParamByFeatureAsBool(
+      features::kBirchWeather, "prod_weather_endpoint", false);
   Shell::Get()
       ->ambient_controller()
       ->ambient_backend_controller()
       ->FetchWeather("chromeos-system-ui",
+                     /*prefer_alpha_endpoint=*/!prefer_prod_endpoint,
                      base::BindOnce(&BirchWeatherProvider::OnWeatherInfoFetched,
                                     weak_factory_.GetWeakPtr()));
 }

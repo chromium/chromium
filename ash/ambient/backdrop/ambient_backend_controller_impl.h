@@ -42,6 +42,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
       int num_albums,
       OnSettingsAndAlbumsFetchedCallback callback) override;
   void FetchWeather(std::optional<std::string> weather_client_id,
+                    bool prefer_alpha_endpoint,
                     FetchWeatherCallback callback) override;
   const std::array<const char*, 2>& GetBackupPhotoUrls() const override;
   std::array<const char*, 2> GetTimeOfDayVideoPreviewImageUrls(

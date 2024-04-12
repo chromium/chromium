@@ -446,6 +446,7 @@ void AmbientBackendControllerImpl::FetchPersonalAlbums(
 
 void AmbientBackendControllerImpl::FetchWeather(
     std::optional<std::string> weather_client_id,
+    bool prefer_alpha_endpoint,
     FetchWeatherCallback callback) {
   auto response_handler =
       [](FetchWeatherCallback callback,
@@ -477,7 +478,8 @@ void AmbientBackendControllerImpl::FetchWeather(
   DCHECK(user->HasGaiaAccount());
   BackdropClientConfig::Request request =
       backdrop_client_config_.CreateFetchWeatherInfoRequest(
-          user->GetAccountId().GetGaiaId(), GetClientId(), weather_client_id);
+          user->GetAccountId().GetGaiaId(), GetClientId(), weather_client_id,
+          prefer_alpha_endpoint);
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateResourceRequest(request);
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
