@@ -772,7 +772,11 @@ void FederatedAuthRequestImpl::RequestToken(
       fedcm_metrics_->RecordRequestTokenStatus(
           TokenStatus::kTooManyRequests, requirement, idp_order_,
           /*num_idps_mismatch=*/0,
-          /*selected_idp_config_url=*/std::nullopt);
+          /*selected_idp_config_url=*/std::nullopt,
+          (IsFedCmButtonModeEnabled() &&
+           idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kButton)
+              ? RpMode::kButton
+              : RpMode::kWidget);
 
       AddDevToolsIssue(
           blink::mojom::FederatedAuthRequestResult::kErrorTooManyRequests);
@@ -2535,7 +2539,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
         [](auto& provider) { return provider.has_login_status_mismatch; });
     fedcm_metrics_->RecordRequestTokenStatus(
         *token_status, mediation_requirement_, idp_order_, num_idps_mismatch,
-        selected_idp_config_url);
+        selected_idp_config_url, rp_mode_);
   }
 
   if (!errors_logged_to_console_ &&

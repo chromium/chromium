@@ -267,7 +267,8 @@ void FedCmMetrics::RecordRequestTokenStatus(
     MediationRequirement requirement,
     const std::vector<GURL>& requested_providers,
     int num_idps_mismatch,
-    const std::optional<GURL>& selected_idp_config_url) {
+    const std::optional<GURL>& selected_idp_config_url,
+    const RpMode& rp_mode) {
   // If the request has failed but we have not yet rejected the promise,
   // e.g. when the user has declined the permission or the API is disabled
   // etc., we have already recorded a RequestTokenStatus. i.e.
@@ -290,6 +291,7 @@ void FedCmMetrics::RecordRequestTokenStatus(
     ukm_builder.SetStatus_MediationRequirement(static_cast<int>(requirement));
     ukm_builder.SetNumIdpsRequested(num_idps_requested);
     ukm_builder.SetNumIdpsMismatch(num_idps_mismatch);
+    ukm_builder.SetRpMode(static_cast<int>(rp_mode));
     ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };

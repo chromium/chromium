@@ -2891,6 +2891,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ExpectNoUKMPresence("Timing.CancelOnDialog");
   ExpectUKMPresence("Timing.AccountsDialogShownDuration");
   ExpectNoUKMPresence("Timing.MismatchDialogShownDuration");
+  ExpectUkmValue("RpMode", static_cast<int>(RpMode::kWidget));
 
   ExpectStatusMetrics(TokenStatus::kSuccess);
   CheckAllFedCmSessionIDs();
@@ -6857,6 +6858,10 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowNotAffectEmbargo) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
 
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
@@ -6872,6 +6877,10 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowNotAffectEmbargo) {
   configuration.accounts_dialog_action = AccountsDialogAction::kClose;
 
   RunAuthTest(parameters, expectations, configuration);
+
+  ukm_loop.Run();
+  ExpectUkmValue("RpMode", static_cast<int>(RpMode::kButton));
+
   EXPECT_TRUE(did_show_accounts_dialog());
   EXPECT_FALSE(DidFetch(FetchedEndpoint::TOKEN));
   EXPECT_FALSE(test_api_permission_delegate_->embargoed_origins_.count(

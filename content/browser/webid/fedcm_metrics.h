@@ -20,6 +20,7 @@ class TimeDelta;
 namespace content {
 
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
+using RpMode = blink::mojom::RpMode;
 
 // This enum describes the status of a request id token call to the FedCM API.
 enum class FedCmRequestIdTokenStatus {
@@ -279,7 +280,8 @@ class CONTENT_EXPORT FedCmMetrics {
       MediationRequirement requirement,
       const std::vector<GURL>& requested_providers,
       int num_idps_mismatch,
-      const std::optional<GURL>& selected_idp_config_url);
+      const std::optional<GURL>& selected_idp_config_url,
+      const RpMode& rp_mode);
 
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(const GURL& provider,

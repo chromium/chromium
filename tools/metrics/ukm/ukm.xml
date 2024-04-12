@@ -4517,6 +4517,13 @@ be describing additional metrics about the same event.
       where the site of the iframe is compared with the site of the main frame.
     </summary>
   </metric>
+  <metric name="RpMode" enum="FedCmRpMode">
+    <summary>
+      Records the RP mode of the FedCM API. Recorded once per API call together
+      with Status.RequestIdToken when the request is fulfilled (either resolved
+      or rejected).
+    </summary>
+  </metric>
   <metric name="Status.Disconnect" enum="FedCmDisconnectStatus">
     <summary>
       Records the status of a disconnect call to the FedCM API. Recorded once
@@ -4534,7 +4541,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">
     <summary>
-      Records the status of a request id token call to the FedCM API.
+      Records the status of a request id token call to the FedCM API. Recorded
+      once per API call when the request is fulfilled (either resolved or
+      rejected).
     </summary>
   </metric>
   <metric name="Status.Revoke" enum="FedCmRevokeStatus">
@@ -4723,6 +4732,13 @@ be describing additional metrics about the same event.
       some integer greater than or equal to 1. Uses exponential count bucketing.
     </summary>
   </metric>
+  <metric name="RpMode" enum="FedCmRpMode">
+    <summary>
+      Records the RP mode of the FedCM API. Recorded once per API call together
+      with Status.RequestIdToken when the request is fulfilled (either resolved
+      or rejected).
+    </summary>
+  </metric>
   <metric name="Status.Disconnect" enum="FedCmDisconnectStatus">
     <summary>
       Records the status of a disconnect call to the FedCM API. Recorded once
@@ -4740,7 +4756,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">
     <summary>
-      Records the status of a request id token call to the FedCM API.
+      Records the status of a request id token call to the FedCM API. Recorded
+      once per API call when the request is fulfilled (either resolved or
+      rejected).
     </summary>
   </metric>
   <metric name="Status.SignInStateMatch" enum="FedCmSignInStateMatchStatus">

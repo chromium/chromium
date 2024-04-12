@@ -11800,6 +11800,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="17" label="ThirdPartyCookiesBlocked"/>
 </enum>
 
+<enum name="FedCmRpMode">
+  <int value="0" label="Widget"/>
+  <int value="1" label="Button"/>
+</enum>
+
 <enum name="FedCmSignInStateMatchStatus">
   <int value="0" label="Success"/>
   <int value="1" label="IdpClaimedSignIn"/>
