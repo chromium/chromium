@@ -3605,7 +3605,6 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
   TreeUpdateCallbackQueue old_tree_update_callback_queue;
   GetTreeUpdateCallbackQueue(document).swap(old_tree_update_callback_queue);
   nodes_with_pending_children_changed_.clear();
-  nodes_with_pending_location_changed_.clear();
   last_value_change_node_ = ui::AXNodeData::kInvalidAXID;
 
   for (TreeUpdateParams* tree_update : old_tree_update_callback_queue) {
@@ -4021,31 +4020,6 @@ void AXObjectCacheImpl::SetMenuListOptionsBounds(
   }
 
   ax_object->SetOptionsBounds(options_bounds);
-}
-
-// This is called when the actual style of an object changed, which can occur in
-// script-based animations as opposed to more automated animations, e.g. via CSS
-// or SVG animation.
-void AXObjectCacheImpl::LocationChanged(const LayoutObject* layout_object) {
-  // No need to send this notification if the object is aria-hidden.
-  // Note that if the node is ignored for other reasons, it still might
-  // be important to send this notification if any of its children are
-  // visible - but in the case of aria-hidden we can safely ignore it.
-  // Use CachedIsAriaHidden() instead of IsAriaHidden() because layout is not
-  // clean here, and it's better to do the optimization up front. This is okay
-  // because if the cached aria-hidden becomes stale, then the entire subtree
-  // will be invalidated anyway.
-  AXObject* obj = Get(layout_object);
-  if (obj) {
-    if (obj->CachedIsAriaHidden())
-      return;
-    if (!nodes_with_pending_location_changed_.insert(obj->AXObjectID())
-             .is_new_entry) {
-      return;
-    }
-  }
-
-  PostNotification(layout_object, ax::mojom::Event::kLocationChanged);
 }
 
 void AXObjectCacheImpl::ImageLoaded(const LayoutObject* layout_object) {

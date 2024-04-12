@@ -2950,11 +2950,6 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
         cache->StyleChanged(this);
     }
 
-    if (diff.TransformChanged()) {
-      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
-        cache->LocationChanged(this);
-    }
-
     if (style_->ContentVisibility() != new_style.ContentVisibility()) {
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
         if (GetNode()) {

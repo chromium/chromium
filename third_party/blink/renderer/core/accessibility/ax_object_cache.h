@@ -99,7 +99,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void ListboxActiveIndexChanged(HTMLSelectElement*) = 0;
   virtual void SetMenuListOptionsBounds(HTMLSelectElement*,
                                         const WTF::Vector<gfx::Rect>&) = 0;
-  virtual void LocationChanged(const LayoutObject*) = 0;
   virtual void ImageLoaded(const LayoutObject*) = 0;
 
   // Removes AXObject backed by passed-in object, if there is one.
