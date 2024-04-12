@@ -723,6 +723,7 @@ src/webgpu/shader/validation/expression/overload_resolution.spec.ts
 src/webgpu/shader/validation/expression/precedence.spec.ts
 src/webgpu/shader/validation/expression/access/vector.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/const_override_validation.ts
+src/webgpu/shader/validation/expression/binary/result_type.ts
 src/webgpu/shader/validation/expression/binary/add_sub_mul.spec.ts
 src/webgpu/shader/validation/expression/binary/and_or_xor.spec.ts
 src/webgpu/shader/validation/expression/binary/bitwise_shift.spec.ts
