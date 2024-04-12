@@ -360,6 +360,10 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
   RemoveNonHeaderChildViews();
 
+  ConfigureBrandImageView(brand_icon_,
+                          idp_display_data_list[0].idp_metadata.brand_icon_url,
+                          kModalIdpIconSize,
+                          /*should_circle_crop=*/false);
   account_chooser_ =
       AddChildView(CreateMultipleAccountChooser(idp_display_data_list));
 
@@ -463,6 +467,10 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
     bool show_back_button) {
   RemoveNonHeaderChildViews();
 
+  ConfigureBrandImageView(brand_icon_,
+                          idp_display_data.idp_metadata.brand_icon_url,
+                          kModalIdpIconSize,
+                          /*should_circle_crop=*/false);
   account_chooser_ =
       AddChildView(CreateSingleAccountChooser(idp_display_data, account,
                                               /*should_hover=*/true,
@@ -519,6 +527,10 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
     const IdentityProviderDisplayData& idp_display_data) {
   RemoveNonHeaderChildViews();
 
+  ConfigureBrandImageView(brand_icon_,
+                          idp_display_data.idp_metadata.brand_icon_url,
+                          kModalIdpIconSize,
+                          /*should_circle_crop=*/false);
   account_chooser_ =
       AddChildView(CreateSingleAccountChooser(idp_display_data, account,
                                               /*should_hover=*/false,
@@ -554,6 +566,7 @@ AccountSelectionModalView::CreateBrandIconImageView(
           base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                          weak_ptr_factory_.GetWeakPtr()),
           kModalIdpIconSize, /*should_circle_crop=*/false);
+  brand_icon_ = brand_icon_image_view.get();
   brand_icon_image_view->SetImageSize(
       gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
   if (brand_icon_url.is_valid()) {
