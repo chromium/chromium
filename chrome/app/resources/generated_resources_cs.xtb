@@ -1575,7 +1575,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2163470535490402084">Chcete-li se přihlásit do zařízení <ph name="DEVICE_TYPE" />, připojte se k internetu.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a 1 další přepínač</translation>
 <translation id="2165102982098084499">Tato zařízení jste propojili naskenováním QR kódu.</translation>
-<translation id="2165177462441582039">Vyberte, jak dlouho mají jednotlivé položky zůstat zvýrazněny</translation>
+<translation id="2165177462441582039">Zvolte, jak dlouho mají jednotlivé položky zůstat zvýrazněny</translation>
 <translation id="2166369534954157698">Příliš žluťoučký kůň úpěl ďábelské ódy</translation>
 <translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Toto zařízení (sériové číslo: <ph name="SERIAL_NUMBER" />) bylo uzamčeno.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Správa zařízení Chrome pomocí služby <ph name="MS_AD_NAME" /> již není podporována. Pokud se chcete přihlásit, použijte jiné zařízení nebo kontaktujte administrátora zařízení.<ph name="END_PARAGRAPH2" /></translation>

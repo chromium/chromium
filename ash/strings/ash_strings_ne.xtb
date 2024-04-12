@@ -854,7 +854,7 @@
 <translation id="4451374464530248585">Alt + डाउन एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। Page Down की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + डाउन एरो की थिच्नुहोस्।</translation>
 <translation id="4453876312474547652">Ctrl + V थिचिराख्दा क्लिपबोर्ड देखाइन्छ। तपाईं chrome://flags मा गई (वा Lacros प्रयोग गर्दै हुनुहुन्छ भने os://flags मा गई) #clipboard-history-longpress फ्ल्याग अफ गरेर यो सर्टकट अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="445864333228800152">नमस्ते,</translation>
-<translation id="4458688154122353284">स्क्रिन रेकर्ड गर्ने कार्य रोक्नुहोस्</translation>
+<translation id="4458688154122353284">स्क्रिन रेकर्ड गर्न छोड्नुहोस्</translation>
 <translation id="445923051607553918">Wi-Fi सञ्जालमा संयोग गर्नुहोस्</translation>
 <translation id="4471354919263203780">वाक् पहिचान गर्न प्रयोग गरिने फाइलहरू डाउनलोड गरिँदै... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{अहिले नै डिभाइस रिस्टार्ट गर्नुहोस्}=1{१ सेकेन्डभित्र डिभाइस रिस्टार्ट गर्नुहोस्}other{# सेकेन्डभित्र डिभाइस रिस्टार्ट गर्नुहोस्}}</translation>
@@ -1048,7 +1048,7 @@
 <translation id="5208059991603368177">अन छ</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> सम्म अफ रहने छ</translation>
 <translation id="5217646019792206018">अर्को डेस्क: <ph name="NEXT_DESK_NAME" />, एक्टिभेट गर्न Search+Space वा किबोर्डमा Shift+Search+<ph name="NEXT_DESK_INDEX" /> थिच्नुहोस्।</translation>
-<translation id="5218064144558110424">पूरा नभएको कार्यका रूपमा चिन्ह लगाइयोस्</translation>
+<translation id="5218064144558110424">पूरा नभएको कार्यका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5229343007215035173">प्राइभेसी स्क्रिन अन/अफ गर्नुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
@@ -1253,7 +1253,7 @@
 <translation id="6002122790816966947">तपाईंका डिभाइसहरू</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> मध्ये <ph name="SELECTED_PAGE" /> पृष्ठ</translation>
 <translation id="601304062528754300">सेल्फमा भएको अर्को वस्तु हाइलाइट गर्नुहोस्</translation>
-<translation id="6015573907265691211">पूरा भएको कार्यका रूपमा चिन्ह लगाइयोस्</translation>
+<translation id="6015573907265691211">पूरा भएको कार्यका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="6018164090099858612">मिरर मोडबाट बाहिर निस्कँदै</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">बायाँतिर स्क्रोल गर्नुहोस्</translation>
