@@ -34,8 +34,8 @@ namespace {
 
 constexpr std::string_view kCountryAllowlist[] = {
     "au", "be", "ca", "ch", "cz", "de", "dk", "es", "fi",
-    "fr", "gb", "ie", "in", "it", "jp", "kr", "lu", "mx",
-    "no", "nz", "nl", "pl", "pt", "se", "us", "za",
+    "fr", "gb", "ie", "in", "it", "jp", "lu", "mx", "no",
+    "nz", "nl", "pl", "pt", "se", "us", "za",
 };
 
 constexpr ui::TextInputType kTextInputTypeAllowlist[] = {
