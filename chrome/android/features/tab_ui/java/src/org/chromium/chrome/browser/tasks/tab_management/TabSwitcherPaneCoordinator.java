@@ -29,6 +29,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.data_sharing.DataSharingInvitationDialogCoordinator;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -62,6 +63,7 @@ import java.util.List;
 public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private static final String COMPONENT_NAME = "GridTabSwitcher";
 
+    private final Activity mActivity;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Callback<Boolean> mOnVisibilityChanged = this::onVisibilityChanged;
     private final ObservableSupplier<Boolean> mIsVisibleSupplier;
@@ -74,9 +76,12 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final LazyOneshotSupplier<DialogController> mDialogControllerSupplier;
     private final TabListEditorManager mTabListEditorManager;
     private final TabSwitcherMessageManager mMessageManager;
+    private final ModalDialogManager mModalDialogManager;
 
     /** Lazily initialized when shown. */
     private @Nullable TabGridDialogCoordinator mTabGridDialogCoordinator;
+
+    private @Nullable DataSharingInvitationDialogCoordinator mDataSharingDialogCoordinator;
 
     /**
      * @param activity The {@link Activity} that hosts the pane.
@@ -126,6 +131,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
             mProfileProviderSupplier = profileProviderSupplier;
             mIsVisibleSupplier = isVisibleSupplier;
+            mActivity = activity;
+            mModalDialogManager = modalDialogManager;
             isVisibleSupplier.addObserver(mOnVisibilityChanged);
             assert mode != TabListMode.STRIP : "TabListMode.STRIP not supported.";
 
@@ -477,5 +484,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     public void openInvitationModal(String invitationId) {
         if (mTabGridDialogCoordinator == null) return;
         mTabGridDialogCoordinator.hideDialog(true);
+
+        if (mDataSharingDialogCoordinator == null) {
+            mDataSharingDialogCoordinator =
+                    new DataSharingInvitationDialogCoordinator(mActivity, mModalDialogManager);
+        }
+        mDataSharingDialogCoordinator.show();
     }
 }

@@ -6091,6 +6091,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_DATA_SHARING_ORIGIN_FALLBACK" desc="The fallback inviter name of the data sharing service notification.">
         Someone
       </message>
+      <message name="IDS_DATA_SHARING_INVITATION_DIALOG_TITLE" desc="The title of the dialog shown when a user has received a tab group invitation.">
+        Open Tab Group?
+      </message>
+      <message name="IDS_DATA_SHARING_INVITATION_DIALOG_BLOCK" desc="The negative button text of the dialog shown when a user has received a tab group invitation.">
+        Block
+      </message>
+      <message name="IDS_DATA_SHARING_INVITATION_DIALOG_NOT_NOW" desc="The snooze button text of the dialog shown when a user has received a tab group invitation.">
+        Not now
+      </message>
+      <message name="IDS_DATA_SHARING_INVITATION_DIALOG_ACCEPT" desc="The positive button text of the dialog shown when a user has received a tab group invitation.">
+        Accept
+      </message>
 
       <!-- Interstitial shown prior to making digital identity request to wallet -->
       <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_DIALOG_TITLE" translateable="false">

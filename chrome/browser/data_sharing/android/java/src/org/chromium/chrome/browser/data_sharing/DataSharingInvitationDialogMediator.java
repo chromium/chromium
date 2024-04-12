@@ -44,7 +44,8 @@ class DataSharingInvitationDialogMediator
     void show(PropertyModel model) {
         mModel = model;
         mDialogManager.addObserver(this);
-        mDialogManager.showDialog(model, ModalDialogManager.ModalDialogType.TAB);
+        mDialogManager.showDialog(
+                model, ModalDialogManager.ModalDialogType.APP, /* showAsNext= */ true);
     }
 
     /** Dismisses the currently visible dialog. */

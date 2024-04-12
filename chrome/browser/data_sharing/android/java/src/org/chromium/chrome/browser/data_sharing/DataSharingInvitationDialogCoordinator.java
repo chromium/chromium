@@ -19,29 +19,19 @@ import org.chromium.ui.modelutil.PropertyModel;
  * communication to the {@link DataSharingInvitationDialogMediator}.
  */
 public class DataSharingInvitationDialogCoordinator {
+    private final Context mContext;
     private final DataSharingInvitationDialogMediator mMediator;
     private final LinearLayout mButtonsView;
 
     /**
-     * Creates the {@link DataSharingInvitationDialogCoordinator}.
-     *
-     * @param modalDialogManager The ModalDialogManager which is going to display the dialog.
-     * @param context The context for accessing resources.
-     */
-    public static DataSharingInvitationDialogCoordinator create(
-            Context context, ModalDialogManager modalDialogManager) {
-        return new DataSharingInvitationDialogCoordinator(context, modalDialogManager);
-    }
-
-    /**
-     * Internal constructor for {@link DataSharingInvitationDialogCoordinator}.
+     * Constructor for {@link DataSharingInvitationDialogCoordinator}.
      *
      * @param context The context for accessing resources.
      * @param modalDialogMediator The DataSharingInvitationDialogMediator to control the dialog.
-     * @param dialogView The custom view with dialog content.
      */
-    private DataSharingInvitationDialogCoordinator(
+    public DataSharingInvitationDialogCoordinator(
             Context context, @NonNull ModalDialogManager modalDialogManager) {
+        mContext = context;
         mMediator = new DataSharingInvitationDialogMediator(modalDialogManager);
         mButtonsView =
                 (LinearLayout)
@@ -54,6 +44,11 @@ public class DataSharingInvitationDialogCoordinator {
         PropertyModel dialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mMediator)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                mContext.getResources(),
+                                R.string.data_sharing_invitation_dialog_title)
                         .with(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, mButtonsView)
                         .build();
         mMediator.show(dialogModel);

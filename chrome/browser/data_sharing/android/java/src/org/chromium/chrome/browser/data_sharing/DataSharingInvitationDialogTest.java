@@ -64,7 +64,7 @@ public class DataSharingInvitationDialogTest {
         DataSharingInvitationDialogCoordinator coordinator =
                 runOnUiThreadBlockingNoException(
                         () ->
-                                DataSharingInvitationDialogCoordinator.create(
+                                new DataSharingInvitationDialogCoordinator(
                                         sActivity, sActivity.getModalDialogManager()));
 
         verify(mObserver, times(0)).onDialogAdded(any());
