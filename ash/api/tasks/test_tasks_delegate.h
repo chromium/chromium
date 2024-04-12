@@ -7,8 +7,12 @@
 
 #include "ash/api/tasks/tasks_delegate.h"
 #include "ash/ash_export.h"
+#include "base/containers/flat_map.h"
+#include "components/account_id/account_id.h"
 
 namespace ash::api {
+
+class FakeTasksClient;
 
 class ASH_EXPORT TestTasksDelegate : public TasksDelegate {
  public:
@@ -32,6 +36,20 @@ class ASH_EXPORT TestTasksDelegate : public TasksDelegate {
                   const std::string& title,
                   bool completed,
                   TasksClient::OnTaskSavedCallback callback) override;
+
+  // Helper function for adding pre-build `FakeTasksClient` objects.
+  void AddFakeTasksClient(const AccountId& account_id,
+                          std::unique_ptr<FakeTasksClient> tasks_client);
+
+  // Switches the active account for the delegate.
+  void SetActiveAccount(const AccountId& account_id);
+
+ private:
+  // The client for the active account.
+  raw_ptr<FakeTasksClient> active_client_ = nullptr;
+
+  // Maps account IDs to clients.
+  base::flat_map<AccountId, std::unique_ptr<FakeTasksClient>> clients_;
 };
 
 }  // namespace ash::api
