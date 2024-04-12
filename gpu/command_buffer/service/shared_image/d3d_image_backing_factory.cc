@@ -306,6 +306,22 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     bool is_thread_safe) {
+  return CreateSharedImage(mailbox, format, size, color_space, surface_origin,
+                           alpha_type, usage, std::move(debug_label),
+                           is_thread_safe, base::span<const uint8_t>());
+}
+
+std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    std::string debug_label,
+    bool is_thread_safe,
+    base::span<const uint8_t> pixel_data) {
   DCHECK(!is_thread_safe);
 
   // Without D3D11, we cannot do shared images. This will happen if we're
@@ -380,8 +396,25 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
   }
 
+  D3D11_SUBRESOURCE_DATA initial_data = {};
+  if (!pixel_data.empty()) {
+    if (format != viz::SinglePlaneFormat::kRGBA_8888) {
+      LOG(ERROR) << "Unsupported format: " << format.ToString();
+      return nullptr;
+    }
+    if (pixel_data.size_bytes() < format.EstimatedSizeInBytes(size)) {
+      LOG(ERROR) << "Not enough pixel data";
+      return nullptr;
+    }
+
+    initial_data.pSysMem = pixel_data.data();
+    initial_data.SysMemPitch = format.BitsPerPixel() * size.width() / 8;
+    initial_data.SysMemSlicePitch = 0;
+  }
+
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-  HRESULT hr = d3d11_device_->CreateTexture2D(&desc, nullptr, &d3d11_texture);
+  HRESULT hr = d3d11_device_->CreateTexture2D(
+      &desc, initial_data.pSysMem ? &initial_data : nullptr, &d3d11_texture);
   if (FAILED(hr)) {
     LOG(ERROR) << "CreateTexture2D failed with error " << std::hex << hr;
     return nullptr;
@@ -391,58 +424,41 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   d3d11_texture->SetPrivateData(WKPDID_D3DDebugObjectName, debug_label.length(),
                                 debug_label.c_str());
 
-  if (!(desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE)) {
-    // Early return before creating D3D shared handle resources.
-    return D3DImageBacking::Create(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        std::move(debug_label), std::move(d3d11_texture),
-        /*dxgi_shared_handle_state=*/nullptr, gl_format_caps_, texture_target,
-        /*array_slice=*/0u,
-        /*plane_index=*/0u);
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state;
+  if (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE) {
+    Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+    hr = d3d11_texture.As(&dxgi_resource);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
+                 << std::hex << hr;
+      return nullptr;
+    }
+
+    HANDLE shared_handle;
+    hr = dxgi_resource->CreateSharedHandle(
+        nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
+        nullptr, &shared_handle);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Unable to create shared handle for DXGIResource "
+                 << std::hex << hr;
+      return nullptr;
+    }
+
+    dxgi_shared_handle_state =
+        dxgi_shared_handle_manager_->CreateAnonymousSharedHandleState(
+            base::win::ScopedHandle(shared_handle), d3d11_texture);
   }
 
-  Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
-  hr = d3d11_texture.As(&dxgi_resource);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
-               << std::hex << hr;
-    return nullptr;
-  }
-
-  HANDLE shared_handle;
-  hr = dxgi_resource->CreateSharedHandle(
-      nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE, nullptr,
-      &shared_handle);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Unable to create shared handle for DXGIResource " << std::hex
-               << hr;
-    return nullptr;
-  }
-
-  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
-      dxgi_shared_handle_manager_->CreateAnonymousSharedHandleState(
-          base::win::ScopedHandle(shared_handle), d3d11_texture);
-
-  return D3DImageBacking::Create(
+  auto backing = D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
       std::move(dxgi_shared_handle_state), gl_format_caps_, texture_target,
       /*array_slice=*/0u, /*plane_index=*/0u);
-}
+  if (backing && !pixel_data.empty()) {
+    backing->SetCleared();
+  }
 
-std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    std::string debug_label,
-    bool is_thread_safe,
-    base::span<const uint8_t> pixel_data) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return backing;
 }
 
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
@@ -536,7 +552,7 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
                                          gfx::GpuMemoryBufferType gmb_type,
                                          GrContextType gr_context_type,
                                          base::span<const uint8_t> pixel_data) {
-  if (!pixel_data.empty()) {
+  if (!pixel_data.empty() && format != viz::SinglePlaneFormat::kRGBA_8888) {
     return false;
   }
 

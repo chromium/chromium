@@ -1146,6 +1146,26 @@ TEST_F(D3DImageBackingFactoryTest, SkiaAccessFirstFails) {
   EXPECT_EQ(scoped_read_access, nullptr);
 }
 
+TEST_F(D3DImageBackingFactoryTest, CreateFromPixelData) {
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size size(1, 1);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ;
+  const std::vector<uint8_t> pixel_data = {0x01, 0x02, 0x03, 0x04};
+  auto backing = shared_image_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, usage, "TestLabel",
+      /*is_thread_safe=*/false, base::span<const uint8_t>(pixel_data));
+  ASSERT_NE(backing, nullptr);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing),
+                                     memory_type_tracker_.get());
+
+  CheckSkiaPixels(mailbox, size, pixel_data);
+}
+
 void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
     DXGI_FORMAT dxgi_format) {
   auto mailbox = Mailbox::GenerateForSharedImage();
