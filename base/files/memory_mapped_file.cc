@@ -123,7 +123,7 @@ bool MemoryMappedFile::Initialize(File file,
 }
 
 bool MemoryMappedFile::IsValid() const {
-  return data_ != nullptr;
+  return !bytes_.empty();
 }
 
 // static
@@ -137,7 +137,7 @@ void MemoryMappedFile::CalculateVMAlignedBoundaries(int64_t start,
   CHECK(IsValueInRangeForNumericType<int32_t>(mask));
   *offset = static_cast<int32_t>(static_cast<uint64_t>(start) & mask);
   *aligned_start = static_cast<int64_t>(static_cast<uint64_t>(start) & ~mask);
-  // The DCHECK above means bit 31 is not set in `mask`, which in turn means
+  // The CHECK above means bit 31 is not set in `mask`, which in turn means
   // *offset is positive.  Therefore casting it to a size_t is safe.
   *aligned_size =
       (size + static_cast<size_t>(*offset) + static_cast<size_t>(mask)) & ~mask;

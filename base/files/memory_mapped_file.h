@@ -110,13 +110,12 @@ class BASE_EXPORT MemoryMappedFile {
     return Initialize(std::move(file), region, READ_ONLY);
   }
 
-  const uint8_t* data() const { return data_; }
-  uint8_t* data() { return data_; }
-  size_t length() const { return length_; }
+  const uint8_t* data() const { return bytes_.data(); }
+  uint8_t* data() { return bytes_.data(); }
+  size_t length() const { return bytes_.size(); }
 
-  span<const uint8_t> bytes() const { return make_span(data_, length_); }
-
-  span<uint8_t> mutable_bytes() const { return make_span(data_, length_); }
+  span<const uint8_t> bytes() const { return bytes_; }
+  span<uint8_t> mutable_bytes() { return bytes_; }
 
   // Is file_ a valid file handle that points to an open, memory mapped file?
   bool IsValid() const;
@@ -135,13 +134,14 @@ class BASE_EXPORT MemoryMappedFile {
                                            int32_t* offset);
 
 #if BUILDFLAG(IS_WIN)
-  // Maps the executable file to memory, set |data_| to that memory address.
+  // Maps the executable file to memory, point `bytes_` to the memory range.
   // Return true on success.
   bool MapImageToMemory(Access access);
 #endif
 
-  // Map the file to memory, set data_ to that memory address. Return true on
-  // success, false on any kind of failure. This is a helper for Initialize().
+  // Map the file to memory, point `bytes_` to that memory address. Return true
+  // on success, false on any kind of failure. This is a helper for
+  // Initialize().
   bool MapFileRegionToMemory(const Region& region, Access access);
 
   // Closes all open handles.
@@ -150,9 +150,8 @@ class BASE_EXPORT MemoryMappedFile {
   File file_;
 
   // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always mmap'ed), so
-  // there is no benefit to using a raw_ptr, only cost.
-  RAW_PTR_EXCLUSION uint8_t* data_ = nullptr;
-  size_t length_ = 0;
+  // there is no benefit to using a raw_span, only cost.
+  RAW_PTR_EXCLUSION span<uint8_t> bytes_;
 
 #if BUILDFLAG(IS_WIN)
   win::ScopedHandle file_mapping_;
