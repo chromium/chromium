@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "components/account_id/account_id.h"
@@ -94,6 +95,9 @@ void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
   UserContext user_context = LoginManagerMixin::CreateDefaultUserContext(user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
   if (user_.user_type == user_manager::UserType::kChild) {
+    // TODO(b/333450354): Determine why this is necessary and fix.
+    SetDelayNetworkCallsForTesting(true);
+
     fake_gaia_.SetupFakeGaiaForChildUser(
         user_.account_id.GetUserEmail(), user_.account_id.GetGaiaId(),
         FakeGaiaMixin::kFakeRefreshToken, issue_any_scope_token);
