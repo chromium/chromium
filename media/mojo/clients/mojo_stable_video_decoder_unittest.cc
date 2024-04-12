@@ -8,6 +8,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/decoder.h"
 #include "media/base/media_util.h"
 #include "media/base/supported_video_decoder_config.h"
@@ -17,6 +18,7 @@
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -25,6 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_fence.h"
 
 using testing::_;
 using testing::InSequence;
@@ -176,6 +179,78 @@ class MockStableVideoDecoderService : public stable::mojom::StableVideoDecoder {
   std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader_;
 };
 
+class MockSharedImageInterface : public gpu::SharedImageInterface {
+ public:
+  // gpu::SharedImageInterface implementation.
+  MOCK_METHOD2(
+      CreateSharedImage,
+      scoped_refptr<gpu::ClientSharedImage>(const gpu::SharedImageInfo& si_info,
+                                            gpu::SurfaceHandle surface_handle));
+  MOCK_METHOD2(CreateSharedImage,
+               scoped_refptr<gpu::ClientSharedImage>(
+                   const gpu::SharedImageInfo& si_info,
+                   base::span<const uint8_t> pixel_data));
+  MOCK_METHOD4(CreateSharedImage,
+               scoped_refptr<gpu::ClientSharedImage>(
+                   const gpu::SharedImageInfo& si_info,
+                   gpu::SurfaceHandle surface_handle,
+                   gfx::BufferUsage buffer_usage,
+                   gfx::GpuMemoryBufferHandle buffer_handle));
+  MOCK_METHOD2(CreateSharedImage,
+               scoped_refptr<gpu::ClientSharedImage>(
+                   const gpu::SharedImageInfo& si_info,
+                   gfx::GpuMemoryBufferHandle buffer_handle));
+  MOCK_METHOD1(CreateSharedImage,
+               SharedImageMapping(const gpu::SharedImageInfo& si_info));
+  MOCK_METHOD4(CreateSharedImage,
+               scoped_refptr<gpu::ClientSharedImage>(
+                   gfx::GpuMemoryBuffer* gpu_memory_buffer,
+                   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+                   gfx::BufferPlane plane,
+                   const gpu::SharedImageInfo& si_info));
+  MOCK_METHOD2(UpdateSharedImage,
+               void(const gpu::SyncToken& sync_token,
+                    const gpu::Mailbox& mailbox));
+  MOCK_METHOD3(UpdateSharedImage,
+               void(const gpu::SyncToken& sync_token,
+                    std::unique_ptr<gfx::GpuFence> acquire_fence,
+                    const gpu::Mailbox& mailbox));
+  MOCK_METHOD2(DestroySharedImage,
+               void(const gpu::SyncToken& sync_token,
+                    const gpu::Mailbox& mailbox));
+  MOCK_METHOD2(DestroySharedImage,
+               void(const gpu::SyncToken& sync_token,
+                    scoped_refptr<gpu::ClientSharedImage> client_shared_image));
+  MOCK_METHOD1(ImportSharedImage,
+               scoped_refptr<gpu::ClientSharedImage>(
+                   const gpu::ExportedSharedImage& exported_shared_image));
+  MOCK_METHOD6(CreateSwapChain,
+               SwapChainSharedImages(viz::SharedImageFormat format,
+                                     const gfx::Size& size,
+                                     const gfx::ColorSpace& color_space,
+                                     GrSurfaceOrigin surface_origin,
+                                     SkAlphaType alpha_type,
+                                     uint32_t usage));
+  MOCK_METHOD2(PresentSwapChain,
+               void(const gpu::SyncToken& sync_token,
+                    const gpu::Mailbox& mailbox));
+  MOCK_METHOD0(GenUnverifiedSyncToken, gpu::SyncToken());
+  MOCK_METHOD0(GenVerifiedSyncToken, gpu::SyncToken());
+  MOCK_METHOD1(VerifySyncToken, void(gpu::SyncToken& sync_token));
+  MOCK_METHOD1(WaitSyncToken, void(const gpu::SyncToken& sync_token));
+  MOCK_METHOD0(Flush, void());
+  MOCK_METHOD1(GetNativePixmap,
+               scoped_refptr<gfx::NativePixmap>(const gpu::Mailbox& mailbox));
+  MOCK_METHOD0(GetCapabilities, const gpu::SharedImageCapabilities&());
+
+  scoped_refptr<gpu::SharedImageInterfaceHolder> holder() const {
+    return holder_;
+  }
+
+ protected:
+  ~MockSharedImageInterface() override = default;
+};
+
 // TestEndpoints groups a few members that result from creating and initializing
 // a MojoStableVideoDecoder so that tests can use them to set expectations
 // and/or to poke at them to trigger specific paths.
@@ -188,14 +263,18 @@ class TestEndpoints {
   // destroyed on that task runner.
   explicit TestEndpoints(
       scoped_refptr<base::SequencedTaskRunner> media_task_runner)
-      : client_media_log_(std::make_unique<NullMediaLog>()),
+      : sii_(base::MakeRefCounted<StrictMock<MockSharedImageInterface>>()),
+        gpu_factories_(
+            std::make_unique<StrictMock<MockGpuVideoAcceleratorFactories>>(
+                sii_.get())),
+        client_media_log_(std::make_unique<NullMediaLog>()),
         media_task_runner_(std::move(media_task_runner)) {
     mojo::PendingRemote<stable::mojom::StableVideoDecoder>
         mojo_stable_vd_pending_remote;
     service_ = std::make_unique<StrictMock<MockStableVideoDecoderService>>(
         mojo_stable_vd_pending_remote.InitWithNewPipeAndPassReceiver());
     client_ = std::make_unique<MojoStableVideoDecoder>(
-        media_task_runner_, client_media_log_.get(),
+        media_task_runner_, gpu_factories_.get(), client_media_log_.get(),
         std::move(mojo_stable_vd_pending_remote));
   }
 
@@ -203,12 +282,22 @@ class TestEndpoints {
     // The |client_| must be destroyed on the |media_task_runner_|, but the
     // TestEndpoints instance can be destroyed on the main test thread.
     // Therefore, we must post a task to destroy the |client_|. However,
-    // *|client_| has a raw pointer to *|client_media_log_|. In order to prevent
-    // that pointer from becoming dangling while waiting for the destroy task to
-    // run, we also post a task to the |media_task_runner_| to destroy the
-    // |client_media_log_|.
+    // *|client_| has raw pointers to *|client_media_log_| and
+    // *|gpu_factories_|. In order to prevent those pointers from becoming
+    // dangling while waiting for the destroy task to run, we also post a task
+    // to the |media_task_runner_| to destroy the |client_media_log_| and the
+    // |gpu_factories_|. The *|gpu_factories_| has a raw pointer to *|sii_|, so
+    // for the same reason, we post a task to the |media_task_runner_| to ensure
+    // *|sii_| outlives *|gpu_factories_|.
     media_task_runner_->DeleteSoon(FROM_HERE, std::move(client_));
     media_task_runner_->DeleteSoon(FROM_HERE, std::move(client_media_log_));
+    media_task_runner_->DeleteSoon(FROM_HERE, std::move(gpu_factories_));
+    media_task_runner_->PostTask(FROM_HERE,
+                                 base::DoNothingWithBoundArgs(std::move(sii_)));
+  }
+
+  StrictMock<MockSharedImageInterface>* shared_image_interface() const {
+    return sii_.get();
   }
 
   MojoStableVideoDecoder* client() const { return client_.get(); }
@@ -232,6 +321,8 @@ class TestEndpoints {
   }
 
  private:
+  scoped_refptr<StrictMock<MockSharedImageInterface>> sii_;
+  std::unique_ptr<StrictMock<MockGpuVideoAcceleratorFactories>> gpu_factories_;
   std::unique_ptr<NullMediaLog> client_media_log_;
   StrictMock<base::MockRepeatingCallback<void(scoped_refptr<VideoFrame>)>>
       client_output_cb_;

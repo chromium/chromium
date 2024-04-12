@@ -89,7 +89,8 @@ void MojoDecoderFactory::CreateVideoDecoders(
           stable_video_decoder_remote.InitWithNewPipeAndPassReceiver());
 
       video_decoders->push_back(std::make_unique<MojoStableVideoDecoder>(
-          task_runner, media_log, std::move(stable_video_decoder_remote)));
+          task_runner, gpu_factories, media_log,
+          std::move(stable_video_decoder_remote)));
       break;
     }
     case OOPVDMode::kEnabledWithGpuProcessAsProxy:

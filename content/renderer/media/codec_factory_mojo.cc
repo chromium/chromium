@@ -59,7 +59,7 @@ std::unique_ptr<media::VideoDecoder> CodecFactoryMojo::CreateVideoDecoder(
       interface_factory_->CreateStableVideoDecoder(
           stable_video_decoder_remote.InitWithNewPipeAndPassReceiver());
       return std::make_unique<media::MojoStableVideoDecoder>(
-          media_task_runner_, media_log,
+          media_task_runner_, gpu_factories, media_log,
           std::move(stable_video_decoder_remote));
     }
     case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:

@@ -12,10 +12,12 @@ namespace media {
 
 MojoStableVideoDecoder::MojoStableVideoDecoder(
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+    GpuVideoAcceleratorFactories* gpu_factories,
     MediaLog* media_log,
     mojo::PendingRemote<stable::mojom::StableVideoDecoder>
         pending_remote_decoder)
     : media_task_runner_(std::move(media_task_runner)),
+      gpu_factories_(gpu_factories),
       media_log_(media_log),
       pending_remote_decoder_(std::move(pending_remote_decoder)),
       weak_this_factory_(this) {
@@ -42,6 +44,13 @@ void MojoStableVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                         const OutputCB& output_cb,
                                         const WaitingCB& waiting_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/327268445): consider not constructing a MojoStableVideoDecoder to
+  // begin with if there isn't a non-null GpuVideoAcceleratorFactories*
+  // available (and then this if can be turned into a CHECK()).
+  if (!gpu_factories_) {
+    std::move(init_cb).Run(DecoderStatus::Codes::kInvalidArgument);
+    return;
+  }
   OOPVideoDecoder::NotifySupportKnown(
       std::move(pending_remote_decoder_),
       base::BindOnce(

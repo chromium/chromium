@@ -17,6 +17,7 @@
 namespace media {
 
 class FrameResource;
+class GpuVideoAcceleratorFactories;
 class MediaLog;
 class OOPVideoDecoder;
 
@@ -33,6 +34,7 @@ class MojoStableVideoDecoder final : public VideoDecoder {
  public:
   MojoStableVideoDecoder(
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+      GpuVideoAcceleratorFactories* gpu_factories,
       MediaLog* media_log,
       mojo::PendingRemote<stable::mojom::StableVideoDecoder>
           pending_remote_decoder);
@@ -90,6 +92,9 @@ class MojoStableVideoDecoder final : public VideoDecoder {
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
+
+  const raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // We hold onto the MediaLog* and the mojo::PendingRemote passed to the
   // constructor so that we can lazily create the |oop_video_decoder_|. After
