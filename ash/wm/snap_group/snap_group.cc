@@ -13,6 +13,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
@@ -60,6 +61,11 @@ SnapGroup::~SnapGroup() {
 
   // `SplitViewDivider::MaybeRemoveObservedWindow()` will close the divider.
   StopObservingWindows();
+}
+
+const aura::Window* SnapGroup::GetWindowOfSnapViewType(
+    SnapViewType snap_type) const {
+  return snap_type == SnapViewType::kPrimary ? window1_ : window2_;
 }
 
 void SnapGroup::ShowDivider() {

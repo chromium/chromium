@@ -34,6 +34,14 @@ namespace {
 
 SnapGroupController* g_instance = nullptr;
 
+// Returns true if both of the windows in `snap_group` are visible.
+// TODO(b/333772909): Precautionary check for group minimize. See if we still
+// need this after group minimize is removed.
+bool AreSnapGroupWindowsVisible(const SnapGroup* snap_group) {
+  return snap_group->window1()->IsVisible() &&
+         snap_group->window2()->IsVisible();
+}
+
 }  // namespace
 
 SnapGroupController::SnapGroupController() {
@@ -120,7 +128,7 @@ bool SnapGroupController::RemoveSnapGroupContainingWindow(
 }
 
 SnapGroup* SnapGroupController::GetSnapGroupForGivenWindow(
-    const aura::Window* window) {
+    const aura::Window* window) const {
   auto iter = window_to_snap_group_map_.find(window);
   return iter != window_to_snap_group_map_.end() ? iter->second : nullptr;
 }
@@ -212,15 +220,33 @@ void SnapGroupController::MinimizeTopMostSnapGroup() {
   topmost_snap_group->MinimizeWindows();
 }
 
-SnapGroup* SnapGroupController::GetTopmostSnapGroup() {
-  auto windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  for (aura::Window* window : windows) {
-    if (auto* snap_group = GetSnapGroupForGivenWindow(window)) {
-      if (!WindowState::Get(snap_group->window1())->IsMinimized() &&
-          !WindowState::Get(snap_group->window2())->IsMinimized()) {
-        return snap_group;
-      }
+SnapGroup* SnapGroupController::GetTopmostVisibleSnapGroup(
+    const aura::Window* target_root) const {
+  for (const aura::Window* top_window :
+       Shell::Get()->mru_window_tracker()->BuildAppWindowList(kActiveDesk)) {
+    // Skip to the topmost window on `target_root`, ignoring occlusion-exempt
+    // windows.
+    if (ShouldExcludeForOcclusionCheck(top_window, target_root)) {
+      continue;
+    }
+    // Note that if `top_window` is floated or pip'ed, it would not belong to a
+    // snap group.
+    if (auto* snap_group = GetSnapGroupForGivenWindow(top_window);
+        snap_group && AreSnapGroupWindowsVisible(snap_group)) {
+      return snap_group;
+    }
+    // Else if `top_window` does not belong to a snap group, we are done.
+    break;
+  }
+  return nullptr;
+}
+
+SnapGroup* SnapGroupController::GetTopmostSnapGroup() const {
+  for (const aura::Window* window :
+       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
+    if (auto* snap_group = GetSnapGroupForGivenWindow(window);
+        snap_group && AreSnapGroupWindowsVisible(snap_group)) {
+      return snap_group;
     }
   }
   return nullptr;

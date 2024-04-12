@@ -851,9 +851,26 @@ bool CanSnapActionSourceStartFasterSplitView(
   }
 }
 
+bool ShouldExcludeForOcclusionCheck(const aura::Window* window,
+                                    const aura::Window* target_root) {
+  // `window` should be excluded for occlusion check under the following
+  // conditions:
+  // 1. When `window` is not on the same root window as `target_root`;
+  // 2. When it is not visible or minimized;
+  // 3. When it is a float or pip window.
+  if (window->GetRootWindow() != target_root || !window->IsVisible()) {
+    return true;
+  }
+  const auto* window_state = WindowState::Get(window);
+  return window_state->IsMinimized() || window_state->IsFloated() ||
+         window_state->IsPip();
+}
+
 aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
+  // `BuildAppWindowList()` will exclude transient windows like the window
+  // layout menu and other bubble widgets.
   const auto windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+      Shell::Get()->mru_window_tracker()->BuildAppWindowList(kActiveDesk);
   const auto opposite_snap_type = GetOppositeSnapType(window);
 
   // Track the union bounds of the windows that are more recently used than the
@@ -861,27 +878,17 @@ aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
   // state of the opposite snapped window.
   gfx::Rect union_bounds;
   for (aura::Window* top_window : windows) {
-    const auto* top_window_state = WindowState::Get(top_window);
-    // The `top_window` should be excluded for occlusion check under the
-    // following conditions:
-    // 1. When it is the `window` itself;
-    // 2. When `top_window` is not on the same root window of the given
-    // `window`;
-    // 3. When it is the transient child of the `window`, for example the window
-    // layout menu or other bubble widget;
-    // 4. When it is not visible or minimized;
-    // 5. When it is a float or pip window.
+    // The `top_window` should be excluded for occlusion check when it is the
+    // `window` itself or if `ShouldExcludeForOcclusionCheck()` is true.
     const bool should_be_excluded_for_occlusion_check =
         top_window == window ||
-        top_window->GetRootWindow() != window->GetRootWindow() ||
-        wm::GetTransientRoot(top_window) == window ||
-        !top_window->IsVisible() || top_window_state->IsMinimized() ||
-        top_window_state->IsFloated() || top_window_state->IsPip();
+        ShouldExcludeForOcclusionCheck(top_window, window->GetRootWindow());
 
     if (should_be_excluded_for_occlusion_check) {
       continue;
     }
 
+    const auto* top_window_state = WindowState::Get(top_window);
     const gfx::Rect top_window_bounds = top_window->GetBoundsInScreen();
     if (top_window_state->GetStateType() == opposite_snap_type) {
       // Ensure that `top_window` is fully visible by checking:

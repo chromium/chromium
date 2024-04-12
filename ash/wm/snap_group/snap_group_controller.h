@@ -65,7 +65,7 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
 
   // Returns the corresponding `SnapGroup` if the given `window` belongs to a
   // snap group or nullptr otherwise.
-  SnapGroup* GetSnapGroupForGivenWindow(const aura::Window* window);
+  SnapGroup* GetSnapGroupForGivenWindow(const aura::Window* window) const;
 
   // Returns true if the attempt to replace the window within the snap group
   // positioned directly below with the given `to_be_snapped_window` is
@@ -77,8 +77,14 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // Minimizes the most recently used and unminimized snap groups.
   void MinimizeTopMostSnapGroup();
 
+  // Returns the topmost fully visible non-occluded snap group on `target_root`.
+  SnapGroup* GetTopmostVisibleSnapGroup(const aura::Window* target_root) const;
+
   // Returns the topmost snap group in unminimized state.
-  SnapGroup* GetTopmostSnapGroup();
+  // TODO(b/333772909): Currently used mostly for group minimize shortcut, which
+  // does not differentiate between root windows. See if we can remove it when
+  // we remove group minimize.
+  SnapGroup* GetTopmostSnapGroup() const;
 
   // Restores the most recent used snap group to be at the default snapped state
   // i.e. two windows in the most recent snap group are positioned at primary

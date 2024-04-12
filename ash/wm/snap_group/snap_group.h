@@ -7,6 +7,7 @@
 
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
@@ -38,6 +39,9 @@ class SnapGroup : public aura::WindowObserver,
   aura::Window* window1() const { return window1_; }
   aura::Window* window2() const { return window2_; }
   SplitViewDivider* snap_group_divider() { return &snap_group_divider_; }
+
+  // Gets the window snapped at `snap_type`.
+  const aura::Window* GetWindowOfSnapViewType(SnapViewType snap_type) const;
 
   void ShowDivider();
   void HideDivider();

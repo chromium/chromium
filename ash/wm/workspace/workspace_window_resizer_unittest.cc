@@ -10,12 +10,17 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_constants.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/wm_metrics.h"
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "ash/wm/workspace_controller.h"
@@ -26,6 +31,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -42,6 +48,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -2438,6 +2445,84 @@ TEST_F(WorkspaceWindowResizerTest, HorizontalMoveNotTriggerSnap) {
   resizer->CompleteDrag();
   window_state = WindowState::Get(window_.get());
   EXPECT_FALSE(window_state->IsMaximized());
+}
+
+class SnapGroupWorkspaceWindowResizerTest : public WorkspaceWindowResizerTest {
+ public:
+  SnapGroupWorkspaceWindowResizerTest() {
+    // The `SnapGroup` feature has to be enabled before `AshTestBase::SetUp()`
+    // to create `SnapGroupController`.
+    scoped_feature_list_.InitWithFeatures({ash::features::kSnapGroup}, {});
+  }
+  SnapGroupWorkspaceWindowResizerTest(
+      const SnapGroupWorkspaceWindowResizerTest&) = delete;
+  SnapGroupWorkspaceWindowResizerTest& operator=(
+      const SnapGroupWorkspaceWindowResizerTest&) = delete;
+  ~SnapGroupWorkspaceWindowResizerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the snap phantom bounds are updated when a window is dragged over
+// a snap group.
+TEST_F(SnapGroupWorkspaceWindowResizerTest, SnapGroupPhantomBounds) {
+  UpdateDisplay("800x600");
+
+  // Create a snap group.
+  std::unique_ptr<aura::Window> w1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> w2 = CreateAppWindow();
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller);
+  const WindowSnapWMEvent snap_primary(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
+      WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  WindowState::Get(w1.get())->OnWMEvent(&snap_primary);
+  const WindowSnapWMEvent snap_secondary(
+      WM_EVENT_SNAP_SECONDARY, chromeos::kDefaultSnapRatio,
+      WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  WindowState::Get(w2.get())->OnWMEvent(&snap_secondary);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  auto* snap_group =
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get());
+  // Resize the snap group to a ratio < kSnapToReplaceRatioDiffThreshold from
+  // the default ratio.
+  SplitViewDivider* snap_group_divider = snap_group->snap_group_divider();
+  const gfx::Point resize_point(
+      snap_group_divider->GetDividerBoundsInScreen(/*is_dragging=*/false)
+          .CenterPoint());
+  snap_group_divider->StartResizeWithDivider(resize_point);
+  snap_group_divider->ResizeWithDivider(resize_point - gfx::Vector2d(50, 0));
+  snap_group_divider->EndResizeWithDivider(resize_point - gfx::Vector2d(50, 0));
+  ASSERT_LE(WindowState::Get(w1.get())->snap_ratio().value() -
+                chromeos::kDefaultSnapRatio,
+            kSnapToReplaceRatioDiffThreshold);
+
+  // Drag to snap `window_` over `w1`. Test we update the phantom bounds.
+  AllowSnap(window_.get());
+  std::unique_ptr<WindowResizer> resizer(CreateResizerForTest(window_.get()));
+  resizer->Drag(gfx::PointF(0, 100), 0);
+  // The phantom bounds will not account for the divider width.
+  EXPECT_TRUE(w1->GetBoundsInScreen().ApproximatelyEqual(
+      snap_phantom_window_controller()->GetTargetWindowBounds(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+
+  // Drag to snap `window_` over `w2`. Test we update the phantom bounds.
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(window_.get());
+  resizer->Drag(gfx::PointF(work_area.right(), work_area.y() + 100), 0);
+  EXPECT_TRUE(w2->GetBoundsInScreen().ApproximatelyEqual(
+      snap_phantom_window_controller()->GetTargetWindowBounds(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+
+  // Create a new window on top of the snap group.
+  std::unique_ptr<aura::Window> w3 = CreateAppWindow();
+
+  // Now drag to snap `window_`. Since the snap group is not fully visible, the
+  // phantom bounds are back to default.
+  resizer->Drag(gfx::PointF(0, 100), 0);
+  EXPECT_EQ(gfx::Rect(0, 0, work_area.width() / 2, work_area.height()),
+            snap_phantom_window_controller()->GetTargetWindowBounds());
 }
 
 class PortraitWorkspaceWindowResizerTest : public WorkspaceWindowResizerTest {
