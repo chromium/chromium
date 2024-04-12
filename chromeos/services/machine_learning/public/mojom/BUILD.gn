@@ -14,7 +14,6 @@ mojom_component("mojom") {
     "image_content_annotation.mojom",
     "machine_learning_service.mojom",
     "model.mojom",
-    "soda.mojom",
     "tensor.mojom",
     "text_classifier.mojom",
     "text_suggester.mojom",
@@ -23,6 +22,7 @@ mojom_component("mojom") {
 
   public_deps = [
     ":document_scanner_param_types",
+    ":soda",
     "//mojo/public/mojom/base",
   ]
 
@@ -33,6 +33,24 @@ mojom_component("mojom") {
 
   output_prefix = "mlservice_mojom"
   macro_prefix = "MLSERVICE_MOJOM"
+}
+
+mojom("soda") {
+  sources = [ "soda.mojom" ]
+
+  deps = [ "//mojo/public/mojom/base" ]
+
+  webui_module_path = "/"
+
+  # ChromeOS relies heavily on old legacy bindings.
+  generate_legacy_js_bindings = true
+
+  export_class_attribute = "COMPONENT_EXPORT(MLSERVICE_MOJOM)"
+  export_define = "IS_MLSERVICE_MOJOM_IMPL=1"
+  export_header = "base/component_export.h"
+
+  export_class_attribute_shared = "COMPONENT_EXPORT(MLSERVICE_MOJOM_SHARED)"
+  export_define_shared = "IS_MLSERVICE_MOJOM_SHARED_IMPL=1"
 }
 
 mojom("document_scanner_param_types") {
