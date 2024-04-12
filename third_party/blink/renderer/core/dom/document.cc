@@ -4167,7 +4167,6 @@ bool Document::CheckCompletedInternal() {
 
   fetcher_->ScheduleWarnUnusedPreloads(
       WTF::BindOnce(&Document::OnWarnUnusedPreloads, WrapWeakPersistent(this)));
-  fetcher_->RecordLCPPSubresourceMetrics();
 
   // The readystatechanged or load event may have disconnected this frame.
   if (!GetFrame() || !GetFrame()->IsAttached())
@@ -4224,6 +4223,7 @@ bool Document::CheckCompletedInternal() {
   if (load_event_needed) {
     if (LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP()) {
       lcpp->OnOutermostMainFrameDocumentLoad();
+      fetcher_->MaybeRecordLCPPSubresourceMetrics(Url());
     }
   }
 

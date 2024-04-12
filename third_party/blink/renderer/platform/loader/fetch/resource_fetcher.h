@@ -365,7 +365,7 @@ class PLATFORM_EXPORT ResourceFetcher
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel) override;
 
-  void RecordLCPPSubresourceMetrics();
+  void MaybeRecordLCPPSubresourceMetrics(const KURL& document_url);
 
   // For every image resource that was deferred, check to see if state has
   // changed such that the load should no longer be deferred.

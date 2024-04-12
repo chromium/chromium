@@ -2991,8 +2991,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Blink.LCPP.PotentiallyLCPResourcePriorityBoosts" units="count"
-    expires_after="2024-10-06">
+<histogram name="Blink.LCPP.PotentiallyLCPResourcePriorityBoosts2"
+    units="count" expires_after="2024-10-06">
   <owner>kouhei@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3004,6 +3004,10 @@ chromium-metrics-reviews@google.com.
     This metric is emitted for every page load when it is about to emit
     &quot;onload&quot; event. The metric would tell us how much LCP Critical
     Path Predictor (LCPP), is affecting page load in the wild.
+
+    This metric is not emitted 1) when there are no LCPP signals, 2) when the
+    document is not in an OutermostMainFrame, or 3) when the document URL is not
+    a HTTP family.
   </summary>
 </histogram>
 

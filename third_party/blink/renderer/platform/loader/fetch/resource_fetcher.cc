@@ -2823,13 +2823,23 @@ void ResourceFetcher::OnMemoryPressure(
   document_resource_strong_refs_total_size_ = 0;
 }
 
-void ResourceFetcher::RecordLCPPSubresourceMetrics() {
+void ResourceFetcher::MaybeRecordLCPPSubresourceMetrics(
+    const KURL& document_url) {
+  if (!document_url.IsValid() || !document_url.ProtocolIsInHTTPFamily()) {
+    return;
+  }
+
+  if (!properties_->IsOutermostMainFrame()) {
+    return;
+  }
+
   if (!context_->DoesLCPPHaveAnyHintData()) {
     return;
   }
 
-  base::UmaHistogramCounts100("Blink.LCPP.PotentiallyLCPResourcePriorityBoosts",
-                              potentially_lcp_resource_priority_boosts_);
+  base::UmaHistogramCounts100(
+      "Blink.LCPP.PotentiallyLCPResourcePriorityBoosts2",
+      potentially_lcp_resource_priority_boosts_);
 }
 
 void ResourceFetcher::MarkEarlyHintConsumedIfNeeded(
