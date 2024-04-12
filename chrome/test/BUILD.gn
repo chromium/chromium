@@ -6539,6 +6539,7 @@ test("unit_tests") {
       "../browser/ui/download/download_bubble_row_view_info_unittest.cc",
       "../browser/ui/download/download_bubble_security_view_info_unittest.cc",
       "../browser/ui/exclusive_access/exclusive_access_permission_manager_unittest.cc",
+      "../browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl_unittest.cc",
       "../browser/ui/plus_addresses/plus_address_creation_controller_desktop_unittest.cc",
       "../browser/ui/safety_hub/menu_notification_service_unittest.cc",
       "../browser/ui/safety_hub/menu_notification_unittest.cc",

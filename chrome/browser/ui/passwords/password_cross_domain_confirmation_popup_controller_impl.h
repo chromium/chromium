@@ -22,6 +22,14 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
       public autofill::AutofillPopupViewDelegate,
       public content::WebContentsObserver {
  public:
+  using ViewFactoryForTesting = base::RepeatingCallback<
+      base::WeakPtr<PasswordCrossDomainConfirmationPopupView>(
+          base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate,
+          const GURL& domain,
+          const std::u16string& password_origin,
+          base::OnceClosure confirmation_callback,
+          base::OnceClosure cancel_callback)>;
+
   explicit PasswordCrossDomainConfirmationPopupControllerImpl(
       content::WebContents* web_contents);
   PasswordCrossDomainConfirmationPopupControllerImpl(
@@ -45,6 +53,10 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
             const std::u16string& password_origin,
             base::OnceClosure confirmation_callback) override;
 
+  void set_view_factory_for_testing(ViewFactoryForTesting factory) {
+    view_factory_for_testing_ = std::move(factory);
+  }
+
  private:
   void HideImpl();
   bool OverlapsWithPictureInPictureWindow() const;
@@ -62,6 +74,8 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
   base::WeakPtr<PasswordCrossDomainConfirmationPopupView> view_;
 
   std::optional<autofill::AutofillPopupHideHelper> popup_hide_helper_;
+
+  ViewFactoryForTesting view_factory_for_testing_;
 
   base::WeakPtrFactory<PasswordCrossDomainConfirmationPopupControllerImpl>
       weak_ptr_factory_{this};

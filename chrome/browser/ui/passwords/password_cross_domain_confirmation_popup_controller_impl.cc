@@ -35,14 +35,19 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
   text_direction_ = text_direction;
   confirmation_callback_ = std::move(confirmation_callback);
 
-  view_ = PasswordCrossDomainConfirmationPopupView::Show(
-      weak_ptr_factory_.GetWeakPtr(), domain, password_origin,
-      base::BindOnce(
-          &PasswordCrossDomainConfirmationPopupControllerImpl::OnConfirm,
-          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(
-          &PasswordCrossDomainConfirmationPopupControllerImpl::OnCancel,
-          weak_ptr_factory_.GetWeakPtr()));
+  auto on_view_confirm = base::BindOnce(
+      &PasswordCrossDomainConfirmationPopupControllerImpl::OnConfirm,
+      weak_ptr_factory_.GetWeakPtr());
+  auto on_view_cancel = base::BindOnce(
+      &PasswordCrossDomainConfirmationPopupControllerImpl::OnCancel,
+      weak_ptr_factory_.GetWeakPtr());
+  view_ = view_factory_for_testing_
+              ? view_factory_for_testing_.Run(
+                    weak_ptr_factory_.GetWeakPtr(), domain, password_origin,
+                    std::move(on_view_confirm), std::move(on_view_cancel))
+              : PasswordCrossDomainConfirmationPopupView::Show(
+                    weak_ptr_factory_.GetWeakPtr(), domain, password_origin,
+                    std::move(on_view_confirm), std::move(on_view_cancel));
 
   content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
   popup_hide_helper_.emplace(
@@ -92,6 +97,7 @@ PasswordCrossDomainConfirmationPopupControllerImpl::GetElementTextDirection()
 void PasswordCrossDomainConfirmationPopupControllerImpl::HideImpl() {
   if (view_) {
     view_->Hide();
+    view_ = nullptr;
   }
   popup_hide_helper_.reset();
 }
