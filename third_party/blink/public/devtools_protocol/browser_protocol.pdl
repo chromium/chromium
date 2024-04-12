@@ -876,6 +876,8 @@ experimental domain Audits
       SilentMediationFailure
       ThirdPartyCookiesBlocked
       NotSignedInWithIdp
+      MissingTransientUserActivation
+      ReplacedByButtonMode
 
   type FederatedAuthUserInfoRequestIssueDetails extends object
     properties

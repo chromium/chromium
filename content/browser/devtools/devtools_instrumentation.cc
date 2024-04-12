@@ -367,6 +367,13 @@ FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorNotSignedInWithIdp: {
       return FederatedAuthRequestIssueReasonEnum::NotSignedInWithIdp;
     }
+    case FederatedAuthRequestResult::kErrorMissingTransientUserActivation: {
+      return FederatedAuthRequestIssueReasonEnum::
+          MissingTransientUserActivation;
+    }
+    case FederatedAuthRequestResult::kErrorReplacedByButtonMode: {
+      return FederatedAuthRequestIssueReasonEnum::ReplacedByButtonMode;
+    }
     case FederatedAuthRequestResult::kSuccess: {
       NOTREACHED_NORETURN();
     }

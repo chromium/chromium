@@ -243,6 +243,8 @@ enum FederatedAuthRequestResult {
   kErrorSilentMediationFailure,
   kErrorThirdPartyCookiesBlocked,
   kErrorNotSignedInWithIdp,
+  kErrorMissingTransientUserActivation,
+  kErrorReplacedByButtonMode,
   kError,
 };
 

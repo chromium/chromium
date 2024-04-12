@@ -234,6 +234,8 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorSilentMediationFailure:
     case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked:
     case FederatedAuthRequestResult::kErrorNotSignedInWithIdp:
+    case FederatedAuthRequestResult::kErrorMissingTransientUserActivation:
+    case FederatedAuthRequestResult::kErrorReplacedByButtonMode:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -248,6 +250,7 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kNone;
     }
     case FederatedAuthRequestResult::kErrorTooManyRequests:
+    case FederatedAuthRequestResult::kErrorMissingTransientUserActivation:
     case FederatedAuthRequestResult::kErrorCanceled: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kRpFailure;
     }
@@ -269,6 +272,7 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kErrorDisabledInSettings:
     case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked:
     case FederatedAuthRequestResult::kErrorRpPageNotVisible:
+    case FederatedAuthRequestResult::kErrorReplacedByButtonMode:
     case FederatedAuthRequestResult::kErrorNotSignedInWithIdp: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kUserFailure;
     }
@@ -788,10 +792,9 @@ void FederatedAuthRequestImpl::RequestToken(
       return;
     }
     // Cancel the pending request before starting the new button flow request.
-    // TODO(crbug.com/326587232): Use specific error type.
     pending_request->CompleteRequestWithError(
-        FederatedAuthRequestResult::kError,
-        /*token_status=*/std::nullopt,
+        FederatedAuthRequestResult::kErrorReplacedByButtonMode,
+        TokenStatus::kReplacedByButtonMode,
         /*token_error=*/std::nullopt,
         /*should_delay_callback=*/false);
     CHECK(!auth_request_token_callback_);
@@ -829,14 +832,11 @@ void FederatedAuthRequestImpl::RequestToken(
     // TODO(crbug.com/329235198): Support other mediation mode in button mode.
     mediation_requirement_ = MediationRequirement::kRequired;
     if (!had_transient_user_activation_) {
-      render_frame_host().AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
-          "FedCM button mode requires transient user activation");
-      // TODO(crbug.com/1487270): use a more specific error.
-      CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                               TokenStatus::kUnhandledRequest,
-                               /*token_error=*/std::nullopt,
-                               /*should_delay_callback=*/false);
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorMissingTransientUserActivation,
+          TokenStatus::kMissingTransientUserActivation,
+          /*token_error=*/std::nullopt,
+          /*should_delay_callback=*/false);
       return;
     }
   } else {

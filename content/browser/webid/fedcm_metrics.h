@@ -67,8 +67,10 @@ enum class FedCmRequestIdTokenStatus {
   kIdTokenIdpErrorResponse,
   kIdTokenCrossSiteIdpErrorResponse,
   kOtherIdpChosen,
+  kMissingTransientUserActivation,
+  kReplacedByButtonMode,
 
-  kMaxValue = kOtherIdpChosen
+  kMaxValue = kReplacedByButtonMode
 };
 
 // This enum describes whether user sign-in states between IDP and browser

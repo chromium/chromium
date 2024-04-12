@@ -320,6 +320,12 @@ std::string GetConsoleErrorMessageFromResult(
              "FedCM without third-party cookies, enable the "
              "#fedcm-without-third-party-cookies flag.";
     }
+    case FederatedAuthRequestResult::kErrorMissingTransientUserActivation: {
+      return "FedCM button mode requires transient user activation.";
+    }
+    case FederatedAuthRequestResult::kErrorReplacedByButtonMode: {
+      return "The request is replaced by a new one with button mode.";
+    }
     case FederatedAuthRequestResult::kErrorNotSignedInWithIdp: {
       return "Not signed in with the identity provider.";
     }

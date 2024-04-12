@@ -5522,10 +5522,11 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowRequiresUserActivation) {
 
   request_remote_.set_disconnect_handler(auth_helper_.quit_closure());
 
-  RequestExpectations error = {RequestTokenStatus::kError,
-                               FederatedAuthRequestResult::kError,
-                               /*standalone_console_message=*/std::nullopt,
-                               /*selected_idp_config_url=*/std::nullopt};
+  RequestExpectations error = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorMissingTransientUserActivation,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
 
   // Button flow request gets rejected without delay.
   RunAuthDontWaitForCallback(parameters, kConfigurationValid);

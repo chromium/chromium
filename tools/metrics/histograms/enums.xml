@@ -11760,6 +11760,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="40" label="IdTokenIdpErrorResponse"/>
   <int value="41" label="IdTokenCrossSiteIdpErrorResponse"/>
   <int value="42" label="OtherIdpChosen"/>
+  <int value="43" label="MissingTransientUserActivation"/>
+  <int value="44" label="ReplacedByButtonMode"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">
