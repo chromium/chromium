@@ -1146,6 +1146,14 @@ public class PersonalDataManager implements Destroyable {
         return mImageFetcher.getImageIfAvailable(customImageUrl, cardIconSpecs);
     }
 
+    /**
+     * Returns the {@link AutofillImageFetcher} that is used to download and cache icons for payment
+     * methods.
+     */
+    public AutofillImageFetcher getImageFetcherForTesting() {
+        return mImageFetcher;
+    }
+
     public void setImageFetcherForTesting(ImageFetcher imageFetcher) {
         var oldValue = this.mImageFetcher;
         this.mImageFetcher = new AutofillImageFetcher(imageFetcher);

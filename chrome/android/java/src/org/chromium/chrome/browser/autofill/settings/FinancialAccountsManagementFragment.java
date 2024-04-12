@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
@@ -14,6 +16,8 @@ import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSize;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.PersonalDataManagerObserver;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
@@ -21,6 +25,8 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+
+import java.util.Optional;
 
 /** Fragment showing management options for financial accounts like Pix, e-Wallets etc. */
 public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragment
@@ -31,6 +37,8 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     @VisibleForTesting static final String PREFERENCE_KEY_PIX_BANK_ACCOUNT = "pix_bank_account:%s";
 
     static final String TITLE_KEY = "financial_accounts_management_title";
+
+    private PersonalDataManager mPersonalDataManager;
 
     // ChromeBaseSettingsFramgent override.
     @Override
@@ -66,13 +74,14 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        PersonalDataManagerFactory.getForProfile(getProfile()).registerDataObserver(this);
+        mPersonalDataManager = PersonalDataManagerFactory.getForProfile(getProfile());
+        mPersonalDataManager.registerDataObserver(this);
     }
 
     // ChromeBaseSettingsFramgent override.
     @Override
     public void onDestroyView() {
-        PersonalDataManagerFactory.getForProfile(getProfile()).unregisterDataObserver(this);
+        mPersonalDataManager.unregisterDataObserver(this);
         super.onDestroyView();
     }
 
@@ -80,9 +89,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         getPreferenceScreen().removeAll();
         getPreferenceScreen().setOrderingAsAdded(true);
 
-        PersonalDataManager personalDataManager =
-                PersonalDataManagerFactory.getForProfile(getProfile());
-        BankAccount[] bankAccounts = personalDataManager.getMaskedBankAccounts();
+        BankAccount[] bankAccounts = mPersonalDataManager.getMaskedBankAccounts();
         if (bankAccounts.length > 0) {
             ChromeSwitchPreference pixSwitch = new ChromeSwitchPreference(getStyledContext());
             pixSwitch.setKey(PREFERENCE_KEY_PIX);
@@ -106,7 +113,17 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                                 R.string.settings_pix_bank_account_identifer,
                                 getBankAccountTypeString(bankAccount.getAccountType()),
                                 bankAccount.getAccountNumberSuffix()));
-        // TODO(b/302383443): Add start and end icons for the bank account.
+        bankAccountPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
+        if (bankAccount.getDisplayIconUrl() != null) {
+            Optional<Bitmap> displayIconOptional =
+                    mPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
+                            bankAccount.getDisplayIconUrl(),
+                            CardIconSpecs.create(getStyledContext(), CardIconSize.LARGE));
+            if (displayIconOptional.isPresent()) {
+                bankAccountPref.setIcon(
+                        new BitmapDrawable(getResources(), displayIconOptional.get()));
+            }
+        }
         return bankAccountPref;
     }
 

@@ -1871,6 +1871,7 @@ if (current_toolchain == default_toolchain) {
       "//components/gcm_driver/instance_id/android:instance_id_driver_java",
       "//components/gcm_driver/instance_id/android:instance_id_driver_test_support_java",
       "//components/image_fetcher:java",
+      "//components/image_fetcher:test_support_java",
       "//components/infobars/android:java",
       "//components/infobars/core:infobar_enums_java",
       "//components/javascript_dialogs/android:java",
