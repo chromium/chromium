@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/resource/svg_document_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -40,11 +41,11 @@ namespace {
 
 class SVGExternalDocumentCache final
     : public GarbageCollected<SVGExternalDocumentCache>,
-      public Supplement<Document> {
+      public Supplement<LocalFrame> {
  public:
   static const char kSupplementName[];
-  static SVGExternalDocumentCache* From(Document&);
-  explicit SVGExternalDocumentCache(Document&);
+  static SVGExternalDocumentCache* From(LocalFrame&);
+  explicit SVGExternalDocumentCache(LocalFrame&);
 
   SVGResourceDocumentContent* Get(const String& url_without_fragment);
   void Put(const String& url_without_fragment,
@@ -59,18 +60,18 @@ class SVGExternalDocumentCache final
 const char SVGExternalDocumentCache::kSupplementName[] =
     "SVGExternalDocumentCache";
 
-SVGExternalDocumentCache* SVGExternalDocumentCache::From(Document& document) {
+SVGExternalDocumentCache* SVGExternalDocumentCache::From(LocalFrame& frame) {
   SVGExternalDocumentCache* cache =
-      Supplement<Document>::From<SVGExternalDocumentCache>(document);
+      Supplement<LocalFrame>::From<SVGExternalDocumentCache>(frame);
   if (!cache) {
-    cache = MakeGarbageCollected<SVGExternalDocumentCache>(document);
-    Supplement<Document>::ProvideTo(document, cache);
+    cache = MakeGarbageCollected<SVGExternalDocumentCache>(frame);
+    Supplement<LocalFrame>::ProvideTo(frame, cache);
   }
   return cache;
 }
 
-SVGExternalDocumentCache::SVGExternalDocumentCache(Document& document)
-    : Supplement<Document>(document) {}
+SVGExternalDocumentCache::SVGExternalDocumentCache(LocalFrame& frame)
+    : Supplement<LocalFrame>(frame) {}
 
 SVGResourceDocumentContent* SVGExternalDocumentCache::Get(
     const String& url_without_fragment) {
@@ -84,7 +85,7 @@ void SVGExternalDocumentCache::Put(const String& url_without_fragment,
 }
 
 void SVGExternalDocumentCache::Trace(Visitor* visitor) const {
-  Supplement<Document>::Trace(visitor);
+  Supplement<LocalFrame>::Trace(visitor);
   visitor->Trace(entries_);
 }
 
@@ -237,7 +238,8 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
 
   const KURL url_without_fragment =
       MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
-  auto* cache = SVGExternalDocumentCache::From(document);
+  auto* cache =
+      SVGExternalDocumentCache::From(document.GetFrame()->LocalFrameRoot());
 
   auto* cached_content = cache->Get(url_without_fragment.GetString());
   if (cached_content && CanReuseContent(*cached_content)) {
