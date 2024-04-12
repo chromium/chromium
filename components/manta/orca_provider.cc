@@ -17,6 +17,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/base_provider.h"
 #include "components/manta/features.h"
+#include "components/manta/manta_service_callbacks.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "components/signin/public/base/consent_level.h"
@@ -175,6 +176,7 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsOrcaUseProdServerEnabled())},
       kOauthConsumerName, traffic_annotation, request.value(),
+      MantaMetricType::kOrca,
       base::BindOnce(&OnServerResponseOrErrorReceived,
                      std::move(done_callback)));
 }

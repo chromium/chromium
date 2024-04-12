@@ -9,6 +9,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/manta/base_provider.h"
@@ -213,6 +214,8 @@ TEST_F(OrcaProviderTest, ParseSuccessfulResponse) {
   proto::OutputData& output_data = *response.add_output_data();
   output_data.set_text("foo");
 
+  base::HistogramTester histogram_tester;
+
   std::map<std::string, std::string> input = {{"data", "simple post data"},
                                               {"tone", "SHORTEN"}};
   std::unique_ptr<FakeOrcaProvider> orca_provider = CreateOrcaProvider();
@@ -240,6 +243,8 @@ TEST_F(OrcaProviderTest, ParseSuccessfulResponse) {
             quit_closure.Run();
           }));
   task_environment_.RunUntilQuit();
+  histogram_tester.ExpectTotalCount("Ash.MantaService.OrcaProvider.TimeCost",
+                                    1);
 }
 
 TEST_F(OrcaProviderTest, EmptyResponseAfterIdentityManagerShutdown) {

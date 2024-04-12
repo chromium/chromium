@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
@@ -17,6 +18,15 @@ class EndpointFetcher;
 struct EndpointResponse;
 
 namespace manta {
+
+// Enum that indicates the source of the call to manta server, used for logging
+// UMA metrics.
+enum class MantaMetricType {
+  kOrca,
+  kSnapper,
+  kMahiSummary,
+  kMahiQA,
+};
 
 // Manta service uses this callback to return a Response proto parsed
 // from server response, and a MantaStatus struct that indicates OK status or
@@ -32,6 +42,8 @@ using MantaGenericCallback =
 
 COMPONENT_EXPORT(MANTA)
 void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
+                               const base::Time& start_time,
+                               const MantaMetricType request_type,
                                std::unique_ptr<EndpointFetcher> fetcher,
                                std::unique_ptr<EndpointResponse> responses);
 

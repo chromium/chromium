@@ -242,6 +242,16 @@ chromium-metrics-reviews@google.com.
       summary="Transition to the shown hotseat"/>
 </variants>
 
+<variants name="MantaMetricType">
+  <variant name="MahiProvider.Outline"
+      summary="Request from Mahi provider for outline"/>
+  <variant name="MahiProvider.QA" summary="Request from Mahi provider for QA"/>
+  <variant name="MahiProvider.Summary"
+      summary="Request from Mahi provider for summary"/>
+  <variant name="OrcaProvider" summary="Request from Orca provider"/>
+  <variant name="SnapperProvider" summary="Request from Snapper provider"/>
+</variants>
+
 <variants name="OverviewAnimationMode">
   <variant name=".ClamshellMode"
       summary="Normal clamshell mode with multiple windows animates"/>
@@ -4806,6 +4816,16 @@ chromium-metrics-reviews@google.com.
     Record the type of feedback that a user has for the Mahi feature. Emitted
     when users click the thumbs up or thumbs down button in the panel.
   </summary>
+</histogram>
+
+<histogram name="Ash.MantaService.{MantaMetricType}.TimeCost" units="ms"
+    expires_after="2025-02-01">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <summary>
+    Record the time cost of successful {MantaMetricType} requests.
+  </summary>
+  <token key="MantaMetricType" variants="MantaMetricType"/>
 </histogram>
 
 <histogram name="Ash.Media.CameraPrivacySwitch.Event"

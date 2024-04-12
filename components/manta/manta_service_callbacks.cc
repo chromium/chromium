@@ -9,6 +9,8 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
@@ -57,15 +59,41 @@ std::optional<MantaStatusCode> MapServerStatusCodeToMantaStatusCode(
   return iter != code_map.end() ? std::optional<MantaStatusCode>(iter->second)
                                 : std::nullopt;
 }
+
+void LogTimeCost(const MantaMetricType request_type,
+                 const base::TimeDelta& time_cost) {
+  switch (request_type) {
+    case MantaMetricType::kOrca:
+      base::UmaHistogramTimes("Ash.MantaService.OrcaProvider.TimeCost",
+                              time_cost);
+      break;
+    case MantaMetricType::kSnapper:
+      base::UmaHistogramTimes("Ash.MantaService.SnapperProvider.TimeCost",
+                              time_cost);
+      break;
+    case MantaMetricType::kMahiSummary:
+      base::UmaHistogramTimes("Ash.MantaService.MahiProvider.Summary.TimeCost",
+                              time_cost);
+      break;
+    case MantaMetricType::kMahiQA:
+      base::UmaHistogramTimes("Ash.MantaService.MahiProvider.QA.TimeCost",
+                              time_cost);
+      break;
+  }
+}
 }  // namespace
 
 void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
+                               const base::Time& start_time,
+                               const MantaMetricType request_type,
                                std::unique_ptr<EndpointFetcher> fetcher,
                                std::unique_ptr<EndpointResponse> responses) {
   // TODO(b/301185733): Log error code to UMA.
   // Tries to parse the response as a Response proto and return to the
   // `callback` together with a OK status, or capture the errors and return a
   // proper error status.
+
+  base::TimeDelta time_cost = base::Time::Now() - start_time;
 
   std::string message = std::string();
 
@@ -135,6 +163,7 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
     return;
   }
 
+  LogTimeCost(request_type, time_cost);
   std::move(callback).Run(std::move(manta_response),
                           {MantaStatusCode::kOk, message});
 }

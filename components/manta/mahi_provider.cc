@@ -96,6 +96,7 @@ void MahiProvider::Summarize(const std::string& input,
   // launch.
   RequestInternal(GURL{GetProviderEndpoint(false)}, kOauthConsumerName,
                   MISSING_TRAFFIC_ANNOTATION, request,
+                  MantaMetricType::kMahiSummary,
                   base::BindOnce(&OnServerResponseOrErrorReceived,
                                  std::move(done_callback)));
 }
@@ -135,7 +136,7 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
   // TODO(b:288019728): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
   RequestInternal(GURL{GetProviderEndpoint(false)}, kOauthConsumerName,
-                  MISSING_TRAFFIC_ANNOTATION, request,
+                  MISSING_TRAFFIC_ANNOTATION, request, MantaMetricType::kMahiQA,
                   base::BindOnce(&OnServerResponseOrErrorReceived,
                                  std::move(done_callback)));
 }

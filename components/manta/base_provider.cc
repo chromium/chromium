@@ -49,6 +49,7 @@ void BaseProvider::RequestInternal(
     const std::string& oauth_consumer_name,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     manta::proto::Request& request,
+    const MantaMetricType metric_type,
     MantaProtoResponseCallback done_callback) {
   if (!is_demo_mode_ && !identity_manager_observation_.IsObserving()) {
     std::move(done_callback)
@@ -65,21 +66,23 @@ void BaseProvider::RequestInternal(
   std::string serialized_request;
   request.SerializeToString(&serialized_request);
 
+  base::Time start_time = base::Time::Now();
+
   if (is_demo_mode_) {
     std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcherForDemoMode(
         url, annotation_tag, serialized_request);
     EndpointFetcher* const fetcher_ptr = fetcher.get();
     fetcher_ptr->PerformRequest(
         base::BindOnce(&OnEndpointFetcherComplete, std::move(done_callback),
-                       std::move(fetcher)),
+                       start_time, metric_type, std::move(fetcher)),
         nullptr);
   } else {
     std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
         url, oauth_consumer_name, annotation_tag, serialized_request);
     EndpointFetcher* const fetcher_ptr = fetcher.get();
     fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
-                                      std::move(done_callback),
-                                      std::move(fetcher)));
+                                      std::move(done_callback), start_time,
+                                      metric_type, std::move(fetcher)));
   }
 }
 

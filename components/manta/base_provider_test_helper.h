@@ -39,6 +39,7 @@ class FakeBaseProvider : virtual public BaseProvider {
                        const std::string& oauth_consumer_name,
                        const net::NetworkTrafficAnnotationTag& annotation_tag,
                        manta::proto::Request& request,
+                       const MantaMetricType metric_type,
                        MantaProtoResponseCallback done_callback) override;
 };
 

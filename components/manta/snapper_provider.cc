@@ -54,7 +54,7 @@ void SnapperProvider::Call(manta::proto::Request& request,
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsSeaPenUseProdServerEnabled())},
       kOauthConsumerName, traffic_annotation, request,
-      std::move(done_callback));
+      MantaMetricType::kSnapper, std::move(done_callback));
 }
 
 }  // namespace manta

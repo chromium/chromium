@@ -39,6 +39,7 @@ void FakeBaseProvider::RequestInternal(
     const std::string& oauth_consumer_name,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     manta::proto::Request& request,
+    const MantaMetricType metric_type,
     MantaProtoResponseCallback done_callback) {
   if (!identity_manager_observation_.IsObserving()) {
     std::move(done_callback)
@@ -59,8 +60,8 @@ void FakeBaseProvider::RequestInternal(
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
-                                    std::move(done_callback),
-                                    std::move(fetcher)));
+                                    std::move(done_callback), base::Time::Now(),
+                                    metric_type, std::move(fetcher)));
 }
 
 BaseProviderTest::BaseProviderTest()

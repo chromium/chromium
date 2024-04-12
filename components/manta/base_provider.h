@@ -50,6 +50,7 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
       const std::string& oauth_consumer_name,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       manta::proto::Request& request,
+      const MantaMetricType metric_type,
       MantaProtoResponseCallback done_callback);
 
   // TODO(b:333459167): they are protected because FakeBaseProvider needs to
