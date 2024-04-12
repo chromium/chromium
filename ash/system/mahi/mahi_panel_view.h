@@ -75,6 +75,10 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView,
   raw_ptr<views::Textfield> question_textfield_ = nullptr;
   raw_ptr<IconButton> send_button_ = nullptr;
 
+  // The time when this view is constructed, which is when the user opens this
+  // view.
+  base::TimeTicks open_time_;
+
   base::WeakPtrFactory<MahiPanelView> weak_ptr_factory_{this};
 };
 

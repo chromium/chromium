@@ -4833,6 +4833,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Mahi.UserJourneyTime" units="ms"
+    expires_after="2025-04-10">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records time user spent in Mahi Panel. Starts measuring time whenever the
+    MahiPanelView is constructed, and records metric when the view is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.MantaService.{MantaMetricType}.TimeCost" units="ms"
     expires_after="2025-02-01">
   <owner>alanlxl@chromium.org</owner>

@@ -408,7 +408,9 @@ DEFINE_VIEW_BUILDER(/*no export*/, ash::BackButton)
 namespace ash {
 
 MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
-    : MahiUiController::Delegate(ui_controller), ui_controller_(ui_controller) {
+    : MahiUiController::Delegate(ui_controller),
+      ui_controller_(ui_controller),
+      open_time_(base::TimeTicks::Now()) {
   CHECK(ui_controller_);
 
   SetOrientation(views::LayoutOrientation::kVertical);
@@ -597,7 +599,12 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
   ui_controller_->RefreshContents();
 }
 
-MahiPanelView::~MahiPanelView() = default;
+MahiPanelView::~MahiPanelView() {
+  // The difference between `Now()` and `open_time_` is the duration that this
+  // view has been shown.
+  base::UmaHistogramLongTimes(mahi_constants::kMahiUserJourneyTimeHistogramName,
+                              base::TimeTicks::Now() - open_time_);
+}
 
 std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
   return views::Builder<views::FlexLayoutView>()

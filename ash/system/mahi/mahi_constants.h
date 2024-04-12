@@ -84,6 +84,8 @@ enum class PanelButton {
 inline constexpr char kMahiFeedbackHistogramName[] = "Ash.Mahi.Feedback";
 inline constexpr char kMahiButtonClickHistogramName[] =
     "Ash.Mahi.ButtonClicked";
+inline constexpr char kMahiUserJourneyTimeHistogramName[] =
+    "Ash.Mahi.UserJourneyTime";
 
 }  // namespace ash::mahi_constants
 

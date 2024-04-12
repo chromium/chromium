@@ -24,6 +24,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -177,6 +178,9 @@ views::Label* GetSummaryLabel(views::View* mahi_view) {
 
 class MahiPanelViewTest : public AshTestBase {
  public:
+  MahiPanelViewTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   MockMahiManager& mock_mahi_manager() { return mock_mahi_manager_; }
 
   MahiUiController* ui_controller() { return &ui_controller_; }
@@ -1473,6 +1477,34 @@ TEST_F(MahiPanelViewTest, DISABLED_ClickMetrics) {
   histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
                               mahi_constants::PanelButton::kCloseButton, 1);
   histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 4);
+}
+
+TEST_F(MahiPanelViewTest, UserJourneyTimeMetrics) {
+  base::HistogramTester histogram;
+  histogram.ExpectTimeBucketCount(
+      mahi_constants::kMahiUserJourneyTimeHistogramName, base::Seconds(3),
+      /*count=*/0);
+
+  task_environment()->AdvanceClock(base::Seconds(3));
+
+  CreatePanelWidget();
+  histogram.ExpectTimeBucketCount(
+      mahi_constants::kMahiUserJourneyTimeHistogramName, base::Seconds(3),
+      /*count=*/1);
+
+  task_environment()->AdvanceClock(base::Minutes(3));
+
+  CreatePanelWidget();
+  histogram.ExpectTimeBucketCount(
+      mahi_constants::kMahiUserJourneyTimeHistogramName, base::Minutes(3),
+      /*count=*/1);
+
+  task_environment()->AdvanceClock(base::Minutes(10));
+
+  CreatePanelWidget();
+  histogram.ExpectTimeBucketCount(
+      mahi_constants::kMahiUserJourneyTimeHistogramName, base::Minutes(10),
+      /*count=*/1);
 }
 
 }  // namespace ash
