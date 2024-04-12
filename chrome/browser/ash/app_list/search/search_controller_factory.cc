@@ -81,7 +81,8 @@ std::unique_ptr<SearchController> CreateSearchController(
 
   if (crosapi::browser_util::IsLacrosEnabled()) {
     controller->AddProvider(std::make_unique<OmniboxLacrosProvider>(
-        profile, list_controller, crosapi::CrosapiManager::Get()));
+        profile, list_controller,
+        OmniboxLacrosProvider::GetSingletonControllerCallback()));
   } else {
     controller->AddProvider(std::make_unique<OmniboxProvider>(
         profile, list_controller, crosapi::ProviderTypes()));

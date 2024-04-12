@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_answer_result.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_result.h"
@@ -49,27 +52,28 @@ using CrosApiSearchResult = ::crosapi::mojom::SearchResult;
 OmniboxLacrosProvider::OmniboxLacrosProvider(
     Profile* profile,
     AppListControllerDelegate* list_controller,
-    crosapi::CrosapiManager* crosapi_manager)
+    SearchControllerCallback search_controller_callback)
     : SearchProvider(SearchCategory::kOmnibox),
-      search_provider_(nullptr),
+      search_controller_callback_(std::move(search_controller_callback)),
       profile_(profile),
       list_controller_(list_controller) {
   DCHECK(profile_);
   DCHECK(list_controller_);
-
-  if (crosapi_manager) {
-    search_provider_ = crosapi_manager->crosapi_ash()->search_provider_ash();
-    DCHECK(search_provider_);
-  }
 }
 
 OmniboxLacrosProvider::~OmniboxLacrosProvider() = default;
 
-crosapi::SearchControllerAsh* OmniboxLacrosProvider::GetSearchController() {
-  if (!search_provider_) {
-    return nullptr;
-  }
-  return search_provider_->GetController();
+// static
+OmniboxLacrosProvider::SearchControllerCallback
+OmniboxLacrosProvider::GetSingletonControllerCallback() {
+  return base::BindRepeating([]() -> crosapi::SearchControllerAsh* {
+    crosapi::SearchProviderAsh* search_provider =
+        crosapi::CrosapiManager::Get()->crosapi_ash()->search_provider_ash();
+    if (!search_provider) {
+      return nullptr;
+    }
+    return search_provider->GetController();
+  });
 }
 
 void OmniboxLacrosProvider::StartWithoutSearchProvider(
@@ -114,7 +118,8 @@ void OmniboxLacrosProvider::StartWithoutSearchProvider(
 }
 
 void OmniboxLacrosProvider::Start(const std::u16string& query) {
-  crosapi::SearchControllerAsh* search_controller = GetSearchController();
+  crosapi::SearchControllerAsh* search_controller =
+      search_controller_callback_.Run();
   if (!search_controller || !search_controller->IsConnected()) {
     StartWithoutSearchProvider(query);
     return;

@@ -387,7 +387,7 @@ PickerClientImpl::CreateOmniboxProvider(int provider_types) {
     // provider.
     return std::make_unique<app_list::OmniboxLacrosProvider>(
         profile_, &app_list_controller_delegate_,
-        crosapi::CrosapiManager::Get());
+        app_list::OmniboxLacrosProvider::GetSingletonControllerCallback());
   } else {
     return std::make_unique<app_list::OmniboxProvider>(
         profile_, &app_list_controller_delegate_, provider_types);

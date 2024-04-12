@@ -13,6 +13,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -178,7 +179,11 @@ class OmniboxLacrosProviderTest : public testing::Test {
 
     // Create the object to actually test.
     auto omnibox_provider = std::make_unique<OmniboxLacrosProvider>(
-        profile_, &list_controller_, crosapi_manager_.get());
+        profile_, &list_controller_, base::BindLambdaForTesting([this] {
+          return crosapi_manager_->crosapi_ash()
+              ->search_provider_ash()
+              ->GetController();
+        }));
     omnibox_provider_ = omnibox_provider.get();
     search_controller_->AddProvider(std::move(omnibox_provider));
   }
