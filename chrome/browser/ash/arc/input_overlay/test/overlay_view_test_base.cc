@@ -132,6 +132,20 @@ TargetView* OverlayViewTestBase::GetTargetView() const {
   return controller_->GetTargetView();
 }
 
+EditLabel* OverlayViewTestBase::GetEditLabel(ActionViewListItem* list_item,
+                                             size_t index) const {
+  auto& labels = list_item->labels_view_->labels_;
+  DCHECK_LT(index, labels.size());
+  return labels[index];
+}
+
+EditLabel* OverlayViewTestBase::GetEditLabel(ButtonOptionsMenu* menu,
+                                             size_t index) const {
+  auto& labels = menu->action_edit_->labels_view_->labels_;
+  DCHECK_LT(index, labels.size());
+  return labels[index];
+}
+
 Action* OverlayViewTestBase::GetButtonOptionsMenuAction() const {
   if (auto* menu = controller_->GetButtonOptionsMenu()) {
     return menu->action();
@@ -201,16 +215,7 @@ void OverlayViewTestBase::SetUp() {
 
 ActionViewListItem* OverlayViewTestBase::GetEditingListItem(
     Action* action) const {
-  if (auto* const editing_list = GetEditingList()) {
-    for (const auto& child : editing_list->scroll_content_->children()) {
-      auto* const list_item = views::AsViewClass<ActionViewListItem>(child);
-      DCHECK(list_item);
-      if (list_item->action() == action) {
-        return list_item;
-      }
-    }
-  }
-  return nullptr;
+  return controller_->GetEditingListItemForAction(action);
 }
 
 void OverlayViewTestBase::VerifyButtonOptionsMenu(

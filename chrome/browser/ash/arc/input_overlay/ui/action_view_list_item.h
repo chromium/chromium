@@ -35,6 +35,7 @@ class ActionViewListItem : public ActionEditView {
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnFocus() override;
+  void OnBlur() override;
 };
 
 }  // namespace arc::input_overlay

@@ -31,6 +31,7 @@ class ScrollView;
 
 namespace arc::input_overlay {
 
+class ActionViewListItem;
 class DisplayOverlayController;
 
 // EditingList contains the list of controls.
@@ -54,6 +55,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
   ~EditingList() override;
 
   void UpdateWidget();
+
+  ActionViewListItem* GetListItemForAction(Action* action);
 
  private:
   friend class ButtonOptionsMenuTest;

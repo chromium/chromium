@@ -126,6 +126,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddActionHighlightWidget(Action* action);
   void RemoveActionHighlightWidget();
   void HideActionHighlightWidget();
+  // Hides the action highlight if the action highlight is anchored to
+  // `action`'s view.
+  void HideActionHighlightWidgetForAction(Action* action);
 
   // Update widget bounds if the view content is changed or the app window
   // bounds are changed.
@@ -133,6 +136,8 @@ class DisplayOverlayController : public ui::EventHandler,
   void UpdateInputMappingWidgetBounds();
   void UpdateEditingListWidgetBounds();
   void UpdateTargetWidgetBounds();
+
+  ActionViewListItem* GetEditingListItemForAction(Action* action);
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;

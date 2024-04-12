@@ -16,11 +16,14 @@
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_highlight.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/nudge_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "ui/aura/window.h"
@@ -121,13 +124,25 @@ class EditingListTest : public OverlayViewTestBase {
     return controller_->input_mapping_widget_.get();
   }
 
-  bool IsActionHighlightVisible() {
+  // Verify action highlight is `expect_visible`. If it is visible, check if it
+  // is anchored to `expect_anchor_view`.
+  void VerifyActionHighlight(bool expect_visible,
+                             ActionView* expect_anchor_view) {
     DCHECK(controller_);
-    if (const auto* highlight_widget =
-            controller_->action_highlight_widget_.get()) {
-      return highlight_widget->IsVisible();
+    bool visible = false;
+    ActionView* anchor_view = nullptr;
+    if (auto* highlight_widget = controller_->action_highlight_widget_.get()) {
+      visible = highlight_widget->IsVisible();
+      auto* highlight = views::AsViewClass<ActionHighlight>(
+          highlight_widget->GetContentsView());
+      DCHECK(highlight);
+      anchor_view = highlight->anchor_view();
     }
-    return false;
+
+    EXPECT_EQ(expect_visible, visible);
+    if (expect_visible) {
+      EXPECT_EQ(expect_anchor_view, anchor_view);
+    }
   }
 
   bool IsButtonOptionsMenuVisible() {
@@ -262,14 +277,18 @@ TEST_F(EditingListTest, TestPressAtActionViewListItem) {
   EXPECT_NE(action_3, action_2);
 }
 
-TEST_F(EditingListTest, TestHoverAtListItem) {
-  EXPECT_FALSE(IsActionHighlightVisible());
+TEST_F(EditingListTest, TestActionHighlight) {
+  // 1. Hover without no view focused.
+  VerifyActionHighlight(/*expect_visible=*/false,
+                        /*expect_anchor_view=*/nullptr);
 
   HoverAtActionViewListItem(/*index=*/0u);
-  EXPECT_TRUE(IsActionHighlightVisible());
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_->action_view());
 
   HoverAtActionViewListItem(/*index=*/1u);
-  EXPECT_TRUE(IsActionHighlightVisible());
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
 
   // Hover outside of the list item and the view highlight is also removed.
   auto* list_item = GetEditingListItem(/*index=*/1u);
@@ -278,7 +297,56 @@ TEST_F(EditingListTest, TestHoverAtListItem) {
   item_origin.Offset(-2, -2);
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(item_origin);
-  EXPECT_FALSE(IsActionHighlightVisible());
+  VerifyActionHighlight(/*expect_visible=*/false,
+                        /*expect_anchor_view=*/nullptr);
+
+  // 2. Hover with the focused list item.
+  list_item->RequestFocus();
+  EXPECT_EQ(list_item, list_item->GetFocusManager()->GetFocusedView());
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+  HoverAtActionViewListItem(/*index=*/0u);
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_->action_view());
+
+  list_item->RequestFocus();
+  EXPECT_EQ(list_item, list_item->GetFocusManager()->GetFocusedView());
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+  HoverAtActionViewListItem(/*index=*/1u);
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+
+  // 3. Hover with the focused edit label.
+  // Clear high light first.
+  event_generator->MoveMouseTo(item_origin);
+  VerifyActionHighlight(/*expect_visible=*/false,
+                        /*expect_anchor_view=*/nullptr);
+  auto* edit_label = GetEditLabel(
+      views::AsViewClass<ActionViewListItem>(list_item), /*index=*/0);
+  edit_label->RequestFocus();
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+  HoverAtActionViewListItem(/*index=*/0u);
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_->action_view());
+
+  edit_label->RequestFocus();
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+  HoverAtActionViewListItem(/*index=*/1u);
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+
+  // 4. Focus on the list item and then click on other view to move the
+  // activation.
+  list_item->RequestFocus();
+  EXPECT_EQ(list_item, list_item->GetFocusManager()->GetFocusedView());
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+  LeftClickOn(tap_action_->action_view());
+  VerifyActionHighlight(/*expect_visible=*/false,
+                        /*expect_anchor_view=*/nullptr);
 }
 
 TEST_F(EditingListTest, TestReposition) {

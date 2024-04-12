@@ -933,6 +933,19 @@ void DisplayOverlayController::HideActionHighlightWidget() {
   }
 }
 
+void DisplayOverlayController::HideActionHighlightWidgetForAction(
+    Action* action) {
+  if (!action_highlight_widget_) {
+    return;
+  }
+
+  if (auto* highlight = views::AsViewClass<ActionHighlight>(
+          action_highlight_widget_->GetContentsView());
+      highlight && highlight->anchor_view() == action->action_view()) {
+    action_highlight_widget_->Hide();
+  }
+}
+
 void DisplayOverlayController::UpdateButtonOptionsMenuWidgetBounds() {
   // There is no `button_options_widget_` in view mode.
   if (!button_options_widget_) {
@@ -975,6 +988,14 @@ void DisplayOverlayController::UpdateTargetWidgetBounds() {
   if (auto* target_view = GetTargetView()) {
     target_view->UpdateWidgetBounds();
   }
+}
+
+ActionViewListItem* DisplayOverlayController::GetEditingListItemForAction(
+    Action* action) {
+  if (auto* editing_list = GetEditingList()) {
+    return editing_list->GetListItemForAction(action);
+  }
+  return nullptr;
 }
 
 void DisplayOverlayController::UpdateWidgetBoundsInRootWindow(

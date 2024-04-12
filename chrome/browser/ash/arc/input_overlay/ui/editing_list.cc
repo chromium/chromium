@@ -534,6 +534,21 @@ gfx::Point EditingList::GetWidgetMagneticPositionLocal() {
   return window_origin;
 }
 
+ActionViewListItem* EditingList::GetListItemForAction(Action* action) {
+  const auto& list_items = scroll_content_->children();
+  auto it =
+      std::find_if(list_items.begin(), list_items.end(), [&](const auto& p) {
+        if (auto* list_item = views::AsViewClass<ActionViewListItem>(p)) {
+          return action == list_item->action();
+        } else {
+          return false;
+        }
+      });
+
+  return it == list_items.end() ? nullptr
+                                : views::AsViewClass<ActionViewListItem>(*it);
+}
+
 void EditingList::ClipScrollViewHeight(bool is_outside) {
   int max_height = controller_->touch_injector()->content_bounds().height() -
                    add_container_->GetPreferredSize().height() -

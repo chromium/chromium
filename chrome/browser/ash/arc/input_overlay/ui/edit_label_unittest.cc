@@ -33,19 +33,6 @@ class EditLabelTest : public OverlayViewTestBase {
  public:
   EditLabelTest() = default;
 
-  EditLabel* GetEditLabel(const ActionViewListItem* list_item,
-                          size_t index) const {
-    auto& labels = list_item->labels_view_->labels_;
-    DCHECK_LT(index, labels.size());
-    return labels[index];
-  }
-
-  EditLabel* GetEditLabel(const ButtonOptionsMenu* menu, size_t index) const {
-    auto& labels = menu->action_edit_->labels_view_->labels_;
-    DCHECK_LT(index, labels.size());
-    return labels[index];
-  }
-
   ActionLabel* GetLabel(const ActionView* action_view, size_t index) const {
     auto& labels = action_view->labels();
     DCHECK_LT(index, labels.size());

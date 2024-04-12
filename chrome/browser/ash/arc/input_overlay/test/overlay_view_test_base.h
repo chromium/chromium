@@ -19,6 +19,7 @@ class ActionViewListItem;
 class ButtonOptionsMenu;
 class DeleteEditShortcut;
 class EditingList;
+class EditLabel;
 class InputMappingView;
 class TargetView;
 
@@ -49,6 +50,9 @@ class OverlayViewTestBase : public GameControlsTestBase {
   EditingList* GetEditingList() const;
   views::View* GetEditingListItem(size_t index) const;
   TargetView* GetTargetView() const;
+
+  EditLabel* GetEditLabel(ActionViewListItem* list_item, size_t index) const;
+  EditLabel* GetEditLabel(ButtonOptionsMenu* menu, size_t index) const;
 
   Action* GetButtonOptionsMenuAction() const;
   Action* GetEditingListItemAction(size_t index) const;

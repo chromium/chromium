@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
@@ -273,6 +274,9 @@ void EditLabel::OnFocus() {
     SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
   }
   SetToFocused();
+  if (for_editing_list_) {
+    controller_->AddActionHighlightWidget(action_);
+  }
 }
 
 void EditLabel::OnBlur() {
@@ -293,6 +297,15 @@ void EditLabel::OnBlur() {
   SetToDefault();
   // Reset the error state if an reserved key was pressed.
   SetNameTagState(/*is_error=*/false, u"");
+
+  if (!for_editing_list_) {
+    return;
+  }
+
+  if (auto* list_item = controller_->GetEditingListItemForAction(action_);
+      !list_item || !list_item->IsMouseHovered()) {
+    controller_->HideActionHighlightWidgetForAction(action_);
+  }
 }
 
 bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
