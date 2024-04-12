@@ -4443,6 +4443,7 @@ test("ash_pixeltests") {
     "app_list/views/app_list_view_pixeltest.cc",
     "app_list/views/search_result_view_pixeltest.cc",
     "capture_mode/capture_mode_pixeltest.cc",
+    "clipboard/views/clipboard_history_item_view_pixeltest.cc",
     "fullscreen_pixeltest.cc",
     "glanceables/glanceables_pixeltest.cc",
     "glanceables/tasks/glanceables_task_view_pixeltest.cc",

@@ -38,6 +38,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -140,6 +141,8 @@ class ClipboardHistoryItemView::DisplayView
       AddChildView(
           views::Builder<views::View>()
               .SetLayoutManager(std::make_unique<views::FillLayout>())
+              .SetProperty(views::kBoxLayoutFlexKey,
+                           views::BoxLayoutFlexSpecification())
               .AddChildren(
                   views::Builder<views::BoxLayoutView>()
                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -170,9 +173,12 @@ class ClipboardHistoryItemView::DisplayView
     } else {
       // Add the item's contents and a delete button that, when visible, takes
       // away some of the contents' horizontal space.
-      AddChildView(views::Builder<views::View>(container->CreateContentsView())
+      AddChildView(views::Builder<views::BoxLayoutView>()
+                       .SetOrientation(views::LayoutOrientation::kVertical)
                        .AddChild(views::Builder<views::View>(
-                           container->CreateDeleteButton()))
+                                     container->CreateContentsView())
+                                     .AddChild(views::Builder<views::View>(
+                                         container->CreateDeleteButton())))
                        .Build());
     }
   }

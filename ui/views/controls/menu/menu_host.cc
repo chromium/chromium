@@ -129,6 +129,7 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
       submenu_->GetMenuItem()->GetMenuController();
   bool bubble_border = submenu_->GetScrollViewContainer() &&
                        submenu_->GetScrollViewContainer()->HasBubbleBorder();
+  params.name = "MenuHost";
   params.shadow_type = bubble_border ? Widget::InitParams::ShadowType::kNone
                                      : Widget::InitParams::ShadowType::kDrop;
   params.opacity = (bubble_border ||
