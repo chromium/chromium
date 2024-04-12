@@ -16,4 +16,6 @@ package omnibox;
 message SearchContext {
   // URL of the current page.
   optional string webpage_url = 1;
+  // Title of the current page.
+  optional string webpage_title = 2;
 }
