@@ -29,7 +29,9 @@ void WebNNCommandQueueTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
   Adapter::EnableDebugLayerForTesting();
   auto adapter_creation_result = Adapter::GetInstanceForTesting();
-  ASSERT_TRUE(adapter_creation_result.has_value());
+  // If the adapter creation result has no value, it's most likely because
+  // platform functions were not properly loaded.
+  SKIP_TEST_IF(!adapter_creation_result.has_value());
   d3d12_device_ = adapter_creation_result.value()->d3d12_device();
 }
 

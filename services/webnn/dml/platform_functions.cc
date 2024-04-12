@@ -52,11 +52,16 @@ PlatformFunctions::PlatformFunctions() {
     DLOG(ERROR) << "Failed to load directml.dll.";
     return;
   }
-  DmlCreateDeviceProc dml_create_device_proc =
-      reinterpret_cast<DmlCreateDeviceProc>(
-          dml_library.GetFunctionPointer("DMLCreateDevice"));
-  if (!dml_create_device_proc) {
-    DLOG(ERROR) << "Failed to get DMLCreateDevice function.";
+  // On older versions of Windows, DMLCreateDevice was not publicly documented
+  // and took a different number of arguments than the publicly documented
+  // version of the function supported by later versions of the DLL. We should
+  // use DMLCreateDevice1 which has always been publicly documented and accepts
+  // a well defined number of arguments."
+  DmlCreateDevice1Proc dml_create_device1_proc =
+      reinterpret_cast<DmlCreateDevice1Proc>(
+          dml_library.GetFunctionPointer("DMLCreateDevice1"));
+  if (!dml_create_device1_proc) {
+    DLOG(ERROR) << "Failed to get DMLCreateDevice1 function.";
     return;
   }
 
@@ -90,8 +95,7 @@ PlatformFunctions::PlatformFunctions() {
 
   // DirectML
   dml_library_ = std::move(dml_library);
-
-  dml_create_device_proc_ = std::move(dml_create_device_proc);
+  dml_create_device1_proc_ = std::move(dml_create_device1_proc);
 }
 
 PlatformFunctions::~PlatformFunctions() = default;
@@ -107,7 +111,7 @@ PlatformFunctions* PlatformFunctions::GetInstance() {
 }
 
 bool PlatformFunctions::AllFunctionsLoaded() {
-  return d3d12_create_device_proc_ && dml_create_device_proc_ &&
+  return d3d12_create_device_proc_ && dml_create_device1_proc_ &&
          d3d12_get_debug_interface_proc_;
 }
 

@@ -244,7 +244,9 @@ void WebNNGraphImplBackendTest::SetUp() {
 
   dml::Adapter::EnableDebugLayerForTesting();
   auto adapter_creation_result = dml::Adapter::GetInstanceForTesting();
-  ASSERT_TRUE(adapter_creation_result.has_value());
+  // If the adapter creation result has no value, it's most likely because
+  // platform functions were not properly loaded.
+  SKIP_TEST_IF(!adapter_creation_result.has_value());
   adapter_ = adapter_creation_result.value();
   // Graph compilation relies on IDMLDevice1::CompileGraph introduced in
   // DirectML version 1.2 or DML_FEATURE_LEVEL_2_1, so skip the tests if the

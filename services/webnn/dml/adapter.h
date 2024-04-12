@@ -53,10 +53,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> GetNpuInstance(
       DML_FEATURE_LEVEL min_required_dml_feature_level);
 
-  // Same as GetGpuInstance() but use the first enumerated DXGI adapter.
+  // Same as GetGpuInstance() but use the first enumerated DXGI adapter. The
+  // minimum required feature level is DML_FEATURE_LEVEL_2_0 because that is
+  // where DMLCreateDevice1 was introduced.
   static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
   GetInstanceForTesting(
-      DML_FEATURE_LEVEL min_required_dml_feature_level = DML_FEATURE_LEVEL_1_0);
+      DML_FEATURE_LEVEL min_required_dml_feature_level = DML_FEATURE_LEVEL_2_0);
 
   Adapter(const Adapter&) = delete;
   Adapter& operator=(const Adapter&) = delete;

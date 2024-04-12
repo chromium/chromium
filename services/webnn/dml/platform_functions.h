@@ -40,9 +40,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
     return dxcore_create_adapter_factory_proc_;
   }
 
-  using DmlCreateDeviceProc = decltype(DMLCreateDevice)*;
-  DmlCreateDeviceProc dml_create_device_proc() const {
-    return dml_create_device_proc_;
+  using DmlCreateDevice1Proc = decltype(DMLCreateDevice1)*;
+  DmlCreateDevice1Proc dml_create_device1_proc() const {
+    return dml_create_device1_proc_;
   }
 
   bool IsDXCoreSupported() const { return dxcore_library_.is_valid(); }
@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
 
   // DirectML
   base::ScopedNativeLibrary dml_library_;
-  DmlCreateDeviceProc dml_create_device_proc_;
+  DmlCreateDevice1Proc dml_create_device1_proc_;
 };
 
 }  // namespace webnn::dml

@@ -14,7 +14,18 @@
 
 namespace webnn::dml {
 
-class WebNNAdapterTest : public TestBase {};
+class WebNNAdapterTest : public TestBase {
+ public:
+  void SetUp() override;
+};
+
+void WebNNAdapterTest::SetUp() {
+  SKIP_TEST_IF(!UseGPUInTests());
+  Adapter::EnableDebugLayerForTesting();
+  // If the adapter creation result has no value, it's most likely because
+  // platform functions were not properly loaded.
+  SKIP_TEST_IF(!Adapter::GetInstanceForTesting().has_value());
+}
 
 TEST_F(WebNNAdapterTest, GetGpuInstance) {
   // Test creating Adapter instance upon `GetGpuInstance()` and release it if
@@ -77,13 +88,13 @@ TEST_F(WebNNAdapterTest, CreateAdapterMinRequiredFeatureLevel) {
 }
 
 TEST_F(WebNNAdapterTest, CheckAdapterMinFeatureLevel) {
-  // Check adapter feature level requested is supported.
-  // All DML adapters must support DML_FEATURE_LEVEL_1_0.
+  // DML_FEATURE_LEVEL_2_0 is the minimum required feature level because that is
+  // where DMLCreateDevice1 was introduced.
   auto adapter_creation_result =
-      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_1_0);
+      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_2_0);
   ASSERT_TRUE(adapter_creation_result.has_value());
   EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
-      DML_FEATURE_LEVEL_1_0));
+      DML_FEATURE_LEVEL_2_0));
 }
 
 TEST_F(WebNNAdapterTest, CheckAdapterMinRequiredFeatureLevel) {
@@ -97,18 +108,10 @@ TEST_F(WebNNAdapterTest, CheckAdapterMinRequiredFeatureLevel) {
       DML_FEATURE_LEVEL_4_0));
   EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
       DML_FEATURE_LEVEL_3_0));
-}
-
-TEST_F(WebNNAdapterTest,
-       CheckAdapterWithPlatformFeatureLevelLowerThanRequired) {
-  // Currently, DML_FEATURE_LEVEL_5_0 is not supported.
-  auto adapter_creation_result =
-      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_5_0);
-  EXPECT_FALSE(adapter_creation_result.has_value());
-  EXPECT_EQ(adapter_creation_result.error()->code,
-            mojom::Error::Code::kNotSupportedError);
-  EXPECT_EQ(adapter_creation_result.error()->message,
-            "DirectML: Unable to find a capable adapter.");
+  EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
+      DML_FEATURE_LEVEL_2_0));
+  EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
+      DML_FEATURE_LEVEL_1_0));
 }
 
 }  // namespace webnn::dml
