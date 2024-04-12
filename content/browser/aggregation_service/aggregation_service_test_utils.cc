@@ -253,8 +253,8 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::kHistogram,
                  {blink::mojom::AggregatableReportHistogramContribution(
-                     /*bucket=*/123,
-                     /*value=*/456)},
+                     /*bucket=*/123, /*value=*/456,
+                     /*filtering_id=*/std::nullopt)},
                  aggregation_mode, std::move(aggregation_coordinator_origin),
                  /*max_contributions_allowed=*/20),
              AggregatableReportSharedInfo(

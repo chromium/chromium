@@ -8011,12 +8011,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
 
   ASSERT_TRUE(request_returned.has_value());
 
-  EXPECT_THAT(request_returned->payload_contents().contributions,
-              testing::UnorderedElementsAre(
-                  blink::mojom::AggregatableReportHistogramContribution(
-                      /*bucket=*/101, /*value=*/10),
-                  blink::mojom::AggregatableReportHistogramContribution(
-                      /*bucket=*/102, /*value=*/10)));
+  EXPECT_THAT(
+      request_returned->payload_contents().contributions,
+      testing::UnorderedElementsAre(
+          blink::mojom::AggregatableReportHistogramContribution(
+              /*bucket=*/101, /*value=*/10, /*filtering_id=*/std::nullopt),
+          blink::mojom::AggregatableReportHistogramContribution(
+              /*bucket=*/102, /*value=*/10, /*filtering_id=*/std::nullopt)));
 
   EXPECT_EQ(request_returned->shared_info().reporting_origin, test_origin_);
   EXPECT_EQ(request_returned->shared_info().debug_mode,

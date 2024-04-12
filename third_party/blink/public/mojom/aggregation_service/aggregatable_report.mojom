@@ -27,4 +27,7 @@ enum AggregationServiceMode {
 struct AggregatableReportHistogramContribution {
   mojo_base.mojom.Uint128 bucket;
   int32 value;
+
+  // Null if no filtering ID was explicitly set.
+  uint64? filtering_id;
 };

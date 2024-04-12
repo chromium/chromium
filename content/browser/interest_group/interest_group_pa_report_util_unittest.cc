@@ -25,7 +25,8 @@ const PrivateAggregationRequestWithEventType
                 NewHistogramContribution(
                     blink::mojom::AggregatableReportHistogramContribution::New(
                         /*bucket=*/123,
-                        /*value=*/45)),
+                        /*value=*/45,
+                        /*filtering_id=*/std::nullopt)),
             blink::mojom::AggregationServiceMode::kDefault,
             blink::mojom::DebugModeDetails::New()),
         /*event_type=*/std::nullopt);
@@ -59,7 +60,7 @@ auction_worklet::mojom::PrivateAggregationRequestPtr CreateHistogramRequest(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
-                  bucket, value)),
+                  bucket, value, /*filtering_id=*/std::nullopt)),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 }
@@ -150,8 +151,7 @@ TEST_F(InterestGroupPaReportUtilTest, HistogramContribution) {
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
-                  /*bucket=*/123,
-                  /*value=*/45)),
+                  /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt)),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
@@ -177,8 +177,7 @@ TEST_F(InterestGroupPaReportUtilTest, AggregationModeAndDebugMode) {
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
-                  /*bucket=*/123,
-                  /*value=*/45)),
+                  /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt)),
       blink::mojom::AggregationServiceMode::kExperimentalPoplar,
       blink::mojom::DebugModeDetails::New(
           /*is_enabled=*/true,
@@ -390,8 +389,8 @@ TEST_F(InterestGroupPaReportUtilTest,
           auction_worklet::mojom::AggregatableReportContribution::
               NewHistogramContribution(
                   blink::mojom::AggregatableReportHistogramContribution::New(
-                      /*bucket=*/6,
-                      /*value=*/45)),
+                      /*bucket=*/6, /*value=*/45,
+                      /*filtering_id=*/std::nullopt)),
           blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New()),
       /*event_type=*/std::nullopt);

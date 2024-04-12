@@ -112,11 +112,13 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
           *source, std::move(aggregatable_trigger_data), {aggregatable_values});
 
   // "key3" is not present as no value is found.
-  EXPECT_THAT(contributions,
-              ElementsAre(AggregatableReportHistogramContribution(
-                              /*bucket=*/1369, /*value=*/32768),
-                          AggregatableReportHistogramContribution(
-                              /*bucket=*/2693, /*value=*/1664)));
+  EXPECT_THAT(
+      contributions,
+      ElementsAre(
+          AggregatableReportHistogramContribution(
+              /*bucket=*/1369, /*value=*/32768, /*filtering_id=*/std::nullopt),
+          AggregatableReportHistogramContribution(
+              /*bucket=*/2693, /*value=*/1664, /*filtering_id=*/std::nullopt)));
 
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.FilteredTriggerDataPercentage", 60, 1);
@@ -173,7 +175,8 @@ TEST(AggregatableAttributionUtilsTest,
                                           /*positive=*/{*FilterConfig::Create(
                                               {{"product", {"1"}}})},
                                           /*negative=*/{}))},
-           .expected = {AggregatableReportHistogramContribution(1029, 1664)},
+           .expected = {AggregatableReportHistogramContribution(
+               1029, 1664, /*filtering_id=*/std::nullopt)},
        },
        {
            .description = "second_entry_ignored",
@@ -188,7 +191,8 @@ TEST(AggregatableAttributionUtilsTest,
                                           /*positive=*/{*FilterConfig::Create(
                                               {{"product", {"1"}}})},
                                           /*negative=*/{}))},
-           .expected = {AggregatableReportHistogramContribution(1369, 32768)},
+           .expected = {AggregatableReportHistogramContribution(
+               1369, 32768, /*filtering_id=*/std::nullopt)},
        },
        {
            .description = "filters_matched_keys_mismatched_no_contributions",
@@ -220,7 +224,8 @@ TEST(AggregatableAttributionUtilsTest,
                                           /*positive=*/{*FilterConfig::Create(
                                               {{"product", {"1"}}})},
                                           /*negative=*/{}))},
-           .expected = {AggregatableReportHistogramContribution(1029, 1664)},
+           .expected = {AggregatableReportHistogramContribution(
+               1029, 1664, /*filtering_id=*/std::nullopt)},
        }};
   for (auto& test_case : kTestCases) {
     std::vector<AggregatableReportHistogramContribution> contributions =
@@ -280,8 +285,9 @@ TEST(AggregatableAttributionUtilsTest, RoundsSourceRegistrationTime) {
         ReportBuilder(AttributionInfoBuilder().Build(),
                       SourceBuilder(source_time).BuildStored())
             .SetAggregatableHistogramContributions(
-                {AggregatableReportHistogramContribution(/*bucket=*/1,
-                                                         /*value=*/2)})
+                {AggregatableReportHistogramContribution(
+                    /*bucket=*/1,
+                    /*value=*/2, /*filtering_id=*/std::nullopt)})
             .BuildAggregatableAttribution();
 
     std::optional<AggregatableReportRequest> request =
@@ -304,8 +310,9 @@ TEST(AggregatableAttributionUtilsTest, AggregationCoordinatorSet) {
       ReportBuilder(AttributionInfoBuilder().Build(),
                     SourceBuilder().BuildStored())
           .SetAggregatableHistogramContributions(
-              {AggregatableReportHistogramContribution(/*bucket=*/1,
-                                                       /*value=*/2)})
+              {AggregatableReportHistogramContribution(
+                  /*bucket=*/1,
+                  /*value=*/2, /*filtering_id=*/std::nullopt)})
           .SetAggregationCoordinatorOrigin(*coordinator_origin)
           .BuildAggregatableAttribution();
 
@@ -346,8 +353,9 @@ TEST(AggregatableAttributionUtilsTest,
                   base::Time::FromMillisecondsSinceUnixEpoch(1234567890123))
                   .BuildStored())
               .SetAggregatableHistogramContributions(
-                  {AggregatableReportHistogramContribution(/*bucket=*/1,
-                                                           /*value=*/2)})
+                  {AggregatableReportHistogramContribution(
+                      /*bucket=*/1,
+                      /*value=*/2, /*filtering_id=*/std::nullopt)})
               .SetSourceRegistrationTimeConfig(
                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
                       kExclude)

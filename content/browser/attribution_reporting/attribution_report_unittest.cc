@@ -234,7 +234,7 @@ TEST(AttributionReportTest, ReportBody_Aggregatable) {
                     SourceBuilder().BuildStored())
           .SetAggregatableHistogramContributions(
               {blink::mojom::AggregatableReportHistogramContribution(
-                  /*bucket=*/1, /*value=*/2)})
+                  /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)})
           .BuildAggregatableAttribution();
 
   EXPECT_THAT(report.ReportBody(), IsJson(expected));
@@ -359,7 +359,7 @@ TEST(AttributionReportTest, ReportBody_AggregatableAttributionReport) {
           .SetTriggerContextId("123")
           .SetAggregatableHistogramContributions(
               {blink::mojom::AggregatableReportHistogramContribution(
-                  /*bucket=*/1, /*value=*/2)})
+                  /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)})
           .BuildAggregatableAttribution();
 
   auto& data =

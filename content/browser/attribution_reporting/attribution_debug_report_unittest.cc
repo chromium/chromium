@@ -59,7 +59,8 @@ AttributionReport DefaultAggregatableReport() {
   return ReportBuilder(AttributionInfoBuilder().Build(),
                        SourceBuilder().BuildStored())
       .SetAggregatableHistogramContributions(
-          {blink::mojom::AggregatableReportHistogramContribution(1, 2)})
+          {blink::mojom::AggregatableReportHistogramContribution(
+              1, 2, /*filtering_id=*/std::nullopt)})
       .BuildAggregatableAttribution();
 }
 

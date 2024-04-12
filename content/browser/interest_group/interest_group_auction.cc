@@ -1857,6 +1857,34 @@ class InterestGroupAuction::BuyerHelper
               [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
                      request_ptr) { return request_ptr.is_null(); }),
           base::NotFatalUntil::M128);
+
+    // TODO(crbug.com/330744610): Allow filtering IDs to be set.
+    if (base::ranges::any_of(
+            pa_requests,
+            [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+                   request_ptr) {
+              return request_ptr->contribution->is_histogram_contribution() &&
+                     request_ptr->contribution->get_histogram_contribution()
+                         ->filtering_id.has_value();
+            })) {
+      mojo_bids.clear();
+      pa_requests.clear();
+      generate_bid_client_receiver_set_.ReportBadMessage(
+          "Filtering ID set inappropriately");
+    }
+    if (base::ranges::any_of(
+            non_kanon_pa_requests,
+            [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+                   request_ptr) {
+              return request_ptr->contribution->is_histogram_contribution() &&
+                     request_ptr->contribution->get_histogram_contribution()
+                         ->filtering_id.has_value();
+            })) {
+      mojo_bids.clear();
+      non_kanon_pa_requests.clear();
+      generate_bid_client_receiver_set_.ReportBadMessage(
+          "Filtering ID set inappropriately");
+    }
     auction_->MaybeLogPrivateAggregationWebFeatures(pa_requests);
     if (!pa_requests.empty()) {
       BidState::PrivateAggregationPhaseKey agg_key = {
@@ -3295,7 +3323,9 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
                   blink::mojom::AggregatableReportHistogramContribution::New(
                       *bucket_base + report_buyers_config->bucket,
                       base::saturated_cast<int32_t>(
-                          std::max(0.0, value * report_buyers_config->scale)))),
+                          std::max(0.0, value * report_buyers_config->scale)),
+                      // TODO(crbug.com/330744610): Allow filtering ID to be set
+                      /*filtering_id=*/std::nullopt)),
           // TODO(caraitto): Consider allowing this to be set.
           blink::mojom::AggregationServiceMode::kDefault,
           std::move(debug_mode_details)));
@@ -4491,7 +4521,8 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
         component_auction_modified_bid_params,
     std::optional<double> bid_in_seller_currency,
     const std::optional<GURL>& debug_loss_report_url,
-    const std::optional<GURL>& debug_win_report_url) {
+    const std::optional<GURL>& debug_win_report_url,
+    const PrivateAggregationRequests& pa_requests) {
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   // If `debug_loss_report_url` or `debug_win_report_url` is not a valid HTTPS
   // URL, the auction should fail because the worklet is compromised.
@@ -4548,6 +4579,19 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
     score_ad_receivers_.ReportBadMessage("Invalid bid_in_seller_currency");
     return false;
   }
+
+  // TODO(crbug.com/330744610): Allow filtering IDs to be set.
+  if (base::ranges::any_of(
+          pa_requests,
+          [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+                 request_ptr) {
+            return request_ptr->contribution->is_histogram_contribution() &&
+                   request_ptr->contribution->get_histogram_contribution()
+                       ->filtering_id.has_value();
+          })) {
+    score_ad_receivers_.ReportBadMessage("Filtering ID set inappropriately");
+    return false;
+  }
   return true;
 }
 
@@ -4570,8 +4614,8 @@ void InterestGroupAuction::OnScoreAdComplete(
 
   if (!ValidateScoreBidCompleteResult(
           score, component_auction_modified_bid_params.get(),
-          bid_in_seller_currency, debug_loss_report_url,
-          debug_win_report_url)) {
+          bid_in_seller_currency, debug_loss_report_url, debug_win_report_url,
+          pa_requests)) {
     OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
     return;
   }

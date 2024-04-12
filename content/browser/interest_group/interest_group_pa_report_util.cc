@@ -226,8 +226,9 @@ CalculateContributionBucketAndValue(
     value = value_opt.value();
   }
 
-  return blink::mojom::AggregatableReportHistogramContribution::New(bucket,
-                                                                    value);
+  // TODO(crbug.com/330744610): Allow filtering ID to be set.
+  return blink::mojom::AggregatableReportHistogramContribution::New(
+      bucket, value, /*filtering_id=*/std::nullopt);
 }
 
 }  // namespace

@@ -347,8 +347,9 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                          .SetDebugCookieSet(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/1,
-                                                                  /*value=*/2)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/1,
+                             /*value=*/2, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486400000))
                      .BuildAggregatableAttribution(),
@@ -360,8 +361,9 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                                        1234483200000))
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/1,
-                                                                  /*value=*/2)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/1,
+                             /*value=*/2, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486400000))
                      .BuildAggregatableAttribution(),
@@ -375,10 +377,12 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                          .SetDebugCookieSet(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/1,
-                                                                  /*value=*/2),
-                          AggregatableReportHistogramContribution(/*bucket=*/3,
-                                                                  /*value=*/4)})
+                         {AggregatableReportHistogramContribution(
+                              /*bucket=*/1,
+                              /*value=*/2, /*filtering_id=*/std::nullopt),
+                          AggregatableReportHistogramContribution(
+                              /*bucket=*/3,
+                              /*value=*/4, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486500000))
                      .BuildAggregatableAttribution(),
@@ -390,10 +394,12 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                                        1234483300000))
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/1,
-                                                                  /*value=*/2),
-                          AggregatableReportHistogramContribution(/*bucket=*/3,
-                                                                  /*value=*/4)})
+                         {AggregatableReportHistogramContribution(
+                              /*bucket=*/1,
+                              /*value=*/2, /*filtering_id=*/std::nullopt),
+                          AggregatableReportHistogramContribution(
+                              /*bucket=*/3,
+                              /*value=*/4, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486500000))
                      .BuildAggregatableAttribution(),
@@ -408,7 +414,8 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
-                             /*bucket=*/absl::Uint128Max(), /*value=*/1000)})
+                             /*bucket=*/absl::Uint128Max(), /*value=*/1000,
+                             /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486600000))
                      .BuildAggregatableAttribution(),
@@ -421,7 +428,8 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
-                             /*bucket=*/absl::Uint128Max(), /*value=*/1000)})
+                             /*bucket=*/absl::Uint128Max(), /*value=*/1000,
+                             /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486600000))
                      .BuildAggregatableAttribution(),
@@ -433,8 +441,9 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                                        1234483200000))
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/0,
-                                                                  /*value=*/1)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/0,
+                             /*value=*/1, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486400000))
                      .SetSourceRegistrationTimeConfig(
@@ -462,8 +471,9 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                                        1234483200000))
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/0,
-                                                                  /*value=*/1)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/0,
+                             /*value=*/1, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486400000))
                      .SetSourceRegistrationTimeConfig(
@@ -481,8 +491,9 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                          .SetDebugCookieSet(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/1,
-                                                                  /*value=*/2)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/1,
+                             /*value=*/2, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486400000))
                      .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
@@ -495,8 +506,9 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                                        1234483200000))
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/1,
-                                                                  /*value=*/2)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/1,
+                             /*value=*/2, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486400000))
                      .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
@@ -511,10 +523,12 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                          .SetDebugCookieSet(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/1,
-                                                                  /*value=*/2),
-                          AggregatableReportHistogramContribution(/*bucket=*/3,
-                                                                  /*value=*/4)})
+                         {AggregatableReportHistogramContribution(
+                              /*bucket=*/1,
+                              /*value=*/2, /*filtering_id=*/std::nullopt),
+                          AggregatableReportHistogramContribution(
+                              /*bucket=*/3,
+                              /*value=*/4, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486500000))
                      .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
@@ -527,10 +541,12 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                                        1234483300000))
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/1,
-                                                                  /*value=*/2),
-                          AggregatableReportHistogramContribution(/*bucket=*/3,
-                                                                  /*value=*/4)})
+                         {AggregatableReportHistogramContribution(
+                              /*bucket=*/1,
+                              /*value=*/2, /*filtering_id=*/std::nullopt),
+                          AggregatableReportHistogramContribution(
+                              /*bucket=*/3,
+                              /*value=*/4, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486500000))
                      .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
@@ -546,7 +562,8 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
-                             /*bucket=*/absl::Uint128Max(), /*value=*/1000)})
+                             /*bucket=*/absl::Uint128Max(), /*value=*/1000,
+                             /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486600000))
                      .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
@@ -560,7 +577,8 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
-                             /*bucket=*/absl::Uint128Max(), /*value=*/1000)})
+                             /*bucket=*/absl::Uint128Max(), /*value=*/1000,
+                             /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486600000))
                      .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
@@ -573,8 +591,9 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                                        1234483200000))
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/0,
-                                                                  /*value=*/1)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/0,
+                             /*value=*/1, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486400000))
                      .SetSourceRegistrationTimeConfig(
@@ -604,8 +623,9 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                                        1234483200000))
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableReportHistogramContribution(/*bucket=*/0,
-                                                                  /*value=*/1)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/0,
+                             /*value=*/1, /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486400000))
                      .SetSourceRegistrationTimeConfig(

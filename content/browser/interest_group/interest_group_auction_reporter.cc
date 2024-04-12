@@ -597,6 +597,13 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
   timings.script_run_time = reporting_latency;
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
+    // TODO(crbug.com/330744610): Allow filtering ID to be set.
+    if (request->contribution->is_histogram_contribution() &&
+        request->contribution->get_histogram_contribution()
+            ->filtering_id.has_value()) {
+      mojo::ReportBadMessage("Filtering ID set inappropriately");
+    }
+
     // reportResult() only gets executed for seller when there was an auction
     // winner so we consider is_winner to be true, which results in
     // "reserved.loss" reports not being reported. Bid reject reason is not
@@ -912,6 +919,13 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
   timings.script_run_time = reporting_latency;
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
+    // TODO(crbug.com/330744610): Allow filtering ID to be set.
+    if (request->contribution->is_histogram_contribution() &&
+        request->contribution->get_histogram_contribution()
+            ->filtering_id.has_value()) {
+      mojo::ReportBadMessage("Filtering ID set inappropriately");
+    }
+
     // Only winner's reportWin() gets executed, so is_winner is true, which
     // results in "reserved.loss" reports not being reported. Bid reject reason
     // is not meaningful thus not supported in reportWin(), so it is set to

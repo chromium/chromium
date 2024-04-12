@@ -856,7 +856,8 @@ DefaultAggregatableHistogramContributions(
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
       contributions;
   for (size_t i = 0; i < histogram_values.size(); ++i) {
-    contributions.emplace_back(absl::MakeUint128(i, i), histogram_values[i]);
+    contributions.emplace_back(absl::MakeUint128(i, i), histogram_values[i],
+                               /*filtering_id=*/std::nullopt);
   }
   return contributions;
 }

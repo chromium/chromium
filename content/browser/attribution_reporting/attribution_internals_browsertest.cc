@@ -95,7 +95,8 @@ AttributionReport IrreleventAggregatableReport() {
   return ReportBuilder(AttributionInfoBuilder().Build(),
                        SourceBuilder().BuildStored())
       .SetAggregatableHistogramContributions(
-          {blink::mojom::AggregatableReportHistogramContribution(1, 2)})
+          {blink::mojom::AggregatableReportHistogramContribution(
+              1, 2, /*filtering_id=*/std::nullopt)})
       .BuildAggregatableAttribution();
 }
 
@@ -1111,8 +1112,8 @@ IN_PROC_BROWSER_TEST_F(
   const base::Time now = base::Time::Now();
 
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
-      contributions{
-          blink::mojom::AggregatableReportHistogramContribution(1, 2)};
+      contributions{blink::mojom::AggregatableReportHistogramContribution(
+          1, 2, /*filtering_id=*/std::nullopt)};
 
   manager()->NotifyReportSent(
       ReportBuilder(AttributionInfoBuilder().Build(),
@@ -1305,7 +1306,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                         SourceBuilder().BuildStored())
               .SetReportId(AttributionReport::Id(5))
               .SetAggregatableHistogramContributions(
-                  {blink::mojom::AggregatableReportHistogramContribution(1, 2)})
+                  {blink::mojom::AggregatableReportHistogramContribution(
+                      1, 2, /*filtering_id=*/std::nullopt)})
               .BuildAggregatableAttribution()}))
       .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 

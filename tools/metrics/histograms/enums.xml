@@ -30193,6 +30193,7 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="API disabled in settings"/>
   <int value="4" label="Enable debug mode called multiple times"/>
   <int value="5" label="Negative value"/>
+  <int value="6" label="Filtering ID invalid"/>
 </enum>
 
 <enum name="PrivacySandboxPrivateAggregationHostTimeoutResult">

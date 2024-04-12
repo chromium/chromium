@@ -380,7 +380,8 @@ bool DeserializeReportMetadata(
     data.contributions.emplace_back(
         absl::MakeUint128(contribution_msg.key().high_bits(),
                           contribution_msg.key().low_bits()),
-        base::checked_cast<int32_t>(contribution_msg.value()));
+        base::checked_cast<int32_t>(contribution_msg.value()),
+        /*filtering_id=*/std::nullopt);
   }
 
   return true;

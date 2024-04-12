@@ -466,7 +466,7 @@ TEST_F(AttributionReportNetworkSenderTest, HeadersPopulated) {
                     SourceBuilder().BuildStored())
           .SetAggregatableHistogramContributions(
               {blink::mojom::AggregatableReportHistogramContribution(
-                  /*bucket=*/1, /*value=*/2)})
+                  /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)})
           .BuildAggregatableAttribution();
 
   network_sender_->SendReport(report, /*is_debug_report=*/false,

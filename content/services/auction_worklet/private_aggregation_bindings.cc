@@ -476,11 +476,12 @@ void PrivateAggregationBindings::ContributeToHistogram(
     return;
   }
 
+  // TODO(crbug.com/330744610): Allow filtering ID to be set.
   bindings->private_aggregation_contributions_.push_back(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
-                  bucket, idl_value)));
+                  bucket, idl_value, /*filtering_id=*/std::nullopt)));
 }
 
 void PrivateAggregationBindings::ContributeToHistogramOnEvent(

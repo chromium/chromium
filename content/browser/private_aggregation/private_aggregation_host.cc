@@ -262,6 +262,16 @@ void PrivateAggregationHost::ContributeToHistogram(
     return;
   }
 
+  // TODO(crbug.com/330744610): Allow filtering ID to be set.
+  if (base::ranges::any_of(incoming_ptrs,
+                           [&](const ContributionPtr& contribution) {
+                             return contribution->filtering_id.has_value();
+                           })) {
+    mojo::ReportBadMessage("Filtering ID set inappropriately");
+    CloseCurrentPipe(PipeResult::kFilteringIdInvalid);
+    return;
+  }
+
   // TODO(alexmt): Consider eliding contributions with values of zero as well as
   // potentially merging contributions with the same bucket (although that
   // should probably be done after budgeting).

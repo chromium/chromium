@@ -93,11 +93,12 @@ void PrivateAggregation::contributeToHistogram(
     return;
   }
 
+  // TODO(crbug.com/330744610): Allow filtering ID to be set.
   Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
       mojom_contribution_vector;
   mojom_contribution_vector.push_back(
-      mojom::blink::AggregatableReportHistogramContribution::New(bucket.value(),
-                                                                 value));
+      mojom::blink::AggregatableReportHistogramContribution::New(
+          bucket.value(), value, /*filtering_id=*/std::nullopt));
 
   int64_t operation_id = global_scope_->GetCurrentOperationId();
   CHECK(operation_states_.Contains(operation_id));

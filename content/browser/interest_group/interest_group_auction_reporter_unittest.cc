@@ -502,7 +502,9 @@ class InterestGroupAuctionReporterTest
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
                       blink::mojom::AggregatableReportHistogramContribution::
-                          New(/*bucket=*/1, /*value=*/2)),
+                          New(/*bucket=*/1,
+                              /*value=*/2,
+                              /*filtering_id=*/std::nullopt)),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -511,7 +513,9 @@ class InterestGroupAuctionReporterTest
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
                       blink::mojom::AggregatableReportHistogramContribution::
-                          New(/*bucket=*/3, /*value=*/4)),
+                          New(/*bucket=*/3,
+                              /*value=*/4,
+                              /*filtering_id=*/std::nullopt)),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -520,7 +524,9 @@ class InterestGroupAuctionReporterTest
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
                       blink::mojom::AggregatableReportHistogramContribution::
-                          New(/*bucket=*/5, /*value=*/6)),
+                          New(/*bucket=*/5,
+                              /*value=*/6,
+                              /*filtering_id=*/std::nullopt)),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -529,7 +535,9 @@ class InterestGroupAuctionReporterTest
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
                       blink::mojom::AggregatableReportHistogramContribution::
-                          New(/*bucket=*/7, /*value=*/8)),
+                          New(/*bucket=*/7,
+                              /*value=*/8,
+                              /*filtering_id=*/std::nullopt)),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -538,7 +546,9 @@ class InterestGroupAuctionReporterTest
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
                       blink::mojom::AggregatableReportHistogramContribution::
-                          New(/*bucket=*/9, /*value=*/10)),
+                          New(/*bucket=*/9,
+                              /*value=*/10,
+                              /*filtering_id=*/std::nullopt)),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -547,7 +557,9 @@ class InterestGroupAuctionReporterTest
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
                       blink::mojom::AggregatableReportHistogramContribution::
-                          New(/*bucket=*/42, /*value=*/24)),
+                          New(/*bucket=*/42,
+                              /*value=*/24,
+                              /*filtering_id=*/std::nullopt)),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr

@@ -54,7 +54,8 @@ class CONTENT_EXPORT PrivateAggregationHost
     kApiDisabledInSettings = 3,
     kEnableDebugModeCalledMultipleTimes = 4,
     kNegativeValue = 5,
-    kMaxValue = kNegativeValue,
+    kFilteringIdInvalid = 6,
+    kMaxValue = kFilteringIdInvalid,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

@@ -135,7 +135,7 @@ TEST_F(PrivateAggregationHostTest,
       contributions;
   contributions.push_back(
       blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+          /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
   remote->ContributeToHistogram(std::move(contributions));
 
   // Should not get a request until after the remote is disconnected.
@@ -162,7 +162,8 @@ TEST_F(PrivateAggregationHostTest,
           AggregationServicePayloadContents(
               AggregationServicePayloadContents::Operation::kHistogram,
               {blink::mojom::AggregatableReportHistogramContribution(
-                  /*bucket=*/123, /*value=*/456)},
+                  /*bucket=*/123, /*value=*/456,
+                  /*filtering_id=*/std::nullopt)},
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
               PrivateAggregationHost::kMaxNumberOfContributions),
@@ -218,7 +219,7 @@ TEST_F(PrivateAggregationHostTest, ApiDiffers_RequestUpdatesCorrectly) {
         contributions;
     contributions.push_back(
         blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/123, /*value=*/456));
+            /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
     remotes[i]->ContributeToHistogram(std::move(contributions));
 
     remotes[i].FlushForTesting();
@@ -282,7 +283,7 @@ TEST_F(PrivateAggregationHostTest, EnableDebugMode_ReflectedInReport) {
         contributions;
     contributions.push_back(
         blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/123, /*value=*/456));
+            /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
     remotes[i]->ContributeToHistogram(std::move(contributions));
     if (debug_mode_details_args[i]->is_enabled) {
       remotes[i]->EnableDebugMode(
@@ -399,7 +400,7 @@ TEST_F(PrivateAggregationHostTest,
         contributions;
     contributions.push_back(
         blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/1, /*value=*/123));
+            /*bucket=*/1, /*value=*/123, /*filtering_id=*/std::nullopt));
     remotes[1]->ContributeToHistogram(std::move(contributions));
   }
 
@@ -408,7 +409,7 @@ TEST_F(PrivateAggregationHostTest,
         contributions;
     contributions.push_back(
         blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/2, /*value=*/123));
+            /*bucket=*/2, /*value=*/123, /*filtering_id=*/std::nullopt));
     remotes[2]->ContributeToHistogram(std::move(contributions));
   }
 
@@ -458,7 +459,7 @@ TEST_F(PrivateAggregationHostTest, BindUntrustworthyOriginReceiver_Fails) {
       contributions;
   contributions.push_back(
       blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+          /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
   remote_1->ContributeToHistogram(std::move(contributions));
 
   // Reset then flush to ensure disconnection and the ContributeToHistogram call
@@ -496,7 +497,7 @@ TEST_F(PrivateAggregationHostTest, BindReceiverWithTooLongContextId_Fails) {
       contributions;
   contributions.push_back(
       blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+          /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
   remote->ContributeToHistogram(std::move(contributions));
 
   // Reset then flush to ensure disconnection and the ContributeToHistogram call
@@ -534,13 +535,13 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
       negative_contributions;
   negative_contributions.push_back(
       blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/-1));
+          /*bucket=*/123, /*value=*/-1, /*filtering_id=*/std::nullopt));
 
   std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
       valid_contributions;
   valid_contributions.push_back(
       blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+          /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
 
   EXPECT_CALL(mock_callback_, Run).Times(0);
 
@@ -605,7 +606,7 @@ TEST_F(PrivateAggregationHostTest, TooManyContributions_Truncated) {
        ++i) {
     too_many_contributions.push_back(
         blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/123, /*value=*/1));
+            /*bucket=*/123, /*value=*/1, /*filtering_id=*/std::nullopt));
   }
 
   base::HistogramTester histogram;
@@ -658,7 +659,7 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationAllowed_RequestSucceeds) {
       contributions;
   contributions.push_back(
       blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+          /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
   remote->ContributeToHistogram(std::move(contributions));
 
   remote.reset();
@@ -698,7 +699,7 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationDisallowed_RequestFails) {
       contributions;
   contributions.push_back(
       blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+          /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
   remote->ContributeToHistogram(std::move(contributions));
 
   remote.reset();
@@ -743,7 +744,7 @@ TEST_F(PrivateAggregationHostTest, ContextIdSet_ReflectedInSingleReport) {
         contributions;
     contributions.push_back(
         blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/123, /*value=*/456));
+            /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
     remote->ContributeToHistogram(std::move(contributions));
   }
 
@@ -932,7 +933,7 @@ TEST_F(PrivateAggregationHostTest, AggregationCoordinatorOrigin) {
         contributions;
     contributions.push_back(
         blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/123, /*value=*/456));
+            /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
     remote->ContributeToHistogram(std::move(contributions));
 
     remote.reset();
@@ -997,7 +998,7 @@ TEST_F(PrivateAggregationHostTest,
         contributions;
     contributions.push_back(
         blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/123, /*value=*/456));
+            /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
     remote->ContributeToHistogram(std::move(contributions));
 
     remote.reset();
@@ -1088,7 +1089,7 @@ TEST_F(PrivateAggregationHostTest,
         contributions;
     contributions.push_back(
         blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/123, /*value=*/456));
+            /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
     remote->ContributeToHistogram(std::move(contributions));
     if (test_case.call_enable_debug_mode) {
       remote->EnableDebugMode(/*debug_key=*/nullptr);
@@ -1608,7 +1609,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
       contributions;
   contributions.push_back(
       blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+          /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
   remote->ContributeToHistogram(std::move(contributions));
   remote.reset();
   host_->FlushReceiverSetForTesting();
@@ -1648,7 +1649,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
       contributions;
   contributions.push_back(
       blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+          /*bucket=*/123, /*value=*/456, /*filtering_id=*/std::nullopt));
   remote->ContributeToHistogram(std::move(contributions));
   remote.reset();
   host_->FlushReceiverSetForTesting();

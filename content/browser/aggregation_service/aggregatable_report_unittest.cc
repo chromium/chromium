@@ -67,7 +67,8 @@ PadContributions(
     int max_contributions_allowed) {
   EXPECT_LE(static_cast<int>(contributions.size()), max_contributions_allowed);
   for (int i = contributions.size(); i < max_contributions_allowed; ++i) {
-    contributions.emplace_back(/*bucket=*/0, /*value=*/0);
+    contributions.emplace_back(/*bucket=*/0, /*value=*/0,
+                               /*filtering_id=*/std::nullopt);
   }
   return contributions;
 }
@@ -289,10 +290,10 @@ TEST_P(AggregatableReportTest,
   expected_payload_contents.contributions = {
       blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/123,
-          /*value=*/456),
+          /*value=*/456, /*filtering_id=*/std::nullopt),
       blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/7890,
-          /*value=*/1234)};
+          /*value=*/1234, /*filtering_id=*/std::nullopt)};
 
   std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(expected_payload_contents,
@@ -335,7 +336,7 @@ TEST_P(AggregatableReportTest,
     expected_payload_contents.contributions = {
         blink::mojom::AggregatableReportHistogramContribution(
             /*bucket=*/0,
-            /*value=*/0)};
+            /*value=*/0, /*filtering_id=*/std::nullopt)};
   }
 
   std::optional<AggregatableReportRequest> request =
@@ -542,10 +543,10 @@ TEST_P(AggregatableReportTest, RequestCreatedWithTooManyContributions) {
   payload_contents.contributions = {
       blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/123,
-          /*value=*/456),
+          /*value=*/456, /*filtering_id=*/std::nullopt),
       blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/7890,
-          /*value=*/1234)};
+          /*value=*/1234, /*filtering_id=*/std::nullopt)};
 
   std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(payload_contents,
@@ -834,7 +835,8 @@ TEST_P(AggregatableReportTest,
   EXPECT_FALSE(negative_request.has_value());
 
   payload_contents.contributions.emplace_back(/*bucket=*/456,
-                                              /*value=*/78);
+                                              /*value=*/78,
+                                              /*filtering_id=*/std::nullopt);
   payload_contents.max_contributions_allowed = 1;
 
   std::optional<AggregatableReportRequest> too_small_max_request =
@@ -1024,7 +1026,8 @@ TEST(AggregatableReportProtoMigrationTest,
           AggregationServicePayloadContents(
               AggregationServicePayloadContents::Operation::kHistogram,
               {blink::mojom::AggregatableReportHistogramContribution(
-                  /*bucket=*/123, /*value=*/456)},
+                  /*bucket=*/123, /*value=*/456,
+                  /*filtering_id=*/std::nullopt)},
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
               /*max_contributions_allowed=*/1),
@@ -1069,7 +1072,8 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
           AggregationServicePayloadContents(
               AggregationServicePayloadContents::Operation::kHistogram,
               {blink::mojom::AggregatableReportHistogramContribution(
-                  /*bucket=*/123, /*value=*/456)},
+                  /*bucket=*/123, /*value=*/456,
+                  /*filtering_id=*/std::nullopt)},
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
               /*max_contributions_allowed=*/1),
@@ -1113,7 +1117,8 @@ TEST(AggregatableReportProtoMigrationTest,
           AggregationServicePayloadContents(
               AggregationServicePayloadContents::Operation::kHistogram,
               {blink::mojom::AggregatableReportHistogramContribution(
-                  /*bucket=*/123, /*value=*/456)},
+                  /*bucket=*/123, /*value=*/456,
+                  /*filtering_id=*/std::nullopt)},
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
               /*max_contributions_allowed=*/1),
@@ -1180,7 +1185,8 @@ TEST_P(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
                 AggregationServicePayloadContents::Operation::kHistogram,
                 {blink::mojom::AggregatableReportHistogramContribution(
                     /*bucket=*/123,
-                    /*value=*/456)},
+                    /*value=*/456,
+                    /*filtering_id=*/std::nullopt)},
                 blink::mojom::AggregationServiceMode::kDefault,
                 test_case.aggregation_coordinator_origin,
                 /*max_contributions_allowed=*/20),

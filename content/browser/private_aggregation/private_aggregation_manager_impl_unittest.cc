@@ -98,7 +98,8 @@ CloneAndSplitOutGenerator(const AggregatableReportRequest& request) {
                  contributions) {
             // Handle null reports
             if (contributions.empty()) {
-              contributions.emplace_back(/*bucket=*/0, /*value=*/0);
+              contributions.emplace_back(/*bucket=*/0, /*value=*/0,
+                                         /*filtering_id=*/std::nullopt);
             }
             EXPECT_EQ(contributions, clone.payload_contents().contributions);
             return clone;
@@ -225,12 +226,18 @@ TEST_F(PrivateAggregationManagerImplTest,
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
   payload_contents.contributions = {
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/123,
-                                                            /*value=*/100),
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/123,
-                                                            /*value=*/5),
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/456,
-                                                            /*value=*/20)};
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/123,
+          /*value=*/100,
+          /*filtering_id=*/std::nullopt),
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/123,
+          /*value=*/5,
+          /*filtering_id=*/std::nullopt),
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/456,
+          /*value=*/20,
+          /*filtering_id=*/std::nullopt)};
 
   AggregatableReportRequest expected_request =
       AggregatableReportRequest::Create(payload_contents,
@@ -351,9 +358,12 @@ TEST_F(PrivateAggregationManagerImplTest,
   payload_contents.contributions = {
       blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/123,
-          /*value=*/std::numeric_limits<int>::max()),
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/456,
-                                                            /*value=*/1)};
+          /*value=*/std::numeric_limits<int>::max(),
+          /*filtering_id=*/std::nullopt),
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/456,
+          /*value=*/1,
+          /*filtering_id=*/std::nullopt)};
 
   AggregatableReportRequest expected_request =
       AggregatableReportRequest::Create(payload_contents,
@@ -677,8 +687,10 @@ TEST_F(PrivateAggregationManagerImplTest,
   AggregationServicePayloadContents null_payload =
       example_request.payload_contents();
   null_payload.contributions = {
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/0,
-                                                            /*value=*/0)};
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/0,
+          /*value=*/0,
+          /*filtering_id=*/std::nullopt)};
 
   std::optional<AggregatableReportRequest> null_request =
       AggregatableReportRequest::Create(
@@ -819,8 +831,10 @@ TEST_F(PrivateAggregationManagerImplTest,
   AggregationServicePayloadContents null_payload =
       example_request.payload_contents();
   null_payload.contributions = {
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/0,
-                                                            /*value=*/0)};
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/0,
+          /*value=*/0,
+          /*filtering_id=*/std::nullopt)};
 
   std::optional<AggregatableReportRequest> null_request =
       AggregatableReportRequest::Create(

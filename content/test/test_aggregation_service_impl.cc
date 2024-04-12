@@ -126,7 +126,8 @@ void TestAggregationServiceImpl::AssembleReport(
   AggregationServicePayloadContents payload_contents(
       ConvertToOperation(request.operation),
       {blink::mojom::AggregatableReportHistogramContribution(
-          /*bucket=*/request.bucket, /*value=*/request.value)},
+          /*bucket=*/request.bucket, /*value=*/request.value,
+          /*filtering_id=*/std::nullopt)},
       ConvertToAggregationMode(request.aggregation_mode),
       /*aggregation_coordinator_origin=*/std::nullopt,
       /*max_contributions_allowed=*/20);

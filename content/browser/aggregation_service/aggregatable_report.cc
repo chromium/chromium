@@ -224,7 +224,7 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
   for (int i = 0; i < number_of_null_contributions_to_add; ++i) {
     AppendEncodedContributionToCborArray(
         data, blink::mojom::AggregatableReportHistogramContribution(
-                  /*bucket=*/0, /*value=*/0));
+                  /*bucket=*/0, /*value=*/0, /*filtering_id=*/std::nullopt));
   }
 
   value.emplace("data", std::move(data));
@@ -307,7 +307,8 @@ ConvertPayloadContentsFromProto(
     contributions.emplace_back(
         /*bucket=*/absl::MakeUint128(contribution_proto.bucket_high(),
                                      contribution_proto.bucket_low()),
-        /*value=*/contribution_proto.value());
+        /*value=*/contribution_proto.value(),
+        /*filtering_id=*/std::nullopt);
   }
 
   blink::mojom::AggregationServiceMode aggregation_mode =
@@ -423,6 +424,9 @@ void ConvertPayloadContentsToProto(
         absl::Uint128High64(contribution.bucket));
     contribution_proto->set_bucket_low(absl::Uint128Low64(contribution.bucket));
     contribution_proto->set_value(contribution.value);
+
+    // TODO(crbug.com/330744610): Add support for filtering IDs.
+    CHECK(!contribution.filtering_id.has_value());
   }
 
   switch (payload_contents.aggregation_mode) {
@@ -672,6 +676,12 @@ AggregatableReportRequest::CreateInternal(
                  contribution) { return contribution.value < 0; })) {
     return std::nullopt;
   }
+
+  // TODO(crbug.com/330744610): Add support for filtering IDs.
+  CHECK(base::ranges::none_of(
+      payload_contents.contributions,
+      [](const blink::mojom::AggregatableReportHistogramContribution&
+             contribution) { return contribution.filtering_id.has_value(); }));
 
   if (!shared_info.report_id.is_valid()) {
     return std::nullopt;

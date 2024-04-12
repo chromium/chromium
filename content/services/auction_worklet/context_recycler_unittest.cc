@@ -2111,7 +2111,7 @@ class ContextRecyclerPrivateAggregationEnabledTest
       int value,
       std::optional<blink::mojom::DebugKeyPtr> debug_key = std::nullopt) {
     blink::mojom::AggregatableReportHistogramContribution expected_contribution(
-        bucket, value);
+        bucket, value, /*filtering_id=*/std::nullopt);
 
     blink::mojom::DebugModeDetailsPtr debug_mode_details;
     if (debug_key.has_value()) {
@@ -2304,7 +2304,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     }
 
     blink::mojom::AggregatableReportHistogramContribution
-        expected_contribution_1(/*bucket=*/123, /*value=*/45);
+        expected_contribution_1(/*bucket=*/123, /*value=*/45,
+                                /*filtering_id=*/std::nullopt);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_1(
         auction_worklet::mojom::AggregatableReportContribution::
             NewHistogramContribution(expected_contribution_1.Clone()),
@@ -2312,7 +2313,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         blink::mojom::DebugModeDetails::New());
 
     blink::mojom::AggregatableReportHistogramContribution
-        expected_contribution_2(/*bucket=*/678, /*value=*/90);
+        expected_contribution_2(/*bucket=*/678, /*value=*/90,
+                                /*filtering_id=*/std::nullopt);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_2(
         auction_worklet::mojom::AggregatableReportContribution::
             NewHistogramContribution(expected_contribution_2.Clone()),
@@ -2733,7 +2735,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     }
 
     blink::mojom::AggregatableReportHistogramContribution
-        expected_contribution_1(/*bucket=*/123, /*value=*/45);
+        expected_contribution_1(/*bucket=*/123, /*value=*/45,
+                                /*filtering_id=*/std::nullopt);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_1(
         auction_worklet::mojom::AggregatableReportContribution::
             NewHistogramContribution(expected_contribution_1.Clone()),
@@ -2743,7 +2746,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
             /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
 
     blink::mojom::AggregatableReportHistogramContribution
-        expected_contribution_2(/*bucket=*/678, /*value=*/90);
+        expected_contribution_2(/*bucket=*/678, /*value=*/90,
+                                /*filtering_id=*/std::nullopt);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_2(
         auction_worklet::mojom::AggregatableReportContribution::
             NewHistogramContribution(expected_contribution_2.Clone()),

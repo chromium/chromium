@@ -101,7 +101,8 @@ CreateAggregatableHistogram(
         }
 
         contributions.emplace_back(key,
-                                   base::checked_cast<int32_t>(value->second));
+                                   base::checked_cast<int32_t>(value->second),
+                                   /*filtering_id=*/std::nullopt);
       }
       break;
     }
