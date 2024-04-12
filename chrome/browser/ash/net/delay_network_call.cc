@@ -23,23 +23,23 @@ namespace {
 
 constexpr base::TimeDelta kDefaultRetryDelay = base::Seconds(3);
 
-bool IsCaptivePortal(const NetworkState* default_network) {
+bool IsOnline(const NetworkState* default_network) {
   if (!network_portal_detector::IsInitialized()) {
     // Network portal detector is not initialized yet so we can't reliably
-    // detect network portals. We will optimistically return false here,
-    // assuming that a network portal doesn't exist.
-    return false;
-  }
-
-  if (const NetworkPortalDetector::CaptivePortalStatus status =
-          network_portal_detector::GetInstance()->GetCaptivePortalStatus();
-      status != NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
-    DVLOG(1) << "DelayNetworkCall: Captive portal status for "
-             << default_network->name() << ": "
-             << NetworkPortalDetector::CaptivePortalStatusString(status);
+    // detect network portals. We will optimistically return true here,
+    // assuming that the default network is online.
     return true;
   }
 
+  const NetworkPortalDetector::CaptivePortalStatus status =
+      network_portal_detector::GetInstance()->GetCaptivePortalStatus();
+  if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
+    return true;
+  }
+
+  DVLOG(1) << "DelayNetworkCall: Not online. CaptivePortalStatus for "
+           << default_network->name() << " = "
+           << NetworkPortalDetector::CaptivePortalStatusString(status);
   return false;
 }
 
@@ -56,13 +56,13 @@ bool AreNetworkCallsDelayed() {
   if (const std::string default_connection_state =
           default_network->connection_state();
       !NetworkState::StateIsConnected(default_connection_state)) {
-    DVLOG(1) << "DelayNetworkCall: "
-             << "Default network: " << default_network->name()
+    DVLOG(1) << "DelayNetworkCall: " << "Default network: "
+             << default_network->name()
              << " State: " << default_connection_state;
     return true;
   }
 
-  if (IsCaptivePortal(default_network)) {
+  if (!IsOnline(default_network)) {
     return true;
   }
 
