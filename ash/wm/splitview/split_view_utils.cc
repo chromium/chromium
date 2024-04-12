@@ -764,9 +764,11 @@ int CalculateDividerPosition(aura::Window* root_window,
   // 1-DIP gap between snapped windows precludes multiresizing. See b/262011280.
   const float snap_length = (divider_upper_limit - divider_delta) * snap_ratio;
 
-  return snap_position == SnapPosition::kPrimary
-             ? snap_length
-             : divider_upper_limit - snap_length - divider_delta;
+  return std::clamp(
+      static_cast<int>(snap_position == SnapPosition::kPrimary
+                           ? snap_length
+                           : divider_upper_limit - snap_length - divider_delta),
+      0, divider_upper_limit);
 }
 
 int GetEquivalentDividerPosition(aura::Window* window,

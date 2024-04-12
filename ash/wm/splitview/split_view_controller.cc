@@ -2093,7 +2093,7 @@ int SplitViewController::GetClosestFixedDividerPosition(int divider_position) {
   if (divider_closest_ratio_ > 0.f && divider_closest_ratio_ < 1.f) {
     fixed_position -= kSplitviewDividerShortSideLength / 2;
   }
-  return fixed_position;
+  return std::clamp(fixed_position, 0, divider_upper_limit);
 }
 
 void SplitViewController::StopAndShoveAnimatedDivider() {
