@@ -1785,7 +1785,7 @@ const ComputedStyle* StyleResolver::StyleForPage(
   StyleResolverState state(GetDocument(), *root_element,
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(parent_style));
-  state.CreateNewStyle(*parent_style, *parent_style);
+  state.CreateNewStyle(*InitialStyleForElement(), *parent_style);
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 

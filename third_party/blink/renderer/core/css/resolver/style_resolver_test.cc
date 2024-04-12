@@ -690,6 +690,7 @@ TEST_P(ParameterizedStyleResolverTest, PageComputedStyle) {
       html {
         font-size: 32px;
         margin: 66px;
+        width: 123px;
       }
       body {
         /* Note: @page inherits from html, but not body. */
@@ -731,6 +732,8 @@ TEST_P(ParameterizedStyleResolverTest, PageComputedStyle) {
   EXPECT_EQ(style->GetPageOrientation(), PageOrientation::kRotateLeft);
 
   EXPECT_EQ(style->PaddingTop(), Length::Fixed(7));
+
+  EXPECT_EQ(style->Width(), Length::Auto());
 
   EXPECT_EQ(style->LineHeight(), Length::Fixed(64));
   EXPECT_EQ(style->FontSize(), 32);

@@ -101,6 +101,10 @@ class CORE_EXPORT StyleResolverState {
     style_builder_.emplace(style);
     UpdateLengthConversionData();
   }
+
+  // Initialize the style builder. source_for_noninherited holds initial values
+  // to use for non-inherited properties. inherit_parent is simply the style to
+  // inherit from (either implicitly or explicitly).
   void CreateNewStyle(
       const ComputedStyle& source_for_noninherited,
       const ComputedStyle& inherit_parent,
