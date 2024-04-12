@@ -73,6 +73,7 @@ class ClientBase {
     bool use_stylus = false;
     std::optional<std::string> wayland_socket = {};
     uint32_t linux_dmabuf_version = ZWP_LINUX_DMABUF_V1_MODIFIER_SINCE_VERSION;
+    bool enable_vulkan_debug = false;
   };
 
   struct Buffer {

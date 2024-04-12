@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bits.h"
 #include "base/command_line.h"
@@ -90,6 +91,9 @@ const char kUseMemfd[] = "use-memfd";
 
 // Specifies if client should be fullscreen.
 const char kFullscreen[] = "fullscreen";
+
+// Specifies if client should run with vulkan debug logs.
+const char kVulkanDebug[] = "vk-debug";
 
 // Specifies if client should y-invert the dmabuf surfaces.
 const char kYInvert[] = "y-invert";
@@ -162,7 +166,7 @@ uint32_t VulkanChooseGraphicsQueueFamily(VkPhysicalDevice device) {
   return UINT32_MAX;
 }
 
-std::unique_ptr<ScopedVkInstance> CreateVkInstance() {
+std::unique_ptr<ScopedVkInstance> CreateVkInstance(bool enable_vulkan_debug) {
   VkApplicationInfo application_info{
       .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
       .pApplicationName = nullptr,
@@ -171,12 +175,17 @@ std::unique_ptr<ScopedVkInstance> CreateVkInstance() {
       .engineVersion = 0,
       .apiVersion = VK_MAKE_VERSION(1, 1, 0),
   };
+
+  std::vector<const char*> enabled_layers;
+  if (enable_vulkan_debug) {
+    enabled_layers.push_back("VK_LAYER_KHRONOS_validation");
+  }
   VkInstanceCreateInfo create_info{
       .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
       .flags = 0,
       .pApplicationInfo = &application_info,
-      .enabledLayerCount = 0,
-      .ppEnabledLayerNames = nullptr,
+      .enabledLayerCount = static_cast<uint32_t>(enabled_layers.size()),
+      .ppEnabledLayerNames = enabled_layers.data(),
       .enabledExtensionCount = 0,
       .ppEnabledExtensionNames = nullptr,
   };
@@ -362,6 +371,8 @@ bool ClientBase::InitParams::FromCommandLine(
   if (command_line.HasSwitch(switches::kWaylandSocket))
     wayland_socket = command_line.GetSwitchValueASCII(switches::kWaylandSocket);
 
+  enable_vulkan_debug = command_line.HasSwitch(switches::kVulkanDebug);
+
   return true;
 }
 
@@ -529,7 +540,7 @@ bool ClientBase::Init(const InitParams& params) {
       CHECK(vk_implementation_) << "Can't create VulkanImplementation";
       bool ret = vk_implementation_->InitializeVulkanInstance(false);
       CHECK(ret) << "Failed to initialize VulkanImplementation";
-      vk_instance_ = CreateVkInstance();
+      vk_instance_ = CreateVkInstance(params.enable_vulkan_debug);
       uint32_t queue_family_index = UINT32_MAX;
       vk_device_ = CreateVkDevice(vk_instance_->get(), &queue_family_index);
       CHECK(gpu::GetVulkanFunctionPointers()->BindDeviceFunctionPointers(
