@@ -3568,6 +3568,21 @@
             ]
         }
     ],
+    "ChromeOSContainerAppPreinstall": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContainerAppPreinstall"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSGlanceablesTimeManagementClassroomStudentData": [
         {
             "platforms": [
