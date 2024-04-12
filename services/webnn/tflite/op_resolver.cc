@@ -110,6 +110,10 @@ OpResolver::OpResolver() {
              ::tflite::ops::builtin::Register_MAXIMUM(),
              /* min_version = */ 1,
              /* max_version = */ 4);
+  AddBuiltin(::tflite::BuiltinOperator_MEAN,
+             ::tflite::ops::builtin::Register_MEAN(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_MINIMUM,
              ::tflite::ops::builtin::Register_MINIMUM(),
              /* min_version = */ 1,
@@ -133,6 +137,16 @@ OpResolver::OpResolver() {
              /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_POW,
              ::tflite::ops::builtin::Register_POW());
+  AddBuiltin(::tflite::BuiltinOperator_REDUCE_PROD,
+             ::tflite::ops::builtin::Register_REDUCE_PROD());
+  AddBuiltin(::tflite::BuiltinOperator_REDUCE_MAX,
+             ::tflite::ops::builtin::Register_REDUCE_MAX(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
+  AddBuiltin(::tflite::BuiltinOperator_REDUCE_MIN,
+             ::tflite::ops::builtin::Register_REDUCE_MIN(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_RELU,
              ::tflite::ops::builtin::Register_RELU(), /* min_version = */ 1,
              /* max_version = */ 2);
@@ -171,6 +185,10 @@ OpResolver::OpResolver() {
              ::tflite::ops::builtin::Register_SUB(),
              /* min_version = */ 1,
              /* max_version = */ 3);
+  AddBuiltin(::tflite::BuiltinOperator_SUM,
+             ::tflite::ops::builtin::Register_SUM(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_TRANSPOSE,
              ::tflite::ops::builtin::Register_TRANSPOSE(),
              /* min_version = */ 1,

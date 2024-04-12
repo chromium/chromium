@@ -350,6 +350,10 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializePool2d(*op.get_pool2d()));
       break;
     }
+    case mojom::Operation::Tag::kReduce: {
+      ASSIGN_OR_RETURN(operator_offset, SerializeReduce(*op.get_reduce()));
+      break;
+    }
     case mojom::Operation::Tag::kRelu:
       operator_offset = SerializeRelu(*op.get_relu());
       break;
@@ -403,8 +407,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("matmul is not implemented");
     case mojom::Operation::Tag::kPrelu:
       return base::unexpected("prelu is not implemented");
-    case mojom::Operation::Tag::kReduce:
-      return base::unexpected("reduce is not implemented");
     case mojom::Operation::Tag::kSoftplus:
       return base::unexpected("softplus is not implemented");
     case mojom::Operation::Tag::kSoftsign:
@@ -1315,6 +1317,58 @@ auto GraphBuilder::SerializePool2d(const mojom::Pool2d& pool2d)
       builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
       builder_.CreateVector<int32_t>(op_outputs),
       ::tflite::BuiltinOptions_Pool2DOptions, pool_2d_options.Union());
+}
+
+auto GraphBuilder::SerializeReduce(const mojom::Reduce& reduce)
+    -> base::expected<OperatorOffset, std::string> {
+  // Serialize the axes tensor to reduce input tensor.
+  ASSIGN_OR_RETURN(const std::vector<int32_t> signed_axes,
+                   ToSignedDimensions(reduce.axes));
+  const std::array<int32_t, 1> axes_tensor_shape = {
+      base::checked_cast<int32_t>(signed_axes.size())};
+  const int32_t axes_tensor_index =
+      SerializeTensorWithBuffer<int32_t>(signed_axes, axes_tensor_shape);
+
+  ::tflite::BuiltinOperator operator_code;
+  switch (reduce.kind) {
+    case mojom::Reduce::Kind::kMax:
+      operator_code = ::tflite::BuiltinOperator_REDUCE_MAX;
+      break;
+    case mojom::Reduce::Kind::kMean:
+      operator_code = ::tflite::BuiltinOperator_MEAN;
+      break;
+    case mojom::Reduce::Kind::kMin:
+      operator_code = ::tflite::BuiltinOperator_REDUCE_MIN;
+      break;
+    case mojom::Reduce::Kind::kProduct:
+      operator_code = ::tflite::BuiltinOperator_REDUCE_PROD;
+      break;
+    case mojom::Reduce::Kind::kSum:
+      operator_code = ::tflite::BuiltinOperator_SUM;
+      break;
+    case mojom::Reduce::Kind::kLogSum:
+    // TODO(crbug.com/333952108): Support reduceLogSum by decomposition.
+    case mojom::Reduce::Kind::kLogSumExp:
+    // TODO(crbug.com/333952108): Support reduceLogSumExp by decomposition.
+    case mojom::Reduce::Kind::kSumSquare:
+    // TODO(crbug.com/333952108): Support reduceSumSquare by decomposition.
+    case mojom::Reduce::Kind::kL1:
+    case mojom::Reduce::Kind::kL2:
+      return base::unexpected(OpKindToString(reduce.kind) +
+                              " is not implemented.");
+  }
+
+  const auto reduce_options =
+      ::tflite::CreateReducerOptions(builder_, reduce.keep_dimensions);
+  const uint32_t operator_code_index = GetOperatorCodeIndex(operator_code);
+  const std::array<int32_t, 2> op_inputs = {
+      operand_to_index_map_.at(reduce.input_operand_id), axes_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(reduce.output_operand_id)};
+  return ::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs),
+      ::tflite::BuiltinOptions_ReducerOptions, reduce_options.Union());
 }
 
 auto GraphBuilder::SerializeRelu(const mojom::Relu& relu) -> OperatorOffset {
