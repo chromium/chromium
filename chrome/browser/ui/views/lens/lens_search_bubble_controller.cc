@@ -18,6 +18,7 @@
 namespace lens {
 
 constexpr int kBubbleCornerRadius = 20;
+constexpr int kBubbleAnchorOffset = -4;
 
 class LensSearchBubbleDialogView : public WebUIBubbleDialogView {
   METADATA_HEADER(LensSearchBubbleDialogView, WebUIBubbleDialogView)
@@ -31,6 +32,12 @@ class LensSearchBubbleDialogView : public WebUIBubbleDialogView {
     // through the LensSearchBubbleController.
     set_close_on_deactivate(false);
     set_corner_radius(kBubbleCornerRadius);
+  }
+
+  gfx::Rect GetAnchorRect() const override {
+    auto anchor_rect = BubbleDialogDelegateView::GetAnchorRect();
+    anchor_rect.Offset(0, kBubbleAnchorOffset);
+    return anchor_rect;
   }
 
  private:
@@ -50,11 +57,14 @@ void LensSearchBubbleController::Show() {
   auto contents_wrapper =
       std::make_unique<WebUIContentsWrapperT<SearchBubbleUI>>(
           GURL(chrome::kChromeUILensSearchBubbleURL), GetBrowser().profile(),
-          IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE);
+          IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE,
+          /*webui_resizes_host=*/true,
+          /*esc_closes_ui=*/true,
+          /*supports_draggable_regions=*/false);
 
   std::unique_ptr<LensSearchBubbleDialogView> bubble_view =
       std::make_unique<LensSearchBubbleDialogView>(
-          BrowserView::GetBrowserViewForBrowser(&GetBrowser())->toolbar(),
+          BrowserView::GetBrowserViewForBrowser(&GetBrowser())->top_container(),
           std::move(contents_wrapper));
   bubble_view->SetProperty(views::kElementIdentifierKey,
                            kLensSearchBubbleElementId);
