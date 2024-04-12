@@ -200,7 +200,8 @@
     <template is="dom-if" route-path="/osPrivacy/lockScreen">
       <os-settings-subpage page-title="[[selectLockScreenTitleString_(hasPinLogin)]]">
         <settings-lock-screen-subpage id="lockScreen"
-            prefs="{{prefs}}" auth-token="[[authTokenInfo_.token]]"
+            prefs="{{prefs}}"
+            auth-token="[[getAuthToken_(authTokenInfo_, authTokenReply_)]]"
             on-invalidate-auth-token-requested="onInvalidateTokenRequested_"
             on-password-requested="onPasswordRequested_">
         </settings-lock-screen-subpage>
@@ -209,7 +210,7 @@
     <template is="dom-if" route-path="/osPrivacy/lockScreen/fingerprint">
       <os-settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
         <settings-fingerprint-list-subpage id="fingerprint-list"
-            auth-token="[[authTokenInfo_.token]]"
+            auth-token="[[getAuthToken_(authTokenInfo_, authTokenReply_]]"
             on-password-requested="onPasswordRequested_">
         </settings-fingerprint-list-subpage>
       </os-settings-subpage>

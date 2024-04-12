@@ -26,6 +26,7 @@ import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settin
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {AUTH_TOKEN_INVALID_EVENT_TYPE} from 'chrome://resources/ash/common/quick_unlock/utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {InSessionAuth, Reason, RequestTokenReply} from 'chrome://resources/mojo/chromeos/components/in_session_auth/mojom/in_session_auth.mojom-webui.js';
 import {afterNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
@@ -71,10 +72,22 @@ export class OsSettingsPrivacyPageElement extends
 
       /**
        * Authentication token.
+       * This is only used if `isAuthPanelEnabled_` is set to false.
+       * i.e if the `UseAuthPanelInSettings` feature is disabled.
        */
       authTokenInfo_: {
         type: Object,
         observer: 'onAuthTokenChanged_',
+      },
+
+      /**
+       * The variable that stores the authentication token we receive
+       * from AuthPanel.
+       * This is only used if `isAuthPanelEnabled_` is set to true.
+       * i.e if the `UseAuthPanelInSettings` feature is enabled.
+       */
+      authTokenReply_: {
+        type: Object,
       },
 
       showPasswordPromptDialog_: {
@@ -104,6 +117,18 @@ export class OsSettingsPrivacyPageElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('fingerprintUnlockEnabled');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * True if auth panel will be used for authentication instead of
+       * password prompt dialog.
+       */
+      isAuthPanelEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isAuthPanelEnabled');
         },
         readOnly: true,
       },
@@ -256,6 +281,7 @@ export class OsSettingsPrivacyPageElement extends
   private authTokenInfo_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private browserProxy_: PeripheralDataAccessBrowserProxy;
   private rowIcons_: Record<string, string>;
+  private authTokenReply_: RequestTokenReply|undefined|null;
 
   /**
    * The timeout ID to pass to clearTimeout() to cancel auth token
@@ -266,6 +292,7 @@ export class OsSettingsPrivacyPageElement extends
   private dataAccessShiftTabPressed_: boolean;
   private fingerprintUnlockEnabled_: boolean;
   private isAccountManagerEnabled_: boolean;
+  private isAuthPanelEnabled_: boolean;
   private isGuestMode_: boolean;
   private isRevampWayfindingEnabled_: boolean;
   private isRevenBranding_: boolean;
@@ -440,16 +467,41 @@ export class OsSettingsPrivacyPageElement extends
     return '';
   }
 
-  private onPasswordRequested_(): void {
-    this.showPasswordPromptDialog_ = true;
+  private async onPasswordRequested_(): Promise<void> {
+    if (!this.isAuthPanelEnabled_) {
+      this.showPasswordPromptDialog_ = true;
+      return;
+    }
+
+    const tokenInfo = await InSessionAuth.getRemote().requestToken(
+        Reason.kAccessAuthenticationSettings,
+        loadTimeData.getString('authPrompt'));
+
+    this.authTokenReply_ = tokenInfo.reply;
+  }
+
+  private getAuthToken_(): string|undefined {
+    if (!this.isAuthPanelEnabled_) {
+      return this.authTokenInfo_?.token;
+    }
+    return this.authTokenReply_?.token;
   }
 
   /**
    * Invalidate the token to trigger a password re-prompt. Used for PIN auto
    * submit when too many attempts were made when using PrefStore based PIN.
    */
-  private onInvalidateTokenRequested_(): void {
-    this.authTokenInfo_ = undefined;
+  private async onInvalidateTokenRequested_(): Promise<void> {
+    if (!this.isAuthPanelEnabled_) {
+      this.authTokenInfo_ = undefined;
+      return;
+    }
+
+    if (this.authTokenReply_) {
+      await InSessionAuth.getRemote().invalidateToken(
+          this.authTokenReply_.token);
+      this.authTokenReply_ = undefined;
+    }
   }
 
   private onPasswordPromptDialogClose_(): void {
@@ -468,7 +520,11 @@ export class OsSettingsPrivacyPageElement extends
    * Should request the password again to get latest token.
    */
   private onAuthTokenInvalid_(): void {
-    this.authTokenInfo_ = undefined;
+    if (!this.isAuthPanelEnabled_) {
+      this.authTokenInfo_ = undefined;
+      return;
+    }
+    this.authTokenReply_ = undefined;
   }
 
   private onConfigureLockClick_(e: Event): void {
