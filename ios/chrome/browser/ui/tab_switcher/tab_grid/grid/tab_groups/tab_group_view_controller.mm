@@ -380,7 +380,7 @@ constexpr CGFloat kPlusImageSize = 20;
 // Returns the tab group menu.
 - (UIMenu*)configuredTabGroupMenu {
   ActionFactory* actionFactory = [[ActionFactory alloc]
-      initWithScenario:kMenuScenarioHistogramTabGroupViewEntry];
+      initWithScenario:kMenuScenarioHistogramTabGroupViewMenuEntry];
 
   __weak TabGroupViewController* weakSelf = self;
   UIAction* renameGroup = [actionFactory actionToRenameTabGroupWithBlock:^{

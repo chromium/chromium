@@ -51,6 +51,8 @@ const char kInactiveTabsEntryActionsHistogram[] =
     "Mobile.ContextMenu.InactiveTabsEntry.Actions";
 const char kTabGroupEntryActionsHistogram[] =
     "Mobile.ContextMenu.TabGroupEntry.Actions";
+const char kTabGroupViewEntryActionsHistogram[] =
+    "Mobile.ContextMenu.TabGroupViewEntry.Actions";
 }  // namespace
 
 void RecordMenuShown(MenuScenarioHistogram scenario) {
@@ -100,8 +102,10 @@ const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
       return kTabStripEntryActionsHistogram;
     case kMenuScenarioHistogramInactiveTabsEntry:
       return kInactiveTabsEntryActionsHistogram;
-    case kMenuScenarioHistogramTabGroupViewEntry:
+    case kMenuScenarioHistogramTabGroupViewMenuEntry:
       return kTabGroupEntryActionsHistogram;
+    case kMenuScenarioHistogramTabGroupViewTabEntry:
+      return kTabGroupViewEntryActionsHistogram;
     case kMenuScenarioHistogramCount:
       NOTREACHED_NORETURN();
   }

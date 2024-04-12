@@ -507,3 +507,52 @@ TEST_F(ActionFactoryTest, AddTabsToGroupNoGroups) {
   EXPECT_NSEQ(expectedTitle, menu_element.title);
   EXPECT_NSEQ(expectedImage, menu_element.image);
 }
+
+// Tests the different sub elements of the menu when moving a tab to a group.
+TEST_F(ActionFactoryTest, MoveTabFromGroup) {
+  feature_list_.InitWithFeatures({kTabGroupsInGrid, kTabGroupsIPad}, {});
+  ActionFactory* factory =
+      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
+
+  TabGroup group1(tab_groups::TabGroupVisualData(
+      u"First", tab_groups::TabGroupColorId::kGrey));
+  TabGroup group2(tab_groups::TabGroupVisualData(
+      u"Second", tab_groups::TabGroupColorId::kGrey));
+  std::set<const TabGroup*> groups{&group1, &group2};
+
+  UIMenuElement* menu_element =
+      [factory menuToMoveTabToGroupWithGroups:groups
+                                 currentGroup:0
+                                    moveBlock:^(const TabGroup*) {
+                                    }
+                                  removeBlock:^{
+                                  }];
+
+  ASSERT_TRUE([menu_element isKindOfClass:UIMenu.class]);
+  UIMenu* menu = base::apple::ObjCCast<UIMenu>(menu_element);
+
+  ASSERT_EQ(2u, menu.children.count);
+
+  EXPECT_TRUE([menu.children[0] isKindOfClass:UIAction.class]);
+  UIImage* expectedImage = DefaultSymbolWithPointSize(
+      kRemoveTabFromGroupActionSymbol, kSymbolActionPointSize);
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_REMOVEFROMGROUP);
+  EXPECT_NSEQ(expectedTitle, menu.children[0].title);
+  EXPECT_EQ(expectedImage, menu.children[0].image);
+
+  ASSERT_TRUE([menu.children[1] isKindOfClass:UIMenu.class]);
+
+  UIMenu* submenu = base::apple::ObjCCast<UIMenu>(menu.children[1]);
+  EXPECT_EQ(2u, submenu.children.count);
+
+  NSMutableSet* titles = [NSMutableSet set];
+  for (UIMenuElement* group in submenu.children) {
+    [titles addObject:group.title];
+    EXPECT_NE(nil, group.image);
+  }
+
+  EXPECT_EQ(2u, titles.count);
+  EXPECT_TRUE([titles containsObject:@"First"]);
+  EXPECT_TRUE([titles containsObject:@"Second"]);
+}

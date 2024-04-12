@@ -694,12 +694,20 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   GridCell* cell = ObjCCastStrict<GridCell>(collectionViewCell);
 
   MenuScenarioHistogram scenario;
-  if (_mode == TabGridModeSearch) {
-    scenario = kMenuScenarioHistogramTabGridSearchResult;
-  } else if (_mode == TabGridModeInactive) {
-    scenario = kMenuScenarioHistogramInactiveTabsEntry;
-  } else {
-    scenario = kMenuScenarioHistogramTabGridEntry;
+  switch (_mode) {
+    case TabGridModeInactive:
+      scenario = kMenuScenarioHistogramInactiveTabsEntry;
+      break;
+    case TabGridModeGroup:
+      scenario = kMenuScenarioHistogramTabGroupViewTabEntry;
+      break;
+    case TabGridModeSearch:
+      scenario = kMenuScenarioHistogramTabGridSearchResult;
+      break;
+    case TabGridModeNormal:
+    case TabGridModeSelection:
+      scenario = kMenuScenarioHistogramTabGridEntry;
+      break;
   }
 
   return [self.menuProvider contextMenuConfigurationForTabCell:cell

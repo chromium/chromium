@@ -150,6 +150,14 @@ class TabGroup;
     menuToAddTabToGroupWithGroups:(const std::set<const TabGroup*>&)groups
                      numberOfTabs:(int)tabsNumber
                             block:(void (^)(const TabGroup*))block;
+
+// Creates a UIMenu instance for moving a tab from `currentGroup` in or out of
+// an existing group. `groups` cannot be empty.
+- (UIMenuElement*)
+    menuToMoveTabToGroupWithGroups:(const std::set<const TabGroup*>&)groups
+                      currentGroup:(const TabGroup*)currentGroup
+                         moveBlock:(void (^)(const TabGroup*))moveBlock
+                       removeBlock:(ProceduralBlock)removeBlock;
 #endif
 
 // Creates a UIAction instance for renaming a tab group.

@@ -220,10 +220,23 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     auto actionResult = ^(const TabGroup* group) {
       [weakSelf handleAddWebState:tabID toGroup:group];
     };
-    UIMenuElement* addToGroupAction =
-        [actionFactory menuToAddTabToGroupWithGroups:groups
-                                        numberOfTabs:1
-                                               block:actionResult];
+
+    const TabGroup* tabGroup = [self groupForWebState:tabID];
+    UIMenuElement* groupAction;
+    if (tabGroup) {
+      ProceduralBlock removeBlock = ^{
+        [weakSelf handleRemoveWebStateFromGroup:tabID];
+      };
+      groupAction = [actionFactory menuToMoveTabToGroupWithGroups:groups
+                                                     currentGroup:tabGroup
+                                                        moveBlock:actionResult
+                                                      removeBlock:removeBlock];
+    } else {
+      groupAction = [actionFactory menuToAddTabToGroupWithGroups:groups
+                                                    numberOfTabs:1
+                                                           block:actionResult];
+    }
+
     if (shareAction) {
       UIMenu* shareMenu = [UIMenu menuWithTitle:@""
                                           image:nil
@@ -233,7 +246,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
       [menuElements addObject:shareMenu];
     }
     NSArray<UIMenuElement*>* tabActions =
-        pinAction ? @[ pinAction, addToGroupAction ] : @[ addToGroupAction ];
+        pinAction ? @[ pinAction, groupAction ] : @[ groupAction ];
     UIMenu* tabMenu = [UIMenu menuWithTitle:@""
                                       image:nil
                                  identifier:nil
@@ -383,6 +396,42 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   } else {
     MoveTabToGroup(webStateID, group, _browserState);
   }
+}
+
+// Handles the result of the remove from group block.
+- (void)handleRemoveWebStateFromGroup:(web::WebStateID)webStateID {
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(_browserState);
+
+  for (Browser* browser : browserList->AllRegularBrowsers()) {
+    WebStateList* webStateList = browser->GetWebStateList();
+    int index = GetWebStateIndex(
+        webStateList,
+        WebStateSearchCriteria{.identifier = webStateID,
+                               .pinned_state = PinnedState::kNonPinned});
+    if (index != WebStateList::kInvalidIndex) {
+      webStateList->RemoveFromGroups({index});
+      return;
+    }
+  }
+}
+
+// Returns the group of the given `webStateID`.
+- (const TabGroup*)groupForWebState:(web::WebStateID)webStateID {
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(_browserState);
+
+  for (Browser* browser : browserList->AllRegularBrowsers()) {
+    WebStateList* webStateList = browser->GetWebStateList();
+    int index = GetWebStateIndex(
+        webStateList,
+        WebStateSearchCriteria{.identifier = webStateID,
+                               .pinned_state = PinnedState::kNonPinned});
+    if (index != WebStateList::kInvalidIndex) {
+      return webStateList->GetGroupOfWebStateAt(index);
+    }
+  }
+  return nil;
 }
 
 @end

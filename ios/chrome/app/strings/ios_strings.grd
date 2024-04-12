@@ -989,6 +989,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_DELETEGROUP" desc="The iOS context menu item for closing a tab group. Title case. [iOS only]">
         Delete Group
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_MOVETABTOGROUP" desc="The iOS context menu item for moving a tab to an existing tab group. [iOS only]">
+        Move to Tab Group
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP" desc="The iOS context menu item for adding a new tab in a tab group. [iOS only]">
         New Tab in Group
       </message>
@@ -1021,6 +1024,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_PINTAB" desc="The iOS context menu item for pinning a tab.[iOS only]">
         Pin Tab
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_REMOVEFROMGROUP" desc="The iOS context menu item for removing a tab from a group. [iOS only]">
+        Remove from Group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP" desc="The iOS context menu item for renaming a tab group. Title case. [iOS only]">
         Rename Group
