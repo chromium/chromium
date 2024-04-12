@@ -3485,6 +3485,7 @@ test("ash_unittests") {
     "birch/birch_model_unittest.cc",
     "birch/birch_ranker_unittest.cc",
     "birch/birch_weather_provider_unittest.cc",
+    "bubble//simple_grid_layout_unittest.cc",
     "bubble/bubble_event_filter_unittest.cc",
     "bubble/bubble_utils_unittest.cc",
     "capture_mode/capture_audio_mixing_unittests.cc",

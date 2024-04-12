@@ -65,8 +65,14 @@ gfx::Size SimpleGridLayout::GetChildPreferredSize() const {
   if (!host_view()->children().size())
     return gfx::Size();
 
-  cached_child_preferred_size_ = host_view()->children()[0]->GetPreferredSize();
-  return *cached_child_preferred_size_;
+  for (views::View* child : host_view()->children()) {
+    if (IsChildIncludedInLayout(child)) {
+      cached_child_preferred_size_ = child->GetPreferredSize();
+      return *cached_child_preferred_size_;
+    }
+  }
+
+  return gfx::Size();
 }
 
 gfx::Size SimpleGridLayout::CalculatePreferredSize() const {
