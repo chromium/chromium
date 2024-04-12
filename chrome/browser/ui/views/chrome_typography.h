@@ -44,6 +44,7 @@ enum ChromeTextContext {
   // little to no effect in terms of typography (font size, weight, etc.):
   //   - Custom tab bar used by PWAs (custom_tab_bar_view.cc)
   //   - Picture-in-Picture view (picture_in_picture_browser_frame_view.cc)
+  //   - TabsharingInfoBar CSC indicator chip (tab_sharing_infobar.cc)
   CONTEXT_OMNIBOX_PRIMARY,
 
   // Primary text in the omnibox dropdown.
