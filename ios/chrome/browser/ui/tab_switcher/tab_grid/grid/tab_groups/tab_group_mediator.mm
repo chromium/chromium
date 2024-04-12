@@ -254,18 +254,29 @@
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& moveChange =
           change.As<WebStateListChangeMove>();
-      if (moveChange.old_group() != _tabGroup.get()) {
+      if (moveChange.old_group() != _tabGroup.get() &&
+          moveChange.new_group() != _tabGroup.get()) {
+        // Not related to this group.
         break;
       }
-      GridItemIdentifier* item =
-          [GridItemIdentifier tabIdentifier:moveChange.moved_web_state()];
-      if (moveChange.new_group() == _tabGroup.get()) {
+      web::WebState* webState = moveChange.moved_web_state();
+      GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
+      if (moveChange.old_group() == moveChange.new_group()) {
+        // Move in the same group
         [self moveItem:item
             beforeWebStateIndex:moveChange.moved_to_index() + 1];
       } else {
-        [self.consumer removeItemWithIdentifier:item
-                         selectedItemIdentifier:[self activeIdentifier]];
-        [self removeObservationForWebState:moveChange.moved_web_state()];
+        if (moveChange.old_group() == _tabGroup.get()) {
+          // The tab left the group.
+          [self.consumer removeItemWithIdentifier:item
+                           selectedItemIdentifier:[self activeIdentifier]];
+          [self removeObservationForWebState:webState];
+        } else if (moveChange.new_group() == _tabGroup.get()) {
+          // The tab joined the group.
+          [self insertInConsumerWebState:webState
+                                 atIndex:moveChange.moved_to_index()];
+          [self addObservationForWebState:webState];
+        }
       }
       break;
     }
@@ -276,19 +287,8 @@
         break;
       }
 
-      GridItemIdentifier* newItem =
-          [GridItemIdentifier tabIdentifier:insertChange.inserted_web_state()];
-
-      GridItemIdentifier* nextItemIdentifier;
-      if (insertChange.index() + 1 < _tabGroup->range().range_end()) {
-        nextItemIdentifier =
-            [GridItemIdentifier tabIdentifier:self.webStateList->GetWebStateAt(
-                                                  insertChange.index() + 1)];
-      }
-
-      [self.consumer insertItem:newItem
-                    beforeItemID:nextItemIdentifier
-          selectedItemIdentifier:[self activeIdentifier]];
+      [self insertInConsumerWebState:insertChange.inserted_web_state()
+                             atIndex:insertChange.index()];
 
       [self addObservationForWebState:insertChange.inserted_web_state()];
       break;
@@ -299,6 +299,23 @@
   }
   // Update the title in case the number of tabs changed.
   [_groupConsumer setGroupTitle:_tabGroup->GetTitle()];
+}
+
+#pragma mark - Private
+
+// Inserts an item representing `webState` in the consumer at `index`.
+- (void)insertInConsumerWebState:(web::WebState*)webState atIndex:(int)index {
+  GridItemIdentifier* newItem = [GridItemIdentifier tabIdentifier:webState];
+
+  GridItemIdentifier* nextItemIdentifier;
+  if (index + 1 < _tabGroup->range().range_end()) {
+    nextItemIdentifier = [GridItemIdentifier
+        tabIdentifier:self.webStateList->GetWebStateAt(index + 1)];
+  }
+
+  [self.consumer insertItem:newItem
+                beforeItemID:nextItemIdentifier
+      selectedItemIdentifier:[self activeIdentifier]];
 }
 
 @end
