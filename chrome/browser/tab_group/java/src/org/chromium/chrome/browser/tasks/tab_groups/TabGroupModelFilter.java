@@ -724,7 +724,13 @@ public class TabGroupModelFilter extends TabModelFilter {
             if (parentTab != null) {
                 Token oldTabGroupId = parentTab.getTabGroupId();
                 Token newTabGroupId = getOrCreateTabGroupId(parentTab);
-                if (!Objects.equals(oldTabGroupId, newTabGroupId)) {
+
+                // Tab groups created via longpressing a link will have a parent tab, causing the
+                // didCreateNewGroup boolean to be true on undone closures. Check that the group
+                // does not already have an existing color to make sure it is truly a new group.
+                boolean isNewGroup =
+                        TabGroupColorUtils.getTabGroupColor(tab.getRootId()) == INVALID_COLOR_ID;
+                if (!Objects.equals(oldTabGroupId, newTabGroupId) && isNewGroup) {
                     didCreateNewGroup = true;
                 }
                 tab.setRootId(parentTab.getRootId());
