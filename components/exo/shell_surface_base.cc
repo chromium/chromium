@@ -163,14 +163,27 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
     const ash::WindowState* window_state = ash::WindowState::Get(window);
     std::optional<gfx::RoundedCornersF> window_radii =
         shell_surface_->window_corners_radii();
+    std::optional<gfx::RoundedCornersF> shadow_radii =
+        shell_surface_->shadow_corner_radii();
 
     int corner_radius = -1;
     if (window_state->IsPip()) {
       corner_radius = chromeos::kPipRoundedCornerRadius;
-    } else if (window_radii) {
+    } else if (window_radii || shadow_radii) {
+      gfx::RoundedCornersF radii;
+
+      // Certain clients (such as Lacros, for instance) handle window rounding
+      // on the client side. These clients do not specify window_radii. However,
+      // they do specify shadow radii which matches window radii.
+      // For such clients, use shadow radii to specify
+      // `aura::client::kWindowCornerRadiusKey` since it is used to round
+      // various server side decorations.
+      radii =
+          window_radii.value_or(shadow_radii.value_or(gfx::RoundedCornersF()));
+
       // TODO(crbug.com/1415486): Support variable window radii.
-      DCHECK(IsRadiiUniform(window_radii.value()));
-      corner_radius = window_radii.value().upper_left();
+      DCHECK(IsRadiiUniform(radii));
+      corner_radius = radii.upper_left();
     }
 
     // TODO(b/302034956): Use `ApplyRoundedCornersToSurfaceTree()` to round pip
@@ -193,7 +206,8 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
     // property.
     window->SetProperty(aura::client::kWindowCornerRadiusKey, corner_radius);
 
-    // If we have a pip window, ignore `window_radii`.
+    // If we have a pip window, ignore `window_radii`. If window_radii is null,
+    // skip rounding the window.
     if (window_state->IsPip() ||
         !chromeos::features::IsRoundedWindowsEnabled() || !window_radii) {
       return;
