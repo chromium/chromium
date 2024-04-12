@@ -190,6 +190,53 @@ std::vector<std::wstring> GetFileExtensionsForProgId(
 
 #endif  // BUILDFLAG(IS_WIN)
 
+// Waits for a Browser to be set to last active.
+class BrowserActivationWaiter : public BrowserListObserver {
+ public:
+  explicit BrowserActivationWaiter(const Browser* browser) : browser_(browser) {
+    BrowserList::AddObserver(this);
+    // When the active browser closes, the next "last active browser" in the
+    // BrowserList might not be immediately activated. So we need to wait for
+    // the "last active browser" to actually be active.
+    if (chrome::FindLastActive() == browser_ &&
+        browser_->window()->IsActive()) {
+      observed_ = true;
+    }
+  }
+
+  BrowserActivationWaiter(const BrowserActivationWaiter&) = delete;
+  BrowserActivationWaiter& operator=(const BrowserActivationWaiter&) = delete;
+
+  ~BrowserActivationWaiter() override { BrowserList::RemoveObserver(this); }
+
+  // Runs a message loop until the `browser_` supplied to the constructor is
+  // activated, or returns immediately if `browser_` has already become active.
+  // Should only be called once.
+  void WaitForActivation() {
+    if (observed_) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+ private:
+  // BrowserListObserver:
+  void OnBrowserSetLastActive(Browser* browser) override {
+    if (browser != browser_) {
+      return;
+    }
+
+    observed_ = true;
+    if (run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+
+  const raw_ptr<const Browser> browser_;
+  bool observed_ = false;
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 namespace web_app {
@@ -2026,6 +2073,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PopupLocationBar) {
 
   Browser* const popup_browser = web_app::CreateWebApplicationWindow(
       profile(), app_id, WindowOpenDisposition::NEW_POPUP, /*restore_id=*/0);
+  BrowserActivationWaiter activation_waiter(popup_browser);
+  popup_browser->window()->Show();
+  activation_waiter.WaitForActivation();
 
   EXPECT_TRUE(
       popup_browser->CanSupportWindowFeature(Browser::FEATURE_LOCATIONBAR));

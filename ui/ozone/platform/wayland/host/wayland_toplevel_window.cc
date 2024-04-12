@@ -879,22 +879,6 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
 
   if (shell_toplevel_) {
     shell_toplevel_->SetUseImmersiveMode(status);
-  } else {
-    // TODO(elkurin): Investigate whether we can deprecate this clause. This
-    // pass is used by some tests which do not set shell properly and ideally we
-    // would like to fix those tests. After those fixes, remove this clause or
-    // replace it by CHECK.
-    NOTIMPLEMENTED_LOG_ONCE();
-    // TODO(https://crbug.com/1113900): With Lacros, the state change gets
-    // completed asynchronously (see removal of notification call in
-    // `BrowserView::ProcessFullscreen`). As such we need to release any waiting
-    // application now. This needs also be properly addressed with the
-    // immersive mode change inside the immersive mode handling by calling
-    // this delegate - or `BrowserView::FullscreenStateChanged()` directly.
-    auto new_type = status ? PlatformFullscreenType::kImmersive
-                           : PlatformFullscreenType::kPlain;
-    delegate()->OnFullscreenTypeChanged(fullscreen_type_, new_type);
-    fullscreen_type_ = new_type;
   }
 }
 
