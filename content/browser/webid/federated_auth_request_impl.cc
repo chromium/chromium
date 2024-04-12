@@ -760,16 +760,14 @@ void FederatedAuthRequestImpl::RequestToken(
         GetPageData(&render_frame_host())->PendingWebIdentityRequest();
 
     RpMode pending_request_rp_mode = pending_request->GetRpMode();
-    bool can_replace_pending_request =
-        IsFedCmButtonModeEnabled() &&
-        idp_get_params_ptrs[0]->mode == RpMode::kButton &&
-        had_transient_user_activation_ &&
-        pending_request_rp_mode != RpMode::kButton;
+    RpMode new_request_rp_mode = idp_get_params_ptrs[0]->mode;
+    fedcm_metrics_->RecordMultipleRequestsRpMode(pending_request_rp_mode,
+                                                 new_request_rp_mode);
 
-    // TODO(crbug.com/326587232): We should add metrics to capture
-    // 1. how often a button flow is triggered while a widget flow is pending
-    // 2. how often a button flow is triggered while a button flow is pending
-    // 3. how often a widget flow is triggered while a button flow is pending
+    bool can_replace_pending_request =
+        IsFedCmButtonModeEnabled() && had_transient_user_activation_ &&
+        new_request_rp_mode == RpMode::kButton &&
+        pending_request_rp_mode != RpMode::kButton;
     if (!can_replace_pending_request) {
       fedcm_metrics_->RecordRequestTokenStatus(
           TokenStatus::kTooManyRequests, requirement, idp_order_,

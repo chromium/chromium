@@ -1600,6 +1600,20 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
     WaitForCurrentAuthRequest(/*should_fast_forward=*/false);
     CheckAuthExpectations(kConfigurationValid, kExpectationSuccess);
+
+    // These metrics are not recorded when a user's LoginStatus is "logged-out"
+    // such that they need to sign in to the IdP in the button flow.
+    histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
+                                       0);
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FedCm.Timing.ShowAccountsDialogBreakdown."
+        "WellKnownAndConfigFetch",
+        0);
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.AccountsFetch", 0);
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch",
+        0);
   }
 
  protected:
@@ -1900,6 +1914,10 @@ TEST_F(FederatedAuthRequestImplTest, AccountsCannotBeParsed) {
       "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.AccountsFetch", 0);
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch", 0);
+  ExpectNoUKMPresence(
+      "Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch");
+  ExpectNoUKMPresence("Timing.ShowAccountsDialogBreakdown.AccountsFetch");
+  ExpectNoUKMPresence("Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch");
   // Records the following histogram as long as the well-known and config file
   // is fetched.
   histogram_tester_.ExpectTotalCount(
@@ -2859,6 +2877,14 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
                                        1, 1);
 
   ExpectUKMPresence("Timing.ShowAccountsDialog");
+  ExpectUKMPresenceInternal(
+      "Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
+      FedCmEntry::kEntryName);
+  ExpectUKMPresenceInternal("Timing.ShowAccountsDialogBreakdown.AccountsFetch",
+                            FedCmEntry::kEntryName);
+  ExpectUKMPresenceInternal(
+      "Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch",
+      FedCmEntry::kEntryName);
   ExpectUKMPresence("Timing.ContinueOnDialog");
   ExpectUKMPresence("Timing.IdTokenResponse");
   ExpectUKMPresence("Timing.TurnaroundTime");
@@ -4817,6 +4843,129 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
   // RequestTokenStatus::kErrorTooManyRequests should not be counted.
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.NumRequestsPerDocument", 1,
                                        1);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MultipleRequestsRpMode", 0,
+                                       1);
+  ExpectUkmValue(
+      "MultipleRequestsRpMode",
+      static_cast<int>(FedCmMultipleRequestsRpMode::kWidgetThenWidget));
+
+  // Check for RP-keyed UKM presence.
+  ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest,
+       ButtonModeTooManyRequestsWithNewWidgetFlow) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kNone;
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RunAuthDontWaitForCallback(parameters, configuration);
+  EXPECT_TRUE(did_show_accounts_dialog());
+
+  // Reset the network request manager so we can check that we fetch no
+  // endpoints in the subsequent call.
+  configuration.accounts_dialog_action =
+      AccountsDialogAction::kSelectFirstAccount;
+  SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
+  // The next FedCM request should fail since a widget flow cannot replace
+  // another button flow.
+  RequestExpectations expectations = {
+      RequestTokenStatus::kErrorTooManyRequests,
+      FederatedAuthRequestResult::kErrorTooManyRequests,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  // Check that the appropriate metrics are recorded upon destruction.
+  federated_auth_request_impl_->ResetAndDeleteThis();
+
+  ukm_loop.Run();
+
+  // Only count the first request, the second request that resulted in
+  // RequestTokenStatus::kErrorTooManyRequests should not be counted.
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.NumRequestsPerDocument", 1,
+                                       1);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MultipleRequestsRpMode", 2,
+                                       1);
+  ExpectUkmValue(
+      "MultipleRequestsRpMode",
+      static_cast<int>(FedCmMultipleRequestsRpMode::kButtonThenWidget));
+
+  // Check for RP-keyed UKM presence.
+  ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest,
+       ButtonModeTooManyRequestsWithNewButtonFlow) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kNone;
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RunAuthDontWaitForCallback(parameters, configuration);
+  EXPECT_TRUE(did_show_accounts_dialog());
+
+  // Reset the network request manager so we can check that we fetch no
+  // endpoints in the subsequent call.
+  configuration.accounts_dialog_action =
+      AccountsDialogAction::kSelectFirstAccount;
+  SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
+  // The next FedCM request should fail since a button flow cannot replace
+  // another button flow.
+  RequestExpectations expectations = {
+      RequestTokenStatus::kErrorTooManyRequests,
+      FederatedAuthRequestResult::kErrorTooManyRequests,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RunAuthTest(parameters, expectations, configuration);
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  // Check that the appropriate metrics are recorded upon destruction.
+  federated_auth_request_impl_->ResetAndDeleteThis();
+
+  ukm_loop.Run();
+
+  // Only count the first request, the second request that resulted in
+  // RequestTokenStatus::kErrorTooManyRequests should not be counted.
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.NumRequestsPerDocument", 1,
+                                       1);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MultipleRequestsRpMode", 3,
+                                       1);
+  ExpectUkmValue(
+      "MultipleRequestsRpMode",
+      static_cast<int>(FedCmMultipleRequestsRpMode::kButtonThenButton));
 
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);

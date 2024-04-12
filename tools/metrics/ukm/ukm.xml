@@ -4477,6 +4477,12 @@ be describing additional metrics about the same event.
       Records a 1 each time a mismatch dialog is shown.
     </summary>
   </metric>
+  <metric name="MultipleRequestsRpMode" enum="FedCmMultipleRequestsRpMode">
+    <summary>
+      Records the RpMode of two consecutive requests. Recorded every time when a
+      token request is invoked while there is another one pending.
+    </summary>
+  </metric>
   <metric name="NumIdpsMismatch">
     <summary>
       Records the number of IDPs that result in a 'mismatch' status from a
@@ -4596,6 +4602,32 @@ be describing additional metrics about the same event.
       when the accounts dialog is shown.
     </summary>
   </metric>
+  <metric name="Timing.ShowAccountsDialogBreakdown.AccountsFetch">
+    <summary>
+      Records the time (in milliseconds) from when the accounts request was made
+      to when the fetch response is received. Only recorded when the accounts
+      are ready to show which means all fetches are done. In case of multiple
+      identity providers, the fetch that takes the longest will be recorded.
+    </summary>
+  </metric>
+  <metric name="Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch">
+    <summary>
+      Records the time (in milliseconds) from when the client metadata request
+      was made to when the fetch response is received. Only recorded when the
+      accounts are ready to show which means all fetches are done. In case of
+      multiple identity providers, the fetch that takes the longest will be
+      recorded.
+    </summary>
+  </metric>
+  <metric name="Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch">
+    <summary>
+      Records the time (in milliseconds) from when a call to the API was made to
+      when the well-known and config files fetch are received. Only recorded
+      when the accounts are ready to show which means all fetches are done. In
+      case of multiple identity providers, the fetch that takes the longest will
+      be recorded.
+    </summary>
+  </metric>
   <metric name="Timing.TurnaroundTime">
     <summary>
       Records the overall time (in milliseconds) from when the API is called to
@@ -4668,6 +4700,12 @@ be describing additional metrics about the same event.
   <metric name="MismatchDialogShown" enum="BooleanHit">
     <summary>
       Records a 1 each time a mismatch dialog is shown.
+    </summary>
+  </metric>
+  <metric name="MultipleRequestsRpMode" enum="FedCmMultipleRequestsRpMode">
+    <summary>
+      Records the RpMode of two consecutive requests. Recorded every time when a
+      token request is invoked while there is another one pending.
     </summary>
   </metric>
   <metric name="NumIdpsMismatch">

@@ -11705,6 +11705,17 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Cross-site with config URL"/>
 </enum>
 
+<enum name="FedCmMultipleRequestsRpMode">
+  <int value="0"
+      label="A widget flow is invoked while a widget flow is pending"/>
+  <int value="1"
+      label="A widget flow is invoked while a button flow is pending"/>
+  <int value="2"
+      label="A button flow is invoked while a widget flow is pending"/>
+  <int value="3"
+      label="A button flow is invoked while a button flow is pending"/>
+</enum>
+
 <enum name="FedCmNumAccounts">
   <int value="0" label="Zero accounts"/>
   <int value="1" label="One account"/>

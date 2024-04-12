@@ -83,6 +83,22 @@ void FedCmMetrics::RecordShowAccountsDialogTimeBreakdown(
     base::TimeDelta well_known_and_config_fetch_duration,
     base::TimeDelta accounts_fetch_duration,
     base::TimeDelta client_metadata_fetch_duration) {
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetTiming_ShowAccountsDialogBreakdown_WellKnownAndConfigFetch(
+        ukm::GetExponentialBucketMinForUserTiming(
+            well_known_and_config_fetch_duration.InMilliseconds()));
+    ukm_builder.SetTiming_ShowAccountsDialogBreakdown_AccountsFetch(
+        ukm::GetExponentialBucketMinForUserTiming(
+            accounts_fetch_duration.InMilliseconds()));
+    ukm_builder.SetTiming_ShowAccountsDialogBreakdown_ClientMetadataFetch(
+        ukm::GetExponentialBucketMinForUserTiming(
+            client_metadata_fetch_duration.InMilliseconds()));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
   base::UmaHistogramMediumTimes(
       "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
       well_known_and_config_fetch_duration);
@@ -591,6 +607,33 @@ void FedCmMetrics::RecordErrorUrlTypeMetrics(
   RecordUkm(fedcm_idp_builder);
 
   base::UmaHistogramEnumeration("Blink.FedCm.Error.ErrorUrlType", type);
+}
+
+void FedCmMetrics::RecordMultipleRequestsRpMode(
+    blink::mojom::RpMode pending_request_rp_mode,
+    blink::mojom::RpMode new_request_rp_mode) {
+  FedCmMultipleRequestsRpMode status;
+  if (pending_request_rp_mode == blink::mojom::RpMode::kWidget) {
+    status = new_request_rp_mode == blink::mojom::RpMode::kWidget
+                 ? FedCmMultipleRequestsRpMode::kWidgetThenWidget
+                 : FedCmMultipleRequestsRpMode::kWidgetThenButton;
+  } else {
+    status = new_request_rp_mode == blink::mojom::RpMode::kWidget
+                 ? FedCmMultipleRequestsRpMode::kButtonThenWidget
+                 : FedCmMultipleRequestsRpMode::kButtonThenButton;
+  }
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetMultipleRequestsRpMode(static_cast<int>(status));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  RecordUkm(fedcm_idp_builder);
+
+  base::UmaHistogramEnumeration("Blink.FedCm.MultipleRequestsRpMode", status);
 }
 
 ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {

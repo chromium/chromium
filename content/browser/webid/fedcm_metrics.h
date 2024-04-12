@@ -11,6 +11,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace base {
 class TimeDelta;
@@ -185,6 +186,18 @@ enum class FedCmLifecycleStateFailureReason {
   kMaxValue = kReadyToBeDeleted
 };
 
+// This enum is used when a token request is invoked while there's a pending
+// one. These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FedCmMultipleRequestsRpMode {
+  kWidgetThenWidget = 0,
+  kWidgetThenButton = 1,
+  kButtonThenWidget = 2,
+  kButtonThenButton = 3,
+
+  kMaxValue = kButtonThenButton
+};
+
 class CONTENT_EXPORT FedCmMetrics {
  public:
   FedCmMetrics(const GURL& provider,
@@ -200,13 +213,16 @@ class CONTENT_EXPORT FedCmMetrics {
                                            const int num_requests);
 
   // Records the time from when a call to the API was made to when the accounts
-  // dialog is shown.
+  // dialog is shown. This does not include flows that involve LoginToIdP. e.g.
+  // mismatch flow or button flow with users whose login status is "logged-out".
   void RecordShowAccountsDialogTime(
       const std::vector<IdentityProviderData>& providers,
       base::TimeDelta duration);
 
   // Records the time from when a call to the API was made to when the accounts
-  // dialog is shown in breakdown.
+  // dialog is shown in breakdown. In case of multi-IdP, this records the max
+  // time across IdPs. This does not include flows that involve LoginToIdP. e.g.
+  // mismatch flow or button flow with users whose login status is "logged-out".
   void RecordShowAccountsDialogTimeBreakdown(
       base::TimeDelta well_known_and_config_fetch_duration,
       base::TimeDelta accounts_fetch_duration,
@@ -353,6 +369,12 @@ class CONTENT_EXPORT FedCmMetrics {
   // cross-site with the config URL.
   void RecordErrorUrlTypeMetrics(
       IdpNetworkRequestManager::FedCmErrorUrlType type);
+
+  // Records the RpMode of two consecutive requests when one is invoked while
+  // the other is pending.
+  void RecordMultipleRequestsRpMode(
+      blink::mojom::RpMode pending_request_rp_mode,
+      blink::mojom::RpMode new_request_rp_mode);
 
  private:
   ukm::SourceId GetOrCreateProviderSourceId(const GURL& provider);
