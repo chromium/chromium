@@ -173,6 +173,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
                                const std::vector<ui::AXTreeUpdate>& updates,
                                const gfx::Point& mouse_location,
                                const std::vector<ui::AXEvent>& events);
+  void SendTreeDestroyedEvent(const ui::AXTreeID& tree_id);
+  void SendActionResult(const ui::AXActionData& data, bool result);
 
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   base::WeakPtr<FakeServiceClient> GetWeakPtr() {

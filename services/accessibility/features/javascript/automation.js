@@ -67,7 +67,6 @@ const exceptionHandler = {
 
 // Access the native bindings installed on the global template.
 const natives = nativeAutomationInternal;
-const IsInteractPermitted = natives.IsInteractPermitted;
 
 /**
  * @param {string} axTreeID The id of the accessibility tree.
@@ -1432,27 +1431,21 @@ class AutomationNode {
       return;
     }
 
-    // Check permissions.
-    if (!IsInteractPermitted()) {
-      throw new Error(
-          actionType + ' requires {"desktop": true} in the ' +
-          '"automation" manifest key.');
-    }
-
     let requestID = -1;
     if (opt_callback) {
       requestID = this.rootImpl_.addActionResultCallback(
           actionType, opt_args, opt_callback);
     }
 
-    chrome.automation.performAction_(
-        {
-          treeID: this.rootImpl_.treeID,
-          automationNodeID: this.id,
-          actionType: actionType,
-          requestID: requestID,
-        },
-        opt_args || {});
+    let actionData = automationUtil.getDefaultAXActionData();
+    actionData.targetTreeId =
+        automationUtil.stringAXTreeIDToMojo(this.rootImpl_.treeID);
+    actionData.targetNodeId = this.id;
+    actionData.action = automationUtil.StringActionToMojo(actionType);
+    actionData.requestId = requestID;
+
+    // TODO(b:333790806): Convert opt_args to AxActionData format.
+    chrome.automation.automationClientRemote.performAction(actionData);
   }
 
   findInternal_(params, opt_results) {
@@ -2227,6 +2220,19 @@ class AutomationUtil {
     return actionData;
   }
 
+  StringActionToMojo(action) {
+    // Action types are represented as strings because features are using ATP
+    // automation and extensions automation (which uses the old IDL formats).
+    // See ActionType in extensions/common/api/automation.idl.
+    if (action == 'hitTest') {
+      return ax.mojom.Action.kHitTest;
+    }
+
+    // TODO(b:327258691): Share const strings between c++ and js for action
+    // names.
+    return ax.mojom.Action.kNone;
+  }
+
   removeTreeChangeObserver(observer) {
     for (const id in this.treeChangeObserverMap) {
       if (this.treeChangeObserverMap[id] === observer) {
@@ -2391,7 +2397,7 @@ class AtpAutomation {
 };
 
 
-automationInternal.onChildTreeID.addListener(function(childTreeId) {
+automationInternal.onChildTreeID.addListener((childTreeId) => {
   const targetTree = AutomationRootNode.get(childTreeId);
 
   // If the tree is already loaded, or if we previously requested it be loaded
@@ -2416,34 +2422,32 @@ automationInternal.onChildTreeID.addListener(function(childTreeId) {
       automationUtil.stringAXTreeIDToMojo(childTreeId));
 });
 
+automationInternal.onTreeChange.addListener(
+    (observerID, treeID, nodeID, changeType) => {
+      const tree = AutomationRootNode.getOrCreate(treeID);
+      if (!tree) {
+        return;
+      }
 
+      const node = tree.get(nodeID);
+      if (!node) {
+        return;
+      }
 
-automationInternal.onTreeChange.addListener(function(
-    observerID, treeID, nodeID, changeType) {
-  const tree = AutomationRootNode.getOrCreate(treeID);
-  if (!tree) {
-    return;
-  }
+      const observer = automationUtil.treeChangeObserverMap[observerID];
+      if (!observer) {
+        return;
+      }
 
-  const node = tree.get(nodeID);
-  if (!node) {
-    return;
-  }
+      try {
+        observer({target: node, type: changeType});
+      } catch (e) {
+        exceptionHandler.handle(
+            'Error in tree change observer for ' + changeType, e);
+      }
+    });
 
-  const observer = automationUtil.treeChangeObserverMap[observerID];
-  if (!observer) {
-    return;
-  }
-
-  try {
-    observer({target: node, type: changeType});
-  } catch (e) {
-    exceptionHandler.handle(
-        'Error in tree change observer for ' + changeType, e);
-  }
-});
-
-automationInternal.onNodesRemoved.addListener(function(treeID, nodeIDs) {
+automationInternal.onNodesRemoved.addListener((treeID, nodeIDs) => {
   const tree = AutomationRootNode.getOrCreate(treeID);
   if (!tree) {
     return;
@@ -2465,7 +2469,7 @@ automationInternal.onAllAutomationEventListenersRemoved.addListener(() => {
  * Dispatch accessibility events fired on individual nodes to its
  * corresponding AutomationNode.
  */
-automationInternal.onAccessibilityEvent.addListener(function(eventParams) {
+automationInternal.onAccessibilityEvent.addListener((eventParams) => {
   const id = eventParams.treeID;
   const targetTree = AutomationRootNode.getOrCreate(id);
   if (eventParams.eventType == 'mediaStartedPlaying' ||
@@ -2498,6 +2502,42 @@ automationInternal.onAccessibilityEvent.addListener(function(eventParams) {
   delete automationUtil.idToCallback[id];
 });
 
+automationInternal.onAccessibilityTreeDestroyed.addListener((id) => {
+  // Destroy the AutomationRootNode.
+  const targetTree = AutomationRootNode.get(id);
+  if (targetTree) {
+    targetTree.destroy();
+    AutomationRootNode.destroy(id);
+  } else {
+    console.warn('no targetTree to destroy');
+  }
 
+  // Destroy the native cache of the accessibility tree.
+  natives.DestroyAccessibilityTree(id);
+});
+
+automationInternal.onAccessibilityTreeSerializationError.addListener((id) => {
+  // TODO(b:332975670): Investigate the usage of automationInternal.enableTree
+  // to reset on serialization problems.
+  chrome.automation.automationClientRemote.enableChildTree(
+      automationUtil.stringAXTreeIDToMojo(id));
+});
+
+automationInternal.onActionResult.addListener((treeID, requestID, result) => {
+  const targetTree = AutomationRootNode.get(treeID);
+  if (!targetTree) {
+    return;
+  }
+  targetTree.onActionResult(requestID, result);
+});
+
+automationInternal.onGetTextLocationResult.addListener((textLocationParams) => {
+  const targetTree = AutomationRootNode.get(textLocationParams.treeID);
+  if (!targetTree) {
+    return;
+  }
+
+  targetTree.onGetTextLocationResult(textLocationParams);
+});
 
 chrome.automation = new AtpAutomation();

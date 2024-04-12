@@ -391,6 +391,19 @@ void FakeServiceClient::SendAccessibilityEvents(
   }
 }
 
+void FakeServiceClient::SendTreeDestroyedEvent(const ui::AXTreeID& tree_id) {
+  for (auto& remote : automation_remotes_) {
+    remote->DispatchTreeDestroyedEvent(tree_id);
+  }
+}
+
+void FakeServiceClient::SendActionResult(const ui::AXActionData& data,
+                                         bool result) {
+  for (auto& remote : automation_remotes_) {
+    remote->DispatchActionResult(data, result);
+  }
+}
+
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 
 bool FakeServiceClient::AccessibilityServiceClientIsBound() const {

@@ -47,7 +47,19 @@ AutomationAXTreeWrapper::AutomationAXTreeWrapper(
     AutomationTreeManagerOwner* owner)
     : AXTreeManager(std::make_unique<AXTree>()), owner_(owner) {}
 
-AutomationAXTreeWrapper::~AutomationAXTreeWrapper() = default;
+AutomationAXTreeWrapper::~AutomationAXTreeWrapper() {
+  // Code paths, when not exiting gracefully, may leave a reference to an
+  // invalid pointer in the map (which is static). One known case is tests that
+  // create a tree with a child tree and do not destroy the objects through
+  // automation standard ways (resetting automation, disabling an individual
+  // tree).
+  std::map<AXTreeID, AutomationAXTreeWrapper*>& child_tree_id_reverse_map =
+      GetChildTreeIDReverseMap();
+  const auto& child_tree_ids = ax_tree_->GetAllChildTreeIds();
+  std::erase_if(child_tree_id_reverse_map, [&child_tree_ids](auto& pair) {
+    return child_tree_ids.count(pair.first);
+  });
+}
 
 // static
 AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentOfTreeId(
@@ -80,7 +92,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
   // there are no entries in this map for a given child tree to |this|, if this
   // is the first event from |this| tree or if |this| was destroyed and (and
   // then reset).
-  std::erase_if(child_tree_id_reverse_map, [child_tree_ids](auto& pair) {
+  std::erase_if(child_tree_id_reverse_map, [&child_tree_ids](auto& pair) {
     return child_tree_ids.count(pair.first);
   });
 

@@ -233,9 +233,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
   void CreateAutomationPosition(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  void IsInteractPermitted(
-      const v8::FunctionCallbackInfo<v8::Value>& args) const;
-
   // Args: string ax_tree_id, int node_id
   // Returns: JS object with a string key for each state flag that's set.
   void GetState(const v8::FunctionCallbackInfo<v8::Value>& args) const;

@@ -1776,4 +1776,106 @@ TEST_F(AutomationJSApiTest, OnAllAutomationEventListenersRemoved) {
   EXPECT_EQ(client_->num_disable_called(), 1u);
 }
 
+// Ensures that the tree is destroyed after a call to the automation
+// DispatchTreeDestroyed.
+TEST_F(AutomationJSApiTest, OnTreeDestroyedEvent) {
+  std::vector<ui::AXTreeUpdate> updates;
+
+  {
+    updates.emplace_back();
+    auto& tree_update = updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+    tree_data.tree_id = client_->desktop_tree_id();
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role = ax::mojom::Role::kDesktop;
+    node_data1.child_ids.push_back(2);
+    tree_update.nodes.emplace_back();
+    auto& node_data2 = tree_update.nodes.back();
+    node_data2.id = 2;
+    node_data2.role = ax::mojom::Role::kButton;
+
+    std::vector<ui::AXEvent> events;
+    client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                     events);
+  }
+
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    let tree_id = '';
+    chrome.automation.getDesktop(desktop => {
+      // Save tree id for later.
+      tree_id = desktop.treeID;
+      remote.checkpointReached('TreeLoaded');
+    });
+  )JS");
+
+  WaitAtCheckpoint("TreeLoaded");
+
+  client_->SendTreeDestroyedEvent(client_->desktop_tree_id());
+
+  SynchronizeAfterMojoCalls();
+
+  ExecuteJS(R"JS(
+    const tree = AutomationRootNode.get(tree_id);
+    remote.testComplete(/*success=*/!tree);
+  )JS");
+
+  WaitForJSTestComplete();
+}
+
+// Ensures that automation is notified when an action result is available.
+TEST_F(AutomationJSApiTest, OnActionResult) {
+  std::vector<ui::AXTreeUpdate> updates;
+
+  {
+    updates.emplace_back();
+    auto& tree_update = updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+    tree_data.tree_id = client_->desktop_tree_id();
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role = ax::mojom::Role::kDesktop;
+    node_data1.child_ids.push_back(2);
+    tree_update.nodes.emplace_back();
+    auto& node_data2 = tree_update.nodes.back();
+    node_data2.id = 2;
+    node_data2.role = ax::mojom::Role::kButton;
+
+    std::vector<ui::AXEvent> events;
+    client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                     events);
+  }
+
+  client_->SetPerformActionCalledCallback(
+      base::BindLambdaForTesting([this](const ui::AXActionData& data) {
+        EXPECT_EQ(data.action, ax::mojom::Action::kHitTest);
+        EXPECT_EQ(data.target_node_id, 2);
+        // TODO(b:333790806): Convert opt_args to AxActionData format. Once that
+        // is done, check x and y passed to perform action hit test logic.
+        client_->SendActionResult(data, /*result=*/true);
+      }));
+
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.automation.getDesktop(desktop => {
+      const button = desktop.firstChild;
+      if (button.role !== 'button') {
+        remote.testComplete(/*success=*/false);
+      }
+      button.hitTestWithReply(10, 10, function() {
+        remote.testComplete(/*success=*/true);
+      });
+    });
+  )JS");
+
+  WaitForJSTestComplete();
+}
+
 }  // namespace ax
