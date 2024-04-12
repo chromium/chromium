@@ -11,11 +11,14 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_link_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_link_coordinator_delegate.h"
@@ -27,9 +30,7 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ui/base/device_form_factor.h"
 
-@interface CardCoordinator () <CardListDelegate,
-                               PersonalDataManagerObserver,
-                               BottomSheetLinkCoordinatorDelegate> {
+@interface CardCoordinator () <CardListDelegate, PersonalDataManagerObserver> {
   // Personal data manager to be observed.
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
@@ -37,7 +38,9 @@
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
       _personalDataManagerObserver;
 
-  BottomSheetLinkCoordinator* bottom_sheet_link_coordinator_;
+  // Opening links on the enrollment bottom sheet is delegated to this
+  // dispatcher.
+  __weak id<ApplicationCommands> _dispatcher;
 }
 
 // The view controller presented above the keyboard where the user can select
@@ -93,6 +96,8 @@
                                  ->GetOriginalChromeBrowserState()
                 webStateList:super.browser->GetWebStateList()
               resultDelegate:_cardMediator];
+    _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                                     ApplicationCommands);
   }
   return self;
 }
@@ -107,13 +112,6 @@
 
 - (UIViewController*)viewController {
   return self.cardViewController;
-}
-
-- (void)stop {
-  [super stop];
-  if (bottom_sheet_link_coordinator_) {
-    [self dismissBottomSheetLinkCoordinator];
-  }
 }
 
 #pragma mark - CardListDelegate
@@ -147,20 +145,12 @@
 }
 
 - (void)openURL:(CrURL*)url withTitle:(NSString*)title {
-  bottom_sheet_link_coordinator_ = [[BottomSheetLinkCoordinator alloc]
-      initWithBaseViewController:self.cardViewController
-                         browser:super.browser
-                             url:url
-                           title:title];
-  bottom_sheet_link_coordinator_.delegate = self;
-  [bottom_sheet_link_coordinator_ start];
-}
-
-#pragma mark - BottomSheetLinkCoordinatorDelegate
-
-- (void)dismissBottomSheetLinkCoordinator {
-  [bottom_sheet_link_coordinator_ stop];
-  bottom_sheet_link_coordinator_ = nil;
+  [_dispatcher
+      openURLInNewTab:[OpenNewTabCommand
+                          commandWithURLFromChrome:url.gurl
+                                       inIncognito:self.browser
+                                                       ->GetBrowserState()
+                                                       ->IsOffTheRecord()]];
 }
 
 #pragma mark - PersonalDataManagerObserver
