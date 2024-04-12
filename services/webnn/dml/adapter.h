@@ -80,6 +80,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   // Determines if IDMLDevice1::CompileGraph can be used.
   bool IsDMLDeviceCompileGraphSupportedForTesting() const;
 
+  // Indicates whether the underlying D3D12 device supports UMA (Unified Memory
+  // Architecture).
+  bool IsUMA() const { return is_uma_; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNAdapterTest, GetGpuInstance);
   FRIEND_TEST_ALL_PREFIXES(WebNNAdapterTest, GetNpuInstance);
@@ -89,7 +93,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
           ComPtr<ID3D12Device> d3d12_device,
           ComPtr<IDMLDevice> dml_device,
           scoped_refptr<CommandQueue> command_queue,
-          DML_FEATURE_LEVEL max_supported_dml_feature_level);
+          DML_FEATURE_LEVEL max_supported_dml_feature_level,
+          bool is_uma);
   ~Adapter();
 
   // `dxgi_or_dxcore_adapter` must be either `IDXGIAdapter` or `IDXCoreAdapter'.
@@ -113,6 +118,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   DML_FEATURE_LEVEL max_supported_dml_feature_level_ = DML_FEATURE_LEVEL_1_0;
 
   static bool enable_d3d12_debug_layer_for_testing_;
+
+  // Store the info of D3D12_FEATURE_DATA_ARCHITECTURE.
+  const bool is_uma_ = false;
 
   static Adapter* gpu_instance_;  // Static instance for dxgi adapter.
   static Adapter* npu_instance_;  // Static instance for dxcore adapter.

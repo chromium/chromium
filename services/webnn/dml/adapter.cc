@@ -269,10 +269,19 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
                                 "Failed to create command queue.");
   }
 
+  D3D12_FEATURE_DATA_ARCHITECTURE arch = {};
+  if (FAILED(d3d12_device->CheckFeatureSupport(D3D12_FEATURE_ARCHITECTURE,
+                                               &arch, sizeof(arch)))) {
+    return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
+                                "Failed to check feature support.");
+  }
+
+  const bool is_uma = (arch.UMA == TRUE);
+
   return WrapRefCounted(
       new Adapter(std::move(dxgi_or_dxcore_adapter), std::move(d3d12_device),
                   std::move(dml_device), std::move(command_queue),
-                  max_supported_dml_feature_level));
+                  max_supported_dml_feature_level, is_uma));
 }
 
 // static
@@ -285,12 +294,14 @@ Adapter::Adapter(ComPtr<IUnknown> dxgi_or_dxcore_adapter,
                  ComPtr<ID3D12Device> d3d12_device,
                  ComPtr<IDMLDevice> dml_device,
                  scoped_refptr<CommandQueue> command_queue,
-                 DML_FEATURE_LEVEL max_supported_dml_feature_level)
+                 DML_FEATURE_LEVEL max_supported_dml_feature_level,
+                 bool is_uma)
     : dxgi_or_dxcore_adapter_(std::move(dxgi_or_dxcore_adapter)),
       d3d12_device_(std::move(d3d12_device)),
       dml_device_(std::move(dml_device)),
       command_queue_(std::move(command_queue)),
-      max_supported_dml_feature_level_(max_supported_dml_feature_level) {
+      max_supported_dml_feature_level_(max_supported_dml_feature_level),
+      is_uma_(is_uma) {
   ComPtr<IDXGIAdapter> dxgi_adapter;
   ComPtr<IDXCoreAdapter> dxcore_adapter;
   if (SUCCEEDED(dxgi_or_dxcore_adapter_->QueryInterface(

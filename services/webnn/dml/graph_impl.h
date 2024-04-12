@@ -26,7 +26,7 @@ namespace webnn::dml {
 
 using Microsoft::WRL::ComPtr;
 
-class CommandQueue;
+class Adapter;
 class CommandRecorder;
 class ContextImpl;
 class GraphBuilder;
@@ -51,9 +51,8 @@ class GraphImpl final : public WebNNGraphImpl {
   // wait for the initialization work to be completed on GPU, the GraphImpl
   // instance will only be created and bound to the mojom receiver in
   // GraphImpl::OnInitializationComplete method.
-  static void CreateAndBuild(base::WeakPtr<ContextImpl> context,
-                             scoped_refptr<CommandQueue> command_queue,
-                             ComPtr<IDMLDevice> dml_device,
+  static void CreateAndBuild(scoped_refptr<Adapter> adapter,
+                             base::WeakPtr<ContextImpl> context,
                              mojom::GraphInfoPtr graph_info,
                              mojom::WebNNContext::CreateGraphCallback callback,
                              bool pass_dml_execution_disable_meta_commands);
@@ -145,7 +144,7 @@ class GraphImpl final : public WebNNGraphImpl {
   };
 
   static base::expected<std::unique_ptr<ComputeResources>, HRESULT>
-  AllocateComputeResources(CommandRecorder* command_recorder,
+  AllocateComputeResources(Adapter* adapter,
                            IDMLCompiledOperator* compiled_operator,
                            const ComputeResourceInfo& compute_resource_info);
 
@@ -161,13 +160,15 @@ class GraphImpl final : public WebNNGraphImpl {
   // some devices during the first execution and following executions of a graph
   // if not needed.
   static HRESULT RecordGraphExecution(
+      Adapter* adapter,
       IDMLCompiledOperator* compiled_operator,
       CommandRecorder* command_recorder,
       const ComputeResources* compute_resources,
       const PersistentResource* persistent_resource,
       const GraphBufferBindingInfo& graph_buffer_binding_info);
 
-  GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
+  GraphImpl(scoped_refptr<Adapter> adapter,
+            std::unique_ptr<CommandRecorder> command_recorder,
             std::unique_ptr<PersistentResource> persistent_resource,
             ComPtr<IDMLCompiledOperator> compiled_operator,
             ComputeResourceInfo compute_resource_info,
@@ -198,6 +199,7 @@ class GraphImpl final : public WebNNGraphImpl {
   // initialization, while the data of the input tensor is uploaded for every
   // graph execution.
   static void OnCompilationComplete(
+      scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImpl> context,
       mojom::WebNNContext::CreateGraphCallback callback,
       std::unique_ptr<CommandRecorder> command_recorder,
@@ -213,6 +215,7 @@ class GraphImpl final : public WebNNGraphImpl {
   // Notice that the persistent_buffer could be nullptr which means it isn't
   // required by the graph.
   static void OnInitializationComplete(
+      scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImpl> context,
       std::unique_ptr<CommandRecorder> command_recorder,
       std::unique_ptr<PersistentResource> persistent_resource,
@@ -258,8 +261,9 @@ class GraphImpl final : public WebNNGraphImpl {
   // graph executions. It could be nullptr which means it isn't required by the
   // graph and won't need to be bound for graph executions.
   std::unique_ptr<PersistentResource> persistent_resource_;
-  scoped_refptr<CommandQueue> command_queue_;
-  ComPtr<IDMLDevice> dml_device_;
+
+  // Adapter used to create the built graph.
+  scoped_refptr<Adapter> adapter_;
 
   // The command_recorder is created for the graph initialization and recycled
   // after graph execution has completed. It avoids the resource allocation

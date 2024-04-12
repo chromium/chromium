@@ -79,8 +79,7 @@ void WebNNCommandRecorderTest::Download(CommandRecorder* command_recorder,
 
   // Close, execute and wait for completion.
   ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  ASSERT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  ASSERT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 
   // Release the resources referred by GPU execution.
   adapter_->command_queue()->ReleaseCompletedResources();
@@ -107,8 +106,7 @@ TEST_F(WebNNCommandRecorderTest, OpenCloseAndExecute) {
   ASSERT_NE(command_recorder.get(), nullptr);
   EXPECT_HRESULT_SUCCEEDED(command_recorder->Open());
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 }
 
 TEST_F(WebNNCommandRecorderTest, CopyBufferRegionFromUploadToDefault) {
@@ -134,8 +132,7 @@ TEST_F(WebNNCommandRecorderTest, CopyBufferRegionFromUploadToDefault) {
                                      std::move(upload_resource), 0,
                                      kBufferSize);
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 }
 
 TEST_F(WebNNCommandRecorderTest, CopyBufferRegionFromDefaultToDefault) {
@@ -163,8 +160,7 @@ TEST_F(WebNNCommandRecorderTest, CopyBufferRegionFromDefaultToDefault) {
   command_recorder->CopyBufferRegion(std::move(dst_resource), 0,
                                      std::move(src_resource), 0, kBufferSize);
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 }
 
 TEST_F(WebNNCommandRecorderTest, CopyBufferRegionFromDefaultToReadback) {
@@ -190,8 +186,7 @@ TEST_F(WebNNCommandRecorderTest, CopyBufferRegionFromDefaultToReadback) {
                                      std::move(default_resource), 0,
                                      kBufferSize);
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 }
 
 TEST_F(WebNNCommandRecorderTest, CopyBufferRegionBetweenCustomAndDefault) {
@@ -201,7 +196,7 @@ TEST_F(WebNNCommandRecorderTest, CopyBufferRegionBetweenCustomAndDefault) {
   auto command_recorder = CommandRecorder::Create(adapter_->command_queue(),
                                                   adapter_->dml_device());
   ASSERT_NE(command_recorder.get(), nullptr);
-  SKIP_TEST_IF(!command_recorder->IsUMA());
+  SKIP_TEST_IF(!adapter_->IsUMA());
 
   ComPtr<ID3D12Resource> src_resource;
   ASSERT_HRESULT_SUCCEEDED(
@@ -236,8 +231,7 @@ TEST_F(WebNNCommandRecorderTest, CopyBufferRegionBetweenCustomAndDefault) {
   command_recorder->CopyBufferRegion(dst_resource, 0, temp_resource, 0,
                                      kBufferSize);
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 }
 
 TEST_F(WebNNCommandRecorderTest, MultipleSubmissionsWithOneWait) {
@@ -281,8 +275,7 @@ TEST_F(WebNNCommandRecorderTest, MultipleSubmissionsWithOneWait) {
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
 
   // Wait for GPU to complete the execution of both command lists.
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 }
 
 TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteReluOperator) {
@@ -321,8 +314,7 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteReluOperator) {
   EXPECT_HRESULT_SUCCEEDED(command_recorder->InitializeOperator(
       compiled_operator.Get(), std::nullopt, std::nullopt));
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
   adapter_->command_queue()->ReleaseCompletedResources();
   EXPECT_HRESULT_SUCCEEDED(adapter_->dml_device()->GetDeviceRemovedReason());
   EXPECT_HRESULT_SUCCEEDED(adapter_->d3d12_device()->GetDeviceRemovedReason());
@@ -386,7 +378,7 @@ TEST_F(WebNNCommandRecorderTest,
   auto command_recorder = CommandRecorder::Create(adapter_->command_queue(),
                                                   adapter_->dml_device());
   ASSERT_NE(command_recorder.get(), nullptr);
-  SKIP_TEST_IF(!command_recorder->IsUMA());
+  SKIP_TEST_IF(!adapter_->IsUMA());
 
   // Create a Relu operator.
   TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 1, 2, 2});
@@ -419,8 +411,7 @@ TEST_F(WebNNCommandRecorderTest,
   EXPECT_HRESULT_SUCCEEDED(command_recorder->InitializeOperator(
       compiled_operator.Get(), std::nullopt, std::nullopt));
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
   adapter_->command_queue()->ReleaseCompletedResources();
   EXPECT_HRESULT_SUCCEEDED(adapter_->dml_device()->GetDeviceRemovedReason());
   EXPECT_HRESULT_SUCCEEDED(adapter_->d3d12_device()->GetDeviceRemovedReason());
@@ -468,8 +459,7 @@ TEST_F(WebNNCommandRecorderTest,
 
   // Close, execute and wait for completion.
   ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  ASSERT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  ASSERT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 
   // Release the resources referred by GPU execution.
   adapter_->command_queue()->ReleaseCompletedResources();
@@ -525,8 +515,7 @@ TEST_F(WebNNCommandRecorderTest,
   EXPECT_HRESULT_SUCCEEDED(command_recorder->InitializeOperator(
       compiled_operator.Get(), std::nullopt, std::nullopt));
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
   adapter_->command_queue()->ReleaseCompletedResources();
   EXPECT_HRESULT_SUCCEEDED(adapter_->dml_device()->GetDeviceRemovedReason());
   EXPECT_HRESULT_SUCCEEDED(adapter_->d3d12_device()->GetDeviceRemovedReason());
@@ -596,8 +585,7 @@ TEST_F(WebNNCommandRecorderTest,
   upload_buffer->Unmap(0, nullptr);
 
   ASSERT_HRESULT_SUCCEEDED(command_recorder->Execute());
-  ASSERT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  ASSERT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 
   // Release the resources referred by GPU execution.
   adapter_->command_queue()->ReleaseCompletedResources();
@@ -621,8 +609,7 @@ TEST_F(WebNNCommandRecorderTest,
   memcpy(upload_buffer_data, input_data.data(), buffer_size);
   upload_buffer->Unmap(0, nullptr);
   ASSERT_HRESULT_SUCCEEDED(command_recorder->Execute());
-  ASSERT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  ASSERT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 
   // Release the resources referred by GPU execution.
   adapter_->command_queue()->ReleaseCompletedResources();
@@ -675,8 +662,7 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
   EXPECT_HRESULT_SUCCEEDED(command_recorder->InitializeOperator(
       compiled_operator.Get(), std::nullopt, std::nullopt));
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
   adapter_->command_queue()->ReleaseCompletedResources();
   EXPECT_HRESULT_SUCCEEDED(adapter_->dml_device()->GetDeviceRemovedReason());
   EXPECT_HRESULT_SUCCEEDED(adapter_->d3d12_device()->GetDeviceRemovedReason());
@@ -786,8 +772,7 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
 
   // Close, execute and wait for completion.
   ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  ASSERT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  ASSERT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 
   // Release the resources referred by GPU execution.
   adapter_->command_queue()->ReleaseCompletedResources();
@@ -922,8 +907,7 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteConvolutionOperator) {
       compiled_operator.Get(), input_buffer_array_binding_desc,
       persistent_buffer_binding_desc));
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
   adapter_->command_queue()->ReleaseCompletedResources();
   EXPECT_HRESULT_SUCCEEDED(adapter_->dml_device()->GetDeviceRemovedReason());
   EXPECT_HRESULT_SUCCEEDED(adapter_->d3d12_device()->GetDeviceRemovedReason());
@@ -998,7 +982,7 @@ TEST_F(WebNNCommandRecorderTest,
   auto command_recorder = CommandRecorder::Create(adapter_->command_queue(),
                                                   adapter_->dml_device());
   ASSERT_NE(command_recorder.get(), nullptr);
-  SKIP_TEST_IF(!command_recorder->IsUMA());
+  SKIP_TEST_IF(!adapter_->IsUMA());
 
   // Create a Convolution operator.
   TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 1, 3, 3});
@@ -1103,8 +1087,7 @@ TEST_F(WebNNCommandRecorderTest,
       compiled_operator.Get(), input_buffer_array_binding_desc,
       persistent_buffer_binding_desc));
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  EXPECT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  EXPECT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
   adapter_->command_queue()->ReleaseCompletedResources();
   EXPECT_HRESULT_SUCCEEDED(adapter_->dml_device()->GetDeviceRemovedReason());
   EXPECT_HRESULT_SUCCEEDED(adapter_->d3d12_device()->GetDeviceRemovedReason());
@@ -1165,8 +1148,7 @@ TEST_F(WebNNCommandRecorderTest,
 
   // Close, execute and wait for completion.
   ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
-  ASSERT_HRESULT_SUCCEEDED(
-      command_recorder->GetCommandQueue()->WaitSyncForTesting());
+  ASSERT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSyncForTesting());
 
   // Release the resources referred by GPU execution.
   adapter_->command_queue()->ReleaseCompletedResources();

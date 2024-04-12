@@ -29,12 +29,6 @@ D3D12_RESOURCE_BARRIER CreateUAVBarrier(ID3D12Resource* resource) {
 std::unique_ptr<CommandRecorder> CommandRecorder::Create(
     scoped_refptr<CommandQueue> queue,
     ComPtr<IDMLDevice> dml_device) {
-  D3D12_FEATURE_DATA_ARCHITECTURE arch = {};
-  RETURN_NULL_IF_FAILED(GetD3D12Device(dml_device.Get())
-                            ->CheckFeatureSupport(D3D12_FEATURE_ARCHITECTURE,
-                                                  &arch, sizeof(arch)));
-  bool is_uma = (arch.UMA == TRUE);
-
   ComPtr<ID3D12CommandAllocator> command_allocator;
   RETURN_NULL_IF_FAILED(
       GetD3D12Device(dml_device.Get())
@@ -50,36 +44,22 @@ std::unique_ptr<CommandRecorder> CommandRecorder::Create(
       dml_device->CreateCommandRecorder(IID_PPV_ARGS(&command_recorder)));
 
   return base::WrapUnique(new CommandRecorder(
-      is_uma, std::move(queue), std::move(dml_device),
-      std::move(command_allocator), std::move(command_recorder)));
+      std::move(queue), std::move(dml_device), std::move(command_allocator),
+      std::move(command_recorder)));
 }
 
 CommandRecorder::CommandRecorder(
-    bool is_uma,
     scoped_refptr<CommandQueue> command_queue,
     ComPtr<IDMLDevice> dml_device,
     ComPtr<ID3D12CommandAllocator> command_allocator,
     ComPtr<IDMLCommandRecorder> command_recorder)
-    : is_uma_(is_uma),
-      command_queue_(std::move(command_queue)),
+    : command_queue_(std::move(command_queue)),
       dml_device_(std::move(dml_device)),
       d3d12_device_(GetD3D12Device(dml_device_.Get())),
       command_allocator_(std::move(command_allocator)),
       command_recorder_(std::move(command_recorder)) {}
 
 CommandRecorder::~CommandRecorder() = default;
-
-bool CommandRecorder::IsUMA() const {
-  return is_uma_;
-}
-
-IDMLDevice* CommandRecorder::GetDMLDevice() const {
-  return dml_device_.Get();
-}
-
-CommandQueue* CommandRecorder::GetCommandQueue() const {
-  return command_queue_.get();
-}
 
 HRESULT CommandRecorder::Open() {
   CHECK(!is_open_);

@@ -35,19 +35,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   CommandRecorder(const CommandRecorder&) = delete;
   CommandRecorder& operator=(const CommandRecorder&) = delete;
 
-  // Indicates whether the underlying D3D12 device supports UMA (Unified Memory
-  // Architecture).
-  bool IsUMA() const;
-
   // Indicates whether this recorder is ready to record new commands.
   bool IsOpen() const { return is_open_; }
-
-  IDMLDevice* GetDMLDevice() const;
-
-  ID3D12Device* d3d12_device() const { return d3d12_device_.Get(); }
-
-  // Get the command queue that this command recorder submits command list to.
-  CommandQueue* GetCommandQueue() const;
 
   // Call the `Open()` method before recording any new commands. The `Open()`
   // method would prepare the underlying command list and command allocator.
@@ -143,14 +132,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
       const std::optional<DML_BINDING_DESC>& temporary_resource_binding);
 
  private:
-  CommandRecorder(bool is_uma,
-                  scoped_refptr<CommandQueue> command_queue,
+  CommandRecorder(scoped_refptr<CommandQueue> command_queue,
                   ComPtr<IDMLDevice> dml_device,
                   ComPtr<ID3D12CommandAllocator> command_allocator,
                   ComPtr<IDMLCommandRecorder> command_recorder);
-
-  // Store the info of D3D12_FEATURE_DATA_ARCHITECTURE.
-  const bool is_uma_ = false;
 
   bool is_open_ = false;
   // The first call to `CloseAndExecute()` sets the first submitted fence value.
