@@ -61,10 +61,16 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "pdf/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
 
@@ -1911,6 +1917,47 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 // closes its own parent. This needs to use tabs.executeScript (for timing
 // reasons), but is close enough to a content script test to re-use the same
 // suite.
+
+#if BUILDFLAG(ENABLE_PDF)
+// A test suite for exercising the behavior of content script injection into
+// PDF-related frames.
+class ContentScriptRelatedPdfFrameTest : public ContentScriptRelatedFrameTest {
+ public:
+  ContentScriptRelatedPdfFrameTest() {
+    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that content scripts can execute in the PDF embedder frame, but not in
+// the PDF extension frame nor PDF content frame.
+IN_PROC_BROWSER_TEST_F(ContentScriptRelatedPdfFrameTest, PdfFrames) {
+  // Navigate to a full-page PDF.
+  content::WebContents* tab = NavigateTab(
+      embedded_test_server()->GetURL("example.com", "/pdf/test.pdf"));
+  content::RenderFrameHost* primary_main_frame = tab->GetPrimaryMainFrame();
+
+  // Wait until the PDF finishes loading.
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(primary_main_frame));
+
+  // The content script should run in the PDF embedder frame.
+  EXPECT_TRUE(DidScriptRunInFrame(primary_main_frame));
+
+  // The content script shouldn't run in the PDF extension frame.
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(tab);
+  ASSERT_TRUE(extension_host);
+  EXPECT_FALSE(DidScriptRunInFrame(extension_host));
+
+  // The content script shouldn't run in the PDF content frame.
+  content::RenderFrameHost* content_host =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(tab);
+  ASSERT_TRUE(content_host);
+  EXPECT_FALSE(DidScriptRunInFrame(content_host));
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 class ContentScriptMatchOriginAsFallbackTest
     : public ContentScriptRelatedFrameTest {

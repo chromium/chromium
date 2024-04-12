@@ -11,7 +11,14 @@
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/renderer/extension_web_view_helper.h"
 #include "extensions/renderer/renderer_extension_registry.h"
+#include "pdf/buildflags.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/feature_list.h"
+#include "components/pdf/common/pdf_util.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
 
@@ -51,6 +58,20 @@ PermissionsData::PageAccess ExtensionInjectionHost::CanExecuteOnFrame(
     content::RenderFrame* render_frame,
     int tab_id,
     bool is_declarative) const {
+  blink::WebLocalFrame* web_local_frame = render_frame->GetWebFrame();
+
+#if BUILDFLAG(ENABLE_PDF)
+  // Block executing scripts in the PDF content frame. The parent frame should
+  // be the PDF extension frame.
+  blink::WebFrame* parent_web_frame = web_local_frame->Parent();
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+      parent_web_frame &&
+      IsPdfExtensionOrigin(
+          url::Origin(parent_web_frame->GetSecurityOrigin()))) {
+    return PermissionsData::PageAccess::kDenied;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   // If the WebView is embedded in another WebView the outermost extension
   // origin will be set, otherwise we should use it directly from the
   // WebFrame's top origin.
@@ -58,7 +79,7 @@ PermissionsData::PageAccess ExtensionInjectionHost::CanExecuteOnFrame(
       ExtensionWebViewHelper::Get(render_frame->GetWebView())
           ->GetOutermostOrigin();
   if (!outermost_origin) {
-    outermost_origin = render_frame->GetWebFrame()->Top()->GetSecurityOrigin();
+    outermost_origin = web_local_frame->Top()->GetSecurityOrigin();
   }
 
   // Only allowlisted extensions may run scripts on another extension's page.

@@ -32,6 +32,13 @@
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
+#include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/feature_list.h"
+#include "extensions/common/constants.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
 
@@ -162,6 +169,22 @@ class Handler : public content::WebContentsObserver {
     if (content::WebContents::FromRenderFrameHost(frame) != web_contents()) {
       return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
     }
+
+#if BUILDFLAG(ENABLE_PDF)
+    if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+      // Don't expose any child frames of the PDF extension frame, such as the
+      // PDF content frame.
+      content::RenderFrameHost* parent = frame->GetParent();
+      if (parent) {
+        const url::Origin& origin = parent->GetLastCommittedOrigin();
+        if (origin.scheme() == extensions::kExtensionScheme &&
+            origin.host() == extension_misc::kPdfExtensionId) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+      }
+    }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
     if (!frame->IsRenderFrameLive() ||
         base::Contains(pending_render_frames_, frame)) {
       return content::RenderFrameHost::FrameIterationAction::kContinue;

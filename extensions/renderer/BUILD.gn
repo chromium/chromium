@@ -282,6 +282,7 @@ source_set("renderer") {
 
   if (enable_pdf) {
     deps += [
+      "//components/pdf/common:util",
       "//pdf:buildflags",
       "//pdf:features",
     ]
