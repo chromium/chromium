@@ -15,6 +15,7 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_enums.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_enums.mojom.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -521,6 +522,26 @@ bool IsTpcdDtGracePeriodEnforced(const SettingInfo& info) {
                         << info.metadata.tpcd_metadata_cohort();
 }
 
+// Whether to bypass any available grants from the Third Party Cookie
+// Deprecation TPCD Metadata.
+bool IgnoreTpcdDtGracePeriodMetadataEntry(const SettingInfo& info) {
+  if (!base::FeatureList::IsEnabled(
+          net::features::kTpcdMetadataStagedRollback)) {
+    return false;
+  }
+
+  switch (info.metadata.tpcd_metadata_cohort()) {
+    case mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF:
+      return true;
+    case mojom::TpcdMetadataCohort::DEFAULT:
+    case mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON:
+      return false;
+  }
+
+  NOTREACHED_NORETURN() << "Invalid enum value: "
+                        << info.metadata.tpcd_metadata_cohort();
+}
+
 absl::variant<CookieSettingsBase::AllowAllCookies,
               CookieSettingsBase::AllowPartitionedCookies,
               CookieSettingsBase::BlockAllCookies>
@@ -594,7 +615,8 @@ CookieSettingsBase::DecideAccess(const GURL& url,
   }
 
   // Chrome controlled mechanisms (ex. 3PCD Metadata Grants):
-  if (is_allowed_by_tpcd_metadata_grants) {
+  if (is_allowed_by_tpcd_metadata_grants &&
+      !IgnoreTpcdDtGracePeriodMetadataEntry(tpcd_metadata_info)) {
     return AllowAllCookies{TpcdMetadataSourceToAllowMechanism(
         tpcd_metadata_info.metadata.tpcd_metadata_rule_source())};
   }

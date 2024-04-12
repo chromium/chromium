@@ -303,7 +303,8 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, SuccessfullyUpdated) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, TpcdDtGracePeriodEnforced) {
+IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
+                       TpcdDtGracePeriodEnforced_ValidDtToken) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   const GURL first_party_url = https_server()->GetURL(kFirstPartyHost, "/");
@@ -405,6 +406,110 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, TpcdDtGracePeriodEnforced) {
     histogram_tester.ExpectUniqueSample(
         kThirdPartyCookieAllowMechanismHistogram,
         ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD, 2);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
+                       TpcdDtGracePeriodEnforced_InValidDtToken) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  const GURL first_party_url = https_server()->GetURL(kFirstPartyHost, "/");
+  const GURL third_party_url_1 = https_server()->GetURL(kThirdPartyHost1, "/");
+  const GURL third_party_url_2 = https_server()->GetURL(kThirdPartyHost2, "/");
+  const GURL third_party_url_3 = https_server()->GetURL(kThirdPartyHost3, "/");
+
+  const std::string secondary_pattern_spec =
+      ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
+  const std::string primary_pattern_spec_1 =
+      ContentSettingsPattern::FromURLNoWildcard(third_party_url_1).ToString();
+  const std::string primary_pattern_spec_2 =
+      ContentSettingsPattern::FromURLNoWildcard(third_party_url_2).ToString();
+  const std::string primary_pattern_spec_3 =
+      ContentSettingsPattern::FromURLNoWildcard(third_party_url_3).ToString();
+
+  Metadata metadata;
+
+  const auto* dtrp_eligible_source = Parser::kSource1pDt;
+  EXPECT_TRUE(
+      Parser::IsDtrpEligible(Parser::ToRuleSource(dtrp_eligible_source)));
+
+  const uint32_t dtrp_guarantees_grace_period_forced_on = 0;
+  tpcd::metadata::helpers::AddEntryToMetadata(
+      metadata, primary_pattern_spec_1, secondary_pattern_spec,
+      dtrp_eligible_source, dtrp_guarantees_grace_period_forced_on);
+
+  const uint32_t dtrp_guarantees_grace_period_forced_off = 100;
+  tpcd::metadata::helpers::AddEntryToMetadata(
+      metadata, primary_pattern_spec_2, secondary_pattern_spec,
+      dtrp_eligible_source, dtrp_guarantees_grace_period_forced_off);
+
+  const auto* dtrp_ineligible_source = Parser::kSourceCriticalSector;
+  EXPECT_FALSE(
+      Parser::IsDtrpEligible(Parser::ToRuleSource(dtrp_ineligible_source)));
+  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec_3,
+                                              secondary_pattern_spec,
+                                              dtrp_ineligible_source);
+
+  EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
+  MockComponentInstallation(metadata);
+  EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 3u);
+
+  auto embedder_origin = url::Origin::Create(first_party_url);
+
+  EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
+      third_party_url_1, net::SiteForCookies(), embedder_origin, {}));
+  {
+    base::HistogramTester histogram_tester;
+    content::CookieChangeObserver observer(GetWebContents(),
+                                           /*num_expected_calls=*/2);
+    NavigateToPageWithFrame(kFirstPartyHost);
+    NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
+    ExpectCookie(GetFrame(), true);
+    observer.Wait();
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+    histogram_tester.ExpectUniqueSample(
+        kThirdPartyCookieAllowMechanismHistogram,
+        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt, 2);
+  }
+
+  EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
+      third_party_url_2, net::SiteForCookies(), embedder_origin, {}));
+  {
+    base::HistogramTester histogram_tester;
+    content::CookieChangeObserver observer(GetWebContents(),
+                                           /*num_expected_calls=*/2);
+    NavigateToPageWithFrame(kFirstPartyHost);
+    NavigateFrameTo(kThirdPartyHost2, "/browsing_data/site_data.html");
+    ExpectCookie(GetFrame(), true);
+    observer.Wait();
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+    EXPECT_EQ(
+        histogram_tester.GetTotalSum(kThirdPartyCookieAllowMechanismHistogram),
+        0);
+  }
+
+  EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
+      third_party_url_3, net::SiteForCookies(), embedder_origin, {}));
+  {
+    base::HistogramTester histogram_tester;
+    content::CookieChangeObserver observer(GetWebContents(),
+                                           /*num_expected_calls=*/2);
+    NavigateToPageWithFrame(kFirstPartyHost);
+    NavigateFrameTo(kThirdPartyHost3, "/browsing_data/site_data.html");
+    ExpectCookie(GetFrame(), true);
+    observer.Wait();
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+    histogram_tester.ExpectUniqueSample(
+        kThirdPartyCookieAllowMechanismHistogram,
+        ThirdPartyCookieAllowMechanism::
+            kAllowBy3PCDMetadataSourceCriticalSector,
+        2);
   }
 }
 
