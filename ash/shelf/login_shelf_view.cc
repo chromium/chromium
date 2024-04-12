@@ -325,10 +325,8 @@ LoginShelfView::LoginShelfView(
                  base::Unretained(Shell::Get()->login_screen_controller())),
              IDS_ASH_BROWSE_AS_GUEST_BUTTON, kShelfBrowseAsGuestButtonIcon);
   add_button(kAddUser,
-             base::BindRepeating(
-                 &LoginScreenController::ShowGaiaSignin,
-                 base::Unretained(Shell::Get()->login_screen_controller()),
-                 EmptyAccountId()),
+             base::BindRepeating(&LoginShelfView::OnAddUserButtonClicked,
+                                 base::Unretained(this)),
              IDS_ASH_ADD_USER_BUTTON, kShelfAddPersonButtonIcon);
   add_button(kParentAccess, base::BindRepeating([]() {
                // TODO(https://crbug.com/999387): Remove this when handling
@@ -922,6 +920,21 @@ bool LoginShelfView::ShouldShowOsInstallButton() const {
 
 views::View* LoginShelfView::GetButtonContainerByID(ButtonId button_id) {
   return GetViewByID(button_id + kButtonContainerDiff);
+}
+
+void LoginShelfView::OnAddUserButtonClicked() {
+  session_manager::SessionState current_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  if (current_state != session_manager::SessionState::OOBE &&
+      current_state != session_manager::SessionState::LOGIN_PRIMARY) {
+    // TODO(b/333882432): Prevent starting a gaia signin in some transitioning
+    // state like LOGGED_IN_NOT_ACTIVE.
+    LOG(WARNING) << "Add User button was called in an unexpected state: "
+                 << static_cast<int>(current_state)
+                 << " skip to call ShowGaiaSignin.";
+    return;
+  }
+  Shell::Get()->login_screen_controller()->ShowGaiaSignin(EmptyAccountId());
 }
 
 BEGIN_METADATA(LoginShelfView)
