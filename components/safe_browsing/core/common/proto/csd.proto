@@ -1952,6 +1952,8 @@ message ClientSafeBrowsingReportRequest {
     SPECULATION_RULES = 26;
     // import "..." with { type: "json" }
     JSON = 27;
+    // sharedStorage.createWorklet(), sharedStorage.worklet.addModule()
+    SHARED_STORAGE_WORKLET = 28;
   }
 
   // Only populated for interstitial reports (URL_PHISHING, URL_MALWARE,

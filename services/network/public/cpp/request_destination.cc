@@ -46,6 +46,7 @@ constexpr char kFencedframe[] = "fencedframe";
 constexpr char kWebIdentity[] = "webidentity";
 constexpr char kDictionary[] = "dictionary";
 constexpr char kSpeculationRules[] = "speculationrules";
+constexpr char kSharedStorageWorklet[] = "sharedstorageworklet";
 
 constexpr auto kRequestDestinationToStringMap =
     base::MakeFixedFlatMap<network::mojom::RequestDestination, const char*>(
@@ -76,7 +77,9 @@ constexpr auto kRequestDestinationToStringMap =
          {network::mojom::RequestDestination::kDictionary, kDictionary},
          {network::mojom::RequestDestination::kSpeculationRules,
           kSpeculationRules},
-         {network::mojom::RequestDestination::kJson, kJson}});
+         {network::mojom::RequestDestination::kJson, kJson},
+         {network::mojom::RequestDestination::kSharedStorageWorklet,
+          kSharedStorageWorklet}});
 
 constexpr auto kRequestDestinationFromStringMap =
     base::MakeFixedFlatMap<std::string_view,
@@ -108,7 +111,9 @@ constexpr auto kRequestDestinationFromStringMap =
          {kDictionary, network::mojom::RequestDestination::kDictionary},
          {kSpeculationRules,
           network::mojom::RequestDestination::kSpeculationRules},
-         {kJson, network::mojom::RequestDestination::kJson}});
+         {kJson, network::mojom::RequestDestination::kJson},
+         {kSharedStorageWorklet,
+          network::mojom::RequestDestination::kSharedStorageWorklet}});
 // LINT.ThenChange(/third_party/blink/renderer/core/fetch/request.idl)
 
 static_assert(

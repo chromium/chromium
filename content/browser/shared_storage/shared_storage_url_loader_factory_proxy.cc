@@ -68,6 +68,8 @@ void SharedStorageURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.site_for_cookies = site_for_cookies_;
   new_request.request_initiator = frame_origin_;
   new_request.mode = network::mojom::RequestMode::kCors;
+  new_request.destination =
+      network::mojom::RequestDestination::kSharedStorageWorklet;
 
   // TODO(crbug/1268616): create a new factory when the current one gets
   // disconnected.

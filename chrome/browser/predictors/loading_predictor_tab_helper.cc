@@ -84,6 +84,7 @@ net::RequestPriority GetRequestPriority(
     case network::mojom::RequestDestination::kWebIdentity:
     case network::mojom::RequestDestination::kDictionary:
     case network::mojom::RequestDestination::kSpeculationRules:
+    case network::mojom::RequestDestination::kSharedStorageWorklet:
       return net::LOWEST;
   }
 }

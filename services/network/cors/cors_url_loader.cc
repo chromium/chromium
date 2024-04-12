@@ -617,6 +617,18 @@ void CorsURLLoader::OnReceiveResponse(
     }
   }
 
+  if (request_.destination ==
+      mojom::RequestDestination::kSharedStorageWorklet) {
+    CHECK(request_.request_initiator);
+
+    if (!request_.request_initiator->IsSameOriginWith(request_.url) &&
+        !CheckSharedStorageCrossOriginWorkletAllowedResponseHeader(
+            *response_head)) {
+      HandleComplete(URLLoaderCompletionStatus(net::ERR_FAILED));
+      return;
+    }
+  }
+
   if (request_.shared_dictionary_writer_enabled && shared_dictionary_storage_ &&
       IsSharedDictionaryWriteAllowed(request_.mode, response_tainting_)) {
     // Opaque response tainting requests should not trigger dictionary
@@ -1384,6 +1396,21 @@ std::optional<std::string> CorsURLLoader::GetHeaderString(
   if (!response.headers->GetNormalizedHeader(header_name, &header_value))
     return std::nullopt;
   return header_value;
+}
+
+// static
+bool CorsURLLoader::CheckSharedStorageCrossOriginWorkletAllowedResponseHeader(
+    const mojom::URLResponseHead& response) {
+  std::optional<std::string> header =
+      GetHeaderString(response, "Shared-Storage-Cross-Origin-Worklet-Allowed");
+  if (!header) {
+    return false;
+  }
+
+  std::optional<net::structured_headers::Item> item =
+      net::structured_headers::ParseBareItem(*header);
+
+  return item && item->is_boolean() && item->GetBoolean();
 }
 
 }  // namespace network::cors

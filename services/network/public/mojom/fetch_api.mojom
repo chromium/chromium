@@ -73,6 +73,8 @@ enum RequestDestination {
   kSpeculationRules = 25,
   // Requests for JSON modules
   kJson = 26,
+  // Requests for shared storage worklet.
+  kSharedStorageWorklet = 27,
 };
 
 // Corresponds to Fetch request's "redirect mode":

@@ -14,8 +14,9 @@ promise_test(async t => {
   const crossOrigin = 'https://{{domains[www]}}:{{ports[https][0]}}';
   const helper_url = crossOrigin +
                      `/shared-storage/resources/credentials-test-helper.py` +
+                     `?access_control_allow_origin_header=${window.origin}` +
                      `&access_control_allow_credentials_header=true` +
-                     `&shared_storage_cross_origin_worklet_allowed_header=?1` +
+                     `&shared_storage_cross_origin_worklet_allowed_header=?0` +
                      `&token=${ancestor_key}`;
 
   return promise_rejects_dom(t, "OperationError",
@@ -23,7 +24,8 @@ promise_test(async t => {
       helper_url + `&action=store-cookie`,
       { credentials: "include" }));
 }, 'createWorklet() with cross-origin module script and credentials ' +
-   '"include", and without the Access-Control-Allow-Origin response header');
+   '"include", and with the Shared-Storage-Cross-Origin-Worklet-Allowed ' +
+   'response header value set to false (?0)');
 
 </script>
 </body>

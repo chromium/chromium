@@ -87,6 +87,7 @@ WebRequestResourceType ToWebRequestResourceType(
     case network::mojom::RequestDestination::kWorker:
     case network::mojom::RequestDestination::kSharedWorker:
     case network::mojom::RequestDestination::kServiceWorker:
+    case network::mojom::RequestDestination::kSharedStorageWorklet:
       return WebRequestResourceType::SCRIPT;
     case network::mojom::RequestDestination::kReport:
       return WebRequestResourceType::CSP_REPORT;

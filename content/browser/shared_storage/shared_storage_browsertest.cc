@@ -84,61 +84,63 @@ namespace {
 
 using WorkletHosts = SharedStorageWorkletHostManager::WorkletHosts;
 
-const char kSharedStorageWorkletExpiredMessage[] =
+constexpr char kSharedStorageWorkletExpiredMessage[] =
     "The sharedStorage worklet cannot execute further operations because the "
     "previous operation did not include the option \'keepAlive: true\'.";
 
-const auto& SetOperation = SharedStorageWriteOperationAndResult::SetOperation;
-const auto& AppendOperation =
+constexpr auto& SetOperation =
+    SharedStorageWriteOperationAndResult::SetOperation;
+constexpr auto& AppendOperation =
     SharedStorageWriteOperationAndResult::AppendOperation;
-const auto& DeleteOperation =
+constexpr auto& DeleteOperation =
     SharedStorageWriteOperationAndResult::DeleteOperation;
-const auto& ClearOperation =
+constexpr auto& ClearOperation =
     SharedStorageWriteOperationAndResult::ClearOperation;
 
-const char kSimplePagePath[] = "/simple_page.html";
+constexpr char kSimplePagePath[] = "/simple_page.html";
 
-const char kTitle1Path[] = "/title1.html";
+constexpr char kTitle1Path[] = "/title1.html";
 
-const char kTitle2Path[] = "/title2.html";
+constexpr char kTitle2Path[] = "/title2.html";
 
-const char kTitle3Path[] = "/title3.html";
+constexpr char kTitle3Path[] = "/title3.html";
 
-const char kTitle4Path[] = "/title4.html";
+constexpr char kTitle4Path[] = "/title4.html";
 
-const char kFencedFramePath[] = "/fenced_frames/title0.html";
+constexpr char kFencedFramePath[] = "/fenced_frames/title0.html";
 
-const char kPageWithBlankIframePath[] = "/page_with_blank_iframe.html";
+constexpr char kPageWithBlankIframePath[] = "/page_with_blank_iframe.html";
 
-const char kPngPath[] = "/shared_storage/pixel.png";
+constexpr char kPngPath[] = "/shared_storage/pixel.png";
 
-const char kDestroyedStatusHistogram[] =
+constexpr char kDestroyedStatusHistogram[] =
     "Storage.SharedStorage.Worklet.DestroyedStatus";
 
-const char kTimingKeepAliveDurationHistogram[] =
+constexpr char kTimingKeepAliveDurationHistogram[] =
     "Storage.SharedStorage.Worklet.Timing."
     "KeepAliveEndedDueToOperationsFinished.KeepAliveDuration";
 
-const char kErrorTypeHistogram[] = "Storage.SharedStorage.Worklet.Error.Type";
+constexpr char kErrorTypeHistogram[] =
+    "Storage.SharedStorage.Worklet.Error.Type";
 
-const char kTimingUsefulResourceHistogram[] =
+constexpr char kTimingUsefulResourceHistogram[] =
     "Storage.SharedStorage.Worklet.Timing.UsefulResourceDuration";
 
-const char kTimingRunExecutedInWorkletHistogram[] =
+constexpr char kTimingRunExecutedInWorkletHistogram[] =
     "Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet";
 
-const char kTimingSelectUrlExecutedInWorkletHistogram[] =
+constexpr char kTimingSelectUrlExecutedInWorkletHistogram[] =
     "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet";
 
-const double kBudgetAllowed = 5.0;
+constexpr double kBudgetAllowed = 5.0;
 
-const int kStalenessThresholdDays = 1;
+constexpr int kStalenessThresholdDays = 1;
 
-const int kSelectURLOverallBitBudget = 12;
+constexpr int kSelectURLOverallBitBudget = 12;
 
-const int kSelectURLSiteBitBudget = 6;
+constexpr int kSelectURLSiteBitBudget = 6;
 
-const char kGenerateURLsListScript[] = R"(
+constexpr char kGenerateURLsListScript[] = R"(
   function generateUrls(size) {
     return new Array(size).fill(0).map((e, i) => {
       return {
@@ -153,7 +155,24 @@ const char kGenerateURLsListScript[] = R"(
   }
 )";
 
-const char kRemainingBudgetPrefix[] = "remaining budget: ";
+constexpr char kRemainingBudgetPrefix[] = "remaining budget: ";
+
+constexpr char kEmptyAccessControlAllowOriginReplacement[] = "";
+
+constexpr char kEmptySharedStorageCrossOriginAllowedReplacement[] = "";
+
+base::StringPairs ResponseHeaderReplacement(
+    const std::string& access_control_allow_origin_replacement,
+    const std::string& shared_storage_cross_origin_allowed_replacement) {
+  base::StringPairs header_replacement;
+  header_replacement.emplace_back("{{ACCESS_CONTROL_ALLOW_ORIGIN_HEADER}}",
+                                  access_control_allow_origin_replacement);
+  header_replacement.emplace_back(
+      "{{SHARED_STORAGE_CROSS_ORIGIN_WORKLET_ALLOWED_HEADER}}",
+      shared_storage_cross_origin_allowed_replacement);
+
+  return header_replacement;
+}
 
 std::string TimeDeltaToString(base::TimeDelta delta) {
   return base::StrCat({base::NumberToString(delta.InMilliseconds()), "ms"});
@@ -2435,14 +2454,12 @@ IN_PROC_BROWSER_TEST_P(
   test_worklet_host_manager()
       .ConfigureShouldDeferWorkletMessagesOnWorkletHostCreation(true);
 
-  base::StringPairs header_replacement;
-  header_replacement.emplace_back("{{ACCESS_CONTROL_ALLOW_ORIGIN_HEADER}}",
-                                  "Access-Control-Allow-Origin: *");
-
   GURL module_script_url = https_server()->GetURL(
-      "b.test",
-      net::test_server::GetFilePathWithReplacements(
-          "/shared_storage/module_with_custom_header.js", header_replacement));
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    ResponseHeaderReplacement(
+                        "Access-Control-Allow-Origin: *",
+                        "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
   EvalJsResult result = EvalJs(
       shell(),
@@ -4574,13 +4591,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  base::StringPairs header_replacement;
-  header_replacement.emplace_back("{{ACCESS_CONTROL_ALLOW_ORIGIN_HEADER}}", "");
-
   GURL module_script_url = https_server()->GetURL(
-      "a.test",
-      net::test_server::GetFilePathWithReplacements(
-          "/shared_storage/module_with_custom_header.js", header_replacement));
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    ResponseHeaderReplacement(
+                        kEmptyAccessControlAllowOriginReplacement,
+                        kEmptySharedStorageCrossOriginAllowedReplacement)));
 
   EXPECT_TRUE(ExecJs(shell(), JsReplace("sharedStorage.createWorklet($1)",
                                         module_script_url.spec())));
@@ -4596,13 +4612,32 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  base::StringPairs header_replacement;
-  header_replacement.emplace_back("{{ACCESS_CONTROL_ALLOW_ORIGIN_HEADER}}", "");
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    ResponseHeaderReplacement(
+                        kEmptyAccessControlAllowOriginReplacement,
+                        "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
+
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1)", module_script_url.spec()));
+
+  EXPECT_THAT(result.error, testing::HasSubstr("error = net::ERR_FAILED"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageBrowserTest,
+    CreateWorklet_CrossOrigin_FailedSharedStorageWorkletAllowedResponseHeaderCheck) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
   GURL module_script_url = https_server()->GetURL(
-      "b.test",
-      net::test_server::GetFilePathWithReplacements(
-          "/shared_storage/module_with_custom_header.js", header_replacement));
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    ResponseHeaderReplacement(
+                        "Access-Control-Allow-Origin: *",
+                        kEmptySharedStorageCrossOriginAllowedReplacement)));
 
   EvalJsResult result = EvalJs(
       shell(),
@@ -4616,14 +4651,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  base::StringPairs header_replacement;
-  header_replacement.emplace_back("{{ACCESS_CONTROL_ALLOW_ORIGIN_HEADER}}",
-                                  "Access-Control-Allow-Origin: *");
-
   GURL module_script_url = https_server()->GetURL(
-      "b.test",
-      net::test_server::GetFilePathWithReplacements(
-          "/shared_storage/module_with_custom_header.js", header_replacement));
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    ResponseHeaderReplacement(
+                        "Access-Control-Allow-Origin: *",
+                        "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
   EXPECT_TRUE(ExecJs(shell(), JsReplace("sharedStorage.createWorklet($1)",
                                         module_script_url.spec())));
@@ -4648,14 +4681,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  base::StringPairs header_replacement;
-  header_replacement.emplace_back("{{ACCESS_CONTROL_ALLOW_ORIGIN_HEADER}}",
-                                  "Access-Control-Allow-Origin: *");
-
   GURL module_script_url = https_server()->GetURL(
-      "b.test",
-      net::test_server::GetFilePathWithReplacements(
-          "/shared_storage/module_with_custom_header.js", header_replacement));
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    ResponseHeaderReplacement(
+                        "Access-Control-Allow-Origin: *",
+                        "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
   EXPECT_TRUE(ExecJs(shell(), JsReplace("sharedStorage.createWorklet($1)",
                                         module_script_url.spec())));
@@ -4682,14 +4713,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   FrameTreeNode* iframe_node =
       CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
 
-  base::StringPairs header_replacement;
-  header_replacement.emplace_back("{{ACCESS_CONTROL_ALLOW_ORIGIN_HEADER}}",
-                                  "Access-Control-Allow-Origin: *");
-
   GURL module_script_url = https_server()->GetURL(
-      "b.test",
-      net::test_server::GetFilePathWithReplacements(
-          "/shared_storage/module_with_custom_header.js", header_replacement));
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    ResponseHeaderReplacement(
+                        "Access-Control-Allow-Origin: *",
+                        "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
   EXPECT_TRUE(ExecJs(shell(), JsReplace("sharedStorage.createWorklet($1)",
                                         module_script_url.spec())));
@@ -4709,14 +4738,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  base::StringPairs header_replacement;
-  header_replacement.emplace_back("{{ACCESS_CONTROL_ALLOW_ORIGIN_HEADER}}",
-                                  "Access-Control-Allow-Origin: *");
-
   GURL module_script_url = https_server()->GetURL(
-      "b.test",
-      net::test_server::GetFilePathWithReplacements(
-          "/shared_storage/module_with_custom_header.js", header_replacement));
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    ResponseHeaderReplacement(
+                        "Access-Control-Allow-Origin: *",
+                        "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
   EXPECT_TRUE(ExecJs(shell(), JsReplace("sharedStorage.createWorklet($1)",
                                         module_script_url.spec())));
@@ -4740,14 +4767,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  base::StringPairs header_replacement;
-  header_replacement.emplace_back("{{ACCESS_CONTROL_ALLOW_ORIGIN_HEADER}}",
-                                  "Access-Control-Allow-Origin: *");
-
   GURL module_script_url = https_server()->GetURL(
-      "b.test",
-      net::test_server::GetFilePathWithReplacements(
-          "/shared_storage/module_with_custom_header.js", header_replacement));
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    ResponseHeaderReplacement(
+                        "Access-Control-Allow-Origin: *",
+                        "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
   EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(
       new Promise((resolve, reject) => {

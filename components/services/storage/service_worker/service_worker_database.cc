@@ -672,6 +672,11 @@ bool WriteToBlinkCondition(
               Request::kJsonDestination:
             request.destination = network::mojom::RequestDestination::kJson;
             break;
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+              Request::kSharedStorageWorkletDestination:
+            request.destination =
+                network::mojom::RequestDestination::kSharedStorageWorklet;
+            break;
         }
       }
       out_request = request;
@@ -1025,6 +1030,11 @@ void WriteConditionToProtoWithHelper(
           mutable_request->set_destination(
               ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
                   Request::kJsonDestination);
+          break;
+        case network::mojom::RequestDestination::kSharedStorageWorklet:
+          mutable_request->set_destination(
+              ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                  Request::kSharedStorageWorkletDestination);
           break;
       }
     }

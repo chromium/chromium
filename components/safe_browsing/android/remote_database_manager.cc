@@ -146,7 +146,7 @@ RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager()
     // By default, we check all types except a few.
     static_assert(
         network::mojom::RequestDestination::kMaxValue ==
-            network::mojom::RequestDestination::kJson,
+            network::mojom::RequestDestination::kSharedStorageWorklet,
         "Decide if new request destination should be skipped on mobile.");
     for (int t_int = 0;
          t_int <=

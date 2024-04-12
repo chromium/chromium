@@ -1508,6 +1508,8 @@ std::string UrlRequestDestinationToString(
       return "SERVICE_WORKER";
     case ClientSafeBrowsingReportRequest::SHARED_WORKER:
       return "SHARED_WORKER";
+    case ClientSafeBrowsingReportRequest::SHARED_STORAGE_WORKLET:
+      return "SHARED_STORAGE_WORKLET";
     case ClientSafeBrowsingReportRequest::STYLE:
       return "STYLE";
     case ClientSafeBrowsingReportRequest::TRACK:

@@ -160,6 +160,8 @@ GetUrlRequestDestinationFromMojomRequestDestination(
       return CSBRR::SERVICE_WORKER;
     case network::mojom::RequestDestination::kSharedWorker:
       return CSBRR::SHARED_WORKER;
+    case network::mojom::RequestDestination::kSharedStorageWorklet:
+      return CSBRR::SHARED_STORAGE_WORKLET;
     case network::mojom::RequestDestination::kStyle:
       return CSBRR::STYLE;
     case network::mojom::RequestDestination::kTrack:
