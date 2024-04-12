@@ -305,7 +305,7 @@
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/language_packs/language_pack_font_service_factory.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
-#include "chrome/browser/chromeos/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
+#include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/push_notification/push_notification_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -725,8 +725,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::multi_screen_capture::MultiScreenCapturePolicyServiceFactory::
-      GetInstance();
+  policy::MultiScreenCapturePolicyServiceFactory::GetInstance();
   if (chromeos::features::
           IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() &&
       !crosapi::browser_util::IsLacrosEnabled()) {

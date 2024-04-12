@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_MULTI_SCREEN_CAPTURE_MULTI_SCREEN_CAPTURE_POLICY_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_MULTI_SCREEN_CAPTURE_MULTI_SCREEN_CAPTURE_POLICY_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_MULTI_SCREEN_CAPTURE_MULTI_SCREEN_CAPTURE_POLICY_SERVICE_H_
+#define CHROME_BROWSER_ASH_POLICY_MULTI_SCREEN_CAPTURE_MULTI_SCREEN_CAPTURE_POLICY_SERVICE_H_
 
 #include <memory>
 
@@ -15,7 +15,7 @@
 class GURL;
 class Profile;
 
-namespace chromeos::multi_screen_capture {
+namespace policy {
 
 // This keyed service serves as mechanism to prevent dynamic propagation for the
 // "profile.managed_multi_screen_capture_allowed_for_urls" pref. On startup, it
@@ -49,6 +49,6 @@ class MultiScreenCapturePolicyService : public KeyedService {
   base::Value::List multi_screen_capture_allow_list_on_login_;
 };
 
-}  // namespace chromeos::multi_screen_capture
+}  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_MULTI_SCREEN_CAPTURE_MULTI_SCREEN_CAPTURE_POLICY_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_MULTI_SCREEN_CAPTURE_MULTI_SCREEN_CAPTURE_POLICY_SERVICE_H_

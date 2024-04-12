@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
+#include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/chromeos/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
+#include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -14,7 +14,7 @@
 #error This file should only be included on Ash ChromeOS.
 #endif
 
-namespace chromeos::multi_screen_capture {
+namespace policy {
 
 MultiScreenCapturePolicyService*
 MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(
@@ -48,4 +48,4 @@ bool MultiScreenCapturePolicyServiceFactory::
   return true;
 }
 
-}  // namespace chromeos::multi_screen_capture
+}  // namespace policy

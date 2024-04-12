@@ -37,8 +37,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
-#include "chrome/browser/chromeos/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
+#include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
+#include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace capture_policy {
@@ -162,9 +162,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context) {
 // TODO(b/40272166): Implement for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::multi_screen_capture::MultiScreenCapturePolicyService*
-      multi_capture_policy_service = chromeos::multi_screen_capture::
-          MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(context);
+  policy::MultiScreenCapturePolicyService* multi_capture_policy_service =
+      policy::MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(
+          context);
   if (!multi_capture_policy_service) {
     return false;
   }
@@ -213,9 +213,9 @@ bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
                                  const GURL& url) {
 // TODO(b/40272166): Implement for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::multi_screen_capture::MultiScreenCapturePolicyService*
-      multi_capture_policy_service = chromeos::multi_screen_capture::
-          MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(context);
+  policy::MultiScreenCapturePolicyService* multi_capture_policy_service =
+      policy::MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(
+          context);
   if (!multi_capture_policy_service) {
     return false;
   }

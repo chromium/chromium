@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
+#include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
@@ -11,7 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos::multi_screen_capture {
+namespace policy {
 
 MultiScreenCapturePolicyService::MultiScreenCapturePolicyService(
     Profile* profile)
@@ -61,4 +61,4 @@ void MultiScreenCapturePolicyService::Shutdown() {
   profile_ = nullptr;
 }
 
-}  // namespace chromeos::multi_screen_capture
+}  // namespace policy
