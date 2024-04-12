@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -352,6 +353,23 @@ TEST_F(CSSPrimitiveValueTest, ComputeMethodsWithLengthResolver) {
     EXPECT_EQ(10.0, value->ComputeDegrees(length_resolver));
     EXPECT_EQ("calc(sign(-1em + 12px) * 10deg)", value->CustomCSSText());
   }
+}
+
+TEST_F(CSSPrimitiveValueTest, ContainerProgressTreeScope) {
+  ScopedCSSProgressNotationForTest scoped_feature(true);
+  const CSSValue* value = css_test_helpers::ParseValue(
+      GetDocument(), "<number>",
+      "container-progress(width of my-container from 0px to 1px)");
+  ASSERT_TRUE(value);
+
+  const CSSValue& scoped_value = value->EnsureScopedValue(&GetDocument());
+  EXPECT_NE(value, &scoped_value);
+  EXPECT_TRUE(scoped_value.IsScopedValue());
+  // Don't crash:
+  const CSSValue& scoped_value2 =
+      scoped_value.EnsureScopedValue(&GetDocument());
+  EXPECT_TRUE(scoped_value2.IsScopedValue());
+  EXPECT_EQ(&scoped_value, &scoped_value2);
 }
 
 }  // namespace

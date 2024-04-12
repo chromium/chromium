@@ -712,8 +712,9 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
 
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope* tree_scope) const final {
-    const CSSCustomIdentValue* container_name =
-        container_name_ ? &container_name_->PopulateWithTreeScope(tree_scope)
+    const auto* container_name =
+        container_name_ ? To<CSSCustomIdentValue>(
+                              &container_name_->EnsureScopedValue(tree_scope))
                         : nullptr;
     return *MakeGarbageCollected<CSSMathExpressionContainerFeature>(
         size_feature_, container_name);

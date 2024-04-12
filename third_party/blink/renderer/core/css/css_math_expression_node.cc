@@ -2667,10 +2667,12 @@ double EvaluateContainerSize(const CSSIdentifierValue* size_feature,
 CSSMathExpressionContainerFeature::CSSMathExpressionContainerFeature(
     const CSSIdentifierValue* size_feature,
     const CSSCustomIdentValue* container_name)
-    : CSSMathExpressionNode(CalculationResultCategory::kCalcLength,
-                            /*has_comparisons =*/false,
-                            /*has_anchor_functions =*/false,
-                            /*needs_tree_scope_population =*/true),
+    : CSSMathExpressionNode(
+          CalculationResultCategory::kCalcLength,
+          /*has_comparisons =*/false,
+          /*has_anchor_functions =*/false,
+          /*needs_tree_scope_population =*/
+          (container_name && !container_name->IsScopedValue())),
       size_feature_(size_feature),
       container_name_(container_name) {
   CHECK(size_feature);
