@@ -840,6 +840,7 @@ source_set("web_applications_unit_tests") {
     "preinstalled_web_app_manager_unittest.cc",
     "preinstalled_web_app_utils_unittest.cc",
     "preinstalled_web_apps/preinstalled_web_app_definition_utils_unittest.cc",
+    "tabbed_mode_scope_matcher_unittest.cc",
     "test/web_app_test.cc",
     "test/web_app_test.h",
     "web_app_command_manager_unittest.cc",
