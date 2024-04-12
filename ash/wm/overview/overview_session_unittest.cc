@@ -10964,7 +10964,7 @@ TEST_F(OakTest, WallpaperClipRectAndRoundedCorners) {
   // corners.
   ToggleOverview();
   OverviewGrid* overview_grid = GetOverviewSession()->grid_list()[0].get();
-  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+  EXPECT_EQ(overview_grid->GetWallpaperClipBounds(),
             wallpaper_view_layer->clip_rect());
   EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
             wallpaper_view_layer->rounded_corner_radii());
@@ -11007,7 +11007,7 @@ TEST_F(OakTest, DisplayChange) {
   ToggleOverview();
   OverviewGrid* overview_grid = GetOverviewSession()->grid_list()[0].get();
   EXPECT_EQ(display_bounds2, wallpaper_underlay_layer->bounds());
-  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+  EXPECT_EQ(overview_grid->GetWallpaperClipBounds(),
             wallpaper_view_layer->clip_rect());
   EXPECT_TRUE(wallpaper_underlay_layer->IsVisible());
 
@@ -11112,7 +11112,7 @@ TEST_F(OakTest, PartialOverviewVisualsAndResize) {
   OverviewGrid* overview_grid = GetOverviewSession()->grid_list()[0].get();
   // Verify that wallpaper is clipped properly with rounded corners applied in
   // partial overview.
-  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+  EXPECT_EQ(overview_grid->GetWallpaperClipBounds(),
             wallpaper_view_layer->clip_rect());
   EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
             wallpaper_view_layer->rounded_corner_radii());
@@ -11127,7 +11127,7 @@ TEST_F(OakTest, PartialOverviewVisualsAndResize) {
   event_generator->MoveMouseBy(-10, 0);
   ASSERT_TRUE(IsInOverviewSession());
   EXPECT_TRUE(WindowState::Get(win1.get())->is_dragged());
-  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+  EXPECT_EQ(overview_grid->GetWallpaperClipBounds(),
             wallpaper_view_layer->clip_rect());
   EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
             wallpaper_view_layer->rounded_corner_radii());
@@ -11195,22 +11195,22 @@ TEST_F(OakTest, WallpaperClipAnimation) {
 
   ToggleOverview();
   OverviewGrid* overview_grid = GetOverviewSession()->grid_list()[0].get();
-  const auto& grid_effective_bounds = overview_grid->GetGridEffectiveBounds();
+  const auto& wallpaper_clip_bounds = overview_grid->GetWallpaperClipBounds();
   EXPECT_TRUE(wallpaper_view_layer_animator->is_animating());
   EXPECT_TRUE(
-      wallpaper_view_layer->clip_rect().Contains(grid_effective_bounds));
+      wallpaper_view_layer->clip_rect().Contains(wallpaper_clip_bounds));
   EXPECT_TRUE(display_bounds.Contains(wallpaper_view_layer->clip_rect()));
 
   ui::LayerAnimationStoppedWaiter layer_animation_stopped_waiter;
   layer_animation_stopped_waiter.Wait(wallpaper_view_layer);
   EXPECT_TRUE(wallpaper_underlay_layer->IsVisible());
   EXPECT_FALSE(wallpaper_view_layer_animator->is_animating());
-  EXPECT_EQ(wallpaper_view_layer->clip_rect(), grid_effective_bounds);
+  EXPECT_EQ(wallpaper_view_layer->clip_rect(), wallpaper_clip_bounds);
 
   ToggleOverview();
   EXPECT_TRUE(wallpaper_view_layer_animator->is_animating());
   EXPECT_TRUE(
-      wallpaper_view_layer->clip_rect().Contains(grid_effective_bounds));
+      wallpaper_view_layer->clip_rect().Contains(wallpaper_clip_bounds));
   EXPECT_TRUE(display_bounds.Contains(wallpaper_view_layer->clip_rect()));
 
   layer_animation_stopped_waiter.Wait(wallpaper_view_layer);
@@ -11262,7 +11262,7 @@ TEST_F(OakTest, VirtualDesksBarStateChange) {
   EXPECT_FALSE(desks_bar_view->background_view());
   gfx::Rect wallpaper_clip_rect_for_zero_state(
       wallpaper_view_layer->clip_rect());
-  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+  EXPECT_EQ(overview_grid->GetWallpaperClipBounds(),
             wallpaper_clip_rect_for_zero_state);
   EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
             wallpaper_view_layer->rounded_corner_radii());
@@ -11279,7 +11279,7 @@ TEST_F(OakTest, VirtualDesksBarStateChange) {
   // the previous `wallpaper_clip_rect_for_zero_state`.
   EXPECT_TRUE(wallpaper_clip_rect_for_zero_state.Contains(
       wallpaper_clip_rect_for_expanded_state));
-  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+  EXPECT_EQ(overview_grid->GetWallpaperClipBounds(),
             wallpaper_clip_rect_for_expanded_state);
   EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
             wallpaper_view_layer->rounded_corner_radii());

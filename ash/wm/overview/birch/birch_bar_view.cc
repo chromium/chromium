@@ -246,6 +246,12 @@ void BirchBarView::Clear() {
   }
 }
 
+int BirchBarView::GetMaximumHeight() const {
+  return GetExpectedLayoutType(kMaxChipsNum) == LayoutType::kOneByFour
+             ? kChipHeight
+             : 2 * kChipHeight + kChipSpacing;
+}
+
 gfx::Size BirchBarView::GetChipSize() const {
   const gfx::Rect display_bounds = display::Screen::GetScreen()
                                        ->GetDisplayNearestWindow(root_window_)
@@ -275,10 +281,11 @@ gfx::Size BirchBarView::GetChipSize() const {
   return gfx::Size(chip_width, kChipHeight);
 }
 
-BirchBarView::LayoutType BirchBarView::GetExpectedLayoutType() const {
+BirchBarView::LayoutType BirchBarView::GetExpectedLayoutType(
+    int chip_num) const {
   // Calculate the expected layout type according to the chip space estimated by
   // current available space and number of chips.
-  const int chip_space = GetChipSpace(available_space_, chips_.size());
+  const int chip_space = GetChipSpace(available_space_, chip_num);
   return chip_space < chip_size_.width() ? LayoutType::kTwoByTwo
                                          : LayoutType::kOneByFour;
 }
@@ -287,9 +294,10 @@ void BirchBarView::Relayout(RelayoutReason reason) {
   base::ScopedClosureRunner scoped_closure(base::BindOnce(
       &BirchBarView::OnRelayout, base::Unretained(this), reason));
 
-  const size_t primary_size = GetExpectedLayoutType() == LayoutType::kOneByFour
-                                  ? kRowCapacityOf1x4Layout
-                                  : kRowCapacityOf2x2Layout;
+  const size_t primary_size =
+      GetExpectedLayoutType(chips_.size()) == LayoutType::kOneByFour
+          ? kRowCapacityOf1x4Layout
+          : kRowCapacityOf2x2Layout;
 
   // Create a secondary row for 2x2 layout if there is no secondary row.
   if (primary_size == kRowCapacityOf2x2Layout && !secondary_row_) {

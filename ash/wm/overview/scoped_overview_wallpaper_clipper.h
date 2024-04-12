@@ -6,6 +6,7 @@
 #define ASH_WM_OVERVIEW_SCOPED_OVERVIEW_WALLPAPER_CLIPPER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ash {
 
@@ -26,6 +27,9 @@ class ScopedOverviewWallpaperClipper {
   void RefreshWallpaperClipBounds();
 
  private:
+  // Gets the clip bounds in the wallpaper layer's parent coordinates.
+  gfx::Rect GetTargetClipBounds() const;
+
   raw_ptr<OverviewGrid> overview_grid_;
 };
 

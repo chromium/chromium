@@ -92,12 +92,13 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // Clear existing chips and create new chips with given items.
   void SetupChips(const std::vector<raw_ptr<BirchItem>>& items);
 
-  // Adds a new birch chip to the bar.
-  // TODO(zxdan): move the function to private when using model and replace the
-  // arguments with chip data structure.
+  // Adds a new chip with given item.
   void AddChip(BirchItem* birch_item);
 
   void RemoveChip(BirchItem* birch_item);
+
+  // Gets the maximum height of the bar with full chips.
+  int GetMaximumHeight() const;
 
  private:
   friend class OverviewGridTestApi;
@@ -117,9 +118,9 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // size.
   gfx::Size GetChipSize() const;
 
-  // Gets expected layout types according to the number of chips and available
-  // space.
-  LayoutType GetExpectedLayoutType() const;
+  // Gets expected layout types according to the given number of chips and
+  // current available space.
+  LayoutType GetExpectedLayoutType(int chip_num) const;
 
   // Rearranges the chips according to current expected layout type.
   void Relayout(RelayoutReason reason);

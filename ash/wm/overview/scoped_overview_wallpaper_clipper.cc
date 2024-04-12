@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -45,18 +44,12 @@ ScopedOverviewWallpaperClipper::ScopedOverviewWallpaperClipper(
   auto* wallpaper_view_layer =
       wallpaper_widget_controller->wallpaper_view()->layer();
 
-  // `GetGridEffectiveBounds()` returns the bounds in screen coordinates.
-  // Convert these to the parent's coordinates, as layer bounds are always
-  // relative to their parent.
-  gfx::Rect target_clip_rect = overview_grid_->GetGridEffectiveBounds();
-  wm::ConvertRectFromScreen(root_window, &target_clip_rect);
-
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
       .SetDuration(kWallpaperClippingAnimationDuration)
-      .SetClipRect(wallpaper_view_layer, target_clip_rect,
+      .SetClipRect(wallpaper_view_layer, GetTargetClipBounds(),
                    gfx::Tween::ACCEL_20_DECEL_100)
       .SetRoundedCorners(wallpaper_view_layer, kWallpaperClipRoundedCornerRadii,
                          gfx::Tween::ACCEL_20_DECEL_100);
@@ -110,12 +103,16 @@ void ScopedOverviewWallpaperClipper::RefreshWallpaperClipBounds() {
   auto* wallpaper_view_layer =
       wallpaper_widget_controller->wallpaper_view()->layer();
 
-  // `GetGridEffectiveBounds()` returns the bounds in screen coordinates.
+  wallpaper_view_layer->SetClipRect(GetTargetClipBounds());
+}
+
+gfx::Rect ScopedOverviewWallpaperClipper::GetTargetClipBounds() const {
+  // `GetWallpaperClipBounds()` returns the bounds in screen coordinates.
   // Convert these to the parent's coordinates, as layer bounds are always
   // relative to their parent.
-  gfx::Rect target_clip_rect = overview_grid_->GetGridEffectiveBounds();
-  wm::ConvertRectFromScreen(root_window, &target_clip_rect);
-  wallpaper_view_layer->SetClipRect(target_clip_rect);
+  gfx::Rect target_clip_rect = overview_grid_->GetWallpaperClipBounds();
+  wm::ConvertRectFromScreen(overview_grid_->root_window(), &target_clip_rect);
+  return target_clip_rect;
 }
 
 }  // namespace ash

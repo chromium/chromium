@@ -1716,13 +1716,11 @@ gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
 
   // Calculate the bottom padding according to the existence of birch bar,
   // shelf, and home launcher.
-  const bool has_birch_bar = birch_bar_view_ && birch_bar_view_->GetChipsNum();
-
-  // If birch bar exist, add compact padding with birch bar height and birch bar
-  // bottom padding to the bottom.
-  if (has_birch_bar) {
+  if (birch_bar_view_) {
+    // If birch bar exists, add compact padding with the maximum birch bar
+    // height and birch bar bottom padding to the bottom.
     vertical_paddings.set_bottom(GetBirchBarBottomPadding(root_window_) +
-                                 birch_bar_view_->GetPreferredSize().height() +
+                                 birch_bar_view_->GetMaximumHeight() +
                                  kCompactPaddingForEffectiveBounds);
     return vertical_paddings;
   }
@@ -2289,6 +2287,14 @@ void OverviewGrid::RefreshGridBounds(bool animate) {
     pine_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
     pine_widget_->SetBounds(pine_bounds);
   }
+
+  if (scoped_overview_wallpaper_clipper_) {
+    scoped_overview_wallpaper_clipper_->RefreshWallpaperClipBounds();
+  }
+
+  if (features::IsForestFeatureEnabled()) {
+    UpdateFeedbackButton();
+  }
 }
 
 void OverviewGrid::UpdateSaveDeskButtons() {
@@ -2521,6 +2527,18 @@ FasterSplitView* OverviewGrid::GetFasterSplitView() {
              : nullptr;
 }
 
+gfx::Rect OverviewGrid::GetWallpaperClipBounds() const {
+  // The bottom of the clipping bounds should be above the birch bar.
+  gfx::Rect clipping_bounds = GetGridEffectiveBounds();
+
+  if (birch_bar_widget_) {
+    clipping_bounds.SetVerticalBounds(
+        clipping_bounds.y(), birch_bar_widget_->GetWindowBoundsInScreen().y() -
+                                 kCompactPaddingForEffectiveBounds);
+  }
+  return clipping_bounds;
+}
+
 void OverviewGrid::MaybeInitBirchBarWidget(bool by_user) {
   if (!ShouldShowBirchBar(root_window_) || birch_bar_widget_) {
     return;
@@ -2542,6 +2560,9 @@ void OverviewGrid::MaybeInitBirchBarWidget(bool by_user) {
   auto* window = birch_bar_widget_->GetNativeWindow();
   window->parent()->StackChildAtBottom(window);
 
+  // Initialize the birch bar bounds to get correct paddings for grid.
+  MaybeUpdateBirchBarWidgetBounds();
+
   if (by_user) {
     RefreshGridBounds(/*animate=*/true);
   }
@@ -2555,10 +2576,10 @@ void OverviewGrid::DestroyBirchBarWidget(bool by_user) {
     }
     birch_bar_view_ = nullptr;
     birch_bar_widget_.reset();
-  }
 
-  if (by_user) {
-    RefreshGridBounds(/*animate=*/true);
+    if (by_user) {
+      RefreshGridBounds(/*animate=*/true);
+    }
   }
 }
 
@@ -3178,16 +3199,11 @@ void OverviewGrid::OnBirchBarLayoutChanged(
     return;
   }
 
-  const int previous_birch_bar_height =
-      birch_bar_widget_->GetWindowBoundsInScreen().height();
-  if (MaybeUpdateBirchBarWidgetBounds()) {
-    // Only re-position the windows if the birch bar height changes.
-    if (previous_birch_bar_height !=
-        birch_bar_widget_->GetWindowBoundsInScreen().height()) {
-      RefreshGridBounds(/*animate=*/true);
-      PositionWindows(/*animate=*/true);
-    }
+  MaybeUpdateBirchBarWidgetBounds();
+  if (scoped_overview_wallpaper_clipper_) {
+    scoped_overview_wallpaper_clipper_->RefreshWallpaperClipBounds();
   }
+  UpdateFeedbackButton();
 }
 
 void OverviewGrid::RefreshDesksWidgets(bool visible) {
@@ -3371,9 +3387,9 @@ void OverviewGrid::UpdateFeedbackButton() {
     return;
   }
 
-  // We don't want the feedback button to overlap the desk bar.
-  gfx::Rect grid_bounds = GetGridEffectiveBounds();
-  if (grid_bounds.height() < kFeedbackGridMinHeight) {
+  // We don't want the feedback button to overlap the desk bar and birch bar.
+  gfx::Rect wallpaper_clip_bounds = GetWallpaperClipBounds();
+  if (wallpaper_clip_bounds.height() < kFeedbackGridMinHeight) {
     return;
   }
 
@@ -3399,11 +3415,11 @@ void OverviewGrid::UpdateFeedbackButton() {
 
   const gfx::Size contents_size =
       feedback_widget_->GetContentsView()->GetPreferredSize();
-  feedback_widget_->SetBounds(
-      gfx::Rect(grid_bounds.bottom_left().x() + kFeedbackCornerSpacing,
-                grid_bounds.bottom_left().y() - kFeedbackCornerSpacing -
-                    contents_size.height(),
-                contents_size.width(), contents_size.height()));
+  feedback_widget_->SetBounds(gfx::Rect(
+      wallpaper_clip_bounds.bottom_left().x() + kFeedbackCornerSpacing,
+      wallpaper_clip_bounds.bottom_left().y() - kFeedbackCornerSpacing -
+          contents_size.height(),
+      contents_size.width(), contents_size.height()));
 }
 
 void OverviewGrid::ShowFeedbackPage() {

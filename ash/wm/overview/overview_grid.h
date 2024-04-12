@@ -421,7 +421,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   FasterSplitView* GetFasterSplitView();
 
-  // Initializes the widget that contains the `BirchBarView` contents. `by_user`
+  // Gets the cropping area of the wallpaper in screen coordinates.
+  gfx::Rect GetWallpaperClipBounds() const;
+
+  // Initializes the widget that contains the `BirchBarView` contents.`by_user`
   // is true, if the user selects to show the birch bar from the context menu.
   void MaybeInitBirchBarWidget(bool by_user = false);
 
