@@ -1143,6 +1143,29 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       WorkBadgeOnTransientModeTimesOutToNonTransient) {
+  std::u16string work_label = u"Work";
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  AvatarToolbarButtonTestObserver observer(avatar_button);
+  EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      browser()->profile(), true);
+  EXPECT_EQ(avatar_button->GetText(), work_label);
+
+  observer.WaitForShowEnterpriseTextEnded();
+  // After timeout the normal state is expect - no text.
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+
+  // Reset the policy to not be transient.
+  EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
+  EXPECT_EQ(avatar_button->GetText(), work_label);
+
+  // Reset the policy to be transient again.
+  EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        WorkBadgeOnNonTransientModeDoesNotTimesOut) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());

@@ -639,16 +639,22 @@ class ManagementStateProvider : public StateProvider,
     BrowserList::AddObserver(this);
     profile_observation_.Observe(&GetProfileAttributesStorage());
 
-    pref_change_registrar_.Init(profile_->GetPrefs());
-    pref_change_registrar_.Add(
+    local_state_pref_change_registrar_.Init(g_browser_process->local_state());
+    local_state_pref_change_registrar_.Add(
+        prefs::kToolbarAvatarLabelSettings,
+        base::BindRepeating(&ManagementStateProvider::RequestUpdate,
+                            weak_ptr_factory_.GetWeakPtr()));
+
+    profile_pref_change_registrar_.Init(profile_->GetPrefs());
+    profile_pref_change_registrar_.Add(
         prefs::kEnterpriseBadgingTemporarySetting,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
-    pref_change_registrar_.Add(
+    profile_pref_change_registrar_.Add(
         prefs::kCustomProfileLabel,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
-    pref_change_registrar_.Add(
+    profile_pref_change_registrar_.Add(
         prefs::kProfileLabelPreset,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -713,7 +719,8 @@ class ManagementStateProvider : public StateProvider,
 
   bool enterprise_text_hide_scheduled_ = false;
   bool temporarily_showing_ = false;
-  PrefChangeRegistrar pref_change_registrar_;
+  PrefChangeRegistrar profile_pref_change_registrar_;
+  PrefChangeRegistrar local_state_pref_change_registrar_;
 
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
