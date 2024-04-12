@@ -154,8 +154,9 @@ std::string GetFeedbackText(
                       metadata->log_id.c_str());
   base::StringAppendF(&feedback_text, "options: ");
   for (const auto& [chip, option] : query->options) {
-    base::StringAppendF(&feedback_text, "(%d:%d)", static_cast<int32_t>(chip),
-                        static_cast<int32_t>(option));
+    base::StringAppendF(&feedback_text, "(%s, %s)",
+                        TemplateChipToString(chip).c_str(),
+                        TemplateOptionToString(option).c_str());
   }
   base::StringAppendF(&feedback_text, "\ngeneration_seed: %u\n",
                       metadata->generation_seed);

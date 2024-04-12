@@ -187,7 +187,8 @@ TEST_F(SeaPenUtilsTest, GetFeedbackText) {
 
   std::string feedback_text =
       "#AIWallpaper Positive: test template query\ntemplate: Flower\noptions: "
-      "(0:0)(1:12)\ngeneration_seed: 4294967290\n";
+      "(<flower_type>, rose)(<flower_color>, blue)\ngeneration_seed: "
+      "4294967290\n";
   EXPECT_EQ(feedback_text, GetFeedbackText(template_query, metadata));
 }
 
