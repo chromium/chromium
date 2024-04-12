@@ -6339,6 +6339,22 @@
             ]
         }
     ],
+    "DisableHangWatcherAndroid": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "EnableHangWatcher"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableUrgentPageDiscarding": [
         {
             "platforms": [

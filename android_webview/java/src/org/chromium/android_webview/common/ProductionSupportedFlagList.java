@@ -966,6 +966,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "UseMoveNotCopyInMergeTreeUpdate",
                 "Enables moves instead of copies of snapshot tree data when merging udpates."),
+        Flag.baseFeature(
+                "EnableHangWatcher",
+                "Controls whether hooks for hang detection are active"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
