@@ -60,7 +60,7 @@ void RecordSeaPenTimeout(bool hit_timeout,
 // Records the number of thumbnails returned. Only recorded if the request
 // completed successfully. Expected to be in bounds [0,
 // kNumThumbnailsRequested].
-void RecordSeaPenThumbnailsCount(int thumbnails_count);
+void RecordSeaPenThumbnailsCount(size_t thumbnails_count);
 
 // Records whether at least one image exists on the response for full size
 // wallpaper image. Only recorded if the request completed successfully.

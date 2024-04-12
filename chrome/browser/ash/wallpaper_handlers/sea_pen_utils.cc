@@ -42,7 +42,7 @@ gfx::Size GetLargestDisplaySizeLandscape() {
   return largest_size;
 }
 
-bool IsValidOutput(manta::proto::OutputData output,
+bool IsValidOutput(const manta::proto::OutputData& output,
                    const std::string_view source) {
   if (!output.has_generation_seed()) {
     LOG(WARNING) << "Manta output data missing id for " << source;

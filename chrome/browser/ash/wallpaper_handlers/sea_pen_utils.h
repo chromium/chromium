@@ -23,7 +23,7 @@ namespace wallpaper_handlers {
 gfx::Size GetLargestDisplaySizeLandscape();
 
 // Helper function to validate the Manta API output data.
-bool IsValidOutput(manta::proto::OutputData output,
+bool IsValidOutput(const manta::proto::OutputData& output,
                    const std::string_view source);
 
 bool IsValidTemplateQuery(

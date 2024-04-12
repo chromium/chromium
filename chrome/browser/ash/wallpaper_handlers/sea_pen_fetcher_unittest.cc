@@ -6,14 +6,16 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,9 +29,14 @@
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/snapper_provider.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {}
 namespace wallpaper_handlers {
@@ -37,8 +44,6 @@ namespace wallpaper_handlers {
 namespace {
 
 constexpr uint32_t kFakeGenerationSeed = 5;
-
-constexpr std::string_view kFakeJpgBytes = "fake_jpg_bytes";
 
 constexpr std::string_view kThumbnailsLatencyMetric =
     "Ash.SeaPen.Api.Thumbnails.Latency";
@@ -58,6 +63,20 @@ constexpr std::string_view kWallpaperTimeoutMetric =
 constexpr std::string_view kWallpaperHasImageMetric =
     "Ash.SeaPen.Api.Wallpaper.HasImage";
 
+const SkBitmap CreateTestBitmap() {
+  return gfx::test::CreateBitmap(1, SK_ColorMAGENTA);
+}
+
+const std::string_view GetJpgBytes() {
+  static const base::NoDestructor<std::string> jpg_bytes([] {
+    SkBitmap bitmap = CreateTestBitmap();
+    std::vector<unsigned char> data;
+    gfx::JPEGCodec::Encode(bitmap, /*quality=*/50, &data);
+    return std::string(data.begin(), data.end());
+  }());
+  return *jpg_bytes;
+}
+
 std::unique_ptr<manta::proto::Response> CreateMantaResponse(
     size_t output_data_length) {
   auto response = std::make_unique<manta::proto::Response>();
@@ -65,17 +84,25 @@ std::unique_ptr<manta::proto::Response> CreateMantaResponse(
     auto* output_data = response->add_output_data();
     output_data->set_generation_seed(kFakeGenerationSeed + i);
     output_data->mutable_image()->set_serialized_bytes(
-        std::string(kFakeJpgBytes));
+        std::string(GetJpgBytes()));
   }
   return response;
 }
 
+MATCHER_P(AreJpgBytesClose, expected_bitmap, "") {
+  std::unique_ptr<SkBitmap> actual_bitmap = gfx::JPEGCodec::Decode(
+      reinterpret_cast<const unsigned char*>(arg.data()), arg.size());
+  return actual_bitmap != nullptr &&
+         gfx::test::AreBitmapsClose(expected_bitmap, *actual_bitmap,
+                                    /*max_deviation=*/1);
+}
+
 testing::Matcher<ash::SeaPenImage> MatchesSeaPenImage(
-    const std::string_view expected_jpg_bytes,
+    const SkBitmap& expected_bitmap,
     const uint32_t expected_id) {
-  return testing::AllOf(
-      testing::Field(&ash::SeaPenImage::id, expected_id),
-      testing::Field(&ash::SeaPenImage::jpg_bytes, expected_jpg_bytes));
+  return testing::AllOf(testing::Field(&ash::SeaPenImage::id, expected_id),
+                        testing::Field(&ash::SeaPenImage::jpg_bytes,
+                                       AreJpgBytesClose(expected_bitmap)));
 }
 
 class MockSnapperProvider : virtual public manta::SnapperProvider {
@@ -147,6 +174,7 @@ class SeaPenFetcherTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::HistogramTester histogram_tester_;
   display::test::TestScreen test_screen_;
   raw_ptr<testing::StrictMock<MockSnapperProvider>> mock_snapper_provider_;
@@ -194,12 +222,12 @@ TEST_F(SeaPenFetcherTest, ThumbnailsCallsSnapperProvider) {
   std::vector<testing::Matcher<ash::SeaPenImage>> matchers;
   for (size_t i = 0; i < SeaPenFetcher::kNumThumbnailsRequested; i++) {
     matchers.push_back(
-        MatchesSeaPenImage(kFakeJpgBytes, kFakeGenerationSeed + i));
+        MatchesSeaPenImage(CreateTestBitmap(), kFakeGenerationSeed + i));
   }
   EXPECT_THAT(fetch_thumbnails_future
                   .Get<std::optional<std::vector<ash::SeaPenImage>>>()
                   .value(),
-              testing::ElementsAreArray(matchers));
+              testing::UnorderedElementsAreArray(matchers));
 
   histogram_tester().ExpectTotalCount(kThumbnailsLatencyMetric, 1);
   histogram_tester().ExpectUniqueSample(kThumbnailsStatusCodeMetric,
@@ -294,6 +322,109 @@ TEST_F(SeaPenFetcherTest, ThumbnailsTimeoutHandled) {
   histogram_tester().ExpectTotalCount(kThumbnailsCountMetric, 0);
 }
 
+TEST_F(SeaPenFetcherTest, ThumbnailsHandlesDuplicateRequests) {
+  EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
+      .WillRepeatedly([](const manta::proto::Request& request,
+                         net::NetworkTrafficAnnotationTag traffic_annotation,
+                         manta::MantaProtoResponseCallback done_callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](manta::MantaProtoResponseCallback delayed_callback) {
+                  std::move(delayed_callback)
+                      .Run(CreateMantaResponse(
+                               SeaPenFetcher::kNumThumbnailsRequested),
+                           {.status_code = manta::MantaStatusCode::kOk,
+                            .message = std::string()});
+                },
+                std::move(done_callback)),
+            SeaPenFetcher::kRequestTimeout / 2);
+      });
+
+  std::vector<base::test::TestFuture<
+      std::optional<std::vector<ash::SeaPenImage>>, manta::MantaStatusCode>>
+      fetch_thumbnails_futures(2);
+
+  sea_pen_fetcher()->FetchThumbnails(
+      manta::proto::FeatureName::CHROMEOS_WALLPAPER,
+      ash::personalization_app::mojom ::SeaPenQuery::NewTextQuery("test query"),
+      fetch_thumbnails_futures.at(0).GetCallback());
+
+  sea_pen_fetcher()->FetchThumbnails(
+      manta::proto::FeatureName::CHROMEOS_WALLPAPER,
+      ash::personalization_app::mojom ::SeaPenQuery::NewTextQuery("test query"),
+      fetch_thumbnails_futures.at(1).GetCallback());
+
+  // First call has already returned with null images.
+  EXPECT_EQ(manta::MantaStatusCode::kOk,
+            fetch_thumbnails_futures.at(0).Get<manta::MantaStatusCode>());
+  EXPECT_EQ(std::nullopt,
+            fetch_thumbnails_futures.at(0)
+                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
+
+  EXPECT_FALSE(fetch_thumbnails_futures.at(1).IsReady());
+
+  FastForwardBy(SeaPenFetcher::kRequestTimeout / 2 + base::Milliseconds(1));
+
+  // Second call returns with valid thumbnails.
+  EXPECT_TRUE(fetch_thumbnails_futures.at(1).IsReady());
+  EXPECT_EQ(manta::MantaStatusCode::kOk,
+            fetch_thumbnails_futures.at(1).Get<manta::MantaStatusCode>());
+  EXPECT_EQ(SeaPenFetcher::kNumThumbnailsRequested,
+            fetch_thumbnails_futures.at(1)
+                .Get<std::optional<std::vector<ash::SeaPenImage>>>()
+                ->size());
+}
+
+TEST_F(SeaPenFetcherTest, ThumbnailsDropsInvalidJpgBytes) {
+  EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
+      .WillOnce([](const manta::proto::Request& request,
+                   net::NetworkTrafficAnnotationTag traffic_annotation,
+                   manta::MantaProtoResponseCallback done_callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](manta::MantaProtoResponseCallback inner_callback) {
+                  auto response = std::make_unique<manta::proto::Response>();
+                  {
+                    // Invalid jpg bytes.
+                    auto* output_data = response->add_output_data();
+                    output_data->set_generation_seed(kFakeGenerationSeed + 1);
+                    output_data->mutable_image()->set_serialized_bytes(
+                        "not real jpg bytes");
+                  }
+                  {
+                    // Valid jpg bytes.
+                    auto* output_data = response->add_output_data();
+                    output_data->set_generation_seed(kFakeGenerationSeed);
+                    output_data->mutable_image()->set_serialized_bytes(
+                        std::string(GetJpgBytes()));
+                  }
+                  std::move(inner_callback)
+                      .Run(std::move(response),
+                           {.status_code = manta::MantaStatusCode::kOk,
+                            .message = std::string()});
+                },
+                std::move(done_callback)));
+      });
+  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+                         manta::MantaStatusCode>
+      fetch_thumbnails_future;
+
+  sea_pen_fetcher()->FetchThumbnails(
+      manta::proto::FeatureName::CHROMEOS_WALLPAPER,
+      ash::personalization_app::mojom ::SeaPenQuery::NewTextQuery("test query"),
+      fetch_thumbnails_future.GetCallback());
+
+  EXPECT_EQ(manta::MantaStatusCode::kOk,
+            fetch_thumbnails_future.Get<manta::MantaStatusCode>());
+  // Only 1 image made it. The other was dropped due to invalid jpg bytes that
+  // failed decoding.
+  EXPECT_EQ(1u, fetch_thumbnails_future
+                    .Get<std::optional<std::vector<ash::SeaPenImage>>>()
+                    ->size());
+}
+
 TEST_F(SeaPenFetcherTest, WallpaperCallsSnapperProvider) {
   auto query =
       ash::personalization_app::mojom ::SeaPenQuery::NewTextQuery("test query");
@@ -323,11 +454,13 @@ TEST_F(SeaPenFetcherTest, WallpaperCallsSnapperProvider) {
       fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(kFakeJpgBytes), kFakeGenerationSeed), query,
+      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed), query,
       fetch_wallpaper_future.GetCallback());
 
   EXPECT_THAT(fetch_wallpaper_future.Get().value(),
-              MatchesSeaPenImage(kFakeJpgBytes, kFakeGenerationSeed));
+              testing::AllOf(
+                  testing::Field(&ash::SeaPenImage::id, kFakeGenerationSeed),
+                  testing::Field(&ash::SeaPenImage::jpg_bytes, GetJpgBytes())));
 
   histogram_tester().ExpectTotalCount(kWallpaperLatencyMetric, 1);
   histogram_tester().ExpectUniqueSample(kWallpaperStatusCodeMetric,
@@ -357,7 +490,7 @@ TEST_F(SeaPenFetcherTest, WallpaperHandlesEmptyImage) {
       fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(kFakeJpgBytes), kFakeGenerationSeed),
+      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed),
       ash::personalization_app::mojom ::SeaPenQuery::NewTextQuery("test query"),
       fetch_wallpaper_future.GetCallback());
 
@@ -392,7 +525,7 @@ TEST_F(SeaPenFetcherTest, WallpaperHandlesTimeout) {
       fetch_wallpaper_future;
   sea_pen_fetcher()->FetchWallpaper(
       manta::proto::FeatureName::CHROMEOS_WALLPAPER,
-      ash::SeaPenImage(std::string(kFakeJpgBytes), kFakeGenerationSeed),
+      ash::SeaPenImage(std::string(GetJpgBytes()), kFakeGenerationSeed),
       ash::personalization_app::mojom ::SeaPenQuery::NewTextQuery("test query"),
       fetch_wallpaper_future.GetCallback());
 

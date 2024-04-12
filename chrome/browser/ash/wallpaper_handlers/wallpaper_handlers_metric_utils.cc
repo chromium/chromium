@@ -104,7 +104,7 @@ void RecordSeaPenTimeout(bool hit_timeout, SeaPenApiType sea_pen_api_type) {
       hit_timeout);
 }
 
-void RecordSeaPenThumbnailsCount(const int thumbnails_count) {
+void RecordSeaPenThumbnailsCount(const size_t thumbnails_count) {
   base::UmaHistogramExactLinear(
       "Ash.SeaPen.Api.Thumbnails.Count",
       std::min(thumbnails_count, SeaPenFetcher::kNumThumbnailsRequested),

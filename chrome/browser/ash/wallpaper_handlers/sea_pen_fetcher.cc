@@ -11,11 +11,18 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/barrier_callback.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
@@ -26,26 +33,11 @@
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/snapper_provider.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "ui/gfx/geometry/size.h"
-
-// Uncomment below to enable a fake API for local debugging purposes.
-// #define FAKE_SEA_PEN_FETCHER_FOR_DEBUG
-
-#if defined(FAKE_SEA_PEN_FETCHER_FOR_DEBUG)
-
-static_assert(DCHECK_IS_ON(),
-              "FakeSeaPenFetcher only allowed in DCHECK builds");
-
-#include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/rand_util.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
-
-#endif  // defined(FAKE_SEA_PEN_FETCHER_FOR_DEBUG)
+#include "ui/gfx/geometry/size.h"
 
 namespace wallpaper_handlers {
 
@@ -146,69 +138,47 @@ net::NetworkTrafficAnnotationTag TrafficAnnotationForFeature(
   }
 }
 
-#if defined(FAKE_SEA_PEN_FETCHER_FOR_DEBUG)
-
-std::string MakeFakeJpgData() {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(kDesiredThumbnailSize.width(),
-                        kDesiredThumbnailSize.height());
-  bitmap.eraseColor(SkColorSetARGB(base::RandInt(0, 255), base::RandInt(0, 255),
-                                   base::RandInt(0, 255),
-                                   base::RandInt(0, 255)));
-  std::vector<unsigned char> encoded_data;
-  CHECK(gfx::JPEGCodec::Encode(bitmap, /*quality=*/10, &encoded_data));
-  return std::string(encoded_data.begin(), encoded_data.end());
+std::optional<ash::SeaPenImage> ToSeaPenImage(const uint32_t generation_seed,
+                                              const SkBitmap& decoded_bitmap) {
+  base::AssertLongCPUWorkAllowed();
+  std::vector<unsigned char> data;
+  if (!gfx::JPEGCodec::Encode(decoded_bitmap, /*quality=*/100, &data)) {
+    return std::nullopt;
+  }
+  return ash::SeaPenImage(std::string(data.begin(), data.end()),
+                          generation_seed);
 }
 
-std::vector<ash::SeaPenImage> MakeFakeSeaPenImages() {
-  std::vector<ash::SeaPenImage> result;
-  for (int i = 0; i < base::RandInt(0, 6); i++) {
-    result.emplace_back(MakeFakeJpgData(), base::RandInt(0, INT32_MAX));
+void EncodeBitmap(
+    base::OnceCallback<void(std::optional<ash::SeaPenImage>)> callback,
+    uint32_t generation_seed,
+    const SkBitmap& decoded_bitmap) {
+  if (decoded_bitmap.empty()) {
+    LOG(WARNING) << "Failed to decode jpg bytes";
+    std::move(callback).Run(std::nullopt);
+    return;
   }
-  return result;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ToSeaPenImage, generation_seed, decoded_bitmap),
+      std::move(callback));
 }
 
-void RunOnFetchThumbnailsComplete(
-    SeaPenFetcher::OnFetchThumbnailsComplete callback,
-    std::vector<ash::SeaPenImage> images) {
-  std::move(callback).Run(std::move(images), manta::MantaStatusCode::kOk);
+void SanitizeJpgBytes(
+    const manta::proto::OutputData& output_data,
+    data_decoder::DataDecoder* data_decoder,
+    base::OnceCallback<void(std::optional<ash::SeaPenImage>)> callback) {
+  if (!IsValidOutput(output_data, __func__)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  data_decoder::DecodeImage(
+      data_decoder, base::as_byte_span(output_data.image().serialized_bytes()),
+      data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
+      base::BindOnce(&EncodeBitmap, std::move(callback),
+                     output_data.generation_seed()));
 }
-
-class FakeSeaPenFetcher : public SeaPenFetcher {
- public:
-  FakeSeaPenFetcher()
-      : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-            {base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
-
-  FakeSeaPenFetcher(const FakeSeaPenFetcher&) = delete;
-  FakeSeaPenFetcher& operator=(const FakeSeaPenFetcher&) = delete;
-
-  ~FakeSeaPenFetcher() override = default;
-
-  void FetchThumbnails(
-      manta::proto::FeatureName feature_name,
-      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-      OnFetchThumbnailsComplete callback) override {
-    sequenced_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&MakeFakeSeaPenImages),
-        base::BindOnce(&RunOnFetchThumbnailsComplete, std::move(callback)));
-  }
-
-  void FetchWallpaper(
-      manta::proto::FeatureName feature_name,
-      const ash::SeaPenImage& thumbnail,
-      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-      OnFetchWallpaperComplete callback) override {
-    std::move(callback).Run(
-        ash::SeaPenImage(thumbnail.jpg_bytes, thumbnail.id));
-  }
-
- private:
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-};
-
-#else  // defined(FAKE_SEA_PEN_FETCHER_FOR_DEBUG)
 
 class SeaPenFetcherImpl : public SeaPenFetcher {
  public:
@@ -337,19 +307,35 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
                         SeaPenApiType::kThumbnails);
     RecordSeaPenTimeout(/*hit_timeout=*/false, SeaPenApiType::kThumbnails);
 
-    std::vector<ash::SeaPenImage> images;
+    std::unique_ptr<data_decoder::DataDecoder> data_decoder =
+        std::make_unique<data_decoder::DataDecoder>();
+    auto* data_decoder_pointer = data_decoder.get();
+
+    const auto barrier_callback =
+        base::BarrierCallback<std::optional<ash::SeaPenImage>>(
+            response->output_data_size(),
+            base::BindOnce(&SeaPenFetcherImpl::OnThumbnailsSanitized,
+                           fetch_thumbnails_weak_ptr_factory_.GetWeakPtr(),
+                           std::move(data_decoder)));
+
     for (auto& data : *response->mutable_output_data()) {
-      if (!IsValidOutput(data, __func__)) {
-        continue;
+      SanitizeJpgBytes(data, data_decoder_pointer, barrier_callback);
+    }
+  }
+
+  void OnThumbnailsSanitized(
+      std::unique_ptr<data_decoder::DataDecoder> data_decoder,
+      const std::vector<std::optional<ash::SeaPenImage>>& optional_images) {
+    std::vector<ash::SeaPenImage> filtered_images;
+    for (auto& image : optional_images) {
+      if (image.has_value()) {
+        filtered_images.emplace_back(std::move(image->jpg_bytes), image->id);
       }
-      images.emplace_back(
-          std::move(*data.mutable_image()->mutable_serialized_bytes()),
-          data.generation_seed());
     }
 
-    RecordSeaPenThumbnailsCount(images.size());
+    RecordSeaPenThumbnailsCount(filtered_images.size());
 
-    if (images.empty()) {
+    if (filtered_images.empty()) {
       LOG(WARNING) << "Got empty images from thumbnails request";
       std::move(pending_fetch_thumbnails_callback_)
           .Run(std::nullopt, manta::MantaStatusCode::kGenericError);
@@ -357,7 +343,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     }
 
     std::move(pending_fetch_thumbnails_callback_)
-        .Run(std::move(images), status.status_code);
+        .Run(std::move(filtered_images), manta::MantaStatusCode::kOk);
   }
 
   void OnFetchThumbnailsTimeout() {
@@ -431,8 +417,6 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       this};
 };
 
-#endif  // defined(FAKE_SEA_PEN_FETCHER_FOR_DEBUG)
-
 }  // namespace
 
 SeaPenFetcher::SeaPenFetcher() = default;
@@ -441,11 +425,7 @@ SeaPenFetcher::~SeaPenFetcher() = default;
 
 std::unique_ptr<SeaPenFetcher> SeaPenFetcher::MakeSeaPenFetcher(
     std::unique_ptr<manta::SnapperProvider> snapper_provider) {
-#ifdef FAKE_SEA_PEN_FETCHER_FOR_DEBUG
-  return std::make_unique<FakeSeaPenFetcher>();
-#else   // FAKE_SEA_PEN_FETCHER_FOR_DEBUG
   return std::make_unique<SeaPenFetcherImpl>(std::move(snapper_provider));
-#endif  // FAKE_SEA_PEN_FETCHER_FOR_DEBUG
 }
 
 }  // namespace wallpaper_handlers
