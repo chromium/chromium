@@ -21,11 +21,11 @@ namespace web_package {
 // static
 base::expected<SignedWebBundleId, std::string> SignedWebBundleId::Create(
     base::StringPiece encoded_id) {
-  if (encoded_id.size() != kEncodedIdLength) {
+  if (encoded_id.size() != kEd25519EncodedIdLength) {
     return base::unexpected(
         base::StringPrintf("The signed web bundle ID must be exactly %zu "
                            "characters long, but was %zu characters long.",
-                           kEncodedIdLength, encoded_id.size()));
+                           kEd25519EncodedIdLength, encoded_id.size()));
   }
 
   for (const char c : encoded_id) {
@@ -39,7 +39,7 @@ base::expected<SignedWebBundleId, std::string> SignedWebBundleId::Create(
   // Base32 decode the ID as an array.
   const std::vector<uint8_t> decoded_id =
       base32::Base32Decode(base::ToUpperASCII(encoded_id));
-  if (decoded_id.size() != kDecodedIdLength) {
+  if (decoded_id.size() < kTypeSuffixLength) {
     return base::unexpected(
         "The signed web bundle ID could not be decoded from its base32 "
         "representation.");
@@ -47,10 +47,24 @@ base::expected<SignedWebBundleId, std::string> SignedWebBundleId::Create(
 
   auto type_suffix = base::span(decoded_id).last<kTypeSuffixLength>();
   if (base::ranges::equal(type_suffix, kTypeProxyMode)) {
-    return SignedWebBundleId(Type::kProxyMode, encoded_id);
+    if (decoded_id.size() == kProxyModeDecodedIdLength) {
+      return SignedWebBundleId(Type::kProxyMode, encoded_id);
+    } else {
+      return base::unexpected(base::StringPrintf(
+          "A ProxyMode signed web bundle ID must be exactly %zu "
+          "characters long, but was %zu characters long.",
+          kProxyModeEncodedIdLength, encoded_id.size()));
+    }
   }
   if (base::ranges::equal(type_suffix, kTypeEd25519PublicKey)) {
-    return SignedWebBundleId(Type::kEd25519PublicKey, encoded_id);
+    if (decoded_id.size() == kEd25519DecodedIdLength) {
+      return SignedWebBundleId(Type::kEd25519PublicKey, encoded_id);
+    } else {
+      return base::unexpected(base::StringPrintf(
+          "An Ed25519 signed web bundle ID must be exactly %zu "
+          "characters long, but was %zu characters long.",
+          kEd25519EncodedIdLength, encoded_id.size()));
+    }
   }
   return base::unexpected("The signed web bundle ID has an unknown type.");
 }
@@ -58,7 +72,7 @@ base::expected<SignedWebBundleId, std::string> SignedWebBundleId::Create(
 // static
 SignedWebBundleId SignedWebBundleId::CreateForEd25519PublicKey(
     Ed25519PublicKey public_key) {
-  std::array<uint8_t, kDecodedIdLength> decoded_id;
+  std::array<uint8_t, kEd25519DecodedIdLength> decoded_id;
   base::ranges::copy(public_key.bytes(), decoded_id.begin());
   base::ranges::copy(kTypeEd25519PublicKey,
                      decoded_id.end() - kTypeSuffixLength);
@@ -71,8 +85,8 @@ SignedWebBundleId SignedWebBundleId::CreateForEd25519PublicKey(
 
 // static
 SignedWebBundleId SignedWebBundleId::CreateForProxyMode(
-    base::span<const uint8_t, kDecodedIdLength - kTypeSuffixLength> data) {
-  std::array<uint8_t, kDecodedIdLength> decoded_id;
+    base::span<const uint8_t, kProxyModeKeyLength> data) {
+  std::array<uint8_t, kProxyModeKeyLength + kTypeSuffixLength> decoded_id;
   base::ranges::copy(data, decoded_id.begin());
   base::ranges::copy(kTypeProxyMode, decoded_id.end() - kTypeSuffixLength);
 
@@ -84,7 +98,7 @@ SignedWebBundleId SignedWebBundleId::CreateForProxyMode(
 
 // static
 SignedWebBundleId SignedWebBundleId::CreateRandomForProxyMode() {
-  std::array<uint8_t, kDecodedIdLength - kTypeSuffixLength> random_bytes;
+  std::array<uint8_t, kProxyModeKeyLength> random_bytes;
   crypto::RandBytes(random_bytes);
   return CreateForProxyMode(random_bytes);
 }

@@ -28,9 +28,29 @@ namespace web_package {
 // can assume that every instance of this class wraps a correctly formatted ID.
 class SignedWebBundleId {
  private:
-  static constexpr size_t kEncodedIdLength = 56;
-  static constexpr size_t kDecodedIdLength = 35;
   static constexpr uint8_t kTypeSuffixLength = 3;
+
+  // The key used in Proxy Mode is assumed to be similar in size to Ed25519
+  // public key.
+  static constexpr size_t kProxyModeKeyLength = 32;
+  static_assert(kProxyModeKeyLength == Ed25519PublicKey::kLength);
+
+  // The decoded ID is a concatenation of a public key and the corresponding
+  // type suffix.
+  static constexpr size_t kProxyModeDecodedIdLength =
+      kProxyModeKeyLength + kTypeSuffixLength;
+  static constexpr size_t kEd25519DecodedIdLength =
+      Ed25519PublicKey::kLength + kTypeSuffixLength;
+  static_assert(kProxyModeDecodedIdLength == kEd25519DecodedIdLength);
+
+  // The encoded ID is a lower ASCII base32-encoded concatenation of
+  // a public key and the corresponding type suffix with the trailing padding
+  // omitted.
+  static constexpr size_t kEd25519EncodedIdLength =
+      (kEd25519DecodedIdLength * 8 + 4) / 5;
+  static constexpr size_t kProxyModeEncodedIdLength =
+      (kProxyModeDecodedIdLength * 8 + 4) / 5;
+  static_assert(kEd25519EncodedIdLength == kProxyModeEncodedIdLength);
 
   using TypeSuffix = std::array<uint8_t, kTypeSuffixLength>;
 
@@ -56,7 +76,7 @@ class SignedWebBundleId {
       Ed25519PublicKey public_key);
 
   static SignedWebBundleId CreateForProxyMode(
-      base::span<const uint8_t, kDecodedIdLength - kTypeSuffixLength> data);
+      base::span<const uint8_t, kProxyModeKeyLength> data);
 
   static SignedWebBundleId CreateRandomForProxyMode();
 
