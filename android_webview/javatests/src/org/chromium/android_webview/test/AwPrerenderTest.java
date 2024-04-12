@@ -40,6 +40,7 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -83,7 +84,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         mWebMessageListener = new TestWebMessageListener();
 
         // This future is used for waiting until the JS prerenderingchange event is fired on the
-        // prerendered page.
+        // prerendered page. See //android_webview/test/data/prerender.html.
         mActivationFuture = SettableFuture.create();
         String name = "awActivationFuture";
         Object injectedObject =
@@ -235,6 +236,111 @@ public class AwPrerenderTest extends AwParameterizedTest {
         activatePage(mPrerenderingUrl);
     }
 
+    // Tests FrameTree swap of AwContentsIoThreadClient by observing that callbacks are correctly
+    // called after prerender activation.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testAwContentsIoThreadClientHandleFrameTreeSwapForward() throws Throwable {
+        String url1 = mTestServer.getURL(INITIAL_URL.concat("?q=1"));
+        String url2 = mTestServer.getURL(PRERENDER_URL);
+        String url3 = mTestServer.getURL(INITIAL_URL.concat("?q=3"));
+
+        final TestAwContentsClient.ShouldInterceptRequestHelper helper =
+                mContentsClient.getShouldInterceptRequestHelper();
+        int callCount = 0;
+
+        helper.clearUrls();
+        callCount = helper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url1);
+        helper.waitForCallback(callCount);
+        Assert.assertEquals(helper.getUrls(), Arrays.asList(url1));
+
+        helper.clearUrls();
+        callCount = helper.getCallCount();
+        injectSpeculationRulesAndWait(url2);
+        helper.waitForCallback(callCount);
+        Assert.assertEquals(helper.getUrls(), Arrays.asList(url2));
+
+        callCount = helper.getCallCount();
+        // Prerender activation will trigger a FrameTree swap and a RenderFrameHostChanged call.
+        activatePage(url2);
+        Assert.assertEquals(
+                "Prerender activation navigation doesn't trigger shouldInterceptRequest",
+                helper.getCallCount(),
+                callCount);
+
+        // An IO thread associated with the previously-prerendered page (the same IO thread used by
+        // the first page) should
+        // receive callbacks. This checks handling of the FrameTree swap.
+        helper.clearUrls();
+        callCount = helper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url3);
+        // If the FrameTree swap wasn't handled correctly, the shouldInterceptRequest callback for
+        // this navigation wont get routed to this thread.
+        helper.waitForCallback(callCount);
+        Assert.assertEquals(helper.getUrls(), Arrays.asList(url3));
+    }
+
+    // Tests RenderFrameHostChanged without FrameTree swap of AwContentsIoThreadClient by observing
+    // that callbacks are correctly called.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testAwContentsIoThreadClientHandleFrameTreeSwapBack() throws Throwable {
+        String url1 = mTestServer.getURL(INITIAL_URL.concat("?q=1"));
+        String url2 = mTestServer.getURL(PRERENDER_URL);
+        String url4 = mTestServer.getURL(INITIAL_URL.concat("?q=4"));
+
+        final TestAwContentsClient.ShouldInterceptRequestHelper helper =
+                mContentsClient.getShouldInterceptRequestHelper();
+        int callCount = 0;
+
+        helper.clearUrls();
+        callCount = helper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url1);
+        helper.waitForCallback(callCount);
+        Assert.assertEquals(helper.getUrls(), Arrays.asList(url1));
+
+        helper.clearUrls();
+        callCount = helper.getCallCount();
+        injectSpeculationRulesAndWait(url2);
+        helper.waitForCallback(callCount);
+        Assert.assertEquals(helper.getUrls(), Arrays.asList(url2));
+
+        callCount = helper.getCallCount();
+        // Prerender activation will trigger a FrameTree swap and a RenderFrameHostChanged call.
+        activatePage(url2);
+        Assert.assertEquals(
+                "Prerender activation navigation doesn't trigger shouldInterceptRequest",
+                helper.getCallCount(),
+                callCount);
+
+        helper.clearUrls();
+        callCount = helper.getCallCount();
+        // RenderFrameHostChanged without FrameTree swap occurs here.
+        mActivityTestRule.runOnUiThread(
+                () -> {
+                    mAwContents.evaluateJavaScript("history.back();", null);
+                });
+        helper.waitForCallback(callCount);
+        Assert.assertEquals(helper.getUrls(), Arrays.asList(url1));
+
+        // An IO thread associated with the third page (the same IO thread used by the first page)
+        // should
+        // receive callbacks. This checks handling of the RenderFrameHostChanged without FrameTree
+        // swap.
+        helper.clearUrls();
+        callCount = helper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url4);
+        helper.waitForCallback(callCount);
+        Assert.assertEquals(helper.getUrls(), Arrays.asList(url4));
+    }
+
     // Tests ShouldInterceptRequest interaction with prerendering.
     @Test
     @LargeTest
@@ -259,7 +365,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         currentShouldInterceptRequestCallCount = shouldInterceptRequestHelper.getCallCount();
         activatePage(mPrerenderingUrl);
         Assert.assertEquals(
-                "Unexpected call to ShouldInterceptRequest on page activation",
+                "Prerender activation navigation doesn't trigger shouldInterceptRequest",
                 shouldInterceptRequestHelper.getCallCount(),
                 currentShouldInterceptRequestCallCount);
     }

@@ -678,6 +678,10 @@ public class TestAwContentsClient extends NullContentsClient {
             return mShouldInterceptRequestUrls;
         }
 
+        public void clearUrls() {
+            mShouldInterceptRequestUrls.clear();
+        }
+
         public WebResourceResponseInfo getReturnValue(String url) {
             WebResourceResponseInfo value = mReturnValuesByUrls.get(url);
             if (value != null) return value;
