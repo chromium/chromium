@@ -60,7 +60,7 @@ std::u16string GetEditorMenuRewriteCardFreeformHolder() {
   return chromeos::features::IsOrcaUseL10nStringsEnabled()
              ? l10n_util::GetStringUTF16(
                    IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER)
-             : u"Enter a prompt like \"sound more confident\"";
+             : u"Enter a prompt like \"make it more confident\"";
 }
 
 std::u16string GetEditorMenuSettingsTooltip() {

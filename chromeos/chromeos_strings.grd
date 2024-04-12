@@ -361,7 +361,7 @@
         Rewrite
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode.">
-        Enter a prompt like "sound more confident"
+        Enter a prompt like "make it more confident"
       </message>
       <message name="IDS_EDITOR_MENU_SETTINGS_TOOLTIP" desc="Tooltip text for the settings button in the Editor Menu.">
         Help me write settings
