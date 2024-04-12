@@ -2290,9 +2290,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANAGE_STORAGE_ALERT_MANAGE_STORAGE_BUTTON" desc="Label of the primary action button in an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. The button opens a page where the user can manage their storage space. [iOS only] [Length: 12em]" meaning="Label of the primary action button in an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. The button opens a page where the user can manage their storage space. [iOS only] [Length: 12em]">
         Manage Storage
       </message>
-      <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_ACCEPT_UNITY" desc="Label on the button to proceed with signout and clear all Chrome data.[Length: 30em].">
-        Clear
-      </message>
       <message name="IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON" desc="The title of the Accept button of the Sign in to a managed account dialog. [40em]">
         Accept and Sign in
       </message>
@@ -5614,15 +5611,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_SETTINGS" desc="Text in image displaying the second step of the Chrome Actions query result. [iOS only]">
         Settings
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_1" desc="Text of the row indicating the first step of Chrome Actions. [iOS only]">
-        In the address bar, enter a task like “clear my history” or “edit passwords.”
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_2" desc="Text of the row indicating the second step of Chrome Actions. [iOS only]">
-        Tap the shortcut that appears under the address bar.
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_3" desc="Text of the row indicating the third step of Chrome Actions. [iOS only]">
-        Complete your task.
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SUBTITLE" desc="Chrome Actions subtitle displayed in What's New. [iOS only]">
         Shortcuts to quickly modify settings and use features from the address bar.
