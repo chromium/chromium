@@ -58,6 +58,9 @@ inline constexpr char kSessionTargeting[] = "session";
 // Experiment Tag Targeting paths.
 inline constexpr char kExperimentTargetings[] = "experimentTags";
 
+// User Targeting paths.
+inline constexpr char kMinorUser[] = "isMinorUser";
+
 // Events Targeting paths.
 inline constexpr char kEventsTargetings[] = "events";
 inline constexpr char kImpressionCap[] = "impressionCap";
@@ -328,6 +331,10 @@ SessionTargeting::~SessionTargeting() = default;
 
 const base::Value::List* SessionTargeting::GetExperimentTags() const {
   return GetListCriteria(kExperimentTargetings);
+}
+
+std::optional<bool> SessionTargeting::GetMinorUser() const {
+  return GetBoolCriteria(kMinorUser);
 }
 
 // Runtime Targeting.

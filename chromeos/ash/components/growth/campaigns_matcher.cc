@@ -18,7 +18,13 @@
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -448,6 +454,31 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
   return true;
 }
 
+// Returns true if the users' minor mode status (e.g. under age of 18 or not)
+// matches the `minor_user_targeting` capaiblity. The minor mode status is read
+// from account capabilities. We assume user is in minor mode if capability
+// value is unknown.
+bool CampaignsMatcher::MatchMinorUser(
+    std::optional<bool> minor_user_targeting) const {
+  if (!minor_user_targeting) {
+    // Campaign matched if it does no include minor targeting.
+    return true;
+  }
+
+  std::string gaia_id = user_manager::UserManager::Get()
+                            ->GetActiveUser()
+                            ->GetAccountId()
+                            .GetGaiaId();
+  auto* identity_manager = client_->GetIdentityManager();
+  const AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
+  // TODO: b/333896450 - find a better signal for minor mode.
+  auto capability = account_info.capabilities.can_use_manta_service();
+
+  bool isMinor = capability != signin::Tribool::kTrue;
+  return isMinor == minor_user_targeting.value();
+}
+
 bool CampaignsMatcher::MatchSessionTargeting(
     const SessionTargeting& targeting) const {
   if (!targeting.IsValid()) {
@@ -455,7 +486,8 @@ bool CampaignsMatcher::MatchSessionTargeting(
     return true;
   }
 
-  return MatchExperimentTags(targeting.GetExperimentTags());
+  return MatchExperimentTags(targeting.GetExperimentTags()) &&
+         MatchMinorUser(targeting.GetMinorUser());
 }
 
 bool CampaignsMatcher::MatchRuntimeTargeting(const RuntimeTargeting& targeting,

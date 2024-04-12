@@ -30,6 +30,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
@@ -188,6 +189,11 @@ bool CampaignsManagerClientImpl::WouldTriggerHelpUI(
 
   UpdateConfig(params);
   return tracker->WouldTriggerHelpUI(feature_engagement::kIPHGrowthFramework);
+}
+
+signin::IdentityManager* CampaignsManagerClientImpl::GetIdentityManager()
+    const {
+  return IdentityManagerFactory::GetForProfile(GetProfile());
 }
 
 void CampaignsManagerClientImpl::OnReadyToLogImpression(int campaign_id) {

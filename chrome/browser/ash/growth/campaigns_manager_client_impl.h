@@ -49,6 +49,7 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   void NotifyEvent(const std::string& event_name) override;
   bool WouldTriggerHelpUI(
       const std::map<std::string, std::string>& params) override;
+  signin::IdentityManager* GetIdentityManager() const override;
 
   // UiActionPerformer::Observer:
   void OnReadyToLogImpression(int campaign_id) override;

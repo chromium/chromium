@@ -57,6 +57,7 @@ class CampaignsMatcher {
                              int campaign_id) const;
   bool MatchEvents(std::unique_ptr<EventsTargeting> config,
                    int campaign_id) const;
+  bool MatchMinorUser(std::optional<bool> minor_user_targeting) const;
   bool Matched(const Targetings* targetings, int campaign_id) const;
 
   // Owned by CampaignsManager.

@@ -222,6 +222,8 @@ class SessionTargeting : public TargetingBase {
   ~SessionTargeting();
 
   const base::Value::List* GetExperimentTags() const;
+
+  std::optional<bool> GetMinorUser() const;
 };
 
 // Wrapper around app targeting dictionary.

@@ -17,7 +17,11 @@
 
 namespace base {
 class Version;
-}
+}  // namespace base
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace growth {
 
@@ -68,6 +72,8 @@ class CampaignsManagerClient {
   virtual void NotifyEvent(const std::string& event) = 0;
   virtual bool WouldTriggerHelpUI(
       const std::map<std::string, std::string>& params) = 0;
+  // Returns the IdentityManager for the active user profile.
+  virtual signin::IdentityManager* GetIdentityManager() const = 0;
 };
 
 }  // namespace growth
