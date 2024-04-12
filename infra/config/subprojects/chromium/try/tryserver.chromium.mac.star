@@ -315,6 +315,7 @@ try_.builder(
         "ci/mac12-wpt-content-shell-fyi-rel",
     ],
     gn_args = "ci/mac12-wpt-content-shell-fyi-rel",
+    cpu = cpu.ARM64,
 )
 
 try_.builder(
