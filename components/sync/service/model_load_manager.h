@@ -129,7 +129,7 @@ class ModelLoadManager {
   // out).
   std::unique_ptr<base::ElapsedTimer> load_models_elapsed_timer_;
 
-  bool notified_about_ready_for_configure_ = false;
+  bool notified_about_ready_for_configure_ = true;
 
   base::WeakPtrFactory<ModelLoadManager> weak_ptr_factory_{this};
 };

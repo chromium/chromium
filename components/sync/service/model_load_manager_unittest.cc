@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/test/fake_model_type_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -716,6 +717,38 @@ TEST_F(SyncModelLoadManagerTest, ShouldTimeoutIfNotAllTypesLoaded) {
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure);
   // Types not loaded till now are skipped.
+  task_environment_.FastForwardBy(kSyncLoadModelsTimeoutDuration);
+}
+
+// Test that if Stop() is called before all data types finish loading,
+// OnAllDataTypesReadyForConfigure will *not* get called after a timeout.
+// Regression test for crbug.com/333865298.
+TEST_F(SyncModelLoadManagerTest, ShouldNotTimeoutAfterStop) {
+  // Create a controllers with delayed model load.
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
+  GetController(BOOKMARKS)->model()->EnableManualModelStart();
+
+  // No calls to OnAllDataTypesReadyForConfigure() should happen.
+  EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure).Times(0);
+
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
+  ModelTypeSet types = {BOOKMARKS};
+
+  model_load_manager.Configure(/*preferred_types_without_errors=*/types,
+                               /*preferred_types=*/types,
+                               BuildConfigureContext());
+
+  // BOOKMARKS blocks the configuration.
+  ASSERT_EQ(GetController(BOOKMARKS)->state(),
+            ModelTypeController::MODEL_STARTING);
+
+  // The ModelLoadManager gets stopped again before BOOKMARKS finishes loading
+  // or times out.
+  model_load_manager.Stop(SyncStopMetadataFate::CLEAR_METADATA);
+
+  // Even after the loading timeout period, OnAllDataTypesReadyForConfigure()
+  // should *not* get called.
   task_environment_.FastForwardBy(kSyncLoadModelsTimeoutDuration);
 }
 
