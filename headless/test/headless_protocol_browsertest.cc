@@ -13,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
@@ -414,14 +415,11 @@ HEADLESS_PROTOCOL_TEST_WITH_PROXY(BrowserSetProxyConfig,
 
 class HeadlessAllowedVideoCodecsTest
     : public HeadlessDevTooledBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          std::tuple<std::string, std::string, bool>> {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (is_codec_enabled()) {
-      command_line->AppendSwitchASCII("allow-video-codecs", "vp8,-*");
-    } else {
-      command_line->AppendSwitchASCII("allow-video-codecs", "-vp8,*");
-    }
+    command_line->AppendSwitchASCII("allow-video-codecs", allowlist());
   }
 
   void RunDevTooledTest() override {
@@ -440,10 +438,11 @@ class HeadlessAllowedVideoCodecsTest
     base::Value::Dict eval_params;
     eval_params.Set("returnByValue", true);
     eval_params.Set("awaitPromise", true);
-    eval_params.Set("expression", R"(
-      VideoDecoder.isConfigSupported({codec: "vp8"})
+    eval_params.Set("expression", base::StringPrintf(R"(
+      VideoDecoder.isConfigSupported({codec: "%s"})
           .then(result => result.supported)
-    )");
+    )",
+                                                     codec_name().c_str()));
     base::Value::Dict result = SendCommandSync(
         devtools_client_, "Runtime.evaluate", std::move(eval_params));
     EXPECT_THAT(result.FindBoolByDottedPath("result.result.value"),
@@ -451,12 +450,25 @@ class HeadlessAllowedVideoCodecsTest
     FinishAsynchronousTest();
   }
 
-  bool is_codec_enabled() { return GetParam(); }
+  const std::string& allowlist() const { return std::get<0>(GetParam()); }
+  const std::string& codec_name() const { return std::get<1>(GetParam()); }
+  bool is_codec_enabled() const { return std::get<2>(GetParam()); }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HeadlessAllowedVideoCodecsTest,
-                         testing::Values(false, true));
+constexpr bool have_proprietary_codecs =
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    true;
+#else
+    false;
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HeadlessAllowedVideoCodecsTest,
+    testing::Values(
+        std::make_tuple("av1,-*", "av01.0.04M.08", true),
+        std::make_tuple("-av1,*", "av01.0.04M.08", false),
+        std::make_tuple("*", "avc1.64000b", have_proprietary_codecs)));
 
 HEADLESS_DEVTOOLED_TEST_P(HeadlessAllowedVideoCodecsTest);
 

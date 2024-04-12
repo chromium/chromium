@@ -43,9 +43,12 @@ void HeadlessContentRendererClient::RenderFrameCreated(
 
 bool HeadlessContentRendererClient::IsSupportedVideoType(
     const media::VideoType& type) {
-  return !video_codecs_allowlist_ ||
-         video_codecs_allowlist_->IsAllowed(
-             base::ToLowerASCII(GetCodecName(type.codec)));
+  const bool allowed_by_flags =
+      !video_codecs_allowlist_ ||
+      video_codecs_allowlist_->IsAllowed(
+          base::ToLowerASCII(GetCodecName(type.codec)));
+  // Besides being _allowed_, the codec actually has to be _supported_.
+  return allowed_by_flags && ContentRendererClient::IsSupportedVideoType(type);
 }
 
 }  // namespace headless
