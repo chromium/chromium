@@ -370,6 +370,13 @@ void SetCameraBackgroundView::SetBackgroundReplaceUiVisible(bool visible) {
   }
 
   SetVisible(visible);
+
+  // Unselect all recently image buttons if this view is invisible.
+  if (!visible) {
+    for (auto& button : recently_used_background_view_->children()) {
+      views::AsViewClass<RecentlyUsedImageButton>(button)->SetSelected(false);
+    }
+  }
 }
 
 BEGIN_METADATA(SetCameraBackgroundView)
