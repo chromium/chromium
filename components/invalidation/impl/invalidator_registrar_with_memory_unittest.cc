@@ -90,8 +90,8 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, Basic) {
   EXPECT_TRUE(
       invalidator->UpdateRegisteredTopics(&handler, {kTopic1, kTopic2}));
 
-  invalidator->UpdateInvalidatorState(INVALIDATIONS_ENABLED);
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
+  invalidator->UpdateInvalidatorState(InvalidatorState::kEnabled);
+  EXPECT_EQ(InvalidatorState::kEnabled, handler.GetInvalidatorState());
 
   DispatchSuccessfullySubscribed(*invalidator, kTopicName1, kTopicName2,
                                  kTopicName3);
@@ -120,11 +120,8 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, Basic) {
             handler.GetReceivedInvalidations());
   handler.Clear();
 
-  invalidator->UpdateInvalidatorState(TRANSIENT_INVALIDATION_ERROR);
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler.GetInvalidatorState());
-
-  invalidator->UpdateInvalidatorState(INVALIDATION_CREDENTIALS_REJECTED);
-  EXPECT_EQ(INVALIDATION_CREDENTIALS_REJECTED, handler.GetInvalidatorState());
+  invalidator->UpdateInvalidatorState(InvalidatorState::kDisabled);
+  EXPECT_EQ(InvalidatorState::kDisabled, handler.GetInvalidatorState());
 
   invalidator->RemoveObserver(&handler);
   EXPECT_FALSE(invalidator->HasObserver(&handler));
@@ -168,11 +165,11 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, MultipleHandlers) {
 
   invalidator->RemoveObserver(&handler4);
 
-  invalidator->UpdateInvalidatorState(INVALIDATIONS_ENABLED);
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler1.GetInvalidatorState());
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler3.GetInvalidatorState());
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler4.GetInvalidatorState());
+  invalidator->UpdateInvalidatorState(InvalidatorState::kEnabled);
+  EXPECT_EQ(InvalidatorState::kEnabled, handler1.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kEnabled, handler2.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kEnabled, handler3.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kDisabled, handler4.GetInvalidatorState());
 
   Dispatch(*invalidator, kInv1, kInv2, kInv3, kInv4);
 
@@ -189,11 +186,11 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, MultipleHandlers) {
   EXPECT_EQ(0, handler3.GetInvalidationCount());
   EXPECT_EQ(0, handler4.GetInvalidationCount());
 
-  invalidator->UpdateInvalidatorState(TRANSIENT_INVALIDATION_ERROR);
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler1.GetInvalidatorState());
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler2.GetInvalidatorState());
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler3.GetInvalidatorState());
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler4.GetInvalidatorState());
+  invalidator->UpdateInvalidatorState(InvalidatorState::kDisabled);
+  EXPECT_EQ(InvalidatorState::kDisabled, handler1.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kDisabled, handler2.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kDisabled, handler3.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kDisabled, handler4.GetInvalidatorState());
 
   invalidator->RemoveObserver(&handler3);
   invalidator->RemoveObserver(&handler2);
@@ -254,9 +251,9 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, EmptySetUnregisters) {
   // further invalidations.
   EXPECT_TRUE(invalidator->UpdateRegisteredTopics(&handler1, {}));
 
-  invalidator->UpdateInvalidatorState(INVALIDATIONS_ENABLED);
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler1.GetInvalidatorState());
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
+  invalidator->UpdateInvalidatorState(InvalidatorState::kEnabled);
+  EXPECT_EQ(InvalidatorState::kEnabled, handler1.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kEnabled, handler2.GetInvalidatorState());
 
   {
     Dispatch(*invalidator, kInv1, kInv2, kInv3);
@@ -265,9 +262,9 @@ TEST_F(InvalidatorRegistrarWithMemoryTest, EmptySetUnregisters) {
     EXPECT_EQ(1, handler2.GetInvalidationCount());
   }
 
-  invalidator->UpdateInvalidatorState(TRANSIENT_INVALIDATION_ERROR);
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler1.GetInvalidatorState());
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler2.GetInvalidatorState());
+  invalidator->UpdateInvalidatorState(InvalidatorState::kDisabled);
+  EXPECT_EQ(InvalidatorState::kDisabled, handler1.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kDisabled, handler2.GetInvalidatorState());
 
   invalidator->RemoveObserver(&handler2);
   invalidator->RemoveObserver(&handler1);

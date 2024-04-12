@@ -127,7 +127,7 @@ class BoundFakeInvalidationHandler : public FakeInvalidationHandler {
 
  private:
   const raw_ref<const InvalidationService> invalidator_;
-  InvalidatorState last_retrieved_state_ = DEFAULT_INVALIDATION_ERROR;
+  InvalidatorState last_retrieved_state_ = InvalidatorState::kDisabled;
 };
 
 }  // namespace
@@ -255,8 +255,8 @@ TEST_F(FCMInvalidationServiceTest, Basic) {
   topics.insert(topic2);
   EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler, topics));
 
-  TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
+  TriggerOnInvalidatorStateChange(InvalidatorState::kEnabled);
+  EXPECT_EQ(InvalidatorState::kEnabled, handler.GetInvalidatorState());
 
   TriggerSuccessfullySubscribed(topic1, topic2, topic3);
   EXPECT_THAT(handler.GetSuccessfullySubscribed(),
@@ -283,11 +283,11 @@ TEST_F(FCMInvalidationServiceTest, Basic) {
             handler.GetReceivedInvalidations());
   handler.Clear();
 
-  TriggerOnInvalidatorStateChange(TRANSIENT_INVALIDATION_ERROR);
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler.GetInvalidatorState());
+  TriggerOnInvalidatorStateChange(InvalidatorState::kDisabled);
+  EXPECT_EQ(InvalidatorState::kDisabled, handler.GetInvalidatorState());
 
-  TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
+  TriggerOnInvalidatorStateChange(InvalidatorState::kEnabled);
+  EXPECT_EQ(InvalidatorState::kEnabled, handler.GetInvalidatorState());
 
   invalidator->RemoveObserver(&handler);
 
@@ -341,11 +341,11 @@ TEST_F(FCMInvalidationServiceTest, MultipleHandlers) {
 
   invalidator->RemoveObserver(&handler4);
 
-  TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler1.GetInvalidatorState());
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler3.GetInvalidatorState());
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler4.GetInvalidatorState());
+  TriggerOnInvalidatorStateChange(InvalidatorState::kEnabled);
+  EXPECT_EQ(InvalidatorState::kEnabled, handler1.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kEnabled, handler2.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kEnabled, handler3.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kDisabled, handler4.GetInvalidatorState());
 
   TriggerSuccessfullySubscribed(topic1, topic2, topic3, topic4);
   EXPECT_THAT(handler1.GetSuccessfullySubscribed(),
@@ -373,11 +373,11 @@ TEST_F(FCMInvalidationServiceTest, MultipleHandlers) {
     EXPECT_EQ(0, handler4.GetInvalidationCount());
   }
 
-  TriggerOnInvalidatorStateChange(TRANSIENT_INVALIDATION_ERROR);
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler1.GetInvalidatorState());
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler2.GetInvalidatorState());
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler3.GetInvalidatorState());
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler4.GetInvalidatorState());
+  TriggerOnInvalidatorStateChange(InvalidatorState::kDisabled);
+  EXPECT_EQ(InvalidatorState::kDisabled, handler1.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kDisabled, handler2.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kDisabled, handler3.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kDisabled, handler4.GetInvalidatorState());
 
   invalidator->RemoveObserver(&handler3);
   invalidator->RemoveObserver(&handler2);
@@ -438,9 +438,9 @@ TEST_F(FCMInvalidationServiceTest, EmptySetUnregisters) {
   // further invalidations.
   EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler1, TopicSet()));
 
-  TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler1.GetInvalidatorState());
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
+  TriggerOnInvalidatorStateChange(InvalidatorState::kEnabled);
+  EXPECT_EQ(InvalidatorState::kEnabled, handler1.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kEnabled, handler2.GetInvalidatorState());
 
   TriggerSuccessfullySubscribed(topic1, topic2, topic3);
   EXPECT_THAT(handler1.GetSuccessfullySubscribed(), IsEmpty());
@@ -456,9 +456,9 @@ TEST_F(FCMInvalidationServiceTest, EmptySetUnregisters) {
     EXPECT_EQ(1, handler2.GetInvalidationCount());
   }
 
-  TriggerOnInvalidatorStateChange(TRANSIENT_INVALIDATION_ERROR);
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler1.GetInvalidatorState());
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler2.GetInvalidatorState());
+  TriggerOnInvalidatorStateChange(InvalidatorState::kDisabled);
+  EXPECT_EQ(InvalidatorState::kDisabled, handler1.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kDisabled, handler2.GetInvalidatorState());
 
   invalidator->RemoveObserver(&handler2);
   invalidator->RemoveObserver(&handler1);
@@ -471,13 +471,13 @@ TEST_F(FCMInvalidationServiceTest, GetInvalidatorStateAlwaysCurrent) {
   BoundFakeInvalidationHandler handler(*invalidator, "owner");
   invalidator->AddObserver(&handler);
 
-  TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
-  EXPECT_EQ(INVALIDATIONS_ENABLED, handler.GetLastRetrievedState());
+  TriggerOnInvalidatorStateChange(InvalidatorState::kEnabled);
+  EXPECT_EQ(InvalidatorState::kEnabled, handler.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kEnabled, handler.GetLastRetrievedState());
 
-  TriggerOnInvalidatorStateChange(TRANSIENT_INVALIDATION_ERROR);
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler.GetInvalidatorState());
-  EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler.GetLastRetrievedState());
+  TriggerOnInvalidatorStateChange(InvalidatorState::kDisabled);
+  EXPECT_EQ(InvalidatorState::kDisabled, handler.GetInvalidatorState());
+  EXPECT_EQ(InvalidatorState::kDisabled, handler.GetLastRetrievedState());
 
   invalidator->RemoveObserver(&handler);
 }

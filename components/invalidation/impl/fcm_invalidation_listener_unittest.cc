@@ -50,7 +50,7 @@ class TestFCMSyncNetworkChannel : public FCMSyncNetworkChannel {
 class FakeDelegate : public FCMInvalidationListener::Delegate {
  public:
   explicit FakeDelegate(FCMInvalidationListener* listener)
-      : state_(TRANSIENT_INVALIDATION_ERROR) {}
+      : state_(InvalidatorState::kDisabled) {}
   ~FakeDelegate() override = default;
 
   size_t GetInvalidationCount(const Topic& topic) const {

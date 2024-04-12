@@ -75,7 +75,7 @@ void DriveNotificationManager::OnInvalidatorStateChange(
   if (AreInvalidationsEnabled()) {
     DVLOG(1) << "XMPP Notifications enabled";
   } else {
-    DVLOG(1) << "XMPP Notifications disabled (state=" << state << ")";
+    DVLOG(1) << "XMPP Notifications disabled";
   }
   for (auto& observer : observers_) {
     observer.OnPushNotificationEnabled(AreInvalidationsEnabled());
@@ -191,7 +191,7 @@ bool DriveNotificationManager::IsRegistered() const {
 
 bool DriveNotificationManager::AreInvalidationsEnabled() const {
   return IsRegistered() && invalidation_service_->GetInvalidatorState() ==
-                               invalidation::INVALIDATIONS_ENABLED;
+                               invalidation::InvalidatorState::kEnabled;
 }
 
 void DriveNotificationManager::RestartPollingTimer() {

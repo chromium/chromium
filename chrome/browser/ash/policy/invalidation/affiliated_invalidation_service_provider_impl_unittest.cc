@@ -54,7 +54,7 @@ CreateInvalidationServiceForSenderId(const std::string& fcm_sender_id) {
   std::unique_ptr<invalidation::FakeInvalidationService> invalidation_service(
       new invalidation::FakeInvalidationService);
   invalidation_service->SetInvalidatorState(
-      invalidation::TRANSIENT_INVALIDATION_ERROR);
+      invalidation::InvalidatorState::kDisabled);
   return invalidation_service;
 }
 
@@ -287,7 +287,7 @@ void AffiliatedInvalidationServiceProviderImplTest::
   // that the consumer is informed about this.
   EXPECT_EQ(0, consumer_->GetAndClearInvalidationServiceSetCount());
   profile_invalidation_service_->SetInvalidatorState(
-      invalidation::INVALIDATIONS_ENABLED);
+      invalidation::InvalidatorState::kEnabled);
   EXPECT_EQ(1, consumer_->GetAndClearInvalidationServiceSetCount());
   EXPECT_EQ(profile_invalidation_service_, consumer_->GetInvalidationService());
 
@@ -312,7 +312,7 @@ void AffiliatedInvalidationServiceProviderImplTest::
   // Indicate that the per-profile invalidation service has connected. Verify
   // that the consumer is not called back.
   profile_invalidation_service_->SetInvalidatorState(
-      invalidation::INVALIDATIONS_ENABLED);
+      invalidation::InvalidatorState::kEnabled);
   EXPECT_EQ(0, consumer_->GetAndClearInvalidationServiceSetCount());
 
   // Verify that the device-global invalidation service still exists.
@@ -329,8 +329,8 @@ void AffiliatedInvalidationServiceProviderImplTest::
   // Indicate that the device-global invalidation service has connected. Verify
   // that the consumer is informed about this.
   EXPECT_EQ(0, consumer_->GetAndClearInvalidationServiceSetCount());
-  SendInvalidatorStateChangeNotification(device_invalidation_service_,
-                                         invalidation::INVALIDATIONS_ENABLED);
+  SendInvalidatorStateChangeNotification(
+      device_invalidation_service_, invalidation::InvalidatorState::kEnabled);
   EXPECT_EQ(1, consumer_->GetAndClearInvalidationServiceSetCount());
   EXPECT_EQ(device_invalidation_service_, consumer_->GetInvalidationService());
 }
@@ -343,7 +343,7 @@ void AffiliatedInvalidationServiceProviderImplTest::
   // that the consumer is informed about this.
   EXPECT_EQ(0, consumer_->GetAndClearInvalidationServiceSetCount());
   profile_invalidation_service_->SetInvalidatorState(
-      invalidation::INVALIDATION_CREDENTIALS_REJECTED);
+      invalidation::InvalidatorState::kDisabled);
   EXPECT_EQ(1, consumer_->GetAndClearInvalidationServiceSetCount());
   EXPECT_EQ(nullptr, consumer_->GetInvalidationService());
 
@@ -409,8 +409,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
   // Verify that the consumer is informed about this.
   EXPECT_EQ(0, consumer_->GetAndClearInvalidationServiceSetCount());
   SendInvalidatorStateChangeNotification(
-      device_invalidation_service_,
-      invalidation::INVALIDATION_CREDENTIALS_REJECTED);
+      device_invalidation_service_, invalidation::InvalidatorState::kDisabled);
   EXPECT_EQ(1, consumer_->GetAndClearInvalidationServiceSetCount());
   EXPECT_EQ(nullptr, consumer_->GetInvalidationService());
 
@@ -478,7 +477,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
 }
 
 // Verifies that every InvalidationService state except
-// |invalidation::INVALIDATIONS_ENABLED| are treated as disconnected.
+// |invalidation::InvalidatorState::kEnabled| are treated as disconnected.
 TEST_F(AffiliatedInvalidationServiceProviderImplTest,
        FlipInvalidationServiceState) {
   consumer_ = std::make_unique<FakeConsumer>(provider_.get(), "consumer");
@@ -486,21 +485,15 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
   // Create and make |profile_invalidation_service_| enabled.
   LogInAsAffiliatedUserAndConnectInvalidationService();
 
-  for (const auto disconnect_state :
-       {invalidation::TRANSIENT_INVALIDATION_ERROR,
-        invalidation::DEFAULT_INVALIDATION_ERROR,
-        invalidation::INVALIDATION_CREDENTIALS_REJECTED,
-        invalidation::INVALIDATOR_SHUTTING_DOWN, invalidation::STOPPED}) {
-    profile_invalidation_service_->SetInvalidatorState(disconnect_state);
-    EXPECT_EQ(1, consumer_->GetAndClearInvalidationServiceSetCount());
-    EXPECT_FALSE(consumer_->GetInvalidationService());
+  profile_invalidation_service_->SetInvalidatorState(
+      invalidation::InvalidatorState::kDisabled);
+  EXPECT_EQ(1, consumer_->GetAndClearInvalidationServiceSetCount());
+  EXPECT_FALSE(consumer_->GetInvalidationService());
 
-    profile_invalidation_service_->SetInvalidatorState(
-        invalidation::INVALIDATIONS_ENABLED);
-    EXPECT_EQ(1, consumer_->GetAndClearInvalidationServiceSetCount());
-    EXPECT_EQ(profile_invalidation_service_,
-              consumer_->GetInvalidationService());
-  }
+  profile_invalidation_service_->SetInvalidatorState(
+      invalidation::InvalidatorState::kEnabled);
+  EXPECT_EQ(1, consumer_->GetAndClearInvalidationServiceSetCount());
+  EXPECT_EQ(profile_invalidation_service_, consumer_->GetInvalidationService());
 }
 
 // A consumer is registered with the AffiliatedInvalidationServiceProviderImpl.
@@ -589,7 +582,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
   // Indicate that the second user's per-profile invalidation service has
   // connected. Verify that the consumer is not called back.
   second_profile_invalidation_service->SetInvalidatorState(
-      invalidation::INVALIDATIONS_ENABLED);
+      invalidation::InvalidatorState::kEnabled);
   EXPECT_EQ(0, consumer_->GetAndClearInvalidationServiceSetCount());
 
   // Indicate that the first user's per-profile invalidation service has
@@ -598,7 +591,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
   // user's.
   EXPECT_EQ(0, consumer_->GetAndClearInvalidationServiceSetCount());
   profile_invalidation_service_->SetInvalidatorState(
-      invalidation::INVALIDATION_CREDENTIALS_REJECTED);
+      invalidation::InvalidatorState::kDisabled);
   EXPECT_EQ(1, consumer_->GetAndClearInvalidationServiceSetCount());
   EXPECT_EQ(second_profile_invalidation_service,
             consumer_->GetInvalidationService());
@@ -688,7 +681,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest, NoServiceAfterShutdown) {
   // Indicate that the second user's per-profile invalidation service has
   // connected. Verify that the consumer is not called back.
   second_profile_invalidation_service->SetInvalidatorState(
-      invalidation::INVALIDATIONS_ENABLED);
+      invalidation::InvalidatorState::kEnabled);
   EXPECT_EQ(0, consumer_->GetAndClearInvalidationServiceSetCount());
 
   // Verify that the device-global invalidation service still does not exist.

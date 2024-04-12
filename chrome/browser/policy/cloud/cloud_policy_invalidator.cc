@@ -291,7 +291,7 @@ bool CloudPolicyInvalidator::IsRegistered() const {
 
 bool CloudPolicyInvalidator::AreInvalidationsEnabled() const {
   return IsRegistered() && invalidation_service_->GetInvalidatorState() ==
-                               invalidation::INVALIDATIONS_ENABLED;
+                               invalidation::InvalidatorState::kEnabled;
 }
 
 void CloudPolicyInvalidator::HandleInvalidation(

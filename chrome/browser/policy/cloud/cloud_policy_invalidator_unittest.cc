@@ -310,12 +310,12 @@ void CloudPolicyInvalidatorTestBase::StorePolicy(PolicyObject object,
 
 void CloudPolicyInvalidatorTestBase::DisableInvalidationService() {
   invalidation_service_.SetInvalidatorState(
-      invalidation::TRANSIENT_INVALIDATION_ERROR);
+      invalidation::InvalidatorState::kDisabled);
 }
 
 void CloudPolicyInvalidatorTestBase::EnableInvalidationService() {
   invalidation_service_.SetInvalidatorState(
-      invalidation::INVALIDATIONS_ENABLED);
+      invalidation::InvalidatorState::kEnabled);
 }
 
 invalidation::Invalidation CloudPolicyInvalidatorTestBase::FireInvalidation(

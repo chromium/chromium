@@ -61,12 +61,12 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
 
   void EnableInvalidationService() {
     invalidation_service_.SetInvalidatorState(
-        invalidation::INVALIDATIONS_ENABLED);
+        invalidation::InvalidatorState::kEnabled);
   }
 
   void DisableInvalidationService() {
     invalidation_service_.SetInvalidatorState(
-        invalidation::TRANSIENT_INVALIDATION_ERROR);
+        invalidation::InvalidatorState::kDisabled);
   }
 
   invalidation::Invalidation CreateInvalidation(

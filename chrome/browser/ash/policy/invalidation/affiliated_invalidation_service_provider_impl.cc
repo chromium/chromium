@@ -86,7 +86,7 @@ AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
   DCHECK(invalidation_service_);
   invalidation_service_observation_.Observe(invalidation_service_);
   is_service_connected_ = invalidation_service->GetInvalidatorState() ==
-                          invalidation::INVALIDATIONS_ENABLED;
+                          invalidation::InvalidatorState::kEnabled;
   is_observer_ready_ = true;
 }
 
@@ -111,7 +111,7 @@ void AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
     return;
 
   const bool new_is_service_connected =
-      (state == invalidation::INVALIDATIONS_ENABLED);
+      (state == invalidation::InvalidatorState::kEnabled);
 
   if (is_service_connected_ == new_is_service_connected)
     return;

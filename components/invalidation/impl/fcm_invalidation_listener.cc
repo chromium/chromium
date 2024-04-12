@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
+#include "components/invalidation/public/invalidator_state.h"
 
 namespace invalidation {
 
@@ -206,19 +207,13 @@ void FCMInvalidationListener::Stop() {
 }
 
 InvalidatorState FCMInvalidationListener::GetState() const {
-  if (subscription_channel_state_ ==
-      SubscriptionChannelState::ACCESS_TOKEN_FAILURE) {
-    return INVALIDATION_CREDENTIALS_REJECTED;
-  }
   if (subscription_channel_state_ == SubscriptionChannelState::ENABLED &&
       fcm_network_state_ == FcmChannelState::ENABLED) {
-    // If the ticl is ready and the push client notifications are
-    // enabled, return INVALIDATIONS_ENABLED.
-    return INVALIDATIONS_ENABLED;
+    return InvalidatorState::kEnabled;
   }
 
-  // Otherwise, we have a transient error.
-  return TRANSIENT_INVALIDATION_ERROR;
+  // Otherwise, we have a (possibly transient) error.
+  return InvalidatorState::kDisabled;
 }
 
 void FCMInvalidationListener::EmitStateChange() {

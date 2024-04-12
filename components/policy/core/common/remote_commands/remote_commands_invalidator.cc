@@ -133,7 +133,7 @@ bool RemoteCommandsInvalidator::IsRegistered() const {
 
 bool RemoteCommandsInvalidator::AreInvalidationsEnabled() const {
   return IsRegistered() && invalidation_service_->GetInvalidatorState() ==
-                               invalidation::INVALIDATIONS_ENABLED;
+                               invalidation::InvalidatorState::kEnabled;
 }
 
 void RemoteCommandsInvalidator::Register(const invalidation::Topic& topic) {

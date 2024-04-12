@@ -64,9 +64,7 @@ class FCMSyncNetworkChannel {
 
  protected:
   // Subclass should notify about connection state through
-  // NotifyChannelStateChange. If communication doesn't work and it is possible
-  // that invalidations from server will not reach this client then channel
-  // should call this function with TRANSIENT_INVALIDATION_ERROR.
+  // NotifyChannelStateChange.
   void NotifyChannelStateChange(FcmChannelState invalidator_state);
 
   // Subclass should call DeliverIncomingMessage for message to reach

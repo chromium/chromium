@@ -7,6 +7,7 @@
 #include "components/invalidation/impl/invalidation_service_util.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
+#include "components/invalidation/public/invalidator_state.h"
 
 namespace invalidation {
 
@@ -16,7 +17,7 @@ FakeInvalidationService::FakeInvalidationService()
       pref_service_.registry());
   invalidator_registrar_ = std::make_unique<InvalidatorRegistrarWithMemory>(
       &pref_service_, /*sender_id=*/"sender_id");
-  invalidator_registrar_->UpdateInvalidatorState(INVALIDATIONS_ENABLED);
+  invalidator_registrar_->UpdateInvalidatorState(InvalidatorState::kEnabled);
 }
 
 FakeInvalidationService::~FakeInvalidationService() = default;

@@ -47,7 +47,6 @@ FCMInvalidationService::FCMInvalidationService(
 
 FCMInvalidationService::~FCMInvalidationService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  invalidator_registrar_.UpdateInvalidatorState(INVALIDATOR_SHUTTING_DOWN);
 
   if (IsStarted()) {
     StopInvalidator();
@@ -122,11 +121,12 @@ InvalidatorState FCMInvalidationService::GetInvalidatorState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (invalidation_listener_) {
     DVLOG(2) << "GetInvalidatorState returning "
-             << invalidator_registrar_.GetInvalidatorState();
+             << InvalidatorStateToString(
+                    invalidator_registrar_.GetInvalidatorState());
     return invalidator_registrar_.GetInvalidatorState();
   }
   DVLOG(2) << "Invalidator currently stopped";
-  return STOPPED;
+  return InvalidatorState::kDisabled;
 }
 
 std::string FCMInvalidationService::GetInvalidatorClientId() const {

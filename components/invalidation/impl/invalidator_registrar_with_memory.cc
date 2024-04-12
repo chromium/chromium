@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
+#include "components/invalidation/public/invalidator_state.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -92,7 +93,9 @@ void InvalidatorRegistrarWithMemory::ClearDeprecatedPrefs(PrefService* prefs) {
 InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
     PrefService* prefs,
     const std::string& sender_id)
-    : state_(DEFAULT_INVALIDATION_ERROR), prefs_(prefs), sender_id_(sender_id) {
+    : state_(InvalidatorState::kDisabled),
+      prefs_(prefs),
+      sender_id_(sender_id) {
   CHECK(!sender_id_.empty());
   const base::Value::Dict* pref_data =
       prefs_->GetDict(kTopicsToHandler).FindDict(sender_id_);
