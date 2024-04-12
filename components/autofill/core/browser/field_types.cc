@@ -55,6 +55,8 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_APT", ADDRESS_HOME_APT},
          {"ADDRESS_HOME_APT_NUM", ADDRESS_HOME_APT_NUM},
          {"ADDRESS_HOME_APT_TYPE", ADDRESS_HOME_APT_TYPE},
+         {"ADDRESS_HOME_HOUSE_NUMBER_AND_APT",
+          ADDRESS_HOME_HOUSE_NUMBER_AND_APT},
          {"ADDRESS_HOME_CITY", ADDRESS_HOME_CITY},
          {"ADDRESS_HOME_STATE", ADDRESS_HOME_STATE},
          {"ADDRESS_HOME_ZIP", ADDRESS_HOME_ZIP},
@@ -170,6 +172,7 @@ bool IsFillableFieldType(FieldType field_type) {
     case ADDRESS_HOME_APT:
     case ADDRESS_HOME_APT_NUM:
     case ADDRESS_HOME_APT_TYPE:
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
     case ADDRESS_HOME_CITY:
     case ADDRESS_HOME_STATE:
     case ADDRESS_HOME_ZIP:
@@ -421,6 +424,8 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
       return "Address street location and landmark";
     case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
       return "Address locality and landmark";
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+      return "House number and apartment number";
     case DELIVERY_INSTRUCTIONS:
       return "Delivery instructions";
     case CREDIT_CARD_NAME_FULL:
@@ -528,6 +533,7 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
     case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
     case DELIVERY_INSTRUCTIONS:
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
       return FieldTypeGroup::kAddress;
 
     case CREDIT_CARD_NAME_FULL:

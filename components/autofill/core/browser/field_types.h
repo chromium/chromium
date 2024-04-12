@@ -413,7 +413,8 @@ enum FieldType {
   // contain the "Entre calle 1" field.
   ADDRESS_HOME_BETWEEN_STREETS_2 = 152,
 
-  // ADDRESS_HOME_HOUSE_NUMBER_AND_APT 153 is server-side only.
+  // House number and apartment.
+  ADDRESS_HOME_HOUSE_NUMBER_AND_APT = 153,
 
   // Username field in a password-less forgot password form.
   SINGLE_USERNAME_FORGOT_PASSWORD = 154,
@@ -556,7 +557,7 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 117 && t != 127 &&
            !(130 <= t && t <= 132) && t != 134 && !(137 <= t && t <= 139) &&
-           !(147 <= t && t <= 149) && t != 153 && t != 155 && t != 158 &&
+           !(147 <= t && t <= 149) && t != 155 && t != 158 &&
            t != 159 && t != 161;
   };
   return IsValid(raw_value) ? static_cast<FieldType>(raw_value)

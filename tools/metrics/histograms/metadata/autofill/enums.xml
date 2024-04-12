@@ -529,6 +529,8 @@ Called by update_autofill_enums.py.-->
   <int value="2417" label="ADDRESS_HOME_BETWEEN_STREETS_1: accepted"/>
   <int value="2432" label="ADDRESS_HOME_BETWEEN_STREETS_2: edited"/>
   <int value="2433" label="ADDRESS_HOME_BETWEEN_STREETS_2: accepted"/>
+  <int value="2448" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: edited"/>
+  <int value="2449" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: accepted"/>
   <int value="2464" label="SINGLE_USERNAME_FORGOT_PASSWORD: edited"/>
   <int value="2465" label="SINGLE_USERNAME_FORGOT_PASSWORD: accepted"/>
   <int value="2496" label="ADDRESS_HOME_APT: edited"/>
@@ -1200,6 +1202,25 @@ Called by update_autofill_enums.py.-->
   <int value="11529"
       label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: False Negative
              (Unknown)"/>
+  <int value="11776" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: True Positive"/>
+  <int value="11777"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: True Negative (Ambiguous)"/>
+  <int value="11778"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: True Negative (Unknown)"/>
+  <int value="11779"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: True Negative (Empty)"/>
+  <int value="11780"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Positive (Mismatch)"/>
+  <int value="11781"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Positive (Ambiguous)"/>
+  <int value="11782"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Positive (Unknown)"/>
+  <int value="11783"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Positive (Empty)"/>
+  <int value="11784"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Negative (Mismatch)"/>
+  <int value="11785"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Negative (Unknown)"/>
 </enum>
 
 <enum name="AutofillFillingMethodMetric">
@@ -3087,6 +3108,24 @@ Called by update_autofill_enums.py.-->
   <int value="918"
       label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions different - Value
              agrees with both predictions"/>
+  <int value="919"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions equal - Value
+             agrees"/>
+  <int value="920"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions equal - Value
+             disagrees"/>
+  <int value="921"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
+             Value agrees with old prediction"/>
+  <int value="922"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
+             Value agrees with new prediction"/>
+  <int value="923"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
+             Value agrees with neither prediction"/>
+  <int value="924"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
+             Value agrees with both predictions"/>
   <int value="925"
       label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions equal - Value
              agrees"/>

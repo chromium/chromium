@@ -10,6 +10,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 
 namespace autofill {
@@ -487,9 +488,11 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
       return Match("ADDRESS_HOME_APT_NUM", 1.0);
     case ADDRESS_HOME_APT:
     case ADDRESS_HOME_APT_TYPE:
-      // ADDRESS_HOME_APT and ADDRESS_HOME_APT_TYPE are currently internal nodes
-      // of the address hierarchy that only exist to parse and format an
-      // address. They don't exist as recognized field types.
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+      // ADDRESS_HOME_APT, ADDRESS_HOME_APT_TYPE and
+      // ADDRESS_HOME_HOUSE_NUMBER_AND_APT are currently internal nodes of the
+      // address hierarchy that only exist to parse and format an address. They
+      // don't exist as recognized field types.
       return std::nullopt;
     case ADDRESS_HOME_CITY:
       return Match("CITY", 1.0);

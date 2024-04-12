@@ -1165,6 +1165,7 @@ Called by update_autofill_enums.py.-->
   <int value="150" label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK"/>
   <int value="151" label="ADDRESS_HOME_BETWEEN_STREETS_1"/>
   <int value="152" label="ADDRESS_HOME_BETWEEN_STREETS_2"/>
+  <int value="153" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT"/>
   <int value="154" label="SINGLE_USERNAME_FORGOT_PASSWORD"/>
   <int value="156" label="ADDRESS_HOME_APT"/>
   <int value="157" label="ADDRESS_HOME_APT_TYPE"/>
@@ -1463,6 +1464,10 @@ Called by update_autofill_enums.py.-->
   <int value="2432"
       label="ADDRESS_HOME_BETWEEN_STREETS_2: Pre-filled on page load"/>
   <int value="2433" label="ADDRESS_HOME_BETWEEN_STREETS_2: Empty on page load"/>
+  <int value="2448"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Pre-filled on page load"/>
+  <int value="2449"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Empty on page load"/>
   <int value="2464"
       label="SINGLE_USERNAME_FORGOT_PASSWORD: Pre-filled on page load"/>
   <int value="2465"
