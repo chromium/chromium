@@ -18,6 +18,7 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
+#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
 #include "content/public/browser/browser_context.h"
@@ -124,6 +125,8 @@ void VcBackgroundUI::AddBooleans(content::WebUIDataSource* source) {
                          ::ash::features::IsSeaPenTextInputEnabled() &&
                          manta::features::IsMantaServiceEnabled() &&
                          common_sea_pen_requirements);
+  source->AddBoolean("isLacrosEnabled",
+                     ::crosapi::lacros_startup_state::IsLacrosEnabled());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(VcBackgroundUI)

@@ -41,6 +41,7 @@ static_library("personalization_app") {
     "//chromeos/ash/components/local_search_service",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
+    "//chromeos/crosapi/cpp:cpp",
     "//chromeos/strings",
     "//components/keyed_service/content",
     "//components/keyed_service/core",

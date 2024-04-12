@@ -32,6 +32,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
 #include "content/public/browser/browser_context.h"
@@ -553,6 +554,8 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                      ::ash::features::IsSeaPenTextInputEnabled() &&
                          manta::features::IsMantaServiceEnabled() &&
                          common_sea_pen_requirements);
+  source->AddBoolean("isLacrosEnabled",
+                     ::crosapi::lacros_startup_state::IsLacrosEnabled());
 }
 
 void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {
