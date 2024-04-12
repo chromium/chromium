@@ -1455,6 +1455,7 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="30" label="Growth Campaigns Nudge"/>
   <int value="31" label="Search Plus Top Row Key Pressed Nudge"/>
   <int value="32" label="Six Pack Key Pressed Nudge"/>
+  <int value="33" label="Switch Caps Lock Key Pressed Nudge"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">

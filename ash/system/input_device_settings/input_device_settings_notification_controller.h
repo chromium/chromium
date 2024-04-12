@@ -88,6 +88,11 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
       ui::KeyboardCode key_code,
       ui::mojom::SixPackShortcutModifier blocked_modifier);
 
+  // Use to display a notification to remind users to press Fn key when users
+  // press search key or right-alt key with alt key to switch caps lock
+  // and there is no matching.
+  void ShowCapsLockRewritingNudge();
+
  private:
   void HandleRightClickNotificationClicked(const std::string& notification_id,
                                            std::optional<int> button_index);

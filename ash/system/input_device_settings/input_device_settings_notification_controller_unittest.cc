@@ -32,6 +32,7 @@ namespace {
 
 constexpr char kTopRowKeyNoMatchNudgeId[] = "top-row-key-no-match-nudge-id";
 constexpr char kSixPackKeyNoMatchNudgeId[] = "six-patch-key-no-match-nudge-id";
+constexpr char kCapsLockNoMatchNudgeId[] = "caps-lock-no-match-nudge-id";
 
 const mojom::Mouse kMouse1 = mojom::Mouse(
     /*name=*/"Razer Basilisk V3",
@@ -684,6 +685,21 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       ui::VKEY_BRIGHTNESS_UP, ui::mojom::SixPackShortcutModifier::kSearch);
   EXPECT_TRUE(nudge_shown);
   EXPECT_FALSE(nudge_shown->GetVisible());
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       ShowCapsLockRewritingNudge) {
+  const AnchoredNudge* nudge =
+      Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+          kCapsLockNoMatchNudgeId);
+  ASSERT_FALSE(nudge);
+
+  controller()->ShowCapsLockRewritingNudge();
+  const AnchoredNudge* nudge_shown =
+      Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+          kCapsLockNoMatchNudgeId);
+  ASSERT_TRUE(nudge_shown);
+  EXPECT_TRUE(nudge_shown->GetVisible());
 }
 
 }  // namespace ash

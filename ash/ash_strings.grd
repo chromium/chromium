@@ -7905,6 +7905,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus top row key.">
         Press Fn + top Row key instead of search + top row key
       </message>
+      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_CAPS_LOCK_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus top row key.">
+        Press Fn + Right-alt key to switch caps lock
+      </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_UP_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus up arrow key.">
         Press Fn + up arrow key in stead of search + up arrow key
       </message>

@@ -52,6 +52,7 @@ const char kKeyboardSettingsLearnMoreLink[] =
     "https://support.google.com/chromebook?p=keyboard_settings";
 constexpr char kTopRowKeyNoMatchNudgeId[] = "top-row-key-no-match-nudge-id";
 constexpr char kSixPackKeyNoMatchNudgeId[] = "six-patch-key-no-match-nudge-id";
+constexpr char kCapsLockNoMatchNudgeId[] = "caps-lock-no-match-nudge-id";
 
 using SimulateRightClickModifier = ui::mojom::SimulateRightClickModifier;
 using SixPackShortcutModifier = ui::mojom::SixPackShortcutModifier;
@@ -801,6 +802,17 @@ void InputDeviceSettingsNotificationController::ShowSixPackKeyRewritingNudge(
   AnchoredNudgeData nudge_data(
       kSixPackKeyNoMatchNudgeId, NudgeCatalogName::kSixPackRemappingPressed,
       GetSixPackShortcutUpdatedString(key_code, old_matched_modifier));
+  nudge_data.title_text = l10n_util::GetStringUTF16(
+      IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
+
+  AnchoredNudgeManager::Get()->Show(nudge_data);
+}
+
+void InputDeviceSettingsNotificationController::ShowCapsLockRewritingNudge() {
+  AnchoredNudgeData nudge_data(
+      kCapsLockNoMatchNudgeId, NudgeCatalogName::kCapsLockShortcutPressed,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_CAPS_LOCK_NUDGE_DESCRIPTION));
   nudge_data.title_text = l10n_util::GetStringUTF16(
       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
 

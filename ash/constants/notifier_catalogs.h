@@ -239,7 +239,8 @@ enum class NudgeCatalogName {
   kGrowthCampaignNudge = 30,
   kSearchTopRowKeyPressed = 31,
   kSixPackRemappingPressed = 32,
-  kMaxValue = kSixPackRemappingPressed
+  kCapsLockShortcutPressed = 33,
+  kMaxValue = kCapsLockShortcutPressed
 };
 
 // A living catalog that registers toasts.
