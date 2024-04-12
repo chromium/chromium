@@ -22,6 +22,12 @@
             (ContextualPanelEntrypointMediator*)mediator
                                          centered:(BOOL)centered;
 
+// Disables fullscreen until `enableFullscreen` is called afterwards.
+- (void)disableFullscreen;
+
+// Re-enables fullscreen, no-op if fullscreen was not disabled beforehand.
+- (void)enableFullscreen;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_ENTRYPOINT_COORDINATOR_CONTEXTUAL_PANEL_ENTRYPOINT_MEDIATOR_DELEGATE_H_

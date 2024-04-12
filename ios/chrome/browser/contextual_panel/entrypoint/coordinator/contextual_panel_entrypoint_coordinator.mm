@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
+#import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 
@@ -22,6 +23,10 @@
   // fullscreen events.
   std::unique_ptr<FullscreenUIUpdater>
       _contextualPanelEntrypointFullscreenUIUpdater;
+
+  // The AnimatedFullscreenDisabler to disable fullscreen momentarily as the
+  // large entrypoint is shown.
+  std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
 }
 
 // The mediator for this coordinator.
@@ -62,6 +67,8 @@
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher stopDispatchingToTarget:_mediator];
 
+  _animatedFullscreenDisabler = nullptr;
+
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator.delegate = nil;
@@ -84,6 +91,17 @@
                                          centered:(BOOL)centered {
   [self.delegate setLocationBarLabelCenteredBetweenContent:self
                                                   centered:centered];
+}
+
+- (void)enableFullscreen {
+  _animatedFullscreenDisabler = nullptr;
+}
+
+- (void)disableFullscreen {
+  _animatedFullscreenDisabler =
+      std::make_unique<AnimatedScopedFullscreenDisabler>(
+          FullscreenController::FromBrowser(self.browser));
+  _animatedFullscreenDisabler->StartAnimation();
 }
 
 @end

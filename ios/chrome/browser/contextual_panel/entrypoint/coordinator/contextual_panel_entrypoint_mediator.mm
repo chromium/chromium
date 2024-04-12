@@ -60,6 +60,8 @@
   _transitionToLargeEntrypointTimer = nullptr;
   _transitionToSmallEntrypointTimer = nullptr;
 
+  [self.delegate enableFullscreen];
+
   if (!_contextualPanelBrowserAgent
            ->IsEntrypointConfigurationAvailableForCurrentTab()) {
     [self.consumer hideEntrypoint];
@@ -93,6 +95,7 @@
 
         strongSelf->_contextualPanelBrowserAgent
             ->SetLargeEntrypointShownForCurrentTab(true);
+        [strongSelf.delegate disableFullscreen];
         [strongSelf.consumer transitionToLargeEntrypoint];
       }));
 
@@ -100,6 +103,7 @@
   _transitionToSmallEntrypointTimer->Start(
       FROM_HERE, base::Seconds(8), base::BindOnce(^{
         [weakSelf.consumer transitionToSmallEntrypoint];
+        [weakSelf.delegate enableFullscreen];
       }));
 }
 
