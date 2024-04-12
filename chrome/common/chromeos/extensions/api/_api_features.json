@@ -72,8 +72,5 @@
   },
   "os.telemetry.getThermalInfo": {
     "feature_flag": "TelemetryExtensionPendingApprovalApi"
-  },
-  "os.diagnostics.replyToRoutineInquiry": {
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
   }
 }
