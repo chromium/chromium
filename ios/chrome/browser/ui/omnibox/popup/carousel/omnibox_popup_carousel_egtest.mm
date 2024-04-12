@@ -25,66 +25,17 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "ui/strings/grit/ui_strings.h"
 
+using omnibox::Page;
+using omnibox::PageContent;
+using omnibox::PageTitle;
+using omnibox::PageURL;
+
 namespace {
 
 /// Number of time URL is reloaded to add it to most visited sites.
 const NSUInteger kMostVisitedLoadCount = 3;
 /// Copy of `kCarouselCapacity` in OmniboxPopupCarouselCell
 const NSUInteger kCarouselCapacity = 10;
-
-#pragma mark Page
-
-using Page = int;
-
-/// Returns the page content of `page_number`.
-std::string PageContent(int page_number) {
-  return "This is page " + base::NumberToString(page_number);
-}
-
-/// Returns the page title of `page_number`.
-std::string PageTitle(int page_number) {
-  return "Title " + base::NumberToString(page_number);
-}
-
-/// Returns the page URL of `page_number`.
-std::string PageURL(int page_number) {
-  // Construct an URL conforming to `kPageURLScheme`.
-  NSString* nsPageURL =
-      [NSString stringWithFormat:@"/page%02d.html", page_number];
-  std::string pageURL = base::SysNSStringToUTF8(nsPageURL);
-  return pageURL;
-}
-
-/// URL scheme used for test pages.
-const std::string kPageURLScheme = "/pageXX.html";
-
-#pragma mark HTTP Server
-
-/// Provides responses for the different pages.
-std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
-    const net::test_server::HttpRequest& request) {
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
-      std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_OK);
-
-  std::string relative_url = request.relative_url;
-  if (relative_url.size() != kPageURLScheme.size()) {
-    return nil;
-  }
-  // Retrieve the page number, assuming the relative_url conforms to
-  // `kPageURLScheme`.
-  std::string page_number_str = relative_url.substr(5, 2);
-  // Replace the page number with `XX` and compare to `kPageURLScheme`.
-  relative_url.replace(5, 2, "XX");
-  if (relative_url != kPageURLScheme) {
-    return nil;
-  }
-  int page_number = stoi(page_number_str);
-  http_response->set_content("<html><head><title>" + PageTitle(page_number) +
-                             "</title></head><body>" +
-                             PageContent(page_number) + "</body></html>");
-  return std::move(http_response);
-}
 
 #pragma mark Matchers
 
@@ -125,7 +76,7 @@ id<GREYMatcher> CarouselMatcher() {
 
   // Start a server to be able to navigate to a web page.
   self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&StandardResponse));
+      base::BindRepeating(&omnibox::OmniboxHTTPResponses));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   [ChromeEarlGrey clearBrowsingHistory];
