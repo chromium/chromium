@@ -65,6 +65,8 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
+import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayCoordinator;
+import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayProperties;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -114,6 +116,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.Toast;
@@ -1110,6 +1113,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private @Nullable Integer mPreBandingState;
         private PageInfoIPHController mPageInfoIPHController;
         private int mTouchTargetSize;
+        private ToolbarBrandingOverlayCoordinator mBrandingOverlayCoordinator;
 
         public View getLayout() {
             return mLocationBarFrameLayout;
@@ -1131,6 +1135,26 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @Override
         public void showBrandingLocationBar() {
             mBrandingStarted = true;
+
+            if (ChromeFeatureList.sCctRevampedBranding.isEnabled()) {
+                ViewStub stub = findViewById(R.id.branding_stub);
+
+                if (stub != null) {
+                    PropertyModel model =
+                            new PropertyModel.Builder(ToolbarBrandingOverlayProperties.ALL_KEYS)
+                                    .with(
+                                            ToolbarBrandingOverlayProperties.COLOR_DATA,
+                                            new ToolbarBrandingOverlayProperties.ColorData(
+                                                    getBackground().getColor(),
+                                                    mBrandedColorScheme))
+                                    .build();
+                    mBrandingOverlayCoordinator =
+                            new ToolbarBrandingOverlayCoordinator(stub, model);
+
+                    return;
+                }
+            }
+
             // Store the title and domain setting, if the empty state is not in used. Otherwise
             // regular state has already been stored.
             if (!mCurrentlyShowingBranding) {
@@ -1163,6 +1187,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @Override
         public void showRegularToolbar() {
             mCurrentlyShowingBranding = false;
+
+            if (ChromeFeatureList.sCctRevampedBranding.isEnabled()) {
+                if (mBrandingOverlayCoordinator != null) {
+                    mBrandingOverlayCoordinator.hideAndDestroy();
+                }
+            }
+
             recoverFromRegularState();
             runAfterBrandingRunnables();
             mAnimDelegate.setUseRotationSecurityButtonTransition(false);

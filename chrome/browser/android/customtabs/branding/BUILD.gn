@@ -11,6 +11,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingDecision.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/SharedPreferencesBrandingTimeStorage.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingDelegate.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingOverlayCoordinator.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingOverlayProperties.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingOverlayViewBinder.java",
   ]
 
   deps = [
@@ -18,6 +21,8 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/omnibox:java",
+    "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/widget/android:java",
     "//components/crash/android:java",
@@ -63,5 +68,26 @@ robolectric_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  resources_package = "org.chromium.chrome.browser.customtabs.features.branding"
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingOverlayViewBinderUnitTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base/test:test_support_java",
+    "//chrome/browser/ui/android/omnibox:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
   ]
 }

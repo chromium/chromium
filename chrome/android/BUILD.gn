@@ -2852,6 +2852,7 @@ if (current_toolchain == default_toolchain) {
       ":chrome_unit_test_java",
       "//build/config/android/test/resource_overlay:unit_device_javatests",
       "//chrome/android/features/tab_ui:unit_device_javatests",
+      "//chrome/browser/android/customtabs/branding:unit_device_javatests",
       "//chrome/browser/android/intents:unit_device_javatests",
       "//chrome/browser/back_press/android:unit_device_javatests",
       "//chrome/browser/download/internal/android:unit_device_javatests",

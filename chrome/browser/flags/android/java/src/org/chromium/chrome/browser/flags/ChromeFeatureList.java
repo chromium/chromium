@@ -553,6 +553,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_GOOGLE_BOTTOM_BAR, false);
     public static final CachedFlag sCctResizableForThirdParties =
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
+    public static final CachedFlag sCctRevampedBranding =
+            newCachedFlag(CCT_REVAMPED_BRANDING, false);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
             newCachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, false);
@@ -695,6 +697,7 @@ public abstract class ChromeFeatureList {
                     sCctPageInsightsHub,
                     sCctGoogleBottomBar,
                     sCctResizableForThirdParties,
+                    sCctRevampedBranding,
                     sCctTabModalDialog,
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,
