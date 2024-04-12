@@ -513,14 +513,20 @@ TEST_P(PrePaintTreeWalkTest, ScrollTranslationNodeForNonZeroScrollPosition) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* object =
-      GetDocument().getElementById(AtomicString("div"))->GetLayoutObject();
-  ASSERT_EQ(
-      ScrollOffset(),
-      To<LayoutBoxModelObject>(object)->GetScrollableArea()->GetScrollOffset());
-  ASSERT_NE(
-      gfx::PointF(),
-      To<LayoutBoxModelObject>(object)->GetScrollableArea()->ScrollPosition());
+  auto* scroller = GetDocument().getElementById(AtomicString("div"));
+  auto* object = To<LayoutBoxModelObject>(scroller->GetLayoutObject());
+  auto* scrollable_area = object->GetScrollableArea();
+
+  ASSERT_EQ(ScrollOffset(), scrollable_area->GetScrollOffset());
+  ASSERT_NE(gfx::PointF(), scrollable_area->ScrollPosition());
+  EXPECT_TRUE(object->FirstFragment().PaintProperties()->ScrollTranslation());
+
+  // When the scroll is scrolled all the way to the end of content it should
+  // still get a scroll node.
+  scroller->scrollBy(-10000, 0);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_NE(ScrollOffset(), scrollable_area->GetScrollOffset());
+  ASSERT_EQ(gfx::PointF(), scrollable_area->ScrollPosition());
   EXPECT_TRUE(object->FirstFragment().PaintProperties()->ScrollTranslation());
 }
 
