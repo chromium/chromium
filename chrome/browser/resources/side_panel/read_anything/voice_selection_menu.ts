@@ -76,6 +76,20 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     };
   }
 
+  onVoiceSelectionMenuClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const minY = target.getBoundingClientRect().bottom;
+
+    this.voicePlayingWhenMenuOpened_ = !this.paused;
+
+    this.$.voiceSelectionMenu.get().showAt(target, {
+      minY: minY,
+      left: 0,
+      anchorAlignmentY: AnchorAlignment.AFTER_END,
+      noOffset: true,
+    });
+  }
+
   private computeVoiceDropdown_(
       selectedVoice: SpeechSynthesisVoice,
       availableVoices: SpeechSynthesisVoice[],
@@ -118,20 +132,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   // This ID does not ensure uniqueness and is just used for testing purposes.
   private stringToHtmlTestId_(s: string): string {
     return s.replace(/\s/g, '-').replace(/[()]/g, '');
-  }
-
-  private onVoiceSelectionMenuClick_(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const minY = target.getBoundingClientRect().bottom;
-
-    this.voicePlayingWhenMenuOpened_ = !this.paused;
-
-    this.$.voiceSelectionMenu.get().showAt(target, {
-      minY: minY,
-      left: 0,
-      anchorAlignmentY: AnchorAlignment.AFTER_END,
-      noOffset: true,
-    });
   }
 
   private onVoiceSelectClick_(event: DomRepeatEvent<VoiceDropdownItem>) {

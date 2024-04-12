@@ -567,6 +567,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.openMenu_(this.$.rateMenu.get(), event.target as HTMLElement);
   }
 
+  private onVoiceSelectionMenuClick_(event: MouseEvent) {
+    const voiceMenu =
+        this.$.toolbarContainer.querySelector('#voiceSelectionMenu');
+    assert(voiceMenu, 'no voiceMenu element');
+    (voiceMenu as VoiceSelectionMenuElement).onVoiceSelectionMenuClick(event);
+  }
+
   private onMoreOptionsClick_(event: MouseEvent) {
     this.openMenu_(this.$.moreOptionsMenu, event.target as HTMLElement);
   }

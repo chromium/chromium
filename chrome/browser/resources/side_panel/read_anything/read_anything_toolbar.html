@@ -149,6 +149,16 @@
       iron-icon="voice-rate:1"
       on-click="onShowRateMenuClick_">
     </cr-icon-button>
+    <cr-icon-button
+      class="toolbar-button"
+      id="voice-selection"
+      tabindex="-1"
+      aria-label="$i18n{voiceSelectionLabel}"
+      title="$i18n{voiceSelectionLabel}"
+      aria-haspopup="menu"
+      iron-icon="read-anything:voice-selection"
+      on-click="onVoiceSelectionMenuClick_">
+    </cr-icon-button>
     <voice-selection-menu
       id="voiceSelectionMenu"
       selected-voice="[[selectedVoice]]"

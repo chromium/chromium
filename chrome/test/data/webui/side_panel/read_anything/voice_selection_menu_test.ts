@@ -4,7 +4,6 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
 
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -14,8 +13,9 @@ function stringToHtmlTestId(s: string): string {
 }
 
 suite('VoiceSelectionMenuElement', () => {
-  let voiceSelectionMenu: VoiceSelectionMenuElement;
+  let voiceSelectionMenu: VoiceSelectionMenuElement|null;
   let availableVoices: SpeechSynthesisVoice[];
+  let myClickEvent: MouseEvent;
 
   const setAvailableVoices = () => {
     // Bypass Typescript compiler to allow us to set a private readonly
@@ -26,7 +26,7 @@ suite('VoiceSelectionMenuElement', () => {
   };
 
   const getDropdownItemForVoice = (voice: SpeechSynthesisVoice) => {
-    return voiceSelectionMenu.$.voiceSelectionMenu.get()
+    return voiceSelectionMenu!.$.voiceSelectionMenu.get()
         .querySelector<HTMLButtonElement>(`[data-test-id="${
             stringToHtmlTestId(voice.name)}"].dropdown-voice-selection-button`)!
         ;
@@ -36,6 +36,14 @@ suite('VoiceSelectionMenuElement', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     voiceSelectionMenu = document.createElement('voice-selection-menu');
     document.body.appendChild(voiceSelectionMenu);
+
+    // Proxy button as click target to open the menu with
+    const dots: HTMLElement = document.createElement('button');
+    const newContent = document.createTextNode('...');
+    dots.appendChild(newContent);
+    document.body.appendChild(dots);
+    myClickEvent = {target: dots} as unknown as MouseEvent;
+
     flush();
   });
 
@@ -51,10 +59,8 @@ suite('VoiceSelectionMenuElement', () => {
     });
 
     test('it shows dropdown items after button click', () => {
-      const button =
-          voiceSelectionMenu.shadowRoot!.querySelector<CrIconButtonElement>(
-              '#voice-selection');
-      button!.click();
+      voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
+
       flush();
 
       assertTrue(
@@ -74,14 +80,11 @@ suite('VoiceSelectionMenuElement', () => {
       });
 
       test('it updates and displays the new voices', () => {
-        const button =
-            voiceSelectionMenu.shadowRoot!.querySelector<CrIconButtonElement>(
-                '#voice-selection')!;
-        button!.click();
+        voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
         flush();
 
         const dropdownItems: NodeListOf<HTMLElement> =
-            voiceSelectionMenu.$.voiceSelectionMenu.get()
+            voiceSelectionMenu!.$.voiceSelectionMenu.get()
                 .querySelectorAll<HTMLButtonElement>(
                     '.dropdown-voice-selection-button');
 
@@ -107,7 +110,7 @@ suite('VoiceSelectionMenuElement', () => {
     setup(() => {
       // We need an additional call to voiceSelectionMenu.get() in these
       // tests to ensure the menu has been rendered.
-      voiceSelectionMenu.$.voiceSelectionMenu.get();
+      voiceSelectionMenu!.$.voiceSelectionMenu.get();
       selectedVoice = {name: 'test voice 3', lang: 'en-US'} as
           SpeechSynthesisVoice;
       previewVoice = {name: 'test voice 1', lang: 'en-US'} as
@@ -141,10 +144,10 @@ suite('VoiceSelectionMenuElement', () => {
 
     test('it groups voices by language', () => {
       const englishGroup: HTMLElement =
-          voiceSelectionMenu.$.voiceSelectionMenu.get()
+          voiceSelectionMenu!.$.voiceSelectionMenu.get()
               .querySelector<HTMLElement>('div[data-test-id="group-en-US"]')!;
       const italianGroup: HTMLElement =
-          voiceSelectionMenu.$.voiceSelectionMenu.get()
+          voiceSelectionMenu!.$.voiceSelectionMenu.get()
               .querySelector<HTMLElement>('div[data-test-id="group-it-IT"]')!;
 
       const englishDropdownItems: NodeListOf<HTMLElement> =
@@ -173,7 +176,7 @@ suite('VoiceSelectionMenuElement', () => {
 
       test('it orders Natural voices first', () => {
         const englishGroup: HTMLElement =
-            voiceSelectionMenu.$.voiceSelectionMenu.get()
+            voiceSelectionMenu!.$.voiceSelectionMenu.get()
                 .querySelector<HTMLElement>('div[data-test-id="group-en-US"]')!;
         const usEnglishDropdownItems: NodeListOf<HTMLElement> =
             englishGroup.querySelectorAll('.voice-name');
@@ -204,7 +207,7 @@ suite('VoiceSelectionMenuElement', () => {
 
       test('it displays the display name', () => {
         const englishGroup: HTMLElement =
-            voiceSelectionMenu.$.voiceSelectionMenu.get()
+            voiceSelectionMenu!.$.voiceSelectionMenu.get()
                 .querySelector<HTMLElement>(
                     'div[data-test-id="group-English-United-States"]')!;
         const groupNameSpan = englishGroup.querySelector<HTMLElement>('span');
@@ -215,7 +218,7 @@ suite('VoiceSelectionMenuElement', () => {
 
       test('it defaults to the locale when there is no display name', () => {
         const italianGroup: HTMLElement =
-            voiceSelectionMenu.$.voiceSelectionMenu.get()
+            voiceSelectionMenu!.$.voiceSelectionMenu.get()
                 .querySelector<HTMLElement>('div[data-test-id="group-it-IT"]')!;
         const groupNameSpan = italianGroup.querySelector<HTMLElement>('span');
 
@@ -235,10 +238,10 @@ suite('VoiceSelectionMenuElement', () => {
 
       test('it groups the duplicate languages correctly', () => {
         const usEnglishGroup: HTMLElement =
-            voiceSelectionMenu.$.voiceSelectionMenu.get()
+            voiceSelectionMenu!.$.voiceSelectionMenu.get()
                 .querySelector<HTMLElement>('div[data-test-id="group-en-US"]')!;
         const ukEnglishGroup: HTMLElement =
-            voiceSelectionMenu.$.voiceSelectionMenu.get()
+            voiceSelectionMenu!.$.voiceSelectionMenu.get()
                 .querySelector<HTMLElement>('div[data-test-id="group-en-UK"]')!;
 
         const usEnglishDropdownItems: NodeListOf<HTMLElement> =
@@ -255,11 +258,8 @@ suite('VoiceSelectionMenuElement', () => {
 
     suite('when preview starts playing', () => {
       setup(() => {
-        // Click button to display dropdown menu
-        const button =
-            voiceSelectionMenu.shadowRoot!.querySelector<CrIconButtonElement>(
-                '#voice-selection')!;
-        button!.click();
+        // Display dropdown menu
+        voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
 
         // Bypass Typescript compiler to allow us to set a private readonly
         // property
