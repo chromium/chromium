@@ -20,6 +20,7 @@ REPLACEMENTS = {
   'absl_base': 'third_party/abseil-cpp/absl/base/BUILD.gn',
   'absl_cleanup': 'third_party/abseil-cpp/absl/cleanup/BUILD.gn',
   'absl_container': 'third_party/abseil-cpp/absl/container/BUILD.gn',
+  'absl_crc': 'third_party/abseil-cpp/absl/crc/BUILD.gn',
   'absl_debugging': 'third_party/abseil-cpp/absl/debugging/BUILD.gn',
   'absl_flags': 'third_party/abseil-cpp/absl/flags/BUILD.gn',
   'absl_functional': 'third_party/abseil-cpp/absl/functional/BUILD.gn',

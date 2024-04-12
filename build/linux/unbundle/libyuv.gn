@@ -1,7 +1,7 @@
 import("//build/config/linux/pkg_config.gni")
 import("//build/shim_headers.gni")
 
-pkg_config("system_yuv") {
+pkg_config("libyuv_config") {
   packages = [ "libyuv" ]
 }
 
@@ -33,5 +33,5 @@ shim_headers("libyuv_shim") {
 
 source_set("libyuv") {
   deps = [ ":libyuv_shim" ]
-  public_configs = [ ":system_yuv" ]
+  public_configs = [ ":libyuv_config" ]
 }

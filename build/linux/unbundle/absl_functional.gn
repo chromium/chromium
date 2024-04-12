@@ -46,4 +46,13 @@ source_set("function_ref") {
   public_configs = [ ":system_absl_function_ref" ]
 }
 
-source_set("any_invocable_test") {}
+source_set("overload") {
+  # Dummy — unavailable with abseil 202308 and chromium 122 does not use it
+}
+
+source_set("any_invocable_test") {
+}
+source_set("function_ref_test") {
+}
+source_set("overload_test") {
+}

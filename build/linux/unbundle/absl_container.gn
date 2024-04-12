@@ -111,9 +111,19 @@ source_set("node_hash_set") {
 
 source_set("common_policy_traits_test") {
 }
+source_set("fixed_array_test") {
+}
+source_set("flat_hash_map_test") {
+}
+source_set("flat_hash_set_test") {
+}
 source_set("inlined_vector_test") {
 }
 source_set("node_slot_policy_test") {
+}
+source_set("raw_hash_set_allocator_test") {
+}
+source_set("raw_hash_set_test") {
 }
 source_set("sample_element_size_test") {
 }

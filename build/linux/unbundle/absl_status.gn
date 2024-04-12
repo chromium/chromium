@@ -34,5 +34,7 @@ source_set("statusor") {
   public_configs = [ ":system_absl_statusor" ]
 }
 
+source_set("status_test") {
+}
 source_set("statusor_test") {
 }
