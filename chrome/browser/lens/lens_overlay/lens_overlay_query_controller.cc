@@ -168,8 +168,6 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   query_controller_state_ = QueryControllerState::kReceivedFullImageResponse;
 
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
-    VLOG(1) << "Could not fetch full image response. HTTP status code: "
-            << response->http_status_code;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(full_image_callback_,
@@ -186,8 +184,6 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   bool parse_successful = server_response.ParseFromArray(
       response_string.data(), response_string.size());
   if (!parse_successful) {
-    VLOG(1) << "Could not parse overlay server response from response string: "
-            << response_string;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(full_image_callback_,

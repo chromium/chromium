@@ -4286,6 +4286,7 @@ if (!is_android) {
       }
       deps += [
         ":test_support_ui",
+        "//chrome/browser/lens/core/mojom:mojo_bindings",
         "//chrome/browser/lens/lens_overlay:lens_overlay",
         "//chrome/browser/ui/actions:actions",
         "//chrome/browser/ui/actions:actions_headers",

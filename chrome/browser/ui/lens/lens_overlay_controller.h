@@ -89,8 +89,9 @@ class LensOverlayController : public TabStripModelObserver,
   // This method is used to set up communication between this instance and the
   // overlay WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and ready to bind.
-  void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
-                   mojo::PendingRemote<lens::mojom::LensPage> page);
+  virtual void BindOverlay(
+      mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
+      mojo::PendingRemote<lens::mojom::LensPage> page);
 
   // This method is used to set up communication between this instance and the
   // side panel WebUI. This is called by the WebUIController when the WebUI is
@@ -167,6 +168,11 @@ class LensOverlayController : public TabStripModelObserver,
   // Returns true if the overlay is open and covering the current active tab.
   bool IsOverlayShowing();
 
+  // Handles the response to the Lens start query request.
+  void HandleStartQueryResponse(
+      std::vector<lens::mojom::OverlayObjectPtr> objects,
+      lens::mojom::TextPtr text);
+
   // Handles when the side panel has been deregistered to do any required
   // cleanup.
   void OnSidePanelEntryDeregistered();
@@ -230,11 +236,6 @@ class LensOverlayController : public TabStripModelObserver,
 
   // Calls CloseUI() asynchronously.
   void CloseUIAsync();
-
-  // Handles the response to the Lens start query request.
-  void HandleStartQueryResponse(
-      std::vector<lens::mojom::OverlayObjectPtr> objects,
-      lens::mojom::TextPtr text);
 
   // Handles the URL response to the Lens interaction request.
   void HandleInteractionURLResponse(

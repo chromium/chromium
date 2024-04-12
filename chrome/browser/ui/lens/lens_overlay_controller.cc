@@ -320,6 +320,20 @@ void LensOverlayController::SendText(lens::mojom::TextPtr text) {
   page_->TextReceived(std::move(text));
 }
 
+void LensOverlayController::HandleStartQueryResponse(
+    std::vector<lens::mojom::OverlayObjectPtr> objects,
+    lens::mojom::TextPtr text) {
+  CHECK(page_);
+  if (!objects.empty()) {
+    SendObjects(std::move(objects));
+  }
+
+  // Text can be null if there was no text within the server response.
+  if (!text.is_null()) {
+    SendText(std::move(text));
+  }
+}
+
 bool LensOverlayController::IsOverlayShowing() {
   return state_ == State::kStartingWebUI || state_ == State::kOverlay ||
          state_ == State::kOverlayAndResults;
@@ -577,12 +591,6 @@ void LensOverlayController::IssueTextSelectionRequest(
   lens_overlay_query_controller_->SendTextOnlyQuery(query);
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
-}
-
-void LensOverlayController::HandleStartQueryResponse(
-    std::vector<lens::mojom::OverlayObjectPtr> objects,
-    lens::mojom::TextPtr text) {
-  // TODO(b/331488406): Handle response and pass objects and text to WebUI.
 }
 
 void LensOverlayController::HandleInteractionURLResponse(

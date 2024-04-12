@@ -9,6 +9,9 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
 #include "base/test/run_until.h"
+#include "chrome/browser/lens/core/mojom/geometry.mojom.h"
+#include "chrome/browser/lens/core/mojom/lens.mojom.h"
+#include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
@@ -27,6 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 
@@ -44,11 +48,44 @@ constexpr char kRequestNotificationsScript[] = R"(
       })
       )";
 
-// Stubs out network requests.
+class LensOverlayPageFake : public lens::mojom::LensPage {
+ public:
+  void ObjectsReceived(
+      std::vector<lens::mojom::OverlayObjectPtr> objects) override {
+    last_received_objects_ = std::move(objects);
+  }
+
+  void TextReceived(lens::mojom::TextPtr text) override {
+    last_received_text_ = std::move(text);
+  }
+
+  std::vector<lens::mojom::OverlayObjectPtr> last_received_objects_;
+  lens::mojom::TextPtr last_received_text_;
+};
+
+// Stubs out network requests and mojo calls.
 class LensOverlayControllerFake : public LensOverlayController {
  public:
   explicit LensOverlayControllerFake(tabs::TabModel* tab_model)
       : LensOverlayController(tab_model) {}
+
+  void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
+                   mojo::PendingRemote<lens::mojom::LensPage> page) override {
+    // Set up the fake overlay page to intercept the mojo call.
+    LensOverlayController::BindOverlay(
+        std::move(receiver),
+        fake_overlay_page_receiver_.BindNewPipeAndPassRemote());
+  }
+
+  void FlushForTesting() { fake_overlay_page_receiver_.FlushForTesting(); }
+
+  const LensOverlayPageFake& GetFakeLensOverlayPage() {
+    return fake_overlay_page_;
+  }
+
+  LensOverlayPageFake fake_overlay_page_;
+  mojo::Receiver<lens::mojom::LensPage> fake_overlay_page_receiver_{
+      &fake_overlay_page_};
 };
 
 class TabFeaturesFake : public tabs::TabFeatures {
@@ -318,6 +355,83 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(coordinator->IsSidePanelShowing());
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       HandleStartQueryResponse) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state.
+  controller->ShowUI();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Set up fake test objects to send to controller.
+  auto test_object = lens::mojom::OverlayObject::New();
+  test_object->id = "unique_id";
+  test_object->geometry = lens::mojom::Geometry::New();
+  test_object->geometry->bounding_box = lens::mojom::CenterRotatedBox::New();
+  test_object->geometry->bounding_box->box = gfx::RectF(0.1, 0.1, 0.8, 0.8);
+
+  std::vector<lens::mojom::OverlayObjectPtr> test_objects;
+  test_objects.push_back(test_object->Clone());
+
+  auto test_text = lens::mojom::Text::New();
+  test_text->content_language = "es";
+  test_text->text_layout = lens::mojom::TextLayout::New();
+
+  // Call the response callback and flush the receiver.
+  controller->HandleStartQueryResponse(std::move(test_objects),
+                                       test_text->Clone());
+
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->FlushForTesting();
+
+  EXPECT_FALSE(
+      fake_controller->GetFakeLensOverlayPage().last_received_objects_.empty());
+  EXPECT_TRUE(test_object->Equals(
+      *fake_controller->GetFakeLensOverlayPage().last_received_objects_[0]));
+  EXPECT_TRUE(test_text->Equals(
+      *fake_controller->GetFakeLensOverlayPage().last_received_text_));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       HandleStartQueryResponse_NoObjectsNoText) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state.
+  controller->ShowUI();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Call the response callback and flush the receiver.
+  controller->HandleStartQueryResponse({}, nullptr);
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->FlushForTesting();
+
+  EXPECT_TRUE(
+      fake_controller->GetFakeLensOverlayPage().last_received_objects_.empty());
+  EXPECT_FALSE(fake_controller->GetFakeLensOverlayPage().last_received_text_);
 }
 
 }  // namespace
