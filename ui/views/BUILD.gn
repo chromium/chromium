@@ -740,7 +740,7 @@ component("views") {
       "win/fullscreen_handler.cc",
       "win/hwnd_message_handler.cc",
       "win/hwnd_message_handler_headless.cc",
-      "win/hwnd_util_aurawin.cc",
+      "win/hwnd_util.cc",
       "win/pen_event_processor.cc",
       "win/pen_id_handler.cc",
       "win/scoped_enable_unadjusted_mouse_events_win.cc",
