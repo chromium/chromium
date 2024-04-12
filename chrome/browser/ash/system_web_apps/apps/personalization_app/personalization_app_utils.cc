@@ -112,7 +112,8 @@ bool IsEligibleForSeaPen(Profile* profile) {
       DemoSession::IsDeviceInDemoMode()) {
     DVLOG(1) << __func__ << " demo mode";
     const auto* user = GetUser(profile);
-    return user && user->GetType() == user_manager::UserType::kPublicAccount;
+    return DemoSession::Get() && user &&
+           user->GetType() == user_manager::UserType::kPublicAccount;
   }
 
   // Do not show for managed profiles.

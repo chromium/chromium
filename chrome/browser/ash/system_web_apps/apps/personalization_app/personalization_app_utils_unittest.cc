@@ -6,10 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
@@ -156,11 +159,18 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_PublicAccountDemoMode) {
   AddAndLoginUser(AccountId::FromUserEmail(email),
                   user_manager::UserType::kPublicAccount);
 
-  // Force demo mode on.
+  // Force device into demo mode.
   ASSERT_FALSE(::ash::DemoSession::IsDeviceInDemoMode());
-  static_cast<StubInstallAttributes*>(StubInstallAttributes::Get())
+  managed_profile->ScopedCrosSettingsTestHelper()
+      ->InstallAttributes()
       ->SetDemoMode();
   ASSERT_TRUE(::ash::DemoSession::IsDeviceInDemoMode());
+
+  // Force demo mode session to start.
+  ASSERT_FALSE(::ash::DemoSession::Get());
+  auto demo_mode_test_helper = std::make_unique<::ash::DemoModeTestHelper>();
+  demo_mode_test_helper->InitializeSession();
+  ASSERT_TRUE(::ash::DemoSession::Get());
 
   ASSERT_TRUE(IsEligibleForSeaPen(managed_profile))
       << "Demo mode should force enable SeaPen for managed profile";
