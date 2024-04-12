@@ -24,6 +24,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/window_properties.h"
+#include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -151,11 +153,23 @@ void GameDashboardController::OnWindowPropertyChanged(aura::Window* window,
                                                       intptr_t old) {
   if (key == kAppIDKey) {
     GetWindowGameState(window);
-  }
-
-  if (key == kArcGameControlsFlagsKey) {
+  } else if (key == kArcGameControlsFlagsKey) {
     RefreshForGameControlsFlags(window);
+  } else if (key == kWindowStateKey) {
+    MaybeCreateGameDashboardContext(window);
   }
+}
+
+void GameDashboardController::OnWindowVisibilityChanged(aura::Window* window,
+                                                        bool visible) {
+  // When this controller determines that the given `window` is a game, the
+  // `window` may not have known `WindowState`, so it will not create
+  // `GameDashboardContext` for the game window. This can happen if the window
+  // is temporarily hidden when launched by window restore. Soon after, the
+  // window will be reparented to a top level container, and
+  // `OnWindowVisibilityChanged` will be called, and it will have a
+  // `WindowState`. This ensures that a `GameDashboardContext` is created.
+  MaybeCreateGameDashboardContext(window);
 }
 
 void GameDashboardController::OnWindowBoundsChanged(
@@ -286,6 +300,22 @@ void GameDashboardController::OnWindowActivated(
   }
 }
 
+void GameDashboardController::MaybeCreateGameDashboardContext(
+    aura::Window* window) {
+  DCHECK(window);
+  if (!IsGameWindow(window) || !WindowState::Get(window) ||
+      window->is_destroying()) {
+    return;
+  }
+  auto& context = game_window_contexts_[window];
+  if (!context) {
+    context = std::make_unique<GameDashboardContext>(window);
+    context->Initialize();
+    RefreshForGameControlsFlags(window);
+    delegate_->RecordGameWindowOpenedEvent(window);
+  }
+}
+
 void GameDashboardController::GetWindowGameState(aura::Window* window) {
   if (const auto* app_id = window->GetProperty(kAppIDKey); !app_id) {
     RefreshWindowTracking(window, WindowGameState::kNotYetKnown);
@@ -326,13 +356,7 @@ void GameDashboardController::RefreshWindowTracking(aura::Window* window,
         window->GetProperty(chromeos::kIsGameKey);
     window->SetProperty(chromeos::kIsGameKey, is_game);
     if (is_game) {
-      auto& context = game_window_contexts_[window];
-      if (!context) {
-        context = std::make_unique<GameDashboardContext>(window);
-        context->Initialize();
-        RefreshForGameControlsFlags(window);
-        delegate_->RecordGameWindowOpenedEvent(window);
-      }
+      MaybeCreateGameDashboardContext(window);
     } else if (prev_is_game_property) {
       // The window was a game, but NOT anymore. This can happen if the user
       // disables ARC during the existing session.
