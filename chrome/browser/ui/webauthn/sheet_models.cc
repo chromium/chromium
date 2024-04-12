@@ -1468,6 +1468,25 @@ void AuthenticatorCreatePasskeySheetModel::OnAccept() {
   dialog_model()->OnCreatePasskeyAccepted();
 }
 
+// AuthenticatorGPMErrorSheetModel -------------------------------------------
+
+AuthenticatorGPMErrorSheetModel::AuthenticatorGPMErrorSheetModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kHidden) {
+  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+}
+
+AuthenticatorGPMErrorSheetModel::~AuthenticatorGPMErrorSheetModel() = default;
+
+std::u16string AuthenticatorGPMErrorSheetModel::GetStepTitle() const {
+  return u"Something went wrong (UNTRANSLATED)";
+}
+
+std::u16string AuthenticatorGPMErrorSheetModel::GetStepDescription() const {
+  return u"Check your internet connection and try again (UNTRANSLATED)";
+}
+
 // AuthenticatorPhoneConfirmationSheet --------------------------------
 
 AuthenticatorPhoneConfirmationSheet::AuthenticatorPhoneConfirmationSheet(

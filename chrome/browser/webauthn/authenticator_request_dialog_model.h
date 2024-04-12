@@ -300,6 +300,7 @@ struct AuthenticatorRequestDialogModel {
     kGPMCreatePasskey,
     kGPMPasskeySaved,
     kCreatePasskey,
+    kGPMError,
 
     // Device bootstrap to use GPM passkeys.
     kRecoverSecurityDomain,

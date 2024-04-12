@@ -402,8 +402,7 @@ void GPMEnclaveController::OnKeysStored() {
             std::move(pin_metadata_),
             base::BindOnce(&GPMEnclaveController::OnDeviceAdded,
                            weak_ptr_factory_.GetWeakPtr()))) {
-      // TODO(enclave): move the UI to a to-be-created error state.
-      NOTREACHED();
+      model_->SetStep(Step::kGPMError);
     }
   } else {
     // If the user has local biometrics, and an existing recovery factor,
@@ -415,8 +414,7 @@ void GPMEnclaveController::OnKeysStored() {
 
 void GPMEnclaveController::OnDeviceAdded(bool success) {
   if (!success) {
-    // TODO(enclave): move the UI to a to-be-created error state.
-    NOTREACHED();
+    model_->SetStep(Step::kGPMError);
     return;
   }
 
@@ -664,7 +662,13 @@ void GPMEnclaveController::StartEnclaveTransaction(
   // `enclave_request_callback_` which surfaces in
   // `EnclaveDiscovery::OnUIRequest`.
 
+  if (!token) {
+    model_->SetStep(Step::kGPMError);
+    return;
+  }
+
   auto request = std::make_unique<device::enclave::CredentialRequest>();
+  request->access_token = std::move(*token);
   // A request to the enclave can either provide a wrapped secret, which only
   // the enclave can decrypt, or can provide the security domain secret
   // directly. The latter is only possible immediately after registering a
@@ -706,14 +710,6 @@ void GPMEnclaveController::StartEnclaveTransaction(
     }
     case EnclaveUserVerificationMethod::kUnsatisfiable:
       NOTREACHED_NORETURN();
-  }
-
-  // If fetching the access token failed a transaction is still started. Without
-  // a token it will fail, but that failure will trigger suitable error
-  // messages.
-  // TODO(enclave): jump directly to some future error state instead.
-  if (token) {
-    request->access_token = std::move(*token);
   }
 
   switch (request_type_) {

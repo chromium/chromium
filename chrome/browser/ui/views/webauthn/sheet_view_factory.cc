@@ -339,6 +339,10 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       sheet_view = std::make_unique<AuthenticatorCreatePasskeySheetView>(
           std::make_unique<AuthenticatorCreatePasskeySheetModel>(dialog_model));
       break;
+    case Step::kGPMError:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<AuthenticatorGPMErrorSheetModel>(dialog_model));
+      break;
     case Step::kGPMCreatePin:
       sheet_view = std::make_unique<AuthenticatorGpmPinSheetView>(
           std::make_unique<AuthenticatorGPMPinSheetModel>(

@@ -751,6 +751,9 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     } else if (name == "gpm_passkey_saved") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved);
+    } else if (name == "gpm_error") {
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMError);
     } else {
       NOTREACHED();
     }
@@ -861,6 +864,10 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_gpm_passkey_saved) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_gpm_error) {
   ShowAndVerifyUi();
 }
 
