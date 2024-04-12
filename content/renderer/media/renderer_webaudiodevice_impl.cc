@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "content/public/renderer/render_frame.h"
 #include "media/audio/null_audio_sink.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -30,8 +31,10 @@
 #include "media/base/output_device_info.h"
 #include "media/base/silent_sink_suspender.h"
 #include "media/base/speech_recognition_client.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -163,9 +166,14 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
     original_sink_params_.Reset(media::AudioParameters::AUDIO_FAKE,
                                 media::ChannelLayoutConfig::Stereo(), 48000,
                                 480);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&RendererWebAudioDeviceImpl::OnRenderError,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    if (base::FeatureList::IsEnabled(
+            blink::features::kWebAudioHandleOnRenderError)) {
+      RenderFrame::FromWebFrame(WebLocalFrame::FromFrameToken(frame_token_))
+          ->GetTaskRunner(blink::TaskType::kInternalMediaRealTime)
+          ->PostTask(FROM_HERE,
+                     base::BindOnce(&RendererWebAudioDeviceImpl::OnRenderError,
+                                    weak_ptr_factory_.GetWeakPtr()));
+    }
   }
   SendLogMessage(base::StringPrintf(
       "%s => (hardware_params=[%s])", __func__,

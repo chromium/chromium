@@ -10,6 +10,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
@@ -1189,13 +1190,15 @@ bool AudioContext::IsValidSinkDescriptor(
 }
 
 void AudioContext::OnRenderError() {
-  DCHECK(IsMainThread());
-  LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
-  if (window && window->GetFrame()) {
-    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "The AudioContext encountered a render error."));
+  if (base::FeatureList::IsEnabled(features::kWebAudioHandleOnRenderError)) {
+    DCHECK(IsMainThread());
+    LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
+    if (window && window->GetFrame()) {
+      window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kError,
+          "The AudioContext encountered a render error."));
+    }
   }
 }
 

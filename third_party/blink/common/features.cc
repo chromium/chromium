@@ -2408,6 +2408,11 @@ BASE_FEATURE(kWebAppManifestLockScreen,
              "WebAppManifestLockScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow OnRenderError callback to propagate in WebAudio
+BASE_FEATURE(kWebAudioHandleOnRenderError,
+             "WebAudioHandleOnRenderError",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A server-side switch for the output device (sink) selection in Web Audio API.
 // This enables the selection via the AudioContext constructor and also via
 // AudioContext.setSinkId() method.
