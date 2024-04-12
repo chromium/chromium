@@ -819,9 +819,11 @@ IN_PROC_BROWSER_TEST_F(MultiCaptureNotificationTest,
 }
 
 class MultiScreenCaptureInIsolatedWebAppBrowserTest
-    : public web_app::IsolatedWebAppBrowserTestHarness {
+    : public web_app::IsolatedWebAppBrowserTestHarness,
+      public ::testing::WithParamInterface<bool> {
  public:
-  MultiScreenCaptureInIsolatedWebAppBrowserTest() {
+  MultiScreenCaptureInIsolatedWebAppBrowserTest()
+      : with_strict_csp_(GetParam()) {
     scoped_feature_list_.InitFromCommandLine(
         /*enable_features=*/
         "GetAllScreensMedia",
@@ -869,25 +871,31 @@ class MultiScreenCaptureInIsolatedWebAppBrowserTest
     base::ScopedAllowBlockingForTesting allow_blocking;
     auto builder = web_app::IsolatedWebAppBuilder(
         web_app::ManifestBuilder().SetName("app-3.0.4").SetVersion("3.0.4"));
-    builder.AddHtml("/", R"(
-        <head>
-          <meta http-equiv="Content-Security-Policy"
-            content="object-src 'none'; base-uri 'none';
-            script-src 'strict-dynamic'
-            'sha256-9kZur2gwMdyfcGTQxLkOGeJuiPDxPqd1z9n1YSaCirY='
-            'sha256-qm/4Jb2mtycc7MTgVEj+rdFrTTJkCOTsMl1tSRaAkLc=';
-            require-trusted-types-for 'script';">
-          <script type="text/javascript" src="/test_functions.js"
-            integrity="sha256-9kZur2gwMdyfcGTQxLkOGeJuiPDxPqd1z9n1YSaCirY=">
-          </script>
-          <script type="text/javascript"
-            src="/get_all_screens_media_functions.js"
-            integrity="sha256-qm/4Jb2mtycc7MTgVEj+rdFrTTJkCOTsMl1tSRaAkLc=">
-          </script>
-          <title>3.0.4</title>
-        </head>
-        <body>
-          <h1>)" + html_text +
+
+    std::string csp;
+    if (with_strict_csp_) {
+      csp = R"(
+        <meta http-equiv="Content-Security-Policy"
+              content="object-src 'none'; base-uri 'none';
+              script-src 'strict-dynamic'
+              'sha256-9kZur2gwMdyfcGTQxLkOGeJuiPDxPqd1z9n1YSaCirY='
+              'sha256-qm/4Jb2mtycc7MTgVEj+rdFrTTJkCOTsMl1tSRaAkLc=';
+              require-trusted-types-for 'script';" />
+      )";
+    }
+
+    builder.AddHtml("/", "<head>" + csp + R"(
+            <script type="text/javascript" src="/test_functions.js"
+              integrity="sha256-9kZur2gwMdyfcGTQxLkOGeJuiPDxPqd1z9n1YSaCirY=">
+            </script>
+            <script type="text/javascript"
+              src="/get_all_screens_media_functions.js"
+              integrity="sha256-qm/4Jb2mtycc7MTgVEj+rdFrTTJkCOTsMl1tSRaAkLc=">
+            </script>
+            <title>3.0.4</title>
+          </head>
+          <body>
+            <h1>)" + html_text +
                              "</h1></body>)");
     builder.AddFileFromDisk("test_functions.js",
                             GetSourceDir().Append(FILE_PATH_LITERAL(
@@ -922,6 +930,7 @@ class MultiScreenCaptureInIsolatedWebAppBrowserTest
   }
 
  protected:
+  const bool with_strict_csp_;
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
@@ -933,7 +942,12 @@ class MultiScreenCaptureInIsolatedWebAppBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(MultiScreenCaptureInIsolatedWebAppBrowserTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         MultiScreenCaptureInIsolatedWebAppBrowserTest,
+                         // Determines whether the IWA uses explicit strict CSP.
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
                        GetAllScreensMediaSuccessful) {
   SetScreens(/*screen_count=*/1u);
   web_app::IsolatedWebAppUrlInfo url_info = app_->Install(profile()).value();
@@ -958,7 +972,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenCaptureInIsolatedWebAppBrowserTest,
   EXPECT_EQ(1u, track_ids.size());
 }
 
-IN_PROC_BROWSER_TEST_F(MultiScreenCaptureInIsolatedWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
                        GetAllScreensMediaDenied) {
   SetScreens(/*screen_count=*/1u);
   auto denied_app =

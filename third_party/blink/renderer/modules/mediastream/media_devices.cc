@@ -8,7 +8,9 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -81,6 +83,45 @@ namespace {
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"display-capture\" is disallowed by permission "
     "policy.";
+
+enum class MultiScreenCaptureCSPResult {
+  kStrictEnough,
+  kNoCSP,
+  kNoStrictCSP,
+  kNoTrustedTypes
+};
+
+MultiScreenCaptureCSPResult IsCSPEnabled(ExecutionContext* context) {
+  const ContentSecurityPolicy* content_security_policy =
+      context->GetContentSecurityPolicy();
+  if (!content_security_policy) {
+    return MultiScreenCaptureCSPResult::kNoCSP;
+  }
+
+  if (!content_security_policy->IsStrictPolicyEnforced()) {
+    return MultiScreenCaptureCSPResult::kNoStrictCSP;
+  }
+
+  if (!content_security_policy->RequiresTrustedTypes()) {
+    return MultiScreenCaptureCSPResult::kNoTrustedTypes;
+  }
+  return MultiScreenCaptureCSPResult::kStrictEnough;
+}
+
+std::string MultiScreenCaptureCSPResultToHelpLink(
+    MultiScreenCaptureCSPResult result) {
+  switch (result) {
+    case MultiScreenCaptureCSPResult::kStrictEnough:
+      NOTREACHED_NORETURN();
+    case MultiScreenCaptureCSPResult::kNoCSP:
+      return "https://web.dev/articles/strict-csp";
+    case MultiScreenCaptureCSPResult::kNoStrictCSP:
+      return "https://web.dev/articles/strict-csp";
+    case MultiScreenCaptureCSPResult::kNoTrustedTypes:
+      return "https://web.dev/articles/trusted-types";
+  }
+  return "";
+}
 
 template <typename IDLResolvedType>
 class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
@@ -599,36 +640,31 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
     return promise;
   }
 
-  const ContentSecurityPolicy* content_security_policy =
-      context->GetContentSecurityPolicy();
-  if (!content_security_policy) {
-    resolver->RecordAndThrowDOMException(
-        exception_state, DOMExceptionCode::kNotAllowedError,
-        "This document's Content Security Policy does not meet the "
-        "requirements to use this API. See https://web.dev/articles/strict-csp "
-        "for more information.",
-        UserMediaRequestResult::kInsecureContext);
-    return promise;
-  }
-
-  if (!content_security_policy->IsStrictPolicyEnforced()) {
-    resolver->RecordAndThrowDOMException(
-        exception_state, DOMExceptionCode::kNotAllowedError,
-        "This document's Content Security Policy does not meet the "
-        "requirements to use this API. See https://web.dev/articles/strict-csp "
-        "for more information.",
-        UserMediaRequestResult::kInsecureContext);
-    return promise;
-  }
-
-  if (!content_security_policy->RequiresTrustedTypes()) {
-    resolver->RecordAndThrowDOMException(
-        exception_state, DOMExceptionCode::kNotAllowedError,
-        "This document's Content Security Policy does not meet the "
-        "requirements to use this API. See "
-        "https://web.dev/articles/trusted-types for more information.",
-        UserMediaRequestResult::kInsecureContext);
-    return promise;
+  // This API is available either in isolated contexts or, temporarily, on web
+  // pages with strict CSP and trusted types. In isolated contexts, an explicit
+  // check for strict CSP is not required as it enforces a restriction
+  // equivalent to strict CSP (i.e. `script-src self` in combination with
+  // packaging).
+  if (!context->IsIsolatedContext()) {
+    auto csp_check_result = IsCSPEnabled(context);
+    switch (csp_check_result) {
+      case MultiScreenCaptureCSPResult::kStrictEnough:
+        break;
+      case MultiScreenCaptureCSPResult::kNoCSP:
+        [[fallthrough]];
+      case MultiScreenCaptureCSPResult::kNoStrictCSP:
+        [[fallthrough]];
+      case MultiScreenCaptureCSPResult::kNoTrustedTypes:
+        resolver->RecordAndThrowDOMException(
+            exception_state, DOMExceptionCode::kNotAllowedError,
+            String(base::StrCat(
+                {"This document's Content Security Policy does not meet the "
+                 "requirements to use this API. See ",
+                 MultiScreenCaptureCSPResultToHelpLink(csp_check_result),
+                 " for more information."})),
+            UserMediaRequestResult::kInsecureContext);
+        return promise;
+    }
   }
 
   MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
