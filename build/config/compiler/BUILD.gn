@@ -2410,6 +2410,20 @@ config("default_stack_frames") {
 }
 
 # Default "optimization on" config.
+#
+# High-end Android: As of April 2024, `-O2` appears to be a good default,
+# particularly since a selection of "hot" targets are already using `-O3`.
+# Enabling `-O3` for all targets does not change performance much (according
+# to Speedometer), but regresses binary size. Using `-O3` as the default:
+#   - Decreases Speedometer 2.1 score by 0.2% [0].
+#   - Increases Speedometer 3.0 score by 0.1% [1].
+#   - Increases binary size by 1.47MB [2] (or 0.8%: the arm64 native code size
+#     in M124 is 178MB).
+# ... over `-O2`.
+#
+# [0]: https://pinpoint-dot-chromeperf.appspot.com/job/147634a8be0000
+# [1]: https://pinpoint-dot-chromeperf.appspot.com/job/132bc772be0000
+# [2]: https://crrev.com/c/5447532
 config("optimize") {
   if (is_win) {
     cflags = [ "/O2" ] + common_optimize_on_cflags
