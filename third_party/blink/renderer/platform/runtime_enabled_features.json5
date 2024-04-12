@@ -2205,8 +2205,11 @@
       base_feature: "none",
     },
     {
+      // TODO(crbug.com/40113891): This feature allow scrollers to be
+      // keyboard focusable by default.
+      // This should be removed in M128 (Jun 24, 2024) assuming no issues.
       name: "KeyboardFocusableScrollers",
-      status: "experimental",
+      status: "stable",
     },
     {
       // This feature makes HTMLLabelElement::DefaultEventHandler always call
