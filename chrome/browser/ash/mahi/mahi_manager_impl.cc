@@ -13,6 +13,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
@@ -193,7 +196,10 @@ void MahiManagerImpl::OnContextMenuClicked(
                          /*current_panel_content=*/false);
       return;
     case MahiContextMenuActionType::kSettings:
-      // TODO(b/318565610): Update the behaviour of kSettings
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          ProfileManager::GetActiveUserProfile(),
+          chromeos::settings::mojom::kSystemPreferencesSectionPath,
+          chromeos::settings::mojom::Setting::kMahiOnOff);
       return;
     case MahiContextMenuActionType::kNone:
       return;

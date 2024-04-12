@@ -1306,6 +1306,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="1" label="Outline"/>
   <int value="2" label="Submit Question Button"/>
   <int value="3" label="Condensed Menu Button"/>
+  <int value="4" label="Settings Button"/>
 </enum>
 
 <enum name="ModifierKeyDomCodes">

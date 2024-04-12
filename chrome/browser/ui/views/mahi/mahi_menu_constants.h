@@ -28,7 +28,8 @@ enum class MahiMenuButton {
   kOutlineButton = 1,
   kSubmitQuestionButton = 2,
   kCondensedMenuButton = 3,
-  kMaxValue = kCondensedMenuButton,
+  kSettingsButton = 4,
+  kMaxValue = kSettingsButton,
 };
 
 inline constexpr char kMahiContextMenuButtonClickHistogram[] =

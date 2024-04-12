@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
@@ -35,6 +36,8 @@ namespace chromeos::mahi {
 using MahiMenuViewTest = ChromeViewsTestBase;
 
 namespace {
+
+using ::testing::Eq;
 
 class MockMahiWebContentsManager : public ::mahi::FakeMahiWebContentsManager {
  public:
@@ -80,6 +83,36 @@ TEST_F(MahiMenuViewTest, Bounds) {
   EXPECT_EQ(editor_menu::GetEditorMenuBounds(
                 anchor_view_bounds, menu_widget.get()->GetContentsView()),
             menu_widget->GetRestoredBounds());
+}
+
+TEST_F(MahiMenuViewTest, SettingsButtonClicked) {
+  base::HistogramTester histogram;
+  MockMahiWebContentsManager mock_mahi_web_contents_manager;
+  ::mahi::ScopedMahiWebContentsManagerForTesting
+      scoped_mahi_web_contents_manager(&mock_mahi_web_contents_manager);
+
+  std::unique_ptr<views::Widget> menu_widget = CreateTestWidget();
+  auto* menu_view =
+      menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
+
+  EXPECT_CALL(
+      mock_mahi_web_contents_manager,
+      OnContextMenuClicked(
+          Eq(display::Screen::GetScreen()
+                 ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
+                 .id()),
+          Eq(::mahi::ButtonType::kSettings), /*question=*/Eq(u"")))
+      .Times(1);
+
+  ui::test::EventGenerator event_generator(
+      views::GetRootWindow(menu_widget.get()));
+  event_generator.MoveMouseTo(menu_view->GetViewByID(ViewID::kSettingsButton)
+                                  ->GetBoundsInScreen()
+                                  .CenterPoint());
+  event_generator.ClickLeftButton();
+
+  histogram.ExpectBucketCount(kMahiContextMenuButtonClickHistogram,
+                              MahiMenuButton::kSettingsButton, 1);
 }
 
 TEST_F(MahiMenuViewTest, SummaryButtonClicked) {

@@ -7,12 +7,14 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "ui/display/screen.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -32,6 +34,9 @@ const std::vector<chromeos::MahiOutline> kDefaultOutlines(
 constexpr char16_t kDefaultSummaryText[] =
     u"fake summary text\nfake summary text\nfake summary text\nfake summary "
     u"text\nfake summary text";
+
+constexpr char kMahiSettingsUrl[] =
+    "chrome://os-settings/systemPreferences?settingId=612";
 
 }  // namespace
 
@@ -106,7 +111,10 @@ void FakeMahiManager::OnContextMenuClicked(
                          /*current_panel_content=*/true);
       return;
     case MahiContextMenuActionType::kSettings:
-      // TODO(b/318565610): Update the behaviour of kSettings
+      NewWindowDelegate::GetInstance()->OpenUrl(
+          GURL(kMahiSettingsUrl),
+          NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+          NewWindowDelegate::Disposition::kNewForegroundTab);
       return;
     case MahiContextMenuActionType::kNone:
       return;

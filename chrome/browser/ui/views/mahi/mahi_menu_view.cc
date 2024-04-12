@@ -8,8 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
@@ -188,7 +190,10 @@ MahiMenuView::MahiMenuView() {
 
   settings_button_ =
       header_row->AddChildView(views::ImageButton::CreateIconButton(
-          views::Button::PressedCallback(), vector_icons::kSettingsOutlineIcon,
+          base::BindRepeating(&MahiMenuView::OnButtonPressed,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              ::mahi::ButtonType::kSettings),
+          vector_icons::kSettingsOutlineIcon,
           l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP)));
   settings_button_->SetID(ViewID::kSettingsButton);
 
@@ -283,13 +288,22 @@ void MahiMenuView::OnButtonPressed(::mahi::ButtonType button_type) {
       display.id(), button_type,
       /*question=*/std::u16string());
   MahiMenuButton histogram_button_type;
-  if (button_type == ::mahi::ButtonType::kSummary) {
-    histogram_button_type = MahiMenuButton::kSummaryButton;
-  } else {
-    // This function only handles clicks of type 'kSummary' and 'kOutline'.
-    // Other click types are not passed here.
-    CHECK(button_type == ::mahi::ButtonType::kOutline);
-    histogram_button_type = MahiMenuButton::kOutlineButton;
+  switch (button_type) {
+    case ::mahi::ButtonType::kSummary:
+      histogram_button_type = MahiMenuButton::kSummaryButton;
+      break;
+    case ::mahi::ButtonType::kOutline:
+      // TODO(b/330643995): Remove CHECK_IS_TEST when outlines are ready.
+      CHECK_IS_TEST();
+      histogram_button_type = MahiMenuButton::kOutlineButton;
+      break;
+    case ::mahi::ButtonType::kSettings:
+      histogram_button_type = MahiMenuButton::kSettingsButton;
+      break;
+    default:
+      // This function only handles clicks of type 'kSummary', 'kOutline' and
+      // `kSettings`. Other click types are not passed here.
+      NOTREACHED_NORETURN();
   }
   base::UmaHistogramEnumeration(kMahiContextMenuButtonClickHistogram,
                                 histogram_button_type);
