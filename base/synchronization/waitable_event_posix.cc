@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -89,6 +89,8 @@ bool WaitableEvent::IsSignaled() {
 // variable and the fired flag in this object.
 // -----------------------------------------------------------------------------
 class SyncWaiter : public WaitableEvent::Waiter {
+  STACK_ALLOCATED();
+
  public:
   SyncWaiter()
       : fired_(false), signaling_event_(nullptr), lock_(), cv_(&lock_) {}
@@ -147,7 +149,7 @@ class SyncWaiter : public WaitableEvent::Waiter {
 
  private:
   bool fired_;
-  raw_ptr<WaitableEvent> signaling_event_;  // The WaitableEvent which woke us
+  WaitableEvent* signaling_event_;  // The WaitableEvent which woke us
   base::Lock lock_;
   base::ConditionVariable cv_;
 };
