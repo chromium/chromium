@@ -13,6 +13,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -21,6 +22,7 @@
 #include "components/enterprise/client_certificates/core/client_identity.h"
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/key_upload_client.h"
+#include "components/enterprise/client_certificates/core/metrics_util.h"
 #include "components/enterprise/client_certificates/core/mock_certificate_store.h"
 #include "components/enterprise/client_certificates/core/mock_key_upload_client.h"
 #include "components/enterprise/client_certificates/core/mock_private_key.h"
@@ -132,6 +134,8 @@ class CertificateProvisioningServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  base::HistogramTester histogram_tester_;
+
   StrictMock<MockCertificateStore> mock_store_;
   TestingPrefServiceSimple pref_service_;
 
@@ -165,6 +169,28 @@ TEST_F(CertificateProvisioningServiceTest,
   CreateService(std::move(mock_client));
 
   VerifySuccessState(mocked_private_key, fake_cert);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.CreateCertificate.UploadCode",
+      kSuccessUploadCode, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.CreatePrivateKey.Source",
+      PrivateKeySource::kUnexportableKey, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.CreateCertificate.Success.HasCert",
+      true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.CertificateCreation."
+      "Outcome",
+      true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.ClientCertificate.Profile.Provisioning.CertificateCreation."
+      "Success.Latency",
+      1);
+  EXPECT_EQ(
+      histogram_tester_.GetTotalCountsForPrefix("Enterprise.ClientCertificate")
+          .size(),
+      5U);
 
   // Disabling the policy afterwards prevents GetManagedIdentity from returning
   // a value.
@@ -234,6 +260,21 @@ TEST_F(CertificateProvisioningServiceTest,
   CreateService(std::move(mock_client));
 
   VerifySuccessState(mocked_private_key, fake_cert);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.PublicKeySync.UploadCode",
+      kSuccessUploadCode, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.PublicKeySync.Outcome",
+      true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.ClientCertificate.Profile.Provisioning.PublicKeySync.Success."
+      "Latency",
+      1);
+  EXPECT_EQ(
+      histogram_tester_.GetTotalCountsForPrefix("Enterprise.ClientCertificate")
+          .size(),
+      3U);
 }
 
 // When the service is created, the policy is enabled and the store has an
@@ -262,6 +303,25 @@ TEST_F(CertificateProvisioningServiceTest,
   CreateService(std::move(mock_client));
 
   VerifySuccessState(mocked_private_key, fake_cert);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.CreateCertificate.UploadCode",
+      kSuccessUploadCode, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.CreateCertificate.Success.HasCert",
+      true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.CertificateCreation."
+      "Outcome",
+      true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.ClientCertificate.Profile.Provisioning.CertificateCreation."
+      "Success.Latency",
+      1);
+  EXPECT_EQ(
+      histogram_tester_.GetTotalCountsForPrefix("Enterprise.ClientCertificate")
+          .size(),
+      4U);
 }
 
 // Tests what happens when the GetIdentity provisioning step fails.
@@ -287,6 +347,24 @@ TEST_F(CertificateProvisioningServiceTest,
 
   EXPECT_FALSE(test_future.Get().has_value());
   VerifyIdledWithoutCache();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.Unknown.Outcome",
+      false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.ClientCertificate.Profile.Provisioning.Unknown.Failure."
+      "Latency",
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.Error",
+      ProvisioningError::kIdentityLoadingFailed, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.Store.Error",
+      StoreError::kGetDatabaseEntryFailed, 1);
+  EXPECT_EQ(
+      histogram_tester_.GetTotalCountsForPrefix("Enterprise.ClientCertificate")
+          .size(),
+      4U);
 }
 
 // Tests what happens when the CreateKey provisioning step fails.
@@ -581,6 +659,25 @@ TEST_F(CertificateProvisioningServiceTest,
   CreateService(std::move(mock_client));
 
   VerifyIdleWithCache(mocked_private_key, fake_cert, kSuccessUploadCode);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.CreateCertificate.UploadCode",
+      kSuccessUploadCode, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.CreateCertificate.Success.HasCert",
+      true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.CertificateRenewal."
+      "Outcome",
+      true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.ClientCertificate.Profile.Provisioning.CertificateRenewal."
+      "Success.Latency",
+      1);
+  EXPECT_EQ(
+      histogram_tester_.GetTotalCountsForPrefix("Enterprise.ClientCertificate")
+          .size(),
+      4U);
 }
 
 // Tests that the provisioning flow will attempt to renew an expired certificate

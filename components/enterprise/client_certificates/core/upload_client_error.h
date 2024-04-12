@@ -11,6 +11,9 @@
 
 namespace client_certificates {
 
+// Captures terminal client-failure states (happening before even trying to
+// upload) of the upload client flows. Do not reorder values as they are used in
+// histograms logging (CertificateUploadClientError in enums.xml).
 enum class UploadClientError {
   kUnknown = 0,
   kInvalidKeyParameter = 1,

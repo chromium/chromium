@@ -11,6 +11,9 @@
 
 namespace client_certificates {
 
+// Captures the union of all possible Store errors throughout all main APIs. Do
+// not reorder values as they are used in histograms logging
+// (CertificateStoreError in enums.xml).
 enum class StoreError {
   kUnknown = 0,
   kInvalidIdentityName = 1,

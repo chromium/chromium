@@ -31,6 +31,45 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Warned"/>
 </enum>
 
+<enum name="CertificatePrivateKeySource">
+  <int value="0" label="Unexportable"/>
+  <int value="1" label="Software"/>
+</enum>
+
+<enum name="CertificateProvisioningError">
+  <int value="0" label="Identity Loading Failed"/>
+  <int value="1" label="Temporary Identity Loading Failed"/>
+  <int value="2" label="Missing Private Key"/>
+  <int value="3" label="Missing Temporary Private Key"/>
+  <int value="4" label="Private Key Creation Failed"/>
+  <int value="5" label="Certificate Creation Failed"/>
+  <int value="6" label="Certificate Commit Failed"/>
+</enum>
+
+<enum name="CertificateStoreError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Invalid Identity Name"/>
+  <int value="2" label="Invalid Database State"/>
+  <int value="3" label="Get Database Entry Failed"/>
+  <int value="4" label="Conflicting Identity"/>
+  <int value="5" label="Create Key Failed"/>
+  <int value="6" label="Save Key Failed"/>
+  <int value="7" label="Invalid Certificate Input"/>
+  <int value="8" label="Certificate Commit Failed"/>
+  <int value="9" label="Load Key Failed"/>
+  <int value="10" label="Invalid Final Identity Name"/>
+  <int value="11" label="Identity Not Found"/>
+</enum>
+
+<enum name="CertificateUploadClientError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Invalid Key Parameter"/>
+  <int value="2" label="Signature Creation Failed"/>
+  <int value="3" label="Missing DM Token"/>
+  <int value="4" label="Missing Upload URL"/>
+  <int value="5" label="Invalid Upload URL"/>
+</enum>
+
 <enum name="DataProtectionURLVerdictSource">
   <int value="0" label="Page UserData"/>
   <int value="1" label="Cached lookup result"/>

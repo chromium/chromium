@@ -22,6 +22,8 @@ enum class PrivateKeySource {
   // Key created from inside the browser, which is not protected by any hardware
   // mechanism.
   kSoftwareKey = 1,
+
+  kMaxValue = kSoftwareKey
 };
 
 // Converts a `proto_key_source` from the proto values to the C++ enum values.

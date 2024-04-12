@@ -31,6 +31,18 @@ chromium-metrics-reviews@google.com.
   <variant name="StateKeysRetrievalError" summary="State keys retrieval error"/>
 </variants>
 
+<variants name="CertificateProvisioningOutcome">
+  <variant name="Failure" summary="failed"/>
+  <variant name="Success" summary="successful"/>
+</variants>
+
+<variants name="CertificateProvisioningScenario">
+  <variant name="CertificateCreation" summary="certificate creation"/>
+  <variant name="CertificateRenewal" summary="certificate renewal"/>
+  <variant name="PublicKeySync" summary="private key sync"/>
+  <variant name="Unknown" summary="unknown"/>
+</variants>
+
 <variants name="CleanupHandler">
   <variant name="Browser"
       summary="Handler for open browser windows and browsing data"/>
@@ -45,6 +57,11 @@ chromium-metrics-reviews@google.com.
   <variant name="PinnedApps" summary="Handler for pinned apps"/>
   <variant name="PrintJobs" summary="Handler for print jobs"/>
   <variant name="WebApp" summary="Handler for web apps"/>
+</variants>
+
+<variants name="ClientCertificateUploadScenario">
+  <variant name="CreateCertificate" summary="certificate creation"/>
+  <variant name="PublicKeySync" summary="public key sync"/>
 </variants>
 
 <variants name="ContentAnalysisProtocol">
@@ -454,6 +471,97 @@ chromium-metrics-reviews@google.com.
     execute. Payloads provide context about the remote commands update, but may
     be absent if dropped by the invalidation service.
   </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.ClientCertificate.Profile.CreateCertificate.Success.HasCert"
+    enum="BooleanSuccess" expires_after="2025-04-09">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures whether the HTTP response body for the Profile certificate creation
+    request had a certificate or not.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ClientCertificate.Profile.CreatePrivateKey.Source"
+    enum="CertificatePrivateKeySource" expires_after="2025-04-09">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the source of a private key creation after it was created (e.g.
+    TPM-backed or not) as part of the client certificate provisioning flow for a
+    Profile.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ClientCertificate.Profile.Provisioning.Error"
+    enum="CertificateProvisioningError" expires_after="2025-04-09">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures a terminal error that occured when trying to provision a client
+    certificate for a Profile.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ClientCertificate.Profile.Provisioning.Store.Error"
+    enum="CertificateStoreError" expires_after="2025-04-09">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures a terminal store error that occured when trying to provision a
+    client certificate for a Profile.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.ClientCertificate.Profile.Provisioning.{ProvisioningScenario}.Outcome"
+    enum="BooleanSuccess" expires_after="2025-04-09">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures whether the {ProvisioningScenario} provisioning scenario was
+    successful or not.
+  </summary>
+  <token key="ProvisioningScenario" variants="CertificateProvisioningScenario"/>
+</histogram>
+
+<histogram
+    name="Enterprise.ClientCertificate.Profile.Provisioning.{ProvisioningScenario}.{ProvisioningOutcome}.Latency"
+    units="ms" expires_after="2025-04-09">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures how long a {ProvisioningOutcome} {ProvisioningScenario}
+    provisioning scenario took.
+  </summary>
+  <token key="ProvisioningScenario" variants="CertificateProvisioningScenario"/>
+  <token key="ProvisioningOutcome" variants="CertificateProvisioningOutcome"/>
+</histogram>
+
+<histogram
+    name="Enterprise.ClientCertificate.Profile.{UploadScenario}.ClientError"
+    enum="CertificateUploadClientError" expires_after="2025-04-09">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures a client error that occured when trying to upload a Profile's
+    public key for {UploadScenario}.
+  </summary>
+  <token key="UploadScenario" variants="ClientCertificateUploadScenario"/>
+</histogram>
+
+<histogram
+    name="Enterprise.ClientCertificate.Profile.{UploadScenario}.UploadCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-04-09">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the HTTP response code for the upload of a Profile's public key for
+    {UploadScenario}.
+  </summary>
+  <token key="UploadScenario" variants="ClientCertificateUploadScenario"/>
 </histogram>
 
 <histogram name="Enterprise.CloudExtensionRequestUpdated"
