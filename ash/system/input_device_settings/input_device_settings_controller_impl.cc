@@ -1650,11 +1650,11 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     auto mojom_mouse =
         BuildMojomMouse(mouse, GetMouseCustomizationRestriction(mouse),
                         GetMouseButtonConfig(mouse));
+    InitializeMouseSettings(mojom_mouse.get());
     if (features::IsPeripheralNotificationEnabled()) {
       notification_controller_->NotifyMouseFirstTimeConnected(*mojom_mouse);
     }
 
-    InitializeMouseSettings(mojom_mouse.get());
     mice_.insert_or_assign(mouse.id, std::move(mojom_mouse));
     DispatchMouseConnected(mouse.id);
   }
@@ -1695,7 +1695,7 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     InitializeGraphicsTabletSettings(mojom_graphics_tablet.get());
     if (features::IsPeripheralNotificationEnabled()) {
       notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
-          mojom_graphics_tablet.get());
+          *mojom_graphics_tablet);
     }
 
     graphics_tablets_.insert_or_assign(graphics_tablet.id,

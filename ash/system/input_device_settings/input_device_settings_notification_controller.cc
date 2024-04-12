@@ -16,12 +16,14 @@
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
@@ -388,6 +390,29 @@ void OnLearnMoreClicked() {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
+// Compares button remapping lists to see if they are equal for notification
+// purposes. This ignores name mismatches, but compares everything else
+// (including ordering).
+bool ButtonRemappingListsAreEqual(
+    const std::vector<mojom::ButtonRemappingPtr>& button_remappings1,
+    const std::vector<mojom::ButtonRemappingPtr>& button_remappings2) {
+  if (button_remappings1.size() != button_remappings2.size()) {
+    return false;
+  }
+
+  for (size_t i = 0; i < button_remappings1.size(); i++) {
+    const auto& button_remapping1 = button_remappings1[i];
+    const auto& button_remapping2 = button_remappings2[i];
+    if (button_remapping1->button != button_remapping2->button ||
+        button_remapping1->remapping_action !=
+            button_remapping2->remapping_action) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 InputDeviceSettingsNotificationController::
@@ -504,12 +529,21 @@ void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
   seen_mouse_list.Append(mouse.device_key);
   prefs->SetList(prefs::kPeripheralNotificationMiceSeen,
                  std::move(seen_mouse_list));
+
+  CHECK(mouse.settings);
+  // Do not show notification if the device remapping list has already been
+  // changed which means they have already used the customization feature.
+  if (!ButtonRemappingListsAreEqual(
+          GetButtonRemappingListForConfig(mouse.mouse_button_config),
+          mouse.settings->button_remappings)) {
+    return;
+  }
   NotifyMouseIsCustomizable(mouse);
 }
 
 void InputDeviceSettingsNotificationController::
     NotifyGraphicsTabletFirstTimeConnected(
-        const mojom::GraphicsTablet* graphics_tablet) {
+        const mojom::GraphicsTablet& graphics_tablet) {
   if (!IsActiveUserSession()) {
     return;
   }
@@ -522,14 +556,28 @@ void InputDeviceSettingsNotificationController::
       prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).Clone();
 
   for (const auto& value : seen_graphics_tablet_list) {
-    if (value.is_string() && value.GetString() == graphics_tablet->device_key) {
+    if (value.is_string() && value.GetString() == graphics_tablet.device_key) {
       return;
     }
   }
-  seen_graphics_tablet_list.Append(graphics_tablet->device_key);
+  seen_graphics_tablet_list.Append(graphics_tablet.device_key);
   prefs->SetList(prefs::kPeripheralNotificationGraphicsTabletsSeen,
                  std::move(seen_graphics_tablet_list));
-  NotifyGraphicsTabletIsCustomizable(*graphics_tablet);
+
+  CHECK(graphics_tablet.settings);
+  // Do not show notification if the device remapping list has already been
+  // changed which means they have already used the customization feature.
+  if (!ButtonRemappingListsAreEqual(
+          GetPenButtonRemappingListForConfig(
+              graphics_tablet.graphics_tablet_button_config),
+          graphics_tablet.settings->pen_button_remappings) ||
+      !ButtonRemappingListsAreEqual(
+          GetTabletButtonRemappingListForConfig(
+              graphics_tablet.graphics_tablet_button_config),
+          graphics_tablet.settings->tablet_button_remappings)) {
+    return;
+  }
+  NotifyGraphicsTabletIsCustomizable(graphics_tablet);
 }
 
 void InputDeviceSettingsNotificationController::

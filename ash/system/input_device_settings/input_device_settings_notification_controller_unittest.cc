@@ -432,6 +432,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->device_key = "0001:0001";
   mojom_mouse->id = 1;
+  mojom_mouse->settings = mojom::MouseSettings::New();
 
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -460,6 +461,23 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_TRUE(message_center()->FindVisibleNotificationById(
       "peripheral_customization_mouse_2"));
+
+  mojom_mouse->id = 3;
+  mojom_mouse->device_key = "0001:0003";
+  mojom_mouse->settings->button_remappings.push_back(
+      mojom::ButtonRemapping::New(
+          /*name=*/"Button 1",
+          mojom::Button::NewCustomizableButton(
+              mojom::CustomizableButton::kBack),
+          /*remapping_action=*/nullptr));
+  controller()->NotifyMouseFirstTimeConnected(*mojom_mouse);
+  EXPECT_EQ(prefs->GetList(prefs::kPeripheralNotificationMiceSeen).size(), 3u);
+  EXPECT_TRUE(
+      base::Contains(prefs->GetList(prefs::kPeripheralNotificationMiceSeen),
+                     base::Value("0001:0003")));
+  EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_mouse_3"));
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
@@ -468,13 +486,13 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
   mojom_graphics_tablet->id = 1;
   mojom_graphics_tablet->device_key = "0002:0001";
+  mojom_graphics_tablet->settings = mojom::GraphicsTabletSettings::New();
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
 
   EXPECT_TRUE(prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen)
                   .empty());
-  controller()->NotifyGraphicsTabletFirstTimeConnected(
-      mojom_graphics_tablet.get());
+  controller()->NotifyGraphicsTabletFirstTimeConnected(*mojom_graphics_tablet);
   EXPECT_EQ(
       prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
       1u);
@@ -486,8 +504,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_TRUE(base::Contains(
       prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen),
       base::Value("0002:0001")));
-  controller()->NotifyGraphicsTabletFirstTimeConnected(
-      mojom_graphics_tablet.get());
+  controller()->NotifyGraphicsTabletFirstTimeConnected(*mojom_graphics_tablet);
   EXPECT_EQ(
       prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
       1u);
@@ -495,8 +512,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   mojom_graphics_tablet->id = 2;
   mojom_graphics_tablet->device_key = "0002:0002";
 
-  controller()->NotifyGraphicsTabletFirstTimeConnected(
-      mojom_graphics_tablet.get());
+  controller()->NotifyGraphicsTabletFirstTimeConnected(*mojom_graphics_tablet);
   EXPECT_EQ(
       prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
       2u);
@@ -506,6 +522,47 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_TRUE(message_center()->FindVisibleNotificationById(
       "peripheral_customization_graphics_tablet_2"));
+
+  mojom_graphics_tablet->id = 3;
+  mojom_graphics_tablet->device_key = "0002:0003";
+  mojom_graphics_tablet->settings->pen_button_remappings.push_back(
+      mojom::ButtonRemapping::New(
+          /*name=*/"Button 1",
+          mojom::Button::NewCustomizableButton(
+              mojom::CustomizableButton::kBack),
+          /*remapping_action=*/nullptr));
+
+  controller()->NotifyGraphicsTabletFirstTimeConnected(*mojom_graphics_tablet);
+  EXPECT_EQ(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
+      3u);
+  EXPECT_TRUE(base::Contains(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen),
+      base::Value("0002:0003")));
+  EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_graphics_tablet_3"));
+
+  mojom_graphics_tablet->id = 4;
+  mojom_graphics_tablet->device_key = "0002:0004";
+  mojom_graphics_tablet->settings->pen_button_remappings.clear();
+  mojom_graphics_tablet->settings->tablet_button_remappings.push_back(
+      mojom::ButtonRemapping::New(
+          /*name=*/"Button 1",
+          mojom::Button::NewCustomizableButton(
+              mojom::CustomizableButton::kBack),
+          /*remapping_action=*/nullptr));
+
+  controller()->NotifyGraphicsTabletFirstTimeConnected(*mojom_graphics_tablet);
+  EXPECT_EQ(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
+      4u);
+  EXPECT_TRUE(base::Contains(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen),
+      base::Value("0002:0004")));
+  EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_graphics_tablet_4"));
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,

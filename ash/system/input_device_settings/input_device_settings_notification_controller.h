@@ -75,7 +75,7 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
 
   // Use to display a notification when a graphics table is first connected.
   void NotifyGraphicsTabletFirstTimeConnected(
-      const mojom::GraphicsTablet* graphics_tablet);
+      const mojom::GraphicsTablet& graphics_tablet);
 
   // Use to display a notification to remind users to press Fn key when users
   // press search key with top row keys and there is no matching behavior.
