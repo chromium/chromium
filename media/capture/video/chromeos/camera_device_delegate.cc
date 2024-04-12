@@ -1034,8 +1034,6 @@ void CameraDeviceDelegate::ConfigureStreams(
     still_capture_stream->height = blob_height;
     still_capture_stream->format =
         cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB;
-    // Set usage flag to allow HAL adapter to identify a still capture stream.
-    still_capture_stream->usage = cros::mojom::GRALLOC_USAGE_STILL_CAPTURE;
     still_capture_stream->data_space = 0;
     still_capture_stream->rotation =
         cros::mojom::Camera3StreamRotation::CAMERA3_STREAM_ROTATION_0;
@@ -1055,8 +1053,6 @@ void CameraDeviceDelegate::ConfigureStreams(
       portrait_mode_stream->height = blob_height;
       portrait_mode_stream->format =
           cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB;
-      // Set usage flag to allow HAL adapter to identify a still capture stream.
-      portrait_mode_stream->usage = cros::mojom::GRALLOC_USAGE_STILL_CAPTURE;
       portrait_mode_stream->data_space = 0;
       portrait_mode_stream->rotation =
           cros::mojom::Camera3StreamRotation::CAMERA3_STREAM_ROTATION_0;
