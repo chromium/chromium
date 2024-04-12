@@ -62,6 +62,23 @@ void V8LocalCompileHintsProducer::GenerateData(bool final_data) {
       continue;
     }
 
+    if (V8CodeCache::HasCodeCache(cache_handler,
+                                  CachedMetadataHandler::kAllowUnchecked)) {
+      // We're trying to set compile hints even though the code cache exists
+      // already. This can happen if the user navigated around on the website
+      // and the script became so hot that a code cache was created.
+      base::UmaHistogramBoolean(kLocalCompileHintsObsoletedByCodeCacheHistogram,
+                                true);
+      return;
+    }
+    base::UmaHistogramBoolean(kLocalCompileHintsObsoletedByCodeCacheHistogram,
+                              false);
+
+    V8CodeCache::RecordCacheSetStatistics(
+        final_data
+            ? V8CodeCache::SetMetadataType::kLocalCompileHintsAtInteractive
+            : V8CodeCache::SetMetadataType::kLocalCompileHintsAtFMP);
+
     uint64_t timestamp = V8CodeCache::GetTimestamp();
     std::unique_ptr<v8::ScriptCompiler::CachedData> data(
         CreateCompileHintsCachedDataForScript(compile_hints, timestamp));

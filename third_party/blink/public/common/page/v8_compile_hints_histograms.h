@@ -13,6 +13,9 @@ inline constexpr const char* kStatusHistogram =
 inline constexpr const char* kLocalCompileHintsGeneratedHistogram =
     "WebCore.Scripts.V8LocalCompileHintsGenerated";
 
+inline constexpr const char* kLocalCompileHintsObsoletedByCodeCacheHistogram =
+    "WebCore.Scripts.V8LocalCompileHintsObsoletedByCodeCache";
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class Status {
