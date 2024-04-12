@@ -131,6 +131,12 @@
   <message name="IDS_COMPOSE_UNDO_LABEL" desc="Label shown on hover and read by screen-readers for button that user clicks to undo to the last result.">
     Undo
   </message>
+  <message name="IDS_COMPOSE_REDO_BUTTON_TEXT" desc="Button that user clicks to redo to the next result.">
+    Redo
+  </message>
+  <message name="IDS_COMPOSE_REDO_LABEL" desc="Label shown on hover and read by screen-readers for button that user clicks to redo to the next result.">
+    Redo
+  </message>
   <message name="IDS_COMPOSE_RESUBMIT" desc="Label shown on hover and read by screen-readers for button that user clicks to regenerate input.">
     Retry
   </message>

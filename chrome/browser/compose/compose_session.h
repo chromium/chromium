@@ -8,11 +8,13 @@
 #include <memory>
 #include <stack>
 #include <string>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -120,9 +122,11 @@ class ComposeSession
   void RevertToMostRecentOkState(
       RevertToMostRecentOkStateCallback callback) override;
 
-  // Undo from the current valid results state to the previous state with a kOk
-  // status and valid response text.
+  // Undo to the previous saved state in the history.
   void Undo(UndoCallback callback) override;
+
+  // Redo to the next saved state in the history.
+  void Redo(RedoCallback callback) override;
 
   // Indicates that the compose result should be accepted by Autofill.
   // Callback<bool> indicates if the accept was successful.
@@ -224,6 +228,8 @@ class ComposeSession
       bool was_input_edited,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
+  void AddNewResponseToHistory(std::unique_ptr<ComposeState> new_state);
+  void EraseForwardStatesInHistory();
 
   // Adds page content to the session context.
   void AddPageContentToSession(std::string inner_text,
@@ -255,6 +261,12 @@ class ComposeSession
       base::TimeDelta request_time,
       bool was_input_edited);
 
+  // Returns a reference to the ComposeState at `history_current_index`, or at
+  // `offset` from the current index if `offset` is specified, if it exists.
+  base::optional_ref<ComposeState> CurrentState(int offset = 0);
+
+  base::optional_ref<ComposeState> LastResponseState();
+
   // Outlives `this`.
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;
 
@@ -263,18 +275,20 @@ class ComposeSession
   mojo::Remote<compose::mojom::ComposeUntrustedDialog> dialog_remote_;
 
   // Initialized during construction, and always remains valid during the
-  // lifetime of ComposeSession.
-  compose::mojom::ComposeStatePtr current_state_;
-
-  // The most recent state that was received via a request/response pair.
-  std::unique_ptr<ComposeState> most_recent_ok_state_;
+  // lifetime of ComposeSession. This diverges from CurrentState()->mojo_state()
+  // to handle error states and store webui state changes in the dialog. This is
+  // otherwise expected to be the same as CurrentState()->mojo_state().
+  compose::mojom::ComposeStatePtr active_mojo_state_;
 
   // the most recent log that wont be stored in the undo stack.
   std::unique_ptr<optimization_guide::ModelQualityLogEntry>
       most_recent_error_log_;
 
-  // The state returned when user clicks undo.
-  std::stack<std::unique_ptr<ComposeState>> undo_states_;
+  // Tracks the position of the current state in the history. This index is only
+  // valid when `state_history_` is non-empty.
+  size_t history_current_index_ = 0;
+  // The saved states that can be navigated between through Undo and Redo.
+  std::vector<std::unique_ptr<ComposeState>> history_;
 
   // Renderer provided text selection.
   std::string initial_input_;

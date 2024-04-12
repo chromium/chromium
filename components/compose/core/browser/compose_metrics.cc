@@ -118,6 +118,10 @@ void LogComposeSessionEventCounts(std::optional<EvalLocation> eval_location,
     base::UmaHistogramEnumeration(histogram,
                                   ComposeSessionEventTypes::kUndoClicked);
   }
+  if (session_events.redo_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kRedoClicked);
+  }
   bool has_used_modifier = false;
   if (session_events.shorten_count > 0) {
     has_used_modifier = true;

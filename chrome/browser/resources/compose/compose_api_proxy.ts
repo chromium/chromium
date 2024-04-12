@@ -27,6 +27,7 @@ export interface ComposeApiProxy {
   revertToMostRecentOkState(): Promise<(ComposeState | null)>;
   undo(): Promise<(ComposeState | null)>;
   editResult(newText: string): void;
+  redo(): Promise<(ComposeState | null)>;
 }
 
 export class ComposeApiProxyImpl implements ComposeApiProxy {
@@ -135,5 +136,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
 
   editResult(newResult: string) {
     this.composeSessionPageHandler.editResult(newResult);
+  }
+
+  redo(): Promise<(ComposeState | null)> {
+    return this.composeSessionPageHandler.redo().then(
+        composeState => composeState.nextState);
   }
 }

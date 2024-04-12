@@ -45,6 +45,7 @@ suite('ComposeApp', () => {
     testProxy.remote.responseReceived({
       status: status,
       undoAvailable: false,
+      redoAvailable: false,
       result,
       onDeviceEvaluationUsed,
       triggeredFromModifier,
@@ -307,6 +308,7 @@ suite('ComposeApp', () => {
       response: {
         status: ComposeStatus.kOk,
         undoAvailable: false,
+        redoAvailable: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -324,6 +326,7 @@ suite('ComposeApp', () => {
       response: {
         status: ComposeStatus.kOk,
         undoAvailable: true,
+        redoAvailable: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -348,6 +351,7 @@ suite('ComposeApp', () => {
       response: {
         status: ComposeStatus.kOk,
         undoAvailable: false,
+        redoAvailable: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -367,6 +371,7 @@ suite('ComposeApp', () => {
       response: {
         status: ComposeStatus.kOk,
         undoAvailable: false,
+        redoAvailable: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -479,6 +484,7 @@ suite('ComposeApp', () => {
       response: {
         status: ComposeStatus.kOk,
         undoAvailable: false,
+        redoAvailable: false,
         result: 'initial result text',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -659,6 +665,7 @@ suite('ComposeApp', () => {
       response: {
         status: ComposeStatus.kOk,
         undoAvailable: true,
+        redoAvailable: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -669,6 +676,7 @@ suite('ComposeApp', () => {
       response: {
         status: ComposeStatus.kOk,
         undoAvailable: false,
+        redoAvailable: false,
         result: 'some undone result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -700,6 +708,59 @@ suite('ComposeApp', () => {
     assertEquals(
         CrFeedbackOption.THUMBS_UP,
         appWithUndo.$.feedbackButtons.selectedOption);
+  });
+
+  test('Redo', async () => {
+    // Set up initial state to show redo button and mock a forward state to redo
+    // to.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testProxy.setOpenMetadata({}, {
+      hasPendingRequest: false,
+      response: {
+        status: ComposeStatus.kOk,
+        undoAvailable: false,
+        redoAvailable: true,
+        result: 'here is a result',
+        onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
+      },
+    });
+    testProxy.setRedoResponse({
+      hasPendingRequest: false,
+      response: {
+        status: ComposeStatus.kOk,
+        undoAvailable: false,
+        redoAvailable: false,
+        result: 'some future result',
+        onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
+      },
+      webuiState: JSON.stringify({
+        input: 'some future input',
+        selectedLength: Number(StyleModifier.kLonger),
+        selectedTone: Number(StyleModifier.kCasual),
+      }),
+      feedback: UserFeedback.kUserFeedbackPositive,
+    });
+    const appWithRedo = document.createElement('compose-app');
+    document.body.appendChild(appWithRedo);
+    await testProxy.whenCalled('requestInitialState');
+
+    // Click redo.
+    appWithRedo.$.redoButton.click();
+    await testProxy.whenCalled('redo');
+    await flushTasks();
+
+    // UI is updated.
+    assertEquals('some future input', appWithRedo.$.textarea.value);
+    assertTrue(isVisible(appWithRedo.$.resultContainer));
+    assertStringContains(
+        appWithRedo.$.resultText.$.root.innerText, 'some future result');
+    assertEquals(StyleModifier.kLonger, Number(appWithRedo.$.lengthMenu.value));
+    assertEquals(StyleModifier.kCasual, Number(appWithRedo.$.toneMenu.value));
+    assertEquals(
+        CrFeedbackOption.THUMBS_UP,
+        appWithRedo.$.feedbackButtons.selectedOption);
   });
 
   test('Feedback', async () => {

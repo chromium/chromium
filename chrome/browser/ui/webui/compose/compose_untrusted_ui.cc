@@ -75,6 +75,8 @@ webui::SetupWebUIDataSource(
       {"formalToneOption", IDS_COMPOSE_MENU_FORMAL_OPTION},
       {"undo", IDS_COMPOSE_UNDO_LABEL},
       {"undoButtonText", IDS_COMPOSE_UNDO_BUTTON_TEXT},
+      {"redo", IDS_COMPOSE_REDO_LABEL},
+      {"redoButtonText", IDS_COMPOSE_REDO_BUTTON_TEXT},
       {"errorTooShort", IDS_COMPOSE_ERROR_TOO_SHORT},
       {"errorTooLong", IDS_COMPOSE_ERROR_TOO_LONG},
       {"errorTryAgain", IDS_COMPOSE_ERROR_TRY_AGAIN},

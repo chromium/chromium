@@ -63,6 +63,7 @@ export interface ComposeAppElement {
     acceptButton: CrButtonElement,
     loading: HTMLElement,
     undoButton: CrButtonElement,
+    redoButton: CrButtonElement,
     refreshButton: HTMLElement,
     resultContainer: HTMLElement,
     resultFooter: HTMLElement,
@@ -175,6 +176,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         reflectToAttribute: true,
       },
       undoEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+      redoEnabled_: {
         type: Boolean,
         value: false,
       },
@@ -305,6 +310,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private textSelected_: boolean;
   private submitted_: boolean;
   private undoEnabled_: boolean;
+  private redoEnabled_: boolean;
   private userHasModifiedState_: boolean = false;
   private lastTriggerElement_: TriggerElement;
   private outputComplete_: boolean = true;
@@ -405,6 +411,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         // If there is a pending request, the existing response is outdated.
         this.response_ = composeState.response;
         this.undoEnabled_ = Boolean(this.response_?.undoAvailable);
+        this.redoEnabled_ = Boolean(this.response_?.redoAvailable);
       }
 
       if (composeState.webuiState) {
@@ -708,6 +715,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private composeResponseReceived_(response: ComposeResponse) {
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.response_ = response;
+    this.redoEnabled_ = false;
   }
 
   private partialComposeResponseReceived_(partialResponse:
@@ -769,6 +777,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private showOnDeviceDogfoodFooter_(): boolean {
     return Boolean(this.response_?.onDeviceEvaluationUsed) &&
         loadTimeData.getBoolean('enableOnDeviceDogfoodFooter');
+  }
+
+  private undoButtonIcon_(): string {
+    return this.enableUiRefinements ? 'compose:undo' : 'compose:mvpUndo';
   }
 
   private acceptButtonText_(): string {
@@ -868,11 +880,32 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
+  private async onRedoClick_() {
+    try {
+      const state = await this.apiProxy_.redo();
+      if (state == null) {
+        // Attempted to redo when there are no compose states available to redo.
+        // Ensure redo is disabled since it is not possible.
+        this.redoEnabled_ = false;
+        return;
+      }
+
+      this.updateWithNewState_(state);
+      this.$.redoButton.focus();
+    } catch (error) {
+      // Error (e.g., disconnected mojo pipe) from a rejected Promise. Allow the
+      // user to try again as there should be a valid state to restore.
+      // TODO(b/301368162): Ask UX how to handle the edge case of multiple
+      // fails.
+    }
+  }
+
   private updateWithNewState_(state: ComposeState) {
     // Restore the dialog to the given state.
     this.response_ = state.response;
     this.partialResponse_ = undefined;
     this.undoEnabled_ = Boolean(state.response?.undoAvailable);
+    this.redoEnabled_ = Boolean(state.response?.redoAvailable);
     this.feedbackState_ = userFeedbackToFeedbackOption(state.feedback);
     if (state.webuiState) {
       const appState: ComposeAppState = JSON.parse(state.webuiState);

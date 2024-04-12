@@ -39,6 +39,7 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
   remote = this.router_.$.bindNewPipeAndPassRemote();
   private undoResponse_: ComposeState|null = null;
   private mostRecentOkResponse_: ComposeState|null = null;
+  private redoResponse_: ComposeState|null = null;
 
   constructor() {
     super([
@@ -59,6 +60,7 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
       'undo',
       'revertToMostRecentOkState',
       'editResult',
+      'redo',
     ]);
   }
 
@@ -101,6 +103,11 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
   revertToMostRecentOkState(): Promise<(ComposeState | null)> {
     this.methodCalled('revertToMostRecentOkState');
     return Promise.resolve(this.mostRecentOkResponse_);
+  }
+
+  redo(): Promise<(ComposeState | null)> {
+    this.methodCalled('redo');
+    return Promise.resolve(this.redoResponse_);
   }
 
   getRouter() {
@@ -153,6 +160,10 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
 
   setMostRecentOkResponse(state: ComposeState|null) {
     this.mostRecentOkResponse_ = state;
+  }
+
+  setRedoResponse(state: ComposeState|null) {
+    this.redoResponse_ = state;
   }
 
   showUi() {

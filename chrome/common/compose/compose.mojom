@@ -32,6 +32,8 @@ struct ComposeResponse {
   string result;
   // Whether undo is possible to a prior state before this response.
   bool undo_available;
+  // Whether redo is possible to a later state before this response.
+  bool redo_available;
   // Whether the response was generated on-device.
   bool on_device_evaluation_used;
   // Whether the request producing this response came from a modifier action.
@@ -157,6 +159,12 @@ interface ComposeSessionUntrustedPageHandler {
   // status and valid response text. A null return means that there is no such
   // valid state. No-op on rejected promise.
   RevertToMostRecentOkState() => (ComposeState? most_recent_ok_state);
+
+  // Asks the native handler to move to and return the `next_state` in the saved
+  // state history. This represents the state that the user saw previous to the
+  // last Undo action. A null return means there is no redoable state available.
+  // No-op on rejected promise.
+  Redo() => (ComposeState? next_state);
 
   // Asks the Browser to open a new tab navigated to the Compose bug report
   // Buganizer.

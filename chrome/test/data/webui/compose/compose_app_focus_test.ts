@@ -34,8 +34,9 @@ suite('ComposeApp', function() {
   function mockResponse(triggeredFromModifier: boolean = false): Promise<void> {
     testProxy.remote.responseReceived({
       status: ComposeStatus.kOk,
-      undoAvailable: false,
       result: 'some response',
+      undoAvailable: false,
+      redoAvailable: false,
       onDeviceEvaluationUsed: false,
       triggeredFromModifier,
     });
@@ -125,6 +126,7 @@ suite('ComposeApp', function() {
       response: {
         status: ComposeStatus.kOk,
         undoAvailable: true,
+        redoAvailable: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
@@ -135,6 +137,7 @@ suite('ComposeApp', function() {
       response: {
         status: ComposeStatus.kOk,
         undoAvailable: false,
+        redoAvailable: false,
         result: 'some undone result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,

@@ -496,6 +496,7 @@
   .result-container[hidden],
   .md-select[hidden],
   .icon-buttons-row cr-icon-button[hidden],
+  /* #redoButton[hidden], */
   #loading[hidden],
   #editContainer[hidden] {
     display: none;
@@ -641,6 +642,15 @@
                       icon="compose:undo">
                     </iron-icon>
                   </cr-button>
+                </div>
+                <div class="button-container" hidden="[[!enableUiRefinements]]">
+                  <cr-button id="redoButton" title="$i18n{redo}"
+                    disabled="[[!redoEnabled_]]" on-click="onRedoClick_">
+                    <div aria-hidden="true"> $i18n{redoButtonText} </div>
+                    <iron-icon aria-hidden="true" slot="suffix-icon"
+                      icon="compose:redo">
+                    </iron-icon>
+                  </cr-icon-button>
                 </div>
               </div>
             </div>

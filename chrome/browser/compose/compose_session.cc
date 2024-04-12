@@ -92,19 +92,13 @@ class ComposeState {
   ComposeState() {
     modeling_log_entry_ = nullptr;
     mojo_state_ = nullptr;
-    is_user_edited_ = false;
-    original_response_ = "";
   }
 
   ComposeState(std::unique_ptr<optimization_guide::ModelQualityLogEntry>
                    modeling_log_entry,
-               compose::mojom::ComposeStatePtr mojo_state,
-               bool is_user_edited,
-               std::string original_response) {
+               compose::mojom::ComposeStatePtr mojo_state) {
     modeling_log_entry_ = std::move(modeling_log_entry);
     mojo_state_ = std::move(mojo_state);
-    is_user_edited_ = is_user_edited;
-    original_response_ = original_response;
   }
 
   ~ComposeState() = default;
@@ -143,11 +137,6 @@ class ComposeState {
   void SetUserEdited(std::string original_response) {
     original_response_ = original_response;
     is_user_edited_ = true;
-  }
-
-  void UnsetUserEdited() {
-    original_response_ = "";
-    is_user_edited_ = false;
   }
 
   void SetMojoState(compose::mojom::ComposeStatePtr mojo_state) {
@@ -195,8 +184,8 @@ class ComposeState {
  private:
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> modeling_log_entry_;
   compose::mojom::ComposeStatePtr mojo_state_;
-  std::string original_response_;
-  bool is_user_edited_;
+  std::string original_response_ = "";
+  bool is_user_edited_ = false;
 };
 
 ComposeSession::ComposeSession(
@@ -228,13 +217,35 @@ ComposeSession::ComposeSession(
       weak_ptr_factory_(this) {
   session_duration_ = std::make_unique<base::ElapsedTimer>();
   callback_ = std::move(callback);
-  current_state_ = compose::mojom::ComposeState::New();
-  most_recent_ok_state_ = std::make_unique<ComposeState>();
+  active_mojo_state_ = compose::mojom::ComposeState::New();
   if (executor_) {
     session_ = executor_->StartSession(
         optimization_guide::ModelBasedCapabilityKey::kCompose,
         /*config_params=*/std::nullopt);
   }
+}
+
+// TODO(b/325341815): Currently, the last response state is the same as the
+// state at `history_current_index_` and this implementation is the same as
+// CurrentState(). When editable results is added, this method must be updated
+// to find the last response state in the history if the state at
+// `history_current_index_` is an edited result.
+base::optional_ref<ComposeState> ComposeSession::LastResponseState() {
+  if (history_.empty() || history_current_index_ >= history_.size() ||
+      !history_[history_current_index_]) {
+    return std::nullopt;
+  }
+
+  return *history_[history_current_index_];
+}
+
+base::optional_ref<ComposeState> ComposeSession::CurrentState(int offset) {
+  if (history_.empty() || history_current_index_ + offset >= history_.size() ||
+      !history_[history_current_index_ + offset]) {
+    return std::nullopt;
+  }
+
+  return *history_[history_current_index_ + offset];
 }
 
 ComposeSession::~ComposeSession() {
@@ -298,24 +309,25 @@ ComposeSession::~ComposeSession() {
   }
 
   if (most_recent_error_log_) {
-    // First set final status on most_recent_error_log
+    // First set final status on most_recent_error_log.
     most_recent_error_log_
         ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_final_status(final_status_);
     model_quality_logs_uploader_->UploadModelQualityLogs(
         std::move(most_recent_error_log_));
-  } else if (most_recent_ok_state_->modeling_log_entry()) {
-    // First set final status on most_recent_ok_state_.
-    most_recent_ok_state_->modeling_log_entry()
-        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-        ->set_final_status(final_status_);
-    most_recent_ok_state_->UploadModelQualityLogs(model_quality_logs_uploader_);
+  } else if (auto last_response_state = LastResponseState();
+             last_response_state.has_value()) {
+    if (auto* log_entry = last_response_state->modeling_log_entry()) {
+      log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+          ->set_final_status(final_status_);
+      last_response_state->UploadModelQualityLogs(model_quality_logs_uploader_);
+    }
   }
 
-  // Explicitly upload the rest of the undo stack.
-  while (!undo_states_.empty()) {
-    undo_states_.top()->UploadModelQualityLogs(model_quality_logs_uploader_);
-    undo_states_.pop();
+  for (auto& state : history_) {
+    // Upload all saved states with a valid quality logs member (those tied to
+    // a ComposeResponse) and then clear all states.
+    state->UploadModelQualityLogs(model_quality_logs_uploader_);
   }
 }
 
@@ -390,7 +402,7 @@ void ComposeSession::Rewrite(compose::mojom::StyleModifier style) {
       break;
   }
   request.mutable_rewrite_params()->set_previous_response(
-      most_recent_ok_state_->mojo_state()->response->result);
+      CurrentState()->mojo_state()->response->result);
   MakeRequest(std::move(request), request_reason, false);
 }
 
@@ -403,8 +415,8 @@ void ComposeSession::MakeRequest(
     optimization_guide::proto::ComposeRequest request,
     compose::ComposeRequestReason request_reason,
     bool is_input_edited) {
-  current_state_->has_pending_request = true;
-  current_state_->feedback =
+  active_mojo_state_->has_pending_request = true;
+  active_mojo_state_->feedback =
       compose::mojom::UserFeedback::kUserFeedbackUnspecified;
   // TODO(b/300974056): Move this to the overall feature-enabled check.
   if (!session_ ||
@@ -468,13 +480,13 @@ void ComposeSession::ComposeRequestTimeout(int id) {
   compose::LogComposeRequestStatus(
       compose::mojom::ComposeStatus::kRequestTimeout);
 
-  current_state_->has_pending_request = false;
-  current_state_->response = compose::mojom::ComposeResponse::New();
-  current_state_->response->status =
+  active_mojo_state_->has_pending_request = false;
+  active_mojo_state_->response = compose::mojom::ComposeResponse::New();
+  active_mojo_state_->response->status =
       compose::mojom::ComposeStatus::kRequestTimeout;
 
   if (dialog_remote_.is_bound()) {
-    dialog_remote_->ResponseReceived(current_state_->response->Clone());
+    dialog_remote_->ResponseReceived(active_mojo_state_->response->Clone());
   }
 }
 
@@ -554,7 +566,7 @@ void ComposeSession::ModelExecutionComplete(
     bool was_input_edited,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   // Handle 'complete' results.
-  current_state_->has_pending_request = false;
+  active_mojo_state_->has_pending_request = false;
   compose::EvalLocation eval_location = GetEvalLocation(result);
   if (eval_location == compose::EvalLocation::kOnDevice) {
     ++session_events_.on_device_responses;
@@ -580,7 +592,7 @@ void ComposeSession::ModelExecutionComplete(
                                 was_input_edited);
     return;
   }
-  DCHECK(result.response->is_complete);
+  CHECK(result.response->is_complete);
 
   auto response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::ComposeResponse>(result.response->response);
@@ -595,28 +607,6 @@ void ComposeSession::ModelExecutionComplete(
     return;
   }
 
-  auto ui_response = compose::mojom::ComposeResponse::New();
-  ui_response->status = compose::mojom::ComposeStatus::kOk;
-  ui_response->result = response->output();
-  ui_response->on_device_evaluation_used = result.provided_by_on_device;
-  current_state_->response = ui_response->Clone();
-
-  // Log successful response status.
-  compose::LogComposeRequestStatus(compose::mojom::ComposeStatus::kOk);
-  compose::LogComposeRequestStatus(eval_location,
-                                   compose::mojom::ComposeStatus::kOk);
-  compose::LogComposeRequestDuration(request_delta, eval_location,
-                                     /* is_ok */ true);
-
-  SaveMostRecentOkStateToUndoStack();
-  current_state_->response->undo_available = !undo_states_.empty();
-  most_recent_ok_state_->SetMojoState(current_state_->Clone());
-
-  ui_response->undo_available = !undo_states_.empty();
-  if (dialog_remote_.is_bound()) {
-    dialog_remote_->ResponseReceived(std::move(ui_response));
-  }
-
   if (result.log_entry) {
     result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_was_generated_via_edit(was_input_edited);
@@ -629,7 +619,6 @@ void ComposeSession::ModelExecutionComplete(
 
     token->set_high(session_id_.high());
     token->set_low(session_id_.low());
-    most_recent_ok_state_->SetModelingLogEntry(std::move(result.log_entry));
     // In the event that we are holding onto an error log upload it before it
     // gets overwritten
     if (most_recent_error_log_ && model_quality_logs_uploader_) {
@@ -639,6 +628,63 @@ void ComposeSession::ModelExecutionComplete(
 
     // if we have a valid most recent state we no longer need an error state.
     most_recent_error_log_.reset();
+  }
+
+  // Create a new ComposeState with the dialog's current mojo state and the log
+  // entry just received with the response.
+  std::unique_ptr<ComposeState> new_response_state =
+      std::make_unique<ComposeState>(std::move(result.log_entry),
+                                     active_mojo_state_.Clone());
+  // Update the new state's mojo state to reflect the new response.
+  auto ui_response = compose::mojom::ComposeResponse::New();
+  ui_response->status = compose::mojom::ComposeStatus::kOk;
+  ui_response->result = response->output();
+  ui_response->on_device_evaluation_used = result.provided_by_on_device;
+  // TODO(b/333944734): Remove undo_available and redo_available from
+  // ComposeState.
+  ui_response->undo_available = !history_.empty();
+  ui_response->redo_available = false;
+  new_response_state->mojo_state()->response = ui_response->Clone();
+
+  // Before adding the new state to history, mark redo available on the current
+  // state that will directly precede it.
+  if (auto current_state = CurrentState(); current_state.has_value()) {
+    current_state->mojo_state()->response->redo_available = true;
+  }
+
+  AddNewResponseToHistory(std::move(new_response_state));
+
+  // Update `active_mojo_state_` to match the new state
+  active_mojo_state_ = CurrentState()->mojo_state()->Clone();
+
+  if (dialog_remote_.is_bound()) {
+    dialog_remote_->ResponseReceived(active_mojo_state_->response->Clone());
+  }
+
+  // Log successful response status.
+  compose::LogComposeRequestStatus(compose::mojom::ComposeStatus::kOk);
+  compose::LogComposeRequestStatus(eval_location,
+                                   compose::mojom::ComposeStatus::kOk);
+  compose::LogComposeRequestDuration(request_delta, eval_location,
+                                     /* is_ok */ true);
+}
+
+void ComposeSession::AddNewResponseToHistory(
+    std::unique_ptr<ComposeState> new_state) {
+  // On a new response, all forward/redo states are cleared. Upload any
+  // associated quality logs first.
+  EraseForwardStatesInHistory();
+  history_.push_back(std::move(new_state));
+  history_current_index_ = history_.size() - 1;
+}
+
+void ComposeSession::EraseForwardStatesInHistory() {
+  for (size_t i = history_current_index_ + 1; i < history_.size(); i++) {
+    history_[i]->UploadModelQualityLogs(model_quality_logs_uploader_);
+  }
+  if (history_.size() > history_current_index_ + 1) {
+    history_.erase(history_.begin() + history_current_index_ + 1,
+                   history_.end());
   }
 }
 
@@ -653,15 +699,15 @@ void ComposeSession::ProcessError(
   compose::LogComposeRequestFeedback(
       eval_location, compose::ComposeRequestFeedback::kRequestError);
 
-  current_state_->has_pending_request = false;
-  current_state_->response = compose::mojom::ComposeResponse::New();
-  current_state_->response->status = error;
-  current_state_->response->triggered_from_modifier =
+  active_mojo_state_->has_pending_request = false;
+  active_mojo_state_->response = compose::mojom::ComposeResponse::New();
+  active_mojo_state_->response->status = error;
+  active_mojo_state_->response->triggered_from_modifier =
       request_reason != compose::ComposeRequestReason::kFirstRequest &&
       request_reason != compose::ComposeRequestReason::kUpdateRequest;
 
   if (dialog_remote_.is_bound()) {
-    dialog_remote_->ResponseReceived(current_state_->response->Clone());
+    dialog_remote_->ResponseReceived(active_mojo_state_->response->Clone());
   }
 }
 
@@ -670,79 +716,99 @@ void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
 
   std::move(callback).Run(compose::mojom::OpenMetadata::New(
       fre_complete_, current_msbb_state_, initial_input_, text_selected_,
-      current_state_->Clone(),
+      active_mojo_state_->Clone(),
       compose::mojom::ConfigurableParams::New(compose_config.input_min_words,
                                               compose_config.input_max_words,
                                               compose_config.input_max_chars)));
 }
 
 void ComposeSession::SaveWebUIState(const std::string& webui_state) {
-  current_state_->webui_state = webui_state;
+  active_mojo_state_->webui_state = webui_state;
 }
 
 void ComposeSession::AcceptComposeResult(
     AcceptComposeResultCallback success_callback) {
-  if (callback_.is_null() || !current_state_->response ||
-      current_state_->response->status != compose::mojom::ComposeStatus::kOk) {
+  if (callback_.is_null() || !active_mojo_state_->response ||
+      active_mojo_state_->response->status !=
+          compose::mojom::ComposeStatus::kOk) {
     // Guard against invoking twice before the UI is able to disconnect.
     std::move(success_callback).Run(false);
     return;
   }
-  std::move(callback_).Run(base::UTF8ToUTF16(current_state_->response->result));
+  std::move(callback_).Run(
+      base::UTF8ToUTF16(active_mojo_state_->response->result));
   std::move(success_callback).Run(true);
 }
 
 void ComposeSession::RevertToMostRecentOkState(
     RevertToMostRecentOkStateCallback callback) {
-  if (!most_recent_ok_state_->IsMojoValid()) {
+  // RevertToMostRecentOkState can only be called if a valid state exists to
+  // return to.
+  CHECK(LastResponseState().has_value());
+  if (!LastResponseState()->IsMojoValid()) {
     // Gracefully fail if we find an invalid state.
     std::move(callback).Run(nullptr);
     return;
   }
 
-  current_state_ = most_recent_ok_state_->mojo_state()->Clone();
+  active_mojo_state_ = LastResponseState()->mojo_state()->Clone();
 
-  std::move(callback).Run(most_recent_ok_state_->mojo_state()->Clone());
+  std::move(callback).Run(active_mojo_state_->Clone());
 }
 
 void ComposeSession::Undo(UndoCallback callback) {
-  if (undo_states_.empty()) {
+  // Undo should only be called if a backwards saved state exists.
+  if (history_current_index_ < 1) {
     std::move(callback).Run(nullptr);
     return;
   }
 
+  auto previous_state = CurrentState(-1);
+  if (!previous_state->IsMojoValid()) {
+    // Gracefully fail if we find an invalid state in the history.
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  history_current_index_--;
   // Only increase undo count if there are states to undo.
   session_events_.undo_count += 1;
 
-  std::unique_ptr<ComposeState> undo_state = std::move(undo_states_.top());
-  undo_states_.pop();
+  active_mojo_state_ = previous_state->mojo_state()->Clone();
 
-  // Upload the most recent modeling quality log entry before overwriting it
-  // with state from undo.
-  most_recent_ok_state_->UploadModelQualityLogs(model_quality_logs_uploader_);
+  std::move(callback).Run(active_mojo_state_->Clone());
+}
 
-  if (!undo_state->IsMojoValid()) {
-    // Gracefully fail if we find an invalid state on the undo stack.
+void ComposeSession::Redo(RedoCallback callback) {
+  // Redo should only be called if a forward saved state exists.
+  if (history_current_index_ >= history_.size() - 1) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  // State returns to the last undo_state.
-  current_state_ = undo_state->mojo_state()->Clone();
+  auto next_state = CurrentState(1);
+  if (!next_state->IsMojoValid()) {
+    // Gracefully fail if we find an invalid state in the history.
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  history_current_index_++;
+  // Only increase redo count if there are states to redo.
+  session_events_.redo_count += 1;
 
-  std::move(callback).Run(undo_state->mojo_state()->Clone());
-  // set recent state to the last undo modeling entry and last mojo state.
-  most_recent_ok_state_->SetMojoState(undo_state->TakeMojoState());
-  most_recent_ok_state_->SetModelingLogEntry(
-      undo_state->TakeModelingLogEntry());
+  active_mojo_state_ = next_state->mojo_state()->Clone();
+
+  std::move(callback).Run(active_mojo_state_->Clone());
 }
 
 void ComposeSession::OpenBugReportingLink() {
   const char* url = kComposeBugReportURL;
-  if (most_recent_ok_state_ && most_recent_ok_state_->mojo_state() &&
-      most_recent_ok_state_->mojo_state()
-          ->response->on_device_evaluation_used) {
-    url = kOnDeviceComposeBugReportURL;
+  if (auto last_response_state = LastResponseState();
+      last_response_state.has_value()) {
+    if (last_response_state->mojo_state() &&
+        last_response_state->mojo_state()
+            ->response->on_device_evaluation_used) {
+      url = kOnDeviceComposeBugReportURL;
+    }
   }
   web_contents_->OpenURL(
       content::OpenURLParams(GURL(url), content::Referrer(),
@@ -763,10 +829,13 @@ void ComposeSession::OpenComposeLearnMorePage() {
 
 void ComposeSession::OpenFeedbackSurveyLink() {
   const char* url = kComposeFeedbackSurveyURL;
-  if (most_recent_ok_state_ && most_recent_ok_state_->mojo_state() &&
-      most_recent_ok_state_->mojo_state()
-          ->response->on_device_evaluation_used) {
-    url = kOnDeviceComposeFeedbackSurveyURL;
+  if (auto last_response_state = LastResponseState();
+      last_response_state.has_value()) {
+    if (last_response_state->mojo_state() &&
+        last_response_state->mojo_state()
+            ->response->on_device_evaluation_used) {
+      url = kOnDeviceComposeFeedbackSurveyURL;
+    }
   }
   web_contents_->OpenURL(
       content::OpenURLParams(GURL(url), content::Referrer(),
@@ -819,26 +888,28 @@ void ComposeSession::OpenFeedbackPage(std::string feedback_id) {
 }
 
 void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
-  if (!most_recent_ok_state_->mojo_state()) {
+  auto last_response_state = LastResponseState();
+  if (!last_response_state.has_value() || !last_response_state->mojo_state()) {
     // If there is no recent State there is nothing that we should be applying
     // feedback to.
     return;
   }
 
-  // Add to most_recent_ok_state_ in case of undos.
-  most_recent_ok_state_->mojo_state()->feedback = feedback;
+  // Save feedback to the last state associated with a valid response.
+  last_response_state->mojo_state()->feedback = feedback;
 
   // Add to current_state_ in case of coming back to a saved state, as
   // RequestInitialState() returns current_state_.
-  if (current_state_->response) {
-    current_state_->feedback = feedback;
+  if (active_mojo_state_->response) {
+    active_mojo_state_->feedback = feedback;
   }
   optimization_guide::proto::UserFeedback user_feedback =
       OptimizationFeedbackFromComposeFeedback(feedback);
 
-  if (most_recent_ok_state_->modeling_log_entry()) {
+  // Apply feedback to the last saved state with a valid response.
+  if (last_response_state->modeling_log_entry()) {
     optimization_guide::proto::ComposeQuality* quality =
-        most_recent_ok_state_->modeling_log_entry()
+        last_response_state->modeling_log_entry()
             ->quality_data<optimization_guide::ComposeFeatureTypeMap>();
     if (quality) {
       quality->set_user_feedback(user_feedback);
@@ -847,7 +918,7 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
       session_events_.has_thumbs_down = true;
       if (CanShowFeedbackPage()) {
         // Open the Feedback Page for a thumbs down using current request log.
-        std::string feedback_id = most_recent_ok_state_->modeling_log_entry()
+        std::string feedback_id = last_response_state->modeling_log_entry()
                                       ->log_ai_data_request()
                                       ->model_execution_info()
                                       .execution_id();
@@ -861,7 +932,7 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
 }
 
 void ComposeSession::EditResult(const std::string& new_result) {
-  // TODO(b/333084626): empty stub, re-implemented with dependent editable
+  // TODO(b/333084626): empty stub, re-implement with dependent editable
   // results changes.
 }
 
@@ -897,20 +968,6 @@ void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
       compose::GetComposeConfig().auto_submit_with_selection) {
     Compose(initial_input_, false);
   }
-}
-
-void ComposeSession::SaveMostRecentOkStateToUndoStack() {
-  if (!most_recent_ok_state_->IsMojoValid()) {
-    // This occurs when processing the first ok response of a session - no
-    // previous ok state exists and so there is nothing to save to the undo
-    // stack.
-    return;
-  }
-  undo_states_.push(std::make_unique<ComposeState>(
-      most_recent_ok_state_->TakeModelingLogEntry(),
-      most_recent_ok_state_->TakeMojoState(),
-      most_recent_ok_state_->is_user_edited(),
-      most_recent_ok_state_->original_response()));
 }
 
 void ComposeSession::AddPageContentToSession(
@@ -1017,7 +1074,7 @@ void ComposeSession::SetMSBBCloseReason(
 void ComposeSession::SetCloseReason(
     compose::ComposeSessionCloseReason close_reason) {
   if (close_reason == compose::ComposeSessionCloseReason::kCloseButtonPressed &&
-      current_state_->has_pending_request) {
+      active_mojo_state_->has_pending_request) {
     close_reason_ =
         compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived;
   } else {

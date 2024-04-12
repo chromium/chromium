@@ -121,7 +121,8 @@ enum class ComposeSessionEventTypes {
   kEditClicked = 19,
   kCancelEditClicked = 20,
   kAnyModifierUsed = 21,
-  kMaxValue = kAnyModifierUsed,
+  kRedoClicked = 22,
+  kMaxValue = kRedoClicked,
 };
 
 // Enum for recording the show status of the Compose context menu item.
@@ -201,6 +202,8 @@ struct ComposeSessionEvents {
   unsigned int msbb_dialog_shown_count = 0;
   // Times the user has pressed "undo" this session.
   unsigned int undo_count = 0;
+  // Times the user has pressed "redo" this session.
+  unsigned int redo_count = 0;
   // Compose request after input edited.
   unsigned int update_input_count = 0;
   // Tiems the user has pressed the "Retry" button.
