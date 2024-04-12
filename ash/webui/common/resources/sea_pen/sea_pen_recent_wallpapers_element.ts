@@ -192,8 +192,9 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
       return null;
     }
 
-    return this.i18n(
-        'seaPenAboutDialogPrompt', data.imageInfo.userVisibleQuery.text);
+    const title = isPersonalizationApp() ? 'seaPenAboutDialogPrompt' :
+                                           'vcBackgroundAboutDialogPrompt';
+    return this.i18n(title, data.imageInfo.userVisibleQuery.text);
   }
 
   private getWallpaperInfoDateMessage_(
@@ -213,6 +214,11 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     return this.i18n(
         'seaPenAboutDialogDate',
         mojoString16ToString(data.imageInfo.creationTime));
+  }
+
+  private getAboutDialogTitle_(): string {
+    return isPersonalizationApp() ? this.i18n('seaPenAboutDialogTitle') :
+                                    this.i18n('vcBackgroundAboutDialogTitle');
   }
 
   private getRecentPoweredByGoogleMessage_(): string {
