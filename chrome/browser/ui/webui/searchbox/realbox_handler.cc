@@ -118,6 +118,11 @@ class RealboxOmniboxClient final : public OmniboxClient {
       IDNA2008DeviationCharacter deviation_char_in_hostname) override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
+  void SetLensSearchboxClientForTesting(  // IN-TEST
+      LensSearchboxClient* lens_searchbox_client) {
+    lens_searchbox_client_ = lens_searchbox_client;
+  }
+
  private:
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
@@ -371,6 +376,7 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
           /*is_prefetch=*/false);
   AutocompleteInput autocomplete_input(
       input, page_classification, ChromeAutocompleteSchemeClassifier(profile_));
+  autocomplete_input.set_current_url(controller_->client()->GetURL());
   autocomplete_input.set_focus_type(
       is_on_focus ? metrics::OmniboxFocusType::INTERACTION_FOCUS
                   : metrics::OmniboxFocusType::INTERACTION_DEFAULT);
@@ -521,6 +527,13 @@ void RealboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
       searchbox::mojom::OmniboxPopupSelection::New(
           selection.line, ConvertLineState(selection.state),
           selection.action_index));
+}
+
+void RealboxHandler::SetLensSearchboxClientForTesting(
+    LensSearchboxClient* lens_searchbox_client) {
+  lens_searchbox_client_ = lens_searchbox_client;
+  static_cast<RealboxOmniboxClient*>(omnibox_controller()->client())
+      ->SetLensSearchboxClientForTesting(lens_searchbox_client);  // IN-TEST
 }
 
 OmniboxEditModel* RealboxHandler::edit_model() const {

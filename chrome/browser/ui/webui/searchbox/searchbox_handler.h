@@ -43,6 +43,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
+  FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest,
+                           Lens_AutocompleteController_Start);
 
   SearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,

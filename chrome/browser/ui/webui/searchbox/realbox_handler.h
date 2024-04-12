@@ -102,6 +102,9 @@ class RealboxHandler : public SearchboxHandler {
   void UpdateSelection(OmniboxPopupSelection old_selection,
                        OmniboxPopupSelection selection);
 
+  void SetLensSearchboxClientForTesting(
+      LensSearchboxClient* lens_searchbox_client);
+
  private:
   OmniboxEditModel* edit_model() const;
   const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url);

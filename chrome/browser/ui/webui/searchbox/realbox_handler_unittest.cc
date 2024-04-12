@@ -27,6 +27,8 @@ namespace {
 
 using testing::_;
 using testing::DoAll;
+using testing::Return;
+using testing::ReturnRef;
 using testing::SaveArg;
 
 class MockPage : public searchbox::mojom::Page {
@@ -64,7 +66,7 @@ class MockAutocompleteController : public AutocompleteController {
       delete;
 
   // AutocompleteController:
-  MOCK_METHOD1(Start, void(const AutocompleteInput&));
+  MOCK_METHOD(void, Start, (const AutocompleteInput&), (override));
 };
 
 class MockOmniboxEditModel : public OmniboxEditModel {
@@ -76,7 +78,29 @@ class MockOmniboxEditModel : public OmniboxEditModel {
   MockOmniboxEditModel& operator=(const MockOmniboxEditModel&) = delete;
 
   // OmniboxEditModel:
-  MOCK_METHOD1(SetUserText, void(const std::u16string&));
+  MOCK_METHOD(void, SetUserText, (const std::u16string&), (override));
+};
+
+class MockLensSearchboxClient : public LensSearchboxClient {
+ public:
+  MockLensSearchboxClient() = default;
+  ~MockLensSearchboxClient() override = default;
+  MockLensSearchboxClient(const MockLensSearchboxClient&) = delete;
+  MockLensSearchboxClient& operator=(const MockLensSearchboxClient&) = delete;
+
+  // LensSearchboxClient:
+  MOCK_METHOD(const GURL&, GetPageURL, (), (override, const));
+  MOCK_METHOD(metrics::OmniboxEventProto::PageClassification,
+              GetPageClassification,
+              (),
+              (override, const));
+  MOCK_METHOD(const std::string&, GetThumbnail, (), (override, const));
+  MOCK_METHOD(const lens::LensOverlayInteractionResponse&,
+              GetLensResponse,
+              (),
+              (override, const));
+  MOCK_METHOD(void, OnThumbnailRemoved, (), (override, const));
+  MOCK_METHOD(void, OnSuggestionAccepted, (const GURL&), (override));
 };
 
 class TestObserver : public OmniboxWebUIPopupChangeObserver {
@@ -107,6 +131,8 @@ class RealboxHandlerTest : public ::testing::Test {
   raw_ptr<testing::NiceMock<MockAutocompleteController>>
       autocomplete_controller_;
   raw_ptr<testing::NiceMock<MockOmniboxEditModel>> omnibox_edit_model_;
+  std::unique_ptr<testing::NiceMock<MockLensSearchboxClient>>
+      lens_searchbox_client_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -134,6 +160,7 @@ class RealboxHandlerTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    lens_searchbox_client_ = nullptr;
     omnibox_edit_model_ = nullptr;
     autocomplete_controller_ = nullptr;
     handler_.reset();
@@ -244,8 +271,10 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
     EXPECT_EQ(input_text, u"");
     EXPECT_EQ(input.text(), u"");
     EXPECT_EQ(input.focus_type(), metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    EXPECT_EQ(input.current_url().spec(), "");
     EXPECT_EQ(input.current_page_classification(),
               metrics::OmniboxEventProto::NTP_REALBOX);
+    EXPECT_FALSE(input.lens_overlay_interaction_response().has_value());
 
     testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
     testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
@@ -269,10 +298,123 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
     EXPECT_EQ(input.text(), u"a");
     EXPECT_EQ(input.focus_type(),
               metrics::OmniboxFocusType::INTERACTION_DEFAULT);
+    EXPECT_EQ(input.current_url().spec(), "");
     EXPECT_EQ(input.current_page_classification(),
               metrics::OmniboxEventProto::NTP_REALBOX);
+    EXPECT_FALSE(input.lens_overlay_interaction_response().has_value());
 
     testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
     testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
   }
+}
+
+TEST_F(RealboxHandlerTest, Lens_AutocompleteController_Start) {
+  // Stop observing the AutocompleteController instance which will be destroyed.
+  handler_->autocomplete_controller_observation_.Reset();
+  // Set a mock AutocompleteController.
+  auto autocomplete_controller =
+      std::make_unique<testing::NiceMock<MockAutocompleteController>>(
+          std::make_unique<MockAutocompleteProviderClient>(), 0);
+  autocomplete_controller_ = autocomplete_controller.get();
+  handler_->omnibox_controller()->SetAutocompleteControllerForTesting(
+      std::move(autocomplete_controller));
+  // Set a mock OmniboxEditModel.
+  auto omnibox_edit_model =
+      std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
+          handler_->omnibox_controller(),
+          /*view=*/nullptr);
+  omnibox_edit_model_ = omnibox_edit_model.get();
+  handler_->omnibox_controller()->SetEditModelForTesting(
+      std::move(omnibox_edit_model));
+  // Set a mock LensSearchboxClient.
+  lens_searchbox_client_ =
+      std::make_unique<testing::NiceMock<MockLensSearchboxClient>>();
+  handler_->SetLensSearchboxClientForTesting(lens_searchbox_client_.get());
+
+  {
+    SCOPED_TRACE("Empty input");
+
+    std::u16string input_text;
+    EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
+        .Times(1)
+        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+
+    AutocompleteInput input;
+    EXPECT_CALL(*autocomplete_controller_, Start(_))
+        .Times(1)
+        .WillOnce(DoAll(SaveArg<0>(&input)));
+
+    EXPECT_CALL(*lens_searchbox_client_, GetPageClassification())
+        .Times(1)
+        .WillOnce(Return(metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX));
+
+    GURL page_url("https://example.com");
+    EXPECT_CALL(*lens_searchbox_client_, GetPageURL())
+        .Times(1)
+        .WillOnce(ReturnRef(page_url));
+
+    lens::LensOverlayInteractionResponse lens_response;
+    lens_response.set_encoded_response("xyz");
+    EXPECT_CALL(*lens_searchbox_client_, GetLensResponse())
+        .WillRepeatedly(ReturnRef(lens_response));
+
+    handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false);
+
+    EXPECT_EQ(input_text, u"");
+    EXPECT_EQ(input.text(), u"");
+    EXPECT_EQ(input.focus_type(), metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    EXPECT_EQ(input.current_url(), page_url);
+    EXPECT_EQ(input.current_page_classification(),
+              metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
+    EXPECT_EQ(input.lens_overlay_interaction_response()->encoded_response(),
+              lens_response.encoded_response());
+
+    testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
+    testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
+    testing::Mock::VerifyAndClearExpectations(lens_searchbox_client_.get());
+  }
+  {
+    SCOPED_TRACE("Non-empty input");
+
+    std::u16string input_text;
+    EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
+        .Times(1)
+        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+
+    AutocompleteInput input;
+    EXPECT_CALL(*autocomplete_controller_, Start(_))
+        .Times(1)
+        .WillOnce(DoAll(SaveArg<0>(&input)));
+
+    EXPECT_CALL(*lens_searchbox_client_, GetPageClassification())
+        .Times(1)
+        .WillOnce(Return(metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX));
+
+    GURL page_url("https://example.com");
+    EXPECT_CALL(*lens_searchbox_client_, GetPageURL())
+        .Times(1)
+        .WillOnce(ReturnRef(page_url));
+
+    lens::LensOverlayInteractionResponse lens_response;
+    EXPECT_CALL(*lens_searchbox_client_, GetLensResponse())
+        .Times(1)
+        .WillOnce(ReturnRef(lens_response));
+
+    handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false);
+
+    EXPECT_EQ(input_text, u"a");
+    EXPECT_EQ(input.text(), u"a");
+    EXPECT_EQ(input.focus_type(),
+              metrics::OmniboxFocusType::INTERACTION_DEFAULT);
+    EXPECT_EQ(input.current_url(), page_url);
+    EXPECT_EQ(input.current_page_classification(),
+              metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
+    EXPECT_FALSE(input.lens_overlay_interaction_response().has_value());
+
+    testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
+    testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
+    testing::Mock::VerifyAndClearExpectations(lens_searchbox_client_.get());
+  }
+
+  handler_->SetLensSearchboxClientForTesting(nullptr);  // Avoids dangling ptr.
 }
