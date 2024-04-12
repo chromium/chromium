@@ -31,6 +31,11 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
+#if DCHECK_IS_ON()
+#include "base/functional/callback_helpers.h"
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 namespace mahi {
 
 namespace {
@@ -180,8 +185,15 @@ void MahiWebContentsManager::OnGetSnapshot(
         focused_web_content_state_.favicon = GetFavicon(web_contents);
       }
     }
-
     focused_web_content_state_.snapshot = snapshot;
+
+    // When debugging is enabled, directly extracts contents.
+#if DCHECK_IS_ON()
+    if (chromeos::features::IsMahiDebuggingEnabled()) {
+      content_extraction_delegate_->ExtractContent(
+          focused_web_content_state_, client_->client_id(), base::DoNothing());
+    }
+#endif
     content_extraction_delegate_->CheckDistillablity(
         focused_web_content_state_);
   } else if (page_id == requested_web_content_state_.page_id) {
