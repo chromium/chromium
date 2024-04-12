@@ -2942,17 +2942,11 @@ public class SiteSettingsTest {
                     singleCategorySettings.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
             assert toggle != null;
 
-            var delegate =
-                    new ChromeSiteSettingsDelegate(
-                            toggle.getContext(), ProfileManager.getLastUsedRegularProfile());
-
             Assert.assertEquals(
                     "Preference title is not set correctly.",
                     singleCategorySettings
                             .getResources()
-                            .getString(
-                                    ContentSettingsResources.getTitle(
-                                            mContentSettingsType, delegate)),
+                            .getString(ContentSettingsResources.getTitle(mContentSettingsType)),
                     toggle.getTitle());
             assertNotNull("Enabled summary text should not be null.", toggle.getSummaryOn());
             assertNotNull("Disabled summary text should not be null.", toggle.getSummaryOff());
@@ -2967,9 +2961,9 @@ public class SiteSettingsTest {
                             .getString(
                                     mIsCategoryEnabled
                                             ? ContentSettingsResources.getEnabledSummary(
-                                                    mContentSettingsType, delegate)
+                                                    mContentSettingsType)
                                             : ContentSettingsResources.getDisabledSummary(
-                                                    mContentSettingsType, delegate));
+                                                    mContentSettingsType));
             Assert.assertEquals(
                     "Summary text in state <" + mIsCategoryEnabled + "> does not match.",
                     expected,

@@ -100,9 +100,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
                                 browserContextHandle, contentType);
             }
 
-            p.setTitle(
-                    ContentSettingsResources.getTitleForCategory(
-                            prefCategory, getSiteSettingsDelegate()));
+            p.setTitle(ContentSettingsResources.getTitleForCategory(prefCategory));
 
             p.setOnPreferenceClickListener(this);
 
@@ -160,9 +158,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
             if (prefCategory != Type.THIRD_PARTY_COOKIES) {
                 p.setIcon(
                         SettingsUtils.getTintedIcon(
-                                getContext(),
-                                ContentSettingsResources.getIcon(
-                                        contentType, getSiteSettingsDelegate())));
+                                getContext(), ContentSettingsResources.getIcon(contentType)));
             }
         }
 
