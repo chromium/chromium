@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <cmath>
 #include <type_traits>
 
@@ -22,6 +23,7 @@
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fp16/src/include/fp16.h"
 
@@ -139,16 +141,9 @@ std::vector<T> BigBufferToVector(mojo_base::BigBuffer big_buffer) {
   return data;
 }
 
-// This method is especially for checking the floating-point output data of some
-// ops like the element wise binary pow, unary operator softmax, etc. The output
-// data needs to be compared with the expected output data per element by macros
-// EXPECT_FLOAT_EQ.
-void VerifyFloatDataIsEqual(const std::vector<float>& data,
-                            const std::vector<float>& expected_data) {
-  ASSERT_EQ(data.size(), expected_data.size());
-  for (size_t i = 0; i < data.size(); ++i) {
-    EXPECT_FLOAT_EQ(data[i], expected_data[i]);
-  }
+void VerifyFloatDataIsEqual(base::span<const float> data,
+                            base::span<const float> expected_data) {
+  EXPECT_THAT(data, testing::Pointwise(testing::FloatEq(), expected_data));
 }
 
 // Convert a vector of 32-bit floating-point data to a vector of 16-bit
