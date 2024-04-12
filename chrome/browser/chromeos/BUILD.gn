@@ -303,6 +303,7 @@ source_set("chromeos") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/components/kcer",
+    "//chromeos/components/mahi/public/cpp",
     "//chromeos/components/mahi/public/mojom",
     "//chromeos/components/mgs",
     "//chromeos/constants",

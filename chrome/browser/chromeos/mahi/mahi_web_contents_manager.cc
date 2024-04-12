@@ -22,6 +22,7 @@
 #include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -74,7 +75,9 @@ void MahiWebContentsManager::Initialize() {
 
 void MahiWebContentsManager::OnFocusedPageLoadComplete(
     content::WebContents* web_contents) {
-  if (!is_initialized_) {
+  if (!is_initialized_ ||
+      (!g_mahi_web_content_manager_for_testing &&
+       !chromeos::MahiManager::Get()->IsSupportedWithCorrectFeatureKey())) {
     return;
   }
   base::Time start_time = base::Time::Now();
