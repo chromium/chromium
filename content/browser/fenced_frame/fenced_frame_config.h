@@ -93,7 +93,10 @@ extern const char kUrnUuidPrefix[];
 GURL CONTENT_EXPORT GenerateUrnUuid();
 
 // Used by the fenced frame properties getter. It specifies the node source
-// of the fenced frame properties.
+// of the fenced frame properties. TODO(crbug/40256574): kClosestAncestor is an
+// artifact to support URN iframes. When URN iframes are removed, we can remove
+// FencedFramePropertiesNodeSource, and all FencedFrameProperties objects will
+// originate from the fenced frame root.
 enum class FencedFramePropertiesNodeSource { kFrameTreeRoot, kClosestAncestor };
 
 // Returns a new string based on input where the matching substrings have been
