@@ -18,11 +18,12 @@ import java.nio.ByteBuffer;
 
 /** {@link PersistedTabData} for archiving/auto-deleting inactive tabs. */
 public class ArchivePersistedTabData extends PersistedTabData {
+    @VisibleForTesting protected static final long INVALID_TIMESTAMP = -1;
     private static final String TAG = "ArchivePTD";
     private static final Class<ArchivePersistedTabData> USER_DATA_KEY =
             ArchivePersistedTabData.class;
 
-    private long mArchivedTimeMs;
+    private long mArchivedTimeMs = INVALID_TIMESTAMP;
 
     /**
      * Gets the {@link ArchivePersistedTabData} associated with the given tab or creates one if it

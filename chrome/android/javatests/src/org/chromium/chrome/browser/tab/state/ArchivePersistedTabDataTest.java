@@ -48,7 +48,10 @@ public class ArchivePersistedTabDataTest {
                     ArchivePersistedTabData.from(
                             sActivityTestRule.getActivity().getActivityTab(),
                             (res) -> {
-                                Assert.assertNull(res);
+                                Assert.assertNotNull(res);
+                                Assert.assertEquals(
+                                        ArchivePersistedTabData.INVALID_TIMESTAMP,
+                                        res.getArchivedTimeMs());
                                 helper.notifyCalled();
                             });
                 });

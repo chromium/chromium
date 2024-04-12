@@ -214,7 +214,8 @@ public abstract class PersistedTabData implements UserData {
                                 PostTask.postTask(
                                         TaskTraits.UI_DEFAULT,
                                         () -> {
-                                            onPersistedTabDataResult(null, tab, clazz, key);
+                                            onPersistedTabDataResult(
+                                                    persistedTabData, tab, clazz, key);
                                         });
                             } else {
                                 // stored {@link PersistedTabData} found
