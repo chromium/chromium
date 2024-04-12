@@ -2851,5 +2851,24 @@
     "args": ["--enable-blink-features=RubyLineBreakable"],
     "owners": ["tkent@chromium.org"],
     "expires": "Oct 10, 2024"
+  },
+  {
+    "prefix": "skip-preload-scanning",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "http/tests/skip-preload-scanning"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=SkipPreloadScanning"
+    ],
+    "expires": "Jan 14, 2025",
+    "owners": [
+      "alexnj@chromium.org"
+    ]
   }
 ]
