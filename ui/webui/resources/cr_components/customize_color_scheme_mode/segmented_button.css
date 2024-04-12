@@ -29,5 +29,6 @@ cr-radio-group {
 
 :host ::slotted(*) {
   min-height: 0;
+  min-width: 0;
   padding: 0;
 }

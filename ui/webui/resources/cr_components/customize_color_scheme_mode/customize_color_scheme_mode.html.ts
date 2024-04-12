@@ -12,7 +12,7 @@ export function getHtml(this: CustomizeColorSchemeModeElement) {
     group-aria-label="${this.i18n('colorSchemeModeLabel')}"
     @selected-changed="${this.onSelectedChanged_}">
   ${this.colorSchemeModeOptions_.map(item => html`
-    <segmented-button-option name="${item.id}">
+    <segmented-button-option name="${item.id}" title="${this.i18n(item.id)}">
       <div id="${item.id}" class="cr-icon" slot="prefix-icon"></div>
       ${this.i18n(item.id)}
     </segmented-button-option>
