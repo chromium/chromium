@@ -35,6 +35,8 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
@@ -1002,6 +1004,108 @@ TEST_F(MahiPanelViewTest, AnswerLoadingAnimation) {
       mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel));
   EXPECT_FALSE(panel_view()->GetViewByID(
       mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
+}
+
+// Tests that the content scroll view scrolls to the bottom or top when being
+// laid out based on the following:
+// 1. Scroll to bottom when switching to the Q&A view, or when a new
+//    question/answer is added.
+// 2. Scroll to top when switching to the summary & outlines section, or
+//    when refreshing the summary contents.
+TEST_F(MahiPanelViewTest, ScrollViewScrollsAfterLayout) {
+  ON_CALL(mock_mahi_manager(), GetSummary).WillByDefault(ReturnLongSummary);
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault(
+          [](const std::u16string& question, bool current_panel_content,
+             chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            std::move(callback).Run(/*answer=*/u"answer",
+                                    MahiResponseStatus::kSuccess);
+          });
+
+  // Recreate panel widget so it can return a long summary.
+  CreatePanelWidget();
+
+  // Check that the Summary view with a long summary has a scroll bar.
+  const auto* const summary_outlines_section = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kSummaryOutlinesSection);
+  ASSERT_TRUE(summary_outlines_section);
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+
+  auto* const scroll_view = views::AsViewClass<views::ScrollView>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView));
+  ASSERT_TRUE(scroll_view);
+  auto* const scroll_bar = scroll_view->vertical_scroll_bar();
+  ASSERT_TRUE(scroll_bar);
+  EXPECT_TRUE(scroll_bar->GetVisible());
+
+  // Switch to the Q&A view, which should initially not be scrollable.
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+  ASSERT_TRUE(question_textfield);
+  question_textfield->SetText(u"question");
+
+  const auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  ASSERT_TRUE(send_button);
+  LeftClickOn(send_button);
+
+  const auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  ASSERT_TRUE(question_answer_view);
+  ASSERT_TRUE(question_answer_view->GetVisible());
+
+  views::test::RunScheduledLayout(widget());
+  EXPECT_FALSE(scroll_bar->GetVisible());
+
+  // Add enough questions to make the view scrollable.
+  while (!scroll_bar->GetVisible()) {
+    question_textfield->SetText(u"question");
+    LeftClickOn(send_button);
+    views::test::RunScheduledLayout(widget());
+  }
+
+  // Ensure that the view scrolls down after a new question is added.
+  int previous_scroll_bar_position = scroll_bar->GetPosition();
+  question_textfield->SetText(u"question");
+  LeftClickOn(send_button);
+  views::test::RunScheduledLayout(widget());
+  EXPECT_GT(scroll_bar->GetPosition(), previous_scroll_bar_position);
+
+  // Ensure that the scroll bar is at the end position.
+  previous_scroll_bar_position = scroll_bar->GetPosition();
+  scroll_bar->ScrollByAmount(views::ScrollBar::ScrollAmount::kEnd);
+  EXPECT_EQ(scroll_bar->GetPosition(), previous_scroll_bar_position);
+
+  // The view scrolls up after switching to the summary section.
+  const auto* const go_to_summary_outlines_button = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kGoToSummaryOutlinesButton);
+  ASSERT_TRUE(go_to_summary_outlines_button);
+  LeftClickOn(go_to_summary_outlines_button);
+  views::test::RunScheduledLayout(widget());
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+
+  // Ensure that the scroll bar is visible.
+  ASSERT_TRUE(scroll_bar->GetVisible());
+  EXPECT_LT(scroll_bar->GetPosition(), previous_scroll_bar_position);
+
+  // Ensure that the scroll bar is at the start position.
+  previous_scroll_bar_position = scroll_bar->GetPosition();
+  scroll_bar->ScrollByAmount(views::ScrollBar::ScrollAmount::kStart);
+  EXPECT_EQ(scroll_bar->GetPosition(), previous_scroll_bar_position);
+
+  // Scroll down to the end position to test that refreshing the summary
+  // contents scrolls to the start position.
+  scroll_bar->ScrollByAmount(views::ScrollBar::ScrollAmount::kEnd);
+  EXPECT_GT(scroll_bar->GetPosition(), previous_scroll_bar_position);
+  previous_scroll_bar_position = scroll_bar->GetPosition();
+  ui_controller()->RefreshContents();
+  views::test::RunScheduledLayout(widget());
+  EXPECT_LT(scroll_bar->GetPosition(), previous_scroll_bar_position);
+
+  // Ensure again that the scroll bar is at the start position.
+  previous_scroll_bar_position = scroll_bar->GetPosition();
+  scroll_bar->ScrollByAmount(views::ScrollBar::ScrollAmount::kStart);
+  EXPECT_EQ(scroll_bar->GetPosition(), previous_scroll_bar_position);
 }
 
 // Verifies the mahi panel view when loading an answer with an error by

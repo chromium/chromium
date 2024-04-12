@@ -6,6 +6,7 @@
 
 #include <climits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -55,6 +56,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -386,11 +388,13 @@ END_VIEW_BUILDER
 // outlines section or the Q&A section. Clips its own bounds to present its
 // contents within a round-cornered container with a cutout in the bottom-right.
 class MahiScrollView : public views::ScrollView,
-                       public views::ViewTargeterDelegate {
+                       public views::ViewTargeterDelegate,
+                       public MahiUiController::Delegate {
   METADATA_HEADER(MahiScrollView, views::ScrollView)
 
  public:
-  MahiScrollView() {
+  MahiScrollView(MahiUiController* ui_controller)
+      : MahiUiController::Delegate(ui_controller) {
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
     SetBackgroundThemeColorId(cros_tokens::kCrosSysSystemOnBase);
     ClipHeightTo(/*min_height=*/0, /*max_height=*/INT_MAX);
@@ -468,6 +472,22 @@ class MahiScrollView : public views::ScrollView,
     SetClipPath(clip_path);
   }
 
+  // views::View
+  void Layout(PassKey) override {
+    LayoutSuperclass<views::ScrollView>(this);
+
+    // Every time the scroll view is laid `default_scroll_position` is checked
+    // to scroll to the top or bottom of the view based on the following:
+    // 1. Scroll to bottom when switching to the Q&A view, or when a new
+    //    question/answer is added.
+    // 2. Scroll to top when switching to the summary & outlines section, or
+    //    when refreshing the summary contents.
+    if (default_scroll_position_.has_value()) {
+      vertical_scroll_bar()->ScrollByAmount(default_scroll_position_.value());
+      default_scroll_position_ = std::nullopt;
+    }
+  }
+
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override {
@@ -477,6 +497,47 @@ class MahiScrollView : public views::ScrollView,
         contents_bounds.height() - kCutoutHeight, kCutoutWidth, kCutoutHeight);
     return !rect.Intersects(corner_cutout_region);
   }
+
+  // MahiController::Delegate:
+  views::View* GetView() override { return this; }
+
+  bool GetViewVisibility(VisibilityState state) const override {
+    return GetVisible();
+  }
+
+  void OnUpdated(const MahiUiUpdate& update) override {
+    views::ScrollBar::ScrollAmount old_scroll_position;
+    switch (update.type()) {
+      case MahiUiUpdateType::kAnswerLoaded:
+      case MahiUiUpdateType::kQuestionPosted: {
+        old_scroll_position = default_scroll_position_.value_or(
+            views::ScrollBar::ScrollAmount::kNone);
+        default_scroll_position_ = views::ScrollBar::ScrollAmount::kEnd;
+        break;
+      }
+      case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated: {
+        old_scroll_position = default_scroll_position_.value_or(
+            views::ScrollBar::ScrollAmount::kNone);
+        default_scroll_position_ = views::ScrollBar::ScrollAmount::kStart;
+        break;
+      }
+      case MahiUiUpdateType::kContentsRefreshInitiated:
+      case MahiUiUpdateType::kErrorReceived:
+      case MahiUiUpdateType::kOutlinesLoaded:
+      case MahiUiUpdateType::kQuestionAndAnswerViewNavigated:
+      case MahiUiUpdateType::kQuestionReAsked:
+      case MahiUiUpdateType::kRefreshAvailabilityUpdated:
+      case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
+      case MahiUiUpdateType::kSummaryLoaded:
+        break;
+    }
+    if (old_scroll_position != default_scroll_position_) {
+      InvalidateLayout();
+    }
+  }
+
+  // Used to scroll the view to a default position based on the current state.
+  std::optional<views::ScrollBar::ScrollAmount> default_scroll_position_;
 };
 
 BEGIN_METADATA(MahiScrollView)
@@ -585,7 +646,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                               FeedbackType::kThumbsDown))
                           .SetID(mahi_constants::ViewId::kThumbsDownButton)),
               views::Builder<views::ScrollView>(
-                  std::make_unique<MahiScrollView>())
+                  std::make_unique<MahiScrollView>(ui_controller_))
                   .SetID(mahi_constants::ViewId::kScrollView)
                   .SetContents(
                       views::Builder<views::FlexLayoutView>()
