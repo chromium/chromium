@@ -56,6 +56,8 @@ bool ShouldAlwaysRetrieveOptimizationGuidePredictions();
 // time.
 size_t GetMaxInflightPrefetches();
 
+BASE_DECLARE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_PREDICTORS_PREDICTORS_FEATURES_H_

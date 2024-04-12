@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
@@ -402,7 +403,10 @@ void LoadingPredictor::CleanupAbandonedHintsAndNavigations(
 void LoadingPredictor::MaybeAddPreconnect(const GURL& url,
                                           PreconnectPrediction prediction) {
   CHECK(!shutdown_);
-  if (!prediction.prefetch_requests.empty()) {
+  if (!prediction.prefetch_requests.empty() &&
+      (AfterStartupTaskUtils::IsBrowserStartupComplete() ||
+       !base::FeatureList::IsEnabled(
+           features::kAvoidLoadingPredictorPrefetchDuringBrowserStartup))) {
     CHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
     prefetch_manager()->Start(url, std::move(prediction.prefetch_requests));
   }

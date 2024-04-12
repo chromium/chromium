@@ -109,4 +109,10 @@ size_t GetMaxInflightPrefetches() {
       3));
 }
 
+// If this is enabled, LoadingPredictor avoids prefetching during
+// browser startup.
+BASE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup,
+             "AvoidLoadingPredictorPrefetchDuringBrowserStartup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
