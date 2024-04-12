@@ -13,6 +13,8 @@
 #include "base/containers/intrusive_heap.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -23,10 +25,13 @@ namespace sequence_manager {
 namespace internal {
 
 struct WorkQueueAndTaskOrder {
+  STACK_ALLOCATED();
+
+  public:
   WorkQueueAndTaskOrder(WorkQueue& work_queue, const TaskOrder& task_order)
       : queue(&work_queue), order(task_order) {}
 
-  raw_ptr<WorkQueue> queue;
+  WorkQueue* queue;
   TaskOrder order;
 };
 
@@ -104,7 +109,8 @@ class BASE_EXPORT WorkQueueSets {
  private:
   struct OldestTaskOrder {
     TaskOrder key;
-    raw_ptr<WorkQueue> value;
+    // RAW_PTR_EXCLUSION: Performance: visible in sampling profiler stacks.
+    RAW_PTR_EXCLUSION WorkQueue* value = nullptr;
 
     // Used for a min-heap.
     bool operator>(const OldestTaskOrder& other) const {
