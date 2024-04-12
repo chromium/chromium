@@ -774,6 +774,7 @@ src/webgpu/shader/validation/expression/call/builtin/max.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/min.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/modf.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/normalize.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/pack2x16float.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/pack2x16snorm.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/pack2x16unorm.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/pack4x8snorm.spec.ts
