@@ -130,14 +130,14 @@ class CORE_EXPORT InsetArea {
 // Non-zero values refer to an anchor edge offset relative to the containing
 // block rectangle.
 struct InsetAreaOffsets {
-  LayoutUnit top_;
-  LayoutUnit bottom_;
-  LayoutUnit left_;
-  LayoutUnit right_;
+  std::optional<LayoutUnit> top;
+  std::optional<LayoutUnit> bottom;
+  std::optional<LayoutUnit> left;
+  std::optional<LayoutUnit> right;
 
   bool operator==(const InsetAreaOffsets& other) const {
-    return top_ == other.top_ && bottom_ == other.bottom_ &&
-           left_ == other.left_ && right_ == other.right_;
+    return top == other.top && bottom == other.bottom && left == other.left &&
+           right == other.right;
   }
 };
 

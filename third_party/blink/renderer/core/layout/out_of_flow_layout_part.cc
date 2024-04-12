@@ -57,8 +57,8 @@ bool CalculateNonOverflowingRangeInOneAxis(
     LayoutUnit margin_box_end,
     LayoutUnit imcb_inset_start,
     LayoutUnit imcb_inset_end,
-    const std::optional<LayoutUnit>& inset_start,
-    const std::optional<LayoutUnit>& inset_end,
+    bool has_non_auto_inset_start,
+    bool has_non_auto_inset_end,
     const std::optional<LayoutUnit>& additional_bounds_start,
     const std::optional<LayoutUnit>& additional_bounds_end,
     std::optional<LayoutUnit>* out_scroll_min,
@@ -68,7 +68,7 @@ bool CalculateNonOverflowingRangeInOneAxis(
   CHECK_EQ(additional_bounds_start.has_value(),
            additional_bounds_end.has_value());
   const LayoutUnit start_available_space = margin_box_start - imcb_inset_start;
-  if (inset_start) {
+  if (has_non_auto_inset_start) {
     // If the start inset is non-auto, then the start edges of both the
     // scroll-adjusted inset-modified containing block and the scroll-shifted
     // margin box always move by the same amount on scrolling. Then it overflows
@@ -85,7 +85,7 @@ bool CalculateNonOverflowingRangeInOneAxis(
   }
   // Calculation for the end edge is symmetric.
   const LayoutUnit end_available_space = imcb_inset_end - margin_box_end;
-  if (inset_end) {
+  if (has_non_auto_inset_end) {
     if (end_available_space < 0) {
       return false;
     }
@@ -523,8 +523,11 @@ OutOfFlowLayoutPart::ApplyInsetAreaOffsets(
     const InsetAreaOffsets& offsets,
     const OutOfFlowLayoutPart::ContainingBlockInfo& container_info) const {
   ContainingBlockInfo adjusted_container_info(container_info);
-  PhysicalToLogical converter(container_info.writing_direction, offsets.top_,
-                              offsets.right_, offsets.bottom_, offsets.left_);
+  PhysicalToLogical converter(container_info.writing_direction,
+                              offsets.top.value_or(LayoutUnit()),
+                              offsets.right.value_or(LayoutUnit()),
+                              offsets.bottom.value_or(LayoutUnit()),
+                              offsets.left.value_or(LayoutUnit()));
 
   // Reduce the container size and adjust the offset based on the inset-area.
   adjusted_container_info.rect.ContractEdges(
@@ -2097,6 +2100,11 @@ OutOfFlowLayoutPart::TryCalculateOffset(
           ? anchor_evaluator->GetAdditionalFallbackBoundsRect()
           : std::nullopt;
 
+  PhysicalToLogicalGetter has_non_auto_inset(
+      candidate_writing_direction, candidate_style,
+      &ComputedStyle::IsTopInsetNonAuto, &ComputedStyle::IsRightInsetNonAuto,
+      &ComputedStyle::IsBottomInsetNonAuto, &ComputedStyle::IsLeftInsetNonAuto);
+
   // Calculate the inline scroll offset range where the inline dimension fits.
   std::optional<InsetModifiedContainingBlock> imcb_for_position_fallback;
   std::optional<LayoutUnit> inline_scroll_min;
@@ -2113,8 +2121,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
             node_dimensions.MarginBoxInlineStart(),
             node_dimensions.MarginBoxInlineEnd(),
             imcb_for_position_fallback->inline_start,
-            imcb_for_position_fallback->InlineEndOffset(), insets.inline_start,
-            insets.inline_end,
+            imcb_for_position_fallback->InlineEndOffset(),
+            has_non_auto_inset.InlineStart(), has_non_auto_inset.InlineEnd(),
             additional_fallback_bounds.has_value()
                 ? std::make_optional(
                       additional_fallback_bounds->offset.inline_offset)
@@ -2147,8 +2155,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
             node_dimensions.MarginBoxBlockStart(),
             node_dimensions.MarginBoxBlockEnd(),
             imcb_for_position_fallback->block_start,
-            imcb_for_position_fallback->BlockEndOffset(), insets.block_start,
-            insets.block_end,
+            imcb_for_position_fallback->BlockEndOffset(),
+            has_non_auto_inset.BlockStart(), has_non_auto_inset.BlockEnd(),
             additional_fallback_bounds.has_value()
                 ? std::make_optional(
                       additional_fallback_bounds->offset.block_offset)

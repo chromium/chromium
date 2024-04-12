@@ -589,10 +589,10 @@ AnchorEvaluatorImpl::ComputeInsetAreaOffsetsForLayout(
   InsetArea physical_inset_area = inset_area.ToPhysical(
       container_converter_.GetWritingDirection(), self_writing_direction_);
 
-  LayoutUnit top;
-  LayoutUnit bottom;
-  LayoutUnit left;
-  LayoutUnit right;
+  std::optional<LayoutUnit> top;
+  std::optional<LayoutUnit> bottom;
+  std::optional<LayoutUnit> left;
+  std::optional<LayoutUnit> right;
 
   // The InsetArea::Used*() methods returns either an anchor() function or
   // nullopt (representing a 0px length), using top/left/right/bottom, to adjust
@@ -604,29 +604,25 @@ AnchorEvaluatorImpl::ComputeInsetAreaOffsetsForLayout(
   if (std::optional<blink::AnchorQuery> query = physical_inset_area.UsedTop()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBaseTop, this);
     top = Evaluate(query.value(), position_anchor,
-                   /* inset_area_offsets */ std::nullopt)
-              .value_or(LayoutUnit());
+                   /* inset_area_offsets */ std::nullopt);
   }
   if (std::optional<blink::AnchorQuery> query =
           physical_inset_area.UsedBottom()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBaseBottom, this);
     bottom = Evaluate(query.value(), position_anchor,
-                      /* inset_area_offsets */ std::nullopt)
-                 .value_or(LayoutUnit());
+                      /* inset_area_offsets */ std::nullopt);
   }
   if (std::optional<blink::AnchorQuery> query =
           physical_inset_area.UsedLeft()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBaseLeft, this);
     left = Evaluate(query.value(), position_anchor,
-                    /* inset_area_offsets */ std::nullopt)
-               .value_or(LayoutUnit());
+                    /* inset_area_offsets */ std::nullopt);
   }
   if (std::optional<blink::AnchorQuery> query =
           physical_inset_area.UsedRight()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBaseRight, this);
     right = Evaluate(query.value(), position_anchor,
-                     /* inset_area_offsets */ std::nullopt)
-                .value_or(LayoutUnit());
+                     /* inset_area_offsets */ std::nullopt);
   }
   return InsetAreaOffsets(top, bottom, left, right);
 }
@@ -642,10 +638,10 @@ PhysicalRect AnchorEvaluatorImpl::InsetAreaModifiedContainingBlock(
         PhysicalRect inset_area_modified_containing_block_rect =
             containing_block_rect_;
 
-        LayoutUnit top = inset_area_offsets->top_;
-        LayoutUnit bottom = inset_area_offsets->bottom_;
-        LayoutUnit left = inset_area_offsets->left_;
-        LayoutUnit right = inset_area_offsets->right_;
+        LayoutUnit top = inset_area_offsets->top.value_or(LayoutUnit());
+        LayoutUnit bottom = inset_area_offsets->bottom.value_or(LayoutUnit());
+        LayoutUnit left = inset_area_offsets->left.value_or(LayoutUnit());
+        LayoutUnit right = inset_area_offsets->right.value_or(LayoutUnit());
 
         // Reduce the container size and adjust the offset based on the
         // inset-area.

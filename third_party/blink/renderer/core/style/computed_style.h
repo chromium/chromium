@@ -1489,6 +1489,24 @@ class ComputedStyle final : public ComputedStyleBase {
     return Top().IsAuto() && Bottom().IsAuto();
   }
 
+  // Whether an inset is considered 'auto' for anchor-positioning position
+  // fallback calculation purposes.
+  // https://drafts.csswg.org/css-anchor-position-1/#determine-the-position-fallback-styles
+  bool IsTopInsetNonAuto() const {
+    return !Top().IsAuto() || (InsetAreaOffsets() && InsetAreaOffsets()->top);
+  }
+  bool IsRightInsetNonAuto() const {
+    return !Right().IsAuto() ||
+           (InsetAreaOffsets() && InsetAreaOffsets()->right);
+  }
+  bool IsBottomInsetNonAuto() const {
+    return !Bottom().IsAuto() ||
+           (InsetAreaOffsets() && InsetAreaOffsets()->bottom);
+  }
+  bool IsLeftInsetNonAuto() const {
+    return !Left().IsAuto() || (InsetAreaOffsets() && InsetAreaOffsets()->left);
+  }
+
   // Content utility functions.
   bool ContentDataEquivalent(const ComputedStyle& other) const {
     return base::ValuesEquivalent(GetContentData(), other.GetContentData());
