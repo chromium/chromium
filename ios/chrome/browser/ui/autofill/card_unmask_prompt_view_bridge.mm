@@ -58,6 +58,10 @@ void CardUnmaskPromptViewBridge::Show() {
                                     completion:nil];
 }
 
+void CardUnmaskPromptViewBridge::Dismiss() {
+  PerformClose();
+}
+
 void CardUnmaskPromptViewBridge::ControllerGone() {
   controller_ = nullptr;
   PerformClose();

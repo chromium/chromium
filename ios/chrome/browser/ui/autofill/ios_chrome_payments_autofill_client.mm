@@ -120,6 +120,30 @@ void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(
   if (unmask_controller_) {
     unmask_controller_->OnVerificationResult(result);
   }
+
+  // For VCN-related errors, on iOS we show a new error dialog instead of
+  // updating the CVC unmask prompt with the error message.
+  switch (result) {
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+      ShowAutofillErrorDialog(
+          AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
+              /*is_permanent_error=*/true));
+      break;
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+      ShowAutofillErrorDialog(
+          AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
+              /*is_permanent_error=*/false));
+      break;
+    case AutofillClient::PaymentsRpcResult::kSuccess:
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
+    case AutofillClient::PaymentsRpcResult::kNetworkError:
+      // Do nothing
+      break;
+    case AutofillClient::PaymentsRpcResult::kNone:
+      NOTREACHED();
+      return;
+  }
 }
 
 }  // namespace autofill::payments
