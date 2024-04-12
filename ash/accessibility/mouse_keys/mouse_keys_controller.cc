@@ -45,6 +45,18 @@ const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
         {ui::DomCode::US_K, MouseKeysController::kKeyDown},
         {ui::DomCode::US_L, MouseKeysController::kKeyDownRight},
     });
+
+const base::flat_map<ui::DomCode, MouseKeysController::MouseKey> kNumPadKeys({
+    {ui::DomCode::NUMPAD5, MouseKeysController::kKeyClick},
+    {ui::DomCode::NUMPAD7, MouseKeysController::kKeyUpLeft},
+    {ui::DomCode::NUMPAD8, MouseKeysController::kKeyUp},
+    {ui::DomCode::NUMPAD9, MouseKeysController::kKeyUpRight},
+    {ui::DomCode::NUMPAD4, MouseKeysController::kKeyLeft},
+    {ui::DomCode::NUMPAD6, MouseKeysController::kKeyRight},
+    {ui::DomCode::NUMPAD1, MouseKeysController::kKeyDownLeft},
+    {ui::DomCode::NUMPAD2, MouseKeysController::kKeyDown},
+    {ui::DomCode::NUMPAD3, MouseKeysController::kKeyDownRight},
+});
 }  // namespace
 
 MouseKeysController::MouseKeysController() {
@@ -96,8 +108,16 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
 
   CenterMouseIfUninitialized();
 
+  // Check primary keyboard keys.
   auto mappings = left_handed_ ? kLeftHandedKeys : kRightHandedKeys;
   for (auto mapping : mappings) {
+    if (CheckFlagsAndMaybeSendEvent(*key_event, mapping.first,
+                                    mapping.second)) {
+      return true;
+    }
+  }
+
+  for (auto mapping : kNumPadKeys) {
     if (CheckFlagsAndMaybeSendEvent(*key_event, mapping.first,
                                     mapping.second)) {
       return true;

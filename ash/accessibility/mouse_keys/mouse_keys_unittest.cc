@@ -721,4 +721,37 @@ TEST_F(MouseKeysTest, LeftHanded) {
                                     kMoveDeltaDIP);
 }
 
+TEST_F(MouseKeysTest, NumPad) {
+  SetEnabled(true);
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+
+  // We should be able to click with the num pad 5.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_NUMPAD5);
+  auto mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(2u, mouse_events.size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[1].flags());
+  EXPECT_EQ(mouse_events[1].location(), kDefaultPosition);
+
+  // We should be able to move the mouse with the num pad.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_NUMPAD7);
+  PressAndReleaseKey(ui::VKEY_NUMPAD8);
+  PressAndReleaseKey(ui::VKEY_NUMPAD9);
+  PressAndReleaseKey(ui::VKEY_NUMPAD4);
+  PressAndReleaseKey(ui::VKEY_NUMPAD6);
+  PressAndReleaseKey(ui::VKEY_NUMPAD1);
+  PressAndReleaseKey(ui::VKEY_NUMPAD2);
+  PressAndReleaseKey(ui::VKEY_NUMPAD3);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectMouseMovedInCircularPattern(CheckForMouseEvents(), kDefaultPosition,
+                                    kMoveDeltaDIP);
+}
+
 }  // namespace ash
