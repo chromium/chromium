@@ -5,6 +5,8 @@
 #include "ash/wm/overview/birch/birch_chip_button.h"
 
 #include "ash/birch/birch_item.h"
+#include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
@@ -242,8 +244,10 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
     case base::to_underlying(BirchBarContextMenuModel::CommandId::kReset):
       birch_bar_controller->ExecuteCommand(command_id, event_flags);
       break;
-    // TODO(zxdan): handle other commands.
-    default:
+    case base::to_underlying(BirchBarContextMenuModel::CommandId::kFeedback):
+      Shell::Get()->shell_delegate()->OpenFeedbackDialog(
+          ShellDelegate::FeedbackSource::kBirch,
+          /*description_template=*/std::string(), /*category_tag=*/"fromBirch");
       break;
   }
 }

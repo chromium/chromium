@@ -124,6 +124,8 @@ content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
 chrome::FeedbackSource ToChromeFeedbackSource(
     ash::ShellDelegate::FeedbackSource source) {
   switch (source) {
+    case ash::ShellDelegate::FeedbackSource::kBirch:
+      return chrome::FeedbackSource::kFeedbackSourceBirch;
     case ash::ShellDelegate::FeedbackSource::kFocusMode:
       return chrome::FeedbackSource::kFeedbackSourceFocusMode;
     case ash::ShellDelegate::FeedbackSource::kGameDashboard:

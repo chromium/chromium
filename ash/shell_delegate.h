@@ -56,6 +56,7 @@ class WindowState;
 class ASH_EXPORT ShellDelegate {
  public:
   enum class FeedbackSource {
+    kBirch,
     kFocusMode,
     kGameDashboard,
     kOverview,
