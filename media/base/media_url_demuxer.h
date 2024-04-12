@@ -47,8 +47,7 @@ class MEDIA_EXPORT MediaUrlDemuxer : public Demuxer {
   ~MediaUrlDemuxer() override;
 
   // MediaResource interface.
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> GetAllStreams()
-      override;
+  std::vector<DemuxerStream*> GetAllStreams() override;
   const MediaUrlParams& GetMediaUrlParams() const override;
   MediaResource::Type GetType() const override;
   void ForwardDurationChangeToDemuxerHost(base::TimeDelta duration) override;

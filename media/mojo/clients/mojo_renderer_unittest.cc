@@ -214,7 +214,7 @@ class MojoRendererTest : public ::testing::Test {
   StrictMock<MockDemuxer> demuxer_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> audio_stream_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> video_stream_;
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams_;
+  std::vector<DemuxerStream*> streams_;
 
   // Service side bindings (declaration order is critical).
   MojoCdmServiceContext mojo_cdm_service_context_;

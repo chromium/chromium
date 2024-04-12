@@ -520,9 +520,9 @@ TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
   DCHECK(report3 != reports.end());
 
   // Get the reports for Source 1 and check the status of all reports.
-  EXPECT_EQ(
-      std::vector<vector_experimental_raw_ptr<const ReportingReport>>{*report1},
-      cache()->GetReportsToDeliverForSource(source1));
+  EXPECT_EQ((std::vector<raw_ptr<const ReportingReport, VectorExperimental>>{
+                *report1}),
+            cache()->GetReportsToDeliverForSource(source1));
   EXPECT_TRUE(cache()->IsReportPendingForTesting(*report1));
   EXPECT_FALSE(cache()->IsReportDoomedForTesting(*report1));
   EXPECT_FALSE(cache()->IsReportPendingForTesting(*report2));
@@ -545,9 +545,9 @@ TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
                     ReportingReport::Status::QUEUED));
 
   // Get the reports for Source 2 and check the status again.
-  EXPECT_EQ(
-      std::vector<vector_experimental_raw_ptr<const ReportingReport>>{*report2},
-      cache()->GetReportsToDeliverForSource(source2));
+  EXPECT_EQ((std::vector<raw_ptr<const ReportingReport, VectorExperimental>>{
+                *report2}),
+            cache()->GetReportsToDeliverForSource(source2));
   EXPECT_TRUE(cache()->IsReportPendingForTesting(*report1));
   EXPECT_FALSE(cache()->IsReportDoomedForTesting(*report1));
   EXPECT_TRUE(cache()->IsReportPendingForTesting(*report2));

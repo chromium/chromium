@@ -331,19 +331,19 @@ class MockFormSaver : public StubFormSaver {
   MOCK_METHOD3(
       Save,
       void(PasswordForm pending,
-           const std::vector<vector_experimental_raw_ptr<const PasswordForm>>&
+           const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
                matches,
            const std::u16string& old_password));
   MOCK_METHOD3(
       Update,
       void(PasswordForm pending,
-           const std::vector<vector_experimental_raw_ptr<const PasswordForm>>&
+           const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
                matches,
            const std::u16string& old_password));
   MOCK_METHOD4(
       UpdateReplace,
       void(PasswordForm pending,
-           const std::vector<vector_experimental_raw_ptr<const PasswordForm>>&
+           const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
                matches,
            const std::u16string& old_password,
            const PasswordForm& old_unique_key));
@@ -1144,10 +1144,8 @@ TEST_P(PasswordFormManagerTest, SaveNewCredentials) {
             saved_form.username_element);
   EXPECT_EQ(submitted_form.fields[kPasswordFieldIndex].name,
             saved_form.password_element);
-  EXPECT_EQ(
-      std::vector<vector_experimental_raw_ptr<const PasswordForm>>{
-          &saved_match_},
-      best_matches);
+  ASSERT_EQ(best_matches.size(), 1u);
+  EXPECT_EQ(best_matches[0], &saved_match_);
 
   // Check UKM metrics.
   form_manager_.reset();
@@ -1191,10 +1189,8 @@ TEST_P(PasswordFormManagerTest, SavePSLToAlreadySaved) {
   EXPECT_EQ(saved_form.username_element, psl_saved_match_.username_element);
   EXPECT_EQ(saved_form.password_element, psl_saved_match_.password_element);
 
-  EXPECT_EQ(
-      std::vector<vector_experimental_raw_ptr<const PasswordForm>>{
-          &psl_saved_match_},
-      best_matches);
+  ASSERT_EQ(best_matches.size(), 1u);
+  EXPECT_EQ(best_matches[0], &psl_saved_match_);
 }
 
 // Tests that when credentials with already saved username but with a new

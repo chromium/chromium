@@ -45,10 +45,10 @@ MediaResource::Type DecryptingMediaResource::GetType() const {
   return MediaResource::Type::kStream;
 }
 
-std::vector<raw_ptr<DemuxerStream, VectorExperimental>>
-DecryptingMediaResource::GetAllStreams() {
-  if (streams_.size())
+std::vector<DemuxerStream*> DecryptingMediaResource::GetAllStreams() {
+  if (streams_.size()) {
     return streams_;
+  }
 
   return media_resource_->GetAllStreams();
 }

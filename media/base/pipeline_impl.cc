@@ -1177,7 +1177,7 @@ void PipelineImpl::RendererWrapper::ReportMetadata(StartType start_type) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   PipelineMetadata metadata;
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams;
+  std::vector<DemuxerStream*> streams;
 
   switch (demuxer_->GetType()) {
     case MediaResource::Type::kStream:

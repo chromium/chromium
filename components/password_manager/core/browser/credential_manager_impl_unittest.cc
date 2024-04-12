@@ -103,7 +103,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
       PasswordWasAutofilled,
       (base::span<const PasswordForm>,
        const url::Origin&,
-       const std::vector<vector_experimental_raw_ptr<const PasswordForm>>*,
+       (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*),
        bool was_autofilled_on_pageload),
       (override));
 

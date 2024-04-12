@@ -351,7 +351,7 @@ bool RendererImpl::GetWallClockTimes(
 }
 
 bool RendererImpl::HasEncryptedStream() {
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> demuxer_streams =
+  std::vector<DemuxerStream*> demuxer_streams =
       media_resource_->GetAllStreams();
 
   for (media::DemuxerStream* stream : demuxer_streams) {

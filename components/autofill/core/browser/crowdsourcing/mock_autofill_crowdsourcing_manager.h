@@ -28,7 +28,7 @@ class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
 
   MOCK_METHOD(bool,
               StartQueryRequest,
-              (const std::vector<vector_experimental_raw_ptr<FormStructure>>&,
+              ((const std::vector<raw_ptr<FormStructure, VectorExperimental>>&),
                net::IsolationInfo,
                QueryRequestCompleteCallback),
               (override));

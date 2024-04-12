@@ -116,7 +116,7 @@ class PipelineImplTest : public ::testing::Test {
 
     // SetDemuxerExpectations() adds overriding expectations for expected
     // non-NULL streams.
-    std::vector<raw_ptr<DemuxerStream, VectorExperimental>> empty;
+    std::vector<DemuxerStream*> empty;
     EXPECT_CALL(*demuxer_, GetAllStreams()).WillRepeatedly(Return(empty));
 
     EXPECT_CALL(*demuxer_, GetTimelineOffset())
@@ -365,7 +365,7 @@ class PipelineImplTest : public ::testing::Test {
   base::WeakPtr<MockRenderer> renderer_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> audio_stream_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> video_stream_;
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams_;
+  std::vector<DemuxerStream*> streams_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION RendererClient* renderer_client_ = nullptr;

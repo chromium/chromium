@@ -558,10 +558,9 @@ base::Time ChunkDemuxer::GetTimelineOffset() const {
   return timeline_offset_;
 }
 
-std::vector<raw_ptr<DemuxerStream, VectorExperimental>>
-ChunkDemuxer::GetAllStreams() {
+std::vector<DemuxerStream*> ChunkDemuxer::GetAllStreams() {
   base::AutoLock auto_lock(lock_);
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> result;
+  std::vector<DemuxerStream*> result;
   // Put enabled streams at the beginning of the list so that
   // MediaResource::GetFirstStream returns the enabled stream if there is one.
   // TODO(servolk): Revisit this after media track switching is supported.

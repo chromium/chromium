@@ -82,8 +82,7 @@ ManifestDemuxer::ManifestDemuxer(
       media_task_runner_(std::move(media_task_runner)),
       impl_(std::move(impl)) {}
 
-std::vector<raw_ptr<DemuxerStream, VectorExperimental>>
-ManifestDemuxer::GetAllStreams() {
+std::vector<DemuxerStream*> ManifestDemuxer::GetAllStreams() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   // For each stream that ChunkDemuxer returns, we need to wrap it so that we
@@ -92,7 +91,7 @@ ManifestDemuxer::GetAllStreams() {
   // memory.
   // TODO(crbug/1266991): Rearchitect the demuxer stream ownership model to
   // prevent long-lived streams from potentially leaking memory.
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams;
+  std::vector<DemuxerStream*> streams;
   for (DemuxerStream* chunk_demuxer_stream : chunk_demuxer_->GetAllStreams()) {
     auto it = streams_.find(chunk_demuxer_stream);
     if (it != streams_.end()) {

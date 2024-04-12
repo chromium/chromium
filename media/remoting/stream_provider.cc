@@ -639,13 +639,14 @@ void StreamProvider::CompleteInitialize() {
   std::move(init_done_callback_).Run(PIPELINE_OK);
 }
 
-std::vector<raw_ptr<DemuxerStream, VectorExperimental>>
-StreamProvider::GetAllStreams() {
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams;
-  if (audio_stream_)
+std::vector<DemuxerStream*> StreamProvider::GetAllStreams() {
+  std::vector<DemuxerStream*> streams;
+  if (audio_stream_) {
     streams.push_back(audio_stream_.get());
-  if (video_stream_)
+  }
+  if (video_stream_) {
     streams.push_back(video_stream_.get());
+  }
   return streams;
 }
 

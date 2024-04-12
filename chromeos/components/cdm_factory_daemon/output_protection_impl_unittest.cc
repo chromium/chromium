@@ -54,11 +54,11 @@ class MockDisplaySystemDelegate
   MOCK_METHOD(void,
               UnregisterClient,
               (display::ContentProtectionManager::ClientId));
-  MOCK_METHOD(
-      const std::vector<vector_experimental_raw_ptr<display::DisplaySnapshot>>&,
-      cached_displays,
-      (),
-      (const));
+  MOCK_METHOD((const std::vector<
+                  raw_ptr<display::DisplaySnapshot, VectorExperimental>>&),
+              cached_displays,
+              (),
+              (const));
 };
 
 }  // namespace

@@ -1122,12 +1122,6 @@ constexpr inline auto SetExperimental = base::RawPtrTraits::kMayDangle;
 // DanglingUntriaged where necessary.
 constexpr inline auto CtnExperimental = base::RawPtrTraits::kMayDangle;
 
-// Temporary workaround needed when using vector<raw_ptr<T, VectorExperimental>
-// in Mocked method signatures as the macros don't allow commas within.
-template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
-using vector_experimental_raw_ptr =
-    base::raw_ptr<T, Traits | VectorExperimental>;
-
 // Public verson used in callbacks arguments when it is known that they might
 // receive dangling pointers. In any other cases, please
 // use one of:

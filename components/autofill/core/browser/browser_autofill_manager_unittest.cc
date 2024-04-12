@@ -656,11 +656,9 @@ class MockAutofillDriver : public TestAutofillDriver {
                const FieldGlobalId& field_id,
                const std::u16string& value),
               (override));
-  MOCK_METHOD(
-      void,
+  MOCK_METHOD1(
       SendAutofillTypePredictionsToRenderer,
-      (const std::vector<vector_experimental_raw_ptr<FormStructure>>& forms),
-      (override));
+      void(const std::vector<raw_ptr<FormStructure, VectorExperimental>>&));
 };
 
 }  // namespace

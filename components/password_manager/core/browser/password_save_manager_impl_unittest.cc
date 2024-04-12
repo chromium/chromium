@@ -150,7 +150,7 @@ class MockFormSaver : public StubFormSaver {
       void,
       Save,
       (PasswordForm pending,
-       const std::vector<vector_experimental_raw_ptr<const PasswordForm>>&
+       (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&)
            matches,
        const std::u16string& old_password),
       (override));
@@ -158,7 +158,7 @@ class MockFormSaver : public StubFormSaver {
       void,
       Update,
       (PasswordForm pending,
-       const std::vector<vector_experimental_raw_ptr<const PasswordForm>>&
+       (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&)
            matches,
        const std::u16string& old_password),
       (override));
@@ -166,7 +166,7 @@ class MockFormSaver : public StubFormSaver {
       void,
       UpdateReplace,
       (PasswordForm pending,
-       const std::vector<vector_experimental_raw_ptr<const PasswordForm>>&
+       (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&)
            matches,
        const std::u16string& old_password,
        const PasswordForm& old_unique_key),
@@ -695,10 +695,8 @@ TEST_P(PasswordSaveManagerImplTest, SaveNewCredentials) {
             saved_form.username_element);
   EXPECT_EQ(submitted_form.fields[kPasswordFieldIndex].name,
             saved_form.password_element);
-  EXPECT_EQ(
-      std::vector<vector_experimental_raw_ptr<const PasswordForm>>{
-          &saved_match_},
-      best_matches);
+  ASSERT_EQ(best_matches.size(), 1u);
+  EXPECT_EQ(best_matches[0], &saved_match_);
 
   // Check histograms.
   histogram_tester.ExpectUniqueSample(
@@ -750,10 +748,8 @@ TEST_P(PasswordSaveManagerImplTest, SavePSLToAlreadySaved) {
   EXPECT_EQ(psl_saved_match_.username_element, saved_form.username_element);
   EXPECT_EQ(psl_saved_match_.password_element, saved_form.password_element);
 
-  EXPECT_EQ(
-      std::vector<vector_experimental_raw_ptr<const PasswordForm>>{
-          &psl_saved_match_},
-      best_matches);
+  ASSERT_EQ(best_matches.size(), 1u);
+  EXPECT_EQ(best_matches[0], &psl_saved_match_);
 }
 
 // Tests that when credentials with already saved username but with a new

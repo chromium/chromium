@@ -136,8 +136,7 @@ class FakeMediaResource : public MediaResource {
   ~FakeMediaResource() override;
 
   // MediaResource implementation.
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> GetAllStreams()
-      override;
+  std::vector<DemuxerStream*> GetAllStreams() override;
 
  private:
   FakeDemuxerStream fake_video_stream_;

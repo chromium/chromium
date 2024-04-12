@@ -1084,17 +1084,25 @@ TEST_P(DesksTest, WindowStackingAfterWindowMoveToAnotherDesk) {
 
   // The global MRU order should be {win0, win3, win2, win1}.
   auto* mru_tracker = Shell::Get()->mru_window_tracker();
-  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<aura::Window>>(
-                {win0.get(), win3.get(), win2.get(), win1.get()}),
-            mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks));
+  EXPECT_EQ(mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks),
+            aura::WindowTracker::WindowList({
+                win0.get(),
+                win3.get(),
+                win2.get(),
+                win1.get(),
+            }));
 
   // Now move back to desk_2, and move its windows to desk_1. Their window
   // stacking should match their order in the MRU.
   ActivateDesk(desk_2);
   // The global MRU order is updated to be {win3, win0, win2, win1}.
-  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<aura::Window>>(
-                {win3.get(), win0.get(), win2.get(), win1.get()}),
-            mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks));
+  EXPECT_EQ(mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks),
+            aura::WindowTracker::WindowList({
+                win3.get(),
+                win0.get(),
+                win2.get(),
+                win1.get(),
+            }));
 
   // Moving |win2| should be enough to get its transient parent |win1| moved as
   // well.
@@ -1410,9 +1418,12 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
   EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
 
   auto* mru_tracker = Shell::Get()->mru_window_tracker();
-  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<aura::Window>>(
-                {win0.get(), win2.get(), win1.get()}),
-            mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
+  EXPECT_EQ(mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk),
+            aura::WindowTracker::WindowList({
+                win0.get(),
+                win2.get(),
+                win1.get(),
+            }));
 
   // Active desk_4 and enter overview mode, and add a single window.
   Desk* desk_4 = controller->GetDeskAtIndex(3);
@@ -1486,13 +1497,21 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
 
   // Verify that the stacking order is correct (top-most comes last, and
   // top-most is the same as MRU).
-  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<aura::Window>>(
-                {win3.get(), win0.get(), win2.get(), win1.get()}),
-            mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
-  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<aura::Window>>(
-                {win1.get(), win2.get(), win0.get(), win3.get()}),
-            desk_4->GetDeskContainerForRoot(Shell::GetPrimaryRootWindow())
-                ->children());
+  EXPECT_EQ(mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk),
+            aura::WindowTracker::WindowList({
+                win3.get(),
+                win0.get(),
+                win2.get(),
+                win1.get(),
+            }));
+  EXPECT_EQ(desk_4->GetDeskContainerForRoot(Shell::GetPrimaryRootWindow())
+                ->children(),
+            aura::WindowTracker::WindowList({
+                win1.get(),
+                win2.get(),
+                win0.get(),
+                win3.get(),
+            }));
 }
 
 TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
@@ -1519,9 +1538,13 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
 
   // The MRU across all desks is now {win2, win3, win0, win1}.
   auto* mru_tracker = Shell::Get()->mru_window_tracker();
-  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<aura::Window>>(
-                {win2.get(), win3.get(), win0.get(), win1.get()}),
-            mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks));
+  EXPECT_EQ(mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks),
+            aura::WindowTracker::WindowList({
+                win2.get(),
+                win3.get(),
+                win0.get(),
+                win1.get(),
+            }));
 
   // Enter overview mode, and remove desk_2 from its mini-view close button.
   auto* overview_controller = OverviewController::Get();
@@ -1570,9 +1593,13 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win3.get()));
 
   // The new MRU order is {win0, win1, win2, win3}.
-  EXPECT_EQ(std::vector<vector_experimental_raw_ptr<aura::Window>>(
-                {win0.get(), win1.get(), win2.get(), win3.get()}),
-            mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
+  EXPECT_EQ(mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk),
+            aura::WindowTracker::WindowList({
+                win0.get(),
+                win1.get(),
+                win2.get(),
+                win3.get(),
+            }));
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win0.get()),
             overview_grid->window_list()[0].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win1.get()),

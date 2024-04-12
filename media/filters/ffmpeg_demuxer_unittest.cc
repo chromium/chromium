@@ -144,8 +144,7 @@ class FFmpegDemuxerTest : public testing::Test {
   }
 
   DemuxerStream* GetStream(DemuxerStream::Type type) {
-    std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams =
-        demuxer_->GetAllStreams();
+    std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
     for (media::DemuxerStream* stream : streams) {
       if (stream->type() == type)
         return stream;
@@ -457,8 +456,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
   CreateDemuxer("bear-320x240-multitrack.webm");
   InitializeDemuxer();
 
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams =
-      demuxer_->GetAllStreams();
+  std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
 
   const size_t kExpectedStreamCount = 3;
   ASSERT_EQ(kExpectedStreamCount, streams.size());
@@ -506,8 +504,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack_Disabled) {
   CreateDemuxer("multitrack-disabled.mp4");
   InitializeDemuxer();
 
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams =
-      demuxer_->GetAllStreams();
+  std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
   EXPECT_EQ(1u, streams.size());
 }
 
@@ -518,8 +515,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Track_Disabled) {
   InitializeDemuxer();
 
   // The track enabled flag should be ignored when all tracks are disabled.
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams =
-      demuxer_->GetAllStreams();
+  std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
   EXPECT_EQ(1u, streams.size());
 }
 #endif
@@ -1769,8 +1765,7 @@ TEST_F(FFmpegDemuxerTest, MultitrackMemoryUsage) {
 
   // Now enable all demuxer streams in the file and perform another read, this
   // will buffer the data for additional streams and memory usage will increase.
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams =
-      demuxer_->GetAllStreams();
+  std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
   for (media::DemuxerStream* stream : streams) {
     static_cast<FFmpegDemuxerStream*>(stream)->SetEnabled(true,
                                                           base::TimeDelta());

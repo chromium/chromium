@@ -135,12 +135,11 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
     create_duplicates_ = false;
   }
 
-  MOCK_METHOD(
-      bool,
-      GetAllForeignSessions,
-      (std::vector<
-          vector_experimental_raw_ptr<const sync_sessions::SyncedSession>>*),
-      (override));
+  MOCK_METHOD(bool,
+              GetAllForeignSessions,
+              ((std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                                    VectorExperimental>>*)),
+              (override));
 
   MOCK_METHOD(bool,
               GetForeignSessionTabs,
