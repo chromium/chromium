@@ -29,7 +29,7 @@
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
     // Also then run tools/search_engine_choice/generate_search_engine_icons.py.
-    "kCurrentDataVersion": 155
+    "kCurrentDataVersion": 156
   },
 
   // The following engines are included in country lists and are added to the
@@ -61,7 +61,7 @@
     },
 
     "bing": {
-      "name": "Bing",
+      "name": "Microsoft Bing",
       "keyword": "bing.com",
       "favicon_url": "https://www.bing.com/sa/simg/bing_p_rr_teal_min.ico",
       "search_url": "https://www.bing.com/search?q={searchTerms}&PC=U316&FORM=CHROMN",
@@ -74,7 +74,7 @@
     },
 
     "brave": {
-      "name": "Brave Search",
+      "name": "Brave",
       "keyword": "search.brave.com",
       "favicon_url": "https://cdn.search.brave.com/serp/favicon.ico",
       "search_url": "https://search.brave.com/search?q={searchTerms}",
@@ -265,7 +265,7 @@
     },
 
     "seznam_cz": {
-      "name": "Seznam",
+      "name": "Seznam.cz",
       "keyword": "seznam.cz",
       "favicon_url": "https://search.seznam.cz/favicon.ico",
       "search_url": "https://search.seznam.cz/?q={searchTerms}",
@@ -275,7 +275,7 @@
     },
 
     "seznam_sk": {
-      "name": "Seznam",
+      "name": "Seznam.cz",
       "keyword": "seznam.sk",
       "favicon_url": "https://search.seznam.sk/favicon.ico",
       "search_url": "https://search.seznam.sk/?q={searchTerms}",
