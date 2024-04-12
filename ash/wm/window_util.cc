@@ -431,49 +431,38 @@ bool ShouldExcludeForCycleList(const aura::Window* window) {
 }
 
 bool ShouldExcludeForOverview(const aura::Window* window) {
+  // A window should be excluded from being shown in overview when:
+  // 1. In tablet split view mode on one window snapped;
+  // 2. In clamshell `SplitViewOverviewSession`,
+  // 3. If the window is not the mru window in snap group i.e. the corresponding
+  // overview item representation for the snap group has been created.
+  auto should_exclude_in_clamshell = [&]() -> bool {
+    if (auto* split_view_overview_session =
+            RootWindowController::ForWindow(window)
+                ->split_view_overview_session();
+        split_view_overview_session &&
+        split_view_overview_session->window() == window) {
+      return true;
+    }
+
+    if (auto* snap_group_controller = SnapGroupController::Get()) {
+      if (SnapGroup* snap_group =
+              snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+        return window != snap_group->GetTopMostWindowInGroup();
+      }
+    }
+
+    return false;
+  };
+
   if (ShouldExcludeForCycleList(window)) {
     return true;
   }
 
-  if (display::Screen::GetScreen()->InTabletMode()) {
-    return window == SplitViewController::Get(window->GetRootWindow())
-                         ->GetDefaultSnappedWindow();
-  }
-
-  // A window should be excluded from being shown in Overview in clamshell mode
-  // when:
-  // 1. In partial Overview:
-  //   - The window itself is the snapped window;
-  //   - The window belongs to a snap group.
-  SplitViewController* split_view_controller = SplitViewController::Get(window);
-  SplitViewController::State split_view_state = split_view_controller->state();
-  SnapGroupController* snap_group_controller = SnapGroupController::Get();
-  if (split_view_state == SplitViewController::State::kPrimarySnapped ||
-      split_view_state == SplitViewController::State::kSecondarySnapped) {
-    if (window == split_view_controller->GetDefaultSnappedWindow()) {
-      return true;
-    }
-
-    if (snap_group_controller &&
-        snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  // 2. In full Overview:
-  //   -  The window is not the most recently used (MRU) window within its snap
-  //   group. i.e. the corresponding overview item representation for the snap
-  //   group has been created.
-  if (snap_group_controller) {
-    if (SnapGroup* snap_group =
-            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      return window != snap_group->GetTopMostWindowInGroup();
-    }
-  }
-
-  return false;
+  return display::Screen::GetScreen()->InTabletMode()
+             ? (window == SplitViewController::Get(window->GetRootWindow())
+                              ->GetDefaultSnappedWindow())
+             : should_exclude_in_clamshell();
 }
 
 void EnsureTransientRoots(

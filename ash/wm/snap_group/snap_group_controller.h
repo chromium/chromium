@@ -87,7 +87,6 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
 
   // OverviewObserver:
   void OnOverviewModeStarting() override;
-  void OnOverviewModeEnding(OverviewSession* overview_session) override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
   // display::DisplayObserver:

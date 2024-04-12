@@ -7,10 +7,8 @@
 #include <optional>
 
 #include "ash/shell.h"
-#include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
-#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_state.h"
@@ -297,28 +295,6 @@ void SnapGroup::ApplyPrimarySnapRatio(float primary_snap_ratio) {
                             primary_snap_ratio);
   UpdateSnappedWindowBounds(window2_, /*account_for_divider_width=*/true,
                             1 - primary_snap_ratio);
-}
-
-void SnapGroup::OnOverviewModeStarting() {
-  SplitViewController* split_view_constroller =
-      SplitViewController::Get(GetRootWindow());
-  SplitViewController::State split_view_state = split_view_constroller->state();
-
-  // Hide windows in the snap group in partial Overview.
-  if (split_view_state == SplitViewController::State::kPrimarySnapped ||
-      split_view_state == SplitViewController::State::kSecondarySnapped) {
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>> hide_windows{
-        window1_.get(), window2_.get()};
-
-    hide_windows_in_partial_overview_ =
-        std::make_unique<ScopedOverviewHideWindows>(
-            /*windows=*/hide_windows,
-            /*force_hidden=*/true);
-  }
-}
-
-void SnapGroup::OnOverviewModeEnding() {
-  hide_windows_in_partial_overview_.reset();
 }
 
 }  // namespace ash
