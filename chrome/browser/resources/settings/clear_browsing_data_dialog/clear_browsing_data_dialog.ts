@@ -535,8 +535,36 @@ export class SettingsClearBrowsingDataDialogElement extends
     return dataTypes;
   }
 
+  private getTimeRangeDropdownForCurrentPage_() {
+    const page = this.$.pages.selectedItem as HTMLElement;
+    const dropdownMenu =
+        page.querySelector<SettingsDropdownMenuElement>('.time-range-select');
+    assert(dropdownMenu);
+    return dropdownMenu;
+  }
+
+  // TODO(crbug.com/1487530): Remove this after CbdTimeframeRequired finishes.
+  /** Highlight the time period dropdown in case no selection was made. */
+  private validateSelectedTimeRange_(): boolean {
+    const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
+    const timePeriod = Number(dropdownMenu.getSelectedValue());
+    if (timePeriod !== TimePeriodExperiment.NOT_SELECTED) {
+      return true;
+    }
+    // No time period is selected: the time period dropdown gets highlighted,
+    // and no clearing should happen.
+    dropdownMenu.classList.add('dropdown-error');
+    // Move the focus to the dropdown to indicate the change to a11y users.
+    dropdownMenu.focus();
+    return false;
+  }
+
   /** Clears browsing data and maybe shows a history notice. */
   private async clearBrowsingData_() {
+    if (!this.validateSelectedTimeRange_()) {
+      return;
+    }
+
     this.clearingInProgress_ = true;
     this.clearingDataAlertString_ = loadTimeData.getString('clearingData');
 
@@ -555,10 +583,7 @@ export class SettingsClearBrowsingDataDialogElement extends
 
     const page = this.$.pages.selectedItem as HTMLElement;
     const dataTypes = this.getSelectedDataTypes_(page);
-    const dropdownMenu =
-        page.querySelector<SettingsDropdownMenuElement>('.time-range-select');
-    assert(dropdownMenu);
-    const timePeriod = dropdownMenu.pref!.value;
+    const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
 
     if (page.id === 'basic-tab') {
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_BasicTab');
@@ -567,7 +592,8 @@ export class SettingsClearBrowsingDataDialogElement extends
     }
 
     const {showHistoryNotice, showPasswordsNotice} =
-        await this.browserProxy_.clearBrowsingData(dataTypes, timePeriod);
+        await this.browserProxy_.clearBrowsingData(
+            dataTypes, dropdownMenu.pref!.value);
     this.clearingInProgress_ = false;
     getAnnouncerInstance().announce(loadTimeData.getString('clearedData'));
     this.showHistoryDeletionDialog_ = showHistoryNotice;
@@ -584,6 +610,11 @@ export class SettingsClearBrowsingDataDialogElement extends
     if (this.$.clearBrowsingDataDialog.open) {
       closeDialog(this.$.clearBrowsingDataDialog, isLastDialog);
     }
+  }
+
+  private onTimeRangeChange_() {
+    const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
+    dropdownMenu.classList.remove('dropdown-error');
   }
 
   private onCancelClick_() {

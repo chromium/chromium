@@ -319,7 +319,7 @@ suite('ClearBrowsingDataDesktop', function() {
             option.name === loadTimeData.getString('clearPeriod15Minutes')));
   });
 
-  async function testDropdownValueForCbdTimeframeRequired(
+  async function testCbdExperimentDropdown(
       testBrowserProxy: TestClearBrowsingDataBrowserProxy, tabIndex: number) {
     // This test requires recreation of the page (ClearBrowsingDataDialog) after
     // defining loadTimeData to apply experiment changes after enabling the
@@ -361,18 +361,43 @@ suite('ClearBrowsingDataDesktop', function() {
           option.text === loadTimeData.getString('clearPeriodNotSelected'),
           option.hidden);
     }
+
+    // Select a datatype for deletion to enable the clear button.
+    const cookiesCheckbox =
+        page.querySelector<SettingsCheckboxElement>('.cookies-checkbox');
+    assertTrue(!!cookiesCheckbox);
+    cookiesCheckbox.$.checkbox.click();
+    await cookiesCheckbox.$.checkbox.updateComplete;
+    const actionButton =
+        element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!actionButton);
+    assertFalse(actionButton.disabled);
+
+    // Before trying data clearing without a time range selection, the dropdown
+    // is not in the dropdown-error state.
+    assertFalse(dropdownMenu.classList.contains('dropdown-error'));
+
+    // Once the user tries to clear data without having made a time range
+    // selection the dropdown goes into the dropdown-error state.
+    actionButton.click();
+    assertTrue(dropdownMenu.classList.contains('dropdown-error'));
+
+    // Once a time range is selected, the dropdown is no longer in the
+    // dropdown-error state.
+    dropdownMenu.$.dropdownMenu.value = TimePeriod.LAST_DAY.toString();
+    dropdownMenu.$.dropdownMenu.dispatchEvent(new CustomEvent('change'));
+    await waitAfterNextRender(dropdownMenu);
+    assertFalse(dropdownMenu.classList.contains('dropdown-error'));
   }
 
   // TODO(crbug.com/1487530): Remove once CbdTimeframeRequired finished.
   test('ClearBrowsingData_CbdTimeframeRequired_Basic', function() {
-    return testDropdownValueForCbdTimeframeRequired(
-        testBrowserProxy, /*tabIndex*/ 0);
+    return testCbdExperimentDropdown(testBrowserProxy, /*tabIndex*/ 0);
   });
 
   // TODO(crbug.com/1487530): Remove once CbdTimeframeRequired finished.
   test('ClearBrowsingData_CbdTimeframeRequired_Advanced', function() {
-    return testDropdownValueForCbdTimeframeRequired(
-        testBrowserProxy, /*tabIndex*/ 1);
+    return testCbdExperimentDropdown(testBrowserProxy, /*tabIndex*/ 1);
   });
 
   async function testUnsupportedTimePeriod(tabIndex: number, prefName: string) {

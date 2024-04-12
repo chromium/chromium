@@ -31,7 +31,7 @@
   <cr-policy-pref-indicator pref="[[pref]]"></cr-policy-pref-indicator>
 </template>
 <select class="md-select" id="dropdownMenu" on-change="onChange_"
-    aria-label$="[[label]]"
+    aria-label$="[[label]]" part="select"
     disabled="[[shouldDisableMenu_(disabled, menuOptions.*, pref.*)]]">
   <template is="dom-repeat" items="[[menuOptions]]">
     <option value="[[item.value]]" hidden="[[item.hidden]]">

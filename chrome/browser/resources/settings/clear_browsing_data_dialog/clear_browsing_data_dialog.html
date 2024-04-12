@@ -80,6 +80,15 @@
         margin-inline-start: 12px;
       }
 
+      .dropdown-error::part(select) {
+        border-color: var(--settings-error-color);
+        color: var(--settings-error-color);
+      }
+
+      .dropdown-error::part(select):focus {
+        outline-color: var(--settings-error-color);
+    }
+
       [slot=title] .secondary {
         font-size: calc(13 / 15 * 100%);
         padding-top: 8px;
@@ -167,11 +176,12 @@
                 </settings-dropdown-menu>
               </template>
               <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFromBasic"
+                <settings-dropdown-menu id="clearFromBasic" required
                     class="time-range-select"
                     label="$i18n{clearTimeRange}"
                     pref="{{prefs.browser.clear_data.time_period_v2_basic}}"
-                    menu-options="[[clearFromOptionsV2_]]">
+                    menu-options="[[clearFromOptionsV2_]]"
+                    on-settings-control-change="onTimeRangeChange_">
                 </settings-dropdown-menu>
               </template>
             </div>
@@ -245,11 +255,12 @@
                 </settings-dropdown-menu>
               </template>
               <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFrom"
+                <settings-dropdown-menu id="clearFrom" required
                     class="time-range-select"
                     label="$i18n{clearTimeRange}"
                     pref="{{prefs.browser.clear_data.time_period_v2}}"
-                    menu-options="[[clearFromOptionsV2_]]">
+                    menu-options="[[clearFromOptionsV2_]]"
+                    on-settings-control-change="onTimeRangeChange_">
                 </settings-dropdown-menu>
               </template>
             </div>
