@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -47,6 +48,7 @@ TEST_F(FamilyInfoLogSourceTest, FetchMemberSignedInBeforeDeadline) {
   identity_test_env_.MakePrimaryAccountAvailable("user_child@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   FamilyInfoLogSource source(identity_test_env_.identity_manager(),
                              url_loader_factory());
@@ -64,12 +66,17 @@ TEST_F(FamilyInfoLogSourceTest, FetchMemberSignedInBeforeDeadline) {
 
   EXPECT_EQ("child",
             response->at(supervised_user::kFamilyMemberRoleFeedbackTag));
+  histogram_tester.ExpectUniqueSample(kFamilyInfoLogSourceFetchStatusUma,
+                                      FamilyInfoLogSource::FetchStatus::kOk, 1);
+  histogram_tester.ExpectUniqueTimeSample(kFamilyInfoLogSourceFetchLatencyUma,
+                                          base::Seconds(0), 1);
 }
 
 TEST_F(FamilyInfoLogSourceTest, FetchMemberSignedInRequestTimeout) {
   identity_test_env_.MakePrimaryAccountAvailable("user_child@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   FamilyInfoLogSource source(identity_test_env_.identity_manager(),
                              url_loader_factory());
@@ -83,11 +90,16 @@ TEST_F(FamilyInfoLogSourceTest, FetchMemberSignedInRequestTimeout) {
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
 
-  // Move fake time passed the deadline.
+  // Move fake time past the 3s deadline.
   task_env_.FastForwardBy(base::Seconds(10));
   run_loop.Run();
 
   EXPECT_FALSE(response->count(supervised_user::kFamilyMemberRoleFeedbackTag));
+  histogram_tester.ExpectUniqueSample(
+      kFamilyInfoLogSourceFetchStatusUma,
+      FamilyInfoLogSource::FetchStatus::kTimeout, 1);
+  histogram_tester.ExpectUniqueTimeSample(kFamilyInfoLogSourceFetchLatencyUma,
+                                          base::Seconds(3), 1);
 }
 
 TEST_F(FamilyInfoLogSourceTest,

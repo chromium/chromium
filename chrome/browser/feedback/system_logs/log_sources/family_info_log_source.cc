@@ -4,6 +4,8 @@
 
 #include "chrome/browser/feedback/system_logs/log_sources/family_info_log_source.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
@@ -33,6 +35,7 @@ void FamilyInfoLogSource::Fetch(SysLogsSourceCallback callback) {
 
   auto callback_split = base::SplitOnceCallback(std::move(callback));
 
+  fetch_timer_ = base::ElapsedTimer();
   fetcher_ = FetchListFamilyMembers(
       *identity_manager_, url_loader_factory_,
       base::BindOnce(&FamilyInfoLogSource::OnListMembersResponse,
@@ -56,7 +59,12 @@ void FamilyInfoLogSource::OnListMembersResponse(
 
   auto logs_response = std::make_unique<SystemLogsResponse>();
   if (status.IsOk()) {
+    RecordFetchUma(FamilyInfoLogSource::FetchStatus::kOk,
+                   fetch_timer_.Elapsed());
     AppendFamilyMemberRoleForPrimaryAccount(*response, logs_response.get());
+  } else {
+    RecordFetchUma(FamilyInfoLogSource::FetchStatus::kFailureResponse,
+                   fetch_timer_.Elapsed());
   }
 
   std::move(callback).Run(std::move(logs_response));
@@ -65,6 +73,8 @@ void FamilyInfoLogSource::OnListMembersResponse(
 void FamilyInfoLogSource::OnListMembersResponseTimeout(
     SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  RecordFetchUma(FamilyInfoLogSource::FetchStatus::kTimeout,
+                 fetch_timer_.Elapsed());
   fetcher_.reset();
 
   std::move(callback).Run(std::make_unique<SystemLogsResponse>());
@@ -90,6 +100,13 @@ void FamilyInfoLogSource::AppendFamilyMemberRoleForPrimaryAccount(
       return;
     }
   }
+}
+
+void FamilyInfoLogSource::RecordFetchUma(
+    FamilyInfoLogSource::FetchStatus status,
+    base::TimeDelta duration) {
+  base::UmaHistogramEnumeration(kFamilyInfoLogSourceFetchStatusUma, status);
+  base::UmaHistogramTimes(kFamilyInfoLogSourceFetchLatencyUma, duration);
 }
 
 }  // namespace system_logs

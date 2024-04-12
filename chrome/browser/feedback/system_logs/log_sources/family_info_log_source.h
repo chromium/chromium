@@ -14,6 +14,10 @@
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 
+namespace base {
+class ElapsedTimer;
+}  // namespace base
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -24,9 +28,28 @@ class IdentityManager;
 
 namespace system_logs {
 
+inline constexpr char kFamilyInfoLogSourceFetchStatusUma[] =
+    "FamilyLinkUser.FamilyInfoLogSource.FetchStatus";
+inline constexpr char kFamilyInfoLogSourceFetchLatencyUma[] =
+    "FamilyLinkUser.FamilyInfoLogSource.FetchLatency";
+
 // Fetches settings related to Family Link if the user is in a Family Group.
 class FamilyInfoLogSource : public system_logs::SystemLogsSource {
  public:
+  // Values for the kFamilyInfoLogSourceFetchStatusUma metric.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(FetchStatus)
+  enum class FetchStatus {
+    kOk = 0,
+    kFailureResponse = 1,
+    kTimeout = 2,
+    kMaxValue = kTimeout,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyInfoLogSourceFetchStatus)
+
   FamilyInfoLogSource(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -58,9 +81,14 @@ class FamilyInfoLogSource : public system_logs::SystemLogsSource {
       const kidsmanagement::ListMembersResponse& list_members_response,
       SystemLogsResponse* logs_response);
 
+  // Logs metrics for a fetch attempt.
+  void RecordFetchUma(FamilyInfoLogSource::FetchStatus status,
+                      base::TimeDelta duration);
+
   std::unique_ptr<
       supervised_user::ProtoFetcher<kidsmanagement::ListMembersResponse>>
       fetcher_;
+  base::ElapsedTimer fetch_timer_;
   base::OneShotTimer list_members_response_timeout_;
 
   // Profile-keyed service that should outlive feedback fetching.

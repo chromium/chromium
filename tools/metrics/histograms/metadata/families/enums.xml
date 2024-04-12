@@ -40,6 +40,24 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has conflict"/>
 </enum>
 
+<!-- LINT.IfChange(FamilyInfoLogSourceFetchStatus) -->
+
+<enum name="FamilyInfoLogSourceFetchStatus">
+  <int value="0" label="Ok">
+    Recorded when a successful response is received from the fetch.
+  </int>
+  <int value="1" label="Failure response">
+    Recorded when an unsuccessful completion is signaled by the fetcher. This
+    corresponds to the non-successful response codes in the
+    SupervisedUserProtoFetcherStatus enum.
+  </int>
+  <int value="2" label="Timeout">
+    Recorded when no completion is signaled by the fetcher within a timeout.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/feedback/system_logs/log_sources/family_info_log_source.h:FetchStatus) -->
+
 <enum name="FamilyLinkFilteringSubdomainConflictType">
   <int value="0" label="Only trivial subdomain conflict">
     Recorded when, for an input host, the matching conflicting entries from the

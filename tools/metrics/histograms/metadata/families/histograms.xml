@@ -248,6 +248,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchLatency" units="ms"
+    expires_after="2024-12-12">
+  <owner>ljjlee@google.com</owner>
+  <owner>fernandex@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The time spent waiting for the Kids Management API::ListMembers fetch done
+    as part of populating the FamilyInfoLogSource in feedback reports. This is
+    recorded for every fetch on either getting a response from the fetcher or
+    timing out (whichever happens first).
+  </summary>
+</histogram>
+
+<histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchStatus"
+    enum="FamilyInfoLogSourceFetchStatus" expires_after="2024-12-12">
+  <owner>ljjlee@google.com</owner>
+  <owner>fernandex@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The result of the Kids Management API::ListMembers fetch done as part of
+    populating the FamilyInfoLogSource in feedback reports. This is output for
+    every fetch on either getting a response from the fetcher or timing out.
+  </summary>
+</histogram>
+
 <histogram name="FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration"
     units="ms" expires_after="2024-09-01">
   <owner>anthie@google.com</owner>
