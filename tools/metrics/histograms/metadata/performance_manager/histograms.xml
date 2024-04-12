@@ -28,6 +28,32 @@ each histogram.
   <variant name="WriteSiteDataIntoStore"/>
 </variants>
 
+<histogram name="CPU.Experimental.EstimatedFrequencyAsPercentOfLimit" units="%"
+    expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The CPU frequency as a percentage of the estimated current frequency (see
+    base::EstimateCpuFrequency) over the max frequency of the fastest CPU, as
+    reported by base::GetCpuMhzLimit.
+
+    Recorded every 5 minutes. Windows x86 only.
+  </summary>
+</histogram>
+
+<histogram name="CPU.Experimental.EstimatedFrequencyAsPercentOfMax" units="%"
+    expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The CPU frequency as a percentage of the estimated current frequency (see
+    base::EstimateCpuFrequency) over the max frequency of the fastest CPU, as
+    reported by base::GetCpuMaxMhz.
+
+    Recorded every 5 minutes. Windows x86 only.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.Experimental.AccessibilityModeFlag"
     enum="AccessibilityModeFlagEnum" expires_after="2024-09-01">
   <owner>anthonyvd@chromium.org</owner>

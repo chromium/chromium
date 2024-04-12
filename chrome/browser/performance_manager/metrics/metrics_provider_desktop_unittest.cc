@@ -274,3 +274,22 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest,
                              /*memory_saver_percent=*/0);
   }
 }
+
+TEST_F(PerformanceManagerMetricsProviderDesktopTest,
+       TestCpuThrottlingMetricRecordedWhereAvailable) {
+  InitProvider();
+  base::HistogramTester tester;
+
+  FastForwardBy(base::Minutes(5));
+  tester.ExpectTotalCount("CPU.Experimental.EstimatedFrequencyAsPercentOfMax",
+                          performance_manager::MetricsProviderDesktop::
+                                  ShouldCollectCpuFrequencyMetrics()
+                              ? 1
+                              : 0);
+
+  tester.ExpectTotalCount("CPU.Experimental.EstimatedFrequencyAsPercentOfLimit",
+                          performance_manager::MetricsProviderDesktop::
+                                  ShouldCollectCpuFrequencyMetrics()
+                              ? 1
+                              : 0);
+}

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -41,6 +42,13 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   };
 
   static MetricsProviderDesktop* GetInstance();
+  static constexpr bool ShouldCollectCpuFrequencyMetrics() {
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_WIN)
+    return true;
+#else
+    return false;
+#endif
+  }
 
   ~MetricsProviderDesktop() override;
 
@@ -68,6 +76,8 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   void RecordAvailableMemoryMetrics();
   void ResetTrackers();
 
+  void RecordCpuFrequencyMetrics();
+
   PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<PrefService> local_state_;
   EfficiencyMode current_mode_ = EfficiencyMode::kNormal;
@@ -77,6 +87,8 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   bool initialized_ = false;
 
   base::RepeatingTimer available_memory_metrics_timer_;
+
+  base::RepeatingTimer cpu_frequency_metrics_timer_;
 
   std::unique_ptr<ScopedTimeInModeTracker> battery_saver_mode_tracker_;
   std::unique_ptr<ScopedTimeInModeTracker> memory_saver_mode_tracker_;

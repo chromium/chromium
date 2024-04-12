@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/power_monitor/cpu_frequency_utils.h"
 #include "base/system/sys_info.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/base_tracing.h"
@@ -71,45 +72,6 @@ bool GetCPUIdleness(int* idleness_percent) {
   *idleness_percent = static_cast<int>(info->Idleness);
   return true;
 }
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#if defined(ARCH_CPU_X86_FAMILY)
-// Returns the estimated CPU frequency by executing a tight loop of predictable
-// assembly instructions. The estimated frequency should be proportional and
-// about the same magnitude than the real CPU frequency. The measurement should
-// be long enough to avoid Turbo Boost effect (~3ms) and be low enough to stay
-// within the operating system scheduler quantum (~100ms).
-double EstimateCpuFrequency() {
-  // The heuristic to estimate CPU frequency is based on UIforETW code.
-  // see: https://github.com/google/UIforETW/blob/main/UIforETW/CPUFrequency.cpp
-  //      https://github.com/google/UIforETW/blob/main/UIforETW/SpinALot64.asm
-  base::ElapsedTimer timer;
-  const int kAmountOfIterations = 50000;
-  const int kAmountOfInstructions = 10;
-  for (int i = 0; i < kAmountOfIterations; ++i) {
-    __asm__ __volatile__(
-        "addl  %%eax, %%eax\n"
-        "addl  %%eax, %%eax\n"
-        "addl  %%eax, %%eax\n"
-        "addl  %%eax, %%eax\n"
-        "addl  %%eax, %%eax\n"
-        "addl  %%eax, %%eax\n"
-        "addl  %%eax, %%eax\n"
-        "addl  %%eax, %%eax\n"
-        "addl  %%eax, %%eax\n"
-        "addl  %%eax, %%eax\n"
-        :
-        :
-        : "eax");
-  }
-
-  const base::TimeDelta elapsed = timer.Elapsed();
-  const double estimated_frequency =
-      (kAmountOfIterations * kAmountOfInstructions) / elapsed.InSecondsF();
-  return estimated_frequency;
-}
-#endif
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 }  // namespace
 

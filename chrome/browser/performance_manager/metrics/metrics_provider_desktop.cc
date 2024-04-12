@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/power_monitor/cpu_frequency_utils.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
 #include "base/timer/timer.h"
@@ -29,6 +30,7 @@ uint64_t kBytesPerMb = 1024 * 1024;
 #if BUILDFLAG(IS_MAC)
 uint64_t kKilobytesPerMb = 1024;
 #endif
+
 }  // namespace
 
 // Tracks the proportion of time a specific mode was enabled during this
@@ -177,6 +179,13 @@ MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
       FROM_HERE, base::Minutes(2),
       base::BindRepeating(&MetricsProviderDesktop::RecordAvailableMemoryMetrics,
                           base::Unretained(this)));
+
+  if constexpr (ShouldCollectCpuFrequencyMetrics()) {
+    cpu_frequency_metrics_timer_.Start(
+        FROM_HERE, base::Minutes(5),
+        base::BindRepeating(&MetricsProviderDesktop::RecordCpuFrequencyMetrics,
+                            base::Unretained(this)));
+  }
 }
 
 void MetricsProviderDesktop::OnBatterySaverActiveChanged(bool is_active) {
@@ -270,4 +279,23 @@ void MetricsProviderDesktop::ResetTrackers() {
       "PerformanceManager.UserTuning.MemorySaverModeEnabledPercent");
 }
 
+void MetricsProviderDesktop::RecordCpuFrequencyMetrics() {
+  CHECK(ShouldCollectCpuFrequencyMetrics());
+
+  static const double kHzInMhz = 1000 * 1000;
+
+  double estimated_mhz = base::EstimateCpuFrequency() / kHzInMhz;
+  unsigned long max_mhz = base::GetCpuMaxMhz();
+  unsigned long mhz_limit = base::GetCpuMhzLimit();
+
+  CHECK_NE(0UL, max_mhz);
+  CHECK_NE(0UL, mhz_limit);
+
+  base::UmaHistogramPercentage(
+      "CPU.Experimental.EstimatedFrequencyAsPercentOfMax",
+      static_cast<int>(estimated_mhz * 100.0 / static_cast<double>(max_mhz)));
+  base::UmaHistogramPercentage(
+      "CPU.Experimental.EstimatedFrequencyAsPercentOfLimit",
+      static_cast<int>(estimated_mhz * 100.0 / static_cast<double>(mhz_limit)));
+}
 }  // namespace performance_manager
