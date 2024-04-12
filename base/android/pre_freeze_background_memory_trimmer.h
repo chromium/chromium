@@ -60,7 +60,9 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       base::TimeDelta delay) LOCKS_EXCLUDED(lock_);
 
   static void SetSupportsModernTrimForTesting(bool is_supported);
+  static void SetDidRegisterTasksForTesting(bool did_register_tasks);
   size_t GetNumberOfPendingBackgroundTasksForTesting() LOCKS_EXCLUDED(lock_);
+  bool DidRegisterTasksForTesting();
 
   static void OnPreFreezeForTesting() LOCKS_EXCLUDED(lock_) { OnPreFreeze(); }
 

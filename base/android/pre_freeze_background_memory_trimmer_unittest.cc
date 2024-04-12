@@ -42,9 +42,9 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
   PreFreezeBackgroundMemoryTrimmerTest() {
     fl_.InitAndEnableFeature(kOnPreFreezeMemoryTrim);
   }
-
   void SetUp() override {
     PreFreezeBackgroundMemoryTrimmer::SetSupportsModernTrimForTesting(true);
+    PreFreezeBackgroundMemoryTrimmer::SetDidRegisterTasksForTesting(false);
     ResetGlobalCounter();
   }
 
@@ -54,26 +54,54 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
         .GetNumberOfPendingBackgroundTasksForTesting();
   }
 
+  bool did_register_tasks() {
+    return PreFreezeBackgroundMemoryTrimmer::Instance()
+        .DidRegisterTasksForTesting();
+  }
+
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
  private:
   test::ScopedFeatureList fl_;
 };
 
-TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostTaskPreFreezeDisabled) {
+// We do not expect any tasks to be registered with
+// PreFreezeBackgroundMemoryTrimmer on Android versions before U.
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostTaskPreFreezeUnsupported) {
   PreFreezeBackgroundMemoryTrimmer::SetSupportsModernTrimForTesting(false);
+
+  ASSERT_FALSE(did_register_tasks());
 
   PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
       SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
       base::BindRepeating(&IncGlobalCounter), base::Seconds(30));
 
   ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(did_register_tasks());
 
   task_environment_.FastForwardBy(base::Seconds(30));
 
   ASSERT_EQ(pending_task_count(), 0u);
+  EXPECT_EQ(s_counter, 1);
+}
 
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostTaskPreFreezeWithoutTrim) {
+  test::ScopedFeatureList fl;
+  fl.InitAndDisableFeature(kOnPreFreezeMemoryTrim);
+  ASSERT_FALSE(did_register_tasks());
+
+  PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
+      SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
+      base::BindRepeating(&IncGlobalCounter), base::Seconds(30));
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_TRUE(did_register_tasks());
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  ASSERT_EQ(pending_task_count(), 0u);
   EXPECT_EQ(s_counter, 1);
 }
 
@@ -82,6 +110,7 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostDelayedTaskSimple) {
       SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
       base::BindRepeating(&IncGlobalCounter), base::Seconds(30));
 
+  ASSERT_TRUE(did_register_tasks());
   ASSERT_EQ(pending_task_count(), 1u);
 
   task_environment_.FastForwardBy(base::Seconds(30));

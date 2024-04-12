@@ -284,10 +284,22 @@ void PreFreezeBackgroundMemoryTrimmer::SetSupportsModernTrimForTesting(
   Instance().supports_modern_trim_ = is_supported;
 }
 
+// static
+void PreFreezeBackgroundMemoryTrimmer::SetDidRegisterTasksForTesting(
+    bool did_register_task) {
+  base::AutoLock locker(Instance().lock_);
+  Instance().did_register_task_ = did_register_task;
+}
+
 size_t PreFreezeBackgroundMemoryTrimmer::
     GetNumberOfPendingBackgroundTasksForTesting() {
   base::AutoLock locker(lock_);
   return background_tasks_.size();
+}
+
+bool PreFreezeBackgroundMemoryTrimmer::DidRegisterTasksForTesting() {
+  base::AutoLock locker(lock_);
+  return did_register_task_;
 }
 
 // static
