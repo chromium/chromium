@@ -19,7 +19,7 @@ CSSStartingStyleRule::CSSStartingStyleRule(
 String CSSStartingStyleRule::cssText() const {
   StringBuilder result;
 
-  result.Append("@starting-style ");
+  result.Append("@starting-style");
   AppendCSSTextForItems(result);
 
   return result.ReleaseString();

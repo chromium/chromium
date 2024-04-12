@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] @starting-style is valid
-  assert_equals: expected "@starting-style {\\n}" but got "@starting-style  {\\n}"
-Harness: the test ran to completion.
-
