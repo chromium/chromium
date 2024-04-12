@@ -76,7 +76,7 @@ inline constexpr char kCurrentMigrationVersionToGoogleMobileServices[] =
     "current_migration_version_to_google_mobile_services";
 
 // Timestamps of when credentials from the GMS Core to the built in storage were
-// last time migrated, in microseconds since Windows epoch.
+// last time migrated, in milliseconds since UNIX epoch.
 inline constexpr char kTimeOfLastMigrationAttempt[] =
     "time_of_last_migration_attempt";
 
