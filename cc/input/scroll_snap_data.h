@@ -354,7 +354,8 @@ class CC_EXPORT SnapContainerData {
            (other.snap_area_list_ == snap_area_list_) &&
            (other.target_snap_area_element_ids_ ==
             target_snap_area_element_ids_) &&
-           (other.targeted_area_id_ == targeted_area_id_);
+           (other.targeted_area_id_ == targeted_area_id_) &&
+           (other.has_horizontal_writing_mode_ == has_horizontal_writing_mode_);
   }
 
   bool operator!=(const SnapContainerData& other) const {
@@ -392,6 +393,10 @@ class CC_EXPORT SnapContainerData {
 
   void set_targeted_area_id(const std::optional<ElementId>& id) {
     targeted_area_id_ = id;
+  }
+
+  void set_has_horizontal_writing_mode(bool has_horizontal_writing_mode) {
+    has_horizontal_writing_mode_ = has_horizontal_writing_mode;
   }
 
  private:
@@ -481,6 +486,11 @@ class CC_EXPORT SnapContainerData {
       float cross_current_position,
       float cross_max_position) const;
 
+  SnapAxis SelectAxisToFollowForMutualVisibility(
+      const SnapSelectionStrategy&,
+      const SnapSearchResult& x_result,
+      const SnapSearchResult& y_result) const;
+
   // Specifies whether a scroll container is a scroll snap container, how
   // strictly it snaps, and which axes are considered.
   // See https://www.w3.org/TR/css-scroll-snap-1/#scroll-snap-type for details.
@@ -513,6 +523,10 @@ class CC_EXPORT SnapContainerData {
   // showing or hiding browser controls during a scroll gesture.  This is only
   // set while a call to FindSnapPosition is executing.
   double snapport_height_adjustment_ = 0;
+
+  // Whether or not the writing mode of this snap container is a horizontal
+  // writing mode.
+  bool has_horizontal_writing_mode_ = true;
 
   // This is the ElementId of the snap area (snapped to by this snap container)
   // that is targeted[1] or contains a targeted[1] element. It is std::nullopt

@@ -649,7 +649,7 @@ TEST_F(ScrollSnapDataTest, SnapToTwoTargetElementsNotMutualVisible) {
       TargetSnapAreaElementIds(ElementId(10), ElementId(20)));
 
   // The container cannot snap to both targets, so it should snap to the one
-  // closer to the scroll offset, and then snap to the closest mutually visible
+  // in the block axis, and then snap to the closest mutually visible
   // snap area on the other axis.
   std::unique_ptr<SnapSelectionStrategy> target_element_strategy =
       SnapSelectionStrategy::CreateForTargetElement(gfx::PointF(10, 0));
@@ -657,9 +657,9 @@ TEST_F(ScrollSnapDataTest, SnapToTwoTargetElementsNotMutualVisible) {
   SnapPositionData result =
       container.FindSnapPosition(*target_element_strategy);
   EXPECT_EQ(Type::kAligned, result.type);
-  EXPECT_EQ(100, result.position.x());
-  EXPECT_EQ(350, result.position.y());
-  EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId(30)),
+  EXPECT_EQ(350, result.position.x());
+  EXPECT_EQ(100, result.position.y());
+  EXPECT_EQ(TargetSnapAreaElementIds(ElementId(30), ElementId(20)),
             result.target_element_ids);
 }
 

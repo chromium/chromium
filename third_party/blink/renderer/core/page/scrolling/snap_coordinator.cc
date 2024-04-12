@@ -128,6 +128,8 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
       MinimumValueForLength(container_style->ScrollPaddingLeft(),
                             container_rect.Width()));
   snap_container_data.set_rect(gfx::RectF(container_rect));
+  snap_container_data.set_has_horizontal_writing_mode(
+      container_style->IsHorizontalWritingMode());
 
   if (snap_container_data.scroll_snap_type().strictness ==
       cc::SnapStrictness::kProximity) {
