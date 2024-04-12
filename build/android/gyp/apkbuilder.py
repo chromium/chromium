@@ -124,9 +124,7 @@ def _ParseArgs(args):
   options.secondary_native_lib_placeholders = action_helpers.parse_gn_list(
       options.secondary_native_lib_placeholders)
   options.java_resources = action_helpers.parse_gn_list(options.java_resources)
-  logging.warning('Adding lib/ %r', options.native_libs)
   options.native_libs = action_helpers.parse_gn_list(options.native_libs)
-  logging.warning('Adding lib/ %r', options.native_libs)
   options.secondary_native_libs = action_helpers.parse_gn_list(
       options.secondary_native_libs)
   options.library_always_compress = action_helpers.parse_gn_list(
@@ -375,7 +373,6 @@ def main(args):
                         apk_root_dir=apk_root_dir))
     return ret
 
-  logging.warning('Adding lib/ %r', native_libs)
   libs_to_add = _GetNativeLibrariesToAdd(native_libs, options.android_abi,
                                          fast_align,
                                          options.library_always_compress)
@@ -467,7 +464,6 @@ def main(args):
 
       # 4. Native libraries.
       logging.debug('Adding lib/')
-      logging.warning('Adding lib/ %r', libs_to_add)
       _AddFiles(out_apk, libs_to_add)
 
       # Add a placeholder lib if the APK should be multi ABI but is missing libs
