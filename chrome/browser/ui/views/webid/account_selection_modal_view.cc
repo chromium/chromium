@@ -360,7 +360,9 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
 }
 
 void AccountSelectionModalView::ShowMultiAccountPicker(
-    const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
+    const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+    bool show_back_button) {
+  DCHECK(!show_back_button);
   RemoveNonHeaderChildViews();
 
   ConfigureBrandImageView(brand_icon_,
@@ -558,6 +560,12 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
     continue_button_->RequestFocus();
   }
   SendAccessibilityEvent(GetWidget());
+}
+
+void AccountSelectionModalView::ShowSingleReturningAccountDialog(
+    const std::vector<IdentityProviderDisplayData>& idp_data_list) {
+  NOTREACHED() << "ShowSingleReturningAccountDialog is only implemented for "
+                  "AccountSelectionBubbleView";
 }
 
 std::unique_ptr<views::View>

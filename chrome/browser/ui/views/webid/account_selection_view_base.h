@@ -49,6 +49,8 @@ inline constexpr int kLargeAvatarBadgeSize = 16;
 inline constexpr int kDesiredIdpIconSize = 20;
 // The desired size of the icon for the "Use another account" button.
 inline constexpr int kDesiredUseOtherAccountIconSize = 20;
+// The desired size of the icon for the "Choose an account" button.
+inline constexpr int kDesiredChooseAnAccountIconSize = 20;
 // The size of the padding used at the top and bottom of the bubble.
 inline constexpr int kTopBottomPadding = 4;
 // The size of the horizontal padding between the bubble content and the edge of
@@ -211,6 +213,9 @@ class AccountSelectionViewBase {
 
     // Called when IdentityProvider.close() is called from the renderer.
     virtual void CloseModalDialog() = 0;
+
+    // Called when the user clicks on the 'Choose an account' button
+    virtual void OnChooseAnAccount() = 0;
   };
 
   AccountSelectionViewBase(
@@ -227,7 +232,8 @@ class AccountSelectionViewBase {
 
   // Updates the FedCM dialog to show the "account picker" sheet.
   virtual void ShowMultiAccountPicker(
-      const std::vector<IdentityProviderDisplayData>& idp_data_list) = 0;
+      const std::vector<IdentityProviderDisplayData>& idp_data_list,
+      bool show_back_button) = 0;
 
   // Updates the FedCM dialog to show the "verifying" sheet.
   virtual void ShowVerifyingSheet(
@@ -264,6 +270,12 @@ class AccountSelectionViewBase {
       const std::u16string& top_frame_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) = 0;
+
+  // Updates to show a single account along with a button to show all options.
+  // Currently used when there are multiple IDPs and exactly one returning
+  // account.
+  virtual void ShowSingleReturningAccountDialog(
+      const std::vector<IdentityProviderDisplayData>& idp_data_list) = 0;
 
   // Updates the FedCM dialog to show the "loading" sheet.
   virtual void ShowLoadingDialog() = 0;

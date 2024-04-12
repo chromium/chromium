@@ -188,6 +188,31 @@ std::pair<std::u16string, std::u16string> GetErrorDialogText(
   return {summary, description};
 }
 
+std::u16string BuildStringFromIDPs(
+    const std::vector<std::u16string> mismatch_idps,
+    const std::vector<std::u16string> non_mismatch_idps) {
+  constexpr int kMaxIdpsToShow = 3;
+  size_t num_idps = 0;
+  std::u16string result;
+  auto AddToResult = [&](const auto& idp_vector) {
+    if (num_idps == kMaxIdpsToShow) {
+      return;
+    }
+    for (const auto& idp : idp_vector) {
+      if (num_idps > 0) {
+        result += u", ";
+      }
+      result += idp;
+      if (++num_idps == kMaxIdpsToShow) {
+        break;
+      }
+    }
+  };
+  AddToResult(mismatch_idps);
+  AddToResult(non_mismatch_idps);
+  return result;
+}
+
 }  // namespace
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
@@ -268,13 +293,14 @@ void AccountSelectionBubbleView::InitDialogWidget() {
 }
 
 void AccountSelectionBubbleView::ShowMultiAccountPicker(
-    const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
+    const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+    bool show_back_button) {
   // If there are multiple IDPs, then the content::IdentityProviderMetadata
   // passed will be unused since there will be no `header_icon_view_`.
   // Therefore, it is fine to pass the first one into UpdateHeader().
   DCHECK(idp_display_data_list.size() == 1u || !header_icon_view_);
   UpdateHeader(idp_display_data_list[0].idp_metadata, title_, subtitle_,
-               /*show_back_button=*/false);
+               show_back_button);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
@@ -288,13 +314,6 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
 
   SizeToContents();
   PreferredSizeChanged();
-
-  // Focusing `continue_button_` without screen reader on makes the UI look
-  // awkward, so we only want to do so when screen reader is enabled.
-  if (accessibility_state_utils::IsScreenReaderEnabled() && continue_button_) {
-    continue_button_->RequestFocus();
-  }
-  SendAccessibilityEvent(GetWidget());
 }
 
 void AccountSelectionBubbleView::ShowVerifyingSheet(
@@ -357,13 +376,6 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
 
   SizeToContents();
   PreferredSizeChanged();
-
-  // Focusing `continue_button_` without screen reader on makes the UI look
-  // awkward, so we only want to do so when screen reader is enabled.
-  if (accessibility_state_utils::IsScreenReaderEnabled() && continue_button_) {
-    continue_button_->RequestFocus();
-  }
-  SendAccessibilityEvent(GetWidget());
 }
 
 void AccountSelectionBubbleView::ShowFailureDialog(
@@ -511,6 +523,29 @@ void AccountSelectionBubbleView::ShowRequestPermissionDialog(
     const IdentityProviderDisplayData& idp_display_data) {
   NOTREACHED() << "ShowRequestPermissionDialog is only implemented for "
                   "AccountSelectionModalView";
+}
+
+void AccountSelectionBubbleView::ShowSingleReturningAccountDialog(
+    const std::vector<IdentityProviderDisplayData>& idp_data_list) {
+  // We currently only invoke this method in the multi IDP case.
+  DCHECK(idp_data_list.size() > 1u);
+  // Since there are multiple IDPs, then the content::IdentityProviderMetadata
+  // passed will be unused since there will be no `header_icon_view_`.
+  UpdateHeader(content::IdentityProviderMetadata(), title_, subtitle_,
+               /*show_back_button=*/false);
+
+  RemoveNonHeaderChildViews();
+  AddChildView(std::make_unique<views::Separator>());
+  AddChildView(CreateSingleReturningAccountChooser(idp_data_list));
+
+  if (!has_sheet_) {
+    has_sheet_ = true;
+    InitDialogWidget();
+    return;
+  }
+
+  SizeToContents();
+  PreferredSizeChanged();
 }
 
 void AccountSelectionBubbleView::CloseDialog() {
@@ -742,6 +777,43 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   return scroll_view;
 }
 
+std::unique_ptr<views::View>
+AccountSelectionBubbleView::CreateSingleReturningAccountChooser(
+    const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
+  std::vector<std::u16string> mismatch_idps;
+  std::vector<std::u16string> non_mismatch_idps;
+  const content::IdentityRequestAccount* returning_account = nullptr;
+  const IdentityProviderDisplayData* returning_idp = nullptr;
+  for (const auto& idp : idp_display_data_list) {
+    if (idp.has_login_status_mismatch) {
+      mismatch_idps.push_back(idp.idp_etld_plus_one);
+    } else {
+      non_mismatch_idps.push_back(idp.idp_etld_plus_one);
+    }
+    if (returning_account) {
+      continue;
+    }
+    for (const auto& acc : idp.accounts) {
+      if (acc.login_state == Account::LoginState::kSignIn) {
+        returning_account = &acc;
+        returning_idp = &idp;
+        break;
+      }
+    }
+  }
+  CHECK(returning_account && returning_idp);
+  auto content = std::make_unique<views::View>();
+  content->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  content->AddChildView(CreateAccountRow(*returning_account, *returning_idp,
+                                         /*should_hover=*/true,
+                                         /*should_include_idp=*/true));
+  content->AddChildView(std::make_unique<views::Separator>());
+  content->AddChildView(
+      CreateChooseAnAccountButton(mismatch_idps, non_mismatch_idps));
+  return content;
+}
+
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
@@ -819,6 +891,23 @@ void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
       delete child_view;
     }
   }
+}
+
+std::unique_ptr<views::View>
+AccountSelectionBubbleView::CreateChooseAnAccountButton(
+    const std::vector<std::u16string> mismatch_idps,
+    const std::vector<std::u16string> non_mismatch_idps) {
+  auto button = std::make_unique<HoverButton>(
+      base::BindOnce(&AccountSelectionViewBase::Observer::OnChooseAnAccount,
+                     base::Unretained(observer_)),
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          kPersonFilledPaddedSmallIcon, ui::kColorMenuIcon,
+          kDesiredChooseAnAccountIconSize)),
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT_BUTTON),
+      BuildStringFromIDPs(mismatch_idps, non_mismatch_idps));
+  button->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
+                               views::style::STYLE_SECONDARY);
+  return button;
 }
 
 BEGIN_METADATA(AccountSelectionBubbleView)

@@ -195,7 +195,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
     // Shown after the user has triggered a button flow and while the accounts
     // are being fetched.
-    LOADING
+    LOADING,
+
+    // Shown when we wish to display only a single returning account.
+    SINGLE_RETURNING_ACCOUNT_PICKER
   };
 
   // This enum describes the outcome of the mismatch dialog and is used for
@@ -241,6 +244,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                     const ui::Event& event) override;
   void OnGotIt(const ui::Event& event) override;
   void OnMoreDetails(const ui::Event& event) override;
+  void OnChooseAnAccount() override;
 
   // Returns false if `this` got deleted. In that case, the caller should not
   // access any further member variables.
@@ -322,6 +326,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // completing the flow, this boolean prevents us from double counting the
   // Blink.FedCm.IdpSigninStatus.MismatchDialogResult metric.
   bool is_mismatch_continue_clicked_{false};
+
+  // Whether the current dialog started as a single returning account dialog.
+  // Used to determine whether the multi IDP picker needs to show a back button
+  // or not.
+  bool started_as_single_returning_account_{false};
 
   // Time when IdentityProvider.close() was called for metrics purposes.
   base::TimeTicks idp_close_popup_time_;

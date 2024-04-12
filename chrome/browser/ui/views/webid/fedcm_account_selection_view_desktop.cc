@@ -91,8 +91,10 @@ void FedCmAccountSelectionView::Show(
   bool has_modal_support = sign_in_mode != Account::SignInMode::kAuto;
 
   idp_display_data_list_.clear();
+  started_as_single_returning_account_ = false;
 
   size_t accounts_size = 0u;
+  size_t returning_accounts_size = 0u;
   blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn;
   for (const auto& identity_provider : identity_provider_data_list) {
     idp_display_data_list_.emplace_back(
@@ -104,6 +106,12 @@ void FedCmAccountSelectionView::Show(
     // different contexts here.
     rp_context = identity_provider.rp_context;
     accounts_size += identity_provider.accounts.size();
+    returning_accounts_size += std::count_if(
+        identity_provider.accounts.begin(), identity_provider.accounts.end(),
+        [](const auto& account) {
+          return account.login_state ==
+                 content::IdentityRequestAccount::LoginState::kSignIn;
+        });
   }
 
   std::optional<std::u16string> idp_title =
@@ -182,7 +190,8 @@ void FedCmAccountSelectionView::Show(
       // The logic to support add account is in ShowMultiAccountPicker for the
       // bubble dialog.
       state_ = State::MULTI_ACCOUNT_PICKER;
-      account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_);
+      account_selection_view_->ShowMultiAccountPicker(
+          idp_display_data_list_, /*show_back_button=*/false);
     } else {
       state_ = State::REQUEST_PERMISSION;
       account_selection_view_->ShowSingleAccountConfirmDialog(
@@ -190,9 +199,19 @@ void FedCmAccountSelectionView::Show(
           idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
           /*show_back_button=*/false);
     }
+  } else if (identity_provider_data_list.size() > 1u &&
+             returning_accounts_size == 1u) {
+    // For now we only highlight the single returning account in the multi IDP
+    // case, but in the future we may want to do so in the single IDP case as
+    // well.
+    state_ = State::SINGLE_RETURNING_ACCOUNT_PICKER;
+    started_as_single_returning_account_ = true;
+    account_selection_view_->ShowSingleReturningAccountDialog(
+        idp_display_data_list_);
   } else {
     state_ = State::MULTI_ACCOUNT_PICKER;
-    account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_);
+    account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_,
+                                                    /*show_back_button=*/false);
   }
 
   if (!GetDialogWidget()) {
@@ -621,9 +640,18 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
         /*show_back_button=*/false);
     return;
   }
-
+  // If the back button was clicked while on the multi account picker, go back
+  // to the single returning account.
+  if (state_ == State::MULTI_ACCOUNT_PICKER) {
+    state_ = State::SINGLE_RETURNING_ACCOUNT_PICKER;
+    account_selection_view_->ShowSingleReturningAccountDialog(
+        idp_display_data_list_);
+    return;
+  }
   state_ = State::MULTI_ACCOUNT_PICKER;
-  account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_);
+  account_selection_view_->ShowMultiAccountPicker(
+      idp_display_data_list_,
+      /*show_back_button=*/started_as_single_returning_account_);
 }
 
 void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
@@ -741,6 +769,12 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     // `this` might be deleted now, do not access member variables
     // after this point.
   }
+}
+
+void FedCmAccountSelectionView::OnChooseAnAccount() {
+  state_ = State::MULTI_ACCOUNT_PICKER;
+  account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_,
+                                                  /*show_back_button=*/true);
 }
 
 void FedCmAccountSelectionView::OnPopupWindowDestroyed() {

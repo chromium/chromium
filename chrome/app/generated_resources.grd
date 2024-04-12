@@ -16486,6 +16486,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT" desc="Text to prompt a user to choose an account to sign in to an identity provider with." translateable="false">
       Choose an account to continue
     </message>
+    <message name="IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT_BUTTON" desc="Title of the button that lets the user look at all account options. Used when we want to highlight a single returning account in the UI." translateable="false">
+      Choose an account
+    </message>
     <message name="IDS_ACCOUNT_SELECTION_CONFIRM_ACCOUNT" desc="Text to prompt a user to confirm using an account to sign in to an identity provider with." translateable="false">
       Confirm you want to sign in to <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$2<ex>idp.example</ex></ph>
     </message>

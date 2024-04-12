@@ -41,8 +41,9 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // AccountSelectionViewBase:
   void InitDialogWidget() override;
 
-  void ShowMultiAccountPicker(const std::vector<IdentityProviderDisplayData>&
-                                  idp_display_data_list) override;
+  void ShowMultiAccountPicker(
+      const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+      bool show_back_button) override;
 
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
                           const IdentityProviderDisplayData& idp_display_data,
@@ -73,6 +74,9 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       const std::u16string& top_frame_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) override;
+
+  void ShowSingleReturningAccountDialog(
+      const std::vector<IdentityProviderDisplayData>& idp_data_list) override;
 
   void ShowLoadingDialog() override;
 

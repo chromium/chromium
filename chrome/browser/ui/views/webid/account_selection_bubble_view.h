@@ -49,8 +49,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // AccountSelectionViewBase:
   void InitDialogWidget() override;
 
-  void ShowMultiAccountPicker(const std::vector<IdentityProviderDisplayData>&
-                                  idp_display_data_list) override;
+  void ShowMultiAccountPicker(
+      const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+      bool show_back_button) override;
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
                           const IdentityProviderDisplayData& idp_display_data,
                           const std::u16string& title) override;
@@ -79,6 +80,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) override;
 
+  void ShowSingleReturningAccountDialog(
+      const std::vector<IdentityProviderDisplayData>& idp_data_list) override;
+
   void ShowLoadingDialog() override;
 
   void CloseDialog() override;
@@ -105,6 +109,12 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
       const std::vector<IdentityProviderDisplayData>& idp_display_data_list);
 
+  // Returns a View containing a single returning account as well as a button to
+  // 'choose an account' which will show all accounts and IDPs that are
+  // available.
+  std::unique_ptr<views::View> CreateSingleReturningAccountChooser(
+      const std::vector<IdentityProviderDisplayData>& idp_display_data_list);
+
   // Returns a view containing a button for the user to login to an IDP for
   // which there was a login status mismatch, to be used in the multiple account
   // chooser case.
@@ -127,11 +137,11 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // Removes all children except for `header_view_`.
   void RemoveNonHeaderChildViews();
 
-  // Opens a modal dialog webview that renders the given `url`.
-  void ShowModalDialog(const GURL& url);
-
-  // Closes the modal webview dialog, if it is shown.
-  void CloseModalDialog();
+  // Creates the "Choose an account" button, showing some IDP domains as well.
+  // Prioritizes showing any IDPs for which there was a login status mismatch.
+  std::unique_ptr<views::View> CreateChooseAnAccountButton(
+      const std::vector<std::u16string> mismatch_idps,
+      const std::vector<std::u16string> non_mismatch_idps);
 
   // The accessible title.
   std::u16string accessible_title_;
