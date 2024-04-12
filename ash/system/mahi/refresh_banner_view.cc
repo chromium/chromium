@@ -133,9 +133,12 @@ RefreshBannerView::RefreshBannerView(MahiUiController* ui_controller)
                            base::Unretained(ui_controller)))
                        .SetVectorIcon(&vector_icons::kReloadChromeRefreshIcon)
                        .SetType(IconButton::Type::kSmallProminentFloating)
+                       // TODO(b/319264190): Replace the a11y string.
+                       .SetAccessibleName(u"Refresh contents")
                        .Build());
   icon_button->SetIconColor(cros_tokens::kCrosSysSystemOnPrimaryContainer);
-  icon_button->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  views::FocusRing::Get(icon_button)
+      ->SetColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
 }
 
 RefreshBannerView::~RefreshBannerView() = default;
