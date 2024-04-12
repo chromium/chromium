@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/types/strong_alias.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
@@ -26,6 +26,7 @@ struct PasswordForm;
 class PasswordStoreBackend;
 class PasswordStoreConsumer;
 class SmartBubbleStatsStore;
+class PasswordStoreSyncInterface;
 
 using IsAccountStore = base::StrongAlias<class IsAccountStoreTag, bool>;
 
@@ -185,9 +186,7 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   // have started yet but its preferences can already be queried.
   virtual void OnSyncServiceInitialized(syncer::SyncService* sync_service) = 0;
 
-  // The passed callback will be invoked whenever sync is enabled/disabled.
-  virtual base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(
-      base::RepeatingClosure sync_enabled_or_disabled_cb) = 0;
+  virtual PasswordStoreSyncInterface* GetPasswordStoreSyncInterface() = 0;
 
   // Tests only can retrieve the backend.
   virtual PasswordStoreBackend* GetBackendForTesting() = 0;

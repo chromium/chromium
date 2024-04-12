@@ -23,12 +23,14 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_sync_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 
 class PrefService;
@@ -57,9 +59,8 @@ class UnsyncedCredentialsDeletionNotifier {
 // Partial, cross-platform implementation for storing form passwords.
 // The login request/manipulation API is not threadsafe and must be used
 // from the UI thread.
-// PasswordStoreSync is a hidden base class because only PasswordSyncBridge
-// needs to access these methods.
-class PasswordStore : public PasswordStoreInterface {
+class PasswordStore : public PasswordStoreInterface,
+                      public PasswordStoreSyncInterface {
  public:
   explicit PasswordStore(std::unique_ptr<PasswordStoreBackend> backend);
 
@@ -119,9 +120,16 @@ class PasswordStore : public PasswordStoreInterface {
   std::unique_ptr<syncer::ModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  PasswordStoreSyncInterface* GetPasswordStoreSyncInterface() override;
+  PasswordStoreBackend* GetBackendForTesting() override;
+
+  // PasswordStoreSyncInterface:
   base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(
       base::RepeatingClosure sync_enabled_or_disabled_cb) override;
-  PasswordStoreBackend* GetBackendForTesting() override;
+#if !BUILDFLAG(IS_ANDROID)
+  void GetUnsyncedCredentials(
+      base::OnceCallback<void(std::vector<PasswordForm>)> callback) override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  protected:
   friend class base::RefCountedThreadSafe<PasswordStore>;

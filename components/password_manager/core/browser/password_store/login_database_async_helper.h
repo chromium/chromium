@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_LOGIN_DATABASE_ASYNC_HELPER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_LOGIN_DATABASE_ASYNC_HELPER_H_
 
+#include <vector>
+
 #include "base/cancelable_callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
@@ -71,6 +74,9 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::Time delete_begin,
       base::Time delete_end);
+
+  // Retrieves all unsynced credentials in the store.
+  std::vector<PasswordForm> GetUnsyncedCredentials();
 
   // Instantiates a proxy controller delegate to react to sync events.
   base::WeakPtr<syncer::ModelTypeControllerDelegate>

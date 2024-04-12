@@ -50,6 +50,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/browser/password_store/password_store_sync_interface.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -240,8 +241,9 @@ base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(
   if (PasswordStoreInterface* account_store =
           client->GetAccountPasswordStore()) {
     // base::Unretained() safe because of the precondition.
-    return account_store->AddSyncEnabledOrDisabledCallback(base::BindRepeating(
-        &PasswordManager::UpdateFormManagers, base::Unretained(manager)));
+    return account_store->GetPasswordStoreSyncInterface()
+        ->AddSyncEnabledOrDisabledCallback(base::BindRepeating(
+            &PasswordManager::UpdateFormManagers, base::Unretained(manager)));
   }
   return {};
 }

@@ -339,6 +339,19 @@ void PasswordStoreBuiltInBackend::RecordUpdateLoginAsyncCalledFromTheStore() {
       true);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void PasswordStoreBuiltInBackend::GetUnsyncedCredentials(
+    base::OnceCallback<void(std::vector<PasswordForm>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(helper_);
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&LoginDatabaseAsyncHelper::GetUnsyncedCredentials,
+                     base::Unretained(helper_.get())),
+      std::move(callback));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 base::WeakPtr<PasswordStoreBackend> PasswordStoreBuiltInBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

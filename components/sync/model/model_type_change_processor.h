@@ -73,7 +73,7 @@ class ModelTypeChangeProcessor {
 
   // Returns true if a tracked entity has local changes. A commit may or may not
   // be in progress at this time.
-  virtual bool IsEntityUnsynced(const std::string& storage_key) = 0;
+  virtual bool IsEntityUnsynced(const std::string& storage_key) const = 0;
 
   // Returns the creation timestamp of the sync entity, or a null time if the
   // entity is not tracked.

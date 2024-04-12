@@ -226,6 +226,14 @@ void FakePasswordStoreBackend::RecordAddLoginAsyncCalledFromTheStore() {}
 
 void FakePasswordStoreBackend::RecordUpdateLoginAsyncCalledFromTheStore() {}
 
+#if !BUILDFLAG(IS_ANDROID)
+void FakePasswordStoreBackend::GetUnsyncedCredentials(
+    base::OnceCallback<void(std::vector<PasswordForm>)> callback) {
+  NOTIMPLEMENTED();
+  std::move(callback).Run({});
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 base::WeakPtr<PasswordStoreBackend> FakePasswordStoreBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

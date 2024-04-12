@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/buildflag.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 
@@ -100,6 +101,10 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   void RecordAddLoginAsyncCalledFromTheStore() override;
   void RecordUpdateLoginAsyncCalledFromTheStore() override;
+#if !BUILDFLAG(IS_ANDROID)
+  void GetUnsyncedCredentials(
+      base::OnceCallback<void(std::vector<PasswordForm>)> callback) override;
+#endif  // !BUILDFLAG(IS_ANDROID)
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
   // Returns the task runner. Defaults to

@@ -10,6 +10,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "build/buildflag.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
@@ -20,8 +22,6 @@ class SyncService;
 }  // namespace syncer
 
 namespace password_manager {
-
-struct PasswordForm;
 
 class AffiliatedMatchHelper;
 class SmartBubbleStatsStore;
@@ -161,6 +161,12 @@ class PasswordStoreBackend {
   // Records calls to the `UpdateLoginAsync()` from the password store.
   // TODO: crbug.com/327126704 - Remove this method after UPM is launched.
   virtual void RecordUpdateLoginAsyncCalledFromTheStore() = 0;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Retrieves all unsynced credentialss in the store.
+  virtual void GetUnsyncedCredentials(
+      base::OnceCallback<void(std::vector<PasswordForm>)> callback) = 0;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Get a WeakPtr to the instance.
   virtual base::WeakPtr<PasswordStoreBackend> AsWeakPtr() = 0;

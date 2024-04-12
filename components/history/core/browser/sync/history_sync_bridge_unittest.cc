@@ -186,7 +186,7 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
     return storage_keys;
   }
 
-  bool IsEntityUnsynced(const std::string& storage_key) override {
+  bool IsEntityUnsynced(const std::string& storage_key) const override {
     return unsynced_entities_.count(storage_key) > 0;
   }
 

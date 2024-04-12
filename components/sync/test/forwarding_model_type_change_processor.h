@@ -35,7 +35,7 @@ class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
   void UntrackEntityForClientTagHash(
       const ClientTagHash& client_tag_hash) override;
   std::vector<std::string> GetAllTrackedStorageKeys() const override;
-  bool IsEntityUnsynced(const std::string& storage_key) override;
+  bool IsEntityUnsynced(const std::string& storage_key) const override;
   base::Time GetEntityCreationTime(
       const std::string& storage_key) const override;
   base::Time GetEntityModificationTime(

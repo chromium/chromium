@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_sync_interface.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
@@ -401,9 +402,10 @@ void PasswordReuseManagerImpl::RequestLoginsFromStores() {
         /*consumer=*/weak_ptr_factory_.GetWeakPtr());
     // base::Unretained() is safe because `this` outlives the subscription.
     account_store_cb_list_subscription_ =
-        account_store_->AddSyncEnabledOrDisabledCallback(base::BindRepeating(
-            &PasswordReuseManagerImpl::AccountStoreStateChanged,
-            base::Unretained(this)));
+        account_store_->GetPasswordStoreSyncInterface()
+            ->AddSyncEnabledOrDisabledCallback(base::BindRepeating(
+                &PasswordReuseManagerImpl::AccountStoreStateChanged,
+                base::Unretained(this)));
   }
 }
 

@@ -568,7 +568,7 @@ ClientTagBasedModelTypeProcessor::GetAllTrackedStorageKeys() const {
 }
 
 bool ClientTagBasedModelTypeProcessor::IsEntityUnsynced(
-    const std::string& storage_key) {
+    const std::string& storage_key) const {
   if (!entity_tracker_) {
     return false;
   }

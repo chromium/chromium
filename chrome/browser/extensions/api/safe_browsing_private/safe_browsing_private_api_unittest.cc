@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -25,6 +26,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_sync_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_sync_interface.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -86,12 +89,28 @@ class SafeBrowsingPrivateApiUnitTest : public ExtensionServiceTestBase {
   Browser* browser() { return browser_.get(); }
 
  private:
+  scoped_refptr<RefcountedKeyedService> BuildMockPasswordStore(
+      content::BrowserContext* context);
+
   void SetUp() override;
   void TearDown() override;
 
+  NiceMock<password_manager::MockPasswordStoreSyncInterface>
+      mock_password_store_sync_interface_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 };
+
+scoped_refptr<RefcountedKeyedService>
+SafeBrowsingPrivateApiUnitTest::BuildMockPasswordStore(
+    content::BrowserContext* context) {
+  scoped_refptr<password_manager::MockPasswordStoreInterface> mock =
+      base::MakeRefCounted<
+          NiceMock<password_manager::MockPasswordStoreInterface>>();
+  ON_CALL(*mock, GetPasswordStoreSyncInterface())
+      .WillByDefault(testing::Return(&mock_password_store_sync_interface_));
+  return mock;
+}
 
 void SafeBrowsingPrivateApiUnitTest::SetUp() {
   ExtensionServiceTestBase::SetUp();
@@ -103,19 +122,17 @@ void SafeBrowsingPrivateApiUnitTest::SetUp() {
   params.window = browser_window_.get();
   browser_ = std::unique_ptr<Browser>(Browser::Create(params));
 
+  base::RepeatingCallback<scoped_refptr<RefcountedKeyedService>(
+      content::BrowserContext*)>
+      mock_password_store_factory = base::BindRepeating(
+          &SafeBrowsingPrivateApiUnitTest::BuildMockPasswordStore,
+          base::Unretained(this));
+
   ProfilePasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile(),
-      base::BindRepeating(
-          &password_manager::BuildPasswordStoreInterface<
-              content::BrowserContext,
-              NiceMock<password_manager::MockPasswordStoreInterface>>));
+      profile(), mock_password_store_factory);
 
   AccountPasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile(),
-      base::BindRepeating(
-          &password_manager::BuildPasswordStoreInterface<
-              content::BrowserContext,
-              NiceMock<password_manager::MockPasswordStoreInterface>>));
+      profile(), mock_password_store_factory);
 
   // Initialize Safe Browsing service.
   safe_browsing::TestSafeBrowsingServiceFactory sb_service_factory;

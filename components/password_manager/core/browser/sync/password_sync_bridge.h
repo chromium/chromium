@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_SYNC_BRIDGE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_SYNC_BRIDGE_H_
 
+#include <set>
+#include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/sync/model/metadata_batch.h"
@@ -51,6 +55,10 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   // the data changes.
   void ActOnPasswordStoreChanges(const PasswordStoreChangeList& changes);
 
+  // Retrieves all unsynced credentials in the store which are not blocklist
+  // entries.
+  std::vector<PasswordForm> GetUnsyncedCredentials() const;
+
   // ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
@@ -82,7 +90,15 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   std::optional<syncer::ModelError> CleanupPasswordStore();
 
   // Retrieves the storage keys of all unsynced passwords in the store.
-  std::set<FormPrimaryKey> GetUnsyncedPasswordsStorageKeys();
+  std::set<FormPrimaryKey> GetUnsyncedPasswordsStorageKeys() const;
+
+  // Retrieves all credentials in the store, partitioned in two:
+  // - `forms_to_be_moved`: unsynced, should be moved to local storage,
+  // - `forms_to_be_deleted`: safe to delete (either already synced, or they're
+  //   blocklist entries which aren't worth moving).
+  void GetUnsyncedCredentialsHelper(
+      std::vector<PasswordForm>& forms_to_be_moved,
+      std::vector<PasswordForm>* forms_to_be_deleted) const;
 
   // If available, returns cached possibly trimmed PasswordSpecificsData for
   // given |storage_key|. By default, empty PasswordSpecificsData is returned.

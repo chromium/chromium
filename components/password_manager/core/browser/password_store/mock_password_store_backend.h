@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
@@ -100,6 +102,12 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               (override));
   MOCK_METHOD(void, RecordAddLoginAsyncCalledFromTheStore, (), (override));
   MOCK_METHOD(void, RecordUpdateLoginAsyncCalledFromTheStore, (), (override));
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void,
+              GetUnsyncedCredentials,
+              (base::OnceCallback<void(std::vector<PasswordForm>)>),
+              (override));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
