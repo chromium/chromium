@@ -446,9 +446,9 @@ const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =
     "When enabled, server card retrieval will begin with a risk-based check "
     "instead of jumping straight to CVC or biometric auth.";
 
-const char kAutofillEnableManuallFallbackIPHName[] =
-    "Show autofill manuall fallback IPH";
-const char kAutofillEnableManuallFallbackIPHDescription[] =
+const char kAutofillEnableManualFallbackIPHName[] =
+    "Show autofill manual fallback IPH";
+const char kAutofillEnableManualFallbackIPHDescription[] =
     "Show a promo on address fields which educates the users about the "
     "possibility to trigger autofill from the context menu.";
 

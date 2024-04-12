@@ -159,8 +159,8 @@ BASE_FEATURE(kAutofillEnableSelectList,
 // from the context menu. The IPH will be attached to address fields with
 // autocomplete="garbage".
 // TODO(b/313587343) Remove once manual fallback IPH feature is launched.
-BASE_FEATURE(kAutofillEnableManuallFallbackIPH,
-             "AutofillEnableManuallFallbackIPH",
+BASE_FEATURE(kAutofillEnableManualFallbackIPH,
+             "AutofillEnableManualFallbackIPH",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls if Chrome support filling and importing between streets.

@@ -293,8 +293,8 @@ extern const char kAutofillEnableFIDOProgressDialogDescription[];
 extern const char kAutofillEnableFpanRiskBasedAuthenticationName[];
 extern const char kAutofillEnableFpanRiskBasedAuthenticationDescription[];
 
-extern const char kAutofillEnableManuallFallbackIPHName[];
-extern const char kAutofillEnableManuallFallbackIPHDescription[];
+extern const char kAutofillEnableManualFallbackIPHName[];
+extern const char kAutofillEnableManualFallbackIPHDescription[];
 
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[];

@@ -18951,6 +18951,7 @@ from previous Chrome versions.
   <int value="-978514039" label="SiteSearchSettingsPolicy:disabled"/>
   <int value="-977770313" label="AndroidSurfaceControl:enabled"/>
   <int value="-977476498" label="disable-eol-notification"/>
+  <int value="-976421766" label="AutofillEnableManualFallbackIPH:enabled"/>
   <int value="-975787829" label="AutofillProfileServerValidation:enabled"/>
   <int value="-974882918" label="WebXRIncubations:disabled"/>
   <int value="-974749863" label="LiveCaptionMultiLanguage:disabled"/>
@@ -19121,6 +19122,7 @@ from previous Chrome versions.
   <int value="-894214299" label="fill-on-account-select:enabled"/>
   <int value="-894185031" label="HighDynamicRange:disabled"/>
   <int value="-893673593" label="BentoOffline:disabled"/>
+  <int value="-893625763" label="AutofillEnableManualFallbackIPH:disabled"/>
   <int value="-892428689" label="ManualPasswordGenerationAndroid:enabled"/>
   <int value="-892297699" label="EditContext:enabled"/>
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>

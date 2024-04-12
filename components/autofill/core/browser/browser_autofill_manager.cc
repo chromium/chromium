@@ -1220,7 +1220,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
                 return profile->HasInfo(field_type);
               }) &&
           base::FeatureList::IsEnabled(
-              features::kAutofillEnableManuallFallbackIPH)) {
+              features::kAutofillEnableManualFallbackIPH)) {
         client().ShowAutofillFieldIphForManualFallbackFeature(field);
       }
       return false;

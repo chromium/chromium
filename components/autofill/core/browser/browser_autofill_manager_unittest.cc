@@ -1602,7 +1602,7 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        AutofillManualFallback_IphIsDisplayedCorrectly) {
   base::test::ScopedFeatureList enabled_features{
-      features::kAutofillEnableManuallFallbackIPH};
+      features::kAutofillEnableManualFallbackIPH};
 
   FormData form;
   form.name = u"MyForm";
