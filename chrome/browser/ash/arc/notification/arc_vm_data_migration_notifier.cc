@@ -154,11 +154,6 @@ void ArcVmDataMigrationNotifier::ShowNotification() {
   notification.SetSystemPriority();
   // Set no timeout so that the notification never disappears spontaneously.
   notification.set_never_timeout(true);
-  if (!ArcVmDataMigrationShouldBeDismissible(days_until_deadline)) {
-    // Pin the notification so that it is moved from the desktop to the
-    // notification list when the close button is clicked.
-    notification.set_pinned(true);
-  }
 
   NotificationDisplayService::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
