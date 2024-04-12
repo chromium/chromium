@@ -20,6 +20,8 @@
 #include "base/functional/bind.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/text_elider.h"
+#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/views/border.h"
@@ -34,6 +36,13 @@
 
 namespace {
 
+constexpr int kTitleRowMinimumWidthWithIcon = 186;
+constexpr int kTitleCharacterLimit =
+    (kTitleRowMinimumWidthWithIcon /
+         message_center::kMinPixelsPerTitleCharacter -
+     12) /
+    2;
+constexpr int kAppNameCharacterLimit = kTitleCharacterLimit;
 constexpr auto kAppIconContainerInteriorMargin =
     gfx::Insets::TLBR(16, 12, 0, 0);
 constexpr auto kCollapsedPreviewContainerDefaultMargin =
@@ -109,8 +118,13 @@ void ConversationNotificationView::UpdateWithNotification(
 
   actions_view_->UpdateWithNotification(notification);
   actions_view_->SetExpanded(expanded_);
-  title_->SetText(notification.title());
-  app_name_view_->SetText(notification.display_source());
+
+  // TODO(b/333740702): Clean up string truncation.
+  title_->SetText(gfx::TruncateString(notification.title(),
+                                      kTitleCharacterLimit, gfx::WORD_BREAK));
+
+  app_name_view_->SetText(gfx::TruncateString(
+      notification.display_source(), kAppNameCharacterLimit, gfx::WORD_BREAK));
 
   if (notification.items().empty()) {
     return;
@@ -282,7 +296,9 @@ ConversationNotificationView::CreateTitleRow(const Notification& notification) {
   auto title = std::make_unique<views::Label>();
   title->SetID(ViewId::kTitleLabel);
   title_ = title_row->AddChildView(std::move(title));
-  title_->SetText(notification.title());
+  // TODO(b/333740702): Clean up string truncation.
+  title_->SetText(gfx::TruncateString(notification.title(),
+                                      kTitleCharacterLimit, gfx::WORD_BREAK));
   ash::TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                              *title_);
 
@@ -298,7 +314,8 @@ ConversationNotificationView::CreateTitleRow(const Notification& notification) {
   auto app_name_view = std::make_unique<views::Label>();
   app_name_view->SetID(ViewId::kTitleLabel);
   app_name_view_ = title_row->AddChildView(std::move(app_name_view));
-  app_name_view_->SetText(notification.display_source());
+  app_name_view_->SetText(gfx::TruncateString(
+      notification.display_source(), kAppNameCharacterLimit, gfx::WORD_BREAK));
   ash::TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                              *app_name_view_);
 
