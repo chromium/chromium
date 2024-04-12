@@ -26,7 +26,6 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
@@ -36,7 +35,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
@@ -54,13 +52,10 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for the WebViewClient.shouldOverrideUrlLoading() method. */
-@DoNotBatch(reason = "This test class is historically prone to flakes.")
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterizedTest {
@@ -74,13 +69,13 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
             "com.android.browser:EnterpriseAuthenticationAppLinkPolicy";
 
     private TestWebServer mWebServer;
-    private ShouldOverrideUrlLoadingClient mContentsClient;
+    private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
 
     private TestAwContentsClient.ShouldOverrideUrlLoadingHelper mShouldOverrideUrlLoadingHelper;
 
-    private static class TestDefaultContentsClient extends ShouldOverrideUrlLoadingClient {
+    private static class TestDefaultContentsClient extends TestAwContentsClient {
         @Override
         public boolean hasWebViewClient() {
             return false;
@@ -101,39 +96,12 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         mWebServer.shutdown();
     }
 
-    private static class ShouldOverrideUrlLoadingClient extends TestAwContentsClient {
-        private final BlockingQueue<AwWebResourceRequest> mShouldOverrideUrlLoadingQueue =
-                new LinkedBlockingQueue<>();
-        private final BlockingQueue<String> mOnPageFinishedQueue = new LinkedBlockingQueue<>();
-
-        @Override
-        public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
-            boolean value = super.shouldOverrideUrlLoading(request);
-            mShouldOverrideUrlLoadingQueue.offer(request);
-            return value;
-        }
-
-        @Override
-        public void onPageFinished(String url) {
-            super.onPageFinished(url);
-            mOnPageFinishedQueue.offer(url);
-        }
-
-        public AwWebResourceRequest waitForShouldOverrideUrlLoading() throws Exception {
-            return AwActivityTestRule.waitForNextQueueElement(mShouldOverrideUrlLoadingQueue);
-        }
-
-        public String waitForOnPageFinished() throws Exception {
-            return AwActivityTestRule.waitForNextQueueElement(mOnPageFinishedQueue);
-        }
-    }
-
     private void standardSetup() {
-        setupWithProvidedContentsClient(new ShouldOverrideUrlLoadingClient());
+        setupWithProvidedContentsClient(new TestAwContentsClient());
         mShouldOverrideUrlLoadingHelper = mContentsClient.getShouldOverrideUrlLoadingHelper();
     }
 
-    private void setupWithProvidedContentsClient(ShouldOverrideUrlLoadingClient contentsClient) {
+    private void setupWithProvidedContentsClient(TestAwContentsClient contentsClient) {
         mContentsClient = contentsClient;
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
         mAwContents = mTestContainerView.getAwContents();
@@ -789,108 +757,60 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         //    on whether it was a real click done by the user, or has it been done by JS; on click,
         //    both the initial navigation and the redirect are reported via
         //    shouldOverrideUrlLoading.
+        int directLoadCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), redirectUrl);
-        if (!serverSideRedirect) {
-            // This assertion is redundant because loadUrlSync already waits for onPageFinished,
-            // however we still need to call waitForOnPageFinished() in order to drain the queue.
-            Assert.assertEquals(
-                    "Expected onPageFinished for redirectUrl",
-                    redirectUrl,
-                    mContentsClient.waitForOnPageFinished());
-        }
-        AwWebResourceRequest request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectTarget, request.url);
-        Assert.assertEquals(serverSideRedirect, request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
+
+        mShouldOverrideUrlLoadingHelper.waitForCallback(directLoadCallCount, 1);
         Assert.assertEquals(
-                "Expected onPageFinished for redirectTarget",
-                redirectTarget,
-                mContentsClient.waitForOnPageFinished());
+                redirectTarget, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
+        Assert.assertEquals(serverSideRedirect, mShouldOverrideUrlLoadingHelper.isRedirect());
+        Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
 
         // Test clicking with JS, hasUserGesture must be false.
         int indirectLoadCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithLinkToRedirectUrl);
-        // This assertion is redundant because loadUrlSync already waits for onPageFinished,
-        // however we still need to call waitForOnPageFinished() in order to drain the queue.
-        Assert.assertEquals(
-                "Expected onPageFinished for pageWithLinkToRedirectUrl",
-                pageWithLinkToRedirectUrl,
-                mContentsClient.waitForOnPageFinished());
-        Assert.assertEquals(
-                "shouldOverrideUrlLoading should not be invoked during loadUrlSync",
-                indirectLoadCallCount,
-                mShouldOverrideUrlLoadingHelper.getCallCount());
+        Assert.assertEquals(indirectLoadCallCount, mShouldOverrideUrlLoadingHelper.getCallCount());
 
         clickOnLinkUsingJs();
 
-        request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectUrl, request.url);
-        Assert.assertFalse(request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
-        if (!serverSideRedirect) {
-            // Make sure the redirect page has finished loading.
-            Assert.assertEquals(
-                    "Expected onPageFinished for redirectUrl",
-                    redirectUrl,
-                    mContentsClient.waitForOnPageFinished());
-        }
+        mShouldOverrideUrlLoadingHelper.waitForCallback(indirectLoadCallCount, 1);
+        Assert.assertEquals(
+                redirectUrl, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
+        Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
+        Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
+        mShouldOverrideUrlLoadingHelper.waitForCallback(indirectLoadCallCount + 1, 1);
+        Assert.assertEquals(
+                redirectTarget, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
+        Assert.assertEquals(serverSideRedirect, mShouldOverrideUrlLoadingHelper.isRedirect());
+        Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
 
-        request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectTarget, request.url);
-        Assert.assertEquals(serverSideRedirect, request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
         // Make sure the redirect target page has finished loading.
-        Assert.assertEquals(
-                "Expected onPageFinished for redirectTarget",
-                redirectTarget,
-                mContentsClient.waitForOnPageFinished());
-
+        mActivityTestRule.pollUiThread(() -> !mAwContents.getTitle().equals(pageTitle));
         indirectLoadCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
-        mActivityTestRule.loadUrlSync(
-                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithLinkToRedirectUrl);
-        // This assertion is redundant because loadUrlSync already waits for onPageFinished,
-        // however we still need to call waitForOnPageFinished() in order to drain the queue.
-        Assert.assertEquals(
-                "Expected onPageFinished for pageWithLinkToRedirectUrl",
-                pageWithLinkToRedirectUrl,
-                mContentsClient.waitForOnPageFinished());
+        mActivityTestRule.loadUrlAsync(mAwContents, pageWithLinkToRedirectUrl);
         mActivityTestRule.pollUiThread(() -> mAwContents.getTitle().equals(pageTitle));
-        Assert.assertEquals(
-                "shouldOverrideUrlLoading should not be invoked during loadUrlSync",
-                indirectLoadCallCount,
-                mShouldOverrideUrlLoadingHelper.getCallCount());
+        Assert.assertEquals(indirectLoadCallCount, mShouldOverrideUrlLoadingHelper.getCallCount());
 
         // Simulate touch, hasUserGesture must be true only on the first call.
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
 
-        request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectUrl, request.url);
-        Assert.assertFalse(request.isRedirect);
-        Assert.assertTrue(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
-        if (!serverSideRedirect) {
-            // Make sure the redirect page has finished loading.
-            Assert.assertEquals(
-                    "Expected onPageFinished for redirectUrl",
-                    redirectUrl,
-                    mContentsClient.waitForOnPageFinished());
-        }
-
-        request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectTarget, request.url);
-        Assert.assertEquals(serverSideRedirect, request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
-        // Make sure the redirect target page has finished loading.
+        mShouldOverrideUrlLoadingHelper.waitForCallback(indirectLoadCallCount, 1);
         Assert.assertEquals(
-                "Expected onPageFinished for redirectTarget",
-                redirectTarget,
-                mContentsClient.waitForOnPageFinished());
+                redirectUrl, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
+        Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.hasUserGesture());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
+        mShouldOverrideUrlLoadingHelper.waitForCallback(indirectLoadCallCount + 1, 1);
+        Assert.assertEquals(
+                redirectTarget, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
+        Assert.assertEquals(serverSideRedirect, mShouldOverrideUrlLoadingHelper.isRedirect());
+        Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
+        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
     @Test
@@ -993,7 +913,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testCallDestroyInCallback() throws Throwable {
-        class DestroyInCallbackClient extends ShouldOverrideUrlLoadingClient {
+        class DestroyInCallbackClient extends TestAwContentsClient {
             @Override
             public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
                 mAwContents.destroy();
@@ -1027,7 +947,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
     @SmallTest
     @Feature({"AndroidWebView", "Navigation"})
     public void testReloadingUrlDoesNotBreakBackForwardList() throws Throwable {
-        class ReloadInCallbackClient extends ShouldOverrideUrlLoadingClient {
+        class ReloadInCallbackClient extends TestAwContentsClient {
             @Override
             public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
                 super.shouldOverrideUrlLoading(request);
@@ -1083,7 +1003,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
     @Feature({"AndroidWebView"})
     public void testCallStopAndLoadJsInCallback() throws Throwable {
         final String globalJsVar = "window.testCallStopAndLoadJsInCallback";
-        class StopInCallbackClient extends ShouldOverrideUrlLoadingClient {
+        class StopInCallbackClient extends TestAwContentsClient {
             @Override
             public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
                 mAwContents.stopLoading();
@@ -1132,7 +1052,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
                 httpPath,
                 CommonResources.makeHtmlPageWithSimpleLinkTo(
                         getTestPageCommonHeaders(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
-        class StopInCallbackClient extends ShouldOverrideUrlLoadingClient {
+        class StopInCallbackClient extends TestAwContentsClient {
             @Override
             public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
                 mAwContents.loadUrl(httpPathOnServer);
@@ -1421,7 +1341,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
     private static final String BAD_SCHEME = "badscheme://";
 
     // AwContentsClient handling an invalid network scheme
-    private static class BadSchemeClient extends ShouldOverrideUrlLoadingClient {
+    private static class BadSchemeClient extends TestAwContentsClient {
         CountDownLatch mLatch = new CountDownLatch(1);
 
         @Override
