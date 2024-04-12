@@ -51,6 +51,7 @@ enum COMPONENT_EXPORT(EVDEV) KeyboardType {
   IN_BLOCKLIST,
   STYLUS_BUTTON_DEVICE,
   VALID_KEYBOARD,
+  IN_ALLOWLIST,
 };
 
 std::ostream& operator<<(std::ostream& os, const KeyboardType value);

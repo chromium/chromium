@@ -46,6 +46,10 @@ struct DeviceId {
   }
 };
 
+constexpr auto kKeyboardAllowlist = base::MakeFixedFlatSet<DeviceId>({
+    {0x2516, 0x0016},  // CM Storm Quickfire Pro Ultimate
+});
+
 constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x0111, 0x1830},  // SteelSeries Rival 3 Wireless (Bluetooth)
     {0x0111, 0x183a},  // SteelSeries Aerox 3 Wireless (Bluetooth)
@@ -820,11 +824,21 @@ bool IsInKeyboardBlockList(input_id input_id_) {
   return false;
 }
 
+bool IsInKeyboardAllowList(input_id input_id_) {
+  DeviceId id = {input_id_.vendor, input_id_.product};
+  return kKeyboardAllowlist.contains(id);
+}
+
 bool EventDeviceInfo::HasKeyboard() const {
-  return GetKeyboardType() == KeyboardType::VALID_KEYBOARD;
+  KeyboardType type = GetKeyboardType();
+  return type == KeyboardType::VALID_KEYBOARD ||
+         type == KeyboardType::IN_ALLOWLIST;
 }
 
 KeyboardType EventDeviceInfo::GetKeyboardType() const {
+  if (IsInKeyboardAllowList(input_id_)) {
+    return KeyboardType::IN_ALLOWLIST;
+  }
   if (!HasEventType(EV_KEY))
     return KeyboardType::NOT_KEYBOARD;
   if (IsInKeyboardBlockList(input_id_))
@@ -1053,6 +1067,8 @@ std::ostream& operator<<(std::ostream& os, const KeyboardType value) {
       return os << "ui::KeyboardType::STYLUS_BUTTON_DEVICE";
     case KeyboardType::VALID_KEYBOARD:
       return os << "ui::KeyboardType::VALID_KEYBOARD";
+    case KeyboardType::IN_ALLOWLIST:
+      return os << "ui::KeyboardType::IN_ALLOWLIST";
   }
   return os << "ui::KeyboardType::unknown_value("
             << static_cast<unsigned int>(value) << ")";
