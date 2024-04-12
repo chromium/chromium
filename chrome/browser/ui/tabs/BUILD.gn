@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# This is the public interface for tabs in a desktop browser. Most features in
+# //chrome/browser depend on this interface, and thus to prevent circular
+# dependencies this interface should not depend on anything else in //chrome.
+source_set("tabs") {
+  sources = [ "public/tab_interface.h" ]
+  deps = [ "//content" ]
+}
+
 # These enums should not need to depend on chrome/browser/ui. They have been
 # broken out of the chrome/browser/ui build file into a separate target to
 # prevent a circular dependency between mojo targets that chrome/browser/ui

@@ -2085,6 +2085,7 @@ static_library("ui") {
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
+      "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
       "//chrome/browser/ui/webui/downloads:mojo_bindings",

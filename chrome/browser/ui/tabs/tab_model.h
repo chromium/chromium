@@ -8,10 +8,13 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/supports_handles.h"
 #include "chrome/browser/ui/tabs/tab_model_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -23,7 +26,9 @@ namespace tabs {
 class TabCollection;
 class TabFeatures;
 
-class TabModel final : public SupportsHandles<const TabModel> {
+class TabModel final : public SupportsHandles<const TabModel>,
+                       public TabInterface,
+                       public TabStripModelObserver {
  public:
   TabModel(std::unique_ptr<content::WebContents> contents,
            TabStripModel* owning_model);
@@ -93,7 +98,38 @@ class TabModel final : public SupportsHandles<const TabModel> {
   // tab hierarchy, maintaining consistent organization.
   void OnReparented(TabCollection* parent, base::PassKey<TabCollection>);
 
+  // TabInterface overrides:
+  content::WebContents* GetContents() const override;
+  base::CallbackListSubscription RegisterDidAddContents(
+      TabInterface::DidAddContentsCallback callback) override;
+  base::CallbackListSubscription RegisterWillRemoveContents(
+      TabInterface::WillRemoveContentsCallback callback) override;
+  bool IsInForeground() const override;
+  base::CallbackListSubscription RegisterDidEnterForeground(
+      TabInterface::DidEnterForegroundCallback callback) override;
+  base::CallbackListSubscription RegisterDidEnterBackground(
+      TabInterface::DidEnterBackgroundCallback callback) override;
+  bool CanShowModalUI() const override;
+  std::unique_ptr<ScopedTabModalUI> ShowModalUI() override;
+
  private:
+  // Overridden from TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
+  // Tracks whether a tab-modal UI is showing.
+  class ScopedTabModalUIImpl : public ScopedTabModalUI {
+   public:
+    explicit ScopedTabModalUIImpl(TabModel* tab);
+    ~ScopedTabModalUIImpl() override;
+
+   private:
+    // Owns this.
+    raw_ptr<TabModel> tab_;
+  };
+
   std::unique_ptr<content::WebContents> contents_;
 
   // A back reference to the TabStripModel that contains this TabModel. The
@@ -109,6 +145,25 @@ class TabModel final : public SupportsHandles<const TabModel> {
   raw_ptr<TabCollection> parent_collection_ = nullptr;
 
   base::ObserverList<TabModelObserver> observers_;
+
+  using DidAddContentsCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*, content::WebContents*)>;
+  DidAddContentsCallbackList did_add_contents_callback_list_;
+
+  using WillRemoveContentsCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*, content::WebContents*)>;
+  WillRemoveContentsCallbackList will_remove_contents_callback_list_;
+
+  using DidEnterForegroundCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*)>;
+  DidEnterForegroundCallbackList did_enter_foreground_callback_list_;
+
+  using DidEnterBackgroundCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*)>;
+  DidEnterBackgroundCallbackList did_enter_background_callback_list_;
+
+  // Tracks whether a modal UI is showing.
+  bool showing_modal_ui_ = false;
 
   // Features that are per-tab will be owned by this class.
   std::unique_ptr<TabFeatures> tab_features_;
