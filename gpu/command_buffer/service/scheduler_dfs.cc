@@ -350,16 +350,19 @@ SchedulingPriority SchedulerDfs::GetSequenceDefaultPriority(
     SequenceId sequence_id) {
   base::AutoLock auto_lock(lock_);
   Sequence* sequence = GetSequence(sequence_id);
-  DCHECK(sequence);
-  return sequence->default_priority_;
+  if (sequence) {
+    return sequence->default_priority_;
+  }
+  return SchedulingPriority::kNormal;
 }
 
 void SchedulerDfs::SetSequencePriority(SequenceId sequence_id,
                                        SchedulingPriority priority) {
   base::AutoLock auto_lock(lock_);
   Sequence* sequence = GetSequence(sequence_id);
-  DCHECK(sequence);
-  sequence->current_priority_ = priority;
+  if (sequence) {
+    sequence->current_priority_ = priority;
+  }
 }
 
 void SchedulerDfs::ScheduleTask(Task task) {
