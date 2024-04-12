@@ -74,6 +74,8 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #endif
 
+namespace web_app {
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -115,9 +117,25 @@ base::OnceClosure& ManifestUpdateAppliedCallbackForTesting() {
   return *callback;
 }
 
-}  // namespace
+// Returns the list of patterns to match URLs against for tabbed mode home
+// tab navigations.
+std::vector<TabbedModeScopeMatcher> CreateTabbedHomeTabScope(
+    const WebApp* web_app) {
+  std::vector<TabbedModeScopeMatcher> matchers;
+  if (!web_app) {
+    return matchers;
+  }
+  TabStrip tab_strip = web_app->tab_strip().value();
+  if (const auto* params =
+          absl::get_if<blink::Manifest::HomeTabParams>(&tab_strip.home_tab)) {
+    for (auto& pattern : params->scope_patterns) {
+      matchers.emplace_back(pattern);
+    }
+  }
+  return matchers;
+}
 
-namespace web_app {
+}  // namespace
 
 WebAppBrowserController::WebAppBrowserController(
     WebAppProvider& provider,
@@ -529,13 +547,15 @@ bool WebAppBrowserController::IsUrlInHomeTabScope(const GURL& url) const {
     return true;
   }
 
-  if (!home_tab_scope_.has_value()) {
-    home_tab_scope_ = GetTabbedHomeTabScope();
+  if (!home_tab_scope_) {
+    home_tab_scope_ = std::make_unique<std::vector<TabbedModeScopeMatcher>>(
+        CreateTabbedHomeTabScope(registrar().GetAppById(app_id())));
   }
 
-  if (home_tab_scope_.has_value()) {
-    std::vector<int> vec;
-    return home_tab_scope_.value().Match(url.path(), &vec);
+  for (auto& matcher : *home_tab_scope_) {
+    if (matcher.Match(url)) {
+      return true;
+    }
   }
   return false;
 }
@@ -816,34 +836,6 @@ WebAppBrowserController::GetResolvedManifestBackgroundColor() const {
     }
   }
   return registrar().GetAppBackgroundColor(app_id());
-}
-
-std::optional<RE2::Set> WebAppBrowserController::GetTabbedHomeTabScope() const {
-  const WebApp* web_app = registrar().GetAppById(app_id());
-  if (!web_app) {
-    return std::nullopt;
-  }
-  TabStrip tab_strip = web_app->tab_strip().value();
-  if (const auto* params =
-          absl::get_if<blink::Manifest::HomeTabParams>(&tab_strip.home_tab)) {
-    std::vector<blink::SafeUrlPattern> scope_patterns = params->scope_patterns;
-
-    RE2::Set scope_set = RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED);
-    for (auto& scope : scope_patterns) {
-      liburlpattern::Options options = {.delimiter_list = "/",
-                                        .prefix_list = "/",
-                                        .sensitive = true,
-                                        .strict = false};
-      liburlpattern::Pattern pattern(scope.pathname, options, "[^/]+?");
-      std::string error;
-      scope_set.Add(pattern.GenerateRegexString(), &error);
-    }
-
-    if (scope_set.Compile()) {
-      return scope_set;
-    }
-  }
-  return std::nullopt;
 }
 
 }  // namespace web_app

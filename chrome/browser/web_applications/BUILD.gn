@@ -252,6 +252,8 @@ source_set("web_applications") {
     "preinstalled_web_apps/preinstalled_web_apps.h",
     "scope_extension_info.cc",
     "scope_extension_info.h",
+    "tabbed_mode_scope_matcher.cc",
+    "tabbed_mode_scope_matcher.h",
     "user_display_mode.cc",
     "user_display_mode.h",
     "user_uninstalled_preinstalled_web_app_prefs.cc",
