@@ -113,7 +113,7 @@ static_library("search_engines") {
   }
 
   if (!is_android) {
-    sources += [ "generated_marketing_snippets.cc" ]
+    sources += [ "search_engine_choice/generated_marketing_snippets.cc" ]
     deps += [
       ":generate_search_engine_icons",
       "//components/resources:components_scaled_resources_grit",
@@ -288,8 +288,8 @@ if (!is_android) {
     ]
 
     outputs = [
-      "$target_gen_dir/generated_search_engine_resource_ids-inc.cc",
       "$root_gen_dir/chrome/browser/ui/webui/search_engine_choice/generated_icon_utils-inc.cc",
+      "$target_gen_dir/generated_search_engine_resource_ids-inc.cc",
     ]
 
     args = [

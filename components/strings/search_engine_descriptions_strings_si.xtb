@@ -2,7 +2,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <!-- This file is generated using
-google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="si">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft වෙතින් වේගවත්, නිවැරදි සහ පුද්ගලික සෙවුම</translation>

@@ -6,10 +6,11 @@
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/strings/grit/search_engine_descriptions_strings.h"
 
-namespace search_engines {
 // This file is generated using
-// google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+// http://go/chrome-search-engines-marketing-snippets-script.
 // Do not modify it manually.
+namespace search_engines {
+// Implements a function declared in search_engine_choice_utils.h.
 int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   if (engine_keyword == TemplateURLPrepopulateData::bing.keyword) {
     return IDS_BING_SEARCH_DESCRIPTION;

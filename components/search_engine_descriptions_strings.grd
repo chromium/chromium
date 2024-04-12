@@ -113,7 +113,7 @@ process but are generated using a script that pulls them from outside the repo.-
     <output filename="search_engine_descriptions_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
-  <!-- The below files are generated using google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py. Do not modify them manually. -->
+  <!-- The below files are generated using http://go/chrome-search-engines-marketing-snippets-script. Do not modify them manually. -->
     <file path="strings/search_engine_descriptions_strings_am.xtb" lang="am" />
     <file path="strings/search_engine_descriptions_strings_ar.xtb" lang="ar" />
     <file path="strings/search_engine_descriptions_strings_as.xtb" lang="as" />
@@ -191,7 +191,7 @@ process but are generated using a script that pulls them from outside the repo.-
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-      <!-- The below strings are generated using google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py. Do not modify them manually. -->
+      <!-- The below strings are generated using http://go/chrome-search-engines-marketing-snippets-script. Do not modify them manually. -->
       <message name="IDS_BING_SEARCH_DESCRIPTION" use_name_for_id="true">
         Microsoft Bing is an AI search engine powered by GPT-4
       </message>
