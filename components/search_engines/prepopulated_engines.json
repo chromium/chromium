@@ -29,7 +29,7 @@
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
     // Also then run tools/search_engine_choice/generate_search_engine_icons.py.
-    "kCurrentDataVersion": 156
+    "kCurrentDataVersion": 157
   },
 
   // The following engines are included in country lists and are added to the
@@ -168,6 +168,7 @@
       "favicon_url": "https://www.lilo.org/wp-content/themes/jarvis_wp/ajans/assets/favicon.ico",
       "search_url": "https://search.lilo.org/?q={searchTerms}",
       "suggest_url": "https://search.lilo.org/api/?service=suggestions&action=suggest&q={searchTerms}&f=chr&l={language}",
+      "new_tab_url": "https://search.lilo.org",
       "type": "SEARCH_ENGINE_LILO",
       "id": 111
     },
