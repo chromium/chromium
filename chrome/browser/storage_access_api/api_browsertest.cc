@@ -169,11 +169,31 @@ std::string CookieAttributes(std::string_view domain) {
   return base::StrCat({";SameSite=None;Secure;Domain=", domain, ";Path=/"});
 }
 
+std::vector<base::test::FeatureRefAndParams> GetEnabledFeaturesForStorage(
+    bool is_storage_partitioned) {
+  std::vector<base::test::FeatureRefAndParams> enabled;
+  if (is_storage_partitioned) {
+    enabled.push_back({net::features::kThirdPartyStoragePartitioning, {}});
+  }
+  // WebSQL is disabled by default as of M119 (crbug/695592). Enable feature
+  // in tests during deprecation trial and enterprise policy support.
+  enabled.push_back({blink::features::kWebSQLAccess, {}});
+  return enabled;
+}
+
+std::vector<base::test::FeatureRef> GetDisabledFeaturesForStorage(
+    bool is_storage_partitioned) {
+  std::vector<base::test::FeatureRef> disabled;
+  if (!is_storage_partitioned) {
+    disabled.push_back(net::features::kThirdPartyStoragePartitioning);
+  }
+  return disabled;
+}
+
 class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
  protected:
-  explicit StorageAccessAPIBaseBrowserTest(bool is_storage_partitioned)
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
-        is_storage_partitioned_(is_storage_partitioned) {}
+  StorageAccessAPIBaseBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUp() override {
     features_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
@@ -182,22 +202,11 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   }
 
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
-    std::vector<base::test::FeatureRefAndParams> enabled;
-    if (is_storage_partitioned_) {
-      enabled.push_back({net::features::kThirdPartyStoragePartitioning, {}});
-    }
-    // WebSQL is disabled by default as of M119 (crbug/695592). Enable feature
-    // in tests during deprecation trial and enterprise policy support.
-    enabled.push_back({blink::features::kWebSQLAccess, {}});
-    return enabled;
+    return {};
   }
 
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
-    std::vector<base::test::FeatureRef> disabled;
-    if (!is_storage_partitioned_) {
-      disabled.push_back(net::features::kThirdPartyStoragePartitioning);
-    }
-    return disabled;
+    return {};
   }
 
   void SetUpOnMainThread() override {
@@ -462,8 +471,6 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
 
   net::test_server::EmbeddedTestServer& https_server() { return https_server_; }
 
-  bool IsStoragePartitioned() const { return is_storage_partitioned_; }
-
   permissions::MockPermissionPromptFactory* prompt_factory() {
     return prompt_factory_.get();
   }
@@ -476,17 +483,12 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
  private:
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList features_;
-  bool is_storage_partitioned_;
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
 };
 
 // Test fixture for core Storage Access API functionality, guaranteed by spec.
 // This fixture should use the minimal set of features/params.
-class StorageAccessAPIBrowserTest : public StorageAccessAPIBaseBrowserTest {
- public:
-  StorageAccessAPIBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(/*is_storage_partitioned=*/false) {}
-};
+class StorageAccessAPIBrowserTest : public StorageAccessAPIBaseBrowserTest {};
 
 // Check default values for permissions.query on storage-access.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryDefault) {
@@ -1655,8 +1657,13 @@ class StorageAccessAPIStorageBrowserTest
     : public StorageAccessAPIBaseBrowserTest,
       public testing::WithParamInterface<std::tuple<TestType, bool>> {
  public:
-  StorageAccessAPIStorageBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(std::get<1>(GetParam())) {}
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return GetEnabledFeaturesForStorage(IsStoragePartitioned());
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return GetDisabledFeaturesForStorage(IsStoragePartitioned());
+  }
 
   void ExpectStorage(content::RenderFrameHost* frame, bool expected) {
     switch (GetTestType()) {
@@ -1684,6 +1691,7 @@ class StorageAccessAPIStorageBrowserTest
 
  private:
   TestType GetTestType() const { return std::get<0>(GetParam()); }
+  bool IsStoragePartitioned() const { return std::get<1>(GetParam()); }
 };
 
 // Validate that the Storage Access API will unblock other types of storage
@@ -1821,9 +1829,6 @@ INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
 class StorageAccessAPIWithFirstPartySetsBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
-  StorageAccessAPIWithFirstPartySetsBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(false) {}
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     StorageAccessAPIBaseBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
@@ -2030,8 +2035,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
 class StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
-  StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(false) {
+  StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest() {
     StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(5);
   }
 };
@@ -2091,8 +2095,13 @@ class StorageAccessAPIEnterprisePolicyBrowserTest
           /* (origin, content_setting, is_storage_partitioned) */
           std::tuple<const char*, ContentSetting, bool>> {
  public:
-  StorageAccessAPIEnterprisePolicyBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(std::get<2>(GetParam())) {}
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return GetEnabledFeaturesForStorage(IsStoragePartitioned());
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return GetDisabledFeaturesForStorage(IsStoragePartitioned());
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
@@ -2142,6 +2151,7 @@ class StorageAccessAPIEnterprisePolicyBrowserTest
  private:
   ContentSetting GetContentSetting() const { return std::get<1>(GetParam()); }
   const char* GetContentOrigin() const { return std::get<0>(GetParam()); }
+  bool IsStoragePartitioned() const { return std::get<2>(GetParam()); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2333,8 +2343,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, IncognitoCanUseAPI) {
 class StorageAccessAPIWithImplicitGrantsBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
-  StorageAccessAPIWithImplicitGrantsBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(/*is_storage_partitioned=*/false) {
+  StorageAccessAPIWithImplicitGrantsBrowserTest() {
     StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(2);
   }
 
@@ -2387,9 +2396,6 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithImplicitGrantsBrowserTest,
 class StorageAccessAPIWith3PCEnabledBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
-  StorageAccessAPIWith3PCEnabledBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(/*is_storage_partitioned=*/false) {}
-
   std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
     return {content_settings::features::kTrackingProtection3pcd};
   }
