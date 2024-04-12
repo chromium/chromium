@@ -420,6 +420,19 @@ Browser::CreateParams Browser::CreateParams::CreateForAppPopup(
 }
 
 // static
+Browser::CreateParams Browser::CreateParams::CreateForPictureInPicture(
+    const std::string& app_name,
+    bool trusted_source,
+    Profile* profile,
+    bool user_gesture) {
+  Browser::CreateParams browser_params(Browser::TYPE_PICTURE_IN_PICTURE,
+                                       profile, user_gesture);
+  browser_params.app_name = app_name;
+  browser_params.trusted_source = trusted_source;
+  return browser_params;
+}
+
+// static
 Browser::CreateParams Browser::CreateParams::CreateForDevTools(
     Profile* profile) {
   CreateParams params(TYPE_DEVTOOLS, profile, true);

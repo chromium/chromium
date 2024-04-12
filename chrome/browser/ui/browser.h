@@ -270,6 +270,11 @@ class Browser : public TabStripModelObserver,
                                           Profile* profile,
                                           bool user_gesture);
 
+    static CreateParams CreateForPictureInPicture(const std::string& app_name,
+                                                  bool trusted_source,
+                                                  Profile* profile,
+                                                  bool user_gesture);
+
     static CreateParams CreateForDevTools(Profile* profile);
 
     // The browser type.

@@ -360,7 +360,15 @@ void BrowserFrameMac::PopulateCreateWindowParams(
                        NSWindowStyleMaskMiniaturizable |
                        NSWindowStyleMaskResizable;
 
-  if (browser_view_->GetIsNormalType() || browser_view_->GetIsWebAppType()) {
+  if (browser_view_->GetIsPictureInPictureType()) {
+    // Picture in Picture windows, even if they are part of a web app, draw
+    // their own title bar and decorations.  Note that `GetIsWebAppType()` might
+    // also be true here, so it's important that this check is first.
+    params->window_class = remote_cocoa::mojom::WindowClass::kFrameless;
+    params->style_mask = NSWindowStyleMaskFullSizeContentView |
+                         NSWindowStyleMaskTitled | NSWindowStyleMaskResizable;
+  } else if (browser_view_->GetIsNormalType() ||
+             browser_view_->GetIsWebAppType()) {
     params->window_class = remote_cocoa::mojom::WindowClass::kBrowser;
     params->style_mask |= NSWindowStyleMaskFullSizeContentView;
 
@@ -370,10 +378,6 @@ void BrowserFrameMac::PopulateCreateWindowParams(
     // Hosted apps draw their own window title.
     if (browser_view_->GetIsWebAppType())
       params->window_title_hidden = true;
-  } else if (browser_view_->GetIsPictureInPictureType()) {
-    params->window_class = remote_cocoa::mojom::WindowClass::kFrameless;
-    params->style_mask = NSWindowStyleMaskFullSizeContentView |
-                         NSWindowStyleMaskTitled | NSWindowStyleMaskResizable;
   } else {
     params->window_class = remote_cocoa::mojom::WindowClass::kDefault;
   }

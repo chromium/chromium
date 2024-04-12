@@ -289,9 +289,17 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
 #if !BUILDFLAG(IS_ANDROID)
     {
-      Browser::CreateParams browser_params(Browser::TYPE_PICTURE_IN_PICTURE,
-                                           profile, params.user_gesture);
-      browser_params.trusted_source = params.trusted_source;
+      // The picture in picture window should be part of the opener's web app,
+      // if any.
+      std::string app_name;
+      if (!params.app_id.empty()) {
+        app_name = web_app::GenerateApplicationNameFromAppId(params.app_id);
+      } else if (params.browser && !params.browser->app_name().empty()) {
+        app_name = params.browser->app_name();
+      }
+
+      auto browser_params = Browser::CreateParams::CreateForPictureInPicture(
+          app_name, params.trusted_source, profile, params.user_gesture);
       DCHECK(params.contents_to_insert);
       auto pip_options =
           params.contents_to_insert->GetPictureInPictureOptions();
