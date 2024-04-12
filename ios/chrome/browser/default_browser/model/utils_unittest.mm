@@ -1099,4 +1099,51 @@ TEST_F(DefaultBrowserUtilsTest,
   EXPECT_EQ(base::Time::UnixEpoch(),
             GetDefaultBrowserFREPromoTimestampIfLast());
 }
+
+TEST_F(DefaultBrowserUtilsTest, GetGenericDefaultBrowserPromoTimestampTest) {
+  feature_list_.InitWithFeatures({/*enabled=*/},
+                                 {/*disabled=*/feature_engagement::
+                                      kDefaultBrowserEligibilitySlidingWindow});
+  // When user hasn't seen generic promo, returns unixepoch.
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+  EXPECT_EQ(base::Time::UnixEpoch(), GetGenericDefaultBrowserPromoTimestamp());
+
+  // When latest is not the generic promo and generic promo hasn't been seen,
+  // returns unixepoch.
+  LogUserInteractionWithTailoredFullscreenPromo();
+  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
+  EXPECT_EQ(base::Time::UnixEpoch(), GetGenericDefaultBrowserPromoTimestamp());
+
+  // When user seen a generic promo, returns the latest timestamp.
+  LogUserInteractionWithFullscreenPromo();
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
+  EXPECT_NE(base::Time::UnixEpoch(), GetGenericDefaultBrowserPromoTimestamp());
+
+  // When latest is not the generic promo, still returns the latest timestamp.
+  LogUserInteractionWithTailoredFullscreenPromo();
+  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
+  EXPECT_NE(base::Time::UnixEpoch(), GetGenericDefaultBrowserPromoTimestamp());
+}
+
+TEST_F(DefaultBrowserUtilsTest, GetTailoredDefaultBrowserPromoTimestampTest) {
+  // When user hasn't seen tailored promo, returns unixepoch.
+  EXPECT_FALSE(HasUserInteractedWithTailoredFullscreenPromoBefore());
+  EXPECT_EQ(base::Time::UnixEpoch(), GetTailoredDefaultBrowserPromoTimestamp());
+
+  // When latest is not the tailored promo and tailored promo hasn't been seen,
+  // returns unixepoch.
+  LogUserInteractionWithFullscreenPromo();
+  EXPECT_FALSE(HasUserInteractedWithTailoredFullscreenPromoBefore());
+  EXPECT_EQ(base::Time::UnixEpoch(), GetTailoredDefaultBrowserPromoTimestamp());
+
+  // When user seen a tailored promo, returns the latest timestamp.
+  LogUserInteractionWithTailoredFullscreenPromo();
+  EXPECT_TRUE(HasUserInteractedWithTailoredFullscreenPromoBefore());
+  EXPECT_NE(base::Time::UnixEpoch(), GetTailoredDefaultBrowserPromoTimestamp());
+
+  // When latest is not the tailored promo, still returns the latest timestamp.
+  LogUserInteractionWithFullscreenPromo();
+  EXPECT_TRUE(HasUserInteractedWithTailoredFullscreenPromoBefore());
+  EXPECT_NE(base::Time::UnixEpoch(), GetTailoredDefaultBrowserPromoTimestamp());
+}
 }  // namespace

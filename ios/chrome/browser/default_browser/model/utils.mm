@@ -465,6 +465,8 @@ NSString* const kSpecialTabsUseCount = @"SpecialTabUseCount";
 NSString* const kFRETimestampMigrationDone = @"fre_timestamp_migration_done";
 NSString* const kPromoInterestEventMigrationDone =
     @"promo_interest_event_migration_done";
+NSString* const kPromoImpressionsMigrationDone =
+    @"promo_impressions_migration_done";
 
 std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
   return LoadActiveTimestampsForKey(StorageKeyForDefaultPromoType(type),
@@ -1113,6 +1115,38 @@ base::Time GetDefaultBrowserFREPromoTimestampIfLast() {
   return base::Time::UnixEpoch();
 }
 
+base::Time GetGenericDefaultBrowserPromoTimestamp() {
+  // Get the latest promo timestamp if user has seen the generic promo before
+  // even when the generic promo is not the latest promo. This is the best we
+  // can get considering the actual timestamp is overwritten.
+  NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
+      kUserHasInteractedWithFullscreenPromo);
+  if (number.boolValue) {
+    NSDate* timestamp = GetObjectFromStorageForKey<NSDate>(
+        kLastTimeUserInteractedWithFullscreenPromo);
+    if (timestamp != nil) {
+      return base::Time::FromNSDate(timestamp);
+    }
+  }
+
+  return base::Time::UnixEpoch();
+}
+
+base::Time GetTailoredDefaultBrowserPromoTimestamp() {
+  // Get the latest promo timestamp if user has seen the tailored promo before
+  // even when the tailored promo is not the latest promo. This is the best we
+  // can get considering the actual timestamp is overwritten.
+  if (HasUserInteractedWithTailoredFullscreenPromoBefore()) {
+    NSDate* timestamp = GetObjectFromStorageForKey<NSDate>(
+        kLastTimeUserInteractedWithFullscreenPromo);
+    if (timestamp != nil) {
+      return base::Time::FromNSDate(timestamp);
+    }
+  }
+
+  return base::Time::UnixEpoch();
+}
+
 void LogFRETimestampMigrationDone() {
   NSDictionary<NSString*, NSObject*>* update =
       @{kFRETimestampMigrationDone : @YES};
@@ -1134,5 +1168,17 @@ void LogPromoInterestEventMigrationDone() {
 BOOL IsPromoInterestEventMigrationDone() {
   NSNumber* number =
       GetObjectFromStorageForKey<NSNumber>(kPromoInterestEventMigrationDone);
+  return number.boolValue;
+}
+
+void LogPromoImpressionsMigrationDone() {
+  NSDictionary<NSString*, NSObject*>* update =
+      @{kPromoImpressionsMigrationDone : @YES};
+  UpdateStorageWithDictionary(update);
+}
+
+BOOL IsPromoImpressionsMigrationDone() {
+  NSNumber* number =
+      GetObjectFromStorageForKey<NSNumber>(kPromoImpressionsMigrationDone);
   return number.boolValue;
 }

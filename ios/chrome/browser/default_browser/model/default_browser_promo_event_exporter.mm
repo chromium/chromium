@@ -45,6 +45,13 @@ void DefaultBrowserEventExporter::ExportEvents(ExportEventsCallback callback) {
         feature_engagement::events::kStaySafePromoConditionsMet);
     LogPromoInterestEventMigrationDone();
   }
+
+  if (!IsPromoImpressionsMigrationDone()) {
+    AddGenericPromoImpressions(events_to_migrate);
+    AddTailoredPromoImpressions(events_to_migrate);
+    LogPromoImpressionsMigrationDone();
+  }
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(events_to_migrate)));
@@ -65,5 +72,32 @@ void DefaultBrowserEventExporter::AddPromoInterestEvents(
     const std::string& event_name) {
   for (base::Time time : LoadTimestampsForPromoType(promo)) {
     events.emplace_back(event_name, DaysSinceTime(time));
+  }
+}
+
+void DefaultBrowserEventExporter::AddGenericPromoImpressions(
+    std::vector<EventData>& events) {
+  const base::Time time = GetGenericDefaultBrowserPromoTimestamp();
+  if (time != base::Time::UnixEpoch()) {
+    events.emplace_back(
+        feature_engagement::events::kGenericDefaultBrowserPromoTrigger,
+        DaysSinceTime(time));
+  }
+}
+void DefaultBrowserEventExporter::AddTailoredPromoImpressions(
+    std::vector<EventData>& events) {
+  const base::Time time = GetTailoredDefaultBrowserPromoTimestamp();
+  if (time != base::Time::UnixEpoch()) {
+    // For tailored promos trigger the group config and all the individual
+    // tailored promos.
+    events.emplace_back(
+        feature_engagement::events::kTailoredDefaultBrowserPromosGroupTrigger,
+        DaysSinceTime(time));
+    events.emplace_back(feature_engagement::events::kAllTabsPromoTrigger,
+                        DaysSinceTime(time));
+    events.emplace_back(feature_engagement::events::kMadeForIOSPromoTrigger,
+                        DaysSinceTime(time));
+    events.emplace_back(feature_engagement::events::kStaySafePromoTrigger,
+                        DaysSinceTime(time));
   }
 }

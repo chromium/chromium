@@ -342,6 +342,14 @@ void LogBrowserIndirectlylaunched();
 // browser promo user seen. Otherwise, returns unix epoch.
 base::Time GetDefaultBrowserFREPromoTimestampIfLast();
 
+// Returns generic Default Browser timestamp if user seen a generic promo
+// before. Otherwise, returns unix epoch.
+base::Time GetGenericDefaultBrowserPromoTimestamp();
+
+// Returns tailored Default Browser timestamp if user seen a tailored promo
+// before. Otherwise, returns unix epoch.
+base::Time GetTailoredDefaultBrowserPromoTimestamp();
+
 // Log to UserDefaults FRE timestamp migration is done.
 void LogFRETimestampMigrationDone();
 
@@ -353,5 +361,11 @@ void LogPromoInterestEventMigrationDone();
 
 // Returns whether promo interest event migratin is done.
 BOOL IsPromoInterestEventMigrationDone();
+
+// Log to UserDefaults promo impressions migration is done.
+void LogPromoImpressionsMigrationDone();
+
+// Returns whether promo impressions migratin is done.
+BOOL IsPromoImpressionsMigrationDone();
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_H_

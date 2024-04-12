@@ -24,6 +24,8 @@ class DefaultBrowserEventExporter
   void AddPromoInterestEvents(std::vector<EventData>& events,
                               DefaultPromoType promo,
                               const std::string& event_name);
+  void AddGenericPromoImpressions(std::vector<EventData>& events);
+  void AddTailoredPromoImpressions(std::vector<EventData>& events);
 };
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_DEFAULT_BROWSER_PROMO_EVENT_EXPORTER_H_

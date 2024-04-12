@@ -110,3 +110,36 @@ TEST_F(DefaultBrowserEventExporterTest, TestPromoInterestEventsMigration) {
   RequestExportEventsAndVerifyCallback();
   EXPECT_EQ(GetExportEventsCount(), 4);
 }
+
+TEST_F(DefaultBrowserEventExporterTest, TestPromoImpressionsMigration) {
+  // No events to export.
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 0);
+
+  // Check when there is 1 generic promo, it should create 1 event to export.
+  ClearDefaultBrowserPromoData();
+  LogUserInteractionWithFullscreenPromo();
+
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 1);
+
+  // Check that exporting second time will not have any events.
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 0);
+
+  // Check when there is 1 tailored promo it should create 4 events to export.
+  ClearDefaultBrowserPromoData();
+  LogUserInteractionWithTailoredFullscreenPromo();
+
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 4);
+
+  // Check when there is 1 generic and 1 tailored promo, should create 5 events
+  // to export.
+  ClearDefaultBrowserPromoData();
+  LogUserInteractionWithFullscreenPromo();
+  LogUserInteractionWithTailoredFullscreenPromo();
+
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 5);
+}

@@ -138,6 +138,13 @@ const char kEnhancedSafeBrowsingPromoCriterionMet[] =
     "enhanced_safe_browsing_promo_criterion_met";
 const char kInlineEnhancedSafeBrowsingPromoClosed[] =
     "inline_enhanced_safe_browsing_promo_closed";
+const char kGenericDefaultBrowserPromoTrigger[] =
+    "generic_default_browser_promo_trigger";
+const char kAllTabsPromoTrigger[] = "all_tabs_promo_trigger";
+const char kMadeForIOSPromoTrigger[] = "made_for_ios_promo_trigger";
+const char kStaySafePromoTrigger[] = "stay_safe_promo_trigger";
+const char kTailoredDefaultBrowserPromosGroupTrigger[] =
+    "tailored_default_browser_promos_group_trigger";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
