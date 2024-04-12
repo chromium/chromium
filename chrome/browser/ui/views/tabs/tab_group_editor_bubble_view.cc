@@ -529,8 +529,9 @@ void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
   tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
           browser->profile());
-  CHECK(saved_tab_group_service);
-  saved_tab_group_service->DisconnectLocalTabGroup(group);
+  if (saved_tab_group_service) {
+    saved_tab_group_service->DisconnectLocalTabGroup(group);
+  }
 
   TabStripModel* const model = browser->tab_strip_model();
   const gfx::Range tab_range =
