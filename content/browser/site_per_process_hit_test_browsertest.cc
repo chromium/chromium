@@ -3426,8 +3426,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
 // This test verifies that MouseEnter and MouseLeave events fire correctly
 // when the mouse cursor moves between processes.
-// Flaky (timeout): https://crbug.com/1006635.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Flaky (timeout): https://crbug.com/1006635, crbug.com/334105909.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_CrossProcessMouseEnterAndLeaveTest \
   DISABLED_CrossProcessMouseEnterAndLeaveTest
 #else
