@@ -8,7 +8,6 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/window_properties.h"
@@ -17,6 +16,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/style/rounded_label_widget.h"
+#include "ash/utility/forest_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
@@ -204,7 +204,7 @@ void OverviewSession::Init(const aura::Window::Windows& windows,
   }
 
   // Create this before the birch bar widget.
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureEnabled()) {
     birch_bar_controller_ = std::make_unique<BirchBarController>(
         /*from_pine_service=*/enter_exit_overview_type_ ==
         OverviewEnterExitType::kPine);
@@ -1588,7 +1588,7 @@ void OverviewSession::OnSplitViewStateChanged(
 
   // Entering or exiting splitview is unexpected behavior in a pine overview
   // session.
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureEnabled()) {
     CHECK(!Shell::Get()->pine_controller()->pine_contents_data());
   }
 

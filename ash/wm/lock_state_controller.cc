@@ -12,7 +12,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/cancel_mode.h"
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -21,6 +20,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/utility/forest_util.h"
 #include "ash/utility/occlusion_tracker_pauser.h"
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
@@ -464,7 +464,7 @@ void LockStateController::CancelShutdownAnimation() {
 void LockStateController::RequestRestart(
     power_manager::RequestRestartReason reason,
     const std::string& description) {
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureEnabled()) {
     restart_reason_ = reason;
     restart_description_ = description;
     HideAndMaybeLockCursor(/*lock=*/false);
@@ -813,7 +813,7 @@ void LockStateController::OnRealPowerTimeout() {
 }
 
 void LockStateController::ShutdownOnPine(bool with_pre_animation) {
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureEnabled()) {
     TakePineImageAndShutdown(with_pre_animation);
   } else {
     StartShutdownProcess(with_pre_animation);
