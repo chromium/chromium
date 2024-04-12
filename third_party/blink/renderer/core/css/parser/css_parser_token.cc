@@ -238,8 +238,11 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
       }
       return builder.Append(Delimiter());
     case kNumberToken:
-      // These won't properly preserve the NumericValueType flag
-      return builder.AppendNumber(NumericValue());
+      if (numeric_value_type_ == kIntegerValueType) {
+        return builder.AppendNumber(ClampTo<int64_t>(NumericValue()));
+      } else {
+        return builder.AppendNumber(NumericValue());
+      }
     case kPercentageToken:
       builder.AppendNumber(NumericValue());
       return builder.Append('%');
