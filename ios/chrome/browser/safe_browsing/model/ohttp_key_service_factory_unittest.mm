@@ -22,6 +22,7 @@ class OhttpKeyServiceFactoryTest : public PlatformTest {
  private:
   safe_browsing::hash_realtime_utils::GoogleChromeBrandingPretenderForTesting
       apply_branding_;
+  OhttpKeyServiceAllowerForTesting allow_ohttp_key_service_;
 };
 
 // Checks that OhttpKeyServiceFactory returns a null for an

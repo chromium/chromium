@@ -6,11 +6,16 @@
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #import "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
+
+namespace {
+bool kAllowInTests = false;
+}
 
 // static
 safe_browsing::OhttpKeyService* OhttpKeyServiceFactory::GetForBrowserState(
@@ -56,4 +61,15 @@ std::unique_ptr<KeyedService> OhttpKeyServiceFactory::BuildServiceInstanceFor(
 bool OhttpKeyServiceFactory::ServiceIsCreatedWithBrowserState() const {
   // The service is created early to start async key fetch.
   return true;
+}
+
+bool OhttpKeyServiceFactory::ServiceIsNULLWhileTesting() const {
+  return !kAllowInTests;
+}
+
+OhttpKeyServiceAllowerForTesting::OhttpKeyServiceAllowerForTesting() {
+  kAllowInTests = true;
+}
+OhttpKeyServiceAllowerForTesting::~OhttpKeyServiceAllowerForTesting() {
+  kAllowInTests = false;
 }

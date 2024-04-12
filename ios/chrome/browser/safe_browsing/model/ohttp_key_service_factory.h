@@ -43,6 +43,23 @@ class OhttpKeyServiceFactory : public BrowserStateKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* browser_state) const override;
   bool ServiceIsCreatedWithBrowserState() const override;
+  bool ServiceIsNULLWhileTesting() const override;
+};
+
+// Used only for tests. By default, the OHTTP key service is null for tests,
+// since when it's created it tries to fetch the OHTTP key, which can cause
+// errors for unrelated tests. To allow the OHTTP key service in tests, create
+// an object of this type and keep it in scope for as long as the override
+// should exist. The constructor will set the override, and the destructor will
+// clear it.
+class OhttpKeyServiceAllowerForTesting {
+ public:
+  OhttpKeyServiceAllowerForTesting();
+  OhttpKeyServiceAllowerForTesting(const OhttpKeyServiceAllowerForTesting&) =
+      delete;
+  OhttpKeyServiceAllowerForTesting& operator=(
+      const OhttpKeyServiceAllowerForTesting&) = delete;
+  ~OhttpKeyServiceAllowerForTesting();
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_OHTTP_KEY_SERVICE_FACTORY_H_
