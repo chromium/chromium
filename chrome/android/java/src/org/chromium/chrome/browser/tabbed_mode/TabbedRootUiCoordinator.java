@@ -939,9 +939,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
         RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPSDialog);
 
-        if (!didTriggerPromo && TrackingProtectionNoticeController.shouldShowNotice()) {
+        if (!didTriggerPromo && TrackingProtectionNoticeController.shouldShowNotice(profile)) {
             TrackingProtectionNoticeController.create(
                     mActivity,
+                    profile,
                     mActivityTabProvider,
                     mMessageDispatcher,
                     new SettingsLauncherImpl());

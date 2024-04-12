@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -47,11 +48,12 @@ import org.chromium.url.GURL;
 
 /** Controller for the Notice message for Tracking Protection. */
 public class TrackingProtectionNoticeController {
-    private Context mContext;
-    private ActivityTabProvider mActivityTabProvider;
+    private final Context mContext;
+    private final TrackingProtectionBridge mTrackingProtectionBridge;
+    private final ActivityTabProvider mActivityTabProvider;
     private ActivityTabTabObserver mActivityTabTabObserver;
-    private MessageDispatcher mMessageDispatcher;
-    private SettingsLauncher mSettingsLauncher;
+    private final MessageDispatcher mMessageDispatcher;
+    private final SettingsLauncher mSettingsLauncher;
     private static final String TRACKING_PROTECTION_HELP_CENTER =
             "https://support.google.com/chrome/?p=tracking_protection";
 
@@ -97,10 +99,15 @@ public class TrackingProtectionNoticeController {
     /**
      * Checks whether the Tracking Protection Notice should be shown.
      *
+     * @param profile The {@link Profile} associated with the tracking protection state.
      * @return boolean value indicating if the Notice should be shown.
      */
-    public static boolean shouldShowNotice() {
-        return TrackingProtectionBridge.getRequiredNotice() != NoticeType.NONE;
+    public static boolean shouldShowNotice(Profile profile) {
+        return shouldShowNotice(new TrackingProtectionBridge(profile));
+    }
+
+    private static boolean shouldShowNotice(TrackingProtectionBridge trackingProtectionBridge) {
+        return trackingProtectionBridge.getRequiredNotice() != NoticeType.NONE;
     }
 
     /**
@@ -109,24 +116,32 @@ public class TrackingProtectionNoticeController {
      * 1. An already loaded tab page is SECURE. 2. The newly loaded page on the current tab is
      * SECURE.
      *
+     * @param profile The {@link Profile} associated with the tracking protection state.
      * @param activityTabProvider The provider of the current activity tab.
      * @param messageDispatcher The {@link MessageDispatcher} to enqueue the message.
      */
     public static TrackingProtectionNoticeController create(
             Context context,
+            Profile profile,
             ActivityTabProvider activityTabProvider,
             MessageDispatcher messageDispatcher,
             @NonNull SettingsLauncher settingsLauncher) {
         return new TrackingProtectionNoticeController(
-                context, activityTabProvider, messageDispatcher, settingsLauncher);
+                context,
+                new TrackingProtectionBridge(profile),
+                activityTabProvider,
+                messageDispatcher,
+                settingsLauncher);
     }
 
     private TrackingProtectionNoticeController(
             Context context,
+            TrackingProtectionBridge trackingProtectionBridge,
             ActivityTabProvider activityTabProvider,
             MessageDispatcher messageDispatcher,
             SettingsLauncher settingsLauncher) {
         mContext = context;
+        mTrackingProtectionBridge = trackingProtectionBridge;
         mActivityTabProvider = activityTabProvider;
         mMessageDispatcher = messageDispatcher;
         mSettingsLauncher = settingsLauncher;
@@ -144,7 +159,7 @@ public class TrackingProtectionNoticeController {
         }
 
         if (getNoticeType() == NoticeType.SILENT_ONBOARDING) {
-            TrackingProtectionBridge.noticeShown(getNoticeType());
+            mTrackingProtectionBridge.noticeShown(getNoticeType());
             destroy();
             return;
         }
@@ -152,7 +167,7 @@ public class TrackingProtectionNoticeController {
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.TRACKING_PROTECTION_NOTICE_REQUEST_TRACKING)) {
             // At this point, we're enqueuing the message, aka requesting the notice.
-            TrackingProtectionBridge.noticeRequested(getNoticeType());
+            mTrackingProtectionBridge.noticeRequested(getNoticeType());
         }
 
         mMessage =
@@ -199,7 +214,7 @@ public class TrackingProtectionNoticeController {
                         .with(
                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
-                                    TrackingProtectionBridge.noticeActionTaken(
+                                    mTrackingProtectionBridge.noticeActionTaken(
                                             getNoticeType(), NoticeAction.GOT_IT);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
@@ -211,20 +226,20 @@ public class TrackingProtectionNoticeController {
         destroy();
     }
 
-    private static Callback<Boolean> onNoticeShown() {
+    private Callback<Boolean> onNoticeShown() {
         return (shown) -> {
             if (shown) {
-                TrackingProtectionBridge.noticeShown(getNoticeType());
+                mTrackingProtectionBridge.noticeShown(getNoticeType());
                 logNoticeControllerEvent(NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN);
             }
         };
     }
 
-    private static Callback<Integer> onNoticeDismissed() {
+    private Callback<Integer> onNoticeDismissed() {
         return (dismissReason) -> {
             switch (dismissReason) {
                 case DismissReason.GESTURE:
-                    TrackingProtectionBridge.noticeActionTaken(
+                    mTrackingProtectionBridge.noticeActionTaken(
                             getNoticeType(), NoticeAction.CLOSED);
                     break;
                 case DismissReason.PRIMARY_ACTION:
@@ -237,7 +252,8 @@ public class TrackingProtectionNoticeController {
                     // shown the notice again.
                     break;
                 default:
-                    TrackingProtectionBridge.noticeActionTaken(getNoticeType(), NoticeAction.OTHER);
+                    mTrackingProtectionBridge.noticeActionTaken(
+                            getNoticeType(), NoticeAction.OTHER);
             }
         };
     }
@@ -266,13 +282,13 @@ public class TrackingProtectionNoticeController {
 
                         // TODO(b/304202327): Offboarding notice should skip the non secure pages
                         // check.
-                        if (shouldShowNotice()
+                        if (shouldShowNotice(mTrackingProtectionBridge)
                                 && (ChromeFeatureList.isEnabled(
                                                 ChromeFeatureList
                                                         .TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK)
                                         || securityLevel == ConnectionSecurityLevel.SECURE)) {
                             showNoticeCallback.onResult(tab);
-                        } else if (shouldShowNotice()) {
+                        } else if (shouldShowNotice(mTrackingProtectionBridge)) {
                             if (securityLevel != ConnectionSecurityLevel.SECURE) {
                                 logNoticeControllerEvent(
                                         NoticeControllerEvent.NON_SECURE_CONNECTION);
@@ -359,12 +375,12 @@ public class TrackingProtectionNoticeController {
                                 mContext, SingleCategorySettings.class, fragmentArguments);
                     }
 
-                    TrackingProtectionBridge.noticeActionTaken(
+                    mTrackingProtectionBridge.noticeActionTaken(
                             getNoticeType(),
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.SETTINGS);
                 } else if (clickedItemID == LEARN_MORE_ITEM_ID) {
                     openUrlInCct(TRACKING_PROTECTION_HELP_CENTER);
-                    TrackingProtectionBridge.noticeActionTaken(
+                    mTrackingProtectionBridge.noticeActionTaken(
                             getNoticeType(),
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.LEARN_MORE);
                 }
@@ -387,8 +403,8 @@ public class TrackingProtectionNoticeController {
         IntentUtils.safeStartActivity(mContext, intent);
     }
 
-    private static @NoticeType int getNoticeType() {
-        return TrackingProtectionBridge.getRequiredNotice();
+    private @NoticeType int getNoticeType() {
+        return mTrackingProtectionBridge.getRequiredNotice();
     }
 
     public void destroy() {

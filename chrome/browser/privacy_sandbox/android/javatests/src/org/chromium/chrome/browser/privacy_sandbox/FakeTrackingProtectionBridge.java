@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.chromium.chrome.browser.profiles.Profile;
+
 /** Java implementation of TrackingProtectionBridge for testing. */
 public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Natives {
     private Integer mLastNoticeAction;
@@ -14,27 +16,27 @@ public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Na
     private @NoticeType int mNoticeType;
 
     @Override
-    public void noticeRequested(int noticeType) {
+    public void noticeRequested(Profile profile, int noticeType) {
         mNoticeRequested = true;
     }
 
     @Override
-    public void noticeShown(int noticeType) {
+    public void noticeShown(Profile profile, int noticeType) {
         mNoticeShown = true;
     }
 
     @Override
-    public void noticeActionTaken(int noticeType, int action) {
+    public void noticeActionTaken(Profile profile, int noticeType, int action) {
         mLastNoticeAction = action;
     }
 
     @Override
-    public @NoticeType int getRequiredNotice() {
+    public @NoticeType int getRequiredNotice(Profile profile) {
         return mNoticeType;
     }
 
     @Override
-    public boolean isOffboarded() {
+    public boolean isOffboarded(Profile profile) {
         return mIsOffboarded;
     }
 

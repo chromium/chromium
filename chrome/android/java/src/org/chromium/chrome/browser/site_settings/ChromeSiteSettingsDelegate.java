@@ -351,7 +351,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     public boolean shouldShowSettingsOffboardingNotice() {
         return ChromeFeatureList.isEnabled(
                         ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE)
-                && TrackingProtectionBridge.isOffboarded();
+                && new TrackingProtectionBridge(mProfile).isOffboarded();
     }
 
     @Override
