@@ -11073,6 +11073,22 @@
             ]
         }
     ],
+    "MahiEnabled": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "MahiEnabled",
+                    "enable_features": [
+                        "Mahi"
+                    ]
+                }
+            ]
+        }
+    ],
     "MainThreadCompositingPriority": [
         {
             "platforms": [
