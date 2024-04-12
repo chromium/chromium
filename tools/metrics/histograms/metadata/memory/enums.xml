@@ -94,21 +94,21 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="VmmmsRequestPriority">
-<!-- This must be kept in sync with enum ResizePriority in ChromeOS
-src/platform2/system_api/non_standard_ipc/vm_memory_management
-vm_memory_management.proto -->
+<!-- This must be kept in sync with enum UmaResizePriority in ChromeOS
+src/platform2/vm_tools/concierge/mm/resize_priority.h -->
 
-  <int value="0" label="RESIZE_PRIORITY_UNSPECIFIED"/>
-  <int value="1" label="RESIZE_PRIORITY_BALLOON_STALL"/>
-  <int value="2" label="RESIZE_PRIORITY_NO_KILL_CANDIDATES_HOST"/>
-  <int value="3" label="RESIZE_PRIORITY_NO_KILL_CANDIDATES_GUEST"/>
-  <int value="4" label="RESIZE_PRIORITY_FOCUSED_TAB"/>
-  <int value="5" label="RESIZE_PRIORITY_FOCUSED_APP"/>
-  <int value="6" label="RESIZE_PRIORITY_PERCEPTIBLE_TAB"/>
-  <int value="7" label="RESIZE_PRIORITY_PERCEPTIBLE_APP"/>
-  <int value="8" label="RESIZE_PRIORITY_CACHED_TAB"/>
-  <int value="9" label="RESIZE_PRIORITY_CACHED_APP"/>
-  <int value="10" label="RESIZE_PRIORITY_MGLRU_RECLAIM"/>
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Balloon Stall"/>
+  <int value="2" label="No Kill Candidates Host"/>
+  <int value="3" label="No Kill Candidates Guest"/>
+  <int value="4" label="Focused Tab"/>
+  <int value="5" label="Focused App"/>
+  <int value="6" label="Perceptible Tab"/>
+  <int value="7" label="Perceptible App"/>
+  <int value="8" label="Cached Tab"/>
+  <int value="9" label="Aggressive Balloon"/>
+  <int value="10" label="Cached App"/>
+  <int value="11" label="MGLRU Reclaim"/>
 </enum>
 
 <enum name="VmmSwapDisableReason">
