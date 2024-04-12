@@ -254,8 +254,10 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     }
 
     var snapshot = diffableDataSource.snapshot()
-    snapshot.reconfigureItems([item])
-    applySnapshot(diffableDataSource: diffableDataSource, snapshot: snapshot)
+    if snapshot.itemIdentifiers.contains(item) {
+      snapshot.reconfigureItems([item])
+      applySnapshot(diffableDataSource: diffableDataSource, snapshot: snapshot)
+    }
   }
 
   func moveItem(
