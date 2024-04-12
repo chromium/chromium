@@ -745,7 +745,7 @@
       // https://drafts.csswg.org/css-anchor-1/
       name: "CSSAnchorPositioning",
       implied_by: ["HTMLSelectListElement"],
-      status: "experimental",
+      status: "stable",
     },
     {
       // Use full cascading for applying @position-try fallback for anchor

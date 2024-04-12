@@ -8,6 +8,7 @@ alignItems
 alignSelf
 alignmentBaseline
 all
+anchorName
 animation
 animationComposition
 animationDelay
@@ -230,6 +231,7 @@ initialLetter
 initialValue
 inlineSize
 inset
+insetArea
 insetBlock
 insetBlockEnd
 insetBlockStart
@@ -346,6 +348,11 @@ placeItems
 placeSelf
 pointerEvents
 position
+positionAnchor
+positionTry
+positionTryOptions
+positionTryOrder
+positionVisibility
 prefix
 quotes
 r

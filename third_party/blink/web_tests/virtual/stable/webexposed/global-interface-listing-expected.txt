@@ -624,6 +624,12 @@ interface CSSPerspective : CSSTransformComponent
     getter length
     method constructor
     setter length
+interface CSSPositionTryRule : CSSRule
+    attribute @@toStringTag
+    getter name
+    getter style
+    method constructor
+    setter style
 interface CSSPositionValue : CSSStyleValue
     attribute @@toStringTag
     getter x
