@@ -14,10 +14,12 @@
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/types/optional_util.h"
 #include "net/dns/public/dns_protocol.h"
 
 namespace net {
@@ -60,21 +62,22 @@ OptRecordRdata::EdeOpt::~EdeOpt() = default;
 std::unique_ptr<OptRecordRdata::EdeOpt> OptRecordRdata::EdeOpt::Create(
     std::string data) {
   uint16_t info_code;
-  std::string_view extra_text;
-  auto edeReader = base::BigEndianReader::FromStringPiece(data);
+  auto edeReader = base::SpanReader(base::as_byte_span(data));
 
   // size must be at least 2: info_code + optional extra_text
-  if (!(edeReader.ReadU16(&info_code) &&
-        edeReader.ReadPiece(&extra_text, edeReader.remaining()))) {
+  base::span<const uint8_t> extra_text;
+  if (!edeReader.ReadU16BigEndian(info_code) ||
+      !base::OptionalUnwrapTo(edeReader.Read(edeReader.remaining()),
+                              extra_text)) {
     return nullptr;
   }
 
-  if (!base::IsStringUTF8(extra_text)) {
+  if (!base::IsStringUTF8(base::as_string_view(extra_text))) {
     return nullptr;
   }
 
-  std::string extra_text_str(extra_text.data(), extra_text.size());
-  return std::make_unique<EdeOpt>(info_code, std::move(extra_text_str));
+  return std::make_unique<EdeOpt>(
+      info_code, std::string(base::as_string_view(extra_text)));
 }
 
 uint16_t OptRecordRdata::EdeOpt::GetCode() const {
@@ -197,17 +200,16 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(std::string_view data) {
   auto rdata = std::make_unique<OptRecordRdata>();
   rdata->buf_.assign(data.begin(), data.end());
 
-  auto reader = base::BigEndianReader::FromStringPiece(data);
-  while (reader.remaining() > 0) {
+  auto reader = base::SpanReader(base::as_byte_span(data));
+  while (reader.remaining() > 0u) {
     uint16_t opt_code, opt_data_size;
-    std::string_view opt_data_sp;
+    base::span<const uint8_t> opt_data;
 
-    if (!(reader.ReadU16(&opt_code) && reader.ReadU16(&opt_data_size) &&
-          reader.ReadPiece(&opt_data_sp, opt_data_size))) {
+    if (!reader.ReadU16BigEndian(opt_code) ||
+        !reader.ReadU16BigEndian(opt_data_size) ||
+        !base::OptionalUnwrapTo(reader.Read(opt_data_size), opt_data)) {
       return nullptr;
     }
-
-    std::string opt_data{opt_data_sp.data(), opt_data_sp.size()};
 
     // After the Opt object has been parsed, parse the contents (the data)
     // depending on the opt_code. The specific Opt subclasses all inherit from
@@ -218,14 +220,16 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(std::string_view data) {
 
     switch (opt_code) {
       case dns_protocol::kEdnsPadding:
-        opt = std::make_unique<OptRecordRdata::PaddingOpt>(std::move(opt_data));
+        opt = std::make_unique<OptRecordRdata::PaddingOpt>(
+            std::string(base::as_string_view(opt_data)));
         break;
       case dns_protocol::kEdnsExtendedDnsError:
-        opt = OptRecordRdata::EdeOpt::Create(std::move(opt_data));
+        opt = OptRecordRdata::EdeOpt::Create(
+            std::string(base::as_string_view(opt_data)));
         break;
       default:
-        opt = base::WrapUnique(
-            new OptRecordRdata::UnknownOpt(opt_code, std::move(opt_data)));
+        opt = base::WrapUnique(new OptRecordRdata::UnknownOpt(
+            opt_code, std::string(base::as_string_view(opt_data))));
         break;
     }
 

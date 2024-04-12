@@ -15,11 +15,13 @@
 
 #include "base/big_endian.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
+#include "base/types/optional_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/dns/dns_names_util.h"
@@ -257,13 +259,15 @@ bool DnsRecordParser::ReadRecord(DnsResourceRecord* out) {
   if (!consumed) {
     return false;
   }
-  base::BigEndianReader reader(packet_.subspan(cur_ + consumed));
+  auto reader = base::SpanReader(packet_.subspan(cur_ + consumed));
   uint16_t rdlen;
-  if (reader.ReadU16(&out->type) &&
-      reader.ReadU16(&out->klass) &&
-      reader.ReadU32(&out->ttl) &&
-      reader.ReadU16(&rdlen) &&
-      reader.ReadPiece(&out->rdata, rdlen)) {
+  if (reader.ReadU16BigEndian(out->type) &&
+      reader.ReadU16BigEndian(out->klass) &&
+      reader.ReadU32BigEndian(out->ttl) &&  //
+      reader.ReadU16BigEndian(rdlen) &&
+      base::OptionalUnwrapTo(reader.Read(rdlen), out->rdata, [](auto span) {
+        return base::as_string_view(span);
+      })) {
     cur_ += consumed + 2u + 2u + 4u + 2u + rdlen;
     ++num_records_parsed_;
     return true;

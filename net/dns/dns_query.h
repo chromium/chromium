@@ -13,14 +13,11 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
-
-namespace base {
-class BigEndianReader;
-}  // namespace base
 
 namespace net {
 
@@ -103,11 +100,12 @@ class NET_EXPORT_PRIVATE DnsQuery {
   DnsQuery(const DnsQuery& orig, uint16_t id);
   void CopyFrom(const DnsQuery& orig);
 
-  bool ReadHeader(base::BigEndianReader* reader, dns_protocol::Header* out);
+  bool ReadHeader(base::SpanReader<const uint8_t>* reader,
+                  dns_protocol::Header* out);
   // After read, |out| is in the DNS format, e.g.
   // "\x03""www""\x08""chromium""\x03""com""\x00". Use DNSDomainToString to
   // convert to the dotted format "www.chromium.com" with no trailing dot.
-  bool ReadName(base::BigEndianReader* reader, std::string* out);
+  bool ReadName(base::SpanReader<const uint8_t>* reader, std::string* out);
 
   // Returns the Header pointer into the `io_buffer_`. Only valid to call on a
   // DNSQuery has a valid IOBuffer, so this never returns null.

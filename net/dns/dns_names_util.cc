@@ -12,9 +12,9 @@
 #include <string_view>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
 #include "net/dns/public/dns_protocol.h"
@@ -112,62 +112,94 @@ std::optional<std::vector<uint8_t>> DottedNameToNetwork(
   return name;
 }
 
-std::optional<std::string> NetworkToDottedName(
-    base::span<const uint8_t> dns_network_wire_name,
-    bool require_complete) {
-  base::BigEndianReader reader(dns_network_wire_name.data(),
-                               dns_network_wire_name.size());
-  return NetworkToDottedName(reader, require_complete);
-}
-
-std::optional<std::string> NetworkToDottedName(
-    std::string_view dns_network_wire_name,
-    bool require_complete) {
-  auto reader = base::BigEndianReader::FromStringPiece(dns_network_wire_name);
-  return NetworkToDottedName(reader, require_complete);
-}
-
-std::optional<std::string> NetworkToDottedName(base::BigEndianReader& reader,
+std::optional<std::string> NetworkToDottedName(base::span<const uint8_t> span,
                                                bool require_complete) {
+  auto reader = base::SpanReader(span);
+  return NetworkToDottedName(reader, require_complete);
+}
+
+std::optional<std::string> NetworkToDottedName(
+    base::SpanReader<const uint8_t>& reader,
+    bool require_complete) {
   std::string ret;
-  size_t octets_read = 0;
-  while (reader.remaining() > 0) {
+  size_t octets_read = 0u;
+  while (reader.remaining() > 0u) {
     // DNS name compression not allowed because it does not make sense without
     // the context of a full DNS message.
-    if ((*reader.ptr() & dns_protocol::kLabelMask) ==
-        dns_protocol::kLabelPointer)
+    if ((reader.remaining_span()[0u] & dns_protocol::kLabelMask) ==
+        dns_protocol::kLabelPointer) {
       return std::nullopt;
+    }
 
-    std::string_view label;
-    if (!reader.ReadU8LengthPrefixed(&label))
+    base::span<const uint8_t> label;
+    if (!ReadU8LengthPrefixed(reader, &label)) {
       return std::nullopt;
+    }
 
     // Final zero-length label not included in size enforcement.
-    if (label.size() != 0)
-      octets_read += label.size() + 1;
+    if (!label.empty()) {
+      octets_read += label.size() + 1u;
+    }
 
-    if (label.size() > dns_protocol::kMaxLabelLength)
+    if (label.size() > dns_protocol::kMaxLabelLength) {
       return std::nullopt;
-    if (octets_read > dns_protocol::kMaxNameLength)
+    }
+    if (octets_read > dns_protocol::kMaxNameLength) {
       return std::nullopt;
+    }
 
-    if (label.size() == 0)
+    if (label.empty()) {
       return ret;
+    }
 
-    if (!ret.empty())
+    if (!ret.empty()) {
       ret.append(".");
+    }
 
-    ret.append(label);
+    ret.append(base::as_string_view(label));
   }
 
-  if (require_complete)
+  if (require_complete) {
     return std::nullopt;
+  }
 
   // If terminating zero-length label was not included in the input, no need to
   // recheck against max name length because terminating zero-length label does
   // not count against the limit.
 
   return ret;
+}
+
+bool ReadU8LengthPrefixed(base::SpanReader<const uint8_t>& reader,
+                          base::span<const uint8_t>* out) {
+  base::SpanReader<const uint8_t> inner_reader = reader;
+  uint8_t len;
+  if (!inner_reader.ReadU8BigEndian(len)) {
+    return false;
+  }
+  std::optional<base::span<const uint8_t>> bytes = inner_reader.Read(len);
+  if (!bytes) {
+    return false;
+  }
+  *out = *bytes;
+  reader = inner_reader;
+  return true;
+}
+
+bool ReadU16LengthPrefixed(base::SpanReader<const uint8_t>& reader,
+                           base::span<const uint8_t>* out) {
+  base::SpanReader<const uint8_t> inner_reader = reader;
+  uint16_t len;
+  if (!inner_reader.ReadU16BigEndian(len)) {
+    return false;
+  }
+  std::optional<base::span<const uint8_t>> bytes = inner_reader.Read(len);
+  if (!bytes) {
+    return false;
+  }
+  *out = *bytes;
+  reader = inner_reader;
+  return true;
 }
 
 std::string UrlCanonicalizeNameIfAble(std::string_view name) {

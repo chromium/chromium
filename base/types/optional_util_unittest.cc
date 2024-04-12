@@ -92,5 +92,111 @@ TEST(OptionalUtilTest, OptionalFromExpected) {
   EXPECT_EQ(f_opt, 1.0);
 }
 
+// Basic test.
+TEST(OptionalUtilTest, OptionalUnwrapTo_Basic) {
+  int i = -404;
+  EXPECT_FALSE(OptionalUnwrapTo(std::optional<int>(), i));
+  EXPECT_EQ(i, -404);
+  EXPECT_TRUE(OptionalUnwrapTo(std::optional<int>(5), i));
+  EXPECT_EQ(i, 5);
+}
+
+// Test projection to a different type.
+TEST(OptionalUtilTest, OptionalUnwrapTo_ProjectionLambda) {
+  struct S {
+    int i = -404;
+  };
+  S s;
+  EXPECT_FALSE(
+      OptionalUnwrapTo(std::optional<int>(), s, [](int i) { return S(i); }));
+  EXPECT_EQ(s.i, -404);
+  EXPECT_TRUE(
+      OptionalUnwrapTo(std::optional<int>(5), s, [](int i) { return S(i); }));
+  EXPECT_EQ(s.i, 5);
+}
+
+// Test projection through a non-lambda function.
+TEST(OptionalUtilTest, OptionalUnwrapTo_ProjectionFunction) {
+  struct S {
+    int i = 0;
+
+    static int IntoInt(S s) { return s.i; }
+  };
+  int i = -404;
+  EXPECT_FALSE(OptionalUnwrapTo(std::optional<S>(), i, S::IntoInt));
+  EXPECT_EQ(i, -404);
+  EXPECT_TRUE(OptionalUnwrapTo(std::optional<S>(S{5}), i, S::IntoInt));
+  EXPECT_EQ(i, 5);
+}
+
+// Test projection through a method.
+TEST(OptionalUtilTest, OptionalUnwrapTo_ProjectionMethod) {
+  struct S {
+    int i = 0;
+
+    int IntoInt() const { return i; }
+  };
+  int i = -404;
+  EXPECT_FALSE(OptionalUnwrapTo(std::optional<S>(), i, &S::IntoInt));
+  EXPECT_EQ(i, -404);
+  EXPECT_TRUE(OptionalUnwrapTo(std::optional<S>(S{5}), i, &S::IntoInt));
+  EXPECT_EQ(i, 5);
+}
+
+// Verify const ref of optional<T> are passed as const T& to projection.
+TEST(OptionalUtilTest, OptionalUnwrapTo_ConstRefOptional) {
+  struct NoCopyMove {
+    explicit NoCopyMove(int i) : i(i) {}
+    NoCopyMove(NoCopyMove&&) = delete;
+    NoCopyMove& operator=(NoCopyMove&&) = delete;
+
+    int i = 0;
+  };
+  std::optional<NoCopyMove> empty;
+  int out = -404;
+  EXPECT_FALSE(
+      OptionalUnwrapTo(empty, out, [](const NoCopyMove& n) { return n.i; }));
+  EXPECT_EQ(out, -404);
+  std::optional<NoCopyMove> full(std::in_place, 5);
+  EXPECT_TRUE(
+      OptionalUnwrapTo(full, out, [](const NoCopyMove& n) { return n.i; }));
+  EXPECT_EQ(out, 5);
+}
+
+// Verify rvalue of optional<T> are passed as rvalue T to projection.
+TEST(OptionalUtilTest, OptionalUnwrapTo_RvalueOptional) {
+  struct MoveOnly {
+    explicit MoveOnly(int i) : i(i) {}
+    MoveOnly(MoveOnly&&) = default;
+    MoveOnly& operator=(MoveOnly&&) = default;
+
+    int i = 0;
+  };
+  int out = -404;
+  EXPECT_FALSE(OptionalUnwrapTo(std::optional<MoveOnly>(), out,
+                                [](MoveOnly&& n) { return n.i; }));
+  EXPECT_EQ(out, -404);
+  EXPECT_TRUE(OptionalUnwrapTo(std::optional<MoveOnly>(std::in_place, 5), out,
+                               [](MoveOnly&& n) { return n.i; }));
+  EXPECT_EQ(out, 5);
+}
+
+// The output type is not the same, but it's assignable.
+TEST(OptionalUtilTest, OptionalUnwrapTo_AssignableOutput) {
+  struct Assignable {
+    Assignable() = default;
+    Assignable(int) = delete;
+
+    void operator=(int ii) { i = ii; }
+
+    int i = -404;
+  };
+  Assignable out;
+  EXPECT_FALSE(OptionalUnwrapTo(std::optional<int>(), out));
+  EXPECT_EQ(out.i, -404);
+  EXPECT_TRUE(OptionalUnwrapTo(std::optional<int>(5), out));
+  EXPECT_EQ(out.i, 5);
+}
+
 }  // namespace
 }  // namespace base

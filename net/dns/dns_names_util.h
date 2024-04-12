@@ -12,12 +12,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/strings/string_util.h"
 #include "net/base/net_export.h"
-
-namespace base {
-class BigEndianReader;
-}  // namespace base
 
 // Various utilities for converting, validating, and comparing DNS names.
 namespace net::dns_names_util {
@@ -60,14 +57,30 @@ NET_EXPORT_PRIVATE std::optional<std::vector<uint8_t>> DottedNameToNetwork(
 // considered malformed. To handle a potentially compressed name, in a
 // DnsResponse object, use DnsRecordParser::ReadName().
 NET_EXPORT_PRIVATE std::optional<std::string> NetworkToDottedName(
-    base::span<const uint8_t> dns_network_wire_name,
+    base::SpanReader<const uint8_t>& reader,
     bool require_complete = false);
 NET_EXPORT_PRIVATE std::optional<std::string> NetworkToDottedName(
-    std::string_view dns_network_wire_name,
+    base::span<const uint8_t> span,
     bool require_complete = false);
-NET_EXPORT_PRIVATE std::optional<std::string> NetworkToDottedName(
-    base::BigEndianReader& reader,
-    bool require_complete = false);
+
+// Reads a length-prefixed region:
+// 1. reads a big-endian length L from the buffer of a size determined by the
+//    function (e.g. ReadU8 reads an 8-bit length);
+// 2. sets `*out` to a span over the next L many bytes of the buffer (beyond
+//    the end of the bytes encoding the length); and
+// 3. skips the main reader past this L-byte substring.
+//
+// Fails if reading the length L fails, or if the parsed length is greater
+// than the number of bytes remaining in the input span.
+//
+// On failure, leaves the stream at the same position
+// as before the call.
+NET_EXPORT_PRIVATE bool ReadU8LengthPrefixed(
+    base::SpanReader<const uint8_t>& reader,
+    base::span<const uint8_t>* out);
+NET_EXPORT_PRIVATE bool ReadU16LengthPrefixed(
+    base::SpanReader<const uint8_t>& reader,
+    base::span<const uint8_t>* out);
 
 // Canonicalize `name` as a URL hostname if able. If unable (typically if a name
 // is not a valid URL hostname), returns `name` without change because such a

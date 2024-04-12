@@ -119,8 +119,8 @@ TEST(SpanReaderTest, ReadInto) {
 }
 
 TEST(SpanReaderTest, ReadBigEndian) {
-  std::array<uint8_t, 5u> kArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
-                                    uint8_t{4}, uint8_t{5}};
+  const std::array<uint8_t, 5u> kArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
+                                          uint8_t{4}, uint8_t{5}};
 
   {
     uint8_t val;
@@ -168,8 +168,8 @@ TEST(SpanReaderTest, ReadBigEndian) {
 }
 
 TEST(SpanReaderTest, ReadLittleEndian) {
-  std::array<uint8_t, 5u> kArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
-                                    uint8_t{4}, uint8_t{5}};
+  const std::array<uint8_t, 5u> kArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
+                                          uint8_t{4}, uint8_t{5}};
 
   {
     uint8_t val;
@@ -217,8 +217,8 @@ TEST(SpanReaderTest, ReadLittleEndian) {
 }
 
 TEST(SpanReaderTest, ReadNativeEndian) {
-  std::array<uint8_t, 5u> kArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
-                                    uint8_t{4}, uint8_t{5}};
+  const std::array<uint8_t, 5u> kArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
+                                          uint8_t{4}, uint8_t{5}};
 
   {
     uint8_t val;

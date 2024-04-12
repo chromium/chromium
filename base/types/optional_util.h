@@ -6,6 +6,7 @@
 #define BASE_TYPES_OPTIONAL_UTIL_H_
 
 #include <concepts>
+#include <functional>
 #include <optional>
 #include <utility>
 
@@ -104,6 +105,70 @@ std::optional<U> OptionalFromExpected(const base::expected<T, E>& exp)
     return std::optional(exp.value());
   }
   return std::nullopt;
+}
+
+// Unwrap a `std::optional<T>` if it holds a value, and set `out` to the value
+// in the optional. Returns true if the optional held a value which means `out`
+// was assigned to. Returns false if the optional was empty, in which casse
+// `out` will be unchanged (and the `proj` function will not be called).
+//
+// If a `proj` function is provided, it can modify the value in the optional,
+// and `out` will instead be set to the value returned from the `proj` function.
+// The `proj` may return any value or type, as long as its type matches or is
+// assignable to `out`.
+//
+// If the optional is moved to this function as an rvalue, the unwrapped value
+// will also be moved to assign to `out` as an rvalue (or moved into the `proj`
+// function argument).
+//
+// # Examples
+// Simple usage that unwraps the inner value into a variable or early outs:
+// ```
+// void maybe_do_stuff(std::optional<int> o) {
+//   int val = 0;
+//   if (!OptionalUnwrapTo(o, val)) {
+//     return;
+//   }
+//   do_stuff(val);
+// }
+// ```
+//
+// Unwraps the inner value and converts it to a different type:
+// ```
+// void maybe_do_stuff(std::optional<int> o) {
+//   MyType val;
+//   if (!OptionalUnwrapTo(o, val, [](int i) { return MyType::FromId(i); })) {
+//     return;
+//   }
+//   do_stuff(val);
+// }
+// ```
+template <class T, class O, class P = std::identity>
+  requires(std::invocable<P, const T&>) &&
+          requires(O& out, std::invoke_result_t<P, const T&> val) { out = val; }
+bool OptionalUnwrapTo(const std::optional<T>& optional, O& out, P proj = {}) {
+  if (optional) {
+    // Note: `proj` is received by value not by ref (unlike similar std
+    // functions) as we see a large binary size impact from the latter. So we
+    // unconditionally move it here while invoking.
+    out = std::invoke(std::move(proj), optional.value());
+    return true;
+  }
+  return false;
+}
+
+template <class T, class O, class P = std::identity>
+  requires(std::invocable<P, T &&>) &&
+          requires(O& out, std::invoke_result_t<P, T&&> val) { out = val; }
+bool OptionalUnwrapTo(std::optional<T>&& optional, O& out, P proj = {}) {
+  if (optional) {
+    // Note: `proj` is received by value not by ref (unlike similar std
+    // functions) as we see a large binary size impact from the latter. So we
+    // unconditionally move it here while invoking.
+    out = std::invoke(std::move(proj), std::move(optional).value());
+    return true;
+  }
+  return false;
 }
 
 }  // namespace base

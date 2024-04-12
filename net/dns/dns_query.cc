@@ -180,8 +180,8 @@ bool DnsQuery::Parse(size_t valid_bytes) {
   if (io_buffer_ == nullptr || io_buffer_->span().empty()) {
     return false;
   }
-  base::BigEndianReader reader(
-      base::as_bytes(io_buffer_->span()).first(valid_bytes));
+  auto reader =
+      base::SpanReader(base::as_bytes(io_buffer_->span()).first(valid_bytes));
   dns_protocol::Header header;
   if (!ReadHeader(&reader, &header)) {
     return false;
@@ -200,7 +200,7 @@ bool DnsQuery::Parse(size_t valid_bytes) {
   }
   uint16_t qtype;
   uint16_t qclass;
-  if (!reader.ReadU16(&qtype) || !reader.ReadU16(&qclass) ||
+  if (!reader.ReadU16BigEndian(qtype) || !reader.ReadU16BigEndian(qclass) ||
       qclass != dns_protocol::kClassIN) {
     return false;
   }
@@ -248,20 +248,23 @@ void DnsQuery::CopyFrom(const DnsQuery& orig) {
   io_buffer_->span().copy_from(orig.io_buffer()->span());
 }
 
-bool DnsQuery::ReadHeader(base::BigEndianReader* reader,
+bool DnsQuery::ReadHeader(base::SpanReader<const uint8_t>* reader,
                           dns_protocol::Header* header) {
-  return (
-      reader->ReadU16(&header->id) && reader->ReadU16(&header->flags) &&
-      reader->ReadU16(&header->qdcount) && reader->ReadU16(&header->ancount) &&
-      reader->ReadU16(&header->nscount) && reader->ReadU16(&header->arcount));
+  return (reader->ReadU16BigEndian(header->id) &&
+          reader->ReadU16BigEndian(header->flags) &&
+          reader->ReadU16BigEndian(header->qdcount) &&
+          reader->ReadU16BigEndian(header->ancount) &&
+          reader->ReadU16BigEndian(header->nscount) &&
+          reader->ReadU16BigEndian(header->arcount));
 }
 
-bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
+bool DnsQuery::ReadName(base::SpanReader<const uint8_t>* reader,
+                        std::string* out) {
   DCHECK(out != nullptr);
   out->clear();
   out->reserve(dns_protocol::kMaxNameLength + 1);
   uint8_t label_length;
-  if (!reader->ReadU8(&label_length)) {
+  if (!reader->ReadU8BigEndian(label_length)) {
     return false;
   }
   while (label_length) {
@@ -269,14 +272,15 @@ bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
       return false;
     }
 
-    out->append(reinterpret_cast<char*>(&label_length), 1);
+    out->push_back(static_cast<char>(label_length));
 
-    std::string_view label;
-    if (!reader->ReadPiece(&label, label_length)) {
+    std::optional<base::span<const uint8_t>> label = reader->Read(label_length);
+    if (!label) {
       return false;
     }
-    out->append(label);
-    if (!reader->ReadU8(&label_length)) {
+    out->append(base::as_string_view(*label));
+
+    if (!reader->ReadU8BigEndian(label_length)) {
       return false;
     }
   }
