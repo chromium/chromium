@@ -174,9 +174,12 @@ bool IsTriggerableFromTextLength(int text_length) {
 std::vector<std::string> GetAllowedInputMethodEngines() {
   // Default English IMEs.
   std::vector<std::string> allowed_imes = {
-      "xkb:gb::eng",
-      "xkb:gb:extd:eng",          // UK
-      "xkb:gb:dvorak:eng",        // UK Extended
+      "xkb:ca:eng:eng",           // Canada
+      "xkb:gb::eng",              // UK
+      "xkb:gb:extd:eng",          // UK Extended
+      "xkb:gb:dvorak:eng",        // UK Dvorak
+      "xkb:in::eng",              // India
+      "xkb:pk::eng",              // Pakistan
       "xkb:us:altgr-intl:eng",    // US Extended
       "xkb:us:colemak:eng",       // US Colemak
       "xkb:us:dvorak:eng",        // US Dvorak
@@ -185,7 +188,8 @@ std::vector<std::string> GetAllowedInputMethodEngines() {
       "xkb:us:intl:eng",          // US Intl
       "xkb:us:workman-intl:eng",  // US Workman Intl
       "xkb:us:workman:eng",       // US Workman
-      "xkb:us::eng",              // US
+      "xkb:us::eng",              // US,
+      "xkb:za:gb:eng"             // South Africa
   };
 
   // Loads allowed imes from field trials
