@@ -437,6 +437,9 @@
   <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_CREDIT_CARD" desc="The (accessibility) title of a button, which brings up a menu of actions that can be taken on a stored credit card. The credit card is described by the credit card nickname or the credit card network and last 4 digits of the card number.">
     More actions for <ph name="CARD_DESCRIPTION">$1<ex>My main card</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_CREDIT_CARD_WITH_CVC" desc="The (accessibility) title of a button, which brings up a menu of actions that can be taken on a stored credit card. The credit card is described by the credit card nickname or the credit card network and last 4 digits of the card number along with appending the CVC saved tag.">
+    More actions for <ph name="CARD_DESCRIPTION">$1<ex>My main card</ex></ph>, CVC saved
+  </message>
   <message name="IDS_AUTOFILL_ADD_VIRTUAL_CARD" desc="The text shown in the secondary action menu button to enroll a card in the virtual card feature. Virtual cards are credit cards generated from the actual cards and provide extra security.">
     Turn on virtual card
   </message>

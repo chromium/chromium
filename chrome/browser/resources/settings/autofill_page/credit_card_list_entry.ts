@@ -106,13 +106,17 @@ export class SettingsCreditCardListEntryElement extends
   /**
    * @returns the title for the More Actions button corresponding to the card
    *     which is described by the nickname or the network name and last 4
-   *     digits or name
+   *     digits or name. If a card has CVC saved, there will be additional
+   *     description to notify of the same.
    */
   private moreActionsTitle_(): string {
     const cardDescription = this.creditCard.nickname ||
         this.getCardNumberDescription_(this.creditCard) ||
         this.creditCard.name!;
-    return this.i18n('moreActionsForCreditCard', cardDescription);
+    return this.i18n(
+        this.creditCard.cvc ? 'moreActionsForCreditCardWithCvc' :
+                              'moreActionsForCreditCard',
+        cardDescription);
   }
 
   /**

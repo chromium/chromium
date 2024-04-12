@@ -114,6 +114,16 @@ suite('PaymentsSectionCardRows', function() {
     updateCreditCardCallback(creditCard);
     assertEquals(
         'More actions for Jane Doe', menuButton!.getAttribute('title'));
+
+    // Case 5: a card with CVC
+    creditCard = createCreditCardEntry();
+    creditCard.cardNumber = '0000000000001234';
+    creditCard.network = 'Visa';
+    creditCard.cvc = '111';
+    updateCreditCardCallback(creditCard);
+    assertEquals(
+        'More actions for Visa ending in 1234, CVC saved',
+        menuButton!.getAttribute('title'));
   });
 
   test('verifyCreditCardRowButtonIsOutlinkWhenRemote', async function() {
