@@ -21,9 +21,17 @@
     inset: 0;
     position: absolute;
   }
+  /* Temporary red scrim to make it evident the overlay is opened. */
+  #scrim {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 0, 0, 0.15);
+    pointer-events: none;
+  }
 </style>
 <div id="selectionOverlay">
   <img id="backgroundImage" draggable="false" src="screenshot.jpeg">
+  <div id="scrim"></div>
   <!-- Wrapper div is needed to stack the seleciton elements on top of
   background image. -->
   <div id="selectionElements">

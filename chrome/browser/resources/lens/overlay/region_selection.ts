@@ -48,7 +48,7 @@ export class RegionSelectionElement extends PolymerElement {
   // Handles a drag gesture by drawing a bounded box on the canvas.
   handleDragGesture(event: GestureEvent) {
     this.clearCanvas();
-    this.renderDashedBoundingBox(event);
+    this.renderBoundingBox(event);
   }
 
   handleUpGesture(event: GestureEvent) {
@@ -82,10 +82,7 @@ export class RegionSelectionElement extends PolymerElement {
     };
   }
 
-  private renderDashedBoundingBox(event: GestureEvent, idealCornerRadius = 12) {
-    const dashLength = 6;
-    const gapLength = 5;
-
+  private renderBoundingBox(event: GestureEvent, idealCornerRadius = 24) {
     // Get the drag event coordinates relative to the canvas
     const relativeDragStart =
         this.getRelativeCoordinate({x: event.startX, y: event.startY});
@@ -97,20 +94,49 @@ export class RegionSelectionElement extends PolymerElement {
     const height = Math.abs(relativeDragEnd.y - relativeDragStart.y);
 
     // Define the points for the bounding box for readability.
-    const topLeftX = Math.min(relativeDragStart.x, relativeDragEnd.x);
-    const topLeftY = Math.min(relativeDragStart.y, relativeDragEnd.y);
+    const left = Math.min(relativeDragStart.x, relativeDragEnd.x);
+    const top = Math.min(relativeDragStart.y, relativeDragEnd.y);
+    const right = Math.max(relativeDragStart.x, relativeDragEnd.x);
+    const bottom = Math.max(relativeDragStart.y, relativeDragEnd.y);
 
-    this.context.setLineDash([dashLength, gapLength]);
-    this.context.lineWidth = 2;
-    this.context.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    this.context.strokeStyle = 'white';
+    // Get the vertical and horizontal directions of the drag.
+    const isDraggingDown = relativeDragEnd.y > relativeDragStart.y;
+    const isDraggingRight = relativeDragEnd.x > relativeDragStart.x;
+
+    this.context.lineWidth = 3;
+    const gradient = this.context.createLinearGradient(
+      left,
+      bottom,
+      right,
+      top,
+    );
+    gradient.addColorStop(0, '#C5E9EB');
+    gradient.addColorStop(0.5, '#FFB2BD');
+    gradient.addColorStop(1, '#028488');
+    this.context.strokeStyle = gradient;
 
     // Draw the path for the region bounding box.
     this.context.beginPath();
+    // The corner corresponding to the user's cursor should have 0 radius.
+    const radii = [
+      isDraggingDown || isDraggingRight ? idealCornerRadius : 0,
+      isDraggingDown || !isDraggingRight ? idealCornerRadius : 0,
+      !isDraggingDown || !isDraggingRight ? idealCornerRadius : 0,
+      !isDraggingDown || isDraggingRight ? idealCornerRadius : 0,
+    ];
     this.context.roundRect(
-        topLeftX, topLeftY, width, height, idealCornerRadius);
+      left, top, width, height, radii);
+
+    // Draw the highlight image clipped to the path.
+    this.context.save();
+    this.context.clip();
+    const image = this.shadowRoot!.querySelector('#highlightImgSrc');
+    this.context.drawImage(
+        image as HTMLImageElement, 0, 0, this.canvasWidth, this.canvasHeight);
+    this.context.restore();
+
+    // Stroke the path on top of the image.
     this.context.stroke();
-    this.context.fill();
   }
 
   /**

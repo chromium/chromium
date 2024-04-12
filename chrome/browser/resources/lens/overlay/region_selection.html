@@ -1,4 +1,8 @@
 <style>
+  #highlightImgContainer {
+    display: none;
+  }
+
   #regionSelectionCanvas {
     top: 0;
     left: 0;
@@ -7,3 +11,7 @@
 </style>
 <canvas id="regionSelectionCanvas" height="[[canvasHeight]]"
   width="[[canvasWidth]]"></canvas>
+<!-- Provides image source for canvas; element is not displayed. -->
+<div id="highlightImgContainer">
+  <img id="highlightImgSrc" src="screenshot.jpeg">
+</div>

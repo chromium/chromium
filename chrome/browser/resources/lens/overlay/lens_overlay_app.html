@@ -21,14 +21,6 @@
     left: 50%;
     transform: translate(-50%, -50%);
   }
-
-  /* Temporary red scrim to make it evident the overlay is opened. */
-  #scrim {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(255, 0, 0, 0.15);
-    pointer-events: none;
-  }
 </style>
 <div class="app-container">
   <lens-selection-overlay></lens-selection-overlay>
@@ -36,5 +28,4 @@
       on-click="onCloseButtonClick_">
     $i18n{close}
   </cr-button>
-  <div id="scrim"></div>
 </div>
