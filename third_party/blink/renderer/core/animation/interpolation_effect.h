@@ -49,6 +49,10 @@ class CORE_EXPORT InterpolationEffect
       double apply_from,
       double apply_to);
 
+  void AddStaticValuedInterpolation(
+      const PropertyHandle& property,
+      const Keyframe::PropertySpecificKeyframe& keyframe);
+
   void Trace(Visitor*) const;
 
  private:
@@ -66,7 +70,17 @@ class CORE_EXPORT InterpolationEffect
           start_(start),
           end_(end),
           apply_from_(apply_from),
-          apply_to_(apply_to) {}
+          apply_to_(apply_to),
+          is_static_(false) {}
+
+    // When a range is not specified, we mark the interpolation as static.
+    explicit InterpolationRecord(Interpolation* interpolation)
+        : interpolation_(interpolation),
+          start_(0),
+          end_(1),
+          apply_from_(0),
+          apply_to_(1),
+          is_static_(true) {}
 
     Member<Interpolation> interpolation_;
     scoped_refptr<TimingFunction> easing_;
@@ -74,6 +88,7 @@ class CORE_EXPORT InterpolationEffect
     double end_;
     double apply_from_;
     double apply_to_;
+    bool is_static_;
 
     void Trace(Visitor* visitor) const { visitor->Trace(interpolation_); }
   };
