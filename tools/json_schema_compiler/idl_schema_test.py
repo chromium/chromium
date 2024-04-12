@@ -188,6 +188,10 @@ class IdlSchemaTest(unittest.TestCase):
                        'items': {'$ref': 'idl_other_namespace.SomeType'}},
                       getReturns(schema, 'function30'))
 
+  def testIgnoresAdditionalPropertiesOnType(self):
+    self.assertTrue(getType(self.idl_basics, 'IgnoreAdditionalPropertiesType')
+                        ['ignoreAdditionalProperties'])
+
   def testChromeOSPlatformsNamespace(self):
     schema = idl_schema.Load('test/idl_namespace_chromeos.idl')[0]
     self.assertEqual('idl_namespace_chromeos', schema['namespace'])

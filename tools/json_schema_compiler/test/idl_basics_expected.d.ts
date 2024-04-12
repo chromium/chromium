@@ -50,6 +50,10 @@ declare global {
         y: string|EnumType;
       }
 
+      export interface IgnoreAdditionalPropertiesType {
+        x: string;
+      }
+
       export function function1(): void;
 
       export function function2(x: number): void;

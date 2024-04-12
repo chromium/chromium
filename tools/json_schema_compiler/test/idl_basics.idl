@@ -44,6 +44,10 @@
     (DOMString or EnumType) y;
   };
 
+  [ignoreAdditionalProperties] dictionary IgnoreAdditionalPropertiesType {
+    DOMString x;
+  };
+
   dictionary ManifestKeys {
     // String manifest key.
     DOMString key_str;
