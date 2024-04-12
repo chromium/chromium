@@ -22,7 +22,7 @@ bool g_trial_is_randomized = false;
 
 // The percentage of population that is enabled in this trial. It can be either
 // 100 or an integer within [0, 50].
-constexpr uint64_t kEnabledPercentage = 50;
+constexpr uint64_t kEnabledPercentage = 100;
 
 bool IsValidTrialSeed(uint64_t seed) {
   return seed > 0 && seed <= 100;

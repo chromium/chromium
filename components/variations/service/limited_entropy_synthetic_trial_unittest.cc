@@ -32,15 +32,6 @@ TEST_F(LimitedEntropySyntheticTrialTest, RandomizesWithExistingSeed_Enabled) {
                      prefs::kVariationsLimitedEntropySyntheticTrialSeed));
 }
 
-TEST_F(LimitedEntropySyntheticTrialTest, RandomizesWithExistingSeed_Disabled) {
-  local_state_.SetUint64(prefs::kVariationsLimitedEntropySyntheticTrialSeed,
-                         90);
-  LimitedEntropySyntheticTrial trial(&local_state_);
-  ASSERT_FALSE(trial.IsEnabled());
-  ASSERT_EQ(90u, local_state_.GetUint64(
-                     prefs::kVariationsLimitedEntropySyntheticTrialSeed));
-}
-
 TEST_F(LimitedEntropySyntheticTrialTest, GeneratesAndRandomizesWithNewSeed) {
   ASSERT_FALSE(local_state_.HasPrefPath(
       prefs::kVariationsLimitedEntropySyntheticTrialSeed));
@@ -48,21 +39,9 @@ TEST_F(LimitedEntropySyntheticTrialTest, GeneratesAndRandomizesWithNewSeed) {
   LimitedEntropySyntheticTrial trial(&local_state_);
   auto group_name = trial.GetGroupName();
 
-  // The default group should not be activated when 50% of the population is in
-  // the enabled group.
-  ASSERT_NE(kLimitedEntropySyntheticTrialDefault, group_name);
-  auto is_enabled = group_name == kLimitedEntropySyntheticTrialEnabled;
-  auto is_control = group_name == kLimitedEntropySyntheticTrialControl;
-  ASSERT_TRUE(is_enabled || is_control);
-
-  auto rand_seed = local_state_.GetUint64(
-      prefs::kVariationsLimitedEntropySyntheticTrialSeed);
-  if (rand_seed < 50u) {
-    ASSERT_TRUE(is_enabled);
-  } else {
-    ASSERT_LT(rand_seed, 100u);
-    ASSERT_TRUE(is_control);
-  }
+  // The client must be in the enabled group because `kEnabledPercentage` is set
+  // to 100.
+  EXPECT_EQ(kLimitedEntropySyntheticTrialEnabled, group_name);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
