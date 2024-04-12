@@ -371,6 +371,7 @@ LensOverlayQueryController::CreateEndpointFetcher(
       /*timeout=*/kServerRequestTimeout,
       /*post_data=*/request_data_string,
       /*headers=*/std::vector<std::string>(),
+      /*cors_exempt_headers=*/std::vector<std::string>(),
       /*annotation_tag=*/kTrafficAnnotationTag,
       /*is_stable_channel=*/chrome::GetChannel() ==
           version_info::Channel::STABLE);

@@ -58,6 +58,7 @@ EndpointFetcher::EndpointFetcher(
     const base::TimeDelta& timeout,
     const std::string& post_data,
     const std::vector<std::string>& headers,
+    const std::vector<std::string>& cors_exempt_headers,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     bool is_stable_channel)
     : auth_type_(CHROME_API_KEY),
@@ -67,6 +68,7 @@ EndpointFetcher::EndpointFetcher(
       timeout_(timeout),
       post_data_(post_data),
       headers_(headers),
+      cors_exempt_headers_(cors_exempt_headers),
       annotation_tag_(annotation_tag),
       url_loader_factory_(url_loader_factory),
       identity_manager_(nullptr),

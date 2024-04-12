@@ -530,6 +530,7 @@ void SecondDeviceAuthBroker::FetchChallengeBytes(
       /*timeout=*/kGetChallengeDataTimeout,
       /*post_data=*/kGetChallengeDataRequest,
       /*headers=*/std::vector<std::string>(),
+      /*cors_exempt_headers=*/std::vector<std::string>(),
       /*annotation_tag=*/kChallengeDataAnnotation,
       /*is_stable_channel=*/chrome::GetChannel() ==
           version_info::Channel::STABLE);
@@ -590,6 +591,7 @@ void SecondDeviceAuthBroker::FetchAuthCode(
       /*post_data=*/
       CreateStartSessionRequestData(fido_assertion_info, certificate),
       /*headers=*/std::vector<std::string>(),
+      /*cors_exempt_headers=*/std::vector<std::string>(),
       /*annotation_tag=*/kStartSessionAnnotation,
       /*is_stable_channel=*/chrome::GetChannel() ==
           version_info::Channel::STABLE);

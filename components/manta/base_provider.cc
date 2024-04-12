@@ -128,6 +128,7 @@ std::unique_ptr<EndpointFetcher> BaseProvider::CreateEndpointFetcherForDemoMode(
       /*timeout=*/kTimeout,
       /*post_data=*/post_data,
       /*headers=*/std::vector<std::string>(),
+      /*cors_exempt_headers=*/std::vector<std::string>(),
       /*annotation_tag=*/annotation_tag,
       // ChromeOS always uses the stable channel API key
       /*is_stable_channel=*/true);

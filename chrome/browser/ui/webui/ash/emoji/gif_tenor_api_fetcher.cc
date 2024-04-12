@@ -96,6 +96,7 @@ std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       /*timeout=*/kTimeout,
       /*post_data=*/"",
       /*headers=*/std::vector<std::string>(),
+      /*cors_exempt_headers=*/std::vector<std::string>(),
       /*annotation_tag=*/annotation_tag,
       /*is_stable_channel=*/chrome::GetChannel() ==
           version_info::Channel::STABLE);
