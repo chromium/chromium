@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.flags;
 
 import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
+import org.chromium.base.MutableIntParamWithSafeDefault;
 import org.chromium.base.cached_flags.AllCachedFieldTrialParameters;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.CachedFlag;
@@ -833,4 +834,11 @@ public abstract class ChromeFeatureList {
     /* Alphabetical: */
     public static final MutableBooleanParamWithSafeDefault sShouldBlockCapturesForFullscreenParam =
             sSuppressionToolbarCaptures.newBooleanParam("block_for_fullscreen", false);
+    public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterArchiveTimeDeltaHours =
+            sAndroidTabDeclutter.newIntParam(
+                    "android_tab_declutter_archive_time_delta_hours", 7 * 24);
+    public static final MutableIntParamWithSafeDefault
+            sAndroidTabDeclutterAutoDeleteTimeDeltaHours =
+                    sAndroidTabDeclutter.newIntParam(
+                            "android_tab_declutter_auto_delete_time_delta_hours", 60 * 24);
 }

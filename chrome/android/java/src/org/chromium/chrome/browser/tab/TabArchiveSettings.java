@@ -5,14 +5,13 @@
 package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 /** Class to manage reading/writing preferences related to tab declutter. */
 public class TabArchiveSettings {
     static final boolean ARCHIVE_ENABLED_DEFAULT = true;
     static final boolean AUTO_DELETE_ENABLED_DEFAULT = true;
-    static final int ARCHIVE_TIME_DELTA_HOURS_DEFAULT = 7 * 24;
-    static final int AUTO_DELETE_TIME_DELTA_HOURS_DEFAULT = 60 * 24;
 
     private final SharedPreferencesManager mPrefsManager;
 
@@ -40,7 +39,7 @@ public class TabArchiveSettings {
     public int getArchiveTimeDeltaHours() {
         return mPrefsManager.readInt(
                 ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS,
-                getDefaultArchiveTimeDeltaHours());
+                ChromeFeatureList.sAndroidTabDeclutterArchiveTimeDeltaHours.getValue());
     }
 
     /** Sets the time delta used to determine if a tab is eligible for archive. */
@@ -67,22 +66,12 @@ public class TabArchiveSettings {
     public int getAutoDeleteTimeDeltaHours() {
         return mPrefsManager.readInt(
                 ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
-                getDefaultAutoDeleteTimeDeltaHours());
+                ChromeFeatureList.sAndroidTabDeclutterAutoDeleteTimeDeltaHours.getValue());
     }
 
     /** Sets the time delta used to determine if an archived tab is eligible for auto deletion. */
     public void setAutoDeleteTimeDeltaHours(int timeDeltaHours) {
         mPrefsManager.writeInt(
                 ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS, timeDeltaHours);
-    }
-
-    private int getDefaultArchiveTimeDeltaHours() {
-        // TODO(crbug.com/332942593): Pull default from finch param.
-        return ARCHIVE_TIME_DELTA_HOURS_DEFAULT;
-    }
-
-    private int getDefaultAutoDeleteTimeDeltaHours() {
-        // TODO(crbug.com/332942593): Pull default from finch param.
-        return AUTO_DELETE_TIME_DELTA_HOURS_DEFAULT;
     }
 }
