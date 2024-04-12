@@ -2824,9 +2824,15 @@ void CrasAudioHandler::HandleHotPlugDeviceWithNotification(
   // kAudioSelectionImprovement flag is on.
   CHECK(features::IsAudioSelectionImprovementEnabled());
   if (hotplug_device.has_privilege()) {
-    // TODO(b/328425880): Record metrics for Rule #1, using an enum to
-    // differentiate each type of device.
     SwitchToDevice(hotplug_device, /*notify=*/true, ACTIVATE_BY_PRIORITY);
+
+    // Record audio selection exception rule #1.
+    audio_device_metrics_handler_.RecordExceptionRulesMet(
+        hotplug_device.is_input
+            ? AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+                  kInputRule1HotPlugPrivilegedDevice
+            : AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+                  kOutputRule1HotPlugPrivilegedDevice);
     return;
   }
 

@@ -4573,6 +4573,18 @@ TEST_P(CrasAudioHandlerTest,
       /*expected_has_alternative_input=*/false,
       /*expected_has_alternative_output=*/false);
 
+  // No exception rule metrics are recorded before plugging 3.5mm headset.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/0);
+
   // Hotplug the 35mm headset with both headphone and mic.
   AudioNodeList audio_nodes;
   AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
@@ -4598,6 +4610,18 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_EQ(headphone.id, cras_audio_handler_->GetPrimaryActiveOutputNode());
   // Verify 35mm mic is selected as active input.
   EXPECT_EQ(mic.id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // Exception rule metrics are recorded after plugging 3.5mm headset.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/1);
 
   // Manually select internal speaker as active output.
   AudioDevice internal_output(internal_speaker);
@@ -4668,6 +4692,18 @@ TEST_P(CrasAudioHandlerTest,
       /*expected_has_alternative_input=*/false,
       /*expected_has_alternative_output=*/false);
 
+  // No exception rule metrics are recorded before plugging bluetooth device.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/0);
+
   // Hotplug the bluetooth devices.
   AudioNodeList audio_nodes;
   AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
@@ -4695,6 +4731,18 @@ TEST_P(CrasAudioHandlerTest,
   // Verify bluetooth_input is selected as active input.
   EXPECT_EQ(bluetooth_input.id,
             cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // Exception rule metrics are recorded after plugging bluetooth device.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/1);
 
   // Manually select internal speaker as active output.
   AudioDevice internal_output(internal_speaker);
@@ -4748,6 +4796,120 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_EQ(bluetooth_input.id,
             cras_audio_handler_->GetPrimaryActiveInputNode());
   EXPECT_LT(internal_mic.plugged_time, bluetooth_input.plugged_time);
+}
+
+// Test the case where 3.5mm headphone will be activated automatically
+// when being hot plugged, and exception rule #1 will be fired, under the
+// condition that the kAudioSelectionImprovement flag is on.
+TEST_P(CrasAudioHandlerTest,
+       HotPlug35mmHeadphone_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalSpeaker},
+      /*expected_active_input_node=*/nullptr,
+      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/false);
+
+  // No exception rule metrics are recorded before plugging 3.5mm headset.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/0);
+
+  // Hotplug the 35mm headset with only headphone.
+  AudioNodeList audio_nodes;
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
+  AudioNode headphone = GenerateAudioNode(kHeadphone);
+  headphone.active = false;
+  headphone.plugged_time = 50000000;
+  audio_nodes.push_back(headphone);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify 35mm headphone is selected as active output.
+  AudioDeviceList audio_devices;
+  cras_audio_handler_->GetAudioDevices(&audio_devices);
+  EXPECT_EQ(2u, audio_devices.size());
+  EXPECT_EQ(headphone.id, cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  // Exception rule metric for output is recorded after plugging 3.5mm
+  // headphone.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/1);
+}
+
+// Test the case where 3.5mm mic will be activated automatically
+// when being hot plugged, and exception rule #1 will be fired, under the
+// condition that the kAudioSelectionImprovement flag is on.
+TEST_P(CrasAudioHandlerTest, HotPlug35mmMic_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalMic},
+      /*expected_active_input_node=*/kInternalMic,
+      /*expected_active_output_node=*/nullptr,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/false);
+
+  // No exception rule metrics are recorded before plugging 3.5mm headset.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/0);
+
+  // Hotplug the 35mm headset with both only mic.
+  AudioNodeList audio_nodes;
+  AudioNode internal_mic = GenerateAudioNode(kInternalMic);
+  internal_mic.active = true;
+  audio_nodes.push_back(internal_mic);
+  AudioNode mic = GenerateAudioNode(kMicJack);
+  mic.active = false;
+  mic.plugged_time = 50000000;
+  audio_nodes.push_back(mic);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify 35mm mic is selected as active input.
+  AudioDeviceList audio_devices;
+  cras_audio_handler_->GetAudioDevices(&audio_devices);
+  EXPECT_EQ(2u, audio_devices.size());
+  EXPECT_EQ(mic.id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // Exception rule metric for input is recorded after plugging 3.5mm mic.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule1HotPlugPrivilegedDevice,
+      /*expected_count=*/0);
 }
 
 // Test the case in which an HDMI output is plugged in with other higher
