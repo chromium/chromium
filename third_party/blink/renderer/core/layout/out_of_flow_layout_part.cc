@@ -57,6 +57,8 @@ bool CalculateNonOverflowingRangeInOneAxis(
     LayoutUnit margin_box_end,
     LayoutUnit imcb_inset_start,
     LayoutUnit imcb_inset_end,
+    LayoutUnit inset_area_start,
+    LayoutUnit inset_area_end,
     bool has_non_auto_inset_start,
     bool has_non_auto_inset_end,
     const std::optional<LayoutUnit>& additional_bounds_start,
@@ -81,7 +83,7 @@ bool CalculateNonOverflowingRangeInOneAxis(
     // containing block is always at the same location, while that of the
     // scroll-shifted margin box can move by at most `start_available_space`
     // before overflowing.
-    *out_scroll_max = start_available_space;
+    *out_scroll_max = inset_area_start + start_available_space;
   }
   // Calculation for the end edge is symmetric.
   const LayoutUnit end_available_space = imcb_inset_end - margin_box_end;
@@ -90,7 +92,7 @@ bool CalculateNonOverflowingRangeInOneAxis(
       return false;
     }
   } else {
-    *out_scroll_min = -end_available_space;
+    *out_scroll_min = -(inset_area_end + end_available_space);
   }
   if (*out_scroll_min && *out_scroll_max &&
       out_scroll_min->value() > out_scroll_max->value()) {
@@ -1965,10 +1967,31 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   const WritingDirectionMode candidate_writing_direction =
       candidate_style.GetWritingDirection();
   const auto container_writing_direction = container_info.writing_direction;
+
   const LogicalRect& container_rect = container_info.rect;
   const PhysicalSize container_physical_content_size =
       ToPhysicalSize(container_rect.size,
                      node_info.default_writing_direction.GetWritingMode());
+
+  // "used" inset-area offsets. Don't use the inset-area offsets directly as
+  // they may be clamped to produce non-negative space. Instead take the
+  // difference between the base, and adjusted container-info.
+  const BoxStrut inset_area_offsets = ([&]() -> BoxStrut {
+    if (!candidate_style.InsetAreaOffsets()) {
+      return BoxStrut();
+    }
+
+    const LogicalRect& base_rect = node_info.base_container_info.rect;
+    const BoxStrut insets(
+        container_rect.offset.inline_offset - base_rect.offset.inline_offset,
+        base_rect.InlineEndOffset() - container_rect.InlineEndOffset(),
+        container_rect.offset.block_offset - base_rect.offset.block_offset,
+        base_rect.BlockEndOffset() - container_rect.BlockEndOffset());
+
+    // Convert into the candidate writing-direction.
+    return insets.ConvertToPhysical(node_info.default_writing_direction)
+        .ConvertToLogical(candidate_writing_direction);
+  })();
 
   // Create a constraint space to resolve border/padding/insets.
   const ConstraintSpace space = ([&]() -> ConstraintSpace {
@@ -2122,6 +2145,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
             node_dimensions.MarginBoxInlineEnd(),
             imcb_for_position_fallback->inline_start,
             imcb_for_position_fallback->InlineEndOffset(),
+            inset_area_offsets.inline_start, inset_area_offsets.inline_end,
             has_non_auto_inset.InlineStart(), has_non_auto_inset.InlineEnd(),
             additional_fallback_bounds.has_value()
                 ? std::make_optional(
@@ -2156,6 +2180,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
             node_dimensions.MarginBoxBlockEnd(),
             imcb_for_position_fallback->block_start,
             imcb_for_position_fallback->BlockEndOffset(),
+            inset_area_offsets.block_start, inset_area_offsets.block_end,
             has_non_auto_inset.BlockStart(), has_non_auto_inset.BlockEnd(),
             additional_fallback_bounds.has_value()
                 ? std::make_optional(
