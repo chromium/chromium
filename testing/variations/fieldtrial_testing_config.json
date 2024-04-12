@@ -17373,6 +17373,22 @@
             ]
         }
     ],
+    "SchedQoS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SchedQoSOnResourcedForChrome"
+                    ],
+                    "min_os_version": "15849.0.0"
+                }
+            ]
+        }
+    ],
     "ScreenCaptureKitMacScreen": [
         {
             "platforms": [
