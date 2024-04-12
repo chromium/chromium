@@ -394,9 +394,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   } else {
     SetV8Flags("--no-harmony-rab-gsab");
   }
-  SetV8FlagsIfOverridden(features::kJavaScriptRegExpUnicodeSets,
-                         "--harmony-regexp-unicode-sets",
-                         "--no-harmony-regexp-unicode-sets");
   SetV8FlagsIfOverridden(features::kJavaScriptArrayBufferTransfer,
                          "--harmony-rab-gsab-transfer",
                          "--no-harmony-rab-gsab-transfer");

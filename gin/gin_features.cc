@@ -237,11 +237,6 @@ BASE_FEATURE(kJavaScriptRabGsab,
              "JavaScriptRabGsab",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the JavaScript RegExp Unicode set notation proposal.
-BASE_FEATURE(kJavaScriptRegExpUnicodeSets,
-             "JavaScriptRegExpUnicodeSets",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the ArrayBuffer transfer proposal.
 BASE_FEATURE(kJavaScriptArrayBufferTransfer,
              "JavaScriptArrayBufferTransfer",
