@@ -62,12 +62,12 @@ TEST(V4L2VP9HelpersTest, CheckSuperFrameIndexSize) {
 
     AppendVP9SuperFrameIndex(decoder_buffer);
     if (frame_sizes.size() == 1) {
-      EXPECT_EQ(decoder_buffer->data_size(), buffer_size);
+      EXPECT_EQ(decoder_buffer->size(), buffer_size);
       continue;
     }
 
-    EXPECT_GT(decoder_buffer->data_size(), buffer_size);
-    size_t superframe_index_size = decoder_buffer->data_size() - buffer_size;
+    EXPECT_GT(decoder_buffer->size(), buffer_size);
+    size_t superframe_index_size = decoder_buffer->size() - buffer_size;
     EXPECT_EQ(superframe_index_size,
               2 + expected_bytes_per_framesize * frame_sizes.size());
   }
@@ -110,7 +110,7 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
     AppendVP9SuperFrameIndex(decoder_buffer);
 
     Vp9Parser vp9_parser(/*parsing_compressed_header=*/false);
-    vp9_parser.SetStream(decoder_buffer->data(), decoder_buffer->data_size(),
+    vp9_parser.SetStream(decoder_buffer->data(), decoder_buffer->size(),
                          /*stream_config=*/nullptr);
 
     // Parse the merged buffer with the created superframe index.

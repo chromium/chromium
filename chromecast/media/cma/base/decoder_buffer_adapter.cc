@@ -33,7 +33,7 @@ DecoderBufferAdapter::DecoderBufferAdapter(
       // DecryptConfig may contain 0 subsamples if all content is encrypted.
       // Map this case to a single fully-encrypted "subsample" for more
       // consistent backend handling.
-      subsamples.emplace_back(0, buffer_->data_size());
+      subsamples.emplace_back(0, buffer_->size());
     }
 
     EncryptionPattern pattern;
@@ -73,7 +73,7 @@ uint8_t* DecoderBufferAdapter::writable_data() const {
 }
 
 size_t DecoderBufferAdapter::data_size() const {
-  return buffer_->data_size();
+  return buffer_->size();
 }
 
 const CastDecryptConfig* DecoderBufferAdapter::decrypt_config() const {

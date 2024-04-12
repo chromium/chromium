@@ -65,7 +65,7 @@ OSStatus ProvideInputCallback(AudioConverterRef decoder,
 
   *num_packets = buffer_list->mNumberBuffers = 1;
   buffer_list->mBuffers[0].mNumberChannels = 0;
-  buffer_list->mBuffers[0].mDataByteSize = input_data->buffer->data_size();
+  buffer_list->mBuffers[0].mDataByteSize = input_data->buffer->size();
 
   // No const version of this API unfortunately, so we need const_cast().
   buffer_list->mBuffers[0].mData =
@@ -159,7 +159,7 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   InputData input_data;
   input_data.buffer = buffer.get();
   if (!buffer->end_of_stream())
-    input_data.packet.mDataByteSize = buffer->data_size();
+    input_data.packet.mDataByteSize = buffer->size();
 
   // Must be filled in each time in case AudioConverterFillComplexBuffer()
   // modified it during a previous call.

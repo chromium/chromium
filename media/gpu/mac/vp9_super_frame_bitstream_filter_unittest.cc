@@ -33,8 +33,8 @@ class VP9SuperFrameBitstreamFilterTest : public testing::Test {
     ASSERT_TRUE(buffer_);
 
     // Initialize ffmpeg with the file data.
-    protocol_ = std::make_unique<InMemoryUrlProtocol>(
-        buffer_->data(), buffer_->data_size(), false);
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(buffer_->data(),
+                                                      buffer_->size(), false);
     glue_ = std::make_unique<FFmpegGlue>(protocol_.get());
     ASSERT_TRUE(glue_->OpenContext());
   }
@@ -86,15 +86,14 @@ TEST_F(VP9SuperFrameBitstreamFilterTest, Passthrough) {
     auto cm_block = bsf.take_buffer();
     ASSERT_TRUE(cm_block);
 
-    ASSERT_EQ(buffer->data_size(), CMBlockBufferGetDataLength(cm_block.get()));
+    ASSERT_EQ(buffer->size(), CMBlockBufferGetDataLength(cm_block.get()));
 
-    std::unique_ptr<uint8_t> block_data(new uint8_t[buffer->data_size()]);
-    ASSERT_EQ(noErr,
-              CMBlockBufferCopyDataBytes(cm_block.get(), 0, buffer->data_size(),
-                                         block_data.get()));
+    std::unique_ptr<uint8_t> block_data(new uint8_t[buffer->size()]);
+    ASSERT_EQ(noErr, CMBlockBufferCopyDataBytes(
+                         cm_block.get(), 0, buffer->size(), block_data.get()));
 
     // Verify that the block is valid.
-    parser_.SetStream(block_data.get(), buffer->data_size(), nullptr);
+    parser_.SetStream(block_data.get(), buffer->size(), nullptr);
     EXPECT_EQ(Vp9Parser::kOk, ParseNextFrame());
     EXPECT_EQ(Vp9Parser::kEOStream, ParseNextFrame());
 
@@ -112,18 +111,18 @@ TEST_F(VP9SuperFrameBitstreamFilterTest, Superframe) {
   // The first packet in this file is not part of a super frame. We still need
   // to send it to the VP9 parser so that the superframe can reference it.
   auto buffer = ReadPacket();
-  parser_.SetStream(buffer->data(), buffer->data_size(), nullptr);
+  parser_.SetStream(buffer->data(), buffer->size(), nullptr);
   EXPECT_EQ(Vp9Parser::kOk, ParseNextFrame());
   bsf.EnqueueBuffer(std::move(buffer));
   ASSERT_TRUE(bsf.take_buffer());
 
   // The second and third belong to a super frame.
   buffer = ReadPacket();
-  size_t total_size = buffer->data_size();
+  size_t total_size = buffer->size();
   bsf.EnqueueBuffer(std::move(buffer));
   ASSERT_FALSE(bsf.take_buffer());
   buffer = ReadPacket();
-  total_size += buffer->data_size();
+  total_size += buffer->size();
   bsf.EnqueueBuffer(std::move(buffer));
 
   auto cm_block = bsf.take_buffer();

@@ -128,7 +128,7 @@ class CbcsDecryptorTest : public testing::Test {
 
     std::vector<uint8_t> decrypted_data;
     if (decrypted.get()) {
-      EXPECT_TRUE(decrypted->size());
+      EXPECT_FALSE(decrypted->empty());
       decrypted_data = base::ToVector(base::span(*decrypted));
     }
 

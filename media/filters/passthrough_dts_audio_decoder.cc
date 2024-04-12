@@ -104,7 +104,7 @@ void PassthroughDTSAudioDecoder::EncapsulateFrame(const DecoderBuffer& buffer) {
 
   // Encapsulated a compressed DTS frame per IEC61937
   base::span<const uint8_t> input_data;
-  input_data = base::span<const uint8_t>(buffer.data(), buffer.data_size());
+  input_data = base::span<const uint8_t>(buffer.data(), buffer.size());
   dts::WrapDTSWithIEC61937(input_data, output_buffer, config_.codec());
 
   // Create a mono channel "buffer" to hold IEC encapsulated bitstream

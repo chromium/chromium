@@ -308,8 +308,7 @@ class Mp2tStreamParserTest : public testing::Test {
     for (const auto& [track_id, buffer] : buffer_queue_map) {
       DVLOG(3) << "Buffers for track_id=" << track_id;
       for (const auto& buf : buffer) {
-        DVLOG(3) << "  track_id=" << buf->track_id()
-                 << ", size=" << buf->data_size()
+        DVLOG(3) << "  track_id=" << buf->track_id() << ", size=" << buf->size()
                  << ", pts=" << buf->timestamp().InSecondsF()
                  << ", dts=" << buf->GetDecodeTimestamp().InSecondsF()
                  << ", dur=" << buf->duration().InSecondsF();
@@ -398,7 +397,7 @@ class Mp2tStreamParserTest : public testing::Test {
     scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile(filename);
 
     const uint8_t* start = buffer->data();
-    const uint8_t* end = start + buffer->data_size();
+    const uint8_t* end = start + buffer->size();
     do {
       size_t chunk_size = std::min(static_cast<size_t>(append_bytes),
                                    static_cast<size_t>(end - start));
@@ -571,7 +570,7 @@ TEST_F(Mp2tStreamParserTest, HLSSampleAES) {
   for (size_t i = 0; i + 1 < video_buffer_capture_.size(); i++) {
     const auto& buffer = video_buffer_capture_[i];
     std::string unencrypted_video_buffer(
-        reinterpret_cast<const char*>(buffer->data()), buffer->data_size());
+        reinterpret_cast<const char*>(buffer->data()), buffer->size());
     EXPECT_EQ(decrypted_video_buffers[i], unencrypted_video_buffer);
   }
   audio_encryption_scheme = current_audio_config_.encryption_scheme();
@@ -579,7 +578,7 @@ TEST_F(Mp2tStreamParserTest, HLSSampleAES) {
   for (size_t i = 0; i + 1 < audio_buffer_capture_.size(); i++) {
     const auto& buffer = audio_buffer_capture_[i];
     std::string unencrypted_audio_buffer(
-        reinterpret_cast<const char*>(buffer->data()), buffer->data_size());
+        reinterpret_cast<const char*>(buffer->data()), buffer->size());
     EXPECT_EQ(decrypted_audio_buffers[i], unencrypted_audio_buffer);
   }
 }

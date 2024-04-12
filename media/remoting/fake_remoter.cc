@@ -70,16 +70,16 @@ bool FakeRemotingDataStreamSender::ValidateFrameBuffer(size_t index,
   }
 
   // Checks if frame buffer size is correct or not
-  if (media_buffer->data_size() != size) {
-    VLOG(1) << "Buffer size should be:" << size << "("
-            << media_buffer->data_size() << ")";
+  if (media_buffer->size() != size) {
+    VLOG(1) << "Buffer size should be:" << size << "(" << media_buffer->size()
+            << ")";
     return false;
   }
 
   // Checks if frame buffer is correct or not.
   bool return_value = true;
   const uint8_t* buffer = media_buffer->data();
-  for (size_t i = 0; i < media_buffer->data_size(); ++i) {
+  for (size_t i = 0; i < media_buffer->size(); ++i) {
     uint32_t value = static_cast<uint32_t>(i & 0xFF);
     if (value != static_cast<uint32_t>(buffer[i])) {
       VLOG(1) << "buffer index: " << i << " should be "

@@ -67,7 +67,7 @@ class FFmpegVideoDecoderTest : public testing::Test {
     i_frame_buffer_ = ReadTestDataFile("h264-320x180-frame-0");
     corrupt_i_frame_buffer_ = ReadTestDataFile("h264-320x180-frame-0");
     memset(corrupt_i_frame_buffer_->writable_data(), 0,
-           corrupt_i_frame_buffer_->data_size() / 2);
+           corrupt_i_frame_buffer_->size() / 2);
   }
 
   FFmpegVideoDecoderTest(const FFmpegVideoDecoderTest&) = delete;

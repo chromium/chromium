@@ -115,11 +115,10 @@ bool AppendVP9SuperFrameIndex(scoped_refptr<DecoderBuffer>& buffer) {
   const uint32_t* cue_data = buffer->side_data()->spatial_layers.data();
   std::vector<uint32_t> frame_sizes(cue_data, cue_data + num_of_layers);
   std::vector<uint8_t> superframe_index = CreateSuperFrameIndex(frame_sizes);
-  const size_t vp9_superframe_size =
-      buffer->data_size() + superframe_index.size();
+  const size_t vp9_superframe_size = buffer->size() + superframe_index.size();
   auto vp9_superframe = base::HeapArray<uint8_t>::Uninit(vp9_superframe_size);
-  memcpy(vp9_superframe.data(), buffer->data(), buffer->data_size());
-  memcpy(vp9_superframe.data() + buffer->data_size(), superframe_index.data(),
+  memcpy(vp9_superframe.data(), buffer->data(), buffer->size());
+  memcpy(vp9_superframe.data() + buffer->size(), superframe_index.data(),
          superframe_index.size());
 
   if (!OverwriteShowFrame(vp9_superframe, frame_sizes)) {

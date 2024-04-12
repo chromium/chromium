@@ -554,10 +554,10 @@ cdm::Status ClearKeyCdm::Decrypt(const cdm::InputBuffer_2& encrypted_buffer,
 
   DCHECK(buffer->data());
   decrypted_block->SetDecryptedBuffer(
-      cdm_host_proxy_->Allocate(buffer->data_size()));
+      cdm_host_proxy_->Allocate(buffer->size()));
   memcpy(reinterpret_cast<void*>(decrypted_block->DecryptedBuffer()->Data()),
-         buffer->data(), buffer->data_size());
-  decrypted_block->DecryptedBuffer()->SetSize(buffer->data_size());
+         buffer->data(), buffer->size());
+  decrypted_block->DecryptedBuffer()->SetSize(buffer->size());
   decrypted_block->SetTimestamp(buffer->timestamp().InMicroseconds());
 
   return cdm::kSuccess;
@@ -687,7 +687,7 @@ cdm::Status ClearKeyCdm::DecryptAndDecodeSamples(
   int64_t timestamp = 0;
   if (!buffer->end_of_stream()) {
     data = buffer->data();
-    size = buffer->data_size();
+    size = buffer->size();
     timestamp = encrypted_buffer.timestamp;
   }
 

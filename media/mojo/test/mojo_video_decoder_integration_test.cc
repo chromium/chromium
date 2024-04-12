@@ -128,7 +128,7 @@ class MockVideoDecoder : public VideoDecoder {
   // TODO(sandersd): Extend to support tests of MojoVideoFrame frames.
   void DoDecode(scoped_refptr<DecoderBuffer> buffer, DecodeCB& decode_cb) {
     if (!buffer->end_of_stream()) {
-      if (buffer->data_size() == kErrorDataSize) {
+      if (buffer->size() == kErrorDataSize) {
         // This size buffer indicates that decoder should return an error.
         // |decode_cb| must not be called from the same stack.
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

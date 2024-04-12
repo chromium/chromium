@@ -13,7 +13,7 @@ AllowSharedBufferSource* StringToBuffer(std::string_view data) {
 
 std::string BufferToString(const media::DecoderBuffer& buffer) {
   return std::string(reinterpret_cast<const char*>(buffer.data()),
-                     buffer.data_size());
+                     buffer.size());
 }
 
 std::unique_ptr<media::DecryptConfig> CreateTestDecryptConfig(

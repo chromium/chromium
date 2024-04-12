@@ -299,7 +299,7 @@ TEST_F(StreamProviderTest, ReadBuffer) {
       1, base::BindOnce(&StreamProviderTest::OnBufferReadFromDemuxerStream,
                         base::Unretained(this), DemuxerStream::Type::AUDIO));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(audio_buffer_->data_size(), received_audio_buffer_->data_size());
+  EXPECT_EQ(audio_buffer_->size(), received_audio_buffer_->size());
   EXPECT_EQ(audio_buffer_->end_of_stream(),
             received_audio_buffer_->end_of_stream());
   EXPECT_EQ(audio_buffer_->is_key_frame(),

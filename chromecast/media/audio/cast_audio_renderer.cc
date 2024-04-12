@@ -475,7 +475,7 @@ void CastAudioRenderer::OnNewBuffer(
 
   DCHECK_EQ(status, ::media::DemuxerStream::kOk);
 
-  size_t filled_bytes = buffer->end_of_stream() ? 0 : buffer->data_size();
+  size_t filled_bytes = buffer->end_of_stream() ? 0 : buffer->size();
   size_t io_buffer_size =
       audio_output_service::OutputSocket::kAudioMessageHeaderSize +
       filled_bytes;
@@ -488,7 +488,7 @@ void CastAudioRenderer::OnNewBuffer(
   last_pushed_timestamp_ = buffer->timestamp() + buffer->duration();
   memcpy(io_buffer->data() +
              audio_output_service::OutputSocket::kAudioMessageHeaderSize,
-         buffer->data(), buffer->data_size());
+         buffer->data(), buffer->size());
 
   output_connection_
       .AsyncCall(&audio_output_service::OutputStreamConnection::SendAudioBuffer)

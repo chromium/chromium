@@ -197,8 +197,7 @@ class MEDIA_EXPORT DecoderBuffer
     return UNSAFE_BUFFERS(base::span(writable_data(), size()));
   }
 
-  // Deprecated, use size().
-  size_t data_size() const { return size(); }
+  inline bool empty() const { return size() == 0u; }
 
   const DiscardPadding& discard_padding() const {
     DCHECK(!end_of_stream());

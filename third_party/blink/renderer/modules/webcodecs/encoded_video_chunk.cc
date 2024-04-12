@@ -95,25 +95,25 @@ std::optional<uint64_t> EncodedVideoChunk::duration() const {
 }
 
 uint64_t EncodedVideoChunk::byteLength() const {
-  return buffer_->data_size();
+  return buffer_->size();
 }
 
 void EncodedVideoChunk::copyTo(const AllowSharedBufferSource* destination,
                                ExceptionState& exception_state) {
   // Validate destination buffer.
   auto dest_wrapper = AsSpan<uint8_t>(destination);
-  if (dest_wrapper.size() < buffer_->data_size()) {
+  if (dest_wrapper.size() < buffer_->size()) {
     exception_state.ThrowTypeError("destination is not large enough.");
     return;
   }
 
-  if (buffer_->data_size() == 0) {
+  if (buffer_->empty()) {
     // Calling memcpy with nullptr is UB, even if count is zero.
     return;
   }
 
   // Copy data.
-  memcpy(dest_wrapper.data(), buffer_->data(), buffer_->data_size());
+  memcpy(dest_wrapper.data(), buffer_->data(), buffer_->size());
 }
 
 }  // namespace blink

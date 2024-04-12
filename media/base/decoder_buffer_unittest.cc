@@ -22,6 +22,7 @@ TEST(DecoderBufferTest, Constructors) {
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
   EXPECT_FALSE(buffer->data());
   EXPECT_EQ(0u, buffer->size());
+  EXPECT_TRUE(buffer->empty());
   EXPECT_EQ(base::span(*buffer), base::span<const uint8_t>());
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
@@ -30,6 +31,7 @@ TEST(DecoderBufferTest, Constructors) {
   scoped_refptr<DecoderBuffer> buffer3(new DecoderBuffer(kTestSize));
   ASSERT_TRUE(buffer3.get());
   EXPECT_EQ(kTestSize, buffer3->size());
+  EXPECT_FALSE(buffer3->empty());
 }
 
 TEST(DecoderBufferTest, CreateEOSBuffer) {

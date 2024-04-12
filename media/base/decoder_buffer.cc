@@ -225,7 +225,7 @@ size_t DecoderBuffer::GetMemoryUsage() const {
     return memory_usage;
   }
 
-  memory_usage += data_size();
+  memory_usage += size();
 
   // Side data and decrypt config would not change after construction.
   if (has_side_data()) {

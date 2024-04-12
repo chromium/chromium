@@ -64,10 +64,10 @@ TestMediaSource::TestMediaSource(const std::string& filename,
   file_data_ = ReadTestDataFile(filename);
 
   if (initial_append_size_ == kAppendWholeFile)
-    initial_append_size_ = file_data_->data_size();
+    initial_append_size_ = file_data_->size();
 
   CHECK_GT(initial_append_size_, 0u);
-  CHECK_LE(initial_append_size_, file_data_->data_size());
+  CHECK_LE(initial_append_size_, file_data_->size());
 }
 
 TestMediaSource::TestMediaSource(const std::string& filename,
@@ -96,10 +96,10 @@ TestMediaSource::TestMediaSource(scoped_refptr<DecoderBuffer> data,
           &media_log_)),
       owned_chunk_demuxer_(chunk_demuxer_) {
   if (initial_append_size_ == kAppendWholeFile)
-    initial_append_size_ = file_data_->data_size();
+    initial_append_size_ = file_data_->size();
 
   CHECK_GT(initial_append_size_, 0u);
-  CHECK_LE(initial_append_size_, file_data_->data_size());
+  CHECK_LE(initial_append_size_, file_data_->size());
 }
 
 TestMediaSource::~TestMediaSource() = default;
@@ -124,7 +124,7 @@ void TestMediaSource::Seek(base::TimeDelta seek_time,
   chunk_demuxer_->ResetParserState(kSourceId, base::TimeDelta(),
                                    kInfiniteDuration, &last_timestamp_offset_);
 
-  CHECK_LT(new_position, file_data_->data_size());
+  CHECK_LT(new_position, file_data_->size());
   current_position_ = new_position;
 
   AppendData(seek_append_size);
@@ -141,8 +141,8 @@ void TestMediaSource::SetSequenceMode(bool sequence_mode) {
 
 void TestMediaSource::AppendData(size_t size) {
   CHECK(chunk_demuxer_);
-  CHECK_LT(current_position_, file_data_->data_size());
-  CHECK_LE(current_position_ + size, file_data_->data_size());
+  CHECK_LT(current_position_, file_data_->size());
+  CHECK_LE(current_position_ + size, file_data_->size());
 
   // Actual append must succeed in these tests, but parse may fail depending on
   // expectations verified later in this method after RunSegmentParserLoop()

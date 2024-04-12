@@ -295,11 +295,11 @@ uint32_t StructTraits<media::stable::mojom::DecoderBufferDataView,
                       scoped_refptr<media::DecoderBuffer>>::
     data_size(const scoped_refptr<media::DecoderBuffer>& input) {
   static_assert(
-      std::is_same<decltype(input->data_size()), size_t>::value,
-      "Unexpected type for media::DecoderBuffer::data_size(). If you need to "
+      std::is_same<decltype(input->size()), size_t>::value,
+      "Unexpected type for media::DecoderBuffer::size(). If you need to "
       "change this assertion, please contact chromeos-gfx-video@google.com.");
   if (!input->end_of_stream())
-    return base::checked_cast<uint32_t>(input->data_size());
+    return base::checked_cast<uint32_t>(input->size());
   return 0u;
 }
 

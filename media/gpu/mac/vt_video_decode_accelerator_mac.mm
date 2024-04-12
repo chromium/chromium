@@ -865,7 +865,7 @@ void VTVideoDecodeAccelerator::DecodeTaskAv1(
   if (!av1_cc_detector_) {
     av1_cc_detector_ = std::make_unique<AV1ConfigChangeDetector>();
   }
-  av1_cc_detector_->DetectConfig(buffer->data(), buffer->data_size());
+  av1_cc_detector_->DetectConfig(buffer->data(), buffer->size());
 
   if (!session_ || av1_cc_detector_->config_changed()) {
     // ConfigureDecoder() calls NotifyError() on failure.
@@ -932,7 +932,7 @@ void VTVideoDecodeAccelerator::DecodeTaskVp9(
   if (!vp9_cc_detector_) {
     vp9_cc_detector_ = std::make_unique<VP9ConfigChangeDetector>();
   }
-  vp9_cc_detector_->DetectConfig(buffer->data(), buffer->data_size());
+  vp9_cc_detector_->DetectConfig(buffer->data(), buffer->size());
 
   if (!session_ || vp9_cc_detector_->config_changed()) {
     // ConfigureDecoder() calls NotifyError() on failure.
@@ -1011,7 +1011,7 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   size_t data_size = 0;
   std::vector<H264NALU> nalus;
   size_t first_slice_index = 0;
-  h264_parser_.SetStream(buffer->data(), buffer->data_size());
+  h264_parser_.SetStream(buffer->data(), buffer->size());
   H264NALU nalu;
   while (true) {
     H264Parser::Result result = h264_parser_.AdvanceToNextNALU(&nalu);
@@ -1399,7 +1399,7 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   int active_vps_id = 0;
   int active_sps_id = 0;
   int active_pps_id = 0;
-  hevc_parser_.SetStream(buffer->data(), buffer->data_size());
+  hevc_parser_.SetStream(buffer->data(), buffer->size());
   H265NALU nalu;
   while (true) {
     H265Parser::Result result = hevc_parser_.AdvanceToNextNALU(&nalu);

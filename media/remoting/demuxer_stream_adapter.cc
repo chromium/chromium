@@ -348,7 +348,7 @@ void DemuxerStreamAdapter::WriteFrame() {
 
   if (!pending_frame_->end_of_stream()) {
     data_pipe_writer_.Write(
-        pending_frame_->data(), pending_frame_->data_size(),
+        pending_frame_->data(), pending_frame_->size(),
         base::BindOnce(&DemuxerStreamAdapter::OnFrameWritten,
                        base::Unretained(this)));
   } else {
@@ -379,7 +379,7 @@ void DemuxerStreamAdapter::TryCompleteFrameWrite() {
   // Resets frame buffer variables.
   const bool pending_frame_is_eos = pending_frame_->end_of_stream();
   if (!pending_frame_is_eos) {
-    bytes_written_to_pipe_ += pending_frame_->data_size();
+    bytes_written_to_pipe_ += pending_frame_->size();
   }
 
   ++last_count_;

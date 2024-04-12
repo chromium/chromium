@@ -46,7 +46,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidNonEOSDecoderBuffer) {
             mojom_decoder_buffer->timestamp);
   EXPECT_EQ(deserialized_decoder_buffer->duration(),
             mojom_decoder_buffer->duration);
-  EXPECT_EQ(deserialized_decoder_buffer->data_size(),
+  EXPECT_EQ(deserialized_decoder_buffer->size(),
             base::strict_cast<size_t>(mojom_decoder_buffer->data_size));
   EXPECT_EQ(deserialized_decoder_buffer->is_key_frame(),
             mojom_decoder_buffer->is_key_frame);

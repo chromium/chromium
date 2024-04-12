@@ -87,7 +87,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   // Compare.
   // Note: We intentionally do not serialize the data section of the
   // DecoderBuffer; no need to check the data here.
-  EXPECT_EQ(kDataSize, result->data_size());
+  EXPECT_EQ(kDataSize, result->size());
   EXPECT_TRUE(result->has_side_data());
   EXPECT_TRUE(buffer->side_data()->Matches(result->side_data().value()));
   EXPECT_EQ(buffer->timestamp(), result->timestamp());
@@ -129,7 +129,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_KeyFrame) {
   // Compare.
   // Note: We intentionally do not serialize the data section of the
   // DecoderBuffer; no need to check the data here.
-  EXPECT_EQ(kDataSize, result->data_size());
+  EXPECT_EQ(kDataSize, result->size());
   EXPECT_TRUE(result->is_key_frame());
 }
 
@@ -157,7 +157,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CencEncryptedBuffer) {
   // Compare.
   // Note: We intentionally do not serialize the data section of the
   // DecoderBuffer; no need to check the data here.
-  EXPECT_EQ(kDataSize, result->data_size());
+  EXPECT_EQ(kDataSize, result->size());
   EXPECT_TRUE(buffer->decrypt_config()->Matches(*result->decrypt_config()));
 
   // Test without DecryptConfig. This is used for clear buffer in an
@@ -195,7 +195,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CbcsEncryptedBuffer) {
   // Compare.
   // Note: We intentionally do not serialize the data section of the
   // DecoderBuffer; no need to check the data here.
-  EXPECT_EQ(kDataSize, result->data_size());
+  EXPECT_EQ(kDataSize, result->size());
   EXPECT_TRUE(buffer->decrypt_config()->Matches(*result->decrypt_config()));
 
   // Test without DecryptConfig. This is used for clear buffer in an

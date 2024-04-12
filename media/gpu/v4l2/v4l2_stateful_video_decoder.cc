@@ -163,13 +163,13 @@ scoped_refptr<media::DecoderBuffer> ReassembleFragments(
     std::vector<scoped_refptr<media::DecoderBuffer>>& fragments) {
   size_t frame_size = 0;
   for (const auto& fragment : fragments) {
-    frame_size += fragment->data_size();
+    frame_size += fragment->size();
   }
   auto temp_buffer = base::HeapArray<uint8_t>::Uninit(frame_size);
   uint8_t* dst = temp_buffer.data();
   for (const auto& fragment : fragments) {
-    memcpy(dst, fragment->data(), fragment->data_size());
-    dst += fragment->data_size();
+    memcpy(dst, fragment->data(), fragment->size());
+    dst += fragment->size();
   }
 
   auto reassembled_frame =
@@ -1103,10 +1103,10 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
 
     CHECK_EQ(v4l2_buffer->PlanesCount(), 1u);
     uint8_t* dst = static_cast<uint8_t*>(v4l2_buffer->GetPlaneMapping(0));
-    CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0), media_buffer->data_size());
-    memcpy(dst, media_buffer->data(), media_buffer->data_size());
-    v4l2_buffer->SetPlaneBytesUsed(0, media_buffer->data_size());
-    VLOGF(4) << "Enqueuing " << media_buffer->data_size() << " bytes.";
+    CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0), media_buffer->size());
+    memcpy(dst, media_buffer->data(), media_buffer->size());
+    v4l2_buffer->SetPlaneBytesUsed(0, media_buffer->size());
+    VLOGF(4) << "Enqueuing " << media_buffer->size() << " bytes.";
     v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(media_buffer->timestamp()));
 
     const int64_t flat_timespec = media_buffer->timestamp().InMilliseconds();
@@ -1181,7 +1181,7 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
       whole_frames;
 
   auto* buffer_pointer = buffer->data();
-  auto remaining_buffer_size = buffer->data_size();
+  auto remaining_buffer_size = buffer->size();
 
   do {
     const auto nalu_info =

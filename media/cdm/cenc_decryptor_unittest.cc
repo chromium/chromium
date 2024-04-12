@@ -111,9 +111,9 @@ class CencDecryptorTest : public testing::Test {
 
     std::vector<uint8_t> decrypted_data;
     if (decrypted.get()) {
-      EXPECT_TRUE(decrypted->data_size());
+      EXPECT_TRUE(decrypted->size());
       decrypted_data.assign(decrypted->data(),
-                            decrypted->data() + decrypted->data_size());
+                            decrypted->data() + decrypted->size());
     }
 
     return decrypted_data;

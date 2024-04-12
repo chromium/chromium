@@ -360,7 +360,7 @@ void V4L2VideoDecodeAccelerator::Decode(BitstreamBuffer bitstream_buffer) {
 void V4L2VideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
                                         int32_t bitstream_id) {
   DVLOGF(4) << "input_id=" << bitstream_id
-            << ", size=" << (buffer ? buffer->data_size() : 0);
+            << ", size=" << (buffer ? buffer->size() : 0);
   DCHECK(decode_task_runner_->RunsTasksInCurrentSequence());
 
   if (bitstream_id < 0) {
@@ -961,8 +961,7 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
     if (buffer) {
       DVLOGF(4) << "reading input_id="
                 << decoder_current_bitstream_buffer_->input_id
-                << ", addr=" << buffer->data()
-                << ", size=" << buffer->data_size();
+                << ", addr=" << buffer->data() << ", size=" << buffer->size();
     } else {
       DCHECK_EQ(decoder_current_bitstream_buffer_->input_id, kFlushBufferId);
       DVLOGF(4) << "reading input_id=kFlushBufferId";
@@ -991,7 +990,7 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
       // reprocessed when the pipeline frees up.
       schedule_task = false;
     }
-  } else if (buffer->data_size() == 0) {
+  } else if (buffer->empty()) {
     // This is a buffer queued from the client that has zero size.  Skip.
     // TODO(sandersd): This shouldn't be possible, empty buffers are never
     // enqueued.
@@ -1001,7 +1000,7 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
     const uint8_t* const data =
         buffer->data() + decoder_current_bitstream_buffer_->bytes_used;
     const size_t data_size =
-        buffer->data_size() - decoder_current_bitstream_buffer_->bytes_used;
+        buffer->size() - decoder_current_bitstream_buffer_->bytes_used;
 
     if (!frame_splitter_->AdvanceFrameFragment(data, data_size,
                                                &decoded_size)) {
@@ -1033,7 +1032,7 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
 
   if (schedule_task) {
     decoder_current_bitstream_buffer_->bytes_used += decoded_size;
-    if ((buffer ? buffer->data_size() : 0) ==
+    if ((buffer ? buffer->size() : 0) ==
         decoder_current_bitstream_buffer_->bytes_used) {
       // Our current bitstream buffer is done; return it.
       int32_t input_id = decoder_current_bitstream_buffer_->input_id;

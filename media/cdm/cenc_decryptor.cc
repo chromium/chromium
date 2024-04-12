@@ -63,7 +63,7 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
     const DecoderBuffer& input,
     const crypto::SymmetricKey& key) {
   const char* sample = reinterpret_cast<const char*>(input.data());
-  const size_t sample_size = input.data_size();
+  const size_t sample_size = input.size();
   DCHECK(sample_size) << "No data to decrypt.";
 
   const DecryptConfig* decrypt_config = input.decrypt_config();

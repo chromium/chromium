@@ -68,7 +68,7 @@ V4L2StatefulVideoDecoderBackend::DecodeRequest::operator=(DecodeRequest&&) =
 V4L2StatefulVideoDecoderBackend::DecodeRequest::~DecodeRequest() = default;
 
 bool V4L2StatefulVideoDecoderBackend::DecodeRequest::IsCompleted() const {
-  return bytes_used == buffer->data_size();
+  return bytes_used == buffer->size();
 }
 
 V4L2StatefulVideoDecoderBackend::V4L2StatefulVideoDecoderBackend(
@@ -228,11 +228,11 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
   DCHECK(current_input_buffer_.has_value());
 
   const DecoderBuffer* current_buffer = current_decode_request_->buffer.get();
-  DCHECK_LT(current_decode_request_->bytes_used, current_buffer->data_size());
+  DCHECK_LT(current_decode_request_->bytes_used, current_buffer->size());
   const uint8_t* const data =
       current_buffer->data() + current_decode_request_->bytes_used;
   const size_t data_size =
-      current_buffer->data_size() - current_decode_request_->bytes_used;
+      current_buffer->size() - current_decode_request_->bytes_used;
   size_t bytes_to_copy = 0;
 
   if (!frame_splitter_->AdvanceFrameFragment(data, data_size, &bytes_to_copy)) {

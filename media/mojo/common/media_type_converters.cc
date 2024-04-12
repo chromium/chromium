@@ -93,7 +93,7 @@ TypeConverter<media::mojom::DecoderBufferPtr, media::DecoderBuffer>::Convert(
   mojo_buffer->timestamp = input.timestamp();
   mojo_buffer->duration = input.duration();
   mojo_buffer->is_key_frame = input.is_key_frame();
-  mojo_buffer->data_size = base::checked_cast<uint32_t>(input.data_size());
+  mojo_buffer->data_size = base::checked_cast<uint32_t>(input.size());
   mojo_buffer->front_discard = input.discard_padding().first;
   mojo_buffer->back_discard = input.discard_padding().second;
 

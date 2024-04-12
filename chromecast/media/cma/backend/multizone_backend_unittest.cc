@@ -269,7 +269,7 @@ void BufferFeeder::FeedBuffer() {
                            (config_.samples_per_second * playback_rate_);
     scoped_refptr<::media::DecoderBuffer> silence_buffer(
         new ::media::DecoderBuffer(size_bytes));
-    memset(silence_buffer->writable_data(), 0, silence_buffer->data_size());
+    memset(silence_buffer->writable_data(), 0, silence_buffer->size());
     pending_buffer_ = new media::DecoderBufferAdapter(silence_buffer);
     pending_buffer_->set_timestamp(base::Microseconds(pushed_us_));
   }

@@ -88,8 +88,7 @@ class ManifestDemuxerTest : public ::testing::Test {
         id, base::BindRepeating([](SourceBufferParseWarning) {}));
 
     scoped_refptr<DecoderBuffer> bear1 = ReadTestDataFile("bear-320x240.webm");
-    ASSERT_TRUE(
-        demuxer->AppendToParseBuffer(id, bear1->data(), bear1->data_size()));
+    ASSERT_TRUE(demuxer->AppendToParseBuffer(id, bear1->data(), bear1->size()));
     for (;;) {
       base::TimeDelta start = base::Seconds(0), end = base::Seconds(10), offset;
       auto result = demuxer->RunSegmentParserLoop(id, start, end, &offset);

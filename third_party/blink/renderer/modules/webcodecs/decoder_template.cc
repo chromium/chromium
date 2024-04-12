@@ -408,7 +408,7 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
   }
 
   // The request may be invalid, if so report that now.
-  if (!request->decoder_buffer || request->decoder_buffer->data_size() == 0) {
+  if (!request->decoder_buffer || request->decoder_buffer->empty()) {
     if (request->status.is_ok()) {
       Shutdown(MakeEncodingError("Null or empty decoder buffer.",
                                  media::DecoderStatus::Codes::kFailed));

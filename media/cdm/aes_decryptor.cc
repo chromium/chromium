@@ -153,7 +153,7 @@ void AesDecryptor::SessionIdDecryptionKeyMap::Erase(
 static scoped_refptr<DecoderBuffer> DecryptData(
     const DecoderBuffer& input,
     const crypto::SymmetricKey& key) {
-  CHECK(input.size());
+  CHECK(!input.empty());
   CHECK(input.decrypt_config());
 
   if (input.decrypt_config()->encryption_scheme() == EncryptionScheme::kCenc)

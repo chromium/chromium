@@ -245,7 +245,7 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     has_reset_ = false;
   }
 
-  auto sample = CreateEmptySampleWithBuffer(buffer->data_size(), 0);
+  auto sample = CreateEmptySampleWithBuffer(buffer->size(), 0);
   if (!sample) {
     std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
     return;

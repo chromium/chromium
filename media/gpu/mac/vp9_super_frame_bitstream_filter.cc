@@ -35,7 +35,7 @@ bool VP9SuperFrameBitstreamFilter::EnqueueBuffer(
   DCHECK(!buffer->end_of_stream());
 
   Vp9RawBitsReader reader;
-  reader.Initialize(buffer->data(), buffer->data_size());
+  reader.Initialize(buffer->data(), buffer->size());
   const bool show_frame = ShouldShowFrame(&reader);
   if (!reader.IsValid()) {
     DLOG(ERROR) << "Bitstream reading failed.";
@@ -44,7 +44,7 @@ bool VP9SuperFrameBitstreamFilter::EnqueueBuffer(
 
   // See Vp9Parser::ParseSuperframe() for more details.
   const bool is_superframe =
-      (buffer->data()[buffer->data_size() - 1] & 0xE0) == kSuperFrameMarker;
+      (buffer->data()[buffer->size() - 1] & 0xE0) == kSuperFrameMarker;
   if (is_superframe && data_) {
     DLOG(WARNING) << "Mixing of superframe and raw frames not supported";
     return false;
@@ -77,9 +77,9 @@ VP9SuperFrameBitstreamFilter::CreatePassthroughBuffer(
   // Create a memory-backed CMBlockBuffer for the translated data.
   OSStatus status = CMBlockBufferCreateWithMemoryBlock(
       kCFAllocatorDefault,
-      static_cast<void*>(const_cast<uint8_t*>(buffer->data())),
-      buffer->data_size(), kCFAllocatorDefault, &source, 0, buffer->data_size(),
-      0, data.InitializeInto());
+      static_cast<void*>(const_cast<uint8_t*>(buffer->data())), buffer->size(),
+      kCFAllocatorDefault, &source, 0, buffer->size(), 0,
+      data.InitializeInto());
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status)
         << "CMBlockBufferCreateWithMemoryBlock failed.";
@@ -144,7 +144,7 @@ bool VP9SuperFrameBitstreamFilter::AllocateCombinedBlock(size_t total_size) {
 bool VP9SuperFrameBitstreamFilter::MergeBuffer(const DecoderBuffer& buffer,
                                                size_t offset) {
   OSStatus status = CMBlockBufferReplaceDataBytes(buffer.data(), data_.get(),
-                                                  offset, buffer.data_size());
+                                                  offset, buffer.size());
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferReplaceDataBytes failed.";
     return false;
@@ -161,9 +161,10 @@ bool VP9SuperFrameBitstreamFilter::BuildSuperFrame() {
   // Calculate maximum and total size.
   size_t total_size = 0, max_size = 0;
   for (const auto& b : partial_buffers_) {
-    total_size += b->data_size();
-    if (b->data_size() > max_size)
-      max_size = b->data_size();
+    total_size += b->size();
+    if (b->size() > max_size) {
+      max_size = b->size();
+    }
   }
 
   const uint8_t bytes_per_frame_size =
@@ -185,7 +186,7 @@ bool VP9SuperFrameBitstreamFilter::BuildSuperFrame() {
   for (const auto& b : partial_buffers_) {
     if (!MergeBuffer(*b, offset))
       return false;
-    offset += b->data_size();
+    offset += b->size();
   }
 
   // Write superframe trailer which has size information for each buffer.
@@ -198,7 +199,7 @@ bool VP9SuperFrameBitstreamFilter::BuildSuperFrame() {
 
   trailer[trailer_offset++] = marker;
   for (const auto& b : partial_buffers_) {
-    const uint32_t s = base::checked_cast<uint32_t>(b->data_size());
+    const uint32_t s = base::checked_cast<uint32_t>(b->size());
     DCHECK_LE(s, (1ULL << (bytes_per_frame_size * 8)) - 1);
 
     memcpy(&trailer[trailer_offset], &s, bytes_per_frame_size);

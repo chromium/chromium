@@ -109,7 +109,7 @@ static void EosOnReadDone(bool* got_eos_buffer,
   }
 
   EXPECT_TRUE(buffer->data());
-  EXPECT_GT(buffer->size(), 0u);
+  EXPECT_FALSE(buffer->empty());
   *got_eos_buffer = false;
 }
 
