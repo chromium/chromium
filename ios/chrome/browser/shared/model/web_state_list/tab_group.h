@@ -32,8 +32,12 @@ class TabGroup {
 
   ~TabGroup();
 
-  // Returns the title of the group.
+  // Returns the title of the group from `visual_data_` if it is not empty.
+  // Otherwise, returns an alternative non-empty descriptive title.
   NSString* GetTitle() const;
+
+  // Returns the title of the group from `visual_data_`, even if empty.
+  NSString* GetRawTitle() const;
 
   // Returns the color of the group.
   UIColor* GetColor() const;

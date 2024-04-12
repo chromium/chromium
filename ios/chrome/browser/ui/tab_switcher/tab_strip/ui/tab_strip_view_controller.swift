@@ -541,7 +541,7 @@ class TabStripViewController: UIViewController,
       (cell, indexPath, itemIdentifier) in
       guard let item = itemIdentifier.tabGroupItem else { return }
       let itemData = self.itemData[itemIdentifier] as? TabStripItemData
-      cell.title = item.title
+      cell.title = item.rawTitle
       cell.titleContainerBackgroundColor = item.groupColor
       cell.collapsed = item.collapsed
       cell.setGroupStrokeColor(itemData?.groupStrokeColor)

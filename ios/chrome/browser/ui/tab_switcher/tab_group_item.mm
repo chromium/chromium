@@ -36,6 +36,13 @@
   return _tabGroup->GetTitle();
 }
 
+- (NSString*)rawTitle {
+  if (!_webStateList->ContainsGroup(_tabGroup)) {
+    return nil;
+  }
+  return _tabGroup->GetRawTitle();
+}
+
 - (UIColor*)groupColor {
   if (!_webStateList->ContainsGroup(_tabGroup)) {
     return nil;

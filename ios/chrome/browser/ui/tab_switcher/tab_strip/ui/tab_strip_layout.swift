@@ -620,7 +620,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
   public func calculateCellSizeForTabGroupItem(_ tabGroupItem: TabGroupItem) -> CGSize {
     var width =
-      tabGroupItem.title?.size(withAttributes: [
+      tabGroupItem.rawTitle?.size(withAttributes: [
         .font: UIFont.systemFont(ofSize: TabStripConstants.GroupItem.fontSize, weight: .medium)
       ]).width ?? 0
     width += 2 * TabStripConstants.GroupItem.titleContainerHorizontalMargin

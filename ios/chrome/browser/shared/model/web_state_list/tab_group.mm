@@ -25,6 +25,10 @@ NSString* TabGroup::GetTitle() const {
                                        range().count());
 }
 
+NSString* TabGroup::GetRawTitle() const {
+  return base::SysUTF16ToNSString(visual_data_.title());
+}
+
 UIColor* TabGroup::GetColor() const {
   return ColorForTabGroupColorId(visual_data_.color());
 }
