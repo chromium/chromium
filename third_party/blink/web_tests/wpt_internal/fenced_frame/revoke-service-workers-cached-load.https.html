@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<title>Test cached pages don't circumvent disableUntrustedNetwork().</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+<body>
+<script>
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext();
+
+  return fencedframe.execute(async () => {
+    const worker = await navigator.serviceWorker.register(
+        "/wpt_internal/fenced_frame/resources/revoke-service-worker.js");
+    const utilsUrl = `/wpt_internal/fenced_frame/resources/attempt-fetch.html`;
+
+    await navigator.serviceWorker.ready.then(async () => {
+      await window.fence.disableUntrustedNetwork();
+      // The src was cached by the service worker when it was loaded.
+      const iframe = document.createElement("iframe");
+      iframe.src = utilsUrl;
+      document.body.appendChild(iframe);
+    });
+
+    // The child iframe will make a fetch call, which we expect to fail because:
+    // 1. Network access is revoked.
+    // 2. The fetch URL is not cached.
+    await new Promise((resolve, reject) => {
+      window.onmessage = (msg) => {
+        if (msg.data == "FAIL") {
+          resolve('The fetch call was not successful post-network cutoff.');
+        } else {
+          reject('The fetch call should not have succeeded.');
+        }
+      }
+    });
+  });
+}, 'Child iframes created after network cutoff do not have network access.');
+
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext();
+  const key = token();
+
+  await fencedframe.execute(async (key) => {
+    // Service workers do not support caching cross-origin resources, so we
+    // only need to test the same-origin path.
+    const utilsUrl = new URL(
+        `/wpt_internal/fenced_frame/resources/attempt-fetch.html?key=` + key,
+        get_host_info().HTTPS_ORIGIN);
+    const worker = await navigator.serviceWorker.register(
+        "/wpt_internal/fenced_frame/resources/revoke-service-worker.js");
+
+    await navigator.serviceWorker.ready.then(async () => {
+      await window.fence.disableUntrustedNetwork();
+      // This was cached by the service worker when it was loaded.
+      location.href = utilsUrl.href;
+    });
+  }, [key]);
+
+  // The child fenced frame will make a fetch call, which we expect to fail
+  // because:
+  // 1. Network access is revoked.
+  // 2. The fetch URL is not cached.
+  const timeout = new Promise(resolve => t.step_timeout(resolve, 1000));
+  const result = await Promise.race([timeout, nextValueFromServer(key)]);
+  assert_true(typeof result === "undefined", "No request should've been sent.");
+}, 'Fenced frames that navigate itself after network cutoff continue to have ' +
+   'network cutoff.');
+</script>
+</body>

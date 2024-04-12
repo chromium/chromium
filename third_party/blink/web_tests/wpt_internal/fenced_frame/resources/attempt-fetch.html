@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>Attempt Fetch</title>
+<body>
+  <script>
+    // This page is loaded into frame in a fenced frame tree. This will attempt
+    // to make a GET request after network access in the fenced frame tree has
+    // been revoked, and then postMessage() the result of that attempt to the
+    // parent. If loaded into a fenced frame, postMessage() won't work, and the
+    // test instead checks to see if the request made it to the key-value-store
+    // endpoint.
+    onload = async (event) => {
+      const key = new URL(location.href).searchParams.get("key");
+      const message = "hello";
+      const fetch_url = new URL(
+          '/wpt_internal/fenced_frame/resources/key-value-store.py' +
+          `?key=${key}&value=${message}`, location.href);
+      try {
+        await fetch(fetch_url, {'mode': 'no-cors'});
+        window.parent.postMessage("PASS");
+      } catch (error) {
+        window.parent.postMessage("FAIL");
+      }
+    }
+  </script>
+</body>

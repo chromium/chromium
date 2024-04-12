@@ -22,9 +22,10 @@ const addResourcesToCache = async (resources) => {
 };
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    addResourcesToCache(['/wpt_internal/fenced_frame/resources/utils.js'])
-  );
+  event.waitUntil(addResourcesToCache([
+    '/wpt_internal/fenced_frame/resources/utils.js',
+    '/wpt_internal/fenced_frame/resources/attempt-fetch.html',
+  ]));
 });
 
 // Flip the switch to have network requests route through this worker.
