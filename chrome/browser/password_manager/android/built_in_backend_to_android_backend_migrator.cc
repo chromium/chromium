@@ -613,6 +613,7 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
         prefs_->SetInteger(
             prefs::kCurrentMigrationVersionToGoogleMobileServices,
             kRequiredMigrationVersion);
+        ResetUnenrollmentStatus(prefs_);
         prefs_->SetInteger(
             prefs::kPasswordsUseUPMLocalAndSeparateStores,
             static_cast<int>(password_manager::prefs::

@@ -637,6 +637,28 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
 
+// The user was syncing and got unenrolled, but then disabled sync and the
+// unenrollment pref wasn't reset.
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       UnenrollmentPrefsAreResetOnLocalPasswordMigration) {
+  Init();
+  prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                      true);
+  prefs()->SetInteger(
+      kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending));
+
+  InitSyncService(/*is_password_sync_enabled=*/true);
+  migrator()->StartMigrationOfLocalPasswords();
+  RunUntilIdle();
+
+  EXPECT_EQ(static_cast<int>(UseUpmLocalAndSeparateStoresState::kOn),
+            prefs()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores));
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+}
+
 class BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends
     : public BuiltInBackendToAndroidBackendMigratorTest {
  protected:
