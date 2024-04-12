@@ -39,6 +39,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -141,12 +142,6 @@ void InstallTextfieldFocusRing(views::View* question_textfield,
       kAskQuestionContainerCornerRadius);
 }
 
-// Options for a feedback button.
-enum FeedbackType {
-  THUMBS_UP,
-  THUMBS_DOWN,
-};
-
 // TODO(b/331127382): Finalize Mahi panel strings.
 std::u16string GetMahiPanelTitle() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -164,42 +159,88 @@ std::u16string GetMahiPanelDisclaimer() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-// Creates a thumbs-up or thumbs-down button for the feedback section.
-std::unique_ptr<IconButton> CreateFeedbackButton(FeedbackType type) {
-  const bool is_thumbs_up = type == THUMBS_UP;
-  auto button =
-      IconButton::Builder()
-          .SetCallback(base::BindRepeating(
-              [](bool is_thumbs_up, const ui::Event& event) {
-                base::UmaHistogramBoolean(
-                    mahi_constants::kMahiFeedbackHistogramName, is_thumbs_up);
-                if (!is_thumbs_up) {
-                  // Open the feedback dialog if thumbs down button is pressed.
-                  if (auto* const manager = chromeos::MahiManager::Get()) {
-                    manager->OpenFeedbackDialog();
-                  } else {
-                    CHECK_IS_TEST();
-                  }
-                }
-              },
-              is_thumbs_up))
-          .SetType(IconButton::Type::kSmallFloating)
-          .SetVectorIcon(is_thumbs_up ? &kMahiThumbsUpIcon
-                                      : &kMahiThumbsDownIcon)
-          // TODO(http://b/319264190): Replace the string IDs used here with the
-          // correct IDs.
-          .SetAccessibleNameId(
-              is_thumbs_up ? IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_UP
-                           : IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_DOWN)
-          .SetViewId(is_thumbs_up ? mahi_constants::ViewId::kThumbsUpButton
-                                  : mahi_constants::ViewId::kThumbsDownButton)
-          .Build();
-  button->SetImageHorizontalAlignment(
-      IconButton::HorizontalAlignment::ALIGN_RIGHT);
-  button->SetImageVerticalAlignment(
-      IconButton::VerticalAlignment::ALIGN_BOTTOM);
-  return button;
+// FeedbackButton --------------------------------------------------------------
+
+// Types of feedback button.
+enum class FeedbackType {
+  kThumbsUp,
+  kThumbsDown,
+};
+
+const gfx::VectorIcon& GetFeedbackButtonIcon(FeedbackType feedback_type,
+                                             bool is_toggled) {
+  switch (feedback_type) {
+    case FeedbackType::kThumbsUp:
+      return is_toggled ? kMahiThumbsUpFilledIcon : kMahiThumbsUpIcon;
+    case FeedbackType::kThumbsDown:
+      return is_toggled ? kMahiThumbsDownFilledIcon : kMahiThumbsDownIcon;
+  }
 }
+
+// Button with a thumbs up or thumbs down icon which users can click to provide
+// feedback.
+class FeedbackButton : public IconButton {
+  METADATA_HEADER(FeedbackButton, IconButton)
+
+ public:
+  explicit FeedbackButton(FeedbackType feedback_type)
+      : IconButton(
+            views::Button::PressedCallback(),
+            IconButton::Type::kSmallFloating,
+            &GetFeedbackButtonIcon(feedback_type, /*is_toggled=*/false),
+            feedback_type == FeedbackType::kThumbsUp
+                ? IDS_ASH_MAHI_THUMBS_UP_FEEDBACK_BUTTON_ACCESSIBLE_NAME
+                : IDS_ASH_MAHI_THUMBS_DOWN_FEEDBACK_BUTTON_ACCESSIBLE_NAME,
+            /*is_togglable=*/true,
+            /*has_border=*/false),
+        feedback_type_(feedback_type) {
+    SetCallback(base::BindRepeating(&FeedbackButton::OnButtonPressed,
+                                    weak_ptr_factory_.GetWeakPtr()));
+
+    SetToggledVectorIcon(
+        GetFeedbackButtonIcon(feedback_type, /*is_toggled=*/true));
+    SetIconColor(cros_tokens::kCrosSysSecondary);
+    SetIconToggledColor(cros_tokens::kCrosSysSecondary);
+    SetBackgroundColor(SK_ColorTRANSPARENT);
+    SetBackgroundToggledColor(SK_ColorTRANSPARENT);
+  }
+  FeedbackButton(const FeedbackButton&) = delete;
+  FeedbackButton& operator=(const FeedbackButton&) = delete;
+  ~FeedbackButton() override = default;
+
+ private:
+  void OnButtonPressed() {
+    SetToggled(!toggled());
+    if (!toggled()) {
+      return;
+    }
+
+    base::UmaHistogramBoolean(mahi_constants::kMahiFeedbackHistogramName,
+                              feedback_type_ == FeedbackType::kThumbsUp);
+
+    // Open the feedback dialog when thumbs down is pressed, but only if it
+    // hasn't already been shown previously.
+    if (feedback_type_ == FeedbackType::kThumbsDown &&
+        !feedback_dialog_was_shown_) {
+      if (auto* const manager = chromeos::MahiManager::Get()) {
+        manager->OpenFeedbackDialog();
+        feedback_dialog_was_shown_ = true;
+      } else {
+        CHECK_IS_TEST();
+      }
+    }
+  }
+
+  const FeedbackType feedback_type_;
+
+  // Whether the feedback dialog has been shown.
+  bool feedback_dialog_was_shown_ = false;
+
+  base::WeakPtrFactory<FeedbackButton> weak_ptr_factory_{this};
+};
+
+BEGIN_METADATA(FeedbackButton)
+END_METADATA
 
 // BackButton ------------------------------------------------------------------
 
@@ -448,10 +489,15 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                   .SetCrossAxisAlignment(
                       views::BoxLayout::CrossAxisAlignment::kEnd)
                   .SetBetweenChildSpacing(kFeedbackButtonSpacing)
-                  .AddChildren(views::Builder<views::View>(
-                                   CreateFeedbackButton(THUMBS_UP)),
-                               views::Builder<views::View>(
-                                   CreateFeedbackButton(THUMBS_DOWN))),
+                  .AddChildren(
+                      views::Builder<views::View>(
+                          std::make_unique<FeedbackButton>(
+                              FeedbackType::kThumbsUp))
+                          .SetID(mahi_constants::ViewId::kThumbsUpButton),
+                      views::Builder<views::View>(
+                          std::make_unique<FeedbackButton>(
+                              FeedbackType::kThumbsDown))
+                          .SetID(mahi_constants::ViewId::kThumbsDownButton)),
               views::Builder<views::ScrollView>(
                   std::make_unique<MahiScrollView>())
                   .SetID(mahi_constants::ViewId::kScrollView)

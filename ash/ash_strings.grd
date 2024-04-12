@@ -5198,6 +5198,12 @@ No devices connected.
       <message name="IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT" desc="Text for the learn more link that user can navigate to learn more about the project information">
         Learn more
       </message>
+      <message name="IDS_ASH_MAHI_THUMBS_UP_FEEDBACK_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The tooltip of the thumbs up feedback button in the mahi panel">
+        Good output
+      </message>
+      <message name="IDS_ASH_MAHI_THUMBS_DOWN_FEEDBACK_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible name of the thumbs down feedback button in the mahi panel">
+        Bad output
+      </message>
       <message name="IDS_ASH_MAHI_REFRESH_BANNER_LABEL_TEXT" desc="Text for the refresh banner shown above the mahi panel.">
         Refresh <ph name="CONTENT_TITLE">$1<ex>test content title</ex></ph>
       </message>
