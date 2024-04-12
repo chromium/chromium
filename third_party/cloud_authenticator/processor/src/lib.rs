@@ -157,6 +157,8 @@ map_keys! {
     EXTERNAL_DEVICE_IDENTIFIER, EXTERNAL_DEVICE_IDENTIFIER_KEY = "ext_device_id",
     KEY, KEY_KEY = "key",
     LAST_USED, LAST_USED_KEY = "last_used",
+    PIN_ATTEMPTS, PIN_ATTEMPTS_KEY = "pin_attempts",
+    PIN_HIGH_WATER, PIN_HIGH_WATER_KEY = "pin_high_water",
     PRIV_KEY, PRIV_KEY_KEY = "priv_key",
     PUB_KEY, PUB_KEY_KEY = "pub_key",
     PUB_KEYS, PUB_KEYS_KEY = "pub_keys",
@@ -165,8 +167,6 @@ map_keys! {
     SIG, SIG_KEY = "sig",
     TO, TO_KEY = "to",
     WRAPPING_KEYS, WRAPPING_KEYS_KEY = "wrapping_keys",
-    PIN_ATTEMPTS, PIN_ATTEMPTS_KEY = "pin_attempts",
-    PIN_HIGH_WATER, PIN_HIGH_WATER_KEY = "pin_high_water",
 }
 
 // Since AES-GCM can only handle 2^32 encryptions per key, the per-registration
@@ -603,11 +603,6 @@ pub fn process_client_msg(
 /// `Error`.
 #[derive(Debug, PartialEq)]
 enum RequestError {
-    /// Entity secrets could not be decrypted. The client may need to request
-    /// records from the Security Domain service in order to catch the
-    /// enclave up with a key rotation.
-    MissingSecrets,
-
     /// A passkey creation request could not be satisfied because the
     /// enclave doesn't support any of the requested algorithms.
     NoSupportedAlgorithm,
@@ -635,7 +630,6 @@ enum RequestError {
 impl RequestError {
     fn to_cbor(&self) -> Value {
         match self {
-            RequestError::MissingSecrets => Value::Int(0),
             RequestError::NoSupportedAlgorithm => Value::Int(1),
             RequestError::Duplicate => Value::Int(2),
             RequestError::IncorrectPIN => Value::Int(3),
@@ -875,16 +869,14 @@ mod tests {
     use crypto::EcdsaKeyPair;
     use passkeys::{
         CLAIMED_PIN, CLIENT_DATA_JSON, COSE_ALGORITHM, KEY_PURPOSE_SECURITY_DOMAIN_SECRET,
-        PIN_CLAIM_KEY, PIN_GENERATION, PIN_HASH, PROTOBUF, PUB_KEY_CRED_PARAMS, RP_ID,
-        WEBAUTHN_REQUEST, WRAPPED_PIN_DATA, WRAPPED_SECRET, WRAPPED_SECRETS,
+        PIN_CLAIM_KEY, PIN_GENERATION, PIN_HASH, PROTOBUF, PUB_KEY_CRED_PARAMS, RP_ID, SECRET,
+        WEBAUTHN_REQUEST, WRAPPED_PIN_DATA, WRAPPED_SECRET,
     };
     use prost::Message;
     use recovery_key_store::{CERT_XML, SIG_XML};
 
     const ERR_KEY: &dyn MapLookupKey = &MapKeyRef::Str(ERR) as &dyn MapLookupKey;
     pub const SAMPLE_SECURITY_DOMAIN_SECRET : &[u8] = b"\xc4\xdf\xa4\xed\xfc\xf9\x7c\xc0\x3a\xb1\xcb\x3c\x03\x02\x9b\x5a\x05\xec\x88\x48\x54\x42\xf1\x20\xb4\x75\x01\xde\x61\xf1\x39\x5d";
-    pub const SAMPLE_WRAPPING_KEY : &[u8] = b"\xd4\xc7\xd9\x4d\x46\x97\xc5\xef\x48\xfd\xf8\xe5\x0e\x96\x3a\x2a\xf0\x3f\x1e\x23\x81\x6a\xa1\x40\x3d\x8e\xb2\x53\xf0\x4d\xf9\x2d";
-    pub const SAMPLE_WRAPPED_SECRET : &[u8] = b"\xbb\x2d\x3c\x95\xcd\x80\x02\xc1\x72\xb5\x82\xe1\x49\x6e\x78\x46\xc8\x76\x29\xe1\xcc\x7d\x76\x7a\x0b\xd5\xce\xe4\xba\x66\x90\xf9\x62\x62\xf9\xf6\x34\xa5\x13\x31\xcf\x2a\x8b\xe6\xe8\x53\x69\xcd\xa9\x9a\x73\xc2\xc8\xd5\x96\x5e\x29\xf9\x5e\xc9\xc9\x6f\xfc\xbd\xfc\xaf\x6d\x9f\x32\xe2\x6d\x15";
     pub const WEBAUTHN_SECRETS_ENCRYPTION_KEY : &[u8] = b"\x55\x9d\xec\xf5\xc3\x42\xbd\xd1\x74\xd3\x3a\x9f\x8f\x8a\x4a\xe0\xf6\x60\x3b\xf8\xe2\xda\x2c\x59\x58\x90\xae\xd9\x3b\xcf\xa8\x18";
     // PROTOBUF_BYTES is a serialized WebauthnCredentialSpecifics that contains an
     // encrypted private key.
@@ -1236,7 +1228,7 @@ mod tests {
     fn test_passkeys_assert() {
         let msg = sign_request(cbor!({
             CMD: "passkeys/assert",
-            WRAPPED_SECRETS: [(REGISTERED_STATE_WRAPPED_SECRET.clone())],
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.as_slice()),
             PROTOBUF: (PROTOBUF_BYTES.to_vec()),
             CLIENT_DATA_JSON: r#"{"type": "webauthn.get", challenge: "1234", "origin": "example.com"}"#,
             WEBAUTHN_REQUEST: {
@@ -1260,7 +1252,7 @@ mod tests {
 
         let msg = sign_request(cbor!({
             CMD: "passkeys/assert",
-            WRAPPED_SECRETS: [(REGISTERED_STATE_WRAPPED_SECRET.clone())],
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.as_slice()),
             PROTOBUF: (ENTITY_PROTOBUF_BYTES.clone()),
             CLIENT_DATA_JSON: r#"{"type": "webauthn.get", challenge: "1234", "origin": "example.com"}"#,
             WEBAUTHN_REQUEST: {
@@ -1275,6 +1267,31 @@ mod tests {
         )
         .unwrap();
         assert!(is_ok(&output), "{:?}", output);
+    }
+
+    #[test]
+    fn test_both_wrapped_and_unwrapped() {
+        let msg = sign_request(cbor!({
+            CMD: "passkeys/assert",
+            // Providing _both_ a wrapped and unwrapped secret should fail.
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.as_slice()),
+            SECRET: SAMPLE_SECURITY_DOMAIN_SECRET,
+            PROTOBUF: (ENTITY_PROTOBUF_BYTES.clone()),
+            CLIENT_DATA_JSON: r#"{"type": "webauthn.get", challenge: "1234", "origin": "example.com"}"#,
+            WEBAUTHN_REQUEST: {
+                RP_ID: "example.com",
+            },
+        }));
+        let (output, _state) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg.clone(),
+        )
+        .unwrap();
+        assert!(!is_ok(&output));
+        let error = single_error_string(&output).unwrap();
+        assert!(error.contains("both wrapped and unwrapped"), "{:?}", output);
     }
 
     fn seal_aes_256_gcm(key: &[u8; 32], plaintext: &[u8], aad: &[u8]) -> Vec<u8> {
@@ -1295,7 +1312,7 @@ mod tests {
     ) -> (Option<cbor::Value>, PINState, ClientState) {
         let msg = sign_request(cbor!({
             CMD: "passkeys/assert",
-            WRAPPED_SECRETS: [(REGISTERED_STATE_WRAPPED_SECRET.clone())],
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.as_slice()),
             PROTOBUF: (ENTITY_PROTOBUF_BYTES.clone()),
             WRAPPED_PIN_DATA: wrapped_pin_data,
             CLAIMED_PIN: pin_claim,
@@ -1312,17 +1329,6 @@ mod tests {
         )
         .unwrap();
 
-        let Value::Array(array) = output else {
-            panic!("");
-        };
-        let [first] = &array[..] else {
-            panic!("");
-        };
-        let Value::Map(map) = first else {
-            panic!("");
-        };
-        let error = map.get(&MapKeyRef::Str("err") as &dyn MapLookupKey);
-
         // Get the state after processing the command. That's either a new
         // state, or the original state because no update was made.
         let state_data = match state_update {
@@ -1335,7 +1341,10 @@ mod tests {
         };
         let parsed_state = ClientState::Explicit(state_data.clone()).parse().unwrap();
         (
-            error.cloned(),
+            single_response(&output)
+                .unwrap()
+                .get(&MapKeyRef::Str("err") as &dyn MapLookupKey)
+                .cloned(),
             parsed_state.get_pin_state(&TEST_DEVICE_ID).unwrap(),
             ClientState::Explicit(state_data),
         )
@@ -1452,7 +1461,7 @@ mod tests {
         matches!(&array[..], [Value::Map(map)] if map.contains_key(ERR_KEY))
     }
 
-    fn ok_value(value: &Value) -> Option<&cbor::Value> {
+    fn single_response(value: &Value) -> Option<&BTreeMap<cbor::MapKey, cbor::Value>> {
         let Value::Array(array) = value else {
             return None;
         };
@@ -1462,11 +1471,24 @@ mod tests {
         let Value::Map(map) = first else {
             return None;
         };
-        map.get(&MapKeyRef::Str("ok") as &dyn MapLookupKey)
+        Some(map)
+    }
+
+    fn ok_value(value: &Value) -> Option<&cbor::Value> {
+        single_response(value)?.get(&MapKeyRef::Str("ok") as &dyn MapLookupKey)
     }
 
     fn is_ok(value: &Value) -> bool {
         ok_value(value).is_some()
+    }
+
+    /// Return the error string from the single response in `value`.
+    fn single_error_string(value: &Value) -> Option<&str> {
+        let error = single_response(value)?.get(&MapKeyRef::Str("err") as &dyn MapLookupKey)?;
+        let Value::String(error) = error else {
+            return None;
+        };
+        Some(error)
     }
 
     // Automated mutation of requests:
@@ -1706,7 +1728,7 @@ mod tests {
     fn test_invalid_passkeys_assert() {
         let request = cbor!({
             CMD: "passkeys/assert",
-            WRAPPED_SECRETS: [(REGISTERED_STATE_WRAPPED_SECRET.clone())],
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.as_slice()),
             PROTOBUF: PROTOBUF_BYTES,
             CLIENT_DATA_JSON: r#"{"type": "webauthn.get", challenge: "1234", "origin": "example.com"}"#,
             WEBAUTHN_REQUEST: {

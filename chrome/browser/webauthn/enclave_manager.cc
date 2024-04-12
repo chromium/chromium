@@ -437,7 +437,7 @@ cbor::Value::ArrayValue BuildPINWrappingEnclaveRequest(
   request.emplace(enclave::kPinHash, hashed_pin);
   request.emplace(enclave::kGeneration, generation);
   request.emplace(enclave::kClaimKey, claim_key);
-  request.emplace(enclave::kWrappedSecret, wrapped_secret);
+  request.emplace(enclave::kRequestWrappedSecretKey, wrapped_secret);
 
   cbor::Value::ArrayValue requests;
   requests.emplace_back(std::move(request));
@@ -457,7 +457,7 @@ cbor::Value::ArrayValue BuildRecoveryKeyStorePINChangeEnclaveRequest(
   request.emplace(enclave::kRecoveryKeyStorePinHash, hashed_pin);
   request.emplace(enclave::kRecoveryKeyStoreCertXml, ToVector(cert_xml));
   request.emplace(enclave::kRecoveryKeyStoreSigXml, ToVector(sig_xml));
-  request.emplace(enclave::kWrappedSecret, wrapped_secret);
+  request.emplace(enclave::kRequestWrappedSecretKey, wrapped_secret);
 
   cbor::Value::ArrayValue requests;
   requests.emplace_back(std::move(request));
@@ -829,7 +829,7 @@ struct HashedPIN {
   uint8_t hashed[32];
 };
 
-std::unique_ptr<HashedPIN> HashPINSlowly(std::string pin) {
+std::unique_ptr<HashedPIN> HashPINSlowly(std::string_view pin) {
   auto hashed = std::make_unique<HashedPIN>();
   RAND_bytes(hashed->salt, sizeof(hashed->salt));
   // This is the primary work factor in scrypt. This value matches
@@ -846,6 +846,44 @@ std::unique_ptr<HashedPIN> HashPINSlowly(std::string pin) {
                        sizeof(hashed->salt), hashed->n, 8, 1,
                        /*max_mem=*/0, hashed->hashed, sizeof(hashed->hashed)));
   return hashed;
+}
+
+std::pair<int32_t, std::vector<uint8_t>> GetCurrentWrappedSecretForUser(
+    const EnclaveLocalState::User* user) {
+  CHECK(!user->wrapped_security_domain_secrets().empty());
+
+  std::optional<int32_t> max_version;
+  const std::string* max_wrapped_secret = nullptr;
+  for (const auto& it : user->wrapped_security_domain_secrets()) {
+    if (!max_version.has_value() || *max_version < it.first) {
+      max_version = it.first;
+      max_wrapped_secret = &it.second;
+    }
+  }
+  return std::make_pair(*max_version, ToVector(*max_wrapped_secret));
+}
+
+std::vector<uint8_t> EncryptWrappedPIN(
+    base::span<const uint8_t> security_domain_secret,
+    base::span<const uint8_t> cbor_bytes) {
+  // This is "KeychainApplicationKey:chrome:GPM PIN data wrapping key".
+  static constexpr uint8_t kKeyPurposePinDataKey[] = {
+      0x4b, 0x65, 0x79, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x41, 0x70, 0x70,
+      0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4b, 0x65, 0x79,
+      0x3a, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x3a, 0x47, 0x50, 0x4d,
+      0x20, 0x50, 0x49, 0x4e, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x77,
+      0x72, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x20, 0x6b, 0x65, 0x79};
+  const std::vector<uint8_t> derived_key = crypto::HkdfSha256(
+      security_domain_secret, /*salt=*/base::span<const uint8_t>(),
+      kKeyPurposePinDataKey, 32);
+  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
+  aead.Init(derived_key);
+  uint8_t nonce[12];
+  crypto::RandBytes(nonce);
+  std::vector<uint8_t> wrapped_pin = aead.Seal(
+      cbor_bytes, nonce, /*additional_data=*/base::span<const uint8_t>());
+  wrapped_pin.insert(wrapped_pin.begin(), std::begin(nonce), std::end(nonce));
+  return wrapped_pin;
 }
 
 }  // namespace
@@ -1481,6 +1519,9 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     join_request_.reset();
+
+    manager_->SetSecret(store_keys_args_for_joining_->last_key_version,
+                        *store_keys_args_for_joining_->keys.rbegin());
     store_keys_args_for_joining_.reset();
 
     CHECK(absl::holds_alternative<JoinStatus>(event));
@@ -1599,8 +1640,8 @@ class EnclaveManager::StateMachine {
     const bool has_rapt = rapt_.has_value();
 
     state_ = State::kChangingPIN;
-    base::span<const uint8_t> wrapped_secret =
-        ToSpan(user_->wrapped_security_domain_secrets().begin()->second);
+    std::vector<uint8_t> wrapped_secret =
+        GetCurrentWrappedSecretForUser(user_).second;
     enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token), std::move(rapt_),
@@ -1901,9 +1942,9 @@ class EnclaveManager::StateMachine {
     }
     const std::vector<uint8_t>& member_proof = it->second.GetBytestring();
 
+    int32_t key_version = GetCurrentWrappedSecretForUser(user_).first;
     member_keys_source_ = trusted_vault::PrecomputedMemberKeys(
-        /*version=*/user_->wrapped_security_domain_secrets().begin()->first,
-        wrapped_sds, member_proof);
+        key_version, wrapped_sds, member_proof);
 
     state_ = State::kWaitingForRecoveryKeyStoreTokenForUpload;
     GetAccessTokenInternal(GaiaConstants::kCryptAuthOAuth2Scope);
@@ -1994,26 +2035,7 @@ class EnclaveManager::StateMachine {
     map.emplace(5, ToSpan(vault->vault_parameters().vault_handle()));
     const std::vector<uint8_t> cbor_bytes =
         cbor::Writer::Write(cbor::Value(std::move(map))).value();
-
-    // This is "KeychainApplicationKey:chrome:GPM PIN data wrapping key".
-    static constexpr uint8_t kKeyPurposePinDataKey[] = {
-        0x4b, 0x65, 0x79, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x41, 0x70, 0x70,
-        0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4b, 0x65, 0x79,
-        0x3a, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x3a, 0x47, 0x50, 0x4d,
-        0x20, 0x50, 0x49, 0x4e, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x77,
-        0x72, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x20, 0x6b, 0x65, 0x79};
-    const std::vector<uint8_t> derived_key = crypto::HkdfSha256(
-        security_domain_secret, /*salt=*/base::span<const uint8_t>(),
-        kKeyPurposePinDataKey, 32);
-    crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-    aead.Init(derived_key);
-    uint8_t nonce[12];
-    crypto::RandBytes(nonce);
-    std::vector<uint8_t> wrapped_pin = aead.Seal(
-        cbor_bytes, nonce, /*additional_data=*/base::span<const uint8_t>());
-    wrapped_pin.insert(wrapped_pin.begin(), std::begin(nonce), std::end(nonce));
-
-    return VecToString(wrapped_pin);
+    return VecToString(EncryptWrappedPIN(security_domain_secret, cbor_bytes));
   }
 
   const raw_ptr<EnclaveManager> manager_;
@@ -2462,30 +2484,22 @@ std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
   return ToVector(it->second);
 }
 
-std::vector<std::vector<uint8_t>> EnclaveManager::GetWrappedSecrets() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(is_ready());
-  std::vector<std::vector<uint8_t>> ret;
-  for (const auto& it : user_->wrapped_security_domain_secrets()) {
-    ret.emplace_back(ToVector(it.second));
-  }
-  return ret;
-}
-
 std::pair<int32_t, std::vector<uint8_t>>
 EnclaveManager::GetCurrentWrappedSecret() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_ready());
-  CHECK(!user_->wrapped_security_domain_secrets().empty());
 
-  std::optional<int32_t> max_version;
-  for (const auto& it : user_->wrapped_security_domain_secrets()) {
-    if (!max_version.has_value() || *max_version < it.first) {
-      max_version = it.first;
-    }
+  return GetCurrentWrappedSecretForUser(user_);
+}
+
+std::optional<std::pair<int32_t, std::vector<uint8_t>>>
+EnclaveManager::TakeSecret() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (secret_.empty()) {
+    return std::nullopt;
   }
-  const auto it = user_->wrapped_security_domain_secrets().find(*max_version);
-  return std::make_pair(it->first, ToVector(it->second));
+  return std::make_pair(secret_version_, std::move(secret_));
 }
 
 bool EnclaveManager::has_wrapped_pin() const {
@@ -2633,6 +2647,30 @@ std::string_view EnclaveManager::recovery_key_store_cert_url_for_testing() {
 // static
 std::string_view EnclaveManager::recovery_key_store_sig_url_for_testing() {
   return kSigFileURL;
+}
+
+// static
+std::string EnclaveManager::MakeWrappedPINForTesting(
+    base::span<const uint8_t> security_domain_secret,
+    std::string_view pin) {
+  constexpr int32_t kGeneration = 0;
+  std::unique_ptr<HashedPIN> hashed = HashPINSlowly(pin);
+  std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin =
+      hashed->ToWrappedPIN(kGeneration);
+  const uint8_t kFakeCounterId[8] = {0};
+  const uint8_t kFakeVaultHandle[16] = {0};
+
+  cbor::Value::MapValue map;
+  map.emplace(1, base::span<const uint8_t>(hashed->hashed));
+  map.emplace(2, kGeneration);
+  map.emplace(3, ToSizedSpan<32>(wrapped_pin->claim_key()));
+  map.emplace(4, base::span<const uint8_t>(kFakeCounterId));
+  map.emplace(5, base::span<const uint8_t>(kFakeVaultHandle));
+  const std::vector<uint8_t> cbor_bytes =
+      cbor::Writer::Write(cbor::Value(std::move(map))).value();
+  wrapped_pin->set_wrapped_pin(
+      VecToString(EncryptWrappedPIN(security_domain_secret, cbor_bytes)));
+  return wrapped_pin->SerializeAsString();
 }
 
 // Observes the `IdentityManager` and tells the `EnclaveManager` when the
@@ -2939,4 +2977,10 @@ void EnclaveManager::ClearRegistration() {
 
   CancelAllActions();
   Stopped();
+}
+
+void EnclaveManager::SetSecret(int32_t key_version,
+                               base::span<const uint8_t> secret) {
+  secret_version_ = key_version;
+  secret_ = std::vector<uint8_t>(secret.begin(), secret.end());
 }

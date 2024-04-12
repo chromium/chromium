@@ -270,8 +270,8 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
     std::tie(secret_version, wrapped_secret) =
         manager_.GetCurrentWrappedSecret();
     EXPECT_EQ(secret_version, kSecretVersion);
-    ui_request->wrapped_secrets = {std::move(wrapped_secret)};
-    ui_request->wrapped_secret_version = kSecretVersion;
+    ui_request->wrapped_secret = std::move(wrapped_secret);
+    ui_request->key_version = kSecretVersion;
     ui_request->claimed_pin = std::move(claimed_pin);
 
     std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> specifics;
@@ -357,8 +357,8 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
                    std::unique_ptr<enclave::ClaimedPIN> claimed_pin) {
     auto ui_request = std::make_unique<enclave::CredentialRequest>();
     ui_request->signing_callback = manager_.HardwareKeySigningCallback();
-    ui_request->wrapped_secrets = {
-        *manager_.GetWrappedSecret(/*version=*/kSecretVersion)};
+    ui_request->wrapped_secret =
+        *manager_.GetWrappedSecret(/*version=*/kSecretVersion);
     ui_request->entity = std::move(entity);
     ui_request->claimed_pin = std::move(claimed_pin);
 
@@ -494,6 +494,8 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_TRUE(manager_.is_registered());
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_FALSE(manager_.has_pending_keys());
+  ASSERT_TRUE(manager_.TakeSecret());
+  ASSERT_FALSE(manager_.TakeSecret());
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 0u);
 
@@ -519,6 +521,7 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
   ASSERT_TRUE(manager_.is_loaded());
   ASSERT_TRUE(manager_.is_registered());
   ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.TakeSecret());
 }
 
 TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
@@ -542,6 +545,7 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
   ASSERT_TRUE(manager_.is_loaded());
   ASSERT_TRUE(manager_.is_registered());
   ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.TakeSecret());
 }
 
 TEST_F(EnclaveManagerTest, RegistrationFailureAndRetry) {
@@ -674,6 +678,7 @@ TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
   ASSERT_TRUE(manager_.is_loaded());
   ASSERT_TRUE(manager_.is_registered());
   ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.TakeSecret());
 
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   // The PIN should not have been added to the account. Instead this test is
@@ -712,6 +717,7 @@ TEST_F(EnclaveManagerTest, SetupWithPIN) {
   setup_callback.WaitForCallback();
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_TRUE(manager_.has_wrapped_pin());
+  ASSERT_TRUE(manager_.TakeSecret());
   EXPECT_FALSE(manager_.wrapped_pin_is_arbitrary());
 
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);

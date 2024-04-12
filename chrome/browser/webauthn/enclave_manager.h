@@ -161,12 +161,12 @@ class EnclaveManager : public KeyedService {
   // Fetch a wrapped security domain secret for the given epoch. Only valid to
   // call if `is_ready`.
   std::optional<std::vector<uint8_t>> GetWrappedSecret(int32_t version);
-  // Fetch all wrapped security domain secrets, for when it's unknown which one
-  // a WebauthnCredentialSpecifics will need. Only valid to call if `is_ready`.
-  std::vector<std::vector<uint8_t>> GetWrappedSecrets();
   // Get the version and value of the current wrapped secret. Only valid to call
   // if `is_ready`.
   std::pair<int32_t, std::vector<uint8_t>> GetCurrentWrappedSecret();
+  // Take the security domain secret. Only possible immediately after the device
+  // has been added to the account.
+  std::optional<std::pair<int32_t, std::vector<uint8_t>>> TakeSecret();
   // Returns true if a wrapped PIN is available for the current user. Requires
   // `is_ready`.
   bool has_wrapped_pin() const;
@@ -226,6 +226,12 @@ class EnclaveManager : public KeyedService {
   static std::string_view recovery_key_store_cert_url_for_testing();
   static std::string_view recovery_key_store_sig_url_for_testing();
 
+  // Create a wrapped PIN, suitable for putting into a simulated security domain
+  // member.
+  static std::string MakeWrappedPINForTesting(
+      base::span<const uint8_t> security_domain_secret,
+      std::string_view pin);
+
  private:
   class StateMachine;
   class IdentityObserver;
@@ -278,6 +284,9 @@ class EnclaveManager : public KeyedService {
   // reset, and can be initiated from scratch.
   void ClearRegistration();
 
+  // Store the secret that `TakeSecret` will make available.
+  void SetSecret(int32_t key_version, base::span<const uint8_t> secret);
+
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   device::NetworkContextFactory network_context_factory_;
@@ -299,6 +308,11 @@ class EnclaveManager : public KeyedService {
   std::unique_ptr<StateMachine> state_machine_;
   std::vector<base::OnceClosure> load_callbacks_;
   std::deque<std::unique_ptr<PendingAction>> pending_actions_;
+
+  // These fields store the security domain secret immediately after a
+  // device has been added to the security domain.
+  int32_t secret_version_ = -1;
+  std::vector<uint8_t> secret_;
 
   // Allow keys to persist across sequences because loading them is slow.
   scoped_refptr<crypto::RefCountedUserVerifyingSigningKey> user_verifying_key_;

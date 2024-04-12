@@ -41,6 +41,8 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCommandAuthLevelKey[];
 
 // Generic keys for all request types.
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRequestCommandKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRequestWrappedSecretKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRequestSecretKey[];
 
 // Keys in the top-level of each response.
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kResponseSuccessKey[];
@@ -72,7 +74,6 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrappingKeyToWrap[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kPinHash[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kGeneration[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kClaimKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrappedSecret[];
 
 // Wrapping response keys
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrappingResponsePublicKey[];

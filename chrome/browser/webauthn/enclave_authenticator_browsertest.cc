@@ -150,6 +150,24 @@ static constexpr char kMakeCredentialUvDiscouraged[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
+static constexpr char kMakeCredentialUvRequired[] = R"((() => {
+  return navigator.credentials.create({ publicKey: {
+    rp: { name: "" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -7}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    authenticatorSelection: {
+      requireResidentKey: true,
+      userVerification: 'required',
+    },
+  }}).then(c => window.domAutomationController.send(
+              'webauthn: uv=' +
+              // This gets the UV bit from the response.
+              ((new Uint8Array(c.response.getAuthenticatorData())[32]&4) != 0)),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
 static constexpr char kGetAssertionUvDiscouraged[] = R"((() => {
   return navigator.credentials.get({ publicKey: {
     challenge: new Uint8Array([0]),
@@ -587,6 +605,184 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   std::string script_result;
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       RegisterDeviceWithGpmPin_MakeCredentialWithUV_Success) {
+  /* Test script:
+   *  - Prerequisites:
+   *       Enclave not registered
+   *       No existing security domain secrets
+   *       Existing user account with password sync enabled
+   *       Platform UV unavailable
+   * 1. Modal MakeCredential request invoked by RP, requires UV.
+   * 2. Mechanism selection appears; test chooses enclave.
+   * 3. UI for onboarding appears; test accepts it
+   * 4. Test selects a GPM PIN
+   * 5. Device registration with enclave succeeds
+   * 6. MakeCredential succeeds
+   *
+   * Notably, user verification is asserted without a second GPM PIN prompt.
+   */
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMOnboardingAccepted();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MakeCredential_RecoverWithGPMPIN_Success) {
+  /* Test script:
+   *  - Prerequisites:
+   *       Enclave not registered
+   *       Security domain exists with GPM PIN.
+   *       Existing user account with password sync enabled
+   *       Platform UV unavailable
+   * 1. Modal MakeCredential request invoked by RP, requires UV.
+   * 2. Mechanism selection appears; test chooses enclave.
+   * 3. UI for onboarding appears; test accepts it
+   * 4. Test simiulates MagicArch
+   * 5. Test selects a GPM PIN
+   * 6. Device registration with enclave succeeds
+   * 7. MakeCredential succeeds
+   *
+   * Notably, user verification is asserted without a second GPM PIN prompt.
+   */
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
+      "public key", EnclaveManager::MakeWrappedPINForTesting(
+                        kSecurityDomainSecret, "123456"));
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  security_domain_service_->pretend_there_are_members();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  EnclaveManagerFactory::GetForProfile(browser()->profile())
+      ->StoreKeys("gaia_id_for_test_gmail.com",
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MakeCredential_RecoverWithLSKF_Success) {
+  /* Test script:
+   *  - Prerequisites:
+   *       Enclave not registered
+   *       Security domain exists with GPM PIN.
+   *       Existing user account with password sync enabled
+   *       Platform UV unavailable
+   * 1. Modal MakeCredential request invoked by RP, requires UV.
+   * 2. Mechanism selection appears; test chooses enclave.
+   * 3. UI for onboarding appears; test accepts it
+   * 4. Test simiulates MagicArch
+   * 5. Test selects a GPM PIN
+   * 6. Device registration with enclave succeeds
+   * 7. MakeCredential succeeds
+   *
+   * Notably, user verification is asserted without a second GPM PIN prompt.
+   */
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  security_domain_service_->pretend_there_are_members();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+  EnclaveManagerFactory::GetForProfile(browser()->profile())
+      ->StoreKeys("gaia_id_for_test_gmail.com",
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,

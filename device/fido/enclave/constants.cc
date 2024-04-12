@@ -83,6 +83,8 @@ const char kCommandSigKey[] = "sig";
 const char kCommandAuthLevelKey[] = "auth_level";
 
 const char kRequestCommandKey[] = "cmd";
+const char kRequestWrappedSecretKey[] = "wrapped_secret";
+const char kRequestSecretKey[] = "secret";
 
 const char kResponseSuccessKey[] = "ok";
 const char kResponseErrorKey[] = "err";
@@ -107,7 +109,6 @@ const char kWrappingKeyToWrap[] = "key";
 const char kPinHash[] = "pin_hash";
 const char kGeneration[] = "pin_generation";
 const char kClaimKey[] = "pin_claim_key";
-const char kWrappedSecret[] = "wrapped_secret";
 
 const char kWrappingResponsePublicKey[] = "pub_key";
 const char kWrappingResponseWrappedPrivateKey[] = "priv_key";

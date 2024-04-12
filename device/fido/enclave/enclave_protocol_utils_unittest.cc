@@ -38,8 +38,6 @@ constexpr uint8_t kHandshakeHash[32] = {
     0xe9, 0xaa, 0x91, 0xe4, 0x4a, 0xd2, 0x72, 0x55, 0xbe, 0xd1};
 constexpr uint8_t kDeviceId[] = "device0";
 constexpr uint8_t kSignature[] = "signature";
-constexpr uint8_t kWrappedSecret1[] = "wrapped1";
-constexpr uint8_t kWrappedSecret2[] = "wrapped2";
 constexpr uint8_t kUserId[] = "ab";
 constexpr uint8_t kEncryptedPasskey[] = {1, 2, 3, 4};
 constexpr char kClientDataJson[] = "client_data_json";
@@ -187,10 +185,6 @@ class EnclaveProtocolUtilsTest : public testing::Test {
     device_id_ = fido_parsing_utils::Materialize(kDeviceId);
     user_id_ = fido_parsing_utils::Materialize(kUserId);
     encrypted_passkey_ = fido_parsing_utils::Materialize(kEncryptedPasskey);
-    wrapped_secrets_.emplace_back(
-        fido_parsing_utils::Materialize(kWrappedSecret1));
-    wrapped_secrets_.emplace_back(
-        fido_parsing_utils::Materialize(kWrappedSecret2));
   }
 
   // This checks the outer map values of a request, which are common to all
@@ -227,18 +221,13 @@ class EnclaveProtocolUtilsTest : public testing::Test {
 
   std::vector<uint8_t>& encrypted_passkey() { return encrypted_passkey_; }
 
-  std::vector<std::vector<uint8_t>> wrapped_secrets() {
-    return wrapped_secrets_;
-  }
-
-  const std::vector<uint8_t>& wrapped_secret() { return wrapped_secret_; }
+  std::vector<uint8_t> wrapped_secret() { return wrapped_secret_; }
 
  private:
   const std::vector<uint8_t> wrapped_secret_ = {1, 2, 3, 4, 5};
   std::vector<uint8_t> device_id_;
   std::vector<uint8_t> user_id_;
   std::vector<uint8_t> encrypted_passkey_;
-  std::vector<std::vector<uint8_t>> wrapped_secrets_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -257,7 +246,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_Success) {
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
   BuildCommandRequestBody(
       BuildGetAssertionCommand(std::move(entity), json_request, kClientDataJson,
-                               /*claimed_pin=*/nullptr, wrapped_secrets()),
+                               /*claimed_pin=*/nullptr, wrapped_secret(),
+                               /*secret=*/std::nullopt),
       base::BindOnce(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));
@@ -305,7 +295,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_WithPIN) {
   auto claimed_pin = std::make_unique<ClaimedPIN>(pin_claim, wrapped_pin);
   BuildCommandRequestBody(
       BuildGetAssertionCommand(std::move(entity), json_request, kClientDataJson,
-                               std::move(claimed_pin), wrapped_secrets()),
+                               std::move(claimed_pin), wrapped_secret(),
+                               /*secret=*/std::nullopt),
       base::BindOnce(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));
@@ -337,7 +328,7 @@ TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_Success) {
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
   BuildCommandRequestBody(
       BuildMakeCredentialCommand(json_request, /*claimed_pin=*/nullptr,
-                                 wrapped_secret()),
+                                 wrapped_secret(), /*secret=*/std::nullopt),
       base::BindOnce(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));
@@ -376,7 +367,7 @@ TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_WithPIN) {
   auto claimed_pin = std::make_unique<ClaimedPIN>(pin_claim, wrapped_pin);
   BuildCommandRequestBody(
       BuildMakeCredentialCommand(json_request, std::move(claimed_pin),
-                                 wrapped_secret()),
+                                 wrapped_secret(), /*secret=*/std::nullopt),
       base::BindOnce(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));

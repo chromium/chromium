@@ -179,6 +179,11 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   std::optional<std::string> pin_;
   std::vector<sync_pb::WebauthnCredentialSpecifics> creds_;
 
+  // have_added_device_ is set to true if the local device was added to the
+  // security domain during this transaction. In this case, the security domain
+  // secret is available and can be used to satisfy user verification.
+  bool have_added_device_ = false;
+
   // The ID of the selected credential when doing a get().
   std::optional<std::vector<uint8_t>> selected_cred_id_;
 

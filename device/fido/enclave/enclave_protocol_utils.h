@@ -59,15 +59,17 @@ cbor::Value COMPONENT_EXPORT(DEVICE_FIDO) BuildGetAssertionCommand(
     scoped_refptr<JSONRequest> request,
     std::string client_data_hash,
     std::unique_ptr<ClaimedPIN> claimed_pin,
-    std::vector<std::vector<uint8_t>> wrapped_secrets);
+    std::optional<std::vector<uint8_t>> wrapped_secret,
+    std::optional<std::vector<uint8_t>> secret);
 
 // Returns a CBOR value with the provided MakeCredential request. The return
 // value can be serialized into a Command request according to the enclave
 // protocol.
-cbor::Value COMPONENT_EXPORT(DEVICE_FIDO)
-    BuildMakeCredentialCommand(scoped_refptr<JSONRequest> request,
-                               std::unique_ptr<ClaimedPIN> claimed_pin,
-                               std::vector<uint8_t> wrapped_secret);
+cbor::Value COMPONENT_EXPORT(DEVICE_FIDO) BuildMakeCredentialCommand(
+    scoped_refptr<JSONRequest> request,
+    std::unique_ptr<ClaimedPIN> claimed_pin,
+    std::optional<std::vector<uint8_t>> wrapped_secret,
+    std::optional<std::vector<uint8_t>> secret);
 
 // Builds a CBOR serialization of the command to be sent to the enclave
 // service which can then be encrypted and sent over HTTPS.

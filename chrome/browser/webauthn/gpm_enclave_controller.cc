@@ -81,65 +81,60 @@ using Step = AuthenticatorRequestDialogModel::Step;
 //   OnGPMSelected -> kGPMOnboarding -> OnGPMOnboardingAccepted ->
 //     kGPMCreatePin -> OnGPMPinEntered -> OnDeviceAdded
 //   OnDeviceAdded -> StartTransaction
-//   // TODO(enclave): it's bad that we could prompt for the PIN again
-//   // here
-//   OnDeviceAdded -> kGPMEnterPin -> OnGPMPinEntered -> StartTransaction
 //   OnDeviceAdded -> kGPMTouchID -> OnTouchIDComplete -> StartTransaction
 // }
 //
-//                      +-------------------------+
-//                      |      OnGPMSelected      |
-//                      +-------------------------+
-//                        |
-//                        |
-//                        v
-//                      +-------------------------+
-//                      |     kGPMOnboarding      |
-//                      +-------------------------+
-//                        |
-//                        |
-//                        v
-//                      +-------------------------+
-//                      | OnGPMOnboardingAccepted |
-//                      +-------------------------+
-//                        |
-//                        |
-//                        v
-//                      +-------------------------+
-//                      |      kGPMCreatePin      |
-//                      +-------------------------+
-//                        |
-//                        |
-//                        v
-//                      +-------------------------+
-//   +----------------> |     OnGPMPinEntered     | -+
-//   |                  +-------------------------+  |
-//   |                    |                          |
-//   |                    |                          |
-//   |                    v                          |
-// +--------------+     +-------------------------+  |
-// | kGPMEnterPin |  +- |      OnDeviceAdded      | -+----+
-// +--------------+  |  +-------------------------+  |    |
-//   ^               |    |                          |    |
-//   |               |    |                          |    |
-//   |               |    v                          |    |
-//   |               |  +-------------------------+  |    |
-//   |               |  |       kGPMTouchID       |  |    |
-//   |               |  +-------------------------+  |    |
-//   |               |    |                          |    |
-//   |               |    |                          |    |
-//   |               |    v                          |    |
-//   |               |  +-------------------------+  |    |
-//   |               |  |    OnTouchIDComplete    |  |    |
-//   |               |  +-------------------------+  |    |
-//   |               |    |                          |    |
-//   |               |    |                          |    |
-//   |               |    v                          |    |
-//   |               |  +-------------------------+  |    |
-//   |               +> |    StartTransaction     | <+    |
-//   |                  +-------------------------+       |
-//   |                                                    |
-//   +----------------------------------------------------+
+// +-------------------------+
+// |      OnGPMSelected      |
+// +-------------------------+
+//   |
+//   |
+//   v
+// +-------------------------+
+// |     kGPMOnboarding      |
+// +-------------------------+
+//   |
+//   |
+//   v
+// +-------------------------+
+// | OnGPMOnboardingAccepted |
+// +-------------------------+
+//   |
+//   |
+//   v
+// +-------------------------+
+// |      kGPMCreatePin      |
+// +-------------------------+
+//   |
+//   |
+//   v
+// +-------------------------+
+// |     OnGPMPinEntered     |
+// +-------------------------+
+//   |
+//   |
+//   v
+// +-------------------------+
+// |      OnDeviceAdded      | -+
+// +-------------------------+  |
+//   |                          |
+//   |                          |
+//   v                          |
+// +-------------------------+  |
+// |       kGPMTouchID       |  |
+// +-------------------------+  |
+//   |                          |
+//   |                          |
+//   v                          |
+// +-------------------------+  |
+// |    OnTouchIDComplete    |  |
+// +-------------------------+  |
+//   |                          |
+//   |                          |
+//   v                          |
+// +-------------------------+  |
+// |    StartTransaction     | <+
+// +-------------------------+
 
 // get(), already enrolled
 //
@@ -149,6 +144,7 @@ using Step = AuthenticatorRequestDialogModel::Step;
 //     StartTransaction
 //   OnGPMPasskeySelected -> kGPMTouchID -> OnTouchIDComplete ->
 //     StartTransaction
+// }
 //
 // +-------------------+     +----------------------+
 // |    kGPMTouchID    | <-- | OnGPMPasskeySelected | -+
@@ -181,6 +177,8 @@ enum class EnclaveUserVerificationMethod {
   kNone,
   // The user will enter a GPM PIN.
   kPIN,
+  // User verification is satisfied because the user performed account recovery.
+  kImplicit,
   // The operating system will perform user verification and allow signing
   // with the UV key.
   kUVKeyWithSystemUI,
@@ -195,6 +193,7 @@ enum class EnclaveUserVerificationMethod {
 // Pick an enclave user verification method for a specific request.
 EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
     device::UserVerificationRequirement uv,
+    bool have_added_device,
     bool has_pin,
     EnclaveManager::UvKeyState uv_key_state) {
   switch (uv) {
@@ -205,7 +204,9 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
     case device::UserVerificationRequirement::kRequired:
       switch (uv_key_state) {
         case EnclaveManager::UvKeyState::kNone:
-          if (has_pin) {
+          if (have_added_device) {
+            return EnclaveUserVerificationMethod::kImplicit;
+          } else if (has_pin) {
             return EnclaveUserVerificationMethod::kPIN;
           } else if (uv == device::UserVerificationRequirement::kPreferred) {
             return EnclaveUserVerificationMethod::kNone;
@@ -266,7 +267,10 @@ GPMEnclaveController::GPMEnclaveController(
   }
 }
 
-GPMEnclaveController::~GPMEnclaveController() = default;
+GPMEnclaveController::~GPMEnclaveController() {
+  // Ensure that any secret is dropped from memory after a transaction.
+  enclave_manager_->TakeSecret();
+}
 
 bool GPMEnclaveController::ready_for_ui() const {
   return account_state_ != AccountState::kLoading;
@@ -416,6 +420,7 @@ void GPMEnclaveController::OnDeviceAdded(bool success) {
     return;
   }
 
+  have_added_device_ = true;
   SetAccountStateReady();
 
   switch (account_state_) {
@@ -423,25 +428,25 @@ void GPMEnclaveController::OnDeviceAdded(bool success) {
       StartTransaction();
       break;
 
-    case AccountState::kReadyWithPIN:
-      PromptForPin();
-      break;
-
     case AccountState::kReadyWithBiometrics:
       model_->SetStep(Step::kGPMTouchID);
       break;
 
     default:
+      // kReadyWithPIN is not possible because `have_added_device_` is set
+      // and so user verification will be satisfied with the stored security
+      // domain secret in this case.
       NOTREACHED_NORETURN();
   }
 }
 
 void GPMEnclaveController::SetAccountStateReady() {
-  switch (PickEnclaveUserVerificationMethod(user_verification_requirement_,
-                                            enclave_manager_->has_wrapped_pin(),
-                                            enclave_manager_->uv_key_state())) {
+  switch (PickEnclaveUserVerificationMethod(
+      user_verification_requirement_, have_added_device_,
+      enclave_manager_->has_wrapped_pin(), enclave_manager_->uv_key_state())) {
     case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
     case EnclaveUserVerificationMethod::kNone:
+    case EnclaveUserVerificationMethod::kImplicit:
       account_state_ = AccountState::kReady;
       break;
 
@@ -660,13 +665,25 @@ void GPMEnclaveController::StartEnclaveTransaction(
   // `EnclaveDiscovery::OnUIRequest`.
 
   auto request = std::make_unique<device::enclave::CredentialRequest>();
+  // A request to the enclave can either provide a wrapped secret, which only
+  // the enclave can decrypt, or can provide the security domain secret
+  // directly. The latter is only possible immediately after registering a
+  // device because that's the only time that the actual security domain secret
+  // is in memory.
+  bool use_unwrapped_secret = false;
 
-  switch (PickEnclaveUserVerificationMethod(user_verification_requirement_,
-                                            enclave_manager_->has_wrapped_pin(),
-                                            enclave_manager_->uv_key_state())) {
+  switch (PickEnclaveUserVerificationMethod(
+      user_verification_requirement_, have_added_device_,
+      enclave_manager_->has_wrapped_pin(), enclave_manager_->uv_key_state())) {
     case EnclaveUserVerificationMethod::kNone:
       request->signing_callback =
           enclave_manager_->HardwareKeySigningCallback();
+      break;
+
+    case EnclaveUserVerificationMethod::kImplicit:
+      request->signing_callback =
+          enclave_manager_->HardwareKeySigningCallback();
+      use_unwrapped_secret = true;
       break;
 
     case EnclaveUserVerificationMethod::kPIN:
@@ -701,12 +718,13 @@ void GPMEnclaveController::StartEnclaveTransaction(
 
   switch (request_type_) {
     case device::FidoRequestType::kMakeCredential: {
-      int32_t version;
-      std::vector<uint8_t> wrapped_secret;
-      std::tie(version, wrapped_secret) =
-          enclave_manager_->GetCurrentWrappedSecret();
-      request->wrapped_secret_version = version;
-      request->wrapped_secrets.emplace_back(std::move(wrapped_secret));
+      if (use_unwrapped_secret) {
+        std::tie(request->key_version, request->secret) =
+            enclave_manager_->TakeSecret().value();
+      } else {
+        std::tie(request->key_version, request->wrapped_secret) =
+            enclave_manager_->GetCurrentWrappedSecret();
+      }
       break;
     }
 
@@ -722,27 +740,33 @@ void GPMEnclaveController::StartEnclaveTransaction(
       }
       CHECK(entity);
 
-      if (entity->key_version()) {
-        std::optional<std::vector<uint8_t>> wrapped_secret =
-            enclave_manager_->GetWrappedSecret(entity->key_version());
-        if (wrapped_secret) {
-          request->wrapped_secrets.emplace_back(std::move(*wrapped_secret));
-        } else {
-          FIDO_LOG(ERROR)
-              << "Unexpectedly did not have a wrapped key for epoch "
-              << entity->key_version();
+      if (use_unwrapped_secret) {
+        std::tie(std::ignore, request->secret) =
+            enclave_manager_->TakeSecret().value();
+      } else {
+        if (entity->key_version()) {
+          std::optional<std::vector<uint8_t>> wrapped_secret =
+              enclave_manager_->GetWrappedSecret(entity->key_version());
+          if (wrapped_secret) {
+            request->wrapped_secret = std::move(*wrapped_secret);
+          } else {
+            FIDO_LOG(ERROR)
+                << "Unexpectedly did not have a wrapped key for epoch "
+                << entity->key_version();
+          }
+        }
+        if (!request->wrapped_secret.has_value()) {
+          request->wrapped_secret =
+              enclave_manager_->GetCurrentWrappedSecret().second;
         }
       }
-      if (request->wrapped_secrets.empty()) {
-        request->wrapped_secrets = enclave_manager_->GetWrappedSecrets();
-      }
-      CHECK(!request->wrapped_secrets.empty());
 
       request->entity = std::move(entity);
       break;
     }
   }
 
+  CHECK(request->wrapped_secret.has_value() ^ request->secret.has_value());
   enclave_request_callback_.Run(std::move(request));
 }
 

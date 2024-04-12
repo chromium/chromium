@@ -88,8 +88,9 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
                                           MakeCredentialOptions options,
                                           MakeCredentialCallback callback) {
   CHECK(!pending_get_assertion_request_ && !pending_make_credential_request_);
-  CHECK_EQ(ui_request_->wrapped_secrets.size(), 1u);
-  CHECK(ui_request_->wrapped_secret_version.has_value());
+  CHECK(ui_request_->wrapped_secret.has_value() ^
+        ui_request_->secret.has_value());
+  CHECK(ui_request_->key_version.has_value());
 
   pending_make_credential_request_ =
       std::make_unique<PendingMakeCredentialRequest>(
@@ -101,7 +102,8 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
            BuildMakeCredentialCommand(
                std::move(pending_make_credential_request_->options.json),
                std::move(ui_request_->claimed_pin),
-               std::move(ui_request_->wrapped_secrets.back())),
+               std::move(ui_request_->wrapped_secret),
+               std::move(ui_request_->secret)),
            std::move(ui_request_->signing_callback),
            base::BindOnce(&EnclaveAuthenticator::ProcessMakeCredentialResponse,
                           weak_factory_.GetWeakPtr()));
@@ -112,6 +114,8 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                                         GetAssertionCallback callback) {
   CHECK(!pending_get_assertion_request_ && !pending_make_credential_request_);
   CHECK(request.allow_list.size() == 1);
+  CHECK(ui_request_->wrapped_secret.has_value() ^
+        ui_request_->secret.has_value());
 
   pending_get_assertion_request_ = std::make_unique<PendingGetAssertionRequest>(
       request, options, std::move(callback));
@@ -124,7 +128,8 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                std::move(pending_get_assertion_request_->options.json),
                pending_get_assertion_request_->request.client_data_json,
                std::move(ui_request_->claimed_pin),
-               std::move(ui_request_->wrapped_secrets)),
+               std::move(ui_request_->wrapped_secret),
+               std::move(ui_request_->secret)),
            std::move(ui_request_->signing_callback),
            base::BindOnce(&EnclaveAuthenticator::ProcessGetAssertionResponse,
                           weak_factory_.GetWeakPtr()));
@@ -142,7 +147,7 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
   std::tie(opt_response, opt_entity, error_description) =
       ParseMakeCredentialResponse(std::move(*response),
                                   pending_make_credential_request_->request,
-                                  *ui_request_->wrapped_secret_version);
+                                  *ui_request_->key_version);
   if (!opt_response || !opt_entity) {
     FIDO_LOG(ERROR) << "Error in registration response from server: "
                     << error_description;
