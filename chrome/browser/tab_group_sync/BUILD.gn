@@ -60,6 +60,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationTrackerUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/StartupHelperUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncControllerUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TestTabGroupSyncService.java",

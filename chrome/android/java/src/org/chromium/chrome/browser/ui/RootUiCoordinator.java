@@ -124,6 +124,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObscuringHandlerSupplier;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
@@ -342,6 +344,7 @@ public class RootUiCoordinator
     private @Nullable View mBaseChromeLayout;
     protected OneshotSupplierImpl<AppHeaderCoordinator> mAppHeaderCoordinatorSupplier =
             new OneshotSupplierImpl<>();
+    private TabGroupSyncController mTabGroupSyncController;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -633,6 +636,11 @@ public class RootUiCoordinator
         destroyUnownedUserDataSuppliers();
         mActivityLifecycleDispatcher.unregister(this);
 
+        if (mTabGroupSyncController != null) {
+            mTabGroupSyncController.destroy();
+            mTabGroupSyncController = null;
+        }
+
         if (mMessageDispatcher != null) {
             mMessageDispatcher.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
             MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
@@ -891,6 +899,14 @@ public class RootUiCoordinator
         // Setup IncognitoReauthController as early as possible, to show the re-auth screen.
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) {
             initIncognitoReauthController();
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)) {
+            mTabGroupSyncController =
+                    new TabGroupSyncController(
+                            mTabModelSelectorSupplier.get(),
+                            mTabCreatorManagerSupplier.get(),
+                            TabGroupSyncServiceFactory.getForProfile(mProfileSupplier.get()));
         }
 
         initMessagesInfra();
