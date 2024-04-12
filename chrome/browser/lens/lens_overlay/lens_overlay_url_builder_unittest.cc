@@ -33,7 +33,7 @@ class LensOverlayUrlBuilderTest : public testing::Test {
 TEST_F(LensOverlayUrlBuilderTest, BuildSearchUrl) {
   std::string text_query = "Apples";
   std::string expected_url = base::StringPrintf(
-      "%s?q=%s&gsc=1", kResultsSearchBaseUrl, text_query.c_str());
+      "%s?q=%s&gsc=1&masfc=c", kResultsSearchBaseUrl, text_query.c_str());
 
   EXPECT_EQ(lens::BuildSearchURL(text_query), expected_url);
 }
@@ -41,7 +41,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildSearchUrl) {
 TEST_F(LensOverlayUrlBuilderTest, BuildSearchUrlEmpty) {
   std::string text_query = "";
   std::string expected_url =
-      base::StringPrintf("%s?q=&gsc=1", kResultsSearchBaseUrl);
+      base::StringPrintf("%s?q=&gsc=1&masfc=c", kResultsSearchBaseUrl);
 
   EXPECT_EQ(lens::BuildSearchURL(text_query), expected_url);
 }
@@ -51,7 +51,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildSearchUrlPunctuation) {
   std::string escaped_text_query =
       base::EscapeQueryParamValue(text_query, /*use_plus=*/true);
   std::string expected_url = base::StringPrintf(
-      "%s?q=%s&gsc=1", kResultsSearchBaseUrl, escaped_text_query.c_str());
+      "%s?q=%s&gsc=1&masfc=c", kResultsSearchBaseUrl,
+      escaped_text_query.c_str());
 
   EXPECT_EQ(lens::BuildSearchURL(text_query), expected_url);
 }
@@ -61,7 +62,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildSearchUrlWhitespace) {
   std::string escaped_text_query =
       base::EscapeQueryParamValue(text_query, /*use_plus=*/true);
   std::string expected_url = base::StringPrintf(
-      "%s?q=%s&gsc=1", kResultsSearchBaseUrl, escaped_text_query.c_str());
+      "%s?q=%s&gsc=1&masfc=c", kResultsSearchBaseUrl,
+      escaped_text_query.c_str());
 
   EXPECT_EQ(lens::BuildSearchURL(text_query), expected_url);
 }

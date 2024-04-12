@@ -10,6 +10,7 @@
 #include "url/gurl.h"
 
 namespace lens {
+GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify);
 GURL BuildSearchURL(const std::string& text_query);
 }  // namespace lens
 

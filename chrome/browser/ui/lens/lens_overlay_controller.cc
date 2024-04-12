@@ -27,6 +27,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
+#include "net/base/url_util.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
@@ -544,8 +545,13 @@ void LensOverlayController::OnThumbnailRemoved() const {
 }
 
 void LensOverlayController::OnSuggestionAccepted(const GURL& destination_url) {
-  // TODO(b/332787629): Append additional params and navigate to
-  // `destination_url` in the side panel.
+  // TODO(b/332787629): Append the 'mactx' param.
+  GURL url = lens::AppendCommonSearchParametersToURL(destination_url);
+  if (side_panel_page_) {
+    side_panel_page_->LoadResultsInFrame(url);
+  } else {
+    pending_side_panel_url_ = std::make_optional<GURL>(url);
+  }
 }
 
 void LensOverlayController::TabForegrounded() {}

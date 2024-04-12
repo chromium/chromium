@@ -250,6 +250,11 @@ export class RealboxMatchElement extends PolymerElement {
         this.matchIndex, this.match.destinationUrl,
         /* are_matches_showing */ true, e.button || 0, e.altKey, e.ctrlKey,
         e.metaKey, e.shiftKey);
+
+    this.dispatchEvent(new CustomEvent('match-click', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private onMatchFocusin_() {

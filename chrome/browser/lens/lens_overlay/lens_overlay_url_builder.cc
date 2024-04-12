@@ -17,14 +17,20 @@ inline constexpr char kTextQueryParameterKey[] = "q";
 inline constexpr char kSearchCompanionParameterKey[] = "gsc";
 inline constexpr char kSearchCompanionParameterValue[] = "1";
 
+// Query parameter for denoting an ambient request source.
+inline constexpr char kAmbientParameterKey[] = "masfc";
+inline constexpr char kAmbientParameterValue[] = "c";
+
+}  // namespace
+
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {
   GURL new_url = url_to_modify;
   new_url = net::AppendOrReplaceQueryParameter(
       new_url, kSearchCompanionParameterKey, kSearchCompanionParameterValue);
+  new_url = net::AppendOrReplaceQueryParameter(
+      new_url, kAmbientParameterKey, kAmbientParameterValue);
   return new_url;
 }
-
-}  // namespace
 
 GURL BuildSearchURL(const std::string& text_query) {
   GURL url_with_query_params =

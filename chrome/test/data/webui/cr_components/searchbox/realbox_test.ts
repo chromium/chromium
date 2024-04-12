@@ -924,6 +924,9 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(
         'https://helloworld.com/',
         cutEvent.clipboardData!.getData('text/plain'));
+
+    // Cut should close the dropdown.
+    assertFalse(await areMatchesShowing());
   });
 
   //============================================================================
@@ -974,6 +977,9 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(args.areMatchesShowing);
     assertTrue(args.shiftKey);
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
+
+    // Navigation should close the dropdown.
+    assertFalse(await areMatchesShowing());
   });
 
   test(
@@ -1209,7 +1215,6 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    assertTrue(await areMatchesShowing());
 
     // First match is selected.
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -1221,6 +1226,9 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(args.areMatchesShowing);
     assertTrue(args.shiftKey);
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
+
+    // Navigation should close the dropdown.
+    assertFalse(await areMatchesShowing());
   });
 
   test('pressing Enter on the selected match navigates to it', async () => {

@@ -10,6 +10,7 @@ import {RealboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/re
 import type {RealboxMatchElement} from 'chrome://resources/cr_components/searchbox/realbox_match.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createAutocompleteMatch} from './realbox_test_utils.js';
 import {TestRealboxBrowserProxy} from './test_realbox_browser_proxy.js';
@@ -104,7 +105,23 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertEquals(1, middleClickArgs.mouseButton);
   });
 
-  test('RemovesMatch', async () => {
+  test('ClickFiresEvent', async () => {
+    const clickPromise = eventToPromise('match-click', matchEl);
+
+    const clickEvent = new MouseEvent('click', {
+      button: 0,
+      cancelable: true,
+      altKey: true,
+      ctrlKey: false,
+      metaKey: true,
+      shiftKey: false,
+    });
+    matchEl.dispatchEvent(clickEvent);
+
+    await clickPromise;
+  });
+
+  test('DeleteButtonRemovesMatch', async () => {
     const matchIndex = 1;
     const destinationUrl = {url: 'http://google.com'};
     matchEl.matchIndex = matchIndex;
