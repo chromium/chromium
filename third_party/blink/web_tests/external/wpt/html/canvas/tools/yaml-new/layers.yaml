@@ -2,6 +2,8 @@
   desc: Checks that layers correctly use global render states.
   size: [90, 90]
   code: |
+    {{ transform_statement }}
+
     ctx.fillStyle = 'rgba(128, 128, 128, 1)';
     ctx.fillRect(20, 15, 50, 50);
 
@@ -22,6 +24,8 @@
 
     ctx.endLayer();
   reference: |
+    {{ transform_statement }}
+
     ctx.fillStyle = 'rgba(128, 128, 128, 1)';
     ctx.fillRect(20, 15, 50, 50);
 
@@ -39,7 +43,7 @@
     ctx2.fillRect(30, 5, 50, 40);
 
     ctx.drawImage(canvas2, 0, 0);
-  variants_layout: [single_file, multi_files, multi_files]
+  variants_layout: [single_file, multi_files, multi_files, multi_files]
   variants: &global-state-variants
   - no-globalAlpha:
       alpha_statement: // No globalAlpha.
@@ -59,11 +63,21 @@
         ctx.shadowOffsetY = 7;
         ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
         ctx.shadowBlur = 3;
+  - no-transform:
+      transform_statement: // No transform.
+    rotation:
+      transform_statement: |-
+        ctx.translate(50, 40);
+        ctx.rotate(Math.PI);
+        ctx.translate(-45, -45);
+
 
 - name: 2d.layer.global-states.filter
   desc: Checks that layers with filters correctly use global render states.
   size: [90, 90]
   code: |
+    {{ transform_statement }}
+
     ctx.fillStyle = 'rgba(128, 128, 128, 1)';
     ctx.fillRect(20, 15, 50, 50);
 
@@ -104,6 +118,8 @@
     img.width = {{ size[0] }};
     img.height = {{ size[1] }};
     img.onload = () => {
+      {{ transform_statement | indent(2) }}
+
       ctx.fillStyle = 'rgba(128, 128, 128, 1)';
       ctx.fillRect(20, 15, 50, 50);
 
@@ -114,7 +130,7 @@
       ctx.drawImage(img, 0, 0);
     };
     img.src = 'data:image/svg+xml;base64,' + btoa(svg);
-  variants_layout: [single_file, multi_files, multi_files]
+  variants_layout: [single_file, multi_files, multi_files, multi_files]
   variants: *global-state-variants
 
 - name: 2d.layer.global-filter
