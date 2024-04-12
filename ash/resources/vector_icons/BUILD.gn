@@ -344,6 +344,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "picker_lower_case.icon",
     "picker_open_tab.icon",
     "picker_sentence_case.icon",
+    "picker_skeleton_loader.icon",
     "picker_symbol.icon",
     "picker_title_case.icon",
     "picker_units_maths.icon",

@@ -10,6 +10,8 @@
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/views/picker_search_results_view.h"
+#include "ash/picker/views/picker_skeleton_loader_view.h"
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
@@ -27,6 +29,9 @@ PickerCategoryView::PickerCategoryView(
   search_results_view_ = AddChildView(std::make_unique<PickerSearchResultsView>(
       picker_view_width, std::move(select_search_result_callback),
       base::DoNothing(), asset_fetcher));
+
+  skeleton_loader_view_ = AddChildView(
+      views::Builder<PickerSkeletonLoaderView>().SetVisible(false).Build());
 }
 
 PickerCategoryView::~PickerCategoryView() = default;
@@ -55,12 +60,24 @@ void PickerCategoryView::AdvancePseudoFocus(PseudoFocusDirection direction) {
   search_results_view_->AdvancePseudoFocus(direction);
 }
 
+void PickerCategoryView::ShowLoadingAnimation() {
+  search_results_view_->ClearSearchResults();
+  search_results_view_->SetVisible(false);
+
+  skeleton_loader_view_->StartAnimationAfter(kLoadingAnimationDelay);
+  skeleton_loader_view_->SetVisible(true);
+}
+
 void PickerCategoryView::SetResults(
     std::vector<PickerSearchResultsSection> sections) {
+  skeleton_loader_view_->StopAnimation();
+  skeleton_loader_view_->SetVisible(false);
+
   search_results_view_->ClearSearchResults();
   for (PickerSearchResultsSection& section : sections) {
     search_results_view_->AppendSearchResults(std::move(section));
   }
+  search_results_view_->SetVisible(true);
 }
 
 BEGIN_METADATA(PickerCategoryView)

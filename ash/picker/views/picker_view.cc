@@ -311,6 +311,9 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
   search_field_view_->SetQueryText(std::u16string(query));
 
   if (query.empty()) {
+    // Getting suggested results for a category can be slow, so show a loading
+    // animation.
+    category_view_->ShowLoadingAnimation();
     SetActivePage(category_view_);
     delegate_->GetResultsForCategory(
         category, base::BindRepeating(&PickerView::PublishCategoryResults,
