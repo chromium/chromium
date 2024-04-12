@@ -1012,16 +1012,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SettingsResetBubble.NumNoThanksPerReset" units="units"
-    expires_after="M85">
-  <owner>mad@chromium.org</owner>
-  <summary>
-    Counts the number of times the user clicked on the No Thanks button of the
-    settings reset bubble before clicking on the Reset button in the same Chrome
-    session.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

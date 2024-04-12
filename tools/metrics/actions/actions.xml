@@ -33420,21 +33420,25 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SettingsResetBubble.LearnMore">
+  <obsolete>Removed in Chrome 49.</obsolete>
   <owner>mad@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="SettingsResetBubble.NoThanks">
+  <obsolete>Removed in Chrome 49.</obsolete>
   <owner>mad@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="SettingsResetBubble.Reset">
+  <obsolete>Removed in Chrome 49.</obsolete>
   <owner>mad@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="SettingsResetBubble.Show">
+  <obsolete>Removed in Chrome 49.</obsolete>
   <owner>mad@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
