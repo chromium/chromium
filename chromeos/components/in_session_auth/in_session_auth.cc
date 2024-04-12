@@ -39,7 +39,7 @@ void InSessionAuth::RequestToken(chromeos::auth::mojom::Reason reason,
                                  const std::optional<std::string>& prompt,
                                  RequestTokenCallback callback) {
   ash::InSessionAuthDialogController::Get()->ShowAuthDialog(
-      ToAshReason(reason),
+      ToAshReason(reason), prompt,
       base::BindOnce(&InSessionAuth::OnAuthComplete, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }

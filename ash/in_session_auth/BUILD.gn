@@ -14,6 +14,8 @@ source_set("in_session_auth") {
     "authentication_dialog.h",
     "in_session_auth_dialog.cc",
     "in_session_auth_dialog.h",
+    "in_session_auth_dialog_contents_view.cc",
+    "in_session_auth_dialog_contents_view.h",
     "in_session_auth_dialog_controller_impl.cc",
     "in_session_auth_dialog_controller_impl.h",
     "webauthn_dialog_controller_impl.cc",

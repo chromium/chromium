@@ -4,6 +4,7 @@
 
 #include "chrome/browser/device_reauth/chromeos/authenticator_chromeos.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -46,6 +47,7 @@ AuthenticatorChromeOS::AuthenticatorChromeOS() = default;
 AuthenticatorChromeOS::~AuthenticatorChromeOS() = default;
 
 void AuthenticatorChromeOS::AuthenticateUser(
+    const std::u16string& message,
     base::OnceCallback<void(bool)> result_callback) {
   // Calls `InSessionAuthDialogController::ShowAuthDialog` to authenticate the
   // currently active user using configured auth factors.
@@ -57,6 +59,7 @@ void AuthenticatorChromeOS::AuthenticateUser(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::InSessionAuthDialogController::Get()->ShowAuthDialog(
       ash::InSessionAuthDialogController::Reason::kAccessPasswordManager,
+      base::UTF16ToUTF8(message),
       base::BindOnce(&OnAuthComplete, std::move(result_callback)));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (auto* lacros_service = chromeos::LacrosService::Get();
@@ -74,7 +77,7 @@ void AuthenticatorChromeOS::AuthenticateUser(
       lacros_service->GetRemote<chromeos::auth::mojom::InSessionAuth>()
           ->RequestToken(
               chromeos::auth::mojom::Reason::kAccessPasswordManager,
-              std::string(),
+              base::UTF16ToUTF8(message),
               base::BindOnce(&OnRequestToken, std::move(result_callback)));
     }
   }

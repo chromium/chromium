@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -28,12 +29,6 @@
 #include "ui/views/layout/layout_types.h"
 
 namespace ash {
-
-namespace {
-
-constexpr int kCornerRadius = 12;
-
-}  // namespace
 
 AuthPanel::AuthPanel(
     std::unique_ptr<FactorAuthViewFactory> view_factory,
@@ -53,13 +48,6 @@ AuthPanel::AuthPanel(
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(false);
-
-  auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW,
-      ui::kColorPrimaryBackground);
-  border->SetCornerRadius(kCornerRadius);
-  SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
-  SetBorder(std::move(border));
 
   InitializeViewPlaceholders();
 }
@@ -143,5 +131,8 @@ void AuthPanel::OnEndAuthentication() {
   auth_hub_connector_ = nullptr;
   std::move(on_end_authentication_).Run();
 }
+
+BEGIN_METADATA(AuthPanel)
+END_METADATA
 
 }  // namespace ash

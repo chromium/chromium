@@ -24,7 +24,8 @@ class MockSystemAuthenticator : public AuthenticatorChromeOSInterface {
  public:
   MOCK_METHOD(void,
               AuthenticateUser,
-              (base::OnceCallback<void(bool)> callback),
+              (const std::u16string& message,
+               base::OnceCallback<void(bool)> callback),
               (override));
 };
 
@@ -61,7 +62,7 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
 
   void ExpectAuthenticationAndSetResult(bool result) {
     EXPECT_CALL(system_authenticator(), AuthenticateUser)
-        .WillOnce(testing::WithArg<0>([result](auto callback) {
+        .WillOnce(testing::WithArg<1>([result](auto callback) {
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(std::move(callback), /*auth_succeeded=*/result));

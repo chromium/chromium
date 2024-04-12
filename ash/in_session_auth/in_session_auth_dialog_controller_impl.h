@@ -35,6 +35,7 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
   // InSessionAuthDialogController overrides
   void ShowAuthDialog(
       Reason reason,
+      const std::optional<std::string>& prompt,
       auth_panel::AuthCompletionCallback on_auth_complete) override;
 
   void SetTokenProvider(
@@ -53,6 +54,7 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
 
  private:
   void CreateAndShowAuthPanel(
+      const std::optional<std::string>& prompt,
       auth_panel::AuthCompletionCallback on_auth_complete,
       Reason reason,
       const AccountId& account_id);
@@ -74,6 +76,8 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
   State state_ = State::kNotShown;
 
   std::unique_ptr<views::Widget> dialog_;
+
+  std::optional<std::string> prompt_;
 
   base::WeakPtrFactory<InSessionAuthDialogControllerImpl> weak_factory_{this};
 };

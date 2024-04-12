@@ -47,6 +47,7 @@ void DeviceAuthenticatorChromeOS::AuthenticateWithMessage(
   callback_ = std::move(callback);
 
   authenticator_->AuthenticateUser(
+      message,
       base::BindOnce(&DeviceAuthenticatorChromeOS::OnAuthenticationCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }

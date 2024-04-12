@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/in_session_auth/authentication_dialog.h"
+#include "ash/in_session_auth/in_session_auth_dialog_contents_view.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
@@ -77,11 +78,13 @@ InSessionAuthDialogControllerImpl::~InSessionAuthDialogControllerImpl() =
     default;
 
 void InSessionAuthDialogControllerImpl::CreateAndShowAuthPanel(
+    const std::optional<std::string>& prompt,
     auth_panel::AuthCompletionCallback on_auth_complete,
     Reason reason,
     const AccountId& account_id) {
   state_ = State::kShowing;
   on_auth_complete_ = std::move(on_auth_complete);
+  prompt_ = prompt;
 
   auto* auth_hub = AuthHub::Get();
 
@@ -94,6 +97,7 @@ void InSessionAuthDialogControllerImpl::CreateAndShowAuthPanel(
 
 void InSessionAuthDialogControllerImpl::ShowAuthDialog(
     Reason reason,
+    const std::optional<std::string>& prompt,
     auth_panel::AuthCompletionCallback on_auth_complete) {
   if (state_ != State::kNotShown) {
     LOG(ERROR) << "Trying to show authentication dialog in session while "
@@ -109,10 +113,12 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
 
   if (reason == Reason::kAccessPasswordManager &&
       features::IsUseAuthPanelInPasswordManagerEnabled()) {
-    CreateAndShowAuthPanel(std::move(on_auth_complete), reason, account_id);
+    CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
+                           account_id);
   } else if (reason == Reason::kAccessAuthenticationSettings &&
              features::IsUseAuthPanelInSettingsEnabled()) {
-    CreateAndShowAuthPanel(std::move(on_auth_complete), reason, account_id);
+    CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
+                           account_id);
   } else {
     // We don't manage the lifetime of `AuthenticationDialog` here.
     // `AuthenticatonDialog` is-a View and it is instead owned by it's widget,
@@ -139,19 +145,17 @@ void InSessionAuthDialogControllerImpl::OnUserAuthAttemptConfirmed(
     raw_ptr<AuthFactorStatusConsumer>& out_consumer) {
   CHECK_EQ(state_, State::kShowing);
 
-  auto auth_panel = std::make_unique<AuthPanel>(
-      std::make_unique<FactorAuthViewFactory>(),
-      std::make_unique<AuthFactorStoreFactory>(),
-      std::make_unique<AuthPanelEventDispatcherFactory>(),
+  auto contents_view = std::make_unique<InSessionAuthDialogContentsView>(
+      prompt_,
       base::BindOnce(&InSessionAuthDialogControllerImpl::OnEndAuthentication,
                      weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &InSessionAuthDialogControllerImpl::OnAuthPanelPreferredSizeChanged,
           weak_factory_.GetWeakPtr()),
-      nullptr);
+      connector);
 
-  out_consumer = auth_panel.get();
-  dialog_ = CreateAuthDialogWidget(std::move(auth_panel));
+  out_consumer = contents_view->GetAuthPanel();
+  dialog_ = CreateAuthDialogWidget(std::move(contents_view));
   dialog_->Show();
   state_ = State::kShown;
 }

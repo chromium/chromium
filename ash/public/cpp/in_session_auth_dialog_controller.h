@@ -32,6 +32,7 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   // `reason`: Indicates security context.
   virtual void ShowAuthDialog(
       Reason reason,
+      const std::optional<std::string>& prompt,
       auth_panel::AuthCompletionCallback on_auth_complete) = 0;
 
   // Must be called with a non null auth_token_provider prior to calling

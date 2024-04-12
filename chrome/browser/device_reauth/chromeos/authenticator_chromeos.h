@@ -13,7 +13,8 @@
 class AuthenticatorChromeOSInterface {
  public:
   virtual ~AuthenticatorChromeOSInterface() = default;
-  virtual void AuthenticateUser(base::OnceCallback<void(bool)> callback) = 0;
+  virtual void AuthenticateUser(const std::u16string& message,
+                                base::OnceCallback<void(bool)> callback) = 0;
 };
 
 // Implementation of the interface that handles communication with the OS.
@@ -26,6 +27,7 @@ class AuthenticatorChromeOS : public AuthenticatorChromeOSInterface {
   AuthenticatorChromeOS& operator=(const AuthenticatorChromeOS&) = delete;
 
   void AuthenticateUser(
+      const std::u16string& message,
       base::OnceCallback<void(bool)> result_callback) override;
 };
 #endif  // CHROME_BROWSER_DEVICE_REAUTH_CHROMEOS_AUTHENTICATOR_CHROMEOS_H_

@@ -34,6 +34,8 @@ class FactorAuthViewFactory;
 // - Tracking selected factors, in the event where a factor can be toggled,
 // for instance, with password/pin.
 class AuthPanel : public NonAccessibleView, public AuthFactorStatusConsumer {
+  METADATA_HEADER(AuthPanel, views::View)
+
  public:
   AuthPanel(
       std::unique_ptr<FactorAuthViewFactory> view_factory,
