@@ -745,8 +745,11 @@ void SellerWorklet::V8State::ScoreAd(
     context_recycler = fresh_context_recycler.get();
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "get_seller_context", trace_id);
   ContextRecyclerScope context_recycler_scope(*context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "get_seller_context", trace_id);
+
   AuctionV8Logger v8_logger(v8_helper_.get(), context);
 
   v8::LocalVector<v8::Value> args(isolate);
@@ -863,7 +866,6 @@ void SellerWorklet::V8State::ScoreAd(
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeSellerWorkletScoringStart");
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "score_ad", trace_id);
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(isolate);
   std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
@@ -871,11 +873,12 @@ void SellerWorklet::V8State::ScoreAd(
   // For a context we're reusing, the top level script was already run and the
   // bindings were already added.
   if (!context_recycler_for_context_reuse_) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "sellerScript", trace_id);
     bool success =
         v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
                               total_timeout.get(), errors_out);
+    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "sellerScript", trace_id);
     if (!success) {
-      TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
       PostScoreAdCallbackToUserThread(
           std::move(callback), /*score=*/0,
           /*reject_reason=*/mojom::RejectReason::kNotAvailable,
@@ -900,6 +903,7 @@ void SellerWorklet::V8State::ScoreAd(
     }
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "score_ad", trace_id);
   bool success =
       v8_helper_
           ->CallFunction(context, debug_id_.get(),
