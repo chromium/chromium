@@ -379,7 +379,7 @@ void ThreadGroupImpl::WaitableEventWorkerDelegate::
   // Add the worker to the idle set.
   outer()->idle_workers_set_.Insert(worker);
   DCHECK_LE(outer()->idle_workers_set_.Size(), outer()->workers_.size());
-  outer()->idle_workers_set_cv_for_testing_->Broadcast();
+  outer()->idle_workers_set_cv_for_testing_.Broadcast();
 }
 
 void ThreadGroupImpl::WaitableEventWorkerDelegate::RecordUnnecessaryWakeup() {

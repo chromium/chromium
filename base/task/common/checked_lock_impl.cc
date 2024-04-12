@@ -4,6 +4,7 @@
 
 #include "base/task/common/checked_lock_impl.h"
 
+#include <optional>
 #include <ostream>
 #include <unordered_map>
 #include <vector>
@@ -181,8 +182,13 @@ void CheckedLockImpl::AssertNotHeld() const {
   lock_.AssertNotHeld();
 }
 
-std::unique_ptr<ConditionVariable> CheckedLockImpl::CreateConditionVariable() {
-  return std::make_unique<ConditionVariable>(&lock_);
+ConditionVariable CheckedLockImpl::CreateConditionVariable() {
+  return ConditionVariable(&lock_);
+}
+
+void CheckedLockImpl::CreateConditionVariableAndEmplace(
+    std::optional<ConditionVariable>& opt) {
+  opt.emplace(&lock_);
 }
 
 }  // namespace internal

@@ -7,7 +7,6 @@
 
 #include <atomic>
 #include <cstdint>
-#include <memory>
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
@@ -123,7 +122,7 @@ class BASE_EXPORT WorkTracker {
   // Allows `OnBeginWork()` to wait until there is no more valid
   // `SyncWorkAuthorization`.
   base::internal::CheckedLock active_sync_work_lock_;
-  std::unique_ptr<ConditionVariable> active_sync_work_cv_ =
+  ConditionVariable active_sync_work_cv_ =
       active_sync_work_lock_.CreateConditionVariable();
 
   THREAD_CHECKER(thread_checker_);

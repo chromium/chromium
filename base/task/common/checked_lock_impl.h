@@ -5,7 +5,7 @@
 #ifndef BASE_TASK_COMMON_CHECKED_LOCK_IMPL_H_
 #define BASE_TASK_COMMON_CHECKED_LOCK_IMPL_H_
 
-#include <memory>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/synchronization/lock.h"
@@ -43,7 +43,8 @@ class BASE_EXPORT CheckedLockImpl {
   void AssertAcquired() const;
   void AssertNotHeld() const;
 
-  std::unique_ptr<ConditionVariable> CreateConditionVariable();
+  ConditionVariable CreateConditionVariable();
+  void CreateConditionVariableAndEmplace(std::optional<ConditionVariable>& opt);
 
   bool is_universal_predecessor() const { return is_universal_predecessor_; }
   bool is_universal_successor() const { return is_universal_successor_; }

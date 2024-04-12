@@ -6,7 +6,6 @@
 #define BASE_TASK_THREAD_POOL_TEST_UTILS_H_
 
 #include <atomic>
-#include <memory>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -50,7 +49,7 @@ class MockWorkerThreadObserver : public WorkerThreadObserver {
 
  private:
   CheckedLock lock_;
-  std::unique_ptr<ConditionVariable> on_main_exit_cv_ GUARDED_BY(lock_);
+  ConditionVariable on_main_exit_cv_ GUARDED_BY(lock_);
   int allowed_calls_on_main_exit_ GUARDED_BY(lock_) = 0;
 };
 

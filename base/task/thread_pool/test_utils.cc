@@ -93,7 +93,7 @@ void MockWorkerThreadObserver::AllowCallsOnMainExit(int num_calls) {
 void MockWorkerThreadObserver::WaitCallsOnMainExit() {
   CheckedAutoLock auto_lock(lock_);
   while (allowed_calls_on_main_exit_ != 0)
-    on_main_exit_cv_->Wait();
+    on_main_exit_cv_.Wait();
 }
 
 void MockWorkerThreadObserver::OnWorkerThreadMainExit() {
@@ -101,7 +101,7 @@ void MockWorkerThreadObserver::OnWorkerThreadMainExit() {
   EXPECT_GE(allowed_calls_on_main_exit_, 0);
   --allowed_calls_on_main_exit_;
   if (allowed_calls_on_main_exit_ == 0)
-    on_main_exit_cv_->Signal();
+    on_main_exit_cv_.Signal();
 }
 
 scoped_refptr<Sequence> CreateSequenceWithTask(

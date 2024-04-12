@@ -497,8 +497,7 @@ class BASE_EXPORT ThreadGroup {
   int num_unresolved_best_effort_may_block_ GUARDED_BY(lock_) = 0;
 
   // Signaled when a worker is added to the idle workers set.
-  std::unique_ptr<ConditionVariable> idle_workers_set_cv_for_testing_
-      GUARDED_BY(lock_);
+  ConditionVariable idle_workers_set_cv_for_testing_ GUARDED_BY(lock_);
 
   // Whether an AdjustMaxTasks() task was posted to the service thread.
   bool adjust_max_tasks_posted_ GUARDED_BY(lock_) = false;
@@ -520,7 +519,7 @@ class BASE_EXPORT ThreadGroup {
 
   // Signaled, if non-null, when |num_workers_cleaned_up_for_testing_| is
   // incremented.
-  std::unique_ptr<ConditionVariable> num_workers_cleaned_up_for_testing_cv_
+  std::optional<ConditionVariable> num_workers_cleaned_up_for_testing_cv_
       GUARDED_BY(lock_);
 
   // All workers owned by this thread group.

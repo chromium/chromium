@@ -5,7 +5,7 @@
 #ifndef BASE_TASK_COMMON_CHECKED_LOCK_H_
 #define BASE_TASK_COMMON_CHECKED_LOCK_H_
 
-#include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
@@ -62,7 +62,7 @@ namespace internal {
 // void AssertAcquired().
 //     DCHECKs if the lock is not acquired.
 //
-// std::unique_ptr<ConditionVariable> CreateConditionVariable()
+// ConditionVariable CreateConditionVariable()
 //     Creates a condition variable using this as a lock.
 
 #if DCHECK_IS_ON()
@@ -85,8 +85,12 @@ class LOCKABLE CheckedLock : public Lock {
   explicit CheckedLock(UniversalSuccessor) {}
   static void AssertNoLockHeldOnCurrentThread() {}
 
-  std::unique_ptr<ConditionVariable> CreateConditionVariable() {
-    return std::unique_ptr<ConditionVariable>(new ConditionVariable(this));
+  ConditionVariable CreateConditionVariable() {
+    return ConditionVariable(this);
+  }
+  void CreateConditionVariableAndEmplace(
+      std::optional<ConditionVariable>& opt) {
+    opt.emplace(this);
   }
 };
 #endif  // DCHECK_IS_ON()

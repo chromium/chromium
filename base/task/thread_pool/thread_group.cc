@@ -494,7 +494,7 @@ void ThreadGroup::WaitForWorkersIdleLockRequiredForTesting(size_t n) {
   AutoReset<bool> ban_cleanups(&worker_cleanup_disallowed_for_testing_, true);
 
   while (NumberOfIdleWorkersLockRequiredForTesting() < n) {
-    idle_workers_set_cv_for_testing_->Wait();
+    idle_workers_set_cv_for_testing_.Wait();
   }
 }
 
@@ -520,7 +520,8 @@ void ThreadGroup::WaitForWorkersCleanedUpForTesting(size_t n) {
   CheckedAutoLock auto_lock(lock_);
 
   if (!num_workers_cleaned_up_for_testing_cv_) {
-    num_workers_cleaned_up_for_testing_cv_ = lock_.CreateConditionVariable();
+    lock_.CreateConditionVariableAndEmplace(
+        num_workers_cleaned_up_for_testing_cv_);
   }
 
   while (num_workers_cleaned_up_for_testing_ < n) {

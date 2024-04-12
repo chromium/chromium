@@ -231,7 +231,7 @@ TaskTracker::TaskTracker()
   // |flush_cv_| is only waited upon in FlushForTesting(), avoid instantiating a
   // ScopedBlockingCallWithBaseSyncPrimitives from test threads intentionally
   // idling themselves to wait on the ThreadPool.
-  flush_cv_->declare_only_used_while_idle();
+  flush_cv_.declare_only_used_while_idle();
 }
 
 TaskTracker::~TaskTracker() = default;
@@ -280,7 +280,7 @@ void TaskTracker::CompleteShutdown() {
   // when shutdown completes.
   {
     CheckedAutoLock auto_lock(flush_lock_);
-    flush_cv_->Broadcast();
+    flush_cv_.Broadcast();
   }
   InvokeFlushCallbacksForTesting();
 }
@@ -290,7 +290,7 @@ void TaskTracker::FlushForTesting() {
   CheckedAutoLock auto_lock(flush_lock_);
   while (num_incomplete_task_sources_.load(std::memory_order_acquire) != 0 &&
          !IsShutdownComplete()) {
-    flush_cv_->Wait();
+    flush_cv_.Wait();
   }
 }
 
@@ -632,7 +632,7 @@ void TaskTracker::DecrementNumIncompleteTaskSources() {
   if (prev_num_incomplete_task_sources == 1) {
     {
       CheckedAutoLock auto_lock(flush_lock_);
-      flush_cv_->Broadcast();
+      flush_cv_.Broadcast();
     }
     InvokeFlushCallbacksForTesting();
   }

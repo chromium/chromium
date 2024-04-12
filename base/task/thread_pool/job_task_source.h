@@ -9,7 +9,7 @@
 
 #include <atomic>
 #include <limits>
-#include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/base_export.h"
@@ -212,7 +212,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   // hence the use of atomics.
   JoinFlag join_flag_ GUARDED_BY(worker_lock_);
   // Signaled when |join_flag_| is kWaiting* and a worker returns.
-  std::unique_ptr<ConditionVariable> worker_released_condition_
+  std::optional<ConditionVariable> worker_released_condition_
       GUARDED_BY(worker_lock_);
 
   std::atomic<uint32_t> assigned_task_ids_{0};

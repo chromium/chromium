@@ -260,7 +260,7 @@ class BASE_EXPORT TaskTracker {
 
   // Signaled when |num_incomplete_task_sources_| is or reaches zero or when
   // shutdown completes.
-  const std::unique_ptr<ConditionVariable> flush_cv_;
+  ConditionVariable flush_cv_;
 
   // All invoked, if any, when |num_incomplete_task_sources_| is zero or when
   // shutdown completes.

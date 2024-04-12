@@ -378,7 +378,7 @@ void ThreadGroupSemaphore::SemaphoreWorkerDelegate::
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   CHECK_GT(outer()->num_active_signals_, 0u);
   --outer()->num_active_signals_;
-  outer()->idle_workers_set_cv_for_testing_->Signal();
+  outer()->idle_workers_set_cv_for_testing_.Signal();
 }
 
 void ThreadGroupSemaphore::SemaphoreWorkerDelegate::RecordUnnecessaryWakeup() {

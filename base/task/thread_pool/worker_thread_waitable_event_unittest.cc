@@ -406,7 +406,7 @@ class ThreadPoolWorkerTest : public testing::Test {
   void WaitForNumGetWork(size_t num_get_work) {
     CheckedAutoLock auto_lock(lock_);
     while (num_get_work_ < num_get_work) {
-      num_get_work_cv_->Wait();
+      num_get_work_cv_.Wait();
     }
   }
 
@@ -488,7 +488,7 @@ class ThreadPoolWorkerTest : public testing::Test {
 
         // Increment the number of times that this method has been called.
         ++outer_->num_get_work_;
-        outer_->num_get_work_cv_->Signal();
+        outer_->num_get_work_cv_.Signal();
 
         // Verify that this method isn't called more times than expected.
         EXPECT_LE(outer_->num_get_work_, outer_->max_get_work_);
@@ -616,7 +616,7 @@ class ThreadPoolWorkerTest : public testing::Test {
   size_t max_get_work_ = 0;
 
   // Condition variable signaled when |num_get_work_| is incremented.
-  std::unique_ptr<ConditionVariable> num_get_work_cv_;
+  ConditionVariable num_get_work_cv_;
 
   // Sequences created by GetWork().
   std::vector<scoped_refptr<TaskSource>> created_sequences_;
