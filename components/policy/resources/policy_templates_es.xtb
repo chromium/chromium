@@ -1800,7 +1800,6 @@ Si se asigna un valor a esta política, el usuario no podrá anularlo.
 Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará inicialmente, pero el usuario podrá controlarla.</translation>
 <translation id="2413899611035194909">Mostrar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de inicio de sesión</translation>
 <translation id="2415715982424988916">Explorar (compatible desde la versión 91)</translation>
-<translation id="2419114151067000328">La función de especificaciones de producto no estará disponible para los usuarios.</translation>
 <translation id="2420958105721932612">Especifica cómo se instala una aplicación. AVAILABLE: la aplicación no se instalará automáticamente, pero el usuario podrá instalarla. Si no se asigna ningún valor a esta política, este será el predeterminado. FORCE_INSTALLED: la aplicación se instalará automáticamente y el usuario no podrá desinstalarla. BLOCKED: la aplicación estará bloqueada y no se podrá instalar. Si la aplicación se instaló cuando estaba vigente una política anterior, se desinstalará.</translation>
 <translation id="2421400544595297401">No permitir que los usuarios no afiliados utilicen aplicaciones Android</translation>
 <translation id="2421677964966613267">Esta política está obsoleta en M88. Chrome ya no es compatible con Flash. Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios no pueden ejecutar el complemento <ph name="FLASH_PLUGIN_NAME" />.
@@ -3318,7 +3317,6 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
 <translation id="3606571057705314194">Selector de perfil inhabilitado al iniciar</translation>
 <translation id="3608206578291537084">Habilitar el flujo de procesamiento de informes cifrados</translation>
 <translation id="3608281460204780443">Mostrar el icono de Chrome Web Store en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /> y en la página Nueva pestaña</translation>
-<translation id="361046511337768385">Permitir que se habilite la función de especificaciones de producto</translation>
 <translation id="3616490235694929053">Esta política controla si se muestra al usuario la pantalla de configuración del tamaño de visualización durante el primer inicio de sesión
       Si se le asigna el valor false, no se mostrará la pantalla de configuración del tamaño de visualización.
       Si le asigna el valor true, se mostrará la pantalla de configuración del tamaño de visualización.</translation>
@@ -5352,7 +5350,6 @@ Si no se define esta política, no se permitirán excepciones de <ph name="URL_B
 
 A partir de la versión 92 de <ph name="PRODUCT_NAME" />, también se admite esta política en el modo sin interfaz gráfica.</translation>
 <translation id="5362531528507578966">Anula el modo de impresión de gráficos de fondo predeterminado.</translation>
-<translation id="5363412016871318326">La función de especificaciones de producto estará disponible para los usuarios.</translation>
 <translation id="5365476955714838841">Parámetros de línea de comandos correspondientes al navegador alternativo.</translation>
 <translation id="5365946944967967336">Mostrar botón de página principal en la barra de herramientas</translation>
 <translation id="5366977351895725771">Si se establece el valor "false", el usuario no podrá crear usuarios supervisados, pero seguirán estando disponibles los usuarios supervisados creados anteriormente.
@@ -8873,9 +8870,6 @@ Advertencia: Se recomienda mantener habilitadas las actualizaciones automáticas
 <translation id="8102854005031553638">El visor de PDFs usa el renderizador de AGG</translation>
 <translation id="8102913158860568230">Opción predeterminada de MediaStream</translation>
 <translation id="8104962233214241919">Seleccionar automáticamente certificados de cliente de estos sitios</translation>
-<translation id="810509972572344398">Si se habilita esta política o no se define, las especificaciones de producto estarán disponibles para los usuarios.
-
-Si se inhabilita, las especificaciones de producto no estarán disponibles.</translation>
 <translation id="8109762054721090517">Plantilla del <ph name="IPP_ATTRIBUTE" /> de <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Configura el tiempo (en segundos) durante el que el dispositivo deberá permanecer inactivo para que se muestre el salvapantallas de la pantalla de bloqueo.
 

@@ -1823,7 +1823,6 @@ Bu politika ayarlandığında kullanıcı, değeri geçersiz kılamaz.
 Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı bırakılır, ancak kullanıcı tarafından kontrol edilebilir.</translation>
 <translation id="2413899611035194909">Giriş ekranı sistem tepsisi menüsünde erişilebilirlik seçeneklerini göster</translation>
 <translation id="2415715982424988916">Keşfet (91 sürümünden itibaren desteklenir)</translation>
-<translation id="2419114151067000328">Ürün spesifikasyonları özelliği kullanıcılar tarafından kullanılamaz.</translation>
 <translation id="2420958105721932612">Bir uygulamanın nasıl yükleneceğini belirtir. AVAILABLE: Uygulama otomatik olarak yüklenmez, ancak kullanıcı tarafından yüklenebilir. Bu politika belirtilmezse varsayılan olarak bu ayar uygulanır. FORCE_INSTALLED: Uygulama otomatik olarak yüklenir ve kullanıcı tarafından kaldırılamaz. BLOCKED: Uygulama engellenir ve yüklenemez. Uygulama önceki politikalardan biri kapsamında yüklenmişse kaldırılır.</translation>
 <translation id="2421400544595297401">İlişkili olmayan kullanıcıların Android uygulamalarını kullanmasına izin verme</translation>
 <translation id="2421677964966613267">Bu politika, M88 sürümünde kullanımdan kaldırılmıştır. Flash artık Chrome tarafından desteklenmemektedir. Politikayı ayarlamak, <ph name="FLASH_PLUGIN_NAME" /> eklentisini çalıştıramayan siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
@@ -3354,7 +3353,6 @@ Bu politikayı her zaman (özellikle de üretim dağıtımı zamanlarında) etki
 <translation id="3606571057705314194">Başlangıçta profil seçiciyi devre dışı bırak</translation>
 <translation id="3608206578291537084">Şifrelenmiş Raporlama Ardışık Düzeni'ni etkinleştir</translation>
 <translation id="3608281460204780443"><ph name="PRODUCT_OS_NAME" /> başlatıcıda ve yeni sekme sayfasında Chrome Web Mağazası simgesini göster</translation>
-<translation id="361046511337768385">Ürün spesifikasyonları özelliğinin etkinleştirilmesine izin ver</translation>
 <translation id="3616490235694929053">Bu politika, ilk oturum açma sırasında görüntü boyutu ayar ekranının kullanıcıya gösterilip gösterilmeyeceğini belirler.
       Bu politika yanlış değerine ayarlanırsa görüntü boyutu ayar ekranı gösterilmez.
       Doğru değerine ayarlanırsa görüntü boyutu ayar ekranı gösterilir.</translation>
@@ -5428,7 +5426,6 @@ Politika ayarlanmadan bırakılırsa <ph name="URL_BLOCKLIST_POLICY_NAME" /> pol
 
 Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz modda da desteklenir.</translation>
 <translation id="5362531528507578966">Varsayılan arka plan grafikleri yazdırma modunu geçersiz kılar.</translation>
-<translation id="5363412016871318326">Ürün spesifikasyonları özelliği kullanıcılar tarafından kullanılabilir.</translation>
 <translation id="5365476955714838841">Alternatif tarayıcı için komut satırı parametreleri.</translation>
 <translation id="5365946944967967336">Araç çubuğunda Ana Sayfa düğmesini göster</translation>
 <translation id="5366977351895725771">False (yanlış) olarak ayarlanırsa, bu kullanıcının denetlenen kullanıcı oluşturma yetkisi devre dışı bırakılır. Mevcut tüm denetlenen kullanıcılar kullanılabilir olmaya devam eder.
@@ -8993,9 +8990,6 @@ Uyarı: Kullanıcıların yazılım güncellemelerini ve kritik güvenlik düzel
 <translation id="8102854005031553638">PDF görüntüleyici AGG oluşturucuyu kullanır.</translation>
 <translation id="8102913158860568230">Varsayılan medya akışı ayarı</translation>
 <translation id="8104962233214241919">Bu siteler için istemci sertifikalarını otomatik olarak seç</translation>
-<translation id="810509972572344398">Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa ürün spesifikasyonları kullanıcılar tarafından kullanılabilir.
-
-Bu politika, Devre Dışı değerine ayarlanırsa ürün spesifikasyonları kullanılamaz.</translation>
 <translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /> şablonu</translation>
 <translation id="8111331908123507719">Kilit ekranında ekran koruyucu gösterilmeden önce cihazın boşta bekleyeceği süreyi saniye cinsinden yapılandırır.
 

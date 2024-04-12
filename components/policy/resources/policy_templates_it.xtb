@@ -1813,7 +1813,6 @@ Se questo criterio viene impostato, l'utente non potrà sostituire il valore.
 Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizialmente disattivata, ma potrà essere controllata dall'utente.</translation>
 <translation id="2413899611035194909">Mostra opzioni di accessibilità nel menu della barra delle applicazioni della schermata di accesso</translation>
 <translation id="2415715982424988916">Esplora (supportata dalla versione 91)</translation>
-<translation id="2419114151067000328">La funzionalità delle specifiche del prodotto non sarà disponibile per gli utenti.</translation>
 <translation id="2420958105721932612">Consente di specificare la modalità di installazione di un'app. AVAILABLE: l'app non viene installata automaticamente, ma può essere installata dall'utente. Si tratta del comportamento predefinito se questo criterio non viene specificato. FORCE_INSTALLED: l'app viene installata automaticamente e l'utente non può disinstallarla. BLOCKED: l'app è bloccata e non può essere installata. Se l'app è stata installata in base a un criterio precedente, verrà disinstallata.</translation>
 <translation id="2421400544595297401">Non consentire a utenti non affiliati di utilizzare app per Android</translation>
 <translation id="2421677964966613267">Questo criterio è deprecato in M88 e Flash non è più supportato da Chrome. Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono eseguire il plug-in <ph name="FLASH_PLUGIN_NAME" />.
@@ -3340,7 +3339,6 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3606571057705314194">Selettore profilo disattivato all'avvio</translation>
 <translation id="3608206578291537084">Abilita la Pipeline di reporting criptato</translation>
 <translation id="3608281460204780443">Visualizza l'icona di Chrome Web Store in Avvio app di <ph name="PRODUCT_OS_NAME" /> e nella pagina Nuova scheda</translation>
-<translation id="361046511337768385">Consenti l'attivazione della funzionalità delle specifiche del prodotto</translation>
 <translation id="3616490235694929053">Questo criterio consente di stabilire se mostrare o meno la schermata di impostazione delle dimensioni di visualizzazione all'utente durante il primo accesso.
       Se viene impostato su false, la schermata di impostazione delle dimensioni di visualizzazione non verrà visualizzata.
       Se il valore è impostato su true, viene visualizzata la schermata di impostazione delle dimensioni del display.</translation>
@@ -5380,7 +5378,6 @@ Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="
 
 A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.</translation>
 <translation id="5362531528507578966">Consente di sostituire la modalità di stampa predefinita delle immagini di sfondo.</translation>
-<translation id="5363412016871318326">La funzionalità delle specifiche del prodotto sarà disponibile per gli utenti.</translation>
 <translation id="5365476955714838841">Parametri della riga di comando per il browser alternativo.</translation>
 <translation id="5365946944967967336">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="5366977351895725771">Se questa norma è impostata su false, la creazione di utenti supervisionati da parte di questo utente sarà disabilitata. Gli eventuali utenti supervisionati esistenti saranno comunque disponibili.
@@ -6615,6 +6612,7 @@ Per maggiori informazioni, visita la pagina https://developer.chrome.com/blog/im
           L'avviso viene mostrato solo se l'azione stabilita in caso di inattività è la disconnessione o lo spegnimento.</translation>
 <translation id="6331943515692769234">Forza l'utilizzo dell'algoritmo User-Agent GREASE precedente.</translation>
 <translation id="6332546092866098577">Blocca l'accesso di lettura tramite l'API file system su questi siti</translation>
+<translation id="6333338054007607863">Consente di scaricare il modello automaticamente</translation>
 <translation id="6334330017384340264">Questo criterio consente di specificare le applicazioni e gli URL da autorizzare per i limiti di utilizzo per app.
         La lista consentita configurata viene applicata alle app installate su <ph name="PRODUCT_OS_NAME" /> per l'utente in questione con limiti di utilizzo per app.
         La lista consentita configurata può essere applicata soltanto agli account per bambini e diventa effettiva quando viene impostato il criterio <ph name="PER_APP_TIME_LIMITS_POLICY_NAME" />.
@@ -8646,6 +8644,7 @@ Se il criterio viene impostato su 2, le origini non possono usare Direct Sockets
 Se non viene configurato, è consentito usare Direct Sockets.</translation>
 <translation id="7853140303943875314">Attiva l'esclusione dell'accesso automatico</translation>
 <translation id="7854187834842629068">Disattiva la dettatura nella schermata di accesso</translation>
+<translation id="7858352166858826505">Impostazioni per il modello di base locale di GenAI</translation>
 <translation id="7863947545897944083">Consente di attivare la funzione di accessibilità ad alto contrasto nella schermata di accesso.
 
           Se questo criterio è impostato su true, l'alto contrasto sarà sempre attivato nella schermata di accesso.
@@ -8916,9 +8915,6 @@ Avviso: è consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="8102854005031553638">Il visualizzatore PDF utilizza il renderer AGG.</translation>
 <translation id="8102913158860568230">Impostazione stream multimediale predefinito</translation>
 <translation id="8104962233214241919">Seleziona automaticamente i certificati client per questi siti</translation>
-<translation id="810509972572344398">Se questo criterio viene attivato o se non viene configurato, le specifiche di prodotto saranno disponibili per gli utenti.
-
-Se questo criterio viene disattivato, le specifiche del prodotto non saranno disponibili.</translation>
 <translation id="8109762054721090517">Modello per l'<ph name="IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Consente di configurare il tempo di inattività del dispositivo in secondi che deve trascorrere prima di mostrare il salvaschermo per la schermata di blocco.
 
@@ -9516,6 +9512,7 @@ Se il criterio non è configurato, gli utenti non possono giocare sul dispositiv
           Se questo criterio non viene impostato, viene usato un periodo di tempo predefinito.
 
           Il valore del criterio deve essere specificato in millisecondi.</translation>
+<translation id="8592363656632862875">Non scaricare il modello</translation>
 <translation id="859579553230883285">Disattiva l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti per i tuoi utenti.</translation>
 <translation id="8597758693275075382">Le stringhe OEM SMBIOS da passare alla VM durante l'installazione. Il valore predefinito è l'elenco vuoto.</translation>
 <translation id="8598786284856179541">Attiva la generazione di report sulle informazioni di versione</translation>
@@ -9928,6 +9925,13 @@ Se viene disattivato, vengono inviati solo i dati hardware standard.</translatio
 <translation id="8931555638815157255">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano periodicamente la versione dei relativi sistemi operativi e firmware.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano le informazioni sulla versione.</translation>
+<translation id="8934485887744460569">Configura il modo in cui <ph name="PRODUCT_NAME" /> scarica il modello di base GenAI e lo utilizza localmente per l'inferenza. 
+
+Se il criterio viene impostato su Consentito (0) o se non viene configurato, il modello viene scaricato automaticamente e utilizzato per l'inferenza.
+
+Se il criterio viene impostato su Disattivato (1), il modello non viene scaricato.
+
+Il download del modello può essere disattivato anche da <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8937282917198525844"> A partire dalla versione M81, abbiamo rinnovato aspetto e design degli elementi di controllo modulo standard (ad esempio, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;), con una superiore accessibilità e una migliore uniformità della piattaforma. Questo criterio ripristina i precedenti controlli modulo "legacy" fino alla versione M84.
 
       Se questo criterio viene impostato su True, gli elementi di controllo modulo "legacy" verranno utilizzati per tutti i siti.

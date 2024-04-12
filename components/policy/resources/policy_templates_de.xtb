@@ -1797,7 +1797,6 @@ Ist diese Richtlinie konfiguriert, können Nutzer den Wert nicht überschreiben.
 Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, Nutzer können ihn jedoch steuern.</translation>
 <translation id="2413899611035194909">Optionen für Bedienungshilfen im Taskleistenmenü des Anmeldebildschirms anzeigen</translation>
 <translation id="2415715982424988916">Entdecken (seit Version 91 unterstützt)</translation>
-<translation id="2419114151067000328">Die Funktion „Produktspezifikationen“ ist für Nutzer nicht verfügbar.</translation>
 <translation id="2420958105721932612">Gibt an, wie eine App installiert wird. AVAILABLE: Die App wird nicht automatisch installiert, Nutzer können sie jedoch installieren. Wenn die Richtlinie nicht festgelegt wird, ist diese Option standardmäßig ausgewählt. FORCE_INSTALLED: Die App wird automatisch installiert und Nutzer können sie nicht deinstallieren. BLOCKED: Die App ist gesperrt und kann nicht installiert werden. Falls die App unter einer früheren Richtlinie installiert wurde, wird sie deinstalliert.</translation>
 <translation id="2421400544595297401">Nicht zugehörige Nutzer dürfen keine Android-Apps verwenden</translation>
 <translation id="2421677964966613267">Diese Richtlinie wurde in M88 eingestellt. Flash wird von Chrome nicht mehr unterstützt. Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Websites angeben, die das <ph name="FLASH_PLUGIN_NAME" />-Plug-in nicht ausführen dürfen.
@@ -3309,7 +3308,6 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
 <translation id="3606571057705314194">Profil-Picker beim Start deaktiviert</translation>
 <translation id="3608206578291537084">Verschlüsselte Pipeline für die Berichterstellung aktivieren</translation>
 <translation id="3608281460204780443">Chrome Web Store-Symbol im <ph name="PRODUCT_OS_NAME" />-Launcher und auf der Seite „Neuer Tab“ anzeigen</translation>
-<translation id="361046511337768385">Aktivieren der Funktion „Produktspezifikationen“ zulassen</translation>
 <translation id="3616490235694929053">Mit dieser Richtlinie wird festgelegt, ob dem Nutzer bei der ersten Anmeldung der Bildschirm mit der Einstellung für die Anzeigegröße angezeigt wird.
       Wenn die Richtlinie auf „false“ gesetzt ist, wird der Bildschirm mit der Einstellung für die Anzeigegröße nicht angezeigt.
       Wird diese Richtlinie auf „true“ gesetzt, wird der Bildschirm mit der Einstellung für die Anzeigegröße angezeigt.</translation>
@@ -5323,7 +5321,6 @@ Wenn die Richtlinie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name=
 
 Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im monitorlosen Modus unterstützt.</translation>
 <translation id="5362531528507578966">Überschreibt den Standarddruckmodus mit Hintergrundgrafiken.</translation>
-<translation id="5363412016871318326">Die Funktion „Produktspezifikationen“ ist für Nutzer verfügbar.</translation>
 <translation id="5365476955714838841">Befehlszeilenparameter für den alternativen Browser.</translation>
 <translation id="5365946944967967336">Startseiten-Schaltfläche auf Symbolleiste anzeigen</translation>
 <translation id="5366977351895725771">Wurde "false" festgelegt, kann dieser Nutzer keine betreuten Nutzer erstellen. Alle vorhandenen betreuten Nutzer sind weiterhin verfügbar.
@@ -8799,9 +8796,6 @@ Achtung: Es wird empfohlen, die automatischen Updates aktiviert zu lassen, damit
 <translation id="8102854005031553638">Der PDF-Viewer verwendet den AGG-Renderer.</translation>
 <translation id="8102913158860568230">Standardeinstellung für MediaStream</translation>
 <translation id="8104962233214241919">Client-Zertifikate für diese Websites automatisch auswählen</translation>
-<translation id="810509972572344398">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, stehen Nutzern Produktspezifikationen zur Verfügung.
-
-Ist die Richtlinie deaktiviert, sind keine Produktspezifikationen verfügbar.</translation>
 <translation id="8109762054721090517">Vorlage für <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Dadurch wird festgelegt, wie viele Sekunden das Gerät inaktiv bleibt, bevor der Bildschirmschoner auf dem Sperrbildschirm angezeigt wird.
 

@@ -1801,7 +1801,6 @@ Lorsque cette règle est définie, l'utilisateur ne peut pas remplacer la valeur
 Si elle n'est pas définie, l'écran de confidentialité est désactivé initialement, mais l'utilisateur peut le modifier.</translation>
 <translation id="2413899611035194909">Afficher les options d'accessibilité dans le menu de la barre d'état système de l'écran de connexion</translation>
 <translation id="2415715982424988916">Explorer (disponible depuis la version 91)</translation>
-<translation id="2419114151067000328">Les utilisateurs ne pourront pas accéder aux caractéristiques du produit.</translation>
 <translation id="2420958105721932612">Cette règle permet de configurer l'installation d'une appli. AVAILABLE : l'appli n'est pas installée automatiquement, mais l'utilisateur peut l'installer. Il s'agit du paramètre par défaut si cette règle n'est pas configurée. FORCE_INSTALLED : l'appli est installée automatiquement, et l'utilisateur ne peut pas la désinstaller. BLOCKED : l'appli est bloquée et ne peut pas être installée. Si elle a été installée d'après une règle précédente, elle sera désinstallée.</translation>
 <translation id="2421400544595297401">Ne pas autoriser les utilisateurs non affiliés à utiliser des applis Android</translation>
 <translation id="2421677964966613267">Cette règle étant obsolète dans la version M88, Flash n'est plus accepté dans Chrome. Elle permet d'établir la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à exécuter le plug-in <ph name="FLASH_PLUGIN_NAME" />.
@@ -3310,7 +3309,6 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3606571057705314194">Outil de sélection du profil désactivé au démarrage</translation>
 <translation id="3608206578291537084">Activer le pipeline de rapports chiffrés</translation>
 <translation id="3608281460204780443">Afficher l'icône du Chrome Web Store dans le lanceur d'applis <ph name="PRODUCT_OS_NAME" /> et sur la page de nouvel onglet</translation>
-<translation id="361046511337768385">Autoriser l'activation des caractéristiques du produit</translation>
 <translation id="3616490235694929053">Cette règle définit si l'utilisateur voit l'écran de configuration de la taille d'affichage la première fois qu'il se connecte.
       Si cette règle est définie sur "False", l'écran n'est pas affiché.
       Si cette règle est définie sur "True", l'écran est affiché.</translation>
@@ -5334,7 +5332,6 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 
 À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode headless.</translation>
 <translation id="5362531528507578966">Permet d'ignorer le mode d'impression d'images de fond par défaut.</translation>
-<translation id="5363412016871318326">Les utilisateurs pourront accéder aux caractéristiques du produit.</translation>
 <translation id="5365476955714838841">Paramètres de ligne de commande pour le navigateur secondaire.</translation>
 <translation id="5365946944967967336">Afficher le bouton Accueil sur la barre d'outils</translation>
 <translation id="5366977351895725771">Si cette règle est associée à la valeur "false", la création de comptes utilisateur supervisés par cet utilisateur est désactivée. Les utilisateurs supervisés existants restent disponibles.
@@ -6567,6 +6564,7 @@ Pour en savoir plus, consultez https://developer.chrome.com/blog/immutable-docum
           Le message d'avertissement ne s'affiche que si le dépassement du délai d'inactivité entraîne une déconnexion ou l'arrêt de l'appareil.</translation>
 <translation id="6331943515692769234">Forcez l'utilisation de l'algorithme GREASE user-agent précédent.</translation>
 <translation id="6332546092866098577">Bloquer l'accès en lecture via l'API File System pour ces sites</translation>
+<translation id="6333338054007607863">Télécharge automatiquement le modèle</translation>
 <translation id="6334330017384340264">Cette règle détermine les applications et URL qui doivent être autorisées pour les restrictions d'utilisation spécifiques pour chaque application.
         La liste d'autorisation configurée est destinée aux applications installées sur <ph name="PRODUCT_OS_NAME" /> pour l'utilisateur concerné avec des limites de temps spécifiques à chaque application.
         La liste d'autorisation configurée ne peut être appliquée qu'aux comptes utilisateur enfants et prend effet lorsque la règle <ph name="PER_APP_TIME_LIMITS_POLICY_NAME" /> est définie.
@@ -8554,6 +8552,7 @@ Si cette règle est définie sur "2", les origines ne peuvent pas utiliser Dire
 Si cette règle n'est pas configurée, Direct Sockets peut être utilisée.</translation>
 <translation id="7853140303943875314">Activer l'annulation de la connexion automatique</translation>
 <translation id="7854187834842629068">Désactiver la dictée sur l'écran de connexion</translation>
+<translation id="7858352166858826505">Paramètres du modèle de fondation local de l'IA générative</translation>
 <translation id="7863947545897944083">Permet d'activer la fonctionnalité d'accessibilité de contraste élevé sur l'écran de connexion.
 
           Si cette règle est définie sur "True", le contraste élevé est toujours activé sur l'écran de connexion.
@@ -8830,9 +8829,6 @@ Avertissement : Il est recommandé de ne pas désactiver les mises à jour auto
 <translation id="8102854005031553638">La visionneuse PDF utilise le moteur de rendu AGG.</translation>
 <translation id="8102913158860568230">Paramètre MediaStream par défaut</translation>
 <translation id="8104962233214241919">Sélectionner automatiquement des certificats client pour ces sites</translation>
-<translation id="810509972572344398">Si cette règle est activée ou n'est pas configurée, les caractéristiques du produit seront disponibles pour les utilisateurs.
-
-Si elle est désactivée, elles ne seront pas disponibles.</translation>
 <translation id="8109762054721090517">Modèle pour l'attribut <ph name="IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Configure le délai d'inactivité de l'appareil, en secondes, avant d'afficher l'économiseur d'écran à l'écran de verrouillage.
 
@@ -9425,6 +9421,7 @@ Si cette règle n'est pas configurée, les utilisateurs ne peuvent pas jouer à 
           Si cette règle n'est pas configurée, un délai par défaut est utilisé.
 
           La valeur de la règle doit être indiquée en millisecondes.</translation>
+<translation id="8592363656632862875">Ne pas télécharger le modèle</translation>
 <translation id="859579553230883285">Désactivez le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> pour vos utilisateurs.</translation>
 <translation id="8597758693275075382">Chaînes OEM SMBIOS à transmettre à la VM lors de l'installation. La liste vide est utilisée par défaut.</translation>
 <translation id="8598786284856179541">Activer les rapports sur les informations liées à la version</translation>
@@ -9830,6 +9827,13 @@ Si cette règle est désactivée, seules les données matérielles standards ser
 <translation id="8931555638815157255">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent régulièrement la version de leur système d'exploitation et celle du micrologiciel.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas d'informations sur les versions.</translation>
+<translation id="8934485887744460569">Configurez la manière dont <ph name="PRODUCT_NAME" /> télécharge le modèle de fondation de l'IA générative et l'utilise pour l'inférence en local. 
+
+Si cette règle est définie sur "Autorisé" (0) ou qu'elle n'est pas configurée, le modèle est téléchargé automatiquement et est utilisé pour l'inférence.
+
+Si elle est définie sur "Désactivé" (1), le modèle n'est pas téléchargé.
+
+Le téléchargement du modèle peut également être désactivé par <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8937282917198525844"> À partir de la version M81, les éléments de contrôle de formulaire (par exemple, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) ont été actualisés pour améliorer leur accessibilité et l'uniformité de la plate-forme. Cette règle restaure les anciens éléments de contrôle de formulaire (jusqu'à la version M84).
 
       Si cette règle est définie sur "True", les anciens éléments de contrôle de formulaire seront utilisés pour tous les sites.
