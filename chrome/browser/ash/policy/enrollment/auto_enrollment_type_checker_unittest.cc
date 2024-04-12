@@ -663,8 +663,7 @@ TEST_F(AutoEnrollmentTypeCheckerInitializationTest, ActiveVersion) {
   base::test::TestFuture<void> future;
   test_url_loader_factory_.AddResponse(
       "https://www.gstatic.com/chromeos-usd-experiment/v1.json",
-      // TODO(b/265923216): Change to 0 when kCodeVersion is 1.
-      R"({"disable_up_to_version": -1})", net::HTTP_OK);
+      R"({"disable_up_to_version": 0})", net::HTTP_OK);
 
   AutoEnrollmentTypeChecker::Initialize(test_shared_loader_factory_,
                                         future.GetCallback());

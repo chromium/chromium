@@ -138,8 +138,7 @@ constexpr int kUMAKSFetchNumTriesBuckets =
 // switch for a particular version, we can increment it after fixing the logic.
 // The devices running new code will not be affected by kill switch and we can
 // test our fixes.
-// TODO(b/265923216): Change to 1 to launch unified state determination.
-const int kCodeVersion = 0;
+const int kCodeVersion = 1;
 
 // When set to true, unified state determination is disabled.
 std::optional<bool> g_unified_state_determination_kill_switch;
