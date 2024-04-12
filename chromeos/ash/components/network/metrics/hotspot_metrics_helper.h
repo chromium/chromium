@@ -227,7 +227,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
     kUpstreamNoInternet = 8,
     kDownstreamLinkDisconnect = 9,
     kDownstreamNetworkDisconnect = 10,
-    kMaxValue = kDownstreamNetworkDisconnect,
+    kStartTimeout = 11,
+    kUpstreamNotAvailable = 12,
+    kUnknownError = 13,
+    kMaxValue = kUnknownError,
   };
 
   // HotspotCapabilitiesProvider::Observer:

@@ -518,6 +518,13 @@ chromium-metrics-reviews@google.com.
   <int value="10"
       label="kDownstreamNetworkDisconnect: Hotspot disabled due to downstream
              network disconnected."/>
+  <int value="11"
+      label="kStartTimeout: Failed to start tethering within given time"/>
+  <int value="12"
+      label="kUpstreamNotAvailable: Hotspot disabled due to upstream network
+             not available."/>
+  <int value="13"
+      label="kUnknownError: Hotspot disabled due to an unknown error."/>
 </enum>
 
 <enum name="HotspotSetConfigResult">

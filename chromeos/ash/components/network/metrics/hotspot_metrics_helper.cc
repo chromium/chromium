@@ -239,6 +239,12 @@ HotspotMetricsHelper::GetMetricsDisableReason(
       return HotspotMetricsDisableReason::kDownstreamLinkDisconnect;
     case DisableReason::kDownstreamNetworkDisconnect:
       return HotspotMetricsDisableReason::kDownstreamNetworkDisconnect;
+    case DisableReason::kStartTimeout:
+      return HotspotMetricsDisableReason::kStartTimeout;
+    case DisableReason::kUpstreamNotAvailable:
+      return HotspotMetricsDisableReason::kUpstreamNotAvailable;
+    case DisableReason::kUnknownError:
+      return HotspotMetricsDisableReason::kUnknownError;
   }
   NOTREACHED() << "Unknown hotspot disable reason.";
 }
