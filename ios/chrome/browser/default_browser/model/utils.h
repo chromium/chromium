@@ -116,9 +116,37 @@ extern const char kVideoFullscreenPromo[];
 extern const char kVideoHalfscreenPromo[];
 extern const char kDefaultBrowserVideoPromoVariant[];
 
+// Key in storage containing a bool indicating if the user has
+// previously interacted with a regular fullscreen promo.
+extern NSString* const kUserHasInteractedWithFullscreenPromo;
+
+// Key in storage containing a bool indicating if the user has
+// previously interacted with a tailored fullscreen promo.
+extern NSString* const kUserHasInteractedWithTailoredFullscreenPromo;
+
+// Key in storage containing a bool indicating if the user has
+// previously interacted with first run promo.
+extern NSString* const kUserHasInteractedWithFirstRunPromo;
+
+// Key in storage containing an int indicating the number of times a fullscreen
+// promo has been displayed.
+extern NSString* const kDisplayedFullscreenPromoCount;
+
+// Key in storage containing an int indicating the number of times a generic
+// promo has been displayed.
+extern NSString* const kGenericPromoInteractionCount;
+
+// Key in storage containing an int indicating the number of times a tailored
+// promo has been displayed.
+extern NSString* const kTailoredPromoInteractionCount;
+
 // Loads from NSUserDefaults the time of the non-expired events for the
 // given promo type.
 std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type);
+
+// Stores the time of the last recorded events for `type`.
+void StoreTimestampsForPromoType(DefaultPromoType type,
+                                 std::vector<base::Time> times);
 
 // Helper function to set `data` for `key` into the storage object.
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data);

@@ -49,38 +49,10 @@ NSString* const kLastSignificantUserEventAllTabs =
 NSString* const kLastSignificantUserEventVideo =
     @"lastSignificantUserEventVideo";
 
-// Key in storage containing a bool indicating if the user has
-// previously interacted with a regular fullscreen promo.
-NSString* const kUserHasInteractedWithFullscreenPromo =
-    @"userHasInteractedWithFullscreenPromo";
-
-// Key in storage containing a bool indicating if the user has
-// previously interacted with a tailored fullscreen promo.
-NSString* const kUserHasInteractedWithTailoredFullscreenPromo =
-    @"userHasInteractedWithTailoredFullscreenPromo";
-
-// Key in storage containing a bool indicating if the user has
-// previously interacted with first run promo.
-NSString* const kUserHasInteractedWithFirstRunPromo =
-    @"userHasInteractedWithFirstRunPromo";
-
 // Key in storage containing an int indicating the number of times the
 // user has interacted with a non-modal promo.
 NSString* const kUserInteractedWithNonModalPromoCount =
     @"userInteractedWithNonModalPromoCount";
-
-// Key in storage containing an int indicating the number of times a fullscreen
-// promo has been displayed.
-NSString* const kDisplayedFullscreenPromoCount = @"displayedPromoCount";
-
-// Key in storage containing an int indicating the number of times a generic
-// promo has been displayed.
-NSString* const kGenericPromoInteractionCount = @"genericPromoInteractionCount";
-
-// Key in storage containing an int indicating the number of times a tailored
-// promo has been displayed.
-NSString* const kTailoredPromoInteractionCount =
-    @"tailoredPromoInteractionCount";
 
 // Key in storage containing the timestamp of the last time the user opened the
 // app via first-party intent.
@@ -292,12 +264,6 @@ void StoreTimestampsForKey(NSString* key, std::vector<base::Time> times) {
   SetObjectIntoStorageForKey(key, dates);
 }
 
-// Stores the time of the last recorded events for `type`.
-void StoreTimestampsForPromoType(DefaultPromoType type,
-                                 std::vector<base::Time> times) {
-  StoreTimestampsForKey(StorageKeyForDefaultPromoType(type), times);
-}
-
 // Returns whether an event was logged for key occuring less than `delay`
 // in the past.
 bool HasRecordedEventForKeyLessThanDelay(NSString* key, base::TimeDelta delay) {
@@ -454,6 +420,17 @@ NSString* const kBookmarkUseCount = @"BookmarkUseCount";
 NSString* const kAutofillUseCount = @"AutofillUseCount";
 NSString* const kSpecialTabsUseCount = @"SpecialTabUseCount";
 
+NSString* const kUserHasInteractedWithFullscreenPromo =
+    @"userHasInteractedWithFullscreenPromo";
+NSString* const kUserHasInteractedWithTailoredFullscreenPromo =
+    @"userHasInteractedWithTailoredFullscreenPromo";
+NSString* const kUserHasInteractedWithFirstRunPromo =
+    @"userHasInteractedWithFirstRunPromo";
+NSString* const kDisplayedFullscreenPromoCount = @"displayedPromoCount";
+NSString* const kGenericPromoInteractionCount = @"genericPromoInteractionCount";
+NSString* const kTailoredPromoInteractionCount =
+    @"tailoredPromoInteractionCount";
+
 // Migration to FET keys.
 NSString* const kFRETimestampMigrationDone = @"fre_timestamp_migration_done";
 NSString* const kPromoInterestEventMigrationDone =
@@ -464,6 +441,11 @@ NSString* const kPromoImpressionsMigrationDone =
 std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
   return LoadActiveTimestampsForKey(StorageKeyForDefaultPromoType(type),
                                     kUserActivityTimestampExpiration);
+}
+
+void StoreTimestampsForPromoType(DefaultPromoType type,
+                                 std::vector<base::Time> times) {
+  StoreTimestampsForKey(StorageKeyForDefaultPromoType(type), times);
 }
 
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {

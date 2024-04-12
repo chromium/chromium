@@ -23,6 +23,12 @@ namespace feature_engagement {
 
 // static
 std::unique_ptr<Tracker> CreateTestTracker() {
+  return CreateTestTracker(nullptr);
+}
+
+// static
+std::unique_ptr<Tracker> CreateTestTracker(
+    std::unique_ptr<TrackerEventExporter> event_exporter) {
   auto configuration = std::make_unique<ChromeVariationsConfiguration>();
   configuration->LoadConfigs(Tracker::GetDefaultConfigurationProviders(),
                              GetAllFeatures(), GetAllGroups());
@@ -42,7 +48,8 @@ std::unique_ptr<Tracker> CreateTestTracker() {
       std::move(event_model), std::make_unique<NeverAvailabilityModel>(),
       std::move(configuration), std::make_unique<NoopDisplayLockController>(),
       std::make_unique<FeatureConfigConditionValidator>(),
-      std::make_unique<SystemTimeProvider>(), nullptr, nullptr);
+      std::make_unique<SystemTimeProvider>(), std::move(event_exporter),
+      nullptr);
 }
 
 }  // namespace feature_engagement

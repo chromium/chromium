@@ -64,6 +64,7 @@ source_set("unit_tests") {
     ":utils",
     "//base/test:test_support",
     "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/test",
