@@ -1837,10 +1837,10 @@ void AuthenticatorGPMArbitraryPinSheetModel::OnGPMPinOptionChosen(
   dialog_model()->OnGPMPinOptionChanged(is_arbitrary);
 }
 
-// AuthenticatorTrustThisComputerSheetModel ------------------------------------
+// AuthenticatorTrustThisComputerAssertionSheetModel -------------------------
 
-AuthenticatorTrustThisComputerSheetModel::
-    AuthenticatorTrustThisComputerSheetModel(
+AuthenticatorTrustThisComputerAssertionSheetModel::
+    AuthenticatorTrustThisComputerAssertionSheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden) {
@@ -1848,57 +1848,52 @@ AuthenticatorTrustThisComputerSheetModel::
   vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
 }
 
-AuthenticatorTrustThisComputerSheetModel::
-    ~AuthenticatorTrustThisComputerSheetModel() = default;
+AuthenticatorTrustThisComputerAssertionSheetModel::
+    ~AuthenticatorTrustThisComputerAssertionSheetModel() = default;
 
-std::u16string AuthenticatorTrustThisComputerSheetModel::GetStepTitle() const {
-  return u"Use passkeys saved in Google Password Manager on this device? "
-         u"(UNTRANSLATED)";
-}
-
-std::u16string AuthenticatorTrustThisComputerSheetModel::GetStepDescription()
+std::u16string AuthenticatorTrustThisComputerAssertionSheetModel::GetStepTitle()
     const {
-  return u"If you continue, this device will use your saved passwords and "
-         u"passkeys to help you sign in. Unless you trust this device, select "
-         u"\"not now.\" (UNTRANSLATED)";
+  return u"To use this passkey, verify it's you (UNTRANSLATED)";
 }
 
-bool AuthenticatorTrustThisComputerSheetModel::IsCancelButtonVisible() const {
+std::u16string
+AuthenticatorTrustThisComputerAssertionSheetModel::GetStepDescription() const {
+  return u"You'll only have to do this once. You can use all of your passkey "
+         u"saved to Google Password Manager on this device. (UNTRANSLATED)";
+}
+
+bool AuthenticatorTrustThisComputerAssertionSheetModel::IsCancelButtonVisible()
+    const {
   return true;
 }
 
-std::u16string AuthenticatorTrustThisComputerSheetModel::GetCancelButtonLabel()
+std::u16string
+AuthenticatorTrustThisComputerAssertionSheetModel::GetCancelButtonLabel()
     const {
   return u"Not now (UNTRANSLATED)";
 }
 
-void AuthenticatorTrustThisComputerSheetModel::OnCancel() {
-  switch (dialog_model()->request_type) {
-    case device::FidoRequestType::kMakeCredential:
-      dialog_model()->StartOver();
-      break;
-    case device::FidoRequestType::kGetAssertion:
-      dialog_model()->ContactPriorityPhone();
-      break;
-    default:
-      NOTREACHED();
-  }
+void AuthenticatorTrustThisComputerAssertionSheetModel::OnCancel() {
+  dialog_model()->ContactPriorityPhone();
 }
 
-bool AuthenticatorTrustThisComputerSheetModel::IsAcceptButtonEnabled() const {
+bool AuthenticatorTrustThisComputerAssertionSheetModel::IsAcceptButtonEnabled()
+    const {
   return true;
 }
 
-bool AuthenticatorTrustThisComputerSheetModel::IsAcceptButtonVisible() const {
+bool AuthenticatorTrustThisComputerAssertionSheetModel::IsAcceptButtonVisible()
+    const {
   return true;
 }
 
-std::u16string AuthenticatorTrustThisComputerSheetModel::GetAcceptButtonLabel()
+std::u16string
+AuthenticatorTrustThisComputerAssertionSheetModel::GetAcceptButtonLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
 }
 
-void AuthenticatorTrustThisComputerSheetModel::OnAccept() {
+void AuthenticatorTrustThisComputerAssertionSheetModel::OnAccept() {
   dialog_model()->OnTrustThisComputer();
 }
 

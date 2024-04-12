@@ -369,7 +369,7 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       break;
     case Step::kTrustThisComputerAssertion:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
-          std::make_unique<AuthenticatorTrustThisComputerSheetModel>(
+          std::make_unique<AuthenticatorTrustThisComputerAssertionSheetModel>(
               dialog_model));
       break;
     case Step::kTrustThisComputerCreation:

@@ -777,14 +777,13 @@ class AuthenticatorGPMArbitraryPinSheetModel
 
 // The sheet shown for bootstrapping Google Password Manager passkeys during
 // sign-in.
-// TODO(rgod): Rename this sheet in a follow-up CL.
-class AuthenticatorTrustThisComputerSheetModel
+class AuthenticatorTrustThisComputerAssertionSheetModel
     : public AuthenticatorSheetModelBase {
  public:
-  explicit AuthenticatorTrustThisComputerSheetModel(
+  explicit AuthenticatorTrustThisComputerAssertionSheetModel(
       AuthenticatorRequestDialogModel* dialog_model);
 
-  ~AuthenticatorTrustThisComputerSheetModel() override;
+  ~AuthenticatorTrustThisComputerAssertionSheetModel() override;
 
  private:
   // AuthenticatorSheetModelBase:
