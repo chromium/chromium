@@ -78,7 +78,6 @@ base::FilePath GetContentVerifierTestPath() {
 scoped_refptr<const Extension> CreateTestExtension(const std::string& name,
                                                    bool incognito_split_mode,
                                                    int manifest_version) {
-  EXPECT_TRUE(manifest_version == 2 || manifest_version == 3);
   return ExtensionBuilder(name)
       .SetManifestVersion(manifest_version)
       .SetManifestKey("incognito", incognito_split_mode ? "split" : "spanning")
@@ -88,7 +87,6 @@ scoped_refptr<const Extension> CreateTestExtension(const std::string& name,
 }
 
 scoped_refptr<const Extension> CreateWebStoreExtension(int manifest_version) {
-  EXPECT_TRUE(manifest_version == 2 || manifest_version == 3);
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_RESOURCES, &path));
   path = path.AppendASCII("web_store");
@@ -113,7 +111,6 @@ scoped_refptr<const Extension> CreateWebStoreExtension(int manifest_version) {
 
 scoped_refptr<const Extension> CreateTestResponseHeaderExtension(
     int manifest_version) {
-  EXPECT_TRUE(manifest_version == 2 || manifest_version == 3);
   return ExtensionBuilder("An extension with web-accessible resources")
       .SetManifestVersion(manifest_version)
       .SetManifestKey(
@@ -131,6 +128,27 @@ scoped_refptr<const Extension> CreateTestResponseHeaderExtension(
               ? base::Value::Dict().Set("service_worker", "background.js")
               : base::Value::Dict().Set(
                     "scripts", base::Value::List().Append("background.js")))
+      .SetPath(GetTestPath("response_headers"))
+      .Build();
+}
+
+scoped_refptr<const Extension> CreateTestModuleResponseHeaderExtension(
+    int manifest_version) {
+  return ExtensionBuilder("A module extension")
+      .SetManifestVersion(manifest_version)
+      .SetManifestKey("export", base::Value::Dict())
+      .SetPath(GetTestPath("response_headers"))
+      .Build();
+}
+
+scoped_refptr<const Extension> CreateTestModuleImporterResponseHeaderExtension(
+    int manifest_version,
+    const std::string& module_extension_id) {
+  return ExtensionBuilder("A module importer extension")
+      .SetManifestVersion(manifest_version)
+      .SetManifestKey("import",
+                      base::Value::List().Append(
+                          base::Value::Dict().Set("id", module_extension_id)))
       .SetPath(GetTestPath("response_headers"))
       .Build();
 }
@@ -172,6 +190,19 @@ class GetResult {
     if (response_ && response_->headers)
       response_->headers->GetNormalizedHeader(name, &value);
     return value;
+  }
+
+  bool HasContentLengthHeader() {
+    std::string content_length =
+        GetResponseHeaderByName(net::HttpRequestHeaders::kContentLength);
+
+    int length_value = 0;
+    return !content_length.empty() &&
+           base::StringToInt(content_length, &length_value) && length_value > 0;
+  }
+
+  bool HeaderIsPresent(const std::string& name) {
+    return !GetResponseHeaderByName(name).empty();
   }
 
   int result() const { return result_; }
@@ -345,14 +376,13 @@ TEST_P(ExtensionProtocolsIncognitoTest, IncognitoRequest) {
     bool incognito_split_mode;
     bool incognito_enabled;
 
-    // Expected results.
+    // Expected result.
     bool should_allow_main_frame_load;
-    bool should_allow_sub_frame_load;
   } test_cases[] = {
-      {"spanning disabled", false, false, false, false},
-      {"split disabled", true, false, false, false},
-      {"spanning enabled", false, true, false, false},
-      {"split enabled", true, true, true, false},
+      {"spanning disabled", false, false, false},
+      {"split disabled", true, false, false},
+      {"spanning enabled", false, true, false},
+      {"split enabled", true, true, true},
   };
 
   for (const auto& test_case : test_cases) {
@@ -381,16 +411,6 @@ TEST_P(ExtensionProtocolsIncognitoTest, IncognitoRequest) {
   }
 }
 
-void CheckForContentLengthHeader(const GetResult& get_result) {
-  std::string content_length = get_result.GetResponseHeaderByName(
-      net::HttpRequestHeaders::kContentLength);
-
-  EXPECT_FALSE(content_length.empty());
-  int length_value = 0;
-  EXPECT_TRUE(base::StringToInt(content_length, &length_value));
-  EXPECT_GT(length_value, 0);
-}
-
 // Tests getting a resource for a component extension works correctly, both when
 // the extension is enabled and when it is disabled.
 TEST_P(ExtensionProtocolsTest, ComponentResourceRequest) {
@@ -404,9 +424,12 @@ TEST_P(ExtensionProtocolsTest, ComponentResourceRequest) {
         RequestOrLoad(extension->GetResourceURL("webstore_icon_16.png"),
                       network::mojom::RequestDestination::kVideo);
     EXPECT_EQ(net::OK, get_result.result());
-    CheckForContentLengthHeader(get_result);
+    EXPECT_TRUE(get_result.HasContentLengthHeader());
     EXPECT_EQ("image/png", get_result.GetResponseHeaderByName(
                                net::HttpRequestHeaders::kContentType));
+    // TODO(crbug.com/333078381): remove "Content-Security-Policy" header from
+    // images.
+    EXPECT_TRUE(get_result.HeaderIsPresent("Content-Security-Policy"));
   }
 
   // And then test it with the extension disabled.
@@ -416,7 +439,7 @@ TEST_P(ExtensionProtocolsTest, ComponentResourceRequest) {
         RequestOrLoad(extension->GetResourceURL("webstore_icon_16.png"),
                       network::mojom::RequestDestination::kVideo);
     EXPECT_EQ(net::OK, get_result.result());
-    CheckForContentLengthHeader(get_result);
+    EXPECT_TRUE(get_result.HasContentLengthHeader());
     EXPECT_EQ("image/png", get_result.GetResponseHeaderByName(
                                net::HttpRequestHeaders::kContentType));
   }
@@ -439,20 +462,240 @@ TEST_P(ExtensionProtocolsTest, ResourceRequestResponseHeaders) {
     EXPECT_TRUE(base::StartsWith(etag, "\"", base::CompareCase::SENSITIVE));
     EXPECT_TRUE(base::EndsWith(etag, "\"", base::CompareCase::SENSITIVE));
 
-    std::string revalidation_header =
-        get_result.GetResponseHeaderByName("cache-control");
-    EXPECT_EQ("no-cache", revalidation_header);
+    EXPECT_EQ("no-cache", get_result.GetResponseHeaderByName("Cache-Control"));
 
-    // We set test.dat as web-accessible, so it should have a CORS header.
-    std::string access_control =
-        get_result.GetResponseHeaderByName("Access-Control-Allow-Origin");
-    EXPECT_EQ("*", access_control);
+    // We set test.dat as web-accessible, so it should have CORS headers.
+    EXPECT_EQ(
+        "*", get_result.GetResponseHeaderByName("Access-Control-Allow-Origin"));
+    EXPECT_EQ("cross-origin", get_result.GetResponseHeaderByName(
+                                  "Cross-Origin-Resource-Policy"));
 
     // Only background service worker script should be allowed to load as a
     // service worker.
-    std::string service_worker_allowed =
-        get_result.GetResponseHeaderByName("Service-Worker-Allowed");
-    EXPECT_TRUE(service_worker_allowed.empty());
+    EXPECT_FALSE(get_result.HeaderIsPresent("Service-Worker-Allowed"));
+
+    // COEP header does not make sense in non-document responses.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Embedder-Policy"));
+
+    // CSP header does not make sense in non-document responses
+    // TODO(crbug.com/333078381): remove "Content-Security-Policy" header from
+    // non-document responses and update this check.
+    EXPECT_TRUE(get_result.HeaderIsPresent("Content-Security-Policy"));
+
+    // COOP header does not make sense in non-document responses.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Opener-Policy"));
+  }
+}
+
+// Tests that request for background script returns a few expected response
+// headers.
+TEST_P(ExtensionProtocolsTest, BackgroundScriptRequestResponseHeaders) {
+  const int manifest_version = GetParam();
+  scoped_refptr<const Extension> extension =
+      CreateTestResponseHeaderExtension(manifest_version);
+  AddExtension(extension, false, false);
+
+  {
+    auto get_result =
+        RequestOrLoad(extension->GetResourceURL("background.js"),
+                      network::mojom::RequestDestination::kServiceWorker);
+    EXPECT_EQ(net::OK, get_result.result());
+
+    // Check that cache-related headers are set.
+    std::string etag = get_result.GetResponseHeaderByName("ETag");
+    EXPECT_TRUE(base::StartsWith(etag, "\"", base::CompareCase::SENSITIVE));
+    EXPECT_TRUE(base::EndsWith(etag, "\"", base::CompareCase::SENSITIVE));
+
+    EXPECT_EQ("no-cache", get_result.GetResponseHeaderByName("Cache-Control"));
+
+    // Background scripts are not web-accessible, so do not need CORS headers.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Access-Control-Allow-Origin"));
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Resource-Policy"));
+
+    // Only background service worker script should be allowed to load as a
+    // service worker.
+    if (manifest_version == 3) {
+      EXPECT_EQ("/",
+                get_result.GetResponseHeaderByName("Service-Worker-Allowed"));
+    } else {
+      EXPECT_FALSE(get_result.HeaderIsPresent("Service-Worker-Allowed"));
+    }
+
+    // COEP header does not make sense in non-document responses.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Embedder-Policy"));
+
+    // Even though CSP is currently not respected for service workers, it
+    // probably should be. We continue to send a CSP header for service worker
+    // scripts for when this changes.
+    // See also
+    // https://github.com/w3c/webappsec-csp/issues/336#issuecomment-1274730655
+    if (manifest_version == 3) {
+      EXPECT_EQ("script-src 'self';",
+                get_result.GetResponseHeaderByName("Content-Security-Policy"));
+    } else {
+      EXPECT_EQ(
+          "script-src 'self' blob: filesystem:; object-src 'self' blob: "
+          "filesystem:;",
+          get_result.GetResponseHeaderByName("Content-Security-Policy"));
+    }
+
+    // COOP header does not make sense in non-document responses.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Opener-Policy"));
+
+    if (manifest_version == 3) {
+      // TODO(crbug.com/40282364): Add check for Origin-Trial header.
+    } else {
+      // In MV2 Origin-Trial token is included in background page responses and
+      // omitted for the actual scripts.
+      EXPECT_FALSE(get_result.HeaderIsPresent("Origin-Trial"));
+    }
+  }
+}
+
+// TODO(crbug.com/333078381): Add a test checking that:
+// - when background.page or background.service_worker is specified requesting
+//   generated background page fails
+// - when no background is specified, requesting generated background page fails
+
+TEST_P(ExtensionProtocolsTest, BackgroundPageRequestResponseHeaders) {
+  const int manifest_version = GetParam();
+  scoped_refptr<const Extension> extension =
+      CreateTestResponseHeaderExtension(manifest_version);
+  AddExtension(extension, false, false);
+
+  {
+    auto get_result = RequestOrLoad(
+        extension->GetResourceURL(kGeneratedBackgroundPageFilename),
+        network::mojom::RequestDestination::kDocument);
+    EXPECT_EQ(net::OK, get_result.result());
+
+    // Check that cache-related headers are omitted
+    // TODO(crbug.com/333078381): consider adding these headers to generated
+    // pages.
+    EXPECT_FALSE(get_result.HeaderIsPresent("ETag"));
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cache-Control"));
+
+    // Background pages are not web-accessible, so do not need CORS headers.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Access-Control-Allow-Origin"));
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Resource-Policy"));
+
+    // Background page does not need to be loaded as a service worker.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Service-Worker-Allowed"));
+
+    // Background page does not load cross-origin content so does not need COEP
+    // header.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Embedder-Policy"));
+
+    if (manifest_version == 3) {
+      EXPECT_EQ("script-src 'self';",
+                get_result.GetResponseHeaderByName("Content-Security-Policy"));
+    } else {
+      EXPECT_EQ(
+          "script-src 'self' blob: filesystem:; object-src 'self' blob: "
+          "filesystem:;",
+          get_result.GetResponseHeaderByName("Content-Security-Policy"));
+    }
+
+    // COOP header does not make sense in non-document responses.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Opener-Policy"));
+
+    // TODO(crbug.com/40282364): Add check for Origin-Trial header.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Origin-Trial"));
+  }
+}
+
+// Tests that resources from imported module extensions get appropriately
+// loaded with proper headers or rejected
+TEST_P(ExtensionProtocolsTest, ModuleRequestResponseHeaders) {
+  const int manifest_version = GetParam();
+  scoped_refptr<const Extension> module_extension =
+      CreateTestModuleResponseHeaderExtension(manifest_version);
+  scoped_refptr<const Extension> importer_extension =
+      CreateTestModuleImporterResponseHeaderExtension(manifest_version,
+                                                      module_extension->id());
+  AddExtension(module_extension, false, false);
+  AddExtension(importer_extension, false, false);
+
+  // Not imported id will fail.
+  {
+    auto get_result =
+        RequestOrLoad(importer_extension->GetResourceURL(
+                          "_modules/modaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/test.dat"),
+                      network::mojom::RequestDestination::kDocument);
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
+  }
+  {
+    auto get_result =
+        RequestOrLoad(importer_extension->GetResourceURL(
+                          "_modules/modaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/test.dat"),
+                      network::mojom::RequestDestination::kServiceWorker);
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
+  }
+
+  // Imported resources get loaded with proper headers (inherited from
+  // importer).
+  {
+    auto get_result =
+        RequestOrLoad(importer_extension->GetResourceURL(
+                          "_modules/" + module_extension->id() + "/test.dat"),
+                      network::mojom::RequestDestination::kDocument);
+    EXPECT_EQ(net::OK, get_result.result());
+
+    // Check that cache-related headers are set.
+    std::string etag = get_result.GetResponseHeaderByName("ETag");
+    EXPECT_TRUE(base::StartsWith(etag, "\"", base::CompareCase::SENSITIVE));
+    EXPECT_TRUE(base::EndsWith(etag, "\"", base::CompareCase::SENSITIVE));
+
+    // Background pages are not web-accessible, so do not need CORS headers.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Access-Control-Allow-Origin"));
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Resource-Policy"));
+
+    // Background page does not need to be loaded as a service worker.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Service-Worker-Allowed"));
+
+    // Background page does not load cross-origin content so does not need COEP
+    // header.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Embedder-Policy"));
+
+    if (manifest_version == 3) {
+      EXPECT_EQ("script-src 'self';",
+                get_result.GetResponseHeaderByName("Content-Security-Policy"));
+    } else {
+      EXPECT_EQ(
+          "script-src 'self' blob: filesystem:; object-src 'self' blob: "
+          "filesystem:;",
+          get_result.GetResponseHeaderByName("Content-Security-Policy"));
+    }
+
+    // COOP header does not make sense in non-document responses.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Opener-Policy"));
+
+    // TODO(crbug.com/40282364): Add check for Origin-Trial header
+    // it should be inherited from importer.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Origin-Trial"));
+  }
+}
+
+TEST_P(ExtensionProtocolsTest, InvalidBackgroundScriptRequest) {
+  const int manifest_version = GetParam();
+  scoped_refptr<const Extension> extension =
+      CreateTestResponseHeaderExtension(manifest_version);
+  AddExtension(extension, false, false);
+
+  // Requesting script from background key with invalid destination is
+  // forbidden.
+  for (network::mojom::RequestDestination destination : {
+           // TODO(crbug.com/333078381): carefully consider which other
+           // request destinations should be allowed or blocked and update
+           // this test
+           network::mojom::RequestDestination::kJson,
+           network::mojom::RequestDestination::kStyle,
+           network::mojom::RequestDestination::kVideo,
+           network::mojom::RequestDestination::kWorker,
+       }) {
+    auto get_result =
+        RequestOrLoad(extension->GetResourceURL("background.js"), destination);
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result()) << destination;
   }
 }
 
@@ -679,7 +922,6 @@ TEST_P(ExtensionProtocolsTest, VerifyScriptListedAsIcon) {
 TEST_P(ExtensionProtocolsTest, MimeTypesForKnownFiles) {
   TestExtensionDir test_dir;
   const int manifest_version = GetParam();
-  EXPECT_TRUE(manifest_version == 2 || manifest_version == 3);
   constexpr char kManifestV2[] = R"(
       {
         "name": "Test Ext",
@@ -729,11 +971,11 @@ TEST_P(ExtensionProtocolsTest, MimeTypesForKnownFiles) {
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.file_name);
-    auto result = RequestOrLoad(extension->GetResourceURL(test_case.file_name),
-                                network::mojom::RequestDestination::kEmpty);
     EXPECT_EQ(
         test_case.expected_mime_type,
-        result.GetResponseHeaderByName(net::HttpRequestHeaders::kContentType));
+        RequestOrLoad(extension->GetResourceURL(test_case.file_name),
+                      network::mojom::RequestDestination::kEmpty)
+            .GetResponseHeaderByName(net::HttpRequestHeaders::kContentType));
   }
 }
 
