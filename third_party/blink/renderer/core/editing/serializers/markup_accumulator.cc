@@ -568,18 +568,21 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
     // User agent shadow roots are never serialized.
     return std::pair<ShadowRoot*, HTMLTemplateElement*>();
   }
-  const bool explicitly_included =
-      shadow_root_inclusion_.include_shadow_roots.Contains(shadow_root);
-  if (!explicitly_included) {
-    const bool closed_root = shadow_root->GetMode() == ShadowRootMode::kClosed;
-    const bool only_if_explicitly_included =
-        shadow_root_inclusion_.behavior == Behavior::kOnlyProvidedShadowRoots;
-    const bool not_serializable =
-        shadow_root_inclusion_.behavior ==
-            Behavior::kIncludeAllSerializableShadowRoots &&
-        !shadow_root->serializable();
-    if (closed_root || only_if_explicitly_included || not_serializable) {
-      return std::pair<ShadowRoot*, HTMLTemplateElement*>();
+  if (!shadow_root_inclusion_.include_shadow_roots.Contains(shadow_root)) {
+    std::pair<ShadowRoot*, HTMLTemplateElement*> no_serialization;
+    switch (shadow_root_inclusion_.behavior) {
+      case Behavior::kOnlyProvidedShadowRoots:
+        return no_serialization;
+      case Behavior::kIncludeAllOpenShadowRoots:
+        if (shadow_root->GetMode() == ShadowRootMode::kClosed) {
+          return no_serialization;
+        }
+        break;
+      case Behavior::kIncludeAnySerializableShadowRoots:
+        if (!shadow_root->serializable()) {
+          return no_serialization;
+        }
+        break;
     }
   }
 

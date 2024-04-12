@@ -1731,7 +1731,7 @@ String ContainerNode::getHTML(const GetHTMLOptions* options,
   DCHECK(IsShadowRoot() || IsElementNode());
   ShadowRootInclusion shadow_root_inclusion{
       options->serializableShadowRoots()
-          ? ShadowRootInclusion::Behavior::kIncludeAllSerializableShadowRoots
+          ? ShadowRootInclusion::Behavior::kIncludeAnySerializableShadowRoots
           : ShadowRootInclusion::Behavior::kOnlyProvidedShadowRoots};
   for (auto& shadow_root : options->shadowRoots()) {
     shadow_root_inclusion.include_shadow_roots.insert(shadow_root);
