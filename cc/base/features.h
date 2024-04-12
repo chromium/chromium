@@ -175,6 +175,9 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsTracingCalculationReduction);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPaintWithGainmapShader);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPaintWithGlobalToneMapFilter);
 
+// When enabled we will restore older FrameSequenceTracker sequence order
+// enforcing that can miss backfilled frames.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsBackfillAdjustmentHoldback);
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

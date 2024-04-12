@@ -193,4 +193,8 @@ BASE_FEATURE(kPaintWithGlobalToneMapFilter,
              "PaintWithGlobalToneMapFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMetricsBackfillAdjustmentHoldback,
+             "MetricsBackfillAdjustmentHoldback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
