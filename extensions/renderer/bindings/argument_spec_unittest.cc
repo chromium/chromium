@@ -663,6 +663,41 @@ TEST_F(ArgumentSpecUnitTest, AdditionalPropertiesTest) {
   }
 }
 
+TEST_F(ArgumentSpecUnitTest, IgnoreAdditionalPropertiesTest) {
+  {
+    constexpr char kPropertiesWithIgnoreAdditionalProperties[] =
+        R"({
+             'type': 'object',
+             'properties': {
+               'prop1': {'type': 'string'}
+             },
+             'ignoreAdditionalProperties': true
+           })";
+    ArgumentSpec spec(
+        DictValueFromString(kPropertiesWithIgnoreAdditionalProperties));
+    ExpectSuccess(spec, "({prop1: 'alpha', prop2: 42, prop3: {foo: 'bar'}})",
+                  "{'prop1':'alpha'}");
+    ExpectSuccess(spec, "({prop1: 'foo'})", "{'prop1':'foo'}");
+    ExpectFailure(spec, "({prop2: 42, prop3: {foo: 'bar'}})",
+                  MissingRequiredProperty("prop1"));
+    ExpectFailure(spec, "({prop1: 42})",
+                  api_errors::PropertyError(
+                      "prop1", InvalidType(kTypeString, kTypeInteger)));
+  }
+  {
+    constexpr char kEmptyPropertiesWithIgnoreAdditionalProperties[] =
+        R"({
+             'type': 'object',
+             'properties': {},
+             'ignoreAdditionalProperties': true
+           })";
+    ArgumentSpec spec(
+        DictValueFromString(kEmptyPropertiesWithIgnoreAdditionalProperties));
+    ExpectSuccess(spec, "({prop1: 'alpha', prop2: {foo: 'bar'}})", "{}");
+    ExpectSuccess(spec, "({})", "{}");
+  }
+}
+
 TEST_F(ArgumentSpecUnitTest, InstanceOfTest) {
   {
     const char kInstanceOfRegExp[] =
