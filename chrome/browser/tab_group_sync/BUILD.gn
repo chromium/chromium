@@ -48,6 +48,7 @@ if (is_android) {
       "//components/saved_tab_groups:java",
       "//components/tab_groups:tab_groups_java",
       "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_no_recycler_view_java",
       "//url:url_java",
     ]

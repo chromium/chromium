@@ -1398,6 +1398,16 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
     }
 
+    /** Returns the sync ID associated with the tab group. */
+    public String getTabGroupSyncId(int rootId) {
+        return TabGroupSyncIdUtils.getTabGroupSyncId(rootId);
+    }
+
+    /** Stores the sync ID associated with the tab group. */
+    public void setTabGroupSyncId(int rootId, String syncId) {
+        TabGroupSyncIdUtils.putTabGroupSyncId(rootId, syncId);
+    }
+
     private static Token getOrCreateTabGroupId(@NonNull Tab tab) {
         return getOrCreateTabGroupIdWithDefault(tab, null);
     }

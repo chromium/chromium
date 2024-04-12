@@ -30,17 +30,16 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 
-/** Tests for {@link TabGroupTitleUtils}. */
+/** Tests for {@link TabGroupSyncIdUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabGroupTitleUtilsUnitTest {
+public class TabGroupSyncIdUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
-
-    private static final int TAB_ID = 456;
-    private static final String TAB_TITLE = "Tab";
+    private static final String TAB_GROUP_SYNC_IDS_FILE_NAME = "tab_group_sync_ids";
+    private static final int LOCAL_ID = 456;
+    private static final String SYNC_ID = "SyncID";
 
     @Mock Context mContext;
     @Mock SharedPreferences mSharedPreferences;
@@ -52,7 +51,7 @@ public class TabGroupTitleUtilsUnitTest {
     public void setUp() {
         doReturn(mSharedPreferences)
                 .when(mContext)
-                .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
+                .getSharedPreferences(TAB_GROUP_SYNC_IDS_FILE_NAME, Context.MODE_PRIVATE);
         doReturn(mEditor).when(mSharedPreferences).edit();
         doReturn(mRemoveEditor).when(mEditor).remove(any(String.class));
         doReturn(mPutStringEditor).when(mEditor).putString(any(String.class), any(String.class));
@@ -60,26 +59,26 @@ public class TabGroupTitleUtilsUnitTest {
     }
 
     @Test
-    public void testDeleteTabGroupTitle() {
-        TabGroupTitleUtils.deleteTabGroupTitle(TAB_ID);
+    public void testDeleteTabGroupSyncId() {
+        TabGroupSyncIdUtils.deleteTabGroupSyncId(LOCAL_ID);
 
-        verify(mEditor).remove(eq(String.valueOf(TAB_ID)));
+        verify(mEditor).remove(eq(String.valueOf(LOCAL_ID)));
         verify(mRemoveEditor).apply();
     }
 
     @Test
-    public void testGetTabGroupTitle() {
-        // Mock that we have a stored tab group title with reference to TAB_ID.
-        when(mSharedPreferences.getString(String.valueOf(TAB_ID), null)).thenReturn(TAB_TITLE);
+    public void testGetTabGroupSyncId() {
+        // Mock that we have a stored tab group sync ID with reference to LOCAL_ID.
+        when(mSharedPreferences.getString(String.valueOf(LOCAL_ID), null)).thenReturn(SYNC_ID);
 
-        assertThat(TabGroupTitleUtils.getTabGroupTitle(TAB_ID), equalTo(TAB_TITLE));
+        assertThat(TabGroupSyncIdUtils.getTabGroupSyncId(LOCAL_ID), equalTo(SYNC_ID));
     }
 
     @Test
-    public void testStoreTabGroupTitle() {
-        TabGroupTitleUtils.storeTabGroupTitle(TAB_ID, TAB_TITLE);
+    public void testStoreTabGroupSyncId() {
+        TabGroupSyncIdUtils.putTabGroupSyncId(LOCAL_ID, SYNC_ID);
 
-        verify(mEditor).putString(eq(String.valueOf(TAB_ID)), eq(TAB_TITLE));
+        verify(mEditor).putString(eq(String.valueOf(LOCAL_ID)), eq(SYNC_ID));
         verify(mPutStringEditor).apply();
     }
 }

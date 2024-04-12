@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -130,6 +131,8 @@ public class TabGroupModelFilterUnitTest {
     private static final int INVALID_COLOR_ID = -1;
     private static final int COLOR_ID = 0;
 
+    private static final String TAB_GROUP_SYNC_IDS_FILE_NAME = "tab_group_sync_ids";
+
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
@@ -140,6 +143,7 @@ public class TabGroupModelFilterUnitTest {
     @Mock Context mContext;
     @Mock SharedPreferences mSharedPreferencesTitle;
     @Mock SharedPreferences mSharedPreferencesColor;
+    @Mock SharedPreferences mSharedPreferencesSyncId;
     @Mock SharedPreferences.Editor mEditor;
     @Mock TabStateAttributes.Observer mAttributesObserver;
 
@@ -370,11 +374,15 @@ public class TabGroupModelFilterUnitTest {
         doReturn(mSharedPreferencesColor)
                 .when(mContext)
                 .getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE);
+        doReturn(mSharedPreferencesSyncId)
+                .when(mContext)
+                .getSharedPreferences(TAB_GROUP_SYNC_IDS_FILE_NAME, Context.MODE_PRIVATE);
         ContextUtils.initApplicationContextForTests(mContext);
         when(mSharedPreferencesTitle.getString(anyString(), any())).thenReturn(TAB_TITLE);
         when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(INVALID_COLOR_ID);
         when(mSharedPreferencesTitle.edit()).thenReturn(mEditor);
         when(mSharedPreferencesColor.edit()).thenReturn(mEditor);
+        when(mSharedPreferencesSyncId.edit()).thenReturn(mEditor);
         when(mEditor.putString(anyString(), anyString())).thenReturn(mEditor);
         when(mEditor.putInt(anyString(), anyInt())).thenReturn(mEditor);
 
@@ -1943,5 +1951,14 @@ public class TabGroupModelFilterUnitTest {
         mTabGroupModelFilter.setTabGroupColor(TAB2_ROOT_ID, TabGroupColorId.GREY);
         verify(mTabGroupModelFilterObserver)
                 .didChangeTabGroupColor(TAB2_ROOT_ID, TabGroupColorId.GREY);
+    }
+
+    @Test
+    public void testSetTabGroupSyncId() {
+        String prefKey = String.valueOf(TAB2_ROOT_ID);
+        mTabGroupModelFilter.setTabGroupSyncId(TAB2_ROOT_ID, "Foo");
+        verify(mEditor).putString(eq(prefKey), eq("Foo"));
+        mTabGroupModelFilter.getTabGroupSyncId(TAB2_ROOT_ID);
+        verify(mSharedPreferencesSyncId).getString(eq(prefKey), eq(null));
     }
 }
