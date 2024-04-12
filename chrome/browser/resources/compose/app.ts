@@ -112,7 +112,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         value: loadTimeData.getBoolean('enableAnimations'),
         reflectToAttribute: true,
       },
-      enableUIRefinements: {
+      enableUiRefinements: {
         type: Boolean,
         value: loadTimeData.getBoolean('enableRefinedUi'),
         reflectToAttribute: true,

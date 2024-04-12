@@ -148,17 +148,13 @@
 
   #body {
     --results-background_: rgb(234, 240, 249);
-    --scrollbar-width_: 4px;
     box-sizing: border-box;
     grid-area: body;
     display: grid;
     grid-template-areas: "textarea" "bodyContent";
     grid-auto-columns: 100%;
     max-height: 220px;
-    overflow: auto;
     padding: 0 20px;
-    padding-inline-end: calc(20px - var(--scrollbar-width_));
-    scrollbar-gutter: stable;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -176,39 +172,61 @@
     --results-background_: var(--color-compose-dialog-result-background);
   }
 
-  #body.is-scrolled {
+  /* Set scroll-related styles if UI refinements are not enabled. */
+  :host(:not([enable-ui-refinements])) #body {
+    --scrollbar-width_: 4px;
+    overflow: auto;
+    padding-inline-end: calc(20px - var(--scrollbar-width_));
+    scrollbar-gutter: stable;
+  }
+
+  :host(:not([enable-ui-refinements])) #body.is-scrolled {
     border-top: var(--cr-hairline);
   }
 
-  :host-context([chrome-refresh-2023]) #body.is-scrolled {
+  :host(:not([enable-ui-refinements])) :host-context([chrome-refresh-2023])
+      #body.is-scrolled {
     border-top: solid 1px var(--color-compose-dialog-divider);
   }
 
-  #body.can-scroll:not(.scrolled-to-bottom) {
+  :host(:not([enable-ui-refinements]))
+      #body.can-scroll:not(.scrolled-to-bottom) {
     border-bottom: var(--cr-hairline);
   }
 
-  :host-context([chrome-refresh-2023])
+  :host(:not([enable-ui-refinements])) :host-context([chrome-refresh-2023])
       #body.can-scroll:not(.scrolled-to-bottom) {
     border-bottom: solid 1px var(--color-compose-dialog-divider);
   }
 
-  #body::-webkit-scrollbar {
+  :host(:not([enable-ui-refinements])) :host([loading-indicator-shown_]) #body {
+    /* When loading, the heights of contents within #body are in flux due to
+    * animations. Force the entire #body to be visible to prevent scrollbars
+    * from flickering, and remove scrollbar width from padding. */
+    overflow: visible;
+    padding-inline-end: 20px;
+  }
+
+  /* Different elements are made scrollable depending on whether UI refinements
+   * are enabled */
+  #body::-webkit-scrollbar, #resultTextContainer::-webkit-scrollbar {
     background: transparent;
     width: var(--scrollbar-width_);
   }
 
-  #body::-webkit-scrollbar-thumb {
+  #body::-webkit-scrollbar-thumb,
+      #resultTextContainer::-webkit-scrollbar-thumb {
     background: var(--google-grey-300);
   }
 
-  @media (prefers-color-scheme: dark) {
-    #body::-webkit-scrollbar-thumb {
+  @media (prefers-color-scheme: dark) { #body::-webkit-scrollbar-thumb,
+        #resultTextContainer::-webkit-scrollbar-thumb {
       background: var(--google-grey-500);
     }
   }
 
-  :host-context([chrome-refresh-2023]) #body::-webkit-scrollbar-thumb {
+  :host-context([chrome-refresh-2023]) #body::-webkit-scrollbar-thumb,
+      #resultTextContainer::-webkit-scrollbar-thumb {
     background: var(--color-compose-dialog-scrollbar-thumb);
   }
 
@@ -216,14 +234,6 @@
     /* There is no footer in the loading screen. */
     grid-template-areas: "body";
     height: var(--compose-loading-body-and-footer-height);
-  }
-
-  :host([loading-indicator-shown_]) #body {
-    /* When loading, the heights of contents within #body are in flux due to
-     * animations. Force the entire #body to be visible to prevent scrollbars
-     * from flickering, and remove scrollbar width from padding. */
-    overflow: visible;
-    padding-inline-end: 20px;
   }
 
   #textarea {
@@ -269,14 +279,46 @@
     flex-direction: column;
     width: 100%;
     box-sizing: border-box;
+    padding-top: 16px;
+  }
+
+  :host(:not([enable-ui-refinements])) #resultContainerInner {
     padding: 16px;
+  }
+
+  /* #resultTextContainer is only styled if UI refinements are applied */
+  :host([enable-ui-refinements]) #resultTextContainer:not(.can-scroll) {
+    margin-bottom: 16px;
+  }
+
+  :host([enable-ui-refinements]) #resultTextContainer {
+    max-height: 113px;
+    overflow: auto;
+    /* Incorporates width of righthand scrollbar */
+    padding-inline-start: 16px;
+    margin-inline-end: 4px;
+
+    --scrollbar-width_: 4px;
+    padding-inline-end: calc(12px - var(--scrollbar-width_));
+    scrollbar-gutter: stable;
+  }
+
+  :host([enable-ui-refinements]) #resultOptionsContainer {
+    border-top: 1px solid #D3E3FD;
   }
 
   #resultOptions {
     display: flex;
     align-items: flex-end;
     gap: 8px;
+  }
+
+  /* Adjust padding and margins based on whether UI refinements is enabled */
+  :host(:not([enable-ui-refinements])) #resultOptions {
     margin-block-start: 16px;
+  }
+  :host([enable-ui-refinements]) #resultOptions {
+    padding: 8px 12px;
   }
 
   #resultFooter[inert], #resultOptions[inert] {
@@ -289,6 +331,18 @@
     min-width: 96px;
     height: auto;
     width: auto;
+  }
+
+  :host([enable-ui-refinements]) #resultOptions .md-select {
+    --md-select-side-padding: 8px;
+    min-height: 24px;
+    min-width: 60px;
+    line-height: 16px;
+    border: 0;
+    border-radius: 100px;
+    font-family: Roboto, "Noto Sans", Arial, sans-serif;
+    font-weight: 500;
+    color: var(--cr-secondary-text-color);
   }
 
   :host-context(html:not([chrome-refresh-2023])) #resultOptions .md-select {
@@ -306,6 +360,11 @@
     margin-inline-start: auto;
   }
 
+  :host([enable-ui-refinements]) .icon-buttons-row {
+    grid-auto-columns: auto;
+    gap: 10px;
+  }
+
   .icon-buttons-row cr-icon-button {
     --cr-icon-button-fill-color: var(--cr-secondary-text-color);
     --cr-icon-button-icon-size: var(--cr-icon-size);
@@ -314,6 +373,28 @@
 
   :host-context([chrome-refresh-2023]) .icon-buttons-row cr-icon-button {
     --cr-icon-button-fill-color: var(--color-compose-dialog-result-icon);
+  }
+
+  /* cr-button is only used when UI refinements is enabled */
+  .icon-buttons-row cr-button {
+    --cr-button-text-color: var(--cr-secondary-text-color);
+    margin: 0;
+    padding: 0;
+    min-height: 24px;
+    height: auto;
+    border: 0;
+    gap: 4px;
+  }
+
+  :host-context([chrome-refresh-2023]) .icon-buttons-row cr-button {
+    --cr-button-text-color: var(--color-compose-dialog-result-icon);
+  }
+
+  /* Vertical divider between buttons */
+  :host([enable-ui-refinements]) .icon-buttons-row
+      .button-container:last-child {
+    padding-left: 10px;
+    border-left: 1px solid #A8C7FA;
   }
 
   .footer {
@@ -414,6 +495,7 @@
   .footer[hidden],
   .result-container[hidden],
   .md-select[hidden],
+  .icon-buttons-row cr-icon-button[hidden],
   #loading[hidden],
   #editContainer[hidden] {
     display: none;
@@ -480,7 +562,7 @@
   </div>
 
   <div id="bodyAndFooter">
-    <div id="body" scrollable>
+    <div id="body" scrollable$="[[!enableUiRefinements]]">
       <compose-textarea id="textarea" value="{{input_}}"
         readonly="[[submitted_]]" allow-exiting-readonly-mode="[[!loading_]]"
         on-edit-click="onEditClick_" input-params="[[inputParams_]]">
@@ -501,52 +583,66 @@
       <div id="resultContainer" class="result-container"
           hidden="[[!hasOutput_]]">
         <div id="resultContainerInner">
-          <compose-result-text id="resultText" text-input="[[responseText_]]"
+          <div id="resultTextContainer" scrollable$="[[enableUiRefinements]]">
+            <compose-result-text id="resultText" text-input="[[responseText_]]"
               is-output-complete="{{outputComplete_}}"
               has-output="{{hasOutput_}}"
               has-partial-output="{{hasPartialOutput_}}">
-          </compose-result-text>
-          <div id="resultOptions"
-              inert$="[[!outputComplete_]]">
-            <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
-                aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_"
-                hidden="[[enableUIRefinements]]">
-              <template is="dom-repeat" items="[[lengthOptions_]]">
-                <option value="[[item.value]]" disabled$="[[item.isDefault]]"
-                    selected$="[[item.isDefault]]">
-                  [[item.label]]
-                </option>
-              </template>
-            </select>
-            <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
-                aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_"
-                hidden="[[enableUIRefinements]]">
-              <template is="dom-repeat" items="[[toneOptions_]]">
-                <option value="[[item.value]]" disabled$="[[item.isDefault]]"
-                    selected$="[[item.isDefault]]">
-                  [[item.label]]
-                </option>
-              </template>
-            </select>
-            <select class="md-select" id="modifierMenu" 
-              value="[[selectedModifier_]]" 
-              aria-label="$i18n{modifierMenuTitle}"
-              on-change="onModifierChanged_" hidden="[[!enableUIRefinements]]">
-              <template is="dom-repeat" items="[[modifierOptions_]]">
-                <option value="[[item.value]]" disabled$="[[item.isDefault]]" 
-                  selected$="[[item.isDefault]]">
-                  [[item.label]]
-                </option>
-              </template>
-            </select>
-            <div class="icon-buttons-row">
-              <cr-icon-button id="undoButton" iron-icon="compose:undo"
-                title="$i18n{undo}"  disabled="[[!undoEnabled_]]"
-                on-click="onUndoClick_">
-              </cr-icon-button>
-              <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
-                title="$i18n{resubmit}" on-click="onRefresh_">
-              </cr-icon-button>
+            </compose-result-text>
+          </div>
+          <div id="resultOptionsContainer">
+            <div id="resultOptions" inert$="[[!outputComplete_]]">
+              <select class="md-select" id="lengthMenu"
+                value="[[selectedLength_]]" aria-label="$i18n{lengthMenuTitle}"
+                on-change="onLengthChanged_" hidden="[[enableUiRefinements]]">
+                <template is="dom-repeat" items="[[lengthOptions_]]">
+                  <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                      selected$="[[item.isDefault]]">
+                    [[item.label]]
+                  </option>
+                </template>
+              </select>
+              <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
+                  aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_"
+                  hidden="[[enableUiRefinements]]">
+                <template is="dom-repeat" items="[[toneOptions_]]">
+                  <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                      selected$="[[item.isDefault]]">
+                    [[item.label]]
+                  </option>
+                </template>
+              </select>
+              <select class="md-select" id="modifierMenu"
+                  value="[[selectedModifier_]]"
+                  aria-label="$i18n{modifierMenuTitle}"
+                  on-change="onModifierChanged_"
+                  hidden="[[!enableUiRefinements]]">
+                <template is="dom-repeat" items="[[modifierOptions_]]">
+                  <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                      selected$="[[item.isDefault]]">
+                    [[item.label]]
+                  </option>
+                </template>
+              </select>
+              <div class="icon-buttons-row">
+                <cr-icon-button id="undoButton" iron-icon="compose:mvpUndo"
+                  title="$i18n{undo}" disabled="[[!undoEnabled_]]"
+                  on-click="onUndoClick_" hidden="[[enableUiRefinements]]">
+                </cr-icon-button>
+                <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
+                  title="$i18n{resubmit}" on-click="onRefresh_"
+                  hidden="[[enableUiRefinements]]">
+                </cr-icon-button>
+                <div class="button-container" hidden="[[!enableUiRefinements]]">
+                  <cr-button id="undoButtonRefined" title="$i18n{undo}"
+                    disabled="[[!undoEnabled_]]" on-click="onUndoClick_">
+                    <div aria-hidden="true"> $i18n{undoButtonText} </div>
+                    <iron-icon aria-hidden="true" slot="suffix-icon"
+                      icon="compose:undo">
+                    </iron-icon>
+                  </cr-button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
