@@ -187,6 +187,10 @@ views::View* GetWindowCaptionButtonContainer() {
   // assume that the triggering window is the window to anchor on. If we adding
   // other triggering UI element, we need to revisit this decision.
   auto* targeting_window_widget = GetTriggeringWindowWidget();
+  if (!targeting_window_widget) {
+    return nullptr;
+  }
+
   auto* root_view = targeting_window_widget->GetRootView();
   if (!root_view) {
     growth::RecordCampaignsManagerError(
