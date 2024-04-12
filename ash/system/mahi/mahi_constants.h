@@ -31,6 +31,7 @@ enum ViewId {
   kOutlinesContainer,
   kSummaryLoadingAnimatedImage,
   kOutlinesLoadingAnimatedImage,
+  kAnswerLoadingAnimatedImage,
   kPanelContentsContainer,
   kQuestionTextfield,
   // Since every text bubble label has this ID, the view lookup will
@@ -62,7 +63,7 @@ inline constexpr int kRefreshBannerStackDepth = 25;
 inline constexpr int kPanelCornerRadius = 16;
 
 // Delays used in `FakeMahiManager` for testing.
-inline constexpr int kFakeMahiManagerLoadAnswerDelaySeconds = 1;
+inline constexpr int kFakeMahiManagerLoadAnswerDelaySeconds = 3;
 inline constexpr int kFakeMahiManagerLoadSummaryDelaySeconds = 4;
 inline constexpr int kFakeMahiManagerLoadOutlinesDelaySeconds = 6;
 

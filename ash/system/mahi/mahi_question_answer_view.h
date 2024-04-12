@@ -39,10 +39,17 @@ class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView,
   bool GetViewVisibility(VisibilityState state) const override;
   void OnUpdated(const MahiUiUpdate& update) override;
 
+  void RemoveLoadingAnimatedImage();
+
   // Tracks the bubble that presents the error introduced by the most recent
   // question. The bubble is created when the error occurs and is destroyed when
   // the user asks a new question.
   views::ViewTracker error_bubble_;
+
+  // Tracks the animated image that shows the loading animation when waiting for
+  // an answer. The image is created when waiting and destroyed when the answer
+  // is loaded.
+  views::ViewTracker answer_loading_animated_image_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, MahiQuestionAnswerView, views::FlexLayoutView)

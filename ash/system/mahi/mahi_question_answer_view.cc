@@ -16,10 +16,14 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
+#include "ash/system/mahi/mahi_animation_utils.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/mahi_ui_update.h"
+#include "ash/system/mahi/resources/grit/mahi_resources.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -31,6 +35,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -230,6 +235,8 @@ bool MahiQuestionAnswerView::GetViewVisibility(VisibilityState state) const {
 void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
   switch (update.type()) {
     case MahiUiUpdateType::kAnswerLoaded:
+      RemoveLoadingAnimatedImage();
+
       AddChildView(
           CreateQuestionAnswerRow(update.GetAnswer(), /*is_question=*/false));
       return;
@@ -237,6 +244,8 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
       RemoveAllChildViews();
       return;
     case MahiUiUpdateType::kErrorReceived:
+      RemoveLoadingAnimatedImage();
+
       // Creates `error_bubble_` if having an inappropriate question error.
       if (update.GetError() == chromeos::MahiResponseStatus::kInappropriate) {
         if (error_bubble_) {
@@ -256,19 +265,47 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
                 .Build());
       }
       return;
-    case MahiUiUpdateType::kQuestionPosted:
+    case MahiUiUpdateType::kQuestionPosted: {
       AddChildView(CreateQuestionAnswerRow(update.GetQuestion(),
                                            /*is_question=*/true));
       // Destroys `error_bubble_` if any when the user posts a new question.
       if (error_bubble_) {
         RemoveChildViewT(error_bubble_.view());
       }
+
+      if (answer_loading_animated_image_) {
+        LOG(ERROR) << "Loading animated image shouldn't be running when a "
+                      "question can be asked";
+        return;
+      }
+
+      auto* answer_loading_animated_image = AddChildView(
+          views::Builder<views::AnimatedImageView>()
+              .SetID(mahi_constants::ViewId::kAnswerLoadingAnimatedImage)
+              .SetAnimatedImage(mahi_animation_utils::GetLottieAnimationData(
+                  IDR_MAHI_LOADING_SUMMARY_ANIMATION))
+              .AfterBuild(base::BindOnce([](views::AnimatedImageView* self) {
+                self->Play(mahi_animation_utils::GetLottiePlaybackConfig(
+                    *self->animated_image()->skottie(),
+                    IDR_MAHI_LOADING_SUMMARY_ANIMATION));
+              }))
+              .Build());
+
+      answer_loading_animated_image_.SetView(answer_loading_animated_image);
+
       return;
+    }
     case MahiUiUpdateType::kOutlinesLoaded:
     case MahiUiUpdateType::kRefreshAvailabilityUpdated:
     case MahiUiUpdateType::kSummaryLoaded:
     case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
       return;
+  }
+}
+
+void MahiQuestionAnswerView::RemoveLoadingAnimatedImage() {
+  if (answer_loading_animated_image_) {
+    RemoveChildViewT(answer_loading_animated_image_.view());
   }
 }
 

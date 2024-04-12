@@ -226,6 +226,20 @@ class MahiPanelViewTest : public AshTestBase {
         std::make_unique<MahiPanelView>(&ui_controller_));
   }
 
+  // Submit a test question by setting the text in the textfield and click send
+  // button.
+  void SubmitTestQuestion(const std::u16string& question = u"fake question") {
+    auto* const question_textfield = views::AsViewClass<views::Textfield>(
+        panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+    ASSERT_TRUE(question_textfield);
+    question_textfield->SetText(question);
+
+    auto* const send_button = panel_view()->GetViewByID(
+        mahi_constants::ViewId::kAskQuestionSendButton);
+    ASSERT_TRUE(send_button);
+    LeftClickOn(send_button);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<MockMahiManager> mock_mahi_manager_;
@@ -876,6 +890,8 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
   auto* const question_answer_view =
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
   ASSERT_TRUE(question_answer_view);
+  // TODO(b/334117521): Create a test API and use it instead of using
+  // `children()`.
   ASSERT_EQ(question_answer_view->children().size(), 2u);
   EXPECT_EQ(u"leading and trailing",
             views::AsViewClass<views::Label>(
@@ -896,6 +912,67 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
                     mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
                 ->GetText(),
             question_text);
+}
+
+// Tests the animated image showing when answer is loading.
+TEST_F(MahiPanelViewTest, AnswerLoadingAnimation) {
+  // Config the mock mahi manager to answer a question asyncly.
+  base::test::TestFuture<void> answer_waiter;
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault(
+          [&answer_waiter](
+              const std::u16string& question, bool current_panel_content,
+              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            ReturnDefaultAnswerAsyncly(answer_waiter,
+                                       MahiResponseStatus::kSuccess,
+                                       std::move(callback));
+          });
+
+  SubmitTestQuestion();
+
+  // After a question is posted and before an answer is loaded, the Q&A view
+  // should show.
+  auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  ASSERT_TRUE(question_answer_view);
+
+  // When the answer is loading, the view should show the question and the
+  // loading image.
+  EXPECT_EQ(question_answer_view->children().size(), 2u);
+  EXPECT_TRUE(question_answer_view->children()[0]->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel));
+  EXPECT_TRUE(question_answer_view->children()[1]->GetViewByID(
+      mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
+
+  // After the answer is loaded, the view should show the question and answer
+  // labels, without the loading image.
+  ASSERT_TRUE(answer_waiter.WaitAndClear());
+  EXPECT_EQ(question_answer_view->children().size(), 2u);
+  EXPECT_TRUE(question_answer_view->children()[0]->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel));
+  EXPECT_TRUE(question_answer_view->children()[1]->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel));
+  EXPECT_FALSE(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
+
+  // Test submitting another question.
+  SubmitTestQuestion();
+
+  EXPECT_EQ(question_answer_view->children().size(), 4u);
+  EXPECT_TRUE(question_answer_view->children()[2]->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel));
+  EXPECT_TRUE(question_answer_view->children()[3]->GetViewByID(
+      mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
+
+  // After 2nd answer is loaded.
+  ASSERT_TRUE(answer_waiter.WaitAndClear());
+  EXPECT_EQ(question_answer_view->children().size(), 4u);
+  EXPECT_TRUE(question_answer_view->children()[2]->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel));
+  EXPECT_TRUE(question_answer_view->children()[3]->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel));
+  EXPECT_FALSE(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
 }
 
 // Verifies the mahi panel view when loading an answer with an error by
@@ -921,15 +998,8 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
                                          std::move(callback));
             });
 
-    auto* const question_textfield = views::AsViewClass<views::Textfield>(
-        panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
-    ASSERT_TRUE(question_textfield);
-    question_textfield->SetText(u"fake question");
+    SubmitTestQuestion();
 
-    auto* const send_button = panel_view()->GetViewByID(
-        mahi_constants::ViewId::kAskQuestionSendButton);
-    ASSERT_TRUE(send_button);
-    LeftClickOn(send_button);
     Mock::VerifyAndClearExpectations(&mock_mahi_manager());
 
     // After a question is posted and before an answer is loaded, the Q&A view
@@ -938,6 +1008,8 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
         panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
     CHECK(question_answer_view);
     EXPECT_TRUE(question_answer_view->GetVisible());
+    EXPECT_TRUE(question_answer_view->GetViewByID(
+        mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
 
     const auto* const summary_outlines_section = panel_view()->GetViewByID(
         mahi_constants::ViewId::kSummaryOutlinesSection);
@@ -957,6 +1029,8 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
     // Wait until an answer is loaded with an error. Verify views' visibility.
     ASSERT_TRUE(answer_waiter.Wait());
     EXPECT_FALSE(question_answer_view->GetVisible());
+    EXPECT_FALSE(question_answer_view->GetViewByID(
+        mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
     EXPECT_FALSE(summary_outlines_section->GetVisible());
     EXPECT_TRUE(error_status_view->GetVisible());
 
@@ -1140,14 +1214,9 @@ TEST_F(MahiPanelViewTest, RefreshSummaryContents_TransitionToSummaryView) {
       mahi_constants::ViewId::kSummaryOutlinesSection);
   const auto* const question_answer_view =
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
-  const auto* const send_button =
-      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
-  auto* const question_textfield = views::AsViewClass<views::Textfield>(
-      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
 
   // Transition to Q&A view by asking a question.
-  question_textfield->SetText(u"question");
-  LeftClickOn(send_button);
+  SubmitTestQuestion();
   EXPECT_FALSE(summary_outlines_section->GetVisible());
   EXPECT_TRUE(question_answer_view->GetVisible());
   EXPECT_EQ(question_answer_view->children().size(), 2u);
@@ -1189,12 +1258,14 @@ TEST_F(MahiPanelViewTest, InappropriateQuestionError) {
   Mock::VerifyAndClearExpectations(&mock_mahi_manager());
 
   // After a question is posted and before an answer is loaded:
-  // 1. The Q&A view should show.
+  // 1. The Q&A view should show. Loading animated image should also show.
   // 2. The error image/label should not exist.
   const auto* const question_answer_view =
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
   CHECK(question_answer_view);
   EXPECT_TRUE(question_answer_view->GetVisible());
+  EXPECT_TRUE(question_answer_view->GetViewByID(
+      mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
   EXPECT_FALSE(panel_view()->GetViewByID(
       mahi_constants::ViewId::kQuestionAnswerErrorImage));
   EXPECT_FALSE(panel_view()->GetViewByID(
@@ -1205,6 +1276,7 @@ TEST_F(MahiPanelViewTest, InappropriateQuestionError) {
   // 2. `error_image_view` shows.
   // 3. `error_label_view` shows with the expected label.
   // 4. `send_button` is re-enabled.
+  // 5. Loading animated image should be removed.
 
   ASSERT_TRUE(answer_waiter.WaitAndClear());
   EXPECT_TRUE(question_answer_view->GetVisible());
@@ -1225,6 +1297,9 @@ TEST_F(MahiPanelViewTest, InappropriateQuestionError) {
 
   EXPECT_TRUE(send_button->GetEnabled());
 
+  EXPECT_FALSE(question_answer_view->GetViewByID(
+      mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
+
   // Config the mock mahi manager to return an answer in success.
   EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
       .WillOnce(
@@ -1240,6 +1315,10 @@ TEST_F(MahiPanelViewTest, InappropriateQuestionError) {
   question_textfield->SetText(u"A new question");
   LeftClickOn(send_button);
   Mock::VerifyAndClearExpectations(&mock_mahi_manager());
+
+  // Loading animated image should show again.
+  EXPECT_TRUE(question_answer_view->GetViewByID(
+      mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
 
   // Before the answer loaded, both the error image view and the error label
   // view should not exist since asking a new question should remove the error
