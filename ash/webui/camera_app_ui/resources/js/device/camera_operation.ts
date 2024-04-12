@@ -107,16 +107,20 @@ class Reconfigurer {
     } else {
       devices = cameraInfo.devicesInfo;
     }
+    const facingPreference = util.getFacingPreference();
+    if (this.initialFacing !== null) {
+      facingPreference.unshift(this.initialFacing);
+    }
+    function preferFacingRank(deviceId: string) {
+      if (facings === null) {
+        return facingPreference.length;
+      }
+      const index = facingPreference.indexOf(facings[deviceId]);
+      return index === -1 ? facingPreference.length : index;
+    }
 
-    const preferredFacing = this.initialFacing ?? util.getDefaultFacing();
     const sorted = devices.map((device) => device.deviceId).sort((a, b) => {
-      if (a === b) {
-        return 0;
-      }
-      if (facings?.[a] === preferredFacing) {
-        return -1;
-      }
-      return 1;
+      return preferFacingRank(a) - preferFacingRank(b);
     });
     return sorted;
   }
