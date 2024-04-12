@@ -169,6 +169,7 @@ Verbs fall into a number of different categories:
     - `NavigateWebContents()` [Browser]
     - `WaitForWebContentsReady()` [Browser]
     - `WaitForWebContentsNavigation()` [Browser]
+    - `WaitForWebContentsPainted()` [Browser]
     - `FocusWebContents()` [Browser]
     - `WaitForStateChange()` [Browser]
 - **Javascript** verbs execute javascript in an
@@ -204,6 +205,8 @@ Verbs fall into a number of different categories:
      build, environment, or platform. See
      [Handling Incompatibilities](#handling-incompatibilities) for more
      information and best practices.
+   - `Screenshot()` and `ScreenshotSurface()` take Skia Gold screenshots of a
+     particular element or window.
 
 Example with mouse input:
 ```cpp

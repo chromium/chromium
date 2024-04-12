@@ -25,11 +25,15 @@ class TrackedElementWebContents : public ui::TrackedElement {
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
+  // Event generated when the WebContents receives its first non-empty paint.
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kFirstNonEmptyPaint);
+
   // TrackedElement:
   gfx::Rect GetScreenBounds() const override;
   std::string ToString() const override;
 
   WebContentsInteractionTestUtil* owner() { return owner_; }
+  const WebContentsInteractionTestUtil* owner() const { return owner_; }
 
  private:
   friend WebContentsInteractionTestUtil;

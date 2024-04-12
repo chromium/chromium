@@ -7,6 +7,10 @@
 
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_tracker.h"
+
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(TrackedElementWebContents,
+                                       kFirstNonEmptyPaint);
 
 TrackedElementWebContents::TrackedElementWebContents(
     ui::ElementIdentifier identifier,

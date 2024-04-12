@@ -61,6 +61,9 @@ class InteractionTestUtilSimulatorViews
   // As above, but for non-button Views.
   static bool DoDefaultAction(View* view,
                               InputType input_type = InputType::kDontCare);
+
+  // Returns whether the current machine is running Wayland.
+  static bool IsWayland();
 };
 
 }  // namespace views::test

@@ -254,6 +254,12 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   // Evaluate() or SendEventOnStateChange().
   bool is_page_loaded() const { return current_element_ != nullptr; }
 
+  // Returns whether any non-empty paints have occurred on the current page.
+  // The first non-empty paint is required before a page can be screenshot or
+  // receive keyboard or accelerator input. Note that completely empty pages
+  // will not receive a paint.
+  bool HasPageBeenPainted() const;
+
   // Returns the instrumented WebView, or null if none.
   views::WebView* GetWebView();
 
@@ -412,6 +418,7 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
+  void DidFirstVisuallyNonEmptyPaint() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -432,6 +439,7 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
                                  views::WebView* web_view);
 
   void MaybeCreateElement(bool force = false);
+  void MaybeSendPaintEvent();
   void DiscardCurrentElement();
 
   void OnPollEvent(Poller* poller, ui::CustomElementEventType event);
@@ -446,6 +454,9 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   // When we force a page load, we might still get events for the old page.
   // We'll ignore those events.
   std::optional<GURL> navigating_away_from_;
+
+  // Whether a painted event was sent for the current page.
+  bool sent_paint_event_ = false;
 
   // Tracks the WebView that hosts a non-tab WebContents; null otherwise.
   std::unique_ptr<WebViewData> web_view_data_;

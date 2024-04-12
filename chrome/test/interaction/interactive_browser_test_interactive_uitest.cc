@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -32,6 +33,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/event_monitor.h"
@@ -502,6 +504,12 @@ class WebBubbleView : public views::BubbleDialogDelegateView {
     web_view_->LoadInitialURL(url);
   }
 
+  // views::BubbleDialogDelegateView:
+  gfx::Size CalculatePreferredSize() const override {
+    // Need a large enough bubble that the WebView has size to render.
+    return gfx::Size(300, 400);
+  }
+
   const raw_ptr<Profile> profile_;
   raw_ptr<views::WebView> web_view_;
   std::unique_ptr<content::WebContents> owned_web_contents_;
@@ -527,6 +535,24 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                   // WebContents until the call resolves.
                   FlushEvents(), Do([&]() { bubble->SwapWebContents(url2); }),
                   WaitForWebContentsNavigation(kWebContentsId, url2));
+
+  bubble->GetWidget()->CloseNow();
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
+                       WaitForWebContentsPainted) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+
+  auto* const bubble = WebBubbleView::CreateBubble(browser(), url);
+
+  RunTestSequence(
+      InstrumentNonTabWebView(kWebContentsId, bubble->web_view(), false),
+      // This should wait for the element to appear and then paint.
+      WaitForWebContentsPainted(kWebContentsId),
+      // This should be more or less a no-op.
+      WaitForWebContentsPainted(kWebContentsId));
 
   bubble->GetWidget()->CloseNow();
 }

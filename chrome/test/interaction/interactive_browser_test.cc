@@ -14,9 +14,12 @@
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,6 +27,7 @@
 #include "chrome/test/interaction/interactive_browser_test_internal.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/update_user_activation_state_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +40,7 @@
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/views_delegate.h"
 
@@ -90,14 +95,16 @@ void InteractiveBrowserTestApi::EnableWebUICodeCoverage() {
   test_impl().MaybeStartWebUICodeCoverage();
 }
 
-ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::Screenshot(
+InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::Screenshot(
     ElementSpecifier element,
     const std::string& screenshot_name,
     const std::string& baseline_cl) {
+  const auto desc =
+      base::StringPrintf("Screenshot( \"%s\", \"%s\" )",
+                         screenshot_name.c_str(), baseline_cl.c_str());
+
   StepBuilder builder;
-  builder.SetDescription(base::StringPrintf("Screenshot( \"%s\", \"%s\" )",
-                                            screenshot_name.c_str(),
-                                            baseline_cl.c_str()));
+  builder.SetDescription(desc);
   ui::test::internal::SpecifyElement(builder, element);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveBrowserTestApi* test, std::string screenshot_name,
@@ -108,18 +115,21 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::Screenshot(
         test->test_impl().HandleActionResult(seq, el, "Screenshot", result);
       },
       base::Unretained(this), screenshot_name, baseline_cl));
-  return builder;
+
+  return Steps(MaybeWaitForPaint(element, desc), std::move(builder));
 }
 
-ui::InteractionSequence::StepBuilder
+InteractiveBrowserTestApi::MultiStep
 InteractiveBrowserTestApi::ScreenshotSurface(
     ElementSpecifier element_in_surface,
     const std::string& screenshot_name,
     const std::string& baseline_cl) {
-  StepBuilder builder;
-  builder.SetDescription(
+  const auto desc =
       base::StringPrintf("ScreenshotSurface( \"%s\", \"%s\" )",
-                         screenshot_name.c_str(), baseline_cl.c_str()));
+                         screenshot_name.c_str(), baseline_cl.c_str());
+
+  StepBuilder builder;
+  builder.SetDescription(desc);
   ui::test::internal::SpecifyElement(builder, element_in_surface);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveBrowserTestApi* test, std::string screenshot_name,
@@ -131,7 +141,8 @@ InteractiveBrowserTestApi::ScreenshotSurface(
         test->test_impl().HandleActionResult(seq, el, "Screenshot", result);
       },
       base::Unretained(this), screenshot_name, baseline_cl));
-  return builder;
+
+  return Steps(MaybeWaitForPaint(element_in_surface, desc), std::move(builder));
 }
 
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::InstrumentTab(
@@ -304,6 +315,136 @@ InteractiveBrowserTestApi::WaitForWebContentsNavigation(
         expected_url.value()));
   }
   return builder;
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// There is a bug that causes WebContents::CompletedFirstVisuallyNonEmptyPaint()
+// to occasionally fail to ever become true. This mostly manifests when running
+// Lacros tests on Linux. In order to prevent tests from hanging when trying to
+// ensure a non-empty paint, then, a workaround is required.
+//
+// See b/332895669 for more information.
+
+namespace {
+
+// Warning message so people aren't surprised when something else in their test
+// flakes after this step due to the bug.
+constexpr char kPaintWorkaroundWarning[] =
+    "\n\nIMPORTANT NOTE FOR TESTERS AND CHROMIUM GARDENERS:\n\n"
+    "There is a known issue (crbug.com/332895669) on Lacros-on-Linux where "
+    "sometimes WebContents::CompletedFirstVisuallyNonEmptyPaint() can return "
+    "false even for a WebContents that is visible and painted, especially in "
+    "secondary UI, and especially on Wayland.\n\n"
+    "Unfortunately, this has happened. In order to prevent this test from "
+    "timing out, we will be ensuring that the page is visible and renders at "
+    "least one frame and then continuing the test.\n\n"
+    "In most cases, this will only result in a slight delay. However, in a "
+    "handful of cases the test may hang or fail because some other code relies "
+    "on the page reporting as painted, which we have no direct control over. "
+    "If this happens, you may need to disable the test for linux-lacros bots "
+    "until the lower-level bug is fixed.\n";
+
+// CheckJsResult() can handle promises, so queue a promise that only succeeds
+// after the contents have been rendered.
+constexpr char kPaintWorkaroundFunction[] =
+    "() => new Promise(resolve => requestAnimationFrame(() => resolve(true)))";
+
+// Event sent on a delay to bypass the "was this WebContents painted?" check on
+// platforms where the check is flaky; see comments above.
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPaintWorkaroundEvent);
+
+void MaybePostPaintWorkaroundEvent(ui::TrackedElement* el) {
+  // Only secondary web contents are affected.
+  if (chrome::FindBrowserWithTab(
+          el->AsA<TrackedElementWebContents>()->owner()->web_contents())) {
+    return;
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](ui::ElementIdentifier id) {
+            if (auto* const el = ui::ElementTracker::GetElementTracker()
+                                     ->GetElementInAnyContext(id)) {
+              ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+                  el, kPaintWorkaroundEvent);
+            }
+          },
+          el->identifier()),
+      base::Seconds(1));
+}
+
+}  // namespace
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// static
+ui::InteractionSequence::StepBuilder
+InteractiveBrowserTestApi::WaitForWebContentsPainted(
+    ui::ElementIdentifier webcontents_id) {
+  auto wait_step = WaitForEvent(webcontents_id,
+                                TrackedElementWebContents::kFirstNonEmptyPaint);
+  wait_step.SetMustBeVisibleAtStart(false);
+  wait_step.SetDescription("WaitForWebContentsPainted()");
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    // Workaround for b/332895669:
+    //
+    // In parallel with waiting for the WebContents to report as painted, post a
+    // delayed event, verify the contents are visible, and ensure at least one
+    // frame has rendered. This doesn't fix the problem of the WebContents not
+    // reporting as painted, but it does prevent tests that want to ensure that
+    // the contents *are* painted from hanging.
+    wait_step = AnyOf(
+        // Ideally this finishes pretty quickly and we can move on.
+        std::move(wait_step),
+        // Otherwise, create a timeout after the WebContents is shown.
+        Steps(
+            // Ensure that the contents are loaded, then wait a short time.
+            AfterShow(webcontents_id, &MaybePostPaintWorkaroundEvent),
+            // After the timeout, first post a verbose warning describing the
+            // known issue so that test maintainers are not surprised if
+            // something later in the test breaks because paint status is still
+            // being reported incorrectly.
+            AfterEvent(webcontents_id, kPaintWorkaroundEvent,
+                       []() { LOG(WARNING) << kPaintWorkaroundWarning; }),
+            // Ensure that the WebContents actually believes it's visible.
+            CheckElement(
+                webcontents_id,
+                [](ui::TrackedElement* el) {
+                  return AsInstrumentedWebContents(el)
+                      ->web_contents()
+                      ->GetVisibility();
+                },
+                content::Visibility::VISIBLE),
+            // Force a frame to render before proceeding.
+            // After this is done, we at least known that the contents have been
+            // painted - even if the WebContents object itself doesn't!
+            CheckJsResult(webcontents_id, kPaintWorkaroundFunction),
+            // Try to ensure that the paint reaches the renderer.
+            FlushEvents()));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // If the element is already painted, there is no reason to actually wait (and
+  // in fact that will cause a timeout). So only execute the wait step if the
+  // WebContents is not ready or not painted.
+  //
+  // Note: this could also be done with a custom `StateObserver` and
+  // `WaitForState()` but this approach requires the fewest steps.
+  return std::move(
+      IfElement(
+          webcontents_id,
+          [](const ui::TrackedElement* el) {
+            // If the page is not ready (i.e. no element) or not painted,
+            // execute the wait step; otherwise skip it.
+            return !el || !el->AsA<TrackedElementWebContents>()
+                               ->owner()
+                               ->HasPageBeenPainted();
+          },
+          std::move(wait_step))
+          .SetDescription("WaitForWebContentsPainted() - IfElement()"));
 }
 
 // static
@@ -561,26 +702,34 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
                          testing::Matcher<base::Value>(IsTruthyMatcher()));
 }
 
-InteractiveBrowserTestApi::StepBuilder InteractiveBrowserTestApi::MoveMouseTo(
-    ElementSpecifier web_contents,
+InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::MoveMouseTo(
+    ui::ElementIdentifier web_contents,
     const DeepQuery& where) {
-  return MoveMouseTo(web_contents, DeepQueryToRelativePosition(where));
+  return Steps(std::move(WaitForWebContentsPainted(web_contents)
+                             .FormatDescription("MoveMouseTo( %s )")),
+               MoveMouseTo(web_contents, DeepQueryToRelativePosition(where)));
 }
 
-InteractiveBrowserTestApi::StepBuilder InteractiveBrowserTestApi::DragMouseTo(
-    ElementSpecifier web_contents,
+InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::DragMouseTo(
+    ui::ElementIdentifier web_contents,
     const DeepQuery& where,
     bool release) {
-  return DragMouseTo(web_contents, DeepQueryToRelativePosition(where), release);
+  return Steps(
+      std::move(WaitForWebContentsPainted(web_contents)
+                    .FormatDescription("DragMouseTo( %s )")),
+      DragMouseTo(web_contents, DeepQueryToRelativePosition(where), release));
 }
 
-InteractiveBrowserTestApi::StepBuilder
-InteractiveBrowserTestApi::ScrollIntoView(ui::ElementIdentifier web_contents,
-                                          const DeepQuery& where) {
-  return std::move(
-      ExecuteJsAt(web_contents, where,
-                  "(el) => { el.scrollIntoView({ behavior: 'instant' }); }")
-          .SetDescription("ScrollIntoView()"));
+InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::ScrollIntoView(
+    ui::ElementIdentifier web_contents,
+    const DeepQuery& where) {
+  return Steps(
+      std::move(WaitForWebContentsPainted(web_contents)
+                    .FormatDescription("ScrollIntoView( %s )")),
+      std::move(
+          ExecuteJsAt(web_contents, where,
+                      "(el) => { el.scrollIntoView({ behavior: 'instant' }); }")
+              .SetDescription("ScrollIntoView()")));
 }
 
 // static
@@ -608,6 +757,30 @@ InteractiveBrowserTestApi::DeepQueryToRelativePosition(const DeepQuery& query) {
         return intersect_bounds.CenterPoint();
       },
       query);
+}
+
+// static
+InteractiveBrowserTestApi::MultiStep
+InteractiveBrowserTestApi::MaybeWaitForPaint(ElementSpecifier element,
+                                             const std::string& desc) {
+  // Only wait if `element` is actually a `WebContents`.
+  //
+  // WebContents are typically only referred to via their assigned IDs.
+  // TODO(dfried): possibly handle (rare) cases where a name has been assigned.
+  if (!absl::holds_alternative<ui::ElementIdentifier>(element)) {
+    return MultiStep();
+  }
+  const auto element_id = absl::get<ui::ElementIdentifier>(element);
+
+  // Do a `WaitForWebContentsPainted()`, but only if the ID has been assigned to
+  // an instrumented `WebContents`.
+  //
+  // TODO(dfried): Maybe handle `WebView` elements as well.
+  return Steps(If(
+      [this, element_id]() {
+        return test_impl().IsInstrumentedWebContents(element_id);
+      },
+      WaitForWebContentsPainted(element_id)));
 }
 
 Browser* InteractiveBrowserTestApi::GetBrowserFor(

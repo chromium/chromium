@@ -47,6 +47,8 @@ class InteractiveBrowserTestPrivate
       std::unique_ptr<WebContentsInteractionTestUtil>
           instrumented_web_contents);
 
+  bool IsInstrumentedWebContents(ui::ElementIdentifier element_id) const;
+
   static std::string DeepQueryToString(
       const WebContentsInteractionTestUtil::DeepQuery& deep_query);
 

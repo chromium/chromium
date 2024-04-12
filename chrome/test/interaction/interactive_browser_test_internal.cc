@@ -125,6 +125,16 @@ void InteractiveBrowserTestPrivate::AddInstrumentedWebContents(
       .get();
 }
 
+bool InteractiveBrowserTestPrivate::IsInstrumentedWebContents(
+    ui::ElementIdentifier element_id) const {
+  for (const auto& existing : instrumented_web_contents_) {
+    if (existing->page_identifier() == element_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::string InteractiveBrowserTestPrivate::DeepQueryToString(
     const WebContentsInteractionTestUtil::DeepQuery& deep_query) {
   std::ostringstream oss;

@@ -27,7 +27,6 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -731,6 +730,11 @@ WebContentsInteractionTestUtil::ForNextTabInAnyBrowser(
       nullptr, page_identifier, nullptr, nullptr));
 }
 
+bool WebContentsInteractionTestUtil::HasPageBeenPainted() const {
+  return is_page_loaded() &&
+         web_contents()->CompletedFirstVisuallyNonEmptyPaint();
+}
+
 views::WebView* WebContentsInteractionTestUtil::GetWebView() {
   if (web_view_data_)
     return web_view_data_->web_view();
@@ -990,6 +994,10 @@ void WebContentsInteractionTestUtil::WebContentsDestroyed() {
   DiscardCurrentElement();
 }
 
+void WebContentsInteractionTestUtil::DidFirstVisuallyNonEmptyPaint() {
+  MaybeSendPaintEvent();
+}
+
 void WebContentsInteractionTestUtil::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -1078,9 +1086,32 @@ void WebContentsInteractionTestUtil::MaybeCreateElement(bool force) {
   // Init (send shown event, etc.) after current_element_ is set in order to
   // ensure that is_page_loaded() is true during any callbacks.
   current_element_->Init();
+
+  // Because callbacks to the above method may result in the contents or current
+  // element being destroyed, make sure to check before trying to access the
+  // objects again.
+  if (current_element_) {
+    if (web_contents()->CompletedFirstVisuallyNonEmptyPaint()) {
+      MaybeSendPaintEvent();
+    }
+  }
+}
+
+void WebContentsInteractionTestUtil::MaybeSendPaintEvent() {
+  if (sent_paint_event_ || !current_element_) {
+    return;
+  }
+
+  CHECK(web_contents());
+  CHECK(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+
+  sent_paint_event_ = true;
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      current_element_.get(), TrackedElementWebContents::kFirstNonEmptyPaint);
 }
 
 void WebContentsInteractionTestUtil::DiscardCurrentElement() {
+  sent_paint_event_ = false;
   current_element_.reset();
   for (const auto& poller : pollers_) {
     CHECK(poller->state_change().continue_across_navigation)

@@ -47,6 +47,10 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE) && \
     !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 #define HANDLE_WAYLAND_FAILURE 1
@@ -55,7 +59,6 @@
 #endif
 
 #if HANDLE_WAYLAND_FAILURE
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/widget/widget_observer.h"
 #endif
 
@@ -656,10 +659,19 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::Confirm(
 }
 
 // static
+bool InteractionTestUtilSimulatorViews::IsWayland() {
+#if BUILDFLAG(IS_OZONE)
+  return ui::OzonePlatform::GetPlatformNameForTest() == "wayland";
+#else
+  return false;
+#endif
+}
+
+// static
 ui::test::ActionResult InteractionTestUtilSimulatorViews::ActivateWidget(
     Widget* widget) {
 #if HANDLE_WAYLAND_FAILURE
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (IsWayland()) {
     WidgetActivationWaiterWayland waiter(widget);
     widget->Activate();
     if (!waiter.Wait()) {
