@@ -293,7 +293,8 @@ bool UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
   EXPECT_FALSE(w1_bounds.Intersects(divider_bounds));
   EXPECT_FALSE(w2_bounds.Intersects(divider_bounds));
   union_bounds.Union(divider_bounds);
-  return union_bounds == work_area_bounds();
+  return union_bounds ==
+         display::Screen::GetScreen()->GetDisplayNearestWindow(w1).work_area();
 }
 
 void VerifyStackingOrder(
@@ -2301,36 +2302,6 @@ TEST_F(SnapGroupTest, DontAutoSnapNewWindowOutsideSplitViewOverview) {
   EXPECT_TRUE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
   EXPECT_TRUE(snap_group_divider()->divider_widget());
-}
-
-// Tests that removing a display during split view overview session doesn't
-// crash.
-TEST_F(SnapGroupTest, RemoveDisplay) {
-  UpdateDisplay("800x600,801+0-800x600");
-  display::test::DisplayManagerTestApi display_manager_test(display_manager());
-
-  // Snap `window` on the second display to start split view overview session.
-  std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(900, 0, 100, 100)));
-  std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(1000, 0, 100, 100)));
-  WindowState* window_state = WindowState::Get(window1.get());
-  const WindowSnapWMEvent snap_type(
-      WM_EVENT_SNAP_PRIMARY,
-      /*snap_action_source=*/WindowSnapActionSource::kTest);
-  window_state->OnWMEvent(&snap_type);
-  ASSERT_EQ(display_manager_test.GetSecondaryDisplay().id(),
-            display::Screen::GetScreen()
-                ->GetDisplayNearestWindow(window1.get())
-                .id());
-  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
-  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
-  EXPECT_TRUE(RootWindowController::ForWindow(window1.get())
-                  ->split_view_overview_session());
-
-  // Disconnect the second display. Test no crash.
-  UpdateDisplay("800x600");
-  base::RunLoop().RunUntilIdle();
 }
 
 // Tests the snap ratio is updated correctly when resizing the windows in a snap
@@ -4872,6 +4843,83 @@ TEST_F(SnapGroupTest, ScaleUpWorkArea) {
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
   UpdateDisplay("800x600*4");
+}
+
+using SnapGroupMultiDisplayTest = SnapGroupTest;
+
+// Tests that removing a display during split view overview session doesn't
+// crash.
+TEST_F(SnapGroupMultiDisplayTest, RemoveDisplay) {
+  UpdateDisplay("800x600,801+0-800x600");
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  // Snap `window` on the second display to start split view overview session.
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShellWithBounds(gfx::Rect(900, 0, 100, 100)));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShellWithBounds(gfx::Rect(1000, 0, 100, 100)));
+  WindowState* window_state = WindowState::Get(window1.get());
+  const WindowSnapWMEvent snap_type(
+      WM_EVENT_SNAP_PRIMARY,
+      /*snap_action_source=*/WindowSnapActionSource::kTest);
+  window_state->OnWMEvent(&snap_type);
+  ASSERT_EQ(display_manager_test.GetSecondaryDisplay().id(),
+            display::Screen::GetScreen()
+                ->GetDisplayNearestWindow(window1.get())
+                .id());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
+  EXPECT_TRUE(RootWindowController::ForWindow(window1.get())
+                  ->split_view_overview_session());
+
+  // Disconnect the second display. Test no crash.
+  UpdateDisplay("800x600");
+  base::RunLoop().RunUntilIdle();
+}
+
+// Test that Search+Alt+M moves the snap group between displays.
+TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplays) {
+  UpdateDisplay("800x600,1000x600");
+
+  // Snap `w1` and `w2` on display 1.
+  std::unique_ptr<aura::Window> w1(
+      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> w2(
+      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100)));
+  SnapTwoTestWindows(w1.get(), w2.get());
+  auto* snap_group_divider = SnapGroupController::Get()
+                                 ->GetSnapGroupForGivenWindow(w1.get())
+                                 ->snap_group_divider();
+  const int64_t primary_id =
+      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  display::Screen* screen = display::Screen::GetScreen();
+  ASSERT_EQ(primary_id, screen->GetDisplayNearestWindow(w1.get()).id());
+  ASSERT_EQ(primary_id, screen->GetDisplayNearestWindow(w2.get()).id());
+
+  // Activate `w1`, then press Search+Alt+M to move it to display 2.
+  wm::ActivateWindow(w1.get());
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
+  ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(w2.get()).id());
+  aura::Window* divider_window =
+      snap_group_divider->divider_widget()->GetNativeWindow();
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(divider_window).id());
+
+  auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
+      Shell::Get()->GetRootWindowForDisplayId(secondary_id));
+  // Note that `w2` will be the mru window since it was moved to display 2 after
+  // `w1`.
+  MruWindowTracker* mru_window_tracker = Shell::Get()->mru_window_tracker();
+  aura::Window* mru_window = window_util::GetTopMostWindow(
+      mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
+  EXPECT_EQ(mru_window, w2.get());
+  VerifyStackingOrder(desk_container, {w1.get(), w2.get(), divider_window});
+  EXPECT_TRUE(
+      UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider));
 }
 
 // -----------------------------------------------------------------------------

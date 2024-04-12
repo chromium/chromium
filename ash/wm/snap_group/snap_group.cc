@@ -128,12 +128,29 @@ void SnapGroup::MinimizeWindows() {
 }
 
 void SnapGroup::OnWindowDestroying(aura::Window* window) {
-  if (window != window1_ && window != window2_) {
-    return;
-  }
-
+  DCHECK(window == window1_ || window == window2_);
   // `this` will be destroyed after this line.
   SnapGroupController::Get()->RemoveSnapGroup(this);
+}
+
+void SnapGroup::OnWindowParentChanged(aura::Window* window,
+                                      aura::Window* parent) {
+  DCHECK(window == window1_ || window == window2_);
+  // Skip any recursive updates during the other window move.
+  if (is_moving_display_ || !parent) {
+    return;
+  }
+  base::AutoReset<bool> lock(&is_moving_display_, true);
+  // Hide the divider, then move the other window to the same display as the
+  // moved `window`.
+  snap_group_divider_.SetVisible(false);
+  window_util::MoveWindowToDisplay(
+      window == window1_ ? window2_ : window1_,
+      display::Screen::GetScreen()->GetDisplayNearestWindow(parent).id());
+  // Re-show the divider after both windows are moved to the target display.
+  snap_group_divider_.SetVisible(true);
+  ApplyPrimarySnapRatio(WindowState::Get(window1_)->snap_ratio().value_or(
+      chromeos::kDefaultSnapRatio));
 }
 
 void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
