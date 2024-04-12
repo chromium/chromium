@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -251,6 +252,7 @@ TEST_F(HelpAppNotificationControllerTestWithHelpAppOpensInsteadEnabled,
 // Tests for help app doesn't open if birch feature flag is on.
 TEST_F(HelpAppNotificationControllerTestWithHelpAppOpensInsteadEnabled,
        DoesNotOpenHelpAppIfBirchFeatureEnabled) {
+  ash::switches::SetIgnoreForestSecretKeyForTest(true);
   TurnOnBirchFeature();
   Profile* profile = CreateRegularProfile();
   profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
@@ -264,6 +266,7 @@ TEST_F(HelpAppNotificationControllerTestWithHelpAppOpensInsteadEnabled,
   EXPECT_EQ(false, HasReleaseNotesNotification());
   EXPECT_EQ(91, profile->GetPrefs()->GetInteger(
                     prefs::kHelpAppNotificationLastShownMilestone));
+  ash::switches::SetIgnoreForestSecretKeyForTest(false);
 }
 
 }  // namespace ash
