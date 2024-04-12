@@ -543,7 +543,7 @@ void BirchModel::OnRecentTabPrefChanged() {
   if (!prefs->GetBoolean(prefs::kBirchUseRecentTabs)) {
     recent_tab_items_.clear();
   } else {
-    is_release_notes_data_fresh_ = false;
+    is_tabs_data_fresh_ = false;
   }
 }
 
