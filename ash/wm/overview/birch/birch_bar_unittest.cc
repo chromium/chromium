@@ -354,6 +354,16 @@ TEST_F(BirchBarTest, ShowBirchBar) {
       OverviewGridTestApi(Shell::GetPrimaryRootWindow()).birch_bar_view());
 }
 
+TEST_F(BirchBarTest, DoNotShowBirchBarForSecondaryUser) {
+  // Sign in a secondary user.
+  SimulateUserLogin("user2@test.com");
+  ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
+
+  EnterOverview();
+  EXPECT_FALSE(
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).birch_bar_view());
+}
+
 TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
   base::HistogramTester histograms;
 

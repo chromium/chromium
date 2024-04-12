@@ -533,8 +533,12 @@ bool ShouldImmediatelyInitDeskBar(OverviewGrid* grid) {
 // Returns true if the birch bar should be shown in current state.
 bool ShouldShowBirchBar(aura::Window* root_window) {
   // The birch bar should not be shown in tablet mode, partial split view,
-  // the forest feature is disabled, or the birch bars are disabled by users.
+  // the forest feature is disabled, non-primary users, or the birch bars are
+  // disabled by users. We don't need to worry about showing/hiding the bar
+  // dynamically on primary/secondary user switch because we exit overview when
+  // we switch users.
   return features::IsForestFeatureEnabled() &&
+         Shell::Get()->session_controller()->IsUserPrimary() &&
          BirchBarController::Get()->GetShowBirchSuggestions() &&
          !SplitViewController::Get(root_window)->InSplitViewMode();
 }
