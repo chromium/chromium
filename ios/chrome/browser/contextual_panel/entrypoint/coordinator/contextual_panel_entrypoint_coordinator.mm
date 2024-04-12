@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/contextual_panel_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 
@@ -44,8 +44,9 @@
   _viewController.mutator = _mediator;
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  [dispatcher startDispatchingToTarget:_mediator
-                           forProtocol:@protocol(ContextualPanelCommands)];
+  [dispatcher
+      startDispatchingToTarget:_mediator
+                   forProtocol:@protocol(ContextualPanelEntrypointCommands)];
 
   _contextualPanelEntrypointFullscreenUIUpdater =
       std::make_unique<FullscreenUIUpdater>(

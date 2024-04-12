@@ -20,6 +20,11 @@ class ContextualPanelTabHelperObserver : public base::CheckedObserver {
       ContextualPanelTabHelper* tab_helper,
       std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
           item_configurations) {}
+
+  // The given ContextualPanelTabHelper is being destroyed, give a chance to
+  // observers to disconnect.
+  virtual void ContextualPanelTabHelperDestroyed(
+      ContextualPanelTabHelper* tab_helper) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_TAB_HELPER_OBSERVER_H_

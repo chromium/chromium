@@ -33,7 +33,22 @@ class ContextualPanelTabHelper
   void AddObserver(ContextualPanelTabHelperObserver* observer);
   void RemoveObserver(ContextualPanelTabHelperObserver* observer);
 
+  // Whether there exists at least one finalized Contextual Panel model config
+  // currently available in the cached list of sorted configs. This will be
+  // false before all the models have returned a response or timed out.
+  bool HasCachedConfigsAvailable();
+
+  // Gets the first config in the cached list of sorted Contextual Panel model
+  // configs.
+  base::WeakPtr<ContextualPanelItemConfiguration> GetFirstCachedConfig();
+
+  // Getter and setter for large_entrypoint_shown_for_curent_page_navigation_.
+  bool WasLargeEntrypointShown();
+  void SetLargeEntrypointShown(bool shown);
+
   // WebStateObserver:
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
@@ -79,6 +94,10 @@ class ContextualPanelTabHelper
 
   WEB_STATE_USER_DATA_KEY_DECL();
 
+  // Whether the large Contextual Panel entrypoint has been shown for the
+  // current navigation.
+  bool large_entrypoint_shown_for_curent_page_navigation_ = false;
+
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   raw_ptr<web::WebState> web_state_ = nullptr;
@@ -88,6 +107,12 @@ class ContextualPanelTabHelper
 
   // Holds the responses currently being returned.
   std::map<ContextualPanelItemType, ModelResponse> responses_;
+
+  // Holds the current finalized and sorted list of configurations passed to
+  // observers when all requests have completed. Not the source of truth of
+  // panel model responses, simply a cached list of their configs.
+  std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
+      sorted_weak_configurations_;
 
   // List of observers to be notified when the Contextual Panel gets new data.
   base::ObserverList<ContextualPanelTabHelperObserver, true> observers_;

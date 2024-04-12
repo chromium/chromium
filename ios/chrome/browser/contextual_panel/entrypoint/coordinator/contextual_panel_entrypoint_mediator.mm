@@ -11,10 +11,11 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_browser_agent.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
-#import "ios/chrome/browser/shared/public/commands/contextual_panel_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
-@interface ContextualPanelEntrypointMediator () <ContextualPanelCommands>
+@interface ContextualPanelEntrypointMediator () <
+    ContextualPanelEntrypointCommands>
 @end
 
 @implementation ContextualPanelEntrypointMediator {
@@ -53,32 +54,46 @@
                                                   centered:centered];
 }
 
-#pragma mark - ContextualPanelCommands
+#pragma mark - ContextualPanelEntrypointCommands
 
-- (void)showContextualPanelEntrypoint {
-  base::WeakPtr<ContextualPanelItemConfiguration> config =
-      _contextualPanelBrowserAgent->GetEntrypointConfiguration();
+- (void)updateContextualPanelEntrypointForNewModelData {
+  _transitionToLargeEntrypointTimer = nullptr;
+  _transitionToSmallEntrypointTimer = nullptr;
 
-  [self.consumer setEntrypointConfig:config];
-  [self.consumer showEntrypoint];
-
-  if (![self.delegate canShowLargeContextualPanelEntrypoint:self]) {
+  if (!_contextualPanelBrowserAgent
+           ->IsEntrypointConfigurationAvailableForCurrentTab()) {
+    [self.consumer hideEntrypoint];
     return;
   }
 
-  // Start timers if we can show the large entrypoint.
+  base::WeakPtr<ContextualPanelItemConfiguration> config =
+      _contextualPanelBrowserAgent->GetEntrypointConfigurationForCurrentTab();
+
+  [self.consumer setEntrypointConfig:config];
+  [self.consumer transitionToSmallEntrypoint];
+  [self.consumer showEntrypoint];
+
+  if (![self canShowLargeEntrypointWithConfig:config]) {
+    return;
+  }
+
+  // Start timers since we can show the large entrypoint.
   __weak ContextualPanelEntrypointMediator* weakSelf = self;
 
   // TODO(crbug.com/330702363): Make amount of time Finchable.
   _transitionToLargeEntrypointTimer = std::make_unique<base::OneShotTimer>();
   _transitionToLargeEntrypointTimer->Start(
       FROM_HERE, base::Seconds(3), base::BindOnce(^{
-        if (![weakSelf.delegate
-                canShowLargeContextualPanelEntrypoint:weakSelf]) {
+        ContextualPanelEntrypointMediator* strongSelf = weakSelf;
+
+        if (![strongSelf.delegate
+                canShowLargeContextualPanelEntrypoint:strongSelf]) {
           return;
         }
 
-        [weakSelf.consumer transitionToLargeEntrypoint];
+        strongSelf->_contextualPanelBrowserAgent
+            ->SetLargeEntrypointShownForCurrentTab(true);
+        [strongSelf.consumer transitionToLargeEntrypoint];
       }));
 
   _transitionToSmallEntrypointTimer = std::make_unique<base::OneShotTimer>();
@@ -88,10 +103,15 @@
       }));
 }
 
-- (void)hideContextualPanelEntrypoint {
-  _transitionToLargeEntrypointTimer = nullptr;
-  _transitionToSmallEntrypointTimer = nullptr;
-  [self.consumer hideEntrypoint];
+#pragma mark - private
+
+- (BOOL)canShowLargeEntrypointWithConfig:
+    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+  return !_contextualPanelBrowserAgent
+              ->WasLargeEntrypointShownForCurrentTab() &&
+         !config->entrypoint_message.empty() &&
+         config->relevance >= config->high_relevance &&
+         [self.delegate canShowLargeContextualPanelEntrypoint:self];
 }
 
 @end

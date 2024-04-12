@@ -16,8 +16,11 @@ void SamplePanelModel::FetchConfigurationForWebState(
     FetchConfigurationForWebStateCallback callback) {
   std::unique_ptr<SamplePanelItemConfiguration> item_configuration =
       std::make_unique<SamplePanelItemConfiguration>();
-  item_configuration->entrypoint_image_name = "book.pages";
-  item_configuration->sample_name = "book";
+
+  item_configuration->sample_name = "sample_config";
+  item_configuration->accessibility_label = "Sample entrypoint";
+  item_configuration->entrypoint_message = "Large entrypoint";
+  item_configuration->entrypoint_image_name = "chrome_product";
   item_configuration->image_type =
       ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
   item_configuration->relevance =

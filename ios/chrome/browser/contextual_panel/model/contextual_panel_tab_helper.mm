@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 
 ContextualPanelTabHelper::ContextualPanelTabHelper(
@@ -17,7 +18,11 @@ ContextualPanelTabHelper::ContextualPanelTabHelper(
   web_state_observation_.Observe(web_state_);
 }
 
-ContextualPanelTabHelper::~ContextualPanelTabHelper() = default;
+ContextualPanelTabHelper::~ContextualPanelTabHelper() {
+  for (auto& observer : observers_) {
+    observer.ContextualPanelTabHelperDestroyed(this);
+  }
+}
 
 WEB_STATE_USER_DATA_KEY_IMPL(ContextualPanelTabHelper)
 
@@ -31,7 +36,43 @@ void ContextualPanelTabHelper::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+bool ContextualPanelTabHelper::HasCachedConfigsAvailable() {
+  return !sorted_weak_configurations_.empty();
+}
+
+base::WeakPtr<ContextualPanelItemConfiguration>
+ContextualPanelTabHelper::GetFirstCachedConfig() {
+  return HasCachedConfigsAvailable() ? sorted_weak_configurations_[0] : nullptr;
+}
+
+bool ContextualPanelTabHelper::WasLargeEntrypointShown() {
+  return large_entrypoint_shown_for_curent_page_navigation_;
+}
+
+void ContextualPanelTabHelper::SetLargeEntrypointShown(bool shown) {
+  large_entrypoint_shown_for_curent_page_navigation_ = shown;
+}
+
 #pragma mark - WebStateObserver
+
+void ContextualPanelTabHelper::DidStartNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  DCHECK_EQ(web_state_, web_state);
+
+  // If the navigation was started for the same document, do nothing.
+  if (navigation_context->IsSameDocument()) {
+    return;
+  }
+
+  large_entrypoint_shown_for_curent_page_navigation_ = false;
+
+  // Clear the configs and notify the observers.
+  sorted_weak_configurations_.clear();
+  for (auto& observer : observers_) {
+    observer.ContextualPanelHasNewData(this, sorted_weak_configurations_);
+  }
+}
 
 // Asks the individual panel models for if they have an item.
 void ContextualPanelTabHelper::DidFinishNavigation(
@@ -92,20 +133,23 @@ void ContextualPanelTabHelper::ModelCallbackReceived(
 }
 
 void ContextualPanelTabHelper::AllRequestsFinished() {
+  sorted_weak_configurations_.clear();
+
   // The active configurations passed to observers as weak ptrs.
   // TODO(crbug.com/332927986): See if this can be an instance variable passed
   // as a reference once the UI lifetime is more stable.
-  std::vector<base::WeakPtr<ContextualPanelItemConfiguration>> configurations;
   for (const auto& [key, response] : responses_) {
     DCHECK(response.completed);
 
     if (response.configuration) {
-      configurations.push_back(response.configuration->AsWeakPtr());
+      sorted_weak_configurations_.push_back(
+          response.configuration->AsWeakPtr());
     }
   }
 
   // Sort configurations so the highest relevance is first.
-  std::sort(configurations.begin(), configurations.end(),
+  std::sort(sorted_weak_configurations_.begin(),
+            sorted_weak_configurations_.end(),
             [](base::WeakPtr<ContextualPanelItemConfiguration> first,
                base::WeakPtr<ContextualPanelItemConfiguration> second) {
               if (!first) {
@@ -118,7 +162,7 @@ void ContextualPanelTabHelper::AllRequestsFinished() {
             });
 
   for (auto& observer : observers_) {
-    observer.ContextualPanelHasNewData(this, configurations);
+    observer.ContextualPanelHasNewData(this, sorted_weak_configurations_);
   }
 }
 

@@ -24,10 +24,17 @@ class TestContextualPanelTabHelperObserver
       ContextualPanelTabHelper* tab_helper,
       std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
           item_configurations) override {
+    item_configurations_set_ = true;
     item_configurations_ = item_configurations;
     run_loop_->Quit();
   }
 
+  void ContextualPanelTabHelperDestroyed(
+      ContextualPanelTabHelper* tab_helper) override {
+    tab_helper->RemoveObserver(this);
+  }
+
+  bool item_configurations_set_ = false;
   raw_ptr<base::RunLoop> run_loop_;
   std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
       item_configurations_;
@@ -69,9 +76,30 @@ class ContextualPanelTabHelperTest : public PlatformTest {
   std::unique_ptr<SamplePanelModel> sample_model_;
 };
 
+// Tests that the tab helper observer disconnects before the tab helper is
+// destroyed. The observers emptiness DCHECK would trigger if that was not the
+// case.
+TEST_F(ContextualPanelTabHelperTest, TestObserverIsAlertedOnDestroyed) {
+  web_state_.CloseWebState();
+}
+
+// Tests that the tab helper calls any observers when a web navigation starts.
+TEST_F(ContextualPanelTabHelperTest, TestObserverIsAlertedOnNavigationStarted) {
+  EXPECT_FALSE(observer_.item_configurations_set_);
+
+  web::FakeNavigationContext context;
+  web_state_.OnNavigationStarted(&context);
+
+  run_loop_.Run();
+
+  EXPECT_TRUE(observer_.item_configurations_set_);
+  EXPECT_EQ(0u, observer_.item_configurations_.size());
+}
+
 // Tests that the tab helper queries the models and calls any observer when
 // a web navigation finishes.
-TEST_F(ContextualPanelTabHelperTest, TestObserverIsAlerted) {
+TEST_F(ContextualPanelTabHelperTest,
+       TestObserverIsAlertedOnNavigationFinished) {
   web::FakeNavigationContext context;
   web_state_.OnNavigationFinished(&context);
 
