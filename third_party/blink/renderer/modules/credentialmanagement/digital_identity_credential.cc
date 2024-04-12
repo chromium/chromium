@@ -85,6 +85,9 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
       return;
     }
     case RequestDigitalIdentityStatus::kSuccess: {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kIdentityDigitalCredentialsSuccess);
+
       if (should_return_digital_credential) {
         DigitalCredential* credential =
             DigitalCredential::Create(protocol, token);

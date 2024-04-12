@@ -11517,6 +11517,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4939" label="SnapEvent"/>
   <int value="4940" label="StaticPropertyInAnimation"/>
   <int value="4941" label="SimplifyLoadingTransparentPlaceholderImage"/>
+  <int value="4942" label="IdentityDigitalCredentialsSuccess"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
