@@ -20,6 +20,18 @@ mojom::CreateVideoCapturerResultPtr MojoVideoCapturerList::CreateVideoCapturer(
     webrtc::ScreenId screen_id,
     DesktopEnvironment* environment,
     scoped_refptr<AutoThreadTaskRunner> caller_task_runner) {
+  // Work around b/332935355 by destroying any full-desktop capturer before
+  // creating a per-screen capturer. When switching from single-stream to
+  // multi-stream, the Network process destroys the full-desktop capturer and
+  // creates new capturers for each display. But (in the Desktop process) Mojo
+  // does not guarantee the destruction of the previous capturer will happen
+  // before creating the new capturer (because each capturer uses a separate
+  // Mojo pipe). The overlapping capturer lifetimes appear to trigger the bug.
+
+  // TODO: b/326319067 - Remove this hack when the Windows host no longer
+  // supports single-stream.
+  video_capturers_.erase(webrtc::kFullDesktopScreenId);
+
   auto capturer = std::make_unique<MojoVideoCapturer>(
       environment->CreateVideoCapturer(screen_id), caller_task_runner);
   mojom::CreateVideoCapturerResultPtr result = capturer->Start();
