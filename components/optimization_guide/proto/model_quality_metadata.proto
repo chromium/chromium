@@ -181,4 +181,8 @@ message TextSafetyModelResponse {
   // The ID for the execution of the text safety model if it leveraged the
   // server for text safety evaluation.
   string server_execution_id = 3;
+
+  // The language code of the detected language. If detection was indeterminate,
+  // this is "und" per ISO 639-2.
+  string language_code = 4;
 }

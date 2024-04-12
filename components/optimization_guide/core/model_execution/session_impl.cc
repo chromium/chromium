@@ -452,6 +452,9 @@ void SessionImpl::OnRequestSafetyResult(
   *response_log->mutable_scores() = {safety_info->class_scores.begin(),
                                      safety_info->class_scores.end()};
   response_log->set_is_unsafe(is_unsafe);
+  if (safety_info->language) {
+    response_log->set_language_code(safety_info->language->code);
+  }
   *(on_device_state_->log_ai_data_request->mutable_model_execution_info()
         ->mutable_on_device_model_execution_info()
         ->add_execution_infos()) = std::move(check_log);
@@ -1027,6 +1030,9 @@ void SessionImpl::OnDeviceState::AddTextSafetyExecutionLogging(
   *ts_resp->mutable_scores() = {safety_info->class_scores.begin(),
                                 safety_info->class_scores.end()};
   ts_resp->set_is_unsafe(is_unsafe);
+  if (safety_info->language) {
+    ts_resp->set_language_code(safety_info->language->code);
+  }
 }
 
 void SessionImpl::OnDeviceState::ResetRequestState() {
