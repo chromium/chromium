@@ -249,7 +249,7 @@ def run_ffx_command(suppress_repair: bool = False,
     # - capture_output is Truthy
     if capture_output or not suppress_repair:
         kwargs['stdout'] = subprocess.PIPE
-        kwargs['stderr'] = subprocess.STDOUT
+        kwargs['stderr'] = subprocess.PIPE
     proc = None
     try:
         proc = run_continuous_ffx_command(**kwargs)
@@ -269,10 +269,13 @@ def run_ffx_command(suppress_repair: bool = False,
         logging.error('%s %s failed with returncode %s.',
                       os.path.relpath(_FFX_TOOL),
                       subprocess.list2cmdline(proc.args[1:]), cpe.returncode)
-        if cpe.output:
-            logging.error('stdout of the command: %s', cpe.output)
-        if suppress_repair or (cpe.output
-                               and not _run_repair_command(cpe.output)):
+        if cpe.stdout or cpe.stderr:
+            logging.error(
+                'stdout of the command: %s, stderr or the command: %s',
+                cpe.stdout, cpe.stderr)
+        if suppress_repair or (
+            (cpe.stdout and not _run_repair_command(cpe.stdout)) and
+            (cpe.stderr and not _run_repair_command(cpe.stderr))):
             raise
 
     # If the original command failed but a repair command was found and
