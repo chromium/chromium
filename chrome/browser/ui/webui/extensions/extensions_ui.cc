@@ -54,6 +54,7 @@
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ui/webui/extensions/ash/kiosk_apps_handler.h"
 #endif
@@ -401,13 +402,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                              .spec()));
   source->AddString("enhancedSafeBrowsingWarningHelpUrl",
                     chrome::kCwsEnhancedSafeBrowsingLearnMoreURL);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  source->AddString(
-      "kioskDisableBailoutWarningBody",
-      l10n_util::GetStringFUTF16(
-          IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_BODY,
-          l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME)));
-#endif
   source->AddString(
       "getMoreExtensionsUrl",
       base::ASCIIToUTF16(
@@ -445,6 +439,17 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
   source->AddBoolean("safetyHubShowReviewPanel",
                      base::FeatureList::IsEnabled(features::kSafetyHub));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  source->AddString(
+      "kioskDisableBailoutWarningBody",
+      l10n_util::GetStringFUTF16(
+          IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_BODY,
+          l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME)));
+
+  source->AddBoolean("isLacrosEnabled",
+                     crosapi::browser_util::IsLacrosEnabled());
+#endif
 
   return source;
 }
@@ -487,9 +492,8 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::move(safety_check_hats_handler));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto kiosk_app_handler = std::make_unique<ash::KioskAppsHandler>(
-      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile));
-  web_ui->AddMessageHandler(std::move(kiosk_app_handler));
+  web_ui->AddMessageHandler(std::make_unique<ash::KioskAppsHandler>(
+      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile)));
 #endif
 
   // Need to allow <object> elements so that the <extensionoptions> browser

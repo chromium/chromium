@@ -471,8 +471,12 @@
       </div>
     </template>
     <cr-link-row class="hr"
+<if expr="chromeos_ash">
+        hidden$="[[isLacrosEnabled_]]"
+</if>
         id="siteSettings" label="$i18n{siteSettings}"
-        on-click="onSiteSettingsClick_" external></cr-link-row>
+        on-click="onSiteSettingsClick_" external
+    ></cr-link-row>
     <template is="dom-if" if="[[shouldShowOptionsSection_(data.*)]]">
       <div id="options-section">
         <template is="dom-if" if="[[canPinToToolbar_(data.pinnedToToolbar)]]">

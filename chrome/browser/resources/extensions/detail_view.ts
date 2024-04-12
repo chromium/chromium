@@ -113,6 +113,15 @@ export class ExtensionsDetailViewElement extends
         type: Boolean,
         computed: 'computeShowBlocklistText_(data.blacklistText)',
       },
+
+      // <if expr="chromeos_ash">
+      /** Whether Lacros is enabled. */
+      isLacrosEnabled_: {
+        type: Boolean,
+        readOnly: true,
+        value: () => loadTimeData.getBoolean('isLacrosEnabled'),
+      },
+      // </if>
     };
   }
 
@@ -132,6 +141,10 @@ export class ExtensionsDetailViewElement extends
   private size_: string;
   private sortedViews_: chrome.developerPrivate.ExtensionView[];
   private safetyCheckExtensionsEnabled_: boolean;
+
+  // <if expr="chromeos_ash">
+  private readonly isLacrosEnabled_: boolean;
+  // </if>
 
   override ready() {
     super.ready();
