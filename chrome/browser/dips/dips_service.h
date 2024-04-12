@@ -167,11 +167,8 @@ class DIPSService : public KeyedService {
   void OnTimerFired();
   void DeleteDIPSEligibleState(DeletedSitesCallback callback,
                                std::vector<std::string> sites_to_clear);
-  void PostDeletionTaskToUIThread(base::OnceClosure callback,
-                                  std::vector<std::string> sites_to_clear);
-  void RunDeletionTaskOnUIThread(
-      std::unique_ptr<content::BrowsingDataFilterBuilder> filter,
-      base::OnceClosure callback);
+  void RunDeletionTaskOnUIThread(std::vector<std::string> sites_to_clear,
+                                 base::OnceClosure callback);
 
   // Checks whether |third_party_url| is allowed to use third-party cookies when
   // embedded under |first_party_url|. Factors the following into account:

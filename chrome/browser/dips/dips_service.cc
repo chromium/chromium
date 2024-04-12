@@ -4,7 +4,9 @@
 
 #include "chrome/browser/dips/dips_service.h"
 
+#include <optional>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -15,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -38,10 +41,14 @@
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/dips_utils.h"
+#include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -107,6 +114,25 @@ void OnDeletionFinished(base::OnceClosure finished_callback,
   std::move(finished_callback).Run();
 }
 
+net::CookiePartitionKeyCollection CookiePartitionKeyCollectionForSites(
+    const std::vector<std::string>& sites) {
+  std::vector<net::CookiePartitionKey> keys;
+  for (const auto& site : sites) {
+    for (const auto& [scheme, port] :
+         {std::make_pair("http", 80), std::make_pair("https", 443)}) {
+      auto key = net::CookiePartitionKey::FromStorageKeyComponents(
+          net::SchemefulSite(
+              url::Origin::CreateFromNormalizedTuple(scheme, site, port)),
+          net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+          /*nonce=*/std::nullopt);
+      if (key.has_value()) {
+        keys.push_back(*key);
+      }
+    }
+  }
+  return net::CookiePartitionKeyCollection(keys);
+}
+
 class StateClearer : public content::BrowsingDataRemover::Observer {
  public:
   StateClearer(const StateClearer&) = delete;
@@ -114,7 +140,7 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
 
   ~StateClearer() override { remover_->RemoveObserver(this); }
 
-  // Clears state for the sites specified by 'filter'. Runs |callback| once
+  // Clears state for the sites in `sites_to_clear`. Runs `callback` once
   // clearing is complete.
   //
   // NOTE: This deletion task removing rows for `sites_to_clear` from the
@@ -122,19 +148,36 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
   // eligible don't have user interaction time values. So even though 'remover'
   // will only clear the storage timestamps, that's sufficient to delete the
   // entire row.
-  static void DeleteState(
-      content::BrowsingDataRemover* remover,
-      std::unique_ptr<content::BrowsingDataFilterBuilder> filter,
-      base::OnceClosure callback) {
+  static void DeleteState(content::BrowsingDataRemover* remover,
+                          std::vector<std::string> sites_to_clear,
+                          base::OnceClosure callback) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-    // StateClearer manages its own lifetime and deletes itself when finished.
-    base::Time deletion_start = base::Time::Now();
-    auto* state_clearer = new StateClearer(
-        remover, base::BindOnce(&OnDeletionFinished, std::move(callback),
-                                deletion_start));
+    // This filter will match unpartitioned cookies and storage, as well as
+    // storage (but not cookies) that is partitioned under tracking domains.
+    std::unique_ptr<content::BrowsingDataFilterBuilder> filter =
+        content::BrowsingDataFilterBuilder::Create(
+            content::BrowsingDataFilterBuilder::Mode::kDelete);
+    for (const auto& site : sites_to_clear) {
+      filter->AddRegisterableDomain(site);
+    }
+    // Don't delete CHIPS partitioned under non-tracking sites.
+    filter->SetCookiePartitionKeyCollection(
+        net::CookiePartitionKeyCollection());
 
-    remover->AddObserver(state_clearer);
+    // This filter will match cookies partitioned under tracking domains.
+    std::unique_ptr<content::BrowsingDataFilterBuilder>
+        partitioned_cookie_filter = content::BrowsingDataFilterBuilder::Create(
+            content::BrowsingDataFilterBuilder::Mode::kPreserve);
+    partitioned_cookie_filter->SetCookiePartitionKeyCollection(
+        CookiePartitionKeyCollectionForSites(sites_to_clear));
+    partitioned_cookie_filter->SetPartitionedCookiesOnly(true);
+    // We don't add any domains to this filter, so with mode=kPreserve it will
+    // delete everything partitioned under the sites.
+
+    // StateClearer manages its own lifetime and deletes itself when finished.
+    StateClearer* clearer =
+        new StateClearer(remover, /*callback_count=*/2, std::move(callback));
     chrome_browsing_data_remover::DataType remove_mask =
         chrome_browsing_data_remover::FILTERABLE_DATA_TYPES;
     if (base::FeatureList::IsEnabled(features::kDIPSPreservePSData)) {
@@ -146,20 +189,42 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
             content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
             content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
-        std::move(filter), state_clearer);
+        std::move(filter), clearer);
+    remover->RemoveWithFilterAndReply(
+        base::Time::Min(), base::Time::Max(),
+        content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+            content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
+        std::move(partitioned_cookie_filter), clearer);
   }
 
  private:
+  // StateClearer will run `callback` and delete itself after
+  // OnBrowsingDataRemoverDone() is called `callback_count` times.
   StateClearer(content::BrowsingDataRemover* remover,
+               int callback_count,
                base::OnceClosure callback)
-      : remover_(remover), callback_(std::move(callback)) {}
+      : remover_(remover),
+        deletion_start_(base::Time::Now()),
+        expected_callback_count_(callback_count),
+        callback_(std::move(callback)) {
+    remover_->AddObserver(this);
+  }
 
+  // BrowsingDataRemover::Observer overrides:
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
-    std::move(callback_).Run();
-    delete this;  // Matches the new in DeleteState()
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (++callback_count_ == expected_callback_count_) {
+      UmaHistogramDeletionLatency(deletion_start_);
+      std::move(callback_).Run();
+      delete this;  // Matches the new in DeleteState()
+    }
   }
 
   raw_ptr<content::BrowsingDataRemover> remover_;
+  const base::Time deletion_start_;
+  const int expected_callback_count_;
+  int callback_count_ = 0;
   base::OnceClosure callback_;
 };
 
@@ -546,8 +611,8 @@ void DIPSService::DeleteDIPSEligibleState(
     }
 
     // Perform state deletion on the filtered list of sites.
-    PostDeletionTaskToUIThread(std::move(finish_callback),
-                               std::move(filtered_sites_to_clear));
+    RunDeletionTaskOnUIThread(std::move(filtered_sites_to_clear),
+                              std::move(finish_callback));
   } else {
     for (auto it = sites_to_clear.begin(); it != sites_to_clear.end(); it++) {
       // TODO(crbug.com/1447035): Investigate and fix the presence of empty
@@ -571,30 +636,12 @@ void DIPSService::DeleteDIPSEligibleState(
   }
 }
 
-void DIPSService::PostDeletionTaskToUIThread(base::OnceClosure callback,
-                                             std::vector<std::string> sites) {
-  std::unique_ptr<content::BrowsingDataFilterBuilder> filter =
-      content::BrowsingDataFilterBuilder::Create(
-          content::BrowsingDataFilterBuilder::Mode::kDelete);
-  for (const auto& site : sites) {
-    filter->AddRegisterableDomain(site);
-  }
-  // Don't delete CHIPS partitioned under non-tracking sites.
-  filter->SetCookiePartitionKeyCollection(net::CookiePartitionKeyCollection());
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DIPSService::RunDeletionTaskOnUIThread,
-                                weak_factory_.GetWeakPtr(), std::move(filter),
-                                std::move(callback)));
-}
-
-void DIPSService::RunDeletionTaskOnUIThread(
-    std::unique_ptr<content::BrowsingDataFilterBuilder> filter,
-    base::OnceClosure callback) {
+void DIPSService::RunDeletionTaskOnUIThread(std::vector<std::string> sites,
+                                            base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   StateClearer::DeleteState(browser_context_->GetBrowsingDataRemover(),
-                            std::move(filter), std::move(callback));
+                            std::move(sites), std::move(callback));
 }
 
 void DIPSService::AddObserver(Observer* observer) {

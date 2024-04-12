@@ -4,6 +4,8 @@
 
 #include "chrome/browser/dips/dips_service.h"
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -34,6 +36,8 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
+#include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -365,6 +369,13 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Enabled) {
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
           content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
       filter_builder.get());
+  // We don't test the filter builder for partitioned cookies here because it's
+  // messy. The browser tests ensure that it behaves as expected.
+  delegate_.ExpectCallDontCareAboutFilterBuilder(
+      base::Time::Min(), base::Time::Max(),
+      content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+          content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB);
 
   // Time-travel to after the grace period has ended for the bounce.
   AdvanceTimeTo(bounce + grace_period + tiny_delta);
@@ -764,6 +775,13 @@ TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
           content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
       filter_builder.get());
+  // We don't test the filter builder for partitioned cookies here because it's
+  // messy. The browser tests ensure that it behaves as expected.
+  delegate_.ExpectCallDontCareAboutFilterBuilder(
+      base::Time::Min(), base::Time::Max(),
+      content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+          content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB);
 
   // Perform immediate enforcement of deletion, without regard for grace period
   // and verify `url` is returned the `DeletedSitesCallback`.
