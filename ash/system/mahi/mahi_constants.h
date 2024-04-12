@@ -27,7 +27,8 @@ enum ViewId {
   kSummaryOutlinesSection,
   kQuestionAnswerView,
   kAskQuestionSendButton,
-  kBackButton,
+  kGoToQuestionAndAnswerButton,
+  kGoToSummaryOutlinesButton,
   kOutlinesContainer,
   kSummaryLoadingAnimatedImage,
   kOutlinesLoadingAnimatedImage,
@@ -76,9 +77,10 @@ enum class PanelButton {
   kCloseButton = 0,
   kLearnMoreLink = 1,
   kAskQuestionSendButton = 2,
-  kBackButton = 3,
+  kGoToSummaryOutlinesButton = 3,
   kRefreshButton = 4,
-  kMaxValue = kRefreshButton,
+  kGoToQuestionAndAnswerButton = 5,
+  kMaxValue = kGoToQuestionAndAnswerButton,
 };
 
 inline constexpr char kMahiFeedbackHistogramName[] = "Ash.Mahi.Feedback";

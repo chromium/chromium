@@ -161,6 +161,7 @@ void SummaryOutlinesSection::OnUpdated(const MahiUiUpdate& update) {
       return;
     case MahiUiUpdateType::kAnswerLoaded:
     case MahiUiUpdateType::kErrorReceived:
+    case MahiUiUpdateType::kQuestionAndAnswerViewNavigated:
     case MahiUiUpdateType::kQuestionPosted:
     case MahiUiUpdateType::kQuestionReAsked:
     case MahiUiUpdateType::kRefreshAvailabilityUpdated:

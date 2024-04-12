@@ -44,6 +44,12 @@ void MahiUiController::RemoveDelegate(Delegate* delegate) {
   delegates_.RemoveObserver(delegate);
 }
 
+void MahiUiController::NavigateToQuestionAnswerView() {
+  SetVisibilityStateAndNotifyUiUpdate(
+      VisibilityState::kQuestionAndAnswer,
+      MahiUiUpdate(MahiUiUpdateType::kQuestionAndAnswerViewNavigated));
+}
+
 void MahiUiController::NavigateToSummaryOutlinesSection() {
   SetVisibilityStateAndNotifyUiUpdate(
       VisibilityState::kSummaryAndOutlines,

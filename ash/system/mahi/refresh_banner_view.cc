@@ -225,6 +225,7 @@ void RefreshBannerView::OnUpdated(const MahiUiUpdate& update) {
     case MahiUiUpdateType::kErrorReceived:
     case MahiUiUpdateType::kAnswerLoaded:
     case MahiUiUpdateType::kOutlinesLoaded:
+    case MahiUiUpdateType::kQuestionAndAnswerViewNavigated:
     case MahiUiUpdateType::kQuestionPosted:
     case MahiUiUpdateType::kQuestionReAsked:
     case MahiUiUpdateType::kSummaryLoaded:

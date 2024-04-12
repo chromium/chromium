@@ -67,6 +67,9 @@ class ASH_EXPORT MahiUiController {
   void AddDelegate(Delegate* delegate);
   void RemoveDelegate(Delegate* delegate);
 
+  // Navigates to the Q&A view and notifies delegates.
+  void NavigateToQuestionAnswerView();
+
   // Navigates to the summary & outlines section and notifies delegates.
   void NavigateToSummaryOutlinesSection();
 

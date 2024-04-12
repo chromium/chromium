@@ -1577,8 +1577,9 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="0" label="Close button"/>
   <int value="1" label="Learn more link"/>
   <int value="2" label="Send question button"/>
-  <int value="3" label="Back button"/>
+  <int value="3" label="Back to Summary Outlines button"/>
   <int value="4" label="Refresh button"/>
+  <int value="5" label="Back to Question and Answer button"/>
 </enum>
 
 <enum name="PeripheralConnectivityResult">

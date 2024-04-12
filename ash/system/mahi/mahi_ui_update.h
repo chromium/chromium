@@ -43,6 +43,9 @@ enum class MahiUiUpdateType {
   // Outlines are loaded successfully.
   kOutlinesLoaded,
 
+  // The question and answer view is requested to show.
+  kQuestionAndAnswerViewNavigated,
+
   // A question is posted by user.
   kQuestionPosted,
 
@@ -154,6 +157,7 @@ class MahiUiUpdate {
   // For `kContentsRefreshInitiated`, `payload` is `std::nullopt`;
   // For `kErrorReceived`, `payload` is an error;
   // For `kOutlinesLoaded`, `payload` is an array of outlines;
+  // For `kQuestionAndAnswerViewNavigated`, `payload` is `std::nullopt`;
   // For `kQuestionPosted`, `payload` is a question;
   // For `kQuestionReAsked`, `payload` is a question params struct;
   // For `kRefreshAvailabilityUpdated`, `payload` is a boolean;

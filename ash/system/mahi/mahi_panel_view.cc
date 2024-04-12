@@ -85,7 +85,8 @@ constexpr int kSourceRowSpacing = 8;
 constexpr gfx::Insets kAskQuestionContainerInteriorMargin =
     gfx::Insets::VH(2, 8);
 constexpr int kAskQuestionContainerCornerRadius = 8;
-constexpr int kAskQuestionContainerChildSpacing = 8;
+constexpr int kInputRowContainerBetweenChildSpacing = 8;
+constexpr gfx::Insets kInputTextfieldPadding = gfx::Insets::TLBR(0, 0, 0, 8);
 
 // The below constants for the feedback buttons and cutout dimensions refer to
 // the following spec, where an order is designated for the first, second, and
@@ -128,11 +129,9 @@ constexpr int kFooterSpacing = 1;
 // can exceed the textfield bounds and cover the entire container.
 void InstallTextfieldFocusRing(views::View* question_textfield,
                                views::View* send_button) {
-  int focus_ring_left_inset = -1 * (kAskQuestionContainerInteriorMargin.left());
-  int focus_ring_right_inset =
-      -1 * (kAskQuestionContainerInteriorMargin.right() +
-            kAskQuestionContainerChildSpacing +
-            send_button->GetPreferredSize().width());
+  int focus_ring_left_inset = -(kAskQuestionContainerInteriorMargin.left());
+  int focus_ring_right_inset = -(kAskQuestionContainerInteriorMargin.right() +
+                                 send_button->GetPreferredSize().width());
   views::FocusRing::Install(question_textfield);
   views::FocusRing::Get(question_textfield)
       ->SetColorId(ui::kColorSysStateFocusRing);
@@ -242,18 +241,18 @@ class FeedbackButton : public IconButton {
 BEGIN_METADATA(FeedbackButton)
 END_METADATA
 
-// BackButton ------------------------------------------------------------------
-
+// GoToSummaryOutlinesButton --------------------------------------------------
 // A button used to navigate to the summary & outlines section. Only shown when
 // in the Q&A view.
-class BackButton : public IconButton, public MahiUiController::Delegate {
-  METADATA_HEADER(BackButton, IconButton)
+class GoToSummaryOutlinesButton : public IconButton,
+                                  public MahiUiController::Delegate {
+  METADATA_HEADER(GoToSummaryOutlinesButton, IconButton)
 
  public:
-  // NOTE: `controller` outlives `BackButton` so it is safe to use
-  // `base::Unretained()` here.
+  // NOTE: `controller` outlives `GoToSummaryOutlinesButton` so it is safe to
+  // use `base::Unretained()` here.
   // TODO(b/319264190): Replace the a11y string.
-  explicit BackButton(MahiUiController* ui_controller)
+  explicit GoToSummaryOutlinesButton(MahiUiController* ui_controller)
       : IconButton(
             /*callback=*/base::BindRepeating(
                 [](MahiUiController* ui_controller) {
@@ -261,7 +260,7 @@ class BackButton : public IconButton, public MahiUiController::Delegate {
 
                   base::UmaHistogramEnumeration(
                       mahi_constants::kMahiButtonClickHistogramName,
-                      mahi_constants::PanelButton::kBackButton);
+                      mahi_constants::PanelButton::kGoToSummaryOutlinesButton);
                 },
                 base::Unretained(ui_controller)),
             IconButton::Type::kSmallFloating,
@@ -271,9 +270,10 @@ class BackButton : public IconButton, public MahiUiController::Delegate {
             /*has_border=*/false),
         MahiUiController::Delegate(ui_controller) {}
 
-  BackButton(const BackButton&) = delete;
-  BackButton& operator=(const BackButton&) = delete;
-  ~BackButton() override = default;
+  GoToSummaryOutlinesButton(const GoToSummaryOutlinesButton&) = delete;
+  GoToSummaryOutlinesButton& operator=(const GoToSummaryOutlinesButton&) =
+      delete;
+  ~GoToSummaryOutlinesButton() override = default;
 
  private:
   // MahiController::Delegate:
@@ -291,10 +291,93 @@ class BackButton : public IconButton, public MahiUiController::Delegate {
   }
 };
 
-BEGIN_METADATA(BackButton)
+BEGIN_METADATA(GoToSummaryOutlinesButton)
 END_METADATA
 
-BEGIN_VIEW_BUILDER(/*no export*/, BackButton, views::View)
+BEGIN_VIEW_BUILDER(/*no export*/, GoToSummaryOutlinesButton, views::View)
+END_VIEW_BUILDER
+
+// GoToQuestionAndAnswerButton ------------------------------------------------
+// A button used to navigate back to the Q&A view from the summary and outlines
+// section. Shown only if the Q&A view has contents.
+class GoToQuestionAndAnswerButton : public IconButton,
+                                    public MahiUiController::Delegate {
+  METADATA_HEADER(GoToQuestionAndAnswerButton, IconButton)
+
+ public:
+  // NOTE: `controller` outlives `GoToQuestionAndAnswerButton` so it is safe to
+  // use `base::Unretained()` here.
+  // TODO(b/319264190): Replace the a11y string.
+  explicit GoToQuestionAndAnswerButton(MahiUiController* ui_controller)
+      : IconButton(
+            /*callback=*/base::BindRepeating(
+                [](MahiUiController* ui_controller) {
+                  ui_controller->NavigateToQuestionAnswerView();
+
+                  base::UmaHistogramEnumeration(
+                      mahi_constants::kMahiButtonClickHistogramName,
+                      mahi_constants::PanelButton::
+                          kGoToQuestionAndAnswerButton);
+                },
+                base::Unretained(ui_controller)),
+            IconButton::Type::kSmallFloating,
+            &kQuickSettingsRightArrowIcon,
+            /*accessible_name=*/u"Back to Q&A view",
+            /*is_togglable=*/false,
+            /*has_border=*/false),
+        MahiUiController::Delegate(ui_controller) {}
+
+  GoToQuestionAndAnswerButton(const GoToQuestionAndAnswerButton&) = delete;
+  GoToQuestionAndAnswerButton& operator=(const GoToQuestionAndAnswerButton&) =
+      delete;
+  ~GoToQuestionAndAnswerButton() override = default;
+
+ private:
+  // MahiController::Delegate:
+  views::View* GetView() override { return this; }
+
+  bool GetViewVisibility(VisibilityState state) const override {
+    switch (state) {
+      case VisibilityState::kError:
+        return GetVisible();
+      case VisibilityState::kQuestionAndAnswer:
+        return false;
+      case VisibilityState::kSummaryAndOutlines:
+        return question_answer_view_has_contents_;
+    }
+  }
+
+  void OnUpdated(const MahiUiUpdate& update) override {
+    switch (update.type()) {
+      case MahiUiUpdateType::kContentsRefreshInitiated:
+        SetVisible(false);
+        question_answer_view_has_contents_ = false;
+        break;
+      case MahiUiUpdateType::kQuestionPosted:
+        // We do not show the button immediately because we navigate to the Q&A
+        // view when a question is posted.
+        question_answer_view_has_contents_ = true;
+        break;
+      case MahiUiUpdateType::kAnswerLoaded:
+      case MahiUiUpdateType::kErrorReceived:
+      case MahiUiUpdateType::kOutlinesLoaded:
+      case MahiUiUpdateType::kQuestionAndAnswerViewNavigated:
+      case MahiUiUpdateType::kQuestionReAsked:
+      case MahiUiUpdateType::kRefreshAvailabilityUpdated:
+      case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
+      case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
+      case MahiUiUpdateType::kSummaryLoaded:
+        return;
+    }
+  }
+
+  bool question_answer_view_has_contents_ = false;
+};
+
+BEGIN_METADATA(GoToQuestionAndAnswerButton)
+END_METADATA
+
+BEGIN_VIEW_BUILDER(/*no export*/, GoToQuestionAndAnswerButton, views::View)
 END_VIEW_BUILDER
 
 // MahiScrollView -----------------------------------------------------------
@@ -403,7 +486,8 @@ END_METADATA
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(/*no export*/, ash::BackButton)
+DEFINE_VIEW_BUILDER(/*no export*/, ash::GoToSummaryOutlinesButton)
+DEFINE_VIEW_BUILDER(/*no export*/, ash::GoToQuestionAndAnswerButton)
 
 namespace ash {
 
@@ -528,37 +612,53 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                   std::make_unique<MahiErrorStatusView>(ui_controller_)))
           .Build());
 
-  auto* ask_question_container = AddChildView(
+  // Add a row for processing user input that includes a textfield, send button
+  // and a back to Q&A button when in the summary section.
+  views::FlexLayoutView* ask_question_container = nullptr;
+  AddChildView(
       views::Builder<views::FlexLayoutView>()
-          .SetBackground(views::CreateThemedRoundedRectBackground(
-              cros_tokens::kCrosSysSystemOnBase,
-              gfx::RoundedCornersF(kAskQuestionContainerCornerRadius)))
-          .SetInteriorMargin(kAskQuestionContainerInteriorMargin)
-          .SetIgnoreDefaultMainAxisMargins(true)
-          .SetCollapseMargins(true)
           .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
             layout->SetDefault(
                 views::kMarginsKey,
-                gfx::Insets::VH(0, kAskQuestionContainerChildSpacing));
+                gfx::Insets::VH(0, kInputRowContainerBetweenChildSpacing));
           }))
-          .Build());
-
-  ask_question_container->AddChildView(
-      views::Builder<views::Textfield>()
-          .CopyAddressTo(&question_textfield_)
-          .SetID(mahi_constants::ViewId::kQuestionTextfield)
-          .SetBackgroundEnabled(false)
-          .SetBorder(nullptr)
-          // TODO(b/319264190): Replace string.
-          .SetPlaceholderText(u"Ask a question.")
-          .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-              TypographyToken::kCrosAnnotation1))
-          .SetProperty(views::kFlexBehaviorKey,
-                       views::FlexSpecification(views::FlexSpecification(
-                           views::LayoutOrientation::kHorizontal,
-                           views::MinimumFlexSizeRule::kPreferred,
-                           views::MaximumFlexSizeRule::kUnbounded)))
-          .SetController(this)
+          .SetCollapseMargins(true)
+          .SetIgnoreDefaultMainAxisMargins(true)
+          .AddChildren(
+              views::Builder<views::FlexLayoutView>()
+                  .CopyAddressTo(&ask_question_container)
+                  .SetBackground(views::CreateThemedRoundedRectBackground(
+                      cros_tokens::kCrosSysSystemOnBase,
+                      gfx::RoundedCornersF(kAskQuestionContainerCornerRadius)))
+                  .SetInteriorMargin(kAskQuestionContainerInteriorMargin)
+                  .SetProperty(
+                      views::kFlexBehaviorKey,
+                      views::FlexSpecification(views::FlexSpecification(
+                          views::LayoutOrientation::kHorizontal,
+                          views::MinimumFlexSizeRule::kPreferred,
+                          views::MaximumFlexSizeRule::kUnbounded)))
+                  .AddChildren(
+                      views::Builder<views::Textfield>()
+                          .CopyAddressTo(&question_textfield_)
+                          .SetID(mahi_constants::ViewId::kQuestionTextfield)
+                          .SetBackgroundEnabled(false)
+                          .SetBorder(
+                              views::CreateEmptyBorder(kInputTextfieldPadding))
+                          // TODO(b/319264190): Replace string.
+                          .SetPlaceholderText(u"Ask a question.")
+                          .SetFontList(
+                              TypographyProvider::Get()->ResolveTypographyToken(
+                                  TypographyToken::kCrosAnnotation1))
+                          .SetProperty(
+                              views::kFlexBehaviorKey,
+                              views::FlexSpecification(views::FlexSpecification(
+                                  views::LayoutOrientation::kHorizontal,
+                                  views::MinimumFlexSizeRule::kPreferred,
+                                  views::MaximumFlexSizeRule::kUnbounded)))
+                          .SetController(this)),
+              views::Builder<GoToQuestionAndAnswerButton>(
+                  std::make_unique<GoToQuestionAndAnswerButton>(ui_controller_))
+                  .SetID(mahi_constants::ViewId::kGoToQuestionAndAnswerButton))
           .Build());
 
   send_button_ = ask_question_container->AddChildView(
@@ -618,10 +718,9 @@ std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
       }))
       .AddChildren(
           // Back Button.
-          views::Builder<BackButton>(
-              std::make_unique<BackButton>(ui_controller_))
-              .CopyAddressTo(&back_button_)
-              .SetID(mahi_constants::ViewId::kBackButton),
+          views::Builder<GoToSummaryOutlinesButton>(
+              std::make_unique<GoToSummaryOutlinesButton>(ui_controller_))
+              .SetID(mahi_constants::ViewId::kGoToSummaryOutlinesButton),
           // The Panel's title label
           views::Builder<views::Label>()
               // TODO(b/319264190): Replace the string used here with the
@@ -697,6 +796,7 @@ void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
       send_button_->SetEnabled(true);
       return;
     case MahiUiUpdateType::kOutlinesLoaded:
+    case MahiUiUpdateType::kQuestionAndAnswerViewNavigated:
     case MahiUiUpdateType::kQuestionPosted:
     case MahiUiUpdateType::kQuestionReAsked:
     case MahiUiUpdateType::kRefreshAvailabilityUpdated:

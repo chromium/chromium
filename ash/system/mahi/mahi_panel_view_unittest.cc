@@ -612,32 +612,39 @@ TEST_F(MahiPanelViewTest, LoadingAnimations) {
 }
 
 // Tests that pressing on the send button with a valid textfield takes the user
-// to the Q&A View and the back button takes the user back to the main view.
+// to the Q&A View and the back to summary outlines button that appears on top
+// takes the user back to the main view.
 TEST_F(MahiPanelViewTest, TransitionToQuestionAnswerView) {
-  auto* const summary_outlines_section = panel_view()->GetViewByID(
+  // Initially the Summary Outlines section is visible.
+  const auto* const summary_outlines_section = panel_view()->GetViewByID(
       mahi_constants::ViewId::kSummaryOutlinesSection);
-  auto* const question_answer_view =
+  ASSERT_TRUE(summary_outlines_section);
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+
+  const auto* const question_answer_view =
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
-  auto* const send_button =
+  ASSERT_TRUE(question_answer_view);
+  EXPECT_FALSE(question_answer_view->GetVisible());
+
+  const auto* const send_button =
       panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
-  auto* const back_button =
-      panel_view()->GetViewByID(mahi_constants::ViewId::kBackButton);
+  ASSERT_TRUE(send_button);
+  EXPECT_TRUE(send_button->GetVisible());
+
+  const auto* const go_to_summary_outlines_button = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kGoToSummaryOutlinesButton);
+  ASSERT_TRUE(go_to_summary_outlines_button);
+  EXPECT_FALSE(go_to_summary_outlines_button->GetVisible());
+
   auto* const question_textfield = views::AsViewClass<views::Textfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
-
-  // Assert that the views to be tested exist.
-  ASSERT_TRUE(summary_outlines_section);
-  ASSERT_TRUE(question_answer_view);
-  ASSERT_TRUE(back_button);
-  ASSERT_TRUE(send_button);
   ASSERT_TRUE(question_textfield);
-
-  // Initially the Summary Outlines section is visible.
-  EXPECT_TRUE(summary_outlines_section->GetVisible());
-  EXPECT_FALSE(question_answer_view->GetVisible());
-  EXPECT_FALSE(back_button->GetVisible());
-  EXPECT_TRUE(send_button->GetVisible());
   EXPECT_TRUE(question_textfield->GetVisible());
+
+  const auto* const go_to_question_answer_button = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kGoToQuestionAndAnswerButton);
+  ASSERT_TRUE(go_to_question_answer_button);
+  EXPECT_FALSE(go_to_question_answer_button->GetVisible());
 
   // Provide a valid input in the textfield so it can be sent as a question.
   question_textfield->SetText(u"input");
@@ -647,18 +654,34 @@ TEST_F(MahiPanelViewTest, TransitionToQuestionAnswerView) {
   LeftClickOn(send_button);
   EXPECT_FALSE(summary_outlines_section->GetVisible());
   EXPECT_TRUE(question_answer_view->GetVisible());
-  EXPECT_TRUE(back_button->GetVisible());
+  EXPECT_TRUE(go_to_summary_outlines_button->GetVisible());
   EXPECT_TRUE(send_button->GetVisible());
 
-  // Run layout so the back button updates its size and becomes clickable.
+  // Run layout so the back to summary outlines button updates its size and
+  // becomes clickable.
   views::test::RunScheduledLayout(widget());
 
-  // Pressing the back button should take the user back to the main view.
-  LeftClickOn(back_button);
+  // Pressing the back to summary outlines button should take the user back to
+  // the main view.
+  LeftClickOn(go_to_summary_outlines_button);
   EXPECT_TRUE(summary_outlines_section->GetVisible());
   EXPECT_FALSE(question_answer_view->GetVisible());
-  EXPECT_FALSE(back_button->GetVisible());
+  EXPECT_FALSE(go_to_summary_outlines_button->GetVisible());
   EXPECT_TRUE(send_button->GetVisible());
+  views::test::RunScheduledLayout(widget());
+
+  // "Back to QA" button should now be visible and clickable.
+  EXPECT_TRUE(go_to_question_answer_button->GetVisible());
+  LeftClickOn(go_to_question_answer_button);
+  EXPECT_FALSE(summary_outlines_section->GetVisible());
+  EXPECT_TRUE(question_answer_view->GetVisible());
+
+  // Refreshing the summary contents should clear the Q&A view and make the
+  // "Back to QA button" invisible.
+  ui_controller()->RefreshContents();
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+  EXPECT_FALSE(question_answer_view->GetVisible());
+  EXPECT_FALSE(go_to_question_answer_button->GetVisible());
 }
 
 TEST_F(MahiPanelViewTest, ScrollViewContentsDynamicSize) {
@@ -703,7 +726,8 @@ TEST_F(MahiPanelViewTest, ScrollViewContentsDynamicSize) {
   // Transition back to summary outlines view. Scroll view should change its
   // preferred height.(the height that the view will take when it is not
   // constrained by `ScrollView`).
-  LeftClickOn(panel_view()->GetViewByID(mahi_constants::ViewId::kBackButton));
+  LeftClickOn(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kGoToSummaryOutlinesButton));
 
   views::test::RunScheduledLayout(widget());
 
@@ -1419,17 +1443,10 @@ TEST_F(MahiPanelViewTest, InappropriateQuestionError) {
 // TODO(crbug.com/333800096): Re-enable this test
 TEST_F(MahiPanelViewTest, DISABLED_ClickMetrics) {
   base::HistogramTester histogram;
-  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
-                              mahi_constants::PanelButton::kCloseButton, 0);
-  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
-                              mahi_constants::PanelButton::kLearnMoreLink, 0);
-  histogram.ExpectBucketCount(
-      mahi_constants::kMahiButtonClickHistogramName,
-      mahi_constants::PanelButton::kAskQuestionSendButton, 0);
-  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
-                              mahi_constants::PanelButton::kBackButton, 0);
 
   // Learn more button.
+  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
+                              mahi_constants::PanelButton::kLearnMoreLink, 0);
   LeftClickOn(
       panel_view()->GetViewByID(mahi_constants::ViewId::kLearnMoreLink));
   histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
@@ -1438,8 +1455,10 @@ TEST_F(MahiPanelViewTest, DISABLED_ClickMetrics) {
 
   auto* const send_button =
       panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
-  auto* const back_button =
-      panel_view()->GetViewByID(mahi_constants::ViewId::kBackButton);
+  auto* const back_to_summary_outlines_button = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kGoToSummaryOutlinesButton);
+  auto* const back_to_question_answer_button = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kGoToQuestionAndAnswerButton);
   auto* const question_textfield = views::AsViewClass<views::Textfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
 
@@ -1451,8 +1470,9 @@ TEST_F(MahiPanelViewTest, DISABLED_ClickMetrics) {
       mahi_constants::kMahiButtonClickHistogramName,
       mahi_constants::PanelButton::kAskQuestionSendButton, 0);
   histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 1);
+
   // Should send question when the question text is not empty.
-  EXPECT_FALSE(back_button->GetVisible());
+  EXPECT_FALSE(back_to_summary_outlines_button->GetVisible());
   const std::u16string question(u"question text");
   question_textfield->SetText(question);
   LeftClickOn(send_button);
@@ -1461,22 +1481,39 @@ TEST_F(MahiPanelViewTest, DISABLED_ClickMetrics) {
       mahi_constants::PanelButton::kAskQuestionSendButton, 1);
   histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 2);
 
-  // Now the back button is visible.
-  EXPECT_TRUE(back_button->GetVisible());
+  // Now the back to summary outlines button is visible.
+  EXPECT_TRUE(back_to_summary_outlines_button->GetVisible());
 
-  // Back button.
+  // Back to summary outlines button.
   views::test::RunScheduledLayout(widget());
-  LeftClickOn(back_button);
-  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
-                              mahi_constants::PanelButton::kBackButton, 1);
+  histogram.ExpectBucketCount(
+      mahi_constants::kMahiButtonClickHistogramName,
+      mahi_constants::PanelButton::kGoToSummaryOutlinesButton, 0);
+  LeftClickOn(back_to_summary_outlines_button);
+  histogram.ExpectBucketCount(
+      mahi_constants::kMahiButtonClickHistogramName,
+      mahi_constants::PanelButton::kGoToSummaryOutlinesButton, 1);
   histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 3);
+
+  // Back to Q&A button.
+  views::test::RunScheduledLayout(widget());
+  EXPECT_TRUE(back_to_question_answer_button->GetVisible());
+  histogram.ExpectBucketCount(
+      mahi_constants::kMahiButtonClickHistogramName,
+      mahi_constants::PanelButton::kGoToQuestionAndAnswerButton, 0);
+  LeftClickOn(back_to_question_answer_button);
+  histogram.ExpectBucketCount(
+      mahi_constants::kMahiButtonClickHistogramName,
+      mahi_constants::PanelButton::kGoToQuestionAndAnswerButton, 1);
 
   // Close button.
   views::test::RunScheduledLayout(widget());
+  histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
+                              mahi_constants::PanelButton::kCloseButton, 0);
   LeftClickOn(panel_view()->GetViewByID(mahi_constants::ViewId::kCloseButton));
   histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
                               mahi_constants::PanelButton::kCloseButton, 1);
-  histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 4);
+  histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 5);
 }
 
 TEST_F(MahiPanelViewTest, UserJourneyTimeMetrics) {

@@ -124,6 +124,9 @@ void MahiUiUpdate::CheckTypeMatchesPayload() {
             std::reference_wrapper<const std::vector<chromeos::MahiOutline>>>(
           *payload_));
       break;
+    case MahiUiUpdateType::kQuestionAndAnswerViewNavigated:
+      CHECK(!payload_.has_value());
+      break;
     case MahiUiUpdateType::kQuestionPosted:
       CHECK(payload_.has_value());
       CHECK(
