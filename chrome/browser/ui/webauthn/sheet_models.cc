@@ -1910,7 +1910,6 @@ AuthenticatorCreateGpmPasskeySheetModel::
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
   // TODO(derinel): Add correct illustration.
-  // TODO(derinel): Rename other mechanism button text.
   vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
 }
 
@@ -1934,6 +1933,11 @@ bool AuthenticatorCreateGpmPasskeySheetModel::IsCancelButtonVisible() const {
 std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetCancelButtonLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_CANCEL);
+}
+
+std::u16string
+AuthenticatorCreateGpmPasskeySheetModel::GetOtherMechanismButtonLabel() const {
+  return u"Save another way (UT)";
 }
 
 void AuthenticatorCreateGpmPasskeySheetModel::OnCancel() {
@@ -1987,6 +1991,11 @@ bool AuthenticatorGpmOnboardingSheetModel::IsCancelButtonVisible() const {
 std::u16string AuthenticatorGpmOnboardingSheetModel::GetCancelButtonLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_CANCEL);
+}
+
+std::u16string
+AuthenticatorGpmOnboardingSheetModel::GetOtherMechanismButtonLabel() const {
+  return u"Save another way (UT)";
 }
 
 void AuthenticatorGpmOnboardingSheetModel::OnCancel() {
@@ -2068,7 +2077,7 @@ AuthenticatorTrustThisComputerCreationSheetModel::GetAcceptButtonLabel() const {
 std::u16string
 AuthenticatorTrustThisComputerCreationSheetModel::GetOtherMechanismButtonLabel()
     const {
-  return u"More options (UT)";
+  return u"Save another way (UT)";
 }
 
 void AuthenticatorTrustThisComputerCreationSheetModel::OnAccept() {
