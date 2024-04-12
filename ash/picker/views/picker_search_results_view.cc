@@ -233,6 +233,13 @@ void PickerSearchResultsView::AddResultToSection(
             item_view->SetLeadingIcon(data.icon);
             section_view->AddListItem(std::move(item_view));
           },
+          [&](const PickerSearchResult::SearchRequestData& data) {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            item_view->SetPrimaryText(data.text);
+            item_view->SetLeadingIcon(data.icon);
+            section_view->AddListItem(std::move(item_view));
+          },
           [&](const PickerSearchResult::EmojiData& data) {
             auto emoji_item = std::make_unique<PickerEmojiItemView>(
                 std::move(select_result_callback), data.emoji);

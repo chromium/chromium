@@ -8,10 +8,18 @@
 #include <string_view>
 
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/rust/fend_core/v1/wrapper/fend_core.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
+namespace {
+constexpr int kIconSize = 20;
+constexpr std::u16string_view kMathExamples[] = {
+    u"1 + 1", u"1/6 + 3/4", u"7^3", u"sqrt 1024", u"12 ft in m",
+};
+}  // namespace
 
 std::optional<PickerSearchResult> PickerMathSearch(std::u16string_view query) {
   std::optional<std::string> result =
@@ -20,6 +28,17 @@ std::optional<PickerSearchResult> PickerMathSearch(std::u16string_view query) {
     return PickerSearchResult::Text(base::UTF8ToUTF16(*result));
   }
   return std::nullopt;
+}
+
+std::vector<PickerSearchResult> PickerMathExamples() {
+  std::vector<PickerSearchResult> results;
+  for (const auto& query : kMathExamples) {
+    results.push_back(PickerSearchResult::SearchRequest(
+        query,
+        ui::ImageModel::FromVectorIcon(
+            kPickerConversionIcon, cros_tokens::kCrosSysOnSurface, kIconSize)));
+  }
+  return results;
 }
 
 }  // namespace ash

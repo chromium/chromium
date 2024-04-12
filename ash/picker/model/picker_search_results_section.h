@@ -22,6 +22,7 @@ enum class ASH_EXPORT PickerSectionType {
   kDriveFiles,
   kGifs,
   kRecentlyUsed,
+  kExamples,
 };
 
 // Search results are divided into different sections.

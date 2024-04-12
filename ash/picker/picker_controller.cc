@@ -22,6 +22,7 @@
 #include "ash/picker/picker_paste_request.h"
 #include "ash/picker/picker_rich_media.h"
 #include "ash/picker/search/picker_date_search.h"
+#include "ash/picker/search/picker_math_search.h"
 #include "ash/picker/search/picker_search_controller.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_positioning.h"
@@ -173,6 +174,9 @@ InsertionContent GetInsertionContentForResult(
             return PickerLinkMedia(data.url);
           },
           [](const PickerSearchResult::CategoryData& data) -> ReturnType {
+            return std::monostate();
+          },
+          [](const PickerSearchResult::SearchRequestData& data) -> ReturnType {
             return std::monostate();
           }},
       result.data());
@@ -367,7 +371,8 @@ void PickerController::GetResultsForCategory(PickerCategory category,
           PickerSectionType::kSuggestions, PickerSuggestedDateResults()));
       break;
     case PickerCategory::kUnitsMaths:
-      NOTIMPLEMENTED_LOG_ONCE();
+      std::move(callback).Run(CreateSingleSectionForCategoryResults(
+          PickerSectionType::kExamples, PickerMathExamples()));
       break;
     case PickerCategory::kClipboard:
       clipboard_provider_->FetchResults(

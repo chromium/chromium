@@ -17,6 +17,9 @@ namespace ash {
 bool PickerSearchResult::TextData::operator==(
     const PickerSearchResult::TextData&) const = default;
 
+bool PickerSearchResult::SearchRequestData::operator==(
+    const PickerSearchResult::SearchRequestData&) const = default;
+
 bool PickerSearchResult::EmojiData::operator==(
     const PickerSearchResult::EmojiData&) const = default;
 
@@ -108,6 +111,12 @@ PickerSearchResult PickerSearchResult::Text(std::u16string_view primary_text,
       TextData{.primary_text = std::u16string(primary_text),
                .secondary_text = std::u16string(secondary_text),
                .icon = std::move(icon)});
+}
+
+PickerSearchResult PickerSearchResult::SearchRequest(std::u16string_view text,
+                                                     ui::ImageModel icon) {
+  return PickerSearchResult(
+      SearchRequestData{.text = std::u16string(text), .icon = std::move(icon)});
 }
 
 PickerSearchResult PickerSearchResult::Emoji(std::u16string_view emoji) {

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -15,6 +16,8 @@ namespace ash {
 
 ASH_EXPORT std::optional<PickerSearchResult> PickerMathSearch(
     std::u16string_view query);
+
+ASH_EXPORT std::vector<PickerSearchResult> PickerMathExamples();
 
 }  // namespace ash
 

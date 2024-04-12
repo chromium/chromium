@@ -32,6 +32,13 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     bool operator==(const TextData&) const;
   };
 
+  struct SearchRequestData {
+    std::u16string text;
+    ui::ImageModel icon;
+
+    bool operator==(const SearchRequestData&) const;
+  };
+
   struct EmojiData {
     std::u16string emoji;
 
@@ -137,6 +144,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   };
 
   using Data = std::variant<TextData,
+                            SearchRequestData,
                             EmojiData,
                             SymbolData,
                             EmoticonData,
@@ -160,6 +168,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   static PickerSearchResult Text(std::u16string_view primary_text,
                                  std::u16string_view secondary_text,
                                  ui::ImageModel icon);
+  static PickerSearchResult SearchRequest(std::u16string_view text,
+                                          ui::ImageModel icon);
   static PickerSearchResult Emoji(std::u16string_view emoji);
   static PickerSearchResult Symbol(std::u16string_view symbol);
   static PickerSearchResult Emoticon(std::u16string_view emoticon);

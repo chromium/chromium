@@ -128,6 +128,7 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
     case PickerSectionType::kCategories:
     case PickerSectionType::kSuggestions:
     case PickerSectionType::kRecentlyUsed:
+    case PickerSectionType::kExamples:
       NOTREACHED_NORETURN();
     case PickerSectionType::kExpressions:
       return PickerCategory::kExpressions;
@@ -250,6 +251,11 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
   if (const PickerSearchResult::CategoryData* category_data =
           std::get_if<PickerSearchResult::CategoryData>(&result.data())) {
     SelectCategory(category_data->category);
+  } else if (const PickerSearchResult::SearchRequestData* search_request_data =
+                 std::get_if<PickerSearchResult::SearchRequestData>(
+                     &result.data())) {
+    search_field_view_->SetQueryText(search_request_data->text);
+    StartSearch(search_request_data->text);
   } else {
     delegate_->InsertResultOnNextFocus(result);
     GetWidget()->Close();

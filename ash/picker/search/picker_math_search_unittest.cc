@@ -11,6 +11,8 @@ namespace ash {
 namespace {
 
 using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::VariantWith;
@@ -36,6 +38,18 @@ TEST(MAYBE_PickerMathSearchTest, OnePlusOneEqualsTwo) {
           "data", &PickerSearchResult::data,
           VariantWith<PickerSearchResult::TextData>(Field(
               "text", &PickerSearchResult::TextData::primary_text, u"2")))));
+}
+
+TEST(PickerMathSearchTest, ReturnsExamples) {
+  std::vector<PickerSearchResult> results = PickerMathExamples();
+  EXPECT_THAT(results, Not(IsEmpty()));
+  EXPECT_THAT(
+      results,
+      Each(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerSearchResult::SearchRequestData>(
+              AllOf(Field("text", &PickerSearchResult::SearchRequestData::text,
+                          Not(IsEmpty())))))));
 }
 
 }  // namespace

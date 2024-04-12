@@ -335,6 +335,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "picker_caps_lock_off.icon",
     "picker_caps_lock_on.icon",
     "picker_clipboard.icon",
+    "picker_conversion.icon",
     "picker_drive_files.icon",
     "picker_emoji.icon",
     "picker_emoticon.icon",
