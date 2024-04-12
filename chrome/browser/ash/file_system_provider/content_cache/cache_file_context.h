@@ -10,9 +10,11 @@
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
 
 namespace ash::file_system_provider {
+
+// Helper to explain the "-1" that is used to denote an unknown ID.
+inline constexpr int kUnknownId = -1;
 
 // Context relating to a file that is cached on disk. Used to make decisions
 // around evicting files from the cache (e.g. until N bytes have been evicted)
@@ -41,7 +43,7 @@ struct CacheFileContext {
 
   // A unique ID associated with this file that is used to write the file on
   // disk.
-  base::UnguessableToken id = base::UnguessableToken::Create();
+  int64_t id = kUnknownId;
 
   // True if there is an open writer to this file, multiple writers at
   // disjoint offset ranges is currently not supported.

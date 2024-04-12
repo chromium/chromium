@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
 
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
@@ -83,6 +84,9 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
 TEST_F(FileSystemProviderContentCacheImplTest, StartWriteBytes) {
   // Perform initial write to cache of length 512 bytes.
   WriteFileToCache(base::FilePath("random-path"), /*version_tag=*/"versionA");
+
+  // The first write to the disk should use the database ID as the file name.
+  EXPECT_TRUE(base::PathExists(temp_dir_.GetPath().Append("1")));
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,

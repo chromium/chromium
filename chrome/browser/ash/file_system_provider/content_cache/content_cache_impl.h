@@ -52,15 +52,23 @@ class ContentCacheImpl : public ContentCache {
       ProvidedFileSystemInterface::ReadChunkReceivedCallback callback,
       FileErrorOrBytesRead error_or_bytes_read);
 
+  // Called when the database returns an ID that will be used as the file name
+  // to write the bytes to disk.
+  void OnFileIdGenerated(
+      base::OnceCallback<base::File::Error(const base::FilePath& path)>
+          write_bytes_callback,
+      FileErrorCallback on_bytes_written_callback,
+      int64_t* inserted_id,
+      bool item_add_success);
+
   void OnBytesWritten(const base::FilePath& file_path,
                       int64_t offset,
                       int length,
                       FileErrorCallback callback,
                       base::File::Error result);
 
-  // Helper method to retrieve the path of a file on disk from the supplied
-  // `ctx`.
-  const base::FilePath GetPathOnDiskFromContext(const CacheFileContext& ctx);
+  // Generates the absolute path on disk from the supplied `item_id`.
+  const base::FilePath GetPathOnDiskFromContext(int64_t item_id);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

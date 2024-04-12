@@ -6,7 +6,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/unguessable_token.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_file_context.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
@@ -17,10 +17,10 @@ namespace ash::file_system_provider {
 
 namespace {
 
-base::File::Error WriteBytesBlocking(const base::FilePath& path,
-                                     scoped_refptr<net::IOBuffer> buffer,
+base::File::Error WriteBytesBlocking(scoped_refptr<net::IOBuffer> buffer,
                                      int64_t offset,
-                                     int length) {
+                                     int length,
+                                     const base::FilePath& path) {
   VLOG(1) << "WriteBytesBlocking: {path = '" << path.value() << "', offset = '"
           << offset << "', length = '" << length << "'}";
 
@@ -108,7 +108,7 @@ bool ContentCacheImpl::StartReadBytes(
           << length << "'} is available";
   io_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ReadBytesBlocking, GetPathOnDiskFromContext(ctx),
+      base::BindOnce(&ReadBytesBlocking, GetPathOnDiskFromContext(ctx.id),
                      base::WrapRefCounted(buffer), offset, length),
       base::BindOnce(&ContentCacheImpl::OnBytesRead,
                      weak_ptr_factory_.GetWeakPtr(), file.file_path,
@@ -170,16 +170,54 @@ bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
   }
   ctx.in_progress_writer = true;
 
-  io_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&WriteBytesBlocking, GetPathOnDiskFromContext(ctx),
-                     base::WrapRefCounted(buffer), offset, length),
-      base::BindOnce(&ContentCacheImpl::OnBytesWritten,
-                     weak_ptr_factory_.GetWeakPtr(), file.file_path, offset,
-                     length, std::move(callback)));
+  auto write_bytes_callback = base::BindOnce(
+      &WriteBytesBlocking, base::WrapRefCounted(buffer), offset, length);
+  auto on_bytes_written_callback = base::BindOnce(
+      &ContentCacheImpl::OnBytesWritten, weak_ptr_factory_.GetWeakPtr(),
+      file.file_path, offset, length, std::move(callback));
+
+  if (ctx.id == kUnknownId) {
+    // An unknown ID means this is the first write to the filesystem. Let's
+    // retrieve an ID first that will be used as the actual file name on disk.
+    context_db_.AsyncCall(&ContextDatabase::AddItem)
+        .WithArgs(file.file_path, file.version_tag, ctx.accessed_time, &ctx.id)
+        .Then(base::BindOnce(&ContentCacheImpl::OnFileIdGenerated,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             std::move(write_bytes_callback),
+                             std::move(on_bytes_written_callback), &ctx.id));
+  } else {
+    // The ID has already been created and is known on disk, bypass generating
+    // the ID and simply start writing to the file.
+    io_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(std::move(write_bytes_callback),
+                       GetPathOnDiskFromContext(ctx.id)),
+        std::move(on_bytes_written_callback));
+  }
 
   VLOG(1) << "Conditions satisified, starting to write file to disk";
   return true;
+}
+
+void ContentCacheImpl::OnFileIdGenerated(
+    base::OnceCallback<base::File::Error(const base::FilePath& path)>
+        write_bytes_callback,
+    FileErrorCallback on_bytes_written_callback,
+    int64_t* inserted_id,
+    bool item_add_success) {
+  if (!item_add_success) {
+    LOG(ERROR) << "Failed to add item to the database";
+    std::move(on_bytes_written_callback).Run(base::File::FILE_ERROR_FAILED);
+    return;
+  }
+
+  DCHECK(inserted_id);
+  DCHECK_GT(*inserted_id, 0);
+  io_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(std::move(write_bytes_callback),
+                     GetPathOnDiskFromContext(*inserted_id)),
+      std::move(on_bytes_written_callback));
 }
 
 void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
@@ -204,9 +242,8 @@ void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
   std::move(callback).Run(result);
 }
 
-const base::FilePath ContentCacheImpl::GetPathOnDiskFromContext(
-    const CacheFileContext& ctx) {
-  return root_dir_.Append(ctx.id.ToString());
+const base::FilePath ContentCacheImpl::GetPathOnDiskFromContext(int64_t id) {
+  return root_dir_.Append(base::NumberToString(id));
 }
 
 }  // namespace ash::file_system_provider
