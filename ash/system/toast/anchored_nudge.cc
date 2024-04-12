@@ -96,6 +96,11 @@ AnchoredNudge::AnchoredNudge(AnchoredNudgeData& nudge_data)
   system_nudge_view_ =
       AddChildView(std::make_unique<SystemNudgeView>(nudge_data));
 
+  // Make nudge not focus traversable if it does not have any buttons.
+  if (nudge_data.primary_button_text.empty()) {
+    set_focus_traversable_from_anchor_view(false);
+  }
+
   if (anchored_to_shelf_ || !GetAnchorView()) {
     Shell::Get()->AddShellObserver(this);
   }
