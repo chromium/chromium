@@ -63,7 +63,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmMountDebugFs[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmUreadaheadMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmUseHugePages[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshClearFastInkBuffer[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshBypassGlanceablesPref[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshConstrainPointerToRoot[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshContextualNudgesInterval[];

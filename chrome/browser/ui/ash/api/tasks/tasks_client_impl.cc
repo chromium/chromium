@@ -16,6 +16,7 @@
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/glanceables/glanceables_metrics.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -131,6 +132,9 @@ bool TasksClientImpl::IsDisabledByAdmin() const {
       !base::Contains(pref_service->GetList(
                           prefs::kContextualGoogleIntegrationsConfiguration),
                       prefs::kGoogleTasksIntegrationName)) {
+    RecordContextualGoogleIntegrationStatus(
+        prefs::kGoogleTasksIntegrationName,
+        ContextualGoogleIntegrationStatus::kDisabledByPolicy);
     return true;
   }
 
@@ -147,15 +151,28 @@ bool TasksClientImpl::IsDisabledByAdmin() const {
                    calendar_app_readiness = update.Readiness();
                  });
   if (calendar_app_readiness == apps::Readiness::kDisabledByPolicy) {
+    RecordContextualGoogleIntegrationStatus(
+        prefs::kGoogleTasksIntegrationName,
+        ContextualGoogleIntegrationStatus::kDisabledByAppBlock);
     return true;
   }
 
   // 3) Check if the Tasks URL is blocked by policy.
   const auto* const policy_blocklist_service =
       PolicyBlocklistFactory::GetForBrowserContext(profile_);
-  return !policy_blocklist_service ||
-         policy_blocklist_service->GetURLBlocklistState(GURL(kTasksUrl)) ==
-             policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+  if (!policy_blocklist_service ||
+      policy_blocklist_service->GetURLBlocklistState(GURL(kTasksUrl)) ==
+          policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+    RecordContextualGoogleIntegrationStatus(
+        prefs::kGoogleTasksIntegrationName,
+        ContextualGoogleIntegrationStatus::kDisabledByUrlBlock);
+    return true;
+  }
+
+  RecordContextualGoogleIntegrationStatus(
+      prefs::kGoogleTasksIntegrationName,
+      ContextualGoogleIntegrationStatus::kEnabled);
+  return false;
 }
 
 const ui::ListModel<api::TaskList>* TasksClientImpl::GetCachedTaskLists() {

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/glanceables/glanceables_metrics.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
@@ -44,6 +45,9 @@ bool CalendarClientImpl::IsDisabledByAdmin() const {
       !base::Contains(pref_service->GetList(
                           prefs::kContextualGoogleIntegrationsConfiguration),
                       prefs::kGoogleCalendarIntegrationName)) {
+    RecordContextualGoogleIntegrationStatus(
+        prefs::kGoogleCalendarIntegrationName,
+        ContextualGoogleIntegrationStatus::kDisabledByPolicy);
     return true;
   }
 
@@ -60,15 +64,28 @@ bool CalendarClientImpl::IsDisabledByAdmin() const {
                    calendar_app_readiness = update.Readiness();
                  });
   if (calendar_app_readiness == apps::Readiness::kDisabledByPolicy) {
+    RecordContextualGoogleIntegrationStatus(
+        prefs::kGoogleCalendarIntegrationName,
+        ContextualGoogleIntegrationStatus::kDisabledByAppBlock);
     return true;
   }
 
   // 3) Check if the Calendar URL is blocked by policy.
   const auto* const policy_blocklist_service =
       PolicyBlocklistFactory::GetForBrowserContext(profile_);
-  return !policy_blocklist_service ||
-         policy_blocklist_service->GetURLBlocklistState(GURL(kCalendarUrl)) ==
-             policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+  if (!policy_blocklist_service ||
+      policy_blocklist_service->GetURLBlocklistState(GURL(kCalendarUrl)) ==
+          policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+    RecordContextualGoogleIntegrationStatus(
+        prefs::kGoogleCalendarIntegrationName,
+        ContextualGoogleIntegrationStatus::kDisabledByUrlBlock);
+    return true;
+  }
+
+  RecordContextualGoogleIntegrationStatus(
+      prefs::kGoogleCalendarIntegrationName,
+      ContextualGoogleIntegrationStatus::kEnabled);
+  return false;
 }
 
 base::OnceClosure CalendarClientImpl::GetCalendarList(

@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/glanceables/glanceables_metrics.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -50,8 +52,13 @@ class CalendarClientImplTest : public testing::Test {
         TestingProfile::TestingFactories());
   }
 
+  const base::HistogramTester* histogram_tester() const {
+    return &histogram_tester_;
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
+  const base::HistogramTester histogram_tester_;
   TestingProfileManager profile_manager_;
 };
 
@@ -60,6 +67,10 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_Default) {
 
   const auto client = CalendarClientImpl(profile);
   EXPECT_FALSE(client.IsDisabledByAdmin());
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.ContextualGoogleIntegrations.GoogleCalendar.Status",
+      ContextualGoogleIntegrationStatus::kEnabled,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarPref) {
@@ -70,6 +81,10 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarPref) {
 
   const auto client = CalendarClientImpl(profile);
   EXPECT_TRUE(client.IsDisabledByAdmin());
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.ContextualGoogleIntegrations.GoogleCalendar.Status",
+      ContextualGoogleIntegrationStatus::kDisabledByPolicy,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CalendarClientImplTest,
@@ -85,6 +100,10 @@ TEST_F(CalendarClientImplTest,
 
   const auto client = CalendarClientImpl(profile);
   EXPECT_TRUE(client.IsDisabledByAdmin());
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.ContextualGoogleIntegrations.GoogleCalendar.Status",
+      ContextualGoogleIntegrationStatus::kDisabledByPolicy,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarApp) {
@@ -101,6 +120,10 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarApp) {
 
   const auto client = CalendarClientImpl(profile);
   EXPECT_TRUE(client.IsDisabledByAdmin());
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.ContextualGoogleIntegrations.GoogleCalendar.Status",
+      ContextualGoogleIntegrationStatus::kDisabledByAppBlock,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CalendarClientImplTest, IsDisabledByAdmin_BlockedCalendarUrl) {
@@ -114,6 +137,10 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_BlockedCalendarUrl) {
 
   const auto client = CalendarClientImpl(profile);
   EXPECT_TRUE(client.IsDisabledByAdmin());
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.ContextualGoogleIntegrations.GoogleCalendar.Status",
+      ContextualGoogleIntegrationStatus::kDisabledByUrlBlock,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace ash

@@ -528,6 +528,15 @@ ash/ambient/util/time_of_day_utils.h -->
              screenshot"/>
 </enum>
 
+<enum name="ContextualGoogleIntegrationStatus">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled by policy"/>
+  <int value="2"
+      label="Disabled because the related app is disabled by policy"/>
+  <int value="3"
+      label="Disabled because the related URLs are blocked by policy"/>
+</enum>
+
 <enum name="DataFetchEventSource">
   <int value="0" label="PostLoginFullRestore"/>
   <int value="1" label="Overview"/>
@@ -2051,7 +2060,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled - trusted tester (deprecated)"/>
   <int value="2" label="Enabled - GlanceablesV2 flag"/>
-  <int value="3" label="Enabled with pref bypass switch"/>
+  <int value="3" label="Enabled with pref bypass switch (deprecated)"/>
   <int value="4" label="Enabled - full launch"/>
 </enum>
 

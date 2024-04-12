@@ -12,6 +12,7 @@
 
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/glanceables/glanceables_metrics.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -199,14 +200,23 @@ class TasksClientImplIsDisabledByAdminTest : public testing::Test {
         TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
+  const base::HistogramTester* histogram_tester() const {
+    return &histogram_tester_;
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
+  const base::HistogramTester histogram_tester_;
   TestingProfileManager profile_manager_;
 };
 
 TEST_F(TasksClientImplIsDisabledByAdminTest, Default) {
   auto* const profile = CreateTestingProfile(GetDefaultPrefs());
   EXPECT_FALSE(CreateClientForProfile(profile).IsDisabledByAdmin());
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.ContextualGoogleIntegrations.GoogleTasks.Status",
+      ContextualGoogleIntegrationStatus::kEnabled,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(TasksClientImplIsDisabledByAdminTest,
@@ -220,6 +230,10 @@ TEST_F(TasksClientImplIsDisabledByAdminTest,
 
   auto* const profile = CreateTestingProfile(std::move(prefs));
   EXPECT_TRUE(CreateClientForProfile(profile).IsDisabledByAdmin());
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.ContextualGoogleIntegrations.GoogleTasks.Status",
+      ContextualGoogleIntegrationStatus::kDisabledByPolicy,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(TasksClientImplIsDisabledByAdminTest, DisabledCalendarApp) {
@@ -236,6 +250,10 @@ TEST_F(TasksClientImplIsDisabledByAdminTest, DisabledCalendarApp) {
       /*should_notify_initialized=*/true);
 
   EXPECT_TRUE(CreateClientForProfile(profile).IsDisabledByAdmin());
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.ContextualGoogleIntegrations.GoogleTasks.Status",
+      ContextualGoogleIntegrationStatus::kDisabledByAppBlock,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(TasksClientImplIsDisabledByAdminTest, BlockedTasksUrl) {
@@ -247,6 +265,10 @@ TEST_F(TasksClientImplIsDisabledByAdminTest, BlockedTasksUrl) {
 
   auto* const profile = CreateTestingProfile(std::move(prefs));
   EXPECT_TRUE(CreateClientForProfile(profile).IsDisabledByAdmin());
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.ContextualGoogleIntegrations.GoogleTasks.Status",
+      ContextualGoogleIntegrationStatus::kDisabledByUrlBlock,
+      /*expected_bucket_count=*/1);
 }
 
 class TasksClientImplTest : public testing::Test {

@@ -5,6 +5,8 @@
 #ifndef ASH_GLANCEABLES_GLANCEABLES_METRICS_H_
 #define ASH_GLANCEABLES_GLANCEABLES_METRICS_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 
@@ -15,6 +17,18 @@ class TimeDelta;
 namespace ash {
 
 enum class StudentAssignmentsListType;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Note this should be kept in sync with `ContextualGoogleIntegrationStatus`
+// enum in tools/metrics/histograms/metadata/ash/enums.xml.
+enum class ContextualGoogleIntegrationStatus {
+  kEnabled = 0,
+  kDisabledByPolicy = 1,
+  kDisabledByAppBlock = 2,
+  kDisabledByUrlBlock = 3,
+  kMaxValue = kDisabledByUrlBlock,
+};
 
 enum class TasksLaunchSource {
   kHeaderButton = 0,
@@ -29,6 +43,10 @@ enum class TaskModificationResult {
   kCancelled = 1,
   kMaxValue = kCancelled
 };
+
+ASH_EXPORT void RecordContextualGoogleIntegrationStatus(
+    const std::string& integration_name,
+    ContextualGoogleIntegrationStatus status);
 
 void RecordActiveTaskListChanged();
 

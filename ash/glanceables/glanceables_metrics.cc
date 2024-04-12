@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 
 namespace {
@@ -65,6 +66,15 @@ void RecordClassroomUserAction(ClassroomUserAction action) {
 }  // namespace
 
 namespace ash {
+
+void RecordContextualGoogleIntegrationStatus(
+    const std::string& integration_name,
+    ContextualGoogleIntegrationStatus status) {
+  base::UmaHistogramEnumeration(
+      base::StringPrintf("Ash.ContextualGoogleIntegrations.%s.Status",
+                         integration_name.data()),
+      status);
+}
 
 void RecordActiveTaskListChanged() {
   RecordTasksUserAction(TasksUserAction::kActiveTaskListChanged);

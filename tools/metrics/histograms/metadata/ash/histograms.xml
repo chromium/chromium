@@ -2246,6 +2246,21 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.ContextualGoogleIntegrations.{IntegrationName}.Status"
+    enum="ContextualGoogleIntegrationStatus" expires_after="2024-12-31">
+  <owner>amitrokhin@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Records the contextual Google integration status (whether it's enabled, or
+    disabled because of policy / app / URL block).
+  </summary>
+  <token key="IntegrationName">
+    <variant name="GoogleCalendar"/>
+    <variant name="GoogleClassroom"/>
+    <variant name="GoogleTasks"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.DarkTheme.SystemTray.IsDarkModeEnabled" enum="Boolean"
     expires_after="2024-09-22">
   <owner>minch@chromium.org</owner>

@@ -27,7 +27,9 @@ inline constexpr char kCalendarIntegrationEnabled[] =
     "ash.calendar_integration_enabled";
 
 // Pref which stores a list of enabled Google integrations such as Calendar,
-// Classroom, Tasks, etc.
+// Classroom, Tasks, etc. Individual integration names should not be changed
+// because they are used in the `ContextualGoogleIntegrationsConfiguration`
+// policy and metrics.
 inline constexpr char kContextualGoogleIntegrationsConfiguration[] =
     "ash.contextual_google_integrations_configuration";
 inline constexpr char kGoogleCalendarIntegrationName[] = "GoogleCalendar";
