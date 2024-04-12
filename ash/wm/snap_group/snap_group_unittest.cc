@@ -4815,6 +4815,19 @@ TEST_F(SnapGroupTest, DoNotSnapToReplaceSnapGroupInOverview) {
       snap_group_controller->AreWindowsInSnapGroup(w0.get(), w2.get()));
 }
 
+// Tests no crash when scaling up the work area. Regression test for
+// http://b/331991853.
+TEST_F(SnapGroupTest, ScaleUpWorkArea) {
+  UpdateDisplay("800x600");
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  UpdateDisplay("800x600*4");
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupHistogramTest:
 

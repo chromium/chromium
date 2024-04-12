@@ -167,9 +167,13 @@ void SplitViewDivider::SetDividerPosition(int divider_position) {
       !display::Screen::GetScreen()->InTabletMode()) {
     const gfx::Range divider_allowed_range =
         GetDividerPositionAllowedRange(observed_windows_);
-    divider_position_ = std::clamp(
-        divider_position_, static_cast<int>(divider_allowed_range.start()),
-        static_cast<int>(divider_allowed_range.end()));
+    if (!divider_allowed_range.is_reversed()) {
+      divider_position_ = std::clamp(
+          divider_position_, static_cast<int>(divider_allowed_range.start()),
+          static_cast<int>(divider_allowed_range.end()));
+    }
+    // TODO(b/333623218): If the divider range is reversed, i.e. the windows no
+    // longer fit, we will break the group.
   }
   RefreshDividerState(/*observed_windows_changed=*/false);
 }
