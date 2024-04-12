@@ -197,6 +197,8 @@ public class TabResumptionTileContainerView extends LinearLayout {
                 /* isSelected= */ false);
         tileView.setOnClickListener(
                 view -> suggestionClickCallback.onSuggestionClickByTabId(entry.tab.getId()));
+        // Handle and return false to avoid obstructing long click handling of containing Views.
+        tileView.setOnLongClickListener(v -> false);
         parentView.addView(tileView);
         return tab.getTitle() + ", " + postInfoText;
     }

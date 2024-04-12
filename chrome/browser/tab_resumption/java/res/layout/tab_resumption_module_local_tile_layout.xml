@@ -18,6 +18,7 @@ found in the LICENSE file.
     android:paddingTop="@dimen/local_tile_tab_thumbnail_padding_top"
     android:paddingBottom="@dimen/tab_resumption_module_tile_bleed"
     android:orientation="horizontal"
+    android:foreground="@drawable/tab_resumption_module_ripple"
     android:baselineAligned="false">
 
   <LinearLayout
@@ -96,6 +97,5 @@ found in the LICENSE file.
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
   </LinearLayout>
-
 
 </org.chromium.chrome.browser.tab_resumption.LocalTileView>
