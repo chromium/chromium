@@ -350,9 +350,10 @@ bool ContentBrowserClient::IsIsolatedContextAllowedForUrl(
   return false;
 }
 
-bool ContentBrowserClient::IsGetAllScreensMediaAllowed(
-    content::RenderFrameHost* render_frame_host) {
-  return false;
+void ContentBrowserClient::CheckGetAllScreensMediaAllowed(
+    content::RenderFrameHost* render_frame_host,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(false);
 }
 
 size_t ContentBrowserClient::GetMaxRendererProcessCountOverride() {

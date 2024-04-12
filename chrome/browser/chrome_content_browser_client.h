@@ -257,8 +257,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url) override;
   bool IsIsolatedContextAllowedForUrl(content::BrowserContext* browser_context,
                                       const GURL& lock_url) override;
-  bool IsGetAllScreensMediaAllowed(
-      content::RenderFrameHost* render_frame_host) override;
+  void CheckGetAllScreensMediaAllowed(
+      content::RenderFrameHost* render_frame_host,
+      base::OnceCallback<void(bool)> callback) override;
   bool IsFileAccessAllowed(const base::FilePath& path,
                            const base::FilePath& absolute_path,
                            const base::FilePath& profile_path) override;

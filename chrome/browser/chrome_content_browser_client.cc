@@ -2453,15 +2453,13 @@ bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
 #endif
 }
 
-bool ChromeContentBrowserClient::IsGetAllScreensMediaAllowed(
-    content::RenderFrameHost* render_frame_host) {
-#if BUILDFLAG(IS_CHROMEOS)
-  return capture_policy::IsGetAllScreensMediaAllowed(
+void ChromeContentBrowserClient::CheckGetAllScreensMediaAllowed(
+    content::RenderFrameHost* render_frame_host,
+    base::OnceCallback<void(bool)> callback) {
+  capture_policy::CheckGetAllScreensMediaAllowed(
       render_frame_host->GetBrowserContext(),
-      render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL());
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
+      std::move(callback));
 }
 
 bool ChromeContentBrowserClient::IsFileAccessAllowed(

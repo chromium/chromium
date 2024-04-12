@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
+
 #include <string>
 #include <vector>
 
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -106,10 +108,14 @@ IN_PROC_BROWSER_TEST_P(SelectAllScreensTest, SelectAllScreensTestOrigins) {
   TabStripModel* current_tab_strip_model = current_browser->tab_strip_model();
   content::WebContents* current_web_contents =
       current_tab_strip_model->GetWebContentsAt(0);
+
+  base::test::TestFuture<bool> future;
+  capture_policy::CheckGetAllScreensMediaAllowed(
+      current_web_contents->GetBrowserContext(), GURL(GetParam().testing_url),
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(GetParam().expected_is_get_all_screens_media_allowed,
-            capture_policy::IsGetAllScreensMediaAllowed(
-                current_web_contents->GetBrowserContext(),
-                GURL(GetParam().testing_url)));
+            future.Get<bool>());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -235,16 +241,22 @@ class SelectAllScreensDynamicRefreshTest
     DCHECK(current_web_contents);
     for (const auto& expected_allowed_origin :
          GetParam().expected_allowed_origins) {
-      EXPECT_TRUE(capture_policy::IsGetAllScreensMediaAllowed(
+      base::test::TestFuture<bool> future;
+      capture_policy::CheckGetAllScreensMediaAllowed(
           current_web_contents->GetBrowserContext(),
-          GURL(expected_allowed_origin)));
+          GURL(expected_allowed_origin), future.GetCallback());
+      ASSERT_TRUE(future.Wait());
+      EXPECT_TRUE(future.Get<bool>());
     }
 
     for (const auto& expected_forbidden_origin :
          GetParam().expected_forbidden_origins) {
-      EXPECT_FALSE(capture_policy::IsGetAllScreensMediaAllowed(
+      base::test::TestFuture<bool> future;
+      capture_policy::CheckGetAllScreensMediaAllowed(
           current_web_contents->GetBrowserContext(),
-          GURL(expected_forbidden_origin)));
+          GURL(expected_forbidden_origin), future.GetCallback());
+      ASSERT_TRUE(future.Wait());
+      EXPECT_FALSE(future.Get<bool>());
     }
   }
 };

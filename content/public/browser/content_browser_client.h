@@ -687,8 +687,9 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Check if the application running in the |render_frame_host| is allowed to
   // automatically capture all screens by using the getAllScreensMedia API.
-  virtual bool IsGetAllScreensMediaAllowed(
-      content::RenderFrameHost* render_frame_host);
+  virtual void CheckGetAllScreensMediaAllowed(
+      content::RenderFrameHost* render_frame_host,
+      base::OnceCallback<void(bool)> callback);
 
   // Allow the embedder to control the maximum renderer process count. Only
   // applies if it is set to a non-zero value.  Once this limit is exceeded,

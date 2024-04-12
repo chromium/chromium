@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/policy/policy_util.h"
@@ -36,10 +37,81 @@
 #include "ui/base/ui_base_types.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+crosapi::mojom::MultiCaptureService* g_multi_capture_service_for_testing =
+    nullptr;
+
+crosapi::mojom::MultiCaptureService* GetMultiCaptureService() {
+  if (g_multi_capture_service_for_testing) {
+    return g_multi_capture_service_for_testing;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+  const int multi_capture_service_version =
+      lacros_service
+          ->GetInterfaceVersion<crosapi::mojom::MultiCaptureService>();
+  if (multi_capture_service_version >=
+      static_cast<int>(crosapi::mojom::MultiCaptureService::MethodMinVersions::
+                           kIsMultiCaptureAllowedMinVersion)) {
+    return lacros_service->GetRemote<crosapi::mojom::MultiCaptureService>()
+        .get();
+  }
+  return nullptr;
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->multi_capture_service_ash();
+#endif
+}
+
+void IsGetAllScreensMediaAllowedForIwaResultReceived(
+    base::OnceCallback<void(bool)> callback,
+    const GURL& url,
+    content::BrowserContext* context,
+    bool result) {
+  if (result) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile) {
+    std::move(callback).Run(false);
+    return;
+  }
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!host_content_settings_map) {
+    std::move(callback).Run(false);
+    return;
+  }
+  ContentSetting auto_accept_enabled =
+      host_content_settings_map->GetContentSetting(
+          url, url, ContentSettingsType::ALL_SCREEN_CAPTURE);
+  std::move(callback).Run(auto_accept_enabled ==
+                          ContentSetting::CONTENT_SETTING_ALLOW);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+}  // namespace
 
 namespace capture_policy {
 
@@ -71,6 +143,15 @@ struct RestrictedCapturePolicy {
 };
 
 }  // namespace
+
+#if BUILDFLAG(IS_CHROMEOS)
+void SetMultiCaptureServiceForTesting(
+    crosapi::mojom::MultiCaptureService* service) {
+  CHECK_IS_TEST();
+  CHECK(!g_multi_capture_service_for_testing);
+  g_multi_capture_service_for_testing = service;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsOriginInList(const GURL& request_origin,
                     const base::Value::List& allowed_origins) {
@@ -209,52 +290,40 @@ bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context) {
 #endif
 }
 
-bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
-                                 const GURL& url) {
-// TODO(b/40272166): Implement for Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::MultiScreenCapturePolicyService* multi_capture_policy_service =
-      policy::MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(
-          context);
-  if (!multi_capture_policy_service) {
-    return false;
-  }
-
-  if (multi_capture_policy_service->IsMultiScreenCaptureAllowed(url)) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // TODO(b/329064666): Remove the checks below once the pivot to IWAs is
-  // complete.
-#if BUILDFLAG(IS_CHROMEOS)
+void CheckGetAllScreensMediaAllowed(content::BrowserContext* context,
+                                    const GURL& url,
+                                    base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // To ensure that a user is informed at login time that capturing of all
   // screens can happen (for privacy reasons), this API is only available on
   // primary profiles.
   if (!profile->IsMainProfile()) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  if (!host_content_settings_map) {
-    return false;
+#if BUILDFLAG(IS_CHROMEOS)
+  crosapi::mojom::MultiCaptureService* multi_capture_service =
+      GetMultiCaptureService();
+  if (multi_capture_service) {
+    multi_capture_service->IsMultiCaptureAllowed(
+        url, base::BindOnce(&IsGetAllScreensMediaAllowedForIwaResultReceived,
+                            std::move(callback), std::move(url), context));
+  } else {
+    // If the multi capture service is not available with the required version,
+    // fall back to the original flow using the deprecated policy.
+    IsGetAllScreensMediaAllowedForIwaResultReceived(
+        std::move(callback), std::move(url), context, /*result=*/false);
   }
-  ContentSetting auto_accept_enabled =
-      host_content_settings_map->GetContentSetting(
-          url, url, ContentSettingsType::ALL_SCREEN_CAPTURE);
-  return auto_accept_enabled == ContentSetting::CONTENT_SETTING_ALLOW;
 #else
-  // This API is currently only available on ChromeOS and Linux.
-  return false;
-#endif
+  std::move(callback).Run(false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 #if !BUILDFLAG(IS_ANDROID)

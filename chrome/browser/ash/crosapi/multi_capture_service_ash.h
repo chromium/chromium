@@ -8,6 +8,8 @@
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
+class GURL;
+
 namespace ash {
 class MultiCaptureServiceClient;
 }  // namespace ash
@@ -32,6 +34,8 @@ class MultiCaptureServiceAsh : public mojom::MultiCaptureService {
                                   const std::string& app_id,
                                   const std::string& app_name) override;
   void MultiCaptureStopped(const std::string& label) override;
+  void IsMultiCaptureAllowed(const GURL& origin,
+                             IsMultiCaptureAllowedCallback callback) override;
 
  private:
   ash::MultiCaptureServiceClient* GetMultiCaptureClient();

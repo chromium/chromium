@@ -81,9 +81,6 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       base::circular_deque<std::unique_ptr<PendingAccessRequest>>;
   RequestsQueue pending_requests_;
 
-  static bool CheckRequestAllScreensAllowed(
-      GlobalRenderFrameHostId render_frame_host_id);
-
   // Performs checks / computations that need to be done on the UI
   // thread (i.e. if a select all screens request is permitted and
   // the computation of the device salt and origin).
@@ -94,6 +91,20 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
           get_salt_and_origin_cb,
       base::OnceCallback<void(GenerateStreamsUIThreadCheckResult)>
           result_callback);
+
+  static void CheckRequestAllScreensAllowed(
+      base::OnceCallback<void(MediaDeviceSaltAndOriginCallback)>
+          get_salt_and_origin_cb,
+      base::OnceCallback<void(GenerateStreamsUIThreadCheckResult)>
+          result_callback,
+      GlobalRenderFrameHostId render_frame_host_id);
+
+  static void CheckStreamsPermissionResultReceived(
+      base::OnceCallback<void(MediaDeviceSaltAndOriginCallback)>
+          get_salt_and_origin_cb,
+      base::OnceCallback<void(GenerateStreamsUIThreadCheckResult)>
+          result_callback,
+      bool result);
 
   const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
   GetMediaStreamDeviceObserver();
