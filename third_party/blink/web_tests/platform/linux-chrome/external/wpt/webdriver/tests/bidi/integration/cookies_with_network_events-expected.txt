@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_iframe[cross_origin]
+  AssertionError
+[FAIL] test_fetch[same_origin]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: SecurityError: Failed to set the 'cookie' property on 'Document': Access is denied for this document.
+[FAIL] test_fetch[cross_origin]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: SecurityError: Failed to set the 'cookie' property on 'Document': Access is denied for this document.
+[FAIL] test_image[cross_origin]
+  AssertionError
+Harness: the test ran to completion.

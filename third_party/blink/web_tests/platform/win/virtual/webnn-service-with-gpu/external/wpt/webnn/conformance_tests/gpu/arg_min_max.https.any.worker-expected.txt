@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] argMin float32 4D tensor options.keepDimensions=false
-  assert_array_equals: lengths differ, expected array [] length 0, got [1, 1, 1, 1] length 4
-[FAIL] argMax float32 4D tensor options.keepDimensions=false
-  assert_array_equals: lengths differ, expected array [] length 0, got [1, 1, 1, 1] length 4
-Harness: the test ran to completion.
-

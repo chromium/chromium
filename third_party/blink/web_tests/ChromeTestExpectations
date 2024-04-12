@@ -53,7 +53,7 @@ crbug.com/324436866 external/wpt/webdriver/tests/bidi/browsing_context/print/con
 crbug.com/324436866 external/wpt/webdriver/tests/classic/get_current_url/file.py [ Failure Pass Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/input/set_files/invalid.py [ Failure Timeout ]
 external/wpt/webdriver/tests/bidi/input/set_files/set_files.py [ Timeout ]
-[ Debug ] external/wpt/webdriver/tests/bidi/network/add_intercept/contexts.py [ Timeout Failure Pass ]
+[ Debug ] external/wpt/webdriver/tests/bidi/network/add_intercept/contexts.py [ Failure Pass Timeout ]
 [ Debug ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/filter.py [ Timeout ]
 [ Debug ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/invalid.py [ Timeout ]
 [ Debug ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/partition.py [ Timeout ]
