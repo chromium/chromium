@@ -184,6 +184,38 @@ TEST_F(SecureDnsManagerTest, SetModeSecureMultipleTemplates) {
       kMultipleTemplates);
 }
 
+TEST_F(SecureDnsManagerTest, SetModeSecureWithFallback) {
+  pref_service()->Set(prefs::kDnsOverHttpsMode,
+                      base::Value(SecureDnsConfig::kModeAutomatic));
+  pref_service()->Set(prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+
+  auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
+  auto providers = GetDOHProviders();
+
+  const auto it = providers.find(kGoogleDns);
+  EXPECT_TRUE(it != providers.end());
+  EXPECT_EQ(it->first, kGoogleDns);
+  EXPECT_EQ(it->second, "*");
+  EXPECT_EQ(providers.size(), 1u);
+}
+
+TEST_F(SecureDnsManagerTest, SetModeSecureWithFallbackMultipleTemplates) {
+  pref_service()->Set(prefs::kDnsOverHttpsMode,
+                      base::Value(SecureDnsConfig::kModeAutomatic));
+  pref_service()->Set(prefs::kDnsOverHttpsTemplates,
+                      base::Value(kMultipleTemplates));
+
+  auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
+  auto providers = GetDOHProviders();
+
+  EXPECT_TRUE(providers.find(kGoogleDns) != providers.end());
+  EXPECT_TRUE(providers.find(kCloudflareDns) != providers.end());
+  EXPECT_EQ(providers.size(), 2u);
+  EXPECT_EQ(
+      pref_service()->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+      kMultipleTemplates);
+}
+
 TEST_F(SecureDnsManagerTest, SetModeAutomaticWithTemplates) {
   pref_service()->Set(prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeAutomatic));

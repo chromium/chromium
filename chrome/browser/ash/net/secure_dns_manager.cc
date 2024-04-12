@@ -6,6 +6,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
@@ -31,6 +32,13 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
+namespace {
+
+// A wildcard character to allow secure DNS automatic mode on any IP addresses.
+// TODO(b/333757554): Update to Shill D-Bus constant after M-125 branch cut.
+constexpr std::string_view kSecureDNSMatchAnyIPAddress = "*";
+
+}  // namespace
 
 SecureDnsManager::SecureDnsManager(PrefService* pref_service)
     : pref_service_(pref_service) {
@@ -95,25 +103,29 @@ base::Value::Dict SecureDnsManager::GetProviders(const std::string& mode,
   }
 
   // If there are templates then use them. In secure mode, the values, which
-  // hold the IP addresses of the name servers, are left empty. In automatic
-  // mode, the corresponding name servers will be populated using the
-  // applicable providers. If no templates are given for automatic mode, the
-  // entire list of providers is used. This enables dns-proxy to correctly
-  // switch providers whenever the tracked network or its settings change.
+  // hold the IP addresses of the name servers, are left empty. In secure DNS
+  // mode with fallback to plain-text nameservers, the values are stored as a
+  // wildcard character denoting that it matches any IP addresses. In automatic
+  // upgrade mode, the corresponding name servers will be populated using the
+  // applicable providers.
+  const auto addr =
+      mode == SecureDnsConfig::kModeSecure ? "" : kSecureDNSMatchAnyIPAddress;
   for (const auto& doh_template : base::SplitString(
            templates, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    doh_providers.Set(doh_template, "");
+    doh_providers.Set(doh_template, addr);
   }
   if (mode == SecureDnsConfig::kModeSecure) {
     return doh_providers;
   }
+  if (!doh_providers.empty()) {
+    return doh_providers;
+  }
 
-  const bool want_all = doh_providers.empty();
+  // No specified DoH providers, relay all DoH provider upgrade configuration
+  // for dns-proxy to switch providers whenever the network or its settings
+  // change.
   for (const auto& provider : local_doh_providers_) {
-    const std::string& server_template = provider.first.server_template();
-    if (want_all || doh_providers.contains(server_template)) {
-      doh_providers.Set(server_template, provider.second);
-    }
+    doh_providers.Set(provider.first.server_template(), provider.second);
   }
   return doh_providers;
 }
