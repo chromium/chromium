@@ -21,6 +21,7 @@ export enum SeaPenActionName {
   SET_THUMBNAIL_RESPONSE_STATUS_CODE = 'set_thumbnail_response_status_code',
   BEGIN_SELECT_SEA_PEN_THUMBNAIL = 'begin_select_sea_pen_thumbnail',
   CLEAR_SEA_PEN_THUMBNAILS = 'clear_sea_pen_thumbnails',
+  CLEAR_SEA_PEN_THUMBNAILS_LOADING = 'clear_sea_pen_thumbnails_loading',
   END_SELECT_SEA_PEN_THUMBNAIL = 'end_select_sea_pen_thumbnail',
   BEGIN_SELECT_RECENT_SEA_PEN_IMAGE = 'begin_select_recent_sea_pen_image',
   END_SELECT_RECENT_SEA_PEN_IMAGE = 'end_select_recent_sea_pen_image',
@@ -36,12 +37,12 @@ export enum SeaPenActionName {
 export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
     BeginLoadRecentSeaPenImagesAction|BeginLoadRecentSeaPenImageDataAction|
     BeginLoadSelectedRecentSeaPenImageAction|BeginSelectRecentSeaPenImageAction|
-    ClearSeaPenThumbnailsAction|EndSelectRecentSeaPenImageAction|
-    SetThumbnailResponseStatusCodeAction|SetSeaPenThumbnailsAction|
-    SetRecentSeaPenImagesAction|SetRecentSeaPenImageDataAction|
-    SetSelectedRecentSeaPenImageAction|BeginSelectSeaPenThumbnailAction|
-    EndSelectSeaPenThumbnailAction|SetShouldShowSeaPenIntroductionDialogAction|
-    DismissSeaPenErrorAction;
+    ClearSeaPenThumbnailsAction|ClearSeaPenThumbnailsLoadingAction|
+    EndSelectRecentSeaPenImageAction|SetThumbnailResponseStatusCodeAction|
+    SetSeaPenThumbnailsAction|SetRecentSeaPenImagesAction|
+    SetRecentSeaPenImageDataAction|SetSelectedRecentSeaPenImageAction|
+    BeginSelectSeaPenThumbnailAction|EndSelectSeaPenThumbnailAction|
+    SetShouldShowSeaPenIntroductionDialogAction|DismissSeaPenErrorAction;
 
 export interface BeginSearchSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS;
@@ -249,6 +250,15 @@ export interface ClearSeaPenThumbnailsAction extends Action {
 
 export function clearSeaPenThumbnailsAction(): ClearSeaPenThumbnailsAction {
   return {name: SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS};
+}
+
+export interface ClearSeaPenThumbnailsLoadingAction extends Action {
+  name: SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS_LOADING;
+}
+
+export function clearSeaPenThumbnailsLoadingAction():
+    ClearSeaPenThumbnailsLoadingAction {
+  return {name: SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS_LOADING};
 }
 
 export interface SetShouldShowSeaPenIntroductionDialogAction extends Action {

@@ -5,10 +5,12 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenImageLoadingElement, SeaPenImagesElement, SeaPenZeroStateSvgElement, setSelectedRecentSeaPenImageAction, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenImageLoadingElement, SeaPenImagesElement, SeaPenRouterElement, SeaPenZeroStateSvgElement, setSelectedRecentSeaPenImageAction, setTransitionsEnabled, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {MantaStatusCode, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -37,9 +39,12 @@ suite('SeaPenImagesElementTest', function() {
   }
 
   setup(() => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
     seaPenProvider = mocks.seaPenProvider;
+    // Disables animation by default.
+    setTransitionsEnabled(false);
   });
 
   teardown(async () => {
@@ -337,5 +342,48 @@ suite('SeaPenImagesElementTest', function() {
         seaPenImagesElement.shadowRoot!.querySelector('.error-message');
     assertFalse(
         !!errorMessage, 'error messages should be hidden while loading');
+  });
+
+  test('switching templates while loading resets loading state', async () => {
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.images;
+
+    // Initialize |seaPenImagesElement|.
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    initElement(SeaPenRouterElement, {basePath: '/base'});
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const loadingThumbnailPlaceholders =
+        seaPenImagesElement.shadowRoot!
+            .querySelectorAll<SparklePlaceholderElement>(
+                'div:not([hidden]) sparkle-placeholder');
+    assertEquals(
+        8, loadingThumbnailPlaceholders!.length,
+        'should be 8 loading placeholders available.');
+    assertTrue(Array.from(loadingThumbnailPlaceholders)
+                   .every(placeholder => !!placeholder.active));
+
+    SeaPenRouterElement.instance().selectSeaPenTemplate(
+        SeaPenTemplateId.kGlowscapes);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    assertFalse(
+        personalizationStore.data.wallpaper.seaPen.loading.thumbnails,
+        'thumbnails should no longer be loading');
+    const loadingThumbnailPlaceholder =
+        seaPenImagesElement.shadowRoot!.querySelector('.placeholder');
+    assertFalse(
+        !!loadingThumbnailPlaceholder,
+        'thumbnails should not be in loading state');
+
+    assertTrue(
+        !!seaPenImagesElement.shadowRoot!.querySelector(
+            SeaPenZeroStateSvgElement.is),
+        'sea-pen-zero-state-svg is shown');
+    assertTrue(
+        !!seaPenImagesElement.shadowRoot!.querySelector('.zero-state-message'),
+        'zero state message is shown');
   });
 });

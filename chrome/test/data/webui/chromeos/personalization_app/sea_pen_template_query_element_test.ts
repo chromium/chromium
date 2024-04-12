@@ -525,4 +525,43 @@ suite('SeaPenTemplateQueryElementTest', function() {
     assertEquals(
         0, unselected.length, 'template should be in the default state');
   });
+
+  test('switching templates while loading resets loading state', async () => {
+    personalizationStore.setReducersEnabled(true);
+    seaPenTemplateQueryElement = initElement(
+        SeaPenTemplateQueryElement,
+        {templateId: SeaPenTemplateId.kFlower.toString()});
+    initElement(SeaPenRouterElement, {basePath: '/base'});
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    // Simulate loading start.
+    personalizationStore.data.wallpaper.seaPen = {
+        ...personalizationStore.data.wallpaper.seaPen};
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertTrue(!!getThumbnailsLoadingText(), 'thumbnails loading text exists');
+    assertTrue(
+        isVisible(getThumbnailsLoadingText()),
+        'thumbnails loading text is visible');
+
+    SeaPenRouterElement.instance().selectSeaPenTemplate(
+        SeaPenTemplateId.kGlowscapes);
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertFalse(
+        personalizationStore.data.wallpaper.seaPen.loading.thumbnails,
+        'thumbnails should no longer be loading');
+    assertTrue(
+        !!getThumbnailsLoadingText(),
+        'thumbnails loading text no longer exists');
+    assertFalse(
+        isVisible(getThumbnailsLoadingText()),
+        'thumbnails loading text is not visible');
+    assertEquals(
+        2, getSearchButtons().length, 'inspire me and create buttons exist');
+    assertTrue(
+        getSearchButtons().every(isVisible), 'buttons are visible again');
+  });
 });

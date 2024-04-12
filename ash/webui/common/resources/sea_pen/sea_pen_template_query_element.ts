@@ -153,7 +153,9 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     beforeNextRender(this, () => {
       this.inspireMeAnimation_ =
           this.shadowRoot?.querySelector<LottieRenderer>('#inspireMeAnimation');
-      this.inspireMeAnimation_!.autoplay = false;
+      if (this.inspireMeAnimation_) {
+        this.inspireMeAnimation_.autoplay = false;
+      }
     });
   }
 

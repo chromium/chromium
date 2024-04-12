@@ -23,7 +23,7 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 
 import {Query, SeaPenImageId} from './constants.js';
 import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
-import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenWallpaper} from './sea_pen_controller.js';
+import {clearSeaPenThumbnails, clearSeaPenThumbnailsLoading, openFeedbackDialog, selectSeaPenWallpaper} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
@@ -158,6 +158,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     this.cameraFeed_?.remove();
     this.cameraFeed_ = null;
     clearSeaPenThumbnails(this.getStore());
+    clearSeaPenThumbnailsLoading(this.getStore());
   }
 
   private shouldShowZeroState_(

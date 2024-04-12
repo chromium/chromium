@@ -18,6 +18,7 @@ function loadingReducer(
         ...state,
         thumbnails: true,
       };
+    case SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS_LOADING:
     case SeaPenActionName.SET_SEA_PEN_THUMBNAILS:
       return {
         ...state,

@@ -51,8 +51,23 @@ export async function searchSeaPenThumbnails(
   if (!isNonEmptyArray(images) || statusCode !== MantaStatusCode.kOk) {
     console.warn('Error generating thumbnails. Status code: ', statusCode);
   }
-  store.dispatch(seaPenAction.setThumbnailResponseStatusCodeAction(statusCode));
-  store.dispatch(seaPenAction.setSeaPenThumbnailsAction(query, images));
+
+  // New requests might have been made for a different template so we should
+  // only return results for the request that matches the template that the user
+  // is using or when the user is not viewing the template to clear the loading
+  // UI.
+  // TODO(b/333924681): Implement a better way to handle the race condition.
+  // The current logic does not handle the case the user lands on the original
+  // template after navigating between different templates.
+  const params = new URLSearchParams(window.location.search);
+  const templateIdParam = params.get('seaPenTemplateId');
+  if (!templateIdParam ||
+      (templateIdParam === query.templateQuery?.id.toString()) ||
+      (templateIdParam === 'Query' && !!query.textQuery)) {
+    store.dispatch(
+        seaPenAction.setThumbnailResponseStatusCodeAction(statusCode));
+    store.dispatch(seaPenAction.setSeaPenThumbnailsAction(query, images));
+  }
 }
 
 export async function selectSeaPenWallpaper(
@@ -85,6 +100,11 @@ export async function selectSeaPenWallpaper(
 
 export async function clearSeaPenThumbnails(store: SeaPenStoreInterface) {
   store.dispatch(seaPenAction.clearSeaPenThumbnailsAction());
+}
+
+export async function clearSeaPenThumbnailsLoading(
+    store: SeaPenStoreInterface) {
+  store.dispatch(seaPenAction.clearSeaPenThumbnailsLoadingAction());
 }
 
 export async function deleteRecentSeaPenImage(
