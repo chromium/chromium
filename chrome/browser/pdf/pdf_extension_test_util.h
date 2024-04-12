@@ -68,7 +68,8 @@ size_t CountPdfPluginProcesses(Browser* browser);
 // Tests that attempt to send mouse/pointer events should pass `true` for
 // `wait_for_hit_test_data`, otherwise the necessary hit test data may not be
 // available by the time this function returns. (This behavior is the default,
-// since the delay should be small.)
+// since the delay should be small.) Only waits for hit test data if the PDF
+// successfully loads.
 [[nodiscard]] testing::AssertionResult EnsurePDFHasLoaded(
     const content::ToRenderFrameHost& frame,
     bool wait_for_hit_test_data = true,

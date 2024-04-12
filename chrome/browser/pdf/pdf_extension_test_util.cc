@@ -165,15 +165,17 @@ testing::AssertionResult EnsurePDFHasLoaded(
                                          post_message_target.c_str()))
           .ExtractBool();
 
-  if (wait_for_hit_test_data) {
-    frame.render_frame_host()->ForEachRenderFrameHost(
-        [](content::RenderFrameHost* render_frame_host) {
-          return content::WaitForHitTestData(render_frame_host);
-        });
+  if (load_success) {
+    if (wait_for_hit_test_data) {
+      frame.render_frame_host()->ForEachRenderFrameHost(
+          [](content::RenderFrameHost* render_frame_host) {
+            return content::WaitForHitTestData(render_frame_host);
+          });
+    }
+    return testing::AssertionSuccess();
   }
 
-  return load_success ? testing::AssertionSuccess()
-                      : (testing::AssertionFailure() << "Load failed.");
+  return (testing::AssertionFailure() << "Load failed.");
 }
 
 gfx::Point ConvertPageCoordToScreenCoord(
