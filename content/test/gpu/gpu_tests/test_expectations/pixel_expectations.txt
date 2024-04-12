@@ -452,8 +452,6 @@ crbug.com/1516977 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLCon
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] Pixel_Video* [ RetryOnFailure ]
 
 # Failures on fuchsia
-crbug.com/414481724 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGLDrawImage [ Failure ]
-crbug.com/414481724 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLDisplayP3 [ Failure ]
 crbug.com/414481724 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
 
 # Failures on Windows with SkiaGraphite
