@@ -14,6 +14,7 @@ source_set("core") {
     "client_identity.h",
     "cloud_management_delegate.h",
     "constants.h",
+    "context_delegate.h",
     "dm_server_client.h",
     "ec_private_key.h",
     "ec_private_key_factory.h",

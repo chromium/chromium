@@ -21,6 +21,7 @@
 #include "components/enterprise/client_certificates/core/certificate_store.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
 #include "components/enterprise/client_certificates/core/constants.h"
+#include "components/enterprise/client_certificates/core/context_delegate.h"
 #include "components/enterprise/client_certificates/core/key_upload_client.h"
 #include "components/enterprise/client_certificates/core/metrics_util.h"
 #include "components/enterprise/client_certificates/core/mock_certificate_store.h"
@@ -58,6 +59,17 @@ scoped_refptr<net::X509Certificate> LoadOtherTestCert() {
                                  kTestCertFileName);
 }
 
+class MockContextDelegate : public ContextDelegate {
+ public:
+  MockContextDelegate() = default;
+  ~MockContextDelegate() override = default;
+
+  MOCK_METHOD(void,
+              OnClientCertificateDeleted,
+              (scoped_refptr<net::X509Certificate>),
+              (override));
+};
+
 }  // namespace
 
 class CertificateProvisioningServiceTest : public testing::Test {
@@ -72,9 +84,19 @@ class CertificateProvisioningServiceTest : public testing::Test {
         base::Value(enabled ? 1 : 0));
   }
 
-  void CreateService(std::unique_ptr<KeyUploadClient> upload_client) {
+  void CreateProvisioningService(
+      std::unique_ptr<KeyUploadClient> upload_client) {
+    CreateProvisioningService(
+        std::make_unique<StrictMock<MockContextDelegate>>(),
+        std::move(upload_client));
+  }
+
+  void CreateProvisioningService(
+      std::unique_ptr<ContextDelegate> context_delegate,
+      std::unique_ptr<KeyUploadClient> upload_client) {
     service_ = CertificateProvisioningService::Create(
-        &pref_service_, &mock_store_, std::move(upload_client));
+        &pref_service_, &mock_store_, std::move(context_delegate),
+        std::move(upload_client));
   }
 
   void VerifySuccessState(scoped_refptr<PrivateKey> expected_private_key,
@@ -166,7 +188,7 @@ TEST_F(CertificateProvisioningServiceTest,
                              kManagedProfileIdentityName, fake_cert, _))
       .WillOnce(RunOnceCallback<3>(std::nullopt));
 
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
 
   VerifySuccessState(mocked_private_key, fake_cert);
 
@@ -222,7 +244,7 @@ TEST_F(CertificateProvisioningServiceTest,
                              kManagedProfileIdentityName, fake_cert, _))
       .WillOnce(RunOnceCallback<3>(std::nullopt));
 
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
 
   SetPolicyPref(true);
 
@@ -234,7 +256,7 @@ TEST_F(CertificateProvisioningServiceTest,
 TEST_F(CertificateProvisioningServiceTest,
        Created_PolicyDisabled_NothingHappens) {
   auto mock_client = std::make_unique<StrictMock<MockKeyUploadClient>>();
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
 
   VerifyDisabled();
 }
@@ -257,7 +279,7 @@ TEST_F(CertificateProvisioningServiceTest,
   EXPECT_CALL(*mock_client, SyncKey(testing::Eq(mocked_private_key), _))
       .WillOnce(RunOnceCallback<1>(kSuccessUploadCode));
 
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
 
   VerifySuccessState(mocked_private_key, fake_cert);
 
@@ -300,7 +322,7 @@ TEST_F(CertificateProvisioningServiceTest,
   EXPECT_CALL(mock_store_,
               CommitCertificate(kManagedProfileIdentityName, fake_cert, _))
       .WillOnce(RunOnceCallback<2>(std::nullopt));
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
 
   VerifySuccessState(mocked_private_key, fake_cert);
 
@@ -335,7 +357,7 @@ TEST_F(CertificateProvisioningServiceTest,
       .WillOnce(MoveArg<1>(&get_identity_callback));
 
   auto mock_client = std::make_unique<StrictMock<MockKeyUploadClient>>();
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
   ASSERT_TRUE(service_);
 
   base::test::TestFuture<std::optional<ClientIdentity>> test_future;
@@ -381,7 +403,7 @@ TEST_F(CertificateProvisioningServiceTest,
       .WillOnce(MoveArg<1>(&create_key_callback));
 
   auto mock_client = std::make_unique<StrictMock<MockKeyUploadClient>>();
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
   ASSERT_TRUE(service_);
 
   base::test::TestFuture<std::optional<ClientIdentity>> test_future;
@@ -413,7 +435,7 @@ TEST_F(CertificateProvisioningServiceTest,
               CreateCertificate(testing::Eq(mocked_private_key), _))
       .WillOnce(MoveArg<1>(&create_certificate_callback));
 
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
   ASSERT_TRUE(service_);
 
   base::test::TestFuture<std::optional<ClientIdentity>> test_future;
@@ -447,7 +469,7 @@ TEST_F(CertificateProvisioningServiceTest,
               CreateCertificate(testing::Eq(mocked_private_key), _))
       .WillOnce(MoveArg<1>(&create_certificate_callback));
 
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
   ASSERT_TRUE(service_);
 
   base::test::TestFuture<std::optional<ClientIdentity>> test_future;
@@ -489,7 +511,7 @@ TEST_F(CertificateProvisioningServiceTest, ConflictTemporaryKey_Resolves) {
                              kManagedProfileIdentityName, fake_cert, _))
       .WillOnce(RunOnceCallback<3>(std::nullopt));
 
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
 
   VerifySuccessState(mocked_private_key, fake_cert);
 }
@@ -509,7 +531,8 @@ TEST_F(CertificateProvisioningServiceTest, ConflictTemporaryKey_FailsLoad) {
       .WillOnce(RunOnceCallback<1>(
           base::unexpected(StoreError::kInvalidDatabaseState)));
 
-  CreateService(std::make_unique<StrictMock<MockKeyUploadClient>>());
+  CreateProvisioningService(
+      std::make_unique<StrictMock<MockKeyUploadClient>>());
 
   VerifyIdledWithoutCache();
 }
@@ -528,7 +551,8 @@ TEST_F(CertificateProvisioningServiceTest, ConflictTemporaryKey_LoadEmpty) {
   EXPECT_CALL(mock_store_, GetIdentity(kTemporaryManagedProfileIdentityName, _))
       .WillOnce(RunOnceCallback<1>(std::nullopt));
 
-  CreateService(std::make_unique<StrictMock<MockKeyUploadClient>>());
+  CreateProvisioningService(
+      std::make_unique<StrictMock<MockKeyUploadClient>>());
 
   VerifyIdledWithoutCache();
 }
@@ -552,7 +576,8 @@ TEST_F(CertificateProvisioningServiceTest,
   EXPECT_CALL(mock_store_, GetIdentity(kTemporaryManagedProfileIdentityName, _))
       .WillOnce(RunOnceCallback<1>(existing_temporary_identity));
 
-  CreateService(std::make_unique<StrictMock<MockKeyUploadClient>>());
+  CreateProvisioningService(
+      std::make_unique<StrictMock<MockKeyUploadClient>>());
 
   VerifyIdledWithoutCache();
 }
@@ -581,7 +606,7 @@ TEST_F(CertificateProvisioningServiceTest,
                              kManagedProfileIdentityName, fake_cert, _))
       .WillOnce(MoveArg<3>(&commit_identity_callback));
 
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
   ASSERT_TRUE(service_);
 
   base::test::TestFuture<std::optional<ClientIdentity>> test_future;
@@ -618,7 +643,7 @@ TEST_F(CertificateProvisioningServiceTest,
               CommitCertificate(kManagedProfileIdentityName, fake_cert, _))
       .WillOnce(MoveArg<2>(&commit_cert_callback));
 
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
   ASSERT_TRUE(service_);
 
   base::test::TestFuture<std::optional<ClientIdentity>> test_future;
@@ -640,9 +665,9 @@ TEST_F(CertificateProvisioningServiceTest,
   SetPolicyPref(true);
 
   auto mocked_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
-  auto test_cert = LoadTestCert();
-  ClientIdentity existing_permanent_identity(kManagedProfileIdentityName,
-                                             mocked_private_key, test_cert);
+  auto expired_test_cert = LoadTestCert();
+  ClientIdentity existing_permanent_identity(
+      kManagedProfileIdentityName, mocked_private_key, expired_test_cert);
 
   EXPECT_CALL(mock_store_, GetIdentity(kManagedProfileIdentityName, _))
       .WillOnce(RunOnceCallback<1>(existing_permanent_identity));
@@ -653,10 +678,16 @@ TEST_F(CertificateProvisioningServiceTest,
               CreateCertificate(testing::Eq(mocked_private_key), _))
       .WillOnce(RunOnceCallback<1>(kSuccessUploadCode, fake_cert));
 
+  auto mock_context_delegate =
+      std::make_unique<StrictMock<MockContextDelegate>>();
+  EXPECT_CALL(*mock_context_delegate,
+              OnClientCertificateDeleted(expired_test_cert));
+
   EXPECT_CALL(mock_store_,
               CommitCertificate(kManagedProfileIdentityName, fake_cert, _))
       .WillOnce(RunOnceCallback<2>(std::nullopt));
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_context_delegate),
+                            std::move(mock_client));
 
   VerifyIdleWithCache(mocked_private_key, fake_cert, kSuccessUploadCode);
 
@@ -704,7 +735,12 @@ TEST_F(
               CreateCertificate(testing::Eq(mocked_private_key), _))
       .WillOnce(RunOnceCallback<1>(kSuccessUploadCode, nullptr));
 
-  CreateService(std::move(mock_client));
+  auto mock_context_delegate =
+      std::make_unique<StrictMock<MockContextDelegate>>();
+  auto* mock_context_delegate_ptr = mock_context_delegate.get();
+
+  CreateProvisioningService(std::move(mock_context_delegate),
+                            std::move(mock_client));
   ASSERT_TRUE(service_);
 
   VerifyIdleWithCache(mocked_private_key, test_cert, kSuccessUploadCode);
@@ -716,6 +752,9 @@ TEST_F(
   EXPECT_CALL(*mock_client_ptr,
               CreateCertificate(testing::Eq(mocked_private_key), _))
       .WillOnce(RunOnceCallback<1>(kSuccessUploadCode, other_test_cert));
+
+  EXPECT_CALL(*mock_context_delegate_ptr,
+              OnClientCertificateDeleted(test_cert));
 
   EXPECT_CALL(mock_store_, CommitCertificate(kManagedProfileIdentityName,
                                              other_test_cert, _))
@@ -756,7 +795,7 @@ TEST_F(CertificateProvisioningServiceTest, ConcurrentGetManagedIdentityCalls) {
                              kManagedProfileIdentityName, fake_cert, _))
       .WillOnce(RunOnceCallback<3>(std::nullopt));
 
-  CreateService(std::move(mock_client));
+  CreateProvisioningService(std::move(mock_client));
 
   ASSERT_TRUE(service_);
 

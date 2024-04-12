@@ -17,6 +17,7 @@ class PrefService;
 
 namespace client_certificates {
 
+class ContextDelegate;
 class CertificateStore;
 class KeyUploadClient;
 
@@ -55,6 +56,7 @@ class CertificateProvisioningService : public KeyedService {
   static std::unique_ptr<CertificateProvisioningService> Create(
       PrefService* profile_prefs,
       CertificateStore* certificate_store,
+      std::unique_ptr<ContextDelegate> context_delegate,
       std::unique_ptr<KeyUploadClient> upload_client);
 
   // Will invoke `callback` with the managed identity once it has been

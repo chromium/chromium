@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/enterprise/client_certificates/core/certificate_store.h"
 #include "components/enterprise/client_certificates/core/constants.h"
+#include "components/enterprise/client_certificates/core/context_delegate.h"
 #include "components/enterprise/client_certificates/core/key_upload_client.h"
 #include "components/enterprise/client_certificates/core/metrics_util.h"
 #include "components/enterprise/client_certificates/core/prefs.h"
@@ -58,6 +59,7 @@ class CertificateProvisioningServiceImpl
   CertificateProvisioningServiceImpl(
       PrefService* profile_prefs,
       CertificateStore* certificate_store,
+      std::unique_ptr<ContextDelegate> context_delegate,
       std::unique_ptr<KeyUploadClient> upload_client);
   ~CertificateProvisioningServiceImpl() override;
 
@@ -102,6 +104,7 @@ class CertificateProvisioningServiceImpl
   PrefChangeRegistrar pref_observer_;
   raw_ptr<PrefService> profile_prefs_;
   raw_ptr<CertificateStore> certificate_store_;
+  std::unique_ptr<ContextDelegate> context_delegate_;
   std::unique_ptr<KeyUploadClient> upload_client_;
 
   std::optional<ProvisioningContext> provisioning_context_{std::nullopt};
@@ -120,20 +123,25 @@ std::unique_ptr<CertificateProvisioningService>
 CertificateProvisioningService::Create(
     PrefService* profile_prefs,
     CertificateStore* certificate_store,
+    std::unique_ptr<ContextDelegate> context_delegate,
     std::unique_ptr<KeyUploadClient> upload_client) {
   return std::make_unique<CertificateProvisioningServiceImpl>(
-      profile_prefs, certificate_store, std::move(upload_client));
+      profile_prefs, certificate_store, std::move(context_delegate),
+      std::move(upload_client));
 }
 
 CertificateProvisioningServiceImpl::CertificateProvisioningServiceImpl(
     PrefService* profile_prefs,
     CertificateStore* certificate_store,
+    std::unique_ptr<ContextDelegate> context_delegate,
     std::unique_ptr<KeyUploadClient> upload_client)
     : profile_prefs_(profile_prefs),
       certificate_store_(certificate_store),
+      context_delegate_(std::move(context_delegate)),
       upload_client_(std::move(upload_client)) {
   CHECK(profile_prefs_);
   CHECK(certificate_store_);
+  CHECK(context_delegate_);
   CHECK(upload_client_);
 
   pref_observer_.Init(profile_prefs_);
@@ -428,6 +436,12 @@ void CertificateProvisioningServiceImpl::OnCertificateCommitted(
     OnProvisioningError(ProvisioningError::kCertificateCommitFailed,
                         commit_error.value());
     return;
+  }
+
+  if (cached_identity_ && cached_identity_->certificate) {
+    // Notify old cert as deleted.
+    context_delegate_->OnClientCertificateDeleted(
+        cached_identity_->certificate);
   }
 
   LOG_POLICY(INFO, DEVICE_TRUST)
