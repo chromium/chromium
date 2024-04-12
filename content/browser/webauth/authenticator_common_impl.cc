@@ -375,6 +375,26 @@ std::optional<device::CredProtectRequest> ProtectionPolicyToCredProtect(
               device::UserVerificationRequirement::kPreferred) {
         return device::CredProtectRequest::kUVRequired;
       }
+#if BUILDFLAG(IS_WIN)
+      // On Windows, if webauthn.dll is version two or below, rk=preferred
+      // cannot be expressed and will be mapped to rk=false. Some security keys
+      // have a bug where they'll return credProtect=1 when credProtect=2 is
+      // requested for non-discoverable credentials. Thus, for these versions
+      // of webauthn.dll, treat rk=preferred as rk=discouraged for the purposes
+      // of credProtect, because that's what will ultimately be sent to the
+      // security key.
+      //
+      // If a site explicitly requests a credProtect level, we'll still respect
+      // that because they are presumably going to check the response.
+      if (base::FeatureList::IsEnabled(
+              device::kWebAuthnCredProtectWin10BugWorkaround) &&
+          make_credential_options.resident_key ==
+              device::ResidentKeyRequirement::kPreferred &&
+          device::WinWebAuthnApi::GetDefault() &&
+          device::WinWebAuthnApi::GetDefault()->Version() < 3) {
+        return std::nullopt;
+      }
+#endif
       if (make_credential_options.resident_key !=
           device::ResidentKeyRequirement::kDiscouraged) {
         // Otherwise, kUVOrCredIDRequired is made the default unless

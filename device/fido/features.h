@@ -138,6 +138,11 @@ BASE_DECLARE_FEATURE(kWebAuthnEnableAndroidCableAuthenticator);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys);
 
+// Enable a workaround for an interaction between Windows 10 and certain
+// security keys.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

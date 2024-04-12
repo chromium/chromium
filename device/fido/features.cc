@@ -165,4 +165,9 @@ BASE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Default enabled in M126. Remove in or after M129.
+BASE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround,
+             "WebAuthenticationCredProtectWin10BugWorkaround",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device
