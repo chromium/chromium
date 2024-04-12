@@ -1932,10 +1932,6 @@ bool View::IsFocusable() const {
          IsDrawn();
 }
 
-bool View::IsAccessibilityFocusable() const {
-  return GetViewAccessibility().IsAccessibilityFocusable();
-}
-
 FocusManager* View::GetFocusManager() {
   Widget* widget = GetWidget();
   return widget ? widget->GetFocusManager() : nullptr;
@@ -1950,7 +1946,7 @@ void View::RequestFocus() {
   FocusManager* focus_manager = GetFocusManager();
   if (focus_manager) {
     bool focusable = focus_manager->keyboard_accessible()
-                         ? IsAccessibilityFocusable()
+                         ? GetViewAccessibility().IsAccessibilityFocusable()
                          : IsFocusable();
     if (focusable) {
       focus_manager->SetFocusedView(this);
@@ -2269,7 +2265,7 @@ bool View::HandleAccessibleAction(const ui::AXActionData& action_data) {
       return true;
     }
     case ax::mojom::Action::kFocus:
-      if (IsAccessibilityFocusable()) {
+      if (GetViewAccessibility().IsAccessibilityFocusable()) {
         RequestFocus();
         return true;
       }
@@ -3804,7 +3800,7 @@ void View::AdvanceFocusIfNecessary() {
   // unfocusable. If the view is still focusable or is not focused, we can
   // return early avoiding further unnecessary checks. Focusability check is
   // performed first as it tends to be faster.
-  if (IsAccessibilityFocusable() || !HasFocus()) {
+  if (GetViewAccessibility().IsAccessibilityFocusable() || !HasFocus()) {
     return;
   }
 

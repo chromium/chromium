@@ -34,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/slider.h"
@@ -244,7 +245,8 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     // focusable.
     EXPECT_TRUE(slider->IsFocusable());
     EXPECT_FALSE(slider_button->IsFocusable());
-    EXPECT_TRUE(slider_button->IsAccessibilityFocusable());
+    EXPECT_TRUE(
+        slider_button->GetViewAccessibility().IsAccessibilityFocusable());
 
     slider->RequestFocus();
     EXPECT_STREQ(slider->GetFocusManager()->GetFocusedView()->GetClassName(),

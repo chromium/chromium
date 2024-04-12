@@ -89,7 +89,8 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
                                                &views);
       // Remove any views except current, which are disabled or hidden.
       std::erase_if(views, [this](View* v) {
-        return v != focused_view_ && !v->IsAccessibilityFocusable();
+        return v != focused_view_ &&
+               !v->GetViewAccessibility().IsAccessibilityFocusable();
       });
       View::Views::const_iterator i = base::ranges::find(views, focused_view_);
       DCHECK(i != views.end());
@@ -402,7 +403,8 @@ bool FocusManager::RestoreFocusedView() {
   View* view = GetStoredFocusView();
   if (view) {
     if (ContainsView(view)) {
-      if (!view->IsFocusable() && view->IsAccessibilityFocusable()) {
+      if (!view->IsFocusable() &&
+          view->GetViewAccessibility().IsAccessibilityFocusable()) {
         // RequestFocus would fail, but we want to restore focus to controls
         // that had focus in accessibility mode.
         SetFocusedViewWithReason(view, FocusChangeReason::kFocusRestore);
@@ -546,10 +548,11 @@ bool FocusManager::IsFocusable(View* view) const {
 
 // |keyboard_accessible_| is only used on Mac.
 #if BUILDFLAG(IS_MAC)
-  return keyboard_accessible_ ? view->IsAccessibilityFocusable()
-                              : view->IsFocusable();
+  return keyboard_accessible_
+             ? view->GetViewAccessibility().IsAccessibilityFocusable()
+             : view->IsFocusable();
 #else
-  return view->IsAccessibilityFocusable();
+  return view->GetViewAccessibility().IsAccessibilityFocusable();
 #endif
 }
 

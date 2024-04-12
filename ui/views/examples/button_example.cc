@@ -16,6 +16,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
@@ -271,7 +272,7 @@ void ButtonExample::LabelButtonPressed(LabelButton* label_button,
   } else if (event.IsShiftDown()) {
     if (event.IsAltDown()) {
       // Toggle focusability.
-      label_button->IsAccessibilityFocusable()
+      label_button->GetViewAccessibility().IsAccessibilityFocusable()
           ? label_button->SetFocusBehavior(View::FocusBehavior::NEVER)
           : label_button->SetFocusBehavior(
                 PlatformStyle::kDefaultFocusBehavior);

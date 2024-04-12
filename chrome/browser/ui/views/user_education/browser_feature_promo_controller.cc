@@ -187,7 +187,9 @@ BrowserFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
   if (promo_type ==
           user_education::FeaturePromoSpecification::PromoType::kTutorial ||
       (anchor_view &&
-       (anchor_view->view()->IsAccessibilityFocusable() ||
+       (anchor_view->view()
+            ->GetViewAccessibility()
+            .IsAccessibilityFocusable() ||
         views::IsViewClass<views::AccessiblePaneView>(anchor_view->view())))) {
     return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION,
                                       accelerator_text);

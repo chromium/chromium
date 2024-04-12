@@ -1331,10 +1331,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Returns true if this view is focusable, |enabled_| and drawn.
   bool IsFocusable() const;
 
-  // Return whether this view is focusable when the user requires full keyboard
-  // access, even though it may not be normally focusable.
-  bool IsAccessibilityFocusable() const;
-
   // Convenience method to retrieve the FocusManager associated with the
   // Widget that contains this view.  This can return NULL if this view is not
   // part of a view hierarchy with a Widget.

@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/slider.h"
@@ -218,7 +219,8 @@ TEST_F(UnifiedVolumeViewTest, SliderFocusToggleMute) {
   // focusable.
   EXPECT_TRUE(slider()->IsFocusable());
   EXPECT_FALSE(slider_button()->IsFocusable());
-  EXPECT_TRUE(slider_button()->IsAccessibilityFocusable());
+  EXPECT_TRUE(
+      slider_button()->GetViewAccessibility().IsAccessibilityFocusable());
 
   // Sets the level to make sure the slider's volume is not 0. Otherwise the
   // slider is still muted even if it's toggled on.

@@ -26,6 +26,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -552,7 +553,8 @@ void LabelButton::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
   button.checked = false;
   button.indeterminate = false;
   button.is_default = GetIsDefault();
-  button.is_focused = HasFocus() && IsAccessibilityFocusable();
+  button.is_focused =
+      HasFocus() && GetViewAccessibility().IsAccessibilityFocusable();
   button.has_border = false;
   button.classic_state = 0;
   button.background_color = label_->GetBackgroundColor();

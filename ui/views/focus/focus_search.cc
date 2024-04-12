@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -119,7 +120,7 @@ bool FocusSearch::IsFocusable(View* v) {
            root_->GetWidget()->GetFocusManager()->keyboard_accessible()));
   if (accessibility_mode_ ||
       root_->GetWidget()->GetFocusManager()->keyboard_accessible())
-    return v && v->IsAccessibilityFocusable();
+    return v && v->GetViewAccessibility().IsAccessibilityFocusable();
   return v && v->IsFocusable();
 }
 
