@@ -52,6 +52,9 @@ class ContextDatabase {
   // requested record is not available.
   bool GetItemById(int64_t item_id, Item& item);
 
+  // Update the accessed time for the supplied `item_id`.
+  bool UpdateAccessedTime(int64_t item_id, base::Time new_accessed_time);
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

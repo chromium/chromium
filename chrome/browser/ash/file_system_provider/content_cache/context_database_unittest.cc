@@ -94,5 +94,30 @@ TEST_F(FileSystemProviderContextDatabaseTest, GetItemById) {
   EXPECT_EQ(item.version_tag, version_tag);
 }
 
+TEST_F(FileSystemProviderContextDatabaseTest, UpdateAccessedTime) {
+  std::unique_ptr<ContextDatabase> db =
+      std::make_unique<ContextDatabase>(base::FilePath());
+  EXPECT_TRUE(db->Initialize());
+
+  // Insert an item into the database.
+  int64_t inserted_id = -1;
+  base::FilePath fsp_path("/fsp_path.txt");
+  std::string version_tag("versionA");
+  base::Time accessed_time = base::Time::Now();
+  EXPECT_TRUE(db->AddItem(fsp_path, version_tag, accessed_time, &inserted_id));
+
+  base::Time new_accessed_time;
+  EXPECT_TRUE(
+      base::Time::FromString("1 Jun 2021 10:00 GMT", &new_accessed_time));
+  EXPECT_TRUE(db->UpdateAccessedTime(inserted_id, new_accessed_time));
+
+  // Retrieve the item back from the database.
+  ContextDatabase::Item item;
+  EXPECT_TRUE(db->GetItemById(inserted_id, item));
+  EXPECT_TRUE(item.item_exists);
+  EXPECT_EQ(item.accessed_time.InMillisecondsSinceUnixEpoch(),
+            new_accessed_time.InMillisecondsSinceUnixEpoch());
+}
+
 }  // namespace
 }  // namespace ash::file_system_provider

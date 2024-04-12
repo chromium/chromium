@@ -131,6 +131,19 @@ void ContentCacheImpl::OnBytesRead(
     return;
   }
 
+  ContentLRUCache::iterator it = lru_cache_.Get(file_path);
+  DCHECK(it != lru_cache_.end());
+
+  // Update the accessed time to now, but don't wait for the database to return,
+  // just fire and forget.
+  CacheFileContext& ctx = it->second;
+  ctx.accessed_time = base::Time::Now();
+  context_db_.AsyncCall(&ContextDatabase::UpdateAccessedTime)
+      .WithArgs(ctx.id, ctx.accessed_time)
+      .Then(base::BindOnce([](bool success) {
+        LOG_IF(ERROR, !success) << "Couldn't update access time on read";
+      }));
+
   int bytes_read = error_or_bytes_read.value();
   VLOG(1) << "OnBytesRead {bytes_read = '" << bytes_read << "'}";
   callback.Run(bytes_read, /*has_more=*/false, base::File::FILE_OK);
@@ -231,10 +244,18 @@ void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
   DCHECK(it != lru_cache_.end());
 
   CacheFileContext& ctx = it->second;
-  ctx.in_progress_writer = false;
   if (result == base::File::FILE_OK) {
     ctx.bytes_on_disk = offset + length;
+    ctx.accessed_time = base::Time::Now();
+
+    // Keep the accessed time up to date.
+    context_db_.AsyncCall(&ContextDatabase::UpdateAccessedTime)
+        .WithArgs(ctx.id, ctx.accessed_time)
+        .Then(base::BindOnce([](bool success) {
+          LOG_IF(ERROR, !success) << "Couldn't update access time on write";
+        }));
   }
+  ctx.in_progress_writer = false;
 
   VLOG(1) << "OnBytesWritten: {offset = '" << offset << "', length = '"
           << length << "', result = '" << base::File::ErrorToString(result)

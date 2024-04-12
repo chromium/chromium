@@ -35,6 +35,11 @@ static constexpr char kSelectItemByIdSql[] =
     "SELECT fsp_path, version_tag, accessed_time FROM items WHERE id=? LIMIT 1";
 // clang-format on
 
+static constexpr char kUpdateAccessedTimeByIdSql[] =
+    // clang-format off
+    "UPDATE items SET accessed_time = ? WHERE id = ?";
+// clang-format on
+
 }  // namespace
 
 ContextDatabase::ContextDatabase(const base::FilePath& db_path)
@@ -154,6 +159,22 @@ bool ContextDatabase::GetItemById(int64_t item_id, Item& item) {
       base::Time::FromMillisecondsSinceUnixEpoch(statement->ColumnInt64(2));
 
   return true;
+}
+
+bool ContextDatabase::UpdateAccessedTime(int64_t item_id,
+                                         base::Time new_accessed_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::unique_ptr<sql::Statement> statement = std::make_unique<sql::Statement>(
+      db_.GetCachedStatement(SQL_FROM_HERE, kUpdateAccessedTimeByIdSql));
+  if (!statement) {
+    LOG(ERROR) << "Couldn't create SQL statement";
+    return false;
+  }
+
+  statement->BindInt64(0, new_accessed_time.InMillisecondsSinceUnixEpoch());
+  statement->BindInt64(1, item_id);
+  return statement->Run();
 }
 
 bool ContextDatabase::Raze() {
