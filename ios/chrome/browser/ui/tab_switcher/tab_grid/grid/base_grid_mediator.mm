@@ -521,26 +521,38 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
       } else if (![self isPinnedWebState:moveChange.moved_to_index()]) {
         // BaseGridMediator handles only non pinned tabs because pinned tabs are
         // handled in PinnedTabsMediator.
-        if (moveChange.old_group() &&
-            moveChange.old_group() == moveChange.new_group()) {
-          [self updateCellGroup:moveChange.new_group()];
-          break;
-        }
-        if (moveChange.old_group()) {
-          [self updateCellGroup:moveChange.old_group()];
-        }
-        if (moveChange.new_group()) {
-          if (!moveChange.old_group()) {
+        if (moveChange.old_group() == moveChange.new_group()) {
+          // No group update.
+          if (moveChange.old_group()) {
+            // The cell moved inside its group, update the group.
+            [self updateCellGroup:moveChange.old_group()];
+          } else {
+            // The cell is not in a group, move it.
+            [self moveItem:[GridItemIdentifier
+                               tabIdentifier:moveChange.moved_web_state()]
+                beforeWebStateIndex:moveChange.moved_to_index() + 1];
+          }
+        } else {
+          // The group has changed.
+          if (moveChange.old_group()) {
+            // The cell left a group.
+            [self updateCellGroup:moveChange.old_group()];
+          } else {
+            // The cell wasn't in a group, remove it from the grid.
             [self.consumer removeItemWithIdentifier:
                                [GridItemIdentifier
                                    tabIdentifier:moveChange.moved_web_state()]
                              selectedItemIdentifier:[self activeIdentifier]];
           }
-          [self updateCellGroup:moveChange.new_group()];
-        } else {
-          [self moveItem:[GridItemIdentifier
-                             tabIdentifier:moveChange.moved_web_state()]
-              beforeWebStateIndex:moveChange.moved_to_index() + 1];
+          if (moveChange.new_group()) {
+            // The cell joined a group.
+            [self updateCellGroup:moveChange.new_group()];
+          } else {
+            // The cell was removed from its group, add it to the grid.
+            web::WebState* movedWebState = moveChange.moved_web_state();
+            [self insertItem:[GridItemIdentifier tabIdentifier:movedWebState]
+                beforeWebStateIndex:moveChange.moved_to_index() + 1];
+          }
         }
       }
       break;
