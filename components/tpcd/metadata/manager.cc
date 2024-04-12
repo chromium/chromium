@@ -32,11 +32,12 @@ Manager::Manager(Parser* parser, GrantsSyncCallback callback)
     : parser_(parser), grants_sync_callback_(std::move(callback)) {
   CHECK(parser_);
 
-  base::AutoLock lock(grants_lock_);
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
+    base::AutoLock lock(grants_lock_);
     grants_ = content_settings::HostIndexedContentSettings();
   } else {
+    base::AutoLock lock(grants_lock_);
     grants_ = ContentSettingsForOneType();
   }
 
@@ -67,18 +68,19 @@ uint32_t Manager::GenerateRand() const {
 }
 
 void Manager::SetGrants(const ContentSettingsForOneType& grants) {
-  base::AutoLock lock(grants_lock_);
-
-  if (absl::holds_alternative<content_settings::HostIndexedContentSettings>(
-          grants_)) {
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kHostIndexedMetadataGrants)) {
     auto indices = content_settings::HostIndexedContentSettings::Create(grants);
     if (indices.empty()) {
+      base::AutoLock lock(grants_lock_);
       grants_ = content_settings::HostIndexedContentSettings();
     } else {
       CHECK_EQ(indices.size(), 1u);
+      base::AutoLock lock(grants_lock_);
       grants_ = std::move(indices.front());
     }
   } else {
+    base::AutoLock lock(grants_lock_);
     grants_ = grants;
   }
 
@@ -141,18 +143,19 @@ void Manager::OnMetadataReady() {
 }
 
 ContentSettingsForOneType Manager::GetGrants() const {
-  base::AutoLock lock(grants_lock_);
 
   if (!base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants)) {
     return ContentSettingsForOneType();
   }
 
-  if (absl::holds_alternative<content_settings::HostIndexedContentSettings>(
-          grants_)) {
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kHostIndexedMetadataGrants)) {
+    base::AutoLock lock(grants_lock_);
     return GetContentSettingForOneType(
         absl::get<content_settings::HostIndexedContentSettings>(grants_));
   }
 
+  base::AutoLock lock(grants_lock_);
   return absl::get<ContentSettingsForOneType>(grants_);
 }
 

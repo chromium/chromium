@@ -103,9 +103,9 @@ TEST_P(ManagerTest, OnMetadataReady) {
   helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
                               secondary_pattern_spec);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
+  GetParser()->ParseMetadata(metadata.SerializeAsString());
 
   Manager* manager = GetManager();
-  GetParser()->ParseMetadata(metadata.SerializeAsString());
   if (!IsTpcdMetadataGrantsEnabled()) {
     EXPECT_TRUE(manager->GetGrants().empty());
   } else {
