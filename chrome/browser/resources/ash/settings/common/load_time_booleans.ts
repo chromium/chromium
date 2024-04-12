@@ -44,6 +44,10 @@ export function isPluginVmAvailable(): boolean {
   return loadTimeData.getBoolean('isPluginVmAvailable');
 }
 
+export function isAppParentalControlsFeatureAvailable(): boolean {
+  return loadTimeData.getBoolean('isAppParentalControlsFeatureAvailable');
+}
+
 // Crostini page
 export function isCrostiniAllowed(): boolean {
   return loadTimeData.getBoolean('isCrostiniAllowed');

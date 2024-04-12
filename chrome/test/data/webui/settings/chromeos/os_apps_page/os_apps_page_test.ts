@@ -376,6 +376,27 @@ suite('AppsPageTests', () => {
       assertTrue(isVisible(rowLink));
     });
 
+    test(
+      'Clicking app parental controls row opens subpage',
+        () => {
+          const rowLink = appsPage.shadowRoot!.querySelector<CrLinkRowElement>(
+              '#appParentalControlsRow');
+          // Row link is visible when the parental controls feature is enabled.
+          if (loadTimeData.getBoolean(
+                  'isAppParentalControlsFeatureAvailable')) {
+            assertTrue(!!rowLink);
+            assertTrue(isVisible(rowLink));
+
+            assertNull(appsPage.shadowRoot!.querySelector(
+                'settings-app-parental-controls-subpage'));
+            rowLink.click();
+            assertTrue(!!appsPage.shadowRoot!.querySelector(
+                'settings-app-parental-controls-subpage'));
+          } else {
+            assertNull(rowLink);
+          }
+        });
+
     test('Clicking enable button enables ARC', () => {
       const button =
           appsPage.shadowRoot!.querySelector<HTMLButtonElement>('#enable');

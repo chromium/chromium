@@ -222,6 +222,7 @@ build_webui("build") {
     "os_apps_page/app_notifications_page/app_notification_row.ts",
     "os_apps_page/app_notifications_page/app_notifications_manager_subpage.ts",
     "os_apps_page/app_notifications_page/app_notifications_subpage.ts",
+    "os_apps_page/app_parental_controls/app_parental_controls_subpage.ts",
     "os_apps_page/manage_isolated_web_apps_page/manage_isolated_web_apps_subpage.ts",
     "os_apps_page/os_apps_page.ts",
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog.ts",

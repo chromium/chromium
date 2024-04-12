@@ -37,7 +37,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {AppManagementStoreMixin} from '../common/app_management/store_mixin.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {androidAppsVisible, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable, isRevampWayfindingEnabled, shouldShowStartup} from '../common/load_time_booleans.js';
+import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable, isRevampWayfindingEnabled, shouldShowStartup} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
@@ -139,6 +139,14 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         value: () => {
           return isPluginVmAvailable();
         },
+      },
+
+      isAppParentalControlsFeatureAvailable_: {
+        type: Boolean,
+        value: () => {
+          return isAppParentalControlsFeatureAvailable();
+        },
+        readOnly: true,
       },
 
       /**
@@ -316,6 +324,10 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
   private onClickAppNotifications_(): void {
     Router.getInstance().navigateTo(routes.APP_NOTIFICATIONS);
+  }
+
+  private onClickParentalControls_(): void {
+    Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
   }
 
   private onClickManageIsolatedWebApps_(): void {

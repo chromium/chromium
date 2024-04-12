@@ -13,7 +13,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {androidAppsVisible, isArcVmEnabled, isCrostiniSupported, isGuest, isInputDeviceSettingsSplitEnabled, isKerberosEnabled, isPluginVmAvailable, isPowerwashAllowed, isRevampWayfindingEnabled} from './common/load_time_booleans.js';
+import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isCrostiniSupported, isGuest, isInputDeviceSettingsSplitEnabled, isKerberosEnabled, isPluginVmAvailable, isPowerwashAllowed, isRevampWayfindingEnabled} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /**
@@ -151,6 +151,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   APP_MANAGEMENT_DETAIL: Route;
   APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS: Route;
   APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES: Route;
+  APP_PARENTAL_CONTROLS: Route;
   APPS: Route;
   ANDROID_APPS_DETAILS: Route;
   ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES: Route;
@@ -458,6 +459,11 @@ export function createRoutes(): OsSettingsRoutes {
   r.MANAGE_ISOLATED_WEB_APPS = createSubpage(
       r.APPS, routesMojom.MANAGE_ISOLATED_WEB_APPS_SUBPAGE_PATH,
       Subpage.kManageIsolatedWebApps);
+  if (isAppParentalControlsFeatureAvailable()) {
+    r.APP_PARENTAL_CONTROLS = createSubpage(
+        r.APPS, routesMojom.APP_PARENTAL_CONTROLS_SUBPAGE_PATH,
+        Subpage.kAppParentalControls);
+  }
 
   // Accessibility section.
   r.OS_ACCESSIBILITY = createSection(

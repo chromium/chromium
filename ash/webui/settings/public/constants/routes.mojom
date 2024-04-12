@@ -118,6 +118,7 @@ enum Subpage {
   kArcVmUsbPreferences = 707,
   kManageIsolatedWebApps = 708,
   kAppNotificationsManager = 709,
+  kAppParentalControls = 710,
 
   // Crostini section.
   kCrostiniDetails = 800,
@@ -272,6 +273,7 @@ const string kPluginVmUsbPreferencesSubpagePath =
 const string kArcVmUsbPreferencesSubpagePath =
      "androidAppsDetails/sharedUsbDevices";
 const string kManageIsolatedWebAppsSubpagePath = "manage-isolated-web-apps";
+const string kAppParentalControlsSubpagePath = "app-parental-controls";
 
 // Crostini section.
 const string kCrostiniSectionPath = "crostini";

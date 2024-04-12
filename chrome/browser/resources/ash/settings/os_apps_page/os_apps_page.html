@@ -29,6 +29,15 @@
                 appsWithNotifications_.*, isDndEnabled_)]]">
         </cr-link-row>
       </template>
+      <template is="dom-if" if="[[isAppParentalControlsFeatureAvailable_]]">
+        <cr-link-row id="appParentalControlsRow" class="settings-box"
+            start-icon="[[rowIcons_.manageApps]]"
+            label="$i18n{appParentalControlsTitle}"
+            on-click="onClickParentalControls_"
+            role-description="$i18n{subpageArrowRoleDescription}"
+            sub-label="$i18n{appParentalControlsSubtitle}">
+        </cr-link-row>
+      </template>
       <template is="dom-if" if="[[showAndroidApps_]]">
         <template is="dom-if" if="[[isPlayStoreAvailable_]]" restamp>
           <div id="androidApps" class="settings-box"
@@ -197,6 +206,16 @@
       <os-settings-subpage page-title="$i18n{manageIsolatedWebAppsTitle}">
         <settings-manage-isolated-web-apps-subpage prefs="{{prefs}}">
         </settings-manage-isolated-web-apps-subpage>
+      </os-settings-subpage>
+    </template>
+  </template>
+
+  <!-- On-device Apps Parental Controls -->
+  <template is="dom-if" if="[[isAppParentalControlsFeatureAvailable_]]">
+    <template is="dom-if" route-path="/app-parental-controls">
+      <os-settings-subpage page-title="$i18n{appParentalControlsTitle}">
+        <settings-app-parental-controls-subpage>
+        </settings-app-parental-controls-subpage>
       </os-settings-subpage>
     </template>
   </template>

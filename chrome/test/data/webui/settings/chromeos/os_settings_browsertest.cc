@@ -157,6 +157,20 @@ class OSSettingsMochaTestLacrosOnlyEnabled : public LacrosOnlyMochaBrowserTest {
   }
 };
 
+class OSSettingsMochaTestAppParentalControlsEnabled
+    : public OSSettingsMochaTestRevampEnabled {
+ protected:
+  OSSettingsMochaTestAppParentalControlsEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAdditionalOnDeviceAppsParentalControls,
+         features::kForceAdditionalOnDeviceAppsParentalControlsAllRegions},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevampEnabled, ApnSubpage) {
   RunSettingsTest("apn_subpage_test.js");
 }
@@ -1156,6 +1170,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsAppsPage) {
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsAppsPageRevamp) {
+  RunSettingsTest("os_apps_page/os_apps_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestAppParentalControlsEnabled,
+                       OsAppsPageWithAppParentalControls) {
   RunSettingsTest("os_apps_page/os_apps_page_test.js");
 }
 

@@ -48,6 +48,7 @@ import './os_apps_page/app_management_page/app_detail_view.js';
 import './os_apps_page/app_management_page/app_management_page.js';
 import './os_apps_page/app_management_page/dom_switch.js';
 import './os_apps_page/app_management_page/main_view.js';
+import './os_apps_page/app_parental_controls/app_parental_controls_subpage.js';
 import './os_search_page/google_assistant_subpage.js';
 import './os_search_page/search_subpage.js';
 import './os_people_page/account_manager_subpage.js';
