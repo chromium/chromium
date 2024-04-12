@@ -73,8 +73,10 @@ void ResetCertCacheData(SessionChapsClient::SlotId slot_id) {
         RecordUmaEvent(NssDbClientCertsRollbackEvent::kCertCacheResetFailed);
         LOG(ERROR) << "Resetting slot certificates cache has failed with:"
                    << result;
+      } else {
+        RecordUmaEvent(
+            NssDbClientCertsRollbackEvent::kCertCacheResetSuccessful);
       }
-      RecordUmaEvent(NssDbClientCertsRollbackEvent::kCertCacheResetSuccessful);
       break;
     }
   }
