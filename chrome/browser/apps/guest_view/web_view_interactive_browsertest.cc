@@ -663,7 +663,14 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusEvent) {
   TestHelper("testFocusEvent", "web_view/focus", NO_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusTakeFocus) {
+// TODO(crbug.com/334045674): Flaky timeouts on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Focus_FocusTakeFocus DISABLED_Focus_FocusTakeFocus
+#else
+#define MAYBE_Focus_FocusTakeFocus Focus_FocusTakeFocus
+#endif
+IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
+                       MAYBE_Focus_FocusTakeFocus) {
   TestHelper("testFocusTakeFocus", "web_view/focus", NO_TEST_SERVER);
   ASSERT_TRUE(GetGuestRenderFrameHost());
 
