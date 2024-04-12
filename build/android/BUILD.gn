@@ -44,6 +44,7 @@ if (enable_java_templates) {
     ]
     sources = [
       "java/src/org/chromium/build/annotations/AlwaysInline.java",
+      "java/src/org/chromium/build/annotations/AssumeNonNull.java",
       "java/src/org/chromium/build/annotations/CheckDiscard.java",
       "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
       "java/src/org/chromium/build/annotations/DoNotInline.java",

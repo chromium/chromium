@@ -10,6 +10,7 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.shared_preferences.PreferenceKeyRegistry;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.AssumeNonNull;
 
 @JNINamespace("android::shared_preferences")
 public class ChromeSharedPreferences {
@@ -25,6 +26,7 @@ public class ChromeSharedPreferences {
     /**
      * @return The //base SharedPreferencesManager singleton.
      */
+    @AssumeNonNull
     @CalledByNative
     public static SharedPreferencesManager getInstance() {
         return SharedPreferencesManager.getInstanceForRegistry(REGISTRY);

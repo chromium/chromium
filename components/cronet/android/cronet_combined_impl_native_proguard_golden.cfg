@@ -113,6 +113,14 @@
 -identifiernamestring class * {
     @org.chromium.build.annotations.IdentifierNameString *;
 }
+
+# Mark fields with this to help R8 figure out that they cannot be null.
+-assumenosideeffects class ** {
+  @org.chromium.build.annotations.AssumeNonNull *** *(...) return _NONNULL_;
+}
+-assumenosideeffects class ** {
+  @org.chromium.build.annotations.AssumeNonNull *** * return _NONNULL_;
+}
 # -------- Config Path: components/cronet/android/cronet_impl_common_proguard.cfg --------
 # Proguard config for apps that depend on cronet_impl_common_java.jar.
 

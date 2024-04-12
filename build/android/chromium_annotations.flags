@@ -58,3 +58,11 @@
 -identifiernamestring class * {
     @org.chromium.build.annotations.IdentifierNameString *;
 }
+
+# Mark fields with this to help R8 figure out that they cannot be null.
+-assumenosideeffects class ** {
+  @org.chromium.build.annotations.AssumeNonNull *** *(...) return _NONNULL_;
+}
+-assumenosideeffects class ** {
+  @org.chromium.build.annotations.AssumeNonNull *** * return _NONNULL_;
+}

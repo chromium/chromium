@@ -4659,7 +4659,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/base/shared_preferences/KeyPrefix.java",
       "android/java/src/org/chromium/base/shared_preferences/KnownPreferenceKeyRegistries.java",
-      "android/java/src/org/chromium/base/shared_preferences/NoOpPreferenceKeyChecker.java",
       "android/java/src/org/chromium/base/shared_preferences/PreferenceKeyChecker.java",
       "android/java/src/org/chromium/base/shared_preferences/PreferenceKeyRegistry.java",
       "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java",
