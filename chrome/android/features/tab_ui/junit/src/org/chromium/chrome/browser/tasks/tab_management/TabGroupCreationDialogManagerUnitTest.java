@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +41,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupCreationDialogManagerUnitTest {
-    private static final int TAB_COUNT = 3;
     private static final String TAB1_TITLE = "Tab1";
     private static final int TAB1_ID = 456;
 
@@ -123,5 +123,19 @@ public class TabGroupCreationDialogManagerUnitTest {
 
         verify(mModalDialogManager)
                 .dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+    }
+
+    @Test
+    public void testCreationDialogDelegate_doubleShowDismissed() {
+        // Mock a double trigger for the creation dialog observer method for the same group action,
+        // but show dialog is only called once.
+        mTabGroupCreationDialogManager
+                .getShowDialogDelegateForTesting()
+                .showDialog(mTab1.getRootId(), mRegularTabGroupModelFilter);
+        mTabGroupCreationDialogManager
+                .getShowDialogDelegateForTesting()
+                .showDialog(mTab1.getRootId(), mRegularTabGroupModelFilter);
+        verify(mModalDialogManager, times(1))
+                .showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
     }
 }

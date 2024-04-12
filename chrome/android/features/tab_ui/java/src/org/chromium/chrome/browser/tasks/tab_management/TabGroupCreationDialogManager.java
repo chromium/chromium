@@ -47,6 +47,15 @@ public class TabGroupCreationDialogManager implements Destroyable {
          * @param filter The current TabGroupModelFilter that this group is created on.
          */
         protected void showDialog(int rootId, TabGroupModelFilter filter) {
+            // If the model is not null, it indicates a chained double show attempt is occurring.
+            // Early exit the second attempt so that we don't show another dialog and cause the
+            // dialog controller and user actions to freeze when attempting to navigate out.
+            if (mModel != null) {
+                TabUiMetricsHelper.recordTabGroupCreationDialogResultActionMetrics(
+                        TabGroupCreationDialogResultAction.DISMISSED_OTHER);
+                return;
+            }
+
             int tabCount = filter.getRelatedTabCountForRootId(rootId);
             String defaultGroupTitle =
                     mActivity
@@ -59,8 +68,7 @@ public class TabGroupCreationDialogManager implements Destroyable {
             View customView =
                     LayoutInflater.from(mActivity)
                             .inflate(R.layout.tab_group_creation_dialog, null);
-            AppCompatEditText editTextView =
-                    (AppCompatEditText) customView.findViewById(R.id.title_input_text);
+            AppCompatEditText editTextView = customView.findViewById(R.id.title_input_text);
             editTextView.setText(defaultGroupTitle);
 
             List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
@@ -79,8 +87,7 @@ public class TabGroupCreationDialogManager implements Destroyable {
             final @TabGroupColorId int defaultColorId = filter.getTabGroupColor(rootId);
             colorPickerCoordinator.setSelectedColorItem(defaultColorId);
 
-            LinearLayout linearLayout =
-                    (LinearLayout) customView.findViewById(R.id.creation_dialog_layout);
+            LinearLayout linearLayout = customView.findViewById(R.id.creation_dialog_layout);
             linearLayout.addView(colorPickerCoordinator.getContainerView());
 
             TabGroupCreationTextInputLayout groupTitle =
@@ -97,7 +104,7 @@ public class TabGroupCreationDialogManager implements Destroyable {
 
                             if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
                                 mModalDialogManager.dismissDialog(
-                                        mModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                                        model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                             }
                         }
 
@@ -140,6 +147,10 @@ public class TabGroupCreationDialogManager implements Destroyable {
                                 TabUiMetricsHelper.recordTabGroupCreationDialogResultActionMetrics(
                                         TabGroupCreationDialogResultAction.DISMISSED_OTHER);
                             }
+
+                            mModalDialogManager.removeObserver(mModalDialogManagerObserver);
+                            // Reset the model to null after each usage.
+                            mModel = null;
                         }
                     };
 
@@ -184,6 +195,10 @@ public class TabGroupCreationDialogManager implements Destroyable {
     private final ModalDialogManager mModalDialogManager;
     private TabModelSelector mTabModelSelector;
     private TabGroupModelFilterObserver mFilterObserver;
+    // TODO(b/333921547): This class uses a member model rather than an instanced model in the
+    // #showDialog call due to the possibility of a double show call being triggered for the
+    // didCreateNewGroup observer and a fix that tackles that. Once the root cause has been fixed,
+    // revert this to an instanced model within the function call for a proper lifecycle.
     private PropertyModel mModel;
     private ShowDialogDelegate mShowDialogDelegate;
     private Runnable mOnDialogAcceptedRunnable;
