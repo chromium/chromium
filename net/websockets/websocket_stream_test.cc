@@ -45,6 +45,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/spdy/test_tools/spdy_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -216,9 +217,9 @@ class WebSocketStreamCreateTest
     // connection preface, initial settings, and window update.
 
     // HTTP/2 connection preface.
-    frames_.emplace_back(const_cast<char*>(spdy::kHttp2ConnectionHeaderPrefix),
-                         spdy::kHttp2ConnectionHeaderPrefixSize,
-                         /* owns_buffer = */ false);
+    frames_.emplace_back(spdy::test::MakeSerializedFrame(
+        const_cast<char*>(spdy::kHttp2ConnectionHeaderPrefix),
+        spdy::kHttp2ConnectionHeaderPrefixSize));
     AddWrite(&frames_.back());
 
     // Server advertises WebSockets over HTTP/2 support.

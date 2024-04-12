@@ -166,7 +166,7 @@ MockRead CreateMockRead(const spdy::SpdySerializedFrame& resp,
 // Combines the given vector of spdy::SpdySerializedFrame into a single frame.
 spdy::SpdySerializedFrame CombineFrames(
     std::vector<const spdy::SpdySerializedFrame*> frames) {
-  int total_size = 0;
+  size_t total_size = 0;
   for (const auto* frame : frames) {
     total_size += frame->size();
   }
@@ -176,8 +176,7 @@ spdy::SpdySerializedFrame CombineFrames(
     memcpy(ptr, frame->data(), frame->size());
     ptr += frame->size();
   }
-  return spdy::SpdySerializedFrame(data.release(), total_size,
-                                   /* owns_buffer = */ true);
+  return spdy::SpdySerializedFrame(std::move(data), total_size);
 }
 
 namespace {

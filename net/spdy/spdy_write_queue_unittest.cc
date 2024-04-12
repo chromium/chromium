@@ -35,8 +35,8 @@ class SpdyWriteQueueTest : public ::testing::Test {};
 std::unique_ptr<SpdyBufferProducer> StringToProducer(const std::string& s) {
   auto data = std::make_unique<char[]>(s.size());
   std::memcpy(data.get(), s.data(), s.size());
-  auto frame = std::make_unique<spdy::SpdySerializedFrame>(data.release(),
-                                                           s.size(), true);
+  auto frame =
+      std::make_unique<spdy::SpdySerializedFrame>(std::move(data), s.size());
   auto buffer = std::make_unique<SpdyBuffer>(std::move(frame));
   return std::make_unique<SimpleBufferProducer>(std::move(buffer));
 }

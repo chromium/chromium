@@ -5733,10 +5733,9 @@ TEST_P(SpdyNetworkTransactionTest, WindowUpdateSent) {
   const int32_t stream_window_update_delta =
       stream_max_recv_window_size / 2 + kChunkSize;
 
-  spdy::SpdySerializedFrame preface(
+  spdy::SpdySerializedFrame preface(spdy::test::MakeSerializedFrame(
       const_cast<char*>(spdy::kHttp2ConnectionHeaderPrefix),
-      spdy::kHttp2ConnectionHeaderPrefixSize,
-      /* owns_buffer = */ false);
+      spdy::kHttp2ConnectionHeaderPrefixSize));
 
   spdy::SettingsMap initial_settings;
   initial_settings[spdy::SETTINGS_HEADER_TABLE_SIZE] = kSpdyMaxHeaderTableSize;
@@ -8909,9 +8908,8 @@ TEST_P(SpdyNetworkTransactionTest, GreaseFrameTypeWithGetRequest) {
       0x00, 0x00, 0x00, 0x01,  // stream ID
       'f',  'o',  'o'          // payload
   };
-  spdy::SpdySerializedFrame grease(reinterpret_cast<char*>(kRawFrameData),
-                                   std::size(kRawFrameData),
-                                   /* owns_buffer = */ false);
+  spdy::SpdySerializedFrame grease(spdy::test::MakeSerializedFrame(
+      reinterpret_cast<char*>(kRawFrameData), std::size(kRawFrameData)));
   spdy::SpdySerializedFrame empty_body(
       spdy_util_.ConstructSpdyDataFrame(1, "", true));
 
@@ -8968,9 +8966,8 @@ TEST_P(SpdyNetworkTransactionTest,
       0x00, 0x00, 0x00, 0x01,  // stream ID
       'f',  'o',  'o'          // payload
   };
-  spdy::SpdySerializedFrame grease(reinterpret_cast<char*>(kRawFrameData),
-                                   std::size(kRawFrameData),
-                                   /* owns_buffer = */ false);
+  spdy::SpdySerializedFrame grease(spdy::test::MakeSerializedFrame(
+      reinterpret_cast<char*>(kRawFrameData), std::size(kRawFrameData)));
   spdy::SpdySerializedFrame request_body(
       spdy_util_.ConstructSpdyDataFrame(1, true));
 
@@ -9028,9 +9025,8 @@ TEST_P(SpdyNetworkTransactionTest,
       0x00, 0x00, 0x00, 0x01,  // stream ID
       'f',  'o',  'o'          // payload
   };
-  spdy::SpdySerializedFrame grease(reinterpret_cast<char*>(kRawFrameData),
-                                   std::size(kRawFrameData),
-                                   /* owns_buffer = */ false);
+  spdy::SpdySerializedFrame grease(spdy::test::MakeSerializedFrame(
+      reinterpret_cast<char*>(kRawFrameData), std::size(kRawFrameData)));
   spdy::SpdySerializedFrame request_body(
       spdy_util_.ConstructSpdyDataFrame(1, true));
 
@@ -9173,9 +9169,8 @@ TEST_P(SpdyNetworkTransactionTest, OnDataSentDoesNotCrashWithGreasedFrameType) {
       0x00, 0x00, 0x00, 0x01,  // stream ID
       'f',  'o',  'o'          // payload
   };
-  spdy::SpdySerializedFrame grease(reinterpret_cast<char*>(kRawFrameData),
-                                   std::size(kRawFrameData),
-                                   /* owns_buffer = */ false);
+  spdy::SpdySerializedFrame grease(spdy::test::MakeSerializedFrame(
+      reinterpret_cast<char*>(kRawFrameData), std::size(kRawFrameData)));
   spdy::SpdySerializedFrame empty_body(
       spdy_util_.ConstructSpdyDataFrame(1, "", true));
 

@@ -31,8 +31,8 @@ std::unique_ptr<spdy::SpdySerializedFrame> MakeSpdySerializedFrame(
 
   auto frame_data = std::make_unique<char[]>(size);
   std::memcpy(frame_data.get(), data, size);
-  return std::make_unique<spdy::SpdySerializedFrame>(frame_data.release(), size,
-                                                     true /* owns_buffer */);
+  return std::make_unique<spdy::SpdySerializedFrame>(std::move(frame_data),
+                                                     size);
 }
 
 }  // namespace

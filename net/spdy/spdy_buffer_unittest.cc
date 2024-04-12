@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "net/base/io_buffer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/spdy/test_tools/spdy_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -31,13 +32,15 @@ std::string BufferToString(const SpdyBuffer& buffer) {
 }
 
 // Construct a SpdyBuffer from a spdy::SpdySerializedFrame and make sure its
-// data points to the frame's underlying data.
+// data is same as the original data.
 TEST_F(SpdyBufferTest, FrameConstructor) {
   SpdyBuffer buffer(std::make_unique<spdy::SpdySerializedFrame>(
-      const_cast<char*>(kData), kDataSize, false /* owns_buffer */));
+      spdy::test::MakeSerializedFrame(const_cast<char*>(kData), kDataSize)));
 
-  EXPECT_EQ(kData, buffer.GetRemainingData());
   EXPECT_EQ(kDataSize, buffer.GetRemainingSize());
+  EXPECT_EQ(
+      std::string_view(kData, kDataSize),
+      std::string_view(buffer.GetRemainingData(), buffer.GetRemainingSize()));
 }
 
 // Construct a SpdyBuffer from a const char*/size_t pair and make sure

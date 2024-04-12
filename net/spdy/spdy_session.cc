@@ -2209,8 +2209,7 @@ void SpdySession::SendInitialData() {
   }
 
   auto initial_frame = std::make_unique<spdy::SpdySerializedFrame>(
-      initial_frame_data.release(), initial_frame_size,
-      /* owns_buffer = */ true);
+      std::move(initial_frame_data), initial_frame_size);
   EnqueueSessionWrite(HIGHEST, spdy::SpdyFrameType::SETTINGS,
                       std::move(initial_frame));
 }
