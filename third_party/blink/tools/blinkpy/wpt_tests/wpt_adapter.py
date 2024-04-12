@@ -276,8 +276,14 @@ class WPTAdapter:
         if verbose_level >= 2:
             runner_options.log_mach_level = 'debug'
         if verbose_level >= 3:
+            runner_options.webdriver_args.append('--verbose')
+        else:
+            # Disable all `chromedriver` logs except from `chrome_launcher.cc`,
+            # which logs the `chrome` command that `WPTResultsProcessor` will
+            # extract.
             runner_options.webdriver_args.extend([
-                '--verbose',
+                '--log-level=INFO',
+                '--vmodule=chrome_launcher=0,*/chrome/test/chromedriver/*=-1',
             ])
 
         if self.using_upstream_wpt:

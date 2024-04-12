@@ -768,7 +768,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                  'layout-test-results', filename)))
 
     def test_extract_logs_interleaved(self):
-        self.processor.browser_logs.capacity = 2
+        self.processor.browser_outputs.capacity = 2
         self._event(action='process_output',
                     command='chromedriver --port=101',
                     data='Running test.html',
@@ -828,6 +828,51 @@ class WPTResultsProcessorTest(LoggingTestCase):
             textwrap.dedent("""\
                 Running timeout.html
                 """))
+
+    def test_extract_command(self):
+        self._event(action='test_start', test='/test.html')
+        self._event(
+            action='process_output',
+            command='chromedriver',
+            data=('[INFO] Launching chrome: /path/to/chrome --headless=new '
+                  '--host-resolver-rules=MAP * ^NOTFOUND --switch data:,'),
+            process='101')
+        self._event(action='test_end',
+                    test='/test.html',
+                    status='OK',
+                    extra={'browser_pid': 101})
+        self._event(action='test_start', test='/timeout.html')
+        self._event(action='test_end',
+                    test='/timeout.html',
+                    status='OK',
+                    extra={'browser_pid': 101})
+        self._event(action='test_start', test='/reftest.html')
+        self._event(action='test_end',
+                    test='/reftest.html',
+                    status='PASS',
+                    extra={'browser_pid': 202})
+
+        self.assertEqual(
+            self.fs.read_text_file(
+                self.fs.join('/mock-checkout', 'out', 'Default',
+                             'layout-test-results', 'external', 'wpt',
+                             'test-command.txt')),
+            "/path/to/chrome '--host-resolver-rules=MAP * ^NOTFOUND' --switch "
+            'http://web-platform.test:8001/test.html')
+        self.assertEqual(
+            self.fs.read_text_file(
+                self.fs.join('/mock-checkout', 'out', 'Default',
+                             'layout-test-results', 'external', 'wpt',
+                             'timeout-command.txt')),
+            "/path/to/chrome '--host-resolver-rules=MAP * ^NOTFOUND' --switch "
+            'http://web-platform.test:8001/timeout.html',
+            'Command should be copied from the previous test.')
+        self.assertFalse(
+            self.fs.exists(
+                self.fs.join('/mock-checkout', 'out', 'Default',
+                             'layout-test-results', 'external', 'wpt',
+                             'reftest-command.txt')),
+            'Command has not been observed for this browser yet.')
 
     def test_unknown_event(self):
         self._event(action='unknown', time=1000)

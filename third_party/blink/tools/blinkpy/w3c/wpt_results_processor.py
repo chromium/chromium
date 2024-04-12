@@ -14,10 +14,13 @@ import math
 import os
 import posixpath
 import queue
+import re
+import shlex
 import signal
 import textwrap
 import threading
 import time
+from dataclasses import dataclass, field
 from typing import (
     Any,
     ClassVar,
@@ -43,6 +46,7 @@ from blinkpy.common.memoized import memoized
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.unified_diff import unified_diff
 from blinkpy.web_tests.port.base import Port
+from blinkpy.web_tests.port.driver import TestURIMapper
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.testharness_results import (
     ABBREVIATED_ALL_PASS,
@@ -301,7 +305,7 @@ class WPTResult(Result):
         url = wpt_fyi_url(self.name)
         if url:
             summary += f'<p><a href="{url}">Latest wpt.fyi results</a></p>'
-        for name in ['stderr', 'crash_log']:
+        for name in ['command', 'stderr', 'crash_log']:
             if name in self.artifacts:
                 summary += f'<h3>{name}</h3>'
                 summary += f'<p><text-artifact artifact-id="{name}"/></p>'
@@ -338,6 +342,21 @@ class ReftestScreenshot(TypedDict):
     screenshot: str
 
 
+@dataclass
+class BrowserOutput:
+    """Output from a live browser process.
+
+    Attributes:
+        command: The base command to start the browser (i.e., does not contain
+            test URI).
+        log: A running buffer of output (usually stderr) from that browser.
+    """
+    # TODO(crbug.com/41494889): Consider sharing a base class with
+    # `DriverOutput` in `web_tests`.
+    command: List[str] = field(default_factory=list)
+    log: io.StringIO = field(default_factory=io.StringIO)
+
+
 class WPTResultsProcessor:
     # Executables that wptrunner can start and whose output should go into the
     # crash log.
@@ -346,6 +365,8 @@ class WPTResultsProcessor:
         'logcat',
         'content_shell',
     ]
+    _cmd_log_pattern: re.Pattern = re.compile(
+        'Launching \w+: (?P<command>.*?)(\s+data:\S+)?$')
 
     def __init__(self,
                  fs: FileSystem,
@@ -369,23 +390,22 @@ class WPTResultsProcessor:
         self.wpt_manifest = self.port.wpt_manifest('external/wpt')
         self.internal_manifest = self.port.wpt_manifest('wpt_internal')
         self.path_finder = path_finder.PathFinder(self.fs)
+        self._test_uri_mapper = TestURIMapper(self.port)
         # Provide placeholder properties until the `suite_start` events are
         # processed.
         self.run_info = dict(mozinfo.info)
 
         self._iteration: int = 0
         self._results: Dict[str, WPTResult] = {}
-        # Map browser PIDs to file-like buffers holding browser logs. The
-        # mapping's capacity should be limited to `wpt run --processes`, which
-        # isn't known until later (`default_child_processes()` is a
-        # placeholder).
+        # Map PIDs of running browsers to their output. The mapping's capacity
+        # should be limited to `wpt run --processes`.
         #
         # Since wptrunner doesn't communicate browser lifecycles, use
         # `LRUMapping` to avoid accumulating too many logs that will never be
         # retrieved by a `test_end` event. Dead browser processes stop
         # producing logs, which will eventually be purged by output produced by
         # restarted browsers.
-        self.browser_logs: Dict[int, io.StringIO] = LRUMapping(
+        self.browser_outputs: Dict[int, BrowserOutput] = LRUMapping(
             processes or port.default_child_processes())
         self._event_handlers = {
             'suite_start': self.suite_start,
@@ -766,11 +786,42 @@ class WPTResultsProcessor:
         #
         # which says that `process` is a PID.
         try:
-            browser_log = self.browser_logs.setdefault(int(process),
-                                                       io.StringIO())
-            browser_log.write(f'{data}\n')
+            pid = int(process)
         except ValueError:
-            pass
+            return
+        output = self.browser_outputs.get(pid)
+        if not output:
+            output = self.browser_outputs[pid] = BrowserOutput()
+        output.log.write(f'{data}\n')
+
+        if output.command:
+            # In wptrunner, there's a 1-1 correspondence between `chromedriver`
+            # PID and session [0], so there's no need to set the command more than
+            # once.
+            #
+            # [0]: https://github.com/web-platform-tests/wpt/blob/f95204fd/tools/wptrunner/wptrunner/executors/executorwebdriver.py#L478-L498
+            return
+        cmd_match = self._cmd_log_pattern.search(data)
+        if cmd_match:
+            output.command = self._parse_command(cmd_match['command'])
+
+    def _parse_command(self, raw_command: str) -> List[str]:
+        tokens = []
+        for raw_token in shlex.split(raw_command):
+            # Unfortunately, whitespace in switch values is not preserved in
+            # the logged output. To produce a `command` artifact that's
+            # copy-paste runnable in a shell, try to reconstruct the value with
+            # this special hardcoded rule. It relies on the assumption that
+            # all arguments after the initial binary are switches prefixed with
+            # `--`.
+            if (tokens and tokens[-1].startswith('--host-resolver-rules=')
+                    and not raw_token.startswith('--')):
+                tokens[-1] += f' {raw_token}'
+            # Don't keep any headless option, since it will hide the browser
+            # locally.
+            elif not raw_token.startswith('--headless'):
+                tokens.append(raw_token)
+        return tokens
 
     def _write_text_results(self, result: WPTResult, artifacts: Artifacts):
         """Write actual, expected, and diff text outputs to disk, if possible.
@@ -913,11 +964,18 @@ class WPTResultsProcessor:
         # If the browser process isn't restarted, it's possible for that process
         # to continue producing stdio that will be dumped into the log for the
         # next test that browser runs.
-        browser_log = self.browser_logs.pop(result.pid, None)
-        if browser_log:
+        output = self.browser_outputs.get(result.pid)
+        if output:
             self._write_log(result.name, artifacts, 'stderr',
                             test_failures.FILENAME_SUFFIX_STDERR,
-                            browser_log.getvalue())
+                            output.log.getvalue())
+            output.log = io.StringIO()
+
+        if output and output.command:
+            uri = self._test_uri_mapper.test_to_uri(result.name)
+            command = shlex.join([*output.command, uri])
+            self._write_log(result.name, artifacts, 'command',
+                            test_failures.FILENAME_SUFFIX_CMD, command)
 
         return artifacts, image_diff_stats
 
