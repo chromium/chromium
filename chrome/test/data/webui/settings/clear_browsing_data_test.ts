@@ -211,11 +211,12 @@ suite('ClearBrowsingDataDesktop', function() {
     assertTrue(!!element.shadowRoot!.querySelector(
         '#clearBrowsingDataDialog [slot=footer]'));
     const syncInfo = element.shadowRoot!.querySelector('#sync-info');
+    assertTrue(!!syncInfo);
     assertTrue(isVisible(syncInfo));
-    const signoutLink = syncInfo!.querySelector<HTMLElement>('a[href]');
+    const signoutLink = syncInfo.querySelector<HTMLElement>('a[href]');
     assertTrue(!!signoutLink);
     assertEquals(0, testSyncBrowserProxy.getCallCount('pauseSync'));
-    signoutLink!.click();
+    signoutLink.click();
     assertEquals(1, testSyncBrowserProxy.getCallCount('pauseSync'));
   });
 
@@ -229,11 +230,12 @@ suite('ClearBrowsingDataDesktop', function() {
     assertTrue(!!element.shadowRoot!.querySelector(
         '#clearBrowsingDataDialog [slot=footer]'));
     const syncInfo = element.shadowRoot!.querySelector('#sync-paused-info');
+    assertTrue(!!syncInfo);
     assertTrue(isVisible(syncInfo));
-    const signinLink = syncInfo!.querySelector<HTMLElement>('a[href]');
+    const signinLink = syncInfo.querySelector<HTMLElement>('a[href]');
     assertTrue(!!signinLink);
     assertEquals(0, testSyncBrowserProxy.getCallCount('startSignIn'));
-    signinLink!.click();
+    signinLink.click();
     assertEquals(1, testSyncBrowserProxy.getCallCount('startSignIn'));
   });
 
@@ -248,10 +250,11 @@ suite('ClearBrowsingDataDesktop', function() {
         '#clearBrowsingDataDialog [slot=footer]'));
     const syncInfo =
         element.shadowRoot!.querySelector('#sync-passphrase-error-info');
+    assertTrue(!!syncInfo);
     assertTrue(isVisible(syncInfo));
-    const passphraseLink = syncInfo!.querySelector<HTMLElement>('a[href]');
+    const passphraseLink = syncInfo.querySelector<HTMLElement>('a[href]');
     assertTrue(!!passphraseLink);
-    passphraseLink!.click();
+    passphraseLink.click();
     assertEquals(routes.SYNC, Router.getInstance().getCurrentRoute());
   });
   // </if>
@@ -549,22 +552,22 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     element.$.cookiesCheckboxBasic.$.checkbox.click();
     await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
 
-    assertFalse(cancelButton!.disabled);
-    assertFalse(actionButton!.disabled);
-    assertFalse(spinner!.active);
+    assertFalse(cancelButton.disabled);
+    assertFalse(actionButton.disabled);
+    assertFalse(spinner.active);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
     testBrowserProxy.setClearBrowsingDataPromise(promiseResolver.promise);
-    actionButton!.click();
+    actionButton.click();
 
     const args = await testBrowserProxy.whenCalled('clearBrowsingData');
     const dataTypes = args[0];
     assertEquals(1, dataTypes.length);
     assertEquals('browser.clear_data.cookies_basic', dataTypes[0]);
     assertTrue(element.$.clearBrowsingDataDialog.open);
-    assertTrue(cancelButton!.disabled);
-    assertTrue(actionButton!.disabled);
-    assertTrue(spinner!.active);
+    assertTrue(cancelButton.disabled);
+    assertTrue(actionButton.disabled);
+    assertTrue(spinner.active);
 
     // Simulate signal from browser indicating that clearing has
     // completed.
@@ -577,9 +580,9 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     await promiseResolver.promise;
 
     assertFalse(element.$.clearBrowsingDataDialog.open);
-    assertFalse(cancelButton!.disabled);
-    assertFalse(actionButton!.disabled);
-    assertFalse(spinner!.active);
+    assertFalse(cancelButton.disabled);
+    assertFalse(actionButton.disabled);
+    assertFalse(spinner.active);
     assertFalse(!!element.shadowRoot!.querySelector('#historyNotice'));
     assertFalse(!!element.shadowRoot!.querySelector('#passwordsNotice'));
   });
@@ -592,20 +595,20 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(!!actionButton);
     assertTrue(!!element.$.cookiesCheckboxBasic);
     // Initially the button is disabled because all checkboxes are off.
-    assertTrue(actionButton!.disabled);
+    assertTrue(actionButton.disabled);
     // The button gets enabled if any checkbox is selected.
     element.$.cookiesCheckboxBasic.$.checkbox.click();
     await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
     assertTrue(element.$.cookiesCheckboxBasic.checked);
-    assertFalse(actionButton!.disabled);
+    assertFalse(actionButton.disabled);
     // Switching to advanced disables the button.
     element.$.tabs.selected = 1;
     await element.$.tabs.updateComplete;
-    assertTrue(actionButton!.disabled);
+    assertTrue(actionButton.disabled);
     // Switching back enables it again.
     element.$.tabs.selected = 0;
     await element.$.tabs.updateComplete;
-    assertFalse(actionButton!.disabled);
+    assertFalse(actionButton.disabled);
   });
 
   test('showHistoryDeletionDialog', async function() {
@@ -618,11 +621,11 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
     await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
-    assertFalse(actionButton!.disabled);
+    assertFalse(actionButton.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
     testBrowserProxy.setClearBrowsingDataPromise(promiseResolver.promise);
-    actionButton!.click();
+    actionButton.click();
 
     await testBrowserProxy.whenCalled('clearBrowsingData');
     // Passing showHistoryNotice = true should trigger the notice about
@@ -643,17 +646,17 @@ suite('ClearBrowsingDataAllPlatforms', function() {
             '#historyNotice');
     assertTrue(!!notice1);
     const noticeActionButton =
-        notice1!.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+        notice1.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!noticeActionButton);
 
     // The notice should have replaced the main dialog.
     assertFalse(element.$.clearBrowsingDataDialog.open);
-    assertTrue(notice1!.$.dialog.open);
+    assertTrue(notice1.$.dialog.open);
 
     const whenNoticeClosed = eventToPromise('close', notice1!);
 
     // Tapping the action button will close the notice.
-    noticeActionButton!.click();
+    noticeActionButton.click();
 
     await whenNoticeClosed;
     const notice2 = element.shadowRoot!.querySelector('#historyNotice');
@@ -672,11 +675,11 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
     await cookieCheckbox.$.checkbox.updateComplete;
-    assertFalse(actionButton!.disabled);
+    assertFalse(actionButton.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
     testBrowserProxy.setClearBrowsingDataPromise(promiseResolver.promise);
-    actionButton!.click();
+    actionButton.click();
 
     await testBrowserProxy.whenCalled('clearBrowsingData');
     // Passing showPasswordsNotice = true should trigger the notice about
@@ -694,17 +697,17 @@ suite('ClearBrowsingDataAllPlatforms', function() {
                             '#passwordsNotice');
     assertTrue(!!notice1);
     const noticeActionButton =
-        notice1!.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+        notice1.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!noticeActionButton);
 
     // The notice should have replaced the main dialog.
     assertFalse(element.$.clearBrowsingDataDialog.open);
-    assertTrue(notice1!.$.dialog.open);
+    assertTrue(notice1.$.dialog.open);
 
     const whenNoticeClosed = eventToPromise('close', notice1!);
 
     // Tapping the action button will close the notice.
-    noticeActionButton!.click();
+    noticeActionButton.click();
 
     await whenNoticeClosed;
     const notice2 = element.shadowRoot!.querySelector('#passwordsNotice');
@@ -723,11 +726,11 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
     await cookieCheckbox.$.checkbox.updateComplete;
-    assertFalse(actionButton!.disabled);
+    assertFalse(actionButton.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
     testBrowserProxy.setClearBrowsingDataPromise(promiseResolver.promise);
-    actionButton!.click();
+    actionButton.click();
 
     await testBrowserProxy.whenCalled('clearBrowsingData');
     // Passing showHistoryNotice = true and showPasswordsNotice = true
@@ -748,18 +751,18 @@ suite('ClearBrowsingDataAllPlatforms', function() {
             '#historyNotice');
     assertTrue(!!notice1);
     const noticeActionButton1 =
-        notice1!.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+        notice1.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!noticeActionButton1);
 
     // The notice should have replaced the main dialog.
     assertFalse(element.$.clearBrowsingDataDialog.open);
-    assertTrue(notice1!.$.dialog.open);
+    assertTrue(notice1.$.dialog.open);
 
     const whenNoticeClosed1 = eventToPromise('close', notice1!);
 
     // Tapping the action button will close the history notice, and
     // display the passwords notice instead.
-    noticeActionButton1!.click();
+    noticeActionButton1.click();
 
     await whenNoticeClosed1;
     // The passwords notice should have replaced the history notice.
@@ -775,16 +778,16 @@ suite('ClearBrowsingDataAllPlatforms', function() {
                             '#passwordsNotice');
     assertTrue(!!notice2);
     const noticeActionButton2 =
-        notice2!.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+        notice2.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!noticeActionButton2);
 
     assertFalse(element.$.clearBrowsingDataDialog.open);
-    assertTrue(notice2!.$.dialog.open);
+    assertTrue(notice2.$.dialog.open);
 
     const whenNoticeClosed2 = eventToPromise('close', notice2!);
 
     // Tapping the action button will close the notice.
-    noticeActionButton2!.click();
+    noticeActionButton2.click();
 
     await whenNoticeClosed2;
     const notice3 = element.shadowRoot!.querySelector('#passwordsNotice');
