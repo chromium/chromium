@@ -920,12 +920,9 @@
       "371AC6869D2138CE58123741E69F67469206909F" // AccessibilityCommon extension. https://crbug.com/1220107
     ]
   },
-  // For now, systemLog API is private to avoid 3rd party logs being sent to
-  // Google in feedback reports. More info: http://crbug.com/1264234
   "systemLog": [{
     "channel": "stable",
-    "dependencies": ["behavior:imprivata_extension"],
-    "extension_types": ["extension", "login_screen_extension"],
+    "extension_types": ["extension", "login_screen_extension", "platform_app"],
     "location": "policy",
     "platforms": ["chromeos", "lacros"]
   }, {
@@ -935,10 +932,7 @@
     "allowlist": [
       "EC3DE21E048B67319893889529354DFBFA96FD23", // Smart Card Connector
       "6B748A5C005F21B7CBCF4170C2F883E435DEB511", // CSSI Smart Card Middleware
-      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA", // Beta CSSI Smart Card Middleware
-      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Identity Card Connector
-      "2462D64ACB971A7E708757159C2B17761D4FF54A", // Citrix Workspace
-      "4DEF8CCE1120215F3D72CF731E0E86EAE017C9CD" // VMware Horizon Client for Chrome
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"  // Beta CSSI Smart Card Middleware
     ]
   }],
   "systemPrivate": {

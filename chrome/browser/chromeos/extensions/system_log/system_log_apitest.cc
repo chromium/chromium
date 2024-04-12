@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
@@ -53,6 +54,11 @@ constexpr char kExtensionPemRelativePath[] =
 constexpr char kExtensionId[] = "ghbglelacokpaehlgjbgdfmmggnihdcf";
 
 constexpr char kDeviceEventLogEntry[] = "device_event_log";
+
+// Test names for when chrome.systemLog is available to the extension (if policy
+// installed) and when chrome.systemLog is undefined (user installed).
+constexpr char kSystemLogAvailableTestName[] = "SystemLogAvailable";
+constexpr char kSystemLogUndefinedTestName[] = "SystemLogUndefined";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kManagedAccountId[] = "managed-guest-account@test";
@@ -150,7 +156,9 @@ IN_PROC_BROWSER_TEST_P(SystemLogSigninScreenApitest, AddLogFromSignInScreen) {
   const bool system_logging_enabled = GetParam();
   SetSystemLogPolicy(system_logging_enabled);
 
+  SetCustomArg(kSystemLogAvailableTestName);
   ResultCatcher catcher;
+
   ForceInstallExtension();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
@@ -243,7 +251,9 @@ IN_PROC_BROWSER_TEST_P(SystemLogUserSessionApitest, AddLogFromUserSession) {
   const bool system_logging_enabled = GetParam();
   SetSystemLogPolicy(system_logging_enabled);
 
+  SetCustomArg(kSystemLogAvailableTestName);
   ResultCatcher catcher;
+
   ForceInstallExtension();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
@@ -253,6 +263,27 @@ IN_PROC_BROWSER_TEST_P(SystemLogUserSessionApitest, AddLogFromUserSession) {
   // Logs are always forwarded to the feedback report via the device event log
   // buffer.
   EXPECT_TRUE(AreLogsForwardedToFeedbackReport());
+}
+
+IN_PROC_BROWSER_TEST_P(SystemLogUserSessionApitest,
+                       DeniesNonPolicyInstalledExtensions) {
+  const bool system_logging_enabled = GetParam();
+  SetSystemLogPolicy(system_logging_enabled);
+
+  SetCustomArg(kSystemLogUndefinedTestName);
+  ResultCatcher catcher;
+
+  // Add user installed extension.
+  extensions::ChromeTestExtensionLoader loader(profile());
+  base::FilePath extension_path =
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII(kApiExtensionRelativePath);
+  loader.set_location(extensions::mojom::ManifestLocation::kInternal);
+  loader.set_pack_extension(true);
+  loader.set_ignore_manifest_warnings(true);
+  loader.LoadExtension(extension_path);
+
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -377,6 +408,11 @@ class SystemLogManagedGuestSessionApitest
         ExtensionForceInstallMixin::WaitMode::kLoad));
   }
 
+  void SetTestCustomArg(const std::string custom_arg) {
+    config_.Set("customArg", base::Value(custom_arg));
+    extensions::TestGetConfigFunction::set_test_config_state(&config_);
+  }
+
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
@@ -385,6 +421,7 @@ class SystemLogManagedGuestSessionApitest
   testing::NiceMock<policy::MockConfigurationPolicyProvider>
       mock_policy_provider_;
 #endif
+  base::Value::Dict config_;
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 };
 
@@ -395,7 +432,9 @@ IN_PROC_BROWSER_TEST_P(SystemLogManagedGuestSessionApitest,
   const bool system_logging_enabled = GetParam();
   SetSystemLogPolicy(system_logging_enabled);
 
+  SetTestCustomArg(kSystemLogAvailableTestName);
   ResultCatcher catcher;
+
   ForceInstallExtension();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
