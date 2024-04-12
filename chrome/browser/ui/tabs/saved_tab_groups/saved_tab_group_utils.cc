@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -274,6 +275,24 @@ std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
 // static
 bool SavedTabGroupUtils::IsURLValidForSavedTabGroups(const GURL& gurl) {
   return gurl.SchemeIsHTTPOrHTTPS() || gurl == GURL(chrome::kChromeUINewTabURL);
+}
+
+// static
+void SavedTabGroupUtils::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(prefs::kTabGroupSavesUIUpdateMigrated, false);
+}
+
+// static
+bool SavedTabGroupUtils::IsTabGroupSavesUIUpdateMigrated(
+    PrefService* pref_service) {
+  return pref_service->GetBoolean(prefs::kTabGroupSavesUIUpdateMigrated);
+}
+
+// static
+void SavedTabGroupUtils::SetTabGroupSavesUIUpdateMigrated(
+    PrefService* pref_service) {
+  pref_service->SetBoolean(prefs::kTabGroupSavesUIUpdateMigrated, true);
 }
 
 }  // namespace tab_groups

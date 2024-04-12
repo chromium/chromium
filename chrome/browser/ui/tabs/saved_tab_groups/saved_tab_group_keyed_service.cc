@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/common/channel_info.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -310,6 +311,15 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
 }
 
 void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
+  // One time migration from Saved Tab Group V1 to V2
+  // TODO(b/333742126): Remove migration code in M135.
+  PrefService* pref_service = profile()->GetPrefs();
+  if (tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
+      !SavedTabGroupUtils::IsTabGroupSavesUIUpdateMigrated(pref_service)) {
+    model_.MigrateTabGroupSavesUIUpdate();
+    SavedTabGroupUtils::SetTabGroupSavesUIUpdateMigrated(pref_service);
+  }
+
   for (const auto& [saved_guid, local_group_id] :
        saved_guid_to_local_group_id_mapping_) {
     if (model()->is_loaded() && !model()->Contains(saved_guid)) {

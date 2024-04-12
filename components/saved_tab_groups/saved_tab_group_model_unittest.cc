@@ -839,6 +839,57 @@ TEST_P(SavedTabGroupModelTest, UnpinGroup) {
   EXPECT_EQ(5u, saved_tab_group_model_->saved_tab_groups().size());
 }
 
+TEST_P(SavedTabGroupModelTest, MigrateSavedTabGroup2FromV1) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  // Add 5 unpinned SavedTabGroups to the model.
+  SavedTabGroup group4(u"Tab Group 4", tab_groups::TabGroupColorId::kRed, {},
+                       std::nullopt);
+  saved_tab_group_model_->Add(group4);
+
+  SavedTabGroup group5(u"Tab Group 5", tab_groups::TabGroupColorId::kRed, {},
+                       std::nullopt);
+  saved_tab_group_model_->Add(group5);
+
+  EXPECT_EQ(5u, saved_tab_group_model_->saved_tab_groups().size());
+
+  // Verify orders of the added groups.
+  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(group5.saved_guid()));
+  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(group4.saved_guid()));
+  EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_3_));
+  EXPECT_EQ(3, saved_tab_group_model_->GetIndexOf(id_2_));
+  EXPECT_EQ(4, saved_tab_group_model_->GetIndexOf(id_1_));
+
+  // Verify all groups are unpinned.
+  EXPECT_EQ(false,
+            saved_tab_group_model_->IsGroupPinned(group5.saved_guid()).value());
+  EXPECT_EQ(false,
+            saved_tab_group_model_->IsGroupPinned(group4.saved_guid()).value());
+  EXPECT_EQ(false, saved_tab_group_model_->IsGroupPinned(id_3_).value());
+  EXPECT_EQ(false, saved_tab_group_model_->IsGroupPinned(id_2_).value());
+  EXPECT_EQ(false, saved_tab_group_model_->IsGroupPinned(id_1_).value());
+
+  saved_tab_group_model_->MigrateTabGroupSavesUIUpdate();
+
+  // Verify orders of the added groups don't change.
+  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(group5.saved_guid()));
+  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(group4.saved_guid()));
+  EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_3_));
+  EXPECT_EQ(3, saved_tab_group_model_->GetIndexOf(id_2_));
+  EXPECT_EQ(4, saved_tab_group_model_->GetIndexOf(id_1_));
+
+  // Verify the first 4 groups are pinned.
+  EXPECT_EQ(true,
+            saved_tab_group_model_->IsGroupPinned(group5.saved_guid()).value());
+  EXPECT_EQ(true,
+            saved_tab_group_model_->IsGroupPinned(group4.saved_guid()).value());
+  EXPECT_EQ(true, saved_tab_group_model_->IsGroupPinned(id_3_).value());
+  EXPECT_EQ(true, saved_tab_group_model_->IsGroupPinned(id_2_).value());
+  EXPECT_EQ(false, saved_tab_group_model_->IsGroupPinned(id_1_).value());
+}
+
 // Tests that SavedTabGroupModelObserver::Added passes the correct element from
 // the model.
 TEST_P(SavedTabGroupModelObserverTest, AddElement) {
@@ -1091,6 +1142,38 @@ TEST_P(SavedTabGroupModelObserverTest, TogglePinState) {
   EXPECT_EQ(group.local_group_id(), received_group.local_group_id());
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.saved_guid()),
             retrieved_index_);
+}
+
+TEST_P(SavedTabGroupModelObserverTest, MigrateSavedTabGroupsFromV1) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  // Add 5 unpinned SavedTabGroups to the model.
+  SavedTabGroup group1(u"Tab Group 1", tab_groups::TabGroupColorId::kRed, {},
+                       std::nullopt);
+  saved_tab_group_model_->Add(group1);
+  SavedTabGroup group2(u"Tab Group 2", tab_groups::TabGroupColorId::kRed, {},
+                       std::nullopt);
+  saved_tab_group_model_->Add(group2);
+  SavedTabGroup group3(u"Tab Group 3", tab_groups::TabGroupColorId::kRed, {},
+                       std::nullopt);
+  saved_tab_group_model_->Add(group3);
+  SavedTabGroup group4(u"Tab Group 4", tab_groups::TabGroupColorId::kRed, {},
+                       std::nullopt);
+  saved_tab_group_model_->Add(group4);
+  SavedTabGroup group5(u"Tab Group 5", tab_groups::TabGroupColorId::kRed, {},
+                       std::nullopt);
+  saved_tab_group_model_->Add(group5);
+
+  EXPECT_EQ(5u, saved_tab_group_model_->saved_tab_groups().size());
+
+  ClearSignals();
+  ASSERT_EQ(0u, retrieved_group_.size());
+
+  // Verify 4 of them are updated.
+  saved_tab_group_model_->MigrateTabGroupSavesUIUpdate();
+  ASSERT_EQ(4u, retrieved_group_.size());
 }
 
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupModel,

@@ -574,6 +574,19 @@ void SavedTabGroupModel::RemoveObserver(SavedTabGroupModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void SavedTabGroupModel::MigrateTabGroupSavesUIUpdate() {
+  CHECK(IsTabGroupsSaveUIUpdateEnabled());
+  constexpr size_t kMaxNumberOfGroupToPin = 4;
+  // Pin the first 4 saved tab groups from V1.
+  for (size_t i = 0;
+       i < std::min(saved_tab_groups_.size(), kMaxNumberOfGroupToPin); ++i) {
+    saved_tab_groups_[i].SetPosition(i);
+    for (auto& observer : observers_) {
+      observer.SavedTabGroupUpdatedLocally(saved_tab_groups_[i].saved_guid());
+    }
+  }
+}
+
 void SavedTabGroupModel::ReorderGroupImpl(const base::Uuid& id, int new_index) {
   DCHECK_GE(new_index, 0);
   DCHECK_LT(new_index, Count());

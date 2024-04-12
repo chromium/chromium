@@ -4109,6 +4109,9 @@ inline constexpr char kBreachedCredentialsCount[] =
     "profile.safety_hub_breached_credentials_count";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+inline constexpr char kTabGroupSavesUIUpdateMigrated[] =
+    "tab_group_saves_ui_update_migrated";
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

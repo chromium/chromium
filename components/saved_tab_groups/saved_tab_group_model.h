@@ -159,6 +159,9 @@ class SavedTabGroupModel {
   void AddObserver(SavedTabGroupModelObserver* observer);
   void RemoveObserver(SavedTabGroupModelObserver* observer);
 
+  // One time migration of saved tab groups from v1 to v2.
+  void MigrateTabGroupSavesUIUpdate();
+
  private:
   // Moves the group denoted by `id` to the position `new_index`.
   void ReorderGroupImpl(const base::Uuid& id, int new_index);
