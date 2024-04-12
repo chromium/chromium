@@ -87,6 +87,11 @@ class CORE_EXPORT LineInfo {
   bool IsBlockInInline() const { return is_block_in_inline_; }
   void SetIsBlockInInline() { is_block_in_inline_ = true; }
 
+  bool IsRubyBase() const { return is_ruby_base_; }
+  void SetIsRubyBase() { is_ruby_base_ = true; }
+  bool IsRubyText() const { return is_ruby_text_; }
+  void SetIsRubyText() { is_ruby_text_ = true; }
+
   // InlineItemResults for this line.
   InlineItemResults* MutableResults() { return &results_; }
   const InlineItemResults& Results() const { return results_; }

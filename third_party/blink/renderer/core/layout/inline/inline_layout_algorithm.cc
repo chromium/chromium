@@ -840,12 +840,10 @@ LayoutUnit InlineLayoutAlgorithm::ApplyTextAlign(LineInfo* line_info) {
     JustificationTarget target = JustificationTarget::kNormal;
     if (Node().IsSvgText()) {
       target = JustificationTarget::kSvgText;
-    } else if (const auto* box = Node().GetLayoutBox()) {
-      if (box->IsRubyBase()) {
-        target = JustificationTarget::kRubyBase;
-      } else if (box->IsRubyText()) {
-        target = JustificationTarget::kRubyText;
-      }
+    } else if (line_info->IsRubyBase()) {
+      target = JustificationTarget::kRubyBase;
+    } else if (line_info->IsRubyText()) {
+      target = JustificationTarget::kRubyText;
     }
     std::optional<LayoutUnit> offset =
         ApplyJustification(space, target, line_info);

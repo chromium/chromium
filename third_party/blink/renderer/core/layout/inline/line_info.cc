@@ -78,8 +78,10 @@ void LineInfo::SetLineStyle(const InlineNode& node,
   const LayoutBox* box = node.GetLayoutBox();
   line_style_ = box->Style(use_first_line_style_);
   needs_accurate_end_position_ = ComputeNeedsAccurateEndPosition();
-  is_ruby_base_ = box->IsRubyBase();
-  is_ruby_text_ = box->IsRubyText();
+  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+    is_ruby_base_ = box->IsRubyBase();
+    is_ruby_text_ = box->IsRubyText();
+  }
 
   // Reset block start offset related members.
   annotation_block_start_adjustment_ = LayoutUnit();

@@ -3034,6 +3034,8 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
   auto* data = MakeGarbageCollected<InlineItemResultRubyColumn>();
   column_result->ruby_column = data;
   data->base_line = base_line_info;
+  data->base_line.SetIsRubyBase();
+  data->base_line.UpdateTextAlign();
   line_info.SetHaveTextCombineOrRubyItem();
 
   data->annotation_line_list = annotation_line_list;
@@ -3041,6 +3043,8 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
     LayoutObject& annotation_object =
         *Items()[annotation_data_list[i].start_item_index].GetLayoutObject();
     data->annotation_line_list[i].OverrideLineStyle(*annotation_object.Style());
+    data->annotation_line_list[i].SetIsRubyText();
+    data->annotation_line_list[i].UpdateTextAlign();
     const LayoutObject* parent = annotation_object.Parent();
     data->position_list.push_back(parent->IsInlineRuby()
                                       ? parent->Style()->GetRubyPosition()
