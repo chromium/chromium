@@ -5,12 +5,21 @@
 #ifndef ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CONTENTS_VIEW_H_
 #define ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CONTENTS_VIEW_H_
 
-#include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/auth_panel/public/shared_types.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
+namespace views {
+
+class Label;
+
+}  // namespace views
+
 namespace ash {
+
+class AnimatedRoundedImageView;
+class AuthHubConnector;
+class AuthPanel;
 
 // The parent view for in-session auth dialogs. This gets created,
 // injected into a widget and shown as part of
@@ -35,10 +44,16 @@ class InSessionAuthDialogContentsView : public views::View {
 
  private:
   void AddVerticalSpacing(int height);
+  void AddUserAvatar();
+  void AddTitle();
   void AddPrompt(const std::string& prompt);
   void AddAuthPanel(base::OnceClosure on_end_authentication,
                     base::RepeatingClosure on_ui_initialized,
                     AuthHubConnector* connector);
+
+  raw_ptr<AnimatedRoundedImageView> avatar_view_ = nullptr;
+
+  raw_ptr<views::Label> title_ = nullptr;
 
   raw_ptr<AuthPanel> auth_panel_;
 
