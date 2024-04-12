@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
-#include "chrome/browser/ash/accessibility/caret_bounds_changed_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
 #include "chrome/browser/ui/browser.h"

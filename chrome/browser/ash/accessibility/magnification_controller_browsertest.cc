@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/accessibility/fullscreen_magnifier_test_helper.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
-#include "chrome/browser/ash/accessibility/magnifier_animation_waiter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"

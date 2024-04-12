@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/accessibility/fullscreen_magnifier_test_helper.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
-#include "chrome/browser/ash/accessibility/magnifier_animation_waiter.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/profiles/profile.h"

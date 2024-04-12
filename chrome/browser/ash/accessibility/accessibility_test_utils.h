@@ -9,12 +9,60 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/statistics_recorder.h"
+#include "base/run_loop.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
+#include "ui/base/ime/input_method_base.h"
+#include "ui/base/ime/input_method_observer.h"
 
 namespace ash {
 
+using ContextType = ::extensions::ExtensionBrowserTest::ContextType;
 using ::extensions::ErrorConsole;
+
+enum class ManifestVersion { kTwo, kThree };
+class FullscreenMagnifierController;
+
+// A class used to define the parameters of an API test case.
+class ApiTestConfig {
+ public:
+  ApiTestConfig(ContextType context_type, ManifestVersion version)
+      : context_type_(context_type), version_(version) {}
+
+  ContextType context_type() const { return context_type_; }
+  ManifestVersion version() const { return version_; }
+
+ private:
+  ContextType context_type_;
+  ManifestVersion version_;
+};
+
+// A class that waits for caret bounds changed.
+class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
+ public:
+  explicit CaretBoundsChangedWaiter(ui::InputMethod* input_method);
+  CaretBoundsChangedWaiter(const CaretBoundsChangedWaiter&) = delete;
+  CaretBoundsChangedWaiter& operator=(const CaretBoundsChangedWaiter&) = delete;
+  ~CaretBoundsChangedWaiter() override;
+
+  // Waits for bounds changed within the input method.
+  void Wait();
+
+ private:
+  // ui::InputMethodObserver:
+  void OnFocus() override {}
+  void OnBlur() override {}
+  void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
+  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
+  void OnCaretBoundsChanged(const ui::TextInputClient* client) override;
+
+  raw_ptr<ui::InputMethod> input_method_;
+  base::RunLoop run_loop_;
+};
 
 // Instantiate this class to get errors and warnings for an extension.
 // This will catch console.error and console.warn messages as well as
@@ -48,6 +96,50 @@ class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
  private:
   std::vector<std::u16string> errors_;
   raw_ptr<ErrorConsole> error_console_;
+};
+
+// Listens for changes to the histogram provided at construction. This class
+// only allows `Wait()` to be called once. If you need to call `Wait()` multiple
+// times, create multiple instances of this class.
+class HistogramWaiter {
+ public:
+  explicit HistogramWaiter(const char* metric_name);
+  ~HistogramWaiter();
+  HistogramWaiter(const HistogramWaiter&) = delete;
+  HistogramWaiter& operator=(const HistogramWaiter&) = delete;
+
+  // Waits for the next update to the observed histogram.
+  void Wait();
+  void OnHistogramCallback(const char* metric_name,
+                           uint64_t name_hash,
+                           base::HistogramBase::Sample sample);
+
+ private:
+  std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
+      histogram_observer_;
+  base::RunLoop run_loop_;
+};
+
+// FullscreenMagnifierController moves the magnifier window with animation
+// when the magnifier is set to be enabled. This waiter class lets a consumer
+// wait until the animation completes, i.e. after a mouse move.
+class MagnifierAnimationWaiter {
+ public:
+  explicit MagnifierAnimationWaiter(FullscreenMagnifierController* controller);
+
+  MagnifierAnimationWaiter(const MagnifierAnimationWaiter&) = delete;
+  MagnifierAnimationWaiter& operator=(const MagnifierAnimationWaiter&) = delete;
+
+  ~MagnifierAnimationWaiter();
+
+  // Wait until the Fullscreen magnifier finishes animating.
+  void Wait();
+
+ private:
+  void OnTimer();
+
+  raw_ptr<FullscreenMagnifierController> controller_;  // not owned
+  scoped_refptr<content::MessageLoopRunner> runner_;
 };
 
 }  // namespace ash

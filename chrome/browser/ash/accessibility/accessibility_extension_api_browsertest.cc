@@ -11,7 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/accessibility/api_test_config.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"

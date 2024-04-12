@@ -30,7 +30,6 @@
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
 #include "chrome/browser/ash/accessibility/dictation_test_utils.h"
-#include "chrome/browser/ash/accessibility/histogram_waiter.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/accessibility/switch_access_test_utils.h"
