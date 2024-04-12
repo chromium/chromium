@@ -96,18 +96,17 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
 
   // Create the shared image
   SharedImageInterface* sii = gl_context_->GetSharedImageInterface();
-  Mailbox gl_mailbox =
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
       sii->CreateSharedImage({viz::SinglePlaneFormat::kRGBA_8888,
                               {1, 1},
                               gfx::ColorSpace::CreateSRGB(),
                               SHARED_IMAGE_USAGE_GLES2_WRITE,
                               "TestLabel"},
-                             kNullSurfaceHandle)
-          ->mailbox();
+                             kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   gl()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
-  GLuint texture =
-      gl()->CreateAndTexStorage2DSharedImageCHROMIUM(gl_mailbox.name);
+  GLuint texture = gl()->CreateAndTexStorage2DSharedImageCHROMIUM(
+      shared_image->mailbox().name);
 
   gl()->BeginSharedImageAccessDirectCHROMIUM(
       texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
@@ -136,10 +135,10 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     gpu::webgpu::ReservedTexture reservation =
         webgpu()->ReserveTexture(device.Get());
 
-    webgpu()->AssociateMailbox(reservation.deviceId,
-                               reservation.deviceGeneration, reservation.id,
-                               reservation.generation, WGPUTextureUsage_CopySrc,
-                               webgpu::WEBGPU_MAILBOX_NONE, gl_mailbox);
+    webgpu()->AssociateMailbox(
+        reservation.deviceId, reservation.deviceGeneration, reservation.id,
+        reservation.generation, WGPUTextureUsage_CopySrc,
+        webgpu::WEBGPU_MAILBOX_NONE, shared_image->mailbox());
     wgpu::Texture wgpu_texture = wgpu::Texture::Acquire(reservation.texture);
 
     // Copy the texture in a mappable buffer.
