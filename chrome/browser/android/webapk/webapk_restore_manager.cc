@@ -15,7 +15,8 @@
 namespace webapk {
 
 WebApkRestoreManager::WebApkRestoreManager(Profile* profile)
-    : web_contents_manager_(
+    : profile_(profile),
+      web_contents_manager_(
           std::make_unique<WebApkRestoreWebContentsManager>(profile)),
       sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
@@ -33,9 +34,10 @@ void WebApkRestoreManager::ScheduleTask(
   MaybeStartNextTask();
 }
 
-std::unique_ptr<AbstractWebApkRestoreTask> WebApkRestoreManager::CreateNewTask(
+std::unique_ptr<WebApkRestoreTask> WebApkRestoreManager::CreateNewTask(
     const sync_pb::WebApkSpecifics& webapk_specifics) {
-  return std::make_unique<WebApkRestoreTask>(PassKey(), webapk_specifics);
+  return std::make_unique<WebApkRestoreTask>(PassKey(), profile_,
+                                             webapk_specifics);
 }
 
 void WebApkRestoreManager::MaybeStartNextTask() {
@@ -56,7 +58,8 @@ void WebApkRestoreManager::MaybeStartNextTask() {
                                        base::Unretained(this)));
 }
 
-void WebApkRestoreManager::OnTaskFinished(const GURL& manifest_id) {
+void WebApkRestoreManager::OnTaskFinished(const GURL& manifest_id,
+                                          webapps::WebApkInstallResult result) {
   tasks_.pop_front();
   is_running_ = false;
 

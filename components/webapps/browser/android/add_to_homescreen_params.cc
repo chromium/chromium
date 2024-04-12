@@ -36,12 +36,16 @@ AddToHomescreenParams::AddToHomescreenParams(
 AddToHomescreenParams::~AddToHomescreenParams() = default;
 
 bool AddToHomescreenParams::HasMaskablePrimaryIcon() const {
-  return app_type != AddToHomescreenParams::AppType::NATIVE &&
-         shortcut_info->is_primary_icon_maskable;
+  return app_type != AppType::NATIVE && shortcut_info->is_primary_icon_maskable;
 }
 
 bool AddToHomescreenParams::IsWebApk() const {
-  return app_type == AppType::WEBAPK || app_type == AppType::WEBAPK_DIY;
+  return IsWebApk(app_type);
+}
+
+// static
+bool AddToHomescreenParams::IsWebApk(AppType type) {
+  return type == AppType::WEBAPK || type == AppType::WEBAPK_DIY;
 }
 
 }  // namespace webapps

@@ -151,6 +151,9 @@ enum class WebappInstallSource {
   // Service](../../chrome/browser/apps/app_service/app_install/README.md).
   ALMANAC_INSTALL_APP_URI = 33,
 
+  // WebAPK Backup and restore.
+  WEBAPK_RESTORE = 34,
+
   // Add any new values above this one.
   COUNT,
 };

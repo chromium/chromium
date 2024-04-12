@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +41,13 @@ class WebApkRestoreTaskBrowserTest : public PlatformBrowserTest {
   }
 
   Profile* profile() { return chrome_test_utils::GetProfile(this); }
+
+  void OnTaskCompleted(base::OnceClosure done,
+                       const GURL& manifest_id,
+                       webapps::WebApkInstallResult result) {
+    EXPECT_EQ(webapps::WebApkInstallResult::SERVER_URL_INVALID, result);
+    std::move(done).Run();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, CreateAndRunTasks) {
@@ -52,12 +60,12 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, CreateAndRunTasks) {
 
   GURL test_url = embedded_test_server()->GetURL("/manifest_test_page.html");
 
-  WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(),
+  WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
                          CreateWebApkSpecifics(test_url.spec()));
 
   task.Start(web_contents_manager.get(),
-             base::BindLambdaForTesting(
-                 [&run_loop](const GURL&) { run_loop.Quit(); }));
+             base::BindOnce(&WebApkRestoreTaskBrowserTest::OnTaskCompleted,
+                            base::Unretained(this), run_loop.QuitClosure()));
 
   run_loop.Run();
 

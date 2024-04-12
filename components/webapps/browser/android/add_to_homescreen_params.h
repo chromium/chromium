@@ -44,6 +44,7 @@ struct AddToHomescreenParams {
 
   bool HasMaskablePrimaryIcon() const;
   bool IsWebApk() const;
+  static bool IsWebApk(AppType type);
 
   AppType app_type;
   SkBitmap primary_icon;

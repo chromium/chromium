@@ -1063,6 +1063,7 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::CHROME_SERVICE:
     case webapps::WebappInstallSource::PROFILE_MENU:
     case webapps::WebappInstallSource::ALMANAC_INSTALL_APP_URI:
+    case webapps::WebappInstallSource::WEBAPK_RESTORE:
       return WebAppManagement::kSync;
 
     case webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER:

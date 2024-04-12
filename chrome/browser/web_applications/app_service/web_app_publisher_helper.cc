@@ -292,6 +292,7 @@ apps::InstallSource GetInstallSource(
     case webapps::WebappInstallSource::PRELOADED_DEFAULT:
       return apps::InstallSource::kSystem;
     case webapps::WebappInstallSource::SYNC:
+    case webapps::WebappInstallSource::WEBAPK_RESTORE:
       return apps::InstallSource::kSync;
     case webapps::WebappInstallSource::COUNT:
       NOTREACHED();

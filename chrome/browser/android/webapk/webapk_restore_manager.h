@@ -17,6 +17,10 @@
 
 class Profile;
 
+namespace webapps {
+enum class WebApkInstallResult;
+}
+
 namespace webapk {
 
 // This class is responsible for managing tasks related to restore WebAPKs
@@ -36,18 +40,22 @@ class WebApkRestoreManager {
   uint32_t GetTasksCountForTesting() const { return tasks_.size(); }
 
  protected:
-  virtual std::unique_ptr<AbstractWebApkRestoreTask> CreateNewTask(
+  virtual std::unique_ptr<WebApkRestoreTask> CreateNewTask(
       const sync_pb::WebApkSpecifics& webapk_specifics);
-  virtual void OnTaskFinished(const GURL& manifest_id);
+  virtual void OnTaskFinished(const GURL& manifest_id,
+                              webapps::WebApkInstallResult result);
+
+  Profile* profile() const { return profile_; }
 
  private:
   void MaybeStartNextTask();
 
+  raw_ptr<Profile> profile_;
   std::unique_ptr<WebApkRestoreWebContentsManager> web_contents_manager_;
 
-  bool is_running_ = false;
   // The list of webapk infos to be restored.
-  std::deque<std::unique_ptr<AbstractWebApkRestoreTask>> tasks_;
+  std::deque<std::unique_ptr<WebApkRestoreTask>> tasks_;
+  bool is_running_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
