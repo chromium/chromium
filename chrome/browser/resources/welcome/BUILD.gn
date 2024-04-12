@@ -90,17 +90,21 @@ build_webui("build") {
   # Files that are passed as input to css_to_wrapper().
   css_files = [
     "landing_view.css",
+    "ntp_background/nux_ntp_background.css",
+    "set_as_default/nux_set_as_default.css",
     "shared/action_link_style.css",
     "shared/action_link_style_lit.css",
     "shared/animations.css",
     "shared/animations_lit.css",
     "shared/chooser_shared.css",
+    "shared/chooser_shared_lit.css",
     "shared/navi_colors.css",
     "shared/navi_colors_lit.css",
     "shared/onboarding_background.css",
     "shared/splash_pages_shared.css",
     "shared/splash_pages_shared_lit.css",
     "shared/step_indicator.css",
+    "signin_view.css",
   ]
 
   icons_html_files = [ "shared/icons.html" ]

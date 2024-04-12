@@ -471,7 +471,7 @@
     "includes": [4160],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/welcome/resources.grd": {
-    "META": {"sizes": {"includes": [70]}},
+    "META": {"sizes": {"includes": [80]}},
     "includes": [4180],
   },
   "chrome/browser/test_dummy/internal/android/resources/resources.grd": {

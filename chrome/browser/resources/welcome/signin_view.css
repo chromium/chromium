@@ -1,0 +1,21 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./shared/animations_lit.css.js
+ * #import=./shared/splash_pages_shared_lit.css.js
+ * #import=./shared/action_link_style_lit.css.js
+ * #include=animations-lit action-link-style-lit splash-pages-shared-lit
+ * #css_wrapper_metadata_end */
+
+onboarding-background {
+  --animation-delay: 150ms;
+  flex: 1;
+  width: 100%;
+}
+
+h1 {
+  outline: none;
+}

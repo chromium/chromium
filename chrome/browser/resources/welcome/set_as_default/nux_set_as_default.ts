@@ -3,24 +3,23 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 // <if expr="is_win">
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 // </if>
-import '../shared/animations.css.js';
 import '../shared/step_indicator.js';
 import '../strings.m.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {NavigationMixin} from '../navigation_mixin.js';
+import {NavigationMixinLit} from '../navigation_mixin_lit.js';
 import {navigateToNextStep} from '../router.js';
 import type {DefaultBrowserInfo, StepIndicatorModel} from '../shared/nux_types.js';
 
-import {getTemplate} from './nux_set_as_default.html.js';
+import {getCss} from './nux_set_as_default.css.js';
+import {getHtml} from './nux_set_as_default.html.js';
 import type {NuxSetAsDefaultProxy} from './nux_set_as_default_proxy.js';
 import {NuxSetAsDefaultProxyImpl} from './nux_set_as_default_proxy.js';
 
@@ -31,50 +30,49 @@ export interface NuxSetAsDefaultElement {
 }
 
 const NuxSetAsDefaultElementBase =
-    WebUiListenerMixin(NavigationMixin(PolymerElement));
+    WebUiListenerMixinLit(NavigationMixinLit(CrLitElement));
 
-/** @polymer */
 export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
   static get is() {
     return 'nux-set-as-default';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      indicatorModel: Object,
+      indicatorModel: {type: Object},
 
       // <if expr="is_win">
-      isWin10: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('is_win10'),
-      },
+      isWin10_: {type: Boolean},
       // </if>
-
-      subtitle: {
-        type: String,
-        value: loadTimeData.getString('setDefaultHeader'),
-      },
     };
   }
+
+  indicatorModel?: StepIndicatorModel;
+
+  // <if expr="is_win">
+  protected isWin10_: boolean = loadTimeData.getBoolean('is_win10');
+  // </if>
 
   private browserProxy_: NuxSetAsDefaultProxy;
   private finalized_: boolean = false;
   navigateToNextStep: Function;
-  indicatorModel?: StepIndicatorModel;
 
   constructor() {
     super();
+    this.subtitle = loadTimeData.getString('setDefaultHeader');
     this.navigateToNextStep = navigateToNextStep;
     this.browserProxy_ = NuxSetAsDefaultProxyImpl.getInstance();
   }
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.addWebUiListener(
         'browser-default-state-changed',
         this.onDefaultBrowserChange_.bind(this));
@@ -101,7 +99,7 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     this.browserProxy_.recordNavigatedAway();
   }
 
-  private onDeclineClick_() {
+  protected onDeclineClick_() {
     if (this.finalized_) {
       return;
     }
@@ -110,7 +108,7 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     this.finished_();
   }
 
-  private onSetDefaultClick_() {
+  protected onSetDefaultClick_() {
     if (this.finalized_) {
       return;
     }

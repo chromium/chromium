@@ -18,8 +18,11 @@ import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.j
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {NuxGoogleAppsElement} from './google_apps/nux_google_apps.js';
 import {NavigationMixin} from './navigation_mixin.js';
+import type {NuxNtpBackgroundElement} from './ntp_background/nux_ntp_background.js';
 import {Routes} from './router.js';
+import type {NuxSetAsDefaultElement} from './set_as_default/nux_set_as_default.js';
 import {NuxSetAsDefaultProxyImpl} from './set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkBarManager} from './shared/bookmark_proxy.js';
 import {getTemplate} from './welcome_app.html.js';
@@ -188,13 +191,15 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
                 document.createElement(elementTagName) as PolymerElement;
             element.id = 'step-' + (index + 1);
             element.setAttribute('slot', 'view');
-            this.$.viewManager.appendChild(element);
             if (MODULES_NEEDING_INDICATOR.has(elementTagName)) {
-              element.set('indicatorModel', {
+              (element as NuxGoogleAppsElement | NuxNtpBackgroundElement |
+               NuxSetAsDefaultElement)
+                  .indicatorModel = {
                 total: indicatorElementCount,
                 active: indicatorActiveCount++,
-              });
+              };
             }
+            this.$.viewManager.appendChild(element);
           });
         });
   }

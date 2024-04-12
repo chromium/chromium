@@ -8,6 +8,7 @@
  */
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -37,7 +38,7 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
     };
   }
 
-  model: StepIndicatorModel = {active: 0, total: 0};
+  model?: StepIndicatorModel;
   protected dots_: number[] = [];
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -49,10 +50,13 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
   }
 
   protected getLabel_(): string {
-    return this.i18n('stepsLabel', this.model.active + 1, this.model.total);
+    return this.model ?
+        this.i18n('stepsLabel', this.model!.active + 1, this.model!.total) :
+        '';
   }
 
   private computeDots_(): number[] {
+    assert(this.model);
     // If total is 1, show nothing.
     const array: number[] = new Array(this.model.total > 1 ? this.model.total : 0);
     array.fill(0);
@@ -60,6 +64,7 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
   }
 
   protected getActiveClass_(index: number): string {
+    assert(this.model);
     return index === this.model.active ? 'active' : '';
   }
 }
