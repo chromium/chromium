@@ -109,7 +109,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromOmniboxSearch) {
                    Field("url", &PickerSearchResult::BrowsingHistoryData::url,
                          Property("spec", &GURL::spec,
                                   "https://www.google.com/search?q=cat"))))),
-           /*has_more_results=*/true))
+           /*has_more_results=*/false))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -125,21 +125,64 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromOmniboxSearch) {
           ui::ImageModel())});
 }
 
-TEST_F(PickerSearchRequestTest, DoesNotHaveMoreResultsInOmniboxOnlySearch) {
+TEST_F(PickerSearchRequestTest, TruncatesOmniboxResults) {
   MockSearchResultsCallback search_results_callback;
-  // Catch-all to prevent unexpected gMock call errors. See
-  // https://google.github.io/googletest/gmock_cook_book.html#uninteresting-vs-unexpected
-  // for more details.
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
       Call(PickerSearchSource::kOmnibox,
-           ElementsAre(Property(
-               "data", &PickerSearchResult::data,
-               VariantWith<PickerSearchResult::BrowsingHistoryData>(
-                   Field("url", &PickerSearchResult::BrowsingHistoryData::url,
-                         Property("spec", &GURL::spec,
-                                  "https://www.google.com/search?q=cat"))))),
+           ElementsAre(
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"1"))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"2"))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"3")))),
+           /*has_more_results=*/true))
+      .Times(AtLeast(1));
+
+  PickerSearchRequest request(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+
+  client().cros_search_callback().Run(
+      ash::AppListSearchResultType::kOmnibox,
+      {ash::PickerSearchResult::Text(u"1"), ash::PickerSearchResult::Text(u"2"),
+       ash::PickerSearchResult::Text(u"3"),
+       ash::PickerSearchResult::Text(u"4")});
+}
+
+TEST_F(PickerSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(PickerSearchSource::kOmnibox,
+           ElementsAre(
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"1"))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"2"))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"3"))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::TextData>(Field(
+                            "text", &PickerSearchResult::TextData::primary_text,
+                            u"4")))),
            /*has_more_results=*/false))
       .Times(AtLeast(1));
 
@@ -151,9 +194,9 @@ TEST_F(PickerSearchRequestTest, DoesNotHaveMoreResultsInOmniboxOnlySearch) {
 
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
-          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
-          ui::ImageModel())});
+      {ash::PickerSearchResult::Text(u"1"), ash::PickerSearchResult::Text(u"2"),
+       ash::PickerSearchResult::Text(u"3"),
+       ash::PickerSearchResult::Text(u"4")});
 }
 
 TEST_F(PickerSearchRequestTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {

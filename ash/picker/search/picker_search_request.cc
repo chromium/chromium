@@ -159,18 +159,23 @@ void PickerSearchRequest::HandleCrosSearchResults(
     ash::AppListSearchResultType type,
     std::vector<PickerSearchResult> results) {
   switch (type) {
-    case AppListSearchResultType::kOmnibox:
+    case AppListSearchResultType::kOmnibox: {
       if (cros_search_start_.has_value()) {
         base::TimeDelta elapsed = base::TimeTicks::Now() - *cros_search_start_;
         base::UmaHistogramTimes("Ash.Picker.Search.OmniboxProvider.QueryTime",
                                 elapsed);
       }
 
-      // TODO: b/333295235 - Check if Omnibox results were truncated.
-      HandleSearchSourceResults(
-          PickerSearchSource::kOmnibox, std::move(results),
-          /*has_more_results=*/!is_category_specific_search_);
+      size_t results_to_remove = is_category_specific_search_
+                                     ? 0
+                                     : std::max<size_t>(results.size(), 3) - 3;
+      results.erase(results.end() - results_to_remove, results.end());
+
+      HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+                                std::move(results),
+                                /*has_more_results=*/results_to_remove > 0);
       break;
+    }
     case AppListSearchResultType::kDriveSearch: {
       if (!drive_search_timeout_timer_.IsRunning()) {
         return;
