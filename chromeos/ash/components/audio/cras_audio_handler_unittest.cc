@@ -6501,4 +6501,188 @@ TEST_P(
       /*expected_count=*/2);
 }
 
+// Tests audio selection exception rule #2 metric is recorded when unplugging a
+// non active device and the currently active device is not the preferred device
+// in the new device set.
+TEST_P(CrasAudioHandlerTest,
+       AudioSelectionExceptionRule2Output_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Set up initial audio devices.
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalSpeaker},
+      /*expected_active_input_node=*/nullptr,
+      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/false);
+
+  // Plug a HDMI output device. Expect active device remains unchanged as
+  // internal speaker.
+  AudioNodeList audio_nodes;
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
+
+  AudioNode hdmi_output = GenerateAudioNode(kHDMIOutput);
+  audio_nodes.push_back(hdmi_output);
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_EQ(0, test_observer_->active_output_node_changed_count());
+  AudioDevice active_output;
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kInternalSpeaker->id, active_output.id);
+  EXPECT_EQ(kInternalSpeaker->id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  // At this moment, system has seen the device set of internal speaker and HDMI
+  // output, and the preferable device is internal speaker.
+
+  // Plug a USB output device. Expect active device remains unchanged as
+  // internal speaker.
+  AudioNode usb_output = GenerateAudioNode(kUSBHeadphone1);
+  audio_nodes.push_back(usb_output);
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kInternalSpeaker->id, active_output.id);
+  EXPECT_EQ(kInternalSpeaker->id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  // Activate HDMI output device, expect HDMI output device becomes active.
+  AudioDevice hdmi_output_device(hdmi_output);
+  cras_audio_handler_->SwitchToDevice(hdmi_output_device, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
+
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kHDMIOutput->id, active_output.id);
+  EXPECT_EQ(kHDMIOutput->id, cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  // No metrics are fired before unplugging.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule2UnplugNonActiveDevice,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      /*expected_count=*/0);
+
+  // Unplug the USB device
+  audio_nodes.clear();
+  audio_nodes.push_back(internal_speaker);
+  hdmi_output.active = true;
+  audio_nodes.push_back(hdmi_output);
+  ChangeAudioNodes(audio_nodes);
+
+  // Expect active device remains HDMI, disregarding that the internal speaker
+  // is the preferable device in the device set of internal speaker and HDMI
+  // output device.
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kHDMIOutput->id, active_output.id);
+  EXPECT_EQ(kHDMIOutput->id, cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule2UnplugNonActiveDevice,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      /*expected_count=*/1);
+}
+
+// Tests audio selection exception rule #2 metric is recorded when unplugging a
+// non active device and the currently active device is not the preferred device
+// in the new device set.
+TEST_P(CrasAudioHandlerTest,
+       AudioSelectionExceptionRule2Input_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Set up initial audio devices.
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalMic},
+      /*expected_active_input_node=*/kInternalMic,
+      /*expected_active_output_node=*/nullptr,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/false);
+
+  // Plug a USB input1 device. Expect active device remains unchanged as
+  // internal speaker.
+  AudioNodeList audio_nodes;
+  AudioNode internal_mic = GenerateAudioNode(kInternalMic);
+  internal_mic.active = true;
+  audio_nodes.push_back(internal_mic);
+
+  AudioNode usb_input1 = GenerateAudioNode(kUSBMic1);
+  audio_nodes.push_back(usb_input1);
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_EQ(0, test_observer_->active_input_node_changed_count());
+  AudioDevice active_input;
+  EXPECT_TRUE(cras_audio_handler_->GetPrimaryActiveInputDevice(&active_input));
+  EXPECT_EQ(kInternalMic->id, active_input.id);
+  EXPECT_EQ(kInternalMic->id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // At this moment, system has seen the device set of internal mic and USB
+  // input1, and the preferable device is internal mic.
+
+  // Plug a USB input2 device. Expect active device remains unchanged as
+  // internal mic.
+  AudioNode usb_input2 = GenerateAudioNode(kUSBMic2);
+  audio_nodes.push_back(usb_input2);
+  ChangeAudioNodes(audio_nodes);
+
+  EXPECT_TRUE(cras_audio_handler_->GetPrimaryActiveInputDevice(&active_input));
+  EXPECT_EQ(kInternalMic->id, active_input.id);
+  EXPECT_EQ(kInternalMic->id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // Activate USB input1 device, expect USB input1 device becomes active.
+  AudioDevice usb_input1_device(usb_input1);
+  cras_audio_handler_->SwitchToDevice(usb_input1_device, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
+
+  EXPECT_TRUE(cras_audio_handler_->GetPrimaryActiveInputDevice(&active_input));
+  EXPECT_EQ(kUSBMic1->id, active_input.id);
+  EXPECT_EQ(kUSBMic1->id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // No metrics are fired before unplugging.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule2UnplugNonActiveDevice,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      /*expected_count=*/0);
+
+  // Unplug the USB2 device
+  audio_nodes.clear();
+  audio_nodes.push_back(internal_mic);
+  usb_input1.active = true;
+  audio_nodes.push_back(usb_input1);
+  ChangeAudioNodes(audio_nodes);
+
+  // Expect active device remains USB1 input device, disregarding that the
+  // internal mic is the preferable device in the device set of internal mic and
+  // USB1 input device.
+  EXPECT_TRUE(cras_audio_handler_->GetPrimaryActiveInputDevice(&active_input));
+  EXPECT_EQ(kUSBMic1->id, active_input.id);
+  EXPECT_EQ(kUSBMic1->id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule2UnplugNonActiveDevice,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      /*expected_count=*/1);
+}
+
 }  // namespace ash

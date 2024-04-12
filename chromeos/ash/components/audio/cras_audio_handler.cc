@@ -2032,6 +2032,30 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
       audio_device_metrics_handler_.MaybeRecordSystemSwitchDecisionAndContext(
           is_input, is_input ? has_alternative_input_ : has_alternative_output_,
           /*is_switched=*/false, audio_devices_, previous_audio_devices_);
+
+      // When removing a non-active device, if the preferred device in the new
+      // device set is not the currently active device, do not switch but keep
+      // the current active device. Record metrics for Rule #2.
+      if (features::IsAudioSelectionImprovementEnabled()) {
+        const std::optional<AudioDevice> preferred_device =
+            GetPreferredDeviceIfDeviceSetSeenBefore(
+                is_input, GetSimpleUsageAudioDevices(audio_devices_, is_input));
+        if (preferred_device.has_value()) {
+          const AudioDevice* current_active_device = GetDeviceFromId(
+              is_input ? active_input_node_id_ : active_output_node_id_);
+          if (current_active_device &&
+              current_active_device->stable_device_id !=
+                  preferred_device->stable_device_id) {
+            audio_device_metrics_handler_.RecordExceptionRulesMet(
+                is_input
+                    ? AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+                          kInputRule2UnplugNonActiveDevice
+                    : AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+                          kOutputRule2UnplugNonActiveDevice);
+          }
+        }
+      }
+
       return;
     }
 
