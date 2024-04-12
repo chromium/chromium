@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_title_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
@@ -93,6 +94,7 @@ const std::vector<PopupItemId> kClickablePopupItemIds{
 
 const std::vector<PopupItemId> kUnclickablePopupItemIds{
     PopupItemId::kInsecureContextPaymentDisabledMessage,
+    PopupItemId::kTitle,
     PopupItemId::kSeparator,
 };
 

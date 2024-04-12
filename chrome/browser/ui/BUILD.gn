@@ -5171,6 +5171,8 @@ static_library("ui") {
       "views/autofill/popup/popup_row_with_button_view.h",
       "views/autofill/popup/popup_separator_view.cc",
       "views/autofill/popup/popup_separator_view.h",
+      "views/autofill/popup/popup_title_view.cc",
+      "views/autofill/popup/popup_title_view.h",
       "views/autofill/popup/popup_view_utils.cc",
       "views/autofill/popup/popup_view_utils.h",
       "views/autofill/popup/popup_view_views.cc",

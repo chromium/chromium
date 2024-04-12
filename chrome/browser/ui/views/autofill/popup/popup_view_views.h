@@ -34,6 +34,7 @@ namespace autofill {
 
 class AutofillPopupController;
 class PopupSeparatorView;
+class PopupTitleView;
 class PopupWarningView;
 
 // Sub-popups and their parent popups are connected by providing children
@@ -59,8 +60,10 @@ class PopupViewViews : public PopupBaseView,
   METADATA_HEADER(PopupViewViews, PopupBaseView)
 
  public:
-  using RowPointer =
-      absl::variant<PopupRowView*, PopupSeparatorView*, PopupWarningView*>;
+  using RowPointer = absl::variant<PopupRowView*,
+                                   PopupSeparatorView*,
+                                   PopupTitleView*,
+                                   PopupWarningView*>;
 
   // The time it takes for a selected cell to open a sub-popup if it has one.
   static constexpr base::TimeDelta kMouseOpenSubPopupDelay =

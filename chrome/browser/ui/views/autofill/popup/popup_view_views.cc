@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_title_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -732,6 +733,12 @@ void PopupViewViews::CreateChildViews() {
         case PopupItemId::kSeparator:
           rows_.push_back(body_container->AddChildView(
               std::make_unique<PopupSeparatorView>(kInterItemsPadding)));
+          break;
+
+        case PopupItemId::kTitle:
+          rows_.push_back(
+              body_container->AddChildView(std::make_unique<PopupTitleView>(
+                  kSuggestions[current_line_number].main_text.value)));
           break;
 
         case PopupItemId::kMixedFormMessage:

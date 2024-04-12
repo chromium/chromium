@@ -73,6 +73,24 @@ std::vector<Suggestion> CreateCreditCardSuggestions() {
   return suggestions;
 }
 
+std::vector<Suggestion> CreatePasswordSuggestions() {
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(u"Title suggestion", PopupItemId::kTitle);
+
+  suggestions.emplace_back(u"Password main text", PopupItemId::kPasswordEntry);
+  suggestions.back().additional_label = u"example.username@gmail.com";
+  suggestions.back().icon = Suggestion::Icon::kGlobe;
+
+  suggestions.emplace_back(autofill::PopupItemId::kSeparator);
+
+  suggestions.emplace_back(u"Manage passwords",
+                           PopupItemId::kAllSavedPasswordsEntry);
+  suggestions.back().icon = Suggestion::Icon::kSettings;
+  suggestions.back().trailing_icon = Suggestion::Icon::kGooglePasswordManager;
+
+  return suggestions;
+}
+
 std::vector<Suggestion> CreateAutocompleteSuggestions() {
   return {Suggestion("Autocomplete entry 1", "", Suggestion::Icon::kNoIcon,
                      PopupItemId::kAutocompleteEntry),
@@ -214,6 +232,11 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_CreditCard) {
   PrepareSuggestions(CreateCreditCardSuggestions());
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Passwords) {
+  PrepareSuggestions(CreatePasswordSuggestions());
   ShowAndVerifyUi();
 }
 
