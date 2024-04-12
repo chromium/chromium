@@ -227,10 +227,6 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         }
     }
 
-    private @Px int getDesiredSheetHeightPx() {
-        return getDimensionPixelSize(R.dimen.pwd_migration_warning_fragment_height);
-    }
-
     private @Px int getDimensionPixelSize(int id) {
         return mContentView.getContext().getResources().getDimensionPixelSize(id);
     }
@@ -289,8 +285,7 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
 
     @Override
     public float getFullHeightRatio() {
-        return Math.min(getDesiredSheetHeightPx(), mBottomSheetController.getContainerHeight())
-                / (float) mBottomSheetController.getContainerHeight();
+        return 1.f;
     }
 
     @Override
