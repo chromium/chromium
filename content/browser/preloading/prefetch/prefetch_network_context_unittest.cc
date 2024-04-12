@@ -15,11 +15,23 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_content_browser_client.h"
+#include "net/base/isolation_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 namespace {
+
+// "arg" type is `url::Origin`.
+// `url` type is `GURL`.
+MATCHER_P(IsSameOriginWith, url, "") {
+  return arg.IsSameOriginWith(url);
+}
+
+// "arg" type is `net::IsolationInfo`.
+MATCHER(IsEmptyIsolationInfo, "") {
+  return arg.IsEmpty();
+}
 
 class ScopedMockContentBrowserClient : public TestContentBrowserClient {
  public:
@@ -39,6 +51,7 @@ class ScopedMockContentBrowserClient : public TestContentBrowserClient {
        int render_process_id,
        URLLoaderFactoryType type,
        const url::Origin& request_initiator,
+       const net::IsolationInfo& isolation_info,
        std::optional<int64_t> navigation_id,
        ukm::SourceIdObj ukm_source_id,
        network::URLLoaderFactoryBuilder& factory_builder,
@@ -94,11 +107,7 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
       WillCreateURLLoaderFactory(
           testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
-          testing::ResultOf(
-              [&kReferringUrl](const url::Origin& request_initiator) {
-                return request_initiator.IsSameOriginWith(kReferringUrl);
-              },
-              true),
+          IsSameOriginWith(kReferringUrl), IsEmptyIsolationInfo(),
           testing::Eq(std::nullopt),
           ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
           testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
@@ -126,11 +135,7 @@ TEST_F(PrefetchNetworkContextTest,
       WillCreateURLLoaderFactory(
           testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
-          testing::ResultOf(
-              [&kReferringUrl](const url::Origin request_initiator) {
-                return request_initiator.IsSameOriginWith(kReferringUrl);
-              },
-              true),
+          IsSameOriginWith(kReferringUrl), IsEmptyIsolationInfo(),
           testing::Eq(std::nullopt),
           ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
           testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
@@ -162,11 +167,7 @@ TEST_F(PrefetchNetworkContextTest,
           testing::NotNull(), testing::IsNull(),
           testing::Eq(content::ChildProcessHost::kInvalidUniqueID),
           ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
-          testing::ResultOf(
-              [&kReferringUrl](const url::Origin request_initiator) {
-                return request_initiator.IsSameOriginWith(kReferringUrl);
-              },
-              true),
+          IsSameOriginWith(kReferringUrl), IsEmptyIsolationInfo(),
           testing::Eq(std::nullopt), testing::Eq(ukm::kInvalidSourceIdObj),
           testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
           testing::IsNull(), testing::IsNull()));

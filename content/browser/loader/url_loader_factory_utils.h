@@ -11,6 +11,10 @@
 #include "content/public/browser/content_browser_client.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 
+namespace net {
+class IsolationInfo;
+}
+
 namespace content {
 
 class StoragePartitionImpl;
@@ -41,6 +45,7 @@ class CONTENT_EXPORT ContentClientParams final {
                       RenderFrameHost* frame,
                       int render_process_id,
                       const url::Origin& request_initiator,
+                      const net::IsolationInfo& isolation_info,
                       ukm::SourceIdObj ukm_source_id,
                       bool* bypass_redirect_checks = nullptr,
                       std::optional<int64_t> navigation_id = std::nullopt,
@@ -67,6 +72,7 @@ class CONTENT_EXPORT ContentClientParams final {
   raw_ptr<RenderFrameHost> frame_;
   int render_process_id_;
   raw_ref<const url::Origin> request_initiator_;
+  raw_ref<const net::IsolationInfo> isolation_info_;
   ukm::SourceIdObj ukm_source_id_;
   raw_ptr<bool> bypass_redirect_checks_;
   std::optional<int64_t> navigation_id_;

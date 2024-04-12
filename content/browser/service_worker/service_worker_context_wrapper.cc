@@ -1913,8 +1913,9 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
       storage_partition_->browser_context(), /*frame=*/nullptr,
       ChildProcessHost::kInvalidUniqueID,
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
-      scope_origin, /*navigation_id=*/std::nullopt, ukm::kInvalidSourceIdObj,
-      factory_builder, &header_client, &bypass_redirect_checks,
+      scope_origin, net::IsolationInfo(),
+      /*navigation_id=*/std::nullopt, ukm::kInvalidSourceIdObj, factory_builder,
+      &header_client, &bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr,
       /*factory_override=*/nullptr,
       /*navigation_response_task_runner=*/nullptr);

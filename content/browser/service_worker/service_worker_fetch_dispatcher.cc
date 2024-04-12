@@ -338,6 +338,7 @@ CreateNetworkFactoryForNavigationPreload(FrameTreeNode& frame_tree_node,
       partition.browser_context(), frame_tree_node.current_frame_host(),
       frame_tree_node.current_frame_host()->GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
+      net::IsolationInfo(),
       frame_tree_node.navigation_request()->GetNavigationId(),
       ukm::SourceIdObj::FromInt64(
           frame_tree_node.navigation_request()->GetNextPageUkmSourceId()),

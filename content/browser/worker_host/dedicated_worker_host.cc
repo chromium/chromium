@@ -565,7 +565,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
       url_loader_factory::ContentClientParams(
           worker_process_host_->GetBrowserContext(),
           /*frame=*/nullptr, worker_process_host_->GetID(),
-          GetStorageKey().origin(),
+          GetStorageKey().origin(), isolation_info_,
           ukm::SourceIdObj::FromInt64(
               ancestor_render_frame_host->GetPageUkmSourceId()),
           bypass_redirect_checks),

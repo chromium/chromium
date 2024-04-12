@@ -78,6 +78,16 @@ void UnreachableFallback(ResponseHeadUpdateParams) {
   NOTREACHED();
 }
 
+// "arg" type is `url::Origin`.
+MATCHER(HasOpaqueFrameOrigin, "") {
+  return arg.opaque();
+}
+
+// "arg" type is `net::IsolationInfo`.
+MATCHER(IsEmptyIsolationInfo, "") {
+  return arg.IsEmpty();
+}
+
 class TestPrefetchOriginProber : public PrefetchOriginProber {
  public:
   TestPrefetchOriginProber(BrowserContext* browser_context,
@@ -152,6 +162,7 @@ class ScopedMockContentBrowserClient : public TestContentBrowserClient {
        int render_process_id,
        URLLoaderFactoryType type,
        const url::Origin& request_initiator,
+       const net::IsolationInfo& isolation_info,
        std::optional<int64_t> navigation_id,
        ukm::SourceIdObj ukm_source_id,
        network::URLLoaderFactoryBuilder& factory_builder,
@@ -546,11 +557,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       WillCreateURLLoaderFactory(
           testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          testing::ResultOf(
-              [](const url::Origin& request_initiator) {
-                return request_initiator.opaque();
-              },
-              true),
+          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
@@ -607,11 +614,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       WillCreateURLLoaderFactory(
           testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          testing::ResultOf(
-              [](const url::Origin& request_initiator) {
-                return request_initiator.opaque();
-              },
-              true),
+          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
@@ -675,11 +678,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       WillCreateURLLoaderFactory(
           testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          testing::ResultOf(
-              [](const url::Origin& request_initiator) {
-                return request_initiator.opaque();
-              },
-              true),
+          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
@@ -733,11 +732,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       WillCreateURLLoaderFactory(
           testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          testing::ResultOf(
-              [](const url::Origin& request_initiator) {
-                return request_initiator.opaque();
-              },
-              true),
+          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
@@ -1026,11 +1021,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
       WillCreateURLLoaderFactory(
           testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          testing::ResultOf(
-              [](const url::Origin& request_initiator) {
-                return request_initiator.opaque();
-              },
-              true),
+          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
@@ -1309,11 +1300,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
       WillCreateURLLoaderFactory(
           testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          testing::ResultOf(
-              [](const url::Origin& request_initiator) {
-                return request_initiator.opaque();
-              },
-              true),
+          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
@@ -1392,11 +1379,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       WillCreateURLLoaderFactory(
           testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          testing::ResultOf(
-              [](const url::Origin& request_initiator) {
-                return request_initiator.opaque();
-              },
-              true),
+          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),

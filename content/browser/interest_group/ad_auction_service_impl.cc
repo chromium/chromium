@@ -682,7 +682,7 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
         url_loader_factory::ContentClientParams(
             render_frame_host().GetSiteInstance()->GetBrowserContext(),
             &render_frame_host(), render_frame_host().GetProcess()->GetID(),
-            url::Origin(),
+            url::Origin(), net::IsolationInfo(),
             ukm::SourceIdObj::FromInt64(
                 render_frame_host().GetPageUkmSourceId())));
 

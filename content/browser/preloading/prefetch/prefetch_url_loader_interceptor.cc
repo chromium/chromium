@@ -218,7 +218,7 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
               url_loader_factory::ContentClientParams(
                   BrowserContextFromFrameTreeNodeId(frame_tree_node_id_),
                   render_frame_host, render_frame_host->GetProcess()->GetID(),
-                  url::Origin(),
+                  url::Origin(), net::IsolationInfo(),
                   ukm::SourceIdObj::FromInt64(
                       navigation_request->GetNextPageUkmSourceId()),
                   &bypass_redirect_checks,

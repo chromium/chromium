@@ -1844,6 +1844,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // TODO(lukasza): https://crbug.com/888079: Ensure that |request_initiator| is
   // always accurate.
   //
+  // |isolation_info| is only set for untrusted factories (according to
+  // |URLLoaderFactoryParams::is_trusted|). It is empty for trusted factories
+  // as they have no fixed IsolationInfo.
+  // |isolation_info| value should be identical to
+  // |URLLoaderFactoryParams::isolation_info|.
+  // For more information about trusted factories, see documentation at
+  // |network.mojom.URLRequest.trusted_params|.
+  //
   // |navigation_id| is valid iff |type| is |kNavigation|. It corresponds to the
   // Navigation ID returned by NavigationHandle::GetNavigationId().
   //
@@ -1892,6 +1900,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       int render_process_id,
       URLLoaderFactoryType type,
       const url::Origin& request_initiator,
+      const net::IsolationInfo& isolation_info,
       std::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
       network::URLLoaderFactoryBuilder& factory_builder,

@@ -827,11 +827,12 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
   }
 
   const url::Origin& origin = storage_key.origin();
+  const net::IsolationInfo& isolation_info =
+      storage_key.ToPartialNetIsolationInfo();
 
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
-          rph, origin, storage_key.ToPartialNetIsolationInfo(),
-          std::move(coep_reporter),
+          rph, origin, isolation_info, std::move(coep_reporter),
           static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
               ->CreateAuthCertObserverForServiceWorker(rph->GetID()),
           NetworkServiceDevToolsObserver::MakeSelfOwned(devtools_worker_token),
@@ -855,7 +856,8 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
           url_loader_factory::FactoryOverrideOption::kAllow),
       url_loader_factory::ContentClientParams(
           rph->GetBrowserContext(), nullptr /* frame_host */, rph->GetID(),
-          origin, ukm::kInvalidSourceIdObj, &bypass_redirect_checks),
+          origin, isolation_info, ukm::kInvalidSourceIdObj,
+          &bypass_redirect_checks),
       devtools_instrumentation::WillCreateURLLoaderFactoryParams::
           ForServiceWorker(*rph, routing_id));
 

@@ -209,8 +209,8 @@ PrefetchNetworkContext::CreateNewURLLoaderFactory(
           url_loader_factory::HeaderClientOption::kAllow),
       url_loader_factory::ContentClientParams(
           browser_context, referring_render_frame_host,
-          referring_render_process_id, referring_origin_, ukm_source_id,
-          &bypass_redirect_checks));
+          referring_render_process_id, referring_origin_, net::IsolationInfo(),
+          ukm_source_id, &bypass_redirect_checks));
 }
 
 }  // namespace content

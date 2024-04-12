@@ -520,6 +520,7 @@ void NavigationURLLoaderImpl::Start() {
                   browser_context_, frame_tree_node->current_frame_host(),
                   frame_tree_node->current_frame_host()->GetProcess()->GetID(),
                   resource_request_->request_initiator.value_or(url::Origin()),
+                  net::IsolationInfo(),
                   ukm::SourceIdObj::FromInt64(ukm_source_id_),
                   /*bypass_redirect_checks=*/nullptr,
                   frame_tree_node->navigation_request()->GetNavigationId(),
@@ -824,7 +825,8 @@ NavigationURLLoaderImpl::CreateNonNetworkLoaderFactory(
                 std::move(terminal), network::mojom::kBrowserProcessId),
             url_loader_factory::ContentClientParams(
                 frame->GetSiteInstance()->GetBrowserContext(), frame,
-                frame->GetProcess()->GetID(), url::Origin(), ukm_id,
+                frame->GetProcess()->GetID(), url::Origin(),
+                net::IsolationInfo(), ukm_id,
                 /*bypass_redirect_checks=*/nullptr,
                 frame_tree_node->navigation_request()->GetNavigationId(),
                 GetUIThreadTaskRunner(
@@ -1594,6 +1596,7 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
       browser_context, frame_tree_node->current_frame_host(),
       frame_tree_node->current_frame_host()->GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
+      net::IsolationInfo(),
       frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
       factory_builder, &header_client, bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,

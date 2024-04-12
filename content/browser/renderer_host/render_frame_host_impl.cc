@@ -10692,6 +10692,7 @@ void RenderFrameHostImpl::CommitNavigation(
               url_loader_factory::ContentClientParams(
                   browser_context, this, GetProcess()->GetID(),
                   subresource_loader_factories_config.origin(),
+                  net::IsolationInfo(),
                   subresource_loader_factories_config.ukm_source_id()));
 
       // If the renderer has webui bindings, then don't give it access to
@@ -10806,6 +10807,7 @@ void RenderFrameHostImpl::CommitNavigation(
           url_loader_factory::ContentClientParams(
               GetBrowserContext(), this, GetProcess()->GetID(),
               subresource_loader_factories_config.origin(),
+              net::IsolationInfo(),
               subresource_loader_factories_config.ukm_source_id()),
           devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
               this));
@@ -11778,6 +11780,7 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
   DCHECK(params->request_initiator_origin_lock.has_value());
   const url::Origin request_initiator =
       params->request_initiator_origin_lock.value();
+  const net::IsolationInfo isolation_info = params->isolation_info;
 
   bool bypass_redirect_checks = false;
   url_loader_factory::CreateAndConnectToPendingReceiver(
@@ -11790,7 +11793,7 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
           url_loader_factory::DisableSecureDnsOption::kAllow),
       url_loader_factory::ContentClientParams(
           GetBrowserContext(), this, GetProcess()->GetID(), request_initiator,
-          ukm_source_id, &bypass_redirect_checks),
+          isolation_info, ukm_source_id, &bypass_redirect_checks),
       devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
           this));
   return bypass_redirect_checks;
