@@ -1746,6 +1746,33 @@ TEST_F(SyncDataTypeManagerImplTest, ShouldFinishConfigureIfSomeTypesTimeout) {
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 }
 
+// Tests that if the load-models timeout triggers after a Stop(), this doesn't
+// have any adverse effects.
+// Regression test for crbug.com/333865298.
+TEST_F(SyncDataTypeManagerImplTest, TimeoutAfterStop) {
+  // Create a controller with a delayed model load.
+  AddController(BOOKMARKS);
+  GetController(BOOKMARKS)->model()->EnableManualModelStart();
+
+  SetConfigureStartExpectation();
+  Configure({BOOKMARKS});
+
+  // BOOKMARKS blocks configuration.
+  EXPECT_TRUE(configurer_.connected_types().empty());
+  EXPECT_EQ(ModelTypeController::MODEL_STARTING,
+            GetController(BOOKMARKS)->state());
+
+  // Before configuration finishes (or times out), the DataTypeManager gets
+  // stopped again, and the configurer gets destroyed.
+  SetConfigureDoneExpectation(DataTypeManager::ABORTED, DataTypeStatusTable());
+  dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
+  dtm_->SetConfigurer(nullptr);
+
+  // Fast-forward to trigger the load-models timeout. This shouldn't do
+  // anything (in particular, not crash).
+  task_environment_.FastForwardBy(kSyncLoadModelsTimeoutDuration);
+}
+
 TEST_F(SyncDataTypeManagerImplTest, ShouldUpdateDataTypeStatusWhileStopped) {
   AddController(BOOKMARKS);
   GetController(BOOKMARKS)->SetPreconditionState(

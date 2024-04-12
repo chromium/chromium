@@ -204,6 +204,9 @@ void ModelLoadManager::Stop(SyncStopMetadataFate metadata_fate) {
     DVLOG(1) << "ModelLoadManager: Stopped " << dtc->name();
   }
 
+  load_models_timeout_timer_.Stop();
+  notified_about_ready_for_configure_ = true;
+
   preferred_types_without_errors_.Clear();
 }
 
