@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.settings.DownloadLocationHelperImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.DownloadUtils;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -202,6 +203,9 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 resources,
                                 R.string.cancel)
+                        .with(
+                                ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
+                                UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
                         .build();
 
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
