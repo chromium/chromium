@@ -64,6 +64,8 @@ constexpr float kMaximumWordSpacingToFontSizeRatio = 0.5;
 constexpr float kMinimumAllowedContrast = 3.;
 constexpr float kMaximumLetterSpacingToFontSizeRatio = 0.2;
 constexpr float kMinimumLetterSpacingToFontSizeRatio = -0.05;
+constexpr int kMaxLengthToFontSizeRatio = 3;
+constexpr int kMinLengthToFontSizeRatio = 1;
 
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
@@ -121,24 +123,20 @@ Vector<PermissionDescriptorPtr> ParsePermissionDescriptorsFromString(
 
 // Helper to get permission text resource ID for the given map which has only
 // one element.
-int GetMessageIDSinglePermission(PermissionName name,
-                                 MojoPermissionStatus status) {
+int GetMessageIDSinglePermission(PermissionName name, bool granted) {
   if (name == PermissionName::VIDEO_CAPTURE) {
-    return status == MojoPermissionStatus::GRANTED
-               ? IDS_PERMISSION_REQUEST_CAMERA_ALLOWED
-               : IDS_PERMISSION_REQUEST_CAMERA;
+    return granted ? IDS_PERMISSION_REQUEST_CAMERA_ALLOWED
+                   : IDS_PERMISSION_REQUEST_CAMERA;
   }
 
   if (name == PermissionName::AUDIO_CAPTURE) {
-    return status == MojoPermissionStatus::GRANTED
-               ? IDS_PERMISSION_REQUEST_MICROPHONE_ALLOWED
-               : IDS_PERMISSION_REQUEST_MICROPHONE;
+    return granted ? IDS_PERMISSION_REQUEST_MICROPHONE_ALLOWED
+                   : IDS_PERMISSION_REQUEST_MICROPHONE;
   }
 
   if (name == PermissionName::GEOLOCATION) {
-    return status == MojoPermissionStatus::GRANTED
-               ? IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED
-               : IDS_PERMISSION_REQUEST_GEOLOCATION;
+    return granted ? IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED
+                   : IDS_PERMISSION_REQUEST_GEOLOCATION;
   }
 
   return 0;
@@ -147,21 +145,9 @@ int GetMessageIDSinglePermission(PermissionName name,
 // Helper to get permission text resource ID for the given map which has
 // multiple elements. Currently we only support "camera microphone" grouped
 // permissions.
-int GetMessageIDMultiplePermissions(
-    const HashMap<PermissionName, MojoPermissionStatus>&
-        permission_status_map) {
-  CHECK_EQ(permission_status_map.size(), 2U);
-  auto camera_it = permission_status_map.find(PermissionName::VIDEO_CAPTURE);
-  auto mic_it = permission_status_map.find(PermissionName::AUDIO_CAPTURE);
-  CHECK(camera_it != permission_status_map.end() &&
-        mic_it != permission_status_map.end());
-
-  if (camera_it->value == MojoPermissionStatus::GRANTED &&
-      mic_it->value == MojoPermissionStatus::GRANTED) {
-    return IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED;
-  }
-
-  return IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE;
+int GetMessageIDMultiplePermissions(bool granted) {
+  return granted ? IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED
+                 : IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE;
 }
 
 // Helper to get `PermissionsPolicyFeature` from permission name
@@ -222,6 +208,31 @@ bool AreColorsNonOpaque(const ComputedStyle* style) {
                  .Alpha() != 1;
 }
 
+// Build an expression that is equivalent to `size * |factor|)`. To be used
+// inside a `calc-size` expression.
+scoped_refptr<const CalculationExpressionNode> BuildFitContentExpr(
+    float factor) {
+  auto constant_expr =
+      base::MakeRefCounted<CalculationExpressionNumberNode>(factor);
+  auto size_expr = base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
+      CalculationExpressionSizingKeywordNode::Keyword::kSize);
+  return CalculationExpressionOperationNode::CreateSimplified(
+      CalculationExpressionOperationNode::Children({constant_expr, size_expr}),
+      CalculationOperator::kMultiply);
+}
+
+// Builds an expression that takes a |length| and bounds it either lower or
+// higher with the provided |bound_expr|.
+scoped_refptr<const CalculationExpressionNode> BuildLengthBoundExpr(
+    const Length& length,
+    scoped_refptr<const CalculationExpressionNode> bound_expr,
+    bool is_lower_bound) {
+  return CalculationExpressionOperationNode::CreateSimplified(
+      CalculationExpressionOperationNode::Children(
+          {bound_expr, length.AsCalculationValue()->GetOrCreateExpression()}),
+      is_lower_bound ? CalculationOperator::kMax : CalculationOperator::kMin);
+}
+
 }  // namespace
 
 HTMLPermissionElement::HTMLPermissionElement(Document& document)
@@ -260,7 +271,6 @@ void HTMLPermissionElement::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
   visitor->Trace(permission_observer_receivers_);
   visitor->Trace(embedded_permission_control_receiver_);
-  visitor->Trace(shadow_element_);
   visitor->Trace(permission_text_span_);
   visitor->Trace(intersection_observer_);
   HTMLElement::Trace(visitor);
@@ -353,7 +363,7 @@ void HTMLPermissionElement::AttributeChanged(
       case 1:
         permission_text_span_->setInnerText(
             GetLocale().QueryString(GetMessageIDSinglePermission(
-                permission_descriptors_[0]->name, MojoPermissionStatus::ASK)));
+                permission_descriptors_[0]->name, /*granted=*/false)));
         break;
       case 2:
         permission_text_span_->setInnerText(
@@ -369,13 +379,10 @@ void HTMLPermissionElement::AttributeChanged(
 }
 
 void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
-  CHECK(!shadow_element_);
-  shadow_element_ = MakeGarbageCollected<PermissionShadowElement>(*this);
-  root.AppendChild(shadow_element_);
   permission_text_span_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
   permission_text_span_->SetShadowPseudoId(
       shadow_element_names::kPseudoInternalPermissionTextSpan);
-  shadow_element_->AppendChild(permission_text_span_);
+  root.AppendChild(permission_text_span_);
 }
 
 void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
@@ -435,9 +442,22 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
                              kMinimumLetterSpacingToFontSizeRatio);
   }
 
-  // TODO(crbug.com/1462930): Add here checks to force the min/max-width/height.
-
-  // TODO(crbug.com/1462930): Set text direction (ltr\rtl) based on language.
+  builder.SetMinHeight(AdjustedBoundedLength(
+      builder.MinHeight(), builder.FontSize() * kMinLengthToFontSizeRatio,
+      /*is_lower_bound=*/true,
+      /*should_multiply_by_content_size=*/false));
+  builder.SetMaxHeight(AdjustedBoundedLength(
+      builder.MaxHeight(), builder.FontSize() * kMaxLengthToFontSizeRatio,
+      /*is_lower_bound=*/false,
+      /*should_multiply_by_content_size=*/false));
+  builder.SetMinWidth(
+      AdjustedBoundedLength(builder.MinWidth(), kMinLengthToFontSizeRatio,
+                            /*is_lower_bound=*/true,
+                            /*should_multiply_by_content_size=*/true));
+  builder.SetMaxWidth(
+      AdjustedBoundedLength(builder.MaxWidth(), kMaxLengthToFontSizeRatio,
+                            /*is_lower_bound=*/false,
+                            /*should_multiply_by_content_size=*/true));
 }
 
 void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
@@ -623,11 +643,15 @@ void HTMLPermissionElement::UpdateAppearance() {
 void HTMLPermissionElement::UpdateText() {
   CHECK_GT(permission_status_map_.size(), 0U);
   CHECK_LE(permission_status_map_.size(), 2u);
-  int message_id =
-      permission_status_map_.size() == 1
-          ? GetMessageIDSinglePermission(permission_status_map_.begin()->key,
-                                         permission_status_map_.begin()->value)
-          : GetMessageIDMultiplePermissions(permission_status_map_);
+  bool granted =
+      base::ranges::all_of(permission_status_map_, [](const auto& status) {
+        return status.value == MojoPermissionStatus::GRANTED;
+      });
+
+  int message_id = permission_status_map_.size() == 1
+                       ? GetMessageIDSinglePermission(
+                             permission_status_map_.begin()->key, granted)
+                       : GetMessageIDMultiplePermissions(granted);
 
   CHECK(message_id);
   permission_text_span_->setInnerText(GetLocale().QueryString(message_id));
@@ -686,6 +710,72 @@ bool HTMLPermissionElement::IsStyleValid() {
   }
 
   return true;
+}
+
+Length HTMLPermissionElement::AdjustedBoundedLength(
+    const Length& length,
+    float bound,
+    bool is_lower_bound,
+    bool should_multiply_by_content_size) {
+  bool is_content_or_stretch =
+      length.HasContentOrIntrinsic() || length.HasStretch();
+  if (is_content_or_stretch && !length_console_error_sent_) {
+    length_console_error_sent_ = true;
+    AddConsoleError(
+        "content, intrinsic, or stretch sizes are not supported as values for "
+        "the min/max width and height of the permission element");
+  }
+
+  const Length& length_to_use =
+      is_content_or_stretch || length.IsNone() ? Length::Auto() : length;
+
+  // If the |length| is not supported and the |bound| is static, return a simple
+  // fixed length.
+  if (length_to_use.IsAuto() && !should_multiply_by_content_size) {
+    return Length(bound, Length::Type::kFixed);
+  }
+
+  // If the |length| is supported and the |bound| is static, return a min|max
+  // expression-type length.
+  if (!should_multiply_by_content_size) {
+    auto bound_expr =
+        base::MakeRefCounted<blink::CalculationExpressionPixelsAndPercentNode>(
+            PixelsAndPercent(bound));
+
+    // expr = min|max(bound, length)
+    auto expr = BuildLengthBoundExpr(length_to_use, bound_expr, is_lower_bound);
+    return Length(CalculationValue::CreateSimplified(
+        std::move(expr), Length::ValueRange::kNonNegative));
+  }
+
+  // bound_expr = size * bound.
+  auto bound_expr = BuildFitContentExpr(bound);
+
+  if (!length_to_use.IsAuto()) {
+    // bound_expr = min|max(size * bound, length)
+    bound_expr =
+        BuildLengthBoundExpr(length_to_use, bound_expr, is_lower_bound);
+  }
+
+  // This uses internally the CalculationExpressionSizingKeywordNode to create
+  // an expression that depends on the size of the contents of the permission
+  // element, in order to set necessary min/max bounds on width and height. If
+  // https://drafts.csswg.org/css-values-5/#calc-size is ever abandoned,
+  // the functionality should still be kept around in some way that can
+  // facilitate this use case.
+
+  auto fit_content_expr =
+      base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
+          CalculationExpressionSizingKeywordNode::Keyword::kFitContent);
+
+  // expr = calc-size(fit-content, bound_expr)
+  auto expr = CalculationExpressionOperationNode::CreateSimplified(
+      CalculationExpressionOperationNode::Children(
+          {fit_content_expr, bound_expr}),
+      CalculationOperator::kCalcSize);
+
+  return Length(CalculationValue::CreateSimplified(
+      std::move(expr), Length::ValueRange::kNonNegative));
 }
 
 }  // namespace blink

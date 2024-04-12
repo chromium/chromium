@@ -14,11 +14,11 @@ permission {
   border-radius: 3px;
   color: #000000;
   display: inline-block;
+  font-weight: normal;
+  font-style: normal;
   height: 1.2em;
   outline: solid 1px #767676;
   width: 188px;
-  font-weight: normal;
-  font-style: normal;
   word-spacing: normal;
  }
 
@@ -35,11 +35,12 @@ permission::-internal-permission-text {
   height: 100%;
   hyphenate-character: auto !important;
   line-height: inherit;
+  min-height: inherit;
   outline: none;
   user-select:none !important;
   vertical-align: inherit;
   white-space:nowrap !important;
+  width: fit-content !important;
   word-wrap: normal !important;
-  width: 100%;
   word-spacing: inherit;
 }

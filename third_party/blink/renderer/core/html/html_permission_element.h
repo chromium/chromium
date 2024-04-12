@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/core/html/shadow/permission_shadow_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -180,6 +180,21 @@ class CORE_EXPORT HTMLPermissionElement final
 
   bool IsStyleValid();
 
+  // Returns an adjusted bounded length that takes in the site-provided length
+  // and creates an expression-type length of the form:
+  // `min|max(|length|, (|fit-content-size| *)? |bound|)`,
+  // |is_lower_bound| determines whether `min` or `max` should be used.
+  // |should_multiply_by_content_size| determines whether the |bound| is
+  // multiplied by the permission element's content size or is simply a fixed
+  // pixel length.
+
+  // If |length| is not a specified length, it is ignored, together with
+  // |is_lower_bound|.
+  Length AdjustedBoundedLength(const Length& length,
+                               float bound,
+                               bool is_lower_bound,
+                               bool should_multiply_by_content_size);
+
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
   // Holds all `PermissionObserver` receivers connected with remotes in browser
@@ -212,7 +227,6 @@ class CORE_EXPORT HTMLPermissionElement final
   // |base::TimeTicks::Max()| if it's indefinite.
   HashMap<DisableReason, base::TimeTicks> clicking_disabled_reasons_;
 
-  Member<PermissionShadowElement> shadow_element_;
   Member<HTMLSpanElement> permission_text_span_;
   Member<IntersectionObserver> intersection_observer_;
 
@@ -227,6 +241,10 @@ class CORE_EXPORT HTMLPermissionElement final
   // The permission descriptors that correspond to a request made from this
   // permission element. Only computed once, when the `type` attribute is set.
   Vector<mojom::blink::PermissionDescriptorPtr> permission_descriptors_;
+
+  // A bool that tracks whether a specific console message was sent already to
+  // ensure it's not sent again.
+  bool length_console_error_sent_ = false;
 };
 
 }  // namespace blink

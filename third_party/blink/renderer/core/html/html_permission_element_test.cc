@@ -656,6 +656,7 @@ class HTMLPemissionElementSimTest : public SimTest {
 
  private:
   std::unique_ptr<TestPermissionService> permission_service_;
+  ScopedTestingPlatformSupport<LocalePlatformSupport> support;
 };
 
 TEST_F(HTMLPemissionElementSimTest, BlockedByPermissionsPolicy) {

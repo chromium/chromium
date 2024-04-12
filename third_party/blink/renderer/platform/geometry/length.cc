@@ -257,10 +257,10 @@ String Length::ToString() const {
   StringBuilder builder;
   builder.Append("Length(");
   static const char* const kTypeNames[] = {
-      "Auto",       "Percent",      "Fixed",         "MinContent",
-      "MaxContent", "MinIntrinsic", "FillAvailable", "FitContent",
-      "Calculated", "ExtendToZoom", "DeviceWidth",   "DeviceHeight",
-      "None",       "Content"};
+      "Auto",         "Percent",      "Fixed",         "MinContent",
+      "MaxContent",   "MinIntrinsic", "FillAvailable", "FitContent",
+      "Calculated",   "Flex",         "ExtendToZoom",  "DeviceWidth",
+      "DeviceHeight", "None",         "Content"};
   if (type_ < std::size(kTypeNames))
     builder.Append(kTypeNames[type_]);
   else
