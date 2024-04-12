@@ -398,14 +398,18 @@ int SavedTabGroupBar::OnDragUpdated(const ui::DropTargetEvent& event) {
   drag_data_->SetLocation(gfx::Point(mirrored_x, event.location().y()));
   UpdateDropIndex();
 
-  const bool dragging_over_button =
-      overflow_button_->GetVisible() &&
-      mirrored_x >= overflow_button_->bounds().x();
-  const bool would_drop_into_overflow =
-      GetDropIndex() >= static_cast<size_t>(GetNumberOfVisibleGroups());
+  // Since v2 do not support dragging tab group into overflow menu, we only need
+  // to show the menu for v1;
+  if (!tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
+    const bool dragging_over_button =
+        overflow_button_->GetVisible() &&
+        mirrored_x >= overflow_button_->bounds().x();
+    const bool would_drop_into_overflow =
+        GetDropIndex() >= static_cast<size_t>(GetNumberOfVisibleGroups());
 
-  if (dragging_over_button || would_drop_into_overflow) {
-    MaybeShowOverflowMenu();
+    if (dragging_over_button || would_drop_into_overflow) {
+      MaybeShowOverflowMenu();
+    }
   }
 
   return ui::DragDropTypes::DRAG_MOVE;
