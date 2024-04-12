@@ -34,7 +34,6 @@ constexpr char kRequestedFields[] =
 constexpr char kCourseStatesParameterName[] = "courseStates";
 constexpr char kPageTokenParameterName[] = "pageToken";
 constexpr char kStudentIdParameterName[] = "studentId";
-constexpr char kTeacherIdParameterName[] = "teacherId";
 
 std::unique_ptr<Courses> ParseResponse(std::string json) {
   std::unique_ptr<base::Value> raw_value = ParseJson(json);
@@ -45,14 +44,13 @@ std::unique_ptr<Courses> ParseResponse(std::string json) {
 
 ListCoursesRequest::ListCoursesRequest(RequestSender* sender,
                                        const std::string& student_id,
-                                       const std::string& teacher_id,
                                        const std::string& page_token,
                                        Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
       student_id_(student_id),
-      teacher_id_(teacher_id),
       page_token_(page_token),
       callback_(std::move(callback)) {
+  CHECK(!student_id_.empty());
   CHECK(!callback_.is_null());
 }
 
@@ -63,14 +61,8 @@ GURL ListCoursesRequest::GetURL() const {
       kListCoursesUrlPath);
   url = net::AppendOrReplaceQueryParameter(url, kFieldsParameterName,
                                            kRequestedFields);
-  if (!student_id_.empty()) {
-    url = net::AppendOrReplaceQueryParameter(url, kStudentIdParameterName,
-                                             student_id_);
-  }
-  if (!teacher_id_.empty()) {
-    url = net::AppendOrReplaceQueryParameter(url, kTeacherIdParameterName,
-                                             teacher_id_);
-  }
+  url = net::AppendOrReplaceQueryParameter(url, kStudentIdParameterName,
+                                           student_id_);
   url = net::AppendOrReplaceQueryParameter(
       url, kCourseStatesParameterName,
       Course::StateToString(Course::State::kActive));

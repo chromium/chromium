@@ -333,7 +333,6 @@ void GlanceablesClassroomClientImpl::OnGlanceablesBubbleClosed() {
     InvalidateFetchStatus(fetch_status);
   }
   student_courses_.InvalidateFetchStatus();
-  teacher_courses_.InvalidateFetchStatus();
 }
 
 // static
@@ -365,25 +364,7 @@ void GlanceablesClassroomClientImpl::FetchStudentCourses(
           std::move(callback));
   if (needs_refetch) {
     auto courses = std::make_unique<CourseList>();
-    FetchCoursesPage(
-        /*student_id=*/kOwnCoursesFilterValue, /*teacher_id=*/"",
-        /*page_token=*/"", student_courses_, std::move(courses));
-  }
-}
-
-void GlanceablesClassroomClientImpl::FetchTeacherCourses(
-    FetchCoursesCallback callback) {
-  NOTREACHED_NORETURN();
-  CHECK(callback);
-
-  const bool needs_refetch =
-      teacher_courses_.RunOrEnqueueCallbackAndUpdateFetchStatus(
-          std::move(callback));
-  if (needs_refetch) {
-    auto courses = std::make_unique<CourseList>();
-    FetchCoursesPage(
-        /*student_id=*/"", /*teacher_id=*/kOwnCoursesFilterValue,
-        /*page_token=*/"", teacher_courses_, std::move(courses));
+    FetchCoursesPage(/*page_token=*/"", std::move(courses));
   }
 }
 
@@ -482,39 +463,28 @@ void GlanceablesClassroomClientImpl::InvokeOnceStudentDataFetched(
 }
 
 void GlanceablesClassroomClientImpl::FetchCoursesPage(
-    const std::string& student_id,
-    const std::string& teacher_id,
     const std::string& page_token,
-    CourseListState& target_courses,
     std::unique_ptr<CourseList> fetched_courses) {
-  CHECK(!student_id.empty() || !teacher_id.empty());
-
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(
       std::make_unique<ListCoursesRequest>(
-          request_sender, student_id, teacher_id, page_token,
+          request_sender, /*student_id=*/kOwnCoursesFilterValue, page_token,
           base::BindOnce(&GlanceablesClassroomClientImpl::OnCoursesPageFetched,
-                         weak_factory_.GetWeakPtr(), student_id, teacher_id,
-                         std::ref(target_courses), std::move(fetched_courses),
+                         weak_factory_.GetWeakPtr(), std::move(fetched_courses),
                          clock_->Now())));
 }
 
 void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
-    const std::string& student_id,
-    const std::string& teacher_id,
-    CourseListState& target_courses,
     std::unique_ptr<CourseList> fetched_courses,
     const base::Time& request_start_time,
     base::expected<std::unique_ptr<Courses>, ApiErrorCode> result) {
-  CHECK(!student_id.empty() || !teacher_id.empty());
-
   base::UmaHistogramTimes("Ash.Glanceables.Api.Classroom.GetCourses.Latency",
                           clock_->Now() - request_start_time);
   base::UmaHistogramSparse("Ash.Glanceables.Api.Classroom.GetCourses.Status",
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    target_courses.FinalizeFetch(nullptr);
+    student_courses_.FinalizeFetch(nullptr);
     return;
   }
 
@@ -526,15 +496,13 @@ void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
   }
 
   if (result.value()->next_page_token().empty()) {
-    if (student_id == kOwnCoursesFilterValue) {
-      base::UmaHistogramCounts100(
-          "Ash.Glanceables.Api.Classroom.StudentCoursesCount",
-          fetched_courses->size());
-    }
-    target_courses.FinalizeFetch(std::move(fetched_courses));
+    base::UmaHistogramCounts100(
+        "Ash.Glanceables.Api.Classroom.StudentCoursesCount",
+        fetched_courses->size());
+    student_courses_.FinalizeFetch(std::move(fetched_courses));
   } else {
-    FetchCoursesPage(student_id, teacher_id, result.value()->next_page_token(),
-                     target_courses, std::move(fetched_courses));
+    FetchCoursesPage(result.value()->next_page_token(),
+                     std::move(fetched_courses));
   }
 }
 
