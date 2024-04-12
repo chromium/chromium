@@ -20,7 +20,7 @@ AddressCountryCode GetCountryCodeForNewAddress(
   PersonalDataManager* pdm =
       ContentAutofillClient::FromWebContents(web_contents)
           ->GetPersonalDataManager();
-  return AddressCountryCode(pdm->GetDefaultCountryCodeForNewAddress());
+  return pdm->address_data_manager().GetDefaultCountryCodeForNewAddress();
 }
 
 bool IsEligibleForAccountStorage(content::WebContents* web_contents,

@@ -352,22 +352,6 @@ class PersonalDataManager : public KeyedService,
   // Returns the |app_locale_| that was provided during construction.
   const std::string& app_locale() const { return app_locale_; }
 
-  // Returns the country code that was provided from the variations service
-  // during construction.
-  const std::string& variations_country_code_for_testing() const {
-    return variations_country_code_;
-  }
-
-  // Sets the country code from the variations service.
-  void set_variations_country_code_for_testing(std::string country_code) {
-    variations_country_code_ = country_code;
-  }
-
-  // Returns our best guess for the country a user is likely to use when
-  // inputting a new address. The value is calculated once and cached, so it
-  // will only update when Chrome is restarted.
-  virtual const std::string& GetDefaultCountryCodeForNewAddress() const;
-
   // Returns our best guess for the country a user is in, for experiment group
   // purposes. The value is calculated once and cached, so it will only update
   // when Chrome is restarted.

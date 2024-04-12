@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/strike_databases/address_suggestion_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
@@ -65,6 +66,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
                      signin::IdentityManager* identity_manager,
                      StrikeDatabaseBase* strike_database,
                      base::RepeatingClosure notify_pdm_observers,
+                     GeoIpCountryCode variation_country_code,
                      const std::string& app_locale);
 
   ~AddressDataManager() override;
@@ -140,6 +142,12 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Updates the `profile`'s use count and use date in the database.
   virtual void RecordUseOf(const AutofillProfile& profile);
+
+  // Returns an uppercase ISO 3166-1 alpha-2 country code, which represents our
+  // best guess for the country a user is likely to use when inputting a new
+  // address. This is used as the default in settings and on form import, if no
+  // country field was observed in the submitted form.
+  virtual AddressCountryCode GetDefaultCountryCodeForNewAddress() const;
 
   // Returns true if a `kLocalOrSyncable` profile identified by its guid is
   // blocked for migration to a `kAccount` profile.
@@ -301,6 +309,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Tracks whether the first `LoadProfiles()` call has already finished.
   bool has_initial_load_finished_ = false;
 
+  GeoIpCountryCode variation_country_code_;
+
  private:
   // TODO(b/322170538): Remove once all code writing to `synced_local_profiles_`
   // and `account_profile_` moved to this class.
@@ -337,9 +347,6 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Remove the change from the |ongoing_profile_changes_|, handle next task or
   // Refresh.
   void OnProfileChangeDone(const std::string& guid);
-
-  // Finds the country code that occurs most frequently among all profiles.
-  const std::string& MostCommonCountryCodeFromProfiles() const;
 
   // Logs metrics around the number of stored profiles after the initial load
   // has finished.
@@ -381,9 +388,6 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // An observer to listen for changes to prefs::kAutofillProfileEnabled.
   std::unique_ptr<BooleanPrefMember> profile_enabled_pref_;
-
-  // The cached result of `MostCommonCountryCodeFromProfiles()`.
-  mutable std::string most_common_country_code_;
 
   // The database that is used to count guid-keyed strikes to suppress the
   // migration-prompt of new profiles.

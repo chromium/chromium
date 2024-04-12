@@ -545,7 +545,7 @@ class FormDataImporterTest : public testing::Test {
 
     test::DisableSystemServices(prefs_.get());
 
-    personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
+    personal_data_manager_ = autofill_client_->GetPersonalDataManager();
     personal_data_manager_->set_auto_accept_address_imports_for_testing(true);
     personal_data_manager_->SetPrefService(prefs_.get());
     personal_data_manager_->SetSyncServiceForTest(&sync_service_);
@@ -766,10 +766,9 @@ class FormDataImporterTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<PrefService> prefs_;
   syncer::TestSyncService sync_service_;
-  // `personal_data_manager_` needs to be destroyed before `autofill_client_`,
-  // as the destructor of the clients FormDataImporter relies on it.
-  std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
+  // Owned by `autofill_client_`.
+  raw_ptr<TestPersonalDataManager> personal_data_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

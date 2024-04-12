@@ -64,7 +64,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   // PersonalDataManager overrides.  These functions are overridden as needed
   // for various tests, whether to skip calls to uncreated databases/services,
   // or to make things easier in general to toggle.
-  const std::string& GetDefaultCountryCodeForNewAddress() const override;
   bool IsDataLoaded() const override;
 
   // Unique to TestPersonalDataManager:
@@ -101,10 +100,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void SetNicknameForCardWithGUID(std::string_view guid,
                                   std::string_view nickname);
 
-  void set_default_country_code(const std::string& default_country_code) {
-    default_country_code_ = default_country_code;
-  }
-
   // TODO(b/322170538): Remove function from TestPDM.
   void SetAutofillPaymentMethodsEnabled(bool autofill_payment_methods_enabled) {
     test_payments_data_manager().SetAutofillPaymentMethodsEnabled(
@@ -131,9 +126,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void ClearCreditCardArtImages() {
     payments_data_manager_->credit_card_art_images_.clear();
   }
-
- private:
-  std::string default_country_code_;
 };
 
 }  // namespace autofill

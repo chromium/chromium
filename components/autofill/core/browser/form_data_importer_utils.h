@@ -106,19 +106,6 @@ class TimestampedSameOriginQueue {
   const size_t max_size_;
 };
 
-// Tries to infer the country `profile` is from, which can be useful to
-// verify whether the data is sensible. Returns a two-letter ISO country code
-// by considering, in decreasing order of priority:
-// - The country specified in `profile`.
-// - The country determined by the variation service stored in
-//   `variation_country_code`.
-// - The country code corresponding to `app_locale`.
-std::string GetPredictedCountryCode(
-    const AutofillProfile& profile,
-    const GeoIpCountryCode& variation_country_code,
-    const std::string& app_locale,
-    LogBuffer* import_log_buffer);
-
 // Stores recently submitted profile fragments, which are merged against future
 // import candidates to construct a complete profile. This enables importing
 // from multi-step import flows.

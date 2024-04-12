@@ -18,7 +18,8 @@ TestAddressDataManager::TestAddressDataManager(
                          /*identity_manager=*/nullptr,
                          /*strike_database=*/nullptr,
                          notify_pdm_observers,
-                         "en-US") {
+                         /*variation_country_code=*/GeoIpCountryCode("US"),
+                         /*app_locale=*/"en-US") {
   // Not initialized through the base class constructor call, since
   // `inmemory_strike_database_` is not initialized at this point.
   SetStrikeDatabase(&inmemory_strike_database_);
@@ -63,6 +64,14 @@ void TestAddressDataManager::RecordUseOf(const AutofillProfile& profile) {
   if (AutofillProfile* adm_profile = GetProfileByGUID(profile.guid())) {
     adm_profile->RecordAndLogUse();
   }
+}
+
+AddressCountryCode TestAddressDataManager::GetDefaultCountryCodeForNewAddress()
+    const {
+  if (default_country_code_.has_value()) {
+    return default_country_code_.value();
+  }
+  return AddressDataManager::GetDefaultCountryCodeForNewAddress();
 }
 
 bool TestAddressDataManager::IsAutofillProfileEnabled() const {

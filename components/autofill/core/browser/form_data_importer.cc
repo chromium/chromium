@@ -249,15 +249,22 @@ void FormDataImporter::ImportAndProcessFormData(
       !cc_prompt_potentially_shown && !iban_prompt_potentially_shown);
 }
 
-bool FormDataImporter::ComplementCountry(
-    AutofillProfile& profile,
-    const std::string& predicted_country_code) {
-  bool should_complement_country = !profile.HasRawInfo(ADDRESS_HOME_COUNTRY);
-  return should_complement_country &&
-         profile.SetInfoWithVerificationStatus(
-             AutofillType(ADDRESS_HOME_COUNTRY),
-             base::ASCIIToUTF16(predicted_country_code), app_locale_,
-             VerificationStatus::kObserved);
+bool FormDataImporter::ComplementCountry(AutofillProfile& profile,
+                                         LogBuffer* import_log_buffer) {
+  if (profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
+    return false;
+  }
+  const std::string fallback = personal_data_manager_->address_data_manager()
+                                   .GetDefaultCountryCodeForNewAddress()
+                                   .value();
+  if (import_log_buffer) {
+    *import_log_buffer
+        << LogMessage::kImportAddressProfileComplementedCountryCode << fallback
+        << CTag{};
+  }
+  return profile.SetInfoWithVerificationStatus(
+      AutofillType(ADDRESS_HOME_COUNTRY), base::ASCIIToUTF16(fallback),
+      app_locale_, VerificationStatus::kObserved);
 }
 
 bool FormDataImporter::SetPhoneNumber(
@@ -434,11 +441,8 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
   // country or the app locale. For the variation country code to take
   // precedence over the app locale, country code complemention needs to happen
   // before `SetPhoneNumber()`.
-  const std::string predicted_country_code = GetPredictedCountryCode(
-      candidate_profile, client_->GetVariationConfigCountryCode(), app_locale_,
-      import_log_buffer);
   import_metadata.did_complement_country =
-      ComplementCountry(candidate_profile, predicted_country_code);
+      ComplementCountry(candidate_profile, import_log_buffer);
 
   // We only set complete phone, so aggregate phone parts in these vars and set
   // complete at the end.

@@ -37,7 +37,8 @@ class AddressEditorControllerTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardEnabled, true);
     pdm_.SetPrefService(&pref_service_);
-    pdm_.set_default_country_code("US");
+    pdm_.test_address_data_manager().SetDefaultCountryCode(
+        AddressCountryCode("US"));
   }
 
  protected:

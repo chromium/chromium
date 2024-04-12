@@ -40,7 +40,11 @@ class CountryComboboxModelTest : public testing::Test {
 
 TEST_F(CountryComboboxModelTest, DefaultCountryCode) {
   std::string default_country = model()->GetDefaultCountryCode();
-  EXPECT_EQ(manager()->GetDefaultCountryCodeForNewAddress(), default_country);
+  EXPECT_EQ(manager()
+                ->address_data_manager()
+                .GetDefaultCountryCodeForNewAddress()
+                .value(),
+            default_country);
 
   AutofillCountry country(default_country, "en-US");
   EXPECT_EQ(country.name(), model()->GetItemAt(0));

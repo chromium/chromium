@@ -310,11 +310,11 @@ class FormDataImporter : public PersonalDataManagerObserver,
       bool is_credit_card_upstream_enabled);
 
   // If the `profile`'s country is not empty, complements it with
-  // `predicted_country_code`. To give users the opportunity to edit, this is
-  // only done with explicit save prompts enabled.
+  // `AddressDataManager::GetDefaultCountryCodeForNewAddress()`, while logging
+  // to the `import_log_buffer`.
   // Returns true if the country was complemented.
   bool ComplementCountry(AutofillProfile& profile,
-                         const std::string& predicted_country_code);
+                         LogBuffer* import_log_buffer);
 
   // Sets the `profile`'s PHONE_HOME_WHOLE_NUMBER to the `combined_phone`, if
   // possible. The phone number's region is deduced based on the profile's

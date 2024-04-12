@@ -82,25 +82,6 @@ TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_TTL) {
   EXPECT_THAT(queue, testing::ElementsAre(3, 2));
 }
 
-TEST(FormDataImporterUtilsTest, GetPredictedCountryCode) {
-  AutofillProfile us_profile(AddressCountryCode("US"));
-  AutofillProfile empty_profile(
-      i18n_model_definition::kLegacyHierarchyCountryCode);
-  // Test prioritization: profile > variation service state > app locale
-  EXPECT_EQ(GetPredictedCountryCode(us_profile, GeoIpCountryCode("DE"), "de-AT",
-                                    nullptr),
-            "US");
-  EXPECT_EQ(GetPredictedCountryCode(us_profile, GeoIpCountryCode(""), "de-AT",
-                                    nullptr),
-            "US");
-  EXPECT_EQ(GetPredictedCountryCode(empty_profile, GeoIpCountryCode("DE"),
-                                    "de-AT", nullptr),
-            "DE");
-  EXPECT_EQ(GetPredictedCountryCode(empty_profile, GeoIpCountryCode(""),
-                                    "de-AT", nullptr),
-            "AT");
-}
-
 // Each test describes a sequence of submitted forms, where 'a' and 'c' indicate
 // an address and a credit card form, respectively.
 // Using an upper case A or C, forms that are supposed to be part of the

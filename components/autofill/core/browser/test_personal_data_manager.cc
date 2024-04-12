@@ -28,14 +28,6 @@ TestPersonalDataManager::TestPersonalDataManager()
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;
 
-const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
-    const {
-  if (default_country_code_.empty())
-    return PersonalDataManager::GetDefaultCountryCodeForNewAddress();
-
-  return default_country_code_;
-}
-
 void TestPersonalDataManager::ClearAllLocalData() {
   ClearProfiles();
   payments_data_manager_->local_credit_cards_.clear();

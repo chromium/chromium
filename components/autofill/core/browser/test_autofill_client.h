@@ -583,6 +583,9 @@ class TestAutofillClientTemplate : public T {
   void SetVariationConfigCountryCode(
       const GeoIpCountryCode& variation_config_country_code) {
     variation_config_country_code_ = variation_config_country_code;
+    GetPersonalDataManager()
+        ->test_address_data_manager()
+        .SetVariationCountryCode(variation_config_country_code);
   }
 
   void set_save_card_offer_user_decision(

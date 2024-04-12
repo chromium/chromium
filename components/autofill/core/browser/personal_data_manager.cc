@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
@@ -93,7 +94,8 @@ void PersonalDataManager::Init(
       &PersonalDataManager::NotifyPersonalDataObserver, base::Unretained(this));
   address_data_manager_ = std::make_unique<AddressDataManager>(
       profile_database, pref_service, sync_service, identity_manager,
-      strike_database, notify_observers, app_locale_);
+      strike_database, notify_observers,
+      GeoIpCountryCode(variations_country_code_), app_locale_);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
@@ -361,17 +363,6 @@ std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest() const {
 bool PersonalDataManager::IsAutofillEnabled() const {
   return address_data_manager_->IsAutofillProfileEnabled() ||
          payments_data_manager_->IsAutofillPaymentMethodsEnabled();
-}
-
-const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()
-    const {
-  const std::string& most_common_country =
-      address_data_manager_->MostCommonCountryCodeFromProfiles();
-  if (!most_common_country.empty()) {
-    return most_common_country;
-  }
-  // Failing that, use the country code determined for experiment groups.
-  return GetCountryCodeForExperimentGroup();
 }
 
 const std::string& PersonalDataManager::GetCountryCodeForExperimentGroup()

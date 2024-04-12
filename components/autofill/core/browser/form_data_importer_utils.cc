@@ -28,43 +28,6 @@ bool IsOriginPartOfDeletionInfo(const std::optional<url::Origin>& origin,
 
 }  // anonymous namespace
 
-std::string GetPredictedCountryCode(
-    const AutofillProfile& profile,
-    const GeoIpCountryCode& variation_country_code,
-    const std::string& app_locale,
-    LogBuffer* import_log_buffer) {
-  // Try to acquire the country code form the filled form.
-  std::string country_code =
-      base::UTF16ToASCII(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
-
-  if (import_log_buffer && !country_code.empty()) {
-    *import_log_buffer << LogMessage::kImportAddressProfileFromFormCountrySource
-                       << "Country entry in form." << CTag{};
-  }
-
-  // As a fallback, use the variation service state to get a country code.
-  if (country_code.empty() && !variation_country_code.value().empty()) {
-    country_code = variation_country_code.value();
-    if (import_log_buffer) {
-      *import_log_buffer
-          << LogMessage::kImportAddressProfileFromFormCountrySource
-          << "Variations service." << CTag{};
-    }
-  }
-
-  // As the last resort, derive the country code from the app_locale.
-  if (country_code.empty()) {
-    country_code = AutofillCountry::CountryCodeForLocale(app_locale);
-    if (import_log_buffer && !country_code.empty()) {
-      *import_log_buffer
-          << LogMessage::kImportAddressProfileFromFormCountrySource
-          << "App locale." << CTag{};
-    }
-  }
-
-  return country_code;
-}
-
 MultiStepImportMerger::MultiStepImportMerger(
     const std::string& app_locale,
     const GeoIpCountryCode& variation_country_code)

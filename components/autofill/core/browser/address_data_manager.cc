@@ -12,6 +12,8 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
@@ -67,8 +69,10 @@ AddressDataManager::AddressDataManager(
     signin::IdentityManager* identity_manager,
     StrikeDatabaseBase* strike_database,
     base::RepeatingClosure notify_pdm_observers,
+    GeoIpCountryCode variation_country_code,
     const std::string& app_locale)
     : notify_pdm_observers_(notify_pdm_observers),
+      variation_country_code_(std::move(variation_country_code)),
       webdata_service_(webdata_service),
       sync_service_(sync_service),
       app_locale_(app_locale) {
@@ -324,6 +328,14 @@ void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
   UpdateProfile(updated_profile);
 }
 
+AddressCountryCode AddressDataManager::GetDefaultCountryCodeForNewAddress()
+    const {
+  std::string country = variation_country_code_->empty()
+                            ? AutofillCountry::CountryCodeForLocale(app_locale_)
+                            : variation_country_code_.value();
+  return AddressCountryCode(country);
+}
+
 bool AddressDataManager::IsProfileMigrationBlocked(
     const std::string& guid) const {
   AutofillProfile* profile = GetProfileByGUID(guid);
@@ -459,13 +471,10 @@ void AddressDataManager::SetPrefService(PrefService* pref_service) {
   // `pref_service_` can be nullptr in tests. Using base::Unretained(this) is
   // safe because observer instances are destroyed once `this` is destroyed.
   if (pref_service_) {
-    profile_enabled_pref_->Init(prefs::kAutofillProfileEnabled, pref_service_,
-                                base::BindRepeating(
-                                    [](AddressDataManager* self) {
-                                      self->most_common_country_code_.clear();
-                                      self->LoadProfiles();
-                                    },
-                                    this));
+    profile_enabled_pref_->Init(
+        prefs::kAutofillProfileEnabled, pref_service_,
+        base::BindRepeating(&AddressDataManager::LoadProfiles,
+                            base::Unretained(this)));
   }
 }
 
@@ -725,37 +734,6 @@ void AddressDataManager::OnProfileChangeDone(const std::string& guid) {
   ongoing_profile_changes_[guid].pop_front();
   notify_pdm_observers_.Run();
   HandleNextProfileChange(guid);
-}
-
-const std::string& AddressDataManager::MostCommonCountryCodeFromProfiles()
-    const {
-  // When `!IsAutofillProfileEnabled()`, `most_common_country_code_` is empty,
-  // since it is reset by a pref observer. See `SetPrefService()`.
-  if (!most_common_country_code_.empty() || !IsAutofillProfileEnabled()) {
-    return most_common_country_code_;
-  }
-  // Count up country codes from existing profiles.
-  std::map<std::string, int> votes;
-  const std::vector<AutofillProfile*>& profiles = GetProfiles();
-  const std::vector<std::string>& country_codes =
-      CountryDataMap::GetInstance()->country_codes();
-  for (const AutofillProfile* profile : profiles) {
-    std::string country_code = base::ToUpperASCII(
-        base::UTF16ToASCII(profile->GetRawInfo(ADDRESS_HOME_COUNTRY)));
-    if (base::Contains(country_codes, country_code)) {
-      votes[country_code]++;
-    }
-  }
-
-  // Take the most common country code.
-  if (!votes.empty()) {
-    most_common_country_code_ =
-        base::ranges::max_element(votes, [](auto& a, auto& b) {
-          return a.second < b.second;
-        })->first;
-  }
-
-  return most_common_country_code_;
 }
 
 void AddressDataManager::LogStoredDataMetrics() const {
