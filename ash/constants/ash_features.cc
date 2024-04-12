@@ -279,7 +279,7 @@ BASE_FEATURE(kBatterySaverAlwaysOn,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Display weather information in birch UI.
-BASE_FEATURE(kBirchWeather, "BirchWeather", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBirchWeather, "BirchWeather", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.

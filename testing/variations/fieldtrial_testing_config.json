@@ -8063,6 +8063,25 @@
                     "enable_features": [
                         "ForestFeature"
                     ]
+                },
+                {
+                    "name": "EnabledWithoutWeather",
+                    "enable_features": [
+                        "ForestFeature"
+                    ],
+                    "disable_features": [
+                        "BirchWeather"
+                    ]
+                },
+                {
+                    "name": "EnabledWithWeatherProdEndpoint",
+                    "params": {
+                        "prod_weather_endpoint": "true"
+                    },
+                    "enable_features": [
+                        "BirchWeather",
+                        "ForestFeature"
+                    ]
                 }
             ]
         }
