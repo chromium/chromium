@@ -98,7 +98,7 @@ using autofill_address_profile_infobar_overlays::
         self.browser->GetWebStateList()->GetActiveWebState();
     AutofillBottomSheetTabHelper* bottomSheetTabHelper =
         AutofillBottomSheetTabHelper::FromWebState(webState);
-    bottomSheetTabHelper->ShowEditAddressBottomSheet();
+    bottomSheetTabHelper->ShowEditAddressBottomSheet(self.config->GetProfile());
   } else {
     SaveAddressProfileInfobarModalOverlayMediator* modalMediator =
         static_cast<SaveAddressProfileInfobarModalOverlayMediator*>(

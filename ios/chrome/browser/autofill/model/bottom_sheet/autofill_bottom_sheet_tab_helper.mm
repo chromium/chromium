@@ -86,7 +86,10 @@ void AutofillBottomSheetTabHelper::ShowVirtualCardEnrollmentBottomSheet(
   [commands_handler_ showVirtualCardEnrollmentBottomSheet:model];
 }
 
-void AutofillBottomSheetTabHelper::ShowEditAddressBottomSheet() {
+void AutofillBottomSheetTabHelper::ShowEditAddressBottomSheet(
+    const autofill::AutofillProfile* profile) {
+  address_profile_for_edit_ =
+      std::make_unique<autofill::AutofillProfile>(*profile);
   [commands_handler_ showEditAddressBottomSheet];
 }
 

@@ -80,7 +80,7 @@ class AutofillBottomSheetTabHelper
       autofill::VirtualCardEnrollmentCallbacks callbacks);
 
   // Send a command to show the bottom sheet to edit an address.
-  void ShowEditAddressBottomSheet();
+  void ShowEditAddressBottomSheet(const autofill::AutofillProfile* profile);
 
   // Handler for JavaScript messages. Dispatch to more specific handler.
   void OnFormMessageReceived(const web::ScriptMessage& message);
@@ -208,6 +208,9 @@ class AutofillBottomSheetTabHelper
   // Callbacks to be run when the virtual card enrollment bottom sheet UI has
   // completed.
   autofill::VirtualCardEnrollmentCallbacks virtual_card_enrollment_callbacks_;
+
+  // Address Profile that is to be/being edited via the bottom sheet.
+  std::unique_ptr<autofill::AutofillProfile> address_profile_for_edit_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
