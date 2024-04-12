@@ -10875,7 +10875,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/views/extensions/extensions_menu_main_page_view_interactive_uitest.cc",
       "../browser/ui/views/extensions/extensions_menu_site_permissions_page_view_interactive_uitest.cc",
       "../browser/ui/views/extensions/extensions_menu_view_interactive_uitest.cc",
-      "../browser/ui/views/lens/search_bubble_interactive_uitest.cc",
+      "../browser/ui/views/lens/lens_search_bubble_interactive_uitest.cc",
       "../browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_pixel_test.cc",
       "../browser/ui/views/media_router/media_router_dialog_controller_views_interactive_uitest.cc",
       "../browser/ui/views/page_info/page_info_bubble_view_interactive_uitest.cc",

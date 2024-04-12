@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_LENS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_LENS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
 
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
@@ -13,11 +13,13 @@
 namespace lens {
 
 // Manages the SearchBubble instance for the associated browser.
-class SearchBubbleController : public BrowserUserData<SearchBubbleController> {
+class LensSearchBubbleController
+  : public BrowserUserData<LensSearchBubbleController> {
  public:
-  SearchBubbleController(const SearchBubbleController&) = delete;
-  SearchBubbleController& operator=(const SearchBubbleController&) = delete;
-  ~SearchBubbleController() override;
+  LensSearchBubbleController(const LensSearchBubbleController&) = delete;
+  LensSearchBubbleController& operator=(const LensSearchBubbleController&)
+    = delete;
+  ~LensSearchBubbleController() override;
 
   // Shows an instance of the lens search bubble for this browser.
   void Show();
@@ -29,9 +31,9 @@ class SearchBubbleController : public BrowserUserData<SearchBubbleController> {
   }
 
  private:
-  friend class BrowserUserData<SearchBubbleController>;
+  friend class BrowserUserData<LensSearchBubbleController>;
 
-  explicit SearchBubbleController(Browser* browser);
+  explicit LensSearchBubbleController(Browser* browser);
 
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
 
@@ -40,4 +42,4 @@ class SearchBubbleController : public BrowserUserData<SearchBubbleController> {
 
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_UI_VIEWS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_LENS_LENS_SEARCH_BUBBLE_CONTROLLER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/lens/search_bubble_controller.h"
+#include "chrome/browser/ui/views/lens/lens_search_bubble_controller.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,16 +19,16 @@ namespace lens {
 
 constexpr int kBubbleCornerRadius = 20;
 
-class SearchBubbleDialogView : public WebUIBubbleDialogView {
-  METADATA_HEADER(SearchBubbleDialogView, WebUIBubbleDialogView)
+class LensSearchBubbleDialogView : public WebUIBubbleDialogView {
+  METADATA_HEADER(LensSearchBubbleDialogView, WebUIBubbleDialogView)
  public:
-  explicit SearchBubbleDialogView(
+  explicit LensSearchBubbleDialogView(
       views::View* anchor_view,
       std::unique_ptr<WebUIContentsWrapper> contents_wrapper)
       : WebUIBubbleDialogView(anchor_view, contents_wrapper->GetWeakPtr()),
         contents_wrapper_(std::move(contents_wrapper)) {
     // This bubble persists even when deactivated. It must be closed
-    // through the SearchBubbleController.
+    // through the LensSearchBubbleController.
     set_close_on_deactivate(false);
     set_corner_radius(kBubbleCornerRadius);
   }
@@ -37,12 +37,12 @@ class SearchBubbleDialogView : public WebUIBubbleDialogView {
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
 };
 
-BEGIN_METADATA(SearchBubbleDialogView)
+BEGIN_METADATA(LensSearchBubbleDialogView)
 END_METADATA
 
-SearchBubbleController::~SearchBubbleController() = default;
+LensSearchBubbleController::~LensSearchBubbleController() = default;
 
-void SearchBubbleController::Show() {
+void LensSearchBubbleController::Show() {
   if (bubble_view_) {
     return;
   }
@@ -52,8 +52,8 @@ void SearchBubbleController::Show() {
           GURL(chrome::kChromeUILensSearchBubbleURL), GetBrowser().profile(),
           IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE);
 
-  std::unique_ptr<SearchBubbleDialogView> bubble_view =
-      std::make_unique<SearchBubbleDialogView>(
+  std::unique_ptr<LensSearchBubbleDialogView> bubble_view =
+      std::make_unique<LensSearchBubbleDialogView>(
           BrowserView::GetBrowserViewForBrowser(&GetBrowser())->toolbar(),
           std::move(contents_wrapper));
   bubble_view->SetProperty(views::kElementIdentifierKey,
@@ -62,7 +62,7 @@ void SearchBubbleController::Show() {
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
 }
 
-void SearchBubbleController::Close() {
+void LensSearchBubbleController::Close() {
   if (!bubble_view_) {
     return;
   }
@@ -71,9 +71,9 @@ void SearchBubbleController::Close() {
       views::Widget::ClosedReason::kUnspecified);
 }
 
-SearchBubbleController::SearchBubbleController(Browser* browser)
-    : BrowserUserData<SearchBubbleController>(*browser) {}
+LensSearchBubbleController::LensSearchBubbleController(Browser* browser)
+    : BrowserUserData<LensSearchBubbleController>(*browser) {}
 
-BROWSER_USER_DATA_KEY_IMPL(SearchBubbleController);
+BROWSER_USER_DATA_KEY_IMPL(LensSearchBubbleController);
 
 }  // namespace lens
