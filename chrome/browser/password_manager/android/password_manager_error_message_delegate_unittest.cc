@@ -308,7 +308,7 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
           kGMSCoreOutdatedSavingPossible,
       mock_dismissal_callback()->Get());
 
-  EXPECT_CALL(*helper_bridge(), LaunchGmsUpdate());
+  EXPECT_CALL(*helper_bridge(), LaunchGmsUpdate(web_contents()));
   // Trigger the click action on the "Update" button and dismiss the message.
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
   // The message needs to be dismissed manually in tests. In production code
@@ -339,7 +339,7 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
           kGMSCoreOutdatedSavingDisabled,
       mock_dismissal_callback()->Get());
 
-  EXPECT_CALL(*helper_bridge(), LaunchGmsUpdate());
+  EXPECT_CALL(*helper_bridge(), LaunchGmsUpdate(web_contents()));
   // Trigger the click action on the "Update" button and dismiss the message.
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
   // The message needs to be dismissed manually in tests. In production code

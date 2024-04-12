@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -151,7 +150,9 @@ public class PasswordManagerErrorMessageHelperBridge {
 
     /** Starts the Google Play services page where the user can choose to update GMSCore. */
     @CalledByNative
-    static void launchGmsUpdate() {
-        PasswordManagerHelper.launchGmsUpdate(ContextUtils.getApplicationContext());
+    static void launchGmsUpdate(WindowAndroid windowAndroid) {
+        assert windowAndroid.getActivity().get() != null;
+        Activity activity = windowAndroid.getActivity().get();
+        PasswordManagerHelper.launchGmsUpdate(activity);
     }
 }

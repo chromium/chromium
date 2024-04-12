@@ -221,7 +221,7 @@ void PasswordManagerErrorMessageDelegate::HandleActionButtonClicked(
       break;
     case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
     case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled:
-      helper_bridge_->LaunchGmsUpdate();
+      helper_bridge_->LaunchGmsUpdate(web_contents);
       break;
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:

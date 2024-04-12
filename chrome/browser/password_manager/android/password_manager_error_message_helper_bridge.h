@@ -36,7 +36,7 @@ class PasswordManagerErrorMessageHelperBridge {
 
   // Starts the Google Play services page where the user can choose to update
   // GMSCore.
-  virtual void LaunchGmsUpdate() = 0;
+  virtual void LaunchGmsUpdate(content::WebContents* web_contents) = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ERROR_MESSAGE_HELPER_BRIDGE_H_
