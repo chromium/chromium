@@ -265,6 +265,7 @@
       } else {
         [self.consumer removeItemWithIdentifier:item
                          selectedItemIdentifier:[self activeIdentifier]];
+        [self removeObservationForWebState:moveChange.moved_web_state()];
       }
       break;
     }
@@ -296,6 +297,8 @@
       [super didChangeWebStateList:webStateList change:change status:status];
       break;
   }
+  // Update the title in case the number of tabs changed.
+  [_groupConsumer setGroupTitle:_tabGroup->GetTitle()];
 }
 
 @end

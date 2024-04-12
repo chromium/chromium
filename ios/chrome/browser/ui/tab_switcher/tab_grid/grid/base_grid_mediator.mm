@@ -456,8 +456,12 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
       const WebStateListChangeStatusOnly& selectionOnlyChange =
           change.As<WebStateListChangeStatusOnly>();
       if (selectionOnlyChange.pinned_state_changed()) {
-        [self changePinnedStateForWebState:selectionOnlyChange.web_state()
-                                   atIndex:selectionOnlyChange.index()];
+        [self
+            changePinnedStateForWebState:selectionOnlyChange.web_state()
+                                 atIndex:selectionOnlyChange.index()
+                            updatedGroup:selectionOnlyChange.old_group()
+                                             ? selectionOnlyChange.old_group()
+                                             : selectionOnlyChange.new_group()];
         break;
       }
       const TabGroup* oldGroup = selectionOnlyChange.old_group();
@@ -517,7 +521,10 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
       if (moveChange.pinned_state_changed()) {
         // The pinned state can be updated when a tab is moved.
         [self changePinnedStateForWebState:moveChange.moved_web_state()
-                                   atIndex:moveChange.moved_to_index()];
+                                   atIndex:moveChange.moved_to_index()
+                              updatedGroup:moveChange.old_group()
+                                               ? moveChange.old_group()
+                                               : moveChange.new_group()];
       } else if (![self isPinnedWebState:moveChange.moved_to_index()]) {
         // BaseGridMediator handles only non pinned tabs because pinned tabs are
         // handled in PinnedTabsMediator.
@@ -1336,16 +1343,25 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
 
 // Inserts/removes a non pinned item to/from the collection.
 - (void)changePinnedStateForWebState:(web::WebState*)webState
-                             atIndex:(int)index {
+                             atIndex:(int)index
+                        updatedGroup:(const TabGroup*)group {
   if ([self isPinnedWebState:index]) {
-    GridItemIdentifier* identifierToRemove =
-        [GridItemIdentifier tabIdentifier:webState];
-    [self.consumer removeItemWithIdentifier:identifierToRemove
-                     selectedItemIdentifier:[self activeIdentifier]];
+    if (group) {
+      [self updateCellGroup:group];
+    } else {
+      GridItemIdentifier* identifierToRemove =
+          [GridItemIdentifier tabIdentifier:webState];
+      [self.consumer removeItemWithIdentifier:identifierToRemove
+                       selectedItemIdentifier:[self activeIdentifier]];
+    }
     [self removeObservationForWebState:webState];
   } else {
-    [self insertItem:[GridItemIdentifier tabIdentifier:webState]
-        beforeWebStateIndex:index + 1];
+    if (group) {
+      [self updateCellGroup:group];
+    } else {
+      [self insertItem:[GridItemIdentifier tabIdentifier:webState]
+          beforeWebStateIndex:index + 1];
+    }
     [self addObservationForWebState:webState];
   }
 }
