@@ -84,10 +84,16 @@ void MaybeDismissNotification() {
   AppLaunchConfiguration config;
   //  config.features_enabled.push_back(kIOSTipsNotifications);
 
+  std::string triggerTime = "2.5s";
+
+  if ([self isRunningTest:@selector(testToggleTipsNotificationsMenuItem)]) {
+    triggerTime = "72h";
+  }
+
   // Enable Tips Notifications with 1s trigger time.
   std::string enableFeatures = base::StringPrintf(
       "--enable-features=%s:%s/%s", kIOSTipsNotifications.name,
-      kIOSTipsNotificationsTriggerTimeParam, "2.5s");
+      kIOSTipsNotificationsTriggerTimeParam, triggerTime.c_str());
   config.additional_args.push_back(enableFeatures);
   return config;
 }
@@ -110,6 +116,9 @@ void MaybeDismissNotification() {
   [super tearDown];
 }
 
+#pragma mark - Helpers
+
+// Opt in to Tips Notications via the SetUpList long-press menu.
 - (void)optInToTipsNotifications {
   // Long press the SetUpList module.
   id<GREYMatcher> setUpList =
@@ -126,6 +135,32 @@ void MaybeDismissNotification() {
 
   // Tap the confirmation snackbar.
   WaitForThenTapText(@"notifications turned on");
+}
+
+// Turn off Tips Notifications via the SetUpList long-press menu.
+- (void)turnOffTipsNotifications {
+  // Long press the SetUpList module.
+  id<GREYMatcher> setUpList =
+      grey_accessibilityID(set_up_list::kDefaultBrowserItemID);
+  [[EarlGrey selectElementWithMatcher:setUpList]
+      performAction:grey_longPress()];
+
+  // Tap the menu item to enable notifications.
+  TapText(@"Turn off Notifications");
+
+  // Tap the confirmation snackbar.
+  WaitForThenTapText(@"notifications turned off");
+}
+
+#pragma mark - Tests
+
+// Tests the SetUpList long press menu item to toggle Tips Notifications.
+- (void)testToggleTipsNotificationsMenuItem {
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  MaybeDismissNotification();
+  [self optInToTipsNotifications];
+  [self turnOffTipsNotifications];
 }
 
 // Tests triggering and interacting with each of the Tips notifications.

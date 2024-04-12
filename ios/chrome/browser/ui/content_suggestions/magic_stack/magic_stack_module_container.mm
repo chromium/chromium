@@ -406,9 +406,8 @@ const CGFloat kSeparatorHeight = 0.5;
 - (NSArray<UIAction*>*)contextMenuActions {
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
-  if (IsSetUpListModuleType(self.type) && IsIOSTipsNotificationsEnabled() &&
-      ![self optedInToTipsNotifications]) {
-    [actions addObject:[self turnOnTipsNotificationsAction]];
+  if (IsSetUpListModuleType(self.type) && IsIOSTipsNotificationsEnabled()) {
+    [actions addObject:[self toggleTipsNotificationsAction]];
   }
   [actions addObject:[self hideAction]];
   return actions;
@@ -429,18 +428,35 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 // Returns the menu action to opt-in to Tips Notifications.
-- (UIAction*)turnOnTipsNotificationsAction {
+- (UIAction*)toggleTipsNotificationsAction {
+  BOOL optedIn = [self optedInToTipsNotifications];
   __weak __typeof(self) weakSelf = self;
-  NSString* title = l10n_util::GetNSStringF(
-      IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM,
-      l10n_util::GetStringUTF16(content_suggestions::SetUpListTitleStringID()));
-  return
-      [UIAction actionWithTitle:title
-                          image:DefaultSymbolWithPointSize(kBellSymbol, 18)
-                     identifier:nil
-                        handler:^(UIAction* action) {
-                          [weakSelf.delegate enableNotifications:weakSelf.type];
-                        }];
+  NSString* title;
+  NSString* symbol;
+  if (optedIn) {
+    title = l10n_util::GetNSStringF(
+        IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM_OFF,
+        l10n_util::GetStringUTF16(
+            content_suggestions::SetUpListTitleStringID()));
+    symbol = kBellSlashSymbol;
+  } else {
+    title = l10n_util::GetNSStringF(
+        IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM,
+        l10n_util::GetStringUTF16(
+            content_suggestions::SetUpListTitleStringID()));
+    symbol = kBellSymbol;
+  }
+  return [UIAction
+      actionWithTitle:title
+                image:DefaultSymbolWithPointSize(symbol, 18)
+           identifier:nil
+              handler:^(UIAction* action) {
+                if (optedIn) {
+                  [weakSelf.delegate disableNotifications:weakSelf.type];
+                } else {
+                  [weakSelf.delegate enableNotifications:weakSelf.type];
+                }
+              }];
 }
 
 - (void)seeMoreButtonWasTapped:(UIButton*)button {

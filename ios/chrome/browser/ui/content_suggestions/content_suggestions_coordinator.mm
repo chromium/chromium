@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
@@ -557,6 +558,34 @@
               content_suggestions::SetUpListTitleStringID()));
   _notificationsOptInAlertCoordinator.delegate = self;
   [_notificationsOptInAlertCoordinator start];
+}
+
+- (void)disableNotifications:(ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List modules.
+  CHECK(IsSetUpListModuleType(type));
+
+  id<SystemIdentity> identity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  GetApplicationContext()->GetPushNotificationService()->SetPreference(
+      identity.gaiaID, PushNotificationClientId::kTips, false);
+
+  // Show confirmation snackbar.
+  NSString* buttonText =
+      l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_MANAGE_SETTINGS);
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE_OFF,
+      l10n_util::GetStringUTF16(content_suggestions::SetUpListTitleStringID()));
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  __weak id<SettingsCommands> weakSettingsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+  [snackbarHandler showSnackbarWithMessage:message
+                                buttonText:buttonText
+                             messageAction:^{
+                               [weakSettingsHandler showNotificationsSettings];
+                             }
+                          completionAction:nil];
 }
 
 #pragma mark - MagicStackHalfSheetTableViewControllerDelegate

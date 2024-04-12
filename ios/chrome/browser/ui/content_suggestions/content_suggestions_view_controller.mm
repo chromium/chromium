@@ -524,6 +524,10 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
   [self.audience enableNotifications:type];
 }
 
+- (void)disableNotifications:(ContentSuggestionsModuleType)type {
+  [self.audience disableNotifications:type];
+}
+
 #pragma mark - Private
 
 // Returns whether the Magic Stack has been constructed and has already been

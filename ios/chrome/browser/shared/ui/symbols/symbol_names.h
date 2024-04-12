@@ -90,6 +90,7 @@ extern NSString* const kDefaultBrowserSymbol;
 extern NSString* const kDefaultBrowseriOS14Symbol;
 extern NSString* const kDiscoverSymbol;
 extern NSString* const kBellSymbol;
+extern NSString* const kBellSlashSymbol;
 extern NSString* const kBellBadgeSymbol;
 extern NSString* const kCachedDataSymbol;
 extern NSString* const kAutofillDataSymbol;

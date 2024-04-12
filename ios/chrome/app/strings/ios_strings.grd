@@ -2488,6 +2488,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE" desc="The snackbar message that confirms that notifications have been turned on.">
         <ph name="FEATURE_NAME">$1<ex>Chromium Tips</ex></ph> notifications turned on
       </message>
+      <message name="IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE_OFF" desc="The snackbar message that confirms that notifications have been turned off.">
+        <ph name="FEATURE_NAME">$1<ex>Chromium Tips</ex></ph> notifications turned off
+      </message>
       <message name="IDS_IOS_NOTIFICATIONS_MANAGE_SETTINGS" desc="The label for a button that takes the user to the app's Notifications Settings page.">
         Manage
       </message>
@@ -5186,6 +5189,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM" desc="Title of context menu item for the Set Up List to enable notifications.">
         Turn on Notifications for <ph name="FEATURE_NAME">$1<ex>Chromium Tips</ex></ph>
+      </message>
+      <message name="IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM_OFF" desc="Title of context menu item for the Set Up List to turn off notifications.">
+        Turn off Notifications for <ph name="FEATURE_NAME">$1<ex>Chromium Tips</ex></ph>
       </message>
       <message name="IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT" desc="Action hint for any managed switch in settings. This is spoken by VoiceOver. [iOS only]">
         This setting is managed, double tap for more information
