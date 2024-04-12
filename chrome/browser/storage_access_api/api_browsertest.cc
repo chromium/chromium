@@ -22,6 +22,8 @@
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/webid/federated_identity_permission_context.h"
+#include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -41,6 +43,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -58,6 +61,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/origin.h"
 
 using content::BrowserThread;
 using testing::Gt;
@@ -321,11 +325,13 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     NavigateFrameTo(https_server_.GetURL(host, path));
   }
 
-  void NavigateFrameTo(const GURL& url, Browser* browser_ptr = nullptr) {
+  void NavigateFrameTo(const GURL& url,
+                       Browser* browser_ptr = nullptr,
+                       const std::string& iframe_id = "test") {
     content::WebContents* web_contents = (browser_ptr ? browser_ptr : browser())
                                              ->tab_strip_model()
                                              ->GetActiveWebContents();
-    EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", url));
+    EXPECT_TRUE(NavigateIframeToURL(web_contents, iframe_id, url));
   }
 
   void NavigateNestedFrameTo(const std::string& host, const std::string& path) {
@@ -2444,6 +2450,76 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
       permissions::PermissionRequestManager::DISMISS);
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
+}
+
+class StorageAccessAPIAutograntsWithFedCMBrowserTest
+    : public StorageAccessAPIBaseBrowserTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {{features::kFedCmWithStorageAccessAPI, {}}};
+  }
+
+  void GrantFedCMPermission() {
+    const url::Origin rp_embedder =
+        url::Origin::Create(GetURL(kHostASubdomain));
+    const url::Origin rp_requester = url::Origin::Create(GetURL(kHostC));
+    const url::Origin idp = url::Origin::Create(GetURL(kHostB));
+    constexpr char account_id[] = "my account";
+
+    FederatedIdentityPermissionContextFactory::GetForProfile(
+        browser()->profile())
+        ->GrantSharingPermission(rp_requester, rp_embedder, idp, account_id);
+  }
+
+  void NavigateToPageWithPermissionsPolicyIframe(
+      const std::string& top_level_host,
+      const std::string& embedded_host) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server().GetURL(
+                       top_level_host,
+                       base::StrCat({"/cross_site_iframe_factory.html?",
+                                     top_level_host, "(", embedded_host,
+                                     "{allow-identity-credentials-get})"}))));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
+                       FedCMGrants_RequiresPermissionPolicy) {
+  SetBlockThirdPartyCookies(true);
+  GrantFedCMPermission();
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+  EXPECT_EQ(prompt_factory()->TotalRequestCount(), 1);
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
+                       FedCMGrantsAllowCookieAccessViaSAA) {
+  SetBlockThirdPartyCookies(true);
+  GrantFedCMPermission();
+
+  NavigateToPageWithPermissionsPolicyIframe(kHostA, kHostB);
+  NavigateFrameTo(EchoCookiesURL(kHostB), browser(), /*iframe_id=*/"child-0");
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(prompt_factory()->TotalRequestCount(), 0);
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
+
+  NavigateToPageWithPermissionsPolicyIframe(kHostA, kHostB);
+  NavigateFrameTo(EchoCookiesURL(kHostB), browser(), /*iframe_id=*/"child-0");
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
 // TODO(crbug.com/1448957): Add test cases of 3PC enabled by other mechanisms.
