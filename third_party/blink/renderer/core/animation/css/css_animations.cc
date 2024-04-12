@@ -2398,6 +2398,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   // transition, then don't start a transition.
   if (discrete_interpolation &&
       behavior != CSSTransitionData::TransitionBehavior::kAllowDiscrete) {
+    state.update.UnstartTransition(property);
     return;
   }
 
