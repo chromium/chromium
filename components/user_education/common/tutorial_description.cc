@@ -4,6 +4,8 @@
 
 #include "components/user_education/common/tutorial_description.h"
 
+#include <variant>
+
 #include "components/user_education/common/events.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -29,11 +31,11 @@ TutorialDescription::Step::Step(ElementSpecifier element,
                                 ui::InteractionSequence::StepType step_type,
                                 HelpBubbleArrow arrow,
                                 ui::CustomElementEventType event_type)
-    : element_id_(absl::holds_alternative<ui::ElementIdentifier>(element)
-                      ? absl::get<ui::ElementIdentifier>(element)
+    : element_id_(std::holds_alternative<ui::ElementIdentifier>(element)
+                      ? std::get<ui::ElementIdentifier>(element)
                       : ui::ElementIdentifier()),
-      element_name_(absl::holds_alternative<std::string>(element)
-                        ? absl::get<std::string>(element)
+      element_name_(std::holds_alternative<std::string>(element)
+                        ? std::get<std::string>(element)
                         : std::string()),
       step_type_(step_type),
       event_type_(event_type) {}

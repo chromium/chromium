@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -156,7 +157,7 @@ struct TutorialDescription {
   ~TutorialDescription();
 
   using ContextMode = ui::InteractionSequence::ContextMode;
-  using ElementSpecifier = absl::variant<ui::ElementIdentifier, std::string>;
+  using ElementSpecifier = std::variant<ui::ElementIdentifier, std::string>;
 
   // Callback used to determine if the "then" branch of a conditional should be
   // followed. Note that `element` may be null if no matching element exists.

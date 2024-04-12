@@ -121,17 +121,17 @@ MATCHER_P2(StringFUT8Eq, message_id, sub, "") {
 }
 
 MATCHER_P(ElementSpecifierEq, element_specifier, "") {
-  return absl::visit(base::Overloaded{
-                         [&](const ui::ElementIdentifier& element_id) {
-                           return arg.element_id() == element_id &&
-                                  arg.element_name().empty();
-                         },
-                         [&](const std::string& element_name) {
-                           return arg.element_name() == element_name &&
-                                  arg.element_id() == ui::ElementIdentifier();
-                         },
-                     },
-                     element_specifier);
+  return std::visit(base::Overloaded{
+                        [&](const ui::ElementIdentifier& element_id) {
+                          return arg.element_id() == element_id &&
+                                 arg.element_name().empty();
+                        },
+                        [&](const std::string& element_name) {
+                          return arg.element_name() == element_name &&
+                                 arg.element_id() == ui::ElementIdentifier();
+                        },
+                    },
+                    element_specifier);
 }
 
 MATCHER_P6(BubbleStep,

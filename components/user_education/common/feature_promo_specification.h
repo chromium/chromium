@@ -9,6 +9,7 @@
 #include <initializer_list>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_tree.h"
@@ -18,7 +19,6 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "components/user_education/common/user_education_metadata.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -101,7 +101,7 @@ class FeaturePromoSpecification {
   // Provide different ways to specify parameters for title or body text.
   struct NoSubstitution {};
   using StringSubstitutions = std::vector<std::u16string>;
-  using FormatParameters = absl::variant<
+  using FormatParameters = std::variant<
       // No substitutions; use the string as-is (default).
       NoSubstitution,
       // Use the following substitutions for the various substitution fields.
@@ -182,7 +182,7 @@ class FeaturePromoSpecification {
    public:
     // You can assign either an int (command ID) or a ui::Accelerator to an
     // AcceleratorInfo object.
-    using ValueType = absl::variant<int, ui::Accelerator>;
+    using ValueType = std::variant<int, ui::Accelerator>;
 
     AcceleratorInfo();
     AcceleratorInfo(const AcceleratorInfo& other);

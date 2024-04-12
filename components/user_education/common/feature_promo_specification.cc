@@ -5,6 +5,7 @@
 #include "components/user_education/common/feature_promo_specification.h"
 
 #include <string>
+#include <variant>
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -123,16 +124,17 @@ FeaturePromoSpecification::AcceleratorInfo::operator=(ValueType value) {
 }
 
 FeaturePromoSpecification::AcceleratorInfo::operator bool() const {
-  return absl::holds_alternative<ui::Accelerator>(value_) ||
-         absl::get<int>(value_);
+  return std::holds_alternative<ui::Accelerator>(value_) ||
+         std::get<int>(value_);
 }
 
 ui::Accelerator FeaturePromoSpecification::AcceleratorInfo::GetAccelerator(
     const ui::AcceleratorProvider* provider) const {
-  if (absl::holds_alternative<ui::Accelerator>(value_))
-    return absl::get<ui::Accelerator>(value_);
+  if (std::holds_alternative<ui::Accelerator>(value_)) {
+    return std::get<ui::Accelerator>(value_);
+  }
 
-  const int command_id = absl::get<int>(value_);
+  const int command_id = std::get<int>(value_);
   DCHECK_GT(command_id, 0);
 
   ui::Accelerator result;
@@ -172,21 +174,20 @@ std::u16string FeaturePromoSpecification::FormatString(
     int string_id,
     const FormatParameters& format_params) {
   if (!string_id) {
-    CHECK(absl::holds_alternative<NoSubstitution>(format_params));
+    CHECK(std::holds_alternative<NoSubstitution>(format_params));
     return std::u16string();
   }
-  if (absl::holds_alternative<NoSubstitution>(format_params)) {
+  if (std::holds_alternative<NoSubstitution>(format_params)) {
     return l10n_util::GetStringUTF16(string_id);
   }
   if (const auto* substitutions =
-          absl::get_if<StringSubstitutions>(&format_params)) {
+          std::get_if<StringSubstitutions>(&format_params)) {
     return l10n_util::GetStringFUTF16(string_id, *substitutions, nullptr);
   }
-  if (const std::u16string* str =
-          absl::get_if<std::u16string>(&format_params)) {
+  if (const std::u16string* str = std::get_if<std::u16string>(&format_params)) {
     return l10n_util::GetStringFUTF16(string_id, *str);
   }
-  int number = absl::get<int>(format_params);
+  int number = std::get<int>(format_params);
   return l10n_util::GetPluralStringFUTF16(string_id, number);
 }
 
