@@ -50,10 +50,8 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectClean(updater_scope_);
   }
 
-  void Install() const override { updater::test::Install(updater_scope_); }
-
-  void InstallEulaRequired() const override {
-    updater::test::InstallEulaRequired(updater_scope_);
+  void Install(const base::Value::List& switches) const override {
+    updater::test::Install(updater_scope_, switches);
   }
 
   void InstallUpdaterAndApp(const std::string& app_id,

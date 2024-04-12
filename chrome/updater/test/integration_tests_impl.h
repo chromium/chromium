@@ -141,10 +141,7 @@ void CopyLog(const base::FilePath& src_dir);
 void ExpectInstalled(UpdaterScope scope);
 
 // Installs the updater.
-void Install(UpdaterScope scope);
-
-// Installs the updater in EULA-required mode.
-void InstallEulaRequired(UpdaterScope scope);
+void Install(UpdaterScope scope, const base::Value::List& switches);
 
 // Installs the updater and an app via the command line.
 void InstallUpdaterAndApp(UpdaterScope scope,

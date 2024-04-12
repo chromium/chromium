@@ -361,9 +361,7 @@ void AppTestHelper::FirstTaskRun() {
           {"expect_version_not_active",
            WithSwitch("updater_version",
                       WithSystemScope(Wrap(&ExpectVersionNotActive)))},
-          {"install", WithSystemScope(Wrap(&Install))},
-          {"install_eula_required",
-           WithSystemScope(Wrap(&InstallEulaRequired))},
+          {"install", WithSwitch("switches", WithSystemScope(Wrap(&Install)))},
           {"install_updater_and_app",
            WithSwitch(
                "verify_app_logo_loaded",

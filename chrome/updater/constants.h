@@ -85,6 +85,9 @@ extern const char kInstallSwitch[];
 extern const char kRuntimeSwitch[];
 extern const char kEulaRequiredSwitch[];
 
+// Specifies that this is an OEM install in audit mode.
+extern const char kOemSwitch[];
+
 // Contains the meta installer tag. The tag is a string of arguments, separated
 // by a delimiter (in this case, the delimiter is =). The tag is typically
 // embedded in the program image of the metainstaller, but for testing purposes,

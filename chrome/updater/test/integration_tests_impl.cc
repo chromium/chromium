@@ -429,22 +429,14 @@ void ExpectVersionNotActive(UpdaterScope scope, const std::string& version) {
   EXPECT_NE(prefs->GetActiveVersion(), version);
 }
 
-void Install(UpdaterScope scope) {
+void Install(UpdaterScope scope, const base::Value::List& switches) {
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitchASCII(kInstallSwitch, "usagestats=1");
-  int exit_code = -1;
-  Run(scope, command_line, &exit_code);
-  ASSERT_EQ(exit_code, 0);
-}
-
-void InstallEulaRequired(UpdaterScope scope) {
-  const base::FilePath path = GetSetupExecutablePath();
-  ASSERT_FALSE(path.empty());
-  base::CommandLine command_line(path);
-  command_line.AppendSwitchASCII(kInstallSwitch, "usagestats=1");
-  command_line.AppendSwitch(kEulaRequiredSwitch);
+  for (const base::Value& cmd_line_switch : switches) {
+    command_line.AppendSwitch(cmd_line_switch.GetString());
+  }
   int exit_code = -1;
   Run(scope, command_line, &exit_code);
   ASSERT_EQ(exit_code, 0);

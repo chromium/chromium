@@ -990,6 +990,11 @@ void AppInstallControllerImpl::DoCancel() {
 }
 
 scoped_refptr<App> MakeAppInstall(bool is_silent_install) {
+  if (IsSystemInstall() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(kOemSwitch)) {
+    const bool success = SetOemInstallState();
+    LOG_IF(ERROR, success) << "SetOemInstallState failed";
+  }
   return base::MakeRefCounted<AppInstall>(
       base::BindRepeating(
           [](bool is_silent_install,

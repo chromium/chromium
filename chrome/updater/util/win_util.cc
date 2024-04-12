@@ -1465,9 +1465,10 @@ bool SetOemInstallState() {
 
 bool ResetOemInstallState() {
   VLOG(1) << "OEM install reset at time: " << base::Time::Now();
-  return base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY,
-                           Wow6432(KEY_SET_VALUE))
-             .DeleteValue(kRegValueOemInstallTimeMin) == ERROR_SUCCESS;
+  const LONG result =
+      base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY, Wow6432(KEY_SET_VALUE))
+          .DeleteValue(kRegValueOemInstallTimeMin);
+  return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
 }
 
 bool IsOemInstalling() {
@@ -1482,13 +1483,11 @@ bool IsOemInstalling() {
   const base::Time now = base::Time::Now();
   const base::Time oem_install_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Minutes(oem_install_time_minutes));
-  if (now < oem_install_time) {
-    LOG(ERROR) << "now < oem_install_time, now: " << now
-               << ", oem_install_time: " << oem_install_time;
-    return true;
-  }
   const base::TimeDelta time_in_oem_mode = now - oem_install_time;
   const bool is_oem_installing = time_in_oem_mode < kMinOemModeTime;
+  if (!is_oem_installing) {
+    ResetOemInstallState();
+  }
   VLOG(1) << "now: " << now << ", OEM install time: " << oem_install_time
           << ", time_in_oem_mode: " << time_in_oem_mode
           << ", is_oem_installing: " << is_oem_installing;

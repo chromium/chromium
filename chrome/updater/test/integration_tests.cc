@@ -55,6 +55,7 @@
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -237,9 +238,9 @@ class IntegrationTest : public ::testing::Test {
 
   void PrintLog() { test_commands_->PrintLog(); }
 
-  void Install() { test_commands_->Install(); }
-
-  void InstallEulaRequired() { test_commands_->InstallEulaRequired(); }
+  void Install(const base::Value::List& switches = {}) {
+    test_commands_->Install(switches);
+  }
 
   void InstallUpdaterAndApp(const std::string& app_id,
                             const bool is_silent_install,
@@ -945,7 +946,8 @@ TEST_F(IntegrationTest, SelfUpdateWithWakeAll) {
 
 TEST_F(IntegrationTest, NoSelfUpdateIfNoEula) {
   ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(InstallEulaRequired());
+  ASSERT_NO_FATAL_FAILURE(
+      Install(base::Value::List().Append(kEulaRequiredSwitch)));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(
@@ -958,7 +960,8 @@ TEST_F(IntegrationTest, NoSelfUpdateIfNoEula) {
 // InstallAppViaService does not work on Linux.
 TEST_F(IntegrationTest, SelfUpdateAfterEulaAcceptedViaInstall) {
   ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(InstallEulaRequired());
+  ASSERT_NO_FATAL_FAILURE(
+      Install(base::Value::List().Append(kEulaRequiredSwitch)));
 
   // Installing an app implies EULA accepted.
   ASSERT_NO_FATAL_FAILURE(ExpectAppsUpdateSequence(
@@ -994,7 +997,8 @@ TEST_F(IntegrationTest, SelfUpdateAfterEulaAcceptedViaRegistry) {
     GTEST_SKIP() << "HKLM/CSM only exists in system scope.";
   }
   ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(InstallEulaRequired());
+  ASSERT_NO_FATAL_FAILURE(
+      Install(base::Value::List().Append(kEulaRequiredSwitch)));
 
   // Set EULA accepted on the updater app itself.
   ASSERT_EQ(base::win::RegKey(UpdaterScopeToHKeyRoot(GetTestScope()),
@@ -1012,6 +1016,122 @@ TEST_F(IntegrationTest, SelfUpdateAfterEulaAcceptedViaRegistry) {
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kUpdaterAppId, next_version));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+namespace {
+
+void SetAuditMode() {
+  ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kSetupStateKey, KEY_SET_VALUE)
+                .WriteValue(L"ImageState", L"IMAGE_STATE_UNDEPLOYABLE"),
+            ERROR_SUCCESS);
+}
+
+void ResetOemMode() {
+  ASSERT_TRUE(ResetOemInstallState());
+  ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kSetupStateKey, KEY_SET_VALUE)
+                .DeleteValue(L"ImageState"),
+            ERROR_SUCCESS);
+}
+
+void RewindOemState72PlusHours() {
+  DWORD oem_install_time_minutes = 0;
+  ASSERT_EQ(
+      base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY,
+                        Wow6432(KEY_QUERY_VALUE))
+          .ReadValueDW(kRegValueOemInstallTimeMin, &oem_install_time_minutes),
+      ERROR_SUCCESS);
+
+  // Rewind to 72 hours and 2 minutes before now.
+  ASSERT_EQ(
+      base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY, Wow6432(KEY_SET_VALUE))
+          .WriteValue(
+              kRegValueOemInstallTimeMin,
+              (base::Minutes(oem_install_time_minutes - 2) - kMinOemModeTime)
+                  .InMinutes()),
+      ERROR_SUCCESS);
+}
+
+}  // namespace
+
+TEST_F(IntegrationTest, NoSelfUpdateIfOemMode) {
+  if (!IsSystemInstall(GetTestScope())) {
+    GTEST_SKIP();
+  }
+  ASSERT_NO_FATAL_FAILURE(SetAuditMode());
+  absl::Cleanup reset_oem_mode = [&] {
+    ASSERT_NO_FATAL_FAILURE(ResetOemMode());
+  };
+
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install(base::Value::List().Append(kOemSwitch)));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectAppVersion(kUpdaterAppId, base::Version(kUpdaterVersion)));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, SelfUpdateIfNoAuditModeWithOemSwitch) {
+  if (!IsSystemInstall(GetTestScope())) {
+    GTEST_SKIP();
+  }
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install(base::Value::List().Append(kOemSwitch)));
+  base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kUpdaterAppId, "", UpdateService::Priority::kBackground,
+      base::Version(kUpdaterVersion), next_version));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kUpdaterAppId, next_version));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, SelfUpdateIfOemModeMoreThan72Hours) {
+  if (!IsSystemInstall(GetTestScope())) {
+    GTEST_SKIP();
+  }
+  ASSERT_NO_FATAL_FAILURE(SetAuditMode());
+  absl::Cleanup reset_oem_mode = [&] {
+    ASSERT_NO_FATAL_FAILURE(ResetOemMode());
+  };
+
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install(base::Value::List().Append(kOemSwitch)));
+  ASSERT_NO_FATAL_FAILURE(RewindOemState72PlusHours());
+  base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kUpdaterAppId, "", UpdateService::Priority::kBackground,
+      base::Version(kUpdaterVersion), next_version));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kUpdaterAppId, next_version));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest,
+       NoSelfUpdateIfOemModeMoreThan72HoursButEulaNotAccepted) {
+  if (!IsSystemInstall(GetTestScope())) {
+    GTEST_SKIP();
+  }
+  ASSERT_NO_FATAL_FAILURE(SetAuditMode());
+  absl::Cleanup reset_oem_mode = [&] {
+    ASSERT_NO_FATAL_FAILURE(ResetOemMode());
+  };
+
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install(
+      base::Value::List().Append(kOemSwitch).Append(kEulaRequiredSwitch)));
+  ASSERT_NO_FATAL_FAILURE(RewindOemState72PlusHours());
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectAppVersion(kUpdaterAppId, base::Version(kUpdaterVersion)));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
@@ -2066,7 +2186,24 @@ TEST_F(IntegrationTest, OfflineInstallOsNotSupportedSilentLegacy) {
 }
 
 TEST_F(IntegrationTest, OfflineInstallEulaRequired) {
-  ASSERT_NO_FATAL_FAILURE(InstallEulaRequired());
+  ASSERT_NO_FATAL_FAILURE(
+      Install(base::Value::List().Append(kEulaRequiredSwitch)));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/false,
+                                            /*is_silent_install=*/false));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, OfflineInstallOemMode) {
+  if (!IsSystemInstall(GetTestScope())) {
+    GTEST_SKIP();
+  }
+  ASSERT_NO_FATAL_FAILURE(SetAuditMode());
+  absl::Cleanup reset_oem_mode = [] {
+    ASSERT_NO_FATAL_FAILURE(ResetOemMode());
+  };
+
+  ASSERT_NO_FATAL_FAILURE(Install(base::Value::List().Append(kOemSwitch)));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/false,
                                             /*is_silent_install=*/false));

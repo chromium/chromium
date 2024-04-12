@@ -1296,6 +1296,89 @@ counts.
     ~/Library/{Company}/{Company}SoftwareUpdate/Actives/{APPID}.
 *   The updater deletes the file when reporting active use.
 
+### OEM Features
+
+#### Background
+
+*   There are two types of OEM installs, which differ between OEMs and
+    geography:
+    *   Machine EULA covering the app and the updater
+        *   A machine EULA is an OEM-specific EULA displayed during the Windows
+            Out Of the Box Experience (OOBE). In some cases, the OEM's EULA
+            covers Google's products. App developers should consult with legal
+            counsel and make sure that the EULA also includes auto-updates and
+            the updater.
+    *   No Machine EULA
+        *   General rule: OEMs should use Windows Audit Mode to install and not
+            enter OOBE.
+*   Large OEMs prepare new computers in factories without network access.
+*   Some OEMs prepare one computer and replicate the image on many computers.
+
+#### Application Integration
+
+In most cases, the Technical Account Manager (TAM) will generate a wrapper
+around the installer that specifies the correct command line.
+
+##### All OEM Cases
+
+*   The app must support per-machine installs.
+*   The app must be installed using a standalone installer.
+*   The updater command line must include the "/oem" switch.
+*   The app installer must not generate unique IDs during \[OEM\] install.
+*   The app installer must not write to HKCU during install (this will be
+    deleted when the OEM exits audit mode). This is a general guideline, but
+    worth re-iterating.
+*   The app installer must not ping or attempt to use the network.
+*   The app installer must not launch the app. If the app uses the Installer API
+    to have the updater launch the app, the updater will not launch it when run
+    silently by the OEM.
+
+###### Detecting OEM Install From App Installer
+
+During an OEM install (/oem), the updater writes the registry value
+`OemInstallTime` \[REG_DWORD\] to
+`HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Google\Update\Clients`.
+The value of `OemInstallTime` is the value in minutes since the Windows Epoch.
+The presence of `OemInstallTime` should be considered an OEM install. The
+updater deletes this value on the next wake after 72 hours.
+
+##### Machine EULA Case
+
+This is the best case for the app (and users) because the updater will be able
+to update applications as soon as the end-user turns on the computer (post
+OOBE).
+
+*   The updater install command line must ***not*** include the "/eularequired"
+    switch if the OEM EULA encompasses the updater and the app.
+
+##### Non-Machine EULA Case
+
+*   The updater command line must include the "/eularequired" switch.
+*   Display a EULA on first run and do not allow the user to use the application
+    without accepting it.
+    *   Usage stats cannot be enabled when installed by the OEM, so you may wish
+        to offer the user the chance to opt-in on the EULA screen.
+*   When the EULA is accepted, notify the updater by writing eulaaccepted=1 in
+    the app's `ClientState` or `ClientStateMedium` key.
+*   See the section on `EULA/ToS Acceptance`.
+
+#### OEM Features
+
+The updater has the following features that support OEM installs.
+
+*   Supports standalone installers, which can install the app without a network
+    connection in the OEM factory.
+*   Supports silent installs and reports errors in any child processes as the
+    exit code, allowing the OEM to easily determine success (exit code 0) or
+    failure.
+*   Detects "OEM factory mode" and behaves correctly:
+    *   Does not ping or otherwise use the network in the OEM factory.
+    *   Does not create unique IDs in OEM factory.
+    *   Does not exit "OEM mode" if the OEM boots the system into non-audit
+        mode.
+*   Does not use the network (i.e for update checks) until application's EULA is
+    accepted when installed in the non-machine EULA case.
+
 ### EULA/ToS Acceptance
 Most commonly, users accept relevant Terms of Service before downloading or
 installing the updater.

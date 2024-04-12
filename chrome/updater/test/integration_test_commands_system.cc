@@ -77,10 +77,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void ExpectClean() const override { RunCommand("expect_clean"); }
 
-  void Install() const override { RunCommand("install"); }
-
-  void InstallEulaRequired() const override {
-    RunCommand("install_eula_required");
+  void Install(const base::Value::List& switches) const override {
+    RunCommand(
+        "install",
+        {Param("switches", StringFromValue(base::Value(switches.Clone())))});
   }
 
   void InstallUpdaterAndApp(const std::string& app_id,

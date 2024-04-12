@@ -20,6 +20,10 @@
 #include "chrome/updater/update_service_impl_impl.h"
 #include "chrome/updater/util/util.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/updater/util/win_util.h"
+#endif
+
 namespace updater {
 
 UpdateServiceImpl::UpdateServiceImpl(UpdaterScope scope,
@@ -55,8 +59,8 @@ void UpdateServiceImpl::GetAppStates(
 
 void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsEulaAccepted()) {
-    VLOG(1) << __func__ << " rejected (EULA required).";
+  if (!IsEulaAccepted() || IsOemMode()) {
+    VLOG(1) << __func__ << " rejected (EULA required or OEM mode).";
     std::move(callback).Run();
     return;
   }
@@ -70,9 +74,9 @@ void UpdateServiceImpl::CheckForUpdate(
     StateChangeCallback state_update,
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsEulaAccepted()) {
-    VLOG(1) << __func__ << " rejected (EULA required).";
-    std::move(callback).Run(Result::kEulaRequired);
+  if (!IsEulaAccepted() || IsOemMode()) {
+    VLOG(1) << __func__ << " rejected (EULA required or OEM mode).";
+    std::move(callback).Run(Result::kEulaRequiredOrOemMode);
     return;
   }
   delegate_->CheckForUpdate(app_id, priority, policy_same_version_update,
@@ -87,9 +91,9 @@ void UpdateServiceImpl::Update(
     StateChangeCallback state_update,
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsEulaAccepted()) {
-    VLOG(1) << __func__ << " rejected (EULA required).";
-    std::move(callback).Run(Result::kEulaRequired);
+  if (!IsEulaAccepted() || IsOemMode()) {
+    VLOG(1) << __func__ << " rejected (EULA required or OEM mode).";
+    std::move(callback).Run(Result::kEulaRequiredOrOemMode);
     return;
   }
   delegate_->Update(app_id, install_data_index, priority,
@@ -100,9 +104,9 @@ void UpdateServiceImpl::Update(
 void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
                                   Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsEulaAccepted()) {
-    VLOG(1) << __func__ << " rejected (EULA required).";
-    std::move(callback).Run(Result::kEulaRequired);
+  if (!IsEulaAccepted() || IsOemMode()) {
+    VLOG(1) << __func__ << " rejected (EULA required or OEM mode).";
+    std::move(callback).Run(Result::kEulaRequiredOrOemMode);
     return;
   }
   delegate_->UpdateAll(state_update, std::move(callback));
@@ -158,6 +162,14 @@ bool UpdateServiceImpl::IsEulaAccepted() {
     return true;
   }
   return false;
+}
+
+bool UpdateServiceImpl::IsOemMode() {
+#if BUILDFLAG(IS_WIN)
+  return IsSystemInstall() && IsOemInstalling();
+#else
+  return false;
+#endif
 }
 
 UpdateServiceImpl::~UpdateServiceImpl() {

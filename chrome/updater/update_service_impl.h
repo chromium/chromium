@@ -70,6 +70,8 @@ class UpdateServiceImpl : public UpdateService {
   void AcceptEula();
   bool IsEulaAccepted();
 
+  bool IsOemMode();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   UpdaterScope scope_;
