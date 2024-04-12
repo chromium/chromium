@@ -91,6 +91,9 @@ class SignatureProvider {
   // Sets universal signing keys that can sign any domain.
   void SetUniversalSigningKeys();
 
+  // Set the signing key signature for child domain (gmail.com).
+  void SetSigningKeysForChildDomain();
+
  private:
   std::vector<SigningKey> signing_keys_;
 

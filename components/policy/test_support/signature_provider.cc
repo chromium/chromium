@@ -216,6 +216,15 @@ void SignatureProvider::SetUniversalSigningKeys() {
   set_signing_keys(std::move(universal_signing_keys));
 }
 
+void SignatureProvider::SetSigningKeysForChildDomain() {
+  std::vector<policy::SignatureProvider::SigningKey> universal_signing_keys;
+  universal_signing_keys.push_back(policy::SignatureProvider::SigningKey(
+      policy::PolicyBuilder::CreateTestSigningKey(),
+      {{kWildCard,
+        policy::PolicyBuilder::GetTestSigningKeySignatureForChild()}}));
+  set_signing_keys(std::move(universal_signing_keys));
+}
+
 SignatureProvider::SignatureProvider() {
   InitSigningKeys(&signing_keys_);
 }
