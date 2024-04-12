@@ -19,7 +19,6 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/autofill/android:java",
-    "//chrome/browser/autofill/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/touch_to_fill/autofill/android:public_java",
