@@ -44,6 +44,10 @@
 // path that contains a literal '#'. Using string concatenation will generate a
 // URL with a truncated path and a reference fragment, while ReplaceComponents
 // will know to escape this and produce the desired result.
+//
+// WARNING: While there is no length limit on GURLs, the Mojo serialization
+// code will replace any very long URL with an invalid GURL.
+// See url::mojom::kMaxURLChars for more details.
 class COMPONENT_EXPORT(URL) GURL {
  public:
   using Replacements = url::StringViewReplacements<char>;
