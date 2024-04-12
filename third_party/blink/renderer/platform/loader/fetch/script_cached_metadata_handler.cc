@@ -11,15 +11,6 @@
 
 namespace blink {
 
-namespace {
-
-void RecordState(StateOnGet state) {
-  UMA_HISTOGRAM_ENUMERATION("Memory.Renderer.BlinkCachedMetadataGetResult",
-                            state);
-}
-
-}  // namespace
-
 ScriptCachedMetadataHandler::ScriptCachedMetadataHandler(
     const WTF::TextEncoding& encoding,
     std::unique_ptr<CachedMetadataSender> sender)
@@ -68,16 +59,9 @@ void ScriptCachedMetadataHandler::ClearCachedMetadata(
 scoped_refptr<CachedMetadata> ScriptCachedMetadataHandler::GetCachedMetadata(
     uint32_t data_type_id,
     GetCachedMetadataBehavior behavior) const {
-  if (!cached_metadata_) {
-    RecordState(cached_metadata_discarded_ ? StateOnGet::kWasDiscarded
-                                           : StateOnGet::kWasNeverPresent);
+  if (!cached_metadata_ || cached_metadata_->DataTypeID() != data_type_id) {
     return nullptr;
   }
-  if (cached_metadata_->DataTypeID() != data_type_id) {
-    RecordState(StateOnGet::kDataTypeMismatch);
-    return nullptr;
-  }
-  RecordState(StateOnGet::kPresent);
   return cached_metadata_;
 }
 

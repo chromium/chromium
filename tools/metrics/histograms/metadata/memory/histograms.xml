@@ -1834,16 +1834,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Renderer.BlinkCachedMetadataGetResult"
-    enum="CachedMetadataHandlerState" expires_after="M87">
-  <owner>pasko@chromium.org</owner>
-  <owner>leszeks@chromium.org</owner>
-  <summary>
-    The state of CachedMetadata on every attempt to use it for a script
-    resource. Used for experiment in http://crbug.com/1045052.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Renderer.EvictedLockedResources.{Source}" units="KB"
     expires_after="2024-10-06">
   <owner>jonross@chromium.org</owner>

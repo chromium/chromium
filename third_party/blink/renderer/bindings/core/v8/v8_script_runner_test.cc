@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 
 #include "base/location.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -219,39 +218,6 @@ class V8ScriptRunnerTest : public testing::Test {
 
 int V8ScriptRunnerTest::counter_ = 0;
 
-class HistogramCounter {
- public:
-  explicit HistogramCounter(const base::HistogramTester& tester)
-      : tester_(tester) {}
-
-  int32_t GetTotal() { return GetSamples()->TotalCount(); }
-
-  int32_t GetPresent() { return GetCount(StateOnGet::kPresent); }
-
-  int32_t GetDataTypeMismatch() {
-    return GetCount(StateOnGet::kDataTypeMismatch);
-  }
-
-  int32_t GetWasNeverPresent() {
-    return GetCount(StateOnGet::kWasNeverPresent);
-  }
-
-  int32_t GetDiscarded() { return GetCount(StateOnGet::kWasDiscarded); }
-
- private:
-  std::unique_ptr<base::HistogramSamples> GetSamples() {
-    return tester_.GetHistogramSamplesSinceCreation(
-        "Memory.Renderer.BlinkCachedMetadataGetResult");
-  }
-
-  int32_t GetCount(StateOnGet state) {
-    static_assert((std::is_same<int, base::HistogramBase::Sample>::value), "");
-    return GetSamples()->GetCount(static_cast<int>(state));
-  }
-
-  const base::HistogramTester& tester_;
-};
-
 TEST_F(V8ScriptRunnerTest, resourcelessShouldPass) {
   V8TestingScope scope;
   ClassicScript* classic_script =
@@ -368,19 +334,6 @@ TEST_F(V8ScriptRunnerTest, produceAndConsumeCodeOption) {
   EXPECT_TRUE(cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
 }
 
-TEST_F(V8ScriptRunnerTest, cacheRequestedBeforeProduced) {
-  V8TestingScope scope;
-  ClassicScript* classic_script =
-      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
-  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
-  base::HistogramTester tester;
-  HistogramCounter counter(tester);
-  EXPECT_FALSE(
-      cache_handler->GetCachedMetadata(TagForTimeStamp(cache_handler)));
-  EXPECT_EQ(1, counter.GetTotal());
-  EXPECT_EQ(1, counter.GetWasNeverPresent());
-}
-
 TEST_F(V8ScriptRunnerTest, cacheDataTypeMismatch) {
   V8TestingScope scope;
   ClassicScript* classic_script =
@@ -392,12 +345,8 @@ TEST_F(V8ScriptRunnerTest, cacheDataTypeMismatch) {
                             *classic_script,
                             mojom::blink::V8CacheOptions::kDefault));
   EXPECT_TRUE(cache_handler->GetCachedMetadata(TagForTimeStamp(cache_handler)));
-  base::HistogramTester tester;
-  HistogramCounter counter(tester);
   EXPECT_FALSE(
       cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
-  EXPECT_EQ(1, counter.GetTotal());
-  EXPECT_EQ(1, counter.GetDataTypeMismatch());
 }
 
 TEST_F(V8ScriptRunnerTest, successfulCodeCacheWithHashing) {
@@ -585,22 +534,15 @@ TEST_F(V8ScriptRunnerTest, successfulOffThreadCodeCache) {
 
   EXPECT_TRUE(consumer_client->cache_consume_finished());
 
-  base::HistogramTester tester;
-  HistogramCounter counter(tester);
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
                                      *classic_script);
-  EXPECT_EQ(1, counter.GetTotal());
-  EXPECT_EQ(1, counter.GetPresent());
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script, compile_options, no_cache_reason,
                             produce_cache_options));
-  EXPECT_EQ(2, counter.GetTotal());
-  EXPECT_EQ(2, counter.GetPresent());
-  EXPECT_EQ(0, counter.GetDiscarded());
 }
 
 TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithDifferentSource) {
@@ -628,16 +570,12 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithDifferentSource) {
   // post a QuitClosure to this RunLoop.
   RunLoopUntilQuit();
 
-  base::HistogramTester tester;
-  HistogramCounter counter(tester);
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
                                      *classic_script);
-  EXPECT_EQ(1, counter.GetTotal());
-  EXPECT_EQ(1, counter.GetPresent());
   EXPECT_EQ(produce_cache_options,
             V8CodeCache::ProduceCacheOptions::kNoProduceCache);
   EXPECT_EQ(compile_options,
@@ -645,8 +583,6 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithDifferentSource) {
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script, compile_options, no_cache_reason,
                             produce_cache_options));
-  EXPECT_EQ(2, counter.GetTotal());
-  EXPECT_EQ(2, counter.GetPresent());
   // Code cache should have been cleared after being rejected.
   EXPECT_FALSE(V8CodeCache::HasCodeCache(resource->CacheHandler()));
 }
@@ -680,16 +616,12 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithBitCorruption) {
   // post a QuitClosure to this RunLoop.
   RunLoopUntilQuit();
 
-  base::HistogramTester tester;
-  HistogramCounter counter(tester);
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
                                      *classic_script);
-  EXPECT_EQ(1, counter.GetTotal());
-  EXPECT_EQ(1, counter.GetPresent());
   EXPECT_EQ(produce_cache_options,
             V8CodeCache::ProduceCacheOptions::kNoProduceCache);
   EXPECT_EQ(compile_options,
@@ -697,8 +629,6 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithBitCorruption) {
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             *classic_script, compile_options, no_cache_reason,
                             produce_cache_options));
-  EXPECT_EQ(2, counter.GetTotal());
-  EXPECT_EQ(2, counter.GetPresent());
   // Code cache should have been cleared after being rejected.
   EXPECT_FALSE(V8CodeCache::HasCodeCache(resource->CacheHandler()));
 }
