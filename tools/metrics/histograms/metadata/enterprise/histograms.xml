@@ -1243,6 +1243,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.PublicKeyUpload.URLLoaderNetError"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-04-11">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Net error recorded when a public key upload request failed to leave the
+    client.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.Tries" units="tries"
     expires_after="2025-03-20">
   <owner>hmare@google.com</owner>

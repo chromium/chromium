@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
@@ -85,6 +86,12 @@ std::unique_ptr<network::SimpleURLLoader> CreateURLLoader(
   return url_loader;
 }
 
+void LogNetError(int net_error) {
+  static constexpr char kNetErrorHistogram[] =
+      "Enterprise.DeviceTrust.PublicKeyUpload.URLLoaderNetError";
+  base::UmaHistogramSparse(kNetErrorHistogram, net_error);
+}
+
 }  // namespace
 
 MojoKeyNetworkDelegate::MojoKeyNetworkDelegate(
@@ -135,6 +142,11 @@ void MojoKeyNetworkDelegate::OnURLLoaderComplete(
     UploadKeyCompletedCallback upload_key_completed_callback,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   HttpResponseCode response_code = headers ? headers->response_code() : 0;
+
+  if (response_code == 0 && url_loader) {
+    LogNetError(url_loader->NetError());
+  }
+
   std::move(upload_key_completed_callback).Run(response_code);
 }
 
@@ -146,6 +158,10 @@ void MojoKeyNetworkDelegate::OnDownloadStringComplete(
   if (url_loader && url_loader->ResponseInfo() &&
       url_loader->ResponseInfo()->headers) {
     response_code = url_loader->ResponseInfo()->headers->response_code();
+  }
+
+  if (response_code == 0 && url_loader) {
+    LogNetError(url_loader->NetError());
   }
 
   enterprise_management::DeviceManagementResponse response;
