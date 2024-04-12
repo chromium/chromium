@@ -194,7 +194,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     throw 'Wrong topLevelSeller ' + browserSignals.topLevelSeller;
 
   if (isGenerateBid) {
-    if (Object.keys(browserSignals).length !== 10) {
+    if (Object.keys(browserSignals).length !== 11) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -211,6 +211,8 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.forDebuggingOnlyInCooldownOrLockout)
       throw 'Wrong forDebuggingOnlyInCooldownOrLockout ' +
           browserSignals.forDebuggingOnlyInCooldownOrLockout;
+    if (browserSignals.multiBidLimit !== 1)
+      throw 'Wrong multiBidLimit ' + browserSignals.multiBidLimit;
   } else {
     // FledgePassKAnonStatusToReportWin feature adds a new parameter
     // KAnonStatus to reportWin(), which is under a Finch trial for some enabled
