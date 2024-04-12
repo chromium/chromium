@@ -100,6 +100,7 @@ extern const char kCastMemoryPressureCriticalFraction[];
 extern const char kCastMemoryPressureModerateFraction[];
 
 extern const char kDisableMojoRenderer[];
+extern const char kForceMojoRenderer[];
 
 // OTA update related switches.
 extern const char kForceUpdateRemoteUrl[];

@@ -292,6 +292,7 @@ cast_source_set("browser") {
     "//ipc",
     "//media",
     "//media/gpu:buildflags",
+    "//media/mojo:buildflags",
     "//media/mojo/mojom",
     "//media/mojo/mojom:remoting",
     "//media/mojo/services",

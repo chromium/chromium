@@ -40,6 +40,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/bindings_policy.h"
+#include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
@@ -190,6 +191,17 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
   if (GetSwitchValueBoolean(switches::kDisableMojoRenderer, false) &&
       params_->renderer_type == mojom::RendererType::MOJO_RENDERER) {
     params_->renderer_type = mojom::RendererType::DEFAULT_RENDERER;
+  } else if (GetSwitchValueBoolean(switches::kForceMojoRenderer, false)) {
+#if BUILDFLAG(ENABLE_MOJO_RENDERER) && BUILDFLAG(ENABLE_CAST_RENDERER)
+    LOG(INFO) << "Enabling mojo renderer";
+#else
+    LOG(ERROR)
+        << "The switch " << switches::kForceMojoRenderer
+        << " was used, but either the mojo renderer or cast renderer is "
+           "disabled via GN args. Check the values of enable_cast_renderer and "
+           "mojo_media_services in your GN args";
+#endif  // BUILDFLAG(ENABLE_MOJO_RENDERER) && BUILDFLAG(ENABLE_CAST_RENDERER)
+    params_->renderer_type = mojom::RendererType::MOJO_RENDERER;
   }
 
   web_contents_->SetPageBaseBackgroundColor(chromecast::GetSwitchValueColor(

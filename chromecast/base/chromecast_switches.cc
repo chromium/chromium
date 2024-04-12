@@ -207,6 +207,17 @@ extern const char kCastMemoryPressureModerateFraction[] =
 // of the media service.
 const char kDisableMojoRenderer[] = "disable-mojo-renderer";
 
+// Forces the use of the mojo renderer. In other words, the renderer process
+// will run a mojo renderer and CastRenderer will run in the browser process.
+// This is necessary for devices that use CastRenderer.
+//
+// For this flag to have any effect, note that you must build the cast web
+// runtime with the gn arg "enable_cast_renderer" set to true, and "renderer"
+// must be included in the list "mojo_media_services".
+//
+// This flag has lower priority than "disable-mojo-renderer".
+const char kForceMojoRenderer[] = "force-mojo-renderer";
+
 // Per-product customization of force update UI remote url, also used in
 // testing.
 const char kForceUpdateRemoteUrl[] = "force-update-remote-url";
