@@ -41,7 +41,7 @@ schema:
     - GoogleTasks
     type: string
   type: array
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:125-
 tags: []
 type: string-enum-list
