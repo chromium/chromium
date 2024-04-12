@@ -18785,7 +18785,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240408",
                     "enable_features": [
                         "TabStateFlatBuffer"
                     ]
