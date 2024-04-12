@@ -8,7 +8,6 @@
 GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "ash/constants/ash_features.h"');
 
 this.BorealisInstallerBrowserTest = class extends PolymerTest {
   /** @override */

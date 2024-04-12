@@ -4884,7 +4884,6 @@ if (!is_android) {
         "../browser/ui/views/apps/chrome_native_app_window_views_aura_ash_browsertest.cc",
         "../browser/ui/views/arc_app_dialog_view_browsertest.cc",
         "../browser/ui/views/borealis/borealis_disallowed_dialog_browsertest.cc",
-        "../browser/ui/views/borealis/borealis_installer_view_browsertest.cc",
         "../browser/ui/views/borealis/borealis_splash_screen_view_browsertest.cc",
         "../browser/ui/views/bruschetta/bruschetta_installer_view_browsertest.cc",
         "../browser/ui/views/bruschetta/bruschetta_uninstaller_view_browsertest.cc",

@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/borealis/borealis_installer_view.h"
 #include "chrome/browser/ui/views/borealis/borealis_launch_error_dialog.h"
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_dialog.h"

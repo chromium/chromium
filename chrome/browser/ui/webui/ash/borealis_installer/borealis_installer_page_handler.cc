@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/views/borealis/borealis_installer_error_dialog.h"
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,7 +59,6 @@ BorealisInstallerPageHandler::BorealisInstallerPageHandler(
     : receiver_{this, std::move(pending_page_handler)},
       page_{std::move(pending_page)},
       on_page_closed_{std::move(on_page_closed)},
-      native_window_(web_ui->GetWebContents()->GetTopLevelNativeWindow()),
       profile_(Profile::FromWebUI(web_ui)),
       observation_(this) {}
 
