@@ -1207,6 +1207,13 @@
       custom_compare: true,
     },
     {
+      // See ComputedStyle::HasAnchorFunctionsWithoutEvaluator.
+      name: "HasAnchorEvaluator",
+      field_template: "monotonic_flag",
+      field_group: "surround",
+      default_value: "false",
+    },
+    {
       name: "InsetAreaOffsets",
       field_template: "external",
       field_group: "*",

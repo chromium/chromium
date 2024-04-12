@@ -494,6 +494,17 @@ class ComputedStyle final : public ComputedStyleBase {
     return base::ValuesEquivalent(AnchorName(), o.AnchorName());
   }
 
+  // Regular (non-interleaved) style resolutions happen without an
+  // AnchorEvaluator, which means any anchor*() function will use
+  // the fallback. Since anchor*() functions resolve computed-value time,
+  // we can't distinguish e.g. left:10px and left:anchor(--a right,10px) during
+  // ComputedStyle diffing if the anchor() was evaluated with a null-
+  // AnchorEvaluator, yet we need to invalidate layout in this situation
+  // to enter interleaved style recalc with the *real* AnchorEvaluator.
+  bool HasAnchorFunctionsWithoutEvaluator() const {
+    return HasAnchorFunctions() && !HasAnchorEvaluator();
+  }
+
   // For containing blocks, use |HasNonInitialBackdropFilter()| which includes
   // will-change: backdrop-filter.
   static bool HasBackdropFilter(const FilterOperations& backdrop_filter) {

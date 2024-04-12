@@ -343,7 +343,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                   CacheSuccess cache_success);
 
   bool ApplyAnimatedStyle(StyleResolverState&, StyleCascade&);
-  void ApplyAnchorCenterOffset(StyleResolverState&);
+  void ApplyAnchorData(StyleResolverState&);
 
   void ApplyCallbackSelectors(StyleResolverState&);
   void ApplyDocumentRulesSelectors(StyleResolverState&, ContainerNode* scope);

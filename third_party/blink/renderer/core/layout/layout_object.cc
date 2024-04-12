@@ -2793,7 +2793,8 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
     if (updated_diff.NeedsFullLayout()) {
       SetNeedsLayoutAndIntrinsicWidthsRecalc(
           layout_invalidation_reason::kStyleChange);
-    } else if (updated_diff.NeedsPositionedMovementLayout()) {
+    } else if (updated_diff.NeedsPositionedMovementLayout() ||
+               StyleRef().HasAnchorFunctionsWithoutEvaluator()) {
       if (StyleRef().HasOutOfFlowPosition()) {
         ContainingBlock()->SetNeedsSimplifiedLayout();
       } else {

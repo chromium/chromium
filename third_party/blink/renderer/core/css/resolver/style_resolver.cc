@@ -1121,7 +1121,7 @@ const ComputedStyle* StyleResolver::ResolveStyle(
         state, style_request.IsPseudoStyleRequest() ? nullptr : element);
   }
 
-  ApplyAnchorCenterOffset(state);
+  ApplyAnchorData(state);
 
   IncrementResolvedStyleCounters(style_request, GetDocument());
 
@@ -1365,6 +1365,14 @@ bool CanApplyInlineStyleIncrementally(Element* element,
   // and we don't support that. It should be rare to animate elements
   // _both_ with animations and mutating inline style anyway.
   if (GetElementAnimations(state) || element->GetComputedStyle()->BaseData()) {
+    return false;
+  }
+
+  // ComputedStyles produced by OOF-interleaving (StyleEngine::
+  // UpdateStyleForOutOfFlow) have this flag set. We can not apply the style
+  // incrementally on top of this, because ComputedStyles produced by normal
+  // style recalcs should not have this flag.
+  if (element->GetComputedStyle()->HasAnchorEvaluator()) {
     return false;
   }
 
@@ -2102,7 +2110,7 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   return apply;
 }
 
-void StyleResolver::ApplyAnchorCenterOffset(StyleResolverState& state) {
+void StyleResolver::ApplyAnchorData(StyleResolverState& state) {
   if (AnchorEvaluator* evaluator =
           state.CssToLengthConversionData().GetAnchorEvaluator()) {
     // Pre-compute anchor-center offset so that the OOF layout code does not
@@ -2113,6 +2121,9 @@ void StyleResolver::ApplyAnchorCenterOffset(StyleResolverState& state) {
         offset.has_value()) {
       state.StyleBuilder().SetAnchorCenterOffset(offset);
     }
+
+    // See ComputedStyle::HasAnchorFunctionsWithoutEvaluator.
+    state.StyleBuilder().SetHasAnchorEvaluator();
   }
 }
 
@@ -2430,7 +2441,7 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
     return false;
   }
 
-  if (base_style->HasAnchorFunctions()) {
+  if (base_style->HasAnchorFunctions() || base_style->HasAnchorEvaluator()) {
     // TODO(crbug.com/41483417): Enable this optimization for styles with
     // anchor queries.
     return false;
