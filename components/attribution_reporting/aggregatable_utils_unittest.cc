@@ -22,6 +22,8 @@ using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 
 TEST(AggregatableUtilsTest, RoundDownToWholeDaySinceUnixEpoch) {
   const struct {
@@ -72,27 +74,35 @@ TEST(AggregatableUtilsTest,
 
   const auto selective = [](int day) { return day == 0 || day == 5; };
 
+  std::vector<NullAggregatableReport> expected_all;
+  expected_all.reserve(31);
+  for (int i = 0; i < 31; i++) {
+    expected_all.emplace_back(now - base::Days(i));
+  }
   EXPECT_THAT(GetNullAggregatableReports(
                   config,
                   /*trigger_time=*/now,
                   /*attributed_source_time=*/std::nullopt, always_true),
-              SizeIs(31));
+              UnorderedElementsAreArray(expected_all));
   EXPECT_THAT(GetNullAggregatableReports(
                   config,
                   /*trigger_time=*/now,
                   /*attributed_source_time=*/std::nullopt, always_false),
               IsEmpty());
-  EXPECT_THAT(GetNullAggregatableReports(
-                  config,
-                  /*trigger_time=*/now,
-                  /*attributed_source_time=*/std::nullopt, selective),
-              SizeIs(2));
+  EXPECT_THAT(
+      GetNullAggregatableReports(config,
+                                 /*trigger_time=*/now,
+                                 /*attributed_source_time=*/std::nullopt,
+                                 selective),
+      UnorderedElementsAre(NullAggregatableReport(now),
+                           NullAggregatableReport(now - base::Days(5))));
 
+  expected_all.erase(expected_all.begin());
   EXPECT_THAT(
       GetNullAggregatableReports(config,
                                  /*trigger_time=*/now,
                                  /*attributed_source_time=*/now, always_true),
-      SizeIs(30));
+      UnorderedElementsAreArray(expected_all));
   EXPECT_THAT(
       GetNullAggregatableReports(config,
                                  /*trigger_time=*/now,
@@ -102,7 +112,7 @@ TEST(AggregatableUtilsTest,
       GetNullAggregatableReports(config,
                                  /*trigger_time=*/now,
                                  /*attributed_source_time=*/now, selective),
-      SizeIs(1));
+      UnorderedElementsAre(NullAggregatableReport(now - base::Days(5))));
 }
 
 TEST(AggregatableUtilsTest,
@@ -122,7 +132,7 @@ TEST(AggregatableUtilsTest,
                   config,
                   /*trigger_time=*/now,
                   /*attributed_source_time=*/std::nullopt, always_true),
-              SizeIs(1));
+              UnorderedElementsAre(NullAggregatableReport(now)));
   EXPECT_THAT(GetNullAggregatableReports(
                   config,
                   /*trigger_time=*/now,
@@ -132,7 +142,7 @@ TEST(AggregatableUtilsTest,
                   config,
                   /*trigger_time=*/now,
                   /*attributed_source_time=*/std::nullopt, selective),
-              SizeIs(1));
+              UnorderedElementsAre(NullAggregatableReport(now)));
 
   EXPECT_THAT(
       GetNullAggregatableReports(config,
@@ -151,6 +161,39 @@ TEST(AggregatableUtilsTest,
       IsEmpty());
 }
 
+TEST(AggregatableUtilsTest, GetNullAggregatableReports_RoundedTime) {
+  auto config =
+      *AggregatableTriggerConfig::Create(SourceRegistrationTimeConfig::kInclude,
+                                         /*trigger_context_id=*/std::nullopt);
+  const auto generate_func = [](int day) {
+    return day == 3 || day == 4 || day == 5;
+  };
+
+  const base::Time whole_day = base::Time::UnixEpoch() + base::Days(14288);
+
+  const std::vector<base::TimeDelta> time_deltas = {
+      base::TimeDelta(), base::Seconds(1), base::Hours(12),
+      base::Days(1) - base::Seconds(1)};
+
+  for (base::TimeDelta source_time_delta : time_deltas) {
+    SCOPED_TRACE(source_time_delta);
+    for (base::TimeDelta trigger_time_delta : time_deltas) {
+      SCOPED_TRACE(trigger_time_delta);
+
+      // Rounded down to `whole_day` + base::Days(4).
+      base::Time trigger_time = whole_day + base::Days(4) + trigger_time_delta;
+
+      EXPECT_THAT(GetNullAggregatableReports(config, trigger_time,
+                                             // Rounded down to `whole_day`.
+                                             whole_day + source_time_delta,
+                                             generate_func),
+                  UnorderedElementsAre(
+                      NullAggregatableReport(trigger_time - base::Days(3)),
+                      NullAggregatableReport(trigger_time - base::Days(5))));
+    }
+  }
+}
+
 TEST(AggregatableUtilsTest, GetNullAggregatableReports_TriggerContextId) {
   auto config =
       *AggregatableTriggerConfig::Create(SourceRegistrationTimeConfig::kExclude,
@@ -167,17 +210,17 @@ TEST(AggregatableUtilsTest, GetNullAggregatableReports_TriggerContextId) {
                   config,
                   /*trigger_time=*/now,
                   /*attributed_source_time=*/std::nullopt, always_true),
-              SizeIs(1));
+              UnorderedElementsAre(NullAggregatableReport(now)));
   EXPECT_THAT(GetNullAggregatableReports(
                   config,
                   /*trigger_time=*/now,
                   /*attributed_source_time=*/std::nullopt, always_false),
-              SizeIs(1));
+              UnorderedElementsAre(NullAggregatableReport(now)));
   EXPECT_THAT(GetNullAggregatableReports(
                   config,
                   /*trigger_time=*/now,
                   /*attributed_source_time=*/std::nullopt, selective),
-              SizeIs(1));
+              UnorderedElementsAre(NullAggregatableReport(now)));
 
   EXPECT_THAT(
       GetNullAggregatableReports(config,

@@ -18,6 +18,9 @@ class AggregatableTriggerConfig;
 
 struct NullAggregatableReport {
   base::Time fake_source_time;
+
+  friend bool operator==(const NullAggregatableReport&,
+                         const NullAggregatableReport&) = default;
 };
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
