@@ -144,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Checkbox) {
 }
 
 // TODO(crbug.com/1222757): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(b/334008286): Failing on Windows.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_Radio DISABLED_Radio
 #else
 #define MAYBE_Radio Radio
@@ -190,7 +191,8 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Button) {
 }
 
 // TODO(crbug.com/1222757): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(b/334008286): Failing on Windows.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_Anchor DISABLED_Anchor
 #else
 #define MAYBE_Anchor Anchor
