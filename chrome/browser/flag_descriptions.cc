@@ -125,6 +125,12 @@ const char kCdmStorageDatabaseMigrationDescription[] =
     "Use the Cdm Storage Database over the MediaLicenseDatabase for Cdm "
     "storage operations.";
 
+const char kClearUndecryptablePasswordsName[] =
+    "Removes passwords that can no longer be decrypted";
+const char kClearUndecryptablePasswordsDescription[] =
+    "If enabled local passwords that current encyrption key cannot decrypt, "
+    "will be deleted to restore the full functionality of password manager.";
+
 const char kClickToCallName[] = "Click-To-Call";
 const char kClickToCallDescription[] = "Enable the click-to-call feature.";
 

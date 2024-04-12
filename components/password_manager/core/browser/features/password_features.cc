@@ -30,6 +30,10 @@ BASE_FEATURE(kButterOnDesktopFollowup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kClearUndecryptablePasswords,
+             "ClearUndecryptablePasswords",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClearUndecryptablePasswordsOnSync,
              "ClearUndecryptablePasswordsInSync",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_IOS)

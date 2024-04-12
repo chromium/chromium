@@ -18267,6 +18267,7 @@ from previous Chrome versions.
   <int value="-1279151596" label="TreatBootstrapAsDefault:enabled"/>
   <int value="-1279017866" label="LowLatencyCanvas2dImageChromium:enabled"/>
   <int value="-1278796760" label="QueryInOmnibox:enabled"/>
+  <int value="-1277216823" label="ClearUndecryptablePasswords:disabled"/>
   <int value="-1276912933" label="enable-quick-unlock-pin"/>
   <int value="-1276579737" label="PictureInPictureAPI:disabled"/>
   <int value="-1275598905" label="Compose:disabled"/>
@@ -23171,6 +23172,7 @@ from previous Chrome versions.
   <int value="923923308" label="WifiSyncAllowDeletes:enabled"/>
   <int value="923947923" label="ReadPrinterCapabilitiesWithXps:disabled"/>
   <int value="924769517" label="AppServiceAdaptiveIcon:disabled"/>
+  <int value="925611968" label="ClearUndecryptablePasswords:enabled"/>
   <int value="925712999" label="V8Orinoco:enabled"/>
   <int value="925950257" label="WebRtcCombinedNetworkAndWorkerThread:disabled"/>
   <int value="926844887" label="QuickDim:disabled"/>

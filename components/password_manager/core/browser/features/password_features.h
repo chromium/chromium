@@ -34,6 +34,9 @@ BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 BASE_DECLARE_FEATURE(kButterOnDesktopFollowup);
 #endif
 
+// Delete undecryptable passwords from the login database.
+BASE_DECLARE_FEATURE(kClearUndecryptablePasswords);
+
 // Delete undecryptable passwords from the store when Sync is active.
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 

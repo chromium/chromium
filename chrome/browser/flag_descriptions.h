@@ -115,6 +115,9 @@ extern const char kCdmStorageDatabaseDescription[];
 extern const char kCdmStorageDatabaseMigrationName[];
 extern const char kCdmStorageDatabaseMigrationDescription[];
 
+extern const char kClearUndecryptablePasswordsName[];
+extern const char kClearUndecryptablePasswordsDescription[];
+
 extern const char kClickToCallName[];
 extern const char kClickToCallDescription[];
 
