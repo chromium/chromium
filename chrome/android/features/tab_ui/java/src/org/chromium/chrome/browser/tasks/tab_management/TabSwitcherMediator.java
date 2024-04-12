@@ -1102,6 +1102,14 @@ class TabSwitcherMediator
                         public void onFinishedHiding(int layoutType) {
                             mLastActiveLayoutType = layoutType;
                         }
+
+                        @Override
+                        public void onStartedShowing(int layoutType) {
+                            if (layoutType == LayoutType.TAB_SWITCHER) {
+                                mIsTransitionInProgress = true;
+                                notifyBackPressStateChangedInternal();
+                            }
+                        }
                     };
         }
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
