@@ -140,7 +140,8 @@
     if (!autofillCreditCard)
       return;
     [weakSelf.cardRequester requestFullCreditCard:*autofillCreditCard
-                           withBaseViewController:weakSelf.baseViewController];
+                           withBaseViewController:weakSelf.baseViewController
+                                       recordType:card.recordType];
   }];
 }
 

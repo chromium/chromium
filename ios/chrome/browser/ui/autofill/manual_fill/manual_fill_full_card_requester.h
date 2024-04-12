@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/autofill/core/browser/data_model/credit_card.h"
+
 namespace autofill {
 class CreditCard;
 }  // namespace autofill
@@ -30,8 +32,9 @@ class WebStateList;
 // Executes the request, putting up a CVC input requester then unlocking a
 // server side credit card if the CVC is correct. The delegate will receive the
 // result of the operation.
-- (void)requestFullCreditCard:(autofill::CreditCard)card
-       withBaseViewController:(UIViewController*)viewController;
+- (void)requestFullCreditCard:(const autofill::CreditCard)card
+       withBaseViewController:(UIViewController*)viewController
+                   recordType:(autofill::CreditCard::RecordType)recordType;
 
 @end
 

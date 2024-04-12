@@ -117,10 +117,10 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
 }
 
 - (ManualFillCardItem*)createVirtualCardItem:(autofill::CreditCard*)card {
-  std::unique_ptr<autofill::CreditCard> virtualCard =
-      autofill::CreditCard::CreateVirtualCardWithGuidSuffix(*card);
+  autofill::CreditCard virtualCard =
+      autofill::CreditCard::CreateVirtualCard(*card);
   ManualFillCreditCard* manualFillVirtualCreditCard =
-      [[ManualFillCreditCard alloc] initWithCreditCard:*virtualCard];
+      [[ManualFillCreditCard alloc] initWithCreditCard:virtualCard];
   return
       [[ManualFillCardItem alloc] initWithCreditCard:manualFillVirtualCreditCard
                                      contentInjector:self.contentInjector

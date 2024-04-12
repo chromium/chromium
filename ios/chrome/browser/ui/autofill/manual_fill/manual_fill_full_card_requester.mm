@@ -17,6 +17,8 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
+using autofill::CreditCard::RecordType::kVirtualCard;
+
 namespace autofill {
 class CreditCard;
 }  // namespace autofill
@@ -51,8 +53,9 @@ class CreditCard;
   return self;
 }
 
-- (void)requestFullCreditCard:(autofill::CreditCard)card
-       withBaseViewController:(UIViewController*)viewController {
+- (void)requestFullCreditCard:(const autofill::CreditCard)card
+       withBaseViewController:(UIViewController*)viewController
+                   recordType:(autofill::CreditCard::RecordType)recordType {
   // Payment Request is only enabled in main frame.
   web::WebState* webState = self.webStateList->GetActiveWebState();
   web::WebFramesManager* frames_manager =
@@ -66,12 +69,17 @@ class CreditCard;
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, mainFrame)
           ->GetAutofillManager();
 
+  autofill::CreditCard virtualCard;
+  if (recordType == kVirtualCard) {
+    virtualCard = autofill::CreditCard::CreateVirtualCard(card);
+  }
   autofill::CreditCardAccessManager& creditCardAccessManager =
       autofillManager.GetCreditCardAccessManager();
   __weak __typeof(self) weakSelf = self;
   creditCardAccessManager.FetchCreditCard(
-      &card, base::BindOnce(^(autofill::CreditCardFetchResult result,
-                              const autofill::CreditCard* fetchedCard) {
+      (recordType == kVirtualCard ? &virtualCard : &card),
+      base::BindOnce(^(autofill::CreditCardFetchResult result,
+                       const autofill::CreditCard* fetchedCard) {
         [weakSelf onCreditCardFetched:result fetchedCard:fetchedCard];
       }));
 

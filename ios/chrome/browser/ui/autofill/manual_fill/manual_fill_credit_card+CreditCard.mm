@@ -23,8 +23,10 @@
   NSString* cardHolder = autofill::GetCreditCardName(
       creditCard, GetApplicationContext()->GetApplicationLocale());
   NSString* number = nil;
-  if (creditCard.record_type() !=
-      autofill::CreditCard::RecordType::kMaskedServerCard) {
+  if ((creditCard.record_type() !=
+       autofill::CreditCard::RecordType::kMaskedServerCard) &&
+      (creditCard.record_type() !=
+       autofill::CreditCard::RecordType::kVirtualCard)) {
     number = base::SysUTF16ToNSString(autofill::CreditCard::StripSeparators(
         creditCard.GetRawInfo(autofill::CREDIT_CARD_NUMBER)));
   }
