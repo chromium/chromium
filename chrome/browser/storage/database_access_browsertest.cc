@@ -11,7 +11,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/switches.h"
 
 class WebSqlAccessBrowserTest : public InProcessBrowserTest {
  public:
@@ -61,26 +60,6 @@ class WebSqlAccessEnabledBrowserTest : public WebSqlAccessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebSqlAccessEnabledBrowserTest, FeatureFlagEnabled) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  EXPECT_TRUE(hasWebSQLAccess(web_contents));
-  EXPECT_TRUE(canOpenDatabase(web_contents));
-}
-
-// WebSQL should be accessible when switch is added by a user on the command
-// line or when appended by an enterprise policy.
-class WebSqlAccessCommandLineBrowserTest : public WebSqlAccessBrowserTest {
- public:
-  WebSqlAccessCommandLineBrowserTest() = default;
-  ~WebSqlAccessCommandLineBrowserTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(blink::switches::kWebSQLAccess);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(WebSqlAccessCommandLineBrowserTest, CommandLineEnabled) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

@@ -55,7 +55,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/services/storage/public/cpp/storage_prefs.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -1262,23 +1261,6 @@ class ChromeContentBrowserClientSwitchTest
   ScopedTestingLocalState testing_local_state_;
   ChromeContentBrowserClient client_;
 };
-
-TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessDefault) {
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_FALSE(result.HasSwitch(blink::switches::kWebSQLAccess));
-}
-
-TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessDisabled) {
-  profile()->GetPrefs()->SetBoolean(storage::kWebSQLAccess, false);
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_FALSE(result.HasSwitch(blink::switches::kWebSQLAccess));
-}
-
-TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessEnabled) {
-  profile()->GetPrefs()->SetBoolean(storage::kWebSQLAccess, true);
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_TRUE(result.HasSwitch(blink::switches::kWebSQLAccess));
-}
 
 TEST_F(ChromeContentBrowserClientSwitchTest, DataUrlInSvgDefault) {
   base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();

@@ -115,10 +115,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
        std::cref(network::features::kCrossOriginOpenerPolicyByDefault),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
-      {blink::switches::kWebSQLAccess,
-       std::cref(blink::features::kWebSQLAccess),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-
       // Overrides for headless
       {::switches::kHeadless, std::cref(blink::features::kPaintHolding),
        base::FeatureList::OVERRIDE_DISABLE_FEATURE},

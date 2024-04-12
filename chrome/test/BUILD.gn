@@ -6989,7 +6989,6 @@ test("unit_tests") {
     "//components/services/app_service",
     "//components/services/paint_preview_compositor/public/mojom",
     "//components/services/patch/content",
-    "//components/services/storage/public/cpp:prefs",
     "//components/services/unzip/content",
     "//components/session_proto_db:session_proto_db",
     "//components/site_engagement/content",

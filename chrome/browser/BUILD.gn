@@ -2467,7 +2467,6 @@ static_library("browser") {
     "//components/services/patch/content",
     "//components/services/quarantine",
     "//components/services/quarantine/public/mojom",
-    "//components/services/storage/public/cpp:prefs",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
     "//components/services/unzip/public/mojom",
