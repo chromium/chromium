@@ -12319,6 +12319,23 @@
             ]
         }
     ],
+    "OidcAuthProfileManagement": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OidcAuthProfileManagement"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmitBlurEventOnElementRemoval": [
         {
             "platforms": [
