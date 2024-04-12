@@ -8231,6 +8231,11 @@
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },
+      'gpu_passthrough_graphite_telemetry_tests': {
+        'variants': [
+          'WIN10_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
       'gpu_webcodecs_telemetry_test': {
         'variants': [
           'WIN10_INTEL_UHD_630_STABLE',

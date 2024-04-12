@@ -1613,6 +1613,11 @@ targets.legacy_matrix_compound_suite(
                 "WIN10_NVIDIA_GTX_1660_STABLE",
             ],
         ),
+        "gpu_passthrough_graphite_telemetry_tests": targets.legacy_matrix_config(
+            variants = [
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
         "gpu_webcodecs_telemetry_test": targets.legacy_matrix_config(
             variants = [
                 "WIN10_INTEL_UHD_630_STABLE",
