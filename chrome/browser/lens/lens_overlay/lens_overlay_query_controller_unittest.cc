@@ -8,6 +8,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/common/api_error_codes.h"
@@ -46,10 +47,12 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>
           url_callback,
       base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
-          interaction_data_callback)
+          interaction_data_callback,
+      Profile* profile)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
-                                   interaction_data_callback) {}
+                                   interaction_data_callback,
+                                   profile) {}
   ~LensOverlayQueryControllerMock() override = default;
 
   lens::LensOverlayObjectsRequest sent_objects_request_;
@@ -89,6 +92,15 @@ class LensOverlayQueryControllerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+
+  TestingProfile* profile() { return profile_.get(); }
+
+ private:
+  void SetUp() override {
+    TestingProfile::Builder profile_builder;
+    profile_ = profile_builder.Build();
+  }
 };
 
 TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
@@ -98,7 +110,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       full_image_response_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
-      base::NullCallback());
+      base::NullCallback(), profile());
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(bitmap);
 
@@ -131,7 +143,7 @@ TEST_F(LensOverlayQueryControllerTest,
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback());
+      interaction_data_response_future.GetRepeatingCallback(), profile());
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(bitmap);
   task_environment_.RunUntilIdle();
@@ -205,7 +217,7 @@ TEST_F(LensOverlayQueryControllerTest,
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback());
+      interaction_data_response_future.GetRepeatingCallback(), profile());
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(bitmap);
   task_environment_.RunUntilIdle();

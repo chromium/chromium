@@ -465,5 +465,5 @@ Refer to README.md for content description and update process.
  <item id="wallpaper_request" added_in_milestone="125" content_hash_code="0192ac19" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.cc" />
  <item id="cws_fetch_item_snippet" added_in_milestone="124" content_hash_code="05d82ce1" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/webstore_data_fetcher.cc" />
  <item id="remoting_cloud_provision_gce_instance" added_in_milestone="125" content_hash_code="020ad462" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
- <item id="lens_overlay" added_in_milestone="125" content_hash_code="05367339" os_list="linux,windows,chromeos" file_path="chrome/browser/lens/lens_overlay/lens_overlay_query_controller.cc" />
+ <item id="lens_overlay" added_in_milestone="125" content_hash_code="06fbffac" os_list="linux,windows,chromeos" file_path="chrome/browser/lens/lens_overlay/lens_overlay_query_controller.cc" />
 </annotations>

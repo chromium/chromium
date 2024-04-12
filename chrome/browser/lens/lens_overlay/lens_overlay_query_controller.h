@@ -19,6 +19,8 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace lens {
 
 // Callback type alias for the lens overlay full image response.
@@ -34,7 +36,8 @@ class LensOverlayQueryController {
       base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>
           url_callback,
       base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
-          interaction_data_callback);
+          interaction_data_callback,
+      Profile* profile);
   virtual ~LensOverlayQueryController();
 
   // Starts a query flow by sending a request to Lens using the screenshot,
@@ -162,6 +165,10 @@ class LensOverlayQueryController {
   // endpoint fetcher is kept; additional fetch requests will discard
   // earlier unfinished requests.
   std::unique_ptr<EndpointFetcher> interaction_endpoint_fetcher_;
+
+  // The profile, necessary to get the variation data to attach to the
+  // Lens server request.
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

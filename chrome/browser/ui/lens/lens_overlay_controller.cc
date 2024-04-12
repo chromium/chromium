@@ -13,6 +13,7 @@
 #include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -168,7 +169,8 @@ void LensOverlayController::ShowUI() {
               weak_factory_.GetWeakPtr()),
           base::BindRepeating(
               &LensOverlayController::HandleInteractionDataResponse,
-              weak_factory_.GetWeakPtr()));
+              weak_factory_.GetWeakPtr()),
+          tab_model_->owning_model()->profile());
 
   state_ = State::kScreenshot;
   view->CopyFromSurface(

@@ -15,8 +15,12 @@
 #include "chrome/browser/lens/lens_overlay/lens_overlay_image_helper.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_proto_converter.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/lens/lens_features.h"
+#include "components/variations/variations.mojom.h"
+#include "components/variations/variations_client.h"
+#include "components/variations/variations_ids_provider.h"
 #include "components/version_info/channel.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/google_api_keys.h"
@@ -30,6 +34,8 @@ namespace lens {
 
 namespace {
 
+// The name string for the header for variations information.
+constexpr char kClientDataHeader[] = "X-Client-Data";
 constexpr char kHttpMethod[] = "POST";
 constexpr char kContentType[] = "application/x-protobuf";
 constexpr base::TimeDelta kServerRequestTimeout = base::Minutes(1);
@@ -60,10 +66,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
             type: USER_CONTENT
             type: WEB_CONTENT
           }
-          last_reviewed: "2024-04-02"
+          last_reviewed: "2024-04-11"
         }
         policy {
-          cookies_allowed: NO
+          cookies_allowed: YES
+          cookies_store: "user"
           setting: "This feature is opt-in by flag only for now, so there "
             "is no setting to disable the feature."
           policy_exception_justification: "Policy not yet implemented."
@@ -101,12 +108,14 @@ LensOverlayQueryController::LensOverlayQueryController(
     base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>
         url_callback,
     base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
-        interaction_data_callback)
+        interaction_data_callback,
+    Profile* profile)
     : request_id_generator_{std::make_unique<
           lens::LensOverlayRequestIdGenerator>()},
       full_image_callback_{full_image_callback},
       url_callback_{url_callback},
-      interaction_data_callback_{interaction_data_callback} {}
+      interaction_data_callback_{interaction_data_callback},
+      profile_{profile} {}
 
 LensOverlayQueryController::~LensOverlayQueryController() = default;
 
@@ -363,6 +372,18 @@ LensOverlayQueryController::CreateEndpointFetcher(
     lens::LensOverlayServerRequest request_data) {
   std::string request_data_string;
   CHECK(request_data.SerializeToString(&request_data_string));
+  std::vector<std::string> cors_exempt_headers;
+
+  variations::VariationsClient* provider = profile_->GetVariationsClient();
+  variations::mojom::VariationsHeadersPtr headers =
+      provider->GetVariationsHeaders();
+  if (!headers.is_null()) {
+    cors_exempt_headers.push_back(kClientDataHeader);
+    // The endpoint is always a Google property.
+    cors_exempt_headers.push_back(headers->headers_map.at(
+        variations::mojom::GoogleWebVisibility::FIRST_PARTY));
+  }
+
   return std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/g_browser_process->shared_url_loader_factory(),
       /*url=*/GURL(lens::features::GetLensOverlayEndpointURL()),
@@ -371,7 +392,7 @@ LensOverlayQueryController::CreateEndpointFetcher(
       /*timeout=*/kServerRequestTimeout,
       /*post_data=*/request_data_string,
       /*headers=*/std::vector<std::string>(),
-      /*cors_exempt_headers=*/std::vector<std::string>(),
+      /*cors_exempt_headers=*/cors_exempt_headers,
       /*annotation_tag=*/kTrafficAnnotationTag,
       /*is_stable_channel=*/chrome::GetChannel() ==
           version_info::Channel::STABLE);
