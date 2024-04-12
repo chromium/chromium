@@ -280,6 +280,7 @@ source_set("browser") {
     "//ui/events/devices",
     "//ui/events/gestures/blink",
     "//ui/gfx",
+    "//ui/gfx:color_utils",
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry/mojom",

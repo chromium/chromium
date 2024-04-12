@@ -165,6 +165,7 @@ class PageHandler : public DevToolsDomainHandler,
                                Maybe<std::string> download_path) override;
 
   void GetAppManifest(
+      protocol::Maybe<std::string> manifest_id,
       std::unique_ptr<GetAppManifestCallback> callback) override;
 
   Response SetWebLifecycleState(const std::string& state) override;
@@ -213,11 +214,6 @@ class PageHandler : public DevToolsDomainHandler,
       const blink::DeviceEmulationParams& original_params,
       const std::optional<blink::web_pref::WebPreferences>& original_web_prefs,
       const gfx::Image& image);
-
-  void GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
-                   const GURL& manifest_url,
-                   ::blink::mojom::ManifestPtr parsed_manifest,
-                   blink::mojom::ManifestDebugInfoPtr debug_info);
 
   // RenderWidgetHostObserver overrides.
   void RenderWidgetHostVisibilityChanged(RenderWidgetHost* widget_host,
