@@ -49,7 +49,9 @@ namespace webnn::coreml {
 
 namespace {
 
-constexpr char kWriteFileErrorMessage[] = "Failed to write constant to file.";
+constexpr char kWriteModelErrorMessage[] = "Failed to serialize Core ML model.";
+constexpr char kWriteWeightsErrorMessage[] =
+    "Failed to write constant to file.";
 
 const base::FilePath::CharType kMlPackageExtension[] =
     FILE_PATH_LITERAL(".mlpackage");
@@ -472,11 +474,7 @@ GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info,
   GraphBuilder graph_builder(graph_info, std::move(ml_package_dir));
 
   RETURN_IF_ERROR(graph_builder.BuildCoreMLModel());
-
-  if (!graph_builder.SerializeModel()) {
-    return NewUnknownError("Failed to serialize CoreML model.");
-  }
-
+  RETURN_IF_ERROR(graph_builder.SerializeModel());
   return graph_builder.FinishAndTakeResult();
 }
 
@@ -615,18 +613,26 @@ GraphBuilder::BuildCoreMLModel() {
   return base::ok();
 }
 
-bool GraphBuilder::SerializeModel() {
+base::expected<void, mojom::ErrorPtr> GraphBuilder::SerializeModel() {
   base::ElapsedTimer ml_model_write_timer;
-  // This will always overwrite if there is an existing file.
-  std::fstream model_file(ml_package_dir()
-                              .Append(kMlPackageDataDir)
-                              .Append(kMlPackageModelFileName)
-                              .value(),
-                          std::ios::out | std::ios::binary);
-  bool result = ml_model_.SerializeToOstream(&model_file);
+  base::FilePath model_file_path = ml_package_dir()
+                                       .Append(kMlPackageDataDir)
+                                       .Append(kMlPackageModelFileName);
+  base::File model_file(model_file_path,
+                        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  if (!model_file.IsValid()) {
+    LOG(ERROR) << "Unable to open " << model_file_path << ": "
+               << base::File::ErrorToString(model_file.error_details());
+    return NewUnknownError(kWriteModelErrorMessage);
+  }
+  bool result =
+      ml_model_.SerializeToFileDescriptor(model_file.GetPlatformFile());
   UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelWrite",
                              ml_model_write_timer.Elapsed());
-  return result;
+  if (!result) {
+    return NewUnknownError(kWriteModelErrorMessage);
+  }
+  return base::ok();
 }
 
 std::unique_ptr<GraphBuilder::Result> GraphBuilder::FinishAndTakeResult() {
@@ -635,18 +641,24 @@ std::unique_ptr<GraphBuilder::Result> GraphBuilder::FinishAndTakeResult() {
 
 base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
     CoreML::Specification::MILSpec::Block& block) {
-  base::File weights_file(ml_package_dir()
-                              .Append(kMlPackageDataDir)
-                              .Append(kMlPackageWeightsDir)
-                              .Append(kMlPackageWeightsFileName),
+  base::FilePath weights_file_path = ml_package_dir()
+                                         .Append(kMlPackageDataDir)
+                                         .Append(kMlPackageWeightsDir)
+                                         .Append(kMlPackageWeightsFileName);
+  base::File weights_file(weights_file_path,
                           base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  if (!weights_file.IsValid()) {
+    LOG(ERROR) << "Unable to open " << weights_file_path << ": "
+               << base::File::ErrorToString(weights_file.error_details());
+    return NewUnknownError(kWriteWeightsErrorMessage);
+  }
 
   uint64_t current_offset = 0;
   WeightHeader header{
       static_cast<uint32_t>(graph_info_->constant_id_to_buffer_map.size())};
   if (!weights_file.WriteAtCurrentPosAndCheck(
           base::byte_span_from_ref(header))) {
-    return NewUnknownError(kWriteFileErrorMessage);
+    return NewUnknownError(kWriteWeightsErrorMessage);
   }
   current_offset += sizeof(header);
 
@@ -668,11 +680,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
 
     if (!weights_file.WriteAtCurrentPosAndCheck(
             base::byte_span_from_ref(metadata))) {
-      return NewUnknownError(kWriteFileErrorMessage);
+      return NewUnknownError(kWriteWeightsErrorMessage);
     }
 
     if (!weights_file.WriteAtCurrentPosAndCheck(base::make_span(buffer))) {
-      return NewUnknownError(kWriteFileErrorMessage);
+      return NewUnknownError(kWriteWeightsErrorMessage);
     }
 
     RETURN_IF_ERROR(AddConstantFileValue(key, current_offset, block));
@@ -680,7 +692,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
     current_offset += buffer.size();
     current_offset = base::bits::AlignUp(current_offset, kWeightAlignment);
     if (!weights_file.Seek(base::File::Whence::FROM_BEGIN, current_offset)) {
-      return NewUnknownError(kWriteFileErrorMessage);
+      return NewUnknownError(kWriteWeightsErrorMessage);
     }
   }
   return base::ok();

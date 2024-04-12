@@ -15,16 +15,18 @@ buildflag_header("buildflags") {
   ]
 }
 
-source_set("coreml_graph_builder") {
-  sources = [
-    "coreml/graph_builder.cc",
-    "coreml/graph_builder.h",
-  ]
-  deps = [
-    "//base",
-    "//services/webnn/public/mojom",
-    "//third_party/coremltools:modelformat_proto",
-  ]
+if (is_posix) {
+  source_set("coreml_graph_builder") {
+    sources = [
+      "coreml/graph_builder.cc",
+      "coreml/graph_builder.h",
+    ]
+    deps = [
+      "//base",
+      "//services/webnn/public/mojom",
+      "//third_party/coremltools:modelformat_proto",
+    ]
+  }
 }
 
 source_set("tflite_graph_builder") {
@@ -240,7 +242,6 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
   proto_deps = [ "//services/webnn/public/mojom:mojom_mojolpm" ]
 
   deps = [
-    ":coreml_graph_builder",
     ":tflite_graph_builder",
     ":webnn_service",
     "//base",
@@ -249,4 +250,8 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
     "//services/webnn/public/mojom",
     "//third_party/libprotobuf-mutator",
   ]
+
+  if (is_posix) {
+    deps += [ ":coreml_graph_builder" ]
+  }
 }

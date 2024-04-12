@@ -116,7 +116,7 @@ class GraphBuilder {
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildCoreMLModel();
 
-  [[nodiscard]] bool SerializeModel();
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> SerializeModel();
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> WriteWeightsToFile(
       CoreML::Specification::MILSpec::Block& block);
 
