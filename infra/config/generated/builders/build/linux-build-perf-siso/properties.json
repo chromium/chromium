@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/build/ios-build-perf/gn-args.json"
+        "infra/config/generated/builders/build/linux-build-perf-siso/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "build",
-              "builder": "ios-build-perf",
+              "builder": "linux-build-perf-siso",
               "project": "chromium"
             },
             "builder_spec": {
@@ -17,16 +17,16 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb",
-                  "mac_toolchain"
+                  "mb"
                 ],
-                "build_config": "Debug",
                 "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "ios"
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
-                "config": "ios"
+                "apply_configs": [
+                  "siso_latest"
+                ],
+                "config": "chromium"
               }
             }
           }
@@ -35,7 +35,7 @@
       "builder_ids": [
         {
           "bucket": "build",
-          "builder": "ios-build-perf",
+          "builder": "linux-build-perf-siso",
           "project": "chromium"
         }
       ]
@@ -50,6 +50,19 @@
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
+  "$build/siso": {
+    "configs": [
+      "builder",
+      "remote-library-link",
+      "remote-exec-link"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [
+      "no-fallback"
+    ],
+    "project": "rbe-chromium-untrusted"
+  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
@@ -58,6 +71,5 @@
     ]
   },
   "builder_group": "chromium.build",
-  "recipe": "chrome_build/build_perf",
-  "xcode_build_version": "15e204a"
+  "recipe": "chrome_build/build_perf_siso"
 }

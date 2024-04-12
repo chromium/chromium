@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/build/build-perf-android-siso/gn-args.json"
+        "infra/config/generated/builders/build/android-build-perf-siso/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "build",
-              "builder": "build-perf-android-siso",
+              "builder": "android-build-perf-siso",
               "project": "chromium"
             },
             "builder_spec": {
@@ -41,7 +41,7 @@
       "builder_ids": [
         {
           "bucket": "build",
-          "builder": "build-perf-android-siso",
+          "builder": "android-build-perf-siso",
           "project": "chromium"
         }
       ]

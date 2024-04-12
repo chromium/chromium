@@ -183,7 +183,7 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/ui/gl/gl_unittest_utils/gl_bindings_autogen_mock.o",
         "./obj/ui/gl/gl_unittest_utils/gl_mock.o",
         "./obj/v8/v8_turboshaft/csa-optimize-phase.o",
-        # Fallback happens with following args.gn (build-perf-android-siso)
+        # Fallback happens with following args.gn (try/android-arm64-rel)
         # android_static_analysis = "off"
         # coverage_instrumentation_input_file = "//.code-coverage/files_to_instrument.txt"
         # dcheck_always_on = true

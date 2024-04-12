@@ -86,22 +86,22 @@
   },
   "chromium.build": {
     "android-build-perf-developer": "build/android-build-perf-developer/gn-args.json",
-    "build-perf-android": "build/build-perf-android/gn-args.json",
-    "build-perf-android-siso": "build/build-perf-android-siso/gn-args.json",
-    "build-perf-linux": "build/build-perf-linux/gn-args.json",
-    "build-perf-linux-siso": "build/build-perf-linux-siso/gn-args.json",
-    "build-perf-windows": "build/build-perf-windows/gn-args.json",
-    "build-perf-windows-siso": "build/build-perf-windows-siso/gn-args.json",
-    "ios-build-perf": "build/ios-build-perf/gn-args.json",
+    "android-build-perf-ninja": "build/android-build-perf-ninja/gn-args.json",
+    "android-build-perf-siso": "build/android-build-perf-siso/gn-args.json",
     "ios-build-perf-developer": "build/ios-build-perf-developer/gn-args.json",
+    "ios-build-perf-ninja": "build/ios-build-perf-ninja/gn-args.json",
     "ios-build-perf-siso": "build/ios-build-perf-siso/gn-args.json",
     "linux-build-perf-developer": "build/linux-build-perf-developer/gn-args.json",
-    "linux-chromeos-build-perf": "build/linux-chromeos-build-perf/gn-args.json",
+    "linux-build-perf-ninja": "build/linux-build-perf-ninja/gn-args.json",
+    "linux-build-perf-siso": "build/linux-build-perf-siso/gn-args.json",
+    "linux-chromeos-build-perf-ninja": "build/linux-chromeos-build-perf-ninja/gn-args.json",
     "linux-chromeos-build-perf-siso": "build/linux-chromeos-build-perf-siso/gn-args.json",
-    "mac-build-perf": "build/mac-build-perf/gn-args.json",
     "mac-build-perf-developer": "build/mac-build-perf-developer/gn-args.json",
+    "mac-build-perf-ninja": "build/mac-build-perf-ninja/gn-args.json",
     "mac-build-perf-siso": "build/mac-build-perf-siso/gn-args.json",
-    "win-build-perf-developer": "build/win-build-perf-developer/gn-args.json"
+    "win-build-perf-developer": "build/win-build-perf-developer/gn-args.json",
+    "win-build-perf-ninja": "build/win-build-perf-ninja/gn-args.json",
+    "win-build-perf-siso": "build/win-build-perf-siso/gn-args.json"
   },
   "chromium.build.fyi": {
     "Mac Builder Siso FYI": "build/Mac Builder Siso FYI/gn-args.json"
