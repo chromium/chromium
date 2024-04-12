@@ -15,10 +15,9 @@
         // BUILDFLAG(IS_WIN)
 
 bool IsDesktopEnUSLocaleOnlySyncPollFeatureEnabled() {
-  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
-          syncer::kSyncPollImmediatelyOnEveryStartup.name)) {
-    return base::FeatureList::IsEnabled(
-        syncer::kSyncPollImmediatelyOnEveryStartup);
+  if (auto state = base::FeatureList::GetStateIfOverridden(
+          syncer::kSyncPollImmediatelyOnEveryStartup)) {
+    return *state;
   }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \

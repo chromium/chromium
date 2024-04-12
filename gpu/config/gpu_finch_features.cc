@@ -599,11 +599,10 @@ bool IsUsingThreadSafeMediaForWebView() {
   // If the feature is overridden from command line or finch we will use its
   // value. If not we use kWebViewThreadSafeMediaDefault which is set in
   // AwMainDelegate for WebView.
-  base::FeatureList* feature_list = base::FeatureList::GetInstance();
-  if (feature_list &&
-      feature_list->IsFeatureOverridden(kWebViewThreadSafeMedia.name))
-    return base::FeatureList::IsEnabled(kWebViewThreadSafeMedia);
-
+  if (auto state =
+          base::FeatureList::GetStateIfOverridden(kWebViewThreadSafeMedia)) {
+    return *state;
+  }
   return base::FeatureList::IsEnabled(kWebViewThreadSafeMediaDefault);
 #else
   return false;
