@@ -140,7 +140,7 @@ __xmlIOErr(int domain, int code, const char *extra)
     xmlStructuredErrorFunc schannel = NULL;
     xmlGenericErrorFunc channel = NULL;
     void *data = NULL;
-    const char *fmt, *arg1, *arg2;
+    const char *fmt, *arg;
     int res;
 
     if (code == 0) {
@@ -309,19 +309,18 @@ __xmlIOErr(int domain, int code, const char *extra)
         data = xmlGenericErrorContext;
     }
 
-    if (extra != NULL) {
-        fmt = "%s: %s";
+    if (code == XML_IO_NETWORK_ATTEMPT) {
+        fmt = "Attempt to load network entity %s";
+        arg = extra;
     } else {
         fmt = "%s";
+        arg = xmlErrString(code);
     }
-
-    arg1 = xmlErrString(code);
-    arg2 = extra;
 
     res = __xmlRaiseError(schannel, channel, data, NULL, NULL,
                           domain, code, XML_ERR_ERROR, NULL, 0,
                           extra, NULL, NULL, 0, 0,
-                          fmt, arg1, arg2);
+                          fmt, arg);
     if (res < 0) {
         xmlIOErrMemory();
         return(XML_ERR_NO_MEMORY);
@@ -1394,7 +1393,7 @@ xmlAllocOutputBuffer(xmlCharEncodingHandlerPtr encoder) {
         xmlFree(ret);
 	return(NULL);
     }
-    xmlBufSetAllocationScheme(ret->buffer, XML_BUFFER_ALLOC_IO);
+    xmlBufSetAllocationScheme(ret->buffer, XML_BUFFER_ALLOC_DOUBLEIT);
 
     ret->encoder = encoder;
     if (encoder != NULL) {
@@ -2452,10 +2451,8 @@ xmlOutputBufferWrite(xmlOutputBufferPtr out, int len, const char *buf) {
                 nbchars = ret >= 0 ? ret : 0;
 	} else {
 	    ret = xmlBufAdd(out->buffer, (const xmlChar *) buf, chunk);
-	    if (ret != 0) {
-                out->error = XML_ERR_NO_MEMORY;
+	    if (ret != 0)
 	        return(-1);
-            }
             if (out->writecallback)
 	        nbchars = xmlBufUse(out->buffer);
             else
@@ -2609,10 +2606,8 @@ xmlOutputBufferWriteEscape(xmlOutputBufferPtr out, const xmlChar *str,
 	 * not the case force a flush, but make sure we stay in the loop
 	 */
 	if (chunk < 40) {
-	    if (xmlBufGrow(out->buffer, 100) < 0) {
-                out->error = XML_ERR_NO_MEMORY;
+	    if (xmlBufGrow(out->buffer, 100) < 0)
 	        return(-1);
-            }
             oldwritten = -1;
 	    continue;
 	}
@@ -2626,17 +2621,11 @@ xmlOutputBufferWriteEscape(xmlOutputBufferPtr out, const xmlChar *str,
 	     */
 	    if (out->conv == NULL) {
 		out->conv = xmlBufCreate();
-                if (out->conv == NULL) {
-                    out->error = XML_ERR_NO_MEMORY;
-                    return(-1);
-                }
 	    }
 	    ret = escaping(xmlBufEnd(out->buffer) ,
 	                   &chunk, str, &cons);
-            if (ret < 0) {
-                out->error = XML_ERR_NO_MEMORY;
-                return(-1);
-            }
+	    if ((ret < 0) || (chunk == 0)) /* chunk==0 => nothing done */
+	        return(-1);
             xmlBufAddLen(out->buffer, chunk);
 
 	    if ((xmlBufUse(out->buffer) < MINLEN) && (cons == len))
@@ -2654,10 +2643,8 @@ xmlOutputBufferWriteEscape(xmlOutputBufferPtr out, const xmlChar *str,
                 nbchars = ret >= 0 ? ret : 0;
 	} else {
 	    ret = escaping(xmlBufEnd(out->buffer), &chunk, str, &cons);
-            if (ret < 0) {
-                out->error = XML_ERR_NO_MEMORY;
-                return(-1);
-            }
+	    if ((ret < 0) || (chunk == 0)) /* chunk==0 => nothing done */
+	        return(-1);
             xmlBufAddLen(out->buffer, chunk);
             if (out->writecallback)
 	        nbchars = xmlBufUse(out->buffer);
@@ -2689,17 +2676,14 @@ xmlOutputBufferWriteEscape(xmlOutputBufferPtr out, const xmlChar *str,
                 int errNo = (ret == -1) ? XML_IO_WRITE : -ret;
 		xmlIOErr(errNo, NULL);
 		out->error = errNo;
-		return(-1);
+		return(ret);
 	    }
             if (out->written > INT_MAX - ret)
                 out->written = INT_MAX;
             else
                 out->written += ret;
 	} else if (xmlBufAvail(out->buffer) < MINLEN) {
-            if (xmlBufGrow(out->buffer, MINLEN) < 0) {
-                out->error = XML_ERR_NO_MEMORY;
-                return(-1);
-            }
+	    xmlBufGrow(out->buffer, MINLEN);
 	}
 	written += nbchars;
     } while ((len > 0) && (oldwritten != written));
@@ -2733,56 +2717,6 @@ xmlOutputBufferWriteString(xmlOutputBufferPtr out, const char *str) {
     if (len > 0)
 	return(xmlOutputBufferWrite(out, len, str));
     return(len);
-}
-
-/**
- * xmlOutputBufferWriteQuotedString:
- * @buf:  output buffer
- * @string:  the string to add
- *
- * routine which manage and grows an output buffer. This one writes
- * a quoted or double quoted #xmlChar string, checking first if it holds
- * quote or double-quotes internally
- */
-void
-xmlOutputBufferWriteQuotedString(xmlOutputBufferPtr buf,
-                                 const xmlChar *string) {
-    const xmlChar *cur, *base;
-
-    if ((buf == NULL) || (buf->error))
-        return;
-
-    if (xmlStrchr(string, '\"')) {
-        if (xmlStrchr(string, '\'')) {
-	    xmlOutputBufferWrite(buf, 1, "\"");
-            base = cur = string;
-            while(*cur != 0){
-                if(*cur == '"'){
-                    if (base != cur)
-                        xmlOutputBufferWrite(buf, cur - base,
-                                             (const char *) base);
-                    xmlOutputBufferWrite(buf, 6, "&quot;");
-                    cur++;
-                    base = cur;
-                }
-                else {
-                    cur++;
-                }
-            }
-            if (base != cur)
-                xmlOutputBufferWrite(buf, cur - base, (const char *) base);
-	    xmlOutputBufferWrite(buf, 1, "\"");
-	}
-        else{
-	    xmlOutputBufferWrite(buf, 1, "'");
-            xmlOutputBufferWriteString(buf, (const char *) string);
-	    xmlOutputBufferWrite(buf, 1, "'");
-        }
-    } else {
-        xmlOutputBufferWrite(buf, 1, "\"");
-        xmlOutputBufferWriteString(buf, (const char *) string);
-        xmlOutputBufferWrite(buf, 1, "\"");
-    }
 }
 
 /**

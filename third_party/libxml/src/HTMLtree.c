@@ -421,18 +421,18 @@ static size_t
 htmlBufNodeDumpFormat(xmlBufPtr buf, xmlDocPtr doc, xmlNodePtr cur,
 	           int format) {
     size_t use;
-    size_t ret;
+    int ret;
     xmlOutputBufferPtr outbuf;
 
     if (cur == NULL) {
-	return ((size_t) -1);
+	return (-1);
     }
     if (buf == NULL) {
-	return ((size_t) -1);
+	return (-1);
     }
     outbuf = (xmlOutputBufferPtr) xmlMalloc(sizeof(xmlOutputBuffer));
     if (outbuf == NULL)
-	return ((size_t) -1);
+	return (-1);
     memset(outbuf, 0, sizeof(xmlOutputBuffer));
     outbuf->buffer = buf;
     outbuf->encoder = NULL;
@@ -443,11 +443,8 @@ htmlBufNodeDumpFormat(xmlBufPtr buf, xmlDocPtr doc, xmlNodePtr cur,
 
     use = xmlBufUse(buf);
     htmlNodeDumpFormatOutput(outbuf, doc, cur, NULL, format);
-    if (outbuf->error)
-        ret = (size_t) -1;
-    else
-        ret = xmlBufUse(buf) - use;
     xmlFree(outbuf);
+    ret = xmlBufUse(buf) - use;
     return (ret);
 }
 
@@ -475,7 +472,6 @@ htmlNodeDump(xmlBufferPtr buf, xmlDocPtr doc, xmlNodePtr cur) {
     if (buffer == NULL)
         return(-1);
 
-    xmlBufSetAllocationScheme(buffer, XML_BUFFER_ALLOC_DOUBLEIT);
     ret = htmlBufNodeDumpFormat(buffer, doc, cur, 1);
 
     xmlBufBackToBuffer(buffer);
@@ -555,32 +551,32 @@ htmlDocDumpMemoryFormat(xmlDocPtr cur, xmlChar**mem, int *size, int format) {
 
     if ((mem == NULL) || (size == NULL))
         return;
-    *mem = NULL;
-    *size = 0;
-    if (cur == NULL)
+    if (cur == NULL) {
+	*mem = NULL;
+	*size = 0;
 	return;
+    }
 
     encoding = (const char *) htmlGetMetaEncoding(cur);
     handler = htmlFindOutputEncoder(encoding);
     buf = xmlAllocOutputBufferInternal(handler);
-    if (buf == NULL)
+    if (buf == NULL) {
+	*mem = NULL;
+	*size = 0;
 	return;
+    }
 
     htmlDocContentDumpFormatOutput(buf, cur, NULL, format);
 
     xmlOutputBufferFlush(buf);
-
-    if (!buf->error) {
-        if (buf->conv != NULL) {
-            *size = xmlBufUse(buf->conv);
-            *mem = xmlStrndup(xmlBufContent(buf->conv), *size);
-        } else {
-            *size = xmlBufUse(buf->buffer);
-            *mem = xmlStrndup(xmlBufContent(buf->buffer), *size);
-        }
+    if (buf->conv != NULL) {
+	*size = xmlBufUse(buf->conv);
+	*mem = xmlStrndup(xmlBufContent(buf->conv), *size);
+    } else {
+	*size = xmlBufUse(buf->buffer);
+	*mem = xmlStrndup(xmlBufContent(buf->buffer), *size);
     }
-
-    xmlOutputBufferClose(buf);
+    (void)xmlOutputBufferClose(buf);
 }
 
 /**
@@ -627,15 +623,15 @@ htmlDtdDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
     xmlOutputBufferWriteString(buf, (const char *)cur->name);
     if (cur->ExternalID != NULL) {
 	xmlOutputBufferWriteString(buf, " PUBLIC ");
-	xmlOutputBufferWriteQuotedString(buf, cur->ExternalID);
+	xmlBufWriteQuotedString(buf->buffer, cur->ExternalID);
 	if (cur->SystemID != NULL) {
 	    xmlOutputBufferWriteString(buf, " ");
-	    xmlOutputBufferWriteQuotedString(buf, cur->SystemID);
+	    xmlBufWriteQuotedString(buf->buffer, cur->SystemID);
 	}
     } else if (cur->SystemID != NULL &&
 	       xmlStrcmp(cur->SystemID, BAD_CAST "about:legacy-compat")) {
 	xmlOutputBufferWriteString(buf, " SYSTEM ");
-	xmlOutputBufferWriteQuotedString(buf, cur->SystemID);
+	xmlBufWriteQuotedString(buf->buffer, cur->SystemID);
     }
     xmlOutputBufferWriteString(buf, ">\n");
 }
@@ -695,13 +691,13 @@ htmlAttrDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc, xmlAttrPtr cur) {
 		escaped = xmlURIEscapeStr(tmp,
                         BAD_CAST "\"#$%&+,/:;<=>?@[\\]^`{|}");
 		if (escaped != NULL) {
-		    xmlOutputBufferWriteQuotedString(buf, escaped);
+		    xmlBufWriteQuotedString(buf->buffer, escaped);
 		    xmlFree(escaped);
 		} else {
                     buf->error = XML_ERR_NO_MEMORY;
 		}
 	    } else {
-		xmlOutputBufferWriteQuotedString(buf, value);
+		xmlBufWriteQuotedString(buf->buffer, value);
 	    }
 	    xmlFree(value);
 	} else  {

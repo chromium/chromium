@@ -253,7 +253,7 @@ xmlAddEntity(xmlDocPtr doc, int extSubset, const xmlChar *name, int type,
             }
 	    table = dtd->pentities;
 	    break;
-        default:
+        case XML_INTERNAL_PREDEFINED_ENTITY:
 	    return(XML_ERR_ARGUMENT);
     }
     ret = xmlCreateEntity(dtd->doc, name, type, ExternalID, SystemID, content);
@@ -395,8 +395,6 @@ xmlNewEntity(xmlDocPtr doc, const xmlChar *name, int type,
     if ((doc != NULL) && (doc->intSubset != NULL)) {
 	return(xmlAddDocEntity(doc, name, type, ExternalID, SystemID, content));
     }
-    if (name == NULL)
-        return(NULL);
     return(xmlCreateEntity(doc, name, type, ExternalID, SystemID, content));
 }
 
@@ -656,6 +654,11 @@ xmlEncodeEntitiesInternal(xmlDocPtr doc, const xmlChar *input, int attr) {
                 l = 4;
                 val = xmlGetUTF8Char(cur, &l);
                 if (val < 0) {
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+                    fprintf(stderr, "xmlEncodeEntitiesInternal: "
+                            "invalid UTF-8\n");
+                    abort();
+#endif
                     val = 0xFFFD;
                     cur++;
                 } else {
@@ -934,8 +937,7 @@ xmlDumpEntityDecl(xmlBufferPtr buf, xmlEntityPtr ent) {
 
     save = xmlSaveToBuffer(buf, NULL, 0);
     xmlSaveTree(save, (xmlNodePtr) ent);
-    if (xmlSaveFinish(save) != XML_ERR_OK)
-        xmlFree(xmlBufferDetach(buf));
+    xmlSaveClose(save);
 }
 
 /**
@@ -946,9 +948,9 @@ xmlDumpEntityDecl(xmlBufferPtr buf, xmlEntityPtr ent) {
  * When using the hash table scan function, arguments need to be reversed
  */
 static void
-xmlDumpEntityDeclScan(void *ent, void *save,
+xmlDumpEntityDeclScan(void *ent, void *buf,
                       const xmlChar *name ATTRIBUTE_UNUSED) {
-    xmlSaveTree(save, ent);
+    xmlDumpEntityDecl((xmlBufferPtr) buf, (xmlEntityPtr) ent);
 }
 
 /**
@@ -960,14 +962,6 @@ xmlDumpEntityDeclScan(void *ent, void *save,
  */
 void
 xmlDumpEntitiesTable(xmlBufferPtr buf, xmlEntitiesTablePtr table) {
-    xmlSaveCtxtPtr save;
-
-    if ((buf == NULL) || (table == NULL))
-        return;
-
-    save = xmlSaveToBuffer(buf, NULL, 0);
-    xmlHashScan(table, xmlDumpEntityDeclScan, save);
-    if (xmlSaveFinish(save) != XML_ERR_OK)
-        xmlFree(xmlBufferDetach(buf));
+    xmlHashScan(table, xmlDumpEntityDeclScan, buf);
 }
 #endif /* LIBXML_OUTPUT_ENABLED */

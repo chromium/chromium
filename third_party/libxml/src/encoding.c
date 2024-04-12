@@ -2491,6 +2491,7 @@ retry:
          */
         charrefLen = snprintf((char *) &charref[0], sizeof(charref),
                          "&#%d;", cur);
+        xmlBufShrink(in, len);
         xmlBufGrow(out, charrefLen * 4);
         c_out = xmlBufAvail(out);
         c_in = charrefLen;
@@ -2501,7 +2502,6 @@ retry:
             goto error;
         }
 
-        xmlBufShrink(in, len);
         xmlBufAddLen(out, c_out);
         writtentot += c_out;
         goto retry;

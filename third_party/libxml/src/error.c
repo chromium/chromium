@@ -698,7 +698,8 @@ xmlVRaiseError(xmlStructuredErrorFunc schannel,
     if (code == XML_ERR_OK)
         return(0);
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
-    if (code == XML_ERR_INTERNAL_ERROR) {
+    if ((code == XML_ERR_INTERNAL_ERROR) ||
+        (code == XML_ERR_ARGUMENT)) {
         fprintf(stderr, "Unexpected error: %d\n", code);
         abort();
     }
@@ -1306,8 +1307,6 @@ xmlErrString(xmlParserErrors code) {
             errmsg = "already in use"; break;
         case XML_IO_EAFNOSUPPORT:
             errmsg = "unknown address family"; break;
-        case XML_IO_UNSUPPORTED_PROTOCOL:
-            errmsg = "unsupported protocol"; break;
 
         default:
             errmsg = "Unregistered error message";

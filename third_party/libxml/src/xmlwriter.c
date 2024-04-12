@@ -1496,8 +1496,8 @@ xmlTextWriterWriteString(xmlTextWriterPtr writer, const xmlChar * content)
                     break;
                 case XML_TEXTWRITER_ATTRIBUTE:
                     buf = NULL;
-                    xmlBufAttrSerializeTxtContent(writer->out, writer->doc,
-                                                  content);
+                    xmlBufAttrSerializeTxtContent(writer->out->buffer,
+                                                  writer->doc, NULL, content);
                     break;
 		default:
 		    break;

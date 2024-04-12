@@ -224,7 +224,7 @@ extra_post_call = {
    "xmlAddPrevSibling": 
        "if (ret_val == NULL) { xmlFreeNode(elem) ; elem = NULL ; }",
    "xmlDocSetRootElement": 
-       "if (ret_val == NULL) { xmlFreeNode(root) ; root = NULL ; }",
+       "if (doc == NULL) { xmlFreeNode(root) ; root = NULL ; }",
    "xmlReplaceNode": 
        """if (cur != NULL) {
               xmlUnlinkNode(cur);
@@ -234,10 +234,9 @@ extra_post_call = {
               xmlFreeNode(old) ; old = NULL ; }
 \t  ret_val = NULL;""",
    "xmlTextMerge": 
-       """if (ret_val == NULL) {
+       """if ((first != NULL) && (first->type != XML_TEXT_NODE)) {
               xmlUnlinkNode(second);
-              xmlFreeNode(second) ; second = NULL ;
-              ret_val = first; }""",
+              xmlFreeNode(second) ; second = NULL ; }""",
    "xmlBuildQName": 
        """if ((ret_val != NULL) && (ret_val != ncname) &&
               (ret_val != prefix) && (ret_val != memory))

@@ -812,6 +812,10 @@ xmlSAX2StartDocument(void *ctx)
 	    doc->dict = ctxt->dict;
 	    xmlDictReference(doc->dict);
 	}
+        if (xmlTreeEnsureXMLDecl(doc) == NULL) {
+            xmlSAX2ErrMemory(ctxt);
+            return;
+        }
     }
     if ((ctxt->myDoc != NULL) && (ctxt->myDoc->URL == NULL) &&
 	(ctxt->input != NULL) && (ctxt->input->filename != NULL)) {
@@ -842,7 +846,17 @@ xmlSAX2EndDocument(void *ctx)
 
     doc = ctxt->myDoc;
     if ((doc != NULL) && (doc->encoding == NULL)) {
-        const xmlChar *encoding = xmlGetActualEncoding(ctxt);
+        const xmlChar *encoding = NULL;
+
+        if ((ctxt->input->flags & XML_INPUT_USES_ENC_DECL) ||
+            (ctxt->input->flags & XML_INPUT_AUTO_ENCODING)) {
+            /* Preserve encoding exactly */
+            encoding = ctxt->encoding;
+        } else if ((ctxt->input->buf) && (ctxt->input->buf->encoder)) {
+            encoding = BAD_CAST ctxt->input->buf->encoder->name;
+        } else if (ctxt->input->flags & XML_INPUT_HAS_ENCODING) {
+            encoding = BAD_CAST "UTF-8";
+        }
 
         if (encoding != NULL) {
             doc->encoding = xmlStrdup(encoding);
@@ -1100,11 +1114,7 @@ xmlSAX2AttributeInternal(void *ctx, const xmlChar *fullname,
     }
 
     if (ns != NULL) {
-        int res;
-
-	res = xmlSearchNsSafe(ctxt->node, ns, &namespace);
-        if (res < 0)
-            xmlSAX2ErrMemory(ctxt);
+	namespace = xmlSearchNs(ctxt->myDoc, ctxt->node, ns);
 
 	if (namespace == NULL) {
 	    xmlNsErrMsg(ctxt, XML_NS_ERR_UNDEFINED_NAMESPACE,
@@ -1144,8 +1154,20 @@ xmlSAX2AttributeInternal(void *ctx, const xmlChar *fullname,
     }
 
     if ((ctxt->replaceEntities == 0) && (!ctxt->html)) {
-        if (xmlNodeParseContent((xmlNodePtr) ret, value, INT_MAX) < 0)
-            xmlSAX2ErrMemory(ctxt);
+        xmlNodePtr tmp;
+
+        if ((value != NULL) && (value[0] != 0)) {
+            ret->children = xmlStringGetNodeList(ctxt->myDoc, value);
+            if (ret->children == NULL)
+                xmlSAX2ErrMemory(ctxt);
+        }
+        tmp = ret->children;
+        while (tmp != NULL) {
+            tmp->parent = (xmlNodePtr) ret;
+            if (tmp->next == NULL)
+                ret->last = tmp;
+            tmp = tmp->next;
+        }
     } else if (value != NULL) {
         ret->children = xmlNewDocText(ctxt->myDoc, value);
         if (ret->children == NULL) {
@@ -1282,10 +1304,8 @@ process_external_subset:
 
 		    if (attr->prefix != NULL) {
 			fulln = xmlStrdup(attr->prefix);
-                        if (fulln != NULL)
-			    fulln = xmlStrcat(fulln, BAD_CAST ":");
-                        if (fulln != NULL)
-			    fulln = xmlStrcat(fulln, attr->name);
+			fulln = xmlStrcat(fulln, BAD_CAST ":");
+			fulln = xmlStrcat(fulln, attr->name);
 		    } else {
 			fulln = xmlStrdup(attr->name);
 		    }
@@ -1489,8 +1509,6 @@ xmlSAX2StartElement(void *ctx, const xmlChar *fullname, const xmlChar **atts)
     xmlAddChild(parent, ret);
 
     if (!ctxt->html) {
-        int res;
-
         /*
          * Insert all the defaulted attributes from the DTD especially
          * namespaces
@@ -1521,14 +1539,9 @@ xmlSAX2StartElement(void *ctx, const xmlChar *fullname, const xmlChar **atts)
          * Search the namespace, note that since the attributes have been
          * processed, the local namespaces are available.
          */
-        res = xmlSearchNsSafe(ret, prefix, &ns);
-        if (res < 0)
-            xmlSAX2ErrMemory(ctxt);
-        if ((ns == NULL) && (parent != NULL)) {
-            res = xmlSearchNsSafe(parent, prefix, &ns);
-            if (res < 0)
-                xmlSAX2ErrMemory(ctxt);
-        }
+        ns = xmlSearchNs(ctxt->myDoc, ret, prefix);
+        if ((ns == NULL) && (parent != NULL))
+            ns = xmlSearchNs(ctxt->myDoc, parent, prefix);
         if ((prefix != NULL) && (ns == NULL)) {
             xmlNsWarnMsg(ctxt, XML_NS_ERR_UNDEFINED_NAMESPACE,
                          "Namespace prefix %s is not defined\n",
@@ -1780,11 +1793,7 @@ xmlSAX2AttributeNs(xmlParserCtxtPtr ctxt,
     if (prefix != NULL) {
 	namespace = xmlParserNsLookupSax(ctxt, prefix);
 	if ((namespace == NULL) && (xmlStrEqual(prefix, BAD_CAST "xml"))) {
-            int res;
-
-	    res = xmlSearchNsSafe(ctxt->node, prefix, &namespace);
-            if (res < 0)
-                xmlSAX2ErrMemory(ctxt);
+	    namespace = xmlSearchNs(ctxt->myDoc, ctxt->node, prefix);
 	}
     }
 
@@ -1847,9 +1856,18 @@ xmlSAX2AttributeNs(xmlParserCtxtPtr ctxt,
 		tmp->parent = (xmlNodePtr) ret;
 	    }
 	} else if (valueend > value) {
-            if (xmlNodeParseContent((xmlNodePtr) ret, value,
-                                    valueend - value) < 0)
+	    ret->children = xmlStringLenGetNodeList(ctxt->myDoc, value,
+						    valueend - value);
+            if (ret->children == NULL)
                 xmlSAX2ErrMemory(ctxt);
+	    tmp = ret->children;
+	    while (tmp != NULL) {
+	        tmp->doc = ret->doc;
+		tmp->parent = (xmlNodePtr) ret;
+		if (tmp->next == NULL)
+		    ret->last = tmp;
+		tmp = tmp->next;
+	    }
 	}
     } else if (value != NULL) {
 	xmlNodePtr tmp;
@@ -1903,9 +1921,7 @@ xmlSAX2AttributeNs(xmlParserCtxtPtr ctxt,
 		    xmlChar *fullname;
 
 		    fullname = xmlBuildQName(localname, prefix, fn, 50);
-                    if (fullname == NULL) {
-                        xmlSAX2ErrMemory(ctxt);
-                    } else {
+		    if (fullname != NULL) {
 			ctxt->vctxt.valid = 1;
 		        nvalnorm = xmlValidCtxtNormalizeAttributeValue(
 			                 &ctxt->vctxt, ctxt->myDoc,
@@ -2167,11 +2183,7 @@ xmlSAX2StartElementNs(void *ctx,
     if ((URI != NULL) && (ret->ns == NULL)) {
         ret->ns = xmlParserNsLookupSax(ctxt, prefix);
 	if ((ret->ns == NULL) && (xmlStrEqual(prefix, BAD_CAST "xml"))) {
-            int res;
-
-	    res = xmlSearchNsSafe(ret, prefix, &ret->ns);
-            if (res < 0)
-                xmlSAX2ErrMemory(ctxt);
+	    ret->ns = xmlSearchNs(ctxt->myDoc, ret, prefix);
 	}
 	if (ret->ns == NULL) {
 	    ns = xmlNewNs(ret, NULL, prefix);
