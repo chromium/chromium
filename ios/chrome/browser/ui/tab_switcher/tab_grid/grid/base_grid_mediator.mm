@@ -1093,9 +1093,14 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
         }
         break;
       }
-      case GridItemType::Group:
-        // TODO(crbug.com/1501837) : Add the drag action for tab groups.
+      case GridItemType::Group: {
+        UIDragItem* dragItem =
+            [self dragItemForTabGroupItem:itemID.tabGroupItem];
+        if (dragItem) {
+          [dragItems addObject:dragItem];
+        }
         break;
+      }
       case GridItemType::SuggestedActions:
         // Suggested actions items are not dragable and not stored in
         // `_selectedEditingItems`.
