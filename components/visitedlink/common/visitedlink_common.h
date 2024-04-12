@@ -15,6 +15,14 @@
 
 class GURL;
 
+namespace net {
+class SchemefulSite;
+}
+
+namespace url {
+class Origin;
+}
+
 namespace visitedlink {
 
 // number of bytes in the salt
@@ -71,11 +79,16 @@ class VisitedLinkCommon {
     return ComputeURLFingerprint(canonical_url, salt_);
   }
 
-  // Looks up the given key in the table. The fingerprint for the URL is
-  // computed if you call one with the string argument. Returns true if found.
-  // Does not modify the hastable.
+  // Looks up the given key in the table. Returns true if found. Does not modify
+  // the hashtable.
   bool IsVisited(const std::string_view canonical_url) const;
   bool IsVisited(const GURL& url) const;
+  // To check if a link is visited in a partitioned table, callers MUST provide
+  // <link url, top-level site, frame origin> AND the origin salt.
+  bool IsVisited(const GURL& link_url,
+                 const net::SchemefulSite& top_level_site,
+                 const url::Origin& frame_origin,
+                 uint64_t salt);
   bool IsVisited(Fingerprint fingerprint) const;
 
 #ifdef UNIT_TEST
@@ -88,8 +101,8 @@ class VisitedLinkCommon {
 #endif
 
  protected:
-  // This structure is at the beginning of the shared memory so that the readers
-  // can get stats on the table
+  // This structure is at the beginning of the unpartitioned shared memory so
+  // that the readers can get stats on the table.
   struct SharedHeader {
     // see goes into table_length_
     uint32_t length;
@@ -104,6 +117,24 @@ class VisitedLinkCommon {
 
   static_assert(sizeof(SharedHeader) % alignof(Fingerprint) == 0,
                 "Fingerprint must be aligned when placed after SharedHeader");
+
+  // This structure is at the beginning of the partitioned shared memory so that
+  // the readers can get stats on the table. We do not include a salt in this
+  // shared header, as the salts are generated per-origin for the partitioned
+  // table. Readers will receive their salts via the
+  // VisitedLinkNavigationThrottle or via the VisitedLinkNotificationSink IPC.
+  struct PartitionedSharedHeader {
+    // see goes into table_length_
+    uint32_t length;
+
+    // Padding to ensure the Fingerprint table is aligned. Without this, reading
+    // from the table causes unaligned reads.
+    uint8_t padding[4];
+  };
+
+  static_assert(
+      sizeof(PartitionedSharedHeader) % alignof(Fingerprint) == 0,
+      "Fingerprint must be aligned when placed after PartitionedSharedHeader");
 
   // Returns the fingerprint at the given index into the URL table. This
   // function should be called instead of accessing the table directly to
@@ -121,6 +152,14 @@ class VisitedLinkCommon {
   static Fingerprint ComputeURLFingerprint(
       std::string_view canonical_url,
       const uint8_t salt[LINK_SALT_LENGTH]);
+
+  // Computes the fingerprint of the given partition key. Used when constructing
+  // the partitioned :visited link hashtable.
+  static Fingerprint ComputePartitionedFingerprint(
+      const GURL& link_url,
+      const net::SchemefulSite& top_level_site,
+      const url::Origin& frame_origin,
+      uint64_t salt);
 
   // Computes the hash value of the given fingerprint, this is used as a lookup
   // into the hashtable.

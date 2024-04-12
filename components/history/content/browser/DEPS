@@ -5,6 +5,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "content_visit_delegate.cc": [
+    "+third_party/blink/public/common/features.h",
+  ],
   "web_contents_top_sites_observer_unittest.cc": [
     "+content/public/test",
     "+third_party/blink/public/common/features.h",

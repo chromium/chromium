@@ -505,6 +505,13 @@ void AwBrowserContext::RebuildTable(
   enumerator->OnComplete(true);
 }
 
+void AwBrowserContext::BuildVisitedLinkTable(
+    const scoped_refptr<VisitedLinkEnumerator>& enumerator) {
+  // Partitioned visited link hashtables are not supported in Android WebView,
+  // so this initialization path is not used.
+  enumerator->OnVisitedLinkComplete(true);
+}
+
 void AwBrowserContext::SetExtendedReportingAllowed(bool allowed) {
   user_pref_service_->SetBoolean(
       ::prefs::kSafeBrowsingExtendedReportingOptInAllowed, allowed);

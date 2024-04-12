@@ -13,7 +13,23 @@
 #include "base/check.h"
 #include "base/hash/md5.h"
 #include "base/notreached.h"
+#include "net/base/schemeful_site.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+
+namespace {
+visitedlink::VisitedLinkCommon::Fingerprint ConvertDigestToFingerprint(
+    base::MD5Digest digest) {
+  // This is the same as "return *(Fingerprint*)&digest.a;" but if we do that
+  // direct cast the alignment could be wrong, and we can't access a 64-bit int
+  // on arbitrary alignment on some processors. This reinterpret_casts it
+  // down to a char array of the same size as fingerprint, and then does the
+  // bit cast, which amounts to a memcpy. This does not handle endian issues.
+  return base::bit_cast<visitedlink::VisitedLinkCommon::Fingerprint,
+                        uint8_t[8]>(
+      *reinterpret_cast<uint8_t(*)[8]>(&digest.a));
+}
+}  // namespace
 
 namespace visitedlink {
 
@@ -40,6 +56,17 @@ bool VisitedLinkCommon::IsVisited(std::string_view canonical_url) const {
 
 bool VisitedLinkCommon::IsVisited(const GURL& url) const {
   return IsVisited(url.spec());
+}
+
+bool VisitedLinkCommon::IsVisited(const GURL& link_url,
+                                  const net::SchemefulSite& top_level_site,
+                                  const url::Origin& frame_origin,
+                                  uint64_t salt) {
+  if (!hash_table_ || table_length_ == 0) {
+    return false;
+  }
+  return IsVisited(ComputePartitionedFingerprint(link_url, top_level_site,
+                                                 frame_origin, salt));
 }
 
 bool VisitedLinkCommon::IsVisited(Fingerprint fingerprint) const {
@@ -92,13 +119,46 @@ VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputeURLFingerprint(
   base::MD5Digest digest;
   base::MD5Final(&digest, &ctx);
 
-  // This is the same as "return *(Fingerprint*)&digest.a;" but if we do that
-  // direct cast the alignment could be wrong, and we can't access a 64-bit int
-  // on arbitrary alignment on some processors. This reinterpret_casts it
-  // down to a char array of the same size as fingerprint, and then does the
-  // bit cast, which amounts to a memcpy. This does not handle endian issues.
-  return base::bit_cast<Fingerprint, uint8_t[8]>(
-      *reinterpret_cast<uint8_t(*)[8]>(&digest.a));
+  return ConvertDigestToFingerprint(digest);
+}
+
+// static
+VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputePartitionedFingerprint(
+    const GURL& link_url,
+    const net::SchemefulSite& top_level_site,
+    const url::Origin& frame_origin,
+    uint64_t salt) {
+  DCHECK(link_url.spec().size()) << "link_url should not be empty.";
+  DCHECK(!top_level_site.opaque())
+      << "Do not call ComputePartitionedFingerprint with an opaque top-level "
+         "site.";
+  DCHECK(!frame_origin.opaque()) << "Do not call ComputePartitionedFingerprint "
+                                    "with an opaque frame origin.";
+
+  base::MD5Context ctx;
+  base::MD5Init(&ctx);
+
+  // Salt the hash.
+  base::MD5Update(&ctx, base::StringPiece(reinterpret_cast<const char*>(&salt),
+                                          sizeof(salt)));
+
+  // Add the link url.
+  base::MD5Update(
+      &ctx, base::StringPiece(link_url.spec().data(), link_url.spec().size()));
+
+  // Add the serialized schemeful top-level site.
+  const std::string serialized_site = top_level_site.Serialize();
+  base::MD5Update(
+      &ctx, base::StringPiece(serialized_site.data(), serialized_site.size()));
+
+  // Add the serialized frame origin.
+  const std::string serialized_origin = frame_origin.Serialize();
+  base::MD5Update(&ctx, base::StringPiece(serialized_origin.data(),
+                                          serialized_origin.size()));
+  base::MD5Digest digest;
+  base::MD5Final(&digest, &ctx);
+
+  return ConvertDigestToFingerprint(digest);
 }
 
 }  // namespace visitedlink

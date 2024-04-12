@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "components/visitedlink/browser/partitioned_visitedlink_writer.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "components/visitedlink/browser/visitedlink_event_listener.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
@@ -65,14 +66,27 @@ GURL TestURL(int i) {
 
 std::vector<VisitedLinkReader*> g_readers;
 
+struct VisitedLink {
+  GURL link_url;
+  GURL top_level_url;
+  GURL frame_url;
+};
+
 class TestVisitedLinkDelegate : public VisitedLinkDelegate {
  public:
   void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;
 
+  void BuildVisitedLinkTable(
+      const scoped_refptr<VisitedLinkEnumerator>& enumerator) override;
+
   void AddURLForRebuild(const GURL& url);
+
+  void AddVisitedLinkForRebuild(const VisitedLink& link);
 
  private:
   URLs rebuild_urls_;
+  std::vector<VisitedLink> rebuild_links_;
+  base::WeakPtrFactory<TestVisitedLinkDelegate> weak_factory_{this};
 };
 
 void TestVisitedLinkDelegate::RebuildTable(
@@ -83,8 +97,23 @@ void TestVisitedLinkDelegate::RebuildTable(
   enumerator->OnComplete(true);
 }
 
+void TestVisitedLinkDelegate::BuildVisitedLinkTable(
+    const scoped_refptr<VisitedLinkEnumerator>& enumerator) {
+  for (auto it = rebuild_links_.begin(); it != rebuild_links_.end(); it++) {
+    const net::SchemefulSite top_level_site(it->top_level_url);
+    const url::Origin frame_origin = url::Origin::Create(it->frame_url);
+    enumerator->OnVisitedLink(it->link_url, top_level_site, frame_origin);
+  }
+  enumerator->OnVisitedLinkComplete(true);
+}
+
 void TestVisitedLinkDelegate::AddURLForRebuild(const GURL& url) {
   rebuild_urls_.push_back(url);
+}
+
+void TestVisitedLinkDelegate::AddVisitedLinkForRebuild(
+    const VisitedLink& link) {
+  rebuild_links_.push_back(link);
 }
 
 class TestURLIterator : public VisitedLinkWriter::URLIterator {
@@ -161,10 +190,12 @@ class VisitedLinkTest : public testing::Test {
                    bool suppress_rebuild,
                    bool wait_for_io_complete) {
     // Initialize the visited link system.
+    partitioned_writer_ = std::make_unique<PartitionedVisitedLinkWriter>(
+        &delegate_, initial_size);
     writer_ = std::make_unique<VisitedLinkWriter>(
         new TrackingVisitedLinkEventListener(), &delegate_, true,
         suppress_rebuild, visited_file_, initial_size);
-    bool result = writer_->Init();
+    bool result = partitioned_writer_->Init() && writer_->Init();
     if (result && wait_for_io_complete) {
       // Wait for all pending file I/O to be completed.
       content::RunAllTasksUntilIdle();
@@ -245,6 +276,7 @@ class VisitedLinkTest : public testing::Test {
   base::FilePath visited_file_;
 
   std::unique_ptr<VisitedLinkWriter> writer_;
+  std::unique_ptr<PartitionedVisitedLinkWriter> partitioned_writer_;
   TestVisitedLinkDelegate delegate_;
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -481,6 +513,36 @@ TEST_F(VisitedLinkTest, Rebuild) {
 
   // Make sure the extra one was *not* written (Reload won't test this).
   EXPECT_FALSE(writer_->IsVisited(TestURL(kTestCount)));
+}
+
+TEST_F(VisitedLinkTest, BuildPartitionedTable) {
+  // Add half of our URLs to history. This needs to be done before we
+  // initialize the visited link hashtable.
+  int history_count = kTestCount / 2;
+  for (int i = 0; i < history_count; i++) {
+    VisitedLink link = {TestURL(i), TestURL(i), TestURL(i)};
+    delegate_.AddVisitedLinkForRebuild(link);
+  }
+
+  // Initialize the visited link hashtable. This will load from history.
+  ASSERT_TRUE(InitVisited(0, false, false));
+
+  // Wait for the build to complete on the DB thread. The task will terminate
+  // the message loop when the build is done.
+  base::RunLoop run_loop;
+  partitioned_writer_->set_build_complete_task(run_loop.QuitClosure());
+  run_loop.Run();
+
+  bool found;
+  for (int i = 0; i < history_count; i++) {
+    GURL cur = TestURL(i);
+    std::optional<uint64_t> salt =
+        partitioned_writer_->GetOrAddOriginSalt(url::Origin::Create(cur));
+    ASSERT_NE(salt, std::nullopt);
+    found = partitioned_writer_->IsVisited(
+        cur, net::SchemefulSite(cur), url::Origin::Create(cur), salt.value());
+    EXPECT_TRUE(found) << "Partitioned link " << i << "not found in writer.";
+  }
 }
 
 // Test that importing a large number of URLs will work
