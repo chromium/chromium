@@ -1,0 +1,37 @@
+<style>
+  :host {
+    /* Variables controlling the rendered post selection */
+    --corner-length: 22px;
+    --corner-radius: 12px;
+    --corner-width: 4px;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  /** Render the selected part of the image again so it appears glowing over
+      the scrim */
+  #backgroundImage {
+    background-image: url('screenshot.jpeg');
+    background-size: contain;
+    clip-path: rect(var(--selection-top)
+                    calc(var(--selection-left) + var(--selection-width))
+                    calc(var(--selection-top) + var(--selection-height))
+                    var(--selection-left));
+    inset: 0;
+    position: absolute;
+  }
+
+  #selectionCorners {
+    background-image: paint(post-selection);
+    height: calc(var(--selection-height) + (2 * var(--corner-width)));
+    left: calc(var(--selection-left) - var(--corner-width));
+    position: absolute;
+    top: calc(var(--selection-top) - var(--corner-width));
+    width: calc(var(--selection-width) + (2 * var(--corner-width)));
+  }
+</style>
+<div id="postSelection" hidden$="[[!hasSelection(height, width)]]">
+  <div id="backgroundImage"></div>
+  <div id="selectionCorners"></div>
+</div>

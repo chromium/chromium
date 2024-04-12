@@ -8,6 +8,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
+import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import {getTemplate} from './region_selection.html.js';
 import type {GestureEvent} from './selection_utils.js';
 
@@ -52,8 +53,18 @@ export class RegionSelectionElement extends PolymerElement {
   }
 
   handleUpGesture(event: GestureEvent) {
+    // Issue the Lens request
     BrowserProxyImpl.getInstance().handler.issueLensRequest(
         this.getNormalizedCenterRotatedBoxFromGesture(event));
+
+    // Keep the region rendered on the page
+    this.dispatchEvent(new CustomEvent('render-post-selection', {
+      bubbles: true,
+      composed: true,
+      detail: this.getPostSelectionRegion(event),
+    }));
+
+    this.clearCanvas();
   }
 
   cancelGesture() {
@@ -170,6 +181,33 @@ export class RegionSelectionElement extends PolymerElement {
       },
       rotation: 0,
       coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+    };
+  }
+
+  private getPostSelectionRegion(gesture: GestureEvent):
+      PostSelectionBoundingBox {
+    const parentRect = this.getBoundingClientRect();
+
+    // Get coordinates relative to the region selection bounds
+    const relativeDragStart =
+        this.getRelativeCoordinate({x: gesture.startX, y: gesture.startY});
+    const relativeDragEnd =
+        this.getRelativeCoordinate({x: gesture.clientX, y: gesture.clientY});
+
+    const normalizedWidth =
+        Math.abs(relativeDragEnd.x - relativeDragStart.x) / parentRect.width;
+    const normalizedHeight =
+        Math.abs(relativeDragEnd.y - relativeDragStart.y) / parentRect.height;
+    const normalizedTop =
+        Math.min(relativeDragEnd.y, relativeDragStart.y) / parentRect.height;
+    const normalizedLeft =
+        Math.min(relativeDragEnd.x, relativeDragStart.x) / parentRect.width;
+
+    return {
+      top: normalizedTop,
+      left: normalizedLeft,
+      width: normalizedWidth,
+      height: normalizedHeight,
     };
   }
 }

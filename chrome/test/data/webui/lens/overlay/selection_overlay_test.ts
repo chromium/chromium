@@ -104,8 +104,7 @@ suite('SelectionOverlay', function() {
       });
 
   test(
-      `verify that starting a drag off a word and continuing onto a word
-      triggers region search`,
+      `verify that starting a drag off a word and continuing onto a word triggers region search`,
       async () => {
         await addWords();
 
@@ -177,21 +176,21 @@ suite('SelectionOverlay', function() {
       });
 
   test(
-      `verify that dragging performs region search, even when an object
-      overlaps`,
+      `verify that dragging performs region search, even when an object overlaps`,
       async () => {
         await addObjects();
 
         // Drag that starts and ends inside the bounding box of an object.
         const objectEl = selectionOverlayElement.$.objectSelectionLayer
                              .getObjectNodesForTesting()[1]!;
+        const objectElBoundingBox = objectEl.getBoundingClientRect();
         const dragStart = {
-          x: objectEl.getBoundingClientRect().left + 1,
-          y: objectEl.getBoundingClientRect().top + 1,
+          x: objectElBoundingBox.left + 1,
+          y: objectElBoundingBox.top + 1,
         };
         const dragEnd = {
-          x: objectEl.getBoundingClientRect().right - 1,
-          y: objectEl.getBoundingClientRect().bottom - 1,
+          x: objectElBoundingBox.right - 1,
+          y: objectElBoundingBox.bottom - 1,
         };
         await simulateDrag(selectionOverlayElement, dragStart, dragEnd);
 
@@ -209,4 +208,30 @@ suite('SelectionOverlay', function() {
             await testBrowserProxy.handler.whenCalled('issueLensRequest');
         assertDeepEquals(expectedRect, rect);
       });
+
+  test('verify that region search triggers post selection', async () => {
+    await simulateDrag(
+        selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
+
+    const postSelectionStyles =
+        selectionOverlayElement.$.postSelectionRenderer.style;
+    const parentBoundingRect = selectionOverlayElement.getBoundingClientRect();
+    const expectedHeight = 175 / parentBoundingRect.height * 100;
+    const expectedWidth = 250 / parentBoundingRect.width * 100;
+    const expectedTop = 25 / parentBoundingRect.height * 100;
+    const expectedLeft = 50 / parentBoundingRect.width * 100;
+
+    assertEquals(
+        `${expectedHeight}%`,
+        postSelectionStyles.getPropertyValue('--selection-height'));
+    assertEquals(
+        `${expectedWidth}%`,
+        postSelectionStyles.getPropertyValue('--selection-width'));
+    assertEquals(
+        `${expectedTop}%`,
+        postSelectionStyles.getPropertyValue('--selection-top'));
+    assertEquals(
+        `${expectedLeft}%`,
+        postSelectionStyles.getPropertyValue('--selection-left'));
+  });
 });
