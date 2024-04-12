@@ -20,6 +20,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -107,6 +108,13 @@ SigninManager::CreateAccountSelectionInProgressHandle() {
 }
 
 void SigninManager::UpdateUnconsentedPrimaryAccount() {
+  if (!signin::IsImplicitBrowserSigninOrExplicitDisabled(
+          &identity_manager_.get(), &prefs_.get())) {
+    // Only update the primary account implicitly if the user hasn't explicitly
+    // signed in or `switches::kExplicitBrowserSigninUIOnDesktop` is disabled.
+    return;
+  }
+
   if (live_account_selection_handles_count_ > 0) {
     // Don't update the unconsented primary account while some UI flow is also
     // manipulating it.
@@ -121,9 +129,7 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
   CoreAccountInfo account = ComputeUnconsentedPrimaryAccountInfo();
 
   if (!account.IsEmpty()) {
-    if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-            switches::ExplicitBrowserSigninPhase::kExperimental) &&
-        identity_manager_->GetPrimaryAccountInfo(
+    if (identity_manager_->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin) != account) {
       DCHECK(
           !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));

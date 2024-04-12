@@ -8,6 +8,8 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 
 // static
 SigninManagerFactory* SigninManagerFactory::GetInstance() {
@@ -33,17 +35,20 @@ SigninManagerFactory::~SigninManagerFactory() = default;
 std::unique_ptr<KeyedService>
 SigninManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // The `SigninManager` isn't needed to update the primary account as it is
-  // set/cleared only on explicit user action (e.g. Sign in/Sign out from chrome
-  // UI).
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  PrefService* prefs = profile->GetPrefs();
+  if (!signin::IsImplicitBrowserSigninOrExplicitDisabled(identity_manager,
+                                                         prefs)) {
+    // The `SigninManager` isn't needed to update the primary account as it is
+    // set/cleared only on explicit user action (e.g. Sign in/Sign out from
+    // chrome UI).
     return nullptr;
   }
 
-  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<SigninManager>(
-      *profile->GetPrefs(), *IdentityManagerFactory::GetForProfile(profile),
+      *prefs, *identity_manager,
       *ChromeSigninClientFactory::GetForProfile(profile));
 }
 

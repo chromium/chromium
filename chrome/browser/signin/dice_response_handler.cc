@@ -32,6 +32,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -466,8 +467,8 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
   // - If there is a policy restriction on removing the primary account.
   bool invalidate_only_primary_account =
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull) ||
+      !signin::IsImplicitBrowserSigninOrExplicitDisabled(
+          identity_manager_, signin_client_->GetPrefs()) ||
       !signin_client_->IsClearPrimaryAccountAllowed(
           /*has_sync_account=*/false);
 
