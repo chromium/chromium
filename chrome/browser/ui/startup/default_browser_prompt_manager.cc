@@ -13,8 +13,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
@@ -28,43 +26,6 @@
 // static
 DefaultBrowserPromptManager* DefaultBrowserPromptManager::GetInstance() {
   return base::Singleton<DefaultBrowserPromptManager>::get();
-}
-
-// static
-void DefaultBrowserPromptManager::MaybeJoinDefaultBrowserPromptCohort() {
-  PrefService* local_state = g_browser_process->local_state();
-  if (!local_state) {
-    return;  // Can be null in unit tests;
-  }
-
-  std::string active_study_group =
-      features::kDefaultBrowserPromptRefreshStudyGroup.Get();
-  // If the study group isn't set, don't add the user to the cohort.
-  if (active_study_group.empty()) {
-    return;
-  }
-
-  local_state->SetString(prefs::kDefaultBrowserPromptRefreshStudyGroup,
-                         active_study_group);
-  DefaultBrowserPromptManager::RegisterSyntheticFieldTrial(active_study_group);
-}
-
-// static
-void DefaultBrowserPromptManager::EnsureStickToDefaultBrowserPromptCohort() {
-  PrefService* local_state = g_browser_process->local_state();
-  if (!local_state) {
-    return;  // Can be null in unit tests;
-  }
-
-  auto enrolled_study_group =
-      local_state->GetString(prefs::kDefaultBrowserPromptRefreshStudyGroup);
-  if (enrolled_study_group.empty()) {
-    // The user was not enrolled or exited the study at some point.
-    return;
-  }
-
-  DefaultBrowserPromptManager::RegisterSyntheticFieldTrial(
-      enrolled_study_group);
 }
 
 // static
@@ -201,16 +162,6 @@ void DefaultBrowserPromptManager::OnDismiss() {
 DefaultBrowserPromptManager::DefaultBrowserPromptManager() = default;
 
 DefaultBrowserPromptManager::~DefaultBrowserPromptManager() = default;
-
-// static
-void DefaultBrowserPromptManager::RegisterSyntheticFieldTrial(
-    const std::string& group_name) {
-  CHECK(!group_name.empty());
-
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "DefaultBrowserPromptRefreshSynthetic", group_name,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
-}
 
 // static
 bool DefaultBrowserPromptManager::ShouldShowPrompts() {

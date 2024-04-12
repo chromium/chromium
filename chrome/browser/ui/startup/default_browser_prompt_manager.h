@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_MANAGER_H_
 
 #include <map>
-#include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
@@ -39,17 +37,6 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   static DefaultBrowserPromptManager* GetInstance();
 
-  // Enrolls this client with a synthetic field trial based on the Finch params.
-  // Should be called when the default browser prompt is potentially shown, then
-  // the client needs to register again on each process startup by calling
-  // `EnsureStickToDefaultBrowserPromptCohort()`.
-  static void MaybeJoinDefaultBrowserPromptCohort();
-
-  // Ensures that the user's experiment group is appropriately reported to track
-  // the effect of the default browser prompt over time. Should be called once
-  // per browser process startup.
-  static void EnsureStickToDefaultBrowserPromptCohort();
-
   // Resets the tracking preferences for the default browser prompts so that
   // they are re-shown if the browser ceases to be the user's chosen default.
   static void ResetPromptPrefs(Profile* profile);
@@ -61,7 +48,7 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   // If enough time has passed since the first show time, the app menu should
   // implicitly be dismissed, in which case prompts will not be shown when
-  // MaybeShowPrompt() is called.
+  // `MaybeShowPrompt()` is called.
   static void MaybeResetAppMenuPromptPrefs(Profile* profile);
 
   bool get_show_app_menu_prompt() const { return show_app_menu_prompt_; }
@@ -96,9 +83,6 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   DefaultBrowserPromptManager();
   ~DefaultBrowserPromptManager() override;
 
-  // Reports to the launch study for the default browser prompt synthetic trial.
-  static void RegisterSyntheticFieldTrial(const std::string& group_name);
-
   // Whether prompts should be shown based on the last declined time/count prefs
   // and the recurrence feature params.
   static bool ShouldShowPrompts();
@@ -115,13 +99,12 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   void SetAppMenuItemVisibility(bool show);
 
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
-
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
-
   bool user_initiated_info_bar_close_pending_ = false;
 
   bool show_app_menu_prompt_ = false;
   bool show_app_menu_item_ = false;
+
   base::ObserverList<Observer> observers_;
 
   base::OneShotTimer app_menu_prompt_dismiss_timer_;

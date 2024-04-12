@@ -180,7 +180,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class tpcd::experiment::ExperimentManagerImpl;
   friend class readaloud::SyntheticTrial;
 #if !BUILDFLAG(IS_ANDROID)
-  friend class DefaultBrowserPromptManager;
+  friend class DefaultBrowserPromptTrial;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

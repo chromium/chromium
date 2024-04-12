@@ -4277,6 +4277,8 @@ static_library("ui") {
       "signin/signin_reauth_view_controller.h",
       "startup/default_browser_prompt.cc",
       "startup/default_browser_prompt.h",
+      "startup/default_browser_prompt_trial.cc",
+      "startup/default_browser_prompt_trial.h",
       "startup/first_run_service.cc",
       "startup/first_run_service.h",
       "views/profiles/badged_profile_photo.cc",

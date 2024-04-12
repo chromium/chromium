@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_trial.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
@@ -95,7 +96,7 @@ void OnCheckIsDefaultBrowserFinished(
              ShouldShowDefaultBrowserPromptForCurrentVersion()) {
     // If the user is in the control or an experiment arm, move them into the
     // synthetic trial cohort.
-    DefaultBrowserPromptManager::MaybeJoinDefaultBrowserPromptCohort();
+    DefaultBrowserPromptTrial::MaybeJoinDefaultBrowserPromptCohort();
 
     DefaultBrowserPromptManager::MaybeResetAppMenuPromptPrefs(profile);
 

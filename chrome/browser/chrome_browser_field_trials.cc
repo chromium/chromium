@@ -47,7 +47,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_trial.h"
 #endif
 
 ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
@@ -154,6 +154,6 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  DefaultBrowserPromptManager::EnsureStickToDefaultBrowserPromptCohort();
+  DefaultBrowserPromptTrial::EnsureStickToDefaultBrowserPromptCohort();
 #endif
 }

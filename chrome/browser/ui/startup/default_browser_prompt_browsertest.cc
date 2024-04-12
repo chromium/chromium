@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_trial.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -43,7 +43,7 @@ class DefaultBrowserPromptBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptBrowserTest,
                        JoinsSyntheticTrialCohort) {
-  DefaultBrowserPromptManager::MaybeJoinDefaultBrowserPromptCohort();
+  DefaultBrowserPromptTrial::MaybeJoinDefaultBrowserPromptCohort();
 
   EXPECT_EQ(
       kStudyTestGroupName,
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptBrowserTest,
                        StickingToCohortDoesNotActivateExperiment) {
   local_state()->SetString(prefs::kDefaultBrowserPromptRefreshStudyGroup,
                            kStudyTestGroupName);
-  DefaultBrowserPromptManager::EnsureStickToDefaultBrowserPromptCohort();
+  DefaultBrowserPromptTrial::EnsureStickToDefaultBrowserPromptCohort();
 
   EXPECT_TRUE(
       variations::HasSyntheticTrial("DefaultBrowserPromptRefreshSynthetic"));
@@ -76,7 +76,7 @@ class DefaultBrowserPromptDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptDisabledBrowserTest,
                        DoesNotJoinSyntheticTrialCohort) {
-  DefaultBrowserPromptManager::MaybeJoinDefaultBrowserPromptCohort();
+  DefaultBrowserPromptTrial::MaybeJoinDefaultBrowserPromptCohort();
 
   EXPECT_EQ("", local_state()->GetString(
                     prefs::kDefaultBrowserPromptRefreshStudyGroup));
