@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <vector>
+
 // Margins of the cell content.
 extern const CGFloat kCellMargin;
 
@@ -22,15 +24,45 @@ typedef NS_OPTIONS(NSUInteger, AppendConstraints) {
   AppendConstraintsHorizontalEqualOrSmallerThanGuide = 1 << 1,
 };
 
+// Struct used to bundle views that are part of the manual fill cells with an
+// ElementType. This bundling is used by the
+// `AppendVerticalConstraintsSpacingForViews` method to determine which spacing
+// to add above the `view` when creating vertical constraints.
+struct ManualFillCellView {
+  // Enum which represents possible types of UI element that are added to a
+  // manual fill cell.
+  enum class ElementType {
+    // The first chip button of a chip group.
+    kFirstChipButtonOfGroup,
+    // A labeled chip button that is not the first of its group.
+    kLabeledChipButton,
+    // A chip button that is not the first of its group and is unlabeled.
+    kOtherChipButton,
+    // Any other element not falling into one of the above types.
+    kOther,
+  };
+
+  UIView* view;
+  ElementType type;
+
+  // Operator overloads.
+  bool operator==(const ManualFillCellView& rhs) const {
+    return [view isEqual:rhs.view] && type == rhs.type;
+  }
+  bool operator!=(const ManualFillCellView& rhs) const {
+    return !(*this == rhs);
+  }
+};
+
 // Creates a blank button in chip style, for the given `action` and `target`.
 UIButton* CreateChipWithSelectorAndTarget(SEL action, id target);
 
-// Adds vertical constraints to given list, laying `views` vertically (based on
-// firstBaselineAnchor for the buttons or labels) following the `layout_guide`.
-// Constraints are not activated.
+// Adds vertical constraints to given list, laying `manual_fill_cell_views`
+// vertically (based on firstBaselineAnchor for the buttons or labels) following
+// the `layout_guide`. Constraints are not activated.
 void AppendVerticalConstraintsSpacingForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
-    NSArray<UIView*>* views,
+    const std::vector<ManualFillCellView>& manual_fill_cell_views,
     UILayoutGuide* layout_guide);
 
 // Adds vertical constraints like `AppendVerticalConstraintsSpacingForViews`
@@ -40,9 +72,22 @@ void AppendVerticalConstraintsSpacingForViews(
 // Accessory Upgrade feature has launched both on iPhone and iPad.
 void AppendVerticalConstraintsSpacingForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
-    NSArray<UIView*>* views,
+    const std::vector<ManualFillCellView>& manual_fill_cell_views,
     UILayoutGuide* layout_guide,
     CGFloat offset);
+
+// Creates a ManualFillCellView with each chip button of `chip_groups`,
+// and adds the ManualFillCellViews to `vertical_lead_views`.
+void AddChipGroupsToVerticalLeadViews(
+    NSArray<NSArray<UIView*>*>* chip_groups,
+    std::vector<ManualFillCellView>& vertical_lead_views);
+
+// Creates a ManualFillCellView with the `view` and adds the ManualFillCellView
+// to `vertical_lead_views`.
+void AddViewToVerticalLeadViews(
+    UIView* view,
+    ManualFillCellView::ElementType type,
+    std::vector<ManualFillCellView>& vertical_lead_views);
 
 // Adds constraints to the given list, for the given `views`, so as to lay them
 // out horizontally, aligned with the `layout_guide`. Constraints are not

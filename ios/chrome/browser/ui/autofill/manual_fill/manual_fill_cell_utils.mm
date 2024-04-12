@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/chip_button.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_labeled_chip.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -24,8 +25,38 @@ constexpr CGFloat kCellBottomMargin = 18;
 // `AppendHorizontalConstraintsForViews`.
 constexpr CGFloat kHorizontalSpacing = 16;
 
-// Vertical spacing between views used in `AppendVerticalConstraintsForViews`.
+// Vertical spacing between views. Used when the Keyboard Accessory Upgrade
+// feature is disabled.
 constexpr CGFloat kVerticalSpacing = 8;
+
+// Generic vertical spacing between views. Delimits the different parts of the
+// cell and the chip groups.
+constexpr CGFloat kGenericVerticalSpacingBetweenViews = 16;
+
+// Vertical spacing between two chip buttons.
+constexpr CGFloat kVerticalSpacingBetweenChips = 4;
+
+// Vertical spacing between two labeled chip buttons.
+constexpr CGFloat kVerticalSpacingBetweenLabeledChips = 8;
+
+// Returns the vertical spacing that should be added above a UI element of given
+// `type`.
+CGFloat GetVerticalSpacingForElementType(
+    ManualFillCellView::ElementType element_type) {
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    return kVerticalSpacing;
+  }
+
+  switch (element_type) {
+    case ManualFillCellView::ElementType::kFirstChipButtonOfGroup:
+    case ManualFillCellView::ElementType::kOther:
+      return kGenericVerticalSpacingBetweenViews;
+    case ManualFillCellView::ElementType::kLabeledChipButton:
+      return kVerticalSpacingBetweenLabeledChips;
+    case ManualFillCellView::ElementType::kOtherChipButton:
+      return kVerticalSpacingBetweenChips;
+  }
+}
 
 }  // namespace
 
@@ -44,29 +75,62 @@ UIButton* CreateChipWithSelectorAndTarget(SEL action, id target) {
 
 void AppendVerticalConstraintsSpacingForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
-    NSArray<UIView*>* views,
+    const std::vector<ManualFillCellView>& manual_fill_cell_views,
     UILayoutGuide* layout_guide) {
-  AppendVerticalConstraintsSpacingForViews(constraints, views, layout_guide, 0);
+  AppendVerticalConstraintsSpacingForViews(constraints, manual_fill_cell_views,
+                                           layout_guide, 0);
 }
 
 void AppendVerticalConstraintsSpacingForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
-    NSArray<UIView*>* views,
+    const std::vector<ManualFillCellView>& manual_fill_cell_views,
     UILayoutGuide* layout_guide,
     CGFloat offset) {
   NSLayoutYAxisAnchor* previous_anchor = layout_guide.topAnchor;
-  CGFloat spacing = offset;
-  for (UIView* view in views) {
+  for (const ManualFillCellView& manual_fill_cell_view :
+       manual_fill_cell_views) {
+    CGFloat spacing =
+        manual_fill_cell_view == manual_fill_cell_views.front()
+            ? offset
+            : GetVerticalSpacingForElementType(manual_fill_cell_view.type);
+
+    UIView* view = manual_fill_cell_view.view;
     [constraints
         addObject:[view.topAnchor constraintEqualToAnchor:previous_anchor
                                                  constant:spacing]];
-    spacing = kVerticalSpacing;
     previous_anchor = view.bottomAnchor;
   }
 
   [constraints
       addObject:[previous_anchor
                     constraintEqualToAnchor:layout_guide.bottomAnchor]];
+}
+
+void AddChipGroupsToVerticalLeadViews(
+    NSArray<NSArray<UIView*>*>* chip_groups,
+    std::vector<ManualFillCellView>& vertical_lead_views) {
+  for (NSArray* chip_group in chip_groups) {
+    for (UIView* chip in chip_group) {
+      ManualFillCellView::ElementType element_type;
+      if ([chip isEqual:[chip_group firstObject]]) {
+        element_type = ManualFillCellView::ElementType::kFirstChipButtonOfGroup;
+      } else if ([chip isKindOfClass:[ManualFillLabeledChip class]]) {
+        element_type = ManualFillCellView::ElementType::kLabeledChipButton;
+      } else {
+        element_type = ManualFillCellView::ElementType::kOtherChipButton;
+      }
+
+      AddViewToVerticalLeadViews(chip, element_type, vertical_lead_views);
+    }
+  }
+}
+
+void AddViewToVerticalLeadViews(
+    UIView* view,
+    ManualFillCellView::ElementType type,
+    std::vector<ManualFillCellView>& vertical_lead_views) {
+  ManualFillCellView manual_fill_cell_view = {view, type};
+  vertical_lead_views.push_back(manual_fill_cell_view);
 }
 
 void AppendHorizontalConstraintsForViews(
@@ -146,8 +210,9 @@ void AppendEqualBaselinesConstraints(
   for (UIView* view in views) {
     DCHECK([view isKindOfClass:[UIButton class]] ||
            [view isKindOfClass:[UILabel class]]);
-    if (view == leadingView)
+    if (view == leadingView) {
       continue;
+    }
     [constraints
         addObject:[view.lastBaselineAnchor
                       constraintEqualToAnchor:leadingView.lastBaselineAnchor]];

@@ -177,8 +177,11 @@ static const CGFloat kOffsetForConnectedCell = 16;
   self.contentInjector = contentInjector;
   self.credential = credential;
 
-  NSMutableArray<UIView*>* verticalLeadViews = [[NSMutableArray alloc] init];
+  // Holds the views whose leading anchor is constrained relative to the cell's
+  // leading anchor.
+  std::vector<ManualFillCellView> verticalLeadViews;
 
+  // Header.
   if (isConnectedToPreviousCell) {
     self.siteNameLabel.hidden = YES;
     self.faviconView.hidden = YES;
@@ -208,11 +211,18 @@ static const CGFloat kOffsetForConnectedCell = 16;
       [attributedString appendAttributedString:hostAttributedString];
     }
     self.siteNameLabel.attributedText = attributedString;
-    [verticalLeadViews addObject:self.siteNameLabel];
+    AddViewToVerticalLeadViews(self.siteNameLabel,
+                               ManualFillCellView::ElementType::kOther,
+                               verticalLeadViews);
     self.siteNameLabel.hidden = NO;
     self.faviconView.hidden = NO;
   }
 
+  // Holds the chip buttons related to the credential that are vertical leads.
+  NSMutableArray<UIView*>* credentialGroupVerticalLeadChips =
+      [[NSMutableArray alloc] init];
+
+  // Username chip button.
   if (credential.username.length) {
     [self.usernameButton setTitle:credential.username
                          forState:UIControlStateNormal];
@@ -224,26 +234,30 @@ static const CGFloat kOffsetForConnectedCell = 16;
                               forState:UIControlStateNormal];
     self.usernameButton.enabled = NO;
   }
-  [verticalLeadViews addObject:self.usernameButton];
+  [credentialGroupVerticalLeadChips addObject:self.usernameButton];
 
+  // Password chip button.
   if (credential.password.length) {
     [self.passwordButton setTitle:kMaskedPasswordTitle
                          forState:UIControlStateNormal];
     self.passwordButton.accessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL);
-    [verticalLeadViews addObject:self.passwordButton];
+    [credentialGroupVerticalLeadChips addObject:self.passwordButton];
     self.passwordButton.hidden = NO;
   } else {
     self.passwordButton.hidden = YES;
   }
 
+  AddChipGroupsToVerticalLeadViews(@[ credentialGroupVerticalLeadChips ],
+                                   verticalLeadViews);
+
   if (isConnectedToNextCell) {
     self.grayLine.hidden = YES;
   }
 
-  CGFloat offset = isConnectedToPreviousCell ? -kOffsetForConnectedCell : 0;
-
+  // Set and activate constraints.
   self.dynamicConstraints = [[NSMutableArray alloc] init];
+  CGFloat offset = isConnectedToPreviousCell ? -kOffsetForConnectedCell : 0;
   AppendVerticalConstraintsSpacingForViews(
       self.dynamicConstraints, verticalLeadViews, self.layoutGuide, offset);
   [NSLayoutConstraint activateConstraints:self.dynamicConstraints];

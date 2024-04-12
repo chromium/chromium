@@ -129,7 +129,9 @@
   }
   self.contentInjector = contentInjector;
 
-  NSMutableArray<UIView*>* verticalLeadViews = [[NSMutableArray alloc] init];
+  // Holds the views whose leading anchor is constrained relative to the cell's
+  // leading anchor.
+  std::vector<ManualFillCellView> verticalLeadViews;
 
   NSString* blackText = nil;
   NSString* grayText = nil;
@@ -174,7 +176,9 @@
 
   if (attributedString) {
     self.addressLabel.attributedText = attributedString;
-    [verticalLeadViews addObject:self.addressLabel];
+    AddViewToVerticalLeadViews(self.addressLabel,
+                               ManualFillCellView::ElementType::kOther,
+                               verticalLeadViews);
   }
 
   self.dynamicConstraints = [[NSMutableArray alloc] init];
@@ -182,13 +186,18 @@
   BOOL largeTypes = UIContentSizeCategoryIsAccessibilityCategory(
       UIScreen.mainScreen.traitCollection.preferredContentSizeCategory);
 
-  // Name line, first middle and last.
+  // First, middle and last names are presented on the same line when possible.
   NSMutableArray<UIView*>* nameLineViews = [[NSMutableArray alloc] init];
 
   bool showFirstName = address.firstName.length;
   bool showMiddleName = address.middleNameOrInitial.length;
   bool showLastName = address.lastName.length;
 
+  // Holds the chip buttons related to the name that are vertical leads.
+  NSMutableArray<UIView*>* nameGroupVerticalLeadChips =
+      [[NSMutableArray alloc] init];
+
+  // First name chip button.
   if (showFirstName) {
     [self.firstNameButton setTitle:address.firstName
                           forState:UIControlStateNormal];
@@ -198,6 +207,7 @@
     self.firstNameButton.hidden = YES;
   }
 
+  // Middle name chip button.
   if (showMiddleName) {
     [self.middleNameButton setTitle:address.middleNameOrInitial
                            forState:UIControlStateNormal];
@@ -207,6 +217,7 @@
     self.middleNameButton.hidden = YES;
   }
 
+  // Last name chip button.
   if (showLastName) {
     [self.lastNameButton setTitle:address.lastName
                          forState:UIControlStateNormal];
@@ -219,38 +230,47 @@
   [self layMultipleViews:nameLineViews
           withLargeTypes:largeTypes
                  onGuide:self.layoutGuide
-      addFirstLineViewTo:verticalLeadViews];
+      addFirstLineViewTo:nameGroupVerticalLeadChips];
 
-  // Company line.
+  // Holds the chip buttons related to the company name that are vertical leads.
+  NSMutableArray<UIView*>* companyGroupVerticalLeadChips =
+      [[NSMutableArray alloc] init];
+
+  // Company line chip button.
   if (address.company.length) {
     [self.companyButton setTitle:address.company forState:UIControlStateNormal];
-    [verticalLeadViews addObject:self.companyButton];
+    [companyGroupVerticalLeadChips addObject:self.companyButton];
     self.companyButton.hidden = NO;
   } else {
     self.companyButton.hidden = YES;
   }
 
-  // Address line 1.
+  // Holds the chip buttons related to the address that are vertical leads.
+  NSMutableArray<UIView*>* addressGroupVerticalLeadChips =
+      [[NSMutableArray alloc] init];
+
+  // Address line 1 chip button.
   if (address.line1.length) {
     [self.line1Button setTitle:address.line1 forState:UIControlStateNormal];
-    [verticalLeadViews addObject:self.line1Button];
+    [addressGroupVerticalLeadChips addObject:self.line1Button];
     self.line1Button.hidden = NO;
   } else {
     self.line1Button.hidden = YES;
   }
 
-  // Address line 2.
+  // Address line 2 chip button.
   if (address.line2.length) {
     [self.line2Button setTitle:address.line2 forState:UIControlStateNormal];
-    [verticalLeadViews addObject:self.line2Button];
+    [addressGroupVerticalLeadChips addObject:self.line2Button];
     self.line2Button.hidden = NO;
   } else {
     self.line2Button.hidden = YES;
   }
 
-  // Zip and city line.
+  // ZIP code and city are presented on the same line when possible.
   NSMutableArray<UIView*>* zipCityLineViews = [[NSMutableArray alloc] init];
 
+  // ZIP code chip button.
   if (address.zip.length) {
     [self.zipButton setTitle:address.zip forState:UIControlStateNormal];
     [zipCityLineViews addObject:self.zipButton];
@@ -259,6 +279,7 @@
     self.zipButton.hidden = YES;
   }
 
+  // City chip button.
   if (address.city.length) {
     [self.cityButton setTitle:address.city forState:UIControlStateNormal];
     [zipCityLineViews addObject:self.cityButton];
@@ -270,12 +291,13 @@
   [self layMultipleViews:zipCityLineViews
           withLargeTypes:largeTypes
                  onGuide:self.layoutGuide
-      addFirstLineViewTo:verticalLeadViews];
+      addFirstLineViewTo:addressGroupVerticalLeadChips];
 
-  // State and country line.
+  // State and country are presented on the same line when possible.
   NSMutableArray<UIView*>* stateCountryLineViews =
       [[NSMutableArray alloc] init];
 
+  // State chip button.
   if (address.state.length) {
     [self.stateButton setTitle:address.state forState:UIControlStateNormal];
     [stateCountryLineViews addObject:self.stateButton];
@@ -284,6 +306,7 @@
     self.stateButton.hidden = YES;
   }
 
+  // Country chip button.
   if (address.country.length) {
     [self.countryButton setTitle:address.country forState:UIControlStateNormal];
     [stateCountryLineViews addObject:self.countryButton];
@@ -295,26 +318,40 @@
   [self layMultipleViews:stateCountryLineViews
           withLargeTypes:largeTypes
                  onGuide:self.layoutGuide
-      addFirstLineViewTo:verticalLeadViews];
+      addFirstLineViewTo:addressGroupVerticalLeadChips];
 
+  // Holds the chip buttons related to the contact info that are vertical leads.
+  NSMutableArray<UIView*>* contactInfoGroupVerticalLeadChips =
+      [[NSMutableArray alloc] init];
+
+  // Phone number chip button.
   if (address.phoneNumber.length) {
     [self.phoneNumberButton setTitle:address.phoneNumber
                             forState:UIControlStateNormal];
-    [verticalLeadViews addObject:self.phoneNumberButton];
+    [contactInfoGroupVerticalLeadChips addObject:self.phoneNumberButton];
     self.phoneNumberButton.hidden = NO;
   } else {
     self.phoneNumberButton.hidden = YES;
   }
 
+  // Email address chip button.
   if (address.emailAddress.length) {
     [self.emailAddressButton setTitle:address.emailAddress
                              forState:UIControlStateNormal];
-    [verticalLeadViews addObject:self.emailAddressButton];
+    [contactInfoGroupVerticalLeadChips addObject:self.emailAddressButton];
     self.emailAddressButton.hidden = NO;
   } else {
     self.emailAddressButton.hidden = YES;
   }
 
+  AddChipGroupsToVerticalLeadViews(
+      @[
+        nameGroupVerticalLeadChips, companyGroupVerticalLeadChips,
+        addressGroupVerticalLeadChips, contactInfoGroupVerticalLeadChips
+      ],
+      verticalLeadViews);
+
+  // Set and activate constraints.
   AppendVerticalConstraintsSpacingForViews(self.dynamicConstraints,
                                            verticalLeadViews, self.layoutGuide);
   [NSLayoutConstraint activateConstraints:self.dynamicConstraints];
@@ -323,7 +360,7 @@
 #pragma mark - Private
 
 // Dynamically lay givens `views` on `guide`, adding first view of every
-// generated line to `addFirstLineViewTo`. If `largeTypes` is true, fields are
+// generated line to `verticalLeadViews`. If `largeTypes` is true, fields are
 // laid out vertically one per line, otherwise horizontally on one line.
 // Constraints are added to `self.dynamicConstraints` property.
 - (void)layMultipleViews:(NSArray<UIView*>*)views

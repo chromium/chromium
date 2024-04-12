@@ -365,36 +365,67 @@ using base::SysNSStringToUTF8;
 
 // Positions the UIViews vertically.
 - (void)verticallyArrangeViews:(ManualFillCreditCard*)card {
-  NSMutableArray<UIView*>* verticalViews =
-      [[NSMutableArray alloc] initWithObjects:self.cardLabel, nil];
+  // Holds the views whose leading anchor is constrained relative to the cell's
+  // leading anchor.
+  std::vector<ManualFillCellView> verticalLeadViews;
+  AddViewToVerticalLeadViews(self.cardLabel,
+                             ManualFillCellView::ElementType::kOther,
+                             verticalLeadViews);
+
+  // Holds the chip buttons related to the card that are vertical leads.
+  NSMutableArray<UIView*>* cardInfoGroupVerticalLeadChips =
+      [[NSMutableArray alloc] init];
+
   // If Virtual Cards are enabled add labeled chips to be positioned
   // else just add the buttons.
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableVirtualCards)) {
-    [self addView:self.virtualCardInstructionTextView
-          toArray:verticalViews
-           ifTrue:(card.recordType == kVirtualCard)];
-    [self addView:self.cardNumberLabeledChip
-          toArray:verticalViews
-           ifTrue:(card.obfuscatedNumber.length > 0)];
-    [verticalViews addObject:self.expirationDateLabeledChip];
-    [self addView:self.cardholderLabeledChip
-          toArray:verticalViews
-           ifTrue:(card.cardHolder.length > 0)];
+    // Virtual card instruction.
+    if (card.recordType == kVirtualCard) {
+      AddViewToVerticalLeadViews(self.virtualCardInstructionTextView,
+                                 ManualFillCellView::ElementType::kOther,
+                                 verticalLeadViews);
+      self.virtualCardInstructionTextView.hidden = NO;
+    } else {
+      self.virtualCardInstructionTextView.hidden = YES;
+    }
+
+    // Card number labeled chip button.
+    [self addChipButton:self.cardNumberLabeledChip
+            toChipGroup:cardInfoGroupVerticalLeadChips
+                 ifTrue:(card.obfuscatedNumber.length > 0)];
+
+    // Expiration date labeled chip button.
+    [cardInfoGroupVerticalLeadChips addObject:self.expirationDateLabeledChip];
+
+    // Card holder labeled chip button.
+    [self addChipButton:self.cardholderLabeledChip
+            toChipGroup:cardInfoGroupVerticalLeadChips
+                 ifTrue:(card.cardHolder.length > 0)];
   } else {
     // TODO(crbug.com/330329960): Deprecate button use once
     // kAutofillEnableVirtualCards is enabled.
-    [self addView:self.cardNumberButton
-          toArray:verticalViews
-           ifTrue:(card.obfuscatedNumber.length > 0)];
-    [verticalViews addObject:self.expirationMonthButton];
-    [self addView:self.cardholderButton
-          toArray:verticalViews
-           ifTrue:(card.cardHolder.length > 0)];
+
+    // Card number chip button.
+    [self addChipButton:self.cardNumberButton
+            toChipGroup:cardInfoGroupVerticalLeadChips
+                 ifTrue:(card.obfuscatedNumber.length > 0)];
+
+    // Expiration date chip button.
+    [cardInfoGroupVerticalLeadChips addObject:self.expirationMonthButton];
+
+    // Card holder chip button.
+    [self addChipButton:self.cardholderButton
+            toChipGroup:cardInfoGroupVerticalLeadChips
+                 ifTrue:(card.cardHolder.length > 0)];
   }
 
+  AddChipGroupsToVerticalLeadViews(@[ cardInfoGroupVerticalLeadChips ],
+                                   verticalLeadViews);
+
+  // Set and activate constraints.
   AppendVerticalConstraintsSpacingForViews(self.dynamicConstraints,
-                                           verticalViews, self.layoutGuide);
+                                           verticalLeadViews, self.layoutGuide);
   [NSLayoutConstraint activateConstraints:self.dynamicConstraints];
 }
 
@@ -589,14 +620,15 @@ using base::SysNSStringToUTF8;
   return expirationSeparatorLabel;
 }
 
-// Adds or hides UIView depending on the 'test' boolean.
-- (void)addView:(UIView*)view
-        toArray:(NSMutableArray<UIView*>*)verticalViews
-         ifTrue:(BOOL)test {
+// Adds or hides ChipButton depending on the 'test' boolean.
+- (void)addChipButton:(UIView*)chipButton
+          toChipGroup:(NSMutableArray<UIView*>*)chipGroup
+               ifTrue:(BOOL)test {
   if (test) {
-    [verticalViews addObject:view];
+    [chipGroup addObject:chipButton];
+    chipButton.hidden = NO;
   } else {
-    view.hidden = YES;
+    chipButton.hidden = YES;
   }
 }
 

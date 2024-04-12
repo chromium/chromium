@@ -175,6 +175,7 @@ source_set("unit_tests") {
     "manual_fill_address+AutofillProfile_unittest.mm",
     "manual_fill_address_unittest.mm",
     "manual_fill_all_password_coordinator_unittest.mm",
+    "manual_fill_cell_utils_unittest.mm",
     "manual_fill_credential+PasswordForm_unittest.mm",
     "manual_fill_credential_unittest.mm",
     "manual_fill_credit_card+CreditCard_unittest.mm",
