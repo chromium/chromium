@@ -441,7 +441,15 @@ public class PasswordManagerHelper {
         // during the GMS Core installation.
         // intent.putExtra("overlay", true);
 
-        context.startActivity(intent);
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            // In case that Google Play Store isn't present on the device, its activity could not
+            // have been started.
+            // TODO: b/334051261 - Instead of silently failing to open Google Play Store to offer
+            // updating GMS Core, either don't offer the option at all or indicate why the update
+            // button didn't work.
+        }
     }
 
     @VisibleForTesting
