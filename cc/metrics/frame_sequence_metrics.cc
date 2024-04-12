@@ -422,7 +422,7 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
   dict->SetInteger("sequence_number", sequence_number);
   dict->SetInteger("last_sequence", last_presented_sequence_number);
   dict->SetInteger("expected", expected);
-  dict->SetInteger("dopped", dropped);
+  dict->SetInteger("dropped", dropped);
   dict->EndDictionary();
 
   // Use different names, because otherwise the trace-viewer shows the slices in
