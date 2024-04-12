@@ -143,8 +143,6 @@
 
 // Sets the GroupTabInfo array with `tabGroupInfos`.
 - (void)setGroupTabInfos:(NSArray<GroupTabInfo*>*)tabGroupInfos {
-  // TODO(crbug.com/1501837): Replace the mutable array with an array once the
-  // manual fetch is removed.
   _tabGroupInfos = [[NSMutableArray alloc] initWithArray:tabGroupInfos];
 }
 

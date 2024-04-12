@@ -92,9 +92,6 @@
          "Tab Groups experiment.";
   CHECK(!_tabGroupCoordinator) << "There is an atemps to display a tab group "
                                   "when one is already presented.";
-  // TODO(crbug.com/1501837): Replace base view controller by view controller
-  // when the base grid coordinator will have access to the grid view
-  // controller.
   _tabGroupCoordinator = [[TabGroupCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -116,9 +113,6 @@
   CHECK(!_tabGroupCreator) << "There is an atemps to create a tab group when a "
                               "creation process is still running.";
 
-  // TODO(crbug.com/1501837): Replace base view controller by view controller
-  // when the base grid coordinator will have access to the grid view
-  // controller.
   _tabGroupCreator = [[CreateTabGroupCoordinator alloc]
       initTabGroupCreationWithBaseViewController:self.baseViewController
                                          browser:self.browser
@@ -140,9 +134,6 @@
                               "creation process is still running.";
   CHECK(tabGroup) << "To edit a tab group you should pass a group.";
 
-  // TODO(crbug.com/1501837): Replace base view controller by view controller
-  // when the base grid coordinator will have access to the grid view
-  // controller.
   UIViewController* backgroundView = _tabGroupCoordinator
                                          ? _tabGroupCoordinator.viewController
                                          : self.baseViewController;

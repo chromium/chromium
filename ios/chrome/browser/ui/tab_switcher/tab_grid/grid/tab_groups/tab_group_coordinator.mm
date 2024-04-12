@@ -97,7 +97,6 @@
   _mediator = nil;
   _tabContextMenuHelper = nil;
 
-  // TODO(crbug.com/1501837): Make the hide tab group animation.
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
 }

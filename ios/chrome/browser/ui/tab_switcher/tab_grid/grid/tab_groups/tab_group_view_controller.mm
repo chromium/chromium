@@ -348,7 +348,6 @@ constexpr CGFloat kPlusImageSize = 20;
   UIView* subTitleView = [[UIView alloc] initWithFrame:CGRectZero];
   subTitleView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  // TODO(crbug.com/1501837): Add action to the button.
   UIButton* menuButton = [[ExtendedTouchTargetButton alloc] init];
   menuButton.translatesAutoresizingMaskIntoConstraints = NO;
   menuButton.menu = [self configuredTabGroupMenu];
