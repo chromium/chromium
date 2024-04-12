@@ -17,6 +17,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -32,10 +33,15 @@ DeskButtonContainer::~DeskButtonContainer() = default;
 
 // static
 bool DeskButtonContainer::ShouldShowDeskProfilesUi() {
-  if (auto* desk_profiles_delegate = Shell::Get()->GetDeskProfilesDelegate()) {
-    return desk_profiles_delegate->GetProfilesSnapshot().size() > 1u;
+  if (!chromeos::features::IsDeskProfilesEnabled()) {
+    return false;
   }
-  return false;
+  auto* desk_profiles_delegate = Shell::Get()->GetDeskProfilesDelegate();
+  if (!desk_profiles_delegate ||
+      desk_profiles_delegate->GetProfilesSnapshot().size() < 2u) {
+    return false;
+  }
+  return true;
 }
 
 // static
