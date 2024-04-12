@@ -22,9 +22,12 @@ namespace blink {
 #define SEGMENT_BREAK_TRANSFORMATION_FOR_EAST_ASIAN_WIDTH 0
 
 #define EXPECT_ITEM_OFFSET(item, type, start, end) \
-  EXPECT_EQ(type, (item).Type());                  \
-  EXPECT_EQ(start, (item).StartOffset());          \
-  EXPECT_EQ(end, (item).EndOffset());
+  {                                                \
+    const auto& item_ref = (item);                 \
+    EXPECT_EQ(type, item_ref.Type());              \
+    EXPECT_EQ(start, item_ref.StartOffset());      \
+    EXPECT_EQ(end, item_ref.EndOffset());          \
+  }
 
 class InlineItemsBuilderTest : public RenderingTest {
  protected:
@@ -612,28 +615,41 @@ TEST_F(InlineItemsBuilderTest, OpenCloseRubyColumns) {
   AppendText("anno3", &builder);
   builder.ExitInline(orphan_rt);
 
-  EXPECT_ITEM_OFFSET(items[0], InlineItem::kOpenTag, 0u, 0u);  // <ruby>
-  EXPECT_ITEM_OFFSET(items[1], InlineItem::kOpenRubyColumn, 0u, 1u);
-  EXPECT_ITEM_OFFSET(items[2], InlineItem::kText, 1u, 6u);        // "base1"
-  EXPECT_ITEM_OFFSET(items[3], InlineItem::kOpenTag, 6u, 6u);     // <rt>
-  EXPECT_ITEM_OFFSET(items[4], InlineItem::kText, 6u, 11u);       // "anno1"
-  EXPECT_ITEM_OFFSET(items[5], InlineItem::kCloseTag, 11u, 11u);  // </rt>
-  EXPECT_ITEM_OFFSET(items[6], InlineItem::kCloseRubyColumn, 11u, 12u);
-  EXPECT_ITEM_OFFSET(items[7], InlineItem::kOpenRubyColumn, 12u, 13u);
-  EXPECT_ITEM_OFFSET(items[8], InlineItem::kText, 13u, 18u);       // "base2"
-  EXPECT_ITEM_OFFSET(items[9], InlineItem::kOpenTag, 18u, 18u);    // <rt>
-  EXPECT_ITEM_OFFSET(items[10], InlineItem::kText, 18u, 23u);      // "anno2"
-  EXPECT_ITEM_OFFSET(items[11], InlineItem::kCloseTag, 23u, 23u);  // </rt>
-  EXPECT_ITEM_OFFSET(items[12], InlineItem::kCloseRubyColumn, 23u, 24u);
-  EXPECT_ITEM_OFFSET(items[13], InlineItem::kOpenRubyColumn, 24u, 25u);
-  EXPECT_ITEM_OFFSET(items[14], InlineItem::kCloseRubyColumn, 25u, 26u);
-  EXPECT_ITEM_OFFSET(items[15], InlineItem::kCloseTag, 26u, 26u);  // </ruby>
+  wtf_size_t i = 0;
+  EXPECT_ITEM_OFFSET(items[i], InlineItem::kOpenTag, 0u, 0u);  // <ruby>
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kOpenRubyColumn, 0u, 1u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 1u, 1u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kText, 1u, 6u);  // "base1"
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 6u, 6u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kOpenTag, 6u, 6u);  // <rt>
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 6u, 6u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kText, 6u, 11u);  // "anno1"
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 11u, 11u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kCloseTag, 11u, 11u);  // </rt>
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kCloseRubyColumn, 11u, 12u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kOpenRubyColumn, 12u, 13u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 13u, 13u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kText, 13u, 18u);  // "base2"
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 18u, 18u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kOpenTag, 18u, 18u);  // <rt>
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 18u, 18u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kText, 18u, 23u);  // "anno2"
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 23u, 23u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kCloseTag, 23u, 23u);  // </rt>
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kCloseRubyColumn, 23u, 24u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kOpenRubyColumn, 24u, 25u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 25u, 25u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kCloseRubyColumn, 25u, 26u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kCloseTag, 26u, 26u);  // </ruby>
 
-  EXPECT_ITEM_OFFSET(items[16], InlineItem::kOpenRubyColumn, 26u, 27u);
-  EXPECT_ITEM_OFFSET(items[17], InlineItem::kOpenTag, 27u, 27u);   // <rt>
-  EXPECT_ITEM_OFFSET(items[18], InlineItem::kText, 27u, 32u);      // "anno3"
-  EXPECT_ITEM_OFFSET(items[19], InlineItem::kCloseTag, 32u, 32u);  // </rt>
-  EXPECT_ITEM_OFFSET(items[20], InlineItem::kCloseRubyColumn, 32u, 33u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kOpenRubyColumn, 26u, 27u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 27u, 27u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kOpenTag, 27u, 27u);  // <rt>
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 27u, 27u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kText, 27u, 32u);  // "anno3"
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kRubyLinePlaceholder, 32u, 32u);
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kCloseTag, 32u, 32u);  // </rt>
+  EXPECT_ITEM_OFFSET(items[++i], InlineItem::kCloseRubyColumn, 32u, 33u);
 
   orphan_rt->Destroy();
   rt->Destroy();

@@ -177,6 +177,8 @@ const char* InlineItem::InlineItemTypeToString(InlineItemType val) const {
       return "OpenRubyColumn";
     case kCloseRubyColumn:
       return "CloseRubyColumn";
+    case kRubyLinePlaceholder:
+      return "RubyLinePlaceholder";
   }
   NOTREACHED_NORETURN();
 }

@@ -900,7 +900,8 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
       HandleBlockInInline(item, block_break_token, line_info);
       continue;
     }
-    if (item.Type() == InlineItem::kCloseRubyColumn) {
+    if (item.Type() == InlineItem::kCloseRubyColumn ||
+        item.Type() == InlineItem::kRubyLinePlaceholder) {
       AddItem(item, line_info);
       MoveToNextOf(item);
       continue;
@@ -923,13 +924,14 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
       continue;
     }
     if (item.Type() == InlineItem::kOpenRubyColumn) {
-      // Skip to call HandleRuby() for an empty ruby column.
-      if (Items()[current_.item_index + 1].Type() ==
-          InlineItem::kCloseRubyColumn) {
+      // Skip to call HandleRuby() for a placeholder-only ruby column.
+      const wtf_size_t i = current_.item_index;
+      if (items[i + 1].Type() == InlineItem::kRubyLinePlaceholder &&
+          (items[i + 2].Type() == InlineItem::kCloseRubyColumn ||
+           (items[i + 2].Type() == InlineItem::kRubyLinePlaceholder &&
+            items[i + 3].Type() == InlineItem::kCloseRubyColumn))) {
         AddItem(item, line_info);
         MoveToNextOf(item);
-        AddItem(items[current_.item_index], line_info);
-        MoveToNextOf(items[current_.item_index]);
         continue;
       }
       if (!HandleRuby(line_info)) {

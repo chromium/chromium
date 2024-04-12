@@ -92,6 +92,7 @@ bool LineWidths::Set(const InlineNode& node,
       case InlineItem::kBidiControl:
       case InlineItem::kOpenRubyColumn:
       case InlineItem::kCloseRubyColumn:
+      case InlineItem::kRubyLinePlaceholder:
         // These items don't affect line heights.
         break;
       case InlineItem::kFloating:

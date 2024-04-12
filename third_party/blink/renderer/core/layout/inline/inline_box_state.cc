@@ -685,8 +685,9 @@ LayoutUnit InlineLayoutStateStack::ComputeInlinePositions(
     child.rect.offset.inline_offset += position;
     // Box margins/boders/paddings will be processed later.
     // TODO(kojii): we could optimize this if the reordering did not occur.
-    if (!child.HasFragment())
+    if (!child.HasFragment() && !child.IsRubyLinePlaceholder()) {
       continue;
+    }
     position += child.inline_size;
   }
 

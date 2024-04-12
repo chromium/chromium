@@ -163,6 +163,14 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
     } else if (item.Type() == InlineItem::kCloseRubyColumn) {
       DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
       line_box->AddChild(item.BidiLevel());
+    } else if (item.Type() == InlineItem::kRubyLinePlaceholder) {
+      DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+      // Adds a LogicalLineItem with an InlineItem to check its
+      // InlineItemType later.
+      line_box->AddChild(item, item_result, item_result.TextOffset(),
+                         /* block_offset */ LayoutUnit(),
+                         item_result.inline_size,
+                         /* text_height */ LayoutUnit(), item.BidiLevel());
     } else if (item.Type() == InlineItem::kListMarker) {
       PlaceListMarker(item, &item_result);
     } else if (item.Type() == InlineItem::kOutOfFlowPositioned) {

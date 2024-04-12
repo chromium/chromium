@@ -44,7 +44,11 @@ class CORE_EXPORT InlineItem {
     // k*RubyColumn is produced only if RubyLineBreakable flag is enabled.
     // They help to pair ruby-base items and ruby-text items in LineBreaker.
     kOpenRubyColumn,
-    kCloseRubyColumn
+    kCloseRubyColumn,
+    // kRubyLinePlaceholder items are added to the beginning and the end of
+    // ruby-base and ruby-text sub-lines. They are helpful to avoid no-item
+    // lines and to add spaces around a sub-line.
+    kRubyLinePlaceholder
   };
 
   enum CollapseType {

@@ -1411,12 +1411,17 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
   }
 
   has_ruby_ = has_ruby_ || node->IsInlineRubyText();
-  if (node->IsInlineRubyText() && !node->Parent()->IsInlineRuby()) {
-    // This creates a ruby column with no ruby-base items.
-    AppendOpaque(InlineItem::kOpenRubyColumn,
-                 IsLtr(style->Direction()) ? kLeftToRightIsolateCharacter
-                                           : kRightToLeftIsolateCharacter,
-                 nullptr);
+  if (node->IsInlineRubyText()) {
+    if (!node->Parent()->IsInlineRuby()) {
+      // This creates a ruby column with a placeholder-only ruby-base.
+      AppendOpaque(InlineItem::kOpenRubyColumn,
+                   IsLtr(style->Direction()) ? kLeftToRightIsolateCharacter
+                                             : kRightToLeftIsolateCharacter,
+                   nullptr);
+      AppendOpaque(InlineItem::kRubyLinePlaceholder, nullptr);
+    } else {
+      AppendOpaque(InlineItem::kRubyLinePlaceholder, node->Parent());
+    }
   }
   AppendOpaque(InlineItem::kOpenTag, node);
 
@@ -1438,6 +1443,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
                  IsLtr(style->Direction()) ? kLeftToRightIsolateCharacter
                                            : kRightToLeftIsolateCharacter,
                  node);
+    AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
+  } else if (node->IsInlineRubyText()) {
+    AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
   }
 }
 
@@ -1459,6 +1467,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
   if (node->IsInlineRuby()) {
     AppendOpaque(InlineItem::kCloseRubyColumn, kPopDirectionalIsolateCharacter,
                  node);
+  } else if (node->IsInlineRubyText()) {
+    AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
   }
 
   if (NeedsBoxInfo()) {
@@ -1507,13 +1517,14 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
       LayoutObject* ruby_container = node->Parent();
       AppendOpaque(InlineItem::kCloseRubyColumn,
                    kPopDirectionalIsolateCharacter, ruby_container);
-      // This produces empty ruby-columns if </ruby> follows.  LineBreaker
-      // should ignore such ruby-columns.
+      // This produces almost-empty ruby-columns if </ruby> follows.
+      // LineBreaker should ignore such ruby-columns.
       AppendOpaque(InlineItem::kOpenRubyColumn,
                    IsLtr(node->Parent()->Style()->Direction())
                        ? kLeftToRightIsolateCharacter
                        : kRightToLeftIsolateCharacter,
                    ruby_container);
+      AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
     } else {
       AppendOpaque(InlineItem::kCloseRubyColumn,
                    kPopDirectionalIsolateCharacter, nullptr);

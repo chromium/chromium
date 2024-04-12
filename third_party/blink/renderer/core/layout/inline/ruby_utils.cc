@@ -286,8 +286,9 @@ AnnotationMetrics ComputeAnnotationOverflow(
   for (const LogicalLineItem& item : logical_line) {
     if (!item.HasInFlowFragment())
       continue;
-    if (item.IsControl())
+    if (item.IsControl() || item.IsRubyLinePlaceholder()) {
       continue;
+    }
     LayoutUnit item_over = line_box_metrics.ascent + item.BlockOffset();
     LayoutUnit item_under = line_box_metrics.ascent + item.BlockEndOffset();
     if (item.shape_result) {
