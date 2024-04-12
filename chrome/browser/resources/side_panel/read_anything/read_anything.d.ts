@@ -298,5 +298,8 @@ declare namespace chrome {
     // Gets the readable name for a locale code
     function getDisplayNameForLocale(locale: string, displayLocale: string):
         string;
+
+    // Log UmaHistogramLong
+    function logMetric(time: number, metricName: string): void;
   }
 }

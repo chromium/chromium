@@ -192,6 +192,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     element.style.display = 'inline-block';
   }
 
+  private startTime = Date.now();
+  private constructorTime: number;
+
   // If you change these fonts, please also update read_anything_constants.h
   private fontOptions_: string[] = [];
 
@@ -340,11 +343,23 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   constructor() {
     super();
+    this.constructorTime = Date.now();
+    chrome.readingMode?.logMetric(
+        (this.constructorTime - this.startTime),
+        'Accessibility.ReadAnything.TimeFromToolbarStartedToConstructor');
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
   }
 
   override connectedCallback() {
     super.connectedCallback();
+    const connectedCallbackTime = Date.now();
+    chrome.readingMode?.logMetric(
+        (connectedCallbackTime - this.startTime),
+        'Accessibility.ReadAnything.TimeFromToolbarStartedToConnectedCallback');
+    chrome.readingMode?.logMetric(
+        (connectedCallbackTime - this.constructorTime),
+        'Accessibility.ReadAnything.' +
+            'TimeFromToolbarConstructorStartedToConnectedCallback');
     if (this.isReadAloudEnabled_) {
       this.textStyleOptions_.push(
           {

@@ -2382,6 +2382,28 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.TimeFrom{Flow}StartedTo{Method}"
+    units="ms" expires_after="2024-09-30">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the time from when opening {Flow} first is triggered and when its
+    {Method} is called.
+  </summary>
+  <token key="Flow">
+    <variant name="App" summary="read_anything/app.ts"/>
+    <variant name="AppConstructor"
+        summary="read_anything/app.ts 's constructor"/>
+    <variant name="Toolbar" summary="read_anything/read_anything_toolbar.ts"/>
+    <variant name="ToolbarConstructor"
+        summary="read_anything/read_anything_toolbar.ts 's constructor"/>
+  </token>
+  <token key="Method">
+    <variant name="ConnectedCallback"/>
+    <variant name="Constructor"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.Reliability.Tree.UnserializeError"
     enum="AccessibilityTreeUnserializeError" expires_after="2025-02-28">
   <owner>aleventhal@chromium.org</owner>

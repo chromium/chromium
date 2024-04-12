@@ -214,6 +214,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return getTemplate();
   }
 
+  private startTime = Date.now();
+  private constructorTime: number;
+
   // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and
   // AXNodeIDs are unique, so this is a two way map where either DOM node or
   // AXNodeID can be used to access the other.
@@ -281,6 +284,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   constructor() {
     super();
+    this.constructorTime = Date.now();
+    chrome.readingMode?.logMetric(
+        (this.constructorTime - this.startTime),
+        'Accessibility.ReadAnything.TimeFromAppStartedToConstructor');
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     this.isWebUIToolbarVisible_ = chrome.readingMode.isWebUIToolbarVisible;
     if (chrome.readingMode && chrome.readingMode.isWebUIToolbarVisible) {
@@ -294,6 +301,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // we're not blocking onConnected on anything else during WebUI setup.
     if (chrome.readingMode) {
       chrome.readingMode.onConnected();
+      const connectedCallbackTime = Date.now();
+      chrome.readingMode.logMetric(
+          (connectedCallbackTime - this.startTime),
+          'Accessibility.ReadAnything.TimeFromAppStartedToConnectedCallback');
+      chrome.readingMode.logMetric(
+          (connectedCallbackTime - this.constructorTime),
+          'Accessibility.ReadAnything.' +
+              'TimeFromAppConstructorStartedToConnectedCallback');
     }
 
     // Wait until the side panel is fully rendered before showing the side

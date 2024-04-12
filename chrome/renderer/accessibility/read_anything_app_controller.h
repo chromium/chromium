@@ -286,6 +286,9 @@ class ReadAnythingAppController
                           int letter_spacing);
   void SetLanguageForTesting(const std::string& language_code);
 
+  // Helper for logging UmaHistograms based on times recorded in WebUI.
+  void LogUmaHistogramLongTimes(int64_t time, std::string metric);
+
   content::RenderFrame* GetRenderFrame();
 
   const blink::LocalFrameToken frame_token_;

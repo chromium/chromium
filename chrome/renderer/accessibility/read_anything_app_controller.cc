@@ -757,7 +757,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::RequestImageDataUrl)
       .SetMethod("getImageDataUrl", &ReadAnythingAppController::GetImageDataUrl)
       .SetMethod("getDisplayNameForLocale",
-                 &ReadAnythingAppController::GetDisplayNameForLocale);
+                 &ReadAnythingAppController::GetDisplayNameForLocale)
+      .SetMethod("logMetric",
+                 &ReadAnythingAppController::LogUmaHistogramLongTimes);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1442,4 +1444,9 @@ int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
       shorter_string.length() - 1, ax::mojom::MoveDirection::kBackward,
       ax::mojom::TextAffinity::kDefaultValue);
   return word_ends;
+}
+
+void ReadAnythingAppController::LogUmaHistogramLongTimes(int64_t time,
+                                                         std::string metric) {
+  base::UmaHistogramTimes(metric, base::Milliseconds(time));
 }

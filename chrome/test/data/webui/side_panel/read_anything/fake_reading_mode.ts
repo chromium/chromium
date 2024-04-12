@@ -342,4 +342,6 @@ export class FakeReadingMode {
   getDisplayNameForLocale(_locale: string, _displayLocale: string): string {
     return '';
   }
+
+  logMetric(_time: number, _metricName: string) : void {}
 }
