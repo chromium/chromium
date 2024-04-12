@@ -136,6 +136,7 @@ void FullscreenMediator::FullscreenModelEnabledStateChanged(
 void FullscreenMediator::FullscreenModelScrollEventStarted(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
+  start_progress_ = model_->progress();
   StopAnimating(true /* update_model */);
   // Show the toolbars if the user begins a scroll past the bottom edge of the
   // screen and the toolbars have been fully collapsed.
@@ -155,13 +156,18 @@ void FullscreenMediator::FullscreenModelScrollEventEnded(
                          ? FullscreenAnimatorStyle::EXIT_FULLSCREEN
                          : FullscreenAnimatorStyle::ENTER_FULLSCREEN);
   } else {
+    // Compute the direction to ensure to not enter fullscreen when the website
+    // is not long enough to have more than 0.5 progress and do not enter
+    // fullscreen when we scroll up.
+    float direction = model_->progress() - start_progress_;
+    animatorStyle = animator_.style;
     if (model_->enabled() && model_->is_scrolled_to_bottom() &&
         AreCGFloatsEqual(model_->progress(), 0.0) &&
         model_->can_collapse_toolbar()) {
       animatorStyle = FullscreenAnimatorStyle::EXIT_FULLSCREEN;
     } else if (model_->progress() >= 0.5) {
       animatorStyle = FullscreenAnimatorStyle::EXIT_FULLSCREEN;
-    } else {
+    } else if (direction < 0) {
       animatorStyle = FullscreenAnimatorStyle::ENTER_FULLSCREEN;
     }
     AnimateWithStyle(animatorStyle);

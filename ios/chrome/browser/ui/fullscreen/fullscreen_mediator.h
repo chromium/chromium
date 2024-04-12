@@ -88,6 +88,8 @@ class FullscreenMediator : public FullscreenModelObserver {
   // animator's current progress value.
   void StopAnimating(bool update_model);
 
+  // Progress value when scroll event started.
+  float start_progress_;
   // The controller.
   raw_ptr<FullscreenController> controller_ = nullptr;
   // The model.
