@@ -3568,6 +3568,21 @@
             ]
         }
     ],
+    "ChromeOSGlanceablesTimeManagementClassroomStudentData": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlanceablesTimeManagementClassroomStudentData"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSGlanceablesTimeManagementTasksView": [
         {
             "platforms": [

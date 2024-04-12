@@ -6,13 +6,16 @@
 
 #include <memory>
 #include <numeric>
+#include <vector>
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
+#include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/glanceables_controller.h"
+#include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -26,6 +29,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_model.h"
@@ -321,17 +325,20 @@ void GlanceableTrayBubbleView::InitializeContents() {
   ChangeAnchorAlignment(shelf_->alignment());
   ChangeAnchorRect(shelf_->GetSystemTrayAnchorRect());
 
-  if (!features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
-    auto* const classroom_client =
-        Shell::Get()->glanceables_controller()->GetClassroomClient();
-    if (should_show_non_calendar_glanceables && classroom_client) {
-      if (!classroom_bubble_student_view_) {
-        classroom_client->IsStudentRoleActive(base::BindOnce(
-            &GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded,
-            weak_ptr_factory_.GetWeakPtr()));
-      }
-    }
+  auto* const classroom_client =
+      Shell::Get()->glanceables_controller()->GetClassroomClient();
+  const bool is_classroom_enabled_via_flags =
+      features::IsGlanceablesTimeManagementClassroomStudentDataEnabled() ||
+      (features::AreGlanceablesV2Enabled() &&
+       !features::AreAnyGlanceablesTimeManagementViewsEnabled());
+  if (should_show_non_calendar_glanceables && is_classroom_enabled_via_flags &&
+      classroom_client) {
+    CHECK(!classroom_bubble_student_view_);
+    classroom_client->IsStudentRoleActive(base::BindOnce(
+        &GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded,
+        weak_ptr_factory_.GetWeakPtr()));
   }
+
   calendar_view_->ScrollViewToVisible();
 
   ClipScrollViewHeight(screen_max_height);
@@ -384,14 +391,25 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
     return;
   }
 
-  // Adds classroom bubble before `calendar_view_`.
-  MaybeCreateTimeManagementContainer();
-  classroom_bubble_student_view_ =
-      time_management_container_view_->AddChildView(
-          std::make_unique<GlanceablesClassroomStudentView>());
-  UpdateBubble();
+  if (features::AreGlanceablesV2Enabled() &&
+      !features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
+    // Adds classroom bubble before `calendar_view_`.
+    MaybeCreateTimeManagementContainer();
+    classroom_bubble_student_view_ =
+        time_management_container_view_->AddChildView(
+            std::make_unique<GlanceablesClassroomStudentView>());
+    UpdateBubble();
 
-  AdjustChildrenFocusOrder();
+    AdjustChildrenFocusOrder();
+  } else if (features::
+                 IsGlanceablesTimeManagementClassroomStudentDataEnabled()) {
+    Shell::Get()
+        ->glanceables_controller()
+        ->GetClassroomClient()
+        ->GetStudentAssignmentsWithApproachingDueDate(base::BindOnce(
+            &GlanceableTrayBubbleView::OnPotentialStudentAssignmentsLoaded,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
@@ -494,6 +512,16 @@ void GlanceableTrayBubbleView::MaybeCreateTimeManagementContainer() {
         AddChildViewAt(std::make_unique<TimeManagementContainer>(), 0);
     box_layout()->SetFlexForView(time_management_container_view_, 1);
   }
+}
+
+void GlanceableTrayBubbleView::OnPotentialStudentAssignmentsLoaded(
+    bool success,
+    std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments)
+    const {
+  auto* const controller = Shell::Get()->glanceables_controller();
+  RecordClassromInitialLoadTime(
+      /*first_occurrence=*/controller->bubble_shown_count() == 1,
+      base::TimeTicks::Now() - controller->last_bubble_show_time());
 }
 
 BEGIN_METADATA(GlanceableTrayBubbleView)

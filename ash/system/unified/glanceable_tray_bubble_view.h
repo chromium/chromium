@@ -5,6 +5,9 @@
 #ifndef ASH_SYSTEM_UNIFIED_GLANCEABLE_TRAY_BUBBLE_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_GLANCEABLE_TRAY_BUBBLE_VIEW_H_
 
+#include <memory>
+#include <vector>
+
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/system/screen_layout_observer.h"
@@ -29,6 +32,7 @@ struct TaskList;
 
 class CalendarView;
 class Shelf;
+struct GlanceablesClassroomAssignment;
 
 // The bubble associated with the `GlanceableTrayBubble`. This bubble is the
 // container for the child `tasks` and `classroom` glanceables.
@@ -90,6 +94,13 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
 
   // Creates `time_management_container_view_` if needed.
   void MaybeCreateTimeManagementContainer();
+
+  // Temporary method for `GlanceablesTimeManagementClassroomStudentData`
+  // feature.
+  void OnPotentialStudentAssignmentsLoaded(
+      bool success,
+      std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments)
+      const;
 
   const raw_ptr<Shelf> shelf_;
 
