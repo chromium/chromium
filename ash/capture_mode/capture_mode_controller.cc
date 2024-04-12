@@ -1330,7 +1330,7 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
   recording_service_remote_ = delegate_->LaunchRecordingService();
   recording_service_remote_.set_disconnect_handler(
       base::BindOnce(&CaptureModeController::OnRecordingServiceDisconnected,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 
   // Prepare the pending remotes of the client, the video capturer, and the
   // audio stream factory.
