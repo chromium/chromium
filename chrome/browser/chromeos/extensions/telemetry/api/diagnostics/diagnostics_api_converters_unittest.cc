@@ -285,6 +285,50 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
                 ButtonType::kVolumeDown);
 }
 
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertLedName) {
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kNone),
+            crosapi::TelemetryDiagnosticLedName::kUnmappedEnumField);
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kBattery),
+            crosapi::TelemetryDiagnosticLedName::kBattery);
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kPower),
+            crosapi::TelemetryDiagnosticLedName::kPower);
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kAdapter),
+            crosapi::TelemetryDiagnosticLedName::kAdapter);
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kLeft),
+            crosapi::TelemetryDiagnosticLedName::kLeft);
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kRight),
+            crosapi::TelemetryDiagnosticLedName::kRight);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertLedColor) {
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kNone),
+            crosapi::TelemetryDiagnosticLedColor::kUnmappedEnumField);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kRed),
+            crosapi::TelemetryDiagnosticLedColor::kRed);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kGreen),
+            crosapi::TelemetryDiagnosticLedColor::kGreen);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kBlue),
+            crosapi::TelemetryDiagnosticLedColor::kBlue);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kYellow),
+            crosapi::TelemetryDiagnosticLedColor::kYellow);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kWhite),
+            crosapi::TelemetryDiagnosticLedColor::kWhite);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kAmber),
+            crosapi::TelemetryDiagnosticLedColor::kAmber);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertLedLitUpState) {
+  EXPECT_EQ(ConvertLedLitUpState(cx_diag::LedLitUpState::kNone),
+            crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+                kUnmappedEnumField);
+  EXPECT_EQ(ConvertLedLitUpState(cx_diag::LedLitUpState::kCorrectColor),
+            crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+                kCorrectColor);
+  EXPECT_EQ(
+      ConvertLedLitUpState(cx_diag::LedLitUpState::kNotLitUp),
+      crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::kNotLitUp);
+}
+
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertRoutineArgumentsUnionErrorWithMultipleNonnullFields) {
   auto args_union = cx_diag::CreateRoutineArgumentsUnion();
@@ -365,12 +409,39 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithLedLitUpArgs) {
+  auto args = cx_diag::CreateLedLitUpRoutineArguments();
+  args.name = cx_diag::LedName::kBattery;
+  args.color = cx_diag::LedColor::kRed;
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.led_lit_up = std::move(args);
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  ASSERT_TRUE(result.value()->is_led_lit_up());
+  EXPECT_EQ(result.value()->get_led_lit_up()->name,
+            crosapi::TelemetryDiagnosticLedName::kBattery);
+  EXPECT_EQ(result.value()->get_led_lit_up()->color,
+            crosapi::TelemetryDiagnosticLedColor::kRed);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertRoutineInquiryReplyUnionAllFieldsAreNull) {
   auto result =
       ConvertRoutineInquiryReplyUnion(cx_diag::RoutineInquiryReplyUnion());
   ASSERT_TRUE(result.has_value());
   ASSERT_FALSE(result.value().is_null());
   EXPECT_TRUE(result.value()->is_unrecognizedReply());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineInquiryReplyUnionSuccessWithCheckLedLitUpState) {
+  auto reply_union = cx_diag::RoutineInquiryReplyUnion();
+  reply_union.check_led_lit_up_state = cx_diag::CheckLedLitUpStateReply();
+  auto result = ConvertRoutineInquiryReplyUnion(std::move(reply_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_check_led_lit_up_state());
 }
 
 }  // namespace chromeos::converters::diagnostics

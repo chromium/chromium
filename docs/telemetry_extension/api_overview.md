@@ -264,10 +264,20 @@ extension-event based interface in M119. The interface is described in
 | uuid | string | UUID of the routine that entered this state  |
 | percentage | number | Current percentage of the routine status (0-100) |
 
+### CheckLedLitUpStateInquiry
+Details regarding the inquiry to check the LED lit up state. Clients should
+inspect the target LED and report its state using `CheckLedLitUpStateReply`
+as the argument of `replyToRoutineInquiry`.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+
 ### RoutineInquiryUnion
 This is a union type. Exactly one field is set.
 
-Currently, there is no member type of `RoutineInquiryUnion`. It is represented as a empty dictionary.
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| checkLedLitUpState | CheckLedLitUpStateInquiry | See `CheckLedLitUpStateInquiry`. |
 
 ### RoutineInteractionUnion
 This is a union type. Exactly one field is set.
@@ -391,6 +401,49 @@ This is a union type. Exactly one field is set.
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 
+### Enum LedName
+| Property Name |
+------------ |
+| battery |
+| power |
+| adapter |
+| left |
+| right |
+
+### Enum LedColor
+| Property Name |
+------------ |
+| red |
+| green |
+| blue |
+| yellow |
+| white |
+| amber |
+
+### CreateLedLitUpRoutineArguments
+The routine lights up the target LED in the specified color and requests
+the caller to verify the change.
+
+This routine is supported if and only if the device has a ChromeOS EC.
+
+When an LED name or LED color is not supported by the EC, it will cause a
+routine exception (by emitting an `onRoutineException` event) at runtime.
+
+The routine proceeds with the following steps:
+1. Set the specified LED with the specified color and enter the waiting
+   state with the `CheckLedLitUpStateInquiry` interaction request.W
+2. After receiving `CheckLedLitUpStateReply` with the observed LED state,
+   the color of the LED will be reset (back to auto control). Notice that
+   there is no timeout so the routine will be in the waiting state
+   indefinitely.
+3. The routine passes if the LED is lit up in the correct color. Otherwise,
+   the routine fails.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| name | LedName | The LED to be lit up |
+| color | LedColor | The color to be lit up |
+
 ### CreateRoutineArgumentsUnion
 This is a union type. Exactly one field is set.
 
@@ -400,6 +453,7 @@ This is a union type. Exactly one field is set.
 | volumeButton | CreateVolumeButtonRoutineArguments | M125 | Arguments to create a volume button routine | None |
 | fan | CreateFanRoutineArguments | M125 | Arguments to create a fan routine | None |
 | networkBandwidth | CreateNetworkBandwidthRoutineArguments | M125 | Arguments to create a network bandwidth routine | `os.diagnostics.network_info_mlab` |
+| ledLitUp | CreateLedLitUpRoutineArguments | M125 | Arguments to create a LED lit up routine | None |
 
 ### CreateRoutineResponse
 | Property Name | Type | Description |
@@ -416,10 +470,24 @@ This is a union type. Exactly one field is set.
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that shall be created |
 
+### Enum LedLitUpState
+| Property Name |
+------------ |
+| correct_color |
+| not_lit_up |
+
+### CheckLedLitUpStateReply
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| state | LedLitUpState | State of the target LED |
+
 ### RoutineInquiryReplyUnion
 This is a union type. Exactly one field is set.
 
-Currently, there is no member type of `RoutineInquiryReplyUnion`. It is represented as a empty dictionary.
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that shall be replied |
+| checkLedLitUpState | CheckLedLitUpStateReply | Reply to a `CheckLedLitUpStateInquiry` |
 
 ### ReplyToRoutineInquiryRequest
 | Property Name | Type | Description |

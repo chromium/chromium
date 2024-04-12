@@ -201,11 +201,18 @@ namespace os.diagnostics {
     RoutineRunningInfoUnion? info;
   };
 
+  // Details regarding the inquiry to check the LED lit up state. Clients should
+  // inspect the target LED and report its state using `CheckLedLitUpStateReply`
+  // as the argument of `replyToRoutineInquiry`.
+  dictionary CheckLedLitUpStateInquiry {
+  };
+
   // This is a union type. Exactly one field should be set.
   //
-  // At time time, there is no member type. Member types will be added later.
-  // TODO(b/302279338): add inquiry for the LED routine.
+  // At this time, there is only one member type. Other member types will be
+  // added when needed.
   dictionary RoutineInquiryUnion {
+    CheckLedLitUpStateInquiry? checkLedLitUpState;
   };
 
   // This is a union type. Exactly one field should be set.
@@ -412,12 +419,52 @@ namespace os.diagnostics {
     double uploadSpeedKbps;
   };
 
+  enum LedName {
+    battery,
+    power,
+    adapter,
+    left,
+    right
+  };
+
+  enum LedColor {
+    red,
+    green,
+    blue,
+    yellow,
+    white,
+    amber
+  };
+
+  // The routine lights up the target LED in the specified color and requests
+  // the caller to verify the change.
+  //
+  // This routine is supported if and only if the device has a ChromeOS EC.
+  //
+  // When an LED name or LED color is not supported by the EC, it will cause a
+  // routine exception (by emitting an `onRoutineException` event) at runtime.
+  //
+  // The routine proceeds with the following steps:
+  // 1. Set the specified LED with the specified color and enter the waiting
+  //    state with the `CheckLedLitUpStateInquiry` interaction request.
+  // 2. After receiving `CheckLedLitUpStateReply` with the observed LED state,
+  //    the color of the LED will be reset (back to auto control). Notice that
+  //    there is no timeout so the routine will be in the waiting state
+  //    indefinitely.
+  // 3. The routine passes if the LED is lit up in the correct color. Otherwise,
+  //    the routine fails.
+  dictionary CreateLedLitUpRoutineArguments {
+    LedName name;
+    LedColor color;
+  };
+
   // This is a union type. Exactly one field should be set.
   [ignoreAdditionalProperties] dictionary CreateRoutineArgumentsUnion {
     CreateMemoryRoutineArguments? memory;
     CreateVolumeButtonRoutineArguments? volumeButton;
     CreateFanRoutineArguments? fan;
     CreateNetworkBandwidthRoutineArguments? networkBandwidth;
+    CreateLedLitUpRoutineArguments? ledLitUp;
   };
 
   // This is a union type. Exactly one field should be set.
@@ -462,11 +509,22 @@ namespace os.diagnostics {
 
   callback CancelRoutineCallback = void ();
 
+  enum LedLitUpState {
+    correct_color,
+    not_lit_up
+  };
+
+  dictionary CheckLedLitUpStateReply {
+    // State of the target LED.
+    LedLitUpState state;
+  };
+
   // This is a union type. Exactly one field should be set.
   //
-  // At time time, there is no member type. Member types will be added later.
-  // TODO(b/302279338): add reply for the LED routine.
+  // At this time, there is only one member type. Other member types will be
+  // added when needed.
   [ignoreAdditionalProperties] dictionary RoutineInquiryReplyUnion {
+    CheckLedLitUpStateReply? checkLedLitUpState;
   };
 
   dictionary ReplyToRoutineInquiryRequest {

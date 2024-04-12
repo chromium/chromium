@@ -105,9 +105,7 @@ cx_diag::RoutineInquiryUnion UncheckedConvertPtr(
       // Return an empty union as a safeguard.
       break;
     case crosapi::TelemetryDiagnosticRoutineInquiry::Tag::kCheckLedLitUpState:
-      // The LED routine is not in the extension IDL.
-      // TODO(b/302279338): update the conversion after the LED routine is added
-      // to web IDL.
+      inquiry.check_led_lit_up_state = cx_diag::CheckLedLitUpStateInquiry();
       break;
   }
   return inquiry;

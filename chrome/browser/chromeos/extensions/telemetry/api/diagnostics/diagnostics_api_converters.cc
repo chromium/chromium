@@ -74,6 +74,33 @@ bool PopulateNetworkBandwidthRoutineArguments(
   return true;
 }
 
+// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
+// `CreateLedLitUpRoutineArguments` instance. Returns whether `out` was
+// successfully populated.
+bool PopulateLedLitUpRoutineArguments(
+    const cx_diag::CreateLedLitUpRoutineArguments& cx_args,
+    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
+  auto args = crosapi::TelemetryDiagnosticLedLitUpRoutineArgument::New();
+  args->name = ConvertLedName(cx_args.name);
+  args->color = ConvertLedColor(cx_args.color);
+  out =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewLedLitUp(std::move(args));
+  return true;
+}
+
+// Populates a `TelemetryDiagnosticRoutineInquiryReplyPtr` object from a
+// `CheckLedLitUpStateReply` instance. Returns whether `out` was successfully
+// populated.
+bool PopulateCheckLedLitUpStateReply(
+    const cx_diag::CheckLedLitUpStateReply& cx_args,
+    crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr& out) {
+  auto args = crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::New();
+  args->state = ConvertLedLitUpState(cx_args.state);
+  out = crosapi::TelemetryDiagnosticRoutineInquiryReply::NewCheckLedLitUpState(
+      std::move(args));
+  return true;
+}
+
 }  // namespace
 
 bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
@@ -294,6 +321,58 @@ ConvertVolumeButtonRoutineButtonType(
   }
 }
 
+crosapi::TelemetryDiagnosticLedName ConvertLedName(cx_diag::LedName led_name) {
+  switch (led_name) {
+    case cx_diag::LedName::kNone:
+      return crosapi::TelemetryDiagnosticLedName::kUnmappedEnumField;
+    case cx_diag::LedName::kBattery:
+      return crosapi::TelemetryDiagnosticLedName::kBattery;
+    case cx_diag::LedName::kPower:
+      return crosapi::TelemetryDiagnosticLedName::kPower;
+    case cx_diag::LedName::kAdapter:
+      return crosapi::TelemetryDiagnosticLedName::kAdapter;
+    case cx_diag::LedName::kLeft:
+      return crosapi::TelemetryDiagnosticLedName::kLeft;
+    case cx_diag::LedName::kRight:
+      return crosapi::TelemetryDiagnosticLedName::kRight;
+  }
+}
+
+crosapi::TelemetryDiagnosticLedColor ConvertLedColor(
+    cx_diag::LedColor led_color) {
+  switch (led_color) {
+    case cx_diag::LedColor::kNone:
+      return crosapi::TelemetryDiagnosticLedColor::kUnmappedEnumField;
+    case cx_diag::LedColor::kRed:
+      return crosapi::TelemetryDiagnosticLedColor::kRed;
+    case cx_diag::LedColor::kGreen:
+      return crosapi::TelemetryDiagnosticLedColor::kGreen;
+    case cx_diag::LedColor::kBlue:
+      return crosapi::TelemetryDiagnosticLedColor::kBlue;
+    case cx_diag::LedColor::kYellow:
+      return crosapi::TelemetryDiagnosticLedColor::kYellow;
+    case cx_diag::LedColor::kWhite:
+      return crosapi::TelemetryDiagnosticLedColor::kWhite;
+    case cx_diag::LedColor::kAmber:
+      return crosapi::TelemetryDiagnosticLedColor::kAmber;
+  }
+}
+
+crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State ConvertLedLitUpState(
+    cx_diag::LedLitUpState led_lit_up_state) {
+  switch (led_lit_up_state) {
+    case cx_diag::LedLitUpState::kNone:
+      return crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+          kUnmappedEnumField;
+    case cx_diag::LedLitUpState::kCorrectColor:
+      return crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+          kCorrectColor;
+    case cx_diag::LedLitUpState::kNotLitUp:
+      return crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+          kNotLitUp;
+  }
+}
+
 std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
 ConvertRoutineArgumentsUnion(
     cx_diag::CreateRoutineArgumentsUnion extension_union) {
@@ -325,6 +404,12 @@ ConvertRoutineArgumentsUnion(
       return std::nullopt;
     }
   }
+  if (extension_union.led_lit_up) {
+    if (result || !PopulateLedLitUpRoutineArguments(
+                      extension_union.led_lit_up.value(), result)) {
+      return std::nullopt;
+    }
+  }
   if (result) {
     return result;
   }
@@ -338,10 +423,19 @@ ConvertRoutineArgumentsUnion(
 std::optional<crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr>
 ConvertRoutineInquiryReplyUnion(
     cx_diag::RoutineInquiryReplyUnion extension_union) {
-  // Currently, there is no field in `RoutineInquiryReplyUnion`.
-  // TODO(b/302279338): update the logic after the reply for the LED routine is
-  // added.
+  // Implementation note: when more than one field is set in `extension_union`,
+  // return std::nullopt because it is an invalid union.
 
+  crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr result;
+  if (extension_union.check_led_lit_up_state) {
+    if (result || !PopulateCheckLedLitUpStateReply(
+                      extension_union.check_led_lit_up_state.value(), result)) {
+      return std::nullopt;
+    }
+  }
+  if (result) {
+    return result;
+  }
   // When extension is newer than the brwowser, extension might pass in a
   // reply that cannot be recognized by the browser. For better developer
   // experience, don't treat it as an invalid union.

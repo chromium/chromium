@@ -80,6 +80,15 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
   EXPECT_EQ(result.info->network_bandwidth->speed_kbps, 100.0);
 }
 
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     RoutineInquiryCheckLedLitUpState) {
+  auto result = ConvertPtr(
+      crosapi::TelemetryDiagnosticRoutineInquiry::NewCheckLedLitUpState(
+          crosapi::TelemetryDiagnosticCheckLedLitUpStateInquiry::New()));
+
+  EXPECT_TRUE(result.check_led_lit_up_state.has_value());
+}
+
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingInfo) {
   constexpr char kMsg[] = "TEST";
   constexpr uint32_t kPercentage = 50;

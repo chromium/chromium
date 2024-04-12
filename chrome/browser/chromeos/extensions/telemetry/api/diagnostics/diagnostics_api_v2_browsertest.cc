@@ -1177,6 +1177,40 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateLedLitUpRoutineWithoutFeatureFlagUnrecognized) {
+  base::test::TestFuture<void> unrecognized_routine_created;
+  fake_service().SetOnCreateRoutineCalled(
+      base::BindLambdaForTesting([this, &unrecognized_routine_created]() {
+        auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
+            crosapi::TelemetryDiagnosticRoutineArgument::Tag::
+                kUnrecognizedArgument);
+        if (control) {
+          unrecognized_routine_created.SetValue();
+        }
+      }));
+
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function createLedLitUpRoutineUnrecognized() {
+        const result = await chrome.os.diagnostics.createRoutine({
+          ledLitUp: {
+            name: "battery",
+            color: "red",
+          },
+        });
+
+        chrome.test.assertTrue(result !== undefined);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+
+  EXPECT_TRUE(unrecognized_routine_created.Wait());
+}
+
 class PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest
     : public TelemetryExtensionDiagnosticsApiV2BrowserTest {
  public:
@@ -1324,7 +1358,11 @@ IN_PROC_BROWSER_TEST_F(
 
             await chrome.os.diagnostics.replyToRoutineInquiry({
               uuid: response.uuid,
-              reply: {},
+              reply: {
+                checkLedLitUpState: {
+                  state: "correct_color",
+                }
+              },
             });
 
             chrome.test.succeed();
@@ -1342,7 +1380,56 @@ IN_PROC_BROWSER_TEST_F(
 
   auto reply = on_reply_to_inquiry.Take();
   ASSERT_TRUE(reply);
-  EXPECT_TRUE(reply->is_unrecognizedReply());
+  ASSERT_TRUE(reply->is_check_led_lit_up_state());
+  EXPECT_EQ(reply->get_check_led_lit_up_state()->state,
+            crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+                kCorrectColor);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest,
+    CreateLedLitUpRoutineWithFeatureFlagSuccess) {
+  base::test::TestFuture<void> led_routine_created;
+  fake_service().SetOnCreateRoutineCalled(
+      base::BindLambdaForTesting([this, &led_routine_created]() {
+        auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
+            crosapi::TelemetryDiagnosticRoutineArgument::Tag::kLedLitUp);
+        ASSERT_TRUE(control);
+        if (control) {
+          led_routine_created.SetValue();
+        }
+      }));
+
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+       async function createRoutine() {
+        let resolver;
+        // Set later once the routine was created.
+        var uuid = new Promise((resolve) => {
+          resolver = resolve;
+        });
+
+        chrome.os.diagnostics.onRoutineInitialized.addListener(
+          async (status) => {
+          chrome.test.assertEq(status.uuid, await uuid);
+          chrome.test.succeed();
+        });
+
+        const response = await chrome.os.diagnostics.createRoutine({
+          ledLitUp: {
+            name: 'battery',
+            color: 'red',
+          },
+        });
+        chrome.test.assertTrue(response !== undefined);
+        resolver(response.uuid);
+      }
+    ]);
+  )");
+
+  EXPECT_TRUE(led_routine_created.Wait());
 }
 
 }  // namespace chromeos
