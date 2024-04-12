@@ -4,26 +4,101 @@
 
 #include "chrome/browser/ui/user_education/recent_session_policy.h"
 
+#include <optional>
+
 #include "base/dcheck_is_on.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chrome/browser/user_education/recent_session_tracker.h"
+#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 
-RecentSessionPolicyImpl::RecentSessionPolicyImpl(
-    const UsageThresholds& thresholds)
-    : thresholds_(thresholds) {
-  CHECK(!thresholds_.empty());
-  if (DCHECK_IS_ON()) {
-    for (size_t i = 1; i < thresholds_.size(); ++i) {
-      CHECK_GT(thresholds_[i].count, thresholds_[i - 1].count)
-          << "Threshold values are in the wrong order; values should go from "
-             "smallest to largest.";
-      CHECK_GT(thresholds_[i].period, thresholds_[i - 1].period)
-          << "Threshold periods are in the wrong order; values should go from "
-             "shortest to longest period.";
+namespace {
+
+constexpr int kMaxRecords = RecentSessionTracker::kMaxRecentSessionRecords;
+
+std::optional<int> GetActivePeriods(const RecentSessionData& recent_sessions,
+                                    int num_periods,
+                                    int period_length_in_days) {
+  const base::Time end =
+      (recent_sessions.recent_session_start_times.front() + base::Days(1))
+          .LocalMidnight();
+  const base::Time start =
+      end - base::Days(num_periods * period_length_in_days);
+  if (recent_sessions.enabled_time > start) {
+    return std::nullopt;
+  }
+
+  const base::TimeDelta period_length = base::Days(period_length_in_days);
+  std::vector<bool> active_periods(num_periods);
+  for (const auto& start_time : recent_sessions.recent_session_start_times) {
+    if (start_time < start) {
+      continue;
     }
+    if (start_time >= end) {
+      active_periods.back() = true;
+      continue;
+    }
+    const size_t index = (start_time - start) / period_length;
+    active_periods[index] = true;
+  }
+  return std::count(active_periods.begin(), active_periods.end(), true);
+}
+
+std::optional<int> ValueOrNull(int value) {
+  return value ? std::make_optional(value) : std::nullopt;
+}
+
+}  // namespace
+
+std::optional<int> RecentSessionPolicyImpl::SessionCountConstraint::GetCount(
+    const RecentSessionData& recent_sessions) const {
+  const base::Time start =
+      recent_sessions.recent_session_start_times.front() - base::Days(days_);
+  if (recent_sessions.enabled_time > start) {
+    return std::nullopt;
+  }
+  int count = 0;
+  for (const auto& start_time : recent_sessions.recent_session_start_times) {
+    if (start_time >= start) {
+      ++count;
+    }
+  }
+  return count;
+}
+
+std::optional<int> RecentSessionPolicyImpl::ActiveDaysConstraint::GetCount(
+    const RecentSessionData& recent_sessions) const {
+  return GetActivePeriods(recent_sessions, days_, 1);
+}
+
+std::optional<int> RecentSessionPolicyImpl::ActiveWeeksConstraint::GetCount(
+    const RecentSessionData& recent_sessions) const {
+  return GetActivePeriods(recent_sessions, weeks_, 7);
+}
+
+RecentSessionPolicyImpl::ConstraintInfo::ConstraintInfo() = default;
+RecentSessionPolicyImpl::ConstraintInfo::ConstraintInfo(
+    std::unique_ptr<Constraint> constraint_,
+    std::string histogram_name_,
+    std::optional<int> histogram_max_,
+    std::optional<int> low_usage_max_)
+    : constraint(std::move(constraint_)),
+      histogram_name(std::move(histogram_name_)),
+      histogram_max(histogram_max_),
+      low_usage_max(low_usage_max_) {}
+RecentSessionPolicyImpl::ConstraintInfo::ConstraintInfo(
+    ConstraintInfo&&) noexcept = default;
+RecentSessionPolicyImpl::ConstraintInfo&
+RecentSessionPolicyImpl::ConstraintInfo::operator=(ConstraintInfo&&) noexcept =
+    default;
+RecentSessionPolicyImpl::ConstraintInfo::~ConstraintInfo() = default;
+
+RecentSessionPolicyImpl::RecentSessionPolicyImpl(ConstraintInfos constraints)
+    : constraints_(std::move(constraints)) {
+  CHECK(!constraints_.empty());
+  for (const auto& constraint : constraints_) {
+    CHECK(constraint.constraint);
   }
 }
 
@@ -31,101 +106,57 @@ RecentSessionPolicyImpl::~RecentSessionPolicyImpl() = default;
 
 void RecentSessionPolicyImpl::RecordRecentUsageMetrics(
     const RecentSessionData& recent_sessions) {
-  const auto counts = GetThresholdCounts(recent_sessions);
-  constexpr int kMaxValue = RecentSessionTracker::kMaxRecentSessionRecords;
-
-  // Record counts in the smallest threshold.
-  if (counts[0]) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("UserEducation.Session.ShortTermCount",
-                                *counts[0], 1, kMaxValue + 1, kMaxValue);
-  }
-
-  // Record counts in the largest threshold.
-  const size_t last_idx = counts.size() - 1;
-  if (counts[last_idx]) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("UserEducation.Session.LongTermCount",
-                                *counts[last_idx], 1, kMaxValue + 1, kMaxValue);
+  for (const auto& constraint : constraints_) {
+    if (!constraint.histogram_name.empty()) {
+      if (const auto result =
+              constraint.constraint->GetCount(recent_sessions)) {
+        base::UmaHistogramExactLinear(
+            constraint.histogram_name.c_str(), *result,
+            constraint.histogram_max.value_or(kMaxRecords));
+      }
+    }
   }
 }
 
 bool RecentSessionPolicyImpl::ShouldEnableLowUsagePromoMode(
     const RecentSessionData& recent_sessions) const {
-  const auto counts = GetThresholdCounts(recent_sessions);
-  CHECK_EQ(counts.size(), thresholds_.size());
-  for (size_t i = 0; i < counts.size(); ++i) {
-    if (!counts[i] || *counts[i] >= thresholds_[i].count) {
-      return false;
+  for (const auto& constraint : constraints_) {
+    if (const auto limit = constraint.low_usage_max) {
+      const auto result = constraint.constraint->GetCount(recent_sessions);
+      if (!result || *result > *limit) {
+        return false;
+      }
     }
   }
   return true;
 }
 
-std::vector<std::optional<int>> RecentSessionPolicyImpl::GetThresholdCounts(
-    const RecentSessionData& recent_sessions) const {
-  CHECK(recent_sessions.enabled_time);
-
-  // Assume that the most recent session is approximately "now", since this
-  // method should only be checked on a new session.
-  const base::Time latest_session =
-      recent_sessions.recent_session_start_times.front();
-
-  // The total number of sessions within the current threshold.
-  // Since threshold lengths and limits are monotonically increasing, a single
-  // count may be kept.
-  int count = 0;
-
-  // Which threshold is currently being checked.
-  auto threshold = thresholds_.begin();
-
-  // Helper function to determine when to store a value for each threshold and
-  // when to store "no value because the minimum time for this threshold has not
-  // been met".
-  const auto get_count_value = [valid_period = latest_session -
-                                               *recent_sessions.enabled_time,
-                                &count](const UsageThreshold& threshold) {
-    return threshold.period <= valid_period ? std::make_optional(count)
-                                            : std::nullopt;
-  };
-
-  // Iterate through the sessions from most recent to least recent, recording
-  // counts when thresholds are crossed.
-  std::vector<std::optional<int>> counts;
-  for (const auto& start_time : recent_sessions.recent_session_start_times) {
-    // If the current threshold duration is exceeded, store the count and
-    // advance to the next threshold (at least until there are no more
-    // thresholds).
-    const auto age = latest_session - start_time;
-    while (threshold != thresholds_.end() && age > threshold->period) {
-      counts.emplace_back(get_count_value(*threshold));
-      ++threshold;
-    }
-    if (threshold == thresholds_.end()) {
-      break;
-    }
-    // The session fits within the current threshold so advance the count.
-    ++count;
-  }
-
-  // If the sessions were exhausted without completing the thresholds, the count
-  // continues to apply to the remaining thresholds, since they are guaranteed
-  // to be of longer duration.
-  for (; threshold != thresholds_.end(); ++threshold) {
-    counts.emplace_back(get_count_value(*threshold));
-  }
-  return counts;
-}
-
 // static
-RecentSessionPolicyImpl::UsageThresholds
-RecentSessionPolicyImpl::GetDefaultThresholds() {
-  const auto short_period = base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kAllowRecentSessionTracking, "short_period", base::Days(7));
-  const auto short_period_count = base::GetFieldTrialParamByFeatureAsInt(
-      kAllowRecentSessionTracking, "short_period_count", 2);
-  const auto long_period = base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kAllowRecentSessionTracking, "long_period", base::Days(21));
-  const auto long_period_count = base::GetFieldTrialParamByFeatureAsInt(
-      kAllowRecentSessionTracking, "long_period_count", 5);
-  return {UsageThreshold{short_period_count, short_period},
-          UsageThreshold{long_period_count, long_period}};
+RecentSessionPolicyImpl::ConstraintInfos
+RecentSessionPolicyImpl::GetDefaultConstraints() {
+  static constexpr int kShortTermDays = 7;
+  static constexpr int kLongTermWeeks = 4;
+  static constexpr int kLongTermDays = kLongTermWeeks * 7;
+  const int max_active_weeks = base::GetFieldTrialParamByFeatureAsInt(
+      kAllowRecentSessionTracking, "max_active_weeks", 2);
+  const int max_active_days = base::GetFieldTrialParamByFeatureAsInt(
+      kAllowRecentSessionTracking, "max_active_days", 3);
+  const int max_weekly_sessions = base::GetFieldTrialParamByFeatureAsInt(
+      kAllowRecentSessionTracking, "max_weekly_sessions", 0);
+  const int max_monthly_sessions = base::GetFieldTrialParamByFeatureAsInt(
+      kAllowRecentSessionTracking, "max_monthly_sessions", 0);
+  ConstraintInfos result;
+  result.emplace_back(std::make_unique<ActiveDaysConstraint>(kShortTermDays),
+                      "UserEducation.Session.RecentActiveDays", kShortTermDays,
+                      ValueOrNull(max_active_days));
+  result.emplace_back(std::make_unique<ActiveWeeksConstraint>(kLongTermWeeks),
+                      "UserEducation.Session.RecentActiveWeeks", kLongTermWeeks,
+                      ValueOrNull(max_active_weeks));
+  result.emplace_back(std::make_unique<SessionCountConstraint>(kShortTermDays),
+                      "UserEducation.Session.ShortTermCount",
+                      kShortTermDays + 1, ValueOrNull(max_weekly_sessions));
+  result.emplace_back(std::make_unique<SessionCountConstraint>(kLongTermDays),
+                      "UserEducation.Session.LongTermCount", kMaxRecords,
+                      ValueOrNull(max_monthly_sessions));
+  return result;
 }

@@ -29,26 +29,89 @@ class RecentSessionPolicy {
 };
 
 // Uses a series of thresholds to determine if this is a high- or low-usage
-// profile/installation.
+// profile/installation. Default is to follow guidance from UX research, but the
+// parameters are adjustable via trade study parameters.
 class RecentSessionPolicyImpl : public RecentSessionPolicy {
  public:
-  // Describes a limit on number of sessions in a particular period of time,
-  // at or above which this is not a "low-usage" browser. The form is
-  // "N usages in time delta T".
-  struct UsageThreshold {
-    int count = 0;
-    base::TimeDelta period;
-  };
-  using UsageThresholds = std::vector<UsageThreshold>;
+  // Represents one element of a logging and/or low-usage-detection policy.
+  class Constraint {
+   public:
+    virtual ~Constraint() = default;
 
-  // Creates a policy with the given thresholds.
-  // The thresholds should be sorted in order of time delta, ascending; for
-  // example, "2 in one week, 5 in one month".
-  //
-  // Due to limitations in the histogram system, only the first and last
-  // thresholds will be logged.
+    // Analyzes `recent_sessions` and returns a count.
+    // If there is insufficient data to produce a count, returns std::nullopt.
+    virtual std::optional<int> GetCount(
+        const RecentSessionData& recent_sessions) const = 0;
+  };
+
+  // Counts the number of sessions in the given number of `days`. Does not
+  // care about calendar days; this is just 24-hour periods.
+  class SessionCountConstraint : public Constraint {
+   public:
+    explicit SessionCountConstraint(int days) : days_(days) {}
+    ~SessionCountConstraint() override = default;
+    std::optional<int> GetCount(
+        const RecentSessionData& recent_sessions) const override;
+
+   private:
+    const int days_;
+  };
+
+  // Counts the number of active weeks in the past number of `weeks`. Uses the
+  // last seven calendar days (including today).
+  class ActiveWeeksConstraint : public Constraint {
+   public:
+    explicit ActiveWeeksConstraint(int weeks) : weeks_(weeks) {}
+    ~ActiveWeeksConstraint() override = default;
+    std::optional<int> GetCount(
+        const RecentSessionData& recent_sessions) const override;
+
+   private:
+    const int weeks_;
+  };
+
+  // Counts the number of active days in the past number of `days`. Uses
+  // calendar days, including today.
+  class ActiveDaysConstraint : public Constraint {
+   public:
+    explicit ActiveDaysConstraint(int days) : days_(days) {}
+    ~ActiveDaysConstraint() override = default;
+    std::optional<int> GetCount(
+        const RecentSessionData& recent_sessions) const override;
+
+   private:
+    const int days_;
+  };
+
+  // Contains data about the various constraints.
+  struct ConstraintInfo {
+    ConstraintInfo();
+    ConstraintInfo(std::unique_ptr<Constraint> constraint,
+                   std::string histogram_name,
+                   std::optional<int> histogram_max,
+                   std::optional<int> low_usage_max);
+    ConstraintInfo(ConstraintInfo&&) noexcept;
+    ConstraintInfo& operator=(ConstraintInfo&&) noexcept;
+    ~ConstraintInfo();
+
+    // The constraint itself.
+    std::unique_ptr<Constraint> constraint;
+
+    // The histogram to log, if any.
+    std::string histogram_name;
+
+    // The max of the histogram; if zero, a default value is used.
+    std::optional<int> histogram_max;
+
+    // The threshold above which the current user is not eligible for low usage
+    // promo mode. If not specified, only histograms will be emitted.
+    std::optional<int> low_usage_max;
+  };
+  using ConstraintInfos = std::vector<ConstraintInfo>;
+
+  // Creates a policy with the given constraints.
   explicit RecentSessionPolicyImpl(
-      const UsageThresholds& thresholds = GetDefaultThresholds());
+      ConstraintInfos constraints = GetDefaultConstraints());
   RecentSessionPolicyImpl(const RecentSessionPolicyImpl&) = delete;
   void operator=(const RecentSessionPolicyImpl&) = delete;
   ~RecentSessionPolicyImpl() override;
@@ -59,23 +122,17 @@ class RecentSessionPolicyImpl : public RecentSessionPolicy {
   bool ShouldEnableLowUsagePromoMode(
       const RecentSessionData& recent_sessions) const override;
 
-  UsageThresholds thresholds_for_testing() const { return thresholds_; }
-  void set_thresholds_for_testing(UsageThresholds thresholds) {
-    CHECK(!thresholds.empty());
-    thresholds_ = thresholds;
+  void set_constraints_for_testing(ConstraintInfos constraints) {
+    CHECK(!constraints.empty());
+    constraints_ = std::move(constraints);
   }
 
  private:
-  static UsageThresholds GetDefaultThresholds();
+  // Gets a set of constraints with parameters read from the feature flag, or
+  // sensible defaults.
+  static ConstraintInfos GetDefaultConstraints();
 
-  // Gets the counts of sessions under each threshold.
-  //
-  // If the feature has not been active long enough to satisfy the threshold,
-  // instead stores `std::nullopt` for tha threshold.
-  std::vector<std::optional<int>> GetThresholdCounts(
-      const RecentSessionData& recent_sessions) const;
-
-  UsageThresholds thresholds_;
+  ConstraintInfos constraints_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_RECENT_SESSION_POLICY_H_

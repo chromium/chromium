@@ -695,8 +695,32 @@ rolled out.
   <owner>frizzle-team@google.com</owner>
   <summary>
     When a new User Education session starts, records the number of recent
-    sessions in the &quot;long-term&quot; window, which defaults to 21 days.
-    This helps us understand how frequently new sessions are triggered.
+    sessions in the &quot;long-term&quot; window, which is 28 days. This helps
+    us understand how frequently new sessions are triggered.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.RecentActiveDays" units="count"
+    expires_after="2024-09-21">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    When a new User Education session starts, records the number of days with at
+    least one session in the past week. This helps us understand how frequently
+    our product is being used in alignment with standard Google user
+    segmentation metrics.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.RecentActiveWeeks" units="count"
+    expires_after="2024-09-21">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    When a new User Education session starts, records the number of weeks with
+    at least one session in the past month. This helps us understand how
+    frequently our product is being used in alignment with standard Google user
+    segmentation metrics.
   </summary>
 </histogram>
 
@@ -706,8 +730,8 @@ rolled out.
   <owner>frizzle-team@google.com</owner>
   <summary>
     When a new User Education session starts, records the number of recent
-    sessions in the &quot;short-term&quot; window, which defaults to 7 days.
-    This helps us understand how frequently new sessions are triggered.
+    sessions in the &quot;short-term&quot; window, which is 7 days. This helps
+    us understand how frequently new sessions are triggered.
   </summary>
 </histogram>
 

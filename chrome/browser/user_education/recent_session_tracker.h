@@ -23,8 +23,8 @@
 // of `BrowserFeaturePromoStorageService`.
 class RecentSessionTracker {
  public:
-  static constexpr int kMaxRecentSessionRecords = 12;
-  static constexpr base::TimeDelta kMaxRecentSessionRetention = base::Days(60);
+  static constexpr int kMaxRecentSessionRecords = 30;
+  static constexpr base::TimeDelta kMaxRecentSessionRetention = base::Days(30);
 
   // Callback that provides updated recent session data to observers.
   using RecentSessionsUpdatedCallback =
