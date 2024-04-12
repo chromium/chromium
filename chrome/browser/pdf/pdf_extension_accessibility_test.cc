@@ -254,8 +254,14 @@ class PDFExtensionAccessibilityTestWithOopifOverride
   bool UseOopif() const override { return GetParam(); }
 };
 
+// The test is flaky on Mac: https://crbug.com/334099836.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PdfAccessibility DISABLED_PdfAccessibility
+#else
+#define MAYBE_PdfAccessibility PdfAccessibility
+#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
-                       PdfAccessibility) {
+                       MAYBE_PdfAccessibility) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 
   ASSERT_TRUE(
@@ -271,8 +277,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
+// The test is flaky on Mac: https://crbug.com/334099836.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PdfAccessibilityEnableLater DISABLED_PdfAccessibilityEnableLater
+#else
+#define MAYBE_PdfAccessibilityEnableLater PdfAccessibilityEnableLater
+#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
-                       PdfAccessibilityEnableLater) {
+                       MAYBE_PdfAccessibilityEnableLater) {
   // In this test, load the PDF file first, with accessibility off.
   ASSERT_TRUE(
       LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
@@ -323,8 +335,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
-// Flaky on ChromiumOS MSan. See https://crbug.com/1484869
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// Flaky on ChromiumOS MSan. See https://crbug.com/1484869.
+// Flaky on Mac: https://crbug.com/334099836.
+#if (BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)) || BUILDFLAG(IS_MAC)
 #define MAYBE_PdfAccessibilityWordBoundaries \
   DISABLED_PdfAccessibilityWordBoundaries
 #else
