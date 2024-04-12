@@ -401,6 +401,15 @@ void OneDriveUploadHandler::ShowIOTaskError(
           copy ? IDS_OFFICE_UPLOAD_ERROR_FILE_NOT_EXIST_TO_COPY
                : IDS_OFFICE_UPLOAD_ERROR_FILE_NOT_EXIST_TO_MOVE);
       break;
+    case base::File::FILE_ERROR_INVALID_URL:
+      if (copy) {
+        upload_result = OfficeFilesUploadResult::kCopyOperationError;
+      } else {
+        upload_result = OfficeFilesUploadResult::kMoveOperationError;
+      }
+      error_message =
+          l10n_util::GetStringUTF8(IDS_OFFICE_UPLOAD_ERROR_REJECTED);
+      break;
     default:
       if (copy) {
         upload_result = OfficeFilesUploadResult::kCopyOperationError;

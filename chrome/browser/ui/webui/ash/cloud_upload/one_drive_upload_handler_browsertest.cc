@@ -483,6 +483,53 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
       OfficeFilesUploadResult::kUploadNotStartedReauthenticationRequired, 1);
 }
 
+// Tests that an appropriate error is shown when INVALID_URL is returned
+// (matches to a rejected request in ODFS).
+IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, FailToUploadDueToInvalidUrl) {
+  SetUpObservers();
+  SetUpMyFiles();
+  SetUpODFS();
+  // Set up upload to fail with INVALID_URL.
+  provided_file_system_->SetCreateFileError(
+      base::File::Error::FILE_ERROR_INVALID_URL);
+  // Set up a test source file.
+  const std::string test_file_name = "text.docx";
+  FileSystemURL source_file_url = CopyTestFile(test_file_name, my_files_dir_);
+
+  // Start the upload workflow and end once the error notification is shown.
+  std::u16string message;
+  SetOnNotificationDisplayedCallback(base::BindLambdaForTesting(
+      [&](const message_center::Notification& notification) {
+        message = notification.message();
+        EndWait();
+      }));
+  SetUpRunLoop(/*conditions_to_end_wait=*/2);
+  OneDriveUploadHandler::Upload(
+      profile(), source_file_url,
+      base::BindOnce(
+          &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
+          base::Unretained(this),
+          /*expected_task_result=*/OfficeTaskResult::kFailedToUpload),
+      cloud_open_metrics_ref_);
+  Wait();
+  EXPECT_EQ(
+      message,
+      u"Microsoft OneDrive rejected the request. Please try again later.");
+
+  // Check that the source file still exists only at the intended source
+  // location and did not get uploaded to ODFS.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
+    CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+  }
+
+  histogram_.ExpectTotalCount(kOneDriveMoveErrorMetricName, 1);
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
+                                OfficeFilesUploadResult::kMoveOperationError,
+                                1);
+}
+
 class OneDriveUploadHandlerTest_ReauthEnabled
     : public OneDriveUploadHandlerTest {
  public:

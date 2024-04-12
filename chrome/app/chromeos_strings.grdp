@@ -7330,6 +7330,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_UPLOAD_ERROR_FILE_NOT_EXIST_TO_COPY" desc="Error message for uploading office files indicating that the file does not exist so it cannot be copied.">
     The file can't be copied because it no longer exists
   </message>
+  <message name="IDS_OFFICE_UPLOAD_ERROR_REJECTED" desc="Error message for uploading office files indicating that the upload is rejected by the remote service.">
+    Microsoft OneDrive rejected the request. Please try again later.
+  </message>
   <message name="IDS_OFFICE_UPLOAD_ERROR_GENERIC" desc="Generic error message for uploading office files.">
     Something went wrong. Try again.
   </message>
