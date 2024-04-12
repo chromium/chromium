@@ -29,6 +29,10 @@ class StatelessAV1Picture : public AV1Picture {
  private:
   ~StatelessAV1Picture() override {}
 
+  scoped_refptr<AV1Picture> CreateDuplicate() override {
+    return new StatelessAV1Picture(dec_surface_);
+  }
+
   scoped_refptr<StatelessDecodeSurface> dec_surface_;
 };
 
