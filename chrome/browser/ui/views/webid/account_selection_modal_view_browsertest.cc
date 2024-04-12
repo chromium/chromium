@@ -132,7 +132,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_FALSE(dialog()->GetOkButton());
     EXPECT_FALSE(dialog()->GetCancelButton());
 
-    // Order: Brand icon, title, potentially body
+    // Order: Brand icon, title, body
     std::vector<std::string> expected_class_names = {"View", "Label", "Label"};
     EXPECT_THAT(GetChildClassNames(header),
                 testing::ElementsAreArray(expected_class_names));
@@ -301,10 +301,12 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                    supports_add_account, /*expect_back_button=*/false);
   }
 
-  void TestRequestPermission() {
+  void TestRequestPermission(
+      content::IdentityRequestAccount::LoginState login_state =
+          content::IdentityRequestAccount::LoginState::kSignUp) {
     const std::string kAccountSuffix = "suffix";
-    content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
-        kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
+    content::IdentityRequestAccount account(
+        CreateTestIdentityRequestAccount(kAccountSuffix, login_state));
     CreateAndShowRequestPermissionDialog(
         account, content::IdentityProviderMetadata(), kTermsOfServiceUrl);
 
@@ -315,14 +317,25 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     PerformHeaderChecks(children[0]);
 
     views::View* single_account_chooser = children[1];
-    // Order: Account row, disclosure text
-    ASSERT_EQ(single_account_chooser->children().size(), 2u);
+    // Order: Account row, potentially disclosure text
+    std::vector<std::string> expected_class_names = {"View"};
+    bool is_returning_user =
+        login_state == content::IdentityRequestAccount::LoginState::kSignIn;
+    // For non-returning users, we expect a StyledLabel which contains the
+    // disclosure text to obtain user permission.
+    if (!is_returning_user) {
+      expected_class_names.emplace_back("StyledLabel");
+    }
+    EXPECT_THAT(GetChildClassNames(single_account_chooser),
+                testing::ElementsAreArray(expected_class_names));
 
     CheckNonHoverableAccountRow(single_account_chooser->children()[0],
                                 kAccountSuffix);
-    CheckDisclosureText(single_account_chooser->children()[1],
-                        /*expect_terms_of_service=*/true,
-                        /*expect_privacy_policy=*/true);
+    if (!is_returning_user) {
+      CheckDisclosureText(single_account_chooser->children()[1],
+                          /*expect_terms_of_service=*/true,
+                          /*expect_privacy_policy=*/true);
+    }
     CheckButtonRow(children[2], /*expect_continue_button=*/true,
                    /*expect_add_account_button=*/false,
                    /*expect_back_button=*/true);
@@ -466,4 +479,20 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        MultipleAccountsUseOtherAccount) {
   TestMultipleAccounts(/*supports_add_account=*/true);
+}
+
+// Tests that the request permission dialog is rendered correctly, when it is
+// shown after the loading dialog for a non-returning user.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       RequestPermissionAfterLoadingNonReturningUser) {
+  TestLoadingDialog();
+  TestRequestPermission(content::IdentityRequestAccount::LoginState::kSignUp);
+}
+
+// Tests that the request permission dialog is rendered correctly, when it is
+// shown after the loading dialog for a returning user.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       RequestPermissionAfterLoadingReturningUser) {
+  TestLoadingDialog();
+  TestRequestPermission(content::IdentityRequestAccount::LoginState::kSignIn);
 }

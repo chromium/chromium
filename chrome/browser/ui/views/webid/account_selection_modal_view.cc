@@ -536,11 +536,12 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
                           idp_display_data.idp_metadata.brand_icon_url,
                           kModalIdpIconSize,
                           /*should_circle_crop=*/false);
-  account_chooser_ =
-      AddChildView(CreateSingleAccountChooser(idp_display_data, account,
-                                              /*should_hover=*/false,
-                                              /*show_disclosure_label=*/true,
-                                              /*show_separator=*/false));
+  account_chooser_ = AddChildView(CreateSingleAccountChooser(
+      idp_display_data, account,
+      /*should_hover=*/false,
+      /*show_disclosure_label=*/account.login_state ==
+          Account::LoginState::kSignUp,
+      /*show_separator=*/false));
   AddChildView(CreateButtonRow(
       base::BindRepeating(
           &AccountSelectionViewBase::Observer::OnAccountSelected,
