@@ -46,6 +46,14 @@ std::optional<crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr>
 ConvertRoutineArgumentsUnion(
     chromeos::api::os_diagnostics::CreateRoutineArgumentsUnion extension_union);
 
+// Converts the web IDL union to the Mojo union type. Returns std::nullopt when
+// the conversion fails. Returns an `unrecognizedReply` if all fields in
+// `extension_union` are null to handle the case when extension is newer than
+// the browser.
+std::optional<crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr>
+ConvertRoutineInquiryReplyUnion(
+    chromeos::api::os_diagnostics::RoutineInquiryReplyUnion extension_union);
+
 }  // namespace chromeos::converters::diagnostics
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_DIAGNOSTICS_API_CONVERTERS_H_

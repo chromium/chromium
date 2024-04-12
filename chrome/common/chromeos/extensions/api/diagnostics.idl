@@ -201,9 +201,26 @@ namespace os.diagnostics {
     RoutineRunningInfoUnion? info;
   };
 
+  // This is a union type. Exactly one field should be set.
+  //
+  // At time time, there is no member type. Member types will be added later.
+  // TODO(b/302279338): add inquiry for the LED routine.
+  dictionary RoutineInquiryUnion {
+  };
+
+  // This is a union type. Exactly one field should be set.
+  //
+  // At this time, there is only one member type. Other member types will be
+  // added later.
+  dictionary RoutineInteractionUnion {
+    // Routine inquiries need to be replied to with the `replyToRoutineInquiry`
+    // method.
+    RoutineInquiryUnion? inquiry;
+  };
+
   enum RoutineWaitingReason {
     waiting_to_be_scheduled,
-    waiting_user_input
+    waiting_for_interaction
   };
 
   dictionary RoutineWaitingInfo {
@@ -213,6 +230,10 @@ namespace os.diagnostics {
     RoutineWaitingReason? reason;
     // Additional information, may be used to pass instruction or explanation.
     DOMString? message;
+    // The requested interaction. When set, clients must respond to the
+    // interaction for the routine to proceed. See `RoutineInteractionUnion` to
+    // learn about how to respond to each interaction.
+    RoutineInteractionUnion? interaction;
   };
 
   enum ExceptionReason {
@@ -441,6 +462,21 @@ namespace os.diagnostics {
 
   callback CancelRoutineCallback = void ();
 
+  // This is a union type. Exactly one field should be set.
+  //
+  // At time time, there is no member type. Member types will be added later.
+  // TODO(b/302279338): add reply for the LED routine.
+  [ignoreAdditionalProperties] dictionary RoutineInquiryReplyUnion {
+  };
+
+  dictionary ReplyToRoutineInquiryRequest {
+    DOMString uuid;
+    // The reply to an inquiry in the routine waiting info.
+    RoutineInquiryReplyUnion reply;
+  };
+
+  callback ReplyToRoutineInquiryCallback = void ();
+
   interface Functions {
     static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
 
@@ -559,6 +595,13 @@ namespace os.diagnostics {
     static void cancelRoutine(
         CancelRoutineRequest request,
         CancelRoutineCallback callback);
+
+    // Replies to a routine inquiry. This can only work when the routine with
+    // `UUID` is in the waiting state and has set an inquiry in the waiting
+    // info.
+    static void replyToRoutineInquiry(
+        ReplyToRoutineInquiryRequest request,
+        ReplyToRoutineInquiryCallback callback);
 
     // ----------------- DEPRECATED DIAGNOSTICS API V2 -----------------
     // TODO(b/331540565): Remove legacy APIs.

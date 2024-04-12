@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/fake_diagnostic_routines_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -1152,7 +1153,27 @@ IN_PROC_BROWSER_TEST_F(
         chrome.test.succeed();
       }
     ]);
+  )");
+}
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       ReplyToRoutineInquiryWithoutFeatureFlagError) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function replyToRoutineInquiryFail() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.replyToRoutineInquiry({
+            uuid: '123',
+            reply: {},
+          });
+        }, [],
+          'chrome.os.diagnostics.replyToRoutineInquiry ' +
+          'is not a function'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
   )");
 }
 
@@ -1207,7 +1228,6 @@ IN_PROC_BROWSER_TEST_F(
           resolver = resolve;
         });
 
-
         let onInitCalled = false;
         chrome.os.diagnostics.onRoutineInitialized.addListener(
           async (status) => {
@@ -1240,6 +1260,89 @@ IN_PROC_BROWSER_TEST_F(
       }
     ]);
   )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest,
+    ReplyToRoutineInquiryUnknownUuidError) {
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function replyToRoutineInquiryFail() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.replyToRoutineInquiry({
+              uuid: '123',
+              reply: {},
+            }),
+            'Error: Unknown routine id.'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest,
+    ReplyToRoutineInquirySuccess) {
+  base::test::TestFuture<crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr>
+      on_reply_to_inquiry;
+
+  fake_service().SetOnCreateRoutineCalled(
+      base::BindLambdaForTesting([this, &on_reply_to_inquiry]() {
+        auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
+            crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory);
+        ASSERT_TRUE(control);
+
+        control->SetOnReplyToInquiryCalled(
+            on_reply_to_inquiry.GetRepeatingCallback());
+      }));
+
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+       async function createMemoryRoutine() {
+        let resolver;
+        // Set later once the routine was created.
+        var uuid = new Promise((resolve) => {
+          resolver = resolve;
+        });
+
+        chrome.os.diagnostics.onRoutineInitialized.addListener(
+          async (status) => {
+            chrome.test.assertEq(status.uuid, await uuid);
+          }
+        );
+
+        // Only resolve the test once we got the final event.
+        chrome.os.diagnostics.onRoutineRunning.addListener(
+          async (status) => {
+            chrome.test.assertEq(status.uuid, await uuid);
+
+            await chrome.os.diagnostics.replyToRoutineInquiry({
+              uuid: response.uuid,
+              reply: {},
+            });
+
+            chrome.test.succeed();
+          }
+        );
+
+        const response = await chrome.os.diagnostics.createMemoryRoutine({});
+        chrome.test.assertTrue(response !== undefined);
+        resolver(response.uuid);
+
+        await chrome.os.diagnostics.startRoutine({ uuid: response.uuid });
+      }
+    ]);
+  )");
+
+  auto reply = on_reply_to_inquiry.Take();
+  ASSERT_TRUE(reply);
+  EXPECT_TRUE(reply->is_unrecognizedReply());
 }
 
 }  // namespace chromeos

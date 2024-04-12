@@ -709,6 +709,36 @@ void OsDiagnosticsCancelRoutineFunction::RunIfAllowed() {
   Respond(NoArguments());
 }
 
+// OsDiagnosticsReplyToRoutineInquiryFunction ----------------------------------
+
+void OsDiagnosticsReplyToRoutineInquiryFunction::RunIfAllowed() {
+  auto params = cx_diag::ReplyToRoutineInquiry::Params::Create(args());
+  if (!params.has_value()) {
+    Respond(BadMessage());
+    return;
+  }
+
+  std::optional<crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr>
+      mojo_reply = converters::diagnostics::ConvertRoutineInquiryReplyUnion(
+          std::move(params->request.reply));
+  if (!mojo_reply.has_value()) {
+    RespondWithError("Inquiry reply is invalid.");
+    return;
+  }
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  bool result = routines_manager->ReplyToRoutineInquiryForExtension(
+      extension_id(), base::Uuid::ParseLowercase(params.value().request.uuid),
+      std::move(mojo_reply.value()));
+
+  if (!result) {
+    RespondWithError("Unknown routine id.");
+    return;
+  }
+
+  Respond(NoArguments());
+}
+
 // OsDiagnosticsIsRoutineArgumentSupportedFunction -----------------------
 
 void OsDiagnosticsIsRoutineArgumentSupportedFunction::RunIfAllowed() {

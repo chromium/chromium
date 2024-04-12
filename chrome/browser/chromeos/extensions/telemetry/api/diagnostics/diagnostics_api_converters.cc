@@ -335,4 +335,18 @@ ConvertRoutineArgumentsUnion(
       false);
 }
 
+std::optional<crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr>
+ConvertRoutineInquiryReplyUnion(
+    cx_diag::RoutineInquiryReplyUnion extension_union) {
+  // Currently, there is no field in `RoutineInquiryReplyUnion`.
+  // TODO(b/302279338): update the logic after the reply for the LED routine is
+  // added.
+
+  // When extension is newer than the brwowser, extension might pass in a
+  // reply that cannot be recognized by the browser. For better developer
+  // experience, don't treat it as an invalid union.
+  return crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+      false);
+}
+
 }  // namespace chromeos::converters::diagnostics

@@ -36,6 +36,12 @@ api::os_diagnostics::NetworkBandwidthRoutineRunningInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfoPtr
         input);
 
+api::os_diagnostics::RoutineInquiryUnion UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticRoutineInquiryPtr input);
+
+api::os_diagnostics::RoutineInteractionUnion UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticRoutineInteractionPtr input);
+
 api::os_diagnostics::RoutineWaitingInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticRoutineStateWaitingPtr input,
     base::Uuid uuid,

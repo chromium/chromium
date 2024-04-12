@@ -177,6 +177,29 @@ void DiagnosticRoutineManager::CancelRoutineForExtension(
       });
 }
 
+bool DiagnosticRoutineManager::ReplyToRoutineInquiryForExtension(
+    const extensions::ExtensionId& extension_id,
+    const base::Uuid& routine_id,
+    crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr reply) {
+  auto it = routines_per_extension_.find(extension_id);
+  if (it == routines_per_extension_.end()) {
+    return false;
+  }
+
+  auto routine = std::find_if(
+      it->second.begin(), it->second.end(),
+      [routine_id](const std::unique_ptr<DiagnosticRoutine>& routine) {
+        return routine->uuid() == routine_id;
+      });
+
+  if (routine == it->second.end()) {
+    return false;
+  }
+
+  routine->get()->GetRemote()->ReplyToInquiry(std::move(reply));
+  return true;
+}
+
 void DiagnosticRoutineManager::IsRoutineArgumentSupported(
     crosapi::TelemetryDiagnosticRoutineArgumentPtr arg,
     base::OnceCallback<void(crosapi::TelemetryExtensionSupportStatusPtr)>

@@ -214,7 +214,7 @@ extension-event based interface in M119. The interface is described in
 | Property Name |
 ------------ |
 | waiting_to_be_scheduled |
-| waiting_user_input |
+| waiting_for_interaction |
 
 ### Enum ExceptionReason
 | Property Name |
@@ -264,6 +264,18 @@ extension-event based interface in M119. The interface is described in
 | uuid | string | UUID of the routine that entered this state  |
 | percentage | number | Current percentage of the routine status (0-100) |
 
+### RoutineInquiryUnion
+This is a union type. Exactly one field is set.
+
+Currently, there is no member type of `RoutineInquiryUnion`. It is represented as a empty dictionary.
+
+### RoutineInteractionUnion
+This is a union type. Exactly one field is set.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| inquiry | RoutineInquiryUnion | Routine inquiries need to be replied to with the `replyToRoutineInquiry` method |
+
 ### RoutineWaitingInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
@@ -271,6 +283,7 @@ extension-event based interface in M119. The interface is described in
 | percentage | number | Current percentage of the routine status (0-100) |
 | reason | RoutineWaitingReason | Reason why the routine waits |
 | message | string | Additional information, may be used to pass instruction or explanation |
+| interaction | RoutineInteractionUnion | The requested interaction. When set, clients must respond to the interaction for the routine to proceed. See `RoutineInteractionUnion` to learn about how to respond to each interaction. |
 
 ### RoutineFinishedInfo
 | Property Name | Type | Description |
@@ -403,6 +416,17 @@ This is a union type. Exactly one field is set.
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that shall be created |
 
+### RoutineInquiryReplyUnion
+This is a union type. Exactly one field is set.
+
+Currently, there is no member type of `RoutineInquiryReplyUnion`. It is represented as a empty dictionary.
+
+### ReplyToRoutineInquiryRequest
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that shall be replied |
+| reply | RoutineInquiryReplyUnion | Reply to an inquiry in the routine waiting info |
+
 ### CancelRoutineRequest
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
@@ -415,6 +439,7 @@ This is a union type. Exactly one field is set.
 | createRoutine | (args: CreateRoutineArgumentsUnion) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M125 | Create a routine with `CreateRoutineArgumentsUnion`. Exactly one routine should be set in `CreateRoutineArgumentsUnion`. |
 | isRoutineArgumentSupported | (args: CreateRoutineArgumentsUnion) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M125 | Checks whether a certain `CreateRoutineArgumentsUnion` is supported on the platform. Exactly one routine should be set in `CreateRoutineArgumentsUnion`. |
 | startRoutine | (params: StartRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 | Starts execution of a routine. This can only be expected to work after `onRoutineInitialized` was emitted for the routine with `UUID`. |
+| replyToRoutineInquiry | (params: ReplyToRoutineInquiryRequest) => Promise<void\> | `os.diagnostics` | M125 | Replies to a routine inquiry. This can only work when the routine with `UUID` is in the waiting state and has set an inquiry in the waiting info |
 | cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 | Stops executing the routine identified by `UUID` and removes all related resources from the system. |
 | createMemoryRoutine | (args: CreateMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 | (Deprecated in M125, use `createRoutine` with `memory` arg) Create a memory routine. |
 | createFanRoutine | (args: CreateFanRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 | (Deprecated in M125, use `createRoutine` with `fan` arg) Create a fan routine. |

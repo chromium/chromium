@@ -294,6 +294,18 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function replyToRoutineInquiry() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.replyToRoutineInquiry({
+              uuid: '123',
+              reply: {},
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.replyToRoutineInquiry. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runAcPowerRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runAcPowerRoutine(

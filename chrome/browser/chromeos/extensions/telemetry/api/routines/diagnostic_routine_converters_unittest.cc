@@ -89,6 +89,10 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingInfo) {
   input->reason = crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
       kWaitingToBeScheduled;
   input->message = kMsg;
+  input->interaction =
+      crosapi::TelemetryDiagnosticRoutineInteraction::NewInquiry(
+          crosapi::TelemetryDiagnosticRoutineInquiry::NewUnrecognizedInquiry(
+              false));
 
   auto result = ConvertPtr(std::move(input), kUuid, kPercentage);
 
@@ -102,6 +106,9 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingInfo) {
 
   ASSERT_TRUE(result.percentage.has_value());
   EXPECT_EQ(static_cast<uint32_t>(*result.percentage), kPercentage);
+
+  ASSERT_TRUE(result.interaction.has_value());
+  EXPECT_TRUE(result.interaction.value().inquiry.has_value());
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
@@ -396,7 +403,7 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingReason) {
 
   EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
                         kWaitingForInteraction),
-            cx_diag::RoutineWaitingReason::kWaitingUserInput);
+            cx_diag::RoutineWaitingReason::kWaitingForInteraction);
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterTestItemEnum) {

@@ -364,4 +364,13 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   EXPECT_TRUE(result.value()->is_fan());
 }
 
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineInquiryReplyUnionAllFieldsAreNull) {
+  auto result =
+      ConvertRoutineInquiryReplyUnion(cx_diag::RoutineInquiryReplyUnion());
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_unrecognizedReply());
+}
+
 }  // namespace chromeos::converters::diagnostics

@@ -406,4 +406,38 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, CancelRoutineSuccess) {
       IsUuidRegisteredForExtension(kExtensionId1, create_result.value()));
 }
 
+TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+       ReplyToRoutineInquiryNoExtension) {
+  EXPECT_FALSE(routine_manager().ReplyToRoutineInquiryForExtension(
+      kExtensionId1, base::Uuid::ParseLowercase(kUnmappedUuid),
+      crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+          true)));
+}
+
+TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+       ReplyToRoutineInquiryNoRoutine) {
+  CreateExtension(kExtensionId1, {kPwaPattern1});
+
+  EXPECT_FALSE(routine_manager().ReplyToRoutineInquiryForExtension(
+      kExtensionId1, base::Uuid::ParseLowercase(kUnmappedUuid),
+      crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+          true)));
+}
+
+TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+       ReplyToRoutineInquirySuccess) {
+  CreateExtension(kExtensionId1, {kPwaPattern1});
+  OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
+                                          /*cert_status=*/net::OK);
+
+  auto create_result =
+      routine_manager().CreateRoutine(kExtensionId1, GetMemoryArgument());
+  EXPECT_TRUE(create_result.has_value());
+
+  EXPECT_TRUE(routine_manager().ReplyToRoutineInquiryForExtension(
+      kExtensionId1, create_result.value(),
+      crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+          true)));
+}
+
 }  // namespace chromeos

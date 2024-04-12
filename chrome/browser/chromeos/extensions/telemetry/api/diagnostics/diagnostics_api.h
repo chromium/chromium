@@ -488,6 +488,17 @@ class OsDiagnosticsCancelRoutineFunction : public DiagnosticsApiFunctionBaseV2 {
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsReplyToRoutineInquiryFunction
+    : public DiagnosticsApiFunctionBaseV2 {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.replyToRoutineInquiry",
+                             OS_DIAGNOSTICS_REPLYTOROUTINEINQUIRY)
+ private:
+  ~OsDiagnosticsReplyToRoutineInquiryFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsIsRoutineArgumentSupportedFunction
     : public DiagnosticsApiFunctionBaseV2 {
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.isRoutineArgumentSupported",

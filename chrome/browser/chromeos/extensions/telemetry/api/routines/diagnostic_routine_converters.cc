@@ -96,6 +96,39 @@ cx_diag::NetworkBandwidthRoutineRunningInfo UncheckedConvertPtr(
   return info;
 }
 
+cx_diag::RoutineInquiryUnion UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticRoutineInquiryPtr input) {
+  cx_diag::RoutineInquiryUnion inquiry;
+  switch (input->which()) {
+    case crosapi::TelemetryDiagnosticRoutineInquiry::Tag::kUnrecognizedInquiry:
+      // This indicates version skew on Mojo interfaces, which is unexpected.
+      // Return an empty union as a safeguard.
+      break;
+    case crosapi::TelemetryDiagnosticRoutineInquiry::Tag::kCheckLedLitUpState:
+      // The LED routine is not in the extension IDL.
+      // TODO(b/302279338): update the conversion after the LED routine is added
+      // to web IDL.
+      break;
+  }
+  return inquiry;
+}
+
+cx_diag::RoutineInteractionUnion UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticRoutineInteractionPtr input) {
+  cx_diag::RoutineInteractionUnion interaction;
+  switch (input->which()) {
+    case crosapi::TelemetryDiagnosticRoutineInteraction::Tag::
+        kUnrecognizedInteraction:
+      // This indicates version skew on Mojo interfaces, which is unexpected.
+      // Return an empty union as a safeguard.
+      break;
+    case crosapi::TelemetryDiagnosticRoutineInteraction::Tag::kInquiry:
+      interaction.inquiry = ConvertPtr(std::move(input->get_inquiry()));
+      break;
+  }
+  return interaction;
+}
+
 cx_diag::RoutineWaitingInfo UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticRoutineStateWaitingPtr input,
     base::Uuid uuid,
@@ -103,8 +136,9 @@ cx_diag::RoutineWaitingInfo UncheckedConvertPtr(
   cx_diag::RoutineWaitingInfo result;
   result.uuid = uuid.AsLowercaseString();
   result.reason = Convert(input->reason);
-  // TODO(b/309781398): add conversion for interaction when it is exposed to the
-  // web IDL.
+  if (input->interaction) {
+    result.interaction = ConvertPtr(std::move(input->interaction));
+  }
   result.message = input->message;
   result.percentage = percentage;
   return result;
@@ -242,7 +276,7 @@ cx_diag::RoutineWaitingReason Convert(
       return cx_diag::RoutineWaitingReason::kWaitingToBeScheduled;
     case crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
         kWaitingForInteraction:
-      return cx_diag::RoutineWaitingReason::kWaitingUserInput;
+      return cx_diag::RoutineWaitingReason::kWaitingForInteraction;
   }
   NOTREACHED_NORETURN();
 }
