@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "chromeos/dbus/power_manager/thermal.pb.h"
 #include "dbus/mock_bus.h"
@@ -179,6 +180,10 @@ class TestObserver : public PowerManagerClient::Observer {
   power_manager::BatterySaverModeState battery_saver_mode_state() const {
     return battery_saver_mode_state_;
   }
+  const power_manager::AmbientLightSensorChange&
+  last_ambient_light_sensor_change() const {
+    return last_ambient_light_sensor_change_;
+  }
 
   void set_should_block_suspend(bool take_callback) {
     should_block_suspend_ = take_callback;
@@ -228,6 +233,10 @@ class TestObserver : public PowerManagerClient::Observer {
   void RestartRequested(power_manager::RequestRestartReason reason) override {
     num_restart_requested_++;
   }
+  void AmbientLightSensorEnabledChanged(
+      const power_manager::AmbientLightSensorChange& change) override {
+    last_ambient_light_sensor_change_ = change;
+  }
 
  private:
   raw_ptr<PowerManagerClient> client_;  // Not owned.
@@ -256,6 +265,9 @@ class TestObserver : public PowerManagerClient::Observer {
 
   // Battery saver mode state.
   power_manager::BatterySaverModeState battery_saver_mode_state_;
+
+  // Last-set ambient light sensor change.
+  power_manager::AmbientLightSensorChange last_ambient_light_sensor_change_;
 };
 
 // Stub implementation of PowerManagerClient::RenderProcessManagerDelegate.
@@ -916,6 +928,66 @@ TEST_F(PowerManagerClientTest, HasAmbientLightSensor) {
       base::BindOnce([](std::optional<bool> has_ambient_light_sensor) {
         EXPECT_FALSE(has_ambient_light_sensor.value());
       }));
+}
+
+// Tests that observers are notified about changes to the Ambient Light Sensor
+// status.
+TEST_F(PowerManagerClientTest, AmbientLightSensorEnabledChanged) {
+  TestObserver observer(client_);
+
+  EXPECT_FALSE(
+      observer.last_ambient_light_sensor_change().has_sensor_enabled());
+  EXPECT_FALSE(observer.last_ambient_light_sensor_change().has_cause());
+
+  {
+    // When PowerManagerClient receives a signal saying that the Ambient Light
+    // Sensor is disabled, observers should be notified.
+    power_manager::AmbientLightSensorChange proto;
+    proto.set_sensor_enabled(false);
+    proto.set_cause(
+        power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+
+    dbus::Signal signal(kInterface,
+                        power_manager::kAmbientLightSensorEnabledChangedSignal);
+    dbus::MessageWriter(&signal).AppendProtoAsArrayOfBytes(proto);
+    EmitSignal(&signal);
+
+    EXPECT_TRUE(
+        observer.last_ambient_light_sensor_change().has_sensor_enabled());
+    EXPECT_EQ(proto.sensor_enabled(),
+              observer.last_ambient_light_sensor_change().sensor_enabled());
+
+    // The change cause should be USER_REQUEST_SETTINGS_APP because the change
+    // was triggered via the PowerManagerClient function.
+    EXPECT_TRUE(observer.last_ambient_light_sensor_change().has_cause());
+    EXPECT_EQ(proto.cause(),
+              observer.last_ambient_light_sensor_change().cause());
+  }
+
+  {
+    // When PowerManagerClient receives a signal saying that the Ambient Light
+    // Sensor is enabled, observers should be notified.
+    power_manager::AmbientLightSensorChange proto;
+    proto.set_sensor_enabled(true);
+    proto.set_cause(
+        power_manager::
+            AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+    dbus::Signal signal(kInterface,
+                        power_manager::kAmbientLightSensorEnabledChangedSignal);
+    dbus::MessageWriter(&signal).AppendProtoAsArrayOfBytes(proto);
+    EmitSignal(&signal);
+
+    EXPECT_TRUE(
+        observer.last_ambient_light_sensor_change().has_sensor_enabled());
+    EXPECT_EQ(proto.sensor_enabled(),
+              observer.last_ambient_light_sensor_change().sensor_enabled());
+
+    // The change cause should be USER_REQUEST_SETTINGS_APP because the change
+    // was triggered via the PowerManagerClient function.
+    EXPECT_TRUE(observer.last_ambient_light_sensor_change().has_cause());
+    EXPECT_EQ(proto.cause(),
+              observer.last_ambient_light_sensor_change().cause());
+  }
 }
 
 }  // namespace chromeos

@@ -20,6 +20,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 
 namespace chromeos {
 
@@ -151,7 +152,25 @@ void FakePowerManagerClient::GetScreenBrightnessPercent(
 }
 
 void FakePowerManagerClient::SetAmbientLightSensorEnabled(bool enabled) {
+  // If this is a no-op, don't emit a signal.
+  if (is_ambient_light_sensor_enabled_ == enabled) {
+    return;
+  }
+
   is_ambient_light_sensor_enabled_ = enabled;
+
+  power_manager::AmbientLightSensorChange change;
+  change.set_sensor_enabled(is_ambient_light_sensor_enabled_);
+  // Changes to the Ambient Light Sensor status that are triggered via the
+  // PowerManagerClient are assumed to be caused by the Settings app.
+  change.set_cause(
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &FakePowerManagerClient::SendAmbientLightSensorEnabledChanged,
+          weak_ptr_factory_.GetWeakPtr(), change));
 }
 
 void FakePowerManagerClient::HasAmbientLightSensor(
@@ -534,6 +553,13 @@ void FakePowerManagerClient::SendScreenBrightnessChanged(
     const power_manager::BacklightBrightnessChange& change) {
   for (auto& observer : observers_)
     observer.ScreenBrightnessChanged(change);
+}
+
+void FakePowerManagerClient::SendAmbientLightSensorEnabledChanged(
+    const power_manager::AmbientLightSensorChange& proto) {
+  for (auto& observer : observers_) {
+    observer.AmbientLightSensorEnabledChanged(proto);
+  }
 }
 
 void FakePowerManagerClient::SendKeyboardBrightnessChanged(

@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -32,6 +33,10 @@ class TestObserver : public PowerManagerClient::Observer {
   const power_manager::BatterySaverModeState& battery_saver_state() const {
     return battery_saver_state_;
   }
+  const power_manager::AmbientLightSensorChange&
+  last_ambient_light_sensor_change() const {
+    return last_ambient_light_sensor_change_;
+  }
 
   void ClearProps() { props_.Clear(); }
 
@@ -46,10 +51,16 @@ class TestObserver : public PowerManagerClient::Observer {
     battery_saver_state_ = proto;
   }
 
+  void AmbientLightSensorEnabledChanged(
+      const power_manager::AmbientLightSensorChange& change) override {
+    last_ambient_light_sensor_change_ = change;
+  }
+
  private:
   int num_power_changed_;
   power_manager::PowerSupplyProperties props_;
   power_manager::BatterySaverModeState battery_saver_state_;
+  power_manager::AmbientLightSensorChange last_ambient_light_sensor_change_;
 };
 
 void SetTestProperties(power_manager::PowerSupplyProperties* props) {
@@ -279,6 +290,66 @@ TEST(FakePowerManagerClientTest, BatterySaverState) {
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(called);
   }
+}
+
+// Test that observers are notified asynchronously when the Ambient Light Sensor
+// status changes.
+TEST(FakePowerManagerClientTest, AmbientLightSensorEnabled) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
+  FakePowerManagerClient client;
+  TestObserver test_observer;
+
+  client.AddObserver(&test_observer);
+
+  // The Ambient Light Sensor is enabled by default.
+  EXPECT_FALSE(
+      test_observer.last_ambient_light_sensor_change().has_sensor_enabled());
+  EXPECT_FALSE(test_observer.last_ambient_light_sensor_change().has_cause());
+
+  // Turn the Ambient Light Sensor off, and check that observers are notified
+  // asynchronously.
+  client.SetAmbientLightSensorEnabled(false);
+
+  // The Ambient Light Sensor should not be disabled synchronously, since the
+  // real client waits for a response from Power Manager.
+  EXPECT_FALSE(
+      test_observer.last_ambient_light_sensor_change().has_sensor_enabled());
+  EXPECT_FALSE(test_observer.last_ambient_light_sensor_change().has_cause());
+  base::RunLoop().RunUntilIdle();
+
+  // The Ambient Light Sensor should be disabled now.
+  EXPECT_TRUE(
+      test_observer.last_ambient_light_sensor_change().has_sensor_enabled());
+  EXPECT_FALSE(
+      test_observer.last_ambient_light_sensor_change().sensor_enabled());
+  // The change cause should be USER_REQUEST_SETTINGS_APP because the change was
+  // triggered via the PowerManagerClient function.
+  EXPECT_TRUE(test_observer.last_ambient_light_sensor_change().has_cause());
+  EXPECT_EQ(
+      test_observer.last_ambient_light_sensor_change().cause(),
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+
+  // Turn the Ambient Light Sensor on, and check that observers are notified
+  // asynchronously.
+  client.SetAmbientLightSensorEnabled(true);
+
+  // The Ambient Light Sensor should not be enabled synchronously, since the
+  // real client waits for a response from Power Manager.
+  EXPECT_TRUE(
+      test_observer.last_ambient_light_sensor_change().has_sensor_enabled());
+  EXPECT_FALSE(
+      test_observer.last_ambient_light_sensor_change().sensor_enabled());
+  base::RunLoop().RunUntilIdle();
+
+  // The Ambient Light Sensor should be enabled now.
+  EXPECT_TRUE(
+      test_observer.last_ambient_light_sensor_change().sensor_enabled());
+  // The cause should be the same as before.
+  EXPECT_TRUE(test_observer.last_ambient_light_sensor_change().has_cause());
+  EXPECT_EQ(
+      test_observer.last_ambient_light_sensor_change().cause(),
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
 }
 
 }  // namespace chromeos

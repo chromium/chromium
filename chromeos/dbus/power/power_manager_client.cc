@@ -201,6 +201,8 @@ class PowerManagerClientImpl : public PowerManagerClient {
     const std::pair<const char*, SignalMethod> kSignalMethods[] = {
         {power_manager::kScreenBrightnessChangedSignal,
          &PowerManagerClientImpl::ScreenBrightnessChangedReceived},
+        {power_manager::kAmbientLightSensorEnabledChangedSignal,
+         &PowerManagerClientImpl::AmbientLightSensorEnabledChangedReceived},
         {power_manager::kAmbientColorTemperatureChangedSignal,
          &PowerManagerClientImpl::AmbientColorTemperatureChangedReceived},
         {power_manager::kKeyboardBrightnessChangedSignal,
@@ -801,6 +803,22 @@ class PowerManagerClientImpl : public PowerManagerClient {
                      << ": cause " << proto.cause();
     for (auto& observer : observers_)
       observer.ScreenBrightnessChanged(proto);
+  }
+
+  void AmbientLightSensorEnabledChangedReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    power_manager::AmbientLightSensorChange proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      POWER_LOG(ERROR) << "Unable to decode protocol buffer from "
+                       << power_manager::kAmbientLightSensorEnabledChangedSignal
+                       << " signal";
+      return;
+    }
+    POWER_LOG(DEBUG) << "Ambient Light Sensor enabled changed to "
+                     << proto.sensor_enabled() << ": cause " << proto.cause();
+    for (auto& observer : observers_) {
+      observer.AmbientLightSensorEnabledChanged(proto);
+    }
   }
 
   void AmbientColorTemperatureChangedReceived(dbus::Signal* signal) {

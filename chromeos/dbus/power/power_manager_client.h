@@ -18,6 +18,7 @@
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/battery_saver.pb.h"
 #include "chromeos/dbus/power_manager/charge_history_state.pb.h"
 #include "chromeos/dbus/power_manager/peripheral_battery_status.pb.h"
@@ -84,6 +85,10 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
     // Called when the screen brightness is changed.
     virtual void ScreenBrightnessChanged(
         const power_manager::BacklightBrightnessChange& change) {}
+
+    // Called when the ambient light sensor status changes.
+    virtual void AmbientLightSensorEnabledChanged(
+        const power_manager::AmbientLightSensorChange& change) {}
 
     // Called when the ambient light changed.
     virtual void AmbientColorChanged(const int32_t color_temperature) {}
