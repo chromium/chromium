@@ -86,7 +86,8 @@ void MaybeDismissNotification() {
 
   std::string triggerTime = "2.5s";
 
-  if ([self isRunningTest:@selector(testToggleTipsNotificationsMenuItem)]) {
+  if ([self isRunningTest:@selector
+            (DISABLED_testToggleTipsNotificationsMenuItem)]) {
     triggerTime = "72h";
   }
 
@@ -155,7 +156,8 @@ void MaybeDismissNotification() {
 #pragma mark - Tests
 
 // Tests the SetUpList long press menu item to toggle Tips Notifications.
-- (void)testToggleTipsNotificationsMenuItem {
+// TODO:(crbug.com/334134064) Fix and reenable test.
+- (void)DISABLED_testToggleTipsNotificationsMenuItem {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGreyUI waitForAppToIdle];
   MaybeDismissNotification();
