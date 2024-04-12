@@ -15,7 +15,7 @@ driver.get('http://www.google.com/xhtml')
 wait = WebDriverWait(driver, 10)
 wait.until(EC.visibility_of_element_located((By.NAME, 'q')))
 
-search_box = driver.find_element_by_name('q')
+search_box = driver.find_element(By.NAME, 'q')
 search_box.send_keys('searchTerm')
 search_box.submit()
 

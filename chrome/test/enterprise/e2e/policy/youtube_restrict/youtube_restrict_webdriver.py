@@ -6,6 +6,7 @@ import time
 
 from absl import app, flags
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 
 from test_util import create_chrome_webdriver
 
@@ -26,8 +27,8 @@ def main(argv):
       time.sleep(FLAGS.wait)
 
     print(
-        driver.find_element_by_xpath(
-            '//*[@id="header"]/ytd-text-header-renderer').text)
+        driver.find_element(By.XPATH,
+                            '//*[@id="header"]/ytd-text-header-renderer').text)
   except NoSuchElementException:
     print("Restricted text not found")
   finally:

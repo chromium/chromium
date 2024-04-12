@@ -6,7 +6,7 @@ import os
 
 from absl import app, flags
 from selenium import webdriver
-
+from selenium.webdriver.common.by import By
 from test_util import create_chrome_webdriver
 
 FLAGS = flags.FLAGS
@@ -34,11 +34,11 @@ def main(argv):
   try:
     # Verify User Data Dir in chrome://policy page
     driver.get(policy_url)
-    print(driver.find_element_by_css_selector('html').text.encode('utf-8'))
+    print(driver.find_element(By.CSS_SELECTOR, 'html').text.encode('utf-8'))
 
     # Verfiy User Data Dir used in chrome://version
     driver.get(version_url)
-    print("Profile path is " + driver.find_element_by_id("profile_path").text)
+    print("Profile path is " + driver.find_element(By.ID, "profile_path").text)
 
     # Verify if UserDataDir folder is created
     print("User data dir creation is " + str(os.path.isdir(FLAGS.user_data_dir)))

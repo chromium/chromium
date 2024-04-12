@@ -4,7 +4,7 @@
 
 import time
 from absl import app, flags
-
+from selenium.webdriver.common.by import By
 from test_util import create_chrome_webdriver
 
 FLAGS = flags.FLAGS
@@ -40,7 +40,7 @@ def main(argv):
     time.sleep(FLAGS.wait)
 
   if FLAGS.text_only:
-    print(driver.find_element_by_css_selector('html').text)
+    print(driver.find_element(By.CSS_SELECTOR, 'html').text)
   else:
     print(driver.page_source)
 
