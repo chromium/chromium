@@ -1868,6 +1868,10 @@ public class BidirectionalStreamTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onStreamReady_receivesSameStreamObject() {
         AtomicReference<BidirectionalStream> callbackStream = new AtomicReference<>();
         TestBidirectionalStreamCallback callback =
@@ -1887,6 +1891,10 @@ public class BidirectionalStreamTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onReadCompleted_receivesSameStreamObject() {
         AtomicReference<BidirectionalStream> callbackStream = new AtomicReference<>();
         TestBidirectionalStreamCallback callback =
@@ -1910,6 +1918,10 @@ public class BidirectionalStreamTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onWriteCompleted_receivesSameStreamObject() {
         AtomicReference<BidirectionalStream> callbackStream = new AtomicReference<>();
         TestBidirectionalStreamCallback callback =
@@ -1934,6 +1946,10 @@ public class BidirectionalStreamTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onResponseHeaders_receivesSameStreamObject() {
         AtomicReference<BidirectionalStream> callbackStream = new AtomicReference<>();
         TestBidirectionalStreamCallback callback =
@@ -1954,6 +1970,10 @@ public class BidirectionalStreamTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onResponseTrailersReceived_receivesSameStreamObject() {
         AtomicReference<BidirectionalStream> callbackStream = new AtomicReference<>();
         TestBidirectionalStreamCallback callback =
@@ -1976,6 +1996,10 @@ public class BidirectionalStreamTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onSucceeded_receivesSameStreamObject() {
         AtomicReference<BidirectionalStream> callbackStream = new AtomicReference<>();
         TestBidirectionalStreamCallback callback =
@@ -1995,6 +2019,10 @@ public class BidirectionalStreamTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onFailed_receivesSameStreamObject() {
         AtomicReference<BidirectionalStream> callbackStream = new AtomicReference<>();
         TestBidirectionalStreamCallback callback =
@@ -2018,6 +2046,10 @@ public class BidirectionalStreamTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallbackMethod_onCanceled_receivesSameStreamObject() {
         AtomicReference<BidirectionalStream> callbackStream = new AtomicReference<>();
         TestBidirectionalStreamCallback callback =
@@ -2057,6 +2089,10 @@ public class BidirectionalStreamTest {
     // object, it is an implicit expectation by our users that we should not break.
     // See b/328442628 for an example regression.
     @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "b/324583507: Unignore when requests in callbacks are == to the user held one.")
     public void testCallback_twoStreamsFromOneBuilder_receivesCorrectStreamObject() {
         AtomicReference<BidirectionalStream> onStreamReadyStream = new AtomicReference<>();
         AtomicReference<BidirectionalStream> onResponseHeadersStream = new AtomicReference<>();
