@@ -88,6 +88,7 @@ class SigninViewControllerDelegate {
   static SigninViewControllerDelegate* CreateManagedUserNoticeDelegate(
       Browser* browser,
       const AccountInfo& account_info,
+      bool is_oidc_account,
       bool force_new_profile,
       bool show_link_data_option,
       signin::SigninChoiceCallback callback);

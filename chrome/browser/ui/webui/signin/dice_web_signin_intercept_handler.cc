@@ -335,6 +335,7 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
     case WebSigninInterceptor::SigninInterceptionType::
         kEnterpriseAcceptManagement:
     case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
     case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
       NOTREACHED() << "This interception type is not handled by a bubble";
       return std::string();

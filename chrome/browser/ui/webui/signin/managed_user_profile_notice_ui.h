@@ -30,6 +30,7 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
     kEntepriseAccountSyncDisabled,
     kConsumerAccountSyncDisabled,
     kEnterpriseAccountCreation,
+    kEnterpriseOIDC
   };
 
   explicit ManagedUserProfileNoticeUI(content::WebUI* web_ui);

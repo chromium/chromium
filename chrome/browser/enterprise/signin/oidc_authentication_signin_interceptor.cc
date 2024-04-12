@@ -131,7 +131,7 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
   WebSigninInterceptor::SigninInterceptionType interception_type =
       switch_to_entry_
           ? WebSigninInterceptor::SigninInterceptionType::kProfileSwitch
-          : WebSigninInterceptor::SigninInterceptionType::kEnterprise;
+          : WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC;
   WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
       interception_type, AccountInfo(),
       identity_manager->FindExtendedAccountInfoByAccountId(

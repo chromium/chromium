@@ -78,6 +78,7 @@ class SigninViewControllerDelegateViews
   CreateManagedUserNoticeConfirmationWebView(
       Browser* browser,
       const AccountInfo& account_info,
+      bool is_oidc_account,
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
       signin::SigninChoiceCallback callback);

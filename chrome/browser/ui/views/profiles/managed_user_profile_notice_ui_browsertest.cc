@@ -239,7 +239,8 @@ class ManagedUserNoticeUIDialogPixelTest
 
     auto* controller = browser()->signin_view_controller();
     controller->ShowModalManagedUserNoticeDialog(
-        account_info, GetParam().profile_creation_required_by_policy,
+        account_info, /*is_oidc_account=*/false,
+        GetParam().profile_creation_required_by_policy,
         GetParam().show_link_data_checkbox, base::DoNothing());
 
     widget_waiter.WaitIfNeededAndGet();

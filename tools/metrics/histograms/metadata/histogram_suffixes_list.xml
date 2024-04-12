@@ -4161,6 +4161,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Sync" label="User has opted in to Sync."/>
   <affected-histogram name="Signin.InterceptResult.Enterprise"/>
   <affected-histogram name="Signin.InterceptResult.EnterpriseForced"/>
+  <affected-histogram name="Signin.InterceptResult.EnterpriseOIDC"/>
   <affected-histogram name="Signin.InterceptResult.MultiUser"/>
   <affected-histogram name="Signin.InterceptResult.Switch"/>
 </histogram_suffixes>
@@ -4169,6 +4170,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="ChromeSignin" label="ChromeSignin bubble."/>
   <suffix name="Enterprise" label="Enterprise bubble."/>
   <suffix name="EnterpriseForced" label="Enterprise dialog."/>
+  <suffix name="EnterpriseOIDC" label="Enterprise dialog for OIDC signin."/>
   <suffix name="MultiUser" label="MultiUser bubble."/>
   <suffix name="Switch" label="Profile-switch bubble."/>
   <affected-histogram name="Signin.InterceptResult"/>

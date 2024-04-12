@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -192,11 +193,18 @@ std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
     Browser* browser,
     const AccountInfo& account_info,
+    bool is_oidc_account,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     signin::SigninChoiceCallback callback) {
   bool enable_updated_dialog = base::FeatureList::IsEnabled(
       features::kEnterpriseUpdatedProfileCreationScreen);
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  enable_updated_dialog |=
+      is_oidc_account &&
+      base::FeatureList::IsEnabled(
+          profile_management::features::kOidcAuthProfileManagement);
+#endif
   auto width = enable_updated_dialog
                    ? kManagedUserNoticeConfirmationUpdatedDialogWidth
                    : kManagedUserNoticeConfirmationDialogWidth;
@@ -215,7 +223,9 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
   DCHECK(web_dialog_ui);
   web_dialog_ui->Initialize(
       browser,
-      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
+      is_oidc_account
+          ? ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC
+          : ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
       account_info, profile_creation_required_by_policy, show_link_data_option,
       std::move(callback));
 
@@ -507,14 +517,16 @@ SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     Browser* browser,
     const AccountInfo& account_info,
+    bool is_oidc_account,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     signin::SigninChoiceCallback callback) {
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::
           CreateManagedUserNoticeConfirmationWebView(
-              browser, account_info, profile_creation_required_by_policy,
-              show_link_data_option, std::move(callback)),
+              browser, account_info, is_oidc_account,
+              profile_creation_required_by_policy, show_link_data_option,
+              std::move(callback)),
       browser, ui::MODAL_TYPE_WINDOW, true, false);
 }
 #endif

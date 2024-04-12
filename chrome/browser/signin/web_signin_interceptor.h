@@ -152,6 +152,7 @@ class WebSigninInterceptor {
     kEnterpriseAcceptManagement,
     kProfileSwitchForced,
     kChromeSignin,
+    kEnterpriseOIDC
   };
 
   // Delegate class responsible for showing the various interception UIs.

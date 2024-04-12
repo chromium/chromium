@@ -76,6 +76,7 @@ std::u16string InterceptionTypeToIdentityPillText(
     case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
     case WebSigninInterceptor::SigninInterceptionType::
         kEnterpriseAcceptManagement:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
     case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
       // These intercept type do not show a bubble and should not need to change
       // the identity pill text.

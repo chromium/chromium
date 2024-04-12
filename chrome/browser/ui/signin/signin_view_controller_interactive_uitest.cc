@@ -35,6 +35,10 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#endif
 
 namespace {
 
@@ -240,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   content_observer.StartWatchingNewWebContents();
   signin::SigninChoice result;
   browser()->signin_view_controller()->ShowModalManagedUserNoticeDialog(
-      account_info, /*force_new_profile=*/true,
+      account_info, /*is_oidc_account=*/false, /*force_new_profile=*/true,
       /*show_link_data_option=*/true,
       base::BindOnce(
           [](Browser* browser, signin::SigninChoice* result,
@@ -265,3 +269,50 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   EXPECT_EQ(result, signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE);
   EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class SignInViewControllerBrowserOIDCAccountTest
+    : public SignInViewControllerBrowserTest {
+ protected:
+  base::test::ScopedFeatureList features_{
+      profile_management::features::kOidcAuthProfileManagement};
+};
+
+// Tests that the confirm button is focused by default in the enterprise
+// interception dialog.
+IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserOIDCAccountTest,
+                       MAYBE_EnterpriseConfirmationDefaultFocus) {
+  auto account_info = signin::MakePrimaryAccountAvailable(
+      GetIdentityManager(), "alice@gmail.com", signin::ConsentLevel::kSync);
+  content::TestNavigationObserver content_observer(
+      (GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)));
+  content_observer.StartWatchingNewWebContents();
+  signin::SigninChoice result;
+  browser()->signin_view_controller()->ShowModalManagedUserNoticeDialog(
+      account_info, /*is_oidc_account=*/true, /*force_new_profile=*/true,
+      /*show_link_data_option=*/true,
+      base::BindOnce(
+          [](Browser* browser, signin::SigninChoice* result,
+             signin::SigninChoice choice) {
+            browser->signin_view_controller()->CloseModalSignin();
+            *result = choice;
+          },
+          browser(), &result));
+  EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
+  content_observer.Wait();
+
+  content::WebContentsDestroyedWatcher dialog_destroyed_watcher(
+      browser()
+          ->signin_view_controller()
+          ->GetModalDialogWebContentsForTesting());
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
+                                              /*control=*/false,
+                                              /*shift=*/false, /*alt=*/false,
+                                              /*command=*/false));
+
+  dialog_destroyed_watcher.Wait();
+  EXPECT_EQ(result, signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE);
+  EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
+}
+
+#endif  //  !BUILDFLAG(IS_CHROMEOS)

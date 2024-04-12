@@ -202,7 +202,8 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
       ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
           browser_->profile(), profile_separation_policies);
   browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
-      account_info, profile_creation_required_by_policy, show_link_data_option,
+      account_info, /*is_oidc_account=*/false,
+      profile_creation_required_by_policy, show_link_data_option,
 
       base::BindOnce(
           [](signin::SigninChoiceCallback callback, Browser* browser,
@@ -246,7 +247,8 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
 #endif
   DCHECK(!prompt_for_new_profile);
   browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
-      account_info, /*profile_creation_required_by_policy=*/false,
+      account_info, /*is_oidc_account=*/false,
+      /*profile_creation_required_by_policy=*/false,
       /*show_link_data_option=*/false,
       base::BindOnce(
           [](signin::SigninChoiceCallback callback, Browser* browser,

@@ -161,6 +161,7 @@ class SigninViewController {
   // SIGNIN_CHOICE_CANCEL or SIGNIN_CHOICE_NEW_PROFILE.
   void ShowModalManagedUserNoticeDialog(
       const AccountInfo& account_info,
+      bool is_oidc_account,
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
       signin::SigninChoiceCallback callback);
@@ -186,6 +187,8 @@ class SigninViewController {
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
                            ErrorDialogDefaultFocus);
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
+                           EnterpriseConfirmationDefaultFocus);
+  FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserOIDCAccountTest,
                            EnterpriseConfirmationDefaultFocus);
   FRIEND_TEST_ALL_PREFIXES(SigninViewControllerDelegateViewsBrowserTest,
                            CloseImmediately);

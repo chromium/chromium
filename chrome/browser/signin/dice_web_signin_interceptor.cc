@@ -950,6 +950,9 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       callback = base::BindOnce(&DiceWebSigninInterceptor::OnChromeSigninChoice,
                                 base::Unretained(this), info);
       break;
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
+      NOTREACHED() << "This interception type should not happen in DICE";
+      break;
   }
   ShowSigninInterceptionBubble(bubble_parameters, std::move(callback));
 }

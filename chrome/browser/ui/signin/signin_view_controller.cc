@@ -332,6 +332,7 @@ void SigninViewController::ShowModalSyncConfirmationDialog(
 
 void SigninViewController::ShowModalManagedUserNoticeDialog(
     const AccountInfo& account_info,
+    bool is_oidc_account,
     bool force_new_profile,
     bool show_link_data_option,
     signin::SigninChoiceCallback callback) {
@@ -340,8 +341,8 @@ void SigninViewController::ShowModalManagedUserNoticeDialog(
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
-          browser_, account_info, force_new_profile, show_link_data_option,
-          std::move(callback)),
+          browser_, account_info, is_oidc_account, force_new_profile,
+          show_link_data_option, std::move(callback)),
       GetOnModalDialogClosedCallback());
 #else
   NOTREACHED() << "Managed user notice dialog modal not supported";

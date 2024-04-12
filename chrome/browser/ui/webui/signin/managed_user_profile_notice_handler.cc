@@ -89,8 +89,13 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
 #if !BUILDFLAG(IS_CHROMEOS)
       show_link_data_option_(show_link_data_option),
 #endif
-      email_(base::UTF8ToUTF16(account_info.email)),
-      domain_name_(gaia::ExtractDomainName(account_info.email)),
+      email_(type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC
+                 ? std::u16string()
+                 : base::UTF8ToUTF16(account_info.email)),
+      domain_name_(
+          type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC
+              ? std::string()
+              : gaia::ExtractDomainName(account_info.email)),
       account_id_(account_info.account_id),
       proceed_callback_(std::move(proceed_callback)) {
   DCHECK(proceed_callback_);
@@ -306,6 +311,21 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
           l10n_util::GetStringUTF8(IDS_SYNC_DISABLED_CONFIRMATION_DETAILS);
       dict.Set("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
+    case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC:
+      title = l10n_util::GetStringUTF8(
+          IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE);
+      dict.Set("showEnterpriseBadge", true);
+      subtitle = l10n_util::GetStringFUTF8(
+          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED,
+          email_);
+      enterprise_info = l10n_util::GetStringUTF8(
+          IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
+      dict.Set("proceedLabel",
+               l10n_util::GetStringUTF8(
+                   profile_creation_required_by_policy_
+                       ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
+                       : IDS_WELCOME_SIGNIN_VIEW_SIGNIN));
+      break;
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
       title = l10n_util::GetStringUTF8(
           profile_creation_required_by_policy_
@@ -372,6 +392,9 @@ std::string ManagedUserProfileNoticeHandler::GetPictureUrl() {
                ? ui::ResourceBundle::GetSharedInstance().GetImageNamed(
                      profiles::GetPlaceholderAvatarIconResourceID())
                : account_info.account_image;
+  } else if (type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
+    icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+        profiles::GetPlaceholderAvatarIconResourceID());
   }
 
   const int avatar_icon_size = kAvatarSize * web_ui()->GetDeviceScaleFactor();

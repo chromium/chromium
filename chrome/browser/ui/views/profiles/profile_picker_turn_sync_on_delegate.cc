@@ -316,6 +316,7 @@ void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
       // entries to better match the situation.
       FinishSyncConfirmation(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
       break;
+    case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC:
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
       NOTREACHED_NORETURN()
           << "The profile picker should not show a managed user "

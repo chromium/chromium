@@ -63,6 +63,8 @@ class ForcedEnterpriseSigninInterceptionHandle
     DCHECK(callback_);
     browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
         bubble_parameters.intercepted_account,
+        /*is_oidc_account=*/bubble_parameters.interception_type ==
+            WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC,
         profile_creation_required_by_policy_, show_link_data_option_,
         base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
                            OnEnterpriseInterceptionDialogClosed,
@@ -152,7 +154,9 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
           WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced ||
       bubble_parameters.interception_type ==
           WebSigninInterceptor::SigninInterceptionType::
-              kEnterpriseAcceptManagement) {
+              kEnterpriseAcceptManagement ||
+      bubble_parameters.interception_type ==
+          WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC) {
     return std::make_unique<ForcedEnterpriseSigninInterceptionHandle>(
         chrome::FindBrowserWithTab(web_contents), bubble_parameters,
         std::move(callback));
@@ -190,6 +194,8 @@ std::string DiceWebSigninInterceptorDelegate::GetHistogramSuffix(
       return ".ChromeSignin";
     case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
       return ".EnterpriseForced";
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
+      return ".EnterpriseOIDC";
   }
 }
 
