@@ -9004,10 +9004,25 @@ bool RenderFrameHostImpl::IsFencedFrameReportingFromRendererAllowed(
 
   if (cross_origin_exposed &&
       !base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginEventReporting)) {
+          blink::features::
+              kFencedFramesCrossOriginEventReportingUnlabeledTraffic) &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesCrossOriginEventReportingAllTraffic)) {
     mojo::ReportBadMessage(
         "Request to send cross-origin reporting beacons received while feature "
         "not enabled.");
+    return false;
+  }
+
+  if (cross_origin_exposed &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesCrossOriginEventReportingAllTraffic) &&
+      base::FeatureList::IsEnabled(
+          features::kCookieDeprecationFacilitatedTesting)) {
+    AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Cross-origin reporting beacons are not supported with Mode A/B "
+        "Chrome-facilitated testing traffic.");
     return false;
   }
 
