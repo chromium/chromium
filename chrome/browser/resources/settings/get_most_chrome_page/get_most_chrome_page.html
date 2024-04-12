@@ -1,13 +1,44 @@
 <style include="cr-shared-style settings-shared">
+.get-most-chrome {
+  padding: 0 var(--cr-section-padding);
+}
+
+h3 {
+  margin: 0;
+  padding-block-start: var(--cr-section-vertical-padding);
+  font-size: 100%;
+  font-weight: 500;
+}
+
+ul {
+  margin-block-end: 0;
+}
 </style>
 <cr-expand-button class="cr-row hr" id="first" expanded="{{expandedFirst_}}">
   <div>$i18n{getTheMostOutOfChromeBetterForYou}</div>
 </cr-expand-button>
 <iron-collapse opened="[[expandedFirst_]]">
-  <div class="cr-row">
-    <div class="cr-padded-text">&nbsp;</div>
+  <div class="get-most-chrome">
+    <div class="cr-padded-text">
+      $i18nRaw{getTheMostOutOfChromeBetterWebMakingTheWeb}
+    </div>
+    <h3>
+      $i18nRaw{getTheMostOutOfChromeBetterWebSubTitleChromeGivesYouChoice}
+    </h3>
+    <div class="cr-padded-text">
+      $i18nRaw{getTheMostOutOfChromeBetterWebYouCanCustomize}
+    </div>
+    <h3>
+      $i18nRaw{getTheMostOutOfChromeBetterWebSubTitleChromeSupportsFreeWeb}
+    </h3>
+    <div class="cr-padded-text">
+      $i18nRaw{getTheMostOutOfChromeBetterWebAdsCritical}
+    </div>
+    <div class="cr-padded-text">
+      $i18nRaw{getTheMostOutOfChromeBetterWebAdsAlsoSupport}
+    </div>
   </div>
-</iron-collapse>
+  </iron-collapse>
 <cr-expand-button class="cr-row hr" id="second" expanded="{{expandedSecond_}}">
   <div>$i18n{getTheMostOutOfChromeYourDataInChrome}</div>
 </cr-expand-button>

@@ -576,6 +576,20 @@ void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_SEARCH_HISTORY},
       {"getTheMostOutOfChromeThirdPartyCookies",
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_THIRD_PARTY_COOKIES},
+
+      // Better web section.
+      {"getTheMostOutOfChromeBetterWebMakingTheWeb",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_MAKING_THE_WEB},
+      {"getTheMostOutOfChromeBetterWebSubTitleChromeGivesYouChoice",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_SUB_TITLE_CHROME_GIVES_YOU_CHOICE},
+      {"getTheMostOutOfChromeBetterWebYouCanCustomize",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_YOU_CAN_CUSTOMIZE},
+      {"getTheMostOutOfChromeBetterWebSubTitleChromeSupportsFreeWeb",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_SUB_TITLE_CHROME_SUPPORTS_FREE_WEB},
+      {"getTheMostOutOfChromeBetterWebAdsCritical",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_ADS_CRITICAL},
+      {"getTheMostOutOfChromeBetterWebAdsAlsoSupport",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_ADS_ALSO_SUPPORT},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

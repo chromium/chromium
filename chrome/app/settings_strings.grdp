@@ -75,6 +75,39 @@
     <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_THIRD_PARTY_COOKIES" desc="Prompt on the link to the 'Get the most out of Chrome' page.">
       Why is Chrome moving beyond third-party cookies?
     </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_MAKING_THE_WEB" desc="A paragraph that includes 2 bullets.">
+      Making the web work better for you means:
+      &lt;ul&gt;
+        &lt;li&gt;Keeping you safe as you browse, and&lt;/li&gt;
+        &lt;li&gt;Supporting a thriving ecosystem that keeps the web safe, open, fast and free&lt;/li&gt;
+      &lt;/ul&gt;
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_SUB_TITLE_CHROME_GIVES_YOU_CHOICE" desc="A subtitle">
+      Chrome gives you choice
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_YOU_CAN_CUSTOMIZE" desc="A paragraph that includes 3 bullets.
+      * Bullet 1: Chrome supports many Google services, but it's the user's choice whether they want to use those services, so we include &quot;for those who want it&quot;.">
+      You can customize Chrome the way you want:
+      &lt;ul&gt;
+        &lt;li&gt;&lt;em&gt;The best of Google&lt;/em&gt;, for those who want it. For example, you can choose Google Search as Chrome’s default search engine and use Google Password Manager to get all your passwords on any device. &lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;Meaningful choice&lt;/em&gt;: Chrome offers you choice and control with settings, and information to help you make meaningful decisions.&lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;Extensions&lt;/em&gt;: You can extend Chrome functionality with over 100,000 extensions in the Chrome Web Store.&lt;/li&gt;
+      &lt;/ul&gt;
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_SUB_TITLE_CHROME_SUPPORTS_FREE_WEB" desc="A subtitle">
+      Chrome supports a free web
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_ADS_CRITICAL" desc="A paragraph that includes 3 bullets.">
+      Ads are critical to many online businesses. They help keep content free online, which helps ensure that anyone can access content. Chrome develops ways to let sites show you personalized ads while protecting your privacy.  Done well, advertising benefits everyone on the web because when you see an ad:
+      &lt;ul&gt;
+        &lt;li&gt;You might find something new or interesting&lt;/li&gt;
+        &lt;li&gt;The advertiser might find a new customer&lt;/li&gt;
+        &lt;li&gt;The site you visit earns money by hosting the ad&lt;/li&gt;
+      &lt;/ul&gt;
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_ADS_ALSO_SUPPORT" desc="A paragraph that explains how ads support the expense of many Google services, like Chrome, Gmail, maps, and YouTube.">
+      Ads revenue also supports Google’s many free products and services, like Chrome, Gmail, Maps, and YouTube.
+    </message>
   </if>
   <if expr="is_macosx">
     <message name="IDS_ABOUT_CHROME_AUTOUPDATE_ALL" desc="The 'Automatically update Chrome for all users.' button in the About window.  Mac-only.">
