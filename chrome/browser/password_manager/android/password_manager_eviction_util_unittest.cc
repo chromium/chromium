@@ -55,6 +55,8 @@ PasswordManagerEvictionUtilTest::PasswordManagerEvictionUtilTest() {
   test_pref_service_.registry()->RegisterIntegerPref(
       password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
       0);
+  test_pref_service_.registry()->RegisterIntegerPref(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 0);
   test_pref_service_.registry()->RegisterDoublePref(
       password_manager::prefs::kTimeOfLastMigrationAttempt, 0.0);
 }
@@ -103,6 +105,18 @@ TEST_F(PasswordManagerEvictionUtilTest, IndicatesEvictedUser) {
 }
 
 TEST_F(PasswordManagerEvictionUtilTest, IndicatesNotEvictedUser) {
+  EXPECT_FALSE(
+      password_manager_upm_eviction::IsCurrentUserEvicted(pref_service()));
+}
+
+TEST_F(PasswordManagerEvictionUtilTest, SplitStoresPrefOverrideEviction) {
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
+
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 2);
+
   EXPECT_FALSE(
       password_manager_upm_eviction::IsCurrentUserEvicted(pref_service()));
 }

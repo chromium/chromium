@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -18,6 +19,9 @@
 namespace password_manager_upm_eviction {
 
 bool IsCurrentUserEvicted(const PrefService* prefs) {
+  if (password_manager::UsesSplitStoresAndUPMForLocal(prefs)) {
+    return false;
+  }
   return prefs->GetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
 }

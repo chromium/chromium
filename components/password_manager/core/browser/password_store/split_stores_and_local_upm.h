@@ -14,7 +14,7 @@ namespace password_manager {
 //  Checks whether the UPM for local users is activated for this client.
 //  This also means that the single password store has been split in
 //  account and local stores.
-bool UsesSplitStoresAndUPMForLocal(PrefService* pref_service);
+bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service);
 
 // Returns whether it is a requirement to update the GMSCore based on the
 // GMSCore version, whether syncing is enabled and whether the user is enrolled

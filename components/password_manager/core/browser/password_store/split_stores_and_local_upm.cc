@@ -17,7 +17,7 @@ using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 
 namespace password_manager {
 
-bool UsesSplitStoresAndUPMForLocal(PrefService* pref_service) {
+bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service) {
   switch (
       static_cast<UseUpmLocalAndSeparateStoresState>(pref_service->GetInteger(
           password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores))) {
