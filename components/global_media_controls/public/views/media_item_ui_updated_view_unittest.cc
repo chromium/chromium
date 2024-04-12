@@ -237,35 +237,40 @@ TEST_F(MediaItemUIUpdatedViewTest, DeviceSelectorViewCheck) {
   EXPECT_EQ(view()->GetDeviceSelectorForTesting(), device_selector());
 
   // Add devices to the list to show the start casting button.
-  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
-      .WillOnce(Return(false));
-  EXPECT_CALL(observer(), OnMediaItemUISizeChanged());
-  view()->OnDeviceSelectorViewDevicesChanged(/*has_devices=*/true);
+  view()->UpdateDeviceSelectorAvailability(/*has_devices=*/true);
   EXPECT_TRUE(view()->GetStartCastingButtonForTesting()->GetVisible());
 
   // Click the start casting button to show devices.
-  EXPECT_CALL(*device_selector(), ShowDevices());
   EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
-      .WillOnce(Return(false))
-      .WillOnce(Return(true));
-  EXPECT_CALL(observer(), OnMediaItemUISizeChanged());
+      .WillOnce(Return(false));
+  EXPECT_CALL(*device_selector(), ShowDevices());
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
+
+  // Device selector view will call to update visibility.
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(true));
+  EXPECT_CALL(observer(), OnMediaItemUISizeChanged());
+  view()->UpdateDeviceSelectorVisibility(/*visible=*/true);
   EXPECT_EQ(views::InkDropState::ACTIVATED,
             views::InkDrop::Get(view()->GetStartCastingButtonForTesting())
                 ->GetInkDrop()
                 ->GetTargetInkDropState());
 
   // Click the start casting button to hide devices.
-  EXPECT_CALL(*device_selector(), HideDevices());
   EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
-      .WillOnce(Return(true))
-      .WillOnce(Return(false));
-  EXPECT_CALL(observer(), OnMediaItemUISizeChanged());
+      .WillOnce(Return(true));
+  EXPECT_CALL(*device_selector(), HideDevices());
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
+
+  // Device selector view will call to update visibility.
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(false));
+  EXPECT_CALL(observer(), OnMediaItemUISizeChanged());
+  view()->UpdateDeviceSelectorVisibility(/*visible=*/false);
   EXPECT_EQ(views::InkDropState::HIDDEN,
             views::InkDrop::Get(view()->GetStartCastingButtonForTesting())
                 ->GetInkDrop()

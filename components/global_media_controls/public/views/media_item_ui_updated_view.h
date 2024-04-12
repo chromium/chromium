@@ -6,8 +6,8 @@
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_UPDATED_VIEW_H_
 
 #include "components/global_media_controls/public/media_item_ui.h"
+#include "components/global_media_controls/public/views/media_action_button.h"
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
-#include "components/global_media_controls/views/media_action_button.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/notification_theme.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -80,11 +80,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   void UpdateWithVectorIcon(const gfx::VectorIcon* vector_icon) override {}
   void UpdateWithMuteStatus(bool mute) override {}
   void UpdateWithVolume(float volume) override {}
-  void UpdateDeviceSelectorVisibility(bool visible) override {}
-  void UpdateDeviceSelectorAvailability(bool has_devices) override {}
-
-  // Called when the devices in the device selector view have changed.
-  void OnDeviceSelectorViewDevicesChanged(bool has_devices);
+  void UpdateDeviceSelectorVisibility(bool visible) override;
+  void UpdateDeviceSelectorAvailability(bool has_devices) override;
 
   // Helper functions for testing:
   views::ImageView* GetArtworkViewForTesting();

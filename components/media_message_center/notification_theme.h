@@ -63,6 +63,9 @@ struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaColorTheme {
   // Color ID for device selector view separator line.
   ui::ColorId separator_color_id = 0;
 
+  // Color ID for device selector view borders.
+  ui::ColorId device_selector_border_color_id = 0;
+
   // Color ID for device selector view background.
   ui::ColorId device_selector_background_color_id = 0;
 

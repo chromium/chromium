@@ -315,13 +315,13 @@ void MediaItemUIUpdatedView::UpdateWithMediaSessionInfo(
         static_cast<int>(MediaSessionAction::kExitPictureInPicture),
         vector_icons::kPictureInPictureAltIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP,
-        media_color_theme_.primary_foreground_color_id);
+        media_color_theme_.secondary_foreground_color_id);
   } else {
     picture_in_picture_button_->Update(
         static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
         vector_icons::kPictureInPictureAltIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP,
-        media_color_theme_.primary_foreground_color_id);
+        media_color_theme_.secondary_foreground_color_id);
   }
 
   UpdateMediaActionButtonsVisibility();
@@ -372,6 +372,24 @@ void MediaItemUIUpdatedView::UpdateWithMediaArtwork(
   SchedulePaint();
 }
 
+void MediaItemUIUpdatedView::UpdateDeviceSelectorVisibility(bool visible) {
+  // The device selector view can change its device list visibility and we need
+  // to update the casting state for it too.
+  UpdateCastingState();
+}
+
+void MediaItemUIUpdatedView::UpdateDeviceSelectorAvailability(
+    bool has_devices) {
+  CHECK(start_casting_button_);
+  // Do not show the start casting button if this media item is being casted to
+  // another device and has a footer view of stop casting button.
+  // TODO(yrw): Add "&& !footer_view_" when it is ready.
+  bool visible = has_devices;
+  if (visible != start_casting_button_->GetVisible()) {
+    start_casting_button_->SetVisible(visible);
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // MediaItemUIUpdatedView implementations:
 
@@ -389,7 +407,7 @@ MediaActionButton* MediaItemUIUpdatedView::CreateMediaActionButton(
       (button_id == static_cast<int>(MediaSessionAction::kPlay)
            ? kPlayPauseButtonSize
            : kMediaActionButtonSize),
-      media_color_theme_.primary_foreground_color_id,
+      media_color_theme_.secondary_foreground_color_id,
       media_color_theme_.secondary_foreground_color_id,
       media_color_theme_.focus_ring_color_id);
   auto* button_ptr = parent->AddChildView(std::move(button));
@@ -445,19 +463,6 @@ void MediaItemUIUpdatedView::SeekTo(double seek_progress) {
   item_->SeekTo(seek_progress * position_.duration());
 }
 
-void MediaItemUIUpdatedView::OnDeviceSelectorViewDevicesChanged(
-    bool has_devices) {
-  CHECK(start_casting_button_);
-  // Do not show the start casting button if this media item is being casted to
-  // another device and has a footer view of stop casting button.
-  // TODO(yrw): Add "&& !footer_view_" when it is ready.
-  bool visible = has_devices;
-  if (visible != start_casting_button_->GetVisible()) {
-    start_casting_button_->SetVisible(visible);
-    UpdateCastingState();
-  }
-}
-
 void MediaItemUIUpdatedView::StartCastingButtonPressed() {
   CHECK(device_selector_view_);
   if (device_selector_view_->IsDeviceSelectorExpanded()) {
@@ -465,7 +470,6 @@ void MediaItemUIUpdatedView::StartCastingButtonPressed() {
   } else {
     device_selector_view_->ShowDevices();
   }
-  UpdateCastingState();
 }
 
 void MediaItemUIUpdatedView::UpdateCastingState() {

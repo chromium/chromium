@@ -304,6 +304,7 @@ media_message_center::MediaColorTheme GetMediaColorTheme() {
   theme.paused_progress_background_color_id = ui::kColorSysTonalContainer;
 
   theme.background_color_id = ui::kColorSysSurface2;
+  theme.device_selector_border_color_id = ui::kColorSysDivider;
   theme.device_selector_background_color_id = ui::kColorSysSurface5;
   theme.error_foreground_color_id = ui::kColorSysError;
   theme.error_container_color_id = ui::kColorSysErrorContainer;

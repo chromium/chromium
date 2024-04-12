@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_CAST_DEVICE_SELECTOR_VIEW_H_
 
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
+#include "components/global_media_controls/public/views/media_action_button.h"
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
 #include "components/media_message_center/notification_theme.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -55,6 +56,9 @@ class CastDeviceSelectorView
   void OnDevicesUpdated(
       std::vector<global_media_controls::mojom::DevicePtr> devices) override;
 
+  // Helper functions for testing:
+  global_media_controls::MediaActionButton* GetCloseButtonForTesting();
+
  private:
   friend class CastDeviceSelectorViewTest;
 
@@ -68,6 +72,7 @@ class CastDeviceSelectorView
   raw_ptr<global_media_controls::MediaItemUIUpdatedView>
       media_item_ui_updated_view_ = nullptr;
 
+  raw_ptr<global_media_controls::MediaActionButton> close_button_ = nullptr;
   raw_ptr<views::BoxLayoutView> device_container_view_ = nullptr;
 
   mojo::Remote<global_media_controls::mojom::DeviceListHost> device_list_host_;
