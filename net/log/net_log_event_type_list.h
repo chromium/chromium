@@ -258,7 +258,7 @@ EVENT_TYPE(HOST_RESOLVER_DNS_TASK_EXTRACTION_RESULTS)
 //   }
 EVENT_TYPE(HOST_RESOLVER_DNS_TASK_TIMEOUT)
 
-// Logged when a ServiceEndpointListBuilder updates intermediate service
+// Logged when a DnsTaskResultsManager updates intermediate service
 // endpoints. Contains the following parameters:
 //
 //   {
@@ -270,7 +270,7 @@ EVENT_TYPE(HOST_RESOLVER_DNS_TASK_TIMEOUT)
 //   }
 EVENT_TYPE(HOST_RESOLVER_SERVICE_ENDPOINTS_UPDATED)
 
-// Logged when a ServiceEndpointListBuilder's resolution timer is timed out,
+// Logged when a DnsTaskResultsManager's resolution timer is timed out,
 // or AAAA response is received before the timer timed out.
 //   {
 //      "timedout": <Whether or not the timer is timed out>,
