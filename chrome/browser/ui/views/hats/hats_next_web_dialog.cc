@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 
 #include "base/base64url.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -138,17 +139,17 @@ HatsNextWebDialog::HatsNextWebDialog(
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data)
-    : HatsNextWebDialog(browser,
-                        trigger_id,
-                        base::FeatureList::IsEnabled(features::kHaTSWebUI)
-                            ? GURL(chrome::kChromeUIUntrustedHatsURL)
-                            : GURL("https://storage.googleapis.com/"
-                                   "chrome_hats_staging/index.html"),
-                        base::Seconds(10),
-                        std::move(success_callback),
-                        std::move(failure_callback),
-                        product_specific_bits_data,
-                        product_specific_string_data) {}
+    : HatsNextWebDialog(
+          browser,
+          trigger_id,
+          base::FeatureList::IsEnabled(features::kHaTSWebUI)
+              ? GURL(chrome::kChromeUIUntrustedHatsURL)
+              : GURL(features::kHappinessTrackingSurveysHostedUrl.Get()),
+          base::Seconds(10),
+          std::move(success_callback),
+          std::move(failure_callback),
+          product_specific_bits_data,
+          product_specific_string_data) {}
 
 gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
   gfx::Size preferred_size = views::View::CalculatePreferredSize();
