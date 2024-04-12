@@ -148,11 +148,13 @@ class LocalSVGResource final : public SVGResource {
   Member<IdTargetObserver> id_observer_;
 };
 
-// External resource reference (see SVGResource).
-class ExternalSVGResource final : public SVGResource,
-                                  public SVGResourceDocumentObserver {
+// External resource reference (see SVGResource) with an
+// SVGResourceDocumentContent as the "data source".
+class ExternalSVGResourceDocumentContent final
+    : public SVGResource,
+      public SVGResourceDocumentObserver {
  public:
-  explicit ExternalSVGResource(const KURL&);
+  explicit ExternalSVGResourceDocumentContent(const KURL&);
 
   void Load(Document&) override;
   void LoadWithoutCSP(Document&) override;

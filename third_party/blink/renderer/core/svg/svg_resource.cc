@@ -228,9 +228,11 @@ void LocalSVGResource::Trace(Visitor* visitor) const {
   SVGResource::Trace(visitor);
 }
 
-ExternalSVGResource::ExternalSVGResource(const KURL& url) : url_(url) {}
+ExternalSVGResourceDocumentContent::ExternalSVGResourceDocumentContent(
+    const KURL& url)
+    : url_(url) {}
 
-void ExternalSVGResource::Load(Document& document) {
+void ExternalSVGResourceDocumentContent::Load(Document& document) {
   if (document_content_)
     return;
   // Loading SVG resources should not trigger script, see
@@ -249,7 +251,7 @@ void ExternalSVGResource::Load(Document& document) {
   target_ = ResolveTarget();
 }
 
-void ExternalSVGResource::LoadWithoutCSP(Document& document) {
+void ExternalSVGResourceDocumentContent::LoadWithoutCSP(Document& document) {
   if (document_content_)
     return;
   // Loading SVG resources should not trigger script, see
@@ -270,7 +272,7 @@ void ExternalSVGResource::LoadWithoutCSP(Document& document) {
   target_ = ResolveTarget();
 }
 
-void ExternalSVGResource::ResourceNotifyFinished(
+void ExternalSVGResourceDocumentContent::ResourceNotifyFinished(
     SVGResourceDocumentContent* document_content) {
   DCHECK_EQ(document_content_, document_content);
   Element* new_target = ResolveTarget();
@@ -280,7 +282,7 @@ void ExternalSVGResource::ResourceNotifyFinished(
   NotifyContentChanged();
 }
 
-Element* ExternalSVGResource::ResolveTarget() {
+Element* ExternalSVGResourceDocumentContent::ResolveTarget() {
   if (!document_content_)
     return nullptr;
   if (!url_.HasFragmentIdentifier())
@@ -293,7 +295,7 @@ Element* ExternalSVGResource::ResolveTarget() {
   return external_document->getElementById(decoded_fragment);
 }
 
-void ExternalSVGResource::Trace(Visitor* visitor) const {
+void ExternalSVGResourceDocumentContent::Trace(Visitor* visitor) const {
   visitor->Trace(document_content_);
   SVGResource::Trace(visitor);
 }
