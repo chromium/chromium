@@ -282,6 +282,7 @@ extern const base::FeatureParam<int> kUpdateTextOptionNumber;
 #endif
 
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadging);
+BASE_DECLARE_FEATURE(kEnterpriseUpdatedProfileCreationScreen);
 
 BASE_DECLARE_FEATURE(kWebUIBubblePerProfilePersistence);
 

@@ -1,0 +1,216 @@
+<style include="signin-shared tangible-sync-style-shared">
+  :host([use-updated-ui_]) {
+    color: var(--cr-primary-text-color);
+    display: block;
+    height: 758px;
+    width: 1024px;
+    position: relative;
+  }
+
+  .main-container {
+    height: calc(100vh -
+        (2*var(--action-container-padding) + var(--cr-button-height)));
+    width: 100vw;
+  }
+
+  .action-container {
+    align-items: flex-end;
+    bottom: 0;
+    box-sizing: border-box;
+    position: absolute;
+    width: 100%;
+  }
+
+  .action-container cr-button {
+    /* Reverts inherited pointer-events value from .action-container. */
+    pointer-events: all;
+  }
+
+  .tangible-sync-style #content-container {
+    left: 50%;
+    position: relative;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  #header-container {
+    position: relative;
+    width: 100%;
+  }
+
+  #avatar-container {
+    height: var(--tangible-sync-style-avatar-size);
+    left: 0;
+    margin: auto;
+    position: relative;
+    right: 0;
+    width: var(--tangible-sync-style-avatar-size);
+    z-index: 1;
+  }
+
+  #avatar {
+    border: 2px solid var(--md-background-color);
+    border-radius: 50%;
+    height: 100%;
+    width: 100%;
+  }
+
+  .work-badge {
+    bottom: 0;
+    position: absolute;
+  }
+
+  #text-container {
+    text-align: center;
+  }
+
+  h1.title {
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 44px;
+    text-align: center;
+
+  }
+
+  .subtitle {
+    margin-top: 0;
+    line-height: 24px;
+    font-size: 20px;
+    font-weight: 400;
+    text-align: center;
+
+  }
+
+  h2 {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 32px;
+    text-align: center;
+  }
+
+  .disclaimer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    padding-inline: 140px;
+    min-height: 212px;
+  }
+
+  .disclaimer {
+    width: 360px;
+    border-radius: 24px;
+    border: 1px solid var(--cr-fallback-color-surface-variant);
+    padding: 24px;
+    margin-block-start: 30px;
+    margin-inline-end: 12px;
+    text-align: center;
+  }
+
+  .disclaimer + .disclaimer {
+    margin-inline-start: 12px;
+  }
+
+  .disclaimer .icon {
+    height: 24px;
+    width: 24px;
+    color: var(--google-blue-500);
+  }
+
+  .disclaimer h3 {
+    line-height: 32px;
+    text-align: center;
+  }
+
+  .disclaimer p {
+    line-height: 20px;
+    text-align: center;
+  }
+
+  .action-container {
+    flex-wrap: wrap-reverse;
+    max-width: 100%;
+    right: 0;
+  }
+
+  .action-container #cancel-button {
+    font-weight: normal;
+  }
+
+  .tangible-sync-style-left-banner {
+    content: url(images/left-banner.svg);
+  }
+
+  .tangible-sync-style-right-banner {
+    content: url(images/right-banner.svg);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .work-badge {
+      border-color: var(--md-background-color);
+    }
+
+    .work-badge > iron-icon {
+      box-shadow: 0 0 2px rgba(var(--google-grey-800-rgb), 0.12),
+         0 0 6px rgba(var(--google-grey-800-rgb), 0.15);
+    }
+
+    .tangible-sync-style-right-banner {
+      content: url(images/right-banner-dark.svg);
+    }
+
+    .tangible-sync-style-left-banner {
+      content: url(images/left-banner-dark.svg);
+    }
+  }
+</style>
+
+<template is="dom-if" if="[[useUpdatedUi_]]">
+  <div class="main-container tangible-sync-style">
+    <img class="tangible-sync-style-left-banner" alt="">
+    <img class="tangible-sync-style-right-banner" alt="">
+    <div id="content-container">
+      <div id="header-container">
+        <div id="avatar-container">
+          <img id="avatar" alt="" src="[[pictureUrl_]]">
+          <div class="work-badge" hidden="[[!showEnterpriseBadge_]]">
+            <iron-icon class="icon" icon="cr:domain"></iron-icon>
+          </div>
+        </div>
+      </div>
+      <div id="text-container">
+        <template is="dom-if" if="[[title_]]">
+          <h1 class="title">
+            [[title_]]
+          </h1>
+        </template>
+        <template is="dom-if" if="[[subtitle_]]">
+          <p class="subtitle">
+            [[subtitle_]]
+          </p>
+        </template>
+      </div>
+      <div class="disclaimer-container">
+        <section class="disclaimer">
+          <iron-icon class="icon" icon="cr:person"></iron-icon>
+          <h2>$i18n{profileInformationTitle}</h2>
+          <p>$i18n{profileInformationDetails}</p>
+        </section>
+        <section class="disclaimer">
+          <iron-icon class="icon" icon="cr:phonelink"></iron-icon>
+          <h2>$i18n{deviceInformationTitle}</h2>
+          <p>$i18n{deviceInformationDetails}</p>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="action-container tangible-sync-style">
+    <cr-button id="proceed-button" class="action-button" on-click="onProceed_"
+        autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
+      [[proceedLabel_]]
+    </cr-button>
+    <cr-button id="cancel-button" on-click="onCancel_"
+        hidden="[[!showCancelButton_]]">
+      $i18n{cancelLabel}
+    </cr-button>
+  </div>
+</template>

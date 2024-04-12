@@ -70,7 +70,7 @@ const DeepQuery kSignInButton{"intro-app", "sign-in-promo",
 const DeepQuery kDontSignInButton{"intro-app", "sign-in-promo",
                                   "#declineSignInButton"};
 const DeepQuery kDeclineManagementButton{
-    "legacy-managed-user-profile-notice-app", "#cancelButton"};
+    "legacy-managed-user-profile-notice-app", "#cancel-button"};
 const DeepQuery kOptInSyncButton{"sync-confirmation-app", "#confirmButton"};
 const DeepQuery kDontSyncButton{"sync-confirmation-app", "#notNowButton"};
 const DeepQuery kSettingsButton{"sync-confirmation-app", "#settingsButton"};

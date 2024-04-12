@@ -9,9 +9,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
@@ -134,7 +136,10 @@ class ManagedUserNoticeUIWindowPixelTest
       public testing::WithParamInterface<ManagedUserNoticeTestParam> {
  public:
   ManagedUserNoticeUIWindowPixelTest()
-      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {}
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
+    feature_list_.InitAndDisableFeature(
+        features::kEnterpriseUpdatedProfileCreationScreen);
+  }
 
   void ShowUi(const std::string& name) override {
     ui::ScopedAnimationDurationScaleMode disable_animation(
@@ -181,6 +186,7 @@ class ManagedUserNoticeUIWindowPixelTest
     return profile_picker_view_->GetWidget();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
       profile_picker_view_;
 };

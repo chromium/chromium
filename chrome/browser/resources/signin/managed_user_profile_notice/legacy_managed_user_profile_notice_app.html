@@ -12,7 +12,7 @@
     display: block;
   }
 
-  :host([is-modal-dialog_]) {
+  :host([is-modal-dialog_][use-legacy-ui_]) {
     --banner-height: 128px;
     --footer-margin: 16px;
     --text-container-margin-inline: 32px;
@@ -154,7 +154,7 @@
     right: 0;
   }
 
-  .action-container #cancelButton {
+  .action-container #cancel-button {
     font-weight: normal;
   }
 
@@ -217,57 +217,59 @@
   }
 </style>
 
-<div class$="main-container tangible-sync-style
-    [[getMaybeDialogClass_(isModalDialog_)]]">
-  <img class="tangible-sync-style-left-banner" alt="">
-  <img class="tangible-sync-style-right-banner" alt="">
-  <img class="tangible-sync-style-dialog-illustration" alt="">
-  <div id="content-container">
-    <div id="header-container">
-      <div id="avatar-container">
-        <img id="avatar" alt="" src="[[pictureUrl_]]">
-        <div class="work-badge" hidden="[[!showEnterpriseBadge_]]">
-          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+<template is="dom-if" if="[[useLegacyUi_]]">
+  <div class$="main-container tangible-sync-style
+      [[getMaybeDialogClass_(isModalDialog_)]]">
+    <img class="tangible-sync-style-left-banner" alt="">
+    <img class="tangible-sync-style-right-banner" alt="">
+    <img class="tangible-sync-style-dialog-illustration" alt="">
+    <div id="content-container">
+      <div id="header-container">
+        <div id="avatar-container">
+          <img id="avatar" alt="" src="[[pictureUrl_]]">
+          <div class="work-badge" hidden="[[!showEnterpriseBadge_]]">
+            <iron-icon class="icon" icon="cr:domain"></iron-icon>
+          </div>
         </div>
       </div>
-    </div>
-    <div id="text-container">
-      <template is="dom-if" if="[[title_]]">
-        <h2 class="title">
-          [[title_]]
-        </h2>
-      </template>
-      <template is="dom-if" if="[[subtitle_]]">
-        <p class="subtitle">
-          [[subtitle_]]
-        </p>
-      </template>
-      <template is="dom-if" if="[[enterpriseInfo_]]">
-        <div class="info-box">
-          <div class="icon-container">
-            <iron-icon icon="cr:domain"></iron-icon>
-          </div>
-          <p id="enterpriseInfo">
-            [[enterpriseInfo_]]
+      <div id="text-container">
+        <template is="dom-if" if="[[title_]]">
+          <h2 class="title">
+            [[title_]]
+          </h2>
+        </template>
+        <template is="dom-if" if="[[subtitle_]]">
+          <p class="subtitle">
+            [[subtitle_]]
           </p>
-        </div>
+        </template>
+        <template is="dom-if" if="[[enterpriseInfo_]]">
+          <div class="info-box">
+            <div class="icon-container">
+              <iron-icon icon="cr:domain"></iron-icon>
+            </div>
+            <p id="enterpriseInfo">
+              [[enterpriseInfo_]]
+            </p>
+          </div>
+        </template>
+      </div>
+      <template is="dom-if" if="[[showLinkDataCheckbox_]]">
+        <cr-checkbox id="linkData" checked="{{linkData_}}">
+          <div>$i18n{linkDataText}</div>
+        </cr-checkbox>
       </template>
     </div>
-    <template is="dom-if" if="[[showLinkDataCheckbox_]]">
-      <cr-checkbox id="linkData" checked="{{linkData_}}">
-        <div>$i18n{linkDataText}</div>
-      </cr-checkbox>
-    </template>
   </div>
-</div>
-<div class$="action-container tangible-sync-style
-    [[getMaybeDialogClass_(isModalDialog_)]]">
-  <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
-      autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
-    [[proceedLabel_]]
-  </cr-button>
-  <cr-button id="cancelButton" on-click="onCancel_"
-      hidden="[[!showCancelButton_]]">
-    $i18n{cancelLabel}
-  </cr-button>
-</div>
+  <div class$="action-container tangible-sync-style
+      [[getMaybeDialogClass_(isModalDialog_)]]">
+    <cr-button id="proceed-button" class="action-button" on-click="onProceed_"
+        autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
+      [[proceedLabel_]]
+    </cr-button>
+    <cr-button id="cancel-button" on-click="onCancel_"
+        hidden="[[!showCancelButton_]]">
+      $i18n{cancelLabel}
+    </cr-button>
+  </div>
+</template>

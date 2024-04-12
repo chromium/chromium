@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './legacy_managed_user_profile_notice_app.html.js';
+import {getTemplate} from './managed_user_profile_notice_app.html.js';
 import type {ManagedUserProfileInfo, ManagedUserProfileNoticeBrowserProxy} from './managed_user_profile_notice_browser_proxy.js';
 import {ManagedUserProfileNoticeBrowserProxyImpl} from './managed_user_profile_notice_browser_proxy.js';
 
@@ -35,13 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.style.width = 'auto';
 });
 
-const LegacyManagedUserProfileNoticeAppElementBase =
+const ManagedUserProfileNoticeAppElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
 
-export class LegacyManagedUserProfileNoticeAppElement extends
-    LegacyManagedUserProfileNoticeAppElementBase {
+export class ManagedUserProfileNoticeAppElement extends
+    ManagedUserProfileNoticeAppElementBase {
   static get is() {
-    return 'legacy-managed-user-profile-notice-app';
+    return 'managed-user-profile-notice-app';
   }
 
   static get template() {
@@ -50,7 +50,6 @@ export class LegacyManagedUserProfileNoticeAppElement extends
 
   static get properties() {
     return {
-      /** Whether the account is managed */
       showEnterpriseBadge_: {
         type: Boolean,
         value: false,
@@ -80,21 +79,6 @@ export class LegacyManagedUserProfileNoticeAppElement extends
         },
       },
 
-      showLinkDataCheckbox_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showLinkDataCheckbox');
-        },
-      },
-
-      useLegacyUi_: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value() {
-          return !loadTimeData.getBoolean('useUpdatedUi');
-        },
-      },
-
       /** The label for the button to proceed with the flow */
       proceedLabel_: String,
 
@@ -109,11 +93,12 @@ export class LegacyManagedUserProfileNoticeAppElement extends
         value: false,
       },
 
-      linkData_: {
+      useUpdatedUi_: {
         type: Boolean,
         reflectToAttribute: true,
-        value: false,
-        observer: 'linkDataChanged_',
+        value() {
+          return loadTimeData.getBoolean('useUpdatedUi');
+        },
       },
     };
   }
@@ -126,9 +111,7 @@ export class LegacyManagedUserProfileNoticeAppElement extends
   private isModalDialog_: boolean;
   private proceedLabel_: string;
   private disableProceedButton_: boolean;
-  private linkData_: boolean;
   private showCancelButton_: boolean;
-  private defaultProceedLabel_: string;
   private managedUserProfileNoticeBrowserProxy_:
       ManagedUserProfileNoticeBrowserProxy =
           ManagedUserProfileNoticeBrowserProxyImpl.getInstance();
@@ -143,15 +126,10 @@ export class LegacyManagedUserProfileNoticeAppElement extends
         info => this.setProfileInfo_(info));
   }
 
-  private linkDataChanged_(linkData: boolean) {
-    this.proceedLabel_ = linkData ? this.i18n('proceedAlternateLabel') :
-                                    this.defaultProceedLabel_;
-  }
-
   /** Called when the proceed button is clicked. */
   private onProceed_() {
     this.disableProceedButton_ = true;
-    this.managedUserProfileNoticeBrowserProxy_.proceed(this.linkData_);
+    this.managedUserProfileNoticeBrowserProxy_.proceed(/*linkData=*/false);
   }
 
   /** Called when the cancel button is clicked. */
@@ -165,31 +143,16 @@ export class LegacyManagedUserProfileNoticeAppElement extends
     this.title_ = info.title;
     this.subtitle_ = info.subtitle;
     this.enterpriseInfo_ = info.enterpriseInfo;
-    this.defaultProceedLabel_ = info.proceedLabel;
-    this.proceedLabel_ = this.defaultProceedLabel_;
+    this.proceedLabel_ = info.proceedLabel;
     this.showCancelButton_ = info.showCancelButton;
-    this.linkData_ = info.checkLinkDataCheckboxByDefault;
-  }
-
-  /**
-   * Returns either "dialog" or an empty string.
-   *
-   * The returned value is intended to be added as a class on the root tags of
-   * the element. Some styles from `tangible_sync_style_shared.css` rely on the
-   * presence of this "dialog" class.
-   */
-  private getMaybeDialogClass_() {
-    return this.isModalDialog_ ? 'dialog' : '';
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'legacy-managed-user-profile-notice-app':
-        LegacyManagedUserProfileNoticeAppElement;
+    'managed-user-profile-notice-app': ManagedUserProfileNoticeAppElement;
   }
 }
 
 customElements.define(
-    LegacyManagedUserProfileNoticeAppElement.is,
-    LegacyManagedUserProfileNoticeAppElement);
+    ManagedUserProfileNoticeAppElement.is, ManagedUserProfileNoticeAppElement);

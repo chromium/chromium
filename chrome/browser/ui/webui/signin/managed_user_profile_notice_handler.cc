@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -310,7 +311,8 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
           profile_creation_required_by_policy_
               ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
               : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE);
-      dict.Set("showEnterpriseBadge", false);
+      dict.Set("showEnterpriseBadge",
+               !chrome::enterprise_util::IsKnownConsumerDomain(domain_name_));
       subtitle = GetManagedAccountTitleWithEmail(Profile::FromWebUI(web_ui()),
                                                  entry, domain_name_, email_);
       enterprise_info = l10n_util::GetStringUTF8(

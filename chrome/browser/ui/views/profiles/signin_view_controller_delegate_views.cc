@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/signin_view_controller_delegate_views.h"
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
@@ -58,6 +60,8 @@ const int kModalDialogWidth = 448;
     BUILDFLAG(IS_CHROMEOS_LACROS)
 const int kManagedUserNoticeConfirmationDialogWidth = 512;
 const int kManagedUserNoticeConfirmationDialogHeight = 576;
+const int kManagedUserNoticeConfirmationUpdatedDialogWidth = 1024;
+const int kManagedUserNoticeConfirmationUpdatedDialogHeight = 758;
 #endif
 const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;
@@ -191,11 +195,17 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     signin::SigninChoiceCallback callback) {
+  bool enable_updated_dialog = base::FeatureList::IsEnabled(
+      features::kEnterpriseUpdatedProfileCreationScreen);
+  auto width = enable_updated_dialog
+                   ? kManagedUserNoticeConfirmationUpdatedDialogWidth
+                   : kManagedUserNoticeConfirmationDialogWidth;
+  auto height = enable_updated_dialog
+                    ? kManagedUserNoticeConfirmationUpdatedDialogHeight
+                    : kManagedUserNoticeConfirmationDialogHeight;
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
-      browser, GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
-      kManagedUserNoticeConfirmationDialogHeight,
-      kManagedUserNoticeConfirmationDialogWidth,
-      InitializeSigninWebDialogUI(false));
+      browser, GURL(chrome::kChromeUIManagedUserProfileNoticeUrl), height,
+      width, InitializeSigninWebDialogUI(false));
 
   ManagedUserProfileNoticeUI* web_dialog_ui =
       web_view->GetWebContents()

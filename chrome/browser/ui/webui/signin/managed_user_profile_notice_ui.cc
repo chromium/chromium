@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -41,6 +42,10 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_LEGACY_MANAGED_USER_PROFILE_NOTICE_APP_JS},
       {"legacy_managed_user_profile_notice_app.html.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_LEGACY_MANAGED_USER_PROFILE_NOTICE_APP_HTML_JS},
+      {"managed_user_profile_notice_app.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_APP_JS},
+      {"managed_user_profile_notice_app.html.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_APP_HTML_JS},
       {"managed_user_profile_notice_browser_proxy.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_BROWSER_PROXY_JS},
       {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
@@ -73,6 +78,20 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
                              IDS_WELCOME_SIGNIN_VIEW_SIGNIN);
   source->AddLocalizedString("linkDataText",
                              IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX);
+
+  source->AddLocalizedString("profileInformationTitle",
+                             IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_TITLE);
+  source->AddLocalizedString(
+      "profileInformationDetails",
+      IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_DETAILS);
+  source->AddLocalizedString("deviceInformationTitle",
+                             IDS_ENTERPRISE_WELCOME_DEVICE_INFORMATION_TITLE);
+  source->AddLocalizedString("deviceInformationDetails",
+                             IDS_ENTERPRISE_WELCOME_DEVICE_INFORMATION_DETAILS);
+
+  source->AddBoolean("useUpdatedUi",
+                     base::FeatureList::IsEnabled(
+                         features::kEnterpriseUpdatedProfileCreationScreen));
   source->AddBoolean("showLinkDataCheckbox", false);
   source->AddBoolean("isModalDialog", false);
   webui::SetupChromeRefresh2023(source);

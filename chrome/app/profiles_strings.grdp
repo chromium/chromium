@@ -591,6 +591,15 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX" desc="Label of the checkbox on the enterprise profile welcome screen that allows a user to link existing data to the new profile. The label informs the user that a profile will be created.">
       Add existing browsing data to managed profile
     </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_TITLE" desc="Title of a section disclaiming to the user what their organization can do with their profile information.">
+      Profile information
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_DEVICE_INFORMATION_TITLE" desc="Title of a section disclaiming to the user what their organization can do with their device information.">
+      Device information
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_DEVICE_INFORMATION_DETAILS" desc="Paragraph section disclaiming to the user what their organization can do with their device information.">
+      To make sure this device can be used safely, your organization may need to see information about its operating system, browser, and settings, and what software is installed on the device.
+    </message>
 
     <!-- Profile Picker -->
     <message name="IDS_PROFILE_PICKER_ADD_SPACE_BUTTON" desc="Text for the add space button on the profile picker main view">
