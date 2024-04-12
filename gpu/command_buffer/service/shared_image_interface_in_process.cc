@@ -425,9 +425,27 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage,
     gfx::GpuMemoryBufferHandle buffer_handle) {
+  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+  CHECK(!si_info.meta.format.PrefersExternalSampler());
+#endif
+
   auto client_buffer_handle = buffer_handle.Clone();
-  auto mailbox =
-      CreateSharedImage(si_info, std::move(buffer_handle))->mailbox();
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  {
+    base::AutoLock lock(lock_);
+    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
+    // Note: we enqueue the task under the lock to guarantee monotonicity of
+    // the release ids as seen by the service. Unretained is safe because
+    // InProcessCommandBuffer synchronizes with the GPU thread at destruction
+    // time, cancelling tasks, before |this| is destroyed.
+    ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcess::
+                                       CreateSharedImageWithBufferOnGpuThread,
+                                   base::Unretained(this), mailbox, si_info,
+                                   std::move(buffer_handle), sync_token),
+                    {});
+  }
 
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info.meta, GenUnverifiedSyncToken(),

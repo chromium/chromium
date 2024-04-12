@@ -150,12 +150,19 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage,
     gfx::GpuMemoryBufferHandle buffer_handle) {
+  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage)) << si_info.meta.usage;
+  DCHECK(viz::HasEquivalentBufferFormat(si_info.meta.format))
+      << si_info.meta.format.ToString();
+  CHECK(!si_info.meta.format.IsLegacyMultiplanar())
+      << si_info.meta.format.ToString();
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  CHECK(!si_info.meta.format.PrefersExternalSampler())
+      << si_info.meta.format.ToString();
+#endif
   auto client_buffer_handle = buffer_handle.Clone();
-  auto mailbox =
-      CreateSharedImage(si_info, std::move(buffer_handle))->mailbox();
-
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(),
+      AddMailbox(proxy_->CreateSharedImage(si_info, std::move(buffer_handle))),
+      si_info.meta, GenUnverifiedSyncToken(),
       GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
                                 si_info.meta.format, si_info.meta.size,
                                 buffer_usage),
