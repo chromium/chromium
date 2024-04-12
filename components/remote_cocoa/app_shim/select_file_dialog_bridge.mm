@@ -28,14 +28,6 @@ namespace {
 
 const int kFileTypePopupTag = 1234;
 
-// TODO(macOS 11): Remove this.
-CFStringRef CreateUTIFromExtension(const base::FilePath::StringType& ext) {
-  base::apple::ScopedCFTypeRef<CFStringRef> ext_cf(
-      base::SysUTF8ToCFStringRef(ext));
-  return UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
-                                               ext_cf.get(), nullptr);
-}
-
 NSString* GetDescriptionFromExtension(const base::FilePath::StringType& ext) {
   if (@available(macOS 11, *)) {
     UTType* type =
@@ -46,7 +38,12 @@ NSString* GetDescriptionFromExtension(const base::FilePath::StringType& ext) {
       return description;
     }
   } else {
-    base::apple::ScopedCFTypeRef<CFStringRef> uti(CreateUTIFromExtension(ext));
+    base::apple::ScopedCFTypeRef<CFStringRef> ext_cf =
+        base::SysUTF8ToCFStringRef(ext);
+    base::apple::ScopedCFTypeRef<CFStringRef> uti(
+        UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
+                                              ext_cf.get(),
+                                              /*inConformingToUTI=*/nullptr));
     NSString* description =
         base::apple::CFToNSOwnershipCast(UTTypeCopyDescription(uti.get()));
 
@@ -217,6 +214,47 @@ NSSavePanel* __weak g_last_created_panel_for_testing = nil;
   }
 
   return YES;
+}
+
+- (BOOL)panel:(id)sender shouldEnableURL:(NSURL*)url {
+  // When provided UTTypes, NSOpenPanel determines whether files are selectable
+  // by conformance, not by strict type equality. For example, with
+  // public.plain-text, not only .txt files will be selectable, but .js, .m3u,
+  // and .csv files will be as well. With public.zip-archive, not only .zip
+  // files will be selectable, but also .jar files and .xlsb files.
+  //
+  // While this can be great for normal viewing/editing apps, this is not
+  // desirable for Chromium, where the web platform requires strict type
+  // matching on the provided extensions, and files that have a conforming file
+  // type by accident of their implementation shouldn't qualify for selection.
+  //
+  // Unfortunately, there's no great way to do strict type matching with
+  // NSOpenPanel. Setting explicit extensions via -allowedFileTypes is
+  // deprecated, and there's no way to specify that strict type equality should
+  // be used for -allowedContentTypes (FB13721802). Therefore, as inefficient as
+  // it is, this use of the delegate is required.
+
+  if (@available(macOS 11, *)) {
+    NSArray<UTType*>* allowedTypes = [sender allowedContentTypes];
+    if (!allowedTypes.count) {
+      // An empty array is "all types";
+      return YES;
+    }
+
+    UTType* type;
+    if (![url getResourceValue:&type forKey:NSURLContentTypeKey error:nil]) {
+      return NO;
+    }
+
+    return [allowedTypes containsObject:type];
+  } else {
+    // It is not documented, but -panel:shouldEnableURL: is a filter. Files for
+    // which NO is returned are disabled, but files for which YES is returned
+    // are further processed and filtered by the specified allowedFileTypes.
+    // Return YES and allow the further filtering by the file types already
+    // specified.
+    return YES;
+  }
 }
 
 @end
@@ -490,21 +528,10 @@ void SelectFileDialogBridge::SetAccessoryView(
           [file_uttype_array addObject:type];
         }
       } else {
-        // Crash reports suggest that CreateUTIFromExtension may return nil.
-        // Hence we nil check before adding to |file_type_set|. See
-        // crbug.com/630101 and rdar://27490414.
-        NSString* uti =
-            base::apple::CFToNSOwnershipCast(CreateUTIFromExtension(ext));
-        if (uti) {
-          if (![file_type_array containsObject:uti]) {
-            [file_type_array addObject:uti];
-          }
-        }
-
-        // Always allow the extension itself, in case the UTI doesn't map
-        // back to the original extension correctly. This occurs with dynamic
-        // UTIs on 10.7 and 10.8.
-        // See https://crbug.com/148840, https://openradar.appspot.com/12316273
+        // Do not include any UTIs in this file type list. UTIs, if included,
+        // are compared with conformance, while strict type equality is
+        // required. See the -panel:shouldEnableURL: delegate callback above for
+        // more information.
         NSString* ext_ns = base::SysUTF8ToNSString(ext);
         if (![file_type_array containsObject:ext_ns]) {
           [file_type_array addObject:ext_ns];
