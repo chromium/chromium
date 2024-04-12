@@ -4032,7 +4032,7 @@ enum WebFeature {
   kTextWrapPretty = 4674,
   // The items above roughly this point are available in the M119 branch.
 
-  kV8PointerEvent_DeviceId_AttributeGetter = 4675,
+  kOBSOLETE_V8PointerEvent_DeviceId_AttributeGetter  = 4675,
   kSourceMappingUrlMagicCommentAtSign = 4676,
   kHTMLDetailsElementNameAttribute = 4677,
   kHTMLDetailsElementNameAttributeClosesSelf = 4678,
@@ -4325,6 +4325,7 @@ enum WebFeature {
   kSimplifyLoadingTransparentPlaceholderImage = 4941,
 
   kIdentityDigitalCredentialsSuccess = 4942,
+  kV8DeviceProperties_UniqueId_AttributeGetter = 4943,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -475,6 +475,8 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/html/void_callback.idl",
   "//third_party/blink/renderer/core/imagebitmap/image_bitmap.idl",
   "//third_party/blink/renderer/core/imagebitmap/image_bitmap_options.idl",
+  "//third_party/blink/renderer/core/input/device_properties_init.idl",
+  "//third_party/blink/renderer/core/input/device_properties.idl",
   "//third_party/blink/renderer/core/input/input_device_capabilities.idl",
   "//third_party/blink/renderer/core/input/input_device_capabilities_init.idl",
   "//third_party/blink/renderer/core/input/touch.idl",

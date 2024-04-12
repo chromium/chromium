@@ -11202,7 +11202,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4672" label="ObservableConstructor"/>
   <int value="4673" label="TextWrapBalance"/>
   <int value="4674" label="TextWrapPretty"/>
-  <int value="4675" label="V8PointerEvent_DeviceId_AttributeGetter"/>
+  <int value="4675" label="OBSOLETE_V8PointerEvent_DeviceId_AttributeGetter"/>
   <int value="4676" label="SourceMappingUrlMagicCommentAtSign"/>
   <int value="4677" label="HTMLDetailsElementNameAttribute"/>
   <int value="4678" label="HTMLDetailsElementNameAttributeClosesSelf"/>
@@ -11518,6 +11518,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4940" label="StaticPropertyInAnimation"/>
   <int value="4941" label="SimplifyLoadingTransparentPlaceholderImage"/>
   <int value="4942" label="IdentityDigitalCredentialsSuccess"/>
+  <int value="4943" label="V8DeviceProperties_UniqueId_AttributeGetter"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

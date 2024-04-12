@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/input/device_properties.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -103,7 +104,9 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
 
   Document* GetDocument() const;
 
-  int32_t deviceId() const { return device_id_; }
+  Member<DeviceProperties> deviceProperties() const {
+    return device_properties_.Get();
+  }
 
   void Trace(Visitor*) const override;
 
@@ -131,6 +134,7 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
   HeapVector<Member<PointerEvent>> predicted_events_;
 
   int32_t device_id_;
+  Member<DeviceProperties> device_properties_;
 };
 
 template <>

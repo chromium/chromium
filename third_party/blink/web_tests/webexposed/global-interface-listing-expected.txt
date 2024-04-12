@@ -1799,6 +1799,10 @@ interface DevicePosture : EventTarget
     getter type
     method constructor
     setter onchange
+interface DeviceProperties
+    attribute @@toStringTag
+    getter uniqueId
+    method constructor
 interface DigitalCredential : Credential
     attribute @@toStringTag
     getter data
@@ -7416,7 +7420,7 @@ interface PointerEvent : MouseEvent
     attribute @@toStringTag
     getter altitudeAngle
     getter azimuthAngle
-    getter deviceId
+    getter deviceProperties
     getter height
     getter isPrimary
     getter pointerId
