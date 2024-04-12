@@ -932,7 +932,7 @@ void VerifyInterfacesRegistryEntries(UpdaterScope scope) {
       const HKEY root = UpdaterScopeToHKeyRoot(scope);
       const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
       const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
-      const std::wstring iid_string = base::win::WStringFromGUID(iid);
+      const std::wstring iid_string = StringFromGuid(iid);
 
       for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
         std::wstring val;
@@ -1080,7 +1080,7 @@ void ExpectMarshalInterfaceSucceeds(UpdaterScope scope) {
                                     ? __uuidof(IUpdaterInternalSystem)
                                     : __uuidof(IUpdaterInternalUser);
   EXPECT_HRESULT_SUCCEEDED(::CoGetPSClsid(iupdaterinternal_iid, &psclsid));
-  EXPECT_EQ(base::ToUpperASCII(base::win::WStringFromGUID(psclsid)),
+  EXPECT_EQ(base::ToUpperASCII(StringFromGuid(psclsid)),
             L"{00020424-0000-0000-C000-000000000046}");
 
   // Get the proxy/stub factory buffer.

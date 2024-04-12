@@ -4,6 +4,7 @@
 
 #include "chrome/updater/util/win_util.h"
 
+#include <objbase.h>
 #include <regstr.h>
 #include <shellapi.h>
 #include <shlobj.h>
@@ -42,6 +43,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
+#include "base/win/win_util.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
@@ -646,6 +648,12 @@ TEST(WinUtil, OemInstallState) {
   ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kSetupStateKey, KEY_SET_VALUE)
                 .DeleteValue(L"ImageState"),
             ERROR_SUCCESS);
+}
+
+TEST(WinUtil, StringFromGuid) {
+  GUID guid = {0};
+  EXPECT_HRESULT_SUCCEEDED(::CoCreateGuid(&guid));
+  EXPECT_EQ(base::win::WStringFromGUID(guid), StringFromGuid(guid));
 }
 
 }  // namespace updater

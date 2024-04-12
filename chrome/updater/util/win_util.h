@@ -58,6 +58,10 @@ struct IidComparator {
 
 namespace updater {
 
+// Converts a `guid` to a string with the format
+// {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}.
+[[nodiscard]] std::wstring StringFromGuid(const GUID& guid);
+
 template <typename ValueT>
 using HResultOr = base::expected<ValueT, HRESULT>;
 
@@ -117,8 +121,8 @@ class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
  public:
   DynamicIIDsImpl() {
     VLOG(3) << __func__ << ": Interface: " << typeid(Interface).name()
-            << ": iid_user: " << base::win::WStringFromGUID(iid_user)
-            << ": iid_system: " << base::win::WStringFromGUID(iid_system)
+            << ": iid_user: " << StringFromGuid(iid_user)
+            << ": iid_system: " << StringFromGuid(iid_system)
             << ": IsSystemInstall(): " << IsSystemInstall();
   }
 

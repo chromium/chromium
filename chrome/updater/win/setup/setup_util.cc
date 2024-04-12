@@ -48,8 +48,8 @@ namespace {
 std::wstring CreateRandomTaskName(UpdaterScope scope) {
   GUID random_guid = {0};
   return SUCCEEDED(::CoCreateGuid(&random_guid))
-             ? base::StrCat({GetTaskNamePrefix(scope),
-                             base::win::WStringFromGUID(random_guid)})
+             ? base::StrCat(
+                   {GetTaskNamePrefix(scope), StringFromGuid(random_guid)})
              : std::wstring();
 }
 
@@ -71,7 +71,7 @@ void AddInstallComProgIdWorkItems(UpdaterScope scope,
                                   WorkItem::kWow64Default);
     list->AddSetRegValueWorkItem(root, progid_reg_path + L"\\CLSID",
                                  WorkItem::kWow64Default, L"",
-                                 base::win::WStringFromGUID(clsid), true);
+                                 StringFromGuid(clsid), true);
   }
 }
 
@@ -303,7 +303,7 @@ void AddInstallComInterfaceWorkItems(HKEY root,
       const std::wstring path = iid_reg_path + L"\\TypeLib";
       list->AddCreateRegKeyWorkItem(root, path, key_flag);
       list->AddSetRegValueWorkItem(root, path, key_flag, L"",
-                                   base::win::WStringFromGUID(iid), true);
+                                   StringFromGuid(iid), true);
       list->AddSetRegValueWorkItem(root, path, key_flag, L"Version", L"1.0",
                                    true);
     }
@@ -460,23 +460,19 @@ std::wstring GetComProgIdRegistryPath(const std::wstring& progid) {
 }
 
 std::wstring GetComServerClsidRegistryPath(REFCLSID clsid) {
-  return base::StrCat(
-      {L"Software\\Classes\\CLSID\\", base::win::WStringFromGUID(clsid)});
+  return base::StrCat({L"Software\\Classes\\CLSID\\", StringFromGuid(clsid)});
 }
 
 std::wstring GetComServerAppidRegistryPath(REFGUID appid) {
-  return base::StrCat(
-      {L"Software\\Classes\\AppID\\", base::win::WStringFromGUID(appid)});
+  return base::StrCat({L"Software\\Classes\\AppID\\", StringFromGuid(appid)});
 }
 
 std::wstring GetComIidRegistryPath(REFIID iid) {
-  return base::StrCat(
-      {L"Software\\Classes\\Interface\\", base::win::WStringFromGUID(iid)});
+  return base::StrCat({L"Software\\Classes\\Interface\\", StringFromGuid(iid)});
 }
 
 std::wstring GetComTypeLibRegistryPath(REFIID iid) {
-  return base::StrCat(
-      {L"Software\\Classes\\TypeLib\\", base::win::WStringFromGUID(iid)});
+  return base::StrCat({L"Software\\Classes\\TypeLib\\", StringFromGuid(iid)});
 }
 
 HRESULT RegisterTypeLibs(UpdaterScope scope, bool is_internal) {
@@ -613,7 +609,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IProcessLauncher2System), kUpdaterLegacySystemIndex},
   };
   const auto index = kTypeLibIndexes.find(iid);
-  CHECK(index != kTypeLibIndexes.end()) << base::win::WStringFromGUID(iid);
+  CHECK(index != kTypeLibIndexes.end()) << StringFromGuid(iid);
   return index->second;
 }
 

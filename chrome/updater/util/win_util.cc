@@ -1126,10 +1126,9 @@ bool EulaAccepted(const std::vector<std::string>& app_ids) {
 }
 
 void LogClsidEntries(REFCLSID clsid) {
-  const std::wstring local_server32_reg_path(
-      base::StrCat({base::StrCat({L"Software\\Classes\\CLSID\\",
-                                  base::win::WStringFromGUID(clsid)}),
-                    L"\\LocalServer32"}));
+  const std::wstring local_server32_reg_path(base::StrCat(
+      {base::StrCat({L"Software\\Classes\\CLSID\\", StringFromGuid(clsid)}),
+       L"\\LocalServer32"}));
   for (const HKEY root : {HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER}) {
     for (const REGSAM key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
       base::win::RegKey key;
@@ -1494,6 +1493,15 @@ bool IsOemInstalling() {
           << ", time_in_oem_mode: " << time_in_oem_mode
           << ", is_oem_installing: " << is_oem_installing;
   return is_oem_installing;
+}
+
+std::wstring StringFromGuid(const GUID& guid) {
+  // {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
+  constexpr int kGuidStringCharacters =
+      1 + 8 + 1 + 4 + 1 + 4 + 1 + 4 + 1 + 12 + 1 + 1;
+  wchar_t guid_string[kGuidStringCharacters] = {0};
+  CHECK_NE(::StringFromGUID2(guid, guid_string, kGuidStringCharacters), 0);
+  return guid_string;
 }
 
 }  // namespace updater

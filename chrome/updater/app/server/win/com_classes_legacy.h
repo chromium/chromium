@@ -149,8 +149,8 @@ class IDispatchImpl
     if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);
         FAILED(hr)) {
       LOG(ERROR) << __func__ << " ::LoadTypeLib failed, " << typelib_path
-                 << ", " << std::hex << hr << ", IID: "
-                 << base::win::WStringFromGUID(__uuidof(TDualInterface));
+                 << ", " << std::hex << hr
+                 << ", IID: " << StringFromGuid(__uuidof(TDualInterface));
       return hr;
     }
 
@@ -158,8 +158,8 @@ class IDispatchImpl
             type_lib->GetTypeInfoOfGuid(__uuidof(TDualInterface), &type_info_);
         FAILED(hr)) {
       LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed" << ", "
-                 << std::hex << hr << ", IID: "
-                 << base::win::WStringFromGUID(__uuidof(TDualInterface));
+                 << std::hex << hr
+                 << ", IID: " << StringFromGuid(__uuidof(TDualInterface));
       return hr;
     }
 

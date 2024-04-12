@@ -52,8 +52,8 @@ class ProxyImplBase {
   explicit ProxyImplBase(UpdaterScope scope) : scope_(scope) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
     VLOG(3) << __func__ << ": Interface: " << typeid(Interface).name()
-            << ": iid_user: " << base::win::WStringFromGUID(iid_user)
-            << ": iid_system: " << base::win::WStringFromGUID(iid_system)
+            << ": iid_user: " << StringFromGuid(iid_user)
+            << ": iid_system: " << StringFromGuid(iid_system)
             << ": scope: " << scope;
   }
 
@@ -83,8 +83,8 @@ class ProxyImplBase {
         if (SUCCEEDED(hr)) {
           return server;
         }
-        VLOG(2) << "::CoCreateInstance failed: "
-                << base::win::WStringFromGUID(clsid) << ": " << std::hex << hr;
+        VLOG(2) << "::CoCreateInstance failed: " << StringFromGuid(clsid)
+                << ": " << std::hex << hr;
         if (hr == REGDB_E_CLASSNOTREG) {
           return base::unexpected(hr);
         }
@@ -104,8 +104,8 @@ class ProxyImplBase {
     if (SUCCEEDED(hr)) {
       return server_interface;
     }
-    VLOG(2) << "Failed to query the interface: "
-            << base::win::WStringFromGUID(iid) << ": " << std::hex << hr;
+    VLOG(2) << "Failed to query the interface: " << StringFromGuid(iid) << ": "
+            << std::hex << hr;
     return base::unexpected(hr);
   }
 
