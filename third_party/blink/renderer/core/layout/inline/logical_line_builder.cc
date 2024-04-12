@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
+#include "third_party/blink/renderer/core/layout/inline/ruby_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
@@ -404,6 +405,7 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
     LogicalLineItems& line_box,
     InlineBoxState* box) {
   InlineItemResultRubyColumn& ruby_column = *item_result.ruby_column;
+  ApplyRubyAlign(item_result.inline_size, ruby_column.base_line);
 
   // Set up LogicalRubyColumns. This should be done before consuming the base
   // InlineItemResults because it might contain ruby columns, and annotation
@@ -437,6 +439,8 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
     wtf_size_t index,
     LineInfo& annotation_line,
     LogicalRubyColumn& logical_column) {
+  ApplyRubyAlign(item_result.inline_size, annotation_line);
+
   auto* line_items = MakeGarbageCollected<LogicalLineItems>();
   InlineLayoutStateStack state_stack;
   LogicalLineBuilder annotation_builder(node_, constraint_space_, &state_stack,

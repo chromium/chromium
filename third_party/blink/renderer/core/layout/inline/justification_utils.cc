@@ -167,6 +167,45 @@ void JustifyResults(String line_text,
   }
 }
 
+class ExpandableItemsFinder {
+  STACK_ALLOCATED();
+
+ public:
+  void Find(InlineItemResults& results) {
+    for (auto& item_result : results) {
+      if (item_result.item->Type() == InlineItem::kRubyLinePlaceholder) {
+        last_placeholder_item_ = &item_result;
+        if (!first_placeholder_item_) {
+          first_placeholder_item_ = &item_result;
+        }
+      }
+      if (item_result.item->Type() == InlineItem::kOpenRubyColumn &&
+          item_result.ruby_column) {
+        LineInfo& base_line = item_result.ruby_column->base_line;
+        if (item_result.inline_size == base_line.Width()) {
+          Find(*base_line.MutableResults());
+        }
+      }
+    }
+  }
+
+  InlineItemResult* FirstExpandable() const { return first_placeholder_item_; }
+  InlineItemResult* LastExpandable() const { return last_placeholder_item_; }
+
+ private:
+  // The first or the last kRubyLinePlaceholder.
+  InlineItemResult* first_placeholder_item_ = nullptr;
+  InlineItemResult* last_placeholder_item_ = nullptr;
+};
+
+void ApplyLeadingAndTrailingExpansion(LayoutUnit leading_expansion,
+                                      LayoutUnit trailing_expansion,
+                                      InlineItemResult& item_result) {
+  DCHECK_EQ(item_result.item->Type(), InlineItem::kRubyLinePlaceholder);
+  item_result.inline_size += leading_expansion + trailing_expansion;
+  item_result.spacing_before += leading_expansion;
+}
+
 }  // namespace
 
 std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
@@ -236,6 +275,23 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
   JustifyResults(line_text, line_text_start_offset, spacing,
                  *line_info->MutableResults());
   return inset / 2;
+}
+
+bool ApplyLeadingAndTrailingExpansion(LayoutUnit leading_expansion,
+                                      LayoutUnit trailing_expansion,
+                                      LineInfo& line_info) {
+  ExpandableItemsFinder finder;
+  finder.Find(*line_info.MutableResults());
+  InlineItemResult* first_expandable = finder.FirstExpandable();
+  InlineItemResult* last_expandable = finder.LastExpandable();
+  if (first_expandable && last_expandable) {
+    ApplyLeadingAndTrailingExpansion(leading_expansion, LayoutUnit(),
+                                     *first_expandable);
+    ApplyLeadingAndTrailingExpansion(LayoutUnit(), trailing_expansion,
+                                     *last_expandable);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace blink

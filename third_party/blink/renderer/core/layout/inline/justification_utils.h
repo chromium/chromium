@@ -27,6 +27,12 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
                                              JustificationTarget target,
                                              LineInfo* line_info);
 
+// Add spaces to the line. This works only for ruby-base and ruby-text for now.
+// Returns false if we couldn't expand the line.
+bool ApplyLeadingAndTrailingExpansion(LayoutUnit leading_expansion,
+                                      LayoutUnit trailing_expansion,
+                                      LineInfo& line_info);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_JUSTIFICATION_UTILS_H_

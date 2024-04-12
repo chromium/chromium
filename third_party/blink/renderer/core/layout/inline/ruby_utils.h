@@ -77,6 +77,8 @@ bool CanApplyStartOverhang(const LineInfo& line_info,
 LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
                                     LineInfo* line_info);
 
+void ApplyRubyAlign(LayoutUnit available_line_size, LineInfo& line_info);
+
 // Stores ComputeAnnotationOverflow() results.
 //
 // |overflow_over| and |space_over| are exclusive. Only one of them can be

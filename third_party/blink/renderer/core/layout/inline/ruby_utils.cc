@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
+#include "third_party/blink/renderer/core/layout/inline/justification_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_container.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
@@ -265,6 +266,64 @@ LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
   atomic_inline_item.inline_size -= end_overhang;
   atomic_inline_item.pending_end_overhang = LayoutUnit();
   return end_overhang;
+}
+
+void ApplyRubyAlign(LayoutUnit available_line_size, LineInfo& line_info) {
+  DCHECK(line_info.IsRubyBase() || line_info.IsRubyText());
+  LayoutUnit space = available_line_size - line_info.WidthForAlignment();
+  if (space <= LayoutUnit()) {
+    return;
+  }
+  ETextAlign text_align = line_info.TextAlign();
+  // Handle `space-around`.
+  if (text_align == ETextAlign::kJustify) {
+    JustificationTarget target = JustificationTarget::kNormal;
+    if (line_info.IsRubyBase()) {
+      target = JustificationTarget::kRubyBase;
+    } else {
+      DCHECK(line_info.IsRubyText());
+      target = JustificationTarget::kRubyText;
+    }
+    std::optional<LayoutUnit> inset =
+        ApplyJustification(space, target, &line_info);
+    if (inset) {
+      ApplyLeadingAndTrailingExpansion(*inset, *inset, line_info);
+    } else {
+      ApplyLeadingAndTrailingExpansion(space / 2, space / 2, line_info);
+    }
+    return;
+  }
+
+  bool is_ltr = IsLtr(line_info.BaseDirection());
+  if (text_align == ETextAlign::kLeft ||
+      text_align == ETextAlign::kWebkitLeft) {
+    text_align = is_ltr ? ETextAlign::kStart : ETextAlign::kEnd;
+  } else if (text_align == ETextAlign::kRight ||
+             text_align == ETextAlign::kWebkitRight) {
+    text_align = is_ltr ? ETextAlign::kEnd : ETextAlign::kStart;
+  }
+  switch (text_align) {
+    case ETextAlign::kStart:
+      ApplyLeadingAndTrailingExpansion(LayoutUnit(), space, line_info);
+      return;
+
+    case ETextAlign::kEnd:
+      ApplyLeadingAndTrailingExpansion(space, LayoutUnit(), line_info);
+      return;
+
+    case ETextAlign::kCenter:
+    case ETextAlign::kWebkitCenter:
+      ApplyLeadingAndTrailingExpansion(space / 2, space / 2, line_info);
+      return;
+
+    case ETextAlign::kLeft:
+    case ETextAlign::kWebkitLeft:
+    case ETextAlign::kRight:
+    case ETextAlign::kWebkitRight:
+    case ETextAlign::kJustify:
+      NOTREACHED();
+      break;
+  }
 }
 
 AnnotationMetrics ComputeAnnotationOverflow(
