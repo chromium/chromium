@@ -3863,6 +3863,12 @@ targets.legacy_basic_suite(
         "media_unittests_skia_graphite_dawn": targets.legacy_test_config(),
         "media_unittests_skia_graphite_metal": targets.legacy_test_config(),
         "midi_unittests": targets.legacy_test_config(),
+        "mojo_unittests": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.mojo_unittests.filter",
+            ],
+        ),
         "native_theme_unittests": targets.legacy_test_config(),
         "net_unittests": targets.legacy_test_config(),
         "perfetto_unittests": targets.legacy_test_config(),

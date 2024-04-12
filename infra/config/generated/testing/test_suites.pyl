@@ -4224,6 +4224,12 @@
         ],
       },
       'midi_unittests': {},
+      'mojo_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.mojo_unittests.filter',
+        ],
+      },
       'native_theme_unittests': {},
       'net_unittests': {},
       'perfetto_unittests': {},
