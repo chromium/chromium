@@ -11,7 +11,7 @@
 // items. Handles performing share actions chosen by the user and opening the
 // sharing service pref pane so that the user can enable or disable services.
 @interface ShareMenuController
-    : NSObject<NSMenuDelegate, NSSharingServiceDelegate>
+    : NSObject <NSMenuDelegate, NSMenuItemValidation, NSSharingServiceDelegate>
 @end
 
 #endif  // CHROME_BROWSER_UI_COCOA_SHARE_MENU_CONTROLLER_H_

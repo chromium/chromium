@@ -75,7 +75,7 @@ bool CanShare() {
                       target:(id*)target
                       action:(SEL*)action {
   // Load the menu if it hasn't loaded already.
-  if ([menu numberOfItems] == 0) {
+  if (!menu.numberOfItems) {
     [self menuNeedsUpdate:menu];
   }
   // Per tapted@'s comment in BookmarkMenuCocoaController, it's fine
@@ -86,9 +86,7 @@ bool CanShare() {
 
 - (void)menuNeedsUpdate:(NSMenu*)menu {
   [menu removeAllItems];
-  [menu setAutoenablesItems:NO];
 
-  bool canShare = CanShare();
   // Using a real URL instead of empty string to avoid system log about relative
   // URLs in the pasteboard. This URL will not actually be shared to, just used
   // to fetch sharing services that can handle the NSURL type.
@@ -96,11 +94,10 @@ bool CanShare() {
       sharingServicesForItems:@[ [NSURL URLWithString:@"https://google.com"] ]];
   for (NSSharingService* service in services) {
     // Don't include "Add to Reading List".
-    if ([[service name]
+    if ([service.name
             isEqualToString:NSSharingServiceNameAddToSafariReadingList])
       continue;
     NSMenuItem* item = [self menuItemForService:service];
-    [item setEnabled:canShare];
     [menu addItem:item];
   }
   NSMenuItem* moreItem = [[NSMenuItem alloc]
@@ -110,6 +107,16 @@ bool CanShare() {
   moreItem.target = self;
   moreItem.image = [self moreImage];
   [menu addItem:moreItem];
+}
+
+// NSMenuItemValidation
+
+- (BOOL)validateMenuItem:(NSMenuItem*)menuItem {
+  if (menuItem.action == @selector(openSharingPrefs:)) {
+    return YES;
+  }
+
+  return CanShare();
 }
 
 // NSSharingServiceDelegate
@@ -243,7 +250,7 @@ bool CanShare() {
 
 // Creates a menu item that calls |service| when invoked.
 - (NSMenuItem*)menuItemForService:(NSSharingService*)service {
-  BOOL isMail = [[service name] isEqual:NSSharingServiceNameComposeEmail];
+  BOOL isMail = [service.name isEqual:NSSharingServiceNameComposeEmail];
   NSString* keyEquivalent = isMail ? [self keyEquivalentForMail] : @"";
   NSString* title = isMail ? l10n_util::GetNSString(IDS_EMAIL_LINK_MAC)
                            : service.menuItemTitle;
@@ -251,7 +258,7 @@ bool CanShare() {
                                                 action:@selector(performShare:)
                                          keyEquivalent:keyEquivalent];
   item.target = self;
-  item.image = [service image];
+  item.image = service.image;
   item.representedObject = service;
   return item;
 }
