@@ -15,6 +15,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
@@ -29,6 +30,135 @@ namespace {
 
 const int kMouseDeviceId = 1;
 const char* kDefaultDisplaySize = "1200x800";
+
+// Facial gestures recognized by Mediapipe. Ensure this enum stays in sync with
+// the source of truth in chrome/browser/resources/chromeos/accessibility/\
+// accessibility_common/facegaze/gesture_detector.ts.
+enum Gesture {
+  BROW_DOWN_LEFT,
+  BROW_DOWN_RIGHT,
+  BROW_INNER_UP,
+  EYE_BLINK_LEFT,
+  EYE_BLINK_RIGHT,
+  EYE_LOOK_DOWN_LEFT,
+  EYE_LOOK_DOWN_RIGHT,
+  EYE_LOOK_IN_LEFT,
+  EYE_LOOK_IN_RIGHT,
+  EYE_LOOK_OUT_LEFT,
+  EYE_LOOK_OUT_RIGHT,
+  EYE_LOOK_UP_LEFT,
+  EYE_LOOK_UP_RIGHT,
+  EYE_SQUINT_LEFT,
+  EYE_SQUINT_RIGHT,
+  JAW_OPEN,
+  MOUTH_LEFT,
+  MOUTH_PUCKER,
+  MOUTH_RIGHT,
+  MOUTH_SMILE_LEFT,
+  MOUTH_SMILE_RIGHT,
+  MOUTH_UPPER_UP_LEFT,
+  MOUTH_UPPER_UP_RIGHT,
+};
+
+std::string ToString(const Gesture& gesture) {
+  switch (gesture) {
+    case BROW_DOWN_LEFT:
+      return "browDownLeft";
+    case BROW_DOWN_RIGHT:
+      return "browDownRight";
+    case BROW_INNER_UP:
+      return "browInnerUp";
+    case EYE_BLINK_LEFT:
+      return "eyeBlinkLeft";
+    case EYE_BLINK_RIGHT:
+      return "eyeBlinkRight";
+    case EYE_LOOK_DOWN_LEFT:
+      return "eyeLookDownLeft";
+    case EYE_LOOK_DOWN_RIGHT:
+      return "eyeLookDownRight";
+    case EYE_LOOK_IN_LEFT:
+      return "eyeLookInLeft";
+    case EYE_LOOK_IN_RIGHT:
+      return "eyeLookInRight";
+    case EYE_LOOK_OUT_LEFT:
+      return "eyeLookOutLeft";
+    case EYE_LOOK_OUT_RIGHT:
+      return "eyeLookOutRight";
+    case EYE_LOOK_UP_LEFT:
+      return "eyeLookUpLeft";
+    case EYE_LOOK_UP_RIGHT:
+      return "eyeLookUpRight";
+    case EYE_SQUINT_LEFT:
+      return "eyeSquintLeft";
+    case EYE_SQUINT_RIGHT:
+      return "eyeSquintRight";
+    case JAW_OPEN:
+      return "jawOpen";
+    case MOUTH_LEFT:
+      return "mouthLeft";
+    case MOUTH_PUCKER:
+      return "mouthPucker";
+    case MOUTH_RIGHT:
+      return "mouthRight";
+    case MOUTH_SMILE_LEFT:
+      return "mouthSmileLeft";
+    case MOUTH_SMILE_RIGHT:
+      return "mouthSmileRight";
+    case MOUTH_UPPER_UP_LEFT:
+      return "mouthUpperUpLeft";
+    case MOUTH_UPPER_UP_RIGHT:
+      return "mouthUpperUpRight";
+  }
+}
+
+// Macros used by accessibility features on ChromeOS.
+// Ensure this enum stays in sync with the source of truth in
+// ash/webui/common/resources/accessibility/macro_names.ts.
+enum MacroName {
+  UNSPECIFIED = 0,
+  INPUT_TEXT_VIEW = 1,
+  DELETE_PREV_CHAR = 2,
+  NAV_PREV_CHAR = 3,
+  NAV_NEXT_CHAR = 4,
+  NAV_PREV_LINE = 5,
+  NAV_NEXT_LINE = 6,
+  COPY_SELECTED_TEXT = 7,
+  PASTE_TEXT = 8,
+  CUT_SELECTED_TEXT = 9,
+  UNDO_TEXT_EDIT = 10,
+  REDO_ACTION = 11,
+  SELECT_ALL_TEXT = 12,
+  UNSELECT_TEXT = 13,
+  LIST_COMMANDS = 14,
+  NEW_LINE = 15,
+  TOGGLE_DICTATION = 16,
+  DELETE_PREV_WORD = 17,
+  DELETE_PREV_SENT = 18,
+  NAV_NEXT_WORD = 19,
+  NAV_PREV_WORD = 20,
+  SMART_DELETE_PHRASE = 21,
+  SMART_REPLACE_PHRASE = 22,
+  SMART_INSERT_BEFORE = 23,
+  SMART_SELECT_BTWN_INCL = 24,
+  NAV_NEXT_SENT = 25,
+  NAV_PREV_SENT = 26,
+  DELETE_ALL_TEXT = 27,
+  NAV_START_TEXT = 28,
+  NAV_END_TEXT = 29,
+  SELECT_PREV_WORD = 30,
+  SELECT_NEXT_WORD = 31,
+  SELECT_NEXT_CHAR = 32,
+  SELECT_PREV_CHAR = 33,
+  REPEAT = 34,
+  MOUSE_CLICK_LEFT = 35,
+  MOUSE_CLICK_RIGHT = 36,
+  RESET_CURSOR = 37,
+  KEY_PRESS_SPACE = 38,
+  KEY_PRESS_LEFT = 39,
+  KEY_PRESS_RIGHT = 40,
+  KEY_PRESS_UP = 41,
+  KEY_PRESS_DOWN = 42,
+};
 
 aura::Window* GetRootWindow() {
   auto* root_window = Shell::GetRootWindowForNewWindows();
@@ -52,7 +182,12 @@ class MockEventHandler : public ui::EventHandler {
   }
 
   void OnMouseEvent(ui::MouseEvent* event) override {
-    mouse_events_.push_back(*event);
+    ui::EventType type = event->type();
+    if (type == ui::EventType::ET_MOUSE_PRESSED ||
+        type == ui::EventType::ET_MOUSE_RELEASED ||
+        type == ui::EventType::ET_MOUSE_MOVED) {
+      mouse_events_.push_back(*event);
+    }
   }
 
   void ClearEvents() {
@@ -265,9 +400,10 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
   ConfigureFaceGaze(
       Config()
           .AsDefault()
-          .WithGesturesToMacros(
-              base::Value::Dict().Set("jawOpen", /*RESET_CURSOR*/ 37))
-          .WithGestureConfidences(base::Value::Dict().Set("jawOpen", 70)));
+          .WithGesturesToMacros(base::Value::Dict().Set(
+              ToString(Gesture::JAW_OPEN), MacroName::RESET_CURSOR))
+          .WithGestureConfidences(
+              base::Value::Dict().Set(ToString(Gesture::JAW_OPEN), 70)));
 
   // Move cursor.
   utils()->ProcessFaceLandmarkerResult(
@@ -279,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
 
   // Reset the cursor to the center of the screen using a gesture.
   utils()->ProcessFaceLandmarkerResult(
-      MockFaceLandmarkerResult().WithGesture("jawOpen", 90));
+      MockFaceLandmarkerResult().WithGesture(ToString(Gesture::JAW_OPEN), 90));
   AssertCursorAt(gfx::Point(600, 400));
 
   // We expect one mouse move event to be received because the FaceGaze
@@ -297,9 +433,10 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   ConfigureFaceGaze(
       Config()
           .AsDefault()
-          .WithGesturesToMacros(
-              base::Value::Dict().Set("jawOpen", /*RESET_CURSOR*/ 37))
-          .WithGestureConfidences(base::Value::Dict().Set("jawOpen", 100)));
+          .WithGesturesToMacros(base::Value::Dict().Set(
+              ToString(Gesture::JAW_OPEN), MacroName::RESET_CURSOR))
+          .WithGestureConfidences(
+              base::Value::Dict().Set(ToString(Gesture::JAW_OPEN), 100)));
 
   // Move cursor.
   utils()->ProcessFaceLandmarkerResult(
@@ -312,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   // confidence.
   event_handler().ClearEvents();
   utils()->ProcessFaceLandmarkerResult(
-      MockFaceLandmarkerResult().WithGesture("jawOpen", 90));
+      MockFaceLandmarkerResult().WithGesture(ToString(Gesture::JAW_OPEN), 90));
   AssertCursorAt(gfx::Point(360, 560));
   ASSERT_EQ(0u, event_handler().mouse_events().size());
 }
@@ -333,6 +470,35 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
     utils()->TriggerMouseControllerInterval();
     AssertCursorAt(gfx::Point(600 - i, 400 + i));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, SpaceKeyEvents) {
+  ConfigureFaceGaze(
+      Config()
+          .AsDefault()
+          .WithGesturesToMacros(base::Value::Dict().Set(
+              ToString(Gesture::MOUTH_LEFT), MacroName::KEY_PRESS_SPACE))
+          .WithGestureConfidences(
+              base::Value::Dict().Set(ToString(Gesture::MOUTH_LEFT), 70)));
+
+  // Open jaw for space key press.
+  event_handler().ClearEvents();
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      ToString(Gesture::MOUTH_LEFT), 90));
+  ASSERT_EQ(0u, event_handler().mouse_events().size());
+  std::vector<ui::KeyEvent> key_events = event_handler().key_events();
+  ASSERT_EQ(1u, key_events.size());
+  ASSERT_EQ(ui::KeyboardCode::VKEY_SPACE, key_events[0].key_code());
+  ASSERT_EQ(ui::EventType::ET_KEY_PRESSED, key_events[0].type());
+
+  // Release gesture for space key release.
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      ToString(Gesture::MOUTH_LEFT), 10));
+  ASSERT_EQ(0u, event_handler().mouse_events().size());
+  key_events = event_handler().key_events();
+  ASSERT_EQ(2u, event_handler().key_events().size());
+  ASSERT_EQ(ui::KeyboardCode::VKEY_SPACE, key_events[1].key_code());
+  ASSERT_EQ(ui::EventType::ET_KEY_RELEASED, key_events[1].type());
 }
 
 }  // namespace ash
