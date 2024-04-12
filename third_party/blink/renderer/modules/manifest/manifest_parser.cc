@@ -2422,6 +2422,9 @@ Vector<SafeUrlPattern> ManifestParser::ParseScopePatterns(
   }
 
   for (wtf_size_t i = 0; i < scope_patterns_list->size(); ++i) {
+    // TODO(b/330640840): allow strings to be passed through here and parsed via
+    // liburlpattern::ConstructorStringParser. The result of the parse can then
+    // be used to create a PatternInit object for the rest of the process.
     JSONObject* pattern_object = JSONObject::Cast(scope_patterns_list->at(i));
     if (!pattern_object) {
       continue;
