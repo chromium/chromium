@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -26,11 +25,8 @@ void SearchProviderAsh::BindReceiver(
   registry_receivers_.Add(this, std::move(pending_receiver));
 }
 
-void SearchProviderAsh::Search(const std::u16string& query,
-                               SearchResultsReceivedCallback callback) {
-  if (search_controller_) {
-    search_controller_->Search(query, std::move(callback));
-  }
+SearchControllerAsh* SearchProviderAsh::GetController() {
+  return search_controller_.get();
 }
 
 void SearchProviderAsh::RegisterSearchController(
@@ -44,10 +40,6 @@ void SearchProviderAsh::RegisterSearchController(
   search_controller_->AddDisconnectHandler(
       base::BindOnce(&SearchProviderAsh::OnSearchControllerDisconnected,
                      weak_factory_.GetWeakPtr()));
-}
-
-bool SearchProviderAsh::IsSearchControllerConnected() const {
-  return search_controller_.get();
 }
 
 void SearchProviderAsh::OnSearchControllerDisconnected(

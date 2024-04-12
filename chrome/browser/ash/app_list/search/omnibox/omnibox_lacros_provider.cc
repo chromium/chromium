@@ -65,6 +65,13 @@ OmniboxLacrosProvider::OmniboxLacrosProvider(
 
 OmniboxLacrosProvider::~OmniboxLacrosProvider() = default;
 
+crosapi::SearchControllerAsh* OmniboxLacrosProvider::GetSearchController() {
+  if (!search_provider_) {
+    return nullptr;
+  }
+  return search_provider_->GetController();
+}
+
 void OmniboxLacrosProvider::StartWithoutSearchProvider(
     const std::u16string& query) {
   // If Lacros is unexpectedly not available (e.g. mount failure), make sure
@@ -107,7 +114,8 @@ void OmniboxLacrosProvider::StartWithoutSearchProvider(
 }
 
 void OmniboxLacrosProvider::Start(const std::u16string& query) {
-  if (!search_provider_ || !search_provider_->IsSearchControllerConnected()) {
+  crosapi::SearchControllerAsh* search_controller = GetSearchController();
+  if (!search_controller || !search_controller->IsConnected()) {
     StartWithoutSearchProvider(query);
     return;
   }
@@ -123,7 +131,7 @@ void OmniboxLacrosProvider::Start(const std::u16string& query) {
       AutocompleteInput(query, metrics::OmniboxEventProto::CHROMEOS_APP_LIST,
                         ChromeAutocompleteSchemeClassifier(profile_));
 
-  search_provider_->Search(
+  search_controller->Search(
       query, base::BindRepeating(&OmniboxLacrosProvider::OnResultsReceived,
                                  weak_factory_.GetWeakPtr()));
 }

@@ -20,11 +20,20 @@ class Profile;
 
 namespace crosapi {
 class CrosapiManager;
+class SearchControllerAsh;
 class SearchProviderAsh;
 }  // namespace crosapi
 
 namespace app_list {
 
+// `OmniboxLacrosProvider` wraps `crosapi::SearchControllerAsh` - an ash-chrome
+// interface to a lacros-chrome `AutocompleteController` - to provide omnibox
+// results.
+//
+// A *shared* `crosapi::SearchControllerAsh` obtained from
+// `crosapi::SearchProviderAsh` is used for all instances of this class. Calling
+// `Start` will interrupt any unfinished searches in other
+// `OmniboxLacrosProvider` instances.
 class OmniboxLacrosProvider : public SearchProvider {
  public:
   OmniboxLacrosProvider(Profile* profile,
@@ -38,6 +47,8 @@ class OmniboxLacrosProvider : public SearchProvider {
   ash::AppListSearchResultType ResultType() const override;
 
  private:
+  crosapi::SearchControllerAsh* GetSearchController();
+
   void OnResultsReceived(std::vector<crosapi::mojom::SearchResultPtr> results);
   void StartWithoutSearchProvider(const std::u16string& query);
 

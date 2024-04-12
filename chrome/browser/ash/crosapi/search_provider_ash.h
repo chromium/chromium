@@ -51,21 +51,13 @@ class SearchProviderAsh : public mojom::SearchControllerRegistry {
 
   using SearchResultsReceivedCallback =
       SearchControllerAsh::SearchResultsReceivedCallback;
-  // Sends search query to lacros. The callback will be called each time results
-  // are received from lacros via OnSearchResultsReceived().
-  // If a search query is called while there is an in-flight search query, the
-  // in-flight search query will be cancelled (from lacros side) before the new
-  // search query is executed.
-  // When lacros finishes the search, it'll terminate the connection and no more
-  // results will be sent.
-  void Search(const std::u16string& query,
-              SearchResultsReceivedCallback callback);
+
+  // If non-null, this is guaranteed to be connected.
+  SearchControllerAsh* GetController();
 
   // mojom::SearchControllerRegistry overrides:
   void RegisterSearchController(
       mojo::PendingRemote<mojom::SearchController> search_controller) override;
-
-  bool IsSearchControllerConnected() const;
 
  private:
   void OnSearchControllerDisconnected(
