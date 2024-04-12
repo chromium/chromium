@@ -71,6 +71,11 @@
   _mediator->SetConsumer(_viewController);
   _viewController.mutator = _mediator->AsMutator();
   [_baseNavigationController pushViewController:viewController animated:YES];
+  __weak __typeof__(self) weakSelf = self;
+  _modelController->ShowDialog(
+      base::BindOnce(^base::WeakPtr<autofill::CardUnmaskOtpInputDialogView>() {
+        return [weakSelf otpInputdialogView];
+      }));
 }
 
 - (void)stop {
@@ -84,6 +89,12 @@
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          BrowserCoordinatorCommands);
   [browserCoordinatorCommandsHandler dismissCardUnmaskAuthentication];
+}
+
+#pragma mark - Private
+
+- (base::WeakPtr<autofill::CardUnmaskOtpInputDialogView>)otpInputdialogView {
+  return _mediator->GetWeakPtr();
 }
 
 @end
