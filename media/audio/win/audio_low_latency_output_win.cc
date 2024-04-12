@@ -791,8 +791,9 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         if (is_glitch) {
           TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("audio"), "glitch",
                                TRACE_EVENT_SCOPE_THREAD);
-          glitch_info_accumulator.Add(AudioGlitchInfo::SingleBoundedGlitch(
-              gap_duration, AudioGlitchInfo::Direction::kRender));
+          glitch_info_accumulator.Add(
+              AudioGlitchInfo::SingleBoundedSystemGlitch(
+                  gap_duration, AudioGlitchInfo::Direction::kRender));
         }
       }
 

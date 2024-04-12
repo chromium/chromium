@@ -428,7 +428,7 @@ void CrasUnifiedStream::CalculateAudioGlitches(
   glitch_reporter_.UpdateStats(underrun_glitch_duration);
 
   if (underrun_glitch_duration.is_positive()) {
-    glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+    glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
         underrun_glitch_duration, AudioGlitchInfo::Direction::kRender));
     TRACE_EVENT_INSTANT("audio", "glitch", [&](perfetto::EventContext ctx) {
       auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();

@@ -626,7 +626,7 @@ void CrasInputStream::CalculateAudioGlitches(
       overrun_glitch_duration + dropped_samples_glitch_duration;
   glitch_reporter_.UpdateStats(glitch_duration);
   if (glitch_duration.is_positive()) {
-    glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+    glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
         glitch_duration, AudioGlitchInfo::Direction::kCapture));
   }
 

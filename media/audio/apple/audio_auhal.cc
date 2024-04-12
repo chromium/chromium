@@ -581,7 +581,7 @@ void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
         });
     glitch_reporter_.UpdateStats(lost_audio_duration);
     if (!lost_audio_duration.is_zero()) {
-      glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+      glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
           lost_audio_duration, AudioGlitchInfo::Direction::kRender));
     }
   }

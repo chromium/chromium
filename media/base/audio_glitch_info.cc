@@ -20,7 +20,7 @@ std::string AudioGlitchInfo::ToString() const {
 }
 
 // static
-AudioGlitchInfo AudioGlitchInfo::SingleBoundedGlitch(
+AudioGlitchInfo AudioGlitchInfo::SingleBoundedSystemGlitch(
     const base::TimeDelta duration,
     const Direction direction) {
   CHECK(duration.is_positive());
