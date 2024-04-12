@@ -86,6 +86,7 @@ class MahiWebContentsManager {
 
   void OnGetSnapshot(const base::UnguessableToken& page_id,
                      content::WebContents* web_contents,
+                     const base::Time& start_time,
                      const ui::AXTreeUpdate& snapshot);
 
   void OnFinishDistillableCheck(const base::UnguessableToken& page_id,

@@ -10,8 +10,10 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
@@ -141,7 +143,8 @@ void MahiContentExtractionDelegate::ExtractContent(
 }
 
 void MahiContentExtractionDelegate::CheckDistillablity(
-    const WebContentState& web_content_state) {
+    const WebContentState& web_content_state,
+    const base::Time& start_time) {
   // Early returns if the snapshot is not valid.
   // TODO(b/318565573) consider adding some error states so that OS side have a
   // better sense of the operations on the browser side.
@@ -165,12 +168,15 @@ void MahiContentExtractionDelegate::CheckDistillablity(
       std::move(extraction_request),
       base::BindOnce(&MahiContentExtractionDelegate::OnGetContentSize,
                      weak_pointer_factory_.GetWeakPtr(),
-                     web_content_state.page_id));
+                     web_content_state.page_id, start_time));
 }
 
 void MahiContentExtractionDelegate::OnGetContentSize(
     const base::UnguessableToken& page_id,
+    const base::Time& start_time,
     mojom::ContentSizeResponsePtr response) {
+  base::UmaHistogramMicrosecondsTimes(kMahiContentExtractionTriggeringLatency,
+                                      base::Time::Now() - start_time);
   distillable_check_callback_.Run(page_id,
                                   response->word_count >= kWordCountThreshold);
 }

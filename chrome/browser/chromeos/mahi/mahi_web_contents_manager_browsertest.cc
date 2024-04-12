@@ -225,6 +225,7 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::HistogramTester histogram;
 
   // Initially, the focused state and the requested state should be different.
   EXPECT_NE(
@@ -247,16 +248,20 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
       })
       // When a new page gets focus, the `MahiBrowserDelegate` should be
       // notified without the distillability check.
-      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info,
-                   base::OnceCallback<void(bool)> callback) {
+      .WillOnce([&histogram](crosapi::mojom::MahiPageInfoPtr page_info,
+                             base::OnceCallback<void(bool)> callback) {
         EXPECT_EQ(GURL(kUrl), page_info->url);
         EXPECT_FALSE(page_info->IsDistillable.has_value());
         std::move(callback).Run(/*success=*/true);
+        // Before distillability check finishes, triggering metric is not
+        // logged.
+        histogram.ExpectTotalCount(kMahiContentExtractionTriggeringLatency, 0);
       })
       // When the focused page finishes loading, the `MahiBrowserDelegate`
       // should be notified with the distillability check.
-      .WillOnce([&run_loop](crosapi::mojom::MahiPageInfoPtr page_info,
-                            base::OnceCallback<void(bool)> callback) {
+      .WillOnce([&run_loop, &histogram](
+                    crosapi::mojom::MahiPageInfoPtr page_info,
+                    base::OnceCallback<void(bool)> callback) {
         EXPECT_EQ(GURL(kUrl), page_info->url);
         EXPECT_TRUE(page_info->IsDistillable.has_value());
         EXPECT_FALSE(page_info->IsDistillable.value());
@@ -265,6 +270,9 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
 
         std::move(callback).Run(/*success=*/true);
         run_loop.Quit();
+
+        // When distillability check finishes, triggering metric is logged.
+        histogram.ExpectTotalCount(kMahiContentExtractionTriggeringLatency, 1);
       });
 
   CreateWebContent();

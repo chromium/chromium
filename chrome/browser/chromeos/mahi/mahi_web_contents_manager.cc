@@ -77,6 +77,8 @@ void MahiWebContentsManager::OnFocusedPageLoadComplete(
   if (!is_initialized_) {
     return;
   }
+  base::Time start_time = base::Time::Now();
+
   // Page info may not be properly updated yet if the user forwards/backwards
   // the tab through cache. Thus, if focused page's URL does not change, we
   // don't create a new `focused_web_content_state_` here, and instead rely on
@@ -112,7 +114,8 @@ void MahiWebContentsManager::OnFocusedPageLoadComplete(
   web_contents->RequestAXTreeSnapshot(
       base::BindOnce(&MahiWebContentsManager::OnGetSnapshot,
                      weak_pointer_factory_.GetWeakPtr(),
-                     focused_web_content_state_.page_id, web_contents),
+                     focused_web_content_state_.page_id, web_contents,
+                     start_time),
       ui::kAXModeWebContentsOnly,
       /* max_nodes= */ 5000, /* timeout= */ {});
 }
@@ -178,6 +181,7 @@ void MahiWebContentsManager::ResetInstanceForTesting() {
 void MahiWebContentsManager::OnGetSnapshot(
     const base::UnguessableToken& page_id,
     content::WebContents* web_contents,
+    const base::Time& start_time,
     const ui::AXTreeUpdate& snapshot) {
   // Updates states and checks the distillability of the snapshot.
   if (page_id == focused_web_content_state_.page_id) {
@@ -203,12 +207,12 @@ void MahiWebContentsManager::OnGetSnapshot(
           focused_web_content_state_, client_->client_id(), base::DoNothing());
     }
 #endif
-    content_extraction_delegate_->CheckDistillablity(
-        focused_web_content_state_);
+    content_extraction_delegate_->CheckDistillablity(focused_web_content_state_,
+                                                     start_time);
   } else if (page_id == requested_web_content_state_.page_id) {
     requested_web_content_state_.snapshot = snapshot;
     content_extraction_delegate_->CheckDistillablity(
-        requested_web_content_state_);
+        requested_web_content_state_, start_time);
   }
 }
 

@@ -50,10 +50,12 @@ class MahiContentExtractionDelegate {
   // Requests the content extraction service to check the page distillability
   // based on the a11y update. `distillable_check_callback_` will be triggered
   // when the check is finished.
-  void CheckDistillablity(const WebContentState& web_content_state);
+  void CheckDistillablity(const WebContentState& web_content_state,
+                          const base::Time& start_time);
 
  private:
   void OnGetContentSize(const base::UnguessableToken& page_id,
+                        const base::Time& start_time,
                         mojom::ContentSizeResponsePtr response);
 
   void OnGetContent(const base::UnguessableToken& page_id,

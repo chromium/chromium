@@ -2260,6 +2260,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Mahi.ContentExtraction.TriggeringLatency" units="ms"
+    expires_after="2025-04-04">
+  <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
+  <summary>
+    Records the latency of the distillability check result is available after
+    the web page finishes loading. Emitted when the distillability check result
+    is returned by the utility process.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Mahi.ContextMenuView.Activated"
     enum="MahiContextMenuButtonType" expires_after="2025-04-04">
   <owner>leandre@chromium.org</owner>

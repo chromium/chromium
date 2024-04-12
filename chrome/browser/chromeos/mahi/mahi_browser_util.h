@@ -19,6 +19,8 @@ namespace mahi {
 using ActionType = crosapi::mojom::MahiContextMenuActionType;
 
 // Metrics:
+inline constexpr char kMahiContentExtractionTriggeringLatency[] =
+    "ChromeOS.Mahi.ContentExtraction.TriggeringLatency";
 inline constexpr char kMahiContextMenuActivated[] =
     "ChromeOS.Mahi.ContextMenuView.Activated";
 inline constexpr char kMahiContextMenuActivatedFailed[] =
