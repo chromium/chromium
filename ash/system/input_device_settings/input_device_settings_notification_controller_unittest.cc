@@ -11,6 +11,7 @@
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
@@ -19,8 +20,10 @@
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/fake_message_center.h"
 
 namespace ash {
@@ -28,6 +31,7 @@ namespace ash {
 namespace {
 
 constexpr char kTopRowKeyNoMatchNudgeId[] = "top-row-key-no-match-nudge-id";
+constexpr char kSixPackKeyNoMatchNudgeId[] = "six-patch-key-no-match-nudge-id";
 
 const mojom::Mouse kMouse1 = mojom::Mouse(
     /*name=*/"Razer Basilisk V3",
@@ -88,6 +92,10 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
               (const GURL& url, OpenUrlFrom from, Disposition disposition),
               (override));
 };
+
+void CancelNudge(const std::string& id) {
+  Shell::Get()->anchored_nudge_manager()->Cancel(id);
+}
 
 }  // namespace
 
@@ -513,6 +521,112 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
           kTopRowKeyNoMatchNudgeId);
   ASSERT_TRUE(nudge_shown);
   EXPECT_TRUE(nudge_shown->GetVisible());
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       ShowSixPackKeyRewritingNudge) {
+  const AnchoredNudge* nudge =
+      Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+          kSixPackKeyNoMatchNudgeId);
+  ASSERT_FALSE(nudge);
+  base::Value::Dict overrides;
+  overrides.Set(prefs::kSixPackKeyInsert, /*kSearch*/ 2);
+  overrides.Set(prefs::kSixPackKeyDelete, /*kAlt*/ 1);
+  overrides.Set(prefs::kSixPackKeyHome, /*kSearch*/ 2);
+  overrides.Set(prefs::kSixPackKeyPageUp, /*kAlt*/ 1);
+  overrides.Set(prefs::kSixPackKeyEnd, /*kSearch*/ 2);
+  base::Value::Dict remappings;
+  remappings.Set(prefs::kKeyboardSettingSixPackKeyRemappings,
+                 std::move(overrides));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetDict(
+      prefs::kKeyboardDefaultChromeOSSettings, std::move(remappings));
+  AnchoredNudgeManagerImpl* nudge_manager =
+      Shell::Get()->anchored_nudge_manager();
+  EXPECT_TRUE(nudge_manager);
+
+  // Display nudge for VKEY_INSERT.
+  controller()->ShowSixPackKeyRewritingNudge(
+      ui::VKEY_INSERT, ui::mojom::SixPackShortcutModifier::kSearch);
+  const AnchoredNudge* nudge_shown =
+      nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId);
+  ASSERT_TRUE(nudge_shown);
+  EXPECT_TRUE(nudge_shown->GetVisible());
+  EXPECT_EQ(
+      nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_SHIFT_BACKSPACE_NUDGE_DESCRIPTION));
+  CancelNudge(kSixPackKeyNoMatchNudgeId);
+  EXPECT_FALSE(nudge_shown->GetVisible());
+
+  // Display nudge for VKEY_DELETE.
+  controller()->ShowSixPackKeyRewritingNudge(
+      ui::VKEY_DELETE, ui::mojom::SixPackShortcutModifier::kSearch);
+  // Modifier not match, nudge should not show.
+  EXPECT_FALSE(nudge_shown->GetVisible());
+  controller()->ShowSixPackKeyRewritingNudge(
+      ui::VKEY_DELETE, ui::mojom::SixPackShortcutModifier::kAlt);
+  EXPECT_TRUE(nudge_shown);
+  EXPECT_TRUE(nudge_shown->GetVisible());
+  EXPECT_EQ(
+      nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_BACKSPACE_NUDGE_DESCRIPTION));
+  CancelNudge(kSixPackKeyNoMatchNudgeId);
+  EXPECT_FALSE(nudge_shown->GetVisible());
+
+  // Display nudge for VKEY_HOME.
+  EXPECT_FALSE(nudge_shown->GetVisible());
+  controller()->ShowSixPackKeyRewritingNudge(
+      ui::VKEY_HOME, ui::mojom::SixPackShortcutModifier::kSearch);
+  EXPECT_TRUE(nudge_shown);
+  EXPECT_TRUE(nudge_shown->GetVisible());
+  EXPECT_EQ(
+      nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_LEFT_NUDGE_DESCRIPTION));
+  CancelNudge(kSixPackKeyNoMatchNudgeId);
+  EXPECT_FALSE(nudge_shown->GetVisible());
+
+  // Display nudge for VKEY_END.
+  EXPECT_FALSE(nudge_shown->GetVisible());
+  controller()->ShowSixPackKeyRewritingNudge(
+      ui::VKEY_END, ui::mojom::SixPackShortcutModifier::kSearch);
+  EXPECT_TRUE(nudge_shown);
+  EXPECT_TRUE(nudge_shown->GetVisible());
+  EXPECT_EQ(
+      nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_RIGHT_NUDGE_DESCRIPTION));
+  CancelNudge(kSixPackKeyNoMatchNudgeId);
+  EXPECT_FALSE(nudge_shown->GetVisible());
+
+  // Display nudge for VKEY_PRIOR.
+  EXPECT_FALSE(nudge_shown->GetVisible());
+  controller()->ShowSixPackKeyRewritingNudge(
+      ui::VKEY_PRIOR, ui::mojom::SixPackShortcutModifier::kAlt);
+  EXPECT_TRUE(nudge_shown);
+  EXPECT_TRUE(nudge_shown->GetVisible());
+  EXPECT_EQ(
+      nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_UP_NUDGE_DESCRIPTION));
+  CancelNudge(kSixPackKeyNoMatchNudgeId);
+  EXPECT_FALSE(nudge_shown->GetVisible());
+
+  // Six pack key VKEY_NEXT is not in the prefDict, should not show anything.
+  EXPECT_FALSE(nudge_shown->GetVisible());
+  controller()->ShowSixPackKeyRewritingNudge(
+      ui::VKEY_NEXT, ui::mojom::SixPackShortcutModifier::kSearch);
+  EXPECT_TRUE(nudge_shown);
+  EXPECT_FALSE(nudge_shown->GetVisible());
+
+  // Call the method with a non six pack key, should not show anything.
+  // Six pack key VKEY_NEXT is not in the prefDict, should not show anything.
+  EXPECT_FALSE(nudge_shown->GetVisible());
+  controller()->ShowSixPackKeyRewritingNudge(
+      ui::VKEY_BRIGHTNESS_UP, ui::mojom::SixPackShortcutModifier::kSearch);
+  EXPECT_TRUE(nudge_shown);
+  EXPECT_FALSE(nudge_shown->GetVisible());
 }
 
 }  // namespace ash

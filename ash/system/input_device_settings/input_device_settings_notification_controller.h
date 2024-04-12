@@ -77,9 +77,16 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
   void NotifyGraphicsTabletFirstTimeConnected(
       const mojom::GraphicsTablet* graphics_tablet);
 
-  // Use to display a notification to remind users pressing Fn key when users
+  // Use to display a notification to remind users to press Fn key when users
   // press search key with top row keys and there is no matching behavior.
   void ShowTopRowRewritingNudge();
+
+  // Use to display a notification to remind users to press Fn key when users
+  // press search key or alt key with arrow keys and there is no matching
+  // behavior.
+  void ShowSixPackKeyRewritingNudge(
+      ui::KeyboardCode key_code,
+      ui::mojom::SixPackShortcutModifier blocked_modifier);
 
  private:
   void HandleRightClickNotificationClicked(const std::string& notification_id,
