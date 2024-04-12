@@ -43,8 +43,10 @@ constexpr gfx::Insets kInteriorMarginsWithAddon = gfx::Insets::VH(12, 0);
 // The layout parameters of icon.
 constexpr gfx::Insets kIconMargins = gfx::Insets::VH(0, 12);
 constexpr int kIconViewSize = 40;
-constexpr int kFaviconSize = 20;
+constexpr int kFaviconSize = 16;
 constexpr int kFaviconCornerRadius = 20;
+constexpr int kCalendarIconSize = 20;
+constexpr int kCalendarCornerRadius = 20;
 constexpr int kIllustrationSize = 40;
 constexpr int kIllustrationCornerRadius = 8;
 constexpr int kWeatherImageSize = 32;
@@ -68,6 +70,11 @@ void StylizeIconForItemType(views::ImageView* icon, BirchItemType type) {
   ui::ColorId background_color_id;
 
   switch (type) {
+    case BirchItemType::kCalendar:
+      icon_size = kCalendarIconSize;
+      rounded_corners = kCalendarCornerRadius;
+      background_color_id = kIconBackgroundColorId;
+      break;
     case BirchItemType::kWeather:
       icon_size = kWeatherImageSize;
       rounded_corners = 0;
