@@ -73,6 +73,7 @@
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -129,6 +130,7 @@
 
 using content::BrowserThread;
 using content::WebContents;
+using safe_browsing::AsyncCheckTracker;
 using safe_browsing::hash_realtime_utils::HashRealTimeSelection;
 using AttributionReportingOsRegistrar =
     content::ContentBrowserClient::AttributionReportingOsRegistrar;
@@ -175,6 +177,28 @@ class XrwNavigationThrottle : public content::NavigationThrottle {
 
   const char* GetNameForLogging() override { return "XrwNavigationThrottle"; }
 };
+
+// Get async check tracker to make Safe Browsing v5 check asynchronous
+base::WeakPtr<AsyncCheckTracker> GetAsyncCheckTracker(
+    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+    int frame_tree_node_id) {
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    return nullptr;
+  }
+  content::WebContents* web_contents = wc_getter.Run();
+  // Check whether current frame is a pre-rendered frame. WebView does not
+  // support NoStatePrefetch, so we do not check for that.
+  if (web_contents == nullptr ||
+      web_contents->IsPrerenderedFrame(frame_tree_node_id)) {
+    return nullptr;
+  }
+
+  return AsyncCheckTracker::GetOrCreateForWebContents(
+             web_contents,
+             AwBrowserProcess::GetInstance()->GetSafeBrowsingUIManager())
+      ->GetWeakPtr();
+}
 
 }  // anonymous namespace
 
@@ -630,10 +654,16 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Set lookup mechanism based on feature flag
-  HashRealTimeSelection hash_real_time_selection =
-      (base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups))
-          ? HashRealTimeSelection::kDatabaseManager
-          : HashRealTimeSelection::kNone;
+  HashRealTimeSelection hash_real_time_selection;
+  base::WeakPtr<AsyncCheckTracker> async_check_tracker;
+  if (base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups)) {
+    hash_real_time_selection = HashRealTimeSelection::kDatabaseManager;
+    async_check_tracker = GetAsyncCheckTracker(wc_getter, frame_tree_node_id);
+  } else {
+    hash_real_time_selection = HashRealTimeSelection::kNone;
+    async_check_tracker = nullptr;
+  }
+
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
   result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
       base::BindRepeating(
@@ -649,9 +679,7 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       /* hash_realtime_service */ nullptr,
       /* hash_realtime_selection */
       hash_real_time_selection,
-      // TODO(crbug.com/1501194): pass in async_check_tracker to support async
-      // check on WV.
-      /* async_check_tracker */ nullptr));
+      /* async_check_tracker */ async_check_tracker));
 
   if (request.destination == network::mojom::RequestDestination::kDocument) {
     const bool is_load_url =
