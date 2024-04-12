@@ -158,56 +158,6 @@ constexpr char kStickySettingsWithExtensionPrinterMissingPrintableArea[] = R"({
     ]
   })";
 
-class KillPrintRenderFrame
-    : public mojom::PrintRenderFrameInterceptorForTesting {
- public:
-  explicit KillPrintRenderFrame(content::RenderProcessHost* rph) : rph_(rph) {}
-  ~KillPrintRenderFrame() override = default;
-
-  void OverrideBinderForTesting(content::RenderFrameHost* render_frame_host) {
-    render_frame_host->GetRemoteAssociatedInterfaces()
-        ->OverrideBinderForTesting(
-            mojom::PrintRenderFrame::Name_,
-            base::BindRepeating(&KillPrintRenderFrame::Bind,
-                                base::Unretained(this)));
-  }
-
-  void KillRenderProcess(int document_cookie,
-                         mojom::DidPrintContentParamsPtr param,
-                         PrintFrameContentCallback callback) const {
-    std::move(callback).Run(document_cookie, std::move(param));
-    rph_->Shutdown(0);
-  }
-
-  void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
-    receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PrintRenderFrame>(
-        std::move(handle)));
-  }
-
-  // mojom::PrintRenderFrameInterceptorForTesting
-  mojom::PrintRenderFrame* GetForwardingInterface() override {
-    NOTREACHED();
-    return nullptr;
-  }
-  void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
-                         PrintFrameContentCallback callback) override {
-    // Sends the printed result back.
-    const size_t kSize = 10;
-    mojom::DidPrintContentParamsPtr printed_frame_params =
-        mojom::DidPrintContentParams::New();
-    base::MappedReadOnlyRegion region_mapping =
-        base::ReadOnlySharedMemoryRegion::Create(kSize);
-    printed_frame_params->metafile_data_region =
-        std::move(region_mapping.region);
-    KillRenderProcess(params->document_cookie, std::move(printed_frame_params),
-                      std::move(callback));
-  }
-
- private:
-  const raw_ptr<content::RenderProcessHost> rph_;
-  mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
-};
-
 class PrintPreviewDoneObserver
     : public mojom::PrintRenderFrameInterceptorForTesting {
  public:
@@ -437,6 +387,53 @@ PrintBrowserTest::WorkerHelper::WorkerHelper(
     base::WeakPtr<PrintBrowserTest> owner)
     : owner_(owner) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+PrintBrowserTest::KillPrintRenderFrame::KillPrintRenderFrame(
+    content::RenderProcessHost* rph)
+    : rph_(rph) {}
+
+PrintBrowserTest::KillPrintRenderFrame::~KillPrintRenderFrame() = default;
+
+void PrintBrowserTest::KillPrintRenderFrame::OverrideBinderForTesting(
+    content::RenderFrameHost* render_frame_host) {
+  render_frame_host->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+      mojom::PrintRenderFrame::Name_,
+      base::BindRepeating(&KillPrintRenderFrame::Bind, base::Unretained(this)));
+}
+
+void PrintBrowserTest::KillPrintRenderFrame::KillRenderProcess(
+    int document_cookie,
+    mojom::DidPrintContentParamsPtr param,
+    PrintFrameContentCallback callback) const {
+  std::move(callback).Run(document_cookie, std::move(param));
+  rph_->Shutdown(0);
+}
+
+void PrintBrowserTest::KillPrintRenderFrame::Bind(
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PrintRenderFrame>(
+      std::move(handle)));
+}
+
+mojom::PrintRenderFrame*
+PrintBrowserTest::KillPrintRenderFrame::GetForwardingInterface() {
+  NOTREACHED();
+  return nullptr;
+}
+
+void PrintBrowserTest::KillPrintRenderFrame::PrintFrameContent(
+    mojom::PrintFrameContentParamsPtr params,
+    PrintFrameContentCallback callback) {
+  // Sends the printed result back.
+  const size_t kSize = 10;
+  mojom::DidPrintContentParamsPtr printed_frame_params =
+      mojom::DidPrintContentParams::New();
+  base::MappedReadOnlyRegion region_mapping =
+      base::ReadOnlySharedMemoryRegion::Create(kSize);
+  printed_frame_params->metafile_data_region = std::move(region_mapping.region);
+  KillRenderProcess(params->document_cookie, std::move(printed_frame_params),
+                    std::move(callback));
 }
 
 PrintBrowserTest::WorkerHelper::~WorkerHelper() = default;

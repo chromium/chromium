@@ -10,15 +10,19 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/printing/common/print.mojom-test-utils.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/print_settings.h"
@@ -87,6 +91,31 @@ class PrintBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  // Support class for making renderer process terminate during tests.
+  class KillPrintRenderFrame
+      : public mojom::PrintRenderFrameInterceptorForTesting {
+   public:
+    explicit KillPrintRenderFrame(content::RenderProcessHost* rph);
+    ~KillPrintRenderFrame() override;
+
+    void OverrideBinderForTesting(content::RenderFrameHost* render_frame_host);
+
+    void KillRenderProcess(int document_cookie,
+                           mojom::DidPrintContentParamsPtr param,
+                           PrintFrameContentCallback callback) const;
+
+    void Bind(mojo::ScopedInterfaceEndpointHandle handle);
+
+    // mojom::PrintRenderFrameInterceptorForTesting
+    mojom::PrintRenderFrame* GetForwardingInterface() override;
+    void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
+                           PrintFrameContentCallback callback) override;
+
+   private:
+    const raw_ptr<content::RenderProcessHost> rph_;
+    mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
+  };
+
   // Initialize a run loop for a testing sequence.
   void PrepareRunloop();
 
