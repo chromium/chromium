@@ -4,7 +4,10 @@
 
 #include "base/containers/span_reader.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::Optional;
 
 namespace base {
 namespace {
@@ -16,6 +19,16 @@ TEST(SpanReaderTest, Construct) {
   EXPECT_EQ(r.remaining(), 5u);
   EXPECT_EQ(r.remaining_span().data(), &kArray[0u]);
   EXPECT_EQ(r.remaining_span().size(), 5u);
+}
+
+TEST(SpanReaderTest, Skip) {
+  std::array<const int, 5u> kArray = {1, 2, 3, 4, 5};
+
+  auto r = SpanReader(base::span(kArray));
+  EXPECT_EQ(r.num_read(), 0u);
+  EXPECT_FALSE(r.Skip(6u));
+  EXPECT_THAT(r.Skip(2u), Optional(base::span(kArray).first(2u)));
+  EXPECT_EQ(r.num_read(), 2u);
 }
 
 TEST(SpanReaderTest, Read) {
@@ -113,6 +126,35 @@ TEST(SpanReaderTest, ReadInto) {
   {
     base::span<const int> s;
     EXPECT_TRUE(r.ReadInto(2u, s));
+    EXPECT_TRUE(s == base::span(kArray).subspan(3u, 2u));
+    EXPECT_EQ(r.remaining(), 0u);
+  }
+}
+
+TEST(SpanReaderTest, ReadCopy) {
+  std::array<const int, 5u> kArray = {1, 2, 3, 4, 5};
+
+  auto r = SpanReader(base::span(kArray));
+  {
+    std::array<int, 2u> s;
+    EXPECT_TRUE(r.ReadCopy(s));
+    EXPECT_TRUE(s == base::span(kArray).subspan(0u, 2u));
+    EXPECT_EQ(r.remaining(), 3u);
+  }
+  {
+    std::array<int, 5u> s;
+    EXPECT_FALSE(r.ReadCopy(s));
+    EXPECT_EQ(r.remaining(), 3u);
+  }
+  {
+    std::array<int, 1u> s;
+    EXPECT_TRUE(r.ReadCopy(s));
+    EXPECT_TRUE(s == base::span(kArray).subspan(2u, 1u));
+    EXPECT_EQ(r.remaining(), 2u);
+  }
+  {
+    std::array<int, 2u> s;
+    EXPECT_TRUE(r.ReadCopy(s));
     EXPECT_TRUE(s == base::span(kArray).subspan(3u, 2u));
     EXPECT_EQ(r.remaining(), 0u);
   }

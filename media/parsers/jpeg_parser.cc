@@ -6,32 +6,31 @@
 
 #include <cstring>
 
-#include "base/big_endian.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/logging.h"
-
-using base::BigEndianReader;
 
 #define READ_U8_OR_RETURN_FALSE(out)                                       \
   do {                                                                     \
     uint8_t _out;                                                          \
-    if (!reader.ReadU8(&_out)) {                                           \
+    if (!reader.ReadU8BigEndian(_out)) {                                   \
       DVLOG(1)                                                             \
           << "Error in stream: unexpected EOS while trying to read " #out; \
       return false;                                                        \
     }                                                                      \
-    *(out) = _out;                                                         \
+    out = _out;                                                            \
   } while (0)
 
 #define READ_U16_OR_RETURN_FALSE(out)                                      \
   do {                                                                     \
     uint16_t _out;                                                         \
-    if (!reader.ReadU16(&_out)) {                                          \
+    if (!reader.ReadU16BigEndian(_out)) {                                  \
       DVLOG(1)                                                             \
           << "Error in stream: unexpected EOS while trying to read " #out; \
       return false;                                                        \
     }                                                                      \
-    *(out) = _out;                                                         \
+    out = _out;                                                            \
   } while (0)
 
 namespace media {
@@ -131,19 +130,17 @@ static int RoundUp(int value, int mul) {
 }
 
 // |frame_header| is already initialized to 0 in ParseJpegPicture.
-static bool ParseSOF(const uint8_t* buffer,
-                     size_t length,
+static bool ParseSOF(base::span<const uint8_t> buffer,
                      JpegFrameHeader* frame_header) {
   // Spec B.2.2 Frame header syntax
-  DCHECK(buffer);
   DCHECK(frame_header);
-  BigEndianReader reader(buffer, length);
+  auto reader = base::SpanReader(buffer);
 
   uint8_t precision;
-  READ_U8_OR_RETURN_FALSE(&precision);
-  READ_U16_OR_RETURN_FALSE(&frame_header->visible_height);
-  READ_U16_OR_RETURN_FALSE(&frame_header->visible_width);
-  READ_U8_OR_RETURN_FALSE(&frame_header->num_components);
+  READ_U8_OR_RETURN_FALSE(precision);
+  READ_U16_OR_RETURN_FALSE(frame_header->visible_height);
+  READ_U16_OR_RETURN_FALSE(frame_header->visible_width);
+  READ_U8_OR_RETURN_FALSE(frame_header->num_components);
 
   if (precision != 8) {
     DLOG(ERROR) << "Only support 8-bit precision, not "
@@ -162,7 +159,7 @@ static bool ParseSOF(const uint8_t* buffer,
   int max_v_factor = 0;
   for (size_t i = 0; i < frame_header->num_components; i++) {
     JpegComponent& component = frame_header->components[i];
-    READ_U8_OR_RETURN_FALSE(&component.id);
+    READ_U8_OR_RETURN_FALSE(component.id);
     if (component.id > frame_header->num_components) {
       DLOG(ERROR) << "component id (" << static_cast<int>(component.id)
                   << ") should be <= num_components ("
@@ -170,7 +167,7 @@ static bool ParseSOF(const uint8_t* buffer,
       return false;
     }
     uint8_t hv;
-    READ_U8_OR_RETURN_FALSE(&hv);
+    READ_U8_OR_RETURN_FALSE(hv);
     component.horizontal_sampling_factor = hv / 16;
     component.vertical_sampling_factor = hv % 16;
     if (component.horizontal_sampling_factor > max_h_factor)
@@ -187,7 +184,7 @@ static bool ParseSOF(const uint8_t* buffer,
                << static_cast<int>(component.horizontal_sampling_factor);
       return false;
     }
-    READ_U8_OR_RETURN_FALSE(&component.quantization_table_selector);
+    READ_U8_OR_RETURN_FALSE(component.quantization_table_selector);
   }
 
   // The size of data unit is 8*8 and the coded size should be extended
@@ -201,16 +198,14 @@ static bool ParseSOF(const uint8_t* buffer,
 }
 
 // |q_table| is already initialized to 0 in ParseJpegPicture.
-static bool ParseDQT(const uint8_t* buffer,
-                     size_t length,
+static bool ParseDQT(base::span<const uint8_t> buffer,
                      JpegQuantizationTable* q_table) {
   // Spec B.2.4.1 Quantization table-specification syntax
-  DCHECK(buffer);
   DCHECK(q_table);
-  BigEndianReader reader(buffer, length);
-  while (reader.remaining() > 0) {
+  auto reader = base::SpanReader(buffer);
+  while (reader.remaining() > 0u) {
     uint8_t precision_and_table_id;
-    READ_U8_OR_RETURN_FALSE(&precision_and_table_id);
+    READ_U8_OR_RETURN_FALSE(precision_and_table_id);
     uint8_t precision = precision_and_table_id / 16;
     uint8_t table_id = precision_and_table_id % 16;
     if (!InRange(precision, 0, 1)) {
@@ -228,7 +223,7 @@ static bool ParseDQT(const uint8_t* buffer,
       return false;
     }
 
-    if (!reader.ReadBytes(q_table[table_id].value)) {
+    if (!reader.ReadCopy(q_table[table_id].value)) {
       return false;
     }
     q_table[table_id].valid = true;
@@ -237,18 +232,16 @@ static bool ParseDQT(const uint8_t* buffer,
 }
 
 // |dc_table| and |ac_table| are already initialized to 0 in ParseJpegPicture.
-static bool ParseDHT(const uint8_t* buffer,
-                     size_t length,
+static bool ParseDHT(base::span<const uint8_t> buffer,
                      JpegHuffmanTable* dc_table,
                      JpegHuffmanTable* ac_table) {
   // Spec B.2.4.2 Huffman table-specification syntax
-  DCHECK(buffer);
   DCHECK(dc_table);
   DCHECK(ac_table);
-  BigEndianReader reader(buffer, length);
-  while (reader.remaining() > 0) {
+  auto reader = base::SpanReader(buffer);
+  while (reader.remaining() > 0u) {
     uint8_t table_class_and_id;
-    READ_U8_OR_RETURN_FALSE(&table_class_and_id);
+    READ_U8_OR_RETURN_FALSE(table_class_and_id);
     int table_class = table_class_and_id / 16;
     int table_id = table_class_and_id % 16;
     if (!InRange(table_class, 0, 1)) {
@@ -267,18 +260,18 @@ static bool ParseDHT(const uint8_t* buffer,
     else
       table = &dc_table[table_id];
 
-    size_t count = 0;
-    if (!reader.ReadBytes(table->code_length)) {
+    size_t count = 0u;
+    if (!reader.ReadCopy(table->code_length)) {
       return false;
     }
     for (size_t i = 0; i < std::size(table->code_length); i++)
       count += table->code_length[i];
 
-    if (!InRange(count, 0, sizeof(table->code_value))) {
+    if (!InRange(count, 0u, sizeof(table->code_value))) {
       DVLOG(1) << "Invalid code count " << count;
       return false;
     }
-    if (!reader.ReadBytes(base::span(table->code_value).first(count))) {
+    if (!reader.ReadCopy(base::span(table->code_value).first(count))) {
       return false;
     }
     table->valid = true;
@@ -286,26 +279,25 @@ static bool ParseDHT(const uint8_t* buffer,
   return true;
 }
 
-static bool ParseDRI(const uint8_t* buffer,
-                     size_t length,
+static bool ParseDRI(base::span<const uint8_t> buffer,
                      uint16_t* restart_interval) {
   // Spec B.2.4.4 Restart interval definition syntax
-  DCHECK(buffer);
   DCHECK(restart_interval);
-  BigEndianReader reader(buffer, length);
-  return reader.ReadU16(restart_interval) && reader.remaining() == 0;
+  if (buffer.size() != 2) {
+    return false;
+  }
+  *restart_interval = base::U16FromBigEndian(buffer.first<2>());
+  return true;
 }
 
 // |scan| is already initialized to 0 in ParseJpegPicture.
-static bool ParseSOS(const uint8_t* buffer,
-                     size_t length,
+static bool ParseSOS(base::span<const uint8_t> buffer,
                      const JpegFrameHeader& frame_header,
                      JpegScanHeader* scan) {
   // Spec B.2.3 Scan header syntax
-  DCHECK(buffer);
   DCHECK(scan);
-  BigEndianReader reader(buffer, length);
-  READ_U8_OR_RETURN_FALSE(&scan->num_components);
+  auto reader = base::SpanReader(buffer);
+  READ_U8_OR_RETURN_FALSE(scan->num_components);
   if (scan->num_components != frame_header.num_components) {
     DLOG(ERROR) << "The number of scan components ("
                 << static_cast<int>(scan->num_components)
@@ -316,9 +308,9 @@ static bool ParseSOS(const uint8_t* buffer,
 
   for (int i = 0; i < scan->num_components; i++) {
     JpegScanHeader::Component* component = &scan->components[i];
-    READ_U8_OR_RETURN_FALSE(&component->component_selector);
+    READ_U8_OR_RETURN_FALSE(component->component_selector);
     uint8_t dc_and_ac_selector;
-    READ_U8_OR_RETURN_FALSE(&dc_and_ac_selector);
+    READ_U8_OR_RETURN_FALSE(dc_and_ac_selector);
     component->dc_selector = dc_and_ac_selector / 16;
     component->ac_selector = dc_and_ac_selector % 16;
     if (component->component_selector != frame_header.components[i].id) {
@@ -341,9 +333,9 @@ static bool ParseSOS(const uint8_t* buffer,
   uint8_t spectral_selection_start;
   uint8_t spectral_selection_end;
   uint8_t point_transform;
-  READ_U8_OR_RETURN_FALSE(&spectral_selection_start);
-  READ_U8_OR_RETURN_FALSE(&spectral_selection_end);
-  READ_U8_OR_RETURN_FALSE(&point_transform);
+  READ_U8_OR_RETURN_FALSE(spectral_selection_start);
+  READ_U8_OR_RETURN_FALSE(spectral_selection_end);
+  READ_U8_OR_RETURN_FALSE(point_transform);
   if (spectral_selection_start != 0 || spectral_selection_end != 63) {
     DLOG(ERROR) << "Spectral selection should be 0,63 for baseline mode";
     return false;
@@ -363,21 +355,26 @@ static bool ParseSOS(const uint8_t* buffer,
 static bool SearchEOI(base::span<const uint8_t> buffer,
                       const char** eoi_begin_ptr,
                       const char** eoi_end_ptr) {
-  DCHECK(!buffer.empty());
   DCHECK(eoi_begin_ptr);
   DCHECK(eoi_end_ptr);
-  BigEndianReader reader(buffer);
+  auto reader = base::SpanReader(buffer);
   uint8_t marker2;
 
-  while (reader.remaining() > 0) {
-    const char* marker1_ptr = static_cast<const char*>(
-        memchr(reader.ptr(), JPEG_MARKER_PREFIX, reader.remaining()));
-    if (!marker1_ptr)
-      return false;
-    reader.Skip(marker1_ptr - reinterpret_cast<const char*>(reader.ptr()) + 1);
+  while (reader.remaining() > 0u) {
+    size_t marker1_in_buffer;
+    {
+      auto search_span = reader.remaining_span();
+      auto it = std::ranges::find(search_span, JPEG_MARKER_PREFIX);
+      if (it == search_span.end()) {
+        return false;
+      }
+      size_t found_offset = it - search_span.begin();
+      marker1_in_buffer = reader.num_read() + found_offset;
+      reader.Skip(found_offset + 1u);
+    }
 
     do {
-      READ_U8_OR_RETURN_FALSE(&marker2);
+      READ_U8_OR_RETURN_FALSE(marker2);
     } while (marker2 == JPEG_MARKER_PREFIX);  // skip fill bytes
 
     switch (marker2) {
@@ -394,14 +391,16 @@ static bool SearchEOI(base::span<const uint8_t> buffer,
       case JPEG_RST6:
       case JPEG_RST7:
         break;
-      case JPEG_EOI:
-        *eoi_begin_ptr = marker1_ptr;
-        *eoi_end_ptr = reinterpret_cast<const char*>(reader.ptr());
+      case JPEG_EOI: {
+        auto buffer_chars = base::as_chars(buffer);
+        *eoi_begin_ptr = buffer_chars.subspan(marker1_in_buffer).data();
+        *eoi_end_ptr = buffer_chars.subspan(reader.num_read()).data();
         return true;
+      }
       default:
         // Skip for other markers.
         uint16_t size;
-        READ_U16_OR_RETURN_FALSE(&size);
+        READ_U16_OR_RETURN_FALSE(size);
         if (size < sizeof(size)) {
           DLOG(ERROR) << "Ill-formed JPEG. Segment size (" << size
                       << ") is smaller than size field (" << sizeof(size)
@@ -426,26 +425,25 @@ static bool SearchEOI(base::span<const uint8_t> buffer,
 static bool ParseSOI(base::span<const uint8_t> buffer,
                      JpegParseResult* result) {
   // Spec B.2.1 High-level syntax
-  DCHECK(!buffer.empty());
   DCHECK(result);
-  BigEndianReader reader(buffer);
   uint8_t marker1;
   uint8_t marker2;
   bool has_marker_dqt = false;
   bool has_marker_sos = false;
 
-  // Once reached SOS, all neccesary data are parsed.
+  // Once reached SOS, all necessary data are parsed.
+  auto reader = base::SpanReader(buffer);
   while (!has_marker_sos) {
-    READ_U8_OR_RETURN_FALSE(&marker1);
+    READ_U8_OR_RETURN_FALSE(marker1);
     if (marker1 != JPEG_MARKER_PREFIX)
       return false;
 
     do {
-      READ_U8_OR_RETURN_FALSE(&marker2);
+      READ_U8_OR_RETURN_FALSE(marker2);
     } while (marker2 == JPEG_MARKER_PREFIX);  // skip fill bytes
 
     uint16_t size;
-    READ_U16_OR_RETURN_FALSE(&size);
+    READ_U16_OR_RETURN_FALSE(size);
     // The size includes the size field itself.
     if (size < sizeof(size)) {
       DLOG(ERROR) << "Ill-formed JPEG. Segment size (" << size
@@ -462,7 +460,8 @@ static bool ParseSOI(base::span<const uint8_t> buffer,
 
     switch (marker2) {
       case JPEG_SOF0:
-        if (!ParseSOF(reader.ptr(), size, &result->frame_header)) {
+        if (!ParseSOF(reader.remaining_span().first(size),
+                      &result->frame_header)) {
           DLOG(ERROR) << "ParseSOF failed";
           return false;
         }
@@ -483,26 +482,28 @@ static bool ParseSOI(base::span<const uint8_t> buffer,
                     << (marker2 - JPEG_SOF0);
         return false;
       case JPEG_DQT:
-        if (!ParseDQT(reader.ptr(), size, result->q_table)) {
+        if (!ParseDQT(reader.remaining_span().first(size), result->q_table)) {
           DLOG(ERROR) << "ParseDQT failed";
           return false;
         }
         has_marker_dqt = true;
         break;
       case JPEG_DHT:
-        if (!ParseDHT(reader.ptr(), size, result->dc_table, result->ac_table)) {
+        if (!ParseDHT(reader.remaining_span().first(size), result->dc_table,
+                      result->ac_table)) {
           DLOG(ERROR) << "ParseDHT failed";
           return false;
         }
         break;
       case JPEG_DRI:
-        if (!ParseDRI(reader.ptr(), size, &result->restart_interval)) {
+        if (!ParseDRI(reader.remaining_span().first(size),
+                      &result->restart_interval)) {
           DLOG(ERROR) << "ParseDRI failed";
           return false;
         }
         break;
       case JPEG_SOS:
-        if (!ParseSOS(reader.ptr(), size, result->frame_header,
+        if (!ParseSOS(reader.remaining_span().first(size), result->frame_header,
                       &result->scan)) {
           DLOG(ERROR) << "ParseSOS failed";
           return false;
@@ -522,47 +523,47 @@ static bool ParseSOI(base::span<const uint8_t> buffer,
   }
 
   // Scan data follows scan header immediately.
-  result->data = reinterpret_cast<const char*>(reader.ptr());
-  result->data_size = reader.remaining();
+  auto remain = base::as_chars(reader.remaining_span());
+  result->data = remain.data();
+  result->data_size = remain.size();
   return true;
 }
 
 bool ParseJpegPicture(base::span<const uint8_t> buffer,
                       JpegParseResult* result) {
-  DCHECK(!buffer.empty());
   DCHECK(result);
-  BigEndianReader reader(buffer);
-  memset(result, 0, sizeof(JpegParseResult));
 
-  uint8_t marker1, marker2;
-  READ_U8_OR_RETURN_FALSE(&marker1);
-  READ_U8_OR_RETURN_FALSE(&marker2);
+  auto reader = base::SpanReader(buffer);
+  std::ranges::fill(base::byte_span_from_ref(*result), 0u);
+
+  uint8_t marker1;
+  uint8_t marker2;
+  READ_U8_OR_RETURN_FALSE(marker1);
+  READ_U8_OR_RETURN_FALSE(marker2);
   if (marker1 != JPEG_MARKER_PREFIX || marker2 != JPEG_SOI) {
     DLOG(ERROR) << "Not a JPEG";
     return false;
   }
 
-  if (!ParseSOI(reader.remaining_bytes(), result)) {
+  if (!ParseSOI(reader.remaining_span(), result)) {
     return false;
   }
-  // TODO(crbug.com/1490484): Make this span part of JpegParseResult.
-  base::span<const uint8_t> result_span =
-      base::as_bytes(base::make_span(result->data, result->data_size));
+  base::span<const uint8_t> result_span = base::as_bytes(
+      // TODO(crbug.com/1490484): Make this span part of JpegParseResult.
+      UNSAFE_BUFFERS(base::span(result->data, result->data_size)));
 
   // Update the sizes: |result->data_size| should not include the EOI marker or
   // beyond.
-  BigEndianReader eoi_reader(result_span);
   const char* eoi_begin_ptr = nullptr;
   const char* eoi_end_ptr = nullptr;
-  if (!SearchEOI(eoi_reader.remaining_bytes(), &eoi_begin_ptr, &eoi_end_ptr)) {
+  if (!SearchEOI(result_span, &eoi_begin_ptr, &eoi_end_ptr)) {
     DLOG(ERROR) << "SearchEOI failed";
     return false;
   }
   DCHECK(eoi_begin_ptr);
   DCHECK(eoi_end_ptr);
   result->data_size = eoi_begin_ptr - result->data;
-  result->image_size =
-      eoi_end_ptr - reinterpret_cast<const char*>(buffer.data());
+  result->image_size = eoi_end_ptr - base::as_chars(buffer).data();
   return true;
 }
 

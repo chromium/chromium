@@ -7,8 +7,8 @@
 #include <array>
 #include <memory>
 
-#include "base/big_endian.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -108,11 +108,11 @@ bool WebMCreateDecryptConfig(const uint8_t* data_ptr,
   // pointer/length pair.
   auto key_id = UNSAFE_BUFFERS(
       base::span(key_id_ptr, base::checked_cast<size_t>(key_id_size)));
-  base::BigEndianReader reader(data);
+  auto reader = base::SpanReader(data);
 
   uint8_t signal_byte;
   static_assert(sizeof(signal_byte) == kWebMSignalByteSize);
-  if (!reader.ReadU8(&signal_byte)) {
+  if (!reader.ReadU8BigEndian(signal_byte)) {
     DVLOG(1) << "Got a block from an encrypted stream with no data.";
     return false;
   }
@@ -121,8 +121,8 @@ bool WebMCreateDecryptConfig(const uint8_t* data_ptr,
   std::vector<SubsampleEntry> subsample_entries;
 
   if (signal_byte & kWebMFlagEncryptedFrame) {
-    std::array<uint8_t, kWebMIvSize> iv = {};
-    if (!reader.ReadBytes(iv)) {
+    base::span<const uint8_t> iv;
+    if (!reader.ReadInto(size_t{kWebMIvSize}, iv)) {
       DVLOG(1) << "Got an encrypted block with not enough data " << data.size();
       return false;
     }
@@ -132,21 +132,23 @@ bool WebMCreateDecryptConfig(const uint8_t* data_ptr,
       uint8_t num_partitions;
       static_assert(sizeof(num_partitions) ==
                     kWebMEncryptedFrameNumPartitionsSize);
-      if (!reader.ReadU8(&num_partitions)) {
+      if (!reader.ReadU8BigEndian(num_partitions)) {
         DVLOG(1) << "Got a partitioned encrypted block with not enough data "
                  << data.size();
         return false;
       }
 
-      std::optional<base::span<const uint8_t>> partition_data = reader.ReadSpan(
-          size_t{kWebMEncryptedFramePartitionOffsetSize} * num_partitions);
-      if (!partition_data || reader.remaining() == 0u) {
+      base::span<const uint8_t> partition_data;
+      if (!reader.ReadInto(
+              size_t{kWebMEncryptedFramePartitionOffsetSize} * num_partitions,
+              partition_data) ||
+          reader.remaining() == 0u) {
         DVLOG(1) << "Got a partitioned encrypted block with " << num_partitions
                  << " partitions but not enough data " << data.size();
         return false;
       }
-      if (!ExtractSubsamples(*partition_data, reader.remaining(),
-                             num_partitions, &subsample_entries)) {
+      if (!ExtractSubsamples(partition_data, reader.remaining(), num_partitions,
+                             &subsample_entries)) {
         return false;
       }
     }

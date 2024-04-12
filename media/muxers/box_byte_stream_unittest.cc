@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/muxers/box_byte_stream.h"
+
 #include <algorithm>
 #include <vector>
 
-#include "base/big_endian.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/test/task_environment.h"
-#include "media/muxers/box_byte_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -77,21 +79,27 @@ TEST(BoxByteStreamTest, Default) {
   }
 
   std::vector<uint8_t> written_data = box_byte_stream.Flush();
-  base::BigEndianReader reader(written_data);
+  auto reader = base::SpanReader(base::span(written_data));
   for (auto& data : test_data) {
     uint64_t ret_value = 0;
     switch (data.type) {
-      case DataType::kPlaceHolder:
-        EXPECT_TRUE(reader.ReadU32(reinterpret_cast<uint32_t*>(&ret_value)));
+      case DataType::kPlaceHolder: {
+        uint32_t val;
+        EXPECT_TRUE(reader.ReadU32BigEndian(val));
+        base::byte_span_from_ref(ret_value).first<4>().copy_from(
+            base::byte_span_from_ref(val));
         EXPECT_EQ(data.value, ret_value);
-        EXPECT_TRUE(reader.ReadU32(reinterpret_cast<uint32_t*>(&ret_value)));
+        EXPECT_TRUE(reader.ReadU32BigEndian(val));
+        base::byte_span_from_ref(ret_value).first<4>().copy_from(
+            base::byte_span_from_ref(val));
         EXPECT_EQ(mp4::FOURCC_MOOV, ret_value);
         break;
+      }
       case DataType::kEndBox:
         break;
       case DataType::kType_8: {
         uint8_t val;
-        EXPECT_TRUE(reader.ReadU8(&val));
+        EXPECT_TRUE(reader.ReadU8BigEndian(val));
         base::byte_span_from_ref(ret_value).first<1>().copy_from(
             base::byte_span_from_ref(val));
         EXPECT_EQ(data.value, ret_value);
@@ -99,7 +107,7 @@ TEST(BoxByteStreamTest, Default) {
       }
       case DataType::kType_16: {
         uint16_t val;
-        EXPECT_TRUE(reader.ReadU16(&val));
+        EXPECT_TRUE(reader.ReadU16BigEndian(val));
         base::byte_span_from_ref(ret_value).first<2>().copy_from(
             base::byte_span_from_ref(val));
         EXPECT_EQ(data.value, ret_value);
@@ -107,32 +115,31 @@ TEST(BoxByteStreamTest, Default) {
       }
       case DataType::kType_32: {
         uint32_t val;
-        EXPECT_TRUE(reader.ReadU32(&val));
+        EXPECT_TRUE(reader.ReadU32BigEndian(val));
         base::byte_span_from_ref(ret_value).first<4>().copy_from(
             base::byte_span_from_ref(val));
         EXPECT_EQ(data.value, ret_value);
         break;
       }
       case DataType::kType_64:
-        EXPECT_TRUE(reader.ReadU64(&ret_value));
+        EXPECT_TRUE(reader.ReadU64BigEndian(ret_value));
         EXPECT_EQ(data.value, ret_value);
         break;
       case DataType::kType_Bytes:
         EXPECT_TRUE(
-            reader.ReadBytes(base::byte_span_from_ref(ret_value).first<7>()));
+            reader.ReadCopy(base::byte_span_from_ref(ret_value).first<7>()));
         EXPECT_EQ(data.value, ret_value);
         break;
       case DataType::kType_String:
         std::string expected_string = reinterpret_cast<char*>(data.value);
         if (expected_string.empty()) {
           EXPECT_TRUE(
-              reader.ReadBytes(base::byte_span_from_ref(ret_value).first<1>()));
+              reader.ReadCopy(base::byte_span_from_ref(ret_value).first<1>()));
           EXPECT_EQ(ret_value, 0u);
         } else {
-          std::vector<uint8_t> ret_string(expected_string.size());
-          EXPECT_TRUE(reader.ReadBytes(ret_string));
-          EXPECT_EQ(expected_string,
-                    std::string(ret_string.begin(), ret_string.end()));
+          base::span<uint8_t> val;
+          EXPECT_TRUE(reader.ReadInto(expected_string.size(), val));
+          EXPECT_EQ(expected_string, base::as_string_view(val));
         }
 
         break;
@@ -155,26 +162,26 @@ TEST(BoxByteStreamTest, GrowLimit) {
   box_byte_stream.EndBox();
 
   std::vector<uint8_t> written_data = box_byte_stream.Flush();
-  base::BigEndianReader reader(written_data);
+  auto reader = base::SpanReader(base::span(written_data));
 
   uint32_t expected_total_size =
-      8 + BoxByteStream::kDefaultBufferLimit + 8 + 2 + 4;
+      8u + uint32_t{BoxByteStream::kDefaultBufferLimit} + 8u + 2u + 4u;
   uint32_t value;
-  reader.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(expected_total_size, value);
-  reader.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(mp4::FOURCC_MOOV, value);
 
-  reader.Skip(BoxByteStream::kDefaultBufferLimit);
-  reader.ReadU32(&value);
+  reader.Skip(size_t{BoxByteStream::kDefaultBufferLimit});
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(14u, value);
-  reader.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(mp4::FOURCC_TRAK, value);
 
   uint16_t value16;
-  reader.ReadU16(&value16);
+  reader.ReadU16BigEndian(value16);
   EXPECT_EQ(0x1617u, value16);
-  reader.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(0u, value);
 }
 
@@ -226,46 +233,46 @@ TEST(BoxByteStreamTest, EndBoxAndFlushDiff) {
 
     // Read.
     std::vector<uint8_t> written_data = box_byte_stream.Flush();
-    base::BigEndianReader reader(written_data);
+    auto reader = base::SpanReader(base::span(written_data));
 
     uint32_t parent;
     uint32_t fourcc;
     constexpr uint32_t kMoovTopBoxSize = 62u;
-    reader.ReadU32(&parent);
+    reader.ReadU32BigEndian(parent);
     EXPECT_EQ(kMoovTopBoxSize, parent);
-    reader.ReadU32(&fourcc);
+    reader.ReadU32BigEndian(fourcc);
     EXPECT_EQ(mp4::FOURCC_MOOV, fourcc);
-    reader.Skip(8);
+    reader.Skip(8u);
 
     uint32_t child_1;
-    reader.ReadU32(&child_1);
+    reader.ReadU32BigEndian(child_1);
     EXPECT_EQ(22u, child_1);
-    reader.ReadU32(&fourcc);
+    reader.ReadU32BigEndian(fourcc);
     EXPECT_EQ(mp4::FOURCC_TRAK, fourcc);
-    reader.Skip(4);
+    reader.Skip(4u);
 
     uint32_t grand_child_1;
-    reader.ReadU32(&grand_child_1);
+    reader.ReadU32BigEndian(grand_child_1);
     EXPECT_EQ(10u, grand_child_1);
-    reader.ReadU32(&fourcc);
+    reader.ReadU32BigEndian(fourcc);
     EXPECT_EQ(mp4::FOURCC_MDIA, fourcc);
-    reader.Skip(2);
+    reader.Skip(2u);
 
     uint32_t child_2;
-    reader.ReadU32(&child_2);
+    reader.ReadU32BigEndian(child_2);
     EXPECT_EQ(12u, child_2);
-    reader.ReadU32(&fourcc);
+    reader.ReadU32BigEndian(fourcc);
     EXPECT_EQ(mp4::FOURCC_MVEX, fourcc);
-    reader.Skip(4);
+    reader.Skip(4u);
 
     uint32_t grand_child_2;
-    reader.ReadU32(&grand_child_2);
+    reader.ReadU32BigEndian(grand_child_2);
     EXPECT_EQ(12u, grand_child_2);
-    reader.ReadU32(&fourcc);
+    reader.ReadU32BigEndian(fourcc);
     EXPECT_EQ(mp4::FOURCC_MFRO, fourcc);
 
     uint32_t field_top_box_size;
-    reader.ReadU32(&field_top_box_size);
+    reader.ReadU32BigEndian(field_top_box_size);
     EXPECT_EQ(kMoovTopBoxSize, field_top_box_size);
   }
 }
@@ -303,24 +310,24 @@ TEST(BoxByteStreamTest, OffsetPlaceholderAndFlush) {
   }
 
   std::vector<uint8_t> written_data = box_byte_stream.Flush();
-  base::BigEndianReader reader(written_data);
+  auto reader = base::SpanReader(base::span(written_data));
   uint32_t fourcc;
-  reader.Skip(4);
-  reader.ReadU32(&fourcc);
+  reader.Skip(4u);
+  reader.ReadU32BigEndian(fourcc);
   EXPECT_EQ(mp4::FOURCC_MOOF, fourcc);
-  reader.Skip(4);
-  reader.ReadU32(&fourcc);
+  reader.Skip(4u);
+  reader.ReadU32BigEndian(fourcc);
   EXPECT_EQ(mp4::FOURCC_TRAF, fourcc);
-  reader.Skip(4);
-  reader.ReadU32(&fourcc);
+  reader.Skip(4u);
+  reader.ReadU32BigEndian(fourcc);
   EXPECT_EQ(mp4::FOURCC_TRUN, fourcc);
 
   // placeholder.
   uint32_t data_offset;
-  reader.ReadU32(&data_offset);
+  reader.ReadU32BigEndian(data_offset);
   EXPECT_EQ(44u, data_offset);
-  reader.Skip(4);
-  reader.ReadU32(&data_offset);
+  reader.Skip(4u);
+  reader.ReadU32BigEndian(data_offset);
   EXPECT_EQ(44u + data.size(), data_offset);
 }
 

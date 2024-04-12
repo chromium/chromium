@@ -61,14 +61,27 @@ class SpanReader {
     return true;
   }
 
-  // Returns true and skips over the next `n` objects, if there are enough
-  // objects left. Otherwise, it returns false and does nothing.
-  bool Skip(base::StrictNumeric<size_t> n) {
-    if (n > remaining()) {
+  // Returns true and copies objects into `out`, if there are enough objects
+  // left to fill `out`. Otherwise, it returns false and does nothing.
+  bool ReadCopy(span<std::remove_const_t<T>> out) {
+    if (out.size() > remaining()) {
       return false;
     }
-    buf_ = buf_.subspan(n);
+    auto [lhs, rhs] = buf_.split_at(out.size());
+    out.copy_from(lhs);
+    buf_ = rhs;
     return true;
+  }
+
+  // Returns true and skips over the next `n` objects, if there are enough
+  // objects left. Otherwise, it returns false and does nothing.
+  std::optional<base::span<T>> Skip(base::StrictNumeric<size_t> n) {
+    if (n > remaining()) {
+      return std::nullopt;
+    }
+    auto [lhs, rhs] = buf_.split_at(n);
+    buf_ = rhs;
+    return lhs;
   }
 
   // For a SpanReader over bytes, we can read integer values directly from those

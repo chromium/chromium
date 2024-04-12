@@ -6,11 +6,12 @@
 
 #include <algorithm>
 
-#include "base/big_endian.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/timestamp_constants.h"
@@ -104,24 +105,26 @@ void ConvertDecoderBufferToProto(
 
 scoped_refptr<media::DecoderBuffer> ByteArrayToDecoderBuffer(
     base::span<const uint8_t> data) {
-  base::BigEndianReader reader(data);
-  uint8_t payload_version = 0;
-  uint16_t proto_size = 0;
+  auto reader = base::SpanReader(data);
+  uint8_t payload_version = 0u;
+  uint16_t proto_size = 0u;
   openscreen::cast::DecoderBuffer segment;
-  uint32_t buffer_size = 0;
-  if (reader.ReadU8(&payload_version) && payload_version == 0 &&
-      reader.ReadU16(&proto_size) && proto_size < reader.remaining() &&
-      segment.ParseFromArray(reader.ptr(), proto_size) &&
-      reader.Skip(proto_size) && reader.ReadU32(&buffer_size) &&
-      buffer_size <= reader.remaining()) {
+  base::span<const uint8_t> segment_span;
+  uint32_t buffer_size = 0u;
+  base::span<const uint8_t> buffer_span;
+  if (reader.ReadU8BigEndian(payload_version) && payload_version == 0 &&
+      reader.ReadU16BigEndian(proto_size) &&
+      base::OptionalUnwrapTo(reader.Skip(proto_size), segment_span) &&
+      segment.ParseFromArray(segment_span.data(), segment_span.size()) &&
+      reader.ReadU32BigEndian(buffer_size) &&
+      base::OptionalUnwrapTo(reader.Skip(buffer_size), buffer_span)) {
     // Deserialize proto buffer. It passes the pre allocated DecoderBuffer into
     // the function because the proto buffer may overwrite DecoderBuffer since
     // it may be EOS buffer.
     scoped_refptr<media::DecoderBuffer> decoder_buffer =
         ConvertProtoToDecoderBuffer(
-            segment,
-            media::DecoderBuffer::CopyFrom(
-                reinterpret_cast<const uint8_t*>(reader.ptr()), buffer_size));
+            segment, media::DecoderBuffer::CopyFrom(buffer_span.data(),
+                                                    buffer_span.size()));
     return decoder_buffer;
   }
 
