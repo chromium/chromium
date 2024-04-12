@@ -234,6 +234,49 @@ public class HomeModulesMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testUpdateModules() {
+        List<Integer> moduleList =
+                List.of(mModuleTypeList[0], mModuleTypeList[1], mModuleTypeList[2]);
+        // Registers three modules to the ModuleRegistry.
+        for (int i = 0; i < 3; i++) {
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(true);
+        }
+
+        // Calls buildModulesAndShow() to show the magic stack.
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+        verify(mModuleRegistry).build(eq(mModuleTypeList[0]), eq(mModuleDelegate), any());
+        verify(mModuleRegistry).build(eq(mModuleTypeList[1]), eq(mModuleDelegate), any());
+        verify(mModuleRegistry).build(eq(mModuleTypeList[2]), eq(mModuleDelegate), any());
+
+        // Calls onModuleBuilt() to add ModuleProviders to the map.
+        for (int i = 0; i < 3; i++) {
+            mMediator.onModuleBuilt(i, mModuleProviders[i]);
+        }
+        // Adds modules to the recyclerview and show.
+        PropertyModel propertyModel0 = Mockito.mock(PropertyModel.class);
+        PropertyModel propertyModel2 = Mockito.mock(PropertyModel.class);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[0], propertyModel0);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[1], null);
+        mMediator.addToRecyclerViewOrCache(mModuleTypeList[2], propertyModel2);
+        verify(mSetVisibilityCallback).onResult(true);
+
+        // Calls buildModulesAndShow() again when the magic stack is still visible.
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+
+        // Verifies that magic stack asks each modules being shown to update their data.
+        verify(mModuleProviders[0]).updateModule();
+        verify(mModuleProviders[1], never()).updateModule();
+        verify(mModuleProviders[2]).updateModule();
+
+        // Verifies that all of the modules aren't built again.
+        verify(mModuleRegistry).build(eq(mModuleTypeList[0]), eq(mModuleDelegate), any());
+        verify(mModuleRegistry).build(eq(mModuleTypeList[1]), eq(mModuleDelegate), any());
+        verify(mModuleRegistry).build(eq(mModuleTypeList[2]), eq(mModuleDelegate), any());
+    }
+
+    @Test
+    @SmallTest
     public void testHide() {
         // Adds 3 modules' data to the magic stack's RecyclerView.
         List<Integer> moduleList =

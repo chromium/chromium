@@ -22,6 +22,12 @@ public interface ModuleProvider {
      */
     void hideModule();
 
+    /**
+     * Updates the module's data if necessary. This API allows the module to decide whether to
+     * refresh the data.
+     */
+    default void updateModule() {}
+
     /** Gets the type of the module. */
     @ModuleType
     int getModuleType();

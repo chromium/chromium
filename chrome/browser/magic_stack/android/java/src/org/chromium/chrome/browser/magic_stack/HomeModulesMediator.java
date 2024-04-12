@@ -84,7 +84,10 @@ public class HomeModulesMediator {
             @NonNull @ModuleType List<Integer> moduleList,
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull Callback<Boolean> setVisibilityCallback) {
-        if (mIsShown) return;
+        if (mIsShown) {
+            updateModules();
+            return;
+        }
 
         mSetVisibilityCallback = setVisibilityCallback;
         assert mModel.size() == 0;
@@ -414,6 +417,16 @@ public class HomeModulesMediator {
 
         HomeModulesMetricsUtils.recordHomeModulesScrollState(
                 mHostSurface, mModel.size() > 1, hasHomeModulesBeenScrolled);
+    }
+
+    /** Asks all of the modules being shown to reload their data if necessary. */
+    void updateModules() {
+        for (int i = 0; i < mModel.size(); i++) {
+            @ModuleType int moduleType = mModel.get(i).type;
+            ModuleProvider moduleProvider = mModuleTypeToModuleProviderMap.get(moduleType);
+            assert moduleProvider != null;
+            moduleProvider.updateModule();
+        }
     }
 
     Map<Integer, ModuleProvider> getModuleTypeToModuleProviderMapForTesting() {
