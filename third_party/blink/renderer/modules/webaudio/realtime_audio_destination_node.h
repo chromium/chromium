@@ -58,6 +58,10 @@ class RealtimeAudioDestinationNode final : public AudioDestinationNode {
                                         const WebAudioLatencyHint&,
                                         std::optional<float> sample_rate);
 
+  // Returns its own handler object instead of a generic one from
+  // AudioNode::Handler().
+  RealtimeAudioDestinationHandler& GetOwnHandler() const;
+
   // See `RealtimeAudioDestinationHandler.SetSinkDescriptor` for details.
   void SetSinkDescriptor(const WebAudioSinkDescriptor&,
                          media::OutputDeviceStatusCB);

@@ -300,11 +300,9 @@ AudioContext::AudioContext(LocalDOMWindow& window,
   // AudioDestinationNode and RealtimeAudioDestinationNode, casting directly
   // from `destination()` is impossible. This is a temporary workaround until
   // the refactoring is completed.
-  RealtimeAudioDestinationHandler& destination_handler =
-      static_cast<RealtimeAudioDestinationHandler&>(
-          destination()->GetAudioDestinationHandler());
-  base_latency_ = destination_handler.GetFramesPerBuffer() /
-                  static_cast<double>(sampleRate());
+  base_latency_ =
+      GetRealtimeAudioDestinationNode()->GetOwnHandler().GetFramesPerBuffer() /
+      static_cast<double>(sampleRate());
   SendLogMessage(String::Format("%s => (base latency=%.3f seconds))", __func__,
                                 base_latency_));
 
@@ -451,13 +449,11 @@ bool AudioContext::IsPullingAudioGraph() const {
     return false;
   }
 
-  RealtimeAudioDestinationHandler& destination_handler =
-      static_cast<RealtimeAudioDestinationHandler&>(
-          destination()->GetAudioDestinationHandler());
-
   // The realtime context is pulling on the audio graph if the realtime
   // destination allows it.
-  return destination_handler.IsPullingAudioGraphAllowed();
+  return GetRealtimeAudioDestinationNode()
+      ->GetOwnHandler()
+      .IsPullingAudioGraphAllowed();
 }
 
 AudioTimestamp* AudioContext::getOutputTimestamp(
@@ -835,6 +831,11 @@ bool AudioContext::HasPendingActivity() const {
       permission_receiver_.is_bound();
 }
 
+RealtimeAudioDestinationNode* AudioContext::GetRealtimeAudioDestinationNode()
+    const {
+  return static_cast<RealtimeAudioDestinationNode*>(destination());
+}
+
 bool AudioContext::HandlePreRenderTasks(const AudioIOPosition* output_position,
                                         const AudioCallbackMetric* metric) {
   DCHECK(IsAudioThread());
@@ -986,8 +987,8 @@ AudioCallbackMetric AudioContext::GetCallbackMetric() const {
 }
 
 base::TimeDelta AudioContext::PlatformBufferDuration() const {
-  return (static_cast<RealtimeAudioDestinationHandler&>(
-              destination()->GetAudioDestinationHandler()))
+  return GetRealtimeAudioDestinationNode()
+      ->GetOwnHandler()
       .GetPlatformBufferDuration();
 }
 
@@ -1154,10 +1155,9 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
     sink_descriptor_ = WebAudioSinkDescriptor(
         String(""),
         To<LocalDOMWindow>(GetExecutionContext())->GetLocalFrameToken());
-    auto* destination_node = destination();
+    auto* destination_node = GetRealtimeAudioDestinationNode();
     if (destination_node) {
-      static_cast<RealtimeAudioDestinationNode*>(destination_node)
-          ->SetSinkDescriptor(sink_descriptor_, base::DoNothing());
+      destination_node->SetSinkDescriptor(sink_descriptor_, base::DoNothing());
     }
     UpdateV8SinkId();
   }

@@ -62,6 +62,11 @@ RealtimeAudioDestinationNode* RealtimeAudioDestinationNode::Create(
       *context, sink_descriptor, latency_hint, sample_rate);
 }
 
+RealtimeAudioDestinationHandler& RealtimeAudioDestinationNode::GetOwnHandler()
+    const {
+  return static_cast<RealtimeAudioDestinationHandler&>(Handler());
+}
+
 void RealtimeAudioDestinationNode::SetSinkDescriptor(
     const WebAudioSinkDescriptor& sink_descriptor,
     media::OutputDeviceStatusCB callback) {

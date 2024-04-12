@@ -30,14 +30,15 @@ namespace blink {
 
 class AudioContextOptions;
 class AudioTimestamp;
-class ExecutionContext;
 class ExceptionState;
+class ExecutionContext;
 class HTMLMediaElement;
 class LocalDOMWindow;
 class MediaElementAudioSourceNode;
 class MediaStream;
 class MediaStreamAudioDestinationNode;
 class MediaStreamAudioSourceNode;
+class RealtimeAudioDestinationNode;
 class ScriptState;
 class WebAudioLatencyHint;
 
@@ -66,6 +67,9 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // For ContextLifeCycleObserver
   void ContextDestroyed() final;
   bool HasPendingActivity() const override;
+
+  // Cannot be called from the audio thread.
+  RealtimeAudioDestinationNode* GetRealtimeAudioDestinationNode() const;
 
   ScriptPromise<IDLUndefined> closeContext(ScriptState*, ExceptionState&);
   bool IsContextCleared() const final;
