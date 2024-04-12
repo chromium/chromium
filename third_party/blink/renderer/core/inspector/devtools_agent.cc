@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
 
 #include <v8-inspector.h>
+
 #include <memory>
 
 #include "base/feature_list.h"
@@ -28,8 +29,11 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace WTF {
 
@@ -242,7 +246,18 @@ void DevToolsAgent::AttachDevToolsSessionImpl(
       std::move(io_session_receiver), std::move(reattach_session_state),
       client_expects_binary_responses, client_is_trusted, session_id,
       session_waits_for_debugger,
-      inspector_task_runner_->isolate_task_runner());
+      // crbug.com/333093232: Mojo ignores the task runner passed to Bind for
+      // channel associated interfaces but uses it for disconnect. Since
+      // devtools relies on a disconnect handler for detaching and is sensitive
+      // to reordering of detach and attach, there's a dependency between task
+      // queues, which is not allowed. To get around this, use the same task
+      // runner that mojo uses for incoming channel associated messages.
+      base::FeatureList::IsEnabled(
+          features::kBlinkSchedulerPrioritizeNavigationIPCs) &&
+              IsMainThread()
+          ? Thread::MainThread()->GetTaskRunner(
+                MainThreadTaskRunnerRestricted{})
+          : inspector_task_runner_->isolate_task_runner());
   sessions_.insert(session);
   client_->DebuggerTaskFinished();
 }
