@@ -255,7 +255,7 @@ bool WrappedSkImageBackingFactory::IsSupported(
     }
     auto backend_format = context_state_->gr_context()->compressedBackendFormat(
         SkTextureCompressionType::kETC1_RGB8);
-    return !backend_format.isValid();
+    return backend_format.isValid();
   }
 
   // TODO(b/281151641): Check for formats are supported with graphite.
