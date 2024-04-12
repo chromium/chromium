@@ -338,8 +338,7 @@ bool OnDeviceModelComponentStateManager::VerifyInstallation(
     const base::FilePath& install_dir,
     const base::Value::Dict& manifest) {
   for (const base::FilePath::CharType* file_name :
-       {kSpModelFile, kWeightsFile, kModelFile,
-        kOnDeviceModelExecutionConfigFile}) {
+       {kWeightsFile, kOnDeviceModelExecutionConfigFile}) {
     if (!base::PathExists(install_dir.Append(file_name))) {
       return false;
     }
