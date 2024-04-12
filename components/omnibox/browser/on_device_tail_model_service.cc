@@ -7,12 +7,14 @@
 #include <optional>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -27,6 +29,10 @@ namespace {
 
 // The maximum idle time before the model executor is unloaded from memory.
 constexpr base::TimeDelta kMaxExecutorIdleSeconds = base::Seconds(60);
+// Constants for TFlite model validation.
+constexpr std::string kTestPrefix = "face";
+constexpr std::string_view kModelValidationSwitchName =
+    "omnibox-on-device-tail-model-validation";
 
 void InitializeTailModelExecutor(
     OnDeviceTailModelExecutor* executor,
@@ -40,7 +46,22 @@ void InitializeTailModelExecutor(
   if (model_file.empty() || additional_files.empty()) {
     return;
   }
-  executor->Init(model_file, additional_files, metadata);
+  bool init_success = executor->Init(model_file, additional_files, metadata);
+
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kModelValidationSwitchName)) {
+    return;
+  }
+  // Histograms only for model validation.
+  LOCAL_HISTOGRAM_BOOLEAN("Omnibox.OnDeviceTailModel.InitExecutor",
+                          init_success);
+  if (init_success) {
+    OnDeviceTailModelExecutor::ModelInput input(kTestPrefix, "", 5, 20, 0.05);
+    std::vector<OnDeviceTailModelExecutor::Prediction> predictions =
+        executor->GenerateSuggestionsForPrefix(input);
+    LOCAL_HISTOGRAM_BOOLEAN("Omnibox.OnDeviceTailModel.HasResultForTestPrefix",
+                            !predictions.empty());
+  }
 }
 
 std::vector<OnDeviceTailModelExecutor::Prediction> RunTailModelExecutor(
