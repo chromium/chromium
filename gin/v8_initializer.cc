@@ -386,9 +386,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-intel-jcc-erratum-mitigation");
 
   // JavaScript language features.
-  SetV8FlagsIfOverridden(features::kJavaScriptSymbolAsWeakMapKey,
-                         "--harmony-symbol-as-weakmap-key",
-                         "--no-harmony-symbol-as-weakmap-key");
   if (base::FeatureList::IsEnabled(features::kJavaScriptRabGsab)) {
     SetV8Flags("--harmony-rab-gsab");
   } else {

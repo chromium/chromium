@@ -227,11 +227,6 @@ BASE_FEATURE(kV8IntelJCCErratumMitigation,
 
 // JavaScript language features.
 
-// Enables the Symbols-as-WeakMap-keys proposal.
-BASE_FEATURE(kJavaScriptSymbolAsWeakMapKey,
-             "JavaScriptSymbolAsWeakMapKey",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Resizable ArrayBuffer proposal.
 BASE_FEATURE(kJavaScriptRabGsab,
              "JavaScriptRabGsab",
