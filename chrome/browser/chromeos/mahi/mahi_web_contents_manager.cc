@@ -56,6 +56,8 @@ MahiWebContentsManager::MahiWebContentsManager() = default;
 MahiWebContentsManager::~MahiWebContentsManager() = default;
 
 void MahiWebContentsManager::Initialize() {
+  // TODO(b/333993475): This should be called sooner to avoid client_ is null in
+  // some cases.
   client_ = std::make_unique<
       MahiBrowserClientImpl>(/*request_content_callback=*/
                              base::BindRepeating(
@@ -72,6 +74,9 @@ void MahiWebContentsManager::Initialize() {
 
 void MahiWebContentsManager::OnFocusedPageLoadComplete(
     content::WebContents* web_contents) {
+  if (!is_initialized_) {
+    return;
+  }
   // Page info may not be properly updated yet if the user forwards/backwards
   // the tab through cache. Thus, if focused page's URL does not change, we
   // don't create a new `focused_web_content_state_` here, and instead rely on
@@ -114,6 +119,10 @@ void MahiWebContentsManager::OnFocusedPageLoadComplete(
 
 void MahiWebContentsManager::ClearFocusedWebContentState() {
   focused_web_content_state_ = WebContentState(/*url=*/GURL(), /*title=*/u"");
+  if (!is_initialized_) {
+    return;
+  }
+
   // Notifies `MahiManger` the focused page has changed.
   client_->OnFocusedPageChanged(focused_web_content_state_);
 }
