@@ -58,6 +58,18 @@ class FamilyUserDeviceMetricsTest
       /*include_initial_user=*/IsUserExisting()};
 
   // MixinBasedInProcessBrowserTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    if (IsUserExisting()) {
+      // Append another user of the same type.
+      if (IsUserChild()) {
+        logged_in_user_mixin_.GetLoginManagerMixin()->AppendChildUsers(1);
+      } else {
+        logged_in_user_mixin_.GetLoginManagerMixin()->AppendRegularUsers(1);
+      }
+    }
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     // Child users require user policy. Set up an empty one so the user can get
@@ -127,12 +139,16 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, SingleUserAdded) {
 }
 
 IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, SingleUserCount) {
+  if (!IsUserExisting()) {
+    GTEST_SKIP() << "This test makes sense only for existing user";
+  }
   base::HistogramTester histogram_tester;
 
   logged_in_user_mixin_.LogInUser();
 
-  const int family_link_users_count = IsUserChild() ? 1 : 0;
-  const int gaia_users_count = 1;
+  // Current user + extra user from setup.
+  const int gaia_users_count = 2;
+  const int family_link_users_count = IsUserChild() ? gaia_users_count : 0;
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetFamilyLinkUsersCountHistogramNameForTest(),
@@ -145,6 +161,10 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, SingleUserCount) {
 }
 
 IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewChildUser) {
+  if (IsUserExisting() && !IsUserChild()) {
+    GTEST_SKIP() << "As this test runs LoginAsNewChildUser"
+                    " it is expected that if user exists, it is a child user";
+  }
   base::HistogramTester histogram_tester;
 
   logged_in_user_mixin_.GetLoginManagerMixin()->SkipPostLoginScreens();
@@ -155,11 +175,13 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewChildUser) {
   const int family_link_users_count = IsUserExisting() && IsUserChild() ? 2 : 1;
   // If no existing users on login screen, then this user is the first and only.
   const int gaia_users_count = IsUserExisting() ? 2 : 1;
+  // If user existed before, then no users were added.
+  const int family_link_users_added = IsUserExisting() ? 0 : 1;
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(),
       FamilyUserDeviceMetrics::NewUserAdded::kFamilyLinkUserAdded,
-      /*expected_count=*/1);
+      /*expected_count=*/family_link_users_added);
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetFamilyLinkUsersCountHistogramNameForTest(),
       /*sample=*/family_link_users_count,
@@ -181,11 +203,13 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewRegularUser) {
   const int family_link_users_count = IsUserExisting() && IsUserChild() ? 1 : 0;
   // If no existing users on login screen, then this user is the first and only.
   const int gaia_users_count = IsUserExisting() ? 2 : 1;
+  // If user existed before, then no users were added.
+  const int regular_users_added = IsUserExisting() ? 0 : 1;
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(),
       FamilyUserDeviceMetrics::NewUserAdded::kRegularUserAdded,
-      /*expected_count=*/1);
+      /*expected_count=*/regular_users_added);
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetFamilyLinkUsersCountHistogramNameForTest(),
       /*sample=*/family_link_users_count,

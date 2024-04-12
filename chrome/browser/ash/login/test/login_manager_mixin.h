@@ -25,8 +25,10 @@ namespace ash {
 
 namespace test {
 
-constexpr char kTestEmail[] = "test_user@gmail.com";
-constexpr char kTestGaiaId[] = "111111111";
+// These probably could be removed and replaced by
+// FakeGaiaMixin::kFakeUserEmail/kFakeUserGaiaId.
+inline constexpr char kTestEmail[] = "fake-email@gmail.com";
+inline constexpr char kTestGaiaId[] = "111111111";
 
 }  // namespace test
 
@@ -85,6 +87,7 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
   // Should be called before any InProcessBrowserTestMixin functions.
   void AppendRegularUsers(int n);
+  void AppendChildUsers(int n);
   void AppendManagedUsers(int n);
 
   explicit LoginManagerMixin(InProcessBrowserTestMixinHost* host);

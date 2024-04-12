@@ -55,12 +55,14 @@ AccountId CreateAccountId(int id, const std::string& domain) {
 
 void AppendUsers(LoginManagerMixin::UserList* users,
                  const std::string& domain,
+                 user_manager::UserType user_type,
                  int n,
                  CryptohomeMixin* cryptohome_mixin) {
   int num = users->size();
   for (int i = 0; i < n; ++i, ++num) {
     auto account_id = CreateAccountId(num, domain);
-    users->push_back(LoginManagerMixin::TestUserInfo(account_id));
+    users->push_back(LoginManagerMixin::TestUserInfo(
+        account_id, test::kDefaultAuthSetup, user_type));
 
     if (cryptohome_mixin != nullptr) {
       cryptohome_mixin->MarkUserAsExisting(account_id);
@@ -93,11 +95,18 @@ UserContext LoginManagerMixin::CreateDefaultUserContext(
 }
 
 void LoginManagerMixin::AppendRegularUsers(int n) {
-  AppendUsers(&initial_users_, kGmailDomain, n, cryptohome_mixin_);
+  AppendUsers(&initial_users_, kGmailDomain, user_manager::UserType::kRegular,
+              n, cryptohome_mixin_);
+}
+
+void LoginManagerMixin::AppendChildUsers(int n) {
+  AppendUsers(&initial_users_, kGmailDomain, user_manager::UserType::kChild, n,
+              cryptohome_mixin_);
 }
 
 void LoginManagerMixin::AppendManagedUsers(int n) {
-  AppendUsers(&initial_users_, kManagedDomain, n, cryptohome_mixin_);
+  AppendUsers(&initial_users_, kManagedDomain, user_manager::UserType::kRegular,
+              n, cryptohome_mixin_);
 }
 
 LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host)
