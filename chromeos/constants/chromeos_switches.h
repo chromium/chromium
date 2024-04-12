@@ -5,9 +5,11 @@
 #ifndef CHROMEOS_CONSTANTS_CHROMEOS_SWITCHES_H_
 #define CHROMEOS_CONSTANTS_CHROMEOS_SWITCHES_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 
@@ -16,10 +18,18 @@
 // in //ash/constants/ash_switches.h.
 namespace chromeos::switches {
 
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kContainerAppPreinstallActivationTimeThreshold[];
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kContainerAppPreinstallKey[];
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+std::optional<base::Time> GetContainerAppPreinstallActivationTimeThreshold();
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) std::string GetContainerAppPreinstallKey();
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
