@@ -18883,7 +18883,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "TabGroupParityAndroid"
+                        "TabGroupParityAndroid",
+                        "TabStripGroupIndicatorsAndroid"
                     ]
                 }
             ]
