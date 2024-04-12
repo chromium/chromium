@@ -261,6 +261,13 @@ void TabletModeWindowManager::Shutdown(ShutdownReason shutdown_reason) {
         /*exiting_tablet_mode=*/true);
     ArrangeWindowsForClamshellMode(carryover_windows_in_splitview,
                                    was_in_overview);
+  } else {
+    CHECK_EQ(shutdown_reason, ShutdownReason::kSystemShutdown);
+    while (window_state_map_.size()) {
+      WindowToState::iterator iter = window_state_map_.begin();
+      iter->first->RemoveObserver(this);
+      window_state_map_.erase(iter);
+    }
   }
 }
 
