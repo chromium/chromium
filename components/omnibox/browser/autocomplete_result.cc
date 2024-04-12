@@ -401,7 +401,23 @@ void AutocompleteResult::SortAndCull(
             std::make_unique<AndroidWebZpsSection>(suggestion_groups_map_));
       }
     } else if constexpr (is_desktop) {
-      if (omnibox::IsNTPPage(page_classification)) {
+      if (omnibox::IsLensSearchbox(page_classification)) {
+        switch (page_classification) {
+          case OmniboxEventProto::CONTEXTUAL_SEARCHBOX:
+          case OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX:
+            sections.push_back(
+                std::make_unique<DesktopLensContextualZpsSection>(
+                    suggestion_groups_map_));
+            break;
+          case OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX:
+            sections.push_back(
+                std::make_unique<DesktopLensMultimodalZpsSection>(
+                    suggestion_groups_map_));
+            break;
+          default:
+            NOTREACHED();
+        }
+      } else if (omnibox::IsNTPPage(page_classification)) {
         sections.push_back(
             std::make_unique<DesktopNTPZpsSection>(suggestion_groups_map_));
         // Allow secondary zero-prefix suggestions in the NTP realbox or the

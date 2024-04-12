@@ -37,6 +37,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "url/gurl.h"
@@ -267,6 +268,16 @@ class ZeroSuggestProviderTest : public testing::Test,
     return input;
   }
 
+  AutocompleteInput OnFocusInputForLens(
+      const std::string& input_url = "https://example.com/") {
+    AutocompleteInput input(
+        u"", metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX,
+        TestSchemeClassifier());
+    input.set_current_url(GURL(input_url));
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    return input;
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -382,6 +393,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
   AutocompleteInput on_focus_srp_input = OnFocusInputForSRP();
   AutocompleteInput on_clobber_web_input = OnClobberInputForWeb();
   AutocompleteInput on_clobber_srp_input = OnClobberInputForSRP();
+  AutocompleteInput on_focus_lens_input = OnFocusInputForLens();
 
   // Disable on-clobber for OTHER and SRP.
   {
@@ -434,6 +446,11 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
               ZeroSuggestProvider::ResultTypeToRun(on_clobber_srp_input));
     EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
                                                        on_clobber_srp_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_lens_input));
+    EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                      on_focus_lens_input));
   }
   // Disable on-clobber for OTHER.
   {
@@ -486,6 +503,11 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
               ZeroSuggestProvider::ResultTypeToRun(on_clobber_srp_input));
     EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
                                                       on_clobber_srp_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_lens_input));
+    EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                      on_focus_lens_input));
   }
 }
 
@@ -914,6 +936,82 @@ TEST_F(ZeroSuggestProviderRequestTest, RequestAndRemoteSendURLDisallowed) {
   // Make sure the default provider's suggest endpoint was not queried.
   EXPECT_TRUE(provider_->done());
   EXPECT_EQ(0, test_loader_factory()->NumPending());
+}
+
+TEST_F(ZeroSuggestProviderRequestTest,
+       SendRequestWithoutLensInteractionResponse) {
+  // Set up a Google default search provider.
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetShortName(u"t");
+  google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  google_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}&{google:currentPageUrl}";
+
+  TemplateURLService* turl_service = client_->GetTemplateURLService();
+  TemplateURL* template_url = turl_service->Add(
+      std::make_unique<TemplateURL>(google_template_url_data));
+  turl_service->SetUserSelectedDefaultSearchProvider(template_url);
+  ASSERT_NE(0, template_url->id());
+
+  EXPECT_CALL(*provider_, AllowZeroPrefixSuggestions(_, _))
+      .WillRepeatedly(testing::Return(true));
+
+  // Start a query for the ResultType::kRemoteSendURL variant.
+  AutocompleteInput input = OnFocusInputForLens();
+  provider_->Start(input, false);
+
+  // Make sure the default provider's suggest endpoint was queried without the
+  // Lens interaction response.
+  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(test_loader_factory()->IsPending(
+      "https://www.google.com/suggest?q=&url=https%3A%2F%2Fexample.com%2F&"));
+
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      R"(["",[],[],[],{}])");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(provider_->done());
+}
+
+TEST_F(ZeroSuggestProviderRequestTest, SendRequestWithLensInteractionResponse) {
+  // Set up a Google default search provider.
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetShortName(u"t");
+  google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  google_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}&{google:currentPageUrl}";
+
+  TemplateURLService* turl_service = client_->GetTemplateURLService();
+  TemplateURL* template_url = turl_service->Add(
+      std::make_unique<TemplateURL>(google_template_url_data));
+  turl_service->SetUserSelectedDefaultSearchProvider(template_url);
+  ASSERT_NE(0, template_url->id());
+
+  EXPECT_CALL(*provider_, AllowZeroPrefixSuggestions(_, _))
+      .WillRepeatedly(testing::Return(true));
+
+  // Start a query for the ResultType::kRemoteSendURL variant.
+  AutocompleteInput input = OnFocusInputForLens();
+  lens::LensOverlayInteractionResponse lens_overlay_interaction_response;
+  lens_overlay_interaction_response.set_encoded_response("xyz");
+  input.set_lens_overlay_interaction_response(
+      lens_overlay_interaction_response);
+  provider_->Start(input, false);
+
+  // Make sure the default provider's suggest endpoint was queried without the
+  // Lens interaction response.
+  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(test_loader_factory()->IsPending(
+      "https://www.google.com/"
+      "suggest?q=&url=https%3A%2F%2Fexample.com%2F&iil=xyz"));
+
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      R"(["",[],[],[],{}])");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(provider_->done());
 }
 
 // -----------------------------------------------------------------------------

@@ -316,6 +316,14 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
     }
   }
 
+  // Lens searchboxes.
+  if (omnibox::IsLensSearchbox(page_class)) {
+    if (focus_type_input_type ==
+        std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
+      return ResultType::kRemoteSendURL;
+    }
+  }
+
   return ResultType::kNone;
 }
 
@@ -383,6 +391,10 @@ void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
   search_terms_args.current_page_url = result_type == ResultType::kRemoteSendURL
                                            ? input.current_url().spec()
                                            : std::string();
+  // Make sure the Lens interaction response is sent in the request, if
+  // available.
+  search_terms_args.lens_overlay_interaction_response =
+      input.lens_overlay_interaction_response();
 
   // AllowZeroPrefixSuggestions() ensures these are not nullptr.
   const TemplateURLService* template_url_service =
@@ -472,6 +484,10 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
       result_type_running_ == ResultType::kRemoteSendURL
           ? input.current_url().spec()
           : std::string();
+  // Make sure the Lens interaction response is sent in the request, if
+  // available.
+  search_terms_args.lens_overlay_interaction_response =
+      input.lens_overlay_interaction_response();
 
   // Create a loader for the request and take ownership of it.
   loader_ =

@@ -1732,8 +1732,8 @@ bool AutocompleteController::ShouldRunProvider(
 
   // Only a subset of providers are run for the Lens searchboxes.
   if (omnibox::IsLensSearchbox(input_.current_page_classification())) {
-    // TODO(b/328293996): Enable ZeroSuggestProvider.
-    return provider->type() == AutocompleteProvider::TYPE_SEARCH;
+    return provider->type() == AutocompleteProvider::TYPE_SEARCH ||
+           provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST;
   }
 
   if (input_.InKeywordMode()) {

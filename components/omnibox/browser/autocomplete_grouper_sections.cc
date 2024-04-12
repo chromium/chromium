@@ -267,6 +267,22 @@ DesktopWebZpsSection::DesktopWebZpsSection(
                  },
                  group_configs) {}
 
+DesktopLensContextualZpsSection::DesktopLensContextualZpsSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(8,
+                 {
+                     {8, omnibox::GROUP_VISITED_DOC_RELATED},
+                 },
+                 group_configs) {}
+
+DesktopLensMultimodalZpsSection::DesktopLensMultimodalZpsSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(8,
+                 {
+                     {8, omnibox::GROUP_MULTIMODAL},
+                 },
+                 group_configs) {}
+
 DesktopNonZpsSection::DesktopNonZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : Section(10,

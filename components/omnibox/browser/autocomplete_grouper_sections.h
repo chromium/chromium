@@ -170,6 +170,26 @@ class DesktopWebZpsSection : public ZpsSection {
   explicit DesktopWebZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
+// Section expressing the Desktop ZPS limits and grouping for the Lens
+// contextual searchbox.
+// - up to 8 suggestions total.
+//  - up to 8 page related suggestions.
+class DesktopLensContextualZpsSection : public ZpsSection {
+ public:
+  explicit DesktopLensContextualZpsSection(
+      omnibox::GroupConfigMap& group_configs);
+};
+
+// Section expressing the Desktop ZPS limits and grouping for the Lens
+// multimodal searchbox.
+// - up to 8 suggestions total.
+//  - up to 8 multimodal suggestions.
+class DesktopLensMultimodalZpsSection : public ZpsSection {
+ public:
+  explicit DesktopLensMultimodalZpsSection(
+      omnibox::GroupConfigMap& group_configs);
+};
+
 // Section expressing the Desktop, non-ZPS limits and grouping.
 // - up to 10 suggestions total.
 //  - up to 1 default, 10 starer packs, 10 search, 8 nav, and 1 history cluster
