@@ -93,6 +93,12 @@ PickerSearchRequest::PickerSearchRequest(
     HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
   }
 
+  if (!category.has_value() || category == PickerCategory::kUnitsMaths) {
+    math_search_start_ = base::TimeTicks::Now();
+    // Math results is currently synchronous.
+    HandleMathSearchResults(PickerMathSearch(query));
+  }
+
   // These searches do not have category-specific search.
   if (!category.has_value()) {
     gif_search_debouncer_.RequestSearch(
@@ -102,9 +108,6 @@ PickerSearchRequest::PickerSearchRequest(
     emoji_search_start_ = base::TimeTicks::Now();
     // Emoji search is currently synchronous.
     HandleEmojiSearchResults(emoji_search_->SearchEmoji(utf8_query));
-
-    // Math results is currently synchronous.
-    HandleMathSearchResults(PickerMathSearch(query));
 
     category_search_start_ = base::TimeTicks::Now();
     // Category results are currently synchronous.

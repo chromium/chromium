@@ -1035,6 +1035,77 @@ TEST_F(PickerSearchRequestTest, PublishesDateResultsWhenDateCategorySelected) {
       &client(), &emoji_search(), kAllCategories);
 }
 
+// TODO: crbug.com/40240570 - Re-enable once MSan stops failing on Rust-side
+// allocations.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PublishesMathResultsOnlyOnce DISABLED_PublishesMathResultsOnlyOnce
+#else
+#define MAYBE_PublishesMathResultsOnlyOnce PublishesMathResultsOnlyOnce
+#endif
+TEST_F(PickerSearchRequestTest, MAYBE_PublishesMathResultsOnlyOnce) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kMath, _, /*has_more_results=*/_))
+      .Times(1);
+
+  PickerSearchRequest request(
+      u"1 + 1", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+}
+
+// TODO: crbug.com/40240570 - Re-enable once MSan stops failing on Rust-side
+// allocations.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_RecordsMathMetricsOnlyOnce DISABLED_RecordsMathMetricsOnlyOnce
+#else
+#define MAYBE_RecordsMathMetricsOnlyOnce RecordsMathMetricsOnlyOnce
+#endif
+TEST_F(PickerSearchRequestTest, MAYBE_RecordsMathMetricsOnlyOnce) {
+  base::HistogramTester histogram;
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kMath, _, /*has_more_results=*/_))
+      .Times(1);
+
+  {
+    PickerSearchRequest request(
+        u"1 + 1", std::nullopt,
+        base::BindRepeating(&MockSearchResultsCallback::Call,
+                            base::Unretained(&search_results_callback)),
+        &client(), &emoji_search(), kAllCategories);
+  }
+
+  histogram.ExpectTotalCount("Ash.Picker.Search.MathProvider.QueryTime", 1);
+}
+
+// TODO: crbug.com/40240570 - Re-enable once MSan stops failing on Rust-side
+// allocations.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PublishesMathResultsWhenMathCategorySelected \
+  DISABLED_PublishesMathResultsWhenMathCategorySelected
+#else
+#define MAYBE_PublishesMathResultsWhenMathCategorySelected \
+  PublishesMathResultsWhenMathCategorySelected
+#endif
+TEST_F(PickerSearchRequestTest,
+       MAYBE_PublishesMathResultsWhenMathCategorySelected) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kMath, _, /*has_more_results=*/_))
+      .Times(1);
+
+  PickerSearchRequest request(
+      u"1 + 1", PickerCategory::kUnitsMaths,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+}
+
 TEST_F(PickerSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
   EXPECT_CALL(client(),
               StartCrosSearch(Eq(u"ant"), Eq(PickerCategory::kLinks), _))
