@@ -293,6 +293,24 @@ class BASE_EXPORT Process {
   static void SetCurrentTaskDefaultRole();
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+  using TerminateCallback = bool (*)(ProcessHandle handle);
+  using WaitForExitCallback = bool (*)(ProcessHandle handle,
+                                       int* exit_code,
+                                       base::TimeDelta timeout);
+  // Function ptrs to implement termination without polluting //base with
+  // BrowserEngineKit APIs.
+  static void SetTerminationHooks(TerminateCallback terminate_callback,
+                                  WaitForExitCallback wait_callback);
+#if TARGET_OS_SIMULATOR
+  // Methods for supporting both "content processes" and traditional
+  // forked processes. For non-simulator builds on iOS every process would
+  // be a "content process" so we don't need the conditionals.
+  void SetIsContentProcess();
+  bool IsContentProcess() const;
+#endif
+#endif
+
  private:
 #if BUILDFLAG(IS_CHROMEOS)
   // Cleans up process state. If OneGroupPerRenderer is enabled, it cleans up
@@ -308,6 +326,13 @@ class BASE_EXPORT Process {
   static void CleanUpProcessScheduled(Process process, int remaining_retries);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_IOS) || (BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR)
+  bool TerminateInternal(int exit_code, bool wait) const;
+  bool WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
+                                  int* exit_code,
+                                  base::TimeDelta timeout) const;
+#endif
+
 #if BUILDFLAG(IS_WIN)
   win::ScopedHandle process_;
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -318,6 +343,14 @@ class BASE_EXPORT Process {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
   bool is_current_process_;
+#endif
+
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR
+  // A flag indicating that this is a "content process". iOS does not support
+  // generic process invocation but it does support some types of well defined
+  // processes. These types of processes are defined at the //content layer so
+  // for termination we defer to some globally initialized callbacks.
+  bool content_process_ = false;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

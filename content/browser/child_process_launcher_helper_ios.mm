@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <list>
+#include "content/browser/child_process_launcher_helper.h"
 
 #import <BrowserEngineKit/BrowserEngineKit.h>
 
+#include <list>
+
 #include "base/mac/mach_port_rendezvous.h"
+#include "base/no_destructor.h"
+#include "base/threading/platform_thread.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/browser/child_process_launcher_helper.h"
 #include "content/browser/child_process_launcher_helper_posix.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/content_switches.h"
@@ -17,19 +20,89 @@
 namespace content {
 namespace internal {
 
+static base::NoDestructor<base::Lock> g_process_table_lock_;
+static base::NoDestructor<
+    std::map<pid_t, scoped_refptr<ChildProcessLauncherHelper>>>
+    g_process_table_;
+
+void InvalidateProcess(NSObject* process) {
+  if ([process isKindOfClass:[BEWebContentProcess class]]) {
+    [(BEWebContentProcess*)process invalidate];
+  } else if ([process isKindOfClass:[BENetworkingProcess class]]) {
+    [(BENetworkingProcess*)process invalidate];
+  } else if ([process isKindOfClass:[BERenderingProcess class]]) {
+    [(BERenderingProcess*)process invalidate];
+  }
+}
+
+void OnChildProcessTerminatedOnAnyThread(pid_t process_id) {
+  base::AutoLock guard(*g_process_table_lock_);
+  auto it = g_process_table_->find(process_id);
+  if (it != g_process_table_->end()) {
+    it->second->ClearProcessStorage();
+    g_process_table_->erase(it);
+  }
+}
+
+bool TerminateNow(pid_t process_id) {
+  NSObject* process = nullptr;
+  {
+    base::AutoLock guard(*g_process_table_lock_);
+    auto it = g_process_table_->find(process_id);
+    if (it != g_process_table_->end()) {
+      process = it->second->GetProcess();
+    }
+  }
+
+  if (!process) {
+    return false;
+  }
+  InvalidateProcess(process);
+  return true;
+}
+
+bool WaitForExit(pid_t process_id, int* exit_code, base::TimeDelta timeout) {
+  base::TimeTicks wakeup_time = base::TimeTicks::Now() + timeout;
+  constexpr uint32_t kMaxSleepInMicroseconds = 1 << 18;  // ~256 ms.
+  uint32_t max_sleep_time_usecs = 1 << 10;               // ~1 ms.
+  int double_sleep_time = 0;
+
+  while (true) {
+    {
+      base::AutoLock guard(*g_process_table_lock_);
+      auto it = g_process_table_->find(process_id);
+      if (it != g_process_table_->end()) {
+        if (it->second->GetProcess() == nullptr) {
+          if (exit_code) {
+            *exit_code = 0;
+          }
+          return true;
+        }
+      } else {
+        return true;
+      }
+    }
+    base::TimeTicks now = base::TimeTicks::Now();
+    if (now > wakeup_time) {
+      return false;
+    }
+
+    const uint32_t sleep_time_usecs = static_cast<uint32_t>(
+        std::min(static_cast<uint64_t>((wakeup_time - now).InMicroseconds()),
+                 uint64_t{max_sleep_time_usecs}));
+    base::PlatformThread::Sleep(base::Microseconds(sleep_time_usecs));
+    if ((max_sleep_time_usecs < kMaxSleepInMicroseconds) &&
+        (double_sleep_time++ % 4 == 0)) {
+      max_sleep_time_usecs *= 2;
+    }
+  }
+}
+
 // Object used to pass the result of the launch from the async
 // dispatch_queue to the LauncherThread.
 class LaunchResult {
  public:
-  void Invalidate() {
-    if ([process isKindOfClass:[BEWebContentProcess class]]) {
-      [(BEWebContentProcess*)process invalidate];
-    } else if ([process isKindOfClass:[BENetworkingProcess class]]) {
-      [(BENetworkingProcess*)process invalidate];
-    } else if ([process isKindOfClass:[BERenderingProcess class]]) {
-      [(BERenderingProcess*)process invalidate];
-    }
-  }
+  void Invalidate() { InvalidateProcess(process); }
 
   id<BEProcessCapabilityGrant> GrantForeground(NSError** error) {
     id<BEProcessCapabilityGrant> grant;
@@ -69,8 +142,12 @@ class ProcessStorage : public ProcessStorageBase {
 
   ~ProcessStorage() override { [grant_ invalidate]; }
 
+  void ReleaseProcess() override { process_ = nullptr; }
+
+  NSObject* Process() { return process_; }
+
  private:
-  [[maybe_unused]] NSObject* process_;
+  NSObject* process_;
   [[maybe_unused]] xpc_connection_t ipc_channel_;
   id<BEProcessCapabilityGrant> grant_;
 };
@@ -115,10 +192,20 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   rendezvous_server_ = std::make_unique<base::MachPortRendezvousServer>(
       options->mach_ports_for_rendezvous);
 
+  // We need to hand out unique "process ids" just use a static counter
+  // for now. There should only be one launcher thread so this is
+  // synchronous access it doesn't need to be an atomic.
+  static pid_t g_pid = 0;
+  pid_t process_id = ++g_pid;
+
+  static bool g_hooks_registered = false;
+  if (!g_hooks_registered) {
+    base::Process::SetTerminationHooks(&TerminateNow, &WaitForExit);
+    g_hooks_registered = true;
+  }
+
   void (^process_terminated)() = ^void() {
-    // TODO(dtapuska): This never gets called, once it does then we can
-    // make an implementation. Reported to Apple via feedback (13657030).
-    LOG(ERROR) << "Process died";
+    OnChildProcessTerminatedOnAnyThread(process_id);
   };
   std::string process_type = GetProcessType();
   std::string utility_sub_type =
@@ -132,7 +219,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
           GetProcessLauncherTaskRunner()->PostTask(
               FROM_HERE,
               base::BindOnce(&ChildProcessLauncherHelper::OnChildProcessStarted,
-                             this, std::move(result)));
+                             this, process_id, std::move(result)));
         };
 
     [BENetworkingProcess
@@ -147,7 +234,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
           GetProcessLauncherTaskRunner()->PostTask(
               FROM_HERE,
               base::BindOnce(&ChildProcessLauncherHelper::OnChildProcessStarted,
-                             this, std::move(result)));
+                             this, process_id, std::move(result)));
         };
 
     [BERenderingProcess
@@ -162,7 +249,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
           GetProcessLauncherTaskRunner()->PostTask(
               FROM_HERE,
               base::BindOnce(&ChildProcessLauncherHelper::OnChildProcessStarted,
-                             this, std::move(result)));
+                             this, process_id, std::move(result)));
         };
 
     [BEWebContentProcess
@@ -174,6 +261,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
 }
 
 void ChildProcessLauncherHelper::OnChildProcessStarted(
+    pid_t process_id,
     std::unique_ptr<LaunchResult> launch_result) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   scoped_refptr<ChildProcessLauncherHelper> ref(this);
@@ -192,8 +280,11 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
     xpc_connection_t xpc_connection =
         launch_result->CreateXPCConnection(&error);
     if (xpc_connection) {
-      xpc_connection_set_event_handler(xpc_connection, ^(xpc_object_t msg){
-                                       });
+      xpc_connection_set_event_handler(xpc_connection, ^(xpc_object_t event) {
+        if (event == XPC_ERROR_CONNECTION_INTERRUPTED) {
+          OnChildProcessTerminatedOnAnyThread(process_id);
+        }
+      });
       xpc_connection_resume(xpc_connection);
       xpc_object_t message = xpc_dictionary_create(nil, nil, 0);
       xpc_object_t args_array = xpc_array_create_empty();
@@ -211,6 +302,14 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
       // life.
       process_storage_ = std::make_unique<ProcessStorage>(
           launch_result->process, xpc_connection, grant);
+
+      // Add the process to the global table.
+      {
+        base::AutoLock guard(*g_process_table_lock_);
+        CHECK(!base::Contains(*g_process_table_, process_id));
+        g_process_table_->emplace(process_id, this);
+      }
+
     } else {
       [grant invalidate];
       launch_result->Invalidate();
@@ -218,12 +317,10 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
   }
 
   ChildProcessLauncherHelper::Process process;
-  // We need to hand out unique "process ids" just use a static counter
-  // for now. There should only be one launcher thread so this is
-  // synchronous access it doesn't need to be an atomic.
-  static pid_t g_pid = 0;
-  g_pid++;
-  process.process = base::Process(g_pid);
+  process.process = base::Process(process_id);
+#if TARGET_OS_SIMULATOR
+  process.process.SetIsContentProcess();
+#endif
   PostLaunchOnLauncherThread(std::move(process), launch_result_code);
 }
 
@@ -239,25 +336,46 @@ ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
     const ChildProcessLauncherHelper::Process& process,
     bool known_dead) {
   ChildProcessTerminationInfo info;
-  info.status = known_dead ? base::GetKnownDeadTerminationStatus(
-                                 process.process.Handle(), &info.exit_code)
-                           : base::GetTerminationStatus(
-                                 process.process.Handle(), &info.exit_code);
+  if (!process_storage_) {
+    info.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
+  } else if (static_cast<ProcessStorage*>(process_storage_.get())->Process() ==
+             nullptr) {
+    info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
+  } else {
+    info.status = base::TERMINATION_STATUS_STILL_RUNNING;
+  }
   return info;
+}
+
+void ChildProcessLauncherHelper::ClearProcessStorage() {
+  if (process_storage_) {
+    process_storage_->ReleaseProcess();
+  }
+}
+
+NSObject* ChildProcessLauncherHelper::GetProcess() {
+  if (process_storage_) {
+    return static_cast<ProcessStorage*>(process_storage_.get())->Process();
+  }
+  return nullptr;
 }
 
 // static
 bool ChildProcessLauncherHelper::TerminateProcess(const base::Process& process,
                                                   int exit_code) {
-  // TODO(dtapuska): We either need to lookup base::Process to some handle.
-  return false;
+  // TODO(https://crbug.com/818244): Determine whether we should also call
+  // EnsureProcessTerminated() to make sure of process-exit, and reap it.
+  return process.Terminate(exit_code, false);
 }
 
 // static
 void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
     ChildProcessLauncherHelper::Process process) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  // TODO(dtapuska): Implement me, lookup ProcessStorage?
+  // Client has gone away, so just kill the process.  Using exit code 0 means
+  // that UMA won't treat this as a crash.
+  process.process.Terminate(RESULT_CODE_NORMAL_EXIT, false);
+  base::EnsureProcessTerminated(std::move(process.process));
 }
 
 void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(

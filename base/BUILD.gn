@@ -2164,11 +2164,12 @@ component("base") {
         "ios/sim_header_shims.h",
         "mac/mach_port_rendezvous.cc",
         "mac/mach_port_rendezvous.h",
-        "process/kill_mac.cc",
+        "process/kill_ios.cc",
         "process/memory_mac.mm",
         "process/port_provider_mac.cc",
         "process/port_provider_mac.h",
         "process/process_handle_mac.cc",
+        "process/process_ios.cc",
         "process/process_iterator_mac.cc",
         "process/process_mac.cc",
         "process/process_posix.cc",
@@ -2178,7 +2179,10 @@ component("base") {
 
       # We include launch_mac on simulator builds so unittests can fork.
       if (target_environment == "simulator") {
-        sources += [ "process/launch_mac.cc" ]
+        sources += [
+          "process/kill_mac.cc",
+          "process/launch_mac.cc",
+        ]
       } else {
         sources += [ "process/launch_ios.cc" ]
       }
