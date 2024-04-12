@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -555,7 +556,7 @@ void NdkAudioEncoder::DrainOutput() {
   int output_data_size;
 
   auto mc_data = base::make_span(buf_data + mc_buffer_offset, mc_buffer_size);
-  std::unique_ptr<uint8_t[]> output_data;
+  base::HeapArray<uint8_t> output_data;
 
   if (output_format == AudioEncoder::AacOutputFormat::ADTS) {
     int adts_header_size = 0;
@@ -564,7 +565,7 @@ void NdkAudioEncoder::DrainOutput() {
 
     output_data_size = mc_data.size() + adts_header_size;
 
-    if (!output_data) {
+    if (output_data.empty()) {
       AMediaCodec_releaseOutputBuffer(media_codec_->codec(),
                                       output_buffer.buffer_index, false);
       LogError({EncoderStatus::Codes::kFormatConversionError,
@@ -573,8 +574,8 @@ void NdkAudioEncoder::DrainOutput() {
     }
 
   } else {
-    output_data = std::make_unique<uint8_t[]>(mc_data.size());
-    memcpy(output_data.get(), mc_data.data(), mc_data.size_bytes());
+    output_data = base::HeapArray<uint8_t>::Uninit(mc_data.size());
+    memcpy(output_data.data(), mc_data.data(), mc_data.size_bytes());
 
     output_data_size = mc_data.size();
   }

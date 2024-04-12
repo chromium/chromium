@@ -316,12 +316,12 @@ TEST_F(AACTest, CreateAdtsFromEsds) {
   const size_t total_size = sizeof(packet) + adts_header_size;
 
   // Make sure the conversion succeeded.
-  EXPECT_TRUE(adts_packet);
+  EXPECT_FALSE(adts_packet.empty());
   EXPECT_EQ(adts_header_size, kADTSHeaderMinSize);
 
   // Verify the packet data.
   EXPECT_EQ(
-      0, memcmp(adts_packet.get() + adts_header_size, packet, sizeof(packet)));
+      0, memcmp(adts_packet.data() + adts_header_size, packet, sizeof(packet)));
 
   ADTSStreamParser adts_parser;
 
@@ -333,7 +333,9 @@ TEST_F(AACTest, CreateAdtsFromEsds) {
   bool metadata_frame;
   std::vector<uint8_t> extra_data;
 
-  adts_parser.ParseFrameHeader(adts_packet.get(), total_size, &frame_size,
+  // TODO(b/40285824): Change ParseFrameHeader to take a span instead of a
+  // `const uint8_t* data` as its first arg.
+  adts_parser.ParseFrameHeader(adts_packet.data(), total_size, &frame_size,
                                &sample_rate, &channel_layout, &sample_count,
                                &metadata_frame, &extra_data);
 

@@ -4,6 +4,7 @@
 
 #include "media/mojo/mojom/encoded_audio_buffer_traits.h"
 
+#include "base/containers/heap_array.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 
@@ -33,8 +34,8 @@ bool StructTraits<media::mojom::EncodedAudioBufferDataView,
     return false;
 
   size_t encoded_data_size = data_view.size();
-  std::unique_ptr<uint8_t[]> encoded_data(new uint8_t[encoded_data_size]);
-  memcpy(encoded_data.get(), data_view.data(), encoded_data_size);
+  auto encoded_data = base::HeapArray<uint8_t>::Uninit(encoded_data_size);
+  memcpy(encoded_data.data(), data_view.data(), encoded_data_size);
 
   *output = media::EncodedAudioBuffer(params, std::move(encoded_data),
                                       encoded_data_size, timestamp, duration);

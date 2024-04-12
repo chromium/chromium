@@ -11,6 +11,7 @@
 #include <sys/ioctl.h>
 
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -164,8 +165,8 @@ scoped_refptr<media::DecoderBuffer> ReassembleFragments(
   for (const auto& fragment : fragments) {
     frame_size += fragment->data_size();
   }
-  auto temp_buffer = std::make_unique<uint8_t[]>(frame_size);
-  uint8_t* dst = temp_buffer.get();
+  auto temp_buffer = base::HeapArray<uint8_t>::Uninit(frame_size);
+  uint8_t* dst = temp_buffer.data();
   for (const auto& fragment : fragments) {
     memcpy(dst, fragment->data(), fragment->data_size());
     dst += fragment->data_size();

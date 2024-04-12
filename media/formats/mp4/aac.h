@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
@@ -68,10 +69,9 @@ class MEDIA_EXPORT AAC {
   // Converts a raw AAC frame into an AAC frame with an ADTS header. Allocates
   // new memory and copies the data from `buffer`, with the appropriate ADTS
   // header. The size of the returned array is `buffer.size` +
-  // `adts_header_size`. Returns nullptr on failure.
-  std::unique_ptr<uint8_t[]> CreateAdtsFromEsds(
-      base::span<const uint8_t> buffer,
-      int* adts_header_size);
+  // `adts_header_size`. Returns an empty HeapArray<uint8_t> on failure.
+  base::HeapArray<uint8_t> CreateAdtsFromEsds(base::span<const uint8_t> buffer,
+                                              int* adts_header_size);
 
   // If known, returns the AudioCodecProfile.
   AudioCodecProfile GetProfile() const;

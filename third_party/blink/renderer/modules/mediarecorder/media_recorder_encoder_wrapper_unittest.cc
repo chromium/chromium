@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
@@ -28,7 +29,7 @@ constexpr gfx::Size k360p{640, 360};
 constexpr size_t kChunkSize = 1234;
 media::VideoEncoderOutput DefaultEncoderOutput() {
   media::VideoEncoderOutput output;
-  output.data = std::make_unique<uint8_t[]>(kChunkSize);
+  output.data = base::HeapArray<uint8_t>::Uninit(kChunkSize);
   output.size = kChunkSize;
   output.key_frame = true;
   return output;
@@ -563,7 +564,7 @@ TEST_P(MediaRecorderEncoderWrapperTest, InitializesAndEncodesOneAlphaFrame) {
                           media::VideoEncoder::EncoderStatusCB encode_done_cb) {
             std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
             media::VideoEncoderOutput output;
-            output.data = std::make_unique<uint8_t[]>(kChunkSize);
+            output.data = base::HeapArray<uint8_t>::Uninit(kChunkSize);
             output.size = kChunkSize;
             output.key_frame = true;
             yuv_output_cb_ptr->Run(std::move(output), std::nullopt);
@@ -574,7 +575,7 @@ TEST_P(MediaRecorderEncoderWrapperTest, InitializesAndEncodesOneAlphaFrame) {
                           media::VideoEncoder::EncoderStatusCB encode_done_cb) {
             std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
             media::VideoEncoderOutput output;
-            output.data = std::make_unique<uint8_t[]>(kAlphaChunkSize);
+            output.data = base::HeapArray<uint8_t>::Uninit(kAlphaChunkSize);
             output.size = kAlphaChunkSize;
             output.key_frame = true;
             alpha_output_cb_ptr->Run(std::move(output), std::nullopt);
@@ -617,7 +618,7 @@ TEST_P(MediaRecorderEncoderWrapperTest,
                           media::VideoEncoder::EncoderStatusCB encode_done_cb) {
             std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
             media::VideoEncoderOutput output;
-            output.data = std::make_unique<uint8_t[]>(kChunkSize);
+            output.data = base::HeapArray<uint8_t>::Uninit(kChunkSize);
             output.size = kChunkSize;
             output.key_frame = true;
             yuv_output_cb_ptr->Run(std::move(output), std::nullopt);
@@ -660,7 +661,7 @@ TEST_P(MediaRecorderEncoderWrapperTest,
                           media::VideoEncoder::EncoderStatusCB encode_done_cb) {
             std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
             media::VideoEncoderOutput output;
-            output.data = std::make_unique<uint8_t[]>(kChunkSize);
+            output.data = base::HeapArray<uint8_t>::Uninit(kChunkSize);
             output.size = kChunkSize;
             output.key_frame = true;
             yuv_output_cb_ptr->Run(std::move(output), std::nullopt);
@@ -671,7 +672,7 @@ TEST_P(MediaRecorderEncoderWrapperTest,
                           media::VideoEncoder::EncoderStatusCB encode_done_cb) {
             std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
             media::VideoEncoderOutput output;
-            output.data = std::make_unique<uint8_t[]>(kAlphaChunkSize);
+            output.data = base::HeapArray<uint8_t>::Uninit(kAlphaChunkSize);
             output.size = kAlphaChunkSize;
             output.key_frame = true;
             alpha_output_cb_ptr->Run(std::move(output), std::nullopt);

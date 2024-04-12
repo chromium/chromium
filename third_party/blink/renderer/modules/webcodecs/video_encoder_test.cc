@@ -345,7 +345,7 @@ TEST_F(
                 FROM_HERE, WTF::BindOnce(std::move(done_cb),
                                          media::EncoderStatus::Codes::kOk));
             media::VideoEncoderOutput out;
-            out.data = std::make_unique<uint8_t[]>(100);
+            out.data = base::HeapArray<uint8_t>::Uninit(100);
             out.size = 100;
             out.key_frame = true;
             scheduler::GetSequencedTaskRunnerForTesting()->PostTask(

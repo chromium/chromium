@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -899,10 +900,10 @@ HRESULT MFAudioEncoder::ProcessOutput(EncodedAudioBuffer& encoded_audio) {
   // Copy the data from `output_buffer` into `encoded_data`.
   size_t encoded_data_size = static_cast<size_t>(total_length);
   BYTE* output_buffer_ptr = nullptr;
-  std::unique_ptr<uint8_t[]> encoded_data(new uint8_t[encoded_data_size]);
+  auto encoded_data = base::HeapArray<uint8_t>::Uninit(encoded_data_size);
   RETURN_IF_FAILED(output_buffer->Lock(&output_buffer_ptr, 0, 0));
 
-  memcpy(encoded_data.get(), output_buffer_ptr, encoded_data_size);
+  memcpy(encoded_data.data(), output_buffer_ptr, encoded_data_size);
   RETURN_IF_FAILED(output_buffer->Unlock());
 
   LONGLONG sample_duration = 0;

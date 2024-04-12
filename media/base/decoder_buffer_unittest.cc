@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_util.h"
@@ -19,7 +20,7 @@ namespace media {
 
 TEST(DecoderBufferTest, Constructors) {
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
-  EXPECT_TRUE(buffer->data());
+  EXPECT_FALSE(buffer->data());
   EXPECT_EQ(0u, buffer->size());
   EXPECT_EQ(base::span(*buffer), base::span<const uint8_t>());
   EXPECT_FALSE(buffer->end_of_stream());
@@ -53,8 +54,8 @@ TEST(DecoderBufferTest, CopyFrom) {
 TEST(DecoderBufferTest, FromArray) {
   const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
-  auto ptr = std::make_unique<uint8_t[]>(kDataSize);
-  memcpy(ptr.get(), kData, kDataSize);
+  auto ptr = base::HeapArray<uint8_t>::Uninit(kDataSize);
+  memcpy(ptr.data(), kData, kDataSize);
 
   scoped_refptr<DecoderBuffer> buffer(
       DecoderBuffer::FromArray(std::move(ptr), kDataSize));

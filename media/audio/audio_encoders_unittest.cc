@@ -737,7 +737,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode) {
     // Use the libopus decoder to decode the |encoded_data| and check we
     // get the expected number of frames per buffer.
     EXPECT_EQ(kOpusDecoderFramesPerBuffer,
-              opus_decode_float(opus_decoder, output.encoded_data.get(),
+              opus_decode_float(opus_decoder, output.encoded_data.data(),
                                 output.encoded_data_size, buffer.data(),
                                 kOpusDecoderFramesPerBuffer, 0));
   };
@@ -790,7 +790,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_BitrateMode) {
       // Use the libopus decoder to decode the |encoded_data| and check we
       // get the expected number of frames per buffer.
       EXPECT_EQ(kOpusDecoderFramesPerBuffer,
-                opus_decode_float(opus_decoder, output.encoded_data.get(),
+                opus_decode_float(opus_decoder, output.encoded_data.data(),
                                   output.encoded_data_size, buffer.data(),
                                   kOpusDecoderFramesPerBuffer, 0));
     };
@@ -873,7 +873,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_OpusOptions) {
       // Use the libopus decoder to decode the |encoded_data| and check we
       // get the expected number of frames per buffer.
       EXPECT_EQ(decoder_frames_per_buffer,
-                opus_decode_float(opus_decoder, output.encoded_data.get(),
+                opus_decode_float(opus_decoder, output.encoded_data.data(),
                                   output.encoded_data_size, buffer.data(),
                                   decoder_frames_per_buffer, 0));
     };

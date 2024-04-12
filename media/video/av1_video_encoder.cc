@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
@@ -655,8 +656,8 @@ VideoEncoderOutput Av1VideoEncoder::GetEncoderOutput(
       // encoded packet, or the frame is dropped.
       CHECK_EQ(output.size, 0u);
       output.size = pkt->data.frame.sz;
-      output.data = std::make_unique<uint8_t[]>(output.size);
-      memcpy(output.data.get(), pkt->data.frame.buf, output.size);
+      output.data = base::HeapArray<uint8_t>::Uninit(output.size);
+      memcpy(output.data.data(), pkt->data.frame.buf, output.size);
       output.key_frame = (pkt->data.frame.flags & AOM_FRAME_IS_KEY) != 0;
       output.temporal_id = output.key_frame ? 0 : temporal_id;
       output.color_space = color_space;

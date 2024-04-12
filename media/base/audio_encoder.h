@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -25,7 +26,7 @@ namespace media {
 struct MEDIA_EXPORT EncodedAudioBuffer {
   EncodedAudioBuffer();
   EncodedAudioBuffer(const AudioParameters& params,
-                     std::unique_ptr<uint8_t[]> data,
+                     base::HeapArray<uint8_t> data,
                      size_t size,
                      base::TimeTicks timestamp,
                      base::TimeDelta duration = media::kNoTimestamp);
@@ -39,7 +40,7 @@ struct MEDIA_EXPORT EncodedAudioBuffer {
   AudioParameters params;
 
   // The buffer containing the encoded data.
-  std::unique_ptr<uint8_t[]> encoded_data;
+  base::HeapArray<uint8_t> encoded_data;
 
   // The size of the encoded data in the above buffer. Note that this is not
   // necessarily equal to the capacity of the buffer. Some encoders allocate a

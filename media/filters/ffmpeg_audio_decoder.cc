@@ -179,8 +179,8 @@ void FFmpegAudioDecoder::DecodeBuffer(const DecoderBuffer& buffer,
 
 bool FFmpegAudioDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
   AVPacket* packet = av_packet_alloc();
-  if (buffer.end_of_stream()) {
-    packet->data = NULL;
+  if (buffer.end_of_stream() || buffer.size() == 0) {
+    packet->data = nullptr;
     packet->size = 0;
   } else {
     packet->data = const_cast<uint8_t*>(buffer.data());
@@ -324,7 +324,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
   ReleaseFFmpegResources();
 
   // Initialize AVCodecContext structure.
-  codec_context_.reset(avcodec_alloc_context3(NULL));
+  codec_context_.reset(avcodec_alloc_context3(nullptr));
   AudioDecoderConfigToAVCodecContext(config, codec_context_.get());
 
   codec_context_->opaque = this;
@@ -339,7 +339,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
   if (!config.should_discard_decoder_delay())
     codec_context_->flags2 |= AV_CODEC_FLAG2_SKIP_MANUAL;
 
-  AVDictionary* codec_options = NULL;
+  AVDictionary* codec_options = nullptr;
   if (config.codec() == AudioCodec::kOpus) {
     codec_context_->request_sample_fmt = AV_SAMPLE_FMT_FLT;
 

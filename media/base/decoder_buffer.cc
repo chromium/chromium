@@ -6,6 +6,7 @@
 
 #include <sstream>
 
+#include "base/containers/heap_array.h"
 #include "base/debug/alias.h"
 #include "media/base/subsample_entry.h"
 
@@ -30,10 +31,10 @@ DecoderBuffer::DecoderBuffer(const uint8_t* data, size_t size)
 
   Initialize();
 
-  memcpy(data_.get(), data, size_);
+  memcpy(data_.data(), data, size_);
 }
 
-DecoderBuffer::DecoderBuffer(std::unique_ptr<uint8_t[]> data, size_t size)
+DecoderBuffer::DecoderBuffer(base::HeapArray<uint8_t> data, size_t size)
     : data_(std::move(data)), size_(size) {}
 
 DecoderBuffer::DecoderBuffer(base::ReadOnlySharedMemoryMapping mapping,
@@ -52,12 +53,10 @@ DecoderBuffer::DecoderBuffer(DecoderBufferType decoder_buffer_type)
     : is_end_of_stream_(decoder_buffer_type ==
                         DecoderBufferType::kEndOfStream) {}
 
-DecoderBuffer::~DecoderBuffer() {
-  data_.reset();
-}
+DecoderBuffer::~DecoderBuffer() = default;
 
 void DecoderBuffer::Initialize() {
-  data_.reset(new uint8_t[size_]);
+  data_ = base::HeapArray<uint8_t>::Uninit(size_);
 }
 
 // static
@@ -70,9 +69,8 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::CopyFrom(const uint8_t* data,
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::FromArray(
-    std::unique_ptr<uint8_t[]> data,
+    base::HeapArray<uint8_t> data,
     size_t size) {
-  CHECK(data);
   return base::WrapRefCounted(new DecoderBuffer(std::move(data), size));
 }
 

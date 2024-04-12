@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
@@ -75,7 +76,8 @@ class MEDIA_EXPORT DecoderBuffer
     DiscardPadding discard_padding;
   };
 
-  // Allocates buffer with |size| >= 0. |is_key_frame_| will default to false.
+  // Allocates buffer with |size| > 0. |is_key_frame_| will default to false.
+  // If size is 0, no buffer will be allocated.
   explicit DecoderBuffer(size_t size);
 
   DecoderBuffer(const DecoderBuffer&) = delete;
@@ -91,7 +93,7 @@ class MEDIA_EXPORT DecoderBuffer
   // as byte array. The buffer's |is_key_frame_| will default to false.
   //
   // Ownership of |data| is transferred to the buffer.
-  static scoped_refptr<DecoderBuffer> FromArray(std::unique_ptr<uint8_t[]> data,
+  static scoped_refptr<DecoderBuffer> FromArray(base::HeapArray<uint8_t> data,
                                                 size_t size);
 
   // Create a DecoderBuffer where data() of |size| bytes resides within the
@@ -168,7 +170,7 @@ class MEDIA_EXPORT DecoderBuffer
       return writable_mapping_.GetMemoryAs<const uint8_t>();
     if (external_memory_)
       return external_memory_->span().data();
-    return data_.get();
+    return data_.data();
   }
 
   // The number of bytes in the buffer.
@@ -185,7 +187,7 @@ class MEDIA_EXPORT DecoderBuffer
     DCHECK(!read_only_mapping_.IsValid());
     DCHECK(!writable_mapping_.IsValid());
     DCHECK(!external_memory_);
-    return data_.get();
+    return const_cast<uint8_t*>(data_.data());
   }
 
   // TODO(sandersd): Remove writable_span(). https://crbug.com/834088
@@ -275,7 +277,7 @@ class MEDIA_EXPORT DecoderBuffer
   // |is_key_frame_| will default to false.
   DecoderBuffer(const uint8_t* data, size_t size);
 
-  DecoderBuffer(std::unique_ptr<uint8_t[]> data, size_t size);
+  DecoderBuffer(base::HeapArray<uint8_t> data, size_t size);
 
   DecoderBuffer(base::ReadOnlySharedMemoryMapping mapping, size_t size);
 
@@ -288,7 +290,7 @@ class MEDIA_EXPORT DecoderBuffer
   virtual ~DecoderBuffer();
 
   // Encoded data, if it is stored on the heap.
-  std::unique_ptr<uint8_t[]> data_;
+  base::HeapArray<uint8_t> data_;
 
  private:
   // Constructor helper method for memory allocations.

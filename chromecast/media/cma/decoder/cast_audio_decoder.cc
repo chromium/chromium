@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -43,20 +44,16 @@ namespace {
 // to the DecoderBufferBase so that it lives longer than this DecoderBuffer.
 class DecoderBuffer : public ::media::DecoderBuffer {
  public:
-  DecoderBuffer(scoped_refptr<DecoderBufferBase> buffer)
+  explicit DecoderBuffer(scoped_refptr<DecoderBufferBase> buffer)
       : ::media::DecoderBuffer(
-            std::unique_ptr<uint8_t[]>(const_cast<uint8_t*>(buffer->data())),
-            buffer->data_size()),
+            std::make_unique<::media::DecoderBuffer::ExternalMemory>(
+                base::make_span(buffer->data(), buffer->data_size()))),
         buffer_(std::move(buffer)) {
     set_timestamp(::base::Microseconds(buffer_->timestamp()));
   }
 
  private:
-  ~DecoderBuffer() override {
-    // Releases the data to prevent it from being deleted.
-    DCHECK_EQ(data_.get(), buffer_->data());
-    data_.release();
-  }
+  ~DecoderBuffer() override { DCHECK_EQ(data_.data(), buffer_->data()); }
 
   scoped_refptr<DecoderBufferBase> buffer_;
 };

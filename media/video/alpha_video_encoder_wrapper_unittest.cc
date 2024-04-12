@@ -223,9 +223,9 @@ TEST_P(AlphaVideoEncoderWrapperTest, OutputCountEqualsFrameCount) {
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
           std::optional<VideoEncoder::CodecDescription> desc) {
-        EXPECT_NE(output.data, nullptr);
+        EXPECT_FALSE(output.data.empty());
         EXPECT_GT(output.size, 0u);
-        EXPECT_NE(output.alpha_data, nullptr);
+        EXPECT_FALSE(output.alpha_data.empty());
         EXPECT_GT(output.alpha_size, 0u);
         EXPECT_EQ(output.timestamp, frame_duration * outputs_count);
         outputs_count++;
@@ -269,12 +269,12 @@ TEST_P(AlphaVideoEncoderWrapperTest, EncodeAndDecode) {
             DecoderBuffer::FromArray(std::move(output.data), output.size);
         buffer->set_timestamp(output.timestamp);
         buffer->set_is_key_frame(output.key_frame);
-        EXPECT_NE(output.alpha_data, nullptr);
+        EXPECT_FALSE(output.alpha_data.empty());
         std::vector<uint8_t>& buf_alpha = buffer->WritableSideData().alpha_data;
         // Side data id for alpha. Big endian one.
         buf_alpha.assign({0, 0, 0, 0, 0, 0, 0, 1});
-        buf_alpha.insert(buf_alpha.end(), output.alpha_data.get(),
-                         output.alpha_data.get() + output.alpha_size);
+        buf_alpha.insert(buf_alpha.end(), output.alpha_data.begin(),
+                         output.alpha_data.end());
         decoder_->Decode(std::move(buffer), base::DoNothing());
       });
 

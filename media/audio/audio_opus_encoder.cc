@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -271,10 +272,10 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
   if (!current_done_cb_)
     return;
 
-  std::unique_ptr<uint8_t[]> encoded_data(new uint8_t[kOpusMaxDataBytes]);
+  auto encoded_data = base::HeapArray<uint8_t>::Uninit(kOpusMaxDataBytes);
   auto result = opus_encode_float(opus_encoder_.get(), buffer_.data(),
                                   converted_params_.frames_per_buffer(),
-                                  encoded_data.get(), kOpusMaxDataBytes);
+                                  encoded_data.data(), kOpusMaxDataBytes);
 
   if (result < 0) {
     DCHECK(current_done_cb_);

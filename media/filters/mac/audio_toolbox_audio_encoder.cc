@@ -5,6 +5,7 @@
 #include "media/filters/mac/audio_toolbox_audio_encoder.h"
 
 #include "base/apple/osstatus_logging.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -380,13 +381,13 @@ void AudioToolboxAudioEncoder::DoEncode(const AudioBus* input_bus) {
     }
 
     int adts_header_size = 0;
-    std::unique_ptr<uint8_t[]> packet_buffer;
+    base::HeapArray<uint8_t> packet_buffer;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     if (format == AudioEncoder::AacOutputFormat::ADTS) {
       packet_buffer = aac_config_parser_.CreateAdtsFromEsds(temp_output_buf_,
                                                             &adts_header_size);
-      adts_conversion_ok = packet_buffer != nullptr;
+      adts_conversion_ok = !packet_buffer.empty();
     }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
@@ -397,11 +398,11 @@ void AudioToolboxAudioEncoder::DoEncode(const AudioBus* input_bus) {
       return;
     }
 
-    if (!packet_buffer) {
+    if (packet_buffer.empty()) {
       // There was no ADTS conversion, we should copy `temp_output_buf_` as is.
       CHECK_EQ(adts_header_size, 0);
-      packet_buffer = std::make_unique<uint8_t[]>(temp_output_buf_.size());
-      std::memcpy(packet_buffer.get(), temp_output_buf_.data(),
+      packet_buffer = base::HeapArray<uint8_t>::Uninit(temp_output_buf_.size());
+      std::memcpy(packet_buffer.data(), temp_output_buf_.data(),
                   temp_output_buf_.size());
     }
 

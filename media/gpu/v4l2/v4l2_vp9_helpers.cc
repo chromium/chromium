@@ -4,6 +4,7 @@
 
 #include "media/gpu/v4l2/v4l2_vp9_helpers.h"
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 
 namespace media {
@@ -116,14 +117,12 @@ bool AppendVP9SuperFrameIndex(scoped_refptr<DecoderBuffer>& buffer) {
   std::vector<uint8_t> superframe_index = CreateSuperFrameIndex(frame_sizes);
   const size_t vp9_superframe_size =
       buffer->data_size() + superframe_index.size();
-  auto vp9_superframe = std::make_unique<uint8_t[]>(vp9_superframe_size);
-  memcpy(vp9_superframe.get(), buffer->data(), buffer->data_size());
-  memcpy(vp9_superframe.get() + buffer->data_size(), superframe_index.data(),
+  auto vp9_superframe = base::HeapArray<uint8_t>::Uninit(vp9_superframe_size);
+  memcpy(vp9_superframe.data(), buffer->data(), buffer->data_size());
+  memcpy(vp9_superframe.data() + buffer->data_size(), superframe_index.data(),
          superframe_index.size());
 
-  if (!OverwriteShowFrame(
-          base::make_span(vp9_superframe.get(), buffer->data_size()),
-          frame_sizes)) {
+  if (!OverwriteShowFrame(vp9_superframe, frame_sizes)) {
     return false;
   }
 

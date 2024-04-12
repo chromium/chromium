@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/mojo/clients/mojo_audio_encoder.h"
+
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -20,7 +23,6 @@
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
 #include "media/base/waiting.h"
-#include "media/mojo/clients/mojo_audio_encoder.h"
 #include "media/mojo/mojom/audio_encoder.mojom.h"
 #include "media/mojo/services/mojo_audio_encoder_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -258,7 +260,7 @@ TEST_F(MojoAudioEncoderTest, Encode) {
                                options.sample_rate, audio_bus->frames());
 
         size_t size = audio_bus->frames();
-        std::unique_ptr<uint8_t[]> data(new uint8_t[size]);
+        auto data = base::HeapArray<uint8_t>::Uninit(size);
 
         for (size_t i = 0; i < size; i++)
           data[i] = static_cast<int>(audio_bus->channel(0)[i]);
@@ -331,7 +333,8 @@ TEST_F(MojoAudioEncoderTest, EncodeWithEmptyResult) {
         AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                {CHANNEL_LAYOUT_DISCRETE, 1}, 8000, 1);
 
-        EncodedAudioBuffer output(params, nullptr, 0, capture_time);
+        EncodedAudioBuffer output(params, base::HeapArray<uint8_t>(), 0,
+                                  capture_time);
 
         service_output_cb.Run(std::move(output), {});
       }));
@@ -377,7 +380,8 @@ TEST_F(MojoAudioEncoderTest, Flush) {
         AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                {CHANNEL_LAYOUT_DISCRETE, audio_bus->channels()},
                                options.sample_rate, audio_bus->frames());
-        EncodedAudioBuffer output(params, nullptr, 0, capture_time);
+        EncodedAudioBuffer output(params, base::HeapArray<uint8_t>(), 0,
+                                  capture_time);
         service_output_cb.Run(std::move(output), {});
       }));
 
