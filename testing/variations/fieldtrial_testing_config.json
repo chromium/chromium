@@ -11715,6 +11715,25 @@
             ]
         }
     ],
+    "MojoPredictiveAllocation": [
+        {
+            "platforms": [
+                "android",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MojoPredictiveAllocation"
+                    ]
+                }
+            ]
+        }
+    ],
     "MouseDragOnCancelledMouseMove": [
         {
             "platforms": [
