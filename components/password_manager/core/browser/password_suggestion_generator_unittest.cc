@@ -147,14 +147,15 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = GenerateSuggestedPasswordsSection(
       {password_form()}, IsTriggeredOnPasswordForm(true));
 
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsManualFallbackSuggestion(
-                              PopupItemId::kPasswordEntry, u"google.com",
-                              u"username@example.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/true,
-                              Suggestion::ValueToFill(u"password")),
-                          EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(EqualsManualFallbackSuggestion(
+                      PopupItemId::kPasswordEntry, u"google.com",
+                      u"username@example.com", Suggestion::Icon::kGlobe,
+                      /*is_acceptable=*/true,
+                      Suggestion::PasswordSuggestionDetails(u"password")),
+                  EqualsSuggestion(PopupItemId::kSeparator),
+                  EqualsManageManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -162,14 +163,15 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = GenerateAllPasswordsSection(
       {credential_ui_entry()}, IsTriggeredOnPasswordForm(true));
 
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsManualFallbackSuggestion(
-                              PopupItemId::kPasswordEntry, u"google.com",
-                              u"username@example.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/true,
-                              Suggestion::ValueToFill(u"password")),
-                          EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(EqualsManualFallbackSuggestion(
+                      PopupItemId::kPasswordEntry, u"google.com",
+                      u"username@example.com", Suggestion::Icon::kGlobe,
+                      /*is_acceptable=*/true,
+                      Suggestion::PasswordSuggestionDetails(u"password")),
+                  EqualsSuggestion(PopupItemId::kSeparator),
+                  EqualsManageManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -184,7 +186,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
               PopupItemId::kPasswordEntry, u"google.com",
               l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN),
               Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true, Suggestion::ValueToFill(u"password")),
+              /*is_acceptable=*/true,
+              Suggestion::PasswordSuggestionDetails(u"password")),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsManageManagePasswordsSuggestion()));
 }
@@ -201,7 +204,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
               PopupItemId::kPasswordEntry, u"google.com",
               l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN),
               Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true, Suggestion::ValueToFill(u"password")),
+              /*is_acceptable=*/true,
+              Suggestion::PasswordSuggestionDetails(u"password")),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsManageManagePasswordsSuggestion()));
 }
@@ -211,14 +215,15 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = GenerateSuggestedPasswordsSection(
       {password_form()}, IsTriggeredOnPasswordForm(false));
 
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsManualFallbackSuggestion(
-                              PopupItemId::kPasswordEntry, u"google.com",
-                              u"username@example.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/false,
-                              Suggestion::ValueToFill(u"password")),
-                          EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(EqualsManualFallbackSuggestion(
+                      PopupItemId::kPasswordEntry, u"google.com",
+                      u"username@example.com", Suggestion::Icon::kGlobe,
+                      /*is_acceptable=*/false,
+                      Suggestion::PasswordSuggestionDetails(u"password")),
+                  EqualsSuggestion(PopupItemId::kSeparator),
+                  EqualsManageManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -226,14 +231,15 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = GenerateAllPasswordsSection(
       {credential_ui_entry()}, IsTriggeredOnPasswordForm(false));
 
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsManualFallbackSuggestion(
-                              PopupItemId::kPasswordEntry, u"google.com",
-                              u"username@example.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/false,
-                              Suggestion::ValueToFill(u"password")),
-                          EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(EqualsManualFallbackSuggestion(
+                      PopupItemId::kPasswordEntry, u"google.com",
+                      u"username@example.com", Suggestion::Icon::kGlobe,
+                      /*is_acceptable=*/false,
+                      Suggestion::PasswordSuggestionDetails(u"password")),
+                  EqualsSuggestion(PopupItemId::kSeparator),
+                  EqualsManageManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -249,14 +255,15 @@ TEST_F(PasswordSuggestionGeneratorTest,
       GenerateAllPasswordsSection({entry}, IsTriggeredOnPasswordForm(true));
 
   // Only the first domain is used to create the suggestion.
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsManualFallbackSuggestion(
-                              PopupItemId::kPasswordEntry, u"google.com",
-                              u"example@google.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/true,
-                              Suggestion::ValueToFill(u"password")),
-                          EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(EqualsManualFallbackSuggestion(
+                      PopupItemId::kPasswordEntry, u"google.com",
+                      u"example@google.com", Suggestion::Icon::kGlobe,
+                      /*is_acceptable=*/true,
+                      Suggestion::PasswordSuggestionDetails(u"password")),
+                  EqualsSuggestion(PopupItemId::kSeparator),
+                  EqualsManageManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -282,27 +289,29 @@ TEST_F(PasswordSuggestionGeneratorTest,
                                   IsTriggeredOnPasswordForm(true));
 
   // Manual fallback suggestions are sorted by domain name.
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(
-          EqualsManualFallbackSuggestion(
-              PopupItemId::kPasswordEntry, u"amazon.com", u"fourth@google.com",
-              Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true, Suggestion::ValueToFill(u"second")),
-          EqualsManualFallbackSuggestion(
-              PopupItemId::kPasswordEntry, u"google.com", u"first@google.com",
-              Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true, Suggestion::ValueToFill(u"first")),
-          EqualsManualFallbackSuggestion(
-              PopupItemId::kPasswordEntry, u"microsoft.com",
-              u"second@google.com", Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true, Suggestion::ValueToFill(u"first")),
-          EqualsManualFallbackSuggestion(
-              PopupItemId::kPasswordEntry, u"netflix.com", u"third@google.com",
-              Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true, Suggestion::ValueToFill(u"second")),
-          EqualsSuggestion(PopupItemId::kSeparator),
-          EqualsManageManagePasswordsSuggestion()));
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsManualFallbackSuggestion(
+                              PopupItemId::kPasswordEntry, u"amazon.com",
+                              u"fourth@google.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::PasswordSuggestionDetails(u"second")),
+                          EqualsManualFallbackSuggestion(
+                              PopupItemId::kPasswordEntry, u"google.com",
+                              u"first@google.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::PasswordSuggestionDetails(u"first")),
+                          EqualsManualFallbackSuggestion(
+                              PopupItemId::kPasswordEntry, u"microsoft.com",
+                              u"second@google.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::PasswordSuggestionDetails(u"first")),
+                          EqualsManualFallbackSuggestion(
+                              PopupItemId::kPasswordEntry, u"netflix.com",
+                              u"third@google.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::PasswordSuggestionDetails(u"second")),
+                          EqualsSuggestion(PopupItemId::kSeparator),
+                          EqualsManageManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -321,7 +330,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
               PopupItemId::kFillPassword,
               l10n_util::GetStringUTF16(
                   IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
-              Suggestion::Icon::kNoIcon, Suggestion::ValueToFill(u"password")),
+              Suggestion::Icon::kNoIcon,
+              Suggestion::PasswordSuggestionDetails(u"password")),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(
               PopupItemId::kViewPasswordDetails,
@@ -346,7 +356,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
               PopupItemId::kFillPassword,
               l10n_util::GetStringUTF16(
                   IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
-              Suggestion::Icon::kNoIcon, Suggestion::ValueToFill(u"password")),
+              Suggestion::Icon::kNoIcon,
+              Suggestion::PasswordSuggestionDetails(u"password")),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(
               PopupItemId::kViewPasswordDetails,
@@ -369,7 +380,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
               PopupItemId::kFillPassword,
               l10n_util::GetStringUTF16(
                   IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
-              Suggestion::Icon::kNoIcon, Suggestion::ValueToFill(u"password")),
+              Suggestion::Icon::kNoIcon,
+              Suggestion::PasswordSuggestionDetails(u"password")),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(
               PopupItemId::kViewPasswordDetails,
@@ -392,7 +404,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
               PopupItemId::kFillPassword,
               l10n_util::GetStringUTF16(
                   IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
-              Suggestion::Icon::kNoIcon, Suggestion::ValueToFill(u"password")),
+              Suggestion::Icon::kNoIcon,
+              Suggestion::PasswordSuggestionDetails(u"password")),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(
               PopupItemId::kViewPasswordDetails,
@@ -435,11 +448,13 @@ TEST_F(PasswordSuggestionGeneratorTest,
           EqualsManualFallbackSuggestion(
               PopupItemId::kPasswordEntry, u"microsoft.com",
               u"first@google.com", Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true, Suggestion::ValueToFill(u"first")),
+              /*is_acceptable=*/true,
+              Suggestion::PasswordSuggestionDetails(u"first")),
           EqualsManualFallbackSuggestion(
               PopupItemId::kPasswordEntry, u"google.com", u"second@google.com",
               Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true, Suggestion::ValueToFill(u"second")),
+              /*is_acceptable=*/true,
+              Suggestion::PasswordSuggestionDetails(u"second")),
           EqualsSuggestion(
               PopupItemId::kTitle,
               l10n_util::GetStringUTF16(
@@ -447,11 +462,13 @@ TEST_F(PasswordSuggestionGeneratorTest,
           EqualsManualFallbackSuggestion(
               PopupItemId::kPasswordEntry, u"google.com", u"second@google.com",
               Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true, Suggestion::ValueToFill(u"second")),
+              /*is_acceptable=*/true,
+              Suggestion::PasswordSuggestionDetails(u"second")),
           EqualsManualFallbackSuggestion(
               PopupItemId::kPasswordEntry, u"microsoft.com",
               u"first@google.com", Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true, Suggestion::ValueToFill(u"first")),
+              /*is_acceptable=*/true,
+              Suggestion::PasswordSuggestionDetails(u"first")),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsManageManagePasswordsSuggestion()));
 }

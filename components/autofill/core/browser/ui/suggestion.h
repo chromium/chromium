@@ -26,12 +26,19 @@
 namespace autofill {
 
 struct Suggestion {
+  struct PasswordSuggestionDetails {
+    friend bool operator==(const PasswordSuggestionDetails&,
+                           const PasswordSuggestionDetails&) = default;
+    std::u16string password;
+  };
+
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using Guid = base::StrongAlias<class GuidTag, std::string>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
   using BackendId = absl::variant<Guid, InstrumentId>;
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
-  using Payload = absl::variant<BackendId, GURL, ValueToFill>;
+  using Payload =
+      absl::variant<BackendId, GURL, ValueToFill, PasswordSuggestionDetails>;
 
   // The text information shown on the UI layer for a Suggestion.
   struct Text {
@@ -147,10 +154,12 @@ struct Suggestion {
         // Manual fallback password suggestions store the password to preview or
         // fill in the suggestion's payload. Regular per-domain contain empty
         // `BackendId`.
+        // TODO(b/333992198): Use `PasswordSuggestionDetails` for all
+        // suggestions with `PopupItemId::kPasswordEntry`.
         return absl::holds_alternative<BackendId>(payload) ||
-               absl::holds_alternative<ValueToFill>(payload);
+               absl::holds_alternative<PasswordSuggestionDetails>(payload);
       case PopupItemId::kFillPassword:
-        return absl::holds_alternative<ValueToFill>(payload);
+        return absl::holds_alternative<PasswordSuggestionDetails>(payload);
       case PopupItemId::kSeePromoCodeDetails:
         return absl::holds_alternative<GURL>(payload);
       case PopupItemId::kIbanEntry:

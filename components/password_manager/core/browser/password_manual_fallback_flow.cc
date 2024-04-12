@@ -136,7 +136,8 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
     case autofill::PopupItemId::kPasswordEntry:
       password_manager_driver_->PreviewSuggestion(
           GetUsernameFromLabel(suggestion.additional_label),
-          suggestion.GetPayload<Suggestion::ValueToFill>().value());
+          suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>()
+              .password);
       break;
     case autofill::PopupItemId::kPasswordFieldByFieldFilling:
       password_manager_driver_->PreviewField(saved_field_id_,
@@ -166,7 +167,8 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
           &PasswordManagerDriver::FillSuggestion,
           base::Unretained(password_manager_driver_),
           GetUsernameFromLabel(suggestion.additional_label),
-          suggestion.GetPayload<Suggestion::ValueToFill>().value()));
+          suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>()
+              .password));
       break;
     case autofill::PopupItemId::kPasswordFieldByFieldFilling:
       password_manager_driver_->FillField(saved_field_id_,
@@ -176,7 +178,8 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       MaybeAuthenticateBeforeFilling(base::BindOnce(
           &PasswordManagerDriver::FillField,
           base::Unretained(password_manager_driver_), saved_field_id_,
-          suggestion.GetPayload<Suggestion::ValueToFill>().value()));
+          suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>()
+              .password));
       break;
     case autofill::PopupItemId::kViewPasswordDetails:
       // TODO(b/324242001): Trigger password details dialog.
