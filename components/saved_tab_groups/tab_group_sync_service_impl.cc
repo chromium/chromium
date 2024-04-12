@@ -181,6 +181,10 @@ void TabGroupSyncServiceImpl::SavedTabGroupUpdatedFromSync(
 
 void TabGroupSyncServiceImpl::SavedTabGroupRemovedFromSync(
     const SavedTabGroup* removed_group) {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupRemoved(removed_group->saved_guid());
+  }
+
   auto local_id = removed_group->local_group_id();
   if (!local_id.has_value()) {
     return;

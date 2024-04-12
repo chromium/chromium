@@ -87,8 +87,14 @@ void TabGroupSyncServiceAndroid::OnTabGroupUpdated(const SavedTabGroup& group,
 void TabGroupSyncServiceAndroid::OnTabGroupRemoved(
     const LocalTabGroupID& local_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_TabGroupSyncServiceImpl_onTabGroupRemoved(env, java_obj_,
-                                                 ToJavaTabGroupId(local_id));
+  Java_TabGroupSyncServiceImpl_onTabGroupRemovedWithLocalId(
+      env, java_obj_, ToJavaTabGroupId(local_id));
+}
+
+void TabGroupSyncServiceAndroid::OnTabGroupRemoved(const base::Uuid& sync_id) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_TabGroupSyncServiceImpl_onTabGroupRemovedWithSyncId(
+      env, java_obj_, UuidToJavaString(env, sync_id));
 }
 
 ScopedJavaLocalRef<jstring> TabGroupSyncServiceAndroid::CreateGroup(

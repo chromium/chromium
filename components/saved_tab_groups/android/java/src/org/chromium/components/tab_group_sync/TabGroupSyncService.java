@@ -20,6 +20,12 @@ public interface TabGroupSyncService {
      */
     interface Observer {
         /**
+         * Called when the sync database (ModelTypeStore) has been initialized and fully loaded to
+         * memory.
+         */
+        void onInitialized();
+
+        /**
          * Called when a new tab group was added from sync. A corresponding local tab group should
          * be created.
          *
@@ -36,18 +42,21 @@ public interface TabGroupSyncService {
         void onTabGroupUpdated(SavedTabGroup group);
 
         /**
-         * Called when the sync database (ModelTypeStore) has been initialized and fully loaded to
-         * memory.
-         */
-        void onInitialized();
-
-        /**
          * Called when a tab group is deleted from sync. The local tab group should be deleted in
          * response and all the corresponding tabs should be closed.
          *
          * @param localId The local ID corresponding to the tab group that was removed.
          */
         void onTabGroupRemoved(int localId);
+
+        /**
+         * Called when a tab group is deleted from sync. This signal is used by revisit surface that
+         * needs to show both open and closed tab groups. All other consumers should use the local
+         * ID variant of this signal.
+         *
+         * @param syncId The sync ID corresponding to the tab group that was removed.
+         */
+        void onTabGroupRemoved(String syncId);
     }
 
     /**

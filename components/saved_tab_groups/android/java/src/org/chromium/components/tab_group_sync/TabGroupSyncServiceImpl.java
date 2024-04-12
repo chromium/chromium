@@ -147,9 +147,16 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @CalledByNative
-    private void onTabGroupRemoved(int localId) {
+    private void onTabGroupRemovedWithLocalId(int localId) {
         for (Observer observer : mObservers) {
             observer.onTabGroupRemoved(localId);
+        }
+    }
+
+    @CalledByNative
+    private void onTabGroupRemovedWithSyncId(String syncId) {
+        for (Observer observer : mObservers) {
+            observer.onTabGroupRemoved(syncId);
         }
     }
 

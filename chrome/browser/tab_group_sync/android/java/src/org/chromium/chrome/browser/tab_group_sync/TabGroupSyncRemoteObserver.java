@@ -96,6 +96,9 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
         mEnableLocalObserverCallback.onResult(true);
     }
 
+    @Override
+    public void onTabGroupRemoved(String syncId) {}
+
     private TabModel getTabModel() {
         return mTabGroupModelFilter.getTabModel();
     }

@@ -31,6 +31,7 @@ class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
   MOCK_METHOD(void, OnTabGroupAdded, (const SavedTabGroup&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupUpdated, (const SavedTabGroup&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const LocalTabGroupID&));
+  MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&));
 };
 
 MATCHER_P(UuidEq, uuid, "") {
@@ -317,11 +318,26 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdated) {
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupRemoved) {
-  EXPECT_CALL(*observer_, OnTabGroupRemoved(Eq(local_group_id_1_))).Times(1);
+  // Removig group having local ID.
+  EXPECT_CALL(*observer_,
+              OnTabGroupRemoved(
+                  testing::TypedEq<const LocalTabGroupID&>(local_group_id_1_)))
+      .Times(1);
+  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
+                              group_1_.saved_guid())))
+      .Times(1);
   model_->RemovedFromSync(group_1_.saved_guid());
 
+  // Remove a group with no local ID.
+  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
+                              group_2_.saved_guid())))
+      .Times(1);
+  model_->RemovedFromSync(group_2_.saved_guid());
+
   // Try removing a group that doesn't exist.
-  EXPECT_CALL(*observer_, OnTabGroupRemoved(_)).Times(0);
+  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
+                              group_1_.saved_guid())))
+      .Times(0);
   model_->RemovedFromSync(group_1_.saved_guid());
 }
 
