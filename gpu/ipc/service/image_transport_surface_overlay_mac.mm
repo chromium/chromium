@@ -238,9 +238,8 @@ void ImageTransportSurfaceOverlayMacEGL::SetMaxPendingSwaps(
 
 #if BUILDFLAG(IS_MAC)
 void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
-  if (!(features::IsCVDisplayLinkBeginFrameSourceEnabled() ||
-        features::IsVSyncAlignedPresentEnabled() ||
-        base::FeatureList::IsEnabled(kNewPresentationFeedbackTimeStamps))) {
+  if (!features::IsVSyncAlignedPresentEnabled() &&
+      !base::FeatureList::IsEnabled(kNewPresentationFeedbackTimeStamps)) {
     return;
   }
 

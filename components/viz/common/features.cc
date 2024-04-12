@@ -217,7 +217,6 @@ BASE_FEATURE(kVSyncAlignedPresent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The paramters for the number of supported pending Frames.
-// 0: Disable both VSyncAlignedPresent and CVDisplayLinkBeginFrameSource
 // 1: Support one pending frame. This is the old default.
 // 2: Support two pending frames. New. This is the number of max pending
 //    swap in the scheduler.
@@ -523,25 +522,16 @@ std::optional<double> SnapshotEvictedRootSurfaceScale() {
 
 #if BUILDFLAG(IS_MAC)
 bool IsCVDisplayLinkBeginFrameSourceEnabled() {
-  bool display_link =
-      base::FeatureList::IsEnabled(features::kCVDisplayLinkBeginFrameSource);
-  bool force_disabled =
-      base::FeatureList::IsEnabled(features::kVSyncAlignedPresent) &&
-      features::kNumPendingFrames.Get() == 0;
-
-  return display_link && !force_disabled;
+  return base::FeatureList::IsEnabled(features::kCVDisplayLinkBeginFrameSource);
 }
 
 bool IsVSyncAlignedPresentEnabled() {
-  return base::FeatureList::IsEnabled(features::kVSyncAlignedPresent) &&
-         features::kNumPendingFrames.Get() != 0;
+  return base::FeatureList::IsEnabled(features::kVSyncAlignedPresent);
 }
 
 int NumPendingFrameSupported() {
   // Return the old default if this feature is not enabled.
   if (!base::FeatureList::IsEnabled(kVSyncAlignedPresent)) {
-    return 1;
-  } else if (features::kNumPendingFrames.Get() == 0) {
     return 1;
   }
 
