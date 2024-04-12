@@ -103,11 +103,13 @@ MockFeedback = class {
   install() {
     assertFalse(this.replaying_, 'install: Should not already be replaying.');
 
-    const MockTts = function() {};
-    MockTts.prototype = {
-      __proto__: TtsInterface.prototype,
-      speak: (...args) => this.addUtterance_(...args),
-    };
+    const addUtterance = this.addUtterance_.bind(this);
+    class MockTts extends PrimaryTts {
+      /** @override */
+      speak(...args) {
+        addUtterance(...args);
+      }
+    }
 
     ChromeVox.tts = new MockTts();
 
