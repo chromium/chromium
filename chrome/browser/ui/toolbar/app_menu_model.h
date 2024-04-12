@@ -265,6 +265,10 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Returns a boolean indicating whether any menu items were added.
   bool AddGlobalErrorMenuItems();
 
+  // Adds actionable default browser prompt menu items to the menu. Returns a
+  // boolean indicating whether any menu items were added.
+  bool AddDefaultBrowserMenuItems();
+
   // Adds the Safety Hub menu notifications to the menu. Returns a boolean
   // indicating whether any menu items were added.
   [[nodiscard]] bool AddSafetyHubMenuItem();

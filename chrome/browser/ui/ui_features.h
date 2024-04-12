@@ -53,6 +53,10 @@ extern const base::FeatureParam<bool> kShowDefaultBrowserInfoBar;
 // Whether to show the default browser app menu chip prompt.
 extern const base::FeatureParam<bool> kShowDefaultBrowserAppMenuChip;
 
+// Whether to show the default browser app menu item anytime the browser isn't
+// default, even if the app menu chip prompt isn't enabled.
+extern const base::FeatureParam<bool> kShowDefaultBrowserAppMenuItem;
+
 // Whether to show the updated info bar strings.
 extern const base::FeatureParam<bool> kUpdatedInfoBarCopy;
 

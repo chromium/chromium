@@ -135,6 +135,28 @@ TEST_F(DefaultBrowserPromptManagerTest, NotifiesAppMenuObservers) {
   prompt_manager_observation.Reset();
 }
 
+TEST_F(DefaultBrowserPromptManagerTest, ShowsAppMenuItemWithParamEnabled) {
+  EnableDefaultBrowserPromptRefreshFeatureWithParams(
+      {{features::kShowDefaultBrowserAppMenuItem.name, "true"}});
+
+  auto* manager = DefaultBrowserPromptManager::GetInstance();
+  ASSERT_FALSE(manager->get_show_app_menu_item());
+
+  manager->MaybeShowPrompt();
+  ASSERT_TRUE(manager->get_show_app_menu_item());
+}
+
+TEST_F(DefaultBrowserPromptManagerTest, HidesAppMenuItemWithParamDisabled) {
+  EnableDefaultBrowserPromptRefreshFeatureWithParams(
+      {{features::kShowDefaultBrowserAppMenuItem.name, "false"}});
+
+  auto* manager = DefaultBrowserPromptManager::GetInstance();
+  ASSERT_FALSE(manager->get_show_app_menu_item());
+
+  manager->MaybeShowPrompt();
+  ASSERT_FALSE(manager->get_show_app_menu_item());
+}
+
 TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
   // If max prompt count is negative, do not limit the number of times the
   // prompt is shown.

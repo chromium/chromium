@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -1101,6 +1102,17 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
           ProfilePicker::EntryPoint::kAppMenuProfileSubMenuManageProfiles));
       break;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+    case IDC_SET_BROWSER_AS_DEFAULT:
+      base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
+          ->StartSetAsDefault(
+              base::IgnoreArgs<shell_integration::DefaultWebClientState>(
+                  base::BindOnce(
+                      &DefaultBrowserPromptManager::CloseAllPrompts,
+                      base::Unretained(
+                          DefaultBrowserPromptManager::GetInstance()))));
+      break;
+#endif
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
       break;
@@ -1374,6 +1386,7 @@ void BrowserCommandController::InitCommandState() {
 
   // These are always enabled; the menu determines their menu item visibility.
   command_updater_.UpdateCommandEnabled(IDC_UPGRADE_DIALOG, true);
+  command_updater_.UpdateCommandEnabled(IDC_SET_BROWSER_AS_DEFAULT, true);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   command_updater_.UpdateCommandEnabled(IDC_LACROS_DATA_MIGRATION, true);
 #endif

@@ -76,6 +76,9 @@ const base::FeatureParam<bool> kShowDefaultBrowserInfoBar{
 const base::FeatureParam<bool> kShowDefaultBrowserAppMenuChip{
     &kDefaultBrowserPromptRefresh, "show_app_menu_chip", false};
 
+const base::FeatureParam<bool> kShowDefaultBrowserAppMenuItem{
+    &kDefaultBrowserPromptRefresh, "show_app_menu_item", false};
+
 const base::FeatureParam<bool> kUpdatedInfoBarCopy{
     &kDefaultBrowserPromptRefresh, "updated_info_bar_copy", true};
 

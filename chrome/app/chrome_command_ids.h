@@ -538,6 +538,9 @@
 #define IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST 53260
 #define IDC_DEVICE_SYSTEM_TRAY_ICON_LAST 53299
 
+// Default browser prompt
+#define IDC_SET_BROWSER_AS_DEFAULT 53300
+
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx
 

@@ -120,6 +120,10 @@ void DefaultBrowserPromptManager::RemoveObserver(Observer* observer) {
 void DefaultBrowserPromptManager::MaybeShowPrompt() {
   CHECK(base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh));
 
+  if (features::kShowDefaultBrowserAppMenuItem.Get()) {
+    SetAppMenuItemVisibility(true);
+  }
+
   if (!ShouldShowPrompts()) {
     return;
   }
@@ -139,6 +143,8 @@ void DefaultBrowserPromptManager::CloseAllPrompts() {
   CloseAllInfoBars();
 
   SetShowAppMenuPromptVisibility(false);
+
+  SetAppMenuItemVisibility(false);
 }
 
 bool DefaultBrowserPromptManager::ShouldTrackBrowser(Browser* browser) {
@@ -295,4 +301,8 @@ void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {
   for (auto& obs : observers_) {
     obs.OnShowAppMenuPromptChanged();
   }
+}
+
+void DefaultBrowserPromptManager::SetAppMenuItemVisibility(bool show) {
+  show_app_menu_item_ = show;
 }

@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
@@ -86,6 +87,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -1663,7 +1665,8 @@ void AppMenuModel::Build() {
 #endif
   }
 
-  if (AddSafetyHubMenuItem() || AddGlobalErrorMenuItems() || need_separator) {
+  if (AddSafetyHubMenuItem() || AddGlobalErrorMenuItems() ||
+      AddDefaultBrowserMenuItems() || need_separator) {
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
@@ -2025,6 +2028,25 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
     }
   }
   return menu_items_added;
+}
+
+bool AppMenuModel::AddDefaultBrowserMenuItems() {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  if ((app_menu_icon_controller_ &&
+       app_menu_icon_controller_->GetTypeAndSeverity().type ==
+           AppMenuIconController::IconType::DEFAULT_BROWSER_PROMPT) ||
+      (DefaultBrowserPromptManager::GetInstance()->get_show_app_menu_item())) {
+    const auto update_icon =
+        ui::ImageModel::FromVectorIcon(omnibox::kProductChromeRefreshIcon,
+                                       ui::kColorMenuIcon, kDefaultIconSize);
+    AddItemWithIcon(
+        IDC_SET_BROWSER_AS_DEFAULT,
+        l10n_util::GetStringUTF16(IDS_SET_BROWSER_AS_DEFAULT_MENU_ITEM),
+        update_icon);
+    return true;
+  }
+#endif
+  return false;
 }
 
 bool AppMenuModel::AddSafetyHubMenuItem() {

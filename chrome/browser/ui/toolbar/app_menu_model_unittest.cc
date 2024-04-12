@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -320,6 +321,28 @@ TEST_F(AppMenuModelTest, GlobalError) {
   model.ActivatedAt(index2.value());
   EXPECT_EQ(1, error1->execute_count());
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+TEST_F(TestAppMenuModelCR2023, DefaultBrowserPrompt) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kDefaultBrowserPromptRefresh,
+      {{features::kShowDefaultBrowserAppMenuItem.name, "true"}});
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
+  FakeIconDelegate fake_delegate;
+  AppMenuIconController app_menu_icon_controller(browser()->profile(),
+                                                 &fake_delegate);
+  TestAppMenuModel model(this, browser(), &app_menu_icon_controller);
+  model.Init();
+
+  EXPECT_TRUE(
+      model.GetIndexOfCommandId(IDC_SET_BROWSER_AS_DEFAULT).has_value());
+
+  size_t default_prompt_index =
+      model.GetIndexOfCommandId(IDC_SET_BROWSER_AS_DEFAULT).value();
+  EXPECT_TRUE(model.IsEnabledAt(default_prompt_index));
+}
+#endif
 
 // Tests that extensions sub menu (when enabled) generates the correct elements
 // or does not generate its elements when disabled.

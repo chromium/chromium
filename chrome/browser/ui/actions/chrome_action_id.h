@@ -157,6 +157,7 @@
   E(kActionManageExtensions, IDC_MANAGE_EXTENSIONS) \
   E(kActionDevToolsInspect, IDC_DEV_TOOLS_INSPECT) \
   E(kActionUpgradeDialog, IDC_UPGRADE_DIALOG) \
+  E(kActionSetBrowserAsDefault, IDC_SET_BROWSER_AS_DEFAULT) \
   E(kActionProfilingEnabled, IDC_PROFILING_ENABLED) \
   E(kActionBookmarksMenu, IDC_BOOKMARKS_MENU) \
   E(kActionExtensionErrors, IDC_EXTENSION_ERRORS) \

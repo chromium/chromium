@@ -65,6 +65,8 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   bool get_show_app_menu_prompt() const { return show_app_menu_prompt_; }
 
+  bool get_show_app_menu_item() const { return show_app_menu_item_; }
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -109,6 +111,8 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   void SetShowAppMenuPromptVisibility(bool show);
 
+  void SetAppMenuItemVisibility(bool show);
+
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
 
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
@@ -116,6 +120,7 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   bool user_initiated_info_bar_close_pending_ = false;
 
   bool show_app_menu_prompt_ = false;
+  bool show_app_menu_item_ = false;
   base::ObserverList<Observer> observers_;
 };
 

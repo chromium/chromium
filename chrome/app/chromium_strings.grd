@@ -1708,6 +1708,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_APP_MENU_BUTTON_DEFAULT_PROMPT" desc="Text in the browser menu chip indicating that the user can change their default browser">
           Set Chromium as your default
         </message>
+        <message name="IDS_SET_BROWSER_AS_DEFAULT_MENU_ITEM" desc="Menu item that prompts user to set Chromium as their default browser.">
+          Set Chromium as your default browser
+        </message>
 
         <!-- Profile switch IPH -->
         <message name="IDS_PROFILE_SWITCH_PROMO" desc="Text of the In-Product-Help bubble for profile switching.">
