@@ -7,7 +7,8 @@ import {MantaStatusCode, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPen
 import * as seaPenAction from './sea_pen_actions.js';
 import {logSeaPenImageSet} from './sea_pen_metrics_logger.js';
 import {SeaPenStoreInterface} from './sea_pen_store.js';
-import {isNonEmptyArray} from './sea_pen_utils.js';
+import {isNonEmptyArray, isPersonalizationApp} from './sea_pen_utils.js';
+import {withMinimumDelay} from './transition.js';
 
 export async function selectRecentSeaPenImage(
     id: SeaPenImageId, provider: SeaPenProviderInterface,
@@ -47,7 +48,8 @@ export async function searchSeaPenThumbnails(
     query: SeaPenQuery, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
   store.dispatch(seaPenAction.beginSearchSeaPenThumbnailsAction(query));
-  const {images, statusCode} = await provider.searchWallpaper(query);
+  const {images, statusCode} =
+      await withMinimumDelay(provider.searchWallpaper(query));
   if (!isNonEmptyArray(images) || statusCode !== MantaStatusCode.kOk) {
     console.warn('Error generating thumbnails. Status code: ', statusCode);
   }
@@ -75,8 +77,19 @@ export async function selectSeaPenWallpaper(
     store: SeaPenStoreInterface): Promise<void> {
   const originalCurrentSelected = store.data.currentSelected;
 
+  let promise: ReturnType<SeaPenProviderInterface['selectSeaPenThumbnail']>;
+  if (isPersonalizationApp()) {
+    promise = withMinimumDelay(provider.selectSeaPenThumbnail(thumbnail.id));
+  } else {
+    // VC Background should not start the visual loading state immediately. The
+    // async request will resolve very quickly.
+    store.beginBatchUpdate();
+    promise = provider.selectSeaPenThumbnail(thumbnail.id);
+  }
+
   store.dispatch(seaPenAction.beginSelectSeaPenThumbnailAction(thumbnail));
-  const {success} = await provider.selectSeaPenThumbnail(thumbnail.id);
+
+  const {success} = await promise;
 
   store.beginBatchUpdate();
   store.dispatch(

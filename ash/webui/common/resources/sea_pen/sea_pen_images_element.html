@@ -146,6 +146,7 @@
 
   div.loading-placeholder {
     box-sizing: border-box;
+    border: 2px solid transparent;
     height: 100%;
     padding: calc(var(--personalization-app-grid-item-spacing) / 2);
     width: 100%;
@@ -173,7 +174,8 @@
     }
   }
 
-  wallpaper-grid-item[data-sea-pen-image] {
+  wallpaper-grid-item[data-sea-pen-image],
+  .error-container {
     animation-direction: normal;
     animation-duration: 900ms;
     animation-iteration-count: 1;
