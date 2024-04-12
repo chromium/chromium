@@ -300,8 +300,8 @@ export function isRecentRoot(entry: Entry|FilesAppEntry) {
  * Whether the `fileData` the is RECENT root.
  * NOTE: Drive shared with me and offline are marked as RECENT.
  */
-export function isRecentFileData(fileData: FileData): boolean {
-  return fileData.type === EntryType.RECENT;
+export function isRecentFileData(fileData: FileData|null|undefined): boolean {
+  return !!fileData && fileData.type === EntryType.RECENT;
 }
 
 /**

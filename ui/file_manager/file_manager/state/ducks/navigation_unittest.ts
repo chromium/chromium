@@ -648,7 +648,7 @@ export async function testNavigationRootsWithMaterializedViews(
   // Dispatch an action to refresh navigation roots.
   store.dispatch(refreshNavigationRoots());
 
-  // Everthing is still empty.
+  // Everything is still empty.
   assertDeepEquals(
       store.getState().materializedViews, [], 'expected empty views');
   // It contains My files by default.

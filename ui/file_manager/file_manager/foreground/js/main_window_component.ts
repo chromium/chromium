@@ -10,7 +10,7 @@ import {getFocusedTreeItem, getKeyModifiers} from '../../common/js/dom_utils.js'
 import {isDirectoryEntry, isRecentRootType, isSameEntry, isTrashEntry} from '../../common/js/entry_utils.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import {getEntryLabel, str} from '../../common/js/translations.js';
+import {str} from '../../common/js/translations.js';
 import type {TrashEntry} from '../../common/js/trash.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
@@ -436,23 +436,16 @@ export class MainWindowComponent {
    *
    * @param event The directory-changed event.
    */
-  private onDirectoryChanged_(event: DirectoryChangeEvent) {
-    const newVolumeInfo = event.detail.newDirEntry ?
-        this.volumeManager_.getVolumeInfo(event.detail.newDirEntry) :
-        null;
-
+  private onDirectoryChanged_(_event: DirectoryChangeEvent) {
     // Update unformatted volume status.
-    const unformatted = !!(newVolumeInfo && newVolumeInfo.error);
-    this.ui_.element.toggleAttribute('unformatted', /*force=*/ unformatted);
+    const newVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
+    const unformatted = !!(newVolumeInfo?.error);
+    this.ui_.element.toggleAttribute('unformatted', unformatted);
 
-    if (event.detail.newDirEntry) {
-      // Updates UI.
-      if (this.dialogType_ === DialogType.FULL_PAGE) {
-        const locationInfo =
-            this.volumeManager_.getLocationInfo(event.detail.newDirEntry);
-        const label = getEntryLabel(locationInfo, event.detail.newDirEntry);
-        document.title = `${str('FILEMANAGER_APP_NAME')} - ${label}`;
-      }
+    // Updates UI.
+    if (this.dialogType_ === DialogType.FULL_PAGE) {
+      const label = this.directoryModel_.getCurrentDirName();
+      document.title = `${str('FILEMANAGER_APP_NAME')} - ${label}`;
     }
   }
 
