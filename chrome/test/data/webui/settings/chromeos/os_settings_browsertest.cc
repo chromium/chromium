@@ -711,10 +711,10 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, EsimRemoveProfileDialog) {
   RunSettingsTest("internet_page/esim_remove_profile_dialog_test.js");
 }
 
-class OSSettingsInternetTestApnAndHotspotAndPasspointEnabled
+class OSSettingsMochaTestApnAndHotspotAndPasspointEnabled
     : public OSSettingsMochaTest {
  protected:
-  OSSettingsInternetTestApnAndHotspotAndPasspointEnabled() {
+  OSSettingsMochaTestApnAndHotspotAndPasspointEnabled() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled=*/
         {
@@ -729,9 +729,9 @@ class OSSettingsInternetTestApnAndHotspotAndPasspointEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OSSettingsInternetTestApnAndHotspotAndPasspointEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnAndHotspotAndPasspointEnabled,
                        InternetPage) {
-  RunSettingsTest("internet_page_tests.js");
+  RunSettingsTest("internet_page/internet_page_test.js");
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,

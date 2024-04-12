@@ -29,6 +29,7 @@ export interface EsimRemoveProfileDialogElement {
   $: {
     dialog: CrDialogElement,
     cancel: CrButtonElement,
+    warningMessage: HTMLElement,
   };
 }
 

@@ -87,10 +87,11 @@ declare global {
   }
 }
 
-interface SettingsInternetPageElement {
+export interface SettingsInternetPageElement {
   $: {
     apnDotsMenu: CrActionMenuElement,
     errorToast: CrToastElement,
+    errorToastMessage: HTMLElement,
   };
 }
 
@@ -107,7 +108,8 @@ const SettingsInternetPageElementBase =
           NetworkListenerBehaviorInterface,
     };
 
-class SettingsInternetPageElement extends SettingsInternetPageElementBase {
+export class SettingsInternetPageElement extends
+    SettingsInternetPageElementBase {
   static get is() {
     return 'settings-internet-page' as const;
   }

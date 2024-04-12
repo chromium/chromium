@@ -34,6 +34,7 @@ const EMOJI_REGEX_EXP =
 export interface EsimRenameDialogElement {
   $: {
     profileRenameDialog: CrDialogElement,
+    warningMessage: HTMLElement,
   };
 }
 

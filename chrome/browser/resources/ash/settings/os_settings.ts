@@ -93,6 +93,7 @@ export {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_butt
 export {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 export {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 export {CrDrawerElement} from 'chrome://resources/ash/common/cr_elements/cr_drawer/cr_drawer.js';
+export {CrExpandButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
 export {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 export {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 export {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
@@ -165,11 +166,13 @@ export {SettingsPerDeviceTouchpadSubsectionElement} from './device_page/per_devi
 export {getShortcutInputProvider} from './device_page/shortcut_input_mojo_interface_provider.js';
 export {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 export {OsSettingsCellularSetupDialogElement} from './internet_page/cellular_setup_dialog.js';
+export {EsimRemoveProfileDialogElement} from './internet_page/esim_remove_profile_dialog.js';
 export {EsimRenameDialogElement} from './internet_page/esim_rename_dialog.js';
 export {HotspotConfigDialogElement, WiFiSecurityType} from './internet_page/hotspot_config_dialog.js';
 export {HotspotSummaryItemElement} from './internet_page/hotspot_summary_item.js';
 export {InternetConfigElement} from './internet_page/internet_config.js';
 export {SettingsInternetDetailMenuElement} from './internet_page/internet_detail_menu.js';
+export {SettingsInternetPageElement} from './internet_page/internet_page.js';
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.js';
 export {NetworkSummaryElement} from './internet_page/network_summary.js';
 export {NetworkSummaryItemElement} from './internet_page/network_summary_item.js';

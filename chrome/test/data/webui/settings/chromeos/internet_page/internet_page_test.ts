@@ -5,59 +5,45 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import {CrActionMenuElement, CrExpandButtonElement, CrIconButtonElement, CrToggleElement, EsimRemoveProfileDialogElement, EsimRenameDialogElement, NetworkSummaryElement, NetworkSummaryItemElement, OsSettingsCellularSetupDialogElement, OsSettingsSubpageElement, Router, routes, settingMojom, SettingsInternetPageElement} from 'chrome://os-settings/os_settings.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
 import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
-import {HotspotAllowStatus, HotspotState} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import {HotspotAllowStatus, HotspotInfo, HotspotState, WiFiBand, WiFiSecurityMode} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
-import {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {CrosNetworkConfigRemote, InhibitReason, MAX_NUM_CUSTOM_APNS, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {ApnProperties, DeviceStateProperties, GlobalPolicy, InhibitReason, MAX_NUM_CUSTOM_APNS, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {FakePasspointService} from 'chrome://webui-test/chromeos/fake_passpoint_service_mojom.js';
 import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
-import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {clearBody} from './utils.js';
+import {clearBody} from '../utils.js';
 
-suite('InternetPage', function() {
-  /** @type {?InternetPageElement} */
-  let internetPage = null;
+suite('<settings-internet-page>', () => {
+  let internetPage: SettingsInternetPageElement;
+  let mojoApi: FakeNetworkConfig;
+  let eSimManagerRemote: FakeESimManagerRemote;
+  let passpointService: FakePasspointService;
+  let hotspotConfig: FakeHotspotConfig;
 
-  /** @type {?NetworkSummaryElement} */
-  let networkSummary_ = null;
-
-  /** @type {?CrosNetworkConfigRemote} */
-  let mojoApi_ = null;
-
-  /** @type {?ESimManagerRemote} */
-  let eSimManagerRemote;
-
-  /** @type {PasspointServiceInterface} */
-  let passpointService_ = null;
-
-  /** @type {?CrosHotspotConfigInterface} */
-  let hotspotConfig = null;
-
-  /** @type {Object} */
-  const prefs_ = {
-    'vpn_config_allowed': {
+  const fakePrefs = {
+    vpn_config_allowed: {
       key: 'vpn_config_allowed',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     },
-    'arc': {
-      'vpn': {
-        'always_on': {
-          'vpn_package': {
+    arc: {
+      vpn: {
+        always_on: {
+          vpn_package: {
             key: 'vpn_package',
             type: chrome.settingsPrivate.PrefType.STRING,
             value: '',
@@ -67,36 +53,23 @@ suite('InternetPage', function() {
     },
   };
 
-  function flushAsync() {
-    flush();
-    // Use setTimeout to wait for the next macrotask.
-    return new Promise(resolve => setTimeout(resolve));
+  function setNetworksForTest(networks: OncMojo.NetworkStateProperties[]):
+      void {
+    mojoApi.resetForTest();
+    mojoApi.addNetworksForTest(networks);
   }
 
-  function setNetworksForTest(networks) {
-    mojoApi_.resetForTest();
-    mojoApi_.addNetworksForTest(networks);
-  }
-
-  /**
-   * @param {string} arcVpnAlwaysOnPackageNamePrefValue
-   * @param {boolean} vpnConfigAllowedPrefValue
-   */
   function setDoesDisconnectProhibitedAlwaysOnVpnPrefs(
-      arcVpnAlwaysOnPackageNamePrefValue, vpnConfigAllowedPrefValue) {
-    prefs_.arc.vpn.always_on.vpn_package.value =
+      arcVpnAlwaysOnPackageNamePrefValue: string,
+      vpnConfigAllowedPrefValue: boolean): void {
+    fakePrefs.arc.vpn.always_on.vpn_package.value =
         arcVpnAlwaysOnPackageNamePrefValue;
-    prefs_.vpn_config_allowed.value = vpnConfigAllowedPrefValue;
-
-    internetPage.prefs = Object.assign({}, prefs_);
+    fakePrefs.vpn_config_allowed.value = vpnConfigAllowedPrefValue;
+    internetPage.prefs = {...fakePrefs};
   }
 
-  /**
-   * @param {boolean} showPSimFlow
-   * @param {boolean} isCellularEnabled
-   * @return {!Promise<function()>}
-   */
-  function navigateToCellularSetupDialog(showPSimFlow, isCellularEnabled) {
+  async function navigateToCellularSetupDialog(
+      showPSimFlow: boolean, isCellularEnabled: boolean): Promise<void> {
     const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     params.append('type', 'Cellular');
@@ -113,96 +86,121 @@ suite('InternetPage', function() {
 
     // Update the device state here to trigger an
     // attemptShowCellularSetupDialog_() call.
-    mojoApi_.setNetworkTypeEnabledState(
+    mojoApi.setNetworkTypeEnabledState(
         NetworkType.kCellular, isCellularEnabled);
 
-    return flushAsync();
+    await flushTasks();
   }
 
-  /**
-   * @param {DivElement} warningMessage
-   */
-  async function assertWarningMessageVisibility(warningMessage) {
+  async function assertWarningMessageVisibility(warningMessage: HTMLElement) {
     assertTrue(!!warningMessage);
-
     // Warning message should be initially hidden.
     assertTrue(warningMessage.hidden);
 
     // Add a pSIM network.
-    mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
-    const pSimNetwork =
-        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular1');
+    mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+    const pSimNetwork = OncMojo.getDefaultManagedProperties(
+        NetworkType.kCellular, 'cellular1', 'foo');
     pSimNetwork.connectionState = ConnectionStateType.kConnected;
-    mojoApi_.setManagedPropertiesForTest(pSimNetwork);
-    await flushAsync();
+    mojoApi.setManagedPropertiesForTest(pSimNetwork);
+    await flushTasks();
 
     // Warning message should now be showing.
     assertFalse(warningMessage.hidden);
 
     // Disconnect from the pSIM network.
     pSimNetwork.connectionState = ConnectionStateType.kNotConnected;
-    mojoApi_.setManagedPropertiesForTest(pSimNetwork);
-    await flushAsync();
+    mojoApi.setManagedPropertiesForTest(pSimNetwork);
+    await flushTasks();
     // Warning message should be hidden.
     assertTrue(warningMessage.hidden);
 
     // Add an eSIM network.
-    const eSimNetwork =
-        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular2');
+    const eSimNetwork = OncMojo.getDefaultManagedProperties(
+        NetworkType.kCellular, 'cellular2', 'foo');
     eSimNetwork.connectionState = ConnectionStateType.kConnected;
-    eSimNetwork.typeProperties.cellular.eid = 'eid';
-    mojoApi_.setManagedPropertiesForTest(eSimNetwork);
-    await flushAsync();
+    eSimNetwork.typeProperties.cellular!.eid = 'eid';
+    mojoApi.setManagedPropertiesForTest(eSimNetwork);
+    await flushTasks();
 
     // Warning message should be showing again.
     assertFalse(warningMessage.hidden);
   }
 
-  async function navigateToCellularDetailPage() {
+  async function navigateToCellularDetailPage(): Promise<void> {
     await init();
 
     const cellularNetwork = OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular1', 'name1');
-    cellularNetwork.typeProperties.cellular.eid = 'eid';
-    mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+    cellularNetwork.typeProperties.cellular!.eid = 'eid';
+    mojoApi.setManagedPropertiesForTest(cellularNetwork);
 
     const params = new URLSearchParams();
     params.append('guid', cellularNetwork.guid);
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
-    return flushAsync();
+    await flushTasks();
   }
 
-  async function navigateToApnSubpage() {
+  async function navigateToApnSubpage(): Promise<void> {
     await navigateToCellularDetailPage();
-    internetPage.shadowRoot.querySelector('settings-internet-detail-subpage')
-        .shadowRoot.querySelector('#apnSubpageButton')
-        .click();
-    return await flushAsync();
+    internetPage.shadowRoot!.querySelector('settings-internet-detail-subpage')!
+        .shadowRoot!.querySelector<HTMLElement>('#apnSubpageButton')!.click();
+    await flushTasks();
   }
 
-  function init() {
-    loadTimeData.overrideValues({
-      bypassConnectivityCheck: false,
-    });
+  function getNetworkSummaryElement(): NetworkSummaryElement {
+    const networkSummary =
+        internetPage.shadowRoot!.querySelector('network-summary');
+    assertTrue(!!networkSummary);
+    return networkSummary;
+  }
+
+  function queryCellularSetupDialog(): OsSettingsCellularSetupDialogElement|
+      null {
+    return internetPage.shadowRoot!.querySelector(
+        'os-settings-cellular-setup-dialog');
+  }
+
+  function queryCreateCustomApnButton(): HTMLButtonElement|null {
+    return internetPage.shadowRoot!.querySelector<HTMLButtonElement>(
+        '#createCustomApnButton');
+  }
+
+  function queryDiscoverMoreApnsButton(): HTMLButtonElement|null {
+    return internetPage.shadowRoot!.querySelector<HTMLButtonElement>(
+        '#discoverMoreApnsButton');
+  }
+
+  function queryApnActionMenuButton(): CrIconButtonElement|null {
+    return internetPage.shadowRoot!.querySelector<CrIconButtonElement>(
+        '#apnActionMenuButton');
+  }
+
+  function queryApnDotsMenu(): CrActionMenuElement|null {
+    return internetPage.shadowRoot!.querySelector<CrActionMenuElement>(
+        '#apnDotsMenu');
+  }
+
+  async function init(): Promise<void> {
+    mojoApi.resetForTest();
+
+    clearBody();
     internetPage = document.createElement('settings-internet-page');
-    assertTrue(!!internetPage);
-    mojoApi_.resetForTest();
     document.body.appendChild(internetPage);
-    networkSummary_ = internetPage.shadowRoot.querySelector('network-summary');
-    assertTrue(!!networkSummary_);
+
     setDoesDisconnectProhibitedAlwaysOnVpnPrefs(
         /*arcVpnAlwaysOnPackageNamePrefValue=*/ '',
         /*vpnConfigAllowedPrefValue=*/ false);
-    return flushAsync().then(() => {
-      return Promise.all([
-        mojoApi_.whenCalled('getNetworkStateList'),
-        mojoApi_.whenCalled('getDeviceStateList'),
-      ]);
-    });
+    await flushTasks();
+    await Promise.all([
+      mojoApi.whenCalled('getNetworkStateList'),
+      mojoApi.whenCalled('getDeviceStateList'),
+    ]);
   }
 
-  setup(function() {
+  setup(() => {
     loadTimeData.overrideValues({
+      bypassConnectivityCheck: false,
       internetAddConnection: 'internetAddConnection',
       internetAddConnectionExpandA11yLabel:
           'internetAddConnectionExpandA11yLabel',
@@ -214,235 +212,225 @@ suite('InternetPage', function() {
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
     });
 
-    mojoApi_ = new FakeNetworkConfig();
-    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    mojoApi = new FakeNetworkConfig();
+    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+        mojoApi);
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(eSimManagerRemote);
-    passpointService_ = new FakePasspointService();
+    passpointService = new FakePasspointService();
     MojoConnectivityProvider.getInstance().setPasspointServiceForTest(
-        passpointService_);
+        passpointService);
     hotspotConfig = new FakeHotspotConfig();
     setHotspotConfigForTesting(hotspotConfig);
-
-    clearBody();
   });
 
-  teardown(function() {
-    const subPage =
-        internetPage.shadowRoot.querySelector('settings-internet-subpage');
-    if (subPage) {
-      subPage.remove();
-    }
-    const detailPage = internetPage.shadowRoot.querySelector(
-        'settings-internet-detail-subpage');
-    if (detailPage) {
-      detailPage.remove();
-    }
-    internetPage.remove();
-    internetPage = null;
+  teardown(() => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  suite('MainPage', function() {
-    test('Ethernet', async function() {
+  suite('MainPage', () => {
+    test('Ethernet', async () => {
       await init();
+      const networkSummary = getNetworkSummaryElement();
+
       // Default fake device state is Ethernet enabled only.
-      const ethernet = networkSummary_.shadowRoot.querySelector('#Ethernet');
+      const ethernet =
+          networkSummary.shadowRoot!.querySelector<NetworkSummaryItemElement>(
+              '#Ethernet');
       assertTrue(!!ethernet);
       assertEquals(1, ethernet.networkStateList.length);
-      assertEquals(null, networkSummary_.shadowRoot.querySelector('#Cellular'));
-      assertEquals(null, networkSummary_.shadowRoot.querySelector('#VPN'));
-      assertEquals(null, networkSummary_.shadowRoot.querySelector('#WiFi'));
+
+      assertNull(networkSummary.shadowRoot!.querySelector('#Cellular'));
+      assertNull(networkSummary.shadowRoot!.querySelector('#VPN'));
+      assertNull(networkSummary.shadowRoot!.querySelector('#WiFi'));
     });
 
-    test('WiFi', async function() {
+    test('WiFi', async () => {
       await init();
       setNetworksForTest([
         OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi1'),
         OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi2'),
       ]);
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
-      return flushAsync().then(() => {
-        const wifi = networkSummary_.shadowRoot.querySelector('#WiFi');
-        assertTrue(!!wifi);
-        assertEquals(2, wifi.networkStateList.length);
-      });
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      await flushTasks();
+
+      const wifi =
+          getNetworkSummaryElement()
+              .shadowRoot!.querySelector<NetworkSummaryItemElement>('#WiFi');
+      assertTrue(!!wifi);
+      assertEquals(2, wifi.networkStateList.length);
     });
 
-    test('WiFiToggle', async function() {
+    test('WiFiToggle', async () => {
       await init();
       // Make WiFi an available but disabled technology.
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, false);
-      return flushAsync().then(() => {
-        const wifi = networkSummary_.shadowRoot.querySelector('#WiFi');
-        assertTrue(!!wifi);
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, false);
+      await flushTasks();
 
-        // Ensure that the initial state is disabled and the toggle is
-        // enabled but unchecked.
-        const wifiDevice = mojoApi_.getDeviceStateForTest(NetworkType.kWiFi);
-        assertTrue(!!wifiDevice);
-        assertEquals(DeviceStateType.kDisabled, wifiDevice.deviceState);
-        const toggle = wifi.shadowRoot.querySelector('#deviceEnabledButton');
-        assertTrue(!!toggle);
-        assertFalse(toggle.disabled);
-        assertFalse(toggle.checked);
+      const networkSummary = getNetworkSummaryElement();
+      const wifi = networkSummary.shadowRoot!.querySelector('#WiFi');
+      assertTrue(!!wifi);
 
-        // Tap the enable toggle button and ensure the state becomes enabling.
-        toggle.click();
-        return flushAsync().then(() => {
-          assertTrue(toggle.checked);
-          const wifiDevice = mojoApi_.getDeviceStateForTest(NetworkType.kWiFi);
-          assertTrue(!!wifiDevice);
-          assertEquals(DeviceStateType.kEnabling, wifiDevice.deviceState);
-        });
-      });
+      // Ensure that the initial state is disabled and the toggle is
+      // enabled but unchecked.
+      let wifiDevice = mojoApi.getDeviceStateForTest(NetworkType.kWiFi);
+      assertTrue(!!wifiDevice);
+      assertEquals(DeviceStateType.kDisabled, wifiDevice.deviceState);
+      const toggle = wifi.shadowRoot!.querySelector<CrToggleElement>(
+          '#deviceEnabledButton');
+      assertTrue(!!toggle);
+      assertFalse(toggle.disabled);
+      assertFalse(toggle.checked);
+
+      // Tap the enable toggle button and ensure the state becomes enabling.
+      toggle.click();
+      await flushTasks();
+
+      assertTrue(toggle.checked);
+      wifiDevice = mojoApi.getDeviceStateForTest(NetworkType.kWiFi);
+      assertTrue(!!wifiDevice);
+      assertEquals(DeviceStateType.kEnabling, wifiDevice.deviceState);
     });
 
-    test('Deep link to WiFiToggle', async () => {
+    test('Deep link to WiFi toggle', async () => {
       await init();
       // Make WiFi an available but disabled technology.
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, false);
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, false);
 
+      const settingId = settingMojom.Setting.kWifiOnOff;
       const params = new URLSearchParams();
-      params.append('settingId', settingMojom.Setting.kWifiOnOff.toString());
+      params.append('settingId', settingId.toString());
       Router.getInstance().navigateTo(routes.INTERNET, params);
-
-      await flushAsync();
+      await flushTasks();
 
       const deepLinkElement =
-          networkSummary_.shadowRoot.querySelector('#WiFi')
-              .shadowRoot.querySelector('#deviceEnabledButton');
+          getNetworkSummaryElement()
+              .shadowRoot!.querySelector('#WiFi')!.shadowRoot!
+              .querySelector<HTMLElement>('#deviceEnabledButton');
       assertTrue(!!deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
-          'Toggle WiFi should be focused for settingId=4.');
+          `Toggle WiFi should be focused for settingId=${settingId}.`);
     });
 
     test('Deep link to APN menu button', async () => {
-      loadTimeData.overrideValues({isApnRevampEnabled: true});
       await init();
 
       const cellularNetwork = OncMojo.getDefaultManagedProperties(
           NetworkType.kCellular, 'cellular1', 'name1');
-      cellularNetwork.typeProperties.cellular.eid = 'eid';
-      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+      cellularNetwork.typeProperties.cellular!.eid = 'eid';
+      mojoApi.setManagedPropertiesForTest(cellularNetwork);
 
+      const settingId = settingMojom.Setting.kCellularAddApn;
       const params = new URLSearchParams();
-      params.append(
-          'settingId', settingMojom.Setting.kCellularAddApn.toString());
+      params.append('settingId', settingId.toString());
       params.append('guid', cellularNetwork.guid);
-
       Router.getInstance().navigateTo(routes.APN, params);
-      await flushAsync();
+      await flushTasks();
 
-      const deepLinkElement =
-          internetPage.shadowRoot.querySelector('#apnActionMenuButton');
+      const deepLinkElement = queryApnActionMenuButton();
       assertTrue(!!deepLinkElement);
-
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
-          `APN menu button be focused for settingId=${
-              settingMojom.Setting.kCellularAddApn.toString()}.`);
+          `APN menu button be focused for settingId=${settingId}.`);
     });
 
-    suite('VPN', function() {
-      test('VpnProviders', async function() {
+    suite('VPN', () => {
+      test('VpnProviders', async () => {
         await init();
-        mojoApi_.setVpnProvidersForTest([
+        mojoApi.setVpnProvidersForTest([
           {
             type: VpnType.kExtension,
             providerId: 'extension_id1',
             providerName: 'MyExtensionVPN1',
             appId: 'extension_id1',
-            lastLaunchTime: {internalValue: 0},
+            lastLaunchTime: {internalValue: BigInt(0)},
           },
           {
             type: VpnType.kArc,
             providerId: 'vpn.app.package1',
             providerName: 'MyArcVPN1',
             appId: 'arcid1',
-            lastLaunchTime: {internalValue: 1},
+            lastLaunchTime: {internalValue: BigInt(1)},
           },
           {
             type: VpnType.kArc,
             providerId: 'vpn.app.package2',
             providerName: 'MyArcVPN2',
             appId: 'arcid2',
-            lastLaunchTime: {internalValue: 2},
+            lastLaunchTime: {internalValue: BigInt(2)},
           },
         ]);
-        return flushAsync().then(() => {
-          assertEquals(3, internetPage.vpnProviders_.length);
-          // Ensure providers are sorted by type and lastLaunchTime.
-          assertEquals(
-              'extension_id1', internetPage.vpnProviders_[0].providerId);
-          assertEquals(
-              'vpn.app.package2', internetPage.vpnProviders_[1].providerId);
-          assertEquals(
-              'vpn.app.package1', internetPage.vpnProviders_[2].providerId);
-        });
+        await flushTasks();
+
+        const vpnProviders = internetPage.get('vpnProviders_');
+        assertEquals(3, vpnProviders.length);
+        // Ensure providers are sorted by type and lastLaunchTime.
+        assertEquals('extension_id1', vpnProviders[0].providerId);
+        assertEquals('vpn.app.package2', vpnProviders[1].providerId);
+        assertEquals('vpn.app.package1', vpnProviders[2].providerId);
       });
 
-      function clickAddConnectionsButton() {
+      function expandAddConnections(): void {
         const button =
-            internetPage.shadowRoot.querySelector('#expandAddConnections');
+            internetPage.shadowRoot!.querySelector<CrExpandButtonElement>(
+                '#expandAddConnections');
         assertTrue(!!button);
         button.expanded = true;
       }
 
-      function addVpnNetworkAndSetDeviceState(vpnProhibited) {
+      function addVpnNetworkAndSetDeviceState(vpnProhibited: boolean): void {
         setNetworksForTest([
           OncMojo.getDefaultNetworkState(NetworkType.kVPN, 'vpn'),
         ]);
-        mojoApi_.setDeviceStateForTest({
+        mojoApi.setDeviceStateForTest({
           type: NetworkType.kVPN,
           deviceState: vpnProhibited ? DeviceStateType.kProhibited :
-                                       DeviceStateType.kAllowed,
-        });
+                                       DeviceStateType.kEnabled,
+        } as DeviceStateProperties);
+      }
+
+      function queryAddVpnLabel() {
+        return internetPage.shadowRoot!.querySelector('#add-vpn-label');
+      }
+
+      function queryAddVpnButton() {
+        return internetPage.shadowRoot!.querySelector<CrIconButtonElement>(
+            '#add-vpn-button');
       }
 
       test(
           'should show disabled add VPN button when allow only policy ' +
               'WiFi networks to connect is enabled and VPN is prohibited',
-          async function() {
+          async () => {
             await init();
-            internetPage.globalPolicy_ = {
-              allowOnlyPolicyWifiNetworksToConnect: true,
-            };
-            clickAddConnectionsButton();
-
+            mojoApi.setGlobalPolicy({
+              allowOnlyPolicyCellularNetworks: true,
+            } as GlobalPolicy);
+            expandAddConnections();
             addVpnNetworkAndSetDeviceState(/* vpnProhibited= */ true);
+            await flushTasks();
 
-            return flushAsync().then(() => {
-              assertTrue(isVisible(
-                  internetPage.shadowRoot.querySelector('#add-vpn-label')));
-              assertTrue(
-                  internetPage.shadowRoot.querySelector('#add-vpn-button')
-                      .disabled);
-            });
+            assertTrue(isVisible(queryAddVpnLabel()));
+            assertTrue(queryAddVpnButton()!.disabled);
           });
 
       test(
           'should show enabled add VPN button when allow only policy ' +
               'WiFi networks to connect is enabled and VPN is allowed',
-          async function() {
+          async () => {
             await init();
-            internetPage.globalPolicy_ = {
+            internetPage.set('globalPolicy_', {
               allowOnlyPolicyWifiNetworksToConnect: true,
-            };
-            clickAddConnectionsButton();
-
-            addVpnNetworkAndSetDeviceState(/* vpnProhibited= */ false);
-
-            return flushAsync().then(() => {
-              assertTrue(isVisible(
-                  internetPage.shadowRoot.querySelector('#add-vpn-label')));
-              assertFalse(
-                  internetPage.shadowRoot.querySelector('#add-vpn-button')
-                      .disabled);
             });
+            expandAddConnections();
+            addVpnNetworkAndSetDeviceState(/* vpnProhibited= */ false);
+            await flushTasks();
+
+            assertTrue(isVisible(queryAddVpnLabel()));
+            assertFalse(queryAddVpnButton()!.disabled);
           });
 
       [{
@@ -497,48 +485,44 @@ suite('InternetPage', function() {
                 `setDoesDisconnectProhibitedAlwaysOnVpnPrefs allowed ` +
                 `by policy: ${manualDisconnectionAllowed}`,
             async () => {
-              await init();
+          await init();
 
-              clickAddConnectionsButton();
+          expandAddConnections();
+          addVpnNetworkAndSetDeviceState(vpnProhibited);
+          setDoesDisconnectProhibitedAlwaysOnVpnPrefs(
+              /* arcVpnAlwaysOnPackageNamePrefValue= */
+              arcVpnAlwaysOnPackageNamePrefValue,
+              /* vpnConfigAllowedPrefValue= */ manualDisconnectionAllowed);
+          await flushTasks();
 
-              addVpnNetworkAndSetDeviceState(vpnProhibited);
+          const vpnPolicyIndicator =
+              internetPage.shadowRoot!.querySelector('#vpnPolicyIndicator');
 
-              setDoesDisconnectProhibitedAlwaysOnVpnPrefs(
-                  /* arcVpnAlwaysOnPackageNamePrefValue= */
-                  arcVpnAlwaysOnPackageNamePrefValue,
-                  /* vpnConfigAllowedPrefValue= */ manualDisconnectionAllowed);
+          if (vpnProhibited ||
+              (!!arcVpnAlwaysOnPackageNamePrefValue &&
+               !manualDisconnectionAllowed)) {
+            assertTrue(isVisible(vpnPolicyIndicator));
+          } else {
+            assertFalse(isVisible(vpnPolicyIndicator));
+          }
 
-              return flushAsync().then(() => {
-                const vpnPolicyIndicator =
-                    internetPage.shadowRoot.querySelector(
-                        '#vpnPolicyIndicator');
-                const policyIndicator =
-                    networkSummary_.shadowRoot.querySelector('#VPN')
-                        .shadowRoot.querySelector('#policyIndicator');
-
-                if (vpnProhibited ||
-                    (!!arcVpnAlwaysOnPackageNamePrefValue &&
-                     !manualDisconnectionAllowed)) {
-                  assertTrue(isVisible(vpnPolicyIndicator));
-
-                } else {
-                  assertFalse(isVisible(vpnPolicyIndicator));
-                }
-
-                if (vpnProhibited) {
-                  assertTrue(isVisible(policyIndicator));
-                } else {
-                  // Note: Users are still allowed to configure existing VPNs
-                  // they set previously if |arcVpnAlwaysOnPackageNamePrefValue|
-                  // is not set and |manualDisconnectionAllowed| is false.
-                  // TODO(http://b/302390893): Consider renaming
-                  // |vpn_config_allowed| pref to something like
-                  // "manual_disconnection_allowed", or discuss with DPanel team
-                  // about rewording
-                  //  https://screenshot.googleplex.com/4KLUdLUtPsvNMDT
-                  assertFalse(isVisible(policyIndicator));
-                }
-              });
+          const policyIndicator =
+              getNetworkSummaryElement()
+                  .shadowRoot!.querySelector('#VPN')!.shadowRoot!.querySelector(
+                      '#policyIndicator');
+          if (vpnProhibited) {
+            assertTrue(isVisible(policyIndicator));
+          } else {
+            // Note: Users are still allowed to configure existing VPNs
+            // they set previously if |arcVpnAlwaysOnPackageNamePrefValue|
+            // is not set and |manualDisconnectionAllowed| is false.
+            // TODO(http://b/302390893): Consider renaming
+            // |vpn_config_allowed| pref to something like
+            // "manual_disconnection_allowed", or discuss with DPanel team
+            // about rewording
+            //  https://screenshot.googleplex.com/4KLUdLUtPsvNMDT
+            assertFalse(isVisible(policyIndicator));
+          }
             });
       });
     });
@@ -546,62 +530,68 @@ suite('InternetPage', function() {
     test('Deep link to mobile on/off toggle', async () => {
       await init();
       // Make WiFi an available but disabled technology.
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, false);
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, false);
 
+      const setting = settingMojom.Setting.kMobileOnOff;
       const params = new URLSearchParams();
-      params.append('settingId', settingMojom.Setting.kMobileOnOff.toString());
+      params.append('settingId', setting.toString());
       Router.getInstance().navigateTo(routes.INTERNET, params);
-
-      await flushAsync();
+      await flushTasks();
 
       const deepLinkElement =
-          networkSummary_.shadowRoot.querySelector('#Cellular')
-              .shadowRoot.querySelector('#deviceEnabledButton');
+          getNetworkSummaryElement()
+              .shadowRoot!.querySelector('#Cellular')!.shadowRoot!
+              .querySelector<HTMLElement>('#deviceEnabledButton');
       assertTrue(!!deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
-          'Toggle mobile on/off should be focused for settingId=13.');
+          `Toggle mobile on/off should be focused for settingId=${setting}.`);
     });
 
-    test('Show rename esim profile dialog', async function() {
+    test('Show rename esim profile dialog', async () => {
       await init();
       eSimManagerRemote.addEuiccForTest(1);
-      await flushAsync();
+      await flushTasks();
 
-      let renameDialog =
-          internetPage.shadowRoot.querySelector('#esimRenameDialog');
-      assertFalse(!!renameDialog);
+      function queryEsimRenameDialog(): EsimRenameDialogElement|null {
+        return internetPage.shadowRoot!.querySelector('esim-rename-dialog');
+      }
+
+      let renameDialog = queryEsimRenameDialog();
+      assertNull(renameDialog);
 
       const event = new CustomEvent(
           'show-esim-profile-rename-dialog', {detail: {iccid: '1'}});
       internetPage.dispatchEvent(event);
+      await flushTasks();
 
-      await flushAsync();
-      renameDialog = internetPage.shadowRoot.querySelector('#esimRenameDialog');
+      renameDialog = queryEsimRenameDialog();
       assertTrue(!!renameDialog);
-
       await assertWarningMessageVisibility(renameDialog.$.warningMessage);
     });
 
-    test('Show remove esim profile dialog', async function() {
+    test('Show remove esim profile dialog', async () => {
       await init();
       eSimManagerRemote.addEuiccForTest(1);
-      await flushAsync();
+      await flushTasks();
 
-      let removeDialog =
-          internetPage.shadowRoot.querySelector('#esimRemoveProfileDialog');
-      assertFalse(!!removeDialog);
+      function queryEsimRemoveProfileDialog(): EsimRemoveProfileDialogElement|
+          null {
+        return internetPage.shadowRoot!.querySelector(
+            'esim-remove-profile-dialog');
+      }
+
+      let removeDialog = queryEsimRemoveProfileDialog();
+      assertNull(removeDialog);
 
       const event = new CustomEvent(
           'show-esim-remove-profile-dialog', {detail: {iccid: '1'}});
       internetPage.dispatchEvent(event);
+      await flushTasks();
 
-      await flushAsync();
-      removeDialog =
-          internetPage.shadowRoot.querySelector('#esimRemoveProfileDialog');
+      removeDialog = queryEsimRemoveProfileDialog();
       assertTrue(!!removeDialog);
-
       await assertWarningMessageVisibility(removeDialog.$.warningMessage);
     });
   });
@@ -609,22 +599,19 @@ suite('InternetPage', function() {
   test(
       'Show pSIM flow cellular setup dialog if route params' +
           'contain showCellularSetup and showPsimFlow',
-      async function() {
+      async () => {
         await init();
 
-        let cellularSetupDialog =
-            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
-        assertFalse(!!cellularSetupDialog);
+        assertNull(queryCellularSetupDialog());
 
         await navigateToCellularSetupDialog(
             /*showPSimFlow=*/ true, /*isCellularEnabled=*/ true);
 
-        cellularSetupDialog =
-            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
+        const cellularSetupDialog = queryCellularSetupDialog();
         assertTrue(!!cellularSetupDialog);
         const psimFlow =
-            cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
-                .shadowRoot.querySelector('#psim-flow-ui');
+            cellularSetupDialog.shadowRoot!.querySelector('cellular-setup')!
+                .shadowRoot!.querySelector('#psim-flow-ui');
         assertTrue(!!psimFlow);
       });
 
@@ -632,29 +619,26 @@ suite('InternetPage', function() {
       'Show eSIM flow cellular setup dialog if route params' +
           'contains showCellularSetup, does not contain showPsimFlow,' +
           'connected to a non-cellular network, and cellular enabled',
-      async function() {
+      async () => {
         await init();
         eSimManagerRemote.addEuiccForTest(1);
 
         const wifiNetwork =
             OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
         wifiNetwork.connectionState = ConnectionStateType.kOnline;
-        mojoApi_.addNetworksForTest([wifiNetwork]);
-        await flushAsync();
+        mojoApi.addNetworksForTest([wifiNetwork]);
+        await flushTasks();
 
-        let cellularSetupDialog =
-            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
-        assertFalse(!!cellularSetupDialog);
+        assertNull(queryCellularSetupDialog());
 
         await navigateToCellularSetupDialog(
             /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
 
-        cellularSetupDialog =
-            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
+        const cellularSetupDialog = queryCellularSetupDialog();
         assertTrue(!!cellularSetupDialog);
         const esimFlow =
-            cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
-                .shadowRoot.querySelector('#esim-flow-ui');
+            cellularSetupDialog.shadowRoot!.querySelector('cellular-setup')!
+                .shadowRoot!.querySelector('#esim-flow-ui');
         assertTrue(!!esimFlow);
       });
 
@@ -662,22 +646,20 @@ suite('InternetPage', function() {
       'Show no connection toast if route params' +
           'contain showCellularSetup, does not contain showPsimFlow,' +
           'cellular is enabled, but not connected to a non-cellular network',
-      async function() {
+      async () => {
         await init();
         eSimManagerRemote.addEuiccForTest(1);
 
-        assertFalse(
-            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
+        assertNull(queryCellularSetupDialog());
 
         await navigateToCellularSetupDialog(
             /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
 
         assertTrue(internetPage.$.errorToast.open);
         assertEquals(
-            internetPage.$.errorToastMessage.innerHTML,
-            internetPage.i18n('eSimNoConnectionErrorToast'));
-        assertFalse(
-            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
+            internetPage.i18n('eSimNoConnectionErrorToast'),
+            internetPage.$.errorToastMessage.innerHTML);
+        assertNull(queryCellularSetupDialog());
       });
 
   test(
@@ -685,26 +667,23 @@ suite('InternetPage', function() {
           'contain showCellularSetup, does not contain showPsimFlow, ' +
           'cellular is enabled, not connected to a non-cellular network ' +
           'but cellular bypass esim installation connectivity flag is enabled',
-      async function() {
-        await init();
+      async () => {
         loadTimeData.overrideValues({
           bypassConnectivityCheck: true,
         });
+        await init();
         eSimManagerRemote.addEuiccForTest(1);
 
-        let cellularSetupDialog =
-            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
-        assertFalse(!!cellularSetupDialog);
+        assertNull(queryCellularSetupDialog());
 
         await navigateToCellularSetupDialog(
             /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
 
-        cellularSetupDialog =
-            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
+        const cellularSetupDialog = queryCellularSetupDialog();
         assertTrue(!!cellularSetupDialog);
         const esimFlow =
-            cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
-                .shadowRoot.querySelector('#esim-flow-ui');
+            cellularSetupDialog.shadowRoot!.querySelector('cellular-setup')!
+                .shadowRoot!.querySelector('#esim-flow-ui');
         assertTrue(!!esimFlow);
       });
 
@@ -712,28 +691,26 @@ suite('InternetPage', function() {
       'Show mobile data not enabled toast if route params' +
           'contains showCellularSetup, does not contain showPsimFlow,' +
           'connected to a non-cellular network, but cellular not enabled',
-      async function() {
+      async () => {
         await init();
         eSimManagerRemote.addEuiccForTest(1);
 
         const wifiNetwork =
             OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
         wifiNetwork.connectionState = ConnectionStateType.kOnline;
-        mojoApi_.addNetworksForTest([wifiNetwork]);
-        await flushAsync();
+        mojoApi.addNetworksForTest([wifiNetwork]);
+        await flushTasks();
 
-        assertFalse(
-            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
+        assertNull(queryCellularSetupDialog());
 
         await navigateToCellularSetupDialog(
             /*showPSimFlow=*/ false, /*isCellularEnabled=*/ false);
 
         assertTrue(internetPage.$.errorToast.open);
         assertEquals(
-            internetPage.$.errorToastMessage.innerHTML,
-            internetPage.i18n('eSimMobileDataNotEnabledErrorToast'));
-        assertFalse(
-            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
+            internetPage.i18n('eSimMobileDataNotEnabledErrorToast'),
+            internetPage.$.errorToastMessage.innerHTML);
+        assertNull(queryCellularSetupDialog());
       });
 
   test(
@@ -741,29 +718,26 @@ suite('InternetPage', function() {
           'contains showCellularSetup, does not contain showPsimFlow,' +
           'connected to a non-cellular network, cellular enabled,' +
           'but profile limit is reached',
-      async function() {
+      async () => {
         await init();
         eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 5);
 
         const wifiNetwork =
             OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
         wifiNetwork.connectionState = ConnectionStateType.kOnline;
-        mojoApi_.addNetworksForTest([wifiNetwork]);
-        await flushAsync();
+        mojoApi.addNetworksForTest([wifiNetwork]);
+        await flushTasks();
 
-        const cellularSetupDialog =
-            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
-        assertFalse(!!cellularSetupDialog);
+        assertNull(queryCellularSetupDialog());
 
         await navigateToCellularSetupDialog(
             /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
 
         assertTrue(internetPage.$.errorToast.open);
         assertEquals(
-            internetPage.$.errorToastMessage.innerHTML,
-            internetPage.i18n('eSimProfileLimitReachedErrorToast', 5));
-        assertFalse(
-            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
+            internetPage.i18n('eSimProfileLimitReachedErrorToast', 5),
+            internetPage.$.errorToastMessage.innerHTML);
+        assertNull(queryCellularSetupDialog());
       });
 
   test('Show sim lock dialog through URL parameters', async () => {
@@ -771,7 +745,7 @@ suite('InternetPage', function() {
 
     const params = new URLSearchParams();
     params.append('type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
-    params.append('showSimLockDialog', true);
+    params.append('showSimLockDialog', 'true');
 
     // Pretend that we initially started on the INTERNET_NETWORKS route with the
     // params.
@@ -779,18 +753,18 @@ suite('InternetPage', function() {
     internetPage.currentRouteChanged(routes.INTERNET_NETWORKS, undefined);
 
     // Update the device state here to trigger an onDeviceStatesChanged_() call.
-    mojoApi_.setDeviceStateForTest({
+    mojoApi.setDeviceStateForTest({
       type: NetworkType.kCellular,
       deviceState: DeviceStateType.kEnabled,
       inhibitReason: InhibitReason.kNotInhibited,
       simLockStatus: {
         lockEnabled: true,
       },
-    });
-    await flushAsync();
+    } as DeviceStateProperties);
+    await flushTasks();
 
     const simLockDialogs =
-        internetPage.shadowRoot.querySelector('sim-lock-dialogs');
+        internetPage.shadowRoot!.querySelector('sim-lock-dialogs');
     assertTrue(!!simLockDialogs);
     assertTrue(simLockDialogs.isDialogOpen);
   });
@@ -808,16 +782,17 @@ suite('InternetPage', function() {
     internetPage.currentRouteChanged(routes.INTERNET_NETWORKS, undefined);
 
     // Update the device state here to trigger an onDeviceStatesChanged_() call.
-    mojoApi_.setDeviceStateForTest({
+    mojoApi.setDeviceStateForTest({
       type: NetworkType.kCellular,
       deviceState: DeviceStateType.kEnabled,
       inhibitReason: InhibitReason.kNotInhibited,
       isCarrierLocked: true,
-    });
-    await flushAsync();
+    } as DeviceStateProperties);
+    await flushTasks();
 
     const cellularSubtitle =
-        internetPage.shadowRoot.querySelector('#cellularSubtitle');
+        internetPage.shadowRoot!.querySelector<HTMLElement>(
+            '#cellularSubtitle');
     assertTrue(!!cellularSubtitle);
   });
 
@@ -838,17 +813,18 @@ suite('InternetPage', function() {
 
         // Update the device state here to trigger an onDeviceStatesChanged_()
         // call.
-        mojoApi_.setDeviceStateForTest({
+        mojoApi.setDeviceStateForTest({
           type: NetworkType.kCellular,
           deviceState: DeviceStateType.kEnabled,
           inhibitReason: InhibitReason.kNotInhibited,
           isCarrierLocked: false,
-        });
-        await flushAsync();
+        } as DeviceStateProperties);
+        await flushTasks();
 
         const cellularSubtitle =
-            internetPage.shadowRoot.querySelector('#cellularSubtitle');
-        assertFalse(!!cellularSubtitle);
+            internetPage.shadowRoot!.querySelector<HTMLElement>(
+                '#cellularSubtitle');
+        assertNull(cellularSubtitle);
       });
 
   test(
@@ -868,28 +844,29 @@ suite('InternetPage', function() {
 
         // Update the device state here to trigger an onDeviceStatesChanged_()
         // call.
-        mojoApi_.setDeviceStateForTest({
+        mojoApi.setDeviceStateForTest({
           type: NetworkType.kCellular,
           deviceState: DeviceStateType.kEnabled,
           inhibitReason: InhibitReason.kNotInhibited,
           isCarrierLocked: true,
-        });
-        await flushAsync();
+        } as DeviceStateProperties);
+        await flushTasks();
 
         const cellularSubtitle =
-            internetPage.shadowRoot.querySelector('#cellularSubtitle');
-        assertFalse(!!cellularSubtitle);
+            internetPage.shadowRoot!.querySelector<HTMLElement>(
+                '#cellularSubtitle');
+        assertNull(cellularSubtitle);
       });
 
 
   test(
       'Show no connection toast if receive show-cellular-setup' +
           'event and not connected to non-cellular network',
-      async function() {
+      async () => {
         await init();
         eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
-        mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
-        await flushAsync();
+        mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+        await flushTasks();
 
         assertFalse(internetPage.$.errorToast.open);
 
@@ -898,13 +875,14 @@ suite('InternetPage', function() {
             'show-cellular-setup',
             {detail: {pageName: CellularSetupPageName.ESIM_FLOW_UI}});
         internetPage.dispatchEvent(event);
-        await flushAsync();
+        await flushTasks();
+
         assertTrue(internetPage.$.errorToast.open);
         assertEquals(
-            internetPage.$.errorToastMessage.innerHTML,
-            internetPage.i18n('eSimNoConnectionErrorToast'));
-        assertFalse(
-            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
+            internetPage.i18n('eSimNoConnectionErrorToast'),
+            internetPage.$.errorToastMessage.innerHTML);
+
+        assertNull(queryCellularSetupDialog());
 
         // Hide the toast
         internetPage.$.errorToast.hide();
@@ -914,65 +892,60 @@ suite('InternetPage', function() {
         const wifiNetwork =
             OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
         wifiNetwork.connectionState = ConnectionStateType.kOnline;
-        mojoApi_.addNetworksForTest([wifiNetwork]);
-        await flushAsync();
+        mojoApi.addNetworksForTest([wifiNetwork]);
+        await flushTasks();
 
         // Send event, toast should be hidden, dialog open.
         internetPage.dispatchEvent(event);
-        await flushAsync();
+        await flushTasks();
         assertFalse(internetPage.$.errorToast.open);
-        assertTrue(
-            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
+        assertTrue(!!queryCellularSetupDialog());
       });
 
-  test('Show toast on show-error-toast event', async function() {
+  test('Show toast on show-error-toast event', async () => {
     await init();
     assertFalse(internetPage.$.errorToast.open);
 
     const message = 'Toast message';
     const event = new CustomEvent('show-error-toast', {detail: message});
     internetPage.dispatchEvent(event);
-    await flushAsync();
+    await flushTasks();
     assertTrue(internetPage.$.errorToast.open);
-    assertEquals(internetPage.$.errorToastMessage.innerHTML, message);
+    assertEquals(message, internetPage.$.errorToastMessage.innerHTML);
   });
 
   test('Internet detail menu renders', async () => {
     await navigateToCellularDetailPage();
 
     const internetDetailMenu =
-        internetPage.shadowRoot.querySelector('settings-internet-detail-menu');
+        internetPage.shadowRoot!.querySelector('settings-internet-detail-menu');
     assertTrue(!!internetDetailMenu);
   });
 
-  test(
-      'Update global policy when triggering OnPoliciesApplied()',
-      async function() {
-        await navigateToCellularDetailPage();
+  test('Update global policy when triggering OnPoliciesApplied()', async () => {
+    await navigateToCellularDetailPage();
 
-        const detailPage = internetPage.shadowRoot.querySelector(
-            'settings-internet-detail-subpage');
-        assertTrue(!!detailPage);
-        assertTrue(!!detailPage.globalPolicy);
-        assertFalse(
-            detailPage.globalPolicy.allow_only_policy_cellular_networks);
+    const detailPage = internetPage.shadowRoot!.querySelector(
+        'settings-internet-detail-subpage');
+    assertTrue(!!detailPage);
+    assertTrue(!!detailPage.globalPolicy);
+    assertFalse(!!detailPage.globalPolicy.allowOnlyPolicyCellularNetworks);
 
-        // Set global policy should also update the global policy
-        const globalPolicy = {
-          allow_only_policy_cellular_networks: true,
-        };
-        mojoApi_.setGlobalPolicy(globalPolicy);
-        await flushAsync();
+    // Set global policy should also update the global policy
+    mojoApi.setGlobalPolicy({
+      allowOnlyPolicyCellularNetworks: true,
+    } as GlobalPolicy);
+    await flushTasks();
 
-        assertTrue(!!detailPage);
-        assertTrue(!!detailPage.globalPolicy);
-        assertTrue(detailPage.globalPolicy.allow_only_policy_cellular_networks);
-      });
+    assertTrue(!!detailPage);
+    assertTrue(!!detailPage.globalPolicy);
+    assertTrue(detailPage.globalPolicy.allowOnlyPolicyCellularNetworks);
+  });
 
   test(
       'Navigating to Known Networks without network-type parameters ' +
           'defaults to Wi-Fi',
-      async function() {
+      async () => {
         await init();
 
         const params = new URLSearchParams();
@@ -983,194 +956,201 @@ suite('InternetPage', function() {
         Router.getInstance().navigateTo(routes.KNOWN_NETWORKS, params);
         internetPage.currentRouteChanged(routes.KNOWN_NETWORKS, undefined);
 
-        const knownNetworksPage = internetPage.shadowRoot.querySelector(
+        const knownNetworksPage = internetPage.shadowRoot!.querySelector(
             'settings-internet-known-networks-subpage');
+        assertTrue(!!knownNetworksPage);
 
         // Confirm that the knownNetworkType_ was set to kWiFi.
-        assertTrue(!!knownNetworksPage);
-        assertEquals(knownNetworksPage.networkType, NetworkType.kWiFi);
+        assertEquals(NetworkType.kWiFi, knownNetworksPage.networkType);
       });
 
-  test('Navigate to/from APN subpage', async function() {
+  test('Navigate to/from APN subpage', async () => {
     loadTimeData.overrideValues({isApnRevampEnabled: true});
     await navigateToApnSubpage();
     assertEquals(Router.getInstance().currentRoute, routes.APN);
-    assertTrue(!!internetPage.shadowRoot.querySelector('apn-subpage'));
+    assertTrue(!!internetPage.shadowRoot!.querySelector('apn-subpage'));
 
     const windowPopstatePromise = eventToPromise('popstate', window);
     Router.getInstance().navigateToPreviousRoute();
     await windowPopstatePromise;
     await waitBeforeNextRender(internetPage);
-    const detailPage = internetPage.shadowRoot.querySelector(
+
+    const detailPage = internetPage.shadowRoot!.querySelector(
         'settings-internet-detail-subpage');
-    await flushAsync();
+    assertTrue(!!detailPage);
+    await flushTasks();
 
     assertEquals(
-        detailPage.shadowRoot.querySelector('#apnSubpageButton'),
-        detailPage.shadowRoot.activeElement,
+        detailPage.shadowRoot!.querySelector('#apnSubpageButton'),
+        detailPage.shadowRoot!.activeElement,
         'Apn subpage row should be focused');
   });
 
   test(
       'Create apn button opens dialogs and clicking cancel button removes it',
-      async function() {
+      async () => {
         loadTimeData.overrideValues({isApnRevampEnabled: true});
         await navigateToApnSubpage();
-        const subpage = internetPage.shadowRoot.querySelector('apn-subpage');
+        const subpage = internetPage.shadowRoot!.querySelector('apn-subpage');
         assertTrue(!!subpage);
-        const apnList = subpage.shadowRoot.querySelector('apn-list');
+        const apnList = subpage.shadowRoot!.querySelector('apn-list');
         assertTrue(!!apnList);
         const getApnDetailDialog = () =>
-            apnList.shadowRoot.querySelector('apn-detail-dialog');
+            apnList.shadowRoot!.querySelector('apn-detail-dialog');
 
-        assertFalse(!!getApnDetailDialog());
-        const apnMenuButton =
-            internetPage.shadowRoot.querySelector('#apnActionMenuButton');
+        assertNull(getApnDetailDialog());
+        const apnMenuButton = queryApnActionMenuButton();
         assertTrue(!!apnMenuButton);
         apnMenuButton.click();
-        await flushAsync();
+        await flushTasks();
 
-        assertTrue(internetPage.shadowRoot.querySelector('#apnDotsMenu').open);
-        const createCustomApnButton =
-            internetPage.shadowRoot.querySelector('#createCustomApnButton');
+        const apnDotsMenu = queryApnDotsMenu();
+        assertTrue(!!apnDotsMenu);
+        assertTrue(apnDotsMenu.open);
+        const createCustomApnButton = queryCreateCustomApnButton();
         assertTrue(!!createCustomApnButton);
         createCustomApnButton.click();
-        await flushAsync();
+        await flushTasks();
 
-        assertFalse(internetPage.shadowRoot.querySelector('#apnDotsMenu').open);
-        assertTrue(!!getApnDetailDialog());
+        assertFalse(apnDotsMenu.open);
+        const apnDetailDialog = getApnDetailDialog();
+        assertTrue(!!apnDetailDialog);
         const onCloseEventPromise = eventToPromise('close', apnList);
-        const cancelBtn = getApnDetailDialog().shadowRoot.querySelector(
-            '#apnDetailCancelBtn');
-        cancelBtn.click();
+        const cancelButton =
+            apnDetailDialog.shadowRoot!.querySelector<HTMLElement>(
+                '#apnDetailCancelBtn');
+        assertTrue(!!cancelButton);
+        cancelButton.click();
         await onCloseEventPromise;
 
-        assertFalse(!!getApnDetailDialog());
+        assertNull(getApnDetailDialog());
       });
 
   test(
       'Discover more apns button opens dialog and clicking cancel button ' +
           'removes it',
-      async function() {
+      async () => {
         loadTimeData.overrideValues({isApnRevampEnabled: true});
         await navigateToApnSubpage();
-        const subpage = internetPage.shadowRoot.querySelector('apn-subpage');
+        const subpage = internetPage.shadowRoot!.querySelector('apn-subpage');
         assertTrue(!!subpage);
-        const apnList = subpage.shadowRoot.querySelector('apn-list');
+        const apnList = subpage.shadowRoot!.querySelector('apn-list');
         assertTrue(!!apnList);
-        const getApnSelectionDialog = () =>
-            apnList.shadowRoot.querySelector('apn-selection-dialog');
 
-        assertFalse(!!getApnSelectionDialog());
-        const apnMenuButton =
-            internetPage.shadowRoot.querySelector('#apnActionMenuButton');
+        function getApnSelectionDialog() {
+          return apnList!.shadowRoot!.querySelector('apn-selection-dialog');
+        }
+
+        assertNull(getApnSelectionDialog());
+        const apnMenuButton = queryApnActionMenuButton();
         assertTrue(!!apnMenuButton);
-        assertEquals(apnMenuButton.title, internetPage.i18n('moreActions'));
+        assertEquals(internetPage.i18n('moreActions'), apnMenuButton.title);
         apnMenuButton.click();
-        await flushAsync();
+        await flushTasks();
 
-        assertTrue(internetPage.shadowRoot.querySelector('#apnDotsMenu').open);
-        const discoverMoreApnsButton =
-            internetPage.shadowRoot.querySelector('#discoverMoreApnsButton');
+        const apnDotsMenu = queryApnDotsMenu();
+        assertTrue(!!apnDotsMenu);
+        assertTrue(apnDotsMenu.open);
+        const discoverMoreApnsButton = queryDiscoverMoreApnsButton();
         assertTrue(!!discoverMoreApnsButton);
         discoverMoreApnsButton.click();
-        await flushAsync();
+        await flushTasks();
 
-        assertFalse(internetPage.shadowRoot.querySelector('#apnDotsMenu').open);
-        assertTrue(!!getApnSelectionDialog());
+        assertFalse(apnDotsMenu.open);
+        const apnSelectionDialog = getApnSelectionDialog();
+        assertTrue(!!apnSelectionDialog);
         const onCloseEventPromise = eventToPromise('close', apnList);
-        const cancelBtn =
-            getApnSelectionDialog().shadowRoot.querySelector('.cancel-button');
-        cancelBtn.click();
+        const cancelButton =
+            apnSelectionDialog.shadowRoot!.querySelector<HTMLElement>(
+                '.cancel-button');
+        assertTrue(!!cancelButton);
+        cancelButton.click();
         await onCloseEventPromise;
 
-        assertFalse(!!getApnSelectionDialog());
+        assertNull(getApnSelectionDialog());
       });
 
-  test(
-      'Navigate to APN subpage and remove cellular properties.',
-      async function() {
-        loadTimeData.overrideValues({isApnRevampEnabled: true});
-        await navigateToApnSubpage();
-        assertEquals(Router.getInstance().currentRoute, routes.APN);
-        assertTrue(!!internetPage.shadowRoot.querySelector('apn-subpage'));
-        // We use the same guid as in navigateToCellularDetailPage so that
-        // we trigger onNetworkStateChanged
-        const network = OncMojo.getDefaultManagedProperties(
-            NetworkType.kWiFi, 'cellular1', 'name1');
-        const windowPopstatePromise = eventToPromise('popstate', window);
-        mojoApi_.setManagedPropertiesForTest(network);
-        await windowPopstatePromise;
-        await waitBeforeNextRender(internetPage);
-        // Because there were no cellular properties we call apn_subpage close
-        // which navigates to the previous page.
-        assertEquals(Router.getInstance().currentRoute, routes.NETWORK_DETAIL);
-      });
+  test('Navigate to APN subpage and remove cellular properties.', async () => {
+    loadTimeData.overrideValues({isApnRevampEnabled: true});
+    await navigateToApnSubpage();
+    assertEquals(routes.APN, Router.getInstance().currentRoute);
+    assertTrue(!!internetPage.shadowRoot!.querySelector('apn-subpage'));
+    // We use the same guid as in navigateToCellularDetailPage so that
+    // we trigger onNetworkStateChanged
+    const network = OncMojo.getDefaultManagedProperties(
+        NetworkType.kWiFi, 'cellular1', 'name1');
+    const windowPopstatePromise = eventToPromise('popstate', window);
+    mojoApi.setManagedPropertiesForTest(network);
+    await windowPopstatePromise;
+    await waitBeforeNextRender(internetPage);
+    // Because there were no cellular properties we call apn_subpage close
+    // which navigates to the previous page.
+    assertEquals(routes.NETWORK_DETAIL, Router.getInstance().currentRoute);
+  });
 
   test(
       'Navigate to APN subpage without providing guid as parameter',
-      async function() {
+      async () => {
         loadTimeData.overrideValues({isApnRevampEnabled: true});
         await navigateToCellularDetailPage();
         const windowPopstatePromise = eventToPromise('popstate', window);
         Router.getInstance().navigateTo(routes.APN);
         await windowPopstatePromise;
         await waitBeforeNextRender(internetPage);
-        assertNotEquals(Router.getInstance().currentRoute, routes.APN);
+        assertNotEquals(routes.APN, Router.getInstance().currentRoute);
       });
 
   test(
       'Disable and show tooltip for APN buttons when custom APNs limit is' +
           'reached',
-      async function() {
+      async () => {
         loadTimeData.overrideValues({isApnRevampEnabled: true});
         await navigateToApnSubpage();
-        const getCreateCustomApnButton = () =>
-            internetPage.shadowRoot.querySelector('#createCustomApnButton');
         const getCreateCustomApnTooltip = () =>
-            internetPage.shadowRoot.querySelector('#createCustomApnTooltip');
-        const getDiscoverMoreApnsButton = () =>
-            internetPage.shadowRoot.querySelector('#discoverMoreApnsButton');
+            internetPage.shadowRoot!.querySelector('#createCustomApnTooltip');
         const getDiscoverMoreApnsTooltip = () =>
-            internetPage.shadowRoot.querySelector('#discoverMoreApnsTooltip');
+            internetPage.shadowRoot!.querySelector('#discoverMoreApnsTooltip');
 
-        assertTrue(!!getCreateCustomApnButton());
-        assertTrue(!!getDiscoverMoreApnsButton());
-        assertFalse(!!getCreateCustomApnTooltip());
-        assertFalse(!!getDiscoverMoreApnsTooltip());
-        assertFalse(getCreateCustomApnButton().disabled);
-        assertFalse(getDiscoverMoreApnsButton().disabled);
+        const createCustomApnButton = queryCreateCustomApnButton();
+        assertTrue(!!createCustomApnButton);
+        assertFalse(createCustomApnButton.disabled);
+        const discoverMoreApnsButton = queryDiscoverMoreApnsButton();
+        assertTrue(!!discoverMoreApnsButton);
+        assertFalse(discoverMoreApnsButton.disabled);
+        assertNull(getCreateCustomApnTooltip());
+        assertNull(getDiscoverMoreApnsTooltip());
 
         let properties = OncMojo.getDefaultManagedProperties(
             NetworkType.kCellular, 'cellular1', 'cellular');
-        // We're setting the list of APNs to the max number
-        properties.typeProperties.cellular.customApnList =
-            Array.apply(null, {length: MAX_NUM_CUSTOM_APNS}).map(_ => {
-              return {
-                accessPointName: 'apn',
-              };
-            });
-        mojoApi_.setManagedPropertiesForTest(properties);
-        await flushAsync();
 
-        assertTrue(!!getCreateCustomApnTooltip());
-        assertTrue(getCreateCustomApnTooltip().innerHTML.includes(
+        // We're setting the list of APNs to the max number
+        const customApn = {accessPointName: 'apn'} as ApnProperties;
+        properties.typeProperties.cellular!.customApnList =
+            Array(MAX_NUM_CUSTOM_APNS).fill({...customApn});
+        mojoApi.setManagedPropertiesForTest(properties);
+        await flushTasks();
+
+        assertTrue(createCustomApnButton.disabled);
+        assertTrue(discoverMoreApnsButton.disabled);
+        const createCustomApnTooltip = getCreateCustomApnTooltip();
+        assertTrue(!!createCustomApnTooltip);
+        assertTrue(createCustomApnTooltip.innerHTML.includes(
             internetPage.i18n('customApnLimitReached')));
-        assertTrue(!!getDiscoverMoreApnsTooltip());
-        assertTrue(getDiscoverMoreApnsTooltip().innerHTML.includes(
+        const discoverMoreApnsTooltip = getDiscoverMoreApnsTooltip();
+        assertTrue(!!discoverMoreApnsTooltip);
+        assertTrue(discoverMoreApnsTooltip.innerHTML.includes(
             internetPage.i18n('customApnLimitReached')));
-        assertTrue(getCreateCustomApnButton().disabled);
-        assertTrue(getDiscoverMoreApnsButton().disabled);
 
         properties = OncMojo.getDefaultManagedProperties(
             NetworkType.kCellular, 'cellular1', 'cellular');
-        properties.typeProperties.cellular.customApnList = [];
-        mojoApi_.setManagedPropertiesForTest(properties);
-        await flushAsync();
-        assertFalse(!!getCreateCustomApnTooltip());
-        assertFalse(!!getDiscoverMoreApnsTooltip());
-        assertFalse(getCreateCustomApnButton().disabled);
-        assertFalse(getDiscoverMoreApnsButton().disabled);
+        properties.typeProperties.cellular!.customApnList = [];
+        mojoApi.setManagedPropertiesForTest(properties);
+        await flushTasks();
+
+        assertFalse(createCustomApnButton.disabled);
+        assertFalse(discoverMoreApnsButton.disabled);
+        assertNull(getCreateCustomApnTooltip());
+        assertNull(getDiscoverMoreApnsTooltip());
       });
 
   test('Navigate to Passpoint detail page', async () => {
@@ -1183,7 +1163,7 @@ suite('InternetPage', function() {
       trustedCa: '',
       expirationEpochMs: 0n,
     };
-    passpointService_.addSubscription(sub);
+    passpointService.addSubscription(sub);
     await init();
 
     const params = new URLSearchParams();
@@ -1194,13 +1174,11 @@ suite('InternetPage', function() {
     internetPage.currentRouteChanged(routes.PASSPOINT_DETAIL, undefined);
 
     const passpointDetailPage =
-        internetPage.shadowRoot.querySelector('settings-passpoint-subpage');
+        internetPage.shadowRoot!.querySelector('settings-passpoint-subpage');
     assertTrue(!!passpointDetailPage);
   });
 
   test('Show spinner on hotspot subpage when enabling', async () => {
-    loadTimeData.overrideValues({isHotspotEnabled: true});
-
     const hotspotInfo = {
       state: HotspotState.kDisabled,
       allowStatus: HotspotAllowStatus.kAllowed,
@@ -1208,29 +1186,35 @@ suite('InternetPage', function() {
       config: {
         ssid: 'test_ssid',
         passphrase: 'test_passphrase',
+        autoDisable: true,
+        security: WiFiSecurityMode.kWpa2,
+        band: WiFiBand.kAutoChoose,
+        bssidRandomization: true,
       },
-    };
+      allowedWifiSecurityModes: [],
+    } as HotspotInfo;
     hotspotConfig.setFakeHotspotInfo(hotspotInfo);
     await init();
 
     Router.getInstance().navigateTo(routes.HOTSPOT_DETAIL);
-    await flushAsync();
+    await flushTasks();
 
     const hotspotDetailPage =
-        internetPage.shadowRoot.querySelector('settings-hotspot-subpage');
+        internetPage.shadowRoot!.querySelector('settings-hotspot-subpage');
     assertTrue(!!hotspotDetailPage);
 
     const hotspotSubpage =
-        internetPage.shadowRoot.querySelector('#hotspotSubpage');
+        internetPage.shadowRoot!.querySelector<OsSettingsSubpageElement>(
+            'os-settings-subpage#hotspotSubpage');
     assertTrue(!!hotspotSubpage);
     assertFalse(hotspotSubpage.showSpinner);
 
     hotspotConfig.setFakeHotspotState(HotspotState.kEnabling);
-    await flushAsync();
+    await flushTasks();
     assertTrue(hotspotSubpage.showSpinner);
 
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabling);
-    await flushAsync();
+    await flushTasks();
     assertTrue(hotspotSubpage.showSpinner);
   });
 

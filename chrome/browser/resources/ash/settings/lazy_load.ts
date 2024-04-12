@@ -192,7 +192,6 @@ export {ApnSubpageElement} from './internet_page/apn_subpage.js';
 export {CellularNetworksListElement} from './internet_page/cellular_networks_list.js';
 export {CellularRoamingToggleButtonElement} from './internet_page/cellular_roaming_toggle_button.js';
 export {EsimInstallErrorDialogElement} from './internet_page/esim_install_error_dialog.js';
-export {EsimRemoveProfileDialogElement} from './internet_page/esim_remove_profile_dialog.js';
 export {SettingsHotspotSubpageElement} from './internet_page/hotspot_subpage.js';
 export {SettingsInternetDetailPageElement} from './internet_page/internet_detail_subpage.js';
 export {SettingsInternetKnownNetworksPageElement} from './internet_page/internet_known_networks_subpage.js';
