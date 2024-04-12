@@ -12,6 +12,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
+#include "components/visitedlink/browser/partitioned_visitedlink_writer.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -29,7 +30,8 @@ class VisitedLinkUpdater;
 // processes. It also coalesces the updates to avoid excessive broadcasting of
 // messages to the renderers.
 class VisitedLinkEventListener
-    : public VisitedLinkWriter::Listener,
+    : public PartitionedVisitedLinkWriter::Listener,
+      public VisitedLinkWriter::Listener,
       public content::RenderProcessHostCreationObserver,
       public content::RenderProcessHostObserver,
       public content::RenderWidgetHostObserver {
