@@ -686,21 +686,28 @@ TEST_F(PineTest, ZoomDisplay) {
   aura::Window* root = Shell::GetPrimaryRootWindow();
   OverviewGrid* overview_grid = GetOverviewGridForRoot(root);
   ASSERT_TRUE(overview_grid);
-  views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
+  OverviewGridTestApi overview_grid_test_api(overview_grid);
+  views::Widget* pine_widget = overview_grid_test_api.pine_widget();
   ASSERT_TRUE(pine_widget);
   const gfx::Rect& initial_bounds = pine_widget->GetWindowBoundsInScreen();
+  const int half_birch_bar_paddings =
+      16 + 0.5 * overview_grid_test_api.birch_bar_widget()
+                     ->GetWindowBoundsInScreen()
+                     .height();
 
   // Checks the widget bounds. The x should be exactly centered in the display,
-  // the y is near the center and the size remains the same.
-  auto verify_widget_bounds = [&root, &pine_widget,
-                               &initial_bounds](const std::string& test_name) {
+  // the y is near the place half of birch bar paddings away from center and the
+  // size remains the same.
+  auto verify_widget_bounds = [&root, &pine_widget, &initial_bounds,
+                               &half_birch_bar_paddings](
+                                  const std::string& test_name) {
     SCOPED_TRACE(test_name);
     const gfx::Rect root_bounds = root->GetBoundsInScreen();
     const gfx::Rect widget_bounds = pine_widget->GetWindowBoundsInScreen();
     EXPECT_EQ(root_bounds.CenterPoint().x(), widget_bounds.CenterPoint().x());
     EXPECT_LT(widget_bounds.CenterPoint().y(), root_bounds.CenterPoint().y());
     EXPECT_GT(widget_bounds.CenterPoint().y(),
-              root_bounds.CenterPoint().y() - 20);
+              root_bounds.CenterPoint().y() - 20 - half_birch_bar_paddings);
     EXPECT_EQ(initial_bounds.size(), widget_bounds.size());
   };
 
