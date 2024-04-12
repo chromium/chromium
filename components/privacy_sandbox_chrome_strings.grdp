@@ -184,7 +184,7 @@
     Topics are based on your recent browsing history and are used by sites to show you personalized ads while protecting your identity
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER_DESKTOP" desc="Desktop - Disclaimer of the new Ad topics setting. This text appears beneath the sublabel.">
-    Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less interesting. Learn more about <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>managing your ad privacy<ph name="LINK_END">&lt;/a&gt;</ph>.
+    Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less personalized. Learn more about <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>managing your ad privacy<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING" desc="A label above a list of the user's topics of interest. Ad topics are published at https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v1.md" formatter_data="android_java">
     Your topics
