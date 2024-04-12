@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/version.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -92,6 +93,20 @@ void ClearProfileMigrationCompletedForUser(PrefService* local_state,
 // g_browser_process->local_state() etc.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
 void SetProfileMigrationCompletedForTest(std::optional<bool> is_completed);
+
+// Reads `kDataVerPref` and gets corresponding data version for `user_id_hash`.
+// If no such version is registered yet, returns `Version` that is invalid.
+// Should only be called on UI thread since it reads from `LocalState`.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+base::Version GetDataVer(PrefService* local_state,
+                         std::string_view user_id_hash);
+
+// Records data version for `user_id_hash` in `LocalState`. Should only be
+// called on UI thread since it reads from `LocalState`.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+void RecordDataVer(PrefService* local_state,
+                   std::string_view user_id_hash,
+                   const base::Version& version);
 
 }  // namespace ash::standalone_browser::migrator_util
 

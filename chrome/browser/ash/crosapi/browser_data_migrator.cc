@@ -287,7 +287,8 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
           IsProfileMigrationCompletedForUser(local_state, user_id_hash,
                                              true /* print_mode */)) {
     LOG(WARNING) << "Profile migration is already completed at version "
-                 << crosapi::browser_util::GetDataVer(local_state, user_id_hash)
+                 << ash::standalone_browser::migrator_util::GetDataVer(
+                        local_state, user_id_hash)
                         .GetString();
 
     return false;
@@ -403,8 +404,8 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
   if (result.data_wipe_result != DataWipeResult::kFailed) {
     // kSkipped means that the directory did not exist so record the current
     // version as the data version.
-    crosapi::browser_util::RecordDataVer(local_state_, user_id_hash_,
-                                         version_info::GetVersion());
+    ash::standalone_browser::migrator_util::RecordDataVer(
+        local_state_, user_id_hash_, version_info::GetVersion());
   }
 
   switch (result.data_migration_result.kind) {

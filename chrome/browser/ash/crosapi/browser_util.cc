@@ -287,8 +287,6 @@ const char kLacrosSelectionRootfs[] = "rootfs";
 const char kLacrosSelectionStateful[] = "stateful";
 
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
-// Marks the Chrome version at which profile migration was completed.
-const char kDataVerPref[] = "lacros.data_version";
 const char kProfileDataBackwardMigrationCompletedForUserPref[] =
     "lacros.profile_data_backward_migration_completed_for_user";
 // This pref is to record whether the user clicks "Go to files" button
@@ -302,7 +300,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kDataVerPref);
   registry->RegisterDictionaryPref(
       kProfileDataBackwardMigrationCompletedForUserPref);
   registry->RegisterListPref(kGotoFilesPref);
@@ -460,24 +457,11 @@ bool DoesMetadataSupportNewAccountManager(base::Value* metadata) {
   return major_version >= 1000 && minor_version >= 0;
 }
 
-base::Version GetDataVer(PrefService* local_state,
-                         const std::string& user_id_hash) {
-  const base::Value::Dict& data_versions = local_state->GetDict(kDataVerPref);
-  const std::string* data_version_str = data_versions.FindString(user_id_hash);
-
-  if (!data_version_str)
-    return base::Version();
-
-  return base::Version(*data_version_str);
-}
-
 void RecordDataVer(PrefService* local_state,
                    const std::string& user_id_hash,
                    const base::Version& version) {
-  DCHECK(version.IsValid());
-  ScopedDictPrefUpdate update(local_state, kDataVerPref);
-  base::Value::Dict& dict = update.Get();
-  dict.Set(user_id_hash, version.GetString());
+  ash::standalone_browser::migrator_util::RecordDataVer(local_state,
+                                                        user_id_hash, version);
 }
 
 base::Version GetRootfsLacrosVersionMayBlock(

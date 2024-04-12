@@ -85,6 +85,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
@@ -1121,9 +1122,9 @@ void BrowserManager::OnUserProfileCreated(const user_manager::User& user) {
   }
 
   // Record data version for primary user profile.
-  crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
-                                       user.username_hash(),
-                                       version_info::GetVersion());
+  ash::standalone_browser::migrator_util::RecordDataVer(
+      g_browser_process->local_state(), user.username_hash(),
+      version_info::GetVersion());
 
   // Check if Lacros is enabled for crash reporting. This must happen after the
   // primary user has been set as priamry user state is used in when evaluating

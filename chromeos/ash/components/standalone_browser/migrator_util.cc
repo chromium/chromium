@@ -19,6 +19,9 @@ namespace {
 
 std::optional<bool> g_profile_migration_completed_for_test;
 
+// Marks the Chrome version at which profile migration was completed.
+constexpr char kDataVerPref[] = "lacros.data_version";
+
 // Local state pref name to keep track of the number of previous migration
 // attempts. It is a dictionary of the form `{<user_id_hash>: <count>}`.
 constexpr char kMigrationAttemptCountPref[] =
@@ -65,6 +68,7 @@ bool IsMigrationCompletedForUserForMode(PrefService* local_state,
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(kDataVerPref);
   registry->RegisterDictionaryPref(kMigrationAttemptCountPref);
   registry->RegisterDictionaryPref(kProfileMigrationCompletedForUserPref);
   registry->RegisterDictionaryPref(kProfileMoveMigrationCompletedForUserPref);
@@ -203,6 +207,27 @@ void ClearProfileMigrationCompletedForUser(PrefService* local_state,
 
 void SetProfileMigrationCompletedForTest(std::optional<bool> is_completed) {
   g_profile_migration_completed_for_test = is_completed;
+}
+
+base::Version GetDataVer(PrefService* local_state,
+                         std::string_view user_id_hash) {
+  const base::Value::Dict& data_versions = local_state->GetDict(kDataVerPref);
+  const std::string* data_version_str = data_versions.FindString(user_id_hash);
+
+  if (!data_version_str) {
+    return base::Version();
+  }
+
+  return base::Version(*data_version_str);
+}
+
+void RecordDataVer(PrefService* local_state,
+                   std::string_view user_id_hash,
+                   const base::Version& version) {
+  DCHECK(version.IsValid());
+  ScopedDictPrefUpdate update(local_state, kDataVerPref);
+  base::Value::Dict& dict = update.Get();
+  dict.Set(user_id_hash, version.GetString());
 }
 
 }  // namespace ash::standalone_browser::migrator_util

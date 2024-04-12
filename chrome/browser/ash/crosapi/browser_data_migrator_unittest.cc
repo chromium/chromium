@@ -115,7 +115,8 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
           &pref_service_, user_id_hash),
       0);
   // Data version should be updated to the current version after a migration.
-  EXPECT_EQ(crosapi::browser_util::GetDataVer(&pref_service_, user_id_hash),
+  EXPECT_EQ(ash::standalone_browser::migrator_util::GetDataVer(&pref_service_,
+                                                               user_id_hash),
             version_info::GetVersion());
 }
 
@@ -163,7 +164,8 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
       1);
   // Even if migration is cancelled, lacros data dir is cleared and thus data
   // version should be updated.
-  EXPECT_EQ(crosapi::browser_util::GetDataVer(&pref_service_, user_id_hash),
+  EXPECT_EQ(ash::standalone_browser::migrator_util::GetDataVer(&pref_service_,
+                                                               user_id_hash),
             version_info::GetVersion());
 }
 
