@@ -20,7 +20,14 @@ class PinOptionsButton : public views::MdTextButtonWithDownArrow,
   METADATA_HEADER(PinOptionsButton, views::MdTextButtonWithDownArrow)
 
  public:
+  enum CommandId {
+    CHOOSE_SIX_DIGIT_PIN = 0,
+    CHOOSE_ARBITRARY_PIN,
+    COMMAND_ID_COUNT,
+  };
+
   PinOptionsButton(const std::u16string& label,
+                   CommandId checked_command_id,
                    base::RepeatingCallback<void(bool)> callback);
   PinOptionsButton(const PinOptionsButton&) = delete;
   PinOptionsButton& operator=(const PinOptionsButton&) = delete;

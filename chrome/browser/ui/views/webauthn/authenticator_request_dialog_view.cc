@@ -123,8 +123,13 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
             base::Unretained(this)),
         u"Forgot PIN (UNTRANSLATED)"));
   } else if (sheet_->model()->IsGPMPinOptionsButtonVisible()) {
+    PinOptionsButton::CommandId checked_command_id =
+        model_->step() ==
+                AuthenticatorRequestDialogModel::Step::kGPMCreateArbitraryPin
+            ? PinOptionsButton::CommandId::CHOOSE_ARBITRARY_PIN
+            : PinOptionsButton::CommandId::CHOOSE_SIX_DIGIT_PIN;
     SetExtraView(std::make_unique<PinOptionsButton>(
-        u"PIN options (UT)",
+        u"PIN options (UT)", checked_command_id,
         base::BindRepeating(&AuthenticatorRequestDialogView::GPMPinOptionChosen,
                             base::Unretained(this))));
   } else {
