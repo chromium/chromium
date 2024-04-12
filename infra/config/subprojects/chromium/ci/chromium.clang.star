@@ -648,6 +648,7 @@ ci.builder(
             "fuchsia",
             "release_builder",
             "clang_tot",
+            "cast_receiver_size_optimized",
         ],
     ),
     console_view_entry = [
@@ -690,6 +691,7 @@ ci.builder(
             "clang_tot",
             "static",
             "arm64_host",
+            "cast_receiver_size_optimized",
         ],
     ),
     console_view_entry = [

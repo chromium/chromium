@@ -1,4 +1,5 @@
 {
+  "args_file": "//build/config/fuchsia/size_optimized_cast_receiver_args.gn",
   "gn_args": {
     "is_clang": true,
     "is_component_build": false,
