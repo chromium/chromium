@@ -585,8 +585,22 @@ def ManualUpdate(args):
     for update in diff.updates:
         old_target_dir = ConvertCrateIdToEpochDir(update.old_crate_id)
         new_target_dir = ConvertCrateIdToEpochDir(update.new_crate_id)
-        if old_target_dir != new_target_dir:  # Skip minor crate updates
+        if old_target_dir == new_target_dir:
+            continue  # Skip minor crate updates
+
+        old_files_count = len(
+            Git("ls-files", "--", old_target_dir).splitlines())
+        new_files_count = len(
+            Git("ls-files", "--", new_target_dir).splitlines())
+        if old_files_count == new_files_count:
             Git("rm", "-r", "--force", "--", old_target_dir)
+        elif old_files_count > new_files_count:
+            print(f"WARNING: not deleting {old_target_dir} "\
+                   "because it contains extra files")
+        else:
+            print(
+                f"WARNING: {old_target_dir} unexpectedly has less files "\
+                f"than {new_target_dir}")
     GitCommit(args, "Removing //third_party/rust/.../<old_epoch>")
 
     # Fix up the target names
