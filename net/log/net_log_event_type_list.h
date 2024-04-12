@@ -3134,6 +3134,18 @@ EVENT_TYPE(CERTIFICATE_DATABASE_CLIENT_CERT_STORE_CHANGED)
 // }
 EVENT_TYPE(CLEAR_CACHED_CLIENT_CERT)
 
+// This event is logged when a request to conditionally clear the cached client
+// certificate matching a given certificate has been received. It contains the
+// following parameters:
+// {
+//    "hosts": <A list of serialized scheme/host/port which had a matching
+//             cached client certificate.>,
+//    "certificates": <A list of PEM encoded certificates, the first one
+//                    being the client certificate being matched and the
+//                    remaining being its certificate chain.>,
+// }
+EVENT_TYPE(CLEAR_MATCHING_CACHED_CLIENT_CERT)
+
 // ------------------------------------------------------------------------
 // Exponential back-off throttling events
 // ------------------------------------------------------------------------

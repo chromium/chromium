@@ -98,6 +98,11 @@ class ProfileNetworkContextService
       const net::HostPortPair& host,
       const scoped_refptr<net::X509Certificate>& certificate);
 
+  // Flushes a cached client certificate preference if |certificate| matches
+  // the cached certificate.
+  void FlushMatchingCachedClientCert(
+      const scoped_refptr<net::X509Certificate>& certificate);
+
   // Flushes all pending proxy configuration changes.
   void FlushProxyConfigMonitorForTesting();
 

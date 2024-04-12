@@ -3054,6 +3054,17 @@ void NetworkContext::FlushCachedClientCertIfNeeded(
   }
 }
 
+void NetworkContext::FlushMatchingCachedClientCert(
+    const scoped_refptr<net::X509Certificate>& certificate) {
+  net::HttpNetworkSession* http_session =
+      url_request_context_->http_transaction_factory()->GetSession();
+  DCHECK(http_session);
+  if (http_session->ssl_client_context()) {
+    http_session->ssl_client_context()->ClearMatchingClientCertificate(
+        certificate);
+  }
+}
+
 void NetworkContext::SetCookieDeprecationLabel(
     const std::optional<std::string>& label) {
   CHECK(url_request_context_);
