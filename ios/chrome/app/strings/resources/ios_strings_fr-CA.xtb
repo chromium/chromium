@@ -113,7 +113,6 @@
 <translation id="1580783302095112590">Courriel envoyé.</translation>
 <translation id="1582732959743469162">Cette opération entraînera l'arrêt de la progression de votre téléchargement en cours.</translation>
 <translation id="158591023028013564">{count,plural, =1{Page ajoutée à votre Liste de lecture}one{{count} page ajoutée à votre Liste de lecture}other{{count} pages ajoutées à votre Liste de lecture}}</translation>
-<translation id="1587629076612412684">Personnaliser les services</translation>
 <translation id="1594034544529347967">Début</translation>
 <translation id="160275202205869636">Activée : utilisez et enregistrez des données dans votre compte Google. Désactivée : les données sont enregistrées uniquement sur cet appareil.</translation>
 <translation id="1605405588277479165">Désactivée : Option non recommandée</translation>
@@ -200,7 +199,6 @@
 <translation id="20485545164632846">nouvel élément</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> comptes utilisant le même mot de passe</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} mode de paiement enregistré proposé en haut du clavier.}one{{count} mode de paiement enregistré proposé en haut du clavier.}other{{count} modes de paiement enregistrés proposés en haut du clavier.}}</translation>
-<translation id="2055515971416882518">Ouvrez « Paramètres ».</translation>
 <translation id="2059166748188874810">Municipalité</translation>
 <translation id="2062410130322589403">Un guide de vos choix en matière de confidentialité</translation>
 <translation id="20638360198452347">Sélecteur de type d'unité</translation>
@@ -551,7 +549,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3861486700625780712">Ne plus suivre</translation>
 <translation id="3861908220442487587">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, transférez-la vers votre compte Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Envoyer à vos appareils</translation>
-<translation id="3875783148670536197">Afficher la marche à suivre</translation>
 <translation id="3888863481921783344">Cela sera utilisé pour vous montrer les invités potentiels à votre événement.</translation>
 <translation id="3891414008432200754">Prix</translation>
 <translation id="3892144330757387737">Vous trouverez votre historique ici</translation>
@@ -1033,6 +1030,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="633809752005859102">Une erreur s'est produite. Nous examinerons ce point.</translation>
 <translation id="6339793034470834130">Pour utiliser l'inspecteur Web, connectez-vous à Safari sur votre ordinateur à l'aide d'un câble et accédez à votre iPhone à partir du menu Développer. Vous pouvez activer le menu de développement dans la section Avancé des paramètres de Safari sur votre ordinateur.</translation>
 <translation id="6340285871011301182">La traduction partielle n'est pas offerte.</translation>
+<translation id="6340526405444716530">Personnalisation</translation>
 <translation id="6342069812937806050">À l'instant</translation>
 <translation id="6344783595350022745">Effacer le texte</translation>
 <translation id="6346549652287021269">Commencer un nouveau téléchargement?</translation>
@@ -1177,7 +1175,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6979158407327259162">Google Disque</translation>
 <translation id="6983306615164277634">Vous pouvez également maintenir votre doigt sur la barre d'adresse pour modifier la position.</translation>
 <translation id="6988572888918530647">Gérer votre compte Google</translation>
-<translation id="6989674195860388998">Changer dans les paramètres…</translation>
 <translation id="6998989275928107238">À</translation>
 <translation id="699954956411469731">Notifications pour appareil mobile</translation>
 <translation id="699985840472413751">Fermer le téléchargement</translation>
@@ -1600,7 +1597,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9106655997975673326">De « <ph name="SOURCE_DEVICE" /> »</translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>
 <translation id="9109699888944026290">{count,plural, =1{Nouveau mot de passe pour ce site}one{Nouveau mot de passe pour ce site}other{Nouveaux mots de passe pour ce site}}</translation>
-<translation id="9110489518258031250">Contrôlez la manière dont votre historique de navigation synchronisé peut être utilisé pour personnaliser d'autres services Google</translation>
 <translation id="9120217828624527905">Passer à la traduction de la page complète</translation>
 <translation id="9124387962554796433">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google.</translation>
 <translation id="9137526406337347448">Services Google</translation>

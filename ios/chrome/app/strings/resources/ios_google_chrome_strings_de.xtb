@@ -19,7 +19,6 @@
 <translation id="1436059927646026729">Aktuellen Tab in Chrome öffnen</translation>
 <translation id="1449241544691504574">Lesezeichen in Chrome hinzufügen</translation>
 <translation id="1462727070346936664">Wenn du Chrome optimal nutzen möchtest, melde dich an.</translation>
-<translation id="1462833127986525564">Wenn du Chrome und andere Google-Dienste verknüpfst, können sie Daten untereinander austauschen, um deine Nutzung zu personalisieren</translation>
 <translation id="1491435845014430217">Aktiviere die Option „Inkognitotabs sperren, wenn Chrome geschlossen wird“.</translation>
 <translation id="1493827051843127077">Du kannst Chrome als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen deinen Geräten zu synchronisieren</translation>
 <translation id="1504372625950710826">Chrome konnte nicht nach Updates suchen. Prüfe deine Internetverbindung.</translation>
@@ -43,7 +42,6 @@ Wichtige Hinweise:
 <translation id="1790080846677398234">Fügt die eingegebenen URLs zu deinen Lesezeichen in Chrome hinzu.</translation>
 <translation id="1799920918471566157">Chrome-Tipps</translation>
 <translation id="1830634592642484976">Diese Adresse ist derzeit in Chrome gespeichert. Wenn du sie in allen Google-Produkten verwenden möchtest, speichere sie in deinem Google-Konto (<ph name="USER_EMAIL" />).</translation>
-<translation id="1843217788865538014">Automatisch Chrome verwenden, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="1910975740091000991">Chrome für iOS</translation>
 <translation id="1917964099031477364">Dieses Konto und alle nicht gespeicherten Daten werden aus Chrome und anderen Google Apps auf diesem Gerät entfernt.</translation>
 <translation id="1965935827552890526">Du kannst zu deinem offenen Chrome-Fenster zurückkehren, um dein vorherige Aktion abzuschließen.</translation>
@@ -123,7 +121,6 @@ Wichtige Hinweise:
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4251174643044751591">Dadurch wird die Seite mit den Einstellungen für Zahlungsmethoden in Chrome geöffnet.</translation>
 <translation id="4453284704333523777">Chrome-Einstellungen verwalten</translation>
-<translation id="4508370294876102450">Chrome über jede App öffnen</translation>
 <translation id="4523886039239821078">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstalliere:</translation>
 <translation id="4633328489441962921">Chrome kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4636900170638246267">Melde dich bei dieser Website und in Chrome an.</translation>
@@ -134,7 +131,6 @@ Wichtige Hinweise:
         Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="484033449593719797">Wird von Chrome Beta nicht unterstützt</translation>
 <translation id="4840404732697892756">Der Google Passwortmanager kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
-<translation id="4856636171409137183">Für eine optimale Personalisierung kannst du Chrome in <ph name="FEATURE_NAME_1" /> und <ph name="FEATURE_NAME_2" /> einbinden</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome kann dir dabei helfen, dieses Paket auf der Seite „Neuer Tab“ zu verfolgen.}other{Chrome kann dir dabei helfen, diese Pakete auf der Seite „Neuer Tab“ zu verfolgen.}}</translation>
 <translation id="4903674399067644695">Auf dieser Karte findest du Vorschläge, wie du Chrome optimal nutzen kannst.</translation>
 <translation id="49200511069271369">Deine Organisation, <ph name="DOMAIN" />, verwaltet dieses Konto und die Nutzung von Chrome. Dein Administrator kann einzelne Funktionen einrichten oder einschränken.</translation>
@@ -177,7 +173,6 @@ Wichtige Hinweise:
 <translation id="6110625574506755980">Einige Chrome-Funktionen sind dann nicht mehr verfügbar.</translation>
 <translation id="6132149203299792222">Melde dich mit deinem Google-Konto an, um z. B. deine Passwörter und Lesezeichen zu synchronisieren.</translation>
 <translation id="6177442314419606057">Suche in Chrome</translation>
-<translation id="6181930887571472871">Zu Chrome wechseln</translation>
 <translation id="6238746320622508509">Erlaube Chrome, deine Inkognitotabs zu sperren.</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
 <translation id="6272822675004864999">Wenn du Benachrichtigungen von Chrome erhalten möchtest, aktiviere Benachrichtigungen in deinen iOS-Einstellungen.</translation>
@@ -205,7 +200,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 
 Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet werden, findest du in den <ph name="BEGIN_LINK" />Google-Diensten<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Sprachsuche in Chrome</translation>
-<translation id="6964931465519938134">Du kannst jetzt Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="6975725306479268850">Chrome für Autofill auswählen</translation>
 <translation id="7004159181872656283">Bilder in Chromium suchen.</translation>
 <translation id="7056826488869329999">Dadurch wird der Sicherheitscheck in Chrome geöffnet und ausgeführt.</translation>
@@ -231,7 +225,6 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7466693328838535498">Gib „Chrome“ in das Feld „Such-Widget“ ein</translation>
 <translation id="746684838091935575">3. Wähle Chrome aus</translation>
 <translation id="7492574581995589075">Deine Organisation hat die Möglichkeit deaktiviert, Chrome-Daten zu nutzen und in deinem Google-Konto zu speichern. Neue Lesezeichen, Passwörter und weitere Informationen werden nur auf diesem Gerät gespeichert.</translation>
-<translation id="7501046334262221972">Wenn du Chrome als deinen Standardbrowser festlegen möchtest, öffne die Einstellungen. Tippe dort auf „Standard-Browser-App“ und wähle Chrome aus.</translation>
 <translation id="756809126120519699">Gelöschte Chrome-Daten</translation>
 <translation id="7581063337314642333">Tab-Raster in Chrome aufrufen</translation>
 <translation id="7662994914830945754">Melde dich an und aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
@@ -244,7 +237,6 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7792140019572081272">Chrome trägt mit Face ID dazu bei, deine sensiblen Daten zu schützen.</translation>
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
 <translation id="7897703007638178753">Zuletzt geöffnete Chrome-Tabs ansehen</translation>
-<translation id="7925119591961387184">Wähle „Chrome“ aus.</translation>
 <translation id="7933491483529363150">Aktuellen Tab in Chrome öffnen.</translation>
 <translation id="7948283758957877064">Jetzt neu bei Chrome</translation>
 <translation id="8006014511203279255">Öffne Links immer in Chrome, wenn du sie in Messages oder anderen Apps antippst.</translation>
@@ -276,7 +268,6 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">Du kannst jetzt Chrome jederzeit nutzen, wenn du surfst oder auf Links in Nachrichten, Dokumenten und anderen Apps tippst.</translation>
 <translation id="8577978202917232774">Die Vorschläge basieren auf deinen Browseraktivitäten auf deinen anderen Geräten. Melde dich auf allen deinen Geräten in Chrome an, um Vorschläge zu erhalten.</translation>
-<translation id="8587647598504233556">Tippe auf „Chrome“ und dann auf „Standard-Browser-App“.</translation>
 <translation id="8603022514504485810">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Chrome optimal nutzen</translation>
 <translation id="8736550665979974340">Sicherer surfen mit Google Chrome</translation>

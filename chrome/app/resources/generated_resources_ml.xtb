@@ -973,6 +973,7 @@
 <translation id="1720318856472900922">TLS WWW സെര്‍‌വര്‍‌ പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />-ലൂടെ ചിത്രം തിരയൂ</translation>
 <translation id="1722460139690167654">നിങ്ങളുടെ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത്<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> ആണ്</translation>
+<translation id="1723166841621737307">നിങ്ങൾക്ക് അനുയോജ്യമായ രീതിയിൽ പ്രവർത്തിക്കാൻ Chrome-നെ എങ്ങനെയാണ് ഡാറ്റ സഹായിക്കുന്നത്?</translation>
 <translation id="1723824996674794290">&amp;പുതിയ വിൻഡോ</translation>
 <translation id="1724801751621173132">ഇൻപുട്ട് മോഡ്</translation>
 <translation id="1725562816265788801">ടാബ് സ്ക്രോൾ ചെയ്യൽ</translation>
@@ -996,6 +997,7 @@
 <translation id="1743970419083351269">ഡൗണ്‍ലോഡ് വിവരങ്ങളുടെ ബാര്‍ അടയ്‌ക്കുക</translation>
 <translation id="1744108098763830590">പശ്ചാത്തല പേജ്</translation>
 <translation id="1745732479023874451">കോൺടാക്‌റ്റുകൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="1746797507422124818">നിങ്ങളുടെ ബ്രൗസിംഗ് സംബന്ധിച്ച ഡാറ്റ</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{ഈ വെബ് ആപ്പിൽ # ഫയലുകൾ തുറന്ന് എഡിറ്റ് ചെയ്യണോ?}}</translation>
 <translation id="1748329107062243374"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്നുള്ള പാസ്‌കീ ഉപയോഗിച്ച് <ph name="WEBSITE" />-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="1748563609363301860">നിങ്ങൾക്ക് ഈ പാസ്‌വേഡ്, നിങ്ങളുടെ Google അക്കൗണ്ടിലോ ഈ ഉപകരണത്തിൽ മാത്രമായോ സംരക്ഷിക്കാം</translation>
@@ -4460,6 +4462,7 @@
 <translation id="4357583358198801992">ടാബ് ഗ്രൂപ്പുകൾ കാണിക്കുക</translation>
 <translation id="4358361163731478742">ആപ്പ് ഭാഷാ സെലക്ഷനെ പിന്തുണയ്ക്കുന്ന ആപ്പുകളൊന്നുമില്ല</translation>
 <translation id="4358643842961018282">നിങ്ങളുടെ ഉപകരണം അപ് ടു ഡേറ്റ് ആണ്</translation>
+<translation id="4358995225307748864">തുറക്കാൻ ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4359408040881008151">ആശ്രയിച്ചിരിക്കുന്ന വിപുലീകരണം (വിപുലീകരണങ്ങൾ) കാരണം ഇൻസ്‌റ്റാൾ ചെയ്തു.</translation>
 <translation id="4359717112757026264">സിറ്റി‌സ്‌കേപ്പ്</translation>
 <translation id="4359809482106103048">ഒറ്റനോട്ടത്തിൽ സുരക്ഷയെ കുറിച്ച്</translation>
@@ -4625,6 +4628,7 @@
 <translation id="4481448477173043917">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്രതീക്ഷിതമായി റീസ്റ്റാർട്ട് ചെയ്തു</translation>
 <translation id="4481467543947557978">സർവീസ് വർക്കർ</translation>
 <translation id="4482990632723642375">ഏറ്റവും അവസാനം അടച്ച ടാബ്</translation>
+<translation id="4485245862007675842">Chrome നിങ്ങൾക്കനുയോജ്യമായി വെബിനെ മാറ്റുന്നു</translation>
 <translation id="4486333480498805415">ലൊക്കേഷൻ കൃത്യത</translation>
 <translation id="4487489714832036847">Chromebooks പരമ്പരാഗത സോഫ്‌റ്റ്‌വെയറിന് പകരം ആപ്പുകൾ ഉപയോഗിക്കുന്നു. ഉൽപ്പാദനക്ഷമത, വിനോദം എന്നിവയ്‌ക്കും മറ്റും ആപ്പുകൾ നേടുക.</translation>
 <translation id="4488257340342212116">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
@@ -6268,6 +6272,7 @@
 <translation id="5793339252089865437">മൊബൈൽ നെറ്റ്‌വർക്ക് ഉപയോഗിച്ച് അ‌പ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്‌താൽ, അത് അധിക നിരക്കുകൾക്കിടയാക്കും.</translation>
 <translation id="5793420564274426163">ജോടിയാക്കൽ സ്ഥിരീകരണം</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> എന്ന ഡെസ്ക്കിൽ <ph name="NUM_BROWSERS" /> ബ്രൗസർ വിൻഡോകൾ തുറന്നിരിക്കുന്നു</translation>
+<translation id="5794086402489402632">ബ്രൗസിംഗും തിരയൽ ചരിത്രവും എങ്ങനെ വ്യത്യാസപ്പെട്ടിരിക്കുന്നു?</translation>
 <translation id="5794414402486823030">എപ്പോഴും സിസ്‌റ്റം വ്യൂവറിൽ തുറക്കുക</translation>
 <translation id="5794700615121138172">Linux-ൽ നിന്ന് പങ്കിട്ട ഫോൾഡറുകൾ</translation>
 <translation id="5794786537412027208">എല്ലാ Chrome അപ്ലിക്കേഷനുകളിൽ നിന്നും പുറത്തുകടക്കുക</translation>
@@ -8054,6 +8059,7 @@
 <translation id="7196913789568937443">Google ഡ്രൈവിലേക്ക് ബാക്കപ്പ് ചെയ്യുക. എളുപ്പത്തിൽ നിങ്ങളുടെ ഡാറ്റ പുന:സ്ഥാപിക്കുകയോ ഏതുസമയത്തും ഉപകരണം മാറുകയോ ചെയ്യുക. ബാക്കപ്പിൽ ആപ്പ് ഡാറ്റയും ഉൾപ്പെടുന്നു. നിങ്ങളുടെ ബാക്കപ്പുകൾ Google-ലേക്ക് അപ്‌ലോഡ് ചെയ്‌ത്, Google Account പാസ്‌വേഡ് ഉപയോഗിച്ച് എൻക്രിപ്റ്റ് ചെയ്യും. <ph name="BEGIN_LINK1" />കൂടുതലറിയുക<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">നിങ്ങൾ ബ്രൗസ് ചെയ്യുന്ന എല്ലാ സമയത്തും Google തിരയൽ, Google സ്‌മാർട്‌സ് എന്നിവ നേടുക</translation>
 <translation id="719791532916917144">കീബോഡ് കുറുക്കുവഴികൾ</translation>
+<translation id="7197958763276896180">എന്തുകൊണ്ടാണ് Chrome മൂന്നാം-കക്ഷി കുക്കികൾ അവസാനിപ്പിക്കുന്നത്?</translation>
 <translation id="7198503619164954386">എന്റർപ്രൈസ് എൻറോൾ ചെയ്‌ത ഉപകരണമായിരിക്കണം നിങ്ങൾ ഉപയോഗിക്കുന്നത്</translation>
 <translation id="7199158086730159431">സ&amp;ഹായം നേടുക</translation>
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് കാസ്‌റ്റ് ചെയ്യുന്നത് താൽക്കാലികമായി നിർത്തുക</translation>

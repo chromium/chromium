@@ -185,7 +185,6 @@
 <translation id="1323433172918577554">আরও দেখুন</translation>
 <translation id="132390688737681464">অ্যাড্রেসগুলি পূরণ করে সেভ করুন</translation>
 <translation id="1325412080783393306">কেনাকাটার আরও বিকল্প সার্চ করুন</translation>
-<translation id="1325749054628832887">পছন্দমতো বিজ্ঞাপন দেখানোর জন্য কোনও সাইট যেসব জিনিস ব্যবহার করে, তাদের মধ্যে একটি হল বিজ্ঞাপনের বিষয়। এমনকি বিজ্ঞাপনের বিষয় ছাড়াও, সাইট আপনাকে বিজ্ঞাপন দেখাতে পারবে কিন্তু সেগুলি কম আকর্ষণীয় হতে পারে। <ph name="BEGIN_LINK" />আপনার বিজ্ঞাপন সংক্রান্ত গোপনীয়তা ম্যানেজ করা<ph name="LINK_END" /> সম্পর্কে আরও জানুন।</translation>
 <translation id="1329916999021038454">রিপোর্ট পাঠান</translation>
 <translation id="1330449323196174374">বাঁদিকে গেট ফোল্ড</translation>
 <translation id="1333745675627230582">Chrome ডাইনো গেম খেলুন</translation>
@@ -2970,7 +2969,6 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">টেলিকনফারেন্সিং</translation>
 <translation id="6753269504797312559">নীতি মান</translation>
-<translation id="6753390234084146956">ট্যাব</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> এন্ট্রি মুছুন</translation>
 <translation id="6754547388777247439">সেভিংস অ্যাকাউন্ট</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3684,6 +3682,7 @@
 <translation id="8075588646978457437">সেল্ফ অ্যাডেসিভ পেপার</translation>
 <translation id="8075736640322370409">চটপট Google Sheet তৈরি করুন</translation>
 <translation id="8075898834294118863">'সাইট সেটিংস' বোতাম ম্যানেজ করুন</translation>
+<translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8077669823243888800">এনভেলপ চিনা #৮</translation>
 <translation id="8078006011486731853">{0,plural, =1{গোপনীয় ফাইল আপলোড করবেন?}one{গোপনীয় ফাইল আপলোড করবেন?}other{গোপনীয় ফাইল আপলোড করবেন?}}</translation>
 <translation id="8078141288243656252">ঘূর্ণনের সময় ব্যাখ্যা করা যাবে না</translation>

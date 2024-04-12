@@ -97,7 +97,6 @@
 <translation id="1436784010935106834">அகற்றப்பட்டது</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> ஆப்ஸில் இயங்குகிறது</translation>
 <translation id="1448440926884431741">நீங்கள் கண்காணிக்கும் தயாரிப்புகளை Bookmarksஸில் ஒழுங்கமைக்கலாம்</translation>
-<translation id="1462833127986525564">உங்கள் அனுபவத்தைப் பிரத்தியேகமாக்க, Chrome மற்றும் பிற Google சேவைகள் தங்களுக்குள் தரவைப் பகிர்ந்துகொள்ள வேண்டும் என்றால் அவற்றை இணைக்கவும்</translation>
 <translation id="1466383950273130737">Chromeமிற்கான மொழியைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="1477626028522505441">சேவையகச் சிக்கல்களால் <ph name="FILE_NAME" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
 <translation id="148482509007564431">புக்மார்க் சேமிப்புச் செயல்முறை</translation>
@@ -746,6 +745,7 @@
 <translation id="4910889077668685004">கட்டணம் செலுத்துவதற்கான ஆப்ஸ்</translation>
 <translation id="4912413785358399818">பக்கத்தை நகர்த்து</translation>
 <translation id="4913169188695071480">புதுப்பிக்காதே</translation>
+<translation id="4918086044614829423">ஏற்கிறேன்</translation>
 <translation id="492284538114688557">விலைச் சரிவு கண்டறியப்பட்டது</translation>
 <translation id="4925120120285606924">ஸ்கிரீன்ஷாட் <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">உங்கள் கடவுச்சொற்கள் எழுத்துவடிவ ஃபைலாக ஏற்றப்பட்டுப் பதிவிறக்கப்படும். இலக்கு ஃபோல்டரை அணுகக்கூடிய எந்தவொரு நபரும் ஆப்ஸும் இவற்றைப் பார்க்க முடியும்.</translation>
@@ -1012,6 +1012,7 @@
 <translation id="6324997754869598316">(பிழை <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> வழியாகப் பகிர்</translation>
 <translation id="6337234675334993532">என்க்ரிப்ஷன்</translation>
+<translation id="6340526405444716530">பிரத்தியேகமாக்குதல்</translation>
 <translation id="6341580099087024258">கோப்புகளை எங்கே சேமிக்க வேண்டும் என்று கேள்</translation>
 <translation id="6342069812937806050">இப்போது</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரி}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரிகள்}}</translation>
@@ -1174,6 +1175,7 @@
 <translation id="7029809446516969842">கடவுச்சொற்கள்</translation>
 <translation id="7030304022046916278">சரிபார்ப்புக்காக URLகளைப் பாதுகாப்பு உலாவலுக்கு அனுப்பும்</translation>
 <translation id="7035701931849773472">பிற விருப்பங்கள்</translation>
+<translation id="7053983685419859001">தடு</translation>
 <translation id="7054588988317389591">பட விளக்கங்களைப் பெற வேண்டுமா?</translation>
 <translation id="7055152154916055070">திசைதிருப்புதல் தடுக்கப்பட்டது:</translation>
 <translation id="7057969023583258980">Chrome செயல்பாடுகளை முழுமையாகக் காட்டு</translation>
@@ -1205,7 +1207,6 @@
 <translation id="7205672015775254816">இளம் வயதினருக்கு Google வழங்கும் உள்ளடக்கம் - முடக்கப்பட்டுள்ளது</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> பக்கங்களைப் புதிய பின்னணிப் பக்கங்களாக மீட்டெடுக்கும்.</translation>
 <translation id="7217781228893594884">Chromeமை விட்டு வெளியேறும்போது மறைநிலைப் பக்கங்கள் பூட்டப்படும்</translation>
-<translation id="722055596168483966">Google சேவைகளைப் பிரத்தியேகமாக்கு</translation>
 <translation id="7221869452894271364">இந்தப் பக்கத்தை மீண்டும் ஏற்று</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ஒரு பதிவிறக்கம் நிலுவையில் உள்ளது}other{# பதிவிறக்கங்கள் நிலுவையில் உள்ளன}}</translation>
 <translation id="72415438529550637">கடவுச்சொல் பரிந்துரை மூடப்பட்டது.</translation>
@@ -1475,7 +1476,6 @@
 <translation id="84594714173170813">உங்கள் Google கணக்கில் தொடர்ந்து Chrome தரவைப் பயன்படுத்தவும்</translation>
 <translation id="8460448946170646641">முக்கியமான தனியுரிமை மற்றும் பாதுகாப்புக் கட்டுப்பாடுகளைச் சரிபாருங்கள்</translation>
 <translation id="8473863474539038330">முகவரிகள் மற்றும் பல</translation>
-<translation id="8478751349603791277">பிற Google சேவைகளைப் பிரத்தியேகமாக்க உங்கள் ஒத்திசைக்கப்பட்ட பதிவுகள் எப்படிப் பயன்படுத்தப்பட வேண்டும் என்பதைக் கட்டுப்படுத்துங்கள்</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">வரலாறு பக்கத்தைத் திறக்கும்</translation>
 <translation id="8493948351860045254">இடத்தைக் காலியாக்கு</translation>

@@ -975,6 +975,7 @@
 <translation id="1720318856472900922">Аутентификация сервера TLS WWW</translation>
 <translation id="172123215662733643">Найти через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654">Ваше <ph name="BEGIN_LINK" />устройство <ph name="DEVICE_TYPE" /> находится под управлением<ph name="END_LINK" /> домена <ph name="ENROLLMENT_DOMAIN" />.</translation>
+<translation id="1723166841621737307">Как данные помогают делать Chrome удобнее для вас?</translation>
 <translation id="1723824996674794290">&amp;Новое окно</translation>
 <translation id="1724801751621173132">Режим ввода</translation>
 <translation id="1725562816265788801">Прокрутка вкладок</translation>
@@ -998,6 +999,7 @@
 <translation id="1743970419083351269">Закрыть панель загрузок</translation>
 <translation id="1744108098763830590">фоновая страница</translation>
 <translation id="1745732479023874451">Управление контактами</translation>
+<translation id="1746797507422124818">Данные о ваших действиях в интернете</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Использовать это веб-приложение для просмотра и редактирования # файла?}few{Использовать это веб-приложение для просмотра и редактирования # файлов?}many{Использовать это веб-приложение для просмотра и редактирования # файлов?}other{Использовать это веб-приложение для просмотра и редактирования # файла?}}</translation>
 <translation id="1748329107062243374">Используйте ключ доступа с устройства "<ph name="DEVICE_NAME" />" для входа на сайт <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Вы можете сохранить пароль в аккаунте Google или только на этом устройстве.</translation>
@@ -4459,6 +4461,7 @@
 <translation id="4357583358198801992">Показывать группы вкладок</translation>
 <translation id="4358361163731478742">Нет приложений, которые поддерживают выбор языка.</translation>
 <translation id="4358643842961018282">На устройстве установлена последняя версия</translation>
+<translation id="4358995225307748864">Выберите приложение</translation>
 <translation id="4359408040881008151">Установлено, так как есть зависимые расширения.</translation>
 <translation id="4359717112757026264">Городской пейзаж</translation>
 <translation id="4359809482106103048">Общие сведения о безопасности</translation>
@@ -4624,6 +4627,7 @@
 <translation id="4481448477173043917">Устройство <ph name="DEVICE_TYPE" /> неожиданно перезапустилось</translation>
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4482990632723642375">Недавно закрытая вкладка</translation>
+<translation id="4485245862007675842">Все возможности интернета в Chrome</translation>
 <translation id="4486333480498805415">Точность геолокации</translation>
 <translation id="4487489714832036847">Вместо традиционного ПО на Chromebook устанавливаются приложения, которые откроют вам новые возможности для работы, развлечений и не только.</translation>
 <translation id="4488257340342212116">Разрешить сайтам использовать камеру</translation>
@@ -6264,6 +6268,7 @@
 <translation id="5793339252089865437">Скачивание обновлений по мобильной сети может привести к дополнительным расходам.</translation>
 <translation id="5793420564274426163">Подтвердите подключение</translation>
 <translation id="5794034487966529952">На рабочем столе "<ph name="DESK_TITLE" />" открыто несколько окон браузера (<ph name="NUM_BROWSERS" />)</translation>
+<translation id="5794086402489402632">Чем различаются история браузера и история поиска?</translation>
 <translation id="5794414402486823030">Всегда открывать в программе просмотра по умолчанию</translation>
 <translation id="5794700615121138172">Общие папки Linux</translation>
 <translation id="5794786537412027208">Закрыть все приложения Chrome</translation>
@@ -8055,6 +8060,7 @@
 <translation id="7196913789568937443">Резервное копирование на Google Диск. Позволяет в любой момент восстановить данные (в том числе данные приложений) или перенести их на новое устройство. Резервные копии загружаются в Google и шифруются с помощью пароля вашего аккаунта Google. <ph name="BEGIN_LINK1" />Подробнее…<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Помогите Поиску и другим сервисам Google узнать вас лучше!</translation>
 <translation id="719791532916917144">Сочетания клавиш</translation>
+<translation id="7197958763276896180">Почему Chrome ограничивает использование сторонних файлов cookie?</translation>
 <translation id="7198503619164954386">Ваше устройство должно быть зарегистрировано в корпоративном домене.</translation>
 <translation id="7199158086730159431">&amp;Справка</translation>
 <translation id="7199452998289813782">Приостановить трансляцию на устройство "<ph name="DEVICE_NAME" />"</translation>

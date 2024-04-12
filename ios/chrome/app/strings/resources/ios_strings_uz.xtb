@@ -113,7 +113,6 @@
 <translation id="1580783302095112590">Xat yuborildi.</translation>
 <translation id="1582732959743469162">Joriy yuklanma uchun barcha jarayonlar to‘xtatiladi.</translation>
 <translation id="158591023028013564">{count,plural, =1{Mutolaa roʻyxatingizga sahifa kiritildi}other{Mutolaa roʻyxatingizga {count} ta sahifa kiritildi}}</translation>
-<translation id="1587629076612412684">Moslashtirilgan Google xizmatlari</translation>
 <translation id="1594034544529347967">Boshlanishi</translation>
 <translation id="160275202205869636">Yoniq boʻlsa, maʼlumotlar Google hisobida saqlanadi va ishlatiladi Oʻchiq boʻlsa, maʼlumotlar faqat shu qurilmada saqlanadi.</translation>
 <translation id="1605405588277479165">Oʻchiq - Tavsiya etilmaydi</translation>
@@ -201,7 +200,6 @@
 <translation id="20485545164632846">yangi element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> ta hisob bir xil parolga ega</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} ta saqlangan toʻlov usuli klaviatura ustida chiqadi.}other{{count} ta saqlangan toʻlov usuli klaviatura ustida chiqadi.}}</translation>
-<translation id="2055515971416882518">Sozlamalarni oching.</translation>
 <translation id="2059166748188874810">Munitsipalitet</translation>
 <translation id="2062410130322589403">Maxfiylik sozlamalaringizga oid qoʻllanma</translation>
 <translation id="20638360198452347">Oʻlchov birligi turini tanlash</translation>
@@ -552,7 +550,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3861486700625780712">Kuzatuvni bekor qilish</translation>
 <translation id="3861908220442487587">Bu manzil faqat shu qurilmaga saqlangan. Undan boshqa qurilmalaringizda foydalanish uchun Google hisobingizga (<ph name="USER_EMAIL" />) oʻtkazing</translation>
 <translation id="3863769054730344136">Qurilmalaringizga yuborish</translation>
-<translation id="3875783148670536197">Koʻrsatish</translation>
 <translation id="3888863481921783344">Bu sizga tadbiringizga ehtimoliy takliflarni koʻrsatish uchun ishlatiladi.</translation>
 <translation id="3891414008432200754">Narxi</translation>
 <translation id="3892144330757387737">Brauzer tarixi shu yerda chiqadi</translation>
@@ -1034,6 +1031,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="633809752005859102">Xatolik yuz berdi. Uni bartaraf etishga harakat qilamiz.</translation>
 <translation id="6339793034470834130">Veb inspektordan foydalanish uchun Ishlab chiqish menyusini bosib, kabel orqali iPhonega kompyuterdagi Safari brauzeri orqali ulaning. Ishlab chiqish menyusini kompyuterda Safari sozlamalaridagi Kengaytirilgan boʻlimdan yoqish mumkin.</translation>
 <translation id="6340285871011301182">Parcha tarjimasi mavjud emas.</translation>
+<translation id="6340526405444716530">Personalizatsiya</translation>
 <translation id="6342069812937806050">Hozirgina</translation>
 <translation id="6344783595350022745">Matnni tozalash</translation>
 <translation id="6346549652287021269">Yangi yuklab olish jarayoni boshlansinmi?</translation>
@@ -1178,7 +1176,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Joylashuvini oʻzgartirish uchun manzillar qatorini bosib turing.</translation>
 <translation id="6988572888918530647">Google hisobingizni boshqaring</translation>
-<translation id="6989674195860388998">Sozlamalar orqali almashtirish…</translation>
 <translation id="6998989275928107238">Host</translation>
 <translation id="699954956411469731">Mobil bildirishnomalar</translation>
 <translation id="699985840472413751">Yuklanmani yopish</translation>
@@ -1601,7 +1598,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9106655997975673326">“<ph name="SOURCE_DEVICE" />” qurilmasidan</translation>
 <translation id="9107664647686727385">Oshkor etilgan parollar uchun tekshirish</translation>
 <translation id="9109699888944026290">{count,plural, =1{Bu sayt uchun yangi parol}other{Bu sayt uchun yangi parollar}}</translation>
-<translation id="9110489518258031250">Sinxronlagan brauzer tarixi boshqa Google xizmatlarini moslashtirish uchun qanday ishlatilishini boshqaring</translation>
 <translation id="9120217828624527905">Butun sahifa tarjimasini ochish</translation>
 <translation id="9124387962554796433">Qidiruv va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin.</translation>
 <translation id="9137526406337347448">Google xizmatlari</translation>

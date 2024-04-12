@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">צריך להניח דף נוסף על הסורק</translation>
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="2873483161362553159">ניווט באמצעות הדפדפן</translation>
-<translation id="2873939192640533085">אפשר להזין הנחיה כמו "אני רוצה שזה ישמע עם יותר ביטחון עצמי"</translation>
 <translation id="2874939134665556319">הרצועה הקודמת</translation>
 <translation id="2875812231449496375">כדאי להפעיל את ההגדרה הזו כדי ליהנות מהתוצאות הטובות ביותר עם הטפט הזה. תמיד אפשר להשבית את ההגדרה הזו.</translation>
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
@@ -1199,6 +1198,7 @@
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
 <translation id="7942349550061667556">אדום</translation>
 <translation id="7943235353293548836">‏מרווח keepalive קבוע</translation>
+<translation id="7943516765291457328">‏כדי לסרוק נקודות לשיתוף אינטרנט בקרבת מקום, צריך להפעיל Bluetooth</translation>
 <translation id="7944562637040950644">הפעלה או כיבוי של התאורה האחורית של המקלדת</translation>
 <translation id="7953669802889559161">שיטות קלט</translation>
 <translation id="7955587717700691983">‏מקלדת Bluetooth</translation>
@@ -1328,6 +1328,7 @@
 <translation id="8747900814994928677">אישור השינוי</translation>
 <translation id="8749478549112817787">רקע המצלמה</translation>
 <translation id="8755946156089753497">מגדל</translation>
+<translation id="8756235582947991808">‏איך יוצרים בעזרת AI וכמה דברים שצריך לקחת בחשבון</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏אלבום של Google Photos</translation>
 <translation id="8775713578693478175">‏ה-APN של המודם</translation>

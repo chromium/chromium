@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">Sätt en till sida i skannern</translation>
 <translation id="2872961005593481000">Stäng av</translation>
 <translation id="2873483161362553159">Webbläsarnavigering</translation>
-<translation id="2873939192640533085">Skriv en prompt, till exempel ”låt mer självsäker”</translation>
 <translation id="2874939134665556319">Föregående spår</translation>
 <translation id="2875812231449496375">Aktivera detta för bästa resultat med den här bakgrunden. Du kan inaktivera den här inställningen när som helst.</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> urladdat på <ph name="NUM_SECONDS" /> sekunder.</translation>
@@ -1199,6 +1198,7 @@
 <translation id="7936303884198020182">Inga namnservrar hittades</translation>
 <translation id="7942349550061667556">Röd</translation>
 <translation id="7943235353293548836">Beständigt keepalive-intervall</translation>
+<translation id="7943516765291457328">Aktivera Bluetooth om du vill söka efter surfzoner i närheten</translation>
 <translation id="7944562637040950644">aktivera och inaktivera tangentbordets bakgrundsbelysning</translation>
 <translation id="7953669802889559161">Inmatningar</translation>
 <translation id="7955587717700691983">Bluetooth-tangentbord</translation>
@@ -1328,6 +1328,7 @@
 <translation id="8747900814994928677">Bekräfta ändring</translation>
 <translation id="8749478549112817787">Kamerabakgrund</translation>
 <translation id="8755946156089753497">torn</translation>
+<translation id="8756235582947991808">Hur du skapar med AI och några saker att tänka på</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album i Google Foto</translation>
 <translation id="8775713578693478175">Modem-APN</translation>

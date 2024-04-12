@@ -976,6 +976,7 @@
 <translation id="1720318856472900922">‏مصادقة TLS (بروتوكول أمان طبقة النقل) للخادم WWW</translation>
 <translation id="172123215662733643">ابحث في الصور عبر "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="1722460139690167654">تتم <ph name="BEGIN_LINK" />إدارة <ph name="DEVICE_TYPE" /><ph name="END_LINK" /> من خلال <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="1723166841621737307">‏أهمية البيانات في تحسين أداء Chrome ليلائم احتياجاتك بشكل أفضل</translation>
 <translation id="1723824996674794290">نافذة &amp;جديدة</translation>
 <translation id="1724801751621173132">وضع الإدخال</translation>
 <translation id="1725562816265788801">الانتقال بين علامات التبويب</translation>
@@ -999,6 +1000,7 @@
 <translation id="1743970419083351269">إغلاق شريط عمليات التنزيل</translation>
 <translation id="1744108098763830590">صفحة الخلفية</translation>
 <translation id="1745732479023874451">إدارة جهات الاتصال</translation>
+<translation id="1746797507422124818">بياناتك أثناء التصفح</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}zero{هل تريد فتح # ملف وتعديله في تطبيق الويب هذا؟}two{هل تريد فتح ملفَين وتعديلهما في تطبيق الويب هذا؟}few{هل تريد فتح # ملفات وتعديلها في تطبيق الويب هذا؟}many{هل تريد فتح # ملفًا وتعديلها في تطبيق الويب هذا؟}other{هل تريد فتح # ملف وتعديلها في تطبيق الويب هذا؟}}</translation>
 <translation id="1748329107062243374">استخدام مفتاح مرور من جهاز <ph name="DEVICE_NAME" /> لتسجيل الدخول إلى <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">‏يمكنك حفظ كلمة المرور هذه في حسابك على Google أو على هذا الجهاز فقط.</translation>
@@ -4460,6 +4462,7 @@
 <translation id="4357583358198801992">عرض مجموعات علامات التبويب</translation>
 <translation id="4358361163731478742">ما مِن تطبيقات تتيح اختيار اللغة.</translation>
 <translation id="4358643842961018282">جهازك مُحدَّث.</translation>
+<translation id="4358995225307748864">اختر تطبيقًا لفتح صفحة الويب</translation>
 <translation id="4359408040881008151">تم التثبيت بسبب الإضافة (الإضافات) التابعة.</translation>
 <translation id="4359717112757026264">مناظر المدن</translation>
 <translation id="4359809482106103048">نظرة سريعة على الأمان</translation>
@@ -4625,6 +4628,7 @@
 <translation id="4481448477173043917">تمت إعادة تشغيل <ph name="DEVICE_TYPE" /> بشكل غير متوقّع</translation>
 <translation id="4481467543947557978">مشغّل الخدمات</translation>
 <translation id="4482990632723642375">آخر علامة تبويب تم إغلاقها</translation>
+<translation id="4485245862007675842">‏دور Chrome في جعل الويب أكثر ملاءمةً لاحتياجاتك</translation>
 <translation id="4486333480498805415">دقة الموقع الجغرافي</translation>
 <translation id="4487489714832036847">‏تستخدم أجهزة Chromebook تطبيقات بدلاً من برامج تقليدية. يمكنك الحصول على تطبيقات لزيادة الإنتاجية والترفيه والمزيد.</translation>
 <translation id="4488257340342212116">المواقع الإلكترونية التي يُسمح لها باستخدام الكاميرا</translation>
@@ -6265,6 +6269,7 @@
 <translation id="5793339252089865437">قد يؤدي تنزيل التحديث عبر شبكة الجوّال إلى تحصيل رسوم زائدة منك.</translation>
 <translation id="5793420564274426163">تأكيد الإقران</translation>
 <translation id="5794034487966529952">عدد نوافذ المتصفّح المفتوحة على سطح مكتب <ph name="DESK_TITLE" />: <ph name="NUM_BROWSERS" /></translation>
+<translation id="5794086402489402632">أوجه الاختلاف بين سجلّ التصفح وسجلّ البحث</translation>
 <translation id="5794414402486823030">افتح دائمًا باستخدام عرض النظام</translation>
 <translation id="5794700615121138172">‏مجلدات نظام التشغيل Linux التي تمت مشاركتها</translation>
 <translation id="5794786537412027208">‏إنهاء جميع تطبيقات Chrome</translation>
@@ -8059,6 +8064,7 @@
 <translation id="7196913789568937443">‏يمكنك الاحتفاظ بنسخة احتياطية في Google Drive. وبإمكانك استعادة بياناتك أو تبديل جهازك بسهولة في أي وقت، علمًا بأن نسختك الاحتياطية تتضمن بيانات التطبيق. ويتم تحميل النُسخ الاحتياطية إلى Google وتشفيرها باستخدام كلمة مرور حسابك على Google. <ph name="BEGIN_LINK1" />مزيد من المعلومات<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">‏يمكنك الحصول على "بحث Google" وميزات Google الذكية في كل مرة تتصفَّح فيها.</translation>
 <translation id="719791532916917144">اختصار لوحة المفاتيح</translation>
+<translation id="7197958763276896180">‏سبب إيقاف Chrome استخدام ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="7198503619164954386">يجب أن تستخدم جهازًا تديره مؤسسة.</translation>
 <translation id="7199158086730159431">الحصول على مساعدة</translation>
 <translation id="7199452998289813782">إيقاف البث مؤقتًا على "<ph name="DEVICE_NAME" />"</translation>

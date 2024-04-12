@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1533488253335887280">Egyszerűen és biztonságosan hozzáférhet a jelszavaihoz a kezdőképernyőről.</translation>
+<translation id="1590550141045148182">Nyissa meg vagy zárja be a lapokat tetszés szerint.</translation>
+<translation id="2036020471903443693">A lap a képernyő aljára lesz kitűzve.</translation>
+<translation id="2984477737332162971">Lépjen a megnyitott lapjaihoz.</translation>
+<translation id="3595188309555410362">Ha vannak olyan lapok, amelyeket egy ideje nem használt, akkor azok mostantól az Inaktív lapok szakaszba kerülnek.</translation>
+<translation id="3941788408634637840">Koppintson az Inaktív lapok lehetőségre (ha rendelkezésre áll).</translation>
+<translation id="3942215673032261195">Kitűzheti kedvenc webhelyeit, hogy később könnyen hozzájuk férhessen.</translation>
+<translation id="4196935312151003338">Válassza a „Lap rögzítése” elemet a menüben.</translation>
+<translation id="4497631794981705027">Tartsa lenyomva ujját a kezdőképernyőn.</translation>
+<translation id="463279609093232564">A képernyő bal felső sarkában koppintson a + ikonra.</translation>
+<translation id="5604467549230434026">Írja be a modulok keresőmezőjébe azt, hogy Chrome.</translation>
+<translation id="5639067007765618198">Google Jelszókezelő modul</translation>
 <translation id="5922999516621365983">Húzza ide a lapot a kitűzéshez.</translation>
 <translation id="5979837087407522202">Jelszavak keresése</translation>
+<translation id="6109989197058801417">Tartsa lenyomva a kitűzni kívánt lapot.</translation>
+<translation id="639614003069108254">Válassza ki a Jelszókezelőt, majd koppintson a Modul hozzáadása lehetőségre.</translation>
+<translation id="6905308710260460250">Rögzített lapok</translation>
+<translation id="720206380500582061">Az Inaktív lapok beállításait a Beállítások &gt; Lapok menüpontban kezelheti.</translation>
 <translation id="8077675488769462025">Inaktív lapok</translation>
+<translation id="8602952180069641300">Görgessen fel a lapok tetejére.</translation>
+<translation id="979990360845983227">Legalább 14 napja nem használt lapok</translation>
 </translationbundle>

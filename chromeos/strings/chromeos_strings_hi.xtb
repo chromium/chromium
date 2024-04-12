@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">स्कैनर पर कोई अन्य पेज रखें</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
 <translation id="2873483161362553159">ब्राउज़र नेविगेशन</translation>
-<translation id="2873939192640533085">"आत्मविश्वास के साथ कैसे बात करें" जैसा कोई प्रॉम्प्ट डालें</translation>
 <translation id="2874939134665556319">पिछला ट्रैक</translation>
 <translation id="2875812231449496375">इस वॉलपेपर से जुड़े बेहतरीन नतीजे पाने के लिए, इसे चालू करें. इस सेटिंग को कभी भी बंद किया जा सकता है.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> डिस्चार्ज हुई.</translation>
@@ -1197,6 +1196,7 @@
 <translation id="7936303884198020182">कोई भी नाम सर्वर नहीं मिला</translation>
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7943235353293548836">परसिस्टेंट कीपअलाइव इंटरवल</translation>
+<translation id="7943516765291457328">आस-पास मौजूद हॉटस्पॉट स्कैन करने के लिए ब्लूटूथ चालू करें</translation>
 <translation id="7944562637040950644">कीबोर्ड बैकलाइट का बटन टॉगल करें</translation>
 <translation id="7953669802889559161">इनपुट</translation>
 <translation id="7955587717700691983">ब्लूटूथ से कनेक्ट होने वाले कीबोर्ड</translation>
@@ -1326,6 +1326,7 @@
 <translation id="8747900814994928677">बदलाव की पुष्टि करें</translation>
 <translation id="8749478549112817787">कैमरे का बैकग्राउंड</translation>
 <translation id="8755946156089753497">टावर</translation>
+<translation id="8756235582947991808">एआई की मदद से इमेज बनाने का तरीका और ध्यान में रखने वाली कुछ बातें</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos की एल्बम</translation>
 <translation id="8775713578693478175">मॉडम एपीएन</translation>

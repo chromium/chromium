@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C 기기(후면 포트)</translation>
 <translation id="1869497990620230175">빠른 파일</translation>
 <translation id="1871023081802165724">미디어 재생</translation>
+<translation id="1871915835366697861">이 게임에서 사용할 수 없음</translation>
 <translation id="1879018240766558464">시크릿 창은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
 <translation id="1882814835921407042">모바일 네트워크 없음</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />에 미러링</translation>
@@ -1791,6 +1792,7 @@
 <translation id="79341161159229895">계정 관리자: <ph name="FIRST_PARENT_EMAIL" /> 및 <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">클립보드를 보려면 <ph name="SHORTCUT_KEY_NAME" /> + V 키를 누르세요. 최근 복사한 5개 항목이 클립보드에 저장되어 있습니다.</translation>
 <translation id="7942349550061667556">빨간색</translation>
+<translation id="7943516765291457328">블루투스를 사용 설정하여 주변 핫스팟을 검색하세요.</translation>
 <translation id="7944023924886109030">오늘의 모든 일정 보기</translation>
 <translation id="7945357288295809525">접근성 설정 표시, "<ph name="ENABLED_FEATURES" />" 사용 설정됨</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />에서 <ph name="DEVICE_NAME" /> 사용할 권한 요청함</translation>

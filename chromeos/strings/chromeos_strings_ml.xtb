@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">സ്‌കാനറിൽ മറ്റൊരു പേജ് വയ്ക്കുക</translation>
 <translation id="2872961005593481000">അടയ്ക്കുക</translation>
 <translation id="2873483161362553159">ബ്രൗസർ നാവിഗേഷൻ</translation>
-<translation id="2873939192640533085">"കൂടുതൽ ആത്മവിശ്വാസമുണ്ടാക്കൂ" എന്നത് പോലുള്ള ഒരു പ്രോംപ്റ്റ് നൽകുക</translation>
 <translation id="2874939134665556319">മുമ്പത്തെ ട്രാക്ക്</translation>
 <translation id="2875812231449496375">ഈ വാൾപേപ്പർ ഏറ്റവും മികച്ചതായി കാണാൻ ഇത് ഓണാക്കുക. ഏതുസമയത്തും നിങ്ങൾക്ക് ഈ ക്രമീകരണം ഓഫാക്കാം.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> സെക്കൻഡിൽ <ph name="RATE" /> ഡിസ്ചാർജ് ചെയ്തു.</translation>
@@ -1199,6 +1198,7 @@
 <translation id="7936303884198020182">നെയിം സെർവറുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="7942349550061667556">ചുവപ്പ്</translation>
 <translation id="7943235353293548836">സജീവമായി നിലനിർത്താനുള്ള സ്ഥിര ഇടവേള</translation>
+<translation id="7943516765291457328">നിയർബൈ ഹോട്ട്‌സ്‌പോട്ടുകൾ സ്‌കാൻ ചെയ്യാൻ Bluetooth ഓണാക്കുക</translation>
 <translation id="7944562637040950644">കീബോർഡിന്റെ ബാക്ക്‌ലൈറ്റ് ടോഗിൾ ചെയ്യുക</translation>
 <translation id="7953669802889559161">ഇൻപുട്ടുകൾ</translation>
 <translation id="7955587717700691983">Bluetooth കീബോർഡ്</translation>
@@ -1328,6 +1328,7 @@
 <translation id="8747900814994928677">മാറ്റം സ്ഥിരീകരിക്കുക</translation>
 <translation id="8749478549112817787">ക്യാമറയുടെ പശ്ചാത്തലം</translation>
 <translation id="8755946156089753497">ടവർ</translation>
+<translation id="8756235582947991808">AI ഉപയോഗിച്ച് എങ്ങനെ സൃഷ്‌ടിക്കാം, എന്തൊക്കെ കാര്യങ്ങൾ ശ്രദ്ധിക്കണം</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ആൽബം</translation>
 <translation id="8775713578693478175">മോഡം APN</translation>

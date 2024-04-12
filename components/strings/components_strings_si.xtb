@@ -185,7 +185,6 @@
 <translation id="1323433172918577554">තව පෙන්වන්න</translation>
 <translation id="132390688737681464">ලිපින සුරක්ෂිත කර පුරවන්න</translation>
 <translation id="1325412080783393306">තවත් මිල දී ගැනීමේ විකල්ප සොයන්න</translation>
-<translation id="1325749054628832887">දැන්වීම් මාතෘකා යනු දැන්වීම් පුද්ගලායනය කිරීමට වෙබ් අඩවියකට භාවිත කළ හැකි බොහෝ දේවල් වලින් එකක් පමණි. දැන්වීම් මාතෘකා නොමැතිව වුවද, වෙබ් අඩවිවලට තවමත් ඔබට දැන්වීම් පෙන්විය හැකි නමුත් ඒවා අඩු ලැදිකමක් දැක්වීමට ඉඩ ඇත. ඔබේ <ph name="BEGIN_LINK" />දැන්වීම් පෞද්ගලිකත්වය කළමනාකරණය කිරීම<ph name="LINK_END" /> පිළිබඳව තව දැන ගන්න.</translation>
 <translation id="1329916999021038454">වාර්තාවක් එවන්න</translation>
 <translation id="1330449323196174374">වම් දොරටු නැමීම</translation>
 <translation id="1333745675627230582">Chrome Dino ක්‍රීඩාව කරන්න</translation>
@@ -2964,7 +2963,6 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ටෙලිසම්මන්ත්‍රණ</translation>
 <translation id="6753269504797312559">ප්‍රතිපත්ති අගය</translation>
-<translation id="6753390234084146956">ටැබ</translation>
 <translation id="6753434778807740853">ඇතුළත් කිරීම මකන්න <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">ඉතුරුම් ගිණුම්</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3677,6 +3675,7 @@
 <translation id="8075588646978457437">ස්වයං ආසක්ත කඩදාසි</translation>
 <translation id="8075736640322370409">ඉක්මනින් නව Google Sheet එකක් තනන්න</translation>
 <translation id="8075898834294118863">අඩවි සැකසීම් කළමනාකරණය කරන්න</translation>
+<translation id="8076492880354921740">පටිති</translation>
 <translation id="8077669823243888800">ලියුම් කවරය චීන #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{රහස්‍ය ගොනුව උඩුගත කරන්න ද?}one{රහස්‍ය ගොනු උඩුගත කරන්න ද?}other{රහස්‍ය ගොනු උඩුගත කරන්න ද?}}</translation>
 <translation id="8078141288243656252">කරකැවූ විට අනුසටහන් කළ නොහැක</translation>

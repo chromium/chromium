@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1533488253335887280">Accédez facilement et de façon sécurisée à vos mots de passe depuis l'écran d'accueil.</translation>
+<translation id="1590550141045148182">Ouvrez ou fermez vos onglets comme vous le souhaitez.</translation>
+<translation id="2036020471903443693">Vous trouverez votre onglet épinglé au bas de l'écran.</translation>
+<translation id="2984477737332162971">Accédez aux onglets ouverts.</translation>
+<translation id="3595188309555410362">Les onglets qui n'ont pas été utilisés depuis un certain temps sont désormais déplacés vers la section "Onglets inactifs".</translation>
+<translation id="3941788408634637840">Appuyez sur "Onglets inactifs" (si disponible).</translation>
+<translation id="3942215673032261195">Vous pouvez épingler vos sites préférés pour y accéder facilement plus tard.</translation>
+<translation id="4196935312151003338">Dans le menu, sélectionnez "Épingler l'onglet".</translation>
+<translation id="4497631794981705027">Appuyez de manière prolongée sur l'écran d'accueil.</translation>
+<translation id="463279609093232564">En haut à gauche de l'écran, appuyez sur +.</translation>
+<translation id="5604467549230434026">Dans le champ "Rechercher des widgets", saisissez "Chrome".</translation>
+<translation id="5639067007765618198">Widget Gestionnaire de mots de passe de Google</translation>
 <translation id="5922999516621365983">Faites glisser l'onglet ici pour l'épingler.</translation>
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
+<translation id="6109989197058801417">Appuyez de manière prolongée sur l'onglet que vous souhaitez épingler.</translation>
+<translation id="639614003069108254">Sélectionnez "Gestionnaire de mots de passe", puis appuyez sur "Ajouter le widget".</translation>
+<translation id="6905308710260460250">Onglets épinglés</translation>
+<translation id="720206380500582061">Gérez les paramètres des onglets inactifs sous Paramètres &gt; Onglets.</translation>
 <translation id="8077675488769462025">Onglets inactifs</translation>
+<translation id="8602952180069641300">Faites défiler vos onglets jusqu'en haut de la page.</translation>
+<translation id="979990360845983227">Inutilisés depuis au moins 14 jours</translation>
 </translationbundle>

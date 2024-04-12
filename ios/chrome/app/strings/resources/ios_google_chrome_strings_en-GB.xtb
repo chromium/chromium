@@ -19,7 +19,6 @@
 <translation id="1436059927646026729">Open my latest tab in Chrome</translation>
 <translation id="1449241544691504574">Add bookmarks to Chrome</translation>
 <translation id="1462727070346936664">Sign in to get the most out of Chrome.</translation>
-<translation id="1462833127986525564">Link Chrome and other Google services if you want them to personalise your experience using data from one another</translation>
 <translation id="1491435845014430217">Turn on 'Lock Incognito tabs when you close Chrome'.</translation>
 <translation id="1493827051843127077">Set Chrome as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="1504372625950710826">Chrome couldn't check for updates. Try checking your Internet connection.</translation>
@@ -43,7 +42,6 @@ Things to consider:
 <translation id="1790080846677398234">Adds the inputted URLs to your bookmarks in Chrome.</translation>
 <translation id="1799920918471566157">Chrome tips</translation>
 <translation id="1830634592642484976">This address is currently saved to Chrome. To use it across Google products, save it in your Google Account, <ph name="USER_EMAIL" />.</translation>
-<translation id="1843217788865538014">Automatically use Chrome when you tap links in messages, documents and other apps.</translation>
 <translation id="1910975740091000991">Chrome for iOS</translation>
 <translation id="1917964099031477364">This account and any unsaved data will be removed from Chrome and other Google apps on this device.</translation>
 <translation id="1965935827552890526">Finish what you were doing in your other open Chrome window.</translation>
@@ -123,7 +121,6 @@ Things to consider:
 <translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="4251174643044751591">Opens The Payment Methods Setting Page in Chrome.</translation>
 <translation id="4453284704333523777">Manage Chrome settings</translation>
-<translation id="4508370294876102450">Open Chrome from any app</translation>
 <translation id="4523886039239821078">Some add-ons cause Chrome to crash. Please uninstall:</translation>
 <translation id="4633328489441962921">Chrome can't check for updates</translation>
 <translation id="4636900170638246267">Sign in to this site and Chrome.</translation>
@@ -134,7 +131,6 @@ Things to consider:
         Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="484033449593719797">Not supported on Chrome beta</translation>
 <translation id="4840404732697892756">Google Password Manager can check your passwords when you sign in with your Google Account.</translation>
-<translation id="4856636171409137183">To get the most personalised experience, include Chrome in <ph name="FEATURE_NAME_1" /> and <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome can help you track this parcel on the New tab page.}other{Chrome can help you track these parcels on the New tab page.}}</translation>
 <translation id="4903674399067644695">This card shows you suggestions on how to get the most out of Chrome.</translation>
 <translation id="49200511069271369">Your organisation, <ph name="DOMAIN" />, manages the account you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.</translation>
@@ -177,7 +173,6 @@ Things to consider:
 <translation id="6110625574506755980">Some Chrome features won’t be available anymore.</translation>
 <translation id="6132149203299792222">Sign in with your Google Account to sync your passwords, bookmarks and more.</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
-<translation id="6181930887571472871">Switch to Chrome</translation>
 <translation id="6238746320622508509">Let Chrome lock your incognito tabs.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6272822675004864999">To receive notifications from Chrome, turn on notifications in your iOS settings.</translation>
@@ -205,7 +200,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 
 For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Search with Voice in Chrome</translation>
-<translation id="6964931465519938134">You can now use Chrome whenever you tap on links in messages, documents and other apps.</translation>
 <translation id="6975725306479268850">Choose Chrome for auto-fill</translation>
 <translation id="7004159181872656283">Search visuals in Chrome.</translation>
 <translation id="7056826488869329999">Opens and Runs Safety Check in Chrome.</translation>
@@ -225,13 +219,13 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="7272930098487145294">To save images, tap on settings to let Chrome add to your photos</translation>
 <translation id="7275945473750112644">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chrome data will be cleared from this device</translation>
 <translation id="7304491752269485262">Chrome autofill expanded view</translation>
+<translation id="7344094882820374540">Get Chrome's strongest security from dangerous sites</translation>
 <translation id="7349129508108954623">Allow Chrome to use Google Maps to give you directions and local info on detected addresses.</translation>
 <translation id="7394108421562933108">Maps in Chrome</translation>
 <translation id="7400722733683201933">About Google Chrome</translation>
 <translation id="7466693328838535498">In the Search Widgets box, enter Chrome</translation>
 <translation id="746684838091935575">3. Select Chrome</translation>
 <translation id="7492574581995589075">Your organisation turned off the ability to use and save Chrome data in your Google Account. New bookmarks, passwords and more will be saved only to this device.</translation>
-<translation id="7501046334262221972">To make Chrome your default browser, open Settings. Tap 'Default browser app', and then select Chrome.</translation>
 <translation id="756809126120519699">Cleared Chrome data</translation>
 <translation id="7581063337314642333">Visit the Tab Grid in Chrome</translation>
 <translation id="7662994914830945754">To see your tabs from wherever you use Chrome, sign in and turn on sync</translation>
@@ -244,7 +238,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="7792140019572081272">Chrome keeps your sensitive data secure with Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome is up to date</translation>
 <translation id="7897703007638178753">See Chrome Recent Tabs</translation>
-<translation id="7925119591961387184">Select "Chrome."</translation>
 <translation id="7933491483529363150">Open my latest tab in Chrome.</translation>
 <translation id="7948283758957877064">What’s new in Chrome</translation>
 <translation id="8006014511203279255">Use Chrome any time that you tap links in messages or other apps.</translation>
@@ -276,7 +269,6 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">You can now use Chrome any time that you browse or tap links in messages, documents and other apps.</translation>
 <translation id="8577978202917232774">Suggestions are based on your browsing activity on your other devices. To get suggestions, sign in to Chrome on all your devices.</translation>
-<translation id="8587647598504233556">Tap "Chrome" then "Default Browser App."</translation>
 <translation id="8603022514504485810">Google Password Manager couldn't check all passwords. Try again tomorrow or <ph name="BEGIN_LINK" />check passwords in your Google Account.<ph name="END_LINK" /></translation>
 <translation id="8727043961453758442">Get the most out of Chrome</translation>
 <translation id="8736550665979974340">Stay safe with Google Chrome</translation>

@@ -19,7 +19,6 @@
 <translation id="1436059927646026729">在 Chrome 中打开“我最近打开的标签页”</translation>
 <translation id="1449241544691504574">将书签添加到 Chrome</translation>
 <translation id="1462727070346936664">登录即可充分利用 Chrome。</translation>
-<translation id="1462833127986525564">如果您想让 Chrome 和其他 Google 服务利用彼此的数据为您提供个性化体验，请关联这些服务</translation>
 <translation id="1491435845014430217">开启“在您关闭 Chrome 时锁定无痕式标签页”。</translation>
 <translation id="1493827051843127077">将 Chrome 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
 <translation id="1504372625950710826">Chrome 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
@@ -43,7 +42,6 @@
 <translation id="1790080846677398234">将输入的网址添加到您在 Chrome 中保存的书签。</translation>
 <translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1830634592642484976">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
-<translation id="1843217788865538014">当您点按消息、文档和其他应用内的链接时，系统会自动使用 Chrome 打开链接。</translation>
 <translation id="1910975740091000991">Chrome（iOS 版）</translation>
 <translation id="1917964099031477364">系统会从该设备上的 Chrome 和其他 Google 应用中移除此账号以及所有未保存的数据。</translation>
 <translation id="1965935827552890526">请完成您先前在另一已打开的 Chrome 窗口中正在执行的操作。</translation>
@@ -123,7 +121,6 @@
 <translation id="424864128008805179">退出 Chrome？</translation>
 <translation id="4251174643044751591">在 Chrome 中打开“付款方式设置”页面。</translation>
 <translation id="4453284704333523777">管理 Chrome 设置</translation>
-<translation id="4508370294876102450">从任意应用内打开 Chrome</translation>
 <translation id="4523886039239821078">部分插件导致 Chrome 崩溃，请卸载这些插件：</translation>
 <translation id="4633328489441962921">Chrome 无法检查是否有更新</translation>
 <translation id="4636900170638246267">登录此网站和 Chrome。</translation>
@@ -134,7 +131,6 @@
         请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="484033449593719797">在 Chrome Beta 版中不受支持</translation>
 <translation id="4840404732697892756">您需要先登录 Google 账号，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
-<translation id="4856636171409137183">若要获得最具个性化的体验，请在“<ph name="FEATURE_NAME_1" />”和“<ph name="FEATURE_NAME_2" />”中包括 Chrome</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome 可以帮助您在“新标签页”页面中跟踪此包裹。}other{Chrome 可以帮助您在“新标签页”页面中跟踪这些包裹。}}</translation>
 <translation id="4903674399067644695">此卡片会为您提供一些建议，帮助您充分利用 Chrome。</translation>
 <translation id="49200511069271369">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chrome 的使用方式。您的管理员可以设置或限制某些功能。</translation>
@@ -177,7 +173,6 @@
 <translation id="6110625574506755980">您将无法再使用某些 Chrome 功能。</translation>
 <translation id="6132149203299792222">登录您的 Google 账号即可同步您的密码、书签等信息。</translation>
 <translation id="6177442314419606057">在 Chrome 中搜索</translation>
-<translation id="6181930887571472871">改用 Chrome</translation>
 <translation id="6238746320622508509">让 Chrome 锁定您的无痕式标签页。</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
 <translation id="6272822675004864999">若要接收来自 Chrome 的通知，请在 iOS 设置中开启通知。</translation>
@@ -203,7 +198,6 @@
 
 如需更多使用数据来提升 Chrome 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
 <translation id="6916015246697034114">在 Chrome 中使用语音搜索</translation>
-<translation id="6964931465519938134">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="6975725306479268850">选择使用 Chrome 的自动填充功能</translation>
 <translation id="7004159181872656283">在 Chrome 中搜索可视化内容。</translation>
 <translation id="7056826488869329999">在 Chrome 中打开并运行安全检查。</translation>
@@ -229,7 +223,6 @@
 <translation id="7466693328838535498">在“搜索小组件”框中，输入“Chrome”</translation>
 <translation id="746684838091935575">3. 选择“Chrome”</translation>
 <translation id="7492574581995589075">贵组织已关闭在您的 Google 账号中保存 Chrome 数据并使用这些数据的功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
-<translation id="7501046334262221972">若要将 Chrome 设为默认浏览器，请打开“设置”，点按“默认浏览器应用”，然后选择“Chrome”。</translation>
 <translation id="756809126120519699">已清除 Chrome 数据</translation>
 <translation id="7581063337314642333">访问 Chrome 中的标签页网格</translation>
 <translation id="7662994914830945754">要查看您在其他设备上用 Chrome 打开的标签页，请登录账号并开启同步功能</translation>
@@ -242,7 +235,6 @@
 <translation id="7792140019572081272">Chrome 可利用面容 ID 确保您的敏感数据安全。</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
 <translation id="7897703007638178753">查看最近使用 Chrome 打开的标签页</translation>
-<translation id="7925119591961387184">选择“Chrome”。</translation>
 <translation id="7933491483529363150">在 Chrome 中打开“我最近打开的标签页”。</translation>
 <translation id="7948283758957877064">Chrome 中的新变化</translation>
 <translation id="8006014511203279255">每次点按消息或其他应用中的链接时，都使用 Chrome 打开。</translation>
@@ -272,7 +264,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="8577978202917232774">系统会根据您在其他设备上的浏览活动给出建议。如需获取建议，请在您的所有设备上登录 Chrome。</translation>
-<translation id="8587647598504233556">依次点按“Chrome”和“默认浏览器应用”。</translation>
 <translation id="8603022514504485810">Google 密码管理工具无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 账号中的密码<ph name="END_LINK" />。</translation>
 <translation id="8727043961453758442">充分利用 Chrome</translation>
 <translation id="8736550665979974340">Google Chrome 为您保驾护航</translation>

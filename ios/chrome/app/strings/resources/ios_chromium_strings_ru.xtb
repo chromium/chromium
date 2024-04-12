@@ -10,7 +10,6 @@
 <translation id="1185134272377778587">О Chromium</translation>
 <translation id="1257458525759135959">Чтобы сохранять изображения, нажмите "Настройки" и предоставьте Chromium доступ к вашим фото.</translation>
 <translation id="12739128458173458">Чтобы отправить вкладку с одного устройства на другое, войдите на них в Chromium.</translation>
-<translation id="1289216811211435351">Переходите на Chromium</translation>
 <translation id="1361748954329991663">Версия Chromium устарела. Если в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> нет обновлений, возможно, ваше устройство не поддерживает новые версии Chromium.</translation>
 <translation id="1423007117030725713">Искать в новой вкладке Chromium</translation>
 <translation id="1431818719585918472">Разрешите Chromium блокировать для посторонних доступ к вашим вкладкам инкогнито.</translation>
@@ -34,7 +33,6 @@
 <translation id="1843424232666537147">В Chromium можно устанавливать параметры обработки данных в Интернете и скорости загрузки веб-страниц.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Карты в Chromium</translation>
-<translation id="186734497270163706">Нажмите Chromium, а затем "Приложение браузера по умолчанию".</translation>
 <translation id="1867772173333403444">4. Выберите Chromium.</translation>
 <translation id="2006345422933397527">Браузеру Chromium не удалось проверить наличие обновлений. Убедитесь, что устройство подключено к Интернету.</translation>
 <translation id="2042889939382983733">Посмотреть историю Chromium</translation>
@@ -104,7 +102,6 @@
 <translation id="394413318816989199">Способы оплаты и адреса не шифруются кодовой фразой.
 
 Чтобы это изменить, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
-<translation id="3955621079070267756">Открывайте Chromium из любого приложения</translation>
 <translation id="4005283307739974863">Начнется проверка безопасности в Chromium.</translation>
 <translation id="4043291146360695975">Пароли сохраняются в Менеджере паролей только на этом устройстве.</translation>
 <translation id="4076589763479456892">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
@@ -116,7 +113,6 @@
 <translation id="4195557071150719219">Недавние вкладки в Chromium</translation>
 <translation id="4200712796753248893">Используйте действия Chromium в iOS</translation>
 <translation id="420541179527342563">Чтобы пользоваться Chromium без режима блокировки, отключите этот режим на устройстве iPad.</translation>
-<translation id="427331839909790668">Свяжите Chromium и другие сервисы Google, чтобы они могли обмениваться данными друг с другом для персонализации контента.</translation>
 <translation id="4408912345039114853">Запустить проверку безопасности в Chromium</translation>
 <translation id="4432744876818348753">Чтобы пользоваться всеми возможностями Chromium, войдите в аккаунт.</translation>
 <translation id="4445228361214254027">В вашей организации отключена возможность использовать данные Chromium и сохранять их в аккаунте Google. Новые закладки, пароли и другие данные будут сохраняться только на этом устройстве.</translation>
@@ -124,7 +120,6 @@
 <translation id="452436063477828504">Обеспечьте доступ к данным Chromium в аккаунте Google.</translation>
 <translation id="4555020257205549924">Когда эта функция включена, Chrome предлагает перевести страницы с помощью Google Переводчика. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Откроется страница настройки способов оплаты в Chromium.</translation>
-<translation id="4585809515399340748">При переходе по ссылкам в сообщениях, документах и других приложениях будет открываться браузер Chromium.</translation>
 <translation id="459080529287102949">Искать изображения в Chromium</translation>
 <translation id="4633738821577273991">Для этого профиля Chromium также доступен улучшенный Безопасный просмотр.</translation>
 <translation id="4638625642619341392">Скачайте Chromium здесь.</translation>
@@ -179,7 +174,6 @@
 <translation id="5945387852661427312">Вы входите в аккаунт, которым управляет администратор домена <ph name="DOMAIN" />. Он может контролировать ваши данные Chromium, которые теперь будут связаны с управляемым аккаунтом. При выходе из системы все данные Chromium, хранящиеся на этом устройстве, будут удалены, но останутся в вашем аккаунте Google.</translation>
 <translation id="5951593919357934226">Максимально эффективная работа с Chromium</translation>
 <translation id="5983312940147103417">Сделайте браузер Chromium лучше</translation>
-<translation id="5985102273857091344">Выберите Chromium.</translation>
 <translation id="5985254578475526217">Чтобы получать уведомления от Chromium, включите уведомления в настройках iOS.</translation>
 <translation id="6093744543579359059">Изменить настройки паролей в Chromium</translation>
 <translation id="6104024151682120539">Открыть в Chromium</translation>
@@ -217,7 +211,6 @@
 <translation id="6852799557929001644">Получайте доступ к паролям и другим данным Chromium в приложениях на этом устройстве.</translation>
 <translation id="6887138405044152640">Чтобы отправить вкладку на другое устройство, войдите на нем в Chromium.</translation>
 <translation id="6911341667534646387">Продолжайте использовать данные Chromium в аккаунте Google.</translation>
-<translation id="7002548535535009764">Чтобы улучшить персонализацию контента, добавьте Chromium сюда: <ph name="FEATURE_NAME_1" /> и <ph name="FEATURE_NAME_2" />.</translation>
 <translation id="7006920032187763988">Вы можете использовать пароли, сохраненные в Менеджере паролей, для других приложений на своем устройстве iPad.</translation>
 <translation id="7018284295775193585">Не удается обновить Chromium</translation>
 <translation id="7045244423563602563">Войдите в Chromium</translation>
@@ -231,7 +224,6 @@
 <translation id="725427773388857052">Chromium поможет обеспечить защиту от утечки данных, подозрительных сайтов и других проблем с безопасностью.</translation>
 <translation id="7269362888766543920">Некоторые дополнения вызывают сбой Chromium. Попробуйте удалить их.</translation>
 <translation id="7285031092584344905">Получайте доступ к паролям и другим данным Chromium в приложениях.</translation>
-<translation id="7313655110045230863">Чтобы сделать Chromium браузером по умолчанию, откройте настройки, нажмите "Приложение браузера по умолчанию" и выберите Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Выбранные данные удалены из Chromium и с синхронизированных устройств. Остальная история ваших действий в Интернете может храниться в аккаунте Google, например в виде поисковых запросов и сведений из наших сервисов. Она доступна на странице history.google.com.</translation>
 <translation id="7387082980875012885">Новая вкладка в Chromium</translation>
@@ -301,7 +293,6 @@
 <translation id="9089354809943900324">Версия Chromium устарела</translation>
 <translation id="9110075932708282655">Используйте Chromium по умолчанию</translation>
 <translation id="921174536258924340">Браузеру Chromium не удается проверить все пароли. Повторите попытку завтра или <ph name="BEGIN_LINK" />проверьте пароли в аккаунте Google<ph name="END_LINK" />.</translation>
-<translation id="971488683725792095">При переходе по ссылкам в сообщениях, документах и приложениях страницы могут автоматически открываться в браузере Chromium.</translation>
 <translation id="981812233959540767">Играть в Chromium Dino</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>
 </translationbundle>

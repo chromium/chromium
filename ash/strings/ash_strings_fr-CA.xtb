@@ -226,6 +226,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1864454756846565995">Appareil USB-C (port arrière)</translation>
 <translation id="1869497990620230175">Accès rapide aux fichiers</translation>
 <translation id="1871023081802165724">Lire le contenu multimédia</translation>
+<translation id="1871915835366697861">Non applicable pour ce jeu</translation>
 <translation id="1879018240766558464">Les fenêtres de navigation privée ne sont pas prises en charge actuellement. Les autres applications seront enregistrées.</translation>
 <translation id="1882814835921407042">Aucun réseau cellulaire</translation>
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
@@ -1790,6 +1791,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="79341161159229895">Compte géré par <ph name="FIRST_PARENT_EMAIL" /> et <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Appuyez sur <ph name="SHORTCUT_KEY_NAME" />+V pour afficher le contenu du presse-papiers. Les cinq derniers éléments que vous avez copiés sont enregistrés dans le presse-papiers.</translation>
 <translation id="7942349550061667556">Rouge</translation>
+<translation id="7943516765291457328">Activez le Bluetooth pour rechercher les points d'accès sans fil à proximité</translation>
 <translation id="7944023924886109030">Voir tous les événements d'aujourd'hui</translation>
 <translation id="7945357288295809525">Afficher les paramètres d'accessibilité, « <ph name="ENABLED_FEATURES" /> » activé.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" /></translation>

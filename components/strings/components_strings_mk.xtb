@@ -185,7 +185,6 @@
 <translation id="1323433172918577554">Прикажи повеќе</translation>
 <translation id="132390688737681464">Зачувувај и пополнувај адреси</translation>
 <translation id="1325412080783393306">Пребарајте повеќе опции за купување</translation>
-<translation id="1325749054628832887">Темите на реклами се само една од многуте работи што може да ги користи конкретен сајт за да персонализира реклами. Дури и без теми на реклами, сајтовите сѐ уште може да ви прикажуваат реклами, но рекламите може да не бидат толку интересни. Дознајте повеќе за <ph name="BEGIN_LINK" />управувањето со приватноста за рекламите<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Испрати извештај</translation>
 <translation id="1330449323196174374">Лево превиткување како брошура</translation>
 <translation id="1333745675627230582">Пушти ја играта „Диносаурус на Chrome“</translation>
@@ -2961,7 +2960,6 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференции</translation>
 <translation id="6753269504797312559">Вредност на политика</translation>
-<translation id="6753390234084146956">картички</translation>
 <translation id="6753434778807740853">Избриши го записот <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Штедни сметки</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3674,6 +3672,7 @@
 <translation id="8075588646978457437">Самолеплива хартија</translation>
 <translation id="8075736640322370409">Набрзина создајте нова табела на Google</translation>
 <translation id="8075898834294118863">Управувај со поставките за сајтови</translation>
+<translation id="8076492880354921740">Картички</translation>
 <translation id="8077669823243888800">Плик Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Да се прикачи доверлива датотека?}one{Да се прикачат доверливи датотеки?}other{Да се прикачат доверливи датотеки?}}</translation>
 <translation id="8078141288243656252">Не може да се стави прибелешка кога документот е ротиран</translation>

@@ -10,7 +10,6 @@
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Om du vill spara bilder trycker du på Inställningar och låter Chromium lägga till dina foton</translation>
 <translation id="12739128458173458">Om du vill skicka den här fliken till en annan enhet loggar du in i Chromium på båda enheterna.</translation>
-<translation id="1289216811211435351">Byt till Chromium</translation>
 <translation id="1361748954329991663">Den här versionen av Chromium är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chromium.</translation>
 <translation id="1423007117030725713">Börja söka på en ny Chromium-flik.</translation>
 <translation id="1431818719585918472">Låt Chromium låsa inkognitoflikarna.</translation>
@@ -34,7 +33,6 @@
 <translation id="1843424232666537147">I Chromium finns det funktioner som du kan använda för att hantera dina internetuppgifter och inläsningshastigheten för webbsidor.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps i Chromium</translation>
-<translation id="186734497270163706">Tryck på Chromium och sedan på Standardwebbläsarapp.</translation>
 <translation id="1867772173333403444">4. Välj Chromium</translation>
 <translation id="2006345422933397527">Chromium kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="2042889939382983733">Visa Chromium-historiken</translation>
@@ -104,7 +102,6 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="394413318816989199">Betalningsmetoder och adresser omfattas inte av lösenfraskryptering.
 
 Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chromium-datan i kontot<ph name="END_LINK" />.</translation>
-<translation id="3955621079070267756">Öppna Chromium från valfri app</translation>
 <translation id="4005283307739974863">Säkerhetskontrollen öppnas och körs i Chromium.</translation>
 <translation id="4043291146360695975">Lösenorden sparas med Lösenordshantering endast på den här enheten.</translation>
 <translation id="4076589763479456892">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chromium-datan i kontot<ph name="END_LINK" />.</translation>
@@ -116,7 +113,6 @@ Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chro
 <translation id="4195557071150719219">Visa senaste flikarna i Chromium</translation>
 <translation id="4200712796753248893">Använda Chromium-åtgärder på iOS</translation>
 <translation id="420541179527342563">Om du vill inaktivera låsningsläget i Chromium kan du stänga av det på din iPad.</translation>
-<translation id="427331839909790668">Länka Chromium och andra tjänster från Google om du vill att din upplevelse ska anpassas med hjälp av data som delas mellan tjänsterna</translation>
 <translation id="4408912345039114853">Kör en säkerhetskontroll i Chromium</translation>
 <translation id="4432744876818348753">Logga in så att du får ut mesta möjliga av Chromium.</translation>
 <translation id="4445228361214254027">Din organisation har inaktiverat möjligheten att använda och spara Chromium-data i ditt Google-konto. Nya bokmärken, lösenord med mera sparas endast på den här enheten.</translation>
@@ -124,7 +120,6 @@ Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chro
 <translation id="452436063477828504">Se till att du alltid kan använda Chromium-data i Google-kontot</translation>
 <translation id="4555020257205549924">När den här funktionen har aktiverats visas alternativet i Chromium att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Öppnar inställningssidan för betalningsmetoder i Chromium.</translation>
-<translation id="4585809515399340748">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="459080529287102949">Sök efter bilder i Chromium</translation>
 <translation id="4633738821577273991">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
 <translation id="4638625642619341392">Ladda ned Chromium här.</translation>
@@ -179,7 +174,6 @@ Tänk på detta:
 <translation id="5945387852661427312">Du håller på att logga in med ett konto som hanteras av <ph name="DOMAIN" /> vilket ger administratören kontroll över data i Chromium. Din data kopplas permanent till det här kontot. Om du loggar ut från Chromium raderas all din data från enheten, men den lagras fortfarande på Google-kontot.</translation>
 <translation id="5951593919357934226">Få ut mesta möjliga av Chromium.</translation>
 <translation id="5983312940147103417">Gör Chromium bättre</translation>
-<translation id="5985102273857091344">Välj Chromium.</translation>
 <translation id="5985254578475526217">Om du vill få aviseringar från Chromium aktiverar du aviseringar i iOS-inställningarna</translation>
 <translation id="6093744543579359059">Hantera lösenord i Chromium</translation>
 <translation id="6104024151682120539">Öppna i Chromium</translation>
@@ -217,7 +211,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="6852799557929001644">Få åtkomst till dina lösenord och annat från Chromium i andra appar på den här enheten.</translation>
 <translation id="6887138405044152640">Om du vill skicka den här fliken till en annan enhet loggar du in i Chromium på den enheten.</translation>
 <translation id="6911341667534646387">Fortsätt använda Chromium-data i Google-kontot</translation>
-<translation id="7002548535535009764">Om du inkluderar Chromium i <ph name="FEATURE_NAME_1" /> och <ph name="FEATURE_NAME_2" /> får du en så anpassad upplevelse som möjligt</translation>
 <translation id="7006920032187763988">Du kan använda lösenorden som sparats med Lösenordshantering i andra iPad-appar.</translation>
 <translation id="7018284295775193585">Chromium kan inte uppdateras</translation>
 <translation id="7045244423563602563">Anpassa Chromium</translation>
@@ -231,7 +224,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="725427773388857052">Chromium kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
 <translation id="7269362888766543920">Några tillägg har fått Chromium att krascha. Testa att avinstallera dem.</translation>
 <translation id="7285031092584344905">Få tillgång till dina lösenord i Chromium och mer i andra appar.</translation>
-<translation id="7313655110045230863">Öppna inställningarna för att välja Chromium som standardwebbläsare. Tryck på Standardwebbläsarapp och välj sedan Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Den data som markerades har tagits bort från Chromium och från synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på history.google.com, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
 <translation id="7387082980875012885">Öppna en ny flik i Chromium</translation>
@@ -302,7 +294,6 @@ Din data krypterades med lösenfrasen <ph name="TIME" />. Ange den om du vill an
 <translation id="9089354809943900324">Den här versionen av Chromium är inaktuell</translation>
 <translation id="9110075932708282655">Använd Chromium som standard</translation>
 <translation id="921174536258924340">Chromium kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
-<translation id="971488683725792095">Använd Chromium automatiskt när du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="981812233959540767">Spela spelet Chromium Dino</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

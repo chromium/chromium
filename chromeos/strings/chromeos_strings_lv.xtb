@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">Novietojiet vēl vienu lapu uz skenera.</translation>
 <translation id="2872961005593481000">Izslēgt</translation>
 <translation id="2873483161362553159">Navigācija pārlūkā</translation>
-<translation id="2873939192640533085">Ievadiet uzvedni, piemēram, “izklausīties pārliecinošāk”</translation>
 <translation id="2874939134665556319">Iepriekšējais ieraksts</translation>
 <translation id="2875812231449496375">Ieslēdziet šo iestatījumu, lai šī fona tapete darbotos optimāli. Jebkurā laikā varat iestatījumu izslēgt.</translation>
 <translation id="2878387241690264070">Izlādes apjoms <ph name="NUM_SECONDS" /> s laikā: <ph name="RATE" />.</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">Jūs vēl neesat izveidojis savienojumu. Ja mobilo sakaru operators iesaka pielāgotu APN, ievadiet APN informāciju, atlasot “+ Jauns APN”.</translation>
 <translation id="5947266287934282605">Ja mēneša pēdējā diena ir pirms šī datuma, dati tiks atiestatīti mēneša pēdējā dienā.</translation>
 <translation id="5948460390109837040">suņi</translation>
+<translation id="594989847980441553">Atlasiet vienumu “Izveidot”, lai izveidotu attēlu, izmantojot MI.
+        Šeit tiks automātiski rādīti visi izveidotie attēli.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">koraļļu sārtā</translation>
 <translation id="5984145644188835034">Noklusējuma fona tapete</translation>

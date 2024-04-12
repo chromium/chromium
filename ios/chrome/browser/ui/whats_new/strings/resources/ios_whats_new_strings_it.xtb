@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1533488253335887280">Accedi in modo semplice e sicuro alle tue password dalla schermata Home.</translation>
+<translation id="1590550141045148182">Apri o chiudi le schede come preferisci.</translation>
+<translation id="2036020471903443693">La scheda viene bloccata nella parte inferiore dello schermo.</translation>
+<translation id="2984477737332162971">Vai alle schede aperte.</translation>
+<translation id="3595188309555410362">Se alcune schede non vengono utilizzate da un po' di tempo, ora verranno spostate nella sezione Schede non attive.</translation>
+<translation id="3941788408634637840">Tocca Schede non attive (se disponibile).</translation>
+<translation id="3942215673032261195">Puoi bloccare i tuoi siti preferiti per accedervi facilmente in un secondo momento.</translation>
+<translation id="4196935312151003338">Seleziona "Blocca scheda" dal menu.</translation>
+<translation id="4497631794981705027">Tocca e tieni premuta la schermata Home.</translation>
+<translation id="463279609093232564">Nella parte in alto a sinistra dello schermo, tocca +.</translation>
+<translation id="5604467549230434026">Nella casella Cerca nei widget, inserisci la parola Chrome.</translation>
+<translation id="5639067007765618198">Widget Gestore delle password di Google</translation>
 <translation id="5922999516621365983">Trascina qui la scheda per bloccarla.</translation>
 <translation id="5979837087407522202">Cerca password</translation>
+<translation id="6109989197058801417">Tieni premuta la scheda che vuoi bloccare.</translation>
+<translation id="639614003069108254">Seleziona Gestore delle password, quindi tocca Aggiungi widget.</translation>
+<translation id="6905308710260460250">Schede bloccate</translation>
+<translation id="720206380500582061">Gestisci le impostazioni delle schede non attive in Impostazioni &gt; Schede.</translation>
 <translation id="8077675488769462025">Schede non attive</translation>
+<translation id="8602952180069641300">Scorri verso l'alto fino alla parte superiore delle schede.</translation>
+<translation id="979990360845983227">Non usata per almeno 14 giorni</translation>
 </translationbundle>

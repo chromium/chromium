@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">วางอีกหน้าบนเครื่องสแกน</translation>
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2873483161362553159">การนำทางสำหรับเบราว์เซอร์</translation>
-<translation id="2873939192640533085">ป้อนพรอมต์ เช่น "ให้ฟังดูมั่นใจมากขึ้น"</translation>
 <translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
 <translation id="2875812231449496375">เปิดโหมดนี้เพื่อให้วอลเปเปอร์นี้มีผลลัพธ์ที่ดีที่สุด คุณปิดการตั้งค่านี้ได้ทุกเมื่อ</translation>
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">คุณยังไม่ได้เชื่อมต่อ หากผู้ให้บริการเครือข่ายมือถือของคุณแนะนำ APN ที่กําหนดเอง ให้ป้อนข้อมูล APN ดังกล่าวโดยเลือก "+ APN ใหม่"</translation>
 <translation id="5947266287934282605">หากวันสุดท้ายของเดือนอยู่ก่อนวันนี้ ระบบจะรีเซ็ตข้อมูลในวันสุดท้ายของเดือน</translation>
 <translation id="5948460390109837040">สุนัข</translation>
+<translation id="594989847980441553">เลือก "สร้าง" เพื่อสร้างรูปภาพด้วย AI
+        รูปภาพที่สร้างขึ้นทั้งหมดจะปรากฏที่นี่โดยอัตโนมัติ</translation>
 <translation id="5972388717451707488">อัปเดตเครื่องมือ</translation>
 <translation id="5975130252842127517">ส้มแดงคอรัล</translation>
 <translation id="5984145644188835034">วอลเปเปอร์เริ่มต้น</translation>
@@ -1197,6 +1198,7 @@
 <translation id="7936303884198020182">ไม่พบเนมเซิร์ฟเวอร์</translation>
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="7943235353293548836">ระยะเวลาของ Keepalive ต่อเนื่อง</translation>
+<translation id="7943516765291457328">เปิดบลูทูธเพื่อสแกนหาฮอตสปอตใกล้เคียง</translation>
 <translation id="7944562637040950644">เปิด/ปิดไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="7953669802889559161">การป้อนข้อมูล</translation>
 <translation id="7955587717700691983">แป้นพิมพ์บลูทูธ</translation>
@@ -1326,6 +1328,7 @@
 <translation id="8747900814994928677">ยืนยันการเปลี่ยนแปลง</translation>
 <translation id="8749478549112817787">พื้นหลังกล้อง</translation>
 <translation id="8755946156089753497">หอคอย</translation>
+<translation id="8756235582947991808">วิธีสร้างด้วย AI และสิ่งที่ควรคำนึงถึง</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">อัลบั้มใน Google Photos</translation>
 <translation id="8775713578693478175">APN ของโมเด็ม</translation>

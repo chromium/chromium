@@ -185,7 +185,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1323433172918577554">Xem thêm</translation>
 <translation id="132390688737681464">Lưu và điền địa chỉ</translation>
 <translation id="1325412080783393306">Tìm thêm lựa chọn mua hàng</translation>
-<translation id="1325749054628832887">Chủ đề quảng cáo chỉ là một trong nhiều công cụ mà một trang web có thể dùng để cá nhân hoá quảng cáo. Ngay cả khi không có chủ đề quảng cáo, các trang web vẫn có thể hiển thị quảng cáo cho bạn. Tuy nhiên, các quảng cáo này có thể ít được bạn quan tâm hơn. Tìm hiểu thêm về việc <ph name="BEGIN_LINK" />quản lý quyền riêng tư trong quảng cáo<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Gửi báo cáo</translation>
 <translation id="1330449323196174374">Gấp dạng cửa bên trái</translation>
 <translation id="1333745675627230582">Chơi Trò chơi khủng long trên Chrome</translation>
@@ -2961,7 +2960,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Hội nghị từ xa</translation>
 <translation id="6753269504797312559">Giá trị chính sách</translation>
-<translation id="6753390234084146956">thẻ</translation>
 <translation id="6753434778807740853">Xoá mục <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Tài khoản tiết kiệm</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3674,6 +3672,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8075588646978457437">Giấy có keo dính sẵn</translation>
 <translation id="8075736640322370409">Tạo nhanh một trang tính mới trên Google Trang tính</translation>
 <translation id="8075898834294118863">Quản lý chế độ cài đặt trang web</translation>
+<translation id="8076492880354921740">Thẻ</translation>
 <translation id="8077669823243888800">Phong bì kiểu Trung số 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Tải tệp bảo mật lên?}other{Tải các tệp bảo mật lên?}}</translation>
 <translation id="8078141288243656252">Không thể chú thích khi xoay</translation>

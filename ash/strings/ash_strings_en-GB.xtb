@@ -226,6 +226,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1864454756846565995">USB-C device (rear port)</translation>
 <translation id="1869497990620230175">Quick files</translation>
 <translation id="1871023081802165724">Play media</translation>
+<translation id="1871915835366697861">Not available for this game</translation>
 <translation id="1879018240766558464">Incognito windows aren’t currently supported. Other apps will be saved.</translation>
 <translation id="1882814835921407042">No mobile network</translation>
 <translation id="1882897271359938046">Mirroring to <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="79341161159229895">Account managed by <ph name="FIRST_PARENT_EMAIL" /> and <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Press <ph name="SHORTCUT_KEY_NAME" /> + V to view your clipboard. The last five items that you've copied are saved to your clipboard.</translation>
 <translation id="7942349550061667556">Red</translation>
+<translation id="7943516765291457328">Turn on Bluetooth to scan for nearby hotspots</translation>
 <translation id="7944023924886109030">See all events for today</translation>
 <translation id="7945357288295809525">Show accessibility settings, '<ph name="ENABLED_FEATURES" />' enabled.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wants to use your <ph name="DEVICE_NAME" /></translation>

@@ -19,7 +19,6 @@
 <translation id="1436059927646026729">Otevřít v prohlížeči Chrome naposledy otevřenou kartu</translation>
 <translation id="1449241544691504574">Přidat záložky do Chromu</translation>
 <translation id="1462727070346936664">Pokud z Chromu chcete získat maximum, přihlaste se.</translation>
-<translation id="1462833127986525564">Pokud chcete, aby Chrome a další služby Google vzájemně sdílely data za účelem přizpůsobení vašeho prostředí, propojte je</translation>
 <translation id="1491435845014430217">Zapněte možnost Při zavření Chromu zamknout anonymní karty.</translation>
 <translation id="1493827051843127077">Nastavte si Chrome jako výchozí prohlížeč a karty, hesla a platební údaje se budou synchronizovat na všechna vaše zařízení</translation>
 <translation id="1504372625950710826">Chrome nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
@@ -43,7 +42,6 @@ Co je třeba zvážit:
 <translation id="1790080846677398234">Přidá zadané adresy URL do záložek v Chromu.</translation>
 <translation id="1799920918471566157">Tipy Chrome</translation>
 <translation id="1830634592642484976">Tato adresa je aktuálně uložena v Chromu. Pokud ji chcete používat ve službách Google, uložte ji do svého účtu Google <ph name="USER_EMAIL" />.</translation>
-<translation id="1843217788865538014">Automaticky použít Chrome, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích</translation>
 <translation id="1910975740091000991">Chrome pro iOS</translation>
 <translation id="1917964099031477364">Tento účet a všechna neuložená data budou z Chromu a z ostatních aplikací v tomto zařízení odstraněny.</translation>
 <translation id="1965935827552890526">Dokončete akci, kterou jste prováděli v jiném otevřeném okně Chromu.</translation>
@@ -123,7 +121,6 @@ Co je třeba zvážit:
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
 <translation id="4251174643044751591">Otevře stránku nastavení platebních metod v prohlížeči Chrome.</translation>
 <translation id="4453284704333523777">Spravovat nastavení prohlížeče Chrome</translation>
-<translation id="4508370294876102450">Otevírejte Chrome z libovolné aplikace</translation>
 <translation id="4523886039239821078">Některé doplňky způsobují selhání prohlížeče Chrome. Prosím odinstalujte:</translation>
 <translation id="4633328489441962921">Chrome nemůže vyhledat dostupné aktualizace</translation>
 <translation id="4636900170638246267">Přihlaste se na tento web a do Chromu.</translation>
@@ -134,7 +131,6 @@ Co je třeba zvážit:
         Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="484033449593719797">V beta verzi prohlížeče Chrome není podporováno</translation>
 <translation id="4840404732697892756">Pokud chcete, aby Správce hesel Google zkontroloval vaše hesla, přihlaste se pomocí účtu Google.</translation>
-<translation id="4856636171409137183">Pokud chcete získat maximálně přizpůsobené prostředí, zahrňte Chrome do těchto funkcí: <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome vám může pomoci sledovat tuto zásilku na stránce Nová karta.}few{Chrome vám může pomoci sledovat tyto zásilky na stránce Nová karta.}many{Chrome vám může pomoci sledovat tyto zásilky na stránce Nová karta.}other{Chrome vám může pomoci sledovat tyto zásilky na stránce Nová karta.}}</translation>
 <translation id="4903674399067644695">Tato karta zobrazuje návrhy, jak Chrome využít na maximum.</translation>
 <translation id="49200511069271369">Účet, ke kterému jste přihlášeni, a možné způsoby používání prohlížeče Chrome spravuje organizace <ph name="DOMAIN" />. Váš administrátor může nastavit nebo omezit určité funkce.</translation>
@@ -177,7 +173,6 @@ Co je třeba zvážit:
 <translation id="6110625574506755980">Některé funkce Chromu už nebudou dostupné</translation>
 <translation id="6132149203299792222">Pokud chcete synchronizovat hesla, záložky a další položky, přihlaste se pomocí účtu Google.</translation>
 <translation id="6177442314419606057">Hledat v Chromu</translation>
-<translation id="6181930887571472871">Přepnout na Chrome</translation>
 <translation id="6238746320622508509">Nechat Chrome zamykat anonymní karty.</translation>
 <translation id="6247557882553405851">Správce hesel Google</translation>
 <translation id="6272822675004864999">Pokud z Chromu chcete dostávat oznámení, zapněte oznámení v nastavení systému iOS.</translation>
@@ -205,7 +200,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 
 Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chrome najdete v sekci <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Vyhledávat hlasem v prohlížeči Chrome</translation>
-<translation id="6964931465519938134">Nyní můžete Chrome použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
 <translation id="6975725306479268850">Vyberte Chrome pro automatické vyplňování</translation>
 <translation id="7004159181872656283">Vyhledat obrazový materiál v prohlížeči Chrome.</translation>
 <translation id="7056826488869329999">Otevře a spustí bezpečnostní kontrolu v prohlížeči Chrome.</translation>
@@ -231,7 +225,6 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="7466693328838535498">Do pole Widgety Vyhledávání zadejte Chrome</translation>
 <translation id="746684838091935575">3. Vyberte Chrome.</translation>
 <translation id="7492574581995589075">Vaše organizace vypnula možnost používat a ukládat data Chromu v účtu Google. Nové záložky, hesla a další položky se budou ukládat pouze do tohoto zařízení.</translation>
-<translation id="7501046334262221972">Pokud chcete Chrome nastavit jako výchozí prohlížeč, otevřete Nastavení. Klepněte na Výchozí prohlížeč a vyberte Chrome.</translation>
 <translation id="756809126120519699">Vymazání údajů Chromu</translation>
 <translation id="7581063337314642333">Navštívit mřížku karet v prohlížeči Chrome</translation>
 <translation id="7662994914830945754">Chcete-li mít své karty k dispozici všude, kde používáte Chrome, přihlaste se a zapněte synchronizaci</translation>
@@ -244,7 +237,6 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="7792140019572081272">Chrome chrání vaše citlivá data pomocí Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuální</translation>
 <translation id="7897703007638178753">Zobrazit nedávno použité karty prohlížeče Chrome</translation>
-<translation id="7925119591961387184">Vyberte Chrome.</translation>
 <translation id="7933491483529363150">Otevřít v prohlížeči Chrome naposledy otevřenou kartu.</translation>
 <translation id="7948283758957877064">Novinky v Chromu</translation>
 <translation id="8006014511203279255">Používejte Chrome, kdykoli klepnete na odkazy ve zprávách a jiných aplikacích.</translation>
@@ -276,7 +268,6 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">Nyní můžete Chrome použít při každém procházení a pokaždé, když klepnete na odkazy ve zprávách, dokumentech a jiných aplikacích.</translation>
 <translation id="8577978202917232774">Návrhy vycházejí z vaší aktivity prohlížení na jiných zařízeních. Pokud chcete dostávat návrhy, přihlaste se do Chromu na všech svých zařízeních.</translation>
-<translation id="8587647598504233556">Klepněte na Chrome a poté na Výchozí prohlížeč.</translation>
 <translation id="8603022514504485810">Správci hesel Google se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Využití všech funkcí Chromu</translation>
 <translation id="8736550665979974340">S prohlížečem Google Chrome budete v bezpečí</translation>

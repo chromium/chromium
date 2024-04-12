@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">Leg een andere pagina op de scanner</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2873483161362553159">Browsernavigatie</translation>
-<translation id="2873939192640533085">Voer een prompt in, zoals 'straal meer zelfvertrouwen uit'</translation>
 <translation id="2874939134665556319">Vorig nummer</translation>
 <translation id="2875812231449496375">Zet dit aan voor de beste resultaten met deze achtergrond. Je kunt deze instelling altijd uitzetten.</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> ontladen in <ph name="NUM_SECONDS" /> seconden.</translation>
@@ -1197,6 +1196,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7936303884198020182">Geen naamservers gevonden</translation>
 <translation id="7942349550061667556">Rood</translation>
 <translation id="7943235353293548836">Permanent keepalive-interval</translation>
+<translation id="7943516765291457328">Zet bluetooth aan om te scannen naar hotspots in de buurt</translation>
 <translation id="7944562637040950644">achtergrondverlichting van toetsenbord aan- of uitzetten</translation>
 <translation id="7953669802889559161">Invoermethoden</translation>
 <translation id="7955587717700691983">Bluetooth-toetsenbord</translation>
@@ -1326,6 +1326,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8747900814994928677">Wijziging bevestigen</translation>
 <translation id="8749478549112817787">Camera-achtergrond</translation>
 <translation id="8755946156089753497">toren</translation>
+<translation id="8756235582947991808">Content maken met AI (en een paar dingen om rekening mee te houden)</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto's-album</translation>
 <translation id="8775713578693478175">Modem-APN</translation>

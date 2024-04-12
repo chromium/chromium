@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1533488253335887280">Acces ușor și sigur la parole de pe ecranul de pornire.</translation>
+<translation id="1590550141045148182">Deschide sau închide filele după cum dorești.</translation>
+<translation id="2036020471903443693">Vei vedea fila fixată în partea de jos a ecranului.</translation>
+<translation id="2984477737332162971">Accesează filele deschise.</translation>
+<translation id="3595188309555410362">Dacă ai file care nu au fost folosite de ceva timp, se vor muta acum în secțiunea File inactive.</translation>
+<translation id="3941788408634637840">Atinge File inactive (dacă sunt disponibile).</translation>
+<translation id="3942215673032261195">Poți fixa site-urile preferate pentru a le accesa ușor mai târziu.</translation>
+<translation id="4196935312151003338">Selectează Fixează fila din meniu.</translation>
+<translation id="4497631794981705027">Atinge lung ecranul de pornire.</translation>
+<translation id="463279609093232564">În partea din stânga sus a ecranului, atinge +.</translation>
+<translation id="5604467549230434026">În caseta Caută widgeturi, introdu Chrome.</translation>
+<translation id="5639067007765618198">Widgetul Manager de parole Google</translation>
 <translation id="5922999516621365983">Trage fila aici pentru a o fixa.</translation>
 <translation id="5979837087407522202">Caută parole</translation>
+<translation id="6109989197058801417">Apasă lung pe fila pe care vrei să o fixezi.</translation>
+<translation id="639614003069108254">Selectează Managerul de parole, apoi atinge Adaugă un widget.</translation>
+<translation id="6905308710260460250">Filele fixate</translation>
+<translation id="720206380500582061">Gestionează setările pentru filele inactive din Setări &gt; File.</translation>
 <translation id="8077675488769462025">File inactive</translation>
+<translation id="8602952180069641300">Derulează spre partea de sus a filelor.</translation>
+<translation id="979990360845983227">Nu s-a folosit timp de cel puțin 14 zile</translation>
 </translationbundle>

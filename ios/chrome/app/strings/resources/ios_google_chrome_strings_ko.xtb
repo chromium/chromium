@@ -19,7 +19,6 @@
 <translation id="1436059927646026729">Chrome에서 최신 내 탭 열기</translation>
 <translation id="1449241544691504574">Chrome에 북마크 추가</translation>
 <translation id="1462727070346936664">로그인하여 Chrome의 모든 기능을 이용하세요</translation>
-<translation id="1462833127986525564">Chrome 및 기타 Google 서비스가 서로의 데이터를 사용하여 내 환경을 맞춤설정하도록 하려면 이러한 서비스를 연결하세요</translation>
 <translation id="1491435845014430217">'Chrome 종료 시 시크릿 탭 잠금'을 사용 설정합니다.</translation>
 <translation id="1493827051843127077">Chrome을 모든 기기에서 탭, 비밀번호, 결제 정보를 동기화할 기본 브라우저로 설정하세요.</translation>
 <translation id="1504372625950710826">Chrome에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인해 보세요.</translation>
@@ -43,7 +42,6 @@
 <translation id="1790080846677398234">Chrome의 북마크에 입력한 URL을 추가합니다.</translation>
 <translation id="1799920918471566157">Chrome 사용 팁</translation>
 <translation id="1830634592642484976">이 주소는 현재 Chrome에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
-<translation id="1843217788865538014">메시지, 문서, 기타 앱에서 링크를 탭하면 자동으로 Chrome이 사용됩니다</translation>
 <translation id="1910975740091000991">iOS용 Chrome</translation>
 <translation id="1917964099031477364">이 계정 및 저장되지 않은 모든 데이터가 Chrome 및 이 기기의 기타 Google 앱에서 삭제됩니다.</translation>
 <translation id="1965935827552890526">열려 있는 다른 Chrome 창에서 진행 중이던 작업을 완료하세요.</translation>
@@ -123,7 +121,6 @@
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4251174643044751591">Chrome에서 결제 수단 설정 페이지를 엽니다.</translation>
 <translation id="4453284704333523777">Chrome 설정 관리</translation>
-<translation id="4508370294876102450">어느 앱에서나 Chrome 열기</translation>
 <translation id="4523886039239821078">일부 부가기능이 Chrome을 비정상 종료시킵니다. 다음 항목을 제거하세요.</translation>
 <translation id="4633328489441962921">Chrome에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="4636900170638246267">이 사이트 및 Chrome에 로그인하세요.</translation>
@@ -134,7 +131,6 @@
         잠시 기다렸다가 로그아웃하세요. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="484033449593719797">Chrome 베타에서는 지원되지 않습니다.</translation>
 <translation id="4840404732697892756">Google 계정으로 로그인하면 Google 비밀번호 관리자에서 비밀번호를 확인할 수 있습니다.</translation>
-<translation id="4856636171409137183">최적의 맞춤 환경을 이용하려면 <ph name="FEATURE_NAME_1" /> 및 <ph name="FEATURE_NAME_2" />에 Chrome을 포함하세요</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome의 새 탭 페이지를 통해 이 택배를 추적할 수 있습니다}other{Chrome의 새 탭 페이지를 통해 이 택배를 추적할 수 있습니다}}</translation>
 <translation id="4903674399067644695">이 카드는 Chrome을 최대한 활용하는 방법에 관한 추천을 보여줍니다.</translation>
 <translation id="49200511069271369">내가 로그인한 계정과 Chrome이 사용될 수 있는 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다. 관리자는 특정 기능을 설정하거나 제한할 수 있습니다</translation>
@@ -177,7 +173,6 @@
 <translation id="6110625574506755980">일부 Chrome 기능을 더 이상 사용할 수 없게 됩니다</translation>
 <translation id="6132149203299792222">Google 계정으로 로그인하여 비밀번호, 북마크 등을 동기화하세요.</translation>
 <translation id="6177442314419606057">Chrome에서 검색</translation>
-<translation id="6181930887571472871">Chrome으로 전환</translation>
 <translation id="6238746320622508509">Chrome에서 시크릿 탭을 잠그도록 허용합니다.</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6272822675004864999">Chrome에서 알림을 받으려면 iOS 설정에서 알림을 사용 설정하세요.</translation>
@@ -205,7 +200,6 @@
 
 Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />로 이동하세요.</translation>
 <translation id="6916015246697034114">Chrome에서 음성으로 검색하기</translation>
-<translation id="6964931465519938134">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="6975725306479268850">Chrome 자동 완성을 선택하세요</translation>
 <translation id="7004159181872656283">Chrome에서 시각적 검색을 수행합니다.</translation>
 <translation id="7056826488869329999">Chrome에서 안전 확인을 열고 실행됩니다.</translation>
@@ -225,13 +219,13 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7272930098487145294">이미지를 저장하려면 '설정'을 탭하여 Chrome에 사진 추가 권한을 부여하세요.</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chrome 데이터가 삭제됩니다</translation>
 <translation id="7304491752269485262">Chrome 자동 완성 펼쳐 보기</translation>
+<translation id="7344094882820374540">위험한 사이트로부터 보호하는 Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="7349129508108954623">Chrome에서 Google 지도를 사용하여 감지된 주소의 경로 및 지역 정보를 제공하도록 허용합니다</translation>
 <translation id="7394108421562933108">Chrome의 지도</translation>
 <translation id="7400722733683201933">Chrome 정보</translation>
 <translation id="7466693328838535498">검색 위젯 상자에 Chrome을 입력합니다.</translation>
 <translation id="746684838091935575">3. Chrome 선택하기</translation>
 <translation id="7492574581995589075">조직에서 Google 계정에 Chrome 데이터를 사용하고 저장하는 기능을 사용 중지했습니다. 새 북마크, 비밀번호 등이 이 기기에만 저장됩니다.</translation>
-<translation id="7501046334262221972">Chrome을 기본 브라우저로 설정하려면 설정을 여세요. 기본 브라우저 앱을 탭한 다음 Chrome을 선택합니다.</translation>
 <translation id="756809126120519699">Chrome 데이터 삭제됨</translation>
 <translation id="7581063337314642333">Chrome에서 탭 그리드로 이동</translation>
 <translation id="7662994914830945754">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
@@ -244,7 +238,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7792140019572081272">Chrome은 Face ID를 통해 사용자의 민감한 정보를 안전하게 보호합니다.</translation>
 <translation id="7855730255114109580">Chrome이 최신 버전입니다.</translation>
 <translation id="7897703007638178753">Chrome 최근 탭 보기</translation>
-<translation id="7925119591961387184">'Chrome'을 선택합니다.</translation>
 <translation id="7933491483529363150">Chrome에서 내 최신 탭을 엽니다.</translation>
 <translation id="7948283758957877064">Chrome의 새로운 기능</translation>
 <translation id="8006014511203279255">언제든지 메시지 또는 기타 앱에서 링크를 탭하여 Chrome을 사용해 보세요.</translation>
@@ -276,7 +269,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8540666473246803645">Chrome</translation>
 <translation id="8558480467877843976">이제 언제든지 메시지, 문서, 기타 앱에서 탐색하거나 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="8577978202917232774">추천은 다른 기기에서 탐색한 활동을 기반으로 합니다. 추천을 받으려면 모든 기기에서 Chrome에 로그인하세요.</translation>
-<translation id="8587647598504233556">'Chrome'을 탭한 다음 '기본 브라우저 앱'을 탭합니다.</translation>
 <translation id="8603022514504485810">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="8727043961453758442">Chrome 최대한 활용하기</translation>
 <translation id="8736550665979974340">Chrome으로 안전하게 보호하기</translation>

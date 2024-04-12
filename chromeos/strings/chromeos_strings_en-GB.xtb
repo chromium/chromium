@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">Place another page on the scanner</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2873483161362553159">Browser navigation</translation>
-<translation id="2873939192640533085">Enter a prompt, like 'sound more confident'</translation>
 <translation id="2874939134665556319">Previous track</translation>
 <translation id="2875812231449496375">Turn this on for best results with this wallpaper. You can turn off this setting at any time.</translation>
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">You are not connected yet. If your mobile operator recommends a custom APN, enter the APN information by selecting '+ New APN'</translation>
 <translation id="5947266287934282605">If the last day of the month is before this day, data will be reset on the last day of the month</translation>
 <translation id="5948460390109837040">dogs</translation>
+<translation id="594989847980441553">Select 'Create' to create an image with AI.
+        All created images will automatically appear here.</translation>
 <translation id="5972388717451707488">Update engine</translation>
 <translation id="5975130252842127517">coral</translation>
 <translation id="5984145644188835034">Default wallpaper</translation>
@@ -1197,6 +1198,7 @@
 <translation id="7936303884198020182">No name servers found</translation>
 <translation id="7942349550061667556">Red</translation>
 <translation id="7943235353293548836">Persistent keepalive interval</translation>
+<translation id="7943516765291457328">Turn on Bluetooth to scan for nearby hotspots</translation>
 <translation id="7944562637040950644">toggle keyboard backlight</translation>
 <translation id="7953669802889559161">Inputs</translation>
 <translation id="7955587717700691983">Bluetooth keyboard</translation>
@@ -1326,6 +1328,7 @@
 <translation id="8747900814994928677">Confirm change</translation>
 <translation id="8749478549112817787">Camera background</translation>
 <translation id="8755946156089753497">tower</translation>
+<translation id="8756235582947991808">How to create with AI and a few things to bear in mind</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos album</translation>
 <translation id="8775713578693478175">Modem APN</translation>

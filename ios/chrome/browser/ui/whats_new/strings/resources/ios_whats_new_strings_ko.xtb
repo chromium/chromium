@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1533488253335887280">홈 화면에서 쉽고 안전하게 비밀번호에 액세스하세요</translation>
+<translation id="1590550141045148182">원하는 대로 탭을 열거나 닫습니다.</translation>
+<translation id="2036020471903443693">탭이 화면 하단에 고정되어 표시됩니다.</translation>
+<translation id="2984477737332162971">열려 있는 탭으로 이동합니다.</translation>
+<translation id="3595188309555410362">이제 한동안 사용하지 않은 탭은 비활성 탭 섹션으로 이동합니다</translation>
+<translation id="3941788408634637840">가능한 경우 비활성 탭을 탭합니다.</translation>
+<translation id="3942215673032261195">나중에 간편하게 액세스할 수 있도록 즐겨찾는 사이트를 고정할 수 있습니다</translation>
+<translation id="4196935312151003338">메뉴에서 '탭 고정'을 선택합니다.</translation>
+<translation id="4497631794981705027">홈 화면을 길게 터치합니다.</translation>
+<translation id="463279609093232564">화면 왼쪽 상단에서 + 아이콘을 탭합니다.</translation>
+<translation id="5604467549230434026">검색 위젯 상자에 Chrome을 입력합니다.</translation>
+<translation id="5639067007765618198">Google 비밀번호 관리자 위젯</translation>
 <translation id="5922999516621365983">탭을 고정하려면 여기로 드래그하세요</translation>
 <translation id="5979837087407522202">비밀번호 검색</translation>
+<translation id="6109989197058801417">고정하려는 탭을 길게 누릅니다.</translation>
+<translation id="639614003069108254">비밀번호 관리자를 선택한 후 위젯 추가를 탭합니다.</translation>
+<translation id="6905308710260460250">탭 고정</translation>
+<translation id="720206380500582061">설정 &gt; 탭에서 비활성 탭 설정을 관리합니다.</translation>
 <translation id="8077675488769462025">비활성된 탭</translation>
+<translation id="8602952180069641300">탭 상단이 표시될 때까지 위로 스크롤합니다.</translation>
+<translation id="979990360845983227">14일 이상 사용하지 않음</translation>
 </translationbundle>

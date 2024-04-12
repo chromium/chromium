@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C डिवाइस (पिछला पोर्ट)</translation>
 <translation id="1869497990620230175">क्विक फ़ाइलें</translation>
 <translation id="1871023081802165724">मीडिया चलाएं</translation>
+<translation id="1871915835366697861">यह सुविधा इस गेम के लिए उपलब्ध नहीं है</translation>
 <translation id="1879018240766558464">फ़िलहाल, गुप्त विंडो काम नहीं कर रही हैं. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
 <translation id="1882814835921407042">आपके फ़ोन में मोबाइल नेटवर्क उपलब्ध नहीं है</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> पर स्क्रीन शेयर कर रहा है</translation>
@@ -1792,6 +1793,7 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> और <ph name="SECOND_PARENT_EMAIL" /> खाता संभालते हैं</translation>
 <translation id="793716872548410480">क्लिपबोर्ड देखने के लिए, <ph name="SHORTCUT_KEY_NAME" /> + V दबाएं. आपके कॉपी किए गए आखिरी पांच आइटम, क्लिपबोर्ड पर सेव किए गए.</translation>
 <translation id="7942349550061667556">लाल</translation>
+<translation id="7943516765291457328">आस-पास मौजूद हॉटस्पॉट स्कैन करने के लिए ब्लूटूथ चालू करें</translation>
 <translation id="7944023924886109030">आज के सभी इवेंट देखें</translation>
 <translation id="7945357288295809525">सुलभता सेटिंग में दिखाएं कि "<ph name="ENABLED_FEATURES" />" चालू है.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> को आपका <ph name="DEVICE_NAME" /> इस्तेमाल करना है</translation>

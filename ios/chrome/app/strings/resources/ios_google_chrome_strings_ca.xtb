@@ -19,7 +19,6 @@
 <translation id="1436059927646026729">Obre la meva darrera pestanya a Chrome</translation>
 <translation id="1449241544691504574">Afegeix adreces d'interès a Chrome</translation>
 <translation id="1462727070346936664">Inicia la sessió per treure el màxim profit de Chrome.</translation>
-<translation id="1462833127986525564">Enllaça Chrome i altres serveis de Google si vols que personalitzin la teva experiència utilitzant dades entre si</translation>
 <translation id="1491435845014430217">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chrome.</translation>
 <translation id="1493827051843127077">Configura Chrome com a navegador predeterminat per sincronitzar les pestanyes, les contrasenyes i la informació de pagament de tots els dispositius</translation>
 <translation id="1504372625950710826">Chrome no ha pogut cercar actualitzacions. Comprova la connexió a Internet.</translation>
@@ -43,7 +42,6 @@ Aspectes que cal tenir en compte:
 <translation id="1790080846677398234">Afegeix els URL introduïts a les adreces d'interès de Chrome.</translation>
 <translation id="1799920918471566157">Consells per a Chrome</translation>
 <translation id="1830634592642484976">Actualment aquesta adreça està desada a Chrome. Per utilitzar-la en tots els productes de Google, desa-la al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
-<translation id="1843217788865538014">Utilitza Chrome automàticament quan toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="1910975740091000991">Chrome per a iOS</translation>
 <translation id="1917964099031477364">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chrome i de la resta d'aplicacions de Google instal·lades en aquest dispositiu.</translation>
 <translation id="1965935827552890526">Acaba el que estaves fent a l'altra finestra de Chrome oberta.</translation>
@@ -123,7 +121,6 @@ Aspectes que cal tenir en compte:
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4251174643044751591">Obre la pàgina de configuració de les formes de pagament a Chrome.</translation>
 <translation id="4453284704333523777">Gestiona la configuració de Chrome</translation>
-<translation id="4508370294876102450">Obre Chrome des de qualsevol aplicació</translation>
 <translation id="4523886039239821078">Alguns complements fan que Chrome falli. Desinstal·la'ls.</translation>
 <translation id="4633328489441962921">Chrome no pot cercar actualitzacions</translation>
 <translation id="4636900170638246267">Inicia la sessió en aquest lloc web i a Chrome.</translation>
@@ -134,7 +131,6 @@ Aspectes que cal tenir en compte:
         Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="484033449593719797">No s'admeten a la versió beta de Chrome</translation>
 <translation id="4840404732697892756">El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
-<translation id="4856636171409137183">Per gaudir d'una experiència més personalitzada, inclou Chrome a <ph name="FEATURE_NAME_1" /> i a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome et pot ajudar a fer un seguiment d'aquest paquet a la pàgina Pestanya nova.}other{Chrome et pot ajudar a fer un seguiment d'aquests paquets a la pàgina Pestanya nova.}}</translation>
 <translation id="4903674399067644695">Aquesta targeta mostra suggeriments sobre com pots treure el màxim profit de Chrome.</translation>
 <translation id="49200511069271369">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què estàs iniciant la sessió i com es pot utilitzar Chrome. L'administrador pot configurar o restringir determinades funcions.</translation>
@@ -177,7 +173,6 @@ Aspectes que cal tenir en compte:
 <translation id="6110625574506755980">Algunes funcions de Chrome ja no estaran disponibles.</translation>
 <translation id="6132149203299792222">Inicia la sessió amb el teu Compte de Google per sincronitzar les contrasenyes, les adreces d'interès i altres elements.</translation>
 <translation id="6177442314419606057">Fes cerques a Chrome</translation>
-<translation id="6181930887571472871">Canvia a Chrome</translation>
 <translation id="6238746320622508509">Deixa que Chrome bloquegi les teves pestanyes d'incògnit.</translation>
 <translation id="6247557882553405851">Gestor de contrasenyes de Google</translation>
 <translation id="6272822675004864999">Per rebre notificacions de Chrome, activa-les a la configuració d'iOS.</translation>
@@ -205,7 +200,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 
 Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chrome, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Cerca amb la veu a Chrome</translation>
-<translation id="6964931465519938134">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="6975725306479268850">Tria Chrome a Emplenament automàtic</translation>
 <translation id="7004159181872656283">Cerca elements visuals a Chrome.</translation>
 <translation id="7056826488869329999">Obre i executa la comprovació de seguretat a Chrome.</translation>
@@ -225,13 +219,13 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="7272930098487145294">Si vols desar imatges, toca Configuració per permetre que Chrome les afegeixi a les teves fotos</translation>
 <translation id="7275945473750112644">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chrome s'esborraran d'aquest dispositiu</translation>
 <translation id="7304491752269485262">Visualització ampliada de la funció Emplenament automàtic de Chrome</translation>
+<translation id="7344094882820374540">Obtén la seguretat més efectiva de Chrome contra llocs web perillosos</translation>
 <translation id="7349129508108954623">Permet que Chrome utilitzi Google Maps per oferir-te indicacions i informació local sobre les adreces detectades.</translation>
 <translation id="7394108421562933108">Maps a Chrome</translation>
 <translation id="7400722733683201933">Sobre Google Chrome</translation>
 <translation id="7466693328838535498">Al quadre de widgets de la Cerca, escriu "Chrome"</translation>
 <translation id="746684838091935575">3. Selecciona Chrome.</translation>
 <translation id="7492574581995589075">La teva organització ha desactivat l'opció de fer servir i desar dades de Chrome al teu Compte de Google. Les adreces d'interès noves, les contrasenyes i altres dades només es desaran en aquest dispositiu.</translation>
-<translation id="7501046334262221972">Per establir Chrome com a navegador predeterminat, obre Configuració. Toca Aplicació de navegador predeterminada i, tot seguit, selecciona Chrome.</translation>
 <translation id="756809126120519699">S'han esborrat les dades de Chrome</translation>
 <translation id="7581063337314642333">Visita la quadrícula de pestanyes a Chrome</translation>
 <translation id="7662994914830945754">Per veure les pestanyes des de tots els llocs on facis servir Chrome, inicia la sessió i activa la sincronització</translation>
@@ -244,7 +238,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="7792140019572081272">Chrome protegeix les teves dades sensibles amb Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome està actualitzat</translation>
 <translation id="7897703007638178753">Mostra les pestanyes recents de Chrome</translation>
-<translation id="7925119591961387184">Selecciona Chrome.</translation>
 <translation id="7933491483529363150">Obre la meva darrera pestanya a Chrome.</translation>
 <translation id="7948283758957877064">Novetats de Chrome</translation>
 <translation id="8006014511203279255">Utilitza Chrome cada vegada que toquis enllaços en missatges o en altres aplicacions.</translation>
@@ -276,7 +269,6 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">Ara pots utilitzar Chrome cada vegada que naveguis o toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="8577978202917232774">Els suggeriments es basen en la teva activitat de navegació als altres dispositius que fas servir. Per rebre suggeriments, inicia la sessió a Chrome en tots els teus dispositius.</translation>
-<translation id="8587647598504233556">Toca Chrome i, a continuació, Aplicació de navegació predeterminada.</translation>
 <translation id="8603022514504485810">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Aprofita Chrome al màxim</translation>
 <translation id="8736550665979974340">Protegeix-te amb Google Chrome</translation>

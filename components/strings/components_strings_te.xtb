@@ -185,7 +185,6 @@
 <translation id="1323433172918577554">మరింత చూపు</translation>
 <translation id="132390688737681464">అడ్రస్‌లను సేవ్ చేసి, పూరించండి</translation>
 <translation id="1325412080783393306">కొనుగోలు చేయడానికి సంబంధించి మరిన్ని ఆప్షన్‌లను సెర్చ్ చేయండి</translation>
-<translation id="1325749054628832887">యాడ్‌లను వ్యక్తిగతీకరించడానికి సైట్ ఉపయోగించే అనేక విషయాలలో యాడ్ టాపిక్‌లు ఒకటి. యాడ్ టాపిక్‌లు లేకున్నా, సైట్‌లు ఇప్పటికీ మీకు యాడ్‌లను చూపగలవు కానీ అవి తక్కువ ఆసక్తికరంగా ఉండవచ్చు. <ph name="BEGIN_LINK" />మీ యాడ్‌ల విషయంలో గోప్యతను మేనేజ్ చేయడం<ph name="LINK_END" /> గురించి మరింత తెలుసుకోండి.</translation>
 <translation id="1329916999021038454">రిపోర్ట్‌ను పంపండి</translation>
 <translation id="1330449323196174374">ఎడమవైపు గేట్‌ ఫోల్డ్</translation>
 <translation id="1333745675627230582">Chrome Dino గేమ్‌ను ఆడండి</translation>
@@ -2962,7 +2961,6 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">టెలీకాన్ఫరెన్సింగ్</translation>
 <translation id="6753269504797312559">విధానం విలువ</translation>
-<translation id="6753390234084146956">ట్యాబ్‌లు</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ఎంట్రీని తొలగించండి</translation>
 <translation id="6754547388777247439">పొదుపు ఖాతాలు</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3676,6 +3674,7 @@
 <translation id="8075588646978457437">సెల్ఫ్-యాడ్హెసివ్ పేపర్</translation>
 <translation id="8075736640322370409">కొత్త Google షీట్‌ను త్వరగా క్రియేట్ చేయండి</translation>
 <translation id="8075898834294118863">సైట్ సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
+<translation id="8076492880354921740">ట్యాబ్‌లు</translation>
 <translation id="8077669823243888800">ఎన్వలప్ చైనీస్ #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{గోప్యమైన ఫైల్‌ను అప్‌లోడ్ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను అప్‌లోడ్ చేయాలా?}}</translation>
 <translation id="8078141288243656252">తిప్పినప్పుడు అదనపు గమనికలను అందించడం సాధ్యపడదు</translation>

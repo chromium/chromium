@@ -113,7 +113,6 @@
 <translation id="1580783302095112590">已傳送郵件。</translation>
 <translation id="1582732959743469162">目前所有下載進度都會因此停止。</translation>
 <translation id="158591023028013564">{count,plural, =1{已將網頁新增至閱讀清單}other{已將 {count} 個網頁新增至閱讀清單}}</translation>
-<translation id="1587629076612412684">享有個人化的 Google 服務</translation>
 <translation id="1594034544529347967">開始時間</translation>
 <translation id="160275202205869636">開啟時，可在 Google 帳戶中使用及儲存資料。關閉後，資料只會儲存到這部裝置。</translation>
 <translation id="1605405588277479165">關閉 - 不建議</translation>
@@ -200,7 +199,6 @@
 <translation id="20485545164632846">新項目</translation>
 <translation id="2049727122989709386">有 <ph name="COUNT" /> 個帳戶使用相同的密碼</translation>
 <translation id="2050196510205866090">{count,plural, =1{鍵盤上方顯示 {count} 個已儲存的付款方式。}other{鍵盤上方顯示 {count} 個已儲存的付款方式。}}</translation>
-<translation id="2055515971416882518">開啟「設定」。</translation>
 <translation id="2059166748188874810">縣/市</translation>
 <translation id="2062410130322589403">隱私權選項指南</translation>
 <translation id="20638360198452347">單位類型選取器</translation>
@@ -551,7 +549,6 @@
 <translation id="3861486700625780712">取消追蹤</translation>
 <translation id="3861908220442487587">這個地址只會儲存在這部裝置上。如要在其他裝置上使用這項地址資訊，請將資訊移到 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
 <translation id="3863769054730344136">傳送到你的裝置</translation>
-<translation id="3875783148670536197">顯示操作說明</translation>
 <translation id="3888863481921783344">系統會使用這些資料向你顯示活動的可能邀請對象。</translation>
 <translation id="3891414008432200754">價格</translation>
 <translation id="3892144330757387737">這裡會顯示你的歷史記錄</translation>
@@ -1033,6 +1030,7 @@
 <translation id="633809752005859102">發生重大錯誤，我們將設法解決。</translation>
 <translation id="6339793034470834130">如要使用網頁檢閱器，請利用傳輸線連上電腦的 Safari，從「開發」選單存取 iPhone。你可以透過電腦，在 Safari 設定的「進階」部分中啟用「開發」選單。</translation>
 <translation id="6340285871011301182">無法進行部分翻譯。</translation>
+<translation id="6340526405444716530">個人化</translation>
 <translation id="6342069812937806050">剛剛</translation>
 <translation id="6344783595350022745">清除文字</translation>
 <translation id="6346549652287021269">要開始進行新的下載作業嗎？</translation>
@@ -1177,7 +1175,6 @@
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6983306615164277634">你也可以按住網址列來變更位置。</translation>
 <translation id="6988572888918530647">管理你的 Google 帳戶</translation>
-<translation id="6989674195860388998">切換至「設定」…</translation>
 <translation id="6998989275928107238">收件者</translation>
 <translation id="699954956411469731">行動裝置通知</translation>
 <translation id="699985840472413751">關閉下載列</translation>
@@ -1600,7 +1597,6 @@
 <translation id="9106655997975673326">來源：<ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">檢查是否有遭外洩的密碼</translation>
 <translation id="9109699888944026290">{count,plural, =1{這個網站的新密碼}other{這個網站的新密碼}}</translation>
-<translation id="9110489518258031250">控管其他 Google 服務如何運用已同步的瀏覽記錄提供個人化體驗</translation>
 <translation id="9120217828624527905">切換成整頁翻譯</translation>
 <translation id="9124387962554796433">Google 可能會使用你的歷史記錄，為你提供個人化的 Google 搜尋和其他服務。</translation>
 <translation id="9137526406337347448">Google 服務</translation>

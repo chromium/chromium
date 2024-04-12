@@ -1990,16 +1990,6 @@ seleção padrão.</translation>
 <translation id="2489558694350871332">Permitir que o dispositivo execute máquinas virtuais</translation>
 <translation id="2492240920793040106">Ativar relatórios de informações do sistema e conteúdo da página para ajudar a melhorar o recurso Navegação segura</translation>
 <translation id="2496180316473517155">Histórico de navegação</translation>
-<translation id="2497530682475109135">Esta política controla um rótulo usado para identificar um perfil conectado. Este rótulo será mostrado em vários locais para ajudar os usuários a identificar o perfil, como ao lado do ícone de perfil na barra de ferramentas.
-Ele também será usado como nome padrão para perfis recém-criados, que podem ser modificados pelos usuários.
-
-Se esta política não for definida, será usado o rótulo padrão "Trabalho" ou "Escola".
-
-Se a política for definida como "Marcar o perfil como Trabalho (1)", será usado o rótulo "Trabalho".
-
-Se a política for definida como "Marcar o perfil como Escola (2)", o rótulo "Escola" será usado.
-
-Essa política será substituída pela <ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" />, se ela estiver definida.</translation>
 <translation id="2497751676088107779">Script de usuário</translation>
 <translation id="2497965601277442929">Não permitir que os usuários ativem o HTTPS-Only Mode</translation>
 <translation id="249798396824949930"> Controla se o navegador pode detectar o escopo obrigatório da política em <ph name="MAC_OS_NAME" /> ou não.
@@ -2237,23 +2227,6 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
 <translation id="2673363037046384711">O usuário final pode ativar ou desativar o modo de alta eficiência.</translation>
 <translation id="2673968385134502798">Jogos</translation>
 <translation id="2678503605767349615">Certificados do cliente em todo o dispositivo obrigatórios</translation>
-<translation id="2679980446318031955">Por motivos de segurança, a
-API <ph name="REQUEST_FULLSCREEN_API_NAME" /> da Web
-exige que um gesto anterior do usuário ("ativação temporária") seja chamado. Caso contrário,
-ela vai falhar. As configurações pessoais dos usuários podem permitir que determinadas origens chamem
-essa API sem um gesto anterior do usuário, conforme descrito em
-<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
-
-Esta política substitui as configurações pessoais dos usuários e permite que origens correspondentes
-chamem a API sem um gesto anterior do usuário.
-
-Para saber mais sobre padrões de URL válidos, consulte
-https://chromeenterprise.google/intl/pt_br/policies/url-patterns/.
-Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-As origens que corresponderem aos padrões de política bloqueados e permitidos ao mesmo tempo serão bloqueadas.
-Origens não especificadas por políticas ou configurações dos usuários exigem um gesto anterior
-do usuário para chamar a API.</translation>
 <translation id="268134026533587276">O protetor da tela de bloqueio do usuário está ativado.</translation>
 <translation id="268577405881275241">Ativar o recurso de proxy de compactação de dados</translation>
 <translation id="268695908564263739">Esta política ativa ou desativa a configuração do modo de alta eficiência. Com essa configuração, as guias são descartadas após um determinado período em segundo plano para recuperar memória.
@@ -6842,23 +6815,6 @@ vão falhar e usar, na tela de <ph name="LOG_IN" />, apenas a
 resolução de localização baseada no <ph name="IP" />.</translation>
 <translation id="6338982178236723271">Enviar informações do sistema</translation>
 <translation id="6339355882150329269">Não considerar o usuário como inativo durante a reprodução de vídeos</translation>
-<translation id="634949984530753985">Por motivos de segurança, a
-API <ph name="REQUEST_FULLSCREEN_API_NAME" /> da Web
-exige que um gesto anterior do usuário ("ativação temporária") seja chamado. Caso contrário,
-ela vai falhar. As configurações pessoais dos usuários podem permitir que determinadas origens chamem
-essa API sem um gesto anterior do usuário, conforme descrito em
-<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
-
-Esta política substitui as configurações pessoais dos usuários e impede que origens correspondentes
-chamem a API sem um gesto anterior do usuário.
-
-Para saber mais sobre padrões de URL válidos, consulte
-https://chromeenterprise.google/intl/pt_br/policies/url-patterns/.
-Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-As origens que corresponderem aos padrões de política bloqueados e permitidos ao mesmo tempo serão bloqueadas.
-Origens não especificadas por políticas ou configurações dos usuários exigem um gesto anterior
-do usuário para chamar a API.</translation>
 <translation id="6352714113109004581">Se a política for definida, é possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que o usuário conceda permissão de acesso ao dispositivo HID.
 
       Se esta política for deixada sem definição, a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> vai ser aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários vão ser aplicadas.
@@ -9539,6 +9495,9 @@ Se ela não for definida ou for definida como "0", a navegação para um URL des
 
       Esta política será removida após o Chrome 115.</translation>
 <translation id="841395160262233331">A tecla de acesso rápido/pesquisa não pode mudar o comportamento das teclas de função, e essa configuração não pode ser modificada pelos usuários.</translation>
+<translation id="8415506434606458373">Se a política estiver definida, as origens listadas poderão acessar atributos do dispositivo, como o número de série ou o nome do host, usando a API Device Attributes.
+
+As origens precisam corresponder a aplicativos da Web de instalação forçada usando a política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (a partir da versão 125) configurados como um aplicativo de quiosque. Para conferir a especificação da API Device Attributes, consulte https://wicg.github.io/WebApiDevice/device_attributes (link em inglês).</translation>
 <translation id="8415953438346821074">Se você ativar esta configuração, as definições armazenadas nos perfis do <ph name="PRODUCT_NAME" />, como favoritos, dados de preenchimento automático, senhas, entre outras, serão gravadas em um arquivo armazenado na pasta "Perfil de usuário de roaming" ou em um local especificado pelo administrador por meio da política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. A ativação dessa política desativa a sincronização em nuvem.
 
       Se a política for desativada ou não for configurada, apenas os perfis locais normais serão usados.</translation>

@@ -113,7 +113,6 @@
 <translation id="1580783302095112590">E-mail envoyé.</translation>
 <translation id="1582732959743469162">Cette action arrêtera le téléchargement en cours.</translation>
 <translation id="158591023028013564">{count,plural, =1{Page ajoutée à votre liste de lecture}one{{count} page ajoutée à votre liste de lecture}other{{count} pages ajoutées à votre liste de lecture}}</translation>
-<translation id="1587629076612412684">Personnaliser services Google</translation>
 <translation id="1594034544529347967">Début</translation>
 <translation id="160275202205869636">Activez l'option pour utiliser et sauvegarder les données dans votre compte Google. Désactivez-la pour n'enregistrer les données que sur l'appareil.</translation>
 <translation id="1605405588277479165">Désactivée – Non recommandé</translation>
@@ -136,6 +135,7 @@
 <translation id="1687475363370981210">Tout marquer comme lu</translation>
 <translation id="1689333818294560261">Pseudo</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> favoris sélectionnés.</translation>
+<translation id="1710698977900873766">Activer la protection renforcée</translation>
 <translation id="1713777106376424209">Livré par</translation>
 <translation id="1715515772563243997">Si vous faites confiance à <ph name="SITE" />, vous pouvez utiliser un mot de passe enregistré pour vous connecter.</translation>
 <translation id="1740468249224277719">Appuyez deux fois pour installer.</translation>
@@ -200,7 +200,6 @@
 <translation id="20485545164632846">nouvel élément</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> comptes utilisent le même mot de passe</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} mode de paiement enregistré disponible au-dessus de votre clavier.}one{{count} mode de paiement enregistré disponible au-dessus de votre clavier.}other{{count} modes de paiement enregistrés disponibles au-dessus de votre clavier.}}</translation>
-<translation id="2055515971416882518">Ouvrez "Réglages".</translation>
 <translation id="2059166748188874810">Municipalité</translation>
 <translation id="2062410130322589403">Guide sur vos choix de confidentialité</translation>
 <translation id="20638360198452347">Sélecteur de type d'unité</translation>
@@ -551,7 +550,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3861486700625780712">Se désabonner</translation>
 <translation id="3861908220442487587">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, déplacez-la vers votre compte Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="3863769054730344136">Envoyer à vos appareils</translation>
-<translation id="3875783148670536197">Démonstration</translation>
 <translation id="3888863481921783344">Cela permettra d'afficher les participants potentiels à votre événement.</translation>
 <translation id="3891414008432200754">Prix</translation>
 <translation id="3892144330757387737">Votre historique s'affichera ici</translation>
@@ -1033,6 +1031,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="633809752005859102">Une erreur importante s'est produite. Nous allons rechercher une solution.</translation>
 <translation id="6339793034470834130">Pour utiliser l'inspecteur Web sur Safari, branchez votre iPhone à votre ordinateur à l'aide d'un câble et accédez-y depuis le menu Développement. Vous pouvez activer ce menu dans la section "Avancé" de Safari sur votre ordinateur.</translation>
 <translation id="6340285871011301182">Traduction partielle non disponible.</translation>
+<translation id="6340526405444716530">Personnalisation</translation>
 <translation id="6342069812937806050">À l'instant</translation>
 <translation id="6344783595350022745">Effacer le texte</translation>
 <translation id="6346549652287021269">Lancer un nouveau téléchargement ?</translation>
@@ -1177,7 +1176,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Vous pouvez aussi appuyer de manière prolongée sur la barre d'adresse pour changer la position.</translation>
 <translation id="6988572888918530647">Gérer votre compte Google</translation>
-<translation id="6989674195860388998">Changer dans les paramètres…</translation>
 <translation id="6998989275928107238">À</translation>
 <translation id="699954956411469731">Notifications mobiles</translation>
 <translation id="699985840472413751">Fermer le téléchargement</translation>
@@ -1601,7 +1599,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9106655997975673326">Provenant de <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>
 <translation id="9109699888944026290">{count,plural, =1{Nouveau mot de passe pour ce site}one{Nouveaux mots de passe pour ce site}other{Nouveaux mots de passe pour ce site}}</translation>
-<translation id="9110489518258031250">Contrôlez la manière dont votre historique de navigation synchronisé peut être utilisé pour personnaliser d'autres services Google</translation>
 <translation id="9120217828624527905">Passer à la traduction complète de la page</translation>
 <translation id="9124387962554796433">Google pourra utiliser votre historique pour personnaliser la recherche et d'autres de ses services.</translation>
 <translation id="9137526406337347448">Google Services</translation>

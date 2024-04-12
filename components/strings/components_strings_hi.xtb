@@ -185,7 +185,6 @@
 <translation id="1323433172918577554">और दिखाएं</translation>
 <translation id="132390688737681464">पतों की जानकारी सेव करें और फ़ॉर्म में भरें</translation>
 <translation id="1325412080783393306">खरीदारी के ज़्यादा विकल्प खोजें</translation>
-<translation id="1325749054628832887">विज्ञापन के विषय, उन कई चीज़ों में से एक हैं जिनका इस्तेमाल करके कोई साइट, आपकी दिलचस्पी के मुताबिक विज्ञापन दिखा सकती है. विज्ञापन के विषयों के बिना भी, साइटें आपको विज्ञापन दिखा सकती हैं. हालांकि, ऐसा हो सकता है कि विज्ञापन आपको कम दिलचस्प लगें. <ph name="BEGIN_LINK" />विज्ञापनों के लिए अपनी निजता को मैनेज करने<ph name="LINK_END" /> के बारे में ज़्यादा जानें.</translation>
 <translation id="1329916999021038454">रिपोर्ट भेजें</translation>
 <translation id="1330449323196174374">बांया गेट फ़ोल्ड</translation>
 <translation id="1333745675627230582">Chrome Dino गेम खेलें</translation>
@@ -1082,6 +1081,7 @@
             <ph name="LIST_ITEM" />खोज इतिहास<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">बचत खाता</translation>
 <translation id="3103188521861412364">स्टॉक और बॉन्ड</translation>
 <translation id="3105172416063519923">एसेट आईडी:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />सुरक्षित डीएनएस कॉन्फ़िगरेशन की जांच करना<ph name="END_LINK" /></translation>
@@ -1298,6 +1298,7 @@
 <translation id="3493660662684070951">ट्रक, वैन, और एसयूवी</translation>
 <translation id="3495081129428749620">पेज में ढूंढें
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">सैलरी खाता</translation>
 <translation id="3497627066518778351">उपयोगकर्ता के डिवाइस पर साइट डेटा की सूची, नई विंडो में देखें</translation>
 <translation id="3498215018399854026">हम इस समय आपके अभिभावक तक नहीं पहुंच पा रहे हैं. कृपया फिर से प्रयास करें.</translation>
 <translation id="350069200438440499">फ़ाइल नाम:</translation>
@@ -2333,6 +2334,7 @@
 <translation id="5519696598216267194">पेपर (प्रीपंच्ड)</translation>
 <translation id="5521782189689806907">कैबिनेट बनाने और इंस्टॉल करने की सेवा</translation>
 <translation id="5523118979700054094">नीति का नाम</translation>
+<translation id="5523588073846127669">कारोबारी या कंपनी इस वर्चुअल कार्ड को स्वीकार नहीं करती</translation>
 <translation id="5525755241743357906">फ़ाइल कॉपी की गई या दूसरी जगह ले जाई गई</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS की सेटिंग में सुलभता टूल को अपने हिसाब से बनाने के लिए, पहले Tab और इसके बाद Enter दबाएं</translation>
 <translation id="55293785478302737">एज़ स्टिच</translation>
@@ -2961,7 +2963,6 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेली कॉन्फ़्रेंसिंग</translation>
 <translation id="6753269504797312559">नीति मान</translation>
-<translation id="6753390234084146956">टैब</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> की एंट्री मिटाएं</translation>
 <translation id="6754547388777247439">बचत खाते</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3674,6 +3675,7 @@
 <translation id="8075588646978457437">सेल्फ़-अधीसिव पेपर</translation>
 <translation id="8075736640322370409">जल्दी से नई Google शीट बनाएं</translation>
 <translation id="8075898834294118863">साइट की सेटिंग मैनेज करें</translation>
+<translation id="8076492880354921740">टैब</translation>
 <translation id="8077669823243888800">चाइनीज़ #8 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8078006011486731853">{0,plural, =1{क्या आपको गोपनीय फ़ाइल अपलोड करनी है?}one{क्या आपको गोपनीय फ़ाइल अपलोड करनी है?}other{क्या आपको गोपनीय फ़ाइलें अपलोड करनी हैं?}}</translation>
 <translation id="8078141288243656252">घुमाने पर एनोटेट नहीं कर सकते</translation>
@@ -3714,6 +3716,7 @@
 <translation id="81563721597823545">हॉकी इक्विपमेंट</translation>
 <translation id="8161095570253161196">ब्राउज़ करना फिर से शुरू करें</translation>
 <translation id="8163866351304776260">बाईं ओर क्वाड पंच</translation>
+<translation id="8163998196788647716">लेन-देन से जुड़ा खाता</translation>
 <translation id="8164078261547504572">क्या आपको प्रॉडक्ट की कीमत में गिरावट आने पर ईमेल से सूचना चाहिए?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" कुंजियों को एक ही शब्दकोश में सेट नहीं किया जा सकता</translation>
 <translation id="8175796834047840627">आपके साइन इन किए होने की वजह से Chrome आपको Google खाते में कार्ड सेव करने की सुविधा देता है. आप सेटिंग में जाकर इसे बदल सकते हैं.</translation>

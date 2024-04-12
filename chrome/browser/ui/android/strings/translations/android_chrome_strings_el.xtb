@@ -97,7 +97,6 @@
 <translation id="1436784010935106834">Καταργήθηκαν</translation>
 <translation id="1437543266176261764">Εκτελείται στην εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Οργανώστε τα προϊόντα παρακολούθησης σε Σελιδοδείκτες</translation>
-<translation id="1462833127986525564">Συνδέστε το Chrome και άλλες υπηρεσίες Google αν θέλετε να εξατομικεύουν την εμπειρία σας χρησιμοποιώντας τα δεδομένα τους από κοινού</translation>
 <translation id="1466383950273130737">Επιλέξτε τη γλώσσα του Chrome</translation>
 <translation id="1477626028522505441">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω προβλημάτων στον διακομιστή.</translation>
 <translation id="148482509007564431">Ροή αποθήκευσης σελιδοδείκτη</translation>
@@ -746,6 +745,7 @@
 <translation id="4910889077668685004">Εφαρμογές πληρωμών</translation>
 <translation id="4912413785358399818">Μετακίνηση καρτέλας</translation>
 <translation id="4913169188695071480">Διακοπή ανανέωσης</translation>
+<translation id="4918086044614829423">Αποδοχή</translation>
 <translation id="492284538114688557">Εντοπίστηκε πτώση τιμής</translation>
 <translation id="4925120120285606924">Στιγμιότυπο οθόνης <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Θα γίνει εξαγωγή και λήψη των κωδικών πρόσβασης ως αρχείου κειμένου. Θα είναι ορατοί σε όλους και σε κάθε εφαρμογή που έχει πρόσβαση στον φάκελο προορισμού.</translation>
@@ -1014,6 +1014,7 @@
 <translation id="6324997754869598316">(Σφάλμα <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Μοιραστείτε μέσω <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Κρυπτογράφηση</translation>
+<translation id="6340526405444716530">Εξατομίκευση</translation>
 <translation id="6341580099087024258">Να γίνεται ερώτηση σχετικά με την τοποθεσία αποθήκευσης των αρχείων</translation>
 <translation id="6342069812937806050">Μόλις τώρα</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}}</translation>
@@ -1176,6 +1177,7 @@
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
 <translation id="7030304022046916278">Στέλνει URL στην Ασφαλή περιήγηση για να τα ελέγξει</translation>
 <translation id="7035701931849773472">Άλλες επιλογές</translation>
+<translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7054588988317389591">Λήψη περιγραφών εικόνων;</translation>
 <translation id="7055152154916055070">Αποκλεισμένη ανακατεύθυνση:</translation>
 <translation id="7057969023583258980">Άνοιγμα πλήρους ιστορικού Chrome</translation>
@@ -1208,7 +1210,6 @@
 <translation id="7205672015775254816">Περιεχόμενο από την Google για νεαρούς χρήστες – ανενεργό</translation>
 <translation id="7207760545532569765">Επαναφέρετε <ph name="TAB_COUNT" /> καρτέλες ως νέες καρτέλες στο παρασκήνιο.</translation>
 <translation id="7217781228893594884">Οι καρτέλες ανώνυμης περιήγησης θα κλειδώνουν όταν αποχωρείτε από το Chrome</translation>
-<translation id="722055596168483966">Εξατομίκευση υπηρεσιών Google</translation>
 <translation id="7221869452894271364">Επαναφόρτωση αυτής της σελίδας</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 λήψη σε εκκρεμότητα}other{# λήψεις σε εκκρεμότητα}}</translation>
 <translation id="72415438529550637">Η πρόταση κωδικού πρόσβασης έκλεισε.</translation>
@@ -1478,7 +1479,6 @@
 <translation id="84594714173170813">Συνεχίστε να χρησιμοποιείτε τα δεδομένα του Chrome στον Λογαριασμό σας Google</translation>
 <translation id="8460448946170646641">Έλεγχος σημαντικών στοιχείων ελέγχου για το απόρρητο και την ασφάλεια</translation>
 <translation id="8473863474539038330">Διευθύνσεις και άλλα</translation>
-<translation id="8478751349603791277">Ελέγξτε τον τρόπο χρήσης του συγχρονισμένου ιστορικού για την εξατομίκευση άλλων υπηρεσιών Google</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Άνοιγμα σελίδας "Ιστορικό"</translation>
 <translation id="8493948351860045254">Αποδεσμεύστε χώρο</translation>

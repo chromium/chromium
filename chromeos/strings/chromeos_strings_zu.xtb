@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">Beka elinye ikhasi kuskena</translation>
 <translation id="2872961005593481000">Cisha</translation>
 <translation id="2873483161362553159">Ukufuna kwebhrawuza</translation>
-<translation id="2873939192640533085">Faka umyalelo njengokuthi "zwakala uqiniseka kakhulu"</translation>
 <translation id="2874939134665556319">Ithrekhi yangaphambilini</translation>
 <translation id="2875812231449496375">Vula lokhu ukuze uthole imiphumela ehamba phambili ngalesi sithombe sangemuva. Ungavala le sethingi nganoma yisiphi isikhathi.</translation>
 <translation id="2878387241690264070">Iyekiswe ukushaja ngokungu-<ph name="RATE" /> kumasekhondi angu-<ph name="NUM_SECONDS" />.</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">Awuxhunyiwe okwamanje. Uma inkampani yakho yenethiwekhi incoma i-APN yangokwezifiso, faka imininingwane ye-APN ngokukhetha "+ I-APN Entsha"</translation>
 <translation id="5947266287934282605">Uma usuku lokugcina lenyanga lingaphambi kwalolu suku, idatha izosethwa kabusha ngosuku lokugcina lwenyanga</translation>
 <translation id="5948460390109837040">izinja</translation>
+<translation id="594989847980441553">Khetha okuthi "Sungula" ukuze usungule isithombe nge-AI.
+        Zonke izithombe ezisunguliwe zizovela lapha ngokuzenzekelayo.</translation>
 <translation id="5972388717451707488">Buyekeza Inini</translation>
 <translation id="5975130252842127517">ikhorali</translation>
 <translation id="5984145644188835034">Isithombe Sangemuva Esizenzakalelayo</translation>

@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">Aутор:</translation>
 <translation id="1247030632403369975">Алуминијум</translation>
 <translation id="1252209483516427155">Капути и јакне</translation>
+<translation id="1253096324252841344">Плаћајте помоћу опције <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхронизовано)</translation>
 <translation id="1255086252236620440">Миксери за храну</translation>
 <translation id="1256368399071562588">&lt;p&gt;Ако посетите веб-сајт и он се не отвори, прво пробајте да отклоните грешку помоћу ових корака за решавање проблема:&lt;/p&gt;
@@ -185,7 +186,6 @@
 <translation id="1323433172918577554">Прикажи више</translation>
 <translation id="132390688737681464">Чувај и уноси адресе</translation>
 <translation id="1325412080783393306">Претражите још опција куповине</translation>
-<translation id="1325749054628832887">Теме огласа су само једна од многих ствари које сајт може да користи за персонализацију огласа. Чак и без тема огласа, сајтови и даље могу да вам приказују огласе, али они могу да буду мање занимљиви. Сазнајте више о <ph name="BEGIN_LINK" />управљању приватношћу са огласима<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Пошаљи извештај</translation>
 <translation id="1330449323196174374">Пресавијање на левој страни у облику прозора</translation>
 <translation id="1333745675627230582">Играјте игру Chrome диносаурус</translation>
@@ -1084,6 +1084,7 @@
             <ph name="LIST_ITEM" />Историја претраге<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Информације унете у обрасцима<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Штедни рачун</translation>
 <translation id="3103188521861412364">Акције и обвезнице</translation>
 <translation id="3105172416063519923">ИД елемента:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />да проверите конфигурацију безбедног DNS-а<ph name="END_LINK" /></translation>
@@ -1302,6 +1303,7 @@
 <translation id="3493660662684070951">Камиони, комбији и теренска возила</translation>
 <translation id="3495081129428749620">Пронађите на страници
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Плата</translation>
 <translation id="3497627066518778351">Прегледајте листу података о сајтовима на уређају у новом прозору</translation>
 <translation id="3498215018399854026">Тренутно не можемо да контактирамо родитеља. Пробај поново.</translation>
 <translation id="350069200438440499">Име датотеке:</translation>
@@ -1510,6 +1512,7 @@
 <translation id="385489333361351399">Опрема за камере и фото-апарате</translation>
 <translation id="3858027520442213535">Ажурирајте датум и време</translation>
 <translation id="3858860766373142691">Назив</translation>
+<translation id="3865339060090354361">Овде погледајте услове за <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Покажи ми како</translation>
 <translation id="3880456882942693779">Уметност и забава</translation>
@@ -2339,12 +2342,14 @@
 <translation id="5519696598216267194">Папир (припремљен)</translation>
 <translation id="5521782189689806907">Ормарићи</translation>
 <translation id="5523118979700054094">Назив смерница</translation>
+<translation id="5523588073846127669">Продавац не прихвата ову виртуелну картицу</translation>
 <translation id="5525755241743357906">Фајл је копиран или премештен</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте персонализовали алатке за приступачност у подешавањима Chrome ОС-а</translation>
 <translation id="55293785478302737">Спајање ивица шавом</translation>
 <translation id="553377674408670169">Послови у образовању</translation>
 <translation id="5536214594743852365">Прикажи одељак <ph name="SECTION" /></translation>
 <translation id="553782666181800029">Коверта Chou 2</translation>
+<translation id="5538270463355278784">аутоматски приказ преко целог екрана</translation>
 <translation id="5539243836947087108">Подлога</translation>
 <translation id="5540224163453853">Нисмо пронашли захтевани чланак.</translation>
 <translation id="5540969246441091044">Коњички спорт</translation>
@@ -2708,6 +2713,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали фајловима које сте преузели у Chrome-у</translation>
 <translation id="6254436959401408446">Нема довољно меморије за отварање ове странице</translation>
 <translation id="625463612687472648">Опозови дозволу</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опцију}one{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опције}few{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опције}other{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опције}}</translation>
 <translation id="6259156558325130047">&amp;Понови промену редоследа</translation>
 <translation id="6263376278284652872">Обележивачи домена <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Ипак преузми</translation>
@@ -2966,7 +2972,6 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телефонске конференције</translation>
 <translation id="6753269504797312559">Вредност смерница</translation>
-<translation id="6753390234084146956">картице</translation>
 <translation id="6753434778807740853">Избришите унос <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Штедни рачуни</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3680,6 +3685,7 @@
 <translation id="8075588646978457437">Самолепљиви папир</translation>
 <translation id="8075736640322370409">Брзо направите нову Google табелу</translation>
 <translation id="8075898834294118863">Управљајте подешавањима сајтова</translation>
+<translation id="8076492880354921740">Картице</translation>
 <translation id="8077669823243888800">Кинеска коверта бр. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Желите да отпремите поверљиви фајл?}one{Желите да отпремите поверљиве фајлове?}few{Желите да отпремите поверљиве фајлове?}other{Желите да отпремите поверљиве фајлове?}}</translation>
 <translation id="8078141288243656252">Додавање напомене није могуће када је ротиран</translation>
@@ -3720,6 +3726,7 @@
 <translation id="81563721597823545">Опрема за хокеј</translation>
 <translation id="8161095570253161196">Настави прегледање</translation>
 <translation id="8163866351304776260">Четвороструко бушење на левој страни</translation>
+<translation id="8163998196788647716">Текући рачун</translation>
 <translation id="8164078261547504572">Желите ли имејлове када цене падну?</translation>
 <translation id="8169175551046720804">Кључеви <ph name="DATA_CONTROLS_KEYS" /> не могу да се подесе у истом речнику</translation>
 <translation id="8175796834047840627">Chrome вам нуди чување картица на Google налогу зато што сте пријављени. То можете да промените у подешавањима.</translation>
@@ -3841,6 +3848,7 @@
 <translation id="8378714024927312812">Овим управља организација</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Ти трошкови могу да буду једнократни или периодични и можда нису одмах видљиви. <ph name="BEGIN_LINK" />Ипак прикажи<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Аутоматски приказ преко целог екрана</translation>
 <translation id="838307841291975086">Караван возила</translation>
 <translation id="8389532092404711541">Обично <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Прилагођена возила и возила високих перформанси</translation>

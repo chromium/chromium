@@ -185,7 +185,6 @@
 <translation id="1323433172918577554">অধিক দেখুৱাওক</translation>
 <translation id="132390688737681464">ছেভ কৰক আৰু ঠিকনা পূৰ কৰক</translation>
 <translation id="1325412080783393306">ক্ৰয় কৰাৰ অধিক বিকল্প সন্ধান কৰক</translation>
-<translation id="1325749054628832887">বিজ্ঞাপনৰ বিষয়বস্তু হৈছে বিজ্ঞাপন ব্যক্তিগতকৰণ কৰিবলৈ ছাইটে ব্যৱহাৰ কৰিব পৰা বহুতো কাৰ্যৰ মাজৰ এটা। বিজ্ঞাপনৰ বিষয়বস্তু অবিহনেও ছাইটে আপোনাক তথাপি বিজ্ঞাপন দেখুৱাব পাৰে, কিন্তু সেয়া কম আকৰ্ষণীয় হ’ব পাৰে। <ph name="BEGIN_LINK" />আপোনাৰ বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰা<ph name="LINK_END" />ৰ বিষয়ে অধিক জানক।</translation>
 <translation id="1329916999021038454">এটা মতামত সম্বলিত ৰিপ’ৰ্ট পঠিয়াওক</translation>
 <translation id="1330449323196174374">বাওঁফালে গেট ফ'ল্ড কৰক</translation>
 <translation id="1333745675627230582">Chrome Dino গে’মটো খেলক</translation>
@@ -2965,7 +2964,6 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">টেলিকনফাৰেন্সিং</translation>
 <translation id="6753269504797312559">নীতিৰ মান</translation>
-<translation id="6753390234084146956">টেব</translation>
 <translation id="6753434778807740853">প্ৰৱিষ্টি <ph name="ENTRY_VOICEOVER" /> মচক</translation>
 <translation id="6754547388777247439">সঞ্চয় একাউণ্ট</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3679,6 +3677,7 @@
 <translation id="8075588646978457437">ছেল্ফ-এডহেছিভ কাগজ</translation>
 <translation id="8075736640322370409">ক্ষিপ্ৰতাৰে এখন নতুন Google Sheet সৃষ্টি কৰক</translation>
 <translation id="8075898834294118863">ছাইটৰ ছেটিং পৰিচালনা কৰক</translation>
+<translation id="8076492880354921740">টেব</translation>
 <translation id="8077669823243888800">এনভেল’প চীনা #৮</translation>
 <translation id="8078006011486731853">{0,plural, =1{গোপনীয় ফাইলটো আপল’ড কৰিবনে?}one{গোপনীয় ফাইলসমূহ আপল’ড কৰিবনে?}other{গোপনীয় ফাইলসমূহ আপল’ড কৰিবনে?}}</translation>
 <translation id="8078141288243656252">ঘূৰ্ণীয়মান অৱস্থাত থাকিলে এন’টে’ট কৰিব নোৱাৰে</translation>

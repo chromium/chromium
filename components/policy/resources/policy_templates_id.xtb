@@ -688,6 +688,10 @@ Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.go
 <translation id="1557113199339446336">Jika kebijakan disetel ke Benar (True), perangkat terdaftar akan melaporkan informasi terkait peristiwa deteksi dan respons yang diperluas (XDR).
 
       Jika kebijakan disetel ke Salah (False) atau tidak disetel, perangkat terdaftar tidak akan melaporkan peristiwa deteksi dan respons yang diperluas (XDR).</translation>
+<translation id="1557873444324280490">Ekstensi perusahaan dapat menambahkan log melalui API chrome.enterprise.systemLog ke file log sistem.
+
+Jika kebijakan disetel ke Aktif, log akan disimpan dalam file log sistem selama jangka waktu terbatas.
+Jika kebijakan disetel ke Nonaktif atau tidak disetel, log tidak akan dapat ditambahkan ke file log sistem, yang berarti log tidak akan disimpan di antara sesi.</translation>
 <translation id="1560279917909364275">Mengizinkan aplikasi pencatat yang diizinkan di layar kunci <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1561424797596341174">Penggantian kebijakan untuk versi Debug host akses jarak jauh</translation>
 <translation id="1561967320164410511">U2F ditambah beberapa ekstensi untuk masing-masing pengesahan</translation>
@@ -1060,6 +1064,7 @@ Kebijakan ini tidak berpengaruh jika disetel di tingkat perangkat.</translation>
 <translation id="1843102210803941014">Hanya mengaktifkan cookie dan data penting di penelusuran</translation>
 <translation id="1843117931376765605">Segarkan peringkat untuk kebijakan pengguna</translation>
 <translation id="1844620919405873871">Mengonfigurasi kebijakan terkait buka kunci cepat.</translation>
+<translation id="1844833120200057817">Mengaktifkan logging sistem ekstensi</translation>
 <translation id="1844972978764975668">Izinkan kueri ke server Google untuk mengambil stempel waktu yang akurat</translation>
 <translation id="1845405905602899692">Setelan Kios</translation>
 <translation id="1845429996559814839">Batasi mode pencetakan PIN</translation>
@@ -1995,16 +2000,6 @@ pilihan default.</translation>
 <translation id="2489558694350871332">Izinkan perangkat menjalankan mesin virtual</translation>
 <translation id="2492240920793040106">Aktifkan pelaporan informasi sistem dan konten halaman untuk membantu meningkatkan Safe Browsing</translation>
 <translation id="2496180316473517155">Histori penjelajahan</translation>
-<translation id="2497530682475109135">Kebijakan ini mengontrol label yang digunakan untuk mengidentifikasi profil yang digunakan untuk login. Label ini akan ditampilkan di berbagai lokasi untuk membantu pengguna mengidentifikasi profil seperti di samping ikon profil toolbar.
-Label ini juga akan digunakan sebagai nama default untuk profil yang baru dibuat dan dapat diubah oleh pengguna.
-
-Jika kebijakan ini tidak disetel, label default akan digunakan, baik "Kerja" maupun "Sekolah".
-
-Jika kebijakan ini disetel ke "Beri label profil sebagai Kerja (1)", label "Kerja" akan digunakan.
-
-Jika kebijakan ini disetel ke "Beri label profil sebagai Sekolah (2)", label "Sekolah" akan digunakan.
-
-Kebijakan ini akan diganti oleh kebijakan <ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" /> jika kebijakan tersebut disetel.</translation>
 <translation id="2497751676088107779">Skrip pengguna</translation>
 <translation id="2497965601277442929">Jangan izinkan pengguna mengaktifkan Mode Khusus HTTPS</translation>
 <translation id="249798396824949930"> Mengontrol apakah browser dapat mendeteksi cakupan kebijakan wajib di <ph name="MAC_OS_NAME" /> atau tidak.
@@ -2242,23 +2237,6 @@ Sistem hanya akan mengkueri data AAAA ketika perangkat dapat menjangkau host IPv
 <translation id="2673363037046384711">Pengguna akhir dapat mengaktifkan atau menonaktifkan Mode Efisiensi Tinggi.</translation>
 <translation id="2673968385134502798">Game</translation>
 <translation id="2678503605767349615">Sertifikat Klien seluruh perangkat yang diperlukan</translation>
-<translation id="2679980446318031955">Untuk alasan keamanan,
-API web <ph name="REQUEST_FULLSCREEN_API_NAME" />
-memerlukan gestur pengguna sebelumnya ("aktivasi sementara") untuk dipanggil atau
-jika tidak, akan gagal. Setelan pribadi pengguna dapat mengizinkan origin tertentu memanggil
-API ini tanpa gestur pengguna sebelumnya, seperti dijelaskan dalam
-<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
-
-Kebijakan ini menggantikan setelan pribadi pengguna dan memungkinkan origin yang cocok
-memanggil API tanpa gestur pengguna sebelumnya.
-
-Untuk informasi selengkapnya tentang pola URL yang valid, lihat
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
-
-Origin yang cocok dengan pola kebijakan yang diblokir dan diizinkan akan diblokir.
-Origin yang tidak ditentukan oleh kebijakan atau setelan pengguna akan memerlukan gestur pengguna sebelumnya
-untuk memanggil API ini.</translation>
 <translation id="268134026533587276">Screensaver untuk layar kunci pengguna diaktifkan.</translation>
 <translation id="268577405881275241">Aktifkan fitur proxy kompresi data</translation>
 <translation id="268695908564263739">Kebijakan ini mengaktifkan atau menonaktifkan setelan Mode Efisiensi Tinggi. Setelan ini membuat tab ditutup setelah jangka waktu tertentu di latar belakang untuk mengklaim kembali memori.
@@ -5989,6 +5967,7 @@ Kebijakan ini memengaruhi alur login dan autentikasi layar kunci.</translation>
           Nilai kebijakan ini hanya akan berlaku jika kebijakan <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> diaktifkan, dan tidak berlaku jika sebaliknya.</translation>
 <translation id="5695907219125832836">Aktifkan fitur, tetapi jangan kirim data untuk membantu melatih model AI</translation>
 <translation id="5697306356229823047">Laporkan pengguna perangkat</translation>
+<translation id="5697387906103995839">Menonaktifkan logging sistem ekstensi perusahaan</translation>
 <translation id="569777361305162263">Jangan izinkan konten promosi ditampilkan dalam tab penuh</translation>
 <translation id="5698923148503075597">Jika kebijakan disetel ke Aktif, kebijakan cloud akan diutamakan jika bertentangan dengan kebijakan platform.
 
@@ -6863,23 +6842,6 @@ akan gagal berfungsi dan hanya menggunakan resolusi lokasi berbasis <ph name="IP
 di layar <ph name="LOG_IN" />.</translation>
 <translation id="6338982178236723271">Melaporkan info sistem</translation>
 <translation id="6339355882150329269">Jangan menganggap pengguna sebagai tidak ada aktivitas saat video diputar</translation>
-<translation id="634949984530753985">Untuk alasan keamanan,
-API web <ph name="REQUEST_FULLSCREEN_API_NAME" />
-memerlukan gestur pengguna sebelumnya ("aktivasi sementara") untuk dipanggil atau
-jika tidak, akan gagal. Setelan pribadi pengguna dapat mengizinkan origin tertentu memanggil
-API ini tanpa gestur pengguna sebelumnya, seperti dijelaskan dalam
-<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
-
-Kebijakan ini akan menggantikan setelan pribadi pengguna dan memblokir origin yang cocok
-agar tidak memanggil API tanpa gestur pengguna sebelumnya.
-
-Untuk informasi selengkapnya tentang pola URL yang valid, lihat
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
-
-Origin yang cocok dengan pola kebijakan yang diblokir dan diizinkan akan diblokir.
-Origin yang tidak ditentukan oleh kebijakan atau setelan pengguna akan memerlukan gestur pengguna sebelumnya
-untuk memanggil API ini.</translation>
 <translation id="6352714113109004581">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang dapat meminta izin kepada pengguna untuk mengakses perangkat HID.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan berlaku.
@@ -7180,6 +7142,7 @@ Catatan: Sandi mungkin menjadi lebih lama dari jumlah hari yang ditentukan jika 
 <translation id="6536600139108165863">Booting ulang otomatis saat mematikan perangkat</translation>
 <translation id="6538653424603921690">Selalu nonaktifkan layar privasi pada layar login</translation>
 <translation id="6539246272469751178">Kebijakan ini tidak memengaruhi aplikasi Android. Aplikasi Android selalu menggunakan direktori download default dan tidak dapat mengakses file apa pun yang didownload oleh <ph name="PRODUCT_OS_NAME" /> ke direktori download non-default.</translation>
+<translation id="6541383786427998658">Mengaktifkan logging sistem ekstensi perusahaan</translation>
 <translation id="654303922206238013">Strategi migrasi untuk ecryptfs</translation>
 <translation id="6544601600794014309">Aktifkan Terjemahan Jawaban Instan</translation>
 <translation id="654546276700640113">Jika kebijakan disetel, panjang PIN maksimum yang dikonfigurasi akan diterapkan. Nilai 0 atau lebih kecil berarti pengguna dapat menyetel panjang PIN sesuai keinginan. Jika nilainya lebih kecil dari <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> tetapi lebih besar dari 0, panjang maksimum akan disetel ke panjang minimum.

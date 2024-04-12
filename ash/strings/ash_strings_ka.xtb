@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C მოწყობილობა (უკანა პორტი)</translation>
 <translation id="1869497990620230175">სწრაფი ფაილები</translation>
 <translation id="1871023081802165724">მედიის დაკვრა</translation>
+<translation id="1871915835366697861">მიუწვდომელია ამ თამაშისთვის</translation>
 <translation id="1879018240766558464">ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
 <translation id="1882814835921407042">მობილური ქსელი არ არის</translation>
 <translation id="1882897271359938046">გამოსახვა <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@
 <translation id="79341161159229895">ანგარიშს მართავენ <ph name="FIRST_PARENT_EMAIL" /> და <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">გაცვლის ბუფერის სანახავად დააჭირეთ კლავიშთა კომბინაციას <ph name="SHORTCUT_KEY_NAME" /> + V. გაცვლის ბუფერში ინახება თქვენ მიერ დაკოპირებული ბოლო 5 ერთეული.</translation>
 <translation id="7942349550061667556">წითელი</translation>
+<translation id="7943516765291457328">ახლომახლო უსადენო ქსელების სკანირებისთვის ჩართეთ Bluetooth</translation>
 <translation id="7944023924886109030">ყველა დღევანდელი მოვლენის ნახვა</translation>
 <translation id="7945357288295809525">მარტივი წვდომის პარამეტრების ჩვენება, „<ph name="ENABLED_FEATURES" />“ ჩართულია.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />-ს სურს, გამოიყენოს თქვენი <ph name="DEVICE_NAME" /></translation>

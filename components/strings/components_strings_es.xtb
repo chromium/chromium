@@ -185,7 +185,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1323433172918577554">Mostrar más</translation>
 <translation id="132390688737681464">Guardar y autocompletar direcciones</translation>
 <translation id="1325412080783393306">Buscar más opciones de compra</translation>
-<translation id="1325749054628832887">Los temas de anuncios son solo una de las muchas cosas que un sitio puede usar para personalizar anuncios. Incluso sin los temas de anuncios, los sitios pueden seguir mostrándote anuncios, pero pueden ser menos interesantes. Consulta más información sobre cómo <ph name="BEGIN_LINK" />gestionar la privacidad en la publicidad<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Enviar un informe</translation>
 <translation id="1330449323196174374">Plegado en ventana a la izquierda</translation>
 <translation id="1333745675627230582">Jugar a El dinosaurio de Chrome</translation>
@@ -2508,7 +2507,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5877359070305966420">Recursos humanos</translation>
 <translation id="5879272455334365707">Planificación y gestión financiera</translation>
 <translation id="5879989559903563723">No se permite en el modo Invitado</translation>
-<translation id="5880050725127890683">Ir a la comprobación de seguridad de Chrome</translation>
+<translation id="5880050725127890683">Ir a Comprobación de seguridad de Chrome</translation>
 <translation id="5884465125445718607">Sobre chino n.º 6</translation>
 <translation id="5887400589839399685">Tarjeta guardada</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
@@ -2961,7 +2960,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferencias</translation>
 <translation id="6753269504797312559">Valor de la política</translation>
-<translation id="6753390234084146956">pestañas</translation>
 <translation id="6753434778807740853">Eliminar entrada <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Cuentas de ahorro</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3674,6 +3672,7 @@ Más información:
 <translation id="8075588646978457437">Papel autoadhesivo</translation>
 <translation id="8075736640322370409">Crea una nueva Hoja de cálculo de Google rápidamente</translation>
 <translation id="8075898834294118863">Gestionar la configuración del sitio</translation>
+<translation id="8076492880354921740">Pestañas</translation>
 <translation id="8077669823243888800">Sobre chino n.º 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{¿Subir archivo confidencial?}other{¿Subir archivos confidenciales?}}</translation>
 <translation id="8078141288243656252">No se pueden añadir anotaciones a los documentos girados</translation>

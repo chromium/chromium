@@ -19,7 +19,6 @@
 <translation id="1436059927646026729">Apri La mia scheda più recente in Chrome</translation>
 <translation id="1449241544691504574">Aggiungi preferiti a Chrome</translation>
 <translation id="1462727070346936664">Accedi per usare al meglio Chrome.</translation>
-<translation id="1462833127986525564">Collega Chrome e altri servizi Google se vuoi che personalizzi la tua esperienza utilizzando i dati provenienti dall'uno e dagli altri</translation>
 <translation id="1491435845014430217">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chrome".</translation>
 <translation id="1493827051843127077">Imposta Chrome come browser predefinito per la sincronizzazione di schede, password e dati di pagamento su tutti i tuoi dispositivi</translation>
 <translation id="1504372625950710826">Chrome non ha potuto verificare la disponibilità di aggiornamenti. Verifica la tua connessione a Internet.</translation>
@@ -43,7 +42,6 @@ Aspetti da considerare:
 <translation id="1790080846677398234">Aggiunge gli URL inseriti ai preferiti in Chrome.</translation>
 <translation id="1799920918471566157">Suggerimenti per Chrome</translation>
 <translation id="1830634592642484976">Al momento questo indirizzo è salvato su Chrome. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
-<translation id="1843217788865538014">Usa automaticamente Chrome quando tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="1910975740091000991">Chrome per iOS</translation>
 <translation id="1917964099031477364">Questo account e gli eventuali dati non salvati verranno rimossi da Chrome e da altre app Google su questo dispositivo.</translation>
 <translation id="1965935827552890526">Finisci ciò che stavi facendo in un'altra finestra di Chrome aperta.</translation>
@@ -123,7 +121,6 @@ Aspetti da considerare:
 <translation id="424864128008805179">Uscire da Chrome?</translation>
 <translation id="4251174643044751591">Apre la pagina delle impostazioni dei metodi di pagamento in Chrome.</translation>
 <translation id="4453284704333523777">Gestisci le impostazioni di Chrome</translation>
-<translation id="4508370294876102450">Apri Chrome da qualsiasi app</translation>
 <translation id="4523886039239821078">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Disinstallali.</translation>
 <translation id="4633328489441962921">Chrome non può controllare la disponibilità di aggiornamenti</translation>
 <translation id="4636900170638246267">Accedi a questo sito e a Chrome.</translation>
@@ -134,7 +131,6 @@ Aspetti da considerare:
         Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="484033449593719797">Non supportata su Chrome beta</translation>
 <translation id="4840404732697892756">Gestore delle password di Google può controllare le tue password quando accedi con il tuo Account Google.</translation>
-<translation id="4856636171409137183">Per un'esperienza più personalizzata, includi Chrome in <ph name="FEATURE_NAME_1" /> e <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome può aiutarti a monitorare questo pacchetto nella pagina Nuova scheda.}other{Chrome può aiutarti a monitorare questi pacchetti nella pagina Nuova scheda.}}</translation>
 <translation id="4903674399067644695">In questa scheda vengono mostrati suggerimenti su come utilizzare al meglio Chrome.</translation>
 <translation id="49200511069271369">La tua organizzazione, <ph name="DOMAIN" />, gestisce l'account a cui stai accedendo e la modalità di utilizzo di Chrome. L'amministratore può configurare o limitare determinate funzionalità.</translation>
@@ -177,7 +173,6 @@ Aspetti da considerare:
 <translation id="6110625574506755980">Alcune funzionalità di Chrome non saranno più disponibili.</translation>
 <translation id="6132149203299792222">Accedi con il tuo Account Google per sincronizzare le password, i preferiti e altro.</translation>
 <translation id="6177442314419606057">Cerca in Chrome</translation>
-<translation id="6181930887571472871">Passa a Chrome</translation>
 <translation id="6238746320622508509">Consenti a Chrome di bloccare le schede di navigazione in incognito.</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
 <translation id="6272822675004864999">Per ricevere notifiche da Chrome, attiva le notifiche nelle Impostazioni di iOS.</translation>
@@ -205,7 +200,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 
 Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chrome, vai alle impostazioni dei <ph name="BEGIN_LINK" />servizi Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Ricerca vocale in Chrome</translation>
-<translation id="6964931465519938134">Ora puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="6975725306479268850">Scegli Chrome per la compilazione automatica</translation>
 <translation id="7004159181872656283">Cerca immagini in Chrome.</translation>
 <translation id="7056826488869329999">Apre ed esegue il controllo di sicurezza in Chrome.</translation>
@@ -225,13 +219,13 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="7272930098487145294">Per salvare le immagini, tocca Impostazioni e consenti a Chrome di aggiungere le tue foto</translation>
 <translation id="7275945473750112644">Il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, pertanto i tuoi dati di Chrome verranno cancellati da questo dispositivo</translation>
 <translation id="7304491752269485262">Visualizzazione espansa della compilazione automatica di Chrome</translation>
+<translation id="7344094882820374540">Usa la funzionalità di sicurezza più efficace di Chrome contro siti pericolosi</translation>
 <translation id="7349129508108954623">Consenti a Chrome di usare Google Maps per darti indicazioni stradali e informazioni locali relative agli indirizzi rilevati.</translation>
 <translation id="7394108421562933108">Maps in Chrome</translation>
 <translation id="7400722733683201933">Informazioni su Google Chrome</translation>
 <translation id="7466693328838535498">Nella casella Cerca nei widget, inserisci la parola Chrome</translation>
 <translation id="746684838091935575">3. Seleziona Chrome</translation>
 <translation id="7492574581995589075">La tua organizzazione ha disattivato la possibilità di usare e salvare i dati di Chrome nel tuo Account Google. I nuovi preferiti, le nuove password e altri dati verranno salvati solo su questo dispositivo.</translation>
-<translation id="7501046334262221972">Per impostare Chrome come browser predefinito, apri le Impostazioni. Tocca App browser predefinita, quindi seleziona Chrome.</translation>
 <translation id="756809126120519699">Dati di Chrome cancellati</translation>
 <translation id="7581063337314642333">Visita la griglia delle schede di Chrome</translation>
 <translation id="7662994914830945754">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chrome e attiva la sincronizzazione per visualizzare le tue schede</translation>
@@ -244,7 +238,6 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="7792140019572081272">Chrome protegge i tuoi dati sensibili con Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome è aggiornato</translation>
 <translation id="7897703007638178753">Visualizza le schede recenti di Chrome</translation>
-<translation id="7925119591961387184">Seleziona "Chrome".</translation>
 <translation id="7933491483529363150">Apri La mia scheda più recente in Chrome.</translation>
 <translation id="7948283758957877064">Novità di Chrome</translation>
 <translation id="8006014511203279255">Usa Chrome ogni volta che tocchi i link nei messaggi e in altre app.</translation>
@@ -276,7 +269,6 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">Ora puoi usare Chrome ogni volta che navighi o tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="8577978202917232774">I suggerimenti sono basati sulla tua attività di navigazione sugli altri dispositivi. Per ricevere suggerimenti, accedi a Chrome su tutti i tuoi dispositivi.</translation>
-<translation id="8587647598504233556">Tocca "Chrome" e poi "App browser predefinita".</translation>
 <translation id="8603022514504485810">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Ottieni il massimo da Chrome</translation>
 <translation id="8736550665979974340">Resta al sicuro con Google Chrome</translation>

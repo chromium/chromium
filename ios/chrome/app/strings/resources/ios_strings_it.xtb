@@ -113,7 +113,6 @@
 <translation id="1580783302095112590">Messaggio inviato.</translation>
 <translation id="1582732959743469162">Verrà interrotto l'avanzamento del tuo download attuale.</translation>
 <translation id="158591023028013564">{count,plural, =1{Pagina aggiunta al tuo elenco di lettura}other{{count} pagine aggiunte al tuo elenco di lettura}}</translation>
-<translation id="1587629076612412684">Personalizza i servizi Google</translation>
 <translation id="1594034544529347967">Inizio</translation>
 <translation id="160275202205869636">Quando l'opzione è attiva, utilizza e salva i dati nel tuo Account Google. Se è disattivata, i dati vengono salvati solo su questo dispositivo.</translation>
 <translation id="1605405588277479165">Off - Sconsigliata</translation>
@@ -136,6 +135,7 @@
 <translation id="1687475363370981210">Segna tutti come già letti</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selezionati</translation>
+<translation id="1710698977900873766">Attiva la Protezione avanzata</translation>
 <translation id="1713777106376424209">Consegnato da</translation>
 <translation id="1715515772563243997">Se ritieni attendibile <ph name="SITE" />, puoi usare una password salvata per accedere.</translation>
 <translation id="1740468249224277719">Tocca due volte per installare.</translation>
@@ -200,7 +200,6 @@
 <translation id="20485545164632846">nuovo elemento</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> account utilizzano la stessa password</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} metodo di pagamento salvato disponibile sopra la tastiera.}other{{count} metodi di pagamento salvati disponibili sopra la tastiera.}}</translation>
-<translation id="2055515971416882518">Apri "Impostazioni".</translation>
 <translation id="2059166748188874810">Comune</translation>
 <translation id="2062410130322589403">Una guida alle scelte relative alla tua privacy</translation>
 <translation id="20638360198452347">Selettore del tipo di unità</translation>
@@ -551,7 +550,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3861486700625780712">Non seguire più</translation>
 <translation id="3861908220442487587">Questo indirizzo viene salvato solo su questo dispositivo. Per usarlo sugli altri tuoi dispositivi, spostalo nel tuo Account Google <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Invia ai tuoi dispositivi</translation>
-<translation id="3875783148670536197">Mostrami come fare</translation>
 <translation id="3888863481921783344">Ti verranno mostrati i possibili invitati al tuo evento.</translation>
 <translation id="3891414008432200754">Prezzo</translation>
 <translation id="3892144330757387737">Qui troverai la tua cronologia</translation>
@@ -1033,6 +1031,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="633809752005859102">Si è verificato un problema. Stiamo cercando una soluzione.</translation>
 <translation id="6339793034470834130">Per usare l'inspector web, collegati a Safari sul computer utilizzando un cavo e accedi all'iPhone dal menu Sviluppo. Puoi attivare il menu Sviluppo nella sezione Avanzate delle impostazioni di Safari sul tuo computer.</translation>
 <translation id="6340285871011301182">Traduzione parziale non disponibile.</translation>
+<translation id="6340526405444716530">Personalizzazione</translation>
 <translation id="6342069812937806050">In questo momento</translation>
 <translation id="6344783595350022745">Cancella testo</translation>
 <translation id="6346549652287021269">Iniziare un nuovo download?</translation>
@@ -1177,7 +1176,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Per cambiare la posizione, puoi anche toccare e tenere premuta la barra degli indirizzi.</translation>
 <translation id="6988572888918530647">Gestisci il tuo Account Google</translation>
-<translation id="6989674195860388998">Cambia nelle Impostazioni…</translation>
 <translation id="6998989275928107238">A</translation>
 <translation id="699954956411469731">Notifiche mobile</translation>
 <translation id="699985840472413751">Chiudi download</translation>
@@ -1600,7 +1598,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9106655997975673326">Di "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Controlla eventuali password compromesse</translation>
 <translation id="9109699888944026290">{count,plural, =1{Nuova password per questo sito}other{Nuove password per questo sito}}</translation>
-<translation id="9110489518258031250">Controlla il modo in cui la cronologia di navigazione sincronizzata può essere utilizzata per personalizzare altri servizi Google</translation>
 <translation id="9120217828624527905">Passa alla traduzione della pagina intera</translation>
 <translation id="9124387962554796433">Google può utilizzare la tua cronologia per personalizzare la Ricerca e altri servizi Google.</translation>
 <translation id="9137526406337347448">Google Services</translation>

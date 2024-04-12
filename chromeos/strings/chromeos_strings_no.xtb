@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">Legg en ny side på skanneren</translation>
 <translation id="2872961005593481000">Slå av</translation>
 <translation id="2873483161362553159">Nettlesernavigering</translation>
-<translation id="2873939192640533085">Skriv inn en forespørsel som «Hør mer selvsikker ut»</translation>
 <translation id="2874939134665556319">Forrige spor</translation>
 <translation id="2875812231449496375">Slå på dette for å få best resultat med denne bakgrunnen. Du kan slå av denne innstillingen når som helst.</translation>
 <translation id="2878387241690264070">Ladet ut <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">Du er ikke koblet til ennå. Hvis mobiloperatøren din anbefaler et egendefinert APN, skriver du inn APN-informasjonen ved å velge «+ Nytt APN».</translation>
 <translation id="5947266287934282605">Hvis den siste dagen i måneden er før denne dagen, tilbakestilles dataene den siste dagen i måneden</translation>
 <translation id="5948460390109837040">hunder</translation>
+<translation id="594989847980441553">Velg «Opprett» for å lage et bilde med AI.
+        Alle bilder du oppretter, vises automatisk her.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">korallfarget</translation>
 <translation id="5984145644188835034">Standardbakgrunn</translation>

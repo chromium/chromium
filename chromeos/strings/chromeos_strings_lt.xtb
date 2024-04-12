@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">Padėkite kitą puslapį ant skaitytuvo</translation>
 <translation id="2872961005593481000">Stabdyti</translation>
 <translation id="2873483161362553159">Naršyklės naršymas</translation>
-<translation id="2873939192640533085">Įveskite užklausą, pvz., „rašyk užtikrinčiau“</translation>
 <translation id="2874939134665556319">Ankstesnis takelis</translation>
 <translation id="2875812231449496375">Įjunkite šią funkciją, kad pasiektumėte geriausių rezultatų naudodami šį ekrano foną. Šį nustatymą galite bet kada išjungti.</translation>
 <translation id="2878387241690264070">Išsikrovė: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">Dar nesate prisijungę. Jei jūsų mobiliojo ryšio operatorius rekomenduoja tinkintą APN, įveskite APN informaciją pasirinkdami „+ Naujas APN“</translation>
 <translation id="5947266287934282605">Jei paskutinė mėnesio diena yra anksčiau nei ši diena, duomenys bus nustatyti iš naujo paskutinę mėnesio dieną</translation>
 <translation id="5948460390109837040">šunys</translation>
+<translation id="594989847980441553">Pasirinkite „Sukurti“, kad sukurtumėte vaizdą naudodami DI.
+        Visi sukurti vaizdai bus automatiškai rodomi čia.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">koralų spalvos</translation>
 <translation id="5984145644188835034">Numatytasis ekrano fonas</translation>

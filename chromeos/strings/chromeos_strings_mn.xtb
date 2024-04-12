@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">Сканнер дээр өөр хуудас байрлуулна уу</translation>
 <translation id="2872961005593481000">Унтраах</translation>
 <translation id="2873483161362553159">Хөтчийн навигац</translation>
-<translation id="2873939192640533085">"Илүү итгэлтэй сонсогд" зэрэг заавар оруулна уу</translation>
 <translation id="2874939134665556319">Өмнөх бичлэг</translation>
 <translation id="2875812231449496375">Энэ дэлгэцийн зургийн илүү сайн үр дүнг авах бол үүнийг асаана уу. Та энэ тохиргоог хүссэн үедээ унтраах боломжтой.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэггүй болсон.</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">Та одоогоор холбогдоогүй байна. Хэрэв таны мобайл оператор компани захиалгат APN-г зөвлөж байвал "+ Шинэ APN"-г сонгосноор APN-н мэдээллийг оруулна уу</translation>
 <translation id="5947266287934282605">Хэрэв сарын сүүлийн өдөр нь энэ өдрийн өмнө бол өгөгдлийг сарын сүүлийн өдөр шинэчилнэ</translation>
 <translation id="5948460390109837040">ноход</translation>
+<translation id="594989847980441553">ХОУ-аар зураг үүсгэхийн тулд "Үүсгэх"-ийг сонгоно уу.
+        Үүсгэсэн бүх зураг энд автоматаар гарч ирнэ.</translation>
 <translation id="5972388717451707488">Системийг шинэчлэх</translation>
 <translation id="5975130252842127517">шүрэн ягаан</translation>
 <translation id="5984145644188835034">Өгөгдмөл дэлгэцийн зураг</translation>
@@ -1197,6 +1198,7 @@
 <translation id="7936303884198020182">DNS олдсонгүй</translation>
 <translation id="7942349550061667556">Улаан</translation>
 <translation id="7943235353293548836">Тогтмол keepalive интервал</translation>
+<translation id="7943516765291457328">Ойролцоох сүлжээний цэгүүд байгаа эсэхийг скан хийхийн тулд Bluetooth-г асаана уу</translation>
 <translation id="7944562637040950644">гарын арын гэрлийг асаах/унтраах</translation>
 <translation id="7953669802889559161">Оролт</translation>
 <translation id="7955587717700691983">Bluetooth гар</translation>
@@ -1326,6 +1328,7 @@
 <translation id="8747900814994928677">Өөрчлөлтийг баталгаажуулах</translation>
 <translation id="8749478549112817787">Камерын дэвсгэр</translation>
 <translation id="8755946156089753497">цамхаг</translation>
+<translation id="8756235582947991808">ХОУ-аар хэрхэн үүсгэх болон анхаарвал зохих цөөн хэдэн зүйл</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Зургийн цомог</translation>
 <translation id="8775713578693478175">Modem APN</translation>

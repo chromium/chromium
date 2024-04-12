@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">በቃኚው ላይ ሌላ ገፅ ያስቀምጡ</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
 <translation id="2873483161362553159">የአሰሳ አሳሽ</translation>
-<translation id="2873939192640533085">እንደ «የበለጠ ራስ መተማመን ያለው ምሰል» የሚል ጥያቄ ያስገቡ</translation>
 <translation id="2874939134665556319">ቀዳሚ ትራክ</translation>
 <translation id="2875812231449496375">በዚህ ልጣፍ ለበለጠ ውጤት ይህንን ያብሩት። ይህን ቅንብር በማንኛውም ጊዜ ማጥፋት ይችላሉ።</translation>
 <translation id="2878387241690264070">በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ <ph name="RATE" /> ሞልቷል።</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">እስካሁን አልተገናኙም። የእርስዎ የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ ብጁ የሆነ ኤፒኤን የሚመክር ከሆነ «+ አዲስ ኤፒኤን» የሚለውን በመምረጥ የኤፒኤን መረጃ ያስገቡ</translation>
 <translation id="5947266287934282605">የወሩ የመጨረሻ ቀን ከዚህ ቀን በፊት ከሆነ ውሂብ በወሩ የመጨረሻ ቀን ዳግም ይጀመራል</translation>
 <translation id="5948460390109837040">ውሻዎች</translation>
+<translation id="594989847980441553">በAI ምስል ለመፍጠር «ፍጠር» የሚለውን ይምረጡ።
+        ሁሉም የተፈጠሩ ምስሎች እዚህ በራስ-ሰር ይታያሉ።</translation>
 <translation id="5972388717451707488">Engine አዘምን</translation>
 <translation id="5975130252842127517">ኮራል</translation>
 <translation id="5984145644188835034">ነባሪ ልጣፍ</translation>
@@ -1197,6 +1198,7 @@
 <translation id="7936303884198020182">ምንም የስም አገልጋዮች አልተገኙም</translation>
 <translation id="7942349550061667556">ቀይ</translation>
 <translation id="7943235353293548836">የማያቋርጥ እንደነቃ አቆይ ክፍተት</translation>
+<translation id="7943516765291457328">በአቅራቢያ ያሉ መገናኛ ነጥቦችን ለመቃኘት ብሉቱዝን ያብሩ</translation>
 <translation id="7944562637040950644">የቁልፍ ሰሌዳን የጀርባ መብራት መቀያየሪያ</translation>
 <translation id="7953669802889559161">ግቤቶች</translation>
 <translation id="7955587717700691983">የብሉቱዝ ቁልፍ ሰሌዳ</translation>
@@ -1326,6 +1328,7 @@
 <translation id="8747900814994928677">ለውጥን አረጋግጥ</translation>
 <translation id="8749478549112817787">የካሜራ ዳራ</translation>
 <translation id="8755946156089753497">ማማ</translation>
+<translation id="8756235582947991808">እንዴት በAI መፍጠር እንደሚቻል እና ልብ ሊባሉ የሚገቡ ጥቂት ነገሮች</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">የGoogle ፎቶዎች አልበም</translation>
 <translation id="8775713578693478175">ዘመናዊ ኤፒኤን</translation>

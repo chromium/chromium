@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">Прылада USB-C (порт ззаду)</translation>
 <translation id="1869497990620230175">Хуткія файлы</translation>
 <translation id="1871023081802165724">Прайграць медыязмесціва</translation>
+<translation id="1871915835366697861">Недаступна для гэтай гульні</translation>
 <translation id="1879018240766558464">Вокны ў рэжыме інкогніта зараз не падтрымліваюцца. Іншыя праграмы будуць захаваны.</translation>
 <translation id="1882814835921407042">Мабільная сетка адсутнічае</translation>
 <translation id="1882897271359938046">Выконваецца адлюстраванне на дысплэй <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@
 <translation id="79341161159229895">Уліковым запісам кіруюць <ph name="FIRST_PARENT_EMAIL" /> і <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Каб прагледзець буфер абмену, націсніце <ph name="SHORTCUT_KEY_NAME" /> + V. Апошнія 5 скапіраваных вамі элементаў захоўваюцца ў буферы абмену.</translation>
 <translation id="7942349550061667556">Чырвоны</translation>
+<translation id="7943516765291457328">Каб знайсці хот-споты паблізу, уключыце Bluetooth</translation>
 <translation id="7944023924886109030">Паглядзець усе падзеі на сёння</translation>
 <translation id="7945357288295809525">Паказаць налады спецыяльных магчымасцей, уключана: "<ph name="ENABLED_FEATURES" />".</translation>
 <translation id="7947798320695032612">Праграма "<ph name="APP_NAME" />" спрабуе выкарыстаць наступную прыладу: <ph name="DEVICE_NAME" /></translation>

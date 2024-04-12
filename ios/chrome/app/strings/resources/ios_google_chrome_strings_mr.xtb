@@ -19,7 +19,6 @@
 <translation id="1436059927646026729">Chrome मध्ये माझा नवीनतम टॅब उघडा</translation>
 <translation id="1449241544691504574">Chrome वर बुकमार्क जोडा</translation>
 <translation id="1462727070346936664">Chrome चा पुरेपूर वापर करण्यासाठी साइन इन करा.</translation>
-<translation id="1462833127986525564">Chrome आणि इतर Google सेवांनी एकमेकांकडील डेटा वापरून तुमचा अनुभव पर्सनलाइझ करायचा असल्यास, ते लिंक करा</translation>
 <translation id="1491435845014430217">"तुम्ही Chrome बंद करता, तेव्हा गुप्त टॅब लॉक करा" हे सुरू करा.</translation>
 <translation id="1493827051843127077">तुमच्या सर्व डिव्हाइसवर तुमचे टॅब, पासवर्ड आणि पेमेंटशी संबंधित माहिती सिंक करण्यासाठी Chrome डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="1504372625950710826">Chrome ला अपडेट तपासता आली नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
@@ -43,7 +42,6 @@
 <translation id="1790080846677398234">Chrome मधील तुमच्या बुकमार्कमध्ये इनपुट केलेल्या URLs जोडते.</translation>
 <translation id="1799920918471566157">Chrome शी संबंधित टिपा</translation>
 <translation id="1830634592642484976">हा पत्ता सध्या Chrome वर सेव्ह केला आहे. तो सर्व Google उत्पादनांवर वापरण्यासाठी, तुमच्या Google खाते <ph name="USER_EMAIL" /> मध्ये सेव्ह करा.</translation>
-<translation id="1843217788865538014">तुम्ही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर टॅप करता, तेव्हा आपोआप Chrome वापरा.</translation>
 <translation id="1910975740091000991">iOS साठी Chrome</translation>
 <translation id="1917964099031477364">हे खाते आणि कोणताही सेव्ह न केलेला डेटा Chrome आणि या डिव्हाइसवरील इतर Google अ‍ॅप्समधून काढून टाकला जाईल.</translation>
 <translation id="1965935827552890526">तुम्ही इतर उघड्या Chrome विंडोमध्ये काय करत होतात ते पूर्ण करा.</translation>
@@ -123,7 +121,6 @@
 <translation id="424864128008805179">Chrome मधून साइन आउट करायचे?</translation>
 <translation id="4251174643044751591">Chrome मध्ये पेमेंट पद्धती सेटिंग पेज उघडते.</translation>
 <translation id="4453284704333523777">Chrome सेटिंग्ज व्यवस्थापित करा</translation>
-<translation id="4508370294876102450">कोणत्याही अ‍ॅपवरून Chrome उघडा</translation>
 <translation id="4523886039239821078">Chrome क्रॅश होण्याचे कारण काही ॲड-ऑन आहेत. कृपया ती अनइंस्टॉल करा:</translation>
 <translation id="4633328489441962921">Chrome ला अपडेट तपासता आले नाहीत</translation>
 <translation id="4636900170638246267">ही साइट आणि Chrome मध्ये साइन इन करा.</translation>
@@ -134,7 +131,6 @@
         साइन आउट करण्यापूर्वी काही मिनिटे प्रतीक्षा करून पहा. तुम्ही आता साइन आउट केल्यास, हा डेटा हटवला जाईल.</translation>
 <translation id="484033449593719797">Chrome बीटा वर सपोर्ट नाही</translation>
 <translation id="4840404732697892756">तुम्ही तुमचे Google खाते वापरून साइन इन करता तेव्हा, Google Password Manager तुमचे पासवर्ड तपासू शकते.</translation>
-<translation id="4856636171409137183">पर्सनलाइझ केलेल्या अनुभवाचा पुरेपूर वापर करण्यासाठी, <ph name="FEATURE_NAME_1" /> आणि <ph name="FEATURE_NAME_2" /> मध्ये Chrome चा समावेश करा</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome तुम्हाला नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करू शकते.}other{Chrome तुम्हाला नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करू शकते.}}</translation>
 <translation id="4903674399067644695">हे कार्ड तुम्हाला Chrome चा पुरेपूर वापर कसा करावा याविषयीच्या सूचना दाखवते.</translation>
 <translation id="49200511069271369">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन करत असलेले खाते आणि Chrome कसे वापरले जाऊ शकते हे व्यवस्थापित करते. तुमचा अ‍ॅडमिनिस्ट्रेटर काही वैशिष्ट्ये सेट करू शकतो किंवा प्रतिबंधित करू शकतो.</translation>
@@ -177,7 +173,6 @@
 <translation id="6110625574506755980">काही Chrome वैशिष्ट्ये यापुढे उपलब्ध असणार नाहीत.</translation>
 <translation id="6132149203299792222">तुमचे पासवर्ड, बुकमार्क आणि आणखी बरेच काही सिंक करण्यासाठी तुमचे Google खाते वापरून साइन इन करा.</translation>
 <translation id="6177442314419606057">Chrome मध्ये शोधा</translation>
-<translation id="6181930887571472871">Chrome वर स्विच करा</translation>
 <translation id="6238746320622508509">Chrome ला तुमचे गुप्त टॅब लॉक करू द्या.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6272822675004864999">Chrome वरून सूचना मिळवण्यासाठी, तुमच्या iOS सेटिंग्ज मध्ये सूचना सुरू करा.</translation>
@@ -205,7 +200,6 @@
 
 तुमच्या Chrome अनुभवामध्ये सुधारणा करण्यासाठी डेटा वापरणाऱ्या आणखी सेटिंग्जकरिता, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> यावर जा.</translation>
 <translation id="6916015246697034114">Chrome मध्ये आवाज वापरून शोधा</translation>
-<translation id="6964931465519938134">तुम्ही आता केव्हाही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समध्ये लिंकवर टॅप केल्यास, Chrome वापरू शकता.</translation>
 <translation id="6975725306479268850">ऑटोफिल साठी Chrome निवडा</translation>
 <translation id="7004159181872656283">Chrome मध्ये व्हिज्युअल शोधा.</translation>
 <translation id="7056826488869329999">Chrome मध्ये सुरक्षितता तपासणी उघडते आणि रन करते.</translation>
@@ -231,7 +225,6 @@
 <translation id="7466693328838535498">शोध विजेट बॉक्समध्ये, Chrome एंटर करा</translation>
 <translation id="746684838091935575">३. Chrome निवडा</translation>
 <translation id="7492574581995589075">तुमच्या संस्थेने तुमच्या Google खाते मधील Chrome डेटा वापरण्याची आणि सेव्ह करण्याची क्षमता बंद केली आहे. नवीन बुकमार्क, पासवर्ड आणि आणखी बऱ्याच गोष्टी फक्त या डिव्हाइसवर सेव्ह केल्या जातील.</translation>
-<translation id="7501046334262221972">Chrome ला तुमचे डीफॉल्ट ब्राउझर करण्यासाठी, सेटिंग्ज उघडा. डीफॉल्ट ब्राउझर अ‍ॅपवर टॅप करा आणि त्यानंतर Chrome निवडा.</translation>
 <translation id="756809126120519699">Chrome डेटा साफ केला</translation>
 <translation id="7581063337314642333">Chrome मधील टॅब ग्रिडला भेट द्या</translation>
 <translation id="7662994914830945754">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
@@ -244,7 +237,6 @@
 <translation id="7792140019572081272">Chrome हे फेस आयडी वापरून तुमचा संवेदनशील डेटा सुरक्षित ठेवते.</translation>
 <translation id="7855730255114109580">Google Chrome अपडेट झाले आहे</translation>
 <translation id="7897703007638178753">Chrome चे अलीकडील टॅब पहा</translation>
-<translation id="7925119591961387184">"Chrome" निवडा.</translation>
 <translation id="7933491483529363150">Chrome मध्ये माझा नवीनतम टॅब उघडा.</translation>
 <translation id="7948283758957877064">Chrome मध्ये नवीन काय आहे</translation>
 <translation id="8006014511203279255">तुम्ही मेसेज किंवा इतर ॲप्समधील लिंकवर टॅप केल्यावर कधीही Chrome वापरा.</translation>
@@ -276,7 +268,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">तुम्ही आता मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंक ब्राउझ करता किंवा त्यावर टॅप करता, तेव्हा Chrome कधीही वापरू शकता.</translation>
 <translation id="8577978202917232774">सूचना या तुमच्या इतर डिव्हाइसवरील तुमच्या ब्राउझिंग ॲक्टिव्हिटीवर आधारित असतात. सूचना मिळवण्यासाठी, तुमच्या सर्व डिव्हाइसवर Chrome मध्ये साइन इन करा.</translation>
-<translation id="8587647598504233556">"Chrome", त्यानंतर "डीफॉल्ट ब्राउझर ॲप" वर टॅप करा.</translation>
 <translation id="8603022514504485810">Google Password Manager ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा किंवा <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये पासवर्ड तपासा.<ph name="END_LINK" /></translation>
 <translation id="8727043961453758442">Chrome चा पुरेपूर वापर करा</translation>
 <translation id="8736550665979974340">Google Chrome सह सुरक्षित राहा</translation>

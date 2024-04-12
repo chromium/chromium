@@ -185,7 +185,6 @@
 <translation id="1323433172918577554">കൂടുതൽ കാണിക്കുക</translation>
 <translation id="132390688737681464">വിലാസങ്ങൾ സംരക്ഷിച്ച് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="1325412080783393306">കൂടുതൽ വാങ്ങൽ ഓപ്ഷനുകൾ തിരയുക</translation>
-<translation id="1325749054628832887">പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ സൈറ്റിന് ഉപയോഗിക്കാനാകുന്ന നിരവധി കാര്യങ്ങളിൽ ഒരെണ്ണം മാത്രമാണ് പരസ്യത്തിന്റെ വിഷയം. പരസ്യത്തിന്റെ വിഷയങ്ങൾ ഇല്ലെങ്കിൽ പോലും, സൈറ്റുകൾക്ക് തുടർന്നും നിങ്ങളെ പരസ്യങ്ങൾ കാണിക്കാനാകും, എന്നാൽ അവ അത്ര താൽപ്പര്യമുളവാക്കുന്നത് ആയേക്കില്ല. <ph name="BEGIN_LINK" />നിങ്ങളുടെ പരസ്യവുമായി ബന്ധപ്പെട്ട സ്വകാര്യത മാനേജ് ചെയ്യുന്നതിനെ<ph name="LINK_END" />കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="1329916999021038454">റിപ്പോർട്ട് അയയ്ക്കുക</translation>
 <translation id="1330449323196174374">ലെഫ്റ്റ് ഗേറ്റ് മടക്ക്</translation>
 <translation id="1333745675627230582">Chrome ദിനോസർ ഗെയിം കളിക്കുക</translation>
@@ -1084,6 +1083,7 @@
             <ph name="LIST_ITEM" />തിരയൽ ചരിത്രം<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />ഫോമുകളിൽ നൽകിയ വിവരങ്ങൾ<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">സേവിംഗ്‌സ് അക്കൗണ്ട്</translation>
 <translation id="3103188521861412364">സ്റ്റോക്കുകളും ബോണ്ടുകളും</translation>
 <translation id="3105172416063519923">അസറ്റ് ഐഡി:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />സുരക്ഷിത DNS കോൺഫിഗറേഷൻ പരിശോധിക്കുന്നു<ph name="END_LINK" /></translation>
@@ -1301,6 +1301,7 @@
 <translation id="3493660662684070951">ട്രക്കുകൾ, വാനുകൾ, എസ്‌യുവികൾ</translation>
 <translation id="3495081129428749620">പേജിൽ കണ്ടെത്തുക
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">സാലറി അക്കൗണ്ട്</translation>
 <translation id="3497627066518778351">ഉപകരണത്തിലുള്ള സൈറ്റ് ഡാറ്റയുടെ ലിസ്റ്റ് ഒരു പുതിയ വിൻഡോയിൽ അവലോകനം ചെയ്യുക</translation>
 <translation id="3498215018399854026">ഇപ്പോൾ ഞങ്ങൾക്ക് നിങ്ങളുടെ രക്ഷകർത്താവിനെ ബന്ധപ്പെടാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="350069200438440499">ഫയല്‍ നാമം:</translation>
@@ -2338,6 +2339,7 @@
 <translation id="5519696598216267194">പേപ്പർ (പ്രീപഞ്ച് ചെയ്തത്)</translation>
 <translation id="5521782189689806907">ക്യാബിനറ്റ് നിർമ്മാണം</translation>
 <translation id="5523118979700054094">നയത്തിന്റെ പേര്</translation>
+<translation id="5523588073846127669">വ്യാപാരി ഈ വെർച്വൽ കാർഡ് സ്വീകരിക്കുന്നില്ല</translation>
 <translation id="5525755241743357906">ഫയൽ പകർത്തി അല്ലെങ്കിൽ നീക്കി</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="55293785478302737">അരിക് കൂട്ടിച്ചേർക്കൽ</translation>
@@ -2966,7 +2968,6 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ടെലികോൺഫറൻസിംഗ്</translation>
 <translation id="6753269504797312559">നയ മൂല്യം</translation>
-<translation id="6753390234084146956">ടാബുകൾ</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> എന്ന എൻട്രി ഇല്ലാതാക്കുക</translation>
 <translation id="6754547388777247439">സേവിംഗ്‌സ് അക്കൗണ്ടുകൾ</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3678,6 +3679,7 @@
 <translation id="8075588646978457437">സെൽഫ് അഡ്ഡിസിവ് പേപ്പർ</translation>
 <translation id="8075736640322370409">പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="8075898834294118863">സൈറ്റ് ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
+<translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{രഹസ്യാത്മക ഫയൽ അപ്‌ലോഡ് ചെയ്യണോ?}other{രഹസ്യാത്മക ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യണോ?}}</translation>
 <translation id="8078141288243656252">തിരിക്കുമ്പോൾ അനോട്ടേറ്റ് ചെയ്യാനാവില്ല</translation>
@@ -3718,6 +3720,7 @@
 <translation id="81563721597823545">ഹോക്കി ഉപകരണം</translation>
 <translation id="8161095570253161196">ബ്രൗസിംഗ് പുനരാരംഭിക്കുക</translation>
 <translation id="8163866351304776260">ഇടതുവശത്ത് നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
+<translation id="8163998196788647716">ഇടപാട് അക്കൗണ്ട്</translation>
 <translation id="8164078261547504572">വിലയിടിയുമ്പോൾ ഇമെയിലുകൾ വേണോ?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" എന്നീ കീകൾ ഒരേ നിഘണ്ടുവിൽ സജ്ജീകരിക്കാനാകില്ല</translation>
 <translation id="8175796834047840627">സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നതിനാൽ നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്ക് കാർഡുകൾ സംരക്ഷിക്കാമെന്ന് Chrome വാഗ്‌ദാനം ചെയ്യുന്നു. ക്രമീകരണത്തിൽ ഈ രീതി മാറ്റാനാകും.</translation>

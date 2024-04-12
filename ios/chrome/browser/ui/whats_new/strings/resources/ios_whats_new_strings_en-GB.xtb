@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1533488253335887280">Easy and secure access to your passwords from the home screen.</translation>
+<translation id="1590550141045148182">Open or close your tabs as you wish.</translation>
+<translation id="2036020471903443693">You'll see your tab pinned to the bottom of your screen.</translation>
+<translation id="2984477737332162971">Go to your open tabs.</translation>
+<translation id="3595188309555410362">If you have tabs that haven't been used in a while, they'll now be moved to the inactive tabs section.</translation>
+<translation id="3941788408634637840">Tap inactive tabs (if available).</translation>
+<translation id="3942215673032261195">You can pin your favourite sites for easy access later.</translation>
+<translation id="4196935312151003338">Select 'Pin tab' from the menu.</translation>
+<translation id="4497631794981705027">Touch and hold the home screen.</translation>
+<translation id="463279609093232564">At the top left of the screen, tap +.</translation>
+<translation id="5604467549230434026">In the Search widgets box, enter Chrome.</translation>
+<translation id="5639067007765618198">Google Password Manager widget</translation>
 <translation id="5922999516621365983">Drag tab here to pin it.</translation>
 <translation id="5979837087407522202">Search passwords</translation>
+<translation id="6109989197058801417">Press and hold on the tab that you want to pin.</translation>
+<translation id="639614003069108254">Select Password Manager, then tap Add widget.</translation>
+<translation id="6905308710260460250">Pinned tabs</translation>
+<translation id="720206380500582061">Manage inactive tabs settings under Settings &gt; Tabs.</translation>
 <translation id="8077675488769462025">Inactive tabs</translation>
+<translation id="8602952180069641300">Scroll up to the top of your tabs.</translation>
+<translation id="979990360845983227">Not used for 14 days or more</translation>
 </translationbundle>

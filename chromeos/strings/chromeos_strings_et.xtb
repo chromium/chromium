@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">Asetage skannerile veel üks leht</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="2873483161362553159">Brauseris navigeerimine</translation>
-<translation id="2873939192640533085">Sisestage päring, nt „kirjuta enesekindlamalt“</translation>
 <translation id="2874939134665556319">Eelmine lugu</translation>
 <translation id="2875812231449496375">Selle taustapildiga parima tulemuse jaoks lülitage see sisse. Saate selle seade igal ajal välja lülitada.</translation>
 <translation id="2878387241690264070">Tühjenes <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundiga.</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">Teil pole veel ühendust. Kui teie mobiilioperaator soovitab kohandatud APN-i, sisestage APN-i teave, valides käsu „+ Uus APN“</translation>
 <translation id="5947266287934282605">Kui kuu viimane päev on enne seda päeva, lähtestatakse andmed kuu viimasel päeval</translation>
 <translation id="5948460390109837040">koerad</translation>
+<translation id="594989847980441553">AI-ga piltide loomiseks valige „Loo“.
+        Kõik loodud pildid kuvatakse automaatselt siin.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">korall</translation>
 <translation id="5984145644188835034">Vaiketaustapilt</translation>
@@ -1197,6 +1198,7 @@
 <translation id="7936303884198020182">Ei leitud ühtegi nimeserverit</translation>
 <translation id="7942349550061667556">Punane</translation>
 <translation id="7943235353293548836">Püsiva säilitamissõnumi intervall</translation>
+<translation id="7943516765291457328">Lülitage Bluetooth sisse, et otsida läheduses asuvaid kuumkohti</translation>
 <translation id="7944562637040950644">lülitab klaviatuuri taustavalguse sisse/välja</translation>
 <translation id="7953669802889559161">Sisestusmeetodid</translation>
 <translation id="7955587717700691983">Bluetooth-klaviatuur</translation>
@@ -1326,6 +1328,7 @@
 <translation id="8747900814994928677">Kinnita muudatus</translation>
 <translation id="8749478549112817787">Kaamera taust</translation>
 <translation id="8755946156089753497">torn</translation>
+<translation id="8756235582947991808">AI abil loomine ja mõningad meelespead</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Teenuse Google Photos album</translation>
 <translation id="8775713578693478175">Modemi APN</translation>

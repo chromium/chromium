@@ -113,7 +113,6 @@
 <translation id="1580783302095112590">Wedi anfon e-bost.</translation>
 <translation id="1582732959743469162">Bydd hyn yn atal pob cynnydd ar gyfer eich lawrlwythiad presennol.</translation>
 <translation id="158591023028013564">{count,plural, =1{Mae Tudalen wedi'i hychwanegu at eich rhestr ddarllen}zero{Mae {count} Tudalen wedi'i hychwanegu at eich rhestr ddarllen}two{Mae {count} Dudalen wedi'u hychwanegu at eich rhestr ddarllen}few{Mae {count} Tudalen wedi'u hychwanegu at eich rhestr ddarllen}many{Mae {count} Tudalen wedi'u hychwanegu at eich rhestr ddarllen}other{Mae {count} Tudalen wedi'u hychwanegu at eich rhestr ddarllen}}</translation>
-<translation id="1587629076612412684">Personoleiddio Gwasanaethau Google</translation>
 <translation id="1594034544529347967">Yn dechrau</translation>
 <translation id="160275202205869636">Pan fydd ymlaen, defnyddiwch a chadwch ddata yn eich Cyfrif Google. Pan fydd wedi'i ddiffodd, dim ond i'r ddyfais hon y caiff data eu cadw.</translation>
 <translation id="1605405588277479165">Wedi'i ddiffodd - Ni argymhellir</translation>
@@ -136,6 +135,7 @@
 <translation id="1687475363370981210">Marcio Pob un ohonynt fel wedi'u Darllen</translation>
 <translation id="1689333818294560261">Llysenw</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> wedi'i ddewis</translation>
+<translation id="1710698977900873766">Troi gwell amddiffyniad ymlaen</translation>
 <translation id="1713777106376424209">Yn cyrraedd erbyn</translation>
 <translation id="1715515772563243997">Os ydych yn ymddiried yn <ph name="SITE" />, gallwch ddefnyddio cyfrinair a gadwyd i fewngofnodi.</translation>
 <translation id="1740468249224277719">Tapiwch ddwywaith i'w osod.</translation>
@@ -200,7 +200,6 @@
 <translation id="20485545164632846">eitem newydd</translation>
 <translation id="2049727122989709386">Mae <ph name="COUNT" /> cyfrif yn defnyddio'r un cyfrinair</translation>
 <translation id="2050196510205866090">{count,plural, =1{Mae {count} dull talu sydd wedi'i gadw ar gael uwchben eich bysellfwrdd.}zero{Mae {count} dull talu sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}two{Mae {count} ddull talu sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}few{Mae {count} dull talu sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}many{Mae {count} dull talu sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}other{Mae {count} dull talu sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}}</translation>
-<translation id="2055515971416882518">Agorwch y "Gosodiadau."</translation>
 <translation id="2059166748188874810">Bwrdeistref</translation>
 <translation id="2062410130322589403">Canllaw o'ch Dewisiadau Preifatrwydd</translation>
 <translation id="20638360198452347">Dewisydd math o uned</translation>
@@ -551,7 +550,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3861486700625780712">Peidio â dilyn</translation>
 <translation id="3861908220442487587">Dim ond ar y ddyfais hon y caiff y cyfeiriad hwn ei gadw. Er mwyn ei ddefnyddio ar eich dyfeisiau eraill, symudwch ef i'ch Cyfrif Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Anfon at Eich Dyfeisiau</translation>
-<translation id="3875783148670536197">Dangoswch i Fi Sut</translation>
 <translation id="3888863481921783344">Bydd hwn yn cael ei ddefnyddio i ddangos i chi wahoddedigion posib i'ch digwyddiad.</translation>
 <translation id="3891414008432200754">Pris</translation>
 <translation id="3892144330757387737">Byddwch yn gweld eich hanes yma</translation>
@@ -1033,6 +1031,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="633809752005859102">Aeth rhywbeth o'i le yn ddifrifol. Byddwn yn gweithio ar hynny.</translation>
 <translation id="6339793034470834130">I ddefnyddio'r Web Inspector, cysylltwch â Safari ar eich cyfrifiadur gan ddefnyddio cebl a chyrchwch eich iPhone o'r ddewislen Datblygu. Gallwch alluogi'r ddewislen datblygu yn adran Uwch gosodiadau Safari ar eich cyfrifiadur.</translation>
 <translation id="6340285871011301182">Cyfieithiad rhannol ddim ar gael.</translation>
+<translation id="6340526405444716530">Personoleiddio</translation>
 <translation id="6342069812937806050">Newydd ddigwydd</translation>
 <translation id="6344783595350022745">Clirio'r Testun</translation>
 <translation id="6346549652287021269">Dechrau Lawrlwythiad Newydd?</translation>
@@ -1177,7 +1176,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Gallwch hefyd gyffwrdd a dal y bar cyfeiriad i newid y safle.</translation>
 <translation id="6988572888918530647">Rheoli'ch Cyfrif Google</translation>
-<translation id="6989674195860388998">Newid yn y Gosodiadau…</translation>
 <translation id="6998989275928107238">I</translation>
 <translation id="699954956411469731">Hysbysiadau Ffôn Symudol</translation>
 <translation id="699985840472413751">Cau'r Lawrlwytho</translation>
@@ -1600,7 +1598,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9106655997975673326">O "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Gwirio am gyfrineiriau sydd wedi'u datgelu</translation>
 <translation id="9109699888944026290">{count,plural, =1{Cyfrinair Newydd Ar Gyfer Y Wefan Hon}zero{Cyfrineiriau Newydd Ar Gyfer Y Wefan Hon}two{Cyfrineiriau Newydd Ar Gyfer Y Wefan Hon}few{Cyfrineiriau newydd ar gyfer y wefan hon}many{Cyfrineiriau newydd ar gyfer y wefan hon}other{Cyfrineiriau newydd ar gyfer y wefan hon}}</translation>
-<translation id="9110489518258031250">Rheoli sut y gellir defnyddio'ch hanes pori cysoni i bersonoleiddio gwasanaethau Google eraill</translation>
 <translation id="9120217828624527905">Newid i Gyfieithu Tudalen Llawn</translation>
 <translation id="9124387962554796433">Mae'n bosib y bydd Google yn defnyddio'ch hanes i bersonoleiddio Search a gwasanaethau Google eraill.</translation>
 <translation id="9137526406337347448">Gwasanaethau Google</translation>

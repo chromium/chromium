@@ -185,7 +185,6 @@
 <translation id="1323433172918577554">Развернуть</translation>
 <translation id="132390688737681464">Сохранять и автоматически подставлять адреса</translation>
 <translation id="1325412080783393306">Ещё предложения</translation>
-<translation id="1325749054628832887">Сайты персонализируют рекламу на основе многих факторов, в том числе с помощью тем. Даже если эта функция отключена, сайты по-прежнему будут показывать объявления, однако они могут меньше соответствовать вашим интересам. Подробнее о том, <ph name="BEGIN_LINK" />как управлять конфиденциальностью в рекламе<ph name="LINK_END" />…</translation>
 <translation id="1329916999021038454">Отправить отчет</translation>
 <translation id="1330449323196174374">Фальцовка левой четверти</translation>
 <translation id="1333745675627230582">Играть в Chrome Dino</translation>
@@ -1081,6 +1080,7 @@
             <ph name="LIST_ITEM" />история поиска;<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />данные, указанные в формах.<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Сберегательный счет</translation>
 <translation id="3103188521861412364">Акции и облигации</translation>
 <translation id="3105172416063519923">Идентификатор объекта:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Проверить настройки безопасного DNS-сервера<ph name="END_LINK" /></translation>
@@ -1297,6 +1297,7 @@
 <translation id="3493660662684070951">Грузовики, фургоны и внедорожники</translation>
 <translation id="3495081129428749620">Найти на странице
     "<ph name="PAGE_TITLE" />"</translation>
+<translation id="3495818359064790343">Зарплатный счет</translation>
 <translation id="3497627066518778351">Открыть в новом окне список данных сайтов на устройстве</translation>
 <translation id="3498215018399854026">Не удалось связаться с вашими родителями. Повторите попытку.</translation>
 <translation id="350069200438440499">Имя файла:</translation>
@@ -2332,6 +2333,7 @@
 <translation id="5519696598216267194">Бумага (с перфорацией)</translation>
 <translation id="5521782189689806907">Корпусная мебель</translation>
 <translation id="5523118979700054094">Название правила</translation>
+<translation id="5523588073846127669">Продавец не принимает эту виртуальную карту.</translation>
 <translation id="5525755241743357906">Файл скопирован или перемещен</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы персонализировать инструменты специальных возможностей в настройках Chrome OS.</translation>
 <translation id="55293785478302737">Скобы по краю</translation>
@@ -2960,7 +2962,6 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференцсвязь</translation>
 <translation id="6753269504797312559">Значение правила</translation>
-<translation id="6753390234084146956">вкладки</translation>
 <translation id="6753434778807740853">Удалить запись "<ph name="ENTRY_VOICEOVER" />"</translation>
 <translation id="6754547388777247439">Сберегательные счета</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3673,6 +3674,7 @@
 <translation id="8075588646978457437">Самоклеящаяся бумага</translation>
 <translation id="8075736640322370409">Быстро создать таблицу Google</translation>
 <translation id="8075898834294118863">Открыть настройки сайтов</translation>
+<translation id="8076492880354921740">Вкладки</translation>
 <translation id="8077669823243888800">Конверт Chinese 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Загрузить конфиденциальный файл?}one{Загрузить конфиденциальные файлы?}few{Загрузить конфиденциальные файлы?}many{Загрузить конфиденциальные файлы?}other{Загрузить конфиденциальные файлы?}}</translation>
 <translation id="8078141288243656252">Недоступно, когда документ повернут</translation>
@@ -3713,6 +3715,7 @@
 <translation id="81563721597823545">Хоккейный инвентарь</translation>
 <translation id="8161095570253161196">Продолжить просмотр</translation>
 <translation id="8163866351304776260">Четыре отверстия слева</translation>
+<translation id="8163998196788647716">Расчетный счет</translation>
 <translation id="8164078261547504572">Хотите получать электронные письма о снижении цен?</translation>
 <translation id="8169175551046720804">Ключи <ph name="DATA_CONTROLS_KEYS" /> невозможно добавить в тот же словарь.</translation>
 <translation id="8175796834047840627">Chrome предлагает вам сохранить карты в аккаунте Google, поскольку вы вошли в систему. Этот параметр можно изменить в разделе настроек.</translation>

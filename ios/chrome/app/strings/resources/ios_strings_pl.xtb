@@ -113,7 +113,6 @@
 <translation id="1580783302095112590">E-mail wysłany.</translation>
 <translation id="1582732959743469162">Spowoduje to zatrzymanie bieżącego pobierania.</translation>
 <translation id="158591023028013564">{count,plural, =1{Dodano stronę do listy Do przeczytania}few{Dodano {count} strony do listy Do przeczytania}many{Dodano {count} stron do listy Do przeczytania}other{Dodano {count} strony do listy Do przeczytania}}</translation>
-<translation id="1587629076612412684">Dostosowywanie usług Google</translation>
 <translation id="1594034544529347967">Rozpoczęcie</translation>
 <translation id="160275202205869636">Gdy opcja jest włączona, możesz używać danych i zapisywać je na swoim koncie Google. Gdy jest wyłączona, dane są zapisywane tylko na tym urządzeniu.</translation>
 <translation id="1605405588277479165">Wyłączono – niezalecane</translation>
@@ -201,7 +200,6 @@
 <translation id="20485545164632846">nowy element</translation>
 <translation id="2049727122989709386">Na <ph name="COUNT" /> kontach masz to samo hasło</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} zapisana forma płatności dostępna nad klawiaturą.}few{{count} zapisane formy płatności dostępne nad klawiaturą.}many{{count} zapisanych form płatności dostępnych nad klawiaturą.}other{{count} zapisanej formy płatności dostępnej nad klawiaturą.}}</translation>
-<translation id="2055515971416882518">Otwórz „Ustawienia”.</translation>
 <translation id="2059166748188874810">Gmina</translation>
 <translation id="2062410130322589403">Przewodnik po ustawieniach prywatności</translation>
 <translation id="20638360198452347">Selektor typu jednostki</translation>
@@ -552,7 +550,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3861486700625780712">Przestań obserwować</translation>
 <translation id="3861908220442487587">Ten adres jest zapisany tylko na tym urządzeniu. Aby korzystać z niego na innych urządzeniach, przenieś go na swoje konto Google <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Wyślij na swoje urządzenia</translation>
-<translation id="3875783148670536197">Pokaż jak</translation>
 <translation id="3888863481921783344">Będziemy z tego korzystać, aby sugerować Ci osoby, które możesz zaprosić na swoje wydarzenie.</translation>
 <translation id="3891414008432200754">Cena</translation>
 <translation id="3892144330757387737">Tu znajdziesz swoją historię</translation>
@@ -1034,6 +1031,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="633809752005859102">Coś poszło nie tak. Zajmiemy się tym.</translation>
 <translation id="6339793034470834130">Aby użyć Inspektora sieci, połącz się z Safari na komputerze, korzystając z kabla, i przejdź do iPhone'a w menu Programowanie. Menu Programowanie możesz włączyć w sekcji Zaawansowane w ustawieniach Safari na komputerze.</translation>
 <translation id="6340285871011301182">Częściowe tłumaczenie jest niedostępne.</translation>
+<translation id="6340526405444716530">Personalizacja</translation>
 <translation id="6342069812937806050">Przed momentem</translation>
 <translation id="6344783595350022745">Wyczyść tekst</translation>
 <translation id="6346549652287021269">Rozpocząć nowe pobieranie?</translation>
@@ -1178,7 +1176,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6979158407327259162">Dysk Google</translation>
 <translation id="6983306615164277634">Możesz też kliknąć i przytrzymać pasek adresu, aby zmienić jego pozycję.</translation>
 <translation id="6988572888918530647">Zarządzaj kontem Google</translation>
-<translation id="6989674195860388998">Przełącz w ustawieniach…</translation>
 <translation id="6998989275928107238">Do</translation>
 <translation id="699954956411469731">Powiadomienia na urządzeniach mobilnych</translation>
 <translation id="699985840472413751">Zamknij pobieranie</translation>
@@ -1601,7 +1598,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9106655997975673326">Z urządzenia „<ph name="SOURCE_DEVICE" />”</translation>
 <translation id="9107664647686727385">Sprawdź, czy nie przejęto haseł</translation>
 <translation id="9109699888944026290">{count,plural, =1{Nowe hasło do tej strony}few{Nowe hasła do tej strony}many{Nowe hasła do tej strony}other{Nowe hasła do tej strony}}</translation>
-<translation id="9110489518258031250">Określ, jak Twoja synchronizowana historia przeglądania może być używana do personalizowania innych usług Google</translation>
 <translation id="9120217828624527905">Przełącz na tłumaczenie całej strony</translation>
 <translation id="9124387962554796433">Google może korzystać z Twojej historii, żeby personalizować wyniki wyszukiwania i działanie innych usług Google.</translation>
 <translation id="9137526406337347448">Usługi Google</translation>

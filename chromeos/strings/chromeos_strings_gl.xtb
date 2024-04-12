@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">Coloca outra páxina no escáner</translation>
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="2873483161362553159">Navegación no navegador</translation>
-<translation id="2873939192640533085">Escribe unha solicitude como "exprésate con máis confianza"</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2875812231449496375">Activa esta opción de configuración para obter os mellores resultados con este fondo de pantalla. Podes desactivala en calquera momento.</translation>
 <translation id="2878387241690264070">Descargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">De momento, non tes conexión. Se o teu operador móbil recomenda usar un APN personalizado, selecciona a opción + Novo APN para engadir a información do APN</translation>
 <translation id="5947266287934282605">Os datos restableceranse o último día do mes se este cae antes desta data</translation>
 <translation id="5948460390109837040">cans</translation>
+<translation id="594989847980441553">Para xerar unha imaxe con IA, selecciona a opción Crear.
+        Todas as imaxes que se creen mostraranse aquí automaticamente.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">coral</translation>
 <translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
@@ -1197,6 +1198,7 @@
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
 <translation id="7942349550061667556">Vermello</translation>
 <translation id="7943235353293548836">Intervalo de conexión persistente</translation>
+<translation id="7943516765291457328">Activa o Bluetooth para buscar zonas wifi próximas</translation>
 <translation id="7944562637040950644">activar ou desactivar a retroiluminación do teclado</translation>
 <translation id="7953669802889559161">Métodos de introdución de texto</translation>
 <translation id="7955587717700691983">Teclado con conexión por Bluetooth</translation>
@@ -1326,6 +1328,7 @@
 <translation id="8747900814994928677">Confirmar o cambio</translation>
 <translation id="8749478549112817787">Fondo da cámara</translation>
 <translation id="8755946156089753497">torre</translation>
+<translation id="8756235582947991808">Como crear contido con IA e que consideracións cómpre ter en conta</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbums de Google Fotos</translation>
 <translation id="8775713578693478175">APN do módem</translation>

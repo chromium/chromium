@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C ഉപകരണം (പുറകിലെ പോർട്ട്)</translation>
 <translation id="1869497990620230175">പെട്ടെന്ന് ആക്‌സസ് ചെയ്യാവുന്ന ഫയലുകൾ</translation>
 <translation id="1871023081802165724">മീഡിയ പ്ലേ ചെയ്യുക</translation>
+<translation id="1871915835366697861">ഈ ഗെയിമിന് ലഭ്യമല്ല</translation>
 <translation id="1879018240766558464">അദൃശ്യ വിൻഡോകൾ നിലവിൽ പിന്തുണയ്ക്കുന്നില്ല. മറ്റ് ആപ്പുകൾ സംരക്ഷിക്കും.</translation>
 <translation id="1882814835921407042">മൊബൈൽ നെറ്റ്‌വർക്ക് ഇല്ല</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് മിറർ ചെയ്യുന്നു</translation>
@@ -1792,6 +1793,7 @@
 <translation id="79341161159229895">അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="FIRST_PARENT_EMAIL" />, <ph name="SECOND_PARENT_EMAIL" /> എന്നിവരാണ്</translation>
 <translation id="793716872548410480">നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡ് കാണാൻ <ph name="SHORTCUT_KEY_NAME" /> + V അമർത്തുക. നിങ്ങൾ അവസാനമായി പകർത്തിയ 5 ഇനങ്ങൾ ക്ലിപ്പ്ബോർഡിൽ സംരക്ഷിക്കുന്നു.</translation>
 <translation id="7942349550061667556">ചുവപ്പ്</translation>
+<translation id="7943516765291457328">നിയർബൈ ഹോട്ട്‌സ്‌പോട്ടുകൾ സ്‌കാൻ ചെയ്യാൻ Bluetooth ഓണാക്കുക</translation>
 <translation id="7944023924886109030">ഇന്നത്തെ എല്ലാ ഇവന്റുകളും കാണുക</translation>
 <translation id="7945357288295809525">ഉപയോഗസഹായി ക്രമീകരണം കാണിക്കുക, "<ph name="ENABLED_FEATURES" />" പ്രവർത്തനക്ഷമമാക്കി.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> നിങ്ങളുടെ <ph name="DEVICE_NAME" /> ഉപയോഗിക്കാൻ ആഗ്രഹിക്കുന്നു</translation>

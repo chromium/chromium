@@ -19,7 +19,6 @@
 <translation id="1436059927646026729">Abrir "Minha guia mais recente" no Chrome</translation>
 <translation id="1449241544691504574">Adicionar favoritos ao Chrome</translation>
 <translation id="1462727070346936664">Faça login para aproveitar o Chrome ao máximo.</translation>
-<translation id="1462833127986525564">Vincule o Chrome e outros Serviços do Google se quiser que eles personalizem sua experiência usando dados uns dos outros</translation>
 <translation id="1491435845014430217">Ative a opção "Bloquear guias anônimas ao fechar o Chrome".</translation>
 <translation id="1493827051843127077">Defina o Chrome como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
@@ -43,7 +42,6 @@ Considerações:
 <translation id="1790080846677398234">Adiciona os URLs inseridos aos seus favoritos no Chrome.</translation>
 <translation id="1799920918471566157">Dicas do Chrome</translation>
 <translation id="1830634592642484976">Este endereço está salvo no Chrome. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="USER_EMAIL" />.</translation>
-<translation id="1843217788865538014">Use o Chrome automaticamente ao tocar em links de mensagens, documentos e outros apps.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
 <translation id="1917964099031477364">A conta e os dados não salvos serão removidos do Chrome e de outros apps do Google neste dispositivo.</translation>
 <translation id="1965935827552890526">Termine o que você estava fazendo na outra janela aberta no Chrome.</translation>
@@ -123,7 +121,6 @@ Considerações:
 <translation id="424864128008805179">Sair do Google Chrome?</translation>
 <translation id="4251174643044751591">Abre a página de configurações de formas de pagamento do Chrome.</translation>
 <translation id="4453284704333523777">Gerenciar as configurações do Chrome</translation>
-<translation id="4508370294876102450">Abrir o Chrome por qualquer app</translation>
 <translation id="4523886039239821078">Alguns complementos causam a falha do Google Chrome. Desinstale-os.</translation>
 <translation id="4633328489441962921">Não é possível verificar se há atualizações</translation>
 <translation id="4636900170638246267">Faça login neste site e no Chrome.</translation>
@@ -134,7 +131,6 @@ Considerações:
         Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="484033449593719797">Indisponível no Chrome Beta</translation>
 <translation id="4840404732697892756">O Gerenciador de senhas do Google pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
-<translation id="4856636171409137183">Para ter uma experiência mais personalizada, inclua o Chrome no <ph name="FEATURE_NAME_1" /> e no <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{O Chrome pode ajudar você a rastrear o pacote na página "Nova guia".}one{O Chrome pode ajudar você a rastrear o pacote na página "Nova guia".}other{O Chrome pode ajudar você a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="4903674399067644695">Este card mostra sugestões para você aproveitar o Chrome ao máximo.</translation>
 <translation id="49200511069271369">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
@@ -177,7 +173,6 @@ Considerações:
 <translation id="6110625574506755980">Você vai perder o acesso a alguns recursos do Chrome.</translation>
 <translation id="6132149203299792222">Faça login com sua Conta do Google para sincronizar suas senhas, favoritos e muito mais.</translation>
 <translation id="6177442314419606057">Pesquisar no Chrome</translation>
-<translation id="6181930887571472871">Mudar para o Chrome</translation>
 <translation id="6238746320622508509">Permita que o Chrome bloqueie suas guias anônimas.</translation>
 <translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
 <translation id="6272822675004864999">Para receber notificações do Chrome, ative as notificações nas configurações do iOS.</translation>
@@ -205,7 +200,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 
 Para conferir mais configurações que usam dados para melhorar sua experiência do Chrome, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Pesquisar com voz no Chrome</translation>
-<translation id="6964931465519938134">Agora você poderá usar o Chrome sempre que tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>
 <translation id="7004159181872656283">Pesquise recursos visuais no Chrome.</translation>
 <translation id="7056826488869329999">Abre e realiza a Confirmação de segurança no Chrome.</translation>
@@ -231,7 +225,6 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="7466693328838535498">Na caixa "Widgets da Pesquisa", digite "Chrome".</translation>
 <translation id="746684838091935575">3. Selecione o Chrome</translation>
 <translation id="7492574581995589075">Sua organização desativou a capacidade de usar e salvar dados do Chrome na Conta do Google. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
-<translation id="7501046334262221972">Para definir o Chrome como o navegador padrão, abra as configurações. Toque em "App do navegador padrão" e selecione o Chrome.</translation>
 <translation id="756809126120519699">Dados do Chrome apagados</translation>
 <translation id="7581063337314642333">Acessar a grade de guias no Chrome</translation>
 <translation id="7662994914830945754">Para acessar suas guias em qualquer lugar onde você usar o Chrome, faça login e ative a sincronização</translation>
@@ -244,7 +237,6 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="7792140019572081272">O Chrome protege seus dados sensíveis com o Face ID.</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
 <translation id="7897703007638178753">Conferir guias recentes do Chrome</translation>
-<translation id="7925119591961387184">Selecione "Chrome".</translation>
 <translation id="7933491483529363150">Abrir "Minha guia mais recente" no Chrome.</translation>
 <translation id="7948283758957877064">Novidades do Chrome</translation>
 <translation id="8006014511203279255">Use o Chrome sempre que abrir links em mensagens e outros apps.</translation>
@@ -276,7 +268,6 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">Agora você pode usar o Chrome sempre que navegar ou tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="8577978202917232774">As sugestões são baseadas na sua atividade de navegação em outros dispositivos. Para receber sugestões, faça login no Chrome em todos os seus dispositivos.</translation>
-<translation id="8587647598504233556">Toque em "Chrome" e em "App de navegação padrão".</translation>
 <translation id="8603022514504485810">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Aproveite o Chrome ao máximo</translation>
 <translation id="8736550665979974340">Mais proteção com o Google Chrome</translation>

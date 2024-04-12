@@ -226,6 +226,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1864454756846565995">USB-C gailua (atzealdeko ataka)</translation>
 <translation id="1869497990620230175">Fitxategi bizkorrak</translation>
 <translation id="1871023081802165724">Erreproduzitu multimedia-edukia</translation>
+<translation id="1871915835366697861">Ez dago erabilgarri joko honetan</translation>
 <translation id="1879018240766558464">Une honetan ez dira onartzen ezkutuko moduko leihoak. Gainerako aplikazioak gorde egingo dira.</translation>
 <translation id="1882814835921407042">Ez dago sare mugikorrik</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> pantailan islatzen</translation>
@@ -1792,6 +1793,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> eta <ph name="SECOND_PARENT_EMAIL" /> kontuen bidez kudeatzen da kontu hau</translation>
 <translation id="793716872548410480">Sakatu <ph name="SHORTCUT_KEY_NAME" /> + V arbela ikusteko. Kopiatutako azken bost elementuak arbelean gordeta geratzen dira.</translation>
 <translation id="7942349550061667556">Gorria</translation>
+<translation id="7943516765291457328">Aktibatu Bluetootha inguruan erabilgarri dauden wifi-guneak hautemateko</translation>
 <translation id="7944023924886109030">Ikusi gaurko gertaera guztiak</translation>
 <translation id="7945357288295809525">Erakutsi erabilerraztasun-ezarpenak, "<ph name="ENABLED_FEATURES" />" gaituta.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> aplikazioak <ph name="DEVICE_NAME" /> erabili nahi du</translation>

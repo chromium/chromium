@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">Col·loca una altra pàgina a l'escàner</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="2873483161362553159">Navegació del navegador</translation>
-<translation id="2873939192640533085">Introdueix una indicació, com ara "que soni més segur"</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2875812231449496375">Activa aquesta opció per obtenir els millors resultats amb aquest fons de pantalla. Pots desactivar-la en qualsevol moment.</translation>
 <translation id="2878387241690264070">S'ha descarregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">Encara no t'has connectat. Si el teu operador de telefonia mòbil et recomana un APN personalitzat, introdueix la informació de l'APN seleccionant l'opció + APN nou.</translation>
 <translation id="5947266287934282605">Si l'últim dia del mes és anterior a aquest dia, les dades es restabliran l'últim dia del mes en qüestió</translation>
 <translation id="5948460390109837040">gossos</translation>
+<translation id="594989847980441553">Per crear una imatge amb IA, selecciona Crea.
+        Totes les imatges creades es mostraran automàticament aquí.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">coral</translation>
 <translation id="5984145644188835034">Fons de pantalla predeterminat</translation>
@@ -1197,6 +1198,7 @@
 <translation id="7936303884198020182">No s'han trobat servidors de noms</translation>
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7943235353293548836">Interval de keepalive persistent</translation>
+<translation id="7943516765291457328">Activa el Bluetooth per cercar punts d'accés Wi‐Fi propers</translation>
 <translation id="7944562637040950644">commuta la retroil·luminació del teclat</translation>
 <translation id="7953669802889559161">Introducció de text</translation>
 <translation id="7955587717700691983">Teclat Bluetooth</translation>
@@ -1326,6 +1328,7 @@
 <translation id="8747900814994928677">Confirma el canvi</translation>
 <translation id="8749478549112817787">Fons de la càmera</translation>
 <translation id="8755946156089753497">torre</translation>
+<translation id="8756235582947991808">Com es poden fer creacions amb IA i quines consideracions cal tenir en compte</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Àlbum de Google Fotos</translation>
 <translation id="8775713578693478175">APN del mòdem</translation>

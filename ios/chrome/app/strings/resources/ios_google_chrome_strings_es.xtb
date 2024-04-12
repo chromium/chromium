@@ -19,7 +19,6 @@
 <translation id="1436059927646026729">Abrir Mi última pestaña en Chrome</translation>
 <translation id="1449241544691504574">Añadir marcadores a Chrome</translation>
 <translation id="1462727070346936664">Inicia sesión para sacarle el máximo partido a Chrome.</translation>
-<translation id="1462833127986525564">Vincula Chrome y otros servicios de Google si quieres que personalicen tu experiencia usando los datos de todos ellos</translation>
 <translation id="1491435845014430217">Activa Bloquear pestañas de Incógnito al cerrar Chrome.</translation>
 <translation id="1493827051843127077">Selecciona Chrome como navegador principal para sincronizar tus pestañas, contraseñas e información de pago en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no ha podido comprobar si hay actualizaciones. Revisa tu conexión a Internet.</translation>
@@ -43,7 +42,6 @@ Notas importantes:
 <translation id="1790080846677398234">Añade las URLs introducidas a tus marcadores de Chrome.</translation>
 <translation id="1799920918471566157">Consejos de Chrome</translation>
 <translation id="1830634592642484976">Actualmente, esta dirección está guardada en Chrome. Para usarla en los productos de Google, guárdala en tu cuenta de Google <ph name="USER_EMAIL" />.</translation>
-<translation id="1843217788865538014">Usa Chrome automáticamente cuando hagas clic en enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
 <translation id="1917964099031477364">Esta cuenta y los datos sin guardar se quitarán de Chrome y de las demás aplicaciones de Google instaladas en este dispositivo.</translation>
 <translation id="1965935827552890526">Termina lo que estabas haciendo en otra ventana abierta de Chrome.</translation>
@@ -123,7 +121,6 @@ Notas importantes:
 <translation id="424864128008805179">¿Quieres cerrar sesión en Chrome?</translation>
 <translation id="4251174643044751591">Abre la página de configuración de métodos de pago en Chrome.</translation>
 <translation id="4453284704333523777">Gestionar la configuración de Chrome</translation>
-<translation id="4508370294876102450">Abre Chrome desde cualquier aplicación</translation>
 <translation id="4523886039239821078">Algunos complementos hacen que Chrome falle. Desinstálalos.</translation>
 <translation id="4633328489441962921">Chrome no puede comprobar si hay actualizaciones</translation>
 <translation id="4636900170638246267">Inicia sesión en este sitio y en Chrome.</translation>
@@ -134,7 +131,6 @@ Notas importantes:
         Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="484033449593719797">No compatible con Chrome Beta</translation>
 <translation id="4840404732697892756">El Gestor de contraseñas de Google puede comprobar tus contraseñas si inicias sesión con tu cuenta de Google.</translation>
-<translation id="4856636171409137183">Para disfrutar de una experiencia más personalizada, incluye Chrome en <ph name="FEATURE_NAME_1" /> y <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome puede ayudarte a hacer un seguimiento de este paquete en la página Nueva pestaña.}other{Chrome puede ayudarte a hacer un seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="4903674399067644695">En esta tarjeta se muestran sugerencias sobre cómo sacarle el máximo partido a Chrome.</translation>
 <translation id="49200511069271369">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en el que se puede usar Chrome. Tu administrador puede configurar o restringir ciertas funciones.</translation>
@@ -177,7 +173,6 @@ Notas importantes:
 <translation id="6110625574506755980">Algunas funciones de Chrome dejarán de estar disponibles.</translation>
 <translation id="6132149203299792222">Inicia sesión con tu cuenta de Google para sincronizar tus contraseñas, marcadores y más.</translation>
 <translation id="6177442314419606057">Buscar en Chrome</translation>
-<translation id="6181930887571472871">Cambiar a Chrome</translation>
 <translation id="6238746320622508509">Permite que Chrome bloquee tus pestañas de incógnito.</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
 <translation id="6272822675004864999">Para recibir notificaciones de Chrome, actívalas en los ajustes de iOS.</translation>
@@ -205,7 +200,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 
 Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrome, ve a los <ph name="BEGIN_LINK" />servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Buscar por voz en Chrome</translation>
-<translation id="6964931465519938134">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="6975725306479268850">Elige Chrome para la función Autocompletar</translation>
 <translation id="7004159181872656283">Busca elementos visuales en Chrome.</translation>
 <translation id="7056826488869329999">Abre y ejecuta una comprobación de seguridad en Chrome.</translation>
@@ -231,7 +225,6 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="7466693328838535498">En el cuadro de búsqueda de widgets, escribe Chrome</translation>
 <translation id="746684838091935575">3. Selecciona Chrome.</translation>
 <translation id="7492574581995589075">Tu organización ha desactivado la opción de usar y guardar datos de Chrome en tu cuenta de Google. Los marcadores, las contraseñas y otros elementos nuevos solo se guardarán en este dispositivo.</translation>
-<translation id="7501046334262221972">Para seleccionar Chrome como navegador predeterminado, abre Ajustes, toca Aplicación de navegador predeterminada y, después, selecciona Chrome.</translation>
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
 <translation id="7581063337314642333">Acceder a la cuadrícula de pestañas en Chrome</translation>
 <translation id="7662994914830945754">Inicia sesión y activa la sincronización para ver tus pestañas dondequiera que uses Chrome</translation>
@@ -244,7 +237,6 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="7792140019572081272">Chrome protege tus datos sensibles con Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
 <translation id="7897703007638178753">Ver las pestañas recientes de Chrome</translation>
-<translation id="7925119591961387184">Selecciona Chrome.</translation>
 <translation id="7933491483529363150">Abre Mi última pestaña en Chrome.</translation>
 <translation id="7948283758957877064">Novedades de Chrome</translation>
 <translation id="8006014511203279255">Usa Chrome cada vez que toques enlaces en mensajes u otras aplicaciones.</translation>
@@ -276,7 +268,6 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">Ahora puedes usar Chrome cada vez que navegues o toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="8577978202917232774">Las sugerencias se basan en tu actividad de navegación en tus otros dispositivos. Para recibir sugerencias, inicia sesión en Chrome con todos tus dispositivos.</translation>
-<translation id="8587647598504233556">Toca Chrome y, a continuación, Aplicación de navegador predeterminada.</translation>
 <translation id="8603022514504485810">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Sácale el máximo partido a Chrome</translation>
 <translation id="8736550665979974340">Protégete con Google Chrome</translation>

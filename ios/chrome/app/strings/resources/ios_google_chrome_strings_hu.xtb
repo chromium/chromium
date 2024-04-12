@@ -19,7 +19,6 @@
 <translation id="1436059927646026729">A legutóbbi lap megnyitása a Chrome-ban</translation>
 <translation id="1449241544691504574">Könyvjelzők hozzáadása a Chrome-hoz</translation>
 <translation id="1462727070346936664">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chrome-ból.</translation>
-<translation id="1462833127986525564">Kapcsolja össze a Chrome-ot az egyéb Google-szolgáltatásokkal, ha szeretné, hogy az adatok kölcsönös megosztása alapján szabják személyre a felhasználói élményt</translation>
 <translation id="1491435845014430217">Kapcsolja be az „Inkognitó lapok zárolása a Chrome bezárásakor” beállítást.</translation>
 <translation id="1493827051843127077">A Chrome-ot alapértelmezett böngészőként beállítva az összes eszközén szinkronizálhatja a lapfüleket, jelszavakat és fizetési adatokat</translation>
 <translation id="1504372625950710826">A Chrome nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
@@ -43,7 +42,6 @@ Megjegyzések:
 <translation id="1790080846677398234">A bevitt URL-eket felveszi a könyvjelzők közé a Chrome-ban.</translation>
 <translation id="1799920918471566157">Chrome-tippek</translation>
 <translation id="1830634592642484976">A címet jelenleg a Chrome-ba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
-<translation id="1843217788865538014">Beállíthatja, hogy a rendszer automatikusan a Chrome-ot használja, amikor üzenetekben, dokumentumokban és más alkalmazásokban található linkekre kattint.</translation>
 <translation id="1910975740091000991">Chrome iOS rendszerhez</translation>
 <translation id="1917964099031477364">Ezzel a fiók és a nem mentett adatok eltávolításra kerülnek a Chrome-ból és az eszközön lévő többi Google-alkalmazásból.</translation>
 <translation id="1965935827552890526">A másik megnyitott Chrome-ablakban fejezze be, amit csinál.</translation>
@@ -123,7 +121,6 @@ Megjegyzések:
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>
 <translation id="4251174643044751591">Megnyitja a Fizetési módok beállítási oldalát a Chrome-ban.</translation>
 <translation id="4453284704333523777">A Chrome beállításainak kezelése</translation>
-<translation id="4508370294876102450">A Chrome megnyitása bármely alkalmazásból</translation>
 <translation id="4523886039239821078">Bizonyos bővítmények a Chrome összeomlását eredményezik. Távolítsa el a következő(ke)t:</translation>
 <translation id="4633328489441962921">A Chrome nem tud frissítéseket keresni</translation>
 <translation id="4636900170638246267">Jelentkezzen be erre a webhelyre és a Chrome-ba.</translation>
@@ -134,7 +131,6 @@ Megjegyzések:
         A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="484033449593719797">A Chrome bétaverziója nem támogatja</translation>
 <translation id="4840404732697892756">A Google Jelszókezelő ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
-<translation id="4856636171409137183">A leginkább személyre szabott élmény érdekében vegye fel a Chrome-ot itt: <ph name="FEATURE_NAME_1" /> és itt: <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{A Chrome segíthet a csomag nyomon követésében az Új lap oldalon.}other{A Chrome segíthet a csomagok nyomon követésében az Új lap oldalon.}}</translation>
 <translation id="4903674399067644695">Ez a kártya javaslatokat ad arra, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
 <translation id="49200511069271369">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe bejelentkezik, valamint azt is, hogy miként használhatja a Chrome-ot. A rendszergazda beállíthat, illetve korlátozhat bizonyos funkciókat.</translation>
@@ -177,7 +173,6 @@ Megjegyzések:
 <translation id="6110625574506755980">Egyes Chrome-funkciók nem állnak majd rendelkezésre.</translation>
 <translation id="6132149203299792222">Jelszavai, könyvjelzői és egyebek szinkronizálásához jelentkezzen be Google-fiókjával.</translation>
 <translation id="6177442314419606057">Keresés a Chrome-ban</translation>
-<translation id="6181930887571472871">Váltás Chrome-ra</translation>
 <translation id="6238746320622508509">Az inkognitó lapok zárolásának engedélyezése a Chrome számára.</translation>
 <translation id="6247557882553405851">Google Jelszókezelő</translation>
 <translation id="6272822675004864999">Ha értesítéseket szeretne kapni a Chrome-tól, kapcsolja be az értesítéseket az iOS beállításaiban.</translation>
@@ -205,7 +200,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 
 Az adatokat a Chrome-élmény javítására használó további beállításokért keresse fel a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> oldalát.</translation>
 <translation id="6916015246697034114">Hangalapú keresés a Chrome-ban</translation>
-<translation id="6964931465519938134">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
 <translation id="6975725306479268850">A Chrome kiválasztása az automatikus kitöltéshez</translation>
 <translation id="7004159181872656283">Képi elemek keresésének lehetősége a Chrome-ban.</translation>
 <translation id="7056826488869329999">Megnyitja és futtatja a biztonsági ellenőrzést a Chrome-ban.</translation>
@@ -225,13 +219,13 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="7272930098487145294">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chrome hozzáadhassa őket a fotóihoz.</translation>
 <translation id="7275945473750112644">Fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, ezért Chrome-adatai törölve lesznek erről az eszközről</translation>
 <translation id="7304491752269485262">A Chrome automatikus kitöltés funkciójának kibontott nézete</translation>
+<translation id="7344094882820374540">A Chrome legerősebb védelmét élvezheti a veszélyes webhelyekkel szemben</translation>
 <translation id="7349129508108954623">Engedélyezze a Chrome számára a Google Térkép használatát, hogy útvonalterveket és helyi információkat jeleníthessen meg az észlelt címekkel kapcsolatban.</translation>
 <translation id="7394108421562933108">Térkép a Chrome-ban</translation>
 <translation id="7400722733683201933">A Google Chrome névjegye</translation>
 <translation id="7466693328838535498">Írja be a Modulok keresése mezőbe a Chrome-ot.</translation>
 <translation id="746684838091935575">3. Válassza ki a Chrome böngészőt.</translation>
 <translation id="7492574581995589075">Szervezete kikapcsolta a Chrome-adatok Google-fiókban való használatát és mentését. Az új könyvjelzők, jelszavak és egyebek csak erre az eszközre lesznek mentve.</translation>
-<translation id="7501046334262221972">Ha a Chrome-ot szeretné beállítani alapértelmezett böngészőként, nyissa meg a Beállítások menüt. Koppintson az Alapértelmezett böngészőalkalmazás lehetőségre, és válassza ki a Chrome-ot.</translation>
 <translation id="756809126120519699">Chrome-adatok törölve</translation>
 <translation id="7581063337314642333">A laprács megnyitása a Chrome-ban</translation>
 <translation id="7662994914830945754">Jelentkezzen be, és kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>
@@ -244,7 +238,6 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="7792140019572081272">A Chrome biztonságban tartja az Ön bizalmas adatait a Face ID segítségével.</translation>
 <translation id="7855730255114109580">A Google Chrome naprakész</translation>
 <translation id="7897703007638178753">Legutóbbi Chrome-lapok megtekintése</translation>
-<translation id="7925119591961387184">Válassza a „Chrome” lehetőséget.</translation>
 <translation id="7933491483529363150">A legutóbbi lap megnyitása a Chrome-ban.</translation>
 <translation id="7948283758957877064">A Chrome újdonságai</translation>
 <translation id="8006014511203279255">Bármikor használhatja a Chrome-ot, amikor üzenetekben vagy más alkalmazásokban linkekre kattint.</translation>
@@ -276,7 +269,6 @@ Adatai titkosítva lettek összetett jelszavával a következő időpontban: <ph
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">Mostantól mindig a Chrome-ot használhatja, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint (illetve böngészik köztük).</translation>
 <translation id="8577978202917232774">A javaslatok a többi eszközén végzett böngészési tevékenységein alapulnak. Ha javaslatokat szeretne kapni, jelentkezzen be a Chrome-ba az összes eszközén.</translation>
-<translation id="8587647598504233556">Koppintson a „Chrome”, majd az „Alapértelmezett böngésző” lehetőségre.</translation>
 <translation id="8603022514504485810">A Google Jelszókezelő nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Hozza ki a legtöbbet a Chrome-ból</translation>
 <translation id="8736550665979974340">Gondoskodjon biztonságáról a Google Chrome-mal</translation>

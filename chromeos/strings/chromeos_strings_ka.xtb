@@ -331,7 +331,6 @@
 <translation id="2860473693272905224">მოათავსეთ სხვა გვერდი სკანერზე</translation>
 <translation id="2872961005593481000">გამორთვა</translation>
 <translation id="2873483161362553159">ნავიგაცია ბრაუზერში</translation>
-<translation id="2873939192640533085">შეიყვანეთ მოთხოვნა — მაგალითად, „მეტი თავდაჯერებულობის მიცემა“</translation>
 <translation id="2874939134665556319">წინა ჩანაწერი</translation>
 <translation id="2875812231449496375">ჩართეთ ეს პარამეტრი, ამ ფონთან დაკავშირებით საუკეთესო შედეგები რომ მიიღოთ. პარამეტრის გამორთვას ნებისმიერ დროს შეძლებთ.</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> განიმუხტა <ph name="NUM_SECONDS" /> წამში.</translation>
@@ -842,6 +841,8 @@
 <translation id="5946538341867151940">ინტერნეტთან დაკავშირებული არ ხართ. თუ მობილური ოპერატორი გირჩევთ მორგებულ APN-ს, მის შესახებ ინფორმაციის მისათითებლად აირჩიეთ „+ ახალი APN“</translation>
 <translation id="5947266287934282605">თუ თვის ბოლო დღე წინ უსწრებს მითითებულ დღეს, მონაცემები განულდება თვის ბოლო დღეს</translation>
 <translation id="5948460390109837040">ძაღლები</translation>
+<translation id="594989847980441553">აირჩიეთ „შექმნა“, ხელოვნური ინტელექტის მეშვეობით რომ შექმნათ სურათი.
+        აქ ავტომატურად გამოჩნდება ყველა შექმნილი სურათი.</translation>
 <translation id="5972388717451707488">ძრავას განახლება</translation>
 <translation id="5975130252842127517">მარჯნისფერი</translation>
 <translation id="5984145644188835034">ნაგულისხმევი ფონი</translation>
@@ -1197,6 +1198,7 @@
 <translation id="7936303884198020182">სახელების სერვერი ვერ მოიძებნა</translation>
 <translation id="7942349550061667556">წითელი</translation>
 <translation id="7943235353293548836">კავშირის მუდმივი შენარჩუნების ინტერვალი</translation>
+<translation id="7943516765291457328">ახლომახლო უსადენო ქსელების სკანირებისთვის ჩართეთ Bluetooth</translation>
 <translation id="7944562637040950644">კლავიატურის შენათების გადართვა</translation>
 <translation id="7953669802889559161">შეყვანის მეთოდები</translation>
 <translation id="7955587717700691983">Bluetooth კლავიატურა</translation>
@@ -1326,6 +1328,7 @@
 <translation id="8747900814994928677">დაადასტურეთ ცვლილება</translation>
 <translation id="8749478549112817787">კამერის ფონი</translation>
 <translation id="8755946156089753497">კოშკი</translation>
+<translation id="8756235582947991808">ხელოვნური ინტელექტის დახმარებით შექმნის წესი და სხვა რამდენიმე გასათვალისწინებელი საკითხი</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ალბომი</translation>
 <translation id="8775713578693478175">მოდემის APN</translation>

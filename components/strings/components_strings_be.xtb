@@ -185,7 +185,6 @@
 <translation id="1323433172918577554">Паказаць яшчэ</translation>
 <translation id="132390688737681464">Захоўваць і запаўняць адрасы</translation>
 <translation id="1325412080783393306">Пошук іншых варыянтаў куплі</translation>
-<translation id="1325749054628832887">Функцыя "Тэмы рэкламы" – адзін з інструментаў, якія могуць быць выкарыстаны сайтам для персаналізацыі рэкламы. Нават калі гэта функцыя адключана, сайты могуць і далей паказваць аб'явы, аднак яны могуць менш адпавядаць інтарэсам карыстальніка. <ph name="BEGIN_LINK" />Даведацца больш пра кіраванне прыватнасцю ў рэкламе.<ph name="LINK_END" /></translation>
 <translation id="1329916999021038454">Адправіць справаздачу</translation>
 <translation id="1330449323196174374">Згіб "вароты" злева</translation>
 <translation id="1333745675627230582">Пагуляць у Chrome Dino</translation>
@@ -1082,6 +1081,7 @@
             <ph name="LIST_ITEM" />гісторыя пошуку;<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />звесткі, якія былі ўведзены ў формах.<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Ашчадны рахунак</translation>
 <translation id="3103188521861412364">Акцыі і аблігацыі</translation>
 <translation id="3105172416063519923">Ідэнтыфікатар аб'екта ўласнасці:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Праверыць канфігурацыю абароненай DNS<ph name="END_LINK" /></translation>
@@ -1298,6 +1298,7 @@
 <translation id="3487845404393360112">Латок 4</translation>
 <translation id="3493660662684070951">Грузавікі, фургоны і аўтамабілі павышанай праходнасці</translation>
 <translation id="3495081129428749620">Знайсці на старонцы "<ph name="PAGE_TITLE" />"</translation>
+<translation id="3495818359064790343">Зарплатны рахунак</translation>
 <translation id="3497627066518778351">Праглядзець у новым акне спіс даных сайтаў на прыладзе</translation>
 <translation id="3498215018399854026">Не ўдалося звязацца з бацькамі. Паўтарыце спробу.</translation>
 <translation id="350069200438440499">Назва файла:</translation>
@@ -2333,6 +2334,7 @@
 <translation id="5519696598216267194">Папера з перфарацыяй</translation>
 <translation id="5521782189689806907">Праектаванне і ўстаноўка шаф</translation>
 <translation id="5523118979700054094">Назва палітыкі</translation>
+<translation id="5523588073846127669">Прадавец не прымае гэту віртуальную картку</translation>
 <translation id="5525755241743357906">Файл капіруецца або перамяшчаецца</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб персаналізаваць інструменты даступнасці ў наладах Chrome OS, націсніце Tab, затым Увод</translation>
 <translation id="55293785478302737">Сшыванне па краі</translation>
@@ -2961,7 +2963,6 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Тэлеканферэнцыі</translation>
 <translation id="6753269504797312559">Значэнне палітыкі</translation>
-<translation id="6753390234084146956">укладкі</translation>
 <translation id="6753434778807740853">Выдаліць запіс "<ph name="ENTRY_VOICEOVER" />"</translation>
 <translation id="6754547388777247439">Ашчадныя рахункі</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -3675,6 +3676,7 @@
 <translation id="8075588646978457437">Самаклейная папера</translation>
 <translation id="8075736640322370409">Хутка стварыць новую табліцу Google</translation>
 <translation id="8075898834294118863">Кіраваць наладамі сайтаў</translation>
+<translation id="8076492880354921740">Укладкі</translation>
 <translation id="8077669823243888800">Канверт Chinese № 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Запампаваць канфідэнцыяльны файл?}one{Запампаваць канфідэнцыяльныя файлы?}few{Запампаваць канфідэнцыяльныя файлы?}many{Запампаваць канфідэнцыяльныя файлы?}other{Запампаваць канфідэнцыяльныя файлы?}}</translation>
 <translation id="8078141288243656252">Нельга дадаваць анатацыі, калі дакумент павернуты</translation>
@@ -3715,6 +3717,7 @@
 <translation id="81563721597823545">Хакейны рыштунак</translation>
 <translation id="8161095570253161196">Узнавіць прагляд</translation>
 <translation id="8163866351304776260">Чатыры дзіркі злева</translation>
+<translation id="8163998196788647716">Разліковы рахунак</translation>
 <translation id="8164078261547504572">Хочаце атрымліваць электронныя лісты пры зніжэнні цэн?</translation>
 <translation id="8169175551046720804">Ключы "<ph name="DATA_CONTROLS_KEYS" />" нельга наладзіць у тым жа слоўніку</translation>
 <translation id="8175796834047840627">Chrome прапаноўвае захоўваць карткі ва Уліковым запісе Google, бо вы ўвайшлі ў сістэму. Гэту функцыю можна выключыць у наладах.</translation>

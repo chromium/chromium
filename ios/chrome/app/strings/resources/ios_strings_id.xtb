@@ -113,7 +113,6 @@
 <translation id="1580783302095112590">Email terkirim.</translation>
 <translation id="1582732959743469162">Ini akan menghentikan semua progres download Anda saat ini.</translation>
 <translation id="158591023028013564">{count,plural, =1{Halaman ditambahkan ke daftar bacaan Anda}other{{count} Halaman ditambahkan ke daftar bacaan Anda}}</translation>
-<translation id="1587629076612412684">Personalisasi Layanan Google</translation>
 <translation id="1594034544529347967">Mulai</translation>
 <translation id="160275202205869636">Jika diaktifkan, data akan digunakan dan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini.</translation>
 <translation id="1605405588277479165">Nonaktif - Tidak direkomendasikan</translation>
@@ -200,7 +199,6 @@
 <translation id="20485545164632846">item baru</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> akun menggunakan sandi yang sama</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} metode pembayaran tersimpan tersedia di atas keyboard Anda.}other{{count} metode pembayaran tersimpan tersedia di atas keyboard Anda.}}</translation>
-<translation id="2055515971416882518">Buka "Settings".</translation>
 <translation id="2059166748188874810">Kotamadya</translation>
 <translation id="2062410130322589403">Panduan Terkait Pilihan Privasi Anda</translation>
 <translation id="20638360198452347">Pemilih jenis satuan</translation>
@@ -551,7 +549,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3861486700625780712">Berhenti mengikuti</translation>
 <translation id="3861908220442487587">Alamat ini hanya disimpan di perangkat ini. Untuk menggunakannya di perangkat lain, pindahkan alamat ke Akun Google Anda, <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Kirim ke Perangkat Anda</translation>
-<translation id="3875783148670536197">Lihat Caranya</translation>
 <translation id="3888863481921783344">Ini akan digunakan untuk menampilkan calon tamu undangan untuk acara Anda.</translation>
 <translation id="3891414008432200754">Harga</translation>
 <translation id="3892144330757387737">Histori Anda akan ditampilkan di sini</translation>
@@ -1033,6 +1030,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="633809752005859102">Terjadi error. Kami akan mengatasinya.</translation>
 <translation id="6339793034470834130">Untuk menggunakan Web Inspector, hubungkan ke Safari di komputer Anda menggunakan kabel dan akses iPhone Anda dari menu Pengembangan. Anda dapat mengaktifkan menu pengembangan di bagian Lanjutan setelan Safari di komputer.</translation>
 <translation id="6340285871011301182">Terjemahan sebagian tidak tersedia.</translation>
+<translation id="6340526405444716530">Personalisasi</translation>
 <translation id="6342069812937806050">Baru saja</translation>
 <translation id="6344783595350022745">Hapus Teks</translation>
 <translation id="6346549652287021269">Mulai Download Baru?</translation>
@@ -1177,7 +1175,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Anda juga dapat menyentuh lama kolom URL untuk mengubah posisi.</translation>
 <translation id="6988572888918530647">Kelola Akun Google Anda</translation>
-<translation id="6989674195860388998">Ubah di Setelan…</translation>
 <translation id="6998989275928107238">Kepada</translation>
 <translation id="699954956411469731">Notifikasi Seluler</translation>
 <translation id="699985840472413751">Tutup Download</translation>
@@ -1600,7 +1597,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9106655997975673326">Dari "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Periksa sandi yang telah dibobol</translation>
 <translation id="9109699888944026290">{count,plural, =1{Sandi Baru Untuk Situs Ini}other{Sandi Baru Untuk Situs Ini}}</translation>
-<translation id="9110489518258031250">Mengontrol cara penggunaan histori penjelajahan yang disinkronkan untuk mempersonalisasi layanan Google lainnya</translation>
 <translation id="9120217828624527905">Beralih ke Terjemahan Halaman Penuh</translation>
 <translation id="9124387962554796433">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya.</translation>
 <translation id="9137526406337347448">Layanan Google</translation>

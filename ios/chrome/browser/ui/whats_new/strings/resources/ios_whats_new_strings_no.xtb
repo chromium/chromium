@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1533488253335887280">Enkel og sikker tilgang til passordene dine fra startskjermen.</translation>
+<translation id="1590550141045148182">Åpne eller lukk fanene slik du vil.</translation>
+<translation id="2036020471903443693">Fanen vises festet nederst på skjermen.</translation>
+<translation id="2984477737332162971">Gå til de åpne fanene dine.</translation>
+<translation id="3595188309555410362">Hvis du har faner som ikke har vært brukt på en stund, blir de nå flyttet til Inaktive faner-delen.</translation>
+<translation id="3941788408634637840">Trykk på Inaktive faner (hvis dette er tilgjengelig).</translation>
+<translation id="3942215673032261195">Du kan feste favorittnettstedene dine, slik at du har enkel tilgang til dem senere.</translation>
+<translation id="4196935312151003338">Velg «Fest fanen» på menyen.</translation>
+<translation id="4497631794981705027">Trykk og hold på startskjermen.</translation>
+<translation id="463279609093232564">Trykk på + øverst til venstre på skjermen.</translation>
+<translation id="5604467549230434026">I feltet Søkemoduler skriver du inn Chrome.</translation>
+<translation id="5639067007765618198">Google Passordlagring-modulen</translation>
 <translation id="5922999516621365983">Dra fanen hit for å feste den.</translation>
 <translation id="5979837087407522202">Søk etter passord</translation>
+<translation id="6109989197058801417">Trykk og hold på fanen du vil feste.</translation>
+<translation id="639614003069108254">Velg Passordlagring, og trykk på Legg til modul.</translation>
+<translation id="6905308710260460250">Festede faner</translation>
+<translation id="720206380500582061">Administrer innstillinger for inaktive faner under Innstillinger &gt; Faner.</translation>
 <translation id="8077675488769462025">Inaktive faner</translation>
+<translation id="8602952180069641300">Rull opp til toppen av fanene.</translation>
+<translation id="979990360845983227">Ikke brukt på 14 dager eller mer</translation>
 </translationbundle>

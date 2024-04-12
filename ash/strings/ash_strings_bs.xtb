@@ -226,6 +226,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1864454756846565995">USB-C uređaj (stražnji priključak)</translation>
 <translation id="1869497990620230175">Brzi fajlovi</translation>
 <translation id="1871023081802165724">Reproduciranje medija</translation>
+<translation id="1871915835366697861">Nije dostupno za ovu igru</translation>
 <translation id="1879018240766558464">Anonimni prozori trenutno nisu podržani. Druge aplikacije će se sačuvati.</translation>
 <translation id="1882814835921407042">Nema mobilne mreže</translation>
 <translation id="1882897271359938046">Preslikava se na <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="79341161159229895">Računom upravlja <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pritisnite <ph name="SHORTCUT_KEY_NAME" /> + V da vidite međumemoriju. Posljednjih 5 kopiranih stavki se pohranjuje u međumemoriju.</translation>
 <translation id="7942349550061667556">Crvena</translation>
+<translation id="7943516765291457328">Uključite Bluetooth da skenirate pristupne tačke u blizini</translation>
 <translation id="7944023924886109030">Prikaz svih događaja za danas</translation>
 <translation id="7945357288295809525">Prikaži postavke pristupačnosti, omogućeno "<ph name="ENABLED_FEATURES" />".</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> želi koristiti uređaj <ph name="DEVICE_NAME" /></translation>
