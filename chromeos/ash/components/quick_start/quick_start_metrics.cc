@@ -269,6 +269,10 @@ void QuickStartMetrics::RecordScreenOpened(ScreenName screen) {
 
 void QuickStartMetrics::RecordScreenClosed(ScreenName screen) {
   // TODO(b/298042953): Add ScreenClosedReason
+  if (screen_opened_view_duration_timer_ == nullptr) {
+    return;
+  }
+
   base::UmaHistogramTimes(MapScreenNameToMetric(screen) + ".ViewDuration",
                           screen_opened_view_duration_timer_->Elapsed());
   screen_opened_view_duration_timer_.reset();
