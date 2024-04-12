@@ -23,6 +23,7 @@ import java.util.List;
  */
 class TabGroup {
     static final int INVALID_ROOT_ID = -1;
+    static final int INVALID_POSITION_IN_GROUP = -1;
 
     private final LinkedHashSet<Integer> mTabIds = new LinkedHashSet<>();
     private final int mRootId;
@@ -113,6 +114,22 @@ class TabGroup {
     /** Returns the ID of the last tab in the group. */
     int getTabIdOfLastTab() {
         return mTabIds.stream().skip(mTabIds.size() - 1).findFirst().get();
+    }
+
+    /**
+     * Returns the position of a tab in the group.
+     *
+     * @param tab The tab whose position is to be determined.
+     */
+    int getPositionOfTab(Tab tab) {
+        int index = 0;
+        for (int tabId : mTabIds) {
+            if (tab.getId() == tabId) {
+                return index;
+            }
+            index++;
+        }
+        return INVALID_POSITION_IN_GROUP;
     }
 
     private int nextTabIdToShow(int tabId) {

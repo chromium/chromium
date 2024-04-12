@@ -103,10 +103,20 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     /**
-     * This method moves the TabGroup which contains the Tab with TabId {@code id} to
-     * {@code newIndex} in TabModel.
-     * @param id         The id of the tab whose related tabs are being moved.
-     * @param newIndex   The new index in TabModel that these tabs are being moved to.
+     * @return The position of the given {@link Tab} in its group.
+     */
+    public int getIndexOfTabInGroup(Tab tab) {
+        TabGroup tabGroup = mRootIdToGroupMap.get(tab.getRootId());
+        if (tabGroup == null) return TabGroup.INVALID_POSITION_IN_GROUP;
+        return tabGroup.getPositionOfTab(tab);
+    }
+
+    /**
+     * This method moves the TabGroup which contains the Tab with TabId {@code id} to {@code
+     * newIndex} in TabModel.
+     *
+     * @param id The id of the tab whose related tabs are being moved.
+     * @param newIndex The new index in TabModel that these tabs are being moved to.
      */
     public void moveRelatedTabs(int id, int newIndex) {
         List<Tab> tabs = getRelatedTabList(id);

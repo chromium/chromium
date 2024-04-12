@@ -18,9 +18,9 @@ import java.util.Set;
 
 /** Helper class to handle tab group color related utilities. */
 public class TabGroupColorUtils {
+    public static final int INVALID_COLOR_ID = -1;
     private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
     private static final String MIGRATION_CHECK = "migration_check";
-    private static final int INVALID_COLOR_ID = -1;
     private static final int MIGRATION_NOT_DONE = 0;
     private static final int MIGRATION_DONE = 1;
 
