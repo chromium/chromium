@@ -63,22 +63,6 @@ public class TabResumptionModuleMetricsUtils {
         int NUM_ENTRIES = 2;
     }
 
-    /**
-     * Decision on whether or not to show the tab resumption module, attached with reason if the
-     * decision is to not show.
-     */
-    public static class ModuleVisibility {
-        public final boolean value;
-
-        // Useful only if `value` is false.
-        public final @ModuleNotShownReason int notShownReason;
-
-        ModuleVisibility(boolean value, @ModuleNotShownReason int notShownReason) {
-            this.value = value;
-            this.notShownReason = notShownReason;
-        }
-    }
-
     static final String HISTOGRAM_CLICK_INFO = "MagicStack.Clank.TabResumption.ClickInfo";
     static final String HISTOGRAM_MODULE_NOT_SHOWN_REASON =
             "MagicStack.Clank.TabResumption.ModuleNotShownReason";

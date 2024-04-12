@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleVisibility;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
@@ -50,9 +50,17 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull Callback<ModuleProvider> onModuleBuiltCallback) {
         Profile profile = getRegularProfile();
-        if (!TabResumptionModuleUtils.shouldShowTabResumptionModule(profile)) {
+
+        Integer notShownReason =
+                TabResumptionModuleEnablement.computeModuleNotShownReason(
+                        moduleDelegate, getRegularProfile());
+        if (notShownReason != null) {
+            TabResumptionModuleMetricsUtils.recordModuleNotShownReason(notShownReason.intValue());
             return false;
         }
+
+        // TODO(b/332588018): Conditionally instantiate TabResumptionDataProvider on this.
+        assert TabResumptionModuleEnablement.ForeignSession.shouldMakeProvider(profile);
 
         addRefToDataSource();
         TabResumptionDataProvider dataProvider =
@@ -108,12 +116,11 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         // See b/324138242.
         if (!mProfileSupplier.hasValue()) return false;
 
-        ModuleVisibility visibility =
-                TabResumptionModuleUtils.computeModuleVisibility(getRegularProfile());
-        if (!visibility.value) {
-            TabResumptionModuleMetricsUtils.recordModuleNotShownReason(visibility.notShownReason);
-        }
-        return visibility.value;
+        if (TabResumptionModuleEnablement.isFeatureEnabled()) return true;
+
+        TabResumptionModuleMetricsUtils.recordModuleNotShownReason(
+                ModuleNotShownReason.FEATURE_DISABLED);
+        return false;
     }
 
     /** Gets the regular profile if exists. */

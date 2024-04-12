@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleBuilder.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleEnablement.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediator.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleProperties.java",
@@ -75,6 +76,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataProviderTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataSourceTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleEnablementUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleSuggestionsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleUtilsUnitTest.java",
