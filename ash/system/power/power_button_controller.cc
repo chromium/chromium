@@ -49,7 +49,7 @@ constexpr base::TimeDelta kShowMenuWhenScreenOffTimeout =
 
 // Time that power button should be pressed after power menu is shown before
 // starting the cancellable pre-shutdown animation.
-constexpr base::TimeDelta kStartShutdownAnimationTimeout =
+constexpr base::TimeDelta kRequestCancelableShutdownTimeout =
     base::Milliseconds(650);
 
 enum PowerButtonUpState {
@@ -141,7 +141,8 @@ PowerButtonController::~PowerButtonController() {
 }
 
 void PowerButtonController::OnPreShutdownTimeout() {
-  lock_state_controller_->StartShutdownAnimation(ShutdownReason::POWER_BUTTON);
+  lock_state_controller_->RequestCancelableShutdown(
+      ShutdownReason::POWER_BUTTON);
   // |menu_widget_| might be reset on login status change while shutting down.
   if (!menu_widget_) {
     return;
@@ -212,7 +213,8 @@ void PowerButtonController::OnPowerButtonEvent(
     display_controller_->SetBacklightsForcedOff(false);
 
     if (menu_shown_when_power_button_down_) {
-      pre_shutdown_timer_.Start(FROM_HERE, kStartShutdownAnimationTimeout, this,
+      pre_shutdown_timer_.Start(FROM_HERE, kRequestCancelableShutdownTimeout,
+                                this,
                                 &PowerButtonController::OnPreShutdownTimeout);
       return;
     }
@@ -230,16 +232,21 @@ void PowerButtonController::OnPowerButtonEvent(
                          base::Unretained(this), ShutdownReason::POWER_BUTTON));
     }
   } else {
-    uint32_t up_state = UP_NONE;
-    if (lock_state_controller_->CanCancelShutdownAnimation()) {
-      up_state |= UP_CAN_CANCEL_SHUTDOWN_ANIMATION;
-      lock_state_controller_->CancelShutdownAnimation();
-    }
     const base::TimeTicks previous_up_time = last_button_up_time_;
     last_button_up_time_ = timestamp;
 
     const bool menu_timer_was_running = power_button_menu_timer_.IsRunning();
     const bool pre_shutdown_timer_was_running = pre_shutdown_timer_.IsRunning();
+    uint32_t up_state = UP_NONE;
+    // A cancelable shutdown will be requested after the menu is fully shown and
+    // `pre_shutdown_timer_` timeout. Check whether the shutdown is still
+    // cancelable only after the shutdown is requested.
+    if (show_menu_animation_done_ && !pre_shutdown_timer_was_running &&
+        lock_state_controller_->CanCancelShutdownAnimation()) {
+      up_state |= UP_CAN_CANCEL_SHUTDOWN_ANIMATION;
+      lock_state_controller_->CancelShutdownAnimation();
+    }
+
     power_button_menu_timer_.Stop();
     pre_shutdown_timer_.Stop();
 
@@ -559,7 +566,8 @@ void PowerButtonController::SetShowMenuAnimationDone() {
   show_menu_animation_done_ = true;
   if (button_type_ != ButtonType::LEGACY &&
       shutdown_reason_ == ShutdownReason::POWER_BUTTON) {
-    pre_shutdown_timer_.Start(FROM_HERE, kStartShutdownAnimationTimeout, this,
+    pre_shutdown_timer_.Start(FROM_HERE, kRequestCancelableShutdownTimeout,
+                              this,
                               &PowerButtonController::OnPreShutdownTimeout);
   }
 }

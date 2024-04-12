@@ -201,7 +201,7 @@ void PowerButtonMenuView::RecreateItems() {
   add_remove_item(
       true, PowerButtonMenuActionType::kPowerOff,
       base::BindRepeating(
-          &LockStateController::StartShutdownAnimation,
+          &LockStateController::RequestShutdown,
           base::Unretained(Shell::Get()->lock_state_controller()),
           shutdown_reason_),
       kSystemPowerButtonMenuPowerOffIcon,
