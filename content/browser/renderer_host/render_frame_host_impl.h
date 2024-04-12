@@ -1967,6 +1967,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindIdleManager(
       mojo::PendingReceiver<blink::mojom::IdleManager> receiver);
 
+  void BindModelManager(
+      mojo::PendingReceiver<blink::mojom::ModelManager> receiver);
+
   void GetPresentationService(
       mojo::PendingReceiver<blink::mojom::PresentationService> receiver);
 

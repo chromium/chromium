@@ -74,6 +74,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
@@ -2868,6 +2869,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // this is used to not move VoiceOver's focus on navigation. This is used
   // today to suppress the event when the user navigates to the new tab page.
   virtual bool ShouldSuppressAXLoadComplete(RenderFrameHost* rfh);
+
+  virtual void BindModelManager(
+      RenderFrameHost* rfh,
+      mojo::PendingReceiver<blink::mojom::ModelManager> receiver);
 };
 
 }  // namespace content

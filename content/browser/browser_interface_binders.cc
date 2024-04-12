@@ -823,6 +823,11 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<media::mojom::MediaPlayerObserverClient>(base::BindRepeating(
       &BindMediaPlayerObserverClientHandler, base::Unretained(host)));
 
+  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+    map->Add<blink::mojom::ModelManager>(base::BindRepeating(
+        &RenderFrameHostImpl::BindModelManager, base::Unretained(host)));
+  }
+
   map->Add<blink::mojom::NotificationService>(base::BindRepeating(
       &RenderFrameHostImpl::CreateNotificationService, base::Unretained(host)));
 

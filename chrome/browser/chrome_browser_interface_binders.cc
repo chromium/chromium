@@ -1083,11 +1083,6 @@ void PopulateChromeFrameBinders(
   map->Add<blink::mojom::WebPrintingService>(
       base::BindRepeating(&printing::CreateWebPrintingServiceForFrame));
 #endif
-
-  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
-    map->Add<blink::mojom::ModelManager>(
-        base::BindRepeating(&ModelManagerImpl::Create));
-  }
 }
 
 void PopulateChromeWebUIFrameBinders(

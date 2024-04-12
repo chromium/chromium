@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/model_execution/mock_model_manager.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
@@ -1714,6 +1715,12 @@ std::unique_ptr<DipsDelegate> ContentBrowserClient::CreateDipsDelegate() {
 
 bool ContentBrowserClient::ShouldSuppressAXLoadComplete(RenderFrameHost* rfh) {
   return false;
+}
+
+void ContentBrowserClient::BindModelManager(
+    RenderFrameHost* rfh,
+    mojo::PendingReceiver<blink::mojom::ModelManager> receiver) {
+  MockModelManager::Create(rfh, std::move(receiver));
 }
 
 }  // namespace content

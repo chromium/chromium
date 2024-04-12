@@ -1027,6 +1027,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldSuppressAXLoadComplete(content::RenderFrameHost* rfh) override;
 
+  void BindModelManager(
+      content::RenderFrameHost* rfh,
+      mojo::PendingReceiver<blink::mojom::ModelManager> receiver) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

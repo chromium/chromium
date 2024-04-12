@@ -269,6 +269,7 @@
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
+#include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
@@ -12117,6 +12118,14 @@ void RenderFrameHostImpl::BindRenderAccessibilityHost(
 void RenderFrameHostImpl::BindNonAssociatedLocalFrameHost(
     mojo::PendingReceiver<blink::mojom::NonAssociatedLocalFrameHost> receiver) {
   non_associated_local_frame_host_receiver_.Bind(std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindModelManager(
+    mojo::PendingReceiver<blink::mojom::ModelManager> receiver) {
+  CHECK(
+      base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI));
+
+  GetContentClient()->browser()->BindModelManager(this, std::move(receiver));
 }
 
 bool RenderFrameHostImpl::CancelPrerendering(
