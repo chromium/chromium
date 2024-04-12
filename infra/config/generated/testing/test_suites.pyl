@@ -4184,6 +4184,12 @@
       'env_chromium_unittests': {},
       'events_unittests': {},
       'gcm_unit_tests': {},
+      'gfx_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.gfx_unittests.filter',
+        ],
+      },
       'gin_unittests': {},
       'gl_unittests': {},
       'google_apis_unittests': {},

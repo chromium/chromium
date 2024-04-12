@@ -3839,6 +3839,12 @@ targets.legacy_basic_suite(
         "env_chromium_unittests": targets.legacy_test_config(),
         "events_unittests": targets.legacy_test_config(),
         "gcm_unit_tests": targets.legacy_test_config(),
+        "gfx_unittests": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.gfx_unittests.filter",
+            ],
+        ),
         "gin_unittests": targets.legacy_test_config(),
         "gl_unittests": targets.legacy_test_config(),
         "google_apis_unittests": targets.legacy_test_config(),
