@@ -49,8 +49,9 @@ public class RemoteTabGroupMutationHelper {
             addTab(groupId, tabs.get(position), position);
         }
 
-        // Update tab group ID mapping in shared preference.
-        // TODO(shaktisahu): Persist the group ID mapping to shared prefs.
+        // Persist sync ID mapping for the tab group in shared preference.
+        SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(groupId);
+        mTabGroupModelFilter.setTabGroupSyncId(groupId, savedTabGroup.syncId);
     }
 
     /**

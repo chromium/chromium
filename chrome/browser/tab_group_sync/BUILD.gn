@@ -35,6 +35,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationObserver.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationTracker.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/RemoteTabGroupMutationHelper.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/StartupHelper.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncController.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserver.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserver.java",
@@ -58,8 +59,10 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationTrackerUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/StartupHelperUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserverUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TestTabGroupSyncService.java",
     ]
     deps = [
       ":java",
@@ -75,6 +78,7 @@ if (is_android) {
       "//components/tab_groups:tab_groups_java",
       "//content/public/android:content_java",
       "//third_party/android_deps:robolectric_all_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/junit:junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java",

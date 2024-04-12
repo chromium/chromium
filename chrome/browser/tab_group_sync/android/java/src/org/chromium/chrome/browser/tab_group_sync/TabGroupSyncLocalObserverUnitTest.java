@@ -52,7 +52,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     @Mock private Profile mProfile;
     private MockTabModel mTabModel;
     private @Mock TabGroupModelFilter mTabGroupModelFilter;
-    private @Mock TabGroupSyncService mTabGroupSyncService;
+    private TabGroupSyncService mTabGroupSyncService;
     private NavigationTracker mNavigationTracker;
     private RemoteTabGroupMutationHelper mRemoteMutationHelper;
     private TabGroupSyncLocalObserver mLocalObserver;
@@ -73,6 +73,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Before
     public void setUp() {
+        mTabGroupSyncService = spy(new TestTabGroupSyncService());
         mTab1 = prepareTab(1, 1);
         mTab2 = prepareTab(2, 2);
         Mockito.doReturn(new Token(2, 3)).when(mTab1).getTabGroupId();
