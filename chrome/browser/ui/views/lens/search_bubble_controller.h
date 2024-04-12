@@ -7,6 +7,8 @@
 
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace lens {
 
@@ -19,13 +21,19 @@ class SearchBubbleController : public BrowserUserData<SearchBubbleController> {
 
   // Shows an instance of the lens search bubble for this browser.
   void Show();
+  // Closes the instance of the lens search bubble.
+  void Close();
+
+  const WebUIBubbleDialogView* bubble_view_for_testing() {
+    return bubble_view_.get();
+  }
 
  private:
   friend class BrowserUserData<SearchBubbleController>;
 
   explicit SearchBubbleController(Browser* browser);
 
-  std::unique_ptr<WebUIBubbleManager> webui_bubble_manager_;
+  base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
 
   BROWSER_USER_DATA_KEY_DECL();
 };
