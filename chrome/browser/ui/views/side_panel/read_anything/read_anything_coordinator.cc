@@ -102,7 +102,9 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     BrowserList::GetInstance()->AddObserver(this);
   }
 
-  EmbeddedA11yExtensionLoader::GetInstance()->Init();
+  if (features::IsReadAnythingDocsIntegrationEnabled()) {
+    EmbeddedA11yExtensionLoader::GetInstance()->Init();
+  }
 }
 
 void ReadAnythingCoordinator::InitModelWithUserPrefs() {
@@ -157,7 +159,9 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
 }
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() {
-  RemoveGDocsHelperExtension();
+  if (features::IsReadAnythingDocsIntegrationEnabled()) {
+    RemoveGDocsHelperExtension();
+  }
 
   // Inform observers when |this| is destroyed so they can do their own cleanup.
   for (Observer& obs : observers_) {
@@ -264,7 +268,8 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryShown() {
 
   // TODO(crbug.com/324143642): Handle the installation of a11y helper extension
   // for local side panels.
-  if (!features::IsReadAnythingLocalSidePanelEnabled()) {
+  if (features::IsReadAnythingDocsIntegrationEnabled() &&
+      !features::IsReadAnythingLocalSidePanelEnabled()) {
     InstallGDocsHelperExtension();
   }
 }
@@ -276,7 +281,8 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
 
   // TODO(crbug.com/324143642): Handle the uninstallation of a11y helper
   // extension for local side panels.
-  if (!features::IsReadAnythingLocalSidePanelEnabled()) {
+  if (features::IsReadAnythingDocsIntegrationEnabled() &&
+      !features::IsReadAnythingLocalSidePanelEnabled()) {
     RemoveGDocsHelperExtension();
   }
 }

@@ -256,6 +256,10 @@ AX_BASE_EXPORT bool IsReadAnythingWithAlgorithmEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingImagesViaAlgorithm);
 AX_BASE_EXPORT bool IsReadAnythingImagesViaAlgorithmEnabled();
 
+// Enable Reading Mode to work on Google Docs. Should be disabled by default.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingDocsIntegration);
+AX_BASE_EXPORT bool IsReadAnythingDocsIntegrationEnabled();
+
 // Write some ScreenAI library debug data in /tmp.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAIDebugMode);
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();

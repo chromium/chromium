@@ -340,6 +340,13 @@ bool IsReadAnythingImagesViaAlgorithmEnabled() {
          IsReadAnythingWithAlgorithmEnabled();
 }
 
+BASE_FEATURE(kReadAnythingDocsIntegration,
+             "ReadAnythingDocsIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingDocsIntegrationEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingDocsIntegration);
+}
+
 // This feature is only for debug purposes and for security/privacy reasons,
 // should be never enabled by default .
 BASE_FEATURE(kScreenAIDebugMode,
