@@ -6762,27 +6762,26 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
     auto& manifest = ParseManifest(R"({
         "tab_strip": {
           "home_tab": {"scope_patterns":
-            [{"protocol": "ftp"}, {"hostname": "bar.com"}]}} })");
+            [{"protocol": "ftp"}, {"hostname": "bar.com"},
+            {"protocol": "ftp", "hostname": "bar.com"}]}} })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
-        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 2u);
+        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 3u);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 1, 0, 0,
-        1, 1, 0, 0, 0);
+        0, 0, 0, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 1, 0, 0,
-        1, 1, 0, 0, 0);
+        1, 0, 0, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[2], 1, 0, 0,
+        1, 0, 0, 0, 0);
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[0]
                   .protocol[0]
                   .value,
               "ftp");
-    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
-                  ->scope_patterns[0]
-                  .hostname[0]
-                  .value,
-              "foo.com");
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[1]
                   .protocol[0]
@@ -6790,6 +6789,16 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
               "http");
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[1]
+                  .hostname[0]
+                  .value,
+              "bar.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .protocol[0]
+                  .value,
+              "ftp");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
                   .hostname[0]
                   .value,
               "bar.com");
@@ -6814,16 +6823,16 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 4u);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 1, 0, 0,
-        1, 1, 1, 0, 0);
+        1, 0, 1, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 1, 0, 0,
-        1, 1, 1, 0, 0);
+        1, 0, 1, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[2], 1, 0, 0,
-        1, 1, 1, 0, 0);
+        1, 0, 1, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[3], 1, 0, 0,
-        1, 1, 1, 0, 0);
+        1, 0, 1, 0, 0);
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[0]
                   .protocol[0]
@@ -6834,6 +6843,11 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
                   .hostname[0]
                   .type,
               liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .hostname[0]
+                  .value,
+              "foo.com");
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[0]
                   .pathname[0]
@@ -6856,6 +6870,11 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
               liburlpattern::PartType::kFixed);
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[1]
+                  .hostname[0]
+                  .value,
+              "foo.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
                   .pathname[0]
                   .type,
               liburlpattern::PartType::kFixed);
@@ -6876,6 +6895,11 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
               liburlpattern::PartType::kFixed);
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[2]
+                  .hostname[0]
+                  .value,
+              "foo.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
                   .pathname[0]
                   .type,
               liburlpattern::PartType::kFixed);
@@ -6894,6 +6918,11 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
                   .hostname[0]
                   .type,
               liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .hostname[0]
+                  .value,
+              "foo.com");
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[3]
                   .pathname[0]
@@ -6928,29 +6957,24 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 5u);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 1, 0, 0,
-        1, 1, 0, 0, 0);
+        0, 0, 0, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 1, 0, 0,
-        1, 1, 0, 0, 0);
+        1, 0, 0, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[2], 1, 0, 0,
-        1, 1, 1, 0, 0);
+        1, 0, 1, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[3], 1, 0, 0,
-        1, 1, 1, 0, 0);
+        1, 0, 1, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[4], 1, 0, 0,
-        1, 1, 1, 0, 0);
+        1, 0, 1, 0, 0);
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[0]
                   .protocol[0]
                   .value,
               "ftp");
-    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
-                  ->scope_patterns[0]
-                  .hostname[0]
-                  .value,
-              "www.bar.com");
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[1]
                   .protocol[0]
@@ -7025,22 +7049,22 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 6u);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 1, 0, 0,
-        1, 1, 1, 0, 0);
+        1, 0, 1, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 1, 0, 0,
-        1, 1, 1, 0, 0);
+        1, 0, 1, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[2], 1, 0, 0,
-        1, 1, 2, 0, 0);
+        1, 0, 2, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[3], 1, 0, 0,
-        1, 1, 3, 0, 0);
+        1, 0, 3, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[4], 1, 0, 0,
-        1, 1, 2, 0, 0);
+        1, 0, 2, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[5], 1, 0, 0,
-        1, 1, 3, 0, 0);
+        1, 0, 3, 0, 0);
 
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[0]
@@ -7146,25 +7170,25 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 7u);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 1, 0, 0,
-        1, 1, 0, 0, 0);
+        1, 0, 0, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 1, 0, 0,
-        1, 1, 0, 0, 0);
+        1, 0, 0, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[2], 1, 0, 0,
-        3, 1, 0, 0, 0);
+        3, 0, 0, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[3], 1, 0, 0,
-        2, 1, 0, 0, 0);
+        2, 0, 0, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[4], 1, 0, 0,
-        3, 1, 0, 0, 0);
+        3, 0, 0, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[5], 1, 0, 0,
-        3, 1, 0, 0, 0);
+        3, 0, 0, 0, 0);
     VerifySafeUrlPatternSizes(
         manifest->tab_strip->home_tab->get_params()->scope_patterns[6], 1, 0, 0,
-        2, 1, 0, 0, 0);
+        2, 0, 0, 0, 0);
 
     EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
                   ->scope_patterns[0]

@@ -90,6 +90,9 @@ class MODULES_EXPORT ManifestParser {
     PatternInit(PatternInit&&);
     PatternInit& operator=(PatternInit&&);
 
+    // Returns true if any of protocol, hostname, or port are filled.
+    bool IsAbsolute() const;
+
     std::optional<String> protocol;
     std::optional<String> username;
     std::optional<String> password;

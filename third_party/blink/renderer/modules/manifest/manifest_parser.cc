@@ -172,6 +172,10 @@ std::optional<std::vector<liburlpattern::Part>> ParsePatternInitField(
     const std::optional<String>& field,
     const String default_field_value) {
   const String value = field.has_value() ? field.value() : default_field_value;
+  if (value.empty()) {
+    return std::vector<liburlpattern::Part>();
+  }
+
   StringUTF8Adaptor utf8(value);
   auto parse_result = liburlpattern::Parse(
       absl::string_view(utf8.data(), utf8.size()),
@@ -416,6 +420,10 @@ ManifestParser::PatternInit::~PatternInit() = default;
 ManifestParser::PatternInit::PatternInit(PatternInit&&) = default;
 ManifestParser::PatternInit& ManifestParser::PatternInit::operator=(
     PatternInit&&) = default;
+
+bool ManifestParser::PatternInit::IsAbsolute() const {
+  return protocol.has_value() || hostname.has_value() || port.has_value();
+}
 
 bool ManifestParser::ParseBoolean(const JSONObject* object,
                                   const String& key,
@@ -2452,6 +2460,8 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
   auto url_pattern = std::make_optional<SafeUrlPattern>();
 
   {
+    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
+    // Always fall back to baseURL protocol if init does not contain protocol.
     std::optional<std::vector<liburlpattern::Part>> part_list =
         ParsePatternInitField(init.protocol, base_url.Protocol());
     if (!part_list.has_value()) {
@@ -2464,8 +2474,15 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
   }
 
   {
+    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
+    // Only fall back to baseURL username if init does not contain any of
+    // protocol, hostname, or port.
+    String default_username;
+    if (!init.IsAbsolute()) {
+      default_username = base_url.User();
+    }
     std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.username, base_url.User());
+        ParsePatternInitField(init.username, default_username);
     if (!part_list.has_value()) {
       AddErrorInfo(
           "property 'username'in home tab scope pattern could not be parsed or "
@@ -2476,8 +2493,15 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
   }
 
   {
+    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
+    // Only fall back to baseURL password if init does not contain any of
+    // protocol, hostname, port, or username.
+    String default_password;
+    if (!init.IsAbsolute() && !init.username.has_value()) {
+      default_password = base_url.Pass();
+    }
     std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.password, base_url.Pass());
+        ParsePatternInitField(init.password, default_password);
     if (!part_list.has_value()) {
       AddErrorInfo(
           "property 'password' in home tab scope pattern could not be parsed "
@@ -2488,8 +2512,14 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
   }
 
   {
+    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
+    // Only fall back to baseURL hostname if init does not contain protocol.
+    String default_hostname;
+    if (!init.protocol.has_value()) {
+      default_hostname = base_url.Host();
+    }
     std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.hostname, base_url.Host());
+        ParsePatternInitField(init.hostname, default_hostname);
     if (!part_list.has_value()) {
       AddErrorInfo(
           "property 'hostname' in home tab scope pattern could not be parsed "
@@ -2500,8 +2530,15 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
   }
 
   {
+    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
+    // Only fall back to baseURL port if init does not contain any of
+    // protocol, hostname, or port, and the baseURL port exists.
+    String default_port;
+    if (!init.IsAbsolute() && base_url.HasPort()) {
+      default_port = String::Number(base_url.Port());
+    }
     std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.port, String::Number(base_url.Port()));
+        ParsePatternInitField(init.port, default_port);
     if (!part_list.has_value()) {
       AddErrorInfo(
           "property 'port'in home tab scope pattern could not be parsed or "
@@ -2517,7 +2554,7 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
       // A possibly-relative path is given; resolve it against base URL's path.
       default_path =
           ResolveRelativePathnamePattern(base_url, init.pathname.value());
-    } else if (!init.protocol && !init.hostname && !init.port) {
+    } else if (!init.IsAbsolute()) {
       // No path, protocol, host or port is given; use the base URL's path.
       default_path = EscapePatternString(base_url.GetPath());
     }
@@ -2536,8 +2573,15 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
   }
 
   {
+    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
+    // Only fall back to baseURL search if init does not contain any of
+    // protocol, hostname, port, or pathname.
+    String default_search;
+    if (!init.IsAbsolute() && !init.pathname.has_value()) {
+      default_search = base_url.Query();
+    }
     std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.search, base_url.Query());
+        ParsePatternInitField(init.search, default_search);
     if (!part_list.has_value()) {
       AddErrorInfo(
           "property 'search' in home tab scope pattern could not be parsed "
@@ -2548,8 +2592,16 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
   }
 
   {
+    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
+    // Only fall back to baseURL hash if init does not contain any of
+    // protocol, hostname, port, pathname, or search.
+    String default_hash;
+    if (!init.IsAbsolute() && !init.pathname.has_value() &&
+        !init.search.has_value()) {
+      default_hash = base_url.FragmentIdentifier();
+    }
     std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.hash, base_url.FragmentIdentifier());
+        ParsePatternInitField(init.hash, default_hash);
     if (!part_list.has_value()) {
       AddErrorInfo(
           "property 'hash' in home tab scope pattern could not be parsed "
