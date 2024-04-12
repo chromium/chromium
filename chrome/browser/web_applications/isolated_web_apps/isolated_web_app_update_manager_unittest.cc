@@ -523,7 +523,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
               "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"));
   IsolatedWebAppUrlInfo dev_proxy_url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          web_package::SignedWebBundleId::CreateRandomForDevelopment());
+          web_package::SignedWebBundleId::CreateRandomForProxyMode());
 
   test::InstallDummyWebApp(profile(), "non-iwa", GURL("https://a"));
   AddDummyIsolatedAppToRegistry(

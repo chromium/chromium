@@ -50,8 +50,7 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReader(
     Flags flags,
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(web_bundle_id.type(),
-            web_package::SignedWebBundleId::Type::kEd25519PublicKey);
+  DCHECK(!web_bundle_id.is_for_proxy_mode());
 
   GURL base_url(
       base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,

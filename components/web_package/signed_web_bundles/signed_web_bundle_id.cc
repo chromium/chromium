@@ -45,10 +45,9 @@ base::expected<SignedWebBundleId, std::string> SignedWebBundleId::Create(
         "representation.");
   }
 
-  auto decoded_span = base::make_span(decoded_id);
-  auto type_suffix = decoded_span.last<kTypeSuffixLength>();
-  if (base::ranges::equal(type_suffix, kTypeDevelopment)) {
-    return SignedWebBundleId(Type::kDevelopment, encoded_id);
+  auto type_suffix = base::span(decoded_id).last<kTypeSuffixLength>();
+  if (base::ranges::equal(type_suffix, kTypeProxyMode)) {
+    return SignedWebBundleId(Type::kProxyMode, encoded_id);
   }
   if (base::ranges::equal(type_suffix, kTypeEd25519PublicKey)) {
     return SignedWebBundleId(Type::kEd25519PublicKey, encoded_id);
@@ -71,23 +70,23 @@ SignedWebBundleId SignedWebBundleId::CreateForEd25519PublicKey(
 }
 
 // static
-SignedWebBundleId SignedWebBundleId::CreateForDevelopment(
+SignedWebBundleId SignedWebBundleId::CreateForProxyMode(
     base::span<const uint8_t, kDecodedIdLength - kTypeSuffixLength> data) {
   std::array<uint8_t, kDecodedIdLength> decoded_id;
   base::ranges::copy(data, decoded_id.begin());
-  base::ranges::copy(kTypeDevelopment, decoded_id.end() - kTypeSuffixLength);
+  base::ranges::copy(kTypeProxyMode, decoded_id.end() - kTypeSuffixLength);
 
   auto encoded_id_uppercase = base32::Base32Encode(
       decoded_id, base32::Base32EncodePolicy::OMIT_PADDING);
   auto encoded_id = base::ToLowerASCII(encoded_id_uppercase);
-  return SignedWebBundleId(Type::kDevelopment, encoded_id);
+  return SignedWebBundleId(Type::kProxyMode, encoded_id);
 }
 
 // static
-SignedWebBundleId SignedWebBundleId::CreateRandomForDevelopment() {
+SignedWebBundleId SignedWebBundleId::CreateRandomForProxyMode() {
   std::array<uint8_t, kDecodedIdLength - kTypeSuffixLength> random_bytes;
   crypto::RandBytes(random_bytes);
-  return CreateForDevelopment(random_bytes);
+  return CreateForProxyMode(random_bytes);
 }
 
 SignedWebBundleId::SignedWebBundleId(Type type, base::StringPiece encoded_id)

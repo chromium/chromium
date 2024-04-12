@@ -237,7 +237,7 @@ IsolatedWebAppUrlInfo ScopedProxyIsolatedWebApp::InstallChecked(
 base::expected<IsolatedWebAppUrlInfo, std::string>
 ScopedProxyIsolatedWebApp::Install(Profile* profile) {
   return Install(profile,
-                 web_package::SignedWebBundleId::CreateRandomForDevelopment());
+                 web_package::SignedWebBundleId::CreateRandomForProxyMode());
 }
 
 base::expected<IsolatedWebAppUrlInfo, std::string>

@@ -126,7 +126,7 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       future;
 
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-      web_package::SignedWebBundleId::CreateRandomForDevelopment());
+      web_package::SignedWebBundleId::CreateRandomForProxyMode());
   WebAppProvider::GetForWebApps(profile)->scheduler().InstallIsolatedWebApp(
       url_info,
       IsolatedWebAppInstallSource::FromDevUi(IwaSourceProxy(proxy_origin)),

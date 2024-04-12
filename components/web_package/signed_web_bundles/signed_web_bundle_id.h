@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_ID_H_
 #define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_ID_H_
 
+#include <array>
 #include <iosfwd>
 
 #include "base/containers/span.h"
@@ -16,8 +17,10 @@
 namespace web_package {
 
 // This class represents the ID of a Signed Web Bundle. There are currently two
-// types of IDs: IDs used for development and testing, and IDs based on an
-// Ed25519 public key.
+// types of IDs:
+//   * IDs used for development and testing (the so-called proxy mode);
+//   * IDs based on an Ed25519 public key.
+//
 // IDs are base32-encoded (without padding), and then transformed to lowercase.
 //
 // New instances of this class can only be constructed via the static `Create`
@@ -29,19 +32,17 @@ class SignedWebBundleId {
   static constexpr size_t kDecodedIdLength = 35;
   static constexpr uint8_t kTypeSuffixLength = 3;
 
-  static constexpr uint8_t kTypeDevelopment[] = {0x00, 0x00, 0x02};
-  static constexpr uint8_t kTypeEd25519PublicKey[] = {0x00, 0x01, 0x02};
+  using TypeSuffix = std::array<uint8_t, kTypeSuffixLength>;
 
-  static_assert(std::size(kTypeDevelopment) ==
-                SignedWebBundleId::kTypeSuffixLength);
-  static_assert(std::size(kTypeEd25519PublicKey) ==
-                SignedWebBundleId::kTypeSuffixLength);
+  static constexpr TypeSuffix kTypeProxyMode = {0x00, 0x00, 0x02};
+  static constexpr TypeSuffix kTypeEd25519PublicKey = {0x00, 0x01, 0x02};
 
  public:
   enum class Type {
-    // This is intended for use during development, where a Web Bundle might not
-    // be signed with a real key and instead uses a fake development-only ID.
-    kDevelopment,
+    // This is intended for use during development (the so-called proxy mode),
+    // where instead of reading from a Signed Web Bundle, requests are proxied
+    // to a development HTTP(s) server.
+    kProxyMode,
     kEd25519PublicKey,
   };
 
@@ -54,15 +55,17 @@ class SignedWebBundleId {
   static SignedWebBundleId CreateForEd25519PublicKey(
       Ed25519PublicKey public_key);
 
-  static SignedWebBundleId CreateForDevelopment(
+  static SignedWebBundleId CreateForProxyMode(
       base::span<const uint8_t, kDecodedIdLength - kTypeSuffixLength> data);
 
-  static SignedWebBundleId CreateRandomForDevelopment();
+  static SignedWebBundleId CreateRandomForProxyMode();
 
   SignedWebBundleId(const SignedWebBundleId& other);
   SignedWebBundleId& operator=(const SignedWebBundleId& other);
 
   ~SignedWebBundleId();
+
+  bool is_for_proxy_mode() const { return type_ == Type::kProxyMode; }
 
   Type type() const { return type_; }
 

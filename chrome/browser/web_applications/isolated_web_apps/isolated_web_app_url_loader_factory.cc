@@ -600,16 +600,14 @@ void IsolatedWebAppURLLoaderFactory::HandleRequest(
   absl::visit(
       base::Overloaded{
           [&](const IwaSourceBundleWithMode& source) {
-            CHECK_EQ(url_info.web_bundle_id().type(),
-                     web_package::SignedWebBundleId::Type::kEd25519PublicKey);
+            CHECK(!url_info.web_bundle_id().is_for_proxy_mode());
             HandleSignedBundle(source.path(), source.dev_mode(),
                                url_info.web_bundle_id(),
                                std::move(loader_receiver), resource_request,
                                std::move(loader_client));
           },
           [&](const IwaSourceProxy& source) {
-            CHECK_EQ(url_info.web_bundle_id().type(),
-                     web_package::SignedWebBundleId::Type::kDevelopment);
+            CHECK(url_info.web_bundle_id().is_for_proxy_mode());
             HandleProxy(url_info, source, std::move(loader_receiver),
                         resource_request, std::move(loader_client),
                         traffic_annotation);

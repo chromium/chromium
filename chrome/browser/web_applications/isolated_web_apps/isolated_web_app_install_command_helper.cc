@@ -250,8 +250,7 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
   absl::visit(
       base::Overloaded{
           [&](const IwaSourceBundleWithMode& location) {
-            CHECK_EQ(url_info_.web_bundle_id().type(),
-                     web_package::SignedWebBundleId::Type::kEd25519PublicKey);
+            CHECK(!url_info_.web_bundle_id().is_for_proxy_mode());
             if (location.dev_mode() && !IsIwaDevModeEnabled(profile)) {
               std::move(callback).Run(
                   base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));
@@ -261,8 +260,7 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
                 location.path(), location.dev_mode(), std::move(callback));
           },
           [&](const IwaSourceProxy& location) {
-            CHECK_EQ(url_info_.web_bundle_id().type(),
-                     web_package::SignedWebBundleId::Type::kDevelopment);
+            CHECK(url_info_.web_bundle_id().is_for_proxy_mode());
             if (!IsIwaDevModeEnabled(profile)) {
               std::move(callback).Run(
                   base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));

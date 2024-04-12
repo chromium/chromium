@@ -95,8 +95,7 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
     const network::ResourceRequest& resource_request,
     ReadResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(web_bundle_id.type(),
-            web_package::SignedWebBundleId::Type::kEd25519PublicKey);
+  DCHECK(!web_bundle_id.is_for_proxy_mode());
 
   Cache::Key cache_key{.path = web_bundle_path, .dev_mode = dev_mode};
 

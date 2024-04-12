@@ -30,13 +30,13 @@ const std::array<uint8_t, 32> kEd25519PublicKeyBytes(
 constexpr char kEd25519SignedWebBundleId[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
-// Some random bytes to use as a development-only key.
-const std::array<uint8_t, 32> kDevelopmentBytes(
+// Some random bytes to use as a proxy mode key.
+const std::array<uint8_t, 32> kProxyModeBytes(
     {0x02, 0x23, 0x43, 0x43, 0x33, 0x42, 0x7a, 0x14, 0x42, 0x14, 0xa2,
      0xb6, 0xc2, 0xd9, 0xf2, 0x02, 0x03, 0x42, 0x18, 0x10, 0x12, 0x26,
      0x62, 0x88, 0xf6, 0xa3, 0xa5, 0x47, 0x14, 0x69, 0x00, 0x73});
 
-constexpr char kDevelopmentSignedWebBundleId[] =
+constexpr char kProxyModeSignedWebBundleId[] =
     "airugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac";
 
 }  // namespace
@@ -69,8 +69,8 @@ INSTANTIATE_TEST_SUITE_P(
     SignedWebBundleIdValidTest,
     ::testing::Values(
         // Development-only key suffix
-        std::make_tuple(kDevelopmentSignedWebBundleId,
-                        SignedWebBundleId::Type::kDevelopment,
+        std::make_tuple(kProxyModeSignedWebBundleId,
+                        SignedWebBundleId::Type::kProxyMode,
                         std::nullopt),
         // Ed25519 key suffix
         std::make_tuple(
@@ -132,23 +132,22 @@ TEST(SignedWebBundleIdTest, Comparators) {
 
 TEST(SignedWebBundleIdTest, CreateForEd25519PublicKey) {
   auto public_key =
-      Ed25519PublicKey::Create(base::make_span(kEd25519PublicKeyBytes));
+      Ed25519PublicKey::Create(base::span(kEd25519PublicKeyBytes));
 
   auto id = SignedWebBundleId::CreateForEd25519PublicKey(public_key);
   EXPECT_EQ(id.type(), SignedWebBundleId::Type::kEd25519PublicKey);
   EXPECT_EQ(id.id(), kEd25519SignedWebBundleId);
 }
 
-TEST(SignedWebBundleIdTest, CreateForDevelopment) {
-  auto id = SignedWebBundleId::CreateForDevelopment(
-      base::make_span(kDevelopmentBytes));
-  EXPECT_EQ(id.type(), SignedWebBundleId::Type::kDevelopment);
-  EXPECT_EQ(id.id(), kDevelopmentSignedWebBundleId);
+TEST(SignedWebBundleIdTest, CreateForProxyMode) {
+  auto id = SignedWebBundleId::CreateForProxyMode(kProxyModeBytes);
+  EXPECT_EQ(id.type(), SignedWebBundleId::Type::kProxyMode);
+  EXPECT_EQ(id.id(), kProxyModeSignedWebBundleId);
 }
 
-TEST(SignedWebBundleIdTest, CreateRandomForDevelopment) {
-  auto id = SignedWebBundleId::CreateRandomForDevelopment();
-  EXPECT_EQ(id.type(), SignedWebBundleId::Type::kDevelopment);
+TEST(SignedWebBundleIdTest, CreateRandomForProxyMode) {
+  auto id = SignedWebBundleId::CreateRandomForProxyMode();
+  EXPECT_EQ(id.type(), SignedWebBundleId::Type::kProxyMode);
 }
 
 }  // namespace web_package

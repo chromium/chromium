@@ -157,7 +157,7 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
   webapps::AppId app_id3 = AddDummyIsolatedAppToRegistry(
       profile(),
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          web_package::SignedWebBundleId::CreateRandomForDevelopment())
+          web_package::SignedWebBundleId::CreateRandomForProxyMode())
           .origin()
           .GetURL(),
       "iwa from installer",
@@ -169,7 +169,7 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
   webapps::AppId app_id4 = AddDummyIsolatedAppToRegistry(
       profile(),
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          web_package::SignedWebBundleId::CreateRandomForDevelopment())
+          web_package::SignedWebBundleId::CreateRandomForProxyMode())
           .origin()
           .GetURL(),
       "iwa from dev ui",
@@ -181,7 +181,7 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
   webapps::AppId app_id5 = AddDummyIsolatedAppToRegistry(
       profile(),
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          web_package::SignedWebBundleId::CreateRandomForDevelopment())
+          web_package::SignedWebBundleId::CreateRandomForProxyMode())
           .origin()
           .GetURL(),
       "iwa from dev command line",

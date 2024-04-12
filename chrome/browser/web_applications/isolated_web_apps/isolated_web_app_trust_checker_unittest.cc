@@ -98,7 +98,7 @@ class IsolatedWebAppTrustCheckerTest : public WebAppTest {
 
 TEST_F(IsolatedWebAppTrustCheckerTest, DevWebBundleId) {
   IsolatedWebAppTrustChecker::Result result = trust_checker().IsTrusted(
-      web_package::SignedWebBundleId::CreateRandomForDevelopment(),
+      web_package::SignedWebBundleId::CreateRandomForProxyMode(),
       /*is_dev_mode_bundle=*/false);
   EXPECT_EQ(result.status, IsolatedWebAppTrustChecker::Result::Status::
                                kErrorUnsupportedWebBundleIdType);

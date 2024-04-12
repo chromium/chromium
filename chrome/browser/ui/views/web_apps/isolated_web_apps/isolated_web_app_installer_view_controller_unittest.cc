@@ -110,7 +110,7 @@ IsolatedWebAppUrlInfo CreateAndWriteTestBundle(
 SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
                                        const std::string& version) {
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-      web_package::SignedWebBundleId::CreateRandomForDevelopment());
+      web_package::SignedWebBundleId::CreateRandomForProxyMode());
   return SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(base::FilePath()), app_name,
       base::Version(version), IconBitmaps());
@@ -319,7 +319,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
     CHECK(base::WriteFile(bundle_path, "not a valid bundle"));
   }
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-      web_package::SignedWebBundleId::CreateRandomForDevelopment());
+      web_package::SignedWebBundleId::CreateRandomForProxyMode());
   MockIconAndPageState(url_info);
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};

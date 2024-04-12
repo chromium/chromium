@@ -45,11 +45,9 @@ IsolatedWebAppTrustChecker::~IsolatedWebAppTrustChecker() = default;
 IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
     const web_package::SignedWebBundleId& web_bundle_id,
     bool is_dev_mode_bundle) const {
-  if (web_bundle_id.type() !=
-      web_package::SignedWebBundleId::Type::kEd25519PublicKey) {
+  if (web_bundle_id.is_for_proxy_mode()) {
     return {.status = Result::Status::kErrorUnsupportedWebBundleIdType,
-            .message =
-                "Only Web Bundle IDs of type Ed25519PublicKey are supported."};
+            .message = "Web Bundle IDs of type ProxyMode are not supported."};
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -94,13 +92,10 @@ bool IsolatedWebAppTrustChecker::IsTrustedViaPolicy(
 
 void SetTrustedWebBundleIdsForTesting(  // IN-TEST
     base::flat_set<web_package::SignedWebBundleId> trusted_web_bundle_ids) {
-  DCHECK(base::ranges::all_of(
-      trusted_web_bundle_ids,
-      [](const web_package::SignedWebBundleId& web_bundle_id) {
-        return web_bundle_id.type() ==
-               web_package::SignedWebBundleId::Type::kEd25519PublicKey;
-      }))
-      << "Can only trust Web Bundle IDs of type Ed25519PublicKey";
+  DCHECK(
+      base::ranges::none_of(trusted_web_bundle_ids,
+                            &web_package::SignedWebBundleId::is_for_proxy_mode))
+      << "Cannot trust Web Bundle IDs of type ProxyMode";
 
   GetTrustedWebBundleIdsForTesting() =  // IN-TEST
       std::move(trusted_web_bundle_ids);
@@ -108,9 +103,8 @@ void SetTrustedWebBundleIdsForTesting(  // IN-TEST
 
 void AddTrustedWebBundleIdForTesting(  // IN-TEST
     const web_package::SignedWebBundleId& trusted_web_bundle_id) {
-  DCHECK(trusted_web_bundle_id.type() ==
-         web_package::SignedWebBundleId::Type::kEd25519PublicKey)
-      << "Can only trust Web Bundle IDs of type Ed25519PublicKey";
+  DCHECK(!trusted_web_bundle_id.is_for_proxy_mode())
+      << "Cannot trust Web Bundle IDs of type ProxyMode";
 
   GetTrustedWebBundleIdsForTesting().insert(trusted_web_bundle_id);  // IN-TEST
 }

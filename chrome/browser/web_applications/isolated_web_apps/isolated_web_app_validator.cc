@@ -33,10 +33,9 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
     bool dev_mode,
     const IsolatedWebAppTrustChecker& trust_checker,
     IntegrityBlockCallback callback) {
-  if (expected_web_bundle_id.type() !=
-      web_package::SignedWebBundleId::Type::kEd25519PublicKey) {
+  if (expected_web_bundle_id.is_for_proxy_mode()) {
     std::move(callback).Run(base::unexpected(
-        "Only Web Bundle IDs of type Ed25519PublicKey are supported."));
+        "Web Bundle IDs of type ProxyMode are not supported."));
     return;
   }
 

@@ -91,7 +91,7 @@ SignedWebBundleMetadata CreateTestMetadata() {
   AddGeneratedIcon(&icons.any, 32, SK_ColorBLUE);
   return SignedWebBundleMetadata::CreateForTesting(
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          web_package::SignedWebBundleId::CreateRandomForDevelopment()),
+          web_package::SignedWebBundleId::CreateRandomForProxyMode()),
       IwaSourceBundleProdMode(base::FilePath()), u"Test Isolated Web App",
       base::Version("0.0.1"), icons);
 }

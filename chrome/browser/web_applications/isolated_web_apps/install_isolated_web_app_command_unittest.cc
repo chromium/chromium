@@ -111,7 +111,7 @@ constexpr std::string_view kIconPath = "/icon.png";
 
 IsolatedWebAppUrlInfo CreateRandomIsolatedWebAppUrlInfo() {
   web_package::SignedWebBundleId signed_web_bundle_id =
-      web_package::SignedWebBundleId::CreateRandomForDevelopment();
+      web_package::SignedWebBundleId::CreateRandomForProxyMode();
   return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       signed_web_bundle_id);
 }

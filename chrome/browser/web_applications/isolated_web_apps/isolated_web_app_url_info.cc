@@ -107,7 +107,7 @@ void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
                     std::move(callback).Run(
                         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
                             web_package::SignedWebBundleId::
-                                CreateRandomForDevelopment()));
+                                CreateRandomForProxyMode()));
                   }},
               source.variant());
 }
