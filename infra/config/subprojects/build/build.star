@@ -87,6 +87,7 @@ ci.defaults.set(
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
     siso_enabled = True,
+    siso_experiments = ["no-fallback"],
 )
 
 consoles.console_view(
@@ -176,7 +177,6 @@ cq_build_perf_builder(
         category = "android",
         short_name = "siso",
     ),
-    siso_experiments = ["no-fallback"],
 )
 
 cq_build_perf_builder(
@@ -234,7 +234,6 @@ cq_build_perf_builder(
         category = "linux",
         short_name = "siso",
     ),
-    siso_experiments = ["no-fallback"],
 )
 
 cq_build_perf_builder(
@@ -353,7 +352,6 @@ cq_build_perf_builder(
         category = "cros",
         short_name = "siso",
     ),
-    siso_experiments = ["no-fallback"],
 )
 
 cq_build_perf_builder(
@@ -417,7 +415,6 @@ cq_build_perf_builder(
         category = "mac",
         short_name = "siso",
     ),
-    siso_experiments = ["no-fallback"],
 )
 
 cq_build_perf_builder(
@@ -484,7 +481,6 @@ cq_build_perf_builder(
         category = "ios",
         short_name = "siso",
     ),
-    siso_experiments = ["no-fallback"],
     xcode = xcode.xcode_default,
 )
 
