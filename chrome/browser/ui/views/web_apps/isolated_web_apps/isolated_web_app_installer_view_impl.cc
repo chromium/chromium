@@ -262,6 +262,11 @@ class InstallerDialogView : public views::BoxLayoutView {
     contents_wrapper_->SetOrientation(views::BoxLayout::Orientation::kVertical);
     contents_wrapper_->SetMainAxisAlignment(
         views::BoxLayout::MainAxisAlignment::kCenter);
+    contents_wrapper_->SetInsideBorderInsets(
+        views::LayoutProvider::Get()
+            ->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG)
+            .set_left_right(0, 0));
+
     contents_wrapper_->SetProperty(
         views::kMarginsKey,
         gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(

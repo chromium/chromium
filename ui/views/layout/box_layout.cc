@@ -252,11 +252,6 @@ ProposedLayout BoxLayout::CalculateProposedLayout(
   host_size.Enlarge(data.host_insets.main_size(),
                     data.host_insets.cross_size());
 
-  // TODO(weidongliu): see crbugs.com/1514004#c5, we handle compatibility here.
-  // Maybe we can remove this in the future.
-  if (collapse_margins_spacing_) {
-    host_size.Enlarge(data.interior_margin.main_size(), 0);
-  }
   data.layout.host_size = Denormalize(orientation_, host_size);
 
   CalculateChildBounds(size_bounds, data);
