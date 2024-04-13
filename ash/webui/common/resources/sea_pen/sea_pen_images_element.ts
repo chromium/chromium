@@ -239,8 +239,8 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       return null;
     }
     let cameraFeed: HTMLVideoElement|null = document.createElement('video');
-    // Stretch camera stream to cover the whole image.
-    cameraFeed.style.objectFit = 'cover';
+    // Stretch camera stream to fit into the image.
+    cameraFeed.style.objectFit = 'contain';
     // Align camera feed with the clicked image.
     cameraFeed.style.position = 'relative';
     // Flip left and right so that camera matches with the image.
