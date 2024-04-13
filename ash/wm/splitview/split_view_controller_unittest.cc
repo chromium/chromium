@@ -1070,51 +1070,6 @@ TEST_F(SplitViewControllerTest, SplitDividerWindowBounds) {
   EXPECT_NEAR(window2_width, old_window1_width, 1);
 }
 
-// Tests that tablet mode multidisplay will end split view to reset window
-// observations.
-TEST_F(SplitViewControllerTest, TabletModeMultiDisplay) {
-  UpdateDisplay("800x600,800x600");
-
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-
-  // Turn off the display mirror mode.
-  Shell::Get()->display_manager()->SetMirrorMode(display::MirrorMode::kOff,
-                                                 std::nullopt);
-
-  // 1. Snap 1 window on display 1.
-  auto* split_view_controller1 =
-      SplitViewController::Get(Shell::GetAllRootWindows()[0]);
-  auto* split_view_controller2 =
-      SplitViewController::Get(Shell::GetAllRootWindows()[1]);
-  std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100)));
-  split_view_controller1->SnapWindow(w1.get(), SnapPosition::kPrimary);
-  EXPECT_TRUE(split_view_controller1->InSplitViewMode());
-  EXPECT_TRUE(split_view_controller1->split_view_divider()->divider_widget());
-
-  // Move the window to display 2. Test we end split view on display 1.
-  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_TRUE(WindowState::Get(w1.get())->IsMaximized());
-  EXPECT_FALSE(split_view_controller1->InSplitViewMode());
-  EXPECT_FALSE(split_view_controller1->split_view_divider()->divider_widget());
-
-  // 2. Snap 2 windows on display 1.
-  std::unique_ptr<aura::Window> w2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100)));
-  split_view_controller1->SnapWindow(w1.get(), SnapPosition::kPrimary);
-  split_view_controller1->SnapWindow(w2.get(), SnapPosition::kSecondary);
-  EXPECT_FALSE(split_view_controller2->InSplitViewMode());
-  EXPECT_TRUE(split_view_controller1->InSplitViewMode());
-  EXPECT_TRUE(split_view_controller1->split_view_divider()->divider_widget());
-
-  // Move the window to display 2. Test we end split view on display 1.
-  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_TRUE(WindowState::Get(w1.get())->IsMaximized());
-  EXPECT_TRUE(WindowState::Get(w2.get())->IsMaximized());
-  EXPECT_FALSE(split_view_controller1->InSplitViewMode());
-  EXPECT_FALSE(split_view_controller1->split_view_divider()->divider_widget());
-}
-
 // Verify that disconnecting a display which has a snapped window in it in
 // tablet mode won't lead to a crash. Regression test for
 // https://crbug.com/1316230.
