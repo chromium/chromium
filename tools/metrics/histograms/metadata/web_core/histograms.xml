@@ -793,27 +793,6 @@ chromium-metrics-reviews@google.com.
   <summary>Whether a parsing blocking script was streamed or not.</summary>
 </histogram>
 
-<histogram name="WebCore.Scripts.V8CodeCacheMetadata.Get"
-    enum="V8CodeCacheGetMetadataType" expires_after="2024-09-15">
-  <owner>marja@chromium.org</owner>
-  <owner>v8-runtime@google.com</owner>
-  <summary>
-    What type of cache metadata we retrieved for a script. Recorded when we are
-    about to compile a script.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.Scripts.V8CodeCacheMetadata.Set"
-    enum="V8CodeCacheSetMetadataType" expires_after="2024-09-15">
-  <owner>marja@chromium.org</owner>
-  <owner>v8-runtime@google.com</owner>
-  <summary>
-    What type of cache metadata we set for a script. If we set multiple metadata
-    types for the same script, multiple samples are recorded. Recorded when we
-    set the metadata.
-  </summary>
-</histogram>
-
 <histogram name="WebCore.Scripts.V8CompileHintsStatus"
     enum="V8CompileHintsStatus" expires_after="2024-09-15">
   <owner>marja@chromium.org</owner>
@@ -844,16 +823,6 @@ chromium-metrics-reviews@google.com.
     Whether we produced the non-final or the final version of local compile
     hints. This can be used for approximating how often we end up not generating
     compile hints if we wait too long for the final compile hints generation.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.Scripts.V8LocalCompileHintsObsoletedByCodeCache"
-    enum="BooleanYesNo" expires_after="2024-09-15">
-  <owner>marja@chromium.org</owner>
-  <owner>v8-runtime@google.com</owner>
-  <summary>
-    Whether there already was a code cache when we tried to set local compile
-    hints. Recorded when we set compile hints.
   </summary>
 </histogram>
 

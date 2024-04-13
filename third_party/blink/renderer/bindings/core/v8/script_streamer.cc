@@ -639,8 +639,6 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
     }
   }
 
-  V8CodeCache::RecordCacheGetStatistics(script_resource_->CacheHandler());
-
   // Here we can't call Check on the cache handler because it requires the
   // script source, which would require having already loaded the script. It is
   // OK at this point to disable streaming even though we might end up rejecting
@@ -1120,8 +1118,6 @@ BuildCompileHintsForStreaming(
   scoped_refptr<CachedMetadata> metadata =
       big_buffer ? CachedMetadata::CreateFromSerializedData(*big_buffer)
                  : nullptr;
-
-  V8CodeCache::RecordCacheGetStatistics(metadata.get(), encoding);
   std::unique_ptr<v8_compile_hints::CompileHintsForStreaming> result =
       std::move(builder).Build(
           (metadata && V8CodeCache::HasHotCompileHints(*metadata, encoding))
@@ -1350,8 +1346,6 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
   }
   if (HasCodeCache(cached_metadata, encoding_.GetName())) {
     SuppressStreaming(NotStreamingReason::kHasCodeCacheBackground);
-    V8CodeCache::RecordCacheGetStatistics(
-        V8CodeCache::GetMetadataType::kCodeCache);
     return false;
   }
   compile_hints_ = BuildCompileHintsForStreaming(
