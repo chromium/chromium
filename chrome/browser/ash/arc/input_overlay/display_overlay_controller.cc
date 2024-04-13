@@ -58,6 +58,7 @@ namespace arc::input_overlay {
 namespace {
 
 using ash::game_dashboard_utils::GetNextWidgetToFocus;
+using ash::game_dashboard_utils::UpdateAccessibilityTree;
 
 // UI specs.
 constexpr int kMenuEntrySideMargin = 24;
@@ -151,7 +152,7 @@ class DisplayOverlayController::FocusCycler {
     if (auto it = std::find(widget_list_.begin(), widget_list_.end(), widget);
         it == widget_list_.end()) {
       widget_list_.emplace_back(widget);
-      OnWidgetListUpdated();
+      UpdateAccessibilityTree(widget_list_);
     }
   }
 
@@ -159,27 +160,7 @@ class DisplayOverlayController::FocusCycler {
     if (auto it = std::find(widget_list_.begin(), widget_list_.end(), widget);
         it != widget_list_.end()) {
       widget_list_.erase(it);
-      OnWidgetListUpdated();
-    }
-  }
-
-  void OnWidgetListUpdated() {
-    const size_t widget_list_size = widget_list_.size();
-    if (widget_list_size <= 1u) {
-      return;
-    }
-
-    // Update the widget's accessibility tree.
-    for (size_t i = 0; i < widget_list_size; i++) {
-      auto* curr_view = widget_list_[i]->GetContentsView();
-      auto& curr_view_a11y = curr_view->GetViewAccessibility();
-      const size_t prev_index = (i + widget_list_size - 1u) % widget_list_size;
-      const size_t next_index = (i + 1u) % widget_list_size;
-
-      curr_view_a11y.SetPreviousFocus(widget_list_[prev_index]);
-      curr_view_a11y.SetNextFocus(widget_list_[next_index]);
-      curr_view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged,
-                                          /*send_native_event=*/true);
+      UpdateAccessibilityTree(widget_list_);
     }
   }
 

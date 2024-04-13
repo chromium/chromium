@@ -84,6 +84,12 @@ void SetShowToolbar(bool show_toolbar);
 // header is not found or when the header is invisible.
 ASH_EXPORT int GetFrameHeaderHeight(aura::Window* window);
 
+// Updates the accessibility tree to match the given `widget_list`. This ensures
+// that the order of widgets in the `widget_list` reflects accessibility
+// navigation and tab navigation.
+ASH_EXPORT void UpdateAccessibilityTree(
+    const std::vector<views::Widget*>& widget_list);
+
 }  // namespace ash::game_dashboard_utils
 
 #endif  // ASH_GAME_DASHBOARD_GAME_DASHBOARD_UTILS_H_

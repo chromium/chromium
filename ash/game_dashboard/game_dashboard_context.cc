@@ -278,6 +278,7 @@ void GameDashboardContext::ToggleMainMenu(
             std::move(widget_delegate)));
     main_menu_widget_->AddObserver(this);
     main_menu_widget_->Show();
+    game_dashboard_utils::UpdateAccessibilityTree(GetTraversableWidgets());
     game_dashboard_button_->SetToggled(true);
     AddCursorHandler();
     RecordGameDashboardToggleMainMenu(app_id_, toggle_method,
@@ -318,6 +319,7 @@ bool GameDashboardContext::ToggleToolbar() {
     MaybeUpdateToolbarWidgetBounds();
 
     toolbar_widget_->ShowInactive();
+    game_dashboard_utils::UpdateAccessibilityTree(GetTraversableWidgets());
     // Display the toolbar behind the main menu view.
     EnsureMainMenuAboveToolbar();
     RecordGameDashboardToolbarToggleState(app_id_, /*toggled_on=*/true);
@@ -333,6 +335,7 @@ void GameDashboardContext::CloseToolbar() {
   DCHECK(toolbar_widget_);
   toolbar_view_ = nullptr;
   toolbar_widget_.reset();
+  game_dashboard_utils::UpdateAccessibilityTree(GetTraversableWidgets());
   RecordGameDashboardToolbarToggleState(app_id_, /*toggled_on=*/false);
 }
 
@@ -790,6 +793,7 @@ void GameDashboardContext::UpdateOnMainMenuClosed() {
   DCHECK(main_menu_view_);
   RemoveCursorHandler();
   main_menu_view_ = nullptr;
+  game_dashboard_utils::UpdateAccessibilityTree(GetTraversableWidgets());
   game_dashboard_button_->SetToggled(false);
 }
 
