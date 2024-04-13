@@ -5638,6 +5638,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
             Run ChromeOS Flex diagnostic tests
           </message>
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS_NETWORK_INFO_FOR_MLAB" desc="Permission string for chrome.os.diagnostics.network_info_mlab API.">
+            Collect IP address and network measurement results for Measurement Lab, according to their privacy policy (measurementlab.net/privacy)
+          </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_EVENTS" desc="Permission string for chrome.os.events API.">
             Subscribe to ChromeOS Flex system events
           </message>
@@ -5663,6 +5666,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
             Run ChromeOS diagnostic tests
+          </message>
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS_NETWORK_INFO_FOR_MLAB" desc="Permission string for chrome.os.diagnostics.network_info_mlab API.">
+            Collect IP address and network measurement results for Measurement Lab, according to their privacy policy (measurementlab.net/privacy)
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_EVENTS" desc="Permission string for chrome.os.events API.">
             Subscribe to ChromeOS system events

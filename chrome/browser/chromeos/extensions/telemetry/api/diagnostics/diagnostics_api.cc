@@ -526,6 +526,18 @@ void OsDiagnosticsCreateRoutineFunction::RunIfAllowed() {
         NewUnrecognizedArgument(false);
   }
 
+  // Network bandwidth routine is guarded by `os.diagnostics.network_info_mlab`
+  // permission.
+  if (mojo_arg.value()->is_network_bandwidth() &&
+      !extension()->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::
+              kChromeOSDiagnosticsNetworkInfoForMlab)) {
+    RespondWithError(
+        "Unauthorized access to chrome.os.diagnostics.CreateRoutine with "
+        "networkBandwidth argument. Extension doesn't have the permission.");
+    return;
+  }
+
   auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
   auto result = routines_manager->CreateRoutine(extension_id(),
                                                 std::move(mojo_arg.value()));
@@ -761,6 +773,19 @@ void OsDiagnosticsIsRoutineArgumentSupportedFunction::RunIfAllowed() {
           extensions_features::kTelemetryExtensionPendingApprovalApi)) {
     mojo_arg = crosapi::mojom::TelemetryDiagnosticRoutineArgument::
         NewUnrecognizedArgument(false);
+  }
+
+  // Network bandwidth routine is guarded by `os.diagnostics.network_info_mlab`
+  // permission.
+  if (mojo_arg.value()->is_network_bandwidth() &&
+      !extension()->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::
+              kChromeOSDiagnosticsNetworkInfoForMlab)) {
+    RespondWithError(
+        "Unauthorized access to "
+        "chrome.os.diagnostics.isRoutineArgumentSupported with "
+        "networkBandwidth argument. Extension doesn't have the permission.");
+    return;
   }
 
   auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());

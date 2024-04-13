@@ -282,6 +282,7 @@ enum APIPermissionID {
   kEnterpriseKioskInput = 255,
   kOdfsConfigPrivate = 256,
   kChromeOSManagementAudio = 257,
+  kChromeOSDiagnosticsNetworkInfoForMlab = 258,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in

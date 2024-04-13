@@ -1374,4 +1374,55 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
+class NoExtraPermissionTelemetryExtensionDiagnosticsApiV2BrowserTest
+    : public PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest {
+ public:
+  NoExtraPermissionTelemetryExtensionDiagnosticsApiV2BrowserTest() = default;
+
+ protected:
+  std::string GetManifestFile(const std::string& manifest_key,
+                              const std::string& matches_origin) override {
+    return base::StringPrintf(R"(
+      {
+        "key": "%s",
+        "name": "Test Telemetry Extension",
+        "version": "1",
+        "manifest_version": 3,
+        "chromeos_system_extension": {},
+        "background": {
+          "service_worker": "sw.js"
+        },
+        "permissions": [ "os.diagnostics" ],
+        "externally_connectable": {
+          "matches": [
+            "%s"
+          ]
+        },
+        "options_page": "options.html"
+      }
+    )",
+                              manifest_key.c_str(), matches_origin.c_str());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NoExtraPermissionTelemetryExtensionDiagnosticsApiV2BrowserTest,
+    NetworkBandwidthRoutineNoPermissionFail) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function createNetworkBandwidthRoutineNoPermission() {
+        await chrome.test.assertPromiseRejects(
+          chrome.os.diagnostics.createRoutine({
+            networkBandwidth: {},
+          }),
+          'Error: Unauthorized access to ' +
+          'chrome.os.diagnostics.CreateRoutine with networkBandwidth ' +
+          'argument. Extension doesn\'t have the permission.'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 }  // namespace chromeos
