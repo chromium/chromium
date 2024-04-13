@@ -18,6 +18,8 @@ component("debug_daemon") {
   ]
 
   sources = [
+    "binary_log_files_reader.cc",
+    "binary_log_files_reader.h",
     "debug_daemon_client.cc",
     "debug_daemon_client.h",
     "debug_daemon_client_provider.cc",

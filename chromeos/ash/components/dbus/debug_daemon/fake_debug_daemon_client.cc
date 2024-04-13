@@ -15,17 +15,25 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 
 namespace {
 
 const char kCrOSTracingAgentName[] = "cros";
 const char kCrOSTraceLabel[] = "systemTraceEvents";
+
+// Writes the |data| to |fd|, then close |fd|.
+void WriteData(base::ScopedFD fd, const std::string& data) {
+  base::WriteFileDescriptor(fd.get(), data);
+}
 
 }  // namespace
 
@@ -131,6 +139,24 @@ void FakeDebugDaemonClient::GetFeedbackLogs(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), /*succeeded=*/true, sample));
+}
+
+void FakeDebugDaemonClient::GetFeedbackBinaryLogs(
+    const cryptohome::AccountIdentifier& id,
+    const std::map<debugd::FeedbackBinaryLogType, base::ScopedFD>& log_type_fds,
+    chromeos::VoidDBusMethodCallback callback) {
+  constexpr char kTestData[] = "TestData";
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), /*succeeded=*/true));
+
+  // Write dummy data to the pipes after callback is invoked to simulate
+  // potential delay writing bug chunk of data.
+  for (const auto& item : log_type_fds) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+        base::BindOnce(&WriteData, base::ScopedFD(dup(item.second.get())),
+                       kTestData));
+  }
 }
 
 void FakeDebugDaemonClient::BackupArcBugReport(

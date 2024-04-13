@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
@@ -38,6 +39,7 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
 namespace ash {
 
@@ -280,6 +282,35 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
         base::BindOnce(&DebugDaemonClientImpl::OnFeedbackLogsResponse,
                        weak_ptr_factory_.GetWeakPtr(),
                        pipe_reader->AsWeakPtr()));
+  }
+
+  void GetFeedbackBinaryLogs(
+      const cryptohome::AccountIdentifier& id,
+      const std::map<debugd::FeedbackBinaryLogType, base::ScopedFD>&
+          log_type_fds,
+      chromeos::VoidDBusMethodCallback callback) override {
+    dbus::MethodCall method_call(debugd::kDebugdInterface,
+                                 debugd::kGetFeedbackBinaryLogs);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(id.account_id());
+
+    dbus::MessageWriter array_writer(nullptr);
+    // Write map of log_type and fd.
+    writer.OpenArray("{ih}", &array_writer);
+    for (const auto& log_type : log_type_fds) {
+      dbus::MessageWriter dict_entry_writer(nullptr);
+      array_writer.OpenDictEntry(&dict_entry_writer);
+      dict_entry_writer.AppendInt32(log_type.first);
+      dict_entry_writer.AppendFileDescriptor(log_type.second.get());
+      array_writer.CloseContainer(&dict_entry_writer);
+    }
+    writer.CloseContainer(&array_writer);
+
+    DVLOG(1) << "Requesting feedback binary logs";
+    debugdaemon_proxy_->CallMethodWithErrorResponse(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DebugDaemonClientImpl::OnFeedbackBinaryLogsResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
@@ -747,6 +778,17 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       // pipe reader is still waiting on read.
       pipe_reader->TerminateStream();
     }
+  }
+
+  void OnFeedbackBinaryLogsResponse(chromeos::VoidDBusMethodCallback callback,
+                                    dbus::Response* response,
+                                    dbus::ErrorResponse* err_response) {
+    bool succeeded = !err_response;
+    if (!succeeded) {
+      LOG(ERROR) << "Failed to GetFeedbackBinaryLogs. Error: "
+                 << err_response->GetErrorName();
+    }
+    std::move(callback).Run(succeeded);
   }
 
   // Called when a response for a simple start is received.

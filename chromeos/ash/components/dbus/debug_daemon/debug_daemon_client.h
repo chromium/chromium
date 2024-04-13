@@ -23,6 +23,7 @@
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/message.h"
+#include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace cryptohome {
@@ -141,6 +142,16 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
       const cryptohome::AccountIdentifier& id,
       const std::vector<debugd::FeedbackLogType>& requested_logs,
       GetLogsCallback callback) = 0;
+
+  // Gets feedback binary logs from debugd.
+  // |id|: Cryptohome Account identifier for the user to get logs for.
+  // |log_type_fds|: The map of FeedbackBinaryLogType and its FD pair.
+  // |callback|: The callback to be invoked once the debugd method is completed.
+  virtual void GetFeedbackBinaryLogs(
+      const cryptohome::AccountIdentifier& id,
+      const std::map<debugd::FeedbackBinaryLogType, base::ScopedFD>&
+          log_type_fds,
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Retrieves the ARC bug report for user identified by |userhash|
   // and saves it in debugd daemon store.

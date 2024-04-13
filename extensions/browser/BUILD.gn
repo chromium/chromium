@@ -1049,6 +1049,7 @@ source_set("unit_tests") {
       "//chromeos:test_support",
       "//chromeos/ash/components/dbus:test_support",
       "//chromeos/ash/components/dbus/audio",
+      "//chromeos/ash/components/dbus/debug_daemon",
       "//chromeos/ash/components/dbus/media_analytics",
       "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
       "//chromeos/ash/components/dbus/shill",

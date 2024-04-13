@@ -1,4 +1,7 @@
 include_rules = [
-  "+components/feedback",
   "+ash/public/cpp",
+  "+components/account_id",
+  "+components/feedback",
+  "+components/user_manager",
+  "+third_party/cros_system_api"
 ]

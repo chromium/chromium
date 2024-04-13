@@ -65,6 +65,11 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
       const cryptohome::AccountIdentifier& id,
       const std::vector<debugd::FeedbackLogType>& requested_logs,
       GetLogsCallback callback) override;
+  void GetFeedbackBinaryLogs(
+      const cryptohome::AccountIdentifier& id,
+      const std::map<debugd::FeedbackBinaryLogType, base::ScopedFD>&
+          log_type_fds,
+      chromeos::VoidDBusMethodCallback callback) override;
   void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
                           chromeos::VoidDBusMethodCallback callback) override;
   void GetAllLogs(GetLogsCallback callback) override;

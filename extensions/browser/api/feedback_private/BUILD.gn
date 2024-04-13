@@ -45,8 +45,12 @@ source_set("feedback_private") {
 
     deps += [
       "//ash/public/cpp",
+      "//chromeos/ash/components/cryptohome",
+      "//chromeos/ash/components/dbus/debug_daemon",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/assistant/public/mojom",
+      "//components/account_id",
+      "//components/user_manager",
     ]
   }
 }
