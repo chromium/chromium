@@ -1133,7 +1133,8 @@ void PeripheralCustomizationEventRewriter::UpdatePressedButtonMapFlags(
   auto modifier_key = ConvertDomCodeToModifierKey(key_event.code());
   int key_event_characteristic_flag =
       ConvertKeyCodeToFlags(key_event.key_code());
-  if (settings && modifier_key) {
+  // Modifiers only need to be remapped now if the rewriter fix is disabled.
+  if (!features::IsKeyboardRewriterFixEnabled() && settings && modifier_key) {
     auto iter = settings->modifier_remappings.find(*modifier_key);
     if (iter != settings->modifier_remappings.end()) {
       key_event_characteristic_flag = ConvertModifierKeyToFlags(iter->second);

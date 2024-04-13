@@ -911,6 +911,10 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
 
 TEST_F(PeripheralCustomizationEventRewriterTest,
        RemappedModifierReleasedDuringSequence) {
+  // This test is only relevant when the keyboard rewriter fix is disabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kEnableKeyboardRewriterFix);
+
   keyboard_->settings->modifier_remappings[ui::mojom::ModifierKey::kAlt] =
       ui::mojom::ModifierKey::kControl;
 
