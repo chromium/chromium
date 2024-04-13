@@ -74,7 +74,6 @@ build_webui("build") {
     "google_apps/google_app_proxy.ts",
     "google_apps/google_apps_metrics_proxy.ts",
     "landing_view_proxy.ts",
-    "navigation_mixin.ts",
     "navigation_mixin_lit.ts",
     "ntp_background/ntp_background_metrics_proxy.ts",
     "ntp_background/ntp_background_proxy.ts",
@@ -89,6 +88,7 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "google_apps/nux_google_apps.css",
     "landing_view.css",
     "ntp_background/nux_ntp_background.css",
     "set_as_default/nux_set_as_default.css",
@@ -105,6 +105,7 @@ build_webui("build") {
     "shared/splash_pages_shared_lit.css",
     "shared/step_indicator.css",
     "signin_view.css",
+    "welcome_app.css",
   ]
 
   icons_html_files = [ "shared/icons.html" ]

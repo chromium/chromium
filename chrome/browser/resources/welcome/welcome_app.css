@@ -1,0 +1,31 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+#viewManager {
+  display: flex;
+  font-size: 100%;
+  margin: 0;
+  min-height: 100vh;
+}
+
+#viewManager :-webkit-any(nux-google-apps, nux-ntp-background,
+    nux-set-as-default) {
+  /* Override cr-view-manager's default styling for view. */
+  bottom: initial;
+  left: initial;
+  margin: auto;
+  position: unset;
+  right: initial;
+  top: initial;
+}
+
+cr-toast {
+  min-width: initial;
+}
