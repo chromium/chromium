@@ -1112,7 +1112,7 @@
 <translation id="5364693579536176785">保存容量</translation>
 <translation id="5369717264580061086">ファイルアプリでファイルをプレビューします</translation>
 <translation id="5377367976106153749">カメラへのアクセスをオンにしますか？</translation>
-<translation id="5379115545237091094">試行回数が上限を超えました</translation>
+<translation id="5379115545237091094">試行回数が上限に達しました</translation>
 <translation id="5391307769715781764">保存済みのデスクを置き換えますか？</translation>
 <translation id="5393156353051693207">任意の場所を長押ししてアプリを並べ替えられます</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />を<ph name="IN_PLACE_APP" />の上にドラッグしました。指を離すとフォルダが作成されます。</translation>

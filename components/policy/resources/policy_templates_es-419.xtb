@@ -6802,6 +6802,7 @@ principal del string usuario-agente en 99.
           Solo se muestra el mensaje de advertencia si la acción de inactividad es salir de la cuenta o apagar el dispositivo.</translation>
 <translation id="6331943515692769234">Forzar el uso del algoritmo GREASE de usuario-agente anterior</translation>
 <translation id="6332546092866098577">Impide el acceso de lectura a través de la API de File System en estos sitios</translation>
+<translation id="6333338054007607863">Descargar el modelo automáticamente</translation>
 <translation id="6334330017384340264">Esta política especifica qué apps y URL deben incluirse en la lista de elementos permitidos para las restricciones de uso por app.
         Se aplica la lista de elementos permitidos configurada a las apps instaladas en <ph name="PRODUCT_OS_NAME" /> para el usuario dado con límites de tiempo por app.
         Solo se puede aplicar esta lista a cuentas de usuario de menores de edad. Cuando se configure la política <ph name="PER_APP_TIME_LIMITS_POLICY_NAME" />, se implementará la lista de elementos permitidos configurada.
@@ -8863,6 +8864,7 @@ Si estableces la política en 2, los orígenes no podrán usar Direct Sockets.
 Si no la estableces, se permitirán los Direct Sockets.</translation>
 <translation id="7853140303943875314">Habilitar el rescate de acceso automático</translation>
 <translation id="7854187834842629068">Inhabilitar el dictado en la pantalla de acceso</translation>
+<translation id="7858352166858826505">Configuración del modelo de base local de IA generativa</translation>
 <translation id="7863947545897944083">Habilita la función de accesibilidad de contraste alto en la pantalla de acceso.
 
           Si se establece esta política como verdadera, el contraste alto estará siempre habilitado en la pantalla de acceso.
@@ -9777,6 +9779,7 @@ Si no la estableces, los usuarios no podrán jugar al juego en el <ph name="PROD
           Si no se establece, se utilizará un período predeterminado.
 
           El valor de la política debe especificarse en milisegundos.</translation>
+<translation id="8592363656632862875">No descargar el modelo</translation>
 <translation id="859579553230883285">Inhabilitar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> para anuncios sugeridos por el sitio para los usuarios</translation>
 <translation id="8597758693275075382">Los strings OEM SMB que se pasarán a la VM durante la instalación. La configuración predeterminada es la lista vacía.</translation>
 <translation id="8598786284856179541">Habilitar la generación de informes sobre la versión</translation>
@@ -10209,6 +10212,13 @@ Si la inhabilitas, solo se enviarán datos de hardware estándar.</translation>
 <translation id="8931555638815157255">Si habilitas la política o no la estableces, los dispositivos inscritos informarán de forma periódica su versión de SO y firmware.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán la versión.</translation>
+<translation id="8934485887744460569">Configura la forma en que <ph name="PRODUCT_NAME" /> descarga el modelo básico de IA generativa y lo usa para la inferencia a nivel local. 
+
+Si permites (0) la política o no la estableces, el modelo se descargará automáticamente y se usará para las inferencias.
+
+Si la inhabilitas (1), no se descargará el modelo.
+
+<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> también puede inhabilitar la descarga de modelos.</translation>
 <translation id="8937282917198525844"> A partir de la versión M81, se actualizaron la apariencia y el estilo de los elementos estándar de los controles de formulario (p. ej., &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;), con mejoras en la accesibilidad y la uniformidad de la plataforma. Esta política restablece los elementos antiguos de los controles de formulario "heredados" hasta la versión M84.
 
       Si se establece esta política como verdadera, se utilizarán los elementos de los controles de formulario "heredados" para todos los sitios.

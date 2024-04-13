@@ -6697,6 +6697,7 @@ Xem thêm thông tin chi tiết tại https://developer.chrome.com/blog/immutabl
           Thông báo cảnh báo chỉ hiển thị nếu hành động ở chế độ tạm vắng là hành động đăng xuất hoặc tắt nguồn.</translation>
 <translation id="6331943515692769234">Buộc sử dụng thuật toán User-Agent GREASE cũ.</translation>
 <translation id="6332546092866098577">Chặn quyền đọc qua API Hệ thống tệp trên các trang web này</translation>
+<translation id="6333338054007607863">Tự động tải mô hình xuống</translation>
 <translation id="6334330017384340264">Chính sách này chỉ định những ứng dụng và URL được phép theo các giới hạn sử dụng của mỗi ứng dụng.
         Danh sách cho phép đã định cấu hình được áp dụng cho các ứng dụng cài đặt trên <ph name="PRODUCT_OS_NAME" /> đối với người dùng cụ thể có giới hạn thời gian cho mỗi ứng dụng.
         Bạn chỉ có thể áp dụng danh sách cho phép đã định cấu hình cho các tài khoản của người dùng trẻ em và danh sách này chỉ có hiệu lực khi đặt chính sách <ph name="PER_APP_TIME_LIMITS_POLICY_NAME" />.
@@ -8727,6 +8728,7 @@ Nếu bạn đặt chính sách này thành 2 thì các nguồn gốc sẽ khôn
 Nếu bạn không đặt chính sách này thì hệ thống sẽ cho phép sử dụng Direct Sockets.</translation>
 <translation id="7853140303943875314">Bật phím tắt bailout tự động đăng nhập</translation>
 <translation id="7854187834842629068">Tắt tính năng nhập bằng giọng nói trên màn hình đăng nhập</translation>
+<translation id="7858352166858826505">Chế độ cài đặt mô hình nền tảng cục bộ cho AI tạo sinh</translation>
 <translation id="7863947545897944083">Bật tính năng hỗ trợ tiếp cận về độ tương phản cao trên màn hình đăng nhập.
 
           Nếu bạn đặt chính sách này thành true, thì chế độ tương phản cao sẽ luôn bật trên màn hình đăng nhập.
@@ -9606,6 +9608,7 @@ Nếu bạn không đặt chính sách này, thì người dùng không thể ch
           Khi bạn không đặt chính sách này, khoảng thời gian mặc định sẽ được sử dụng.
 
           Bạn phải chỉ định giá trị của chính sách bằng mili giây.</translation>
+<translation id="8592363656632862875">Không tải mô hình xuống</translation>
 <translation id="859579553230883285">Tắt chế độ cài đặt Quảng cáo do trang web đề xuất của <ph name="PRIVACY_SANDBOX_NAME" /> cho người dùng.</translation>
 <translation id="8597758693275075382">Chuỗi SMBIOS của OEM (Nhà sản xuất thiết bị gốc) được truyền đến máy ảo trong quá trình cài đặt. Giá trị mặc định là danh sách trống.</translation>
 <translation id="8598786284856179541">Bật chính sách báo cáo thông tin phiên bản</translation>
@@ -10016,6 +10019,13 @@ Nếu bạn Tắt chính sách, thì hệ thống sẽ chỉ gửi dữ liệu p
 <translation id="8931555638815157255">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ định kỳ báo cáo phiên bản hệ điều hành và chương trình cơ sở của thiết bị đó.
 
       Nếu bạn đặt chính sách này thành Tắt, thiết bị đã đăng ký sẽ không báo cáo thông tin phiên bản.</translation>
+<translation id="8934485887744460569">Định cấu hình cách <ph name="PRODUCT_NAME" /> tải mô hình AI tạo sinh nền tảng xuống và dùng mô hình đó để suy luận cục bộ. 
+
+Khi bạn không đặt hoặc đặt chính sách này thành Allowed (Cho phép) (0), mô hình sẽ tự động được tải xuống và dùng để suy luận.
+
+Khi bạn đặt chính sách này thành Disabled (Tắt) (1), mô hình sẽ không được tải xuống.
+
+Bạn cũng có thể tắt tính năng tải mô hình xuống bằng chính sách <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8937282917198525844"> Kể từ phiên bản M81, các thành phần điều khiển biểu mẫu tiêu chuẩn (ví dụ: &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) đều có giao diện mới, với khả năng tiếp cận tốt hơn và nền tảng đồng nhất hơn. Chính sách này khôi phục các thành phần điều khiển biểu mẫu "cũ" cho đến phiên bản M84.
 
       Nếu bạn đặt chính sách này thành True, thì các thành phần điều khiển biểu mẫu "cũ" sẽ được dùng cho tất cả các trang web.

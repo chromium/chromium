@@ -6793,6 +6793,7 @@ Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-do
           A mensagem de aviso só será mostrada se a ação de inatividade for para sair ou encerrar.</translation>
 <translation id="6331943515692769234">Forçar o algoritmo User-Agent GREASE anterior a ser usado.</translation>
 <translation id="6332546092866098577">Bloquear acesso de leitura com a API File System nestes sites</translation>
+<translation id="6333338054007607863">Baixar o modelo automaticamente</translation>
 <translation id="6334330017384340264">Esta política especifica quais aplicativos e URLs serão permitidos para restrições de uso por app.
         A lista de permissões configurada é aplicada aos apps instalados no <ph name="PRODUCT_OS_NAME" /> para um determinado usuário com limite de tempo por app.
         A lista de permissões configurada só pode ser aplicada para contas de crianças e entra em vigor quando a política <ph name="PER_APP_TIME_LIMITS_POLICY_NAME" /> é definida.
@@ -8853,6 +8854,7 @@ Se a política for definida como 2, as origens não poderão usar a API.
 Se ela não for definida, a API Direct Sockets vai ser permitida.</translation>
 <translation id="7853140303943875314">Ativar o descarte do login automático</translation>
 <translation id="7854187834842629068">Desativar o Ditado na tela de login</translation>
+<translation id="7858352166858826505">Configurações do modelo de fundação local da IA generativa</translation>
 <translation id="7863947545897944083">Ativar o recurso de acessibilidade de alto contraste na tela de login.
 
           Se esta política for definida como verdadeira, o alto contraste sempre ficará ativado na tela de login.
@@ -9748,6 +9750,7 @@ Não definir a política significa que os usuários não poderão jogar no <ph n
           Quando esta política não é definida, um período padrão é usado.
 
           O valor da política precisa ser especificado em milissegundos.</translation>
+<translation id="8592363656632862875">Não baixar o modelo</translation>
 <translation id="859579553230883285">Desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de anúncios sugeridos pelo site para os usuários.</translation>
 <translation id="8597758693275075382">Strings OEM da SMBIOS a serem transmitidas para a VM durante a instalação. O padrão é a lista vazia.</translation>
 <translation id="8598786284856179541">Ativar relatórios sobre informações de versão</translation>
@@ -10173,6 +10176,13 @@ Se desativada, apenas os dados de hardware padrão serão enviados.</translation
 <translation id="8931555638815157255">Se a política for definida como "Ativada" ou não for definida, os dispositivos registrados informarão a versão do SO e do firmware periodicamente.
 
       Se a política for definida como "Desativada", os dispositivos registrados não relatarão as informações de versão.</translation>
+<translation id="8934485887744460569">Configure como o <ph name="PRODUCT_NAME" /> baixa o modelo básico da IA generativa e usa para inferência local. 
+
+Quando a política é definida como "Permitida" (0) ou deixada sem definição, o modelo é baixado automaticamente e ele é usado para inferência.
+
+Quando a política é desativada (1), o modelo não é baixado.
+
+O download do modelo também pode ser desativado pela <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8937282917198525844"> A partir da versão M81, os elementos padrão de controle de formulários (por exemplo, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) foram atualizados para proporcionar melhor acessibilidade e uniformidade na plataforma. Esta política restaura os antigos elementos de controle de formulários "legados" até a M84.
 
       Se esta política for definida como verdadeira, os elementos de controle de formulários "legados" serão usados para todos os sites.
