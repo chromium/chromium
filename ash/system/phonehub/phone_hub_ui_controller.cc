@@ -351,6 +351,8 @@ void PhoneHubUiController::UpdateUiState(
         phone_hub_manager_->GetPhoneHubStructuredMetricsLogger()
             ->LogPhoneHubUiStateUpdated(
                 phonehub::PhoneHubUiState::kDisconnected);
+        phone_hub_manager_->GetPhoneHubStructuredMetricsLogger()
+            ->ResetSessionId();
       }
       break;
     case UiState::kPhoneConnecting:

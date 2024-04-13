@@ -20,6 +20,19 @@ extern const char kScreenLockStatus[];
 extern const char kRecentAppsHistory[];
 extern const char kFeatureSetupRequestSupported[];
 
+// Connected phone information used by Phone Hub Structured Metrics
+extern const char kPhoneManufacturer[];
+extern const char kPhoneModel[];
+extern const char kPhoneLocale[];
+extern const char kPhonePseudonymousId[];
+extern const char kPhoneAndroidVersion[];
+extern const char kPhoneGmsCoreVersion[];
+extern const char kPhoneAmbientApkVersion[];
+extern const char kPhoneProfileType[];
+extern const char kPhoneInfoLastUpdatedTime[];
+extern const char kChromebookPseudonymousId[];
+extern const char kPseudonymousIdRotationDate[];
+
 }  // namespace prefs
 }  // namespace phonehub
 }  // namespace ash

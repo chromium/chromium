@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/phonehub/message_sender_impl.h"
-
 #include <netinet/in.h>
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
+#include "chromeos/ash/components/phonehub/message_sender_impl.h"
 #include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -39,7 +41,7 @@ class MessageSenderImplTest : public testing::Test {
             fake_feature_status_provider_.get(),
             fake_connection_manager_.get());
     phone_hub_structured_metrics_logger_ =
-        std::make_unique<PhoneHubStructuredMetricsLogger>();
+        std::make_unique<PhoneHubStructuredMetricsLogger>(&pref_service_);
     message_sender_ = std::make_unique<MessageSenderImpl>(
         fake_connection_manager_.get(), phone_hub_ui_readiness_recorder_.get(),
         phone_hub_structured_metrics_logger_.get());
@@ -68,6 +70,8 @@ class MessageSenderImplTest : public testing::Test {
     EXPECT_EQ(expected_proto_message, actual_proto_message);
   }
 
+  base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;

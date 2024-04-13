@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/phonehub/notification_processor.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
@@ -231,7 +232,8 @@ PhoneStatusProcessor::PhoneStatusProcessor(
     AppStreamManager* app_stream_manager,
     AppStreamLauncherDataModel* app_stream_launcher_data_model,
     IconDecoder* icon_decoder,
-    PhoneHubUiReadinessRecorder* phone_hub_ui_readiness_recorder)
+    PhoneHubUiReadinessRecorder* phone_hub_ui_readiness_recorder,
+    PhoneHubStructuredMetricsLogger* phone_hub_structured_metrics_logger)
     : do_not_disturb_controller_(do_not_disturb_controller),
       feature_status_provider_(feature_status_provider),
       message_receiver_(message_receiver),
@@ -246,7 +248,9 @@ PhoneStatusProcessor::PhoneStatusProcessor(
       app_stream_manager_(app_stream_manager),
       app_stream_launcher_data_model_(app_stream_launcher_data_model),
       icon_decoder_(icon_decoder),
-      phone_hub_ui_readiness_recorder_(phone_hub_ui_readiness_recorder) {
+      phone_hub_ui_readiness_recorder_(phone_hub_ui_readiness_recorder),
+      phone_hub_structured_metrics_logger_(
+          phone_hub_structured_metrics_logger) {
   DCHECK(do_not_disturb_controller_);
   DCHECK(feature_status_provider_);
   DCHECK(message_receiver_);
@@ -259,6 +263,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
   DCHECK(app_stream_manager_);
   DCHECK(icon_decoder_);
   DCHECK(phone_hub_ui_readiness_recorder_);
+  DCHECK(phone_hub_structured_metrics_logger_);
 
   message_receiver_->AddObserver(this);
   feature_status_provider_->AddObserver(this);
@@ -304,6 +309,8 @@ void PhoneStatusProcessor::ProcessReceivedNotifications(
 
 void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
     const proto::PhoneProperties& phone_properties) {
+  phone_hub_structured_metrics_logger_->ProcessPhoneInformation(
+      phone_properties);
   phone_model_->SetPhoneStatusModel(CreatePhoneStatusModel(phone_properties));
 
   do_not_disturb_controller_->SetDoNotDisturbStateInternal(

@@ -32,6 +32,7 @@
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager_impl.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager_impl.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder_impl.h"
@@ -223,6 +224,7 @@ void PhoneHubManagerFactory::RegisterProfilePrefs(
   OnboardingUiTrackerImpl::RegisterPrefs(registry);
   ScreenLockManagerImpl::RegisterPrefs(registry);
   RecentAppsInteractionHandlerImpl::RegisterPrefs(registry);
+  PhoneHubStructuredMetricsLogger::RegisterPrefs(registry);
 }
 
 }  // namespace ash::phonehub
