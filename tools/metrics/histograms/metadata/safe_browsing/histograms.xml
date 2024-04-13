@@ -516,6 +516,46 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.ClientSafeBrowsingReport.PersistDownloadReportResult"
+    enum="ClientReportPersistDownloadReportResult" expires_after="2024-10-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result of the call to persisting a download report on disk.
+    Logged each time a download report needs to be persisted at shutdown.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.ClientSafeBrowsingReport.PersisterReadReportSuccessful"
+    enum="BooleanSuccess" expires_after="2024-10-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether reading a persisted report is successful. Logged each time a
+    persisted report is found on startup.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.ClientSafeBrowsingReport.PersisterReportCountOnStartup"
+    units="count" expires_after="2024-10-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>Record the number of persisted report on startup.</summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ClientSafeBrowsingReport.PersisterWriteResult"
+    enum="ClientReportPersisterWriteResult" expires_after="2024-10-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result of persisting a report on disk. Logged each time the
+    persister write a report on disk.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ClientSafeBrowsingReport.ReportType"
     enum="ClientSafeBrowsingReportType" expires_after="2024-09-29">
   <owner>xinghuilu@chromium.org</owner>

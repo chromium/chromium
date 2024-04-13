@@ -148,6 +148,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unavailable"/>
 </enum>
 
+<enum name="ClientReportPersistDownloadReportResult">
+  <int value="0" label="kPersistTaskPosted"/>
+  <int value="1" label="kSerializationError"/>
+  <int value="2" label="kEmptyReport"/>
+</enum>
+
+<enum name="ClientReportPersisterWriteResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kFailedCreateDirectory"/>
+  <int value="2" label="kFailedWriteFile"/>
+</enum>
+
 <enum name="ClientSafeBrowsingReportType">
   <int value="0" label="Unknown"/>
   <int value="1" label="URL phishing"/>
@@ -170,6 +182,8 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Phishy site interactions"/>
   <int value="23" label="Safe Browsing warning shown to user"/>
   <int value="24" label="Abusive notification permission accepted"/>
+  <int value="25" label="dangerous download auto deleted"/>
+  <int value="26" label="dangerous download canceled on profile closure"/>
 </enum>
 
 <enum name="SafeBrowsingAllowlistAsyncMatch">

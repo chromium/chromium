@@ -607,6 +607,8 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
 }
 
 TEST_F(PingManagerTest, PersistThreatDetailsAtShutdown) {
+  base::HistogramTester histogram_tester;
+
   CallPersistThreatDetails("https://some.url.com/");
   ASSERT_TRUE(base::PathExists(persister_dir_));
   base::FileEnumerator directory_enumerator(persister_dir_,
@@ -629,6 +631,10 @@ TEST_F(PingManagerTest, PersistThreatDetailsAtShutdown) {
     EXPECT_EQ(persisted_report->url(), "https://some.url.com/");
   }
   EXPECT_EQ(number_of_files, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ClientSafeBrowsingReport.PersisterWriteResult",
+      /*sample=*/PingManager::Persister::WriteResult::kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PingManagerTest, PersistThreatDetailsAtShutdown_EmptyReport) {
@@ -641,6 +647,7 @@ TEST_F(PingManagerTest, PersistThreatDetailsAtShutdown_EmptyReport) {
 }
 
 TEST_F(PingManagerTest, SendPersistedThreatDetailsOnStartup) {
+  base::HistogramTester histogram_tester;
   std::string persisted_report1 =
       CallPersistThreatDetails("https://some.url1.com/");
   std::string persisted_report2 =
@@ -681,6 +688,14 @@ TEST_F(PingManagerTest, SendPersistedThreatDetailsOnStartup) {
   EXPECT_TRUE(report2_sent);
   // Directory is deleted.
   EXPECT_FALSE(base::PathExists(persister_dir_));
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ClientSafeBrowsingReport.PersisterReadReportSuccessful",
+      /*sample=*/true,
+      /*expected_bucket_count=*/2);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ClientSafeBrowsingReport.PersisterReportCountOnStartup",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PingManagerTest, SendPersistedThreatDetailsOnStartup_MalformedReports) {

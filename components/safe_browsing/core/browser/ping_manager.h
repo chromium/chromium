@@ -42,6 +42,8 @@ class PingManager : public KeyedService {
     EMPTY_REPORT = 2,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class PersistThreatDetailsResult {
     // The task to persist the report has posted. The actual file write
     // operation may still fail.
@@ -50,6 +52,7 @@ class PingManager : public KeyedService {
     kSerializationError = 1,
     // The report is empty, so it is not sent.
     kEmptyReport = 2,
+    kMaxValue = kEmptyReport,
   };
 
   // Interface via which a client of this class can surface relevant events in
@@ -69,6 +72,15 @@ class PingManager : public KeyedService {
   // Helper class to read/write a report on disk.
   class Persister {
    public:
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    enum class WriteResult {
+      kSuccess = 0,
+      kFailedCreateDirectory = 1,
+      kFailedWriteFile = 2,
+      kMaxValue = kFailedWriteFile,
+    };
+
     explicit Persister(const base::FilePath& persister_root_path);
     Persister(const Persister&) = delete;
     Persister& operator=(const Persister&) = delete;

@@ -555,9 +555,13 @@ bool SafeBrowsingService::PersistDownloadReportAndSendOnNextStartup(
                                      show_download_in_folder);
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(download));
-  return ChromePingManagerFactory::GetForBrowserContext(profile)
-             ->PersistThreatDetailsAndReportOnNextStartup(std::move(report)) ==
-         PingManager::PersistThreatDetailsResult::kPersistTaskPosted;
+  PingManager::PersistThreatDetailsResult result =
+      ChromePingManagerFactory::GetForBrowserContext(profile)
+          ->PersistThreatDetailsAndReportOnNextStartup(std::move(report));
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.ClientSafeBrowsingReport.PersistDownloadReportResult",
+      result);
+  return result == PingManager::PersistThreatDetailsResult::kPersistTaskPosted;
 }
 
 bool SafeBrowsingService::SendPhishyInteractionsReport(

@@ -41,6 +41,8 @@
 
 namespace {
 
+using WriteResult = safe_browsing::PingManager::Persister::WriteResult;
+
 // Delay before reading persisted reports at startup.
 base::TimeDelta kReadPersistedReportsDelay = base::Seconds(15);
 
@@ -66,6 +68,10 @@ bool IsDownloadReport(
         DANGEROUS_DOWNLOAD_BY_API:
     case safe_browsing::ClientSafeBrowsingReportRequest::
         DANGEROUS_DOWNLOAD_OPENED:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_AUTO_DELETED:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_PROFILE_CLOSED:
       return true;
     default:
       return false;
@@ -75,6 +81,12 @@ bool IsDownloadReport(
 std::string GetRandFileName() {
   return base::NumberToString(
       base::RandGenerator(std::numeric_limits<uint64_t>::max()));
+}
+
+void RecordPersisterWriteResult(WriteResult write_result) {
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.ClientSafeBrowsingReport.PersisterWriteResult",
+      write_result);
 }
 
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -127,10 +139,13 @@ PingManager::Persister::Persister(const base::FilePath& persister_root_path) {
 void PingManager::Persister::WriteReport(const std::string& serialized_report) {
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(dir_path_, &error)) {
+    RecordPersisterWriteResult(WriteResult::kFailedCreateDirectory);
     return;
   }
   base::FilePath file_path = dir_path_.AppendASCII((GetRandFileName()));
-  base::WriteFile(file_path, serialized_report);
+  bool success = base::WriteFile(file_path, serialized_report);
+  RecordPersisterWriteResult(success ? WriteResult::kSuccess
+                                     : WriteResult::kFailedWriteFile);
 }
 
 std::vector<std::string> PingManager::Persister::ReadAndDeleteReports() {
@@ -145,6 +160,9 @@ std::vector<std::string> PingManager::Persister::ReadAndDeleteReports() {
        !file_name.empty(); file_name = directory_enumerator.Next()) {
     std::string persisted_report;
     bool success = base::ReadFileToString(file_name, &persisted_report);
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.ClientSafeBrowsingReport.PersisterReadReportSuccessful",
+        success);
     if (success) {
       persisted_reports.emplace_back(std::move(persisted_report));
     }
@@ -152,6 +170,9 @@ std::vector<std::string> PingManager::Persister::ReadAndDeleteReports() {
   // Since persisted reports are uncommon, delete the directory so that we don't
   // leave an empty directory going forward.
   base::DeletePathRecursively(dir_path_);
+  base::UmaHistogramCounts1000(
+      "SafeBrowsing.ClientSafeBrowsingReport.PersisterReportCountOnStartup",
+      persisted_reports.size());
   return persisted_reports;
 }
 
