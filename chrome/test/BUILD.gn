@@ -8580,6 +8580,7 @@ test("unit_tests") {
       "../browser/ui/ash/network/network_state_notifier_unittest.cc",
       "../browser/ui/ash/network/tether_notification_presenter_unittest.cc",
       "../browser/ui/ash/picker/picker_client_impl_unittest.cc",
+      "../browser/ui/ash/picker/picker_lacros_omnibox_search_provider_unittest.cc",
       "../browser/ui/ash/projector/projector_client_impl_unittest.cc",
       "../browser/ui/ash/projector/projector_soda_installation_controller_unittest.cc",
       "../browser/ui/ash/projector/projector_utils_unittest.cc",

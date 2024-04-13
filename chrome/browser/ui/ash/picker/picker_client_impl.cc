@@ -34,12 +34,12 @@
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
 #include "chrome/browser/ash/app_list/search/search_engine.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/picker/picker_file_suggester.h"
+#include "chrome/browser/ui/ash/picker/picker_lacros_omnibox_search_provider.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-shared.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -378,11 +378,10 @@ PickerClientImpl::CreateOmniboxProvider(bool bookmarks,
                                         bool history,
                                         bool open_tabs) {
   if (crosapi::browser_util::IsLacrosEnabled()) {
-    // TODO: b/326147929 - Add autocomplete provider types for the Lacros
-    // provider.
     return std::make_unique<app_list::OmniboxLacrosProvider>(
         profile_, &app_list_controller_delegate_,
-        app_list::OmniboxLacrosProvider::GetSingletonControllerCallback());
+        PickerLacrosOmniboxSearchProvider::CreateControllerCallback(
+            bookmarks, history, open_tabs));
   } else {
     return std::make_unique<app_list::OmniboxProvider>(
         profile_, &app_list_controller_delegate_,

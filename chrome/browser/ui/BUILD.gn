@@ -2807,6 +2807,8 @@ static_library("ui") {
       "ash/network/network_state_notifier.h",
       "ash/network/tether_notification_presenter.cc",
       "ash/network/tether_notification_presenter.h",
+      "ash/picker/picker_lacros_omnibox_search_provider.cc",
+      "ash/picker/picker_lacros_omnibox_search_provider.h",
       "ash/picker/picker_client_impl.cc",
       "ash/picker/picker_client_impl.h",
       "ash/picker/picker_file_suggester.cc",
