@@ -83,4 +83,17 @@ GuardedPageAllocator::OutOfMemoryCallback CreateOomCallback(
   return base::BindOnce(&ReportOomHistogram, histogram, sampling_frequency);
 }
 
+void ReportGwpAsanActivated(std::string_view allocator_name,
+                            std::string_view process_type,
+                            bool activated) {
+  const auto process_str = ProcessString(process_type);
+  if (!process_str.has_value()) {
+    return;
+  }
+  const std::string histogram_name =
+      base::StrCat({"Security.GwpAsan.Activated.", allocator_name, ".",
+                    process_str.value()});
+  base::UmaHistogramBoolean(histogram_name, activated);
+}
+
 }  // namespace gwp_asan::internal

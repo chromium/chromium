@@ -60,5 +60,29 @@ TEST(SamplingHelpers, RecordClampedMax) {
       "Security.GwpAsan.AllocatorOom.Foo.Browser", 1'000'000'000u - 1, 1);
 }
 
+TEST(SamplingHelpers, RecordNonActivated) {
+  base::HistogramTester histogram_tester;
+
+  ReportGwpAsanActivated("Foo", "", false);
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Security.GwpAsan.Activated"),
+      testing::SizeIs(1));
+
+  histogram_tester.ExpectUniqueSample("Security.GwpAsan.Activated.Foo.Browser",
+                                      false, 1);
+}
+
+TEST(SamplingHelpers, RecordActivated) {
+  base::HistogramTester histogram_tester;
+
+  ReportGwpAsanActivated("Foo", "", true);
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Security.GwpAsan.Activated"),
+      testing::SizeIs(1));
+
+  histogram_tester.ExpectUniqueSample("Security.GwpAsan.Activated.Foo.Browser",
+                                      true, 1);
+}
+
 }  // namespace
 }  // namespace gwp_asan::internal

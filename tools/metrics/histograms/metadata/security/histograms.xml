@@ -139,6 +139,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.GwpAsan.Activated.{Allocator}.{Process}"
+    units="allocations" expires_after="2025-01-31">
+  <owner>mpdenton@chromium.org</owner>
+  <owner>kdlee@chromium.org</owner>
+  <owner>memory-safety-dev@chromium.org</owner>
+  <summary>
+    Reports the activation state of {Allocator} GWP-ASan for {Process}. Reported
+    once when the memory system initializes.
+  </summary>
+  <token key="Allocator">
+    <variant name="Malloc"/>
+    <variant name="PartitionAlloc"/>
+  </token>
+  <token key="Process">
+    <variant name="Browser"/>
+    <variant name="Extension"/>
+    <variant name="Gpu"/>
+    <variant name="Ppapi"/>
+    <variant name="Renderer"/>
+    <variant name="Utility"/>
+  </token>
+</histogram>
+
 <histogram name="Security.GwpAsan.AllocatorOom.{Allocator}.{Process}"
     units="allocations" expires_after="2025-01-31">
   <owner>mpdenton@chromium.org</owner>

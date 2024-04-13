@@ -449,6 +449,8 @@ void EnableForMalloc(bool boost_sampling, std::string_view process_type) {
   static bool init_once = [&]() -> bool {
     auto settings = internal::GetAllocatorSettings(internal::kGwpAsanMalloc,
                                                    boost_sampling);
+    internal::ReportGwpAsanActivated("Malloc", process_type,
+                                     settings.has_value());
     if (!settings)
       return false;
 
@@ -472,6 +474,8 @@ void EnableForPartitionAlloc(bool boost_sampling,
   static bool init_once = [&]() -> bool {
     auto settings = internal::GetAllocatorSettings(
         internal::kGwpAsanPartitionAlloc, boost_sampling);
+    internal::ReportGwpAsanActivated("PartitionAlloc", process_type,
+                                     settings.has_value());
     if (!settings)
       return false;
 

@@ -19,6 +19,11 @@ GWP_ASAN_EXPORT GuardedPageAllocator::OutOfMemoryCallback CreateOomCallback(
     std::string_view process_type,
     size_t sampling_frequency);
 
+// Emits to `Security.GwpAsan.Activated...`.
+GWP_ASAN_EXPORT void ReportGwpAsanActivated(std::string_view allocator_name,
+                                            std::string_view process_type,
+                                            bool activated);
+
 }  // namespace gwp_asan::internal
 
 #endif  // COMPONENTS_GWP_ASAN_CLIENT_SAMPLING_HELPERS_H_
