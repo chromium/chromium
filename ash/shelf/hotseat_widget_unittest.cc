@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/shelf/hotseat_widget.h"
+
 #include <memory>
 #include <tuple>
 #include <vector>
@@ -11,13 +13,13 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
 #include "ash/shelf/home_button.h"
-#include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_app_button.h"
@@ -215,13 +217,29 @@ class HotseatWidgetTest
     GetEventGenerator()->GestureTapAt(overview_button_center);
   }
 
- private:
-  friend class StackedHotseatWidgetTest;
+ protected:
   const ShelfAutoHideBehavior shelf_auto_hide_behavior_;
   const bool is_assistant_enabled_;
   const bool navigation_buttons_shown_in_tablet_mode_;
   std::unique_ptr<AssistantTestApi> assistant_test_api_;
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class HotseatWidgetForestTest : public HotseatWidgetTest {
+ public:
+  HotseatWidgetForestTest() { switches::SetIgnoreForestSecretKeyForTest(true); }
+
+  ~HotseatWidgetForestTest() {
+    switches::SetIgnoreForestSecretKeyForTest(false);
+  }
+
+  // HotseatWidgetTest:
+  void SetupFeatureLists() override {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kHideShelfControlsInTabletMode,
+          !navigation_buttons_shown_in_tablet_mode()},
+         {features::kForestFeature, true}});
+  }
 };
 
 class StackedHotseatWidgetTest : public HotseatWidgetTest {
@@ -341,6 +359,15 @@ class HotseatTransitionAnimationObserver
 INSTANTIATE_TEST_SUITE_P(
     All,
     HotseatWidgetTest,
+    testing::Combine(
+        testing::Values(ShelfAutoHideBehavior::kNever,
+                        ShelfAutoHideBehavior::kAlways),
+        /*is_assistant_enabled*/ testing::Bool(),
+        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HotseatWidgetForestTest,
     testing::Combine(
         testing::Values(ShelfAutoHideBehavior::kNever,
                         ShelfAutoHideBehavior::kAlways),
@@ -986,6 +1013,31 @@ TEST_P(HotseatWidgetTest, DisableBlurDuringOverviewMode) {
   EXPECT_EQ(
       ShelfConfig::Get()->shelf_blur_radius(),
       GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
+}
+
+TEST_P(HotseatWidgetForestTest, EnableBlurDuringOverviewMode) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  const int expected_blur_radius = ShelfConfig::Get()->shelf_blur_radius();
+  ASSERT_EQ(
+      GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest(),
+      expected_blur_radius);
+
+  // Go into overview and check that at the end of the animation, background
+  // blur is still enabled.
+  StartOverview();
+  WaitForOverviewAnimation(/*enter=*/true);
+  EXPECT_EQ(
+      GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest(),
+      expected_blur_radius);
+
+  // Exit overview and check that at the end of the animation, background
+  // blur is still enabled.
+  EndOverview();
+  WaitForOverviewAnimation(/*enter=*/false);
+  EXPECT_EQ(
+      GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest(),
+      expected_blur_radius);
 }
 
 // Tests that releasing the hotseat gesture below the threshold results in a
