@@ -41,7 +41,15 @@ CardUnmaskAuthenticationSelectionMediator::
 }
 
 CardUnmaskAuthenticationSelectionMediator::
-    ~CardUnmaskAuthenticationSelectionMediator() = default;
+    ~CardUnmaskAuthenticationSelectionMediator() {
+  if (!was_dismissed_ && model_controller_) {
+    // Our coordinator is stopping (e.g. closing Chromium). We must call
+    // OnDialogClosed on the model_controller_ before this mediator is
+    // destroyed.
+    model_controller_->OnDialogClosed(
+        /*user_closed_dialog=*/true, /*server_success=*/false);
+  }
+}
 
 // Implementation of CardUnmaskAuthenticationSelectionMutatorBridgeTarget
 // follows:

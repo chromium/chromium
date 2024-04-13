@@ -179,3 +179,19 @@ source_set("card_unmask_authentication_selection_mutator_bridge_target") {
   sources = [ "card_unmask_authentication_selection_mutator_bridge_target.h" ]
   public_deps = [ "//ios/chrome/browser/autofill/model/authentication:card_unmask_challenge_option_ios" ]
 }
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "card_unmask_authentication_egtest.mm" ]
+  deps = [
+    "//components/autofill/core/browser:test_support",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
