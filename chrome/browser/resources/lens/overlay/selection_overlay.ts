@@ -16,8 +16,11 @@ import {getTemplate} from './selection_overlay.html.js';
 import {DRAG_THRESHOLD, DragFeature, emptyGestureEvent, type GestureEvent, GestureState} from './selection_utils.js';
 import type {TextLayerElement} from './text_layer.js';
 
+const RESIZE_THRESHOLD = 8;
+
 export interface SelectionOverlayElement {
   $: {
+    backgroundImage: HTMLImageElement,
     objectSelectionLayer: ObjectLayerElement,
     postSelectionRenderer: PostSelectionRendererElement,
     regionSelectionLayer: RegionSelectionElement,
@@ -42,6 +45,16 @@ export class SelectionOverlayElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      isResized: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+    };
+  }
+
   // The current gesture event. The coordinate values are only accurate if a
   // gesture has started.
   private currentGesture: GestureEvent = emptyGestureEvent();
@@ -51,15 +64,28 @@ export class SelectionOverlayElement extends PolymerElement {
   private resizeObserver: ResizeObserver = new ResizeObserver(() => {
     this.handleResize();
   });
+  // We need to listen to resizes on the selectionElements separately, since
+  // resizeObserver will trigger before the selectionElements have a chance to
+  // resize.
+  private selectionElementsResizeObserver: ResizeObserver =
+      new ResizeObserver(() => {
+        this.handleSelectionElementsResize();
+      });
+  private initialWidth: number = 0;
+  private initialHeight: number = 0;
+  // Whether the selection overlay is its initial size, or has changed size.
+  private isResized: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
     this.resizeObserver.observe(this);
+    this.selectionElementsResizeObserver.observe(this.$.selectionOverlay);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.resizeObserver.unobserve(this);
+    this.selectionElementsResizeObserver.unobserve(this.$.selectionOverlay);
   }
 
   override ready() {
@@ -167,7 +193,24 @@ export class SelectionOverlayElement extends PolymerElement {
 
   private handleResize() {
     const newRect = this.getBoundingClientRect();
-    this.$.regionSelectionLayer.setCanvasSizeTo(newRect.width, newRect.height);
+
+    if (this.initialHeight === 0 || this.initialWidth === 0) {
+      this.initialWidth = newRect.width;
+      this.initialHeight = newRect.height;
+    }
+    // We allow a buffer threshold when determining if the page has been
+    // resized so that subtle one pixel adjustments don't trigger an entire
+    // page reflow.
+    this.isResized =
+        Math.abs(newRect.height - this.initialHeight) >= RESIZE_THRESHOLD ||
+        Math.abs(newRect.width - this.initialWidth) >= RESIZE_THRESHOLD;
+  }
+
+  handleSelectionElementsResize() {
+    const selectionOverlayBounds =
+        this.$.selectionOverlay.getBoundingClientRect();
+    this.$.regionSelectionLayer.setCanvasSizeTo(
+        selectionOverlayBounds.width, selectionOverlayBounds.height);
   }
 
   // Updates the currentGesture to correspond with the given PointerEvent.

@@ -1,20 +1,40 @@
 <style>
+  :host {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
   #selectionOverlay {
     display: grid;
+    position: relative;
+  }
+
+  :host([is-resized]) #selectionOverlay {
+    border-radius: 28px;
+    overflow: hidden;
   }
 
   /* Force all child elements to share the same grid cell so they overlap. */
   #selectionOverlay > * {
     grid-column: 1;
     grid-row: 1;
+
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
   }
 
   #backgroundImage {
-    pointer-events: none;
     max-width: 100vw;
     max-height: 100vh;
-    pointer-events: none;
-    user-select: none;
+  }
+
+  :host([is-resized]) #backgroundImage{
+    max-width: calc(100vw - 24px);
+    max-height: calc(100vh - 24px);
   }
 
   #selectionElements > * {
@@ -23,7 +43,7 @@
   }
   /* Temporary red scrim to make it evident the overlay is opened. */
   #scrim {
-    position: absolute;
+    position: fixed;
     inset: 0;
     background-color: rgba(255, 0, 0, 0.15);
     pointer-events: none;

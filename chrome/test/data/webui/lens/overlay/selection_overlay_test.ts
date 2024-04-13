@@ -11,7 +11,7 @@ import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webu
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
-import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertNull} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
@@ -44,7 +44,7 @@ suite('SelectionOverlay', function() {
     // viewport.
     selectionOverlayElement.$.selectionOverlay.style.width = '100%';
     selectionOverlayElement.$.selectionOverlay.style.height = '100%';
-    return flushTasks();
+    return waitAfterNextRender(selectionOverlayElement);
   });
 
   // Normalizes the given values to the size of selection overlay.
@@ -234,4 +234,28 @@ suite('SelectionOverlay', function() {
         `${expectedLeft}%`,
         postSelectionStyles.getPropertyValue('--selection-left'));
   });
+
+  test('verify that resizing renders image with padding', async () => {
+    selectionOverlayElement.style.display = 'block';
+    selectionOverlayElement.style.width = '50px';
+    selectionOverlayElement.style.height = '50px';
+    await waitAfterNextRender(selectionOverlayElement);
+    assertNotEquals(null, selectionOverlayElement.getAttribute('is-resized'));
+
+    // Verify resizing back no longer renders with padding
+    selectionOverlayElement.style.width = '100%';
+    selectionOverlayElement.style.height = '100%';
+    await waitAfterNextRender(selectionOverlayElement);
+    assertNull(selectionOverlayElement.getAttribute('is-resized'));
+  });
+
+  test(
+      'verify that resizing within threshold does not rerender image',
+      async () => {
+        selectionOverlayElement.style.display = 'block';
+        selectionOverlayElement.style.width =
+            `${selectionOverlayElement.getBoundingClientRect().width - 4}px`;
+        await waitAfterNextRender(selectionOverlayElement);
+        assertNull(selectionOverlayElement.getAttribute('is-resized'));
+      });
 });

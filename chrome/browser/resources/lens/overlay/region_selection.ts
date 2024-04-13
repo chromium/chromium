@@ -13,7 +13,10 @@ import {getTemplate} from './region_selection.html.js';
 import type {GestureEvent} from './selection_utils.js';
 
 export interface RegionSelectionElement {
-  $: {regionSelectionCanvas: HTMLCanvasElement};
+  $: {
+    highlightImg: HTMLImageElement,
+    regionSelectionCanvas: HTMLCanvasElement,
+  };
 }
 
 /*
@@ -141,9 +144,8 @@ export class RegionSelectionElement extends PolymerElement {
     // Draw the highlight image clipped to the path.
     this.context.save();
     this.context.clip();
-    const image = this.shadowRoot!.querySelector('#highlightImgSrc');
     this.context.drawImage(
-        image as HTMLImageElement, 0, 0, this.canvasWidth, this.canvasHeight);
+        this.$.highlightImg, 0, 0, this.canvasWidth, this.canvasHeight);
     this.context.restore();
 
     // Stroke the path on top of the image.

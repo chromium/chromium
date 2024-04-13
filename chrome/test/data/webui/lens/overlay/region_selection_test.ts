@@ -30,26 +30,30 @@ suite('ManualRegionSelection', function() {
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
     selectionOverlayElement = document.createElement('lens-selection-overlay');
-    // Position absolutely so we can handle logic of drag ending off this
-    // element.
-    selectionOverlayElement.style.position = 'absolute';
-    selectionOverlayElement.style.height = 'calc(100% - 100px)';
-    selectionOverlayElement.style.width = 'calc(100% - 100px)';
-    selectionOverlayElement.style.top = '50px';
-    selectionOverlayElement.style.left = '50px';
     document.body.appendChild(selectionOverlayElement);
+
+    // Set image to be less than fullscreen so we can handle logic of drag
+    // ending off this element.
+    selectionOverlayElement.$.backgroundImage.style.height =
+        'calc(100vh - 100px)';
+    selectionOverlayElement.$.backgroundImage.style.width =
+        'calc(100vw - 100px)';
     return waitAfterNextRender(selectionOverlayElement);
   });
 
   // Normalizes the given values to the size of selection overlay.
   function normalizedBox(box: RectF): RectF {
-    const boundingRect = selectionOverlayElement.getBoundingClientRect();
+    const boundingRect = getImageBoundingRect();
     return {
       x: box.x / boundingRect.width,
       y: box.y / boundingRect.height,
       width: box.width / boundingRect.width,
       height: box.height / boundingRect.height,
     };
+  }
+
+  function getImageBoundingRect() {
+    return selectionOverlayElement.$.backgroundImage.getBoundingClientRect();
   }
 
   // Does a drag and verifies that expectedRect is sent via mojo.
@@ -68,14 +72,14 @@ suite('ManualRegionSelection', function() {
       `verify that completing a drag within the overlay bounds issues correct
       lens request via mojo`,
       async () => {
-        const overlayRect = selectionOverlayElement.getBoundingClientRect();
+        const imageBounds = getImageBoundingRect();
         const startPointInsideOverlay = {
-          x: overlayRect.left + 10,
-          y: overlayRect.top + 10,
+          x: imageBounds.left + 10,
+          y: imageBounds.top + 10,
         };
         const endPointInsideOverlay = {
-          x: overlayRect.left + 100,
-          y: overlayRect.top + 100,
+          x: imageBounds.left + 100,
+          y: imageBounds.top + 100,
         };
 
         const expectedRect: CenterRotatedBox = {
@@ -90,14 +94,14 @@ suite('ManualRegionSelection', function() {
   test(
       'verify that completing a drag above the selection overlay rounds y to 0',
       async () => {
-        const overlayRect = selectionOverlayElement.getBoundingClientRect();
+        const imageBounds = getImageBoundingRect();
         const startPointInsideOverlay = {
-          x: overlayRect.left + 10,
-          y: overlayRect.top + 10,
+          x: imageBounds.left + 10,
+          y: imageBounds.top + 10,
         };
         const endPointAboveOverlay = {
-          x: overlayRect.left + 100,
-          y: overlayRect.top - 30,
+          x: imageBounds.left + 100,
+          y: imageBounds.top - 30,
         };
 
         const expectedRect: CenterRotatedBox = {
@@ -113,19 +117,19 @@ suite('ManualRegionSelection', function() {
       `verify that completing a drag below the selection overlay rounds y to
       overlay height`,
       async () => {
-        const overlayRect = selectionOverlayElement.getBoundingClientRect();
+        const imageBounds = getImageBoundingRect();
         const startPointInsideOverlay = {
-          x: overlayRect.left + 10,
-          y: overlayRect.bottom - 20,
+          x: imageBounds.left + 10,
+          y: imageBounds.bottom - 20,
         };
         const endPointBelowOverlay = {
-          x: overlayRect.left + 100,
-          y: overlayRect.bottom + 20,
+          x: imageBounds.left + 100,
+          y: imageBounds.bottom + 20,
         };
 
         const expectedRect: CenterRotatedBox = {
           box: normalizedBox(
-              {x: 55, y: overlayRect.height - 10, width: 90, height: 20}),
+              {x: 55, y: imageBounds.height - 10, width: 90, height: 20}),
           rotation: 0,
           coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
         };
@@ -137,14 +141,14 @@ suite('ManualRegionSelection', function() {
       `verify that completing a drag to the left of the selection overlay rounds
        x to 0`,
       async () => {
-        const overlayRect = selectionOverlayElement.getBoundingClientRect();
+        const imageBounds = getImageBoundingRect();
         const startPointInsideOverlay = {
-          x: overlayRect.left + 20,
-          y: overlayRect.top + 10,
+          x: imageBounds.left + 20,
+          y: imageBounds.top + 10,
         };
         const endPointLeftOfOverlay = {
-          x: overlayRect.left - 10,
-          y: overlayRect.top + 100,
+          x: imageBounds.left - 10,
+          y: imageBounds.top + 100,
         };
 
         const expectedRect: CenterRotatedBox = {
@@ -160,19 +164,19 @@ suite('ManualRegionSelection', function() {
       `verify that completing a drag to the right of the selection overlay
       rounds x to overlay width`,
       async () => {
-        const overlayRect = selectionOverlayElement.getBoundingClientRect();
+        const imageBounds = getImageBoundingRect();
         const startPointInsideOverlay = {
-          x: overlayRect.right - 20,
-          y: overlayRect.top + 10,
+          x: imageBounds.right - 20,
+          y: imageBounds.top + 10,
         };
         const endPointRightOfOverlay = {
-          x: overlayRect.right + 10,
-          y: overlayRect.top + 100,
+          x: imageBounds.right + 10,
+          y: imageBounds.top + 100,
         };
 
         const expectedRect: CenterRotatedBox = {
           box: normalizedBox(
-              {x: overlayRect.width - 10, y: 55, width: 20, height: 90}),
+              {x: imageBounds.width - 10, y: 55, width: 20, height: 90}),
           rotation: 0,
           coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
         };
