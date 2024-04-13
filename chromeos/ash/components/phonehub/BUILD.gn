@@ -160,6 +160,7 @@ static_library("phonehub") {
     "//chromeos/dbus/power",
     "//chromeos/services/network_config/public/cpp",
     "//components/keyed_service/core",
+    "//components/metrics/structured:structured_events",
     "//components/metrics/structured:structured_metrics_features",
     "//components/prefs",
     "//components/session_manager/core",
