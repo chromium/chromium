@@ -787,7 +787,7 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.startCalibration();
+    const result = await service.startCalibration(/* components= */[]);
     assertEquals(State.kChooseDestination, result.stateResult.state);
     assertEquals(RmadErrorCode.kOk, result.stateResult.error);
   });

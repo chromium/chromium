@@ -369,6 +369,10 @@ export class ReimagingCalibrationFailedPage extends
       disableNextButton(this);
     }
   }
+
+  getComponentsListForTesting(): CalibrationComponentStatus[] {
+    return this.getComponentsList();
+  }
 }
 
 declare global {

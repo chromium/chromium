@@ -549,7 +549,8 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
    * The fake does not use the status list parameter, the fake data is never
    * updated.
    */
-  startCalibration(): Promise<{stateResult: StateResult}> {
+  startCalibration(_components: CalibrationComponentStatus[]):
+      Promise<{stateResult: StateResult}> {
     return this.getNextStateForMethod(
         'startCalibration', State.kCheckCalibration);
   }

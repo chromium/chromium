@@ -33,10 +33,6 @@ this.ShimlessRmaBrowserTest = class extends PolymerTest {
 };
 
 const tests = [
-  [
-    'ReimagingCalibrationFailedPageTest',
-    'reimaging_calibration_failed_page_test.js'
-  ],
   ['ReimagingCalibrationRunPageTest', 'reimaging_calibration_run_page_test.js'],
   [
     'ReimagingCalibrationSetupPageTest',
