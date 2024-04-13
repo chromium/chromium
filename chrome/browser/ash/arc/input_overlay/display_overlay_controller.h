@@ -20,6 +20,7 @@
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
@@ -316,7 +317,7 @@ class DisplayOverlayController : public ui::EventHandler,
   std::unique_ptr<views::Widget> button_options_widget_;
   std::unique_ptr<views::Widget> target_widget_;
   std::unique_ptr<views::Widget> action_highlight_widget_;
-  raw_ptr<views::Widget> delete_edit_shortcut_widget_;
+  views::UniqueWidgetPtr delete_edit_shortcut_widget_;
   raw_ptr<views::Widget> rich_nudge_widget_;
 
   std::unique_ptr<FocusCycler> focus_cycler_;

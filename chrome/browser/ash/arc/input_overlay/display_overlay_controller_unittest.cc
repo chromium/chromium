@@ -380,6 +380,21 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestEnterExitFullscreen) {
       /*button_options_visible=*/true, /*delete_edit_menu_visible=*/false);
 }
 
+TEST_F(EditModeDisplayOverlayControllerTest, TestDeleteEditMenu) {
+  HoverAtActionViewListItem(/*index=*/1u);
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
+      /*button_options_visible=*/false, /*delete_edit_menu_visible=*/true);
+
+  // Close the delete-edit menu inexplicitly.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  // Delete-edit menu is closed asynchronously.
+  base::RunLoop().RunUntilIdle();
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
+      /*button_options_visible=*/false, /*delete_edit_menu_visible=*/false);
+}
+
 TEST_F(EditModeDisplayOverlayControllerTest, TestHistograms) {
   base::HistogramTester histograms;
 

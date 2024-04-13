@@ -872,9 +872,9 @@ void DisplayOverlayController::AddDeleteEditShortcutWidget(
     ActionViewListItem* anchor_view) {
   if (!delete_edit_shortcut_widget_) {
     delete_edit_shortcut_widget_ =
-        views::BubbleDialogDelegateView::CreateBubble(
-            std::make_unique<DeleteEditShortcut>(this, anchor_view));
-    widget_observations_.AddObservation(delete_edit_shortcut_widget_);
+        base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
+            std::make_unique<DeleteEditShortcut>(this, anchor_view)));
+    widget_observations_.AddObservation(delete_edit_shortcut_widget_.get());
   }
 
   if (auto* shortcut = GetDeleteEditShortcut();
@@ -888,7 +888,7 @@ void DisplayOverlayController::AddDeleteEditShortcutWidget(
 void DisplayOverlayController::RemoveDeleteEditShortcutWidget() {
   if (delete_edit_shortcut_widget_) {
     delete_edit_shortcut_widget_->Close();
-    delete_edit_shortcut_widget_ = nullptr;
+    delete_edit_shortcut_widget_.reset();
   }
 }
 
