@@ -263,6 +263,9 @@ void Pkcs12Migrator::ExportedOneCert(net::ScopedCERTCertificateList certs,
 
   auto callback = base::BindOnce(&Pkcs12Migrator::ImportedOneCert,
                                  weak_factory_.GetWeakPtr(), std::move(certs));
+  // Set the flag that some certs now exist in both NSS public slot and Chaps.
+  // It might be needed for the rollback.
+  kcer::KcerFactory::RecordPkcs12CertDualWritten();
   kcer->ImportPkcs12Cert(Token::kUser, std::move(pkcs12),
                          /*password=*/std::string(),
                          /*hardware_backed=*/false, /*mark_as_migrated=*/true,

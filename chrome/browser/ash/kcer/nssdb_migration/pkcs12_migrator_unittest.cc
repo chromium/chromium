@@ -10,7 +10,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/net/fake_nss_service.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/kcer/chaps/mock_high_level_chaps_client.h"
 #include "chromeos/components/kcer/kcer.h"
@@ -59,10 +61,17 @@ class KcerPkcs12MigratorTest : public testing::Test {
  public:
   KcerPkcs12MigratorTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-                          base::test::TaskEnvironment::MainThreadType::UI) {}
+                          base::test::TaskEnvironment::MainThreadType::UI),
+        fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
   void SetUp() override {
     profile_ = TestingProfile::Builder().Build();
+    auto account = AccountId::FromUserEmail("test@example.com");
+    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        account, false, user_manager::UserType::kRegular, profile_.get());
+    fake_user_manager_->OnUserProfileCreated(account, profile_->GetPrefs());
+    fake_user_manager_->LoginUser(account);
+
     migrator_ = std::make_unique<Pkcs12Migrator>(profile_.get());
 
     nss_service_ = FakeNssService::InitializeForBrowserContext(
@@ -70,6 +79,9 @@ class KcerPkcs12MigratorTest : public testing::Test {
         /*enable_system_slot=*/false);
 
     InitKcer(profile_.get());
+
+    // Sanity check that by default the flag is false for all tests.
+    ASSERT_FALSE(GetDualWrittenFlag());
   }
 
   void TearDown() override { nss_service_ = nullptr; }
@@ -120,10 +132,19 @@ class KcerPkcs12MigratorTest : public testing::Test {
                              true, nullptr);
   }
 
+  bool GetDualWrittenFlag() {
+    return user_manager::UserManager::Get()
+        ->GetActiveUser()
+        ->GetProfilePrefs()
+        ->GetBoolean(prefs::kNssChapsDualWrittenCertsExist);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<internal::KcerToken> kcer_token_;
   std::unique_ptr<TestingProfile> profile_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
+  std::unique_ptr<internal::KcerToken> kcer_token_;
   std::unique_ptr<Pkcs12Migrator> migrator_;
   MockHighLevelChapsClient chaps_client_;
   raw_ptr<FakeNssService> nss_service_;
@@ -140,6 +161,8 @@ TEST_F(KcerPkcs12MigratorTest, NothingToMigrateSuccess) {
       histogram_tester_.GetAllSamples(kKcerPkcs12MigrationUma),
       BucketsAre(Bucket(KcerPkcs12MigrationEvent::kMigrationStarted, 1),
                  Bucket(KcerPkcs12MigrationEvent::kkNothingToMigrate, 1)));
+
+  EXPECT_FALSE(GetDualWrittenFlag());
 }
 
 // Test that Pkcs12Migrator can successfully migrate a single cert.
@@ -166,6 +189,8 @@ TEST_F(KcerPkcs12MigratorTest, OneCertMigratedSuccess) {
       BucketsAre(Bucket(KcerPkcs12MigrationEvent::kMigrationStarted, 1),
                  Bucket(KcerPkcs12MigrationEvent::kMigrationFinishedSuccess, 1),
                  Bucket(KcerPkcs12MigrationEvent::kCertMigratedSuccess, 1)));
+
+  EXPECT_TRUE(GetDualWrittenFlag());
 }
 
 // Test that Pkcs12Migrator can successfully migrate multiple certs.
@@ -202,6 +227,8 @@ TEST_F(KcerPkcs12MigratorTest, MultipleCertsMigratedSuccess) {
       BucketsAre(Bucket(KcerPkcs12MigrationEvent::kMigrationStarted, 1),
                  Bucket(KcerPkcs12MigrationEvent::kMigrationFinishedSuccess, 1),
                  Bucket(KcerPkcs12MigrationEvent::kCertMigratedSuccess, 2)));
+
+  EXPECT_TRUE(GetDualWrittenFlag());
 }
 
 // Test that Pkcs12Migrator doesn't migrate certs that are already present in
@@ -217,6 +244,8 @@ TEST_F(KcerPkcs12MigratorTest, CertAlreadyExists) {
       histogram_tester_.GetAllSamples(kKcerPkcs12MigrationUma),
       BucketsAre(Bucket(KcerPkcs12MigrationEvent::kMigrationStarted, 1),
                  Bucket(KcerPkcs12MigrationEvent::kkNothingToMigrate, 1)));
+
+  EXPECT_FALSE(GetDualWrittenFlag());
 }
 
 // Test that Pkcs12Migrator doesn't migrate certs that are already present in
@@ -255,6 +284,8 @@ TEST_F(KcerPkcs12MigratorTest, SomeCertsAlreadyExist) {
       BucketsAre(Bucket(KcerPkcs12MigrationEvent::kMigrationStarted, 1),
                  Bucket(KcerPkcs12MigrationEvent::kMigrationFinishedSuccess, 1),
                  Bucket(KcerPkcs12MigrationEvent::kCertMigratedSuccess, 1)));
+
+  EXPECT_TRUE(GetDualWrittenFlag());
 }
 
 // Test that Pkcs12Migrator correctly handles errors from re-importing a cert.
@@ -280,6 +311,10 @@ TEST_F(KcerPkcs12MigratorTest, CertMigrationFailed) {
       BucketsAre(Bucket(KcerPkcs12MigrationEvent::kMigrationStarted, 1),
                  Bucket(KcerPkcs12MigrationEvent::kMigrationFinishedFailure, 1),
                  Bucket(KcerPkcs12MigrationEvent::kFailedToReimportCert, 1)));
+
+  // True because even when it fails, some Chaps objects in theory might have
+  // been created and not deleted.
+  EXPECT_TRUE(GetDualWrittenFlag());
 }
 
 }  // namespace
