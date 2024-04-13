@@ -5,8 +5,10 @@
 #import <memory>
 
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
@@ -104,12 +106,8 @@ id<GREYMatcher> UploadBannerLabelsMatcher() {
 // Some tests are not compatible with explicit save prompts for addresses.
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector(testUserData_LocalSave_UserAccepts)] ||
-      [self
-          isRunningTest:@selector(testOfferLocalSave_FullData_RequestFails)] ||
-      [self isRunningTest:@selector(testUserData_LocalSave_UserDeclines)] ||
-      [self isRunningTest:@selector
-            (testOfferLocalSave_FullData_PaymentsDeclines)]) {
+  if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
+    config.features_enabled.push_back(kAutofillStickyInfobarIos);
   }
   return config;
 }
@@ -603,6 +601,83 @@ id<GREYMatcher> UploadBannerLabelsMatcher() {
   GREYAssertFalse(
       [self waitForUIElementToAppearWithMatcher:LocalBannerLabelsMatcher()],
       @"Save card infobar should not show.");
+}
+
+// Tests the sticky credit card prompt journey where the prompt remains there
+// when navigating without an explicit user gesture, and then the prompt is
+// dismissed when navigating with a user gesture. Test with the credit card save
+// prompt but the type of credit card prompt doesn't matter in this test case.
+- (void)testStickySavePromptJourney {
+  const GURL testPageURL =
+      web::test::HttpServer::MakeUrl(kCreditCardUploadForm);
+
+  [ChromeEarlGrey loadURL:testPageURL];
+
+  // Set up the Google Payments server response.
+  [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsFailure
+                                 forRequest:kURLGetUploadDetailsRequest
+                              withErrorCode:net::HTTP_OK];
+
+  [AutofillAppInterface resetEventWaiterForEvents:@[
+    @(CreditCardSaveManagerObserverEvent::kOnDecideToRequestUploadSaveCalled),
+    @(CreditCardSaveManagerObserverEvent::
+          kOnReceivedGetUploadDetailsResponseCalled),
+    @(CreditCardSaveManagerObserverEvent::kOnOfferLocalSaveCalled)
+  ]
+                                          timeout:kWaitForDownloadTimeout];
+  [self fillAndSubmitForm];
+  GREYAssertTrue([AutofillAppInterface waitForEvents],
+                 @"Event was not triggered");
+
+  // Wait until the save card infobar becomes visible.
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:LocalBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
+
+  [AutofillAppInterface resetEventWaiterForEvents:@[
+    @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
+  ]
+                                          timeout:kWaitForDownloadTimeout];
+
+  {
+    // Reloading page from script shouldn't dismiss the infobar.
+    NSString* script = @"location.reload();";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+  {
+    // Assigning url from script to the page aka open an url shouldn't dismiss
+    // the infobar.
+    NSString* script = @"window.location.assign(window.location.href);";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+  {
+    // Pushing new history entry without reloading content shouldn't dismiss the
+    // infobar.
+    NSString* script = @"history.pushState({}, '', 'destination2.html');";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+  {
+    // Replacing history entry without reloading content shouldn't dismiss the
+    // infobar.
+    NSString* script = @"history.replaceState({}, '', 'destination3.html');";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+
+  // Wait some time for things to settle.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(200));
+
+  // Verify that the prompt is still there after the non-user initiated
+  // navigations.
+  [[EarlGrey selectElementWithMatcher:LocalBannerLabelsMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Navigate with an emulated user gesture.
+  [ChromeEarlGrey loadURL:testPageURL];
+
+  // Wait until the save card infobar disappears.
+  GREYAssertTrue(
+      [self waitForUIElementToDisappearWithMatcher:LocalBannerLabelsMatcher()],
+      @"Save card infobar failed to disappear.");
 }
 
 @end
