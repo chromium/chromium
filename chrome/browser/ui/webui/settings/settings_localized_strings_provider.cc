@@ -1832,7 +1832,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       {"chromeCertificatesDescription",
        IDS_SETTINGS_CHROME_CERTIFICATES_DESCRIPTION},
 #endif
-  };
+      {"safeBrowsingEnhancedLearnMoreLabel",
+       IDS_SETTINGS_SAFEBROWSING_ENHANCED_LEARN_MORE_LABEL}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("cookiesSettingsHelpCenterURL",
@@ -1857,12 +1858,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
           ? chrome::kSafeBrowsingHelpCenterUpdatedURL
           : chrome::kSafeBrowsingHelpCenterURL);
 
-  html_source->AddString(
-      "enhancedProtectionLearnMoreLabel",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_SAFEBROWSING_ENHANCED_LEARN_MORE_LABEL,
-          chrome::kSafeBrowsingInChromeHelpCenterURL));
-
   html_source->AddString("syncAndGoogleServicesLearnMoreURL",
                          chrome::kSyncAndGoogleServicesLearnMoreURL);
 
@@ -1879,6 +1874,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("driveSuggestNoSyncRequirement",
                           base::FeatureList::IsEnabled(
                               omnibox::kDocumentProviderNoSyncRequirement));
+  html_source->AddString("enhancedProtectionHelpCenterURL",
+                         chrome::kSafeBrowsingInChromeHelpCenterURL);
 
   bool show_secure_dns = IsSecureDnsAvailable();
   bool link_secure_dns = ShouldLinkSecureDnsOsSettings();

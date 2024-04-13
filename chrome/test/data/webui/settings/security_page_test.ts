@@ -9,7 +9,7 @@ import type {SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
 import {HttpsFirstModeSetting, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {HatsBrowserProxyImpl, CrSettingsPrefs, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SecurityPageInteraction} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -992,6 +992,36 @@ suite('SafeBrowsing', function() {
     await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     // Learn more label should be visible.
     assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
+  });
+
+  test('LearnMoreLinkClickableWhenControlledByPolicy', async () => {
+    page.$.safeBrowsingEnhanced.$.expandButton.click();
+
+    // Set the page to be enterprise policy enforced.
+    page.set(
+        'prefs.generated.safe_browsing.enforcement',
+        chrome.settingsPrivate.Enforcement.ENFORCED);
+    flush();
+
+    const learnMoreLink = page.shadowRoot!.querySelector<HTMLElement>(
+        '#enhancedProtectionLearnMoreLink');
+
+    // Confirm that the learnMoreLink element exists.
+    assertNotEquals(learnMoreLink, null);
+
+    // Confirm that the pointer-events value is auto when enterprise policy is
+    // enforced.
+    assertEquals(
+        'auto',
+        (learnMoreLink!.computedStyleMap()!.get('pointer-events') as
+         CSSKeywordValue)
+            .value);
+
+    // Confirm that the correct link was clicked.
+    learnMoreLink!.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(
+        url, loadTimeData.getString('enhancedProtectionHelpCenterURL'));
   });
 
   // <if expr="_google_chrome">

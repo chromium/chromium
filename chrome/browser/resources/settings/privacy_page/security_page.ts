@@ -562,6 +562,12 @@ export class SettingsSecurityPageElement extends
   }
   // </if>
 
+  private onEnhancedProtectionLearnMoreClick_(e: Event) {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('enhancedProtectionHelpCenterURL'));
+    e.preventDefault();
+  }
+
   private onSafeBrowsingExtendedReportingChange_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.IMPROVE_SECURITY);
