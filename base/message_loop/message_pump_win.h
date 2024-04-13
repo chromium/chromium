@@ -187,8 +187,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
     // There are no nested message loops running.
     kNone,
     // kMsgHaveWork was pumped from a native queue. The state will return to
-    // `kNormal` whenever DoRunLoop() regains control. In this state,
-    // ScheduleDelayedWork() will start a native timer.
+    // `kNormal` whenever DoRunLoop() regains control.
     //
     // It is reset to `kNone` when DoRunLoop() gets control back after
     // ProcessNextWindowsMessage() or DoWork().
@@ -196,9 +195,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
     // HandleNestedNativeLoopWithApplicationTasks(true) was called (when a
     // `ScopedAllowApplicationTasksInNativeNestedLoop` is instantiated). When
     // running with `event_`, switches to pumping `kMsgHaveWork` MSGs when there
-    // are application tasks to be done during native runloops. Is a 'superset'
-    // of `kNestedNativeLoopDetected`, and will also start a native timer when
-    // ScheduleDelayedWork() is called.
+    // are application tasks to be done during native runloops. In this state,
+    // ScheduleDelayedWork() will start a native timer.
     //
     // It is reset to `kNone` when:
     //   - DoRunLoop() gets control back after ProcessNextWindowsMessage().

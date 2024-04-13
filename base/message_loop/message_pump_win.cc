@@ -160,7 +160,7 @@ void MessagePumpForUI::ScheduleDelayedWork(
   // See MessageLoopTest.PostDelayedTaskFromSystemPump for an example.
   // TODO(gab): This could potentially be replaced by a ForegroundIdleProc hook
   // if Windows ends up being the only platform requiring ScheduleDelayedWork().
-  if (nested_state_ != NestedState::kNone &&
+  if (nested_state_ == NestedState::kNestedNativeLoopAnnounced &&
       !native_msg_scheduled_.load(std::memory_order_relaxed)) {
     ScheduleNativeTimer(next_work_info);
   }
