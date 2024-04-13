@@ -184,6 +184,7 @@ void BluetoothRfcommChannelMac::OnChannelClosed(
     IOBluetoothRFCOMMChannel* channel) {
   DCHECK_EQ(channel_, channel);
   channel_ = nil;
+  [delegate_ resetOwner];
   delegate_ = nil;
   socket()->OnChannelClosed();
 }

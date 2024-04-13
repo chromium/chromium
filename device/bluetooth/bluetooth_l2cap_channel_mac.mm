@@ -183,6 +183,7 @@ void BluetoothL2capChannelMac::OnChannelClosed(
     IOBluetoothL2CAPChannel* channel) {
   DCHECK_EQ(channel_, channel);
   channel_ = nil;
+  [delegate_ resetOwner];
   delegate_ = nil;
   socket()->OnChannelClosed();
 }
