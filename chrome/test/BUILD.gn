@@ -6163,6 +6163,7 @@ test("unit_tests") {
     "../browser/data_sharing/data_sharing_service_factory_unittest.cc",
     "../browser/download/chrome_download_manager_delegate_unittest.cc",
     "../browser/download/deferred_client_wrapper_unittest.cc",
+    "../browser/download/download_core_service_impl_unittest.cc",
     "../browser/download/download_history_unittest.cc",
     "../browser/download/download_item_model_unittest.cc",
     "../browser/download/download_item_warning_data_unittest.cc",

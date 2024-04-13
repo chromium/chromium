@@ -130,9 +130,11 @@ void DownloadCoreServiceImpl::CancelDownloads() {
   DownloadManager* download_manager = profile_->GetDownloadManager();
   DownloadManager::DownloadVector downloads;
   download_manager->GetAllDownloads(&downloads);
-  for (auto it = downloads.begin(); it != downloads.end(); ++it) {
-    if ((*it)->GetState() == download::DownloadItem::IN_PROGRESS)
-      (*it)->Cancel(false);
+  for (auto& download : downloads) {
+    if (download->GetState() == download::DownloadItem::IN_PROGRESS) {
+      download->Cancel(/*user_cancel=*/false);
+      manager_delegate_->OnDownloadCanceledAtShutdown(download);
+    }
   }
 }
 
