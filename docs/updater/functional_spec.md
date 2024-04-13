@@ -825,11 +825,13 @@ updater server to register with device management and fetch policies.
 The updater also checks for policy updates when the `RunPeriodicTasks` RPC is
 invoked at periodic intervals.
 
+The maximum size of the token is 4K (Windows only).
+
 #### Windows
 The enrollment token is searched in the order:
-* The `EnrollmentToken` REG_SZ value from
+* The `EnrollmentToken` REG_BINARY value from
   `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`
-* The `CloudManagementEnrollmentToken` REG_SZ value from
+* The `CloudManagementEnrollmentToken` REG_BINARY value from
   `HKLM\Software\Policies\{COMPANY_SHORTNAME}\{BROWSER_NAME}`
 
 The `EnrollmentMandatory` REG_DWORD value is also read from
@@ -862,9 +864,9 @@ in the subsequent communication with the DM server.
 
 DM token is stored at:
 ##### Windows
-- The `dmtoken` REG_SZ value at path:
+- The `dmtoken` REG_BINARY value at path:
   `HKLM\Software\WOW6432Node\{COMPANY_SHORTNAME}\Enrollment\`
-- The `dmtoken` REG_SZ value at path:
+- The `dmtoken` REG_BINARY value at path:
   `HKLM64\Software\{COMPANY_SHORTNAME}\{BROWSER_NAME}\Enrollment\`. This is
   for backward compatibility.
 

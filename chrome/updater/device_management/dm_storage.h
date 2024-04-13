@@ -64,6 +64,7 @@ class TokenServiceInterface {
 //   3) DM policies.
 class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
  public:
+  static constexpr size_t kMaxDmTokenLength = 4096;
 #if BUILDFLAG(IS_WIN)
   explicit DMStorage(const base::FilePath& policy_cache_root);
 #else
