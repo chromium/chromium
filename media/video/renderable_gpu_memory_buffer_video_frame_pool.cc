@@ -17,12 +17,14 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 
@@ -157,8 +159,9 @@ FrameResources::FrameResources(scoped_refptr<InternalRefCountedPool> pool,
       format_(format),
       coded_size_(coded_size),
       color_space_(color_space) {
-  // Currently only support ARGB and NV12.
-  CHECK(format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_NV12);
+  // Currently only support ARGB, ABGR and NV12.
+  CHECK(format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_ABGR ||
+        format == PIXEL_FORMAT_NV12);
 }
 
 FrameResources::~FrameResources() {
@@ -172,22 +175,12 @@ FrameResources::~FrameResources() {
   }
 }
 
-gfx::BufferFormat GetBufferFormatForVideoPixelFormat(VideoPixelFormat format) {
-  switch (format) {
-    case PIXEL_FORMAT_ARGB:
-      return gfx::BufferFormat::RGBA_8888;
-    case PIXEL_FORMAT_NV12:
-      return gfx::BufferFormat::YUV_420_BIPLANAR;
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-
 gfx::Size GetBufferSizeInPixelsForVideoPixelFormat(
     VideoPixelFormat format,
     const gfx::Size& coded_size) {
   switch (format) {
     case PIXEL_FORMAT_ARGB:
+    case PIXEL_FORMAT_ABGR:
       return coded_size;
     case PIXEL_FORMAT_NV12:
       // Align number of rows to 2, because it's required by YUV_420_BIPLANAR
@@ -214,7 +207,7 @@ bool FrameResources::Initialize() {
       ;
 
   const gfx::BufferFormat buffer_format =
-      GetBufferFormatForVideoPixelFormat(format_);
+      VideoPixelFormatToGfxBufferFormat(format_).value();
 
   const gfx::Size buffer_size_in_pixels =
       GetBufferSizeInPixelsForVideoPixelFormat(format_, coded_size_);
@@ -288,11 +281,14 @@ bool FrameResources::Initialize() {
       }
       return true;
     }
+    case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_ARGB: {
+      const viz::SharedImageFormat image_format =
+          viz::GetSinglePlaneSharedImageFormat(buffer_format);
       shared_images_[0] = context->CreateSharedImage(
-          gpu_memory_buffer_.get(), viz::SinglePlaneFormat::kRGBA_8888,
-          color_space_, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          kSharedImageUsage, mailbox_holders_[0].sync_token);
+          gpu_memory_buffer_.get(), image_format, color_space_,
+          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
+          mailbox_holders_[0].sync_token);
       if (shared_images_[0]) {
         mailbox_holders_[0].mailbox = shared_images_[0]->mailbox();
         mailbox_holders_[0].texture_target =

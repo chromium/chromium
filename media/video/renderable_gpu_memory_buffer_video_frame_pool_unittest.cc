@@ -15,6 +15,7 @@
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/video/fake_gpu_memory_buffer.h"
@@ -32,19 +33,8 @@ gfx::ColorSpace GetColorSpaceForPixelFormat(media::VideoPixelFormat format) {
     case media::PIXEL_FORMAT_NV12:
       return gfx::ColorSpace::CreateREC709();
     case media::PIXEL_FORMAT_ARGB:
+    case media::PIXEL_FORMAT_ABGR:
       return gfx::ColorSpace::CreateSRGB();
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-
-gfx::BufferFormat GetBufferFormatForVideoPixelFormat(
-    media::VideoPixelFormat format) {
-  switch (format) {
-    case media::PIXEL_FORMAT_ARGB:
-      return gfx::BufferFormat::RGBA_8888;
-    case media::PIXEL_FORMAT_NV12:
-      return gfx::BufferFormat::YUV_420_BIPLANAR;
     default:
       NOTREACHED_NORETURN();
   }
@@ -159,6 +149,12 @@ class RenderableGpuMemoryBufferVideoFramePoolTest
       }
       case PIXEL_FORMAT_ARGB: {
         EXPECT_CALL(*context,
+                    DoCreateSharedImage(viz::SinglePlaneFormat::kBGRA_8888, _,
+                                        _, _, _, _, _));
+        break;
+      }
+      case PIXEL_FORMAT_ABGR: {
+        EXPECT_CALL(*context,
                     DoCreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888, _,
                                         _, _, _, _, _));
         break;
@@ -174,6 +170,7 @@ class RenderableGpuMemoryBufferVideoFramePoolTest
       case PIXEL_FORMAT_NV12: {
         return nv12_multi_plane_ ? 1 : 2;
       }
+      case PIXEL_FORMAT_ABGR:
       case PIXEL_FORMAT_ARGB: {
         return 1;
       }
@@ -192,7 +189,8 @@ class RenderableGpuMemoryBufferVideoFramePoolTest
 TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, SimpleLifetimes) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const gfx::Size size0(128, 256);
-  const gfx::BufferFormat format = GetBufferFormatForVideoPixelFormat(format_);
+  const gfx::BufferFormat format =
+      VideoPixelFormatToGfxBufferFormat(format_).value();
   const gfx::ColorSpace color_space0 = GetColorSpaceForPixelFormat(format_);
 
   base::WeakPtr<FakeContext> context;
@@ -252,7 +250,8 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, SimpleLifetimes) {
 TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, FrameFreedAfterPool) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const gfx::Size size0(128, 256);
-  const gfx::BufferFormat format = GetBufferFormatForVideoPixelFormat(format_);
+  const gfx::BufferFormat format =
+      VideoPixelFormatToGfxBufferFormat(format_).value();
   const gfx::ColorSpace color_space0 = GetColorSpaceForPixelFormat(format_);
 
   base::WeakPtr<FakeContext> context;
@@ -317,7 +316,8 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest,
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   const gfx::Size size0(128, 256);
-  const gfx::BufferFormat format = GetBufferFormatForVideoPixelFormat(format_);
+  const gfx::BufferFormat format =
+      VideoPixelFormatToGfxBufferFormat(format_).value();
   const gfx::ColorSpace color_space0 = GetColorSpaceForPixelFormat(format_);
 
   // Create a pool and several frames on the main thread.
@@ -384,7 +384,8 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, ConcurrentCreateDestroy) {
 
 TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, RespectSizeAndColorSpace) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  const gfx::BufferFormat format = GetBufferFormatForVideoPixelFormat(format_);
+  const gfx::BufferFormat format =
+      VideoPixelFormatToGfxBufferFormat(format_).value();
   const gfx::Size size0(128, 256);
   const gfx::ColorSpace color_space0 = GetColorSpaceForPixelFormat(format_);
   const gfx::Size size1(256, 256);
@@ -469,7 +470,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool(),
 #endif
         testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_NV12,
-                        media::VideoPixelFormat::PIXEL_FORMAT_ARGB)));
+                        media::VideoPixelFormat::PIXEL_FORMAT_ARGB,
+                        media::VideoPixelFormat::PIXEL_FORMAT_ABGR)));
 
 }  // namespace
 
