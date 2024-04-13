@@ -1110,6 +1110,7 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="20" label="Stop screen recording keyboard shortcut"/>
   <int value="21" label="Game dashboard stop recording button"/>
   <int value="22" label="Game toolbar stop recording button"/>
+  <int value="23" label="Game dashboard stop recording for tablet mode"/>
 </enum>
 
 <enum name="EolIncentiveButtonType">

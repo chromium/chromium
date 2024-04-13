@@ -239,10 +239,8 @@ void GameDashboardController::OnDisplayTabletStateChanged(
       if (active_recording_context_) {
         auto* capture_mode_controller = CaptureModeController::Get();
         CHECK(capture_mode_controller->is_recording_in_progress());
-        // TODO(b/316036118): Update the end recording reason in the capture
-        // mode.
         capture_mode_controller->EndVideoRecording(
-            EndRecordingReason::kGameDashboardStopRecordingButton);
+            EndRecordingReason::kGameDashboardTabletMode);
       }
       MaybeEnableFeatures(/*enable=*/false,
                           GameDashboardMainMenuToggleMethod::kTabletMode);

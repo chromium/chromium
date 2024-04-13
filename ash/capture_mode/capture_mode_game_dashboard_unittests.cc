@@ -26,9 +26,11 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1109,6 +1111,40 @@ TEST_P(GameDashboardCaptureModeHistogramTest,
   histogram_tester_.ExpectBucketCount(
       histogram_name,
       /*sample=*/EndRecordingReason::kGameToolbarStopRecordingButton,
+      /*expected_count=*/1);
+
+  // Testing stop recording by the tablet mode enum.
+  // Game dashboard is not available on the tablet mode.
+  if (GetParam()) {
+    return;
+  }
+
+  histogram_tester_.ExpectBucketCount(
+      histogram_name,
+      /*sample=*/EndRecordingReason::kGameDashboardTabletMode,
+      /*expected_count=*/0);
+  auto game_dashboard_test_api = std::make_unique<GameDashboardContextTestApi>(
+      GameDashboardController::Get()->GetGameDashboardContext(game_window()),
+      GetEventGenerator());
+
+  game_dashboard_test_api->OpenTheMainMenu();
+  LeftClickOn(game_dashboard_test_api->GetMainMenuRecordGameTile());
+  // Clicking on the record game tile closes the main menu, and asynchronously
+  // starts the capture session. Run until idle to ensure that the posted task
+  // runs synchronously and completes before proceeding.
+  base::RunLoop().RunUntilIdle();
+  LeftClickOn(GetStartRecordingButton());
+  WaitForRecordingToStart();
+  EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
+  TabletModeControllerTestApi().EnterTabletMode();
+  WaitForCaptureFileToBeSaved();
+  // The histogram name becomes
+  // "ash.CaptureModeController.EndRecordingReason.TabletMode";
+  histogram_tester_.ExpectBucketCount(
+      BuildHistogramName(kHistogramNameBase,
+                         test_api.GetBehavior(BehaviorType::kDefault),
+                         /*append_ui_mode_suffix=*/true),
+      /*sample=*/EndRecordingReason::kGameDashboardTabletMode,
       /*expected_count=*/1);
 }
 

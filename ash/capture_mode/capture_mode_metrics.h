@@ -42,7 +42,8 @@ enum class EndRecordingReason {
   kKeyboardShortcut,
   kGameDashboardStopRecordingButton,
   kGameToolbarStopRecordingButton,
-  kMaxValue = kGameToolbarStopRecordingButton,
+  kGameDashboardTabletMode,
+  kMaxValue = kGameDashboardTabletMode,
 };
 
 // Enumeration of capture bar buttons that can be pressed while in capture mode.
