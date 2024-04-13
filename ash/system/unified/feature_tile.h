@@ -196,6 +196,7 @@ class ASH_EXPORT FeatureTile : public views::Button {
   TileType tile_type() { return type_; }
   bool is_icon_clickable() const { return is_icon_clickable_; }
   views::ImageButton* icon_button() { return icon_button_; }
+  views::FlexLayoutView* title_container() const { return title_container_; }
   views::Label* label() { return label_; }
   views::Label* sub_label() { return sub_label_; }
   views::ImageView* drill_in_arrow() { return drill_in_arrow_; }
