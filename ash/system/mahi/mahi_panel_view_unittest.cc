@@ -1192,9 +1192,12 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
                                          std::move(callback));
             });
 
+    base::HistogramTester histogram_tester;
     const std::u16string question(u"A question that brings errors");
     SubmitTestQuestion(question);
-
+    histogram_tester.ExpectBucketCount(
+        mahi_constants::kMahiQuestionSourceHistogramName,
+        MahiUiController::QuestionSource::kPanel, 1);
     Mock::VerifyAndClearExpectations(&mock_mahi_manager());
 
     // After a question is posted and before an answer is loaded, the Q&A view
@@ -1264,7 +1267,13 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
                                  /*callback=*/_));
       EXPECT_CALL(mock_mahi_manager(), GetOutlines).Times(0);
       EXPECT_CALL(mock_mahi_manager(), GetSummary).Times(0);
+      histogram_tester.ExpectBucketCount(
+          mahi_constants::kMahiQuestionSourceHistogramName,
+          MahiUiController::QuestionSource::kRetry, 0);
       GetEventGenerator()->ClickLeftButton();
+      histogram_tester.ExpectBucketCount(
+          mahi_constants::kMahiQuestionSourceHistogramName,
+          MahiUiController::QuestionSource::kRetry, 1);
       Mock::VerifyAndClear(&mock_mahi_manager());
     }
 

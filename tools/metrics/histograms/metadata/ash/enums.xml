@@ -1282,6 +1282,12 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="6" label="IME tray"/>
 </enum>
 
+<enum name="MahiQuestionSource">
+  <int value="0" label="menu view"/>
+  <int value="1" label="panel view"/>
+  <int value="2" label="retry button"/>
+</enum>
+
 <enum name="MantaStatusCode">
   <int value="0" label="kOk"/>
   <int value="1" label="kGenericError"/>

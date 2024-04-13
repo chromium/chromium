@@ -48,6 +48,8 @@ class ASH_EXPORT MahiUiController {
   };
 
   // Lists question sources.
+  // Note: this should be kept in sync with `MahiQuestionSource` enum in
+  // tools/metrics/histograms/metadata/ash/enums.xml
   enum class QuestionSource {
     // From the Mahi menu view.
     kMenuView,
@@ -57,6 +59,8 @@ class ASH_EXPORT MahiUiController {
 
     // From the retry button.
     kRetry,
+
+    kMaxValue = kRetry,
   };
 
   MahiUiController();

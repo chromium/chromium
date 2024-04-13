@@ -4843,6 +4843,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Mahi.QuestionSource" enum="MahiQuestionSource"
+    expires_after="2025-02-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the sources of questions sent to the Mahi backend. Emitted when a
+    question is posted.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Mahi.Summary.LoadingTime" units="ms"
     expires_after="2025-04-10">
   <owner>leandre@chromium.org</owner>

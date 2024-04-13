@@ -4,8 +4,10 @@
 
 #include "ash/system/mahi/mahi_ui_controller.h"
 
+#include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_ui_update.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/views/view.h"
@@ -91,6 +93,9 @@ void MahiUiController::Retry(VisibilityState origin_state) {
 void MahiUiController::SendQuestion(const std::u16string& question,
                                     bool current_panel_content,
                                     QuestionSource source) {
+  base::UmaHistogramEnumeration(
+      mahi_constants::kMahiQuestionSourceHistogramName, source);
+
   if (source != QuestionSource::kRetry) {
     most_recent_question_params_.emplace(question, current_panel_content);
   }
