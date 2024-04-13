@@ -33,6 +33,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/highlight_border.h"
@@ -383,6 +384,7 @@ void GameDashboardToolbarView::AddShortcutTiles() {
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE),
       /*is_togglable=*/false, /*icon_color=*/cros_tokens::kCrosSysPrimary));
+  gamepad_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   UpdateGamepadButtonTooltipText();
   MayAddGameControlsTile();
@@ -397,6 +399,8 @@ void GameDashboardToolbarView::AddShortcutTiles() {
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
         /*is_togglable=*/true));
+    record_game_button_->GetViewAccessibility().SetRole(
+        ax::mojom::Role::kButton);
     record_game_button_->SetVectorIcon(kGdRecordGameIcon);
     record_game_button_->SetBackgroundToggledColor(cros_tokens::kCrosSysError);
     record_game_button_->SetToggledVectorIcon(kCaptureModeCircleStopIcon);
@@ -432,6 +436,8 @@ void GameDashboardToolbarView::MayAddGameControlsTile() {
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE),
       /*is_togglable=*/true));
+  game_controls_button_->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kButton);
 
   UpdateViewForGameControls(*flags);
 }
