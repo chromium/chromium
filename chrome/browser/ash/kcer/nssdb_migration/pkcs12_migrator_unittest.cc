@@ -40,6 +40,9 @@ std::u16string GetPassword(const std::string& file_name) {
   if (file_name == "client_with_ec_key.p12") {
     return u"123456";
   }
+  if (file_name == "client-empty-password.p12") {
+    return u"";
+  }
   ADD_FAILURE() << "GetPassword() is called with an unexpected file name";
   return u"";
 }
@@ -166,10 +169,17 @@ TEST_F(KcerPkcs12MigratorTest, OneCertMigratedSuccess) {
 }
 
 // Test that Pkcs12Migrator can successfully migrate multiple certs.
-// TODO(crbug.com/333795379): Re-enable this test
-TEST_F(KcerPkcs12MigratorTest, DISABLED_MultipleCertsMigratedSuccess) {
+TEST_F(KcerPkcs12MigratorTest, MultipleCertsMigratedSuccess) {
   ImportPkcs12("client.p12", NssSlot::kPublic);
+#if defined(MEMORY_SANITIZER)
+  // For whatever reason NSS behaves differently under memory sanitizer and
+  // fails to import the client_with_ec_key.p12 file. It's working on a normal
+  // build, and it's useful to test files with EC keys, so only replace the file
+  // for the MSAN builds.
+  ImportPkcs12("client-empty-password.p12", NssSlot::kPublic);
+#else
   ImportPkcs12("client_with_ec_key.p12", NssSlot::kPublic);
+#endif
 
   // The internal call to ImportPkcs12 tries to find the existing key for each
   // PKCS#12 file before importing it. The certs are checked by listing them
@@ -211,11 +221,19 @@ TEST_F(KcerPkcs12MigratorTest, CertAlreadyExists) {
 
 // Test that Pkcs12Migrator doesn't migrate certs that are already present in
 // the private slot (i.e. in Chaps), but migrates the other ones.
-// TODO(crbug.com/333795379): Re-enable this test
-TEST_F(KcerPkcs12MigratorTest, DISABLED_SomeCertsAlreadyExist) {
+TEST_F(KcerPkcs12MigratorTest, SomeCertsAlreadyExist) {
   ImportPkcs12("client.p12", NssSlot::kPublic);
-  ImportPkcs12("client_with_ec_key.p12", NssSlot::kPublic);
   ImportPkcs12("client.p12", NssSlot::kPrivate);
+
+#if defined(MEMORY_SANITIZER)
+  // For whatever reason NSS behaves differently under memory sanitizer and
+  // fails to import the client_with_ec_key.p12 file. It's working on a normal
+  // build, and it's useful to test files with EC keys, so only replace the file
+  // for the MSAN builds.
+  ImportPkcs12("client-empty-password.p12", NssSlot::kPublic);
+#else
+  ImportPkcs12("client_with_ec_key.p12", NssSlot::kPublic);
+#endif
 
   // For files that should be imported, the internal call to ImportPkcs12 will
   // try to find the existing key before importing it for each file. The certs
