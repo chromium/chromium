@@ -9,6 +9,7 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
+#include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -17,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_highlight.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
@@ -803,6 +805,28 @@ bool DisplayOverlayController::IsActiveAction(Action* action) const {
   return it != actions.end() && !(it->get()->IsDeleted());
 }
 
+MappingSource DisplayOverlayController::GetMappingSource() const {
+  const auto& actions = touch_injector_->actions();
+  if (actions.empty()) {
+    return MappingSource::kEmpty;
+  }
+
+  // Check if there is any default action.
+  auto default_it = std::find_if(
+      actions.begin(), actions.end(),
+      [&](const std::unique_ptr<Action>& p) { return p->IsDefaultAction(); });
+
+  // Check if there is any user added action.
+  auto user_added_it = std::find_if(
+      actions.begin(), actions.end(),
+      [&](const std::unique_ptr<Action>& p) { return !p->IsDefaultAction(); });
+
+  return default_it != actions.end() && user_added_it != actions.end()
+             ? MappingSource::kDefaultAndUserAdded
+             : (default_it != actions.end() ? MappingSource::kDefault
+                                            : MappingSource::kUserAdded);
+}
+
 void DisplayOverlayController::AddTouchInjectorObserver(
     TouchInjectorObserver* observer) {
   touch_injector_->AddObserver(observer);
@@ -1087,6 +1111,21 @@ void DisplayOverlayController::OnWindowPropertyChanged(aura::Window* window,
       }
 
       UpdateEventRewriteCapability();
+
+      // Record metrics.
+      const auto mapping_source = GetMappingSource();
+      if (IsFlagChanged(flags, old_flags, ash::ArcGameControlsFlag::kEnabled)) {
+        RecordToggleWithMappingSource(
+            /*is_feature=*/true,
+            /*is_on=*/IsFlagSet(flags, ash::ArcGameControlsFlag::kEnabled),
+            mapping_source);
+      }
+      if (IsFlagChanged(flags, old_flags, ash::ArcGameControlsFlag::kHint)) {
+        RecordToggleWithMappingSource(
+            /*is_feature=*/false,
+            /*is_on=*/IsFlagSet(flags, ash::ArcGameControlsFlag::kHint),
+            mapping_source);
+      }
     }
   }
 }

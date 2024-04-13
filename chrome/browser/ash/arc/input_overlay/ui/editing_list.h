@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/style/pill_button.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
@@ -15,6 +16,7 @@
 
 namespace ash {
 class AnchoredNudge;
+class PillButton;
 class SystemShadow;
 }  // namespace ash
 
@@ -140,6 +142,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   raw_ptr<views::Label> editing_header_label_;
 
   raw_ptr<AddContainerButton> add_container_;
+  raw_ptr<ash::PillButton> done_button_;
 
   // Owned by this view.
   std::unique_ptr<ash::SystemShadow> shadow_;

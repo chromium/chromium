@@ -12256,6 +12256,36 @@ Called by update_permissions_policy_enum.py.-->
   <int value="8" label="Overflow"/>
 </enum>
 
+<enum name="GameControlsButtonOptionsMenuFunction">
+  <int value="0" label="Select single button type"/>
+  <int value="1" label="Select joystick type"/>
+  <int value="2" label="Edit label is focused"/>
+  <int value="3" label="Key assigned successfully"/>
+  <int value="4" label="Press done button"/>
+  <int value="5" label="Press delete button"/>
+</enum>
+
+<enum name="GameControlsEditDeleteMenuFunction">
+  <int value="0" label="Press edit button"/>
+  <int value="1" label="Press delete button"/>
+</enum>
+
+<enum name="GameControlsEditingListFunction">
+  <int value="0" label="Add"/>
+  <int value="1" label="Done"/>
+  <int value="2" label="Hover list item"/>
+  <int value="3" label="Press list item"/>
+  <int value="4" label="Edit label is focused"/>
+  <int value="5" label="Key assigned successfully"/>
+</enum>
+
+<enum name="GameControlsMappingSource">
+  <int value="0" label="Empty"/>
+  <int value="1" label="Default mapping, including position change"/>
+  <int value="2" label="User added mapping only"/>
+  <int value="3" label="Default and user-added mapping"/>
+</enum>
+
 <enum name="GameDashboardFunction">
   <int value="0" label="Feedback"/>
   <int value="1" label="Help"/>

@@ -11,7 +11,9 @@
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/style/icon_button.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
@@ -280,6 +282,24 @@ TEST_F(ButtonOptionsMenuTest, TestDisplayRelatedToShelf) {
   // Menu should align to the bottom of the root window if the shelf is hidden.
   EXPECT_EQ(root_window->bounds().bottom(),
             menu->GetWidget()->GetNativeWindow()->bounds().bottom());
+}
+
+TEST_F(ButtonOptionsMenuTest, TestHistograms) {
+  base::HistogramTester histograms;
+  const std::string histogram_name = BuildGameControlsHistogramName(
+      kButtonOptionsMenuFunctionTriggeredHistogram);
+  std::map<ButtonOptionsMenuFunction, int> expected_histogram_values;
+
+  auto* menu = ShowButtonOptionsMenu(tap_action_);
+  PressActionMoveButton(menu);
+  MapIncreaseValueByOne(expected_histogram_values,
+                        ButtonOptionsMenuFunction::kOptionJoystick);
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+
+  PressTapButton(menu);
+  MapIncreaseValueByOne(expected_histogram_values,
+                        ButtonOptionsMenuFunction::kOptionSingleButton);
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
 }
 
 }  // namespace arc::input_overlay

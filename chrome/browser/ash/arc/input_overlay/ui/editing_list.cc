@@ -21,6 +21,7 @@
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
@@ -318,14 +319,14 @@ void EditingList::AddHeader() {
   help_button->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 8));
 
   // Add done button.
-  auto* done_button =
+  done_button_ =
       header_container->AddChildView(std::make_unique<ash::PillButton>(
           base::BindRepeating(&EditingList::OnDoneButtonPressed,
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(
               IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL),
           ash::PillButton::Type::kSecondaryWithoutIcon));
-  done_button->SetAccessibleName(l10n_util::GetStringUTF16(
+  done_button_->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_INPUT_OVERLAY_EDITING_LIST_DONE_BUTTON_A11Y_LABEL));
 }
 
@@ -421,10 +422,12 @@ void EditingList::OnAddButtonPressed() {
     ash::Shell::Get()->anchored_nudge_manager()->Cancel(kKeyEditNudgeID);
   }
   controller_->EnterButtonPlaceMode(ActionType::TAP);
+  RecordEditingListFunctionTriggered(EditingListFunction::kAdd);
 }
 
 void EditingList::OnDoneButtonPressed() {
   DCHECK(controller_);
+  RecordEditingListFunctionTriggered(EditingListFunction::kDone);
   controller_->OnCustomizeSave();
 }
 

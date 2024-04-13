@@ -1135,6 +1135,59 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Arc.GameControls.ButtonOptionsMenuFunctionTriggered"
+    enum="GameControlsButtonOptionsMenuFunction" expires_after="2025-04-07">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>pjlee@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Records how often a specific function within the game controls button
+    options menu is triggered.
+  </summary>
+</histogram>
+
+<histogram name="Arc.GameControls.EditDeleteMenuFuctionTriggered"
+    enum="GameControlsEditDeleteMenuFunction" expires_after="2025-04-07">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>pjlee@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Records how often a specific function within the game controls edit/delete
+    menu is triggered.
+  </summary>
+</histogram>
+
+<histogram name="Arc.GameControls.EditingListFunctionTriggered"
+    enum="GameControlsEditingListFunction" expires_after="2025-04-07">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>pjlee@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Records how often a specific function within the game controls editing list
+    is triggered.
+  </summary>
+</histogram>
+
+<histogram
+    name="Arc.GameControls.{FeatureOrHint}ToggleWithMappingSource.{OnOrOff}"
+    enum="GameControlsMappingSource" expires_after="2025-04-07">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>pjlee@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Records the game controls feature or hint is toggled on or off with current
+    mapping source.
+  </summary>
+  <token key="FeatureOrHint">
+    <variant name="Feature"/>
+    <variant name="Hint"/>
+  </token>
+  <token key="OnOrOff">
+    <variant name="Off"/>
+    <variant name="On"/>
+  </token>
+</histogram>
+
 <histogram name="Arc.GhostWindowViewType" units="ArcGhostWindowViewType"
     expires_after="2024-09-01">
   <owner>sstan@chromium.org</owner>

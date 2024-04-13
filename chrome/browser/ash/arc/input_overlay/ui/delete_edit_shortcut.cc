@@ -10,6 +10,7 @@
 #include "ash/style/icon_button.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
@@ -119,6 +120,7 @@ void DeleteEditShortcut::UpdateTooltipText(ActionViewListItem* anchor_view) {
 }
 
 void DeleteEditShortcut::OnEditButtonPressed() {
+  RecordEditDeleteMenuFunctionTriggered(EditDeleteMenuFunction::kEdit);
   if (auto* anchor_view =
           views::AsViewClass<ActionViewListItem>(GetAnchorView())) {
     controller_->AddButtonOptionsMenuWidget(anchor_view->action());
@@ -126,6 +128,7 @@ void DeleteEditShortcut::OnEditButtonPressed() {
 }
 
 void DeleteEditShortcut::OnDeleteButtonPressed() {
+  RecordEditDeleteMenuFunctionTriggered(EditDeleteMenuFunction::kDelete);
   if (auto* anchor_view =
           views::AsViewClass<ActionViewListItem>(GetAnchorView())) {
     controller_->RemoveAction(anchor_view->action());

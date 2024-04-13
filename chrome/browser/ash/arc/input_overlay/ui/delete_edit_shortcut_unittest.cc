@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
+#include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "ui/views/view_utils.h"
 
@@ -107,6 +110,26 @@ TEST_F(DeleteEditShortcutTest, TestFunctions) {
   EXPECT_FALSE(IsDeleteEditShortcutVisible());
   EXPECT_EQ(original_size - 1, GetActionListItemsSize());
   EXPECT_EQ(original_size - 1, GetActionViewSize());
+}
+
+TEST_F(DeleteEditShortcutTest, TestHistograms) {
+  base::HistogramTester histograms;
+  const std::string histogram_name =
+      BuildGameControlsHistogramName(kEditDeleteMenuFunctionTriggeredHistogram);
+  std::map<EditDeleteMenuFunction, int> expected_histogram_values;
+
+  HoverAtActionViewListItem(/*index=*/0u);
+  PressEditButton();
+  MapIncreaseValueByOne(expected_histogram_values,
+                        EditDeleteMenuFunction::kEdit);
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+
+  PressDoneButtonOnButtonOptionsMenu();
+  HoverAtActionViewListItem(/*index=*/1u);
+  PressDeleteButton();
+  MapIncreaseValueByOne(expected_histogram_values,
+                        EditDeleteMenuFunction::kDelete);
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
 }
 
 }  // namespace arc::input_overlay

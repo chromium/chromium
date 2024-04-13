@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -150,6 +151,8 @@ void ActionTypeButtonGroup::OnActionTapButtonPressed() {
   }
   selected_action_type_ = ActionType::TAP;
   controller_->ChangeActionType(action_, ActionType::TAP);
+  RecordButtonOptionsMenuFunctionTriggered(
+      ButtonOptionsMenuFunction::kOptionSingleButton);
 }
 
 void ActionTypeButtonGroup::OnActionMoveButtonPressed() {
@@ -158,6 +161,8 @@ void ActionTypeButtonGroup::OnActionMoveButtonPressed() {
   }
   selected_action_type_ = ActionType::MOVE;
   controller_->ChangeActionType(action_, ActionType::MOVE);
+  RecordButtonOptionsMenuFunctionTriggered(
+      ButtonOptionsMenuFunction::kOptionJoystick);
 }
 
 BEGIN_METADATA(ActionTypeButtonGroup)

@@ -14,6 +14,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
@@ -276,6 +277,10 @@ void EditLabel::OnFocus() {
   SetToFocused();
   if (for_editing_list_) {
     controller_->AddActionHighlightWidget(action_);
+    RecordEditingListFunctionTriggered(EditingListFunction::kEditLabelFocused);
+  } else {
+    RecordButtonOptionsMenuFunctionTriggered(
+        ButtonOptionsMenuFunction::kEditLabelFocused);
   }
 }
 
@@ -333,6 +338,12 @@ bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
   }
 
   SetTextLabel(new_bind);
+  if (for_editing_list_) {
+    RecordEditingListFunctionTriggered(EditingListFunction::kKeyAssigned);
+  } else {
+    RecordButtonOptionsMenuFunctionTriggered(
+        ButtonOptionsMenuFunction::kKeyAssigned);
+  }
 
   std::unique_ptr<InputElement> input;
   switch (action_->GetType()) {

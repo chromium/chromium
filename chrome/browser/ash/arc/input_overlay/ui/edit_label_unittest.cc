@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -306,6 +307,50 @@ TEST_F(EditLabelTest, TestEditingNewAction) {
               {ui::DomCode::NONE, ui::DomCode::US_A, ui::DomCode::NONE,
                ui::DomCode::NONE},
               {u"", u"a", u"", u""}, GetControlName(ActionType::MOVE, u"a"));
+}
+
+TEST_F(EditLabelTest, TestHistograms) {
+  widget_->GetNativeWindow()->SetBounds(gfx::Rect(310, 10, 300, 500));
+  base::HistogramTester histograms;
+
+  // Check histograms for editing list.
+  const std::string editing_list_histogram_name =
+      BuildGameControlsHistogramName(kEditingListFunctionTriggeredHistogram);
+  std::map<EditingListFunction, int> expected_editing_list_histogram_values;
+  LeftClickOn(GetEditLabel(tap_action_list_item_, /*index=*/0));
+  MapIncreaseValueByOne(expected_editing_list_histogram_values,
+                        EditingListFunction::kEditLabelFocused);
+  VerifyHistogramValues(histograms, editing_list_histogram_name,
+                        expected_editing_list_histogram_values);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_M, ui::EF_NONE);
+  MapIncreaseValueByOne(expected_editing_list_histogram_values,
+                        EditingListFunction::kKeyAssigned);
+  VerifyHistogramValues(histograms, editing_list_histogram_name,
+                        expected_editing_list_histogram_values);
+
+  // Check histograms for button options menu.
+  const std::string button_options_histogram_name =
+      BuildGameControlsHistogramName(
+          kButtonOptionsMenuFunctionTriggeredHistogram);
+  std::map<ButtonOptionsMenuFunction, int>
+      expected_button_options_histogram_values;
+  auto* menu = ShowButtonOptionsMenu(move_action_);
+  LeftClickOn(GetEditLabel(menu, /*index=*/1));
+  MapIncreaseValueByOne(expected_button_options_histogram_values,
+                        ButtonOptionsMenuFunction::kEditLabelFocused);
+  VerifyHistogramValues(histograms, button_options_histogram_name,
+                        expected_button_options_histogram_values);
+
+  event_generator->PressAndReleaseKey(ui::VKEY_N, ui::EF_NONE);
+  // After assign a key, the focus is automatically moved to the next one.
+  MapIncreaseValueByOne(expected_button_options_histogram_values,
+                        ButtonOptionsMenuFunction::kEditLabelFocused);
+  MapIncreaseValueByOne(expected_button_options_histogram_values,
+                        ButtonOptionsMenuFunction::kKeyAssigned);
+  VerifyHistogramValues(histograms, button_options_histogram_name,
+                        expected_button_options_histogram_values);
 }
 
 }  // namespace arc::input_overlay

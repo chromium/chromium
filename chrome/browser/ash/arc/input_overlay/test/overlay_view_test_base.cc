@@ -51,6 +51,13 @@ void OverlayViewTestBase::PressAddContainerButton() {
   LeftClickOn(editing_list_->GetAddContainerButtonForTesting());
 }
 
+void OverlayViewTestBase::PressDoneButton() {
+  if (!editing_list_) {
+    return;
+  }
+  LeftClickOn(editing_list_->done_button_);
+}
+
 void OverlayViewTestBase::AddNewActionInCenter() {
   DCHECK(editing_list_);
 

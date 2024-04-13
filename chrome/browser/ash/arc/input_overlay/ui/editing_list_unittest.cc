@@ -10,7 +10,9 @@
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/check.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
@@ -525,6 +527,28 @@ TEST_F(EditingListTest, TestMaximumActions) {
 
   PressAddContainerButton();
   EXPECT_FALSE(GetTargetView());
+}
+
+TEST_F(EditingListTest, TestHistograms) {
+  base::HistogramTester histograms;
+  const std::string histogram_name =
+      BuildGameControlsHistogramName(kEditingListFunctionTriggeredHistogram);
+  std::map<EditingListFunction, int> expected_histogram_values;
+
+  PressAddButton();
+  MapIncreaseValueByOne(expected_histogram_values, EditingListFunction::kAdd);
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  HoverAtActionViewListItem(/*index=*/0u);
+  MapIncreaseValueByOne(expected_histogram_values,
+                        EditingListFunction::kHoverListItem);
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+
+  LeftClickAtActionViewListItem(/*index=*/0);
+  MapIncreaseValueByOne(expected_histogram_values,
+                        EditingListFunction::kPressListItem);
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
 }
 
 }  // namespace arc::input_overlay

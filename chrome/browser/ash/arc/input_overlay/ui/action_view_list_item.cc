@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
@@ -22,12 +23,14 @@ ActionViewListItem::ActionViewListItem(DisplayOverlayController* controller,
 ActionViewListItem::~ActionViewListItem() = default;
 
 void ActionViewListItem::ClickCallback() {
+  RecordEditingListFunctionTriggered(EditingListFunction::kPressListItem);
   controller_->AddButtonOptionsMenuWidget(action_);
 }
 
 void ActionViewListItem::OnMouseEntered(const ui::MouseEvent& event) {
   controller_->AddActionHighlightWidget(action_);
   controller_->AddDeleteEditShortcutWidget(this);
+  RecordEditingListFunctionTriggered(EditingListFunction::kHoverListItem);
 }
 
 void ActionViewListItem::OnMouseExited(const ui::MouseEvent& event) {

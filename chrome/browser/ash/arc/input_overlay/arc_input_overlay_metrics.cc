@@ -6,12 +6,19 @@
 
 #include "ash/wm/window_state.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "components/ukm/app_source_url_recorder.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/aura/client/aura_constants.h"
 
 namespace arc::input_overlay {
+
+namespace {
+
+constexpr char kGameControlsHistogramNameRoot[] = "Arc.GameControls";
+
+}  // namespace
 
 class InputOverlayUkm {
  public:
@@ -81,6 +88,11 @@ class InputOverlayUkm {
   }
 };
 
+std::string BuildGameControlsHistogramName(const std::string& name) {
+  return base::JoinString({kGameControlsHistogramNameRoot, name},
+                          kGameControlsHistogramSeparator);
+}
+
 void RecordInputOverlayFeatureState(const std::string& package_name,
                                     bool enable) {
   base::UmaHistogramBoolean("Arc.InputOverlay.FeatureState", enable);
@@ -132,6 +144,40 @@ void RecordInputOverlayButtonGroupReposition(
       "Arc.InputOverlay.ButtonGroupRepositionWindowStateType", state_type);
   InputOverlayUkm::RecordInputOverlayButtonGroupReposition(
       package_name, reposition_type, state_type);
+}
+
+void RecordEditingListFunctionTriggered(EditingListFunction function) {
+  base::UmaHistogramEnumeration(
+      BuildGameControlsHistogramName(kEditingListFunctionTriggeredHistogram),
+      function);
+}
+
+void RecordButtonOptionsMenuFunctionTriggered(
+    ButtonOptionsMenuFunction function) {
+  base::UmaHistogramEnumeration(
+      BuildGameControlsHistogramName(
+          kButtonOptionsMenuFunctionTriggeredHistogram),
+      function);
+}
+
+void RecordEditDeleteMenuFunctionTriggered(EditDeleteMenuFunction function) {
+  base::UmaHistogramEnumeration(
+      BuildGameControlsHistogramName(kEditDeleteMenuFunctionTriggeredHistogram),
+      function);
+}
+
+void RecordToggleWithMappingSource(bool is_feature,
+                                   bool is_on,
+                                   MappingSource source) {
+  base::UmaHistogramEnumeration(
+      BuildGameControlsHistogramName(
+          base::JoinString(
+              {(is_feature ? kFeatureHistogramName : kHintHistogramName),
+               kToggleWithMappingSourceHistogram},
+              ""))
+          .append(kGameControlsHistogramSeparator)
+          .append(is_on ? kToggleOnHistogramName : kToggleOffHistogramName),
+      source);
 }
 
 }  // namespace arc::input_overlay

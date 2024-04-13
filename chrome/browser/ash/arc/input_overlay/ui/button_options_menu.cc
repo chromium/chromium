@@ -14,6 +14,7 @@
 #include "ash/style/typography.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_type_button_group.h"
@@ -281,11 +282,13 @@ void ButtonOptionsMenu::AddDoneButton() {
 }
 
 void ButtonOptionsMenu::OnTrashButtonPressed() {
+  RecordButtonOptionsMenuFunctionTriggered(ButtonOptionsMenuFunction::kDelete);
   controller_->RemoveAction(action_);
 }
 
 void ButtonOptionsMenu::OnDoneButtonPressed() {
   controller_->SaveToProtoFile();
+  RecordButtonOptionsMenuFunctionTriggered(ButtonOptionsMenuFunction::kDone);
 
   controller_->SetEditingListVisibility(/*visible=*/true);
 

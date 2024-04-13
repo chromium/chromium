@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/property_change_reason.h"
 #include "ui/events/event.h"
@@ -102,6 +103,8 @@ class DisplayOverlayController : public ui::EventHandler,
   bool HasSingleUserAddedAction() const;
   // Return true if action is not deleted.
   bool IsActiveAction(Action* action) const;
+
+  MappingSource GetMappingSource() const;
 
   // For menu entry hover state:
   void SetMenuEntryHoverState(bool curr_hover_state);

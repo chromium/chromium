@@ -7,8 +7,11 @@
 #include <vector>
 
 #include "ash/public/cpp/arc_game_controls_flag.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/test/game_controls_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
+#include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
@@ -375,6 +378,41 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestEnterExitFullscreen) {
   CheckWidgetsVisible(
       /*input_mapping_visible=*/true, /*editing_list_visible=*/false,
       /*button_options_visible=*/true, /*delete_edit_menu_visible=*/false);
+}
+
+TEST_F(EditModeDisplayOverlayControllerTest, TestHistograms) {
+  base::HistogramTester histograms;
+
+  // Check button options histograms.
+  const std::string button_options_histogram_name =
+      BuildGameControlsHistogramName(
+          kButtonOptionsMenuFunctionTriggeredHistogram);
+  std::map<ButtonOptionsMenuFunction, int>
+      expected_button_options_histogram_values;
+
+  ShowButtonOptionsMenu(tap_action_);
+  PressDoneButtonOnButtonOptionsMenu();
+  MapIncreaseValueByOne(expected_button_options_histogram_values,
+                        ButtonOptionsMenuFunction::kDone);
+  VerifyHistogramValues(histograms, button_options_histogram_name,
+                        expected_button_options_histogram_values);
+
+  ShowButtonOptionsMenu(move_action_);
+  PressDeleteButtonOnButtonOptionsMenu();
+  MapIncreaseValueByOne(expected_button_options_histogram_values,
+                        ButtonOptionsMenuFunction::kDelete);
+  VerifyHistogramValues(histograms, button_options_histogram_name,
+                        expected_button_options_histogram_values);
+
+  // Check editing list histograms.
+  const std::string editing_list_histogram_name =
+      BuildGameControlsHistogramName(kEditingListFunctionTriggeredHistogram);
+  std::map<EditingListFunction, int> expected_editing_list_histogram_values;
+  PressDoneButton();
+  MapIncreaseValueByOne(expected_editing_list_histogram_values,
+                        EditingListFunction::kDone);
+  VerifyHistogramValues(histograms, editing_list_histogram_name,
+                        expected_editing_list_histogram_values);
 }
 
 }  // namespace arc::input_overlay
