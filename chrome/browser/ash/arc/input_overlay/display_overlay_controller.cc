@@ -56,6 +56,9 @@
 namespace arc::input_overlay {
 
 namespace {
+
+using ash::game_dashboard_utils::GetNextWidgetToFocus;
+
 // UI specs.
 constexpr int kMenuEntrySideMargin = 24;
 constexpr int kNudgeVerticalAlign = 8;
@@ -134,7 +137,8 @@ class DisplayOverlayController::FocusCycler {
     }
 
     // Change focus to the next widget.
-    if (auto* next_widget = GetNextWidgetToFocus(target_widget, reverse)) {
+    if (auto* next_widget =
+            GetNextWidgetToFocus(widget_list_, target_widget, reverse)) {
       next_widget->GetFocusManager()->AdvanceFocus(reverse);
       // Change the event target.
       ui::Event::DispatcherApi(&event).set_target(
@@ -177,21 +181,6 @@ class DisplayOverlayController::FocusCycler {
       curr_view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged,
                                           /*send_native_event=*/true);
     }
-  }
-
-  views::Widget* GetNextWidgetToFocus(views::Widget* focused_widget,
-                                      bool reverse) {
-    if (auto it =
-            std::find(widget_list_.begin(), widget_list_.end(), focused_widget);
-        it != widget_list_.end()) {
-      const int index = std::distance(widget_list_.begin(), it);
-      const size_t widget_list_size = widget_list_.size();
-      const size_t next_index =
-          reverse ? (index - 1u + widget_list_size) % widget_list_size
-                  : (index + 1u) % widget_list_size;
-      return widget_list_[next_index];
-    }
-    return nullptr;
   }
 
   // Only contains visible and unique widgets.

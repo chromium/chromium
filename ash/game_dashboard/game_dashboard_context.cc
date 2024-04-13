@@ -39,6 +39,7 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -103,6 +104,21 @@ std::unique_ptr<views::Widget> CreateTransientChildWidget(
 void MaybeUpdateCameraPreview() {
   CaptureModeController::Get()->camera_controller()->MaybeUpdatePreviewWidget(
       /*animate=*/true);
+}
+
+// Determines whether a given `key_code` will interact with the toolbar.
+bool WillToolbarViewProcessKeyCode(const ui::KeyboardCode key_code) {
+  switch (key_code) {
+    case ui::VKEY_RIGHT:
+    case ui::VKEY_LEFT:
+    case ui::VKEY_UP:
+    case ui::VKEY_DOWN:
+    case ui::VKEY_RETURN:
+    case ui::VKEY_SPACE:
+      return true;
+    default:
+      return false;
+  }
 }
 
 }  // namespace
@@ -427,8 +443,26 @@ void GameDashboardContext::MaybeRemovePreTargetHandler() {
 void GameDashboardContext::OnEvent(ui::Event* event) {
   // Close the main menu if the user clicks outside of both the main menu
   // widget and the Game Dashboard button.
-  if (main_menu_widget_) {
-    switch (event->type()) {
+  auto event_type = event->type();
+  if (event_type == ui::ET_KEY_PRESSED) {
+    const ui::KeyEvent* key_event = event->AsKeyEvent();
+    if (toolbar_widget_ && toolbar_widget_->IsActive() && main_menu_widget_ &&
+        WillToolbarViewProcessKeyCode(key_event->key_code())) {
+      // Close the main menu if the toolbar processes the given key.
+      CloseMainMenu(GameDashboardMainMenuToggleMethod::kOthers);
+    } else if (ShouldNavigateToNewWidget(key_event)) {
+      const auto* currently_focused = views::Widget::GetWidgetForNativeWindow(
+          static_cast<aura::Window*>(event->target()));
+      const bool reverse = event->IsShiftDown();
+
+      // Manually move focus from the currently focused widget to the next in
+      // the widget list.
+      MoveFocus(game_dashboard_utils::GetNextWidgetToFocus(
+                    GetTraversableWidgets(), currently_focused, reverse),
+                event, reverse);
+    }
+  } else if (main_menu_widget_) {
+    switch (event_type) {
       case ui::ET_TOUCH_PRESSED:
       case ui::ET_MOUSE_PRESSED: {
         // TODO(b/328852471): Update logic to compare event target with native
@@ -763,6 +797,68 @@ void GameDashboardContext::EnsureMainMenuAboveToolbar() {
   if (main_menu_widget_ && toolbar_widget_) {
     main_menu_widget_->StackAboveWidget(toolbar_widget_.get());
   }
+}
+
+bool GameDashboardContext::ShouldNavigateToNewWidget(
+    const ui::KeyEvent* event) const {
+  // Tab navigation between Game Dashboard sibling widgets is only supported
+  // when the GD button is enabled.
+  if (!game_dashboard_button_->GetEnabled() ||
+      event->type() != ui::ET_KEY_PRESSED ||
+      event->key_code() != ui::VKEY_TAB) {
+    return false;
+  }
+
+  if (auto* target_widget = views::Widget::GetWidgetForNativeWindow(
+          static_cast<aura::Window*>(event->target()))) {
+    if (auto* focus_manager = target_widget->GetFocusManager()) {
+      // If `GetNextFocusableView` returns null, navigation has reached the last
+      // focusable view in the given direction.
+      return !(focus_manager->GetNextFocusableView(
+          /*starting_view=*/focus_manager->GetFocusedView(),
+          /*starting_widget=*/target_widget,
+          /*reverse=*/event->IsShiftDown(),
+          /*dont_loop=*/true));
+    }
+  }
+
+  return false;
+}
+
+std::vector<views::Widget*> GameDashboardContext::GetTraversableWidgets()
+    const {
+  std::vector<views::Widget*> widget_list;
+  widget_list.emplace_back(game_dashboard_button_widget_.get());
+  if (main_menu_widget_) {
+    widget_list.emplace_back(main_menu_widget_.get());
+  }
+  if (toolbar_widget_) {
+    widget_list.emplace_back(toolbar_widget_.get());
+  }
+  if (widget_list.size() == 1) {
+    // If the toolbar and main menu widgets don't exist but focus is placed on
+    // the Game Dashboard button, manually move focus to the game window to
+    // avoid tab support looping just the Game Dashboard button.
+    widget_list.emplace_back(
+        views::Widget::GetWidgetForNativeWindow(game_window_.get()));
+  }
+
+  return widget_list;
+}
+
+void GameDashboardContext::MoveFocus(views::Widget* new_widget,
+                                     ui::Event* event,
+                                     bool reverse) {
+  CHECK(new_widget) << "Cannot move focus to a non-existent widget.";
+  auto* focus_manager = new_widget->GetFocusManager();
+  DCHECK(focus_manager) << "Cannot move focus without a focus manager";
+  focus_manager->ClearFocus();
+  // Avoid having the focus restored to the same view when the parent view
+  // is refocused.
+  focus_manager->SetStoredFocusView(nullptr);
+  focus_manager->AdvanceFocus(reverse);
+  event->StopPropagation();
+  event->SetHandled();
 }
 
 }  // namespace ash

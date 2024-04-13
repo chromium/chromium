@@ -6,6 +6,7 @@
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_UTILS_H_
 
 #include <optional>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
@@ -16,6 +17,7 @@ class Window;
 
 namespace views {
 class Button;
+class Widget;
 }  // namespace views
 
 namespace ash::game_dashboard_utils {
@@ -39,6 +41,14 @@ ASH_EXPORT ArcGameControlsFlag UpdateFlag(ArcGameControlsFlag flags,
 // when the feature availability is aligned with GD entry availability, since
 // GD features availability dependency may change.
 ASH_EXPORT bool ShouldEnableFeatures();
+
+// Returns the next `views::Widget` from the `widget_list` that should be
+// focused. This is determined by looking at the currently `focused_widget` and
+// whether or not the tab navigation is moving in `reverse`.
+ASH_EXPORT views::Widget* GetNextWidgetToFocus(
+    const std::vector<views::Widget*> widget_list,
+    const views::Widget* focused_widget,
+    bool reverse);
 
 // Returns flags value if `window` is an ARC game window. Otherwise, it returns
 // nullopt.

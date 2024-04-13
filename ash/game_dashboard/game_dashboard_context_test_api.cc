@@ -254,6 +254,13 @@ IconButton* GameDashboardContextTestApi::GetToolbarScreenshotButton() {
           GameDashboardToolbarView::ToolbarViewId::kScreenshotButton)));
 }
 
+bool GameDashboardContextTestApi::IsToolbarExpanded() {
+  auto* toolbar_view = GetToolbarView();
+  CHECK(toolbar_view)
+      << "The toolbar must be opened first before checking expanded state.";
+  return toolbar_view->is_expanded_;
+}
+
 GameDashboardToolbarSnapLocation
 GameDashboardContextTestApi::GetToolbarSnapLocation() const {
   return context_->toolbar_snap_location_;

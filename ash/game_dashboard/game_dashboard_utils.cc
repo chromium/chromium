@@ -44,6 +44,26 @@ bool ShouldEnableFeatures() {
          !display::Screen::GetScreen()->InTabletMode();
 }
 
+views::Widget* GetNextWidgetToFocus(
+    const std::vector<views::Widget*> widget_list,
+    const views::Widget* focused_widget,
+    bool reverse) {
+  if (auto it =
+          std::find(widget_list.begin(), widget_list.end(), focused_widget);
+      it != widget_list.end()) {
+    const int focused_widget_index =
+        std::distance(widget_list.begin(),
+                      it);  // it - widget_list_.begin();
+    const size_t widget_list_size = widget_list.size();
+    const size_t next_focus_widget_index =
+        (reverse ? (focused_widget_index + widget_list_size - 1u)
+                 : (focused_widget_index + 1u)) %
+        widget_list_size;
+    return widget_list[next_focus_widget_index];
+  }
+  return nullptr;
+}
+
 std::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window) {
   if (!IsArcWindow(window)) {
     return std::nullopt;

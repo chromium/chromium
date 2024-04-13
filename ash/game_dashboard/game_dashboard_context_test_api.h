@@ -108,6 +108,7 @@ class GameDashboardContextTestApi {
   IconButton* GetToolbarGameControlsButton();
   IconButton* GetToolbarRecordGameButton();
   IconButton* GetToolbarScreenshotButton();
+  bool IsToolbarExpanded();
 
   // Returns the quadrant that the toolbar is currently placed in.
   GameDashboardToolbarSnapLocation GetToolbarSnapLocation() const;

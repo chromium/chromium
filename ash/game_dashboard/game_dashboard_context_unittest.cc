@@ -742,6 +742,14 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_EQ(toggled, game_button->toggled());
   }
 
+  void TabNavigateForward() {
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  }
+
+  void TabNavigateBackward() {
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  }
+
   void PressKeyAndVerify(ui::KeyboardCode key,
                          GameDashboardToolbarSnapLocation desired_location) {
     GetEventGenerator()->PressAndReleaseKey(key);
@@ -1636,6 +1644,133 @@ TEST_F(GameDashboardContextTest, OverviewModeWithTwoWindows) {
   ASSERT_TRUE(arc_gamepad_button->HasFocus());
 }
 
+TEST_F(GameDashboardContextTest, TabNavigationMainMenu) {
+  // Open the main menu and begin tab navigation.
+  CreateGameWindow(/*is_arc_window=*/false);
+  test_api_->OpenTheMainMenu();
+  TabNavigateForward();
+
+  // Verify focus is placed on the main menu's first element then move focus to
+  // the last element in the main menu.
+  views::Widget* main_menu_widget = test_api_->GetMainMenuWidget();
+  EXPECT_TRUE(main_menu_widget->IsActive());
+  EXPECT_TRUE(test_api_->GetMainMenuToolbarTile()->HasFocus());
+  main_menu_widget->GetFocusManager()->SetFocusedView(
+      test_api_->GetMainMenuSettingsButton());
+  EXPECT_TRUE(test_api_->GetMainMenuSettingsButton()->HasFocus());
+
+  // Tab navigate forward and verify focus is placed on the Game Dashboard
+  // Button.
+  TabNavigateForward();
+  EXPECT_TRUE(test_api_->GetGameDashboardButton()->HasFocus());
+
+  // Tab navigate forward and verify focus is placed back on the main menu's
+  // first element.
+  TabNavigateForward();
+  EXPECT_TRUE(test_api_->GetMainMenuToolbarTile()->HasFocus());
+
+  // Tab navigate backwards and verify focus is placed back on the Game
+  // Dashboard button.
+  TabNavigateBackward();
+  EXPECT_TRUE(test_api_->GetGameDashboardButton()->HasFocus());
+
+  // Tab navigate backwards and verify focus is placed on the last element in
+  // the main menu.
+  TabNavigateBackward();
+  EXPECT_TRUE(test_api_->GetMainMenuSettingsButton()->HasFocus());
+}
+
+TEST_F(GameDashboardContextTest, TabNavigationMainMenuAndToolbar) {
+  // Open the main menu and toolbar, then tab navigate to the last element in
+  // the main menu.
+  CreateGameWindow(/*is_arc_window=*/false);
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+  TabNavigateForward();
+  views::Widget* main_menu_widget = test_api_->GetMainMenuWidget();
+  ASSERT_TRUE(main_menu_widget->IsActive());
+  ASSERT_TRUE(test_api_->GetMainMenuToolbarTile()->HasFocus());
+  main_menu_widget->GetFocusManager()->SetFocusedView(
+      test_api_->GetMainMenuSettingsButton());
+  ASSERT_TRUE(test_api_->GetMainMenuSettingsButton()->HasFocus());
+
+  // Tab navigate forward and verify focus is placed on the first element in the
+  // toolbar.
+  TabNavigateForward();
+  views::Widget* toolbar_widget = test_api_->GetToolbarWidget();
+  EXPECT_TRUE(toolbar_widget->IsActive());
+  EXPECT_TRUE(test_api_->GetToolbarGamepadButton()->HasFocus());
+
+  // Move focus to the last element in the toolbar, tab navigate forward, and
+  // verify focus is placed on the Game Dashboard button.
+  toolbar_widget->GetFocusManager()->SetFocusedView(
+      test_api_->GetToolbarScreenshotButton());
+  TabNavigateForward();
+  EXPECT_TRUE(test_api_->GetGameDashboardButton()->HasFocus());
+
+  // Tab navigate forward and verify focus is placed back on the main menu's
+  // first element.
+  TabNavigateForward();
+  EXPECT_TRUE(test_api_->GetMainMenuToolbarTile()->HasFocus());
+
+  // Tab navigate backwards and verify focus is placed back on the Game
+  // Dashboard button.
+  TabNavigateBackward();
+  EXPECT_TRUE(test_api_->GetGameDashboardButton()->HasFocus());
+
+  // Tab navigate backwards and verify focus is placed back on the last element
+  // in the toolbar.
+  TabNavigateBackward();
+  EXPECT_TRUE(test_api_->GetToolbarScreenshotButton()->HasFocus());
+
+  // Move focus to the first element in the toolbar, tab navigate backwards, and
+  // verify focus is placed on the last element in the main menu.
+  toolbar_widget->GetFocusManager()->SetFocusedView(
+      test_api_->GetToolbarGamepadButton());
+  TabNavigateBackward();
+  EXPECT_TRUE(test_api_->GetMainMenuSettingsButton()->HasFocus());
+}
+
+TEST_F(GameDashboardContextTest, TabNavigationToolbar) {
+  // Open the main menu and toolbar, close the main menu, then begin tab
+  // navigation.
+  CreateGameWindow(/*is_arc_window=*/false);
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+  test_api_->CloseTheMainMenu();
+  test_api_->SetFocusOnToolbar();
+  ASSERT_TRUE(test_api_->IsToolbarExpanded());
+  TabNavigateForward();
+
+  // Verify the toolbar is active and has focus.
+  views::Widget* toolbar_widget = test_api_->GetToolbarWidget();
+  EXPECT_TRUE(toolbar_widget->IsActive());
+  EXPECT_TRUE(test_api_->GetToolbarGamepadButton()->HasFocus());
+
+  // Move focus to the last element in the toolbar, tab navigate forward, and
+  // verify focus is placed on the Game Dashboard button.
+  toolbar_widget->GetFocusManager()->SetFocusedView(
+      test_api_->GetToolbarScreenshotButton());
+  ASSERT_TRUE(test_api_->GetToolbarScreenshotButton()->HasFocus());
+  TabNavigateForward();
+  EXPECT_TRUE(test_api_->GetGameDashboardButton()->HasFocus());
+
+  // Tab navigate forward and verify focus is placed back on the toolbar's
+  // first element.
+  TabNavigateForward();
+  EXPECT_TRUE(test_api_->GetToolbarGamepadButton()->HasFocus());
+
+  // Tab navigate backwards and verify focus is placed back on the Game
+  // Dashboard button.
+  TabNavigateBackward();
+  EXPECT_TRUE(test_api_->GetGameDashboardButton()->HasFocus());
+
+  // Tab navigate backwards and verify focus is placed back on the last element
+  // in the toolbar.
+  TabNavigateBackward();
+  EXPECT_TRUE(test_api_->GetToolbarScreenshotButton()->HasFocus());
+}
+
 // -----------------------------------------------------------------------------
 // GameTypeGameDashboardContextTest:
 // Test fixture to test both ARC and GeForceNow game window depending on the
@@ -2441,7 +2576,7 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
           .append(kGameDashboardHistogramSeparator)
           .append(kGameDashboardHistogramOff);
 
-  // Toggle on/off main menu by pressing GD button.
+  // Toggle on/off main menu by pressing Game Dashboard button.
   test_api_->OpenTheMainMenu();
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_on,

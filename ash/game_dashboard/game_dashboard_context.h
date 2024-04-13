@@ -224,6 +224,19 @@ class ASH_EXPORT GameDashboardContext : public ui::EventHandler,
   // Ensures that the main menu stacks above the toolbar.
   void EnsureMainMenuAboveToolbar();
 
+  // Determines whether it's required to tab navigate from one Game Dashboard
+  // widget to another widget. Returns false if tab-navigating within the same
+  // widget.
+  bool ShouldNavigateToNewWidget(const ui::KeyEvent* event) const;
+
+  // Returns a list of visible Game Dashboard widgets that are available to be
+  // traversed.
+  std::vector<views::Widget*> GetTraversableWidgets() const;
+
+  // Manually moves focus to the `new_widget`. If `reverse` is true, focus will
+  // move backwards.
+  void MoveFocus(views::Widget* new_widget, ui::Event* event, bool reverse);
+
   const raw_ptr<aura::Window> game_window_;
 
   const std::string app_id_;
