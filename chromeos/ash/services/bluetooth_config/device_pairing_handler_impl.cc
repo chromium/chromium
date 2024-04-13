@@ -136,7 +136,7 @@ void DevicePairingHandlerImpl::CancelPairing() {
         << "Could not cancel pairing for device to due device no longer being "
            "found, identifier: "
         << current_pairing_device_id();
-    FinishCurrentPairingRequest(device::ConnectionFailureReason::kAuthFailed);
+    FinishCurrentPairingRequest(device::ConnectionFailureReason::kNotFound);
     return;
   }
 
@@ -151,7 +151,7 @@ void DevicePairingHandlerImpl::OnRequestPinCode(const std::string& pin_code) {
     BLUETOOTH_LOG(ERROR)
         << "OnRequestPinCode failed due to device no longer being "
         << "found, identifier: " << current_pairing_device_id();
-    FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
+    FinishCurrentPairingRequest(device::ConnectionFailureReason::kNotFound);
     return;
   }
 
@@ -166,7 +166,7 @@ void DevicePairingHandlerImpl::OnRequestPasskey(const std::string& passkey) {
     BLUETOOTH_LOG(ERROR)
         << "OnRequestPasskey failed due to device no longer being "
         << "found, identifier: " << current_pairing_device_id();
-    FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
+    FinishCurrentPairingRequest(device::ConnectionFailureReason::kNotFound);
     return;
   }
 
@@ -194,7 +194,7 @@ void DevicePairingHandlerImpl::OnConfirmPairing(bool confirmed) {
     BLUETOOTH_LOG(ERROR)
         << "OnConfirmPairing failed due to device no longer being "
         << "found, identifier: " << current_pairing_device_id();
-    FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
+    FinishCurrentPairingRequest(device::ConnectionFailureReason::kNotFound);
     return;
   }
 

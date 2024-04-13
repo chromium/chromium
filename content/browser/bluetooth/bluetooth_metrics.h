@@ -53,6 +53,7 @@ enum class UMAConnectGATTOutcome {
   NOT_CONNECTED = 13,
   DOES_NOT_EXIST = 14,
   INVALID_ARGS = 15,
+  NON_AUTH_TIMEOUT = 16,
   // Note: Add new ConnectGATT outcomes immediately above this line. Make sure
   // to update the enum list in tools/metrics/histograms/histograms.xml
   // accordingly.

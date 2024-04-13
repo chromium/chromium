@@ -54,6 +54,7 @@ chrome.bluetoothPrivate.ConnectResultType = {
   NOT_CONNECTED: 'notConnected',
   DOES_NOT_EXIST: 'doesNotExist',
   INVALID_ARGS: 'invalidArgs',
+  NON_AUTH_TIMEOUT: 'nonAuthTimeout',
 };
 
 /**

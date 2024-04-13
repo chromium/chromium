@@ -29,6 +29,7 @@ enum ConnectResult {
   NOT_CONNECTED,
   DOES_NOT_EXIST,
   INVALID_ARGS,
+  NON_AUTH_TIMEOUT,
 };
 
 union LocalCharacteristicReadResult {

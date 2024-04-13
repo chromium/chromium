@@ -58,7 +58,8 @@ namespace bluetoothPrivate {
     alreadyExists,
     notConnected,
     doesNotExist,
-    invalidArgs
+    invalidArgs,
+    nonAuthTimeout
   };
 
   // Valid pairing responses.

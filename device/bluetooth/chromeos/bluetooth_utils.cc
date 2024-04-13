@@ -181,6 +181,10 @@ void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
     case ConnectionFailureReason::kFailed:
       [[fallthrough]];
     case ConnectionFailureReason::kInprogress:
+      [[fallthrough]];
+    case ConnectionFailureReason::kNotFound:
+      [[fallthrough]];
+    case ConnectionFailureReason::kBluetoothDisabled:
       const std::string result_histogram_name_prefix =
           "Bluetooth.ChromeOS.Pairing.Result";
       base::UmaHistogramEnumeration(

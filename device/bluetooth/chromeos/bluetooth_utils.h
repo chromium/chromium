@@ -56,7 +56,9 @@ enum class ConnectionFailureReason {
   kAuthCanceled = 8,
   kAuthRejected = 9,
   kInprogress = 10,
-  kMaxValue = kInprogress
+  kNotFound = 11,
+  kBluetoothDisabled = 12,
+  kMaxValue = kBluetoothDisabled
 };
 
 // This enum is tied directly to a UMA enum defined in

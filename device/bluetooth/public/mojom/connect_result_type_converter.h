@@ -50,6 +50,8 @@ struct TypeConverter<bluetooth::mojom::ConnectResult,
         return bluetooth::mojom::ConnectResult::DOES_NOT_EXIST;
       case device::BluetoothDevice::ConnectErrorCode::ERROR_INVALID_ARGS:
         return bluetooth::mojom::ConnectResult::INVALID_ARGS;
+      case device::BluetoothDevice::ConnectErrorCode::ERROR_NON_AUTH_TIMEOUT:
+        return bluetooth::mojom::ConnectResult::NON_AUTH_TIMEOUT;
       case device::BluetoothDevice::ConnectErrorCode::NUM_CONNECT_ERROR_CODES:
         NOTREACHED();
         return bluetooth::mojom::ConnectResult::FAILED;

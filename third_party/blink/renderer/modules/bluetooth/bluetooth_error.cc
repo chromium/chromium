@@ -118,6 +118,8 @@ DOMException* BluetoothError::CreateDOMException(
                 "Connection Error: Already exists.");
       MAP_ERROR(CONNECT_NOT_CONNECTED, DOMExceptionCode::kInvalidStateError,
                 "Connection Error: Not connected.");
+      MAP_ERROR(CONNECT_NON_AUTH_TIMEOUT, DOMExceptionCode::kInvalidStateError,
+                "Connection Error: Non-authentication timeout.");
 
       // NetworkErrors:
       MAP_ERROR(CONNECT_ALREADY_IN_PROGRESS, DOMExceptionCode::kNetworkError,

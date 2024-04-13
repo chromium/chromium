@@ -262,6 +262,9 @@ WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
     case BluetoothDevice::ERROR_INVALID_ARGS:
       RecordConnectGATTOutcome(UMAConnectGATTOutcome::INVALID_ARGS);
       return blink::mojom::WebBluetoothResult::CONNECT_INVALID_ARGS;
+    case BluetoothDevice::ERROR_NON_AUTH_TIMEOUT:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::NON_AUTH_TIMEOUT);
+      return blink::mojom::WebBluetoothResult::CONNECT_NON_AUTH_TIMEOUT;
     case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
       NOTREACHED();
       return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;

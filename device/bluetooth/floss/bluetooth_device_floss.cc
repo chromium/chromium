@@ -309,7 +309,7 @@ void BluetoothDeviceFloss::OnCreateBond(DBusResult<bool> ret) {
 void BluetoothDeviceFloss::ConnectionIncomplete() {
   UpdateConnectingState(
       ConnectingState::kIdle,
-      BluetoothDevice::ConnectErrorCode::ERROR_DEVICE_NOT_READY);
+      BluetoothDevice::ConnectErrorCode::ERROR_NON_AUTH_TIMEOUT);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
