@@ -4833,6 +4833,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Mahi.QuestionAnswer.LoadingTime" units="ms"
+    expires_after="2025-04-10">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the time it takes to answer the question inside the Mahi panel.
+    Emitted when an answer text is fully loaded and shows up.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Mahi.Summary.LoadingTime" units="ms"
+    expires_after="2025-04-10">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the time it takes to load the summary inside the Mahi panel. Emitted
+    when summary text is fully loaded and shows up.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Mahi.UserJourneyTime" units="ms"
     expires_after="2025-04-10">
   <owner>leandre@chromium.org</owner>

@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -57,6 +58,8 @@ class ASH_EXPORT SummaryOutlinesSection : public views::BoxLayoutView,
   raw_ptr<views::AnimatedImageView> outlines_loading_animated_image_ = nullptr;
   raw_ptr<views::Label> summary_label_ = nullptr;
   raw_ptr<views::View> outlines_container_ = nullptr;
+
+  base::Time summary_start_loading_time_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, SummaryOutlinesSection, views::BoxLayoutView)

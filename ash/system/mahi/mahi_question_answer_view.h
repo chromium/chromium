@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
+#include "base/time/time.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -52,6 +53,10 @@ class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView,
   // an answer. The image is created when waiting and destroyed when the answer
   // is loaded.
   views::ViewTracker answer_loading_animated_image_;
+
+  // Records the time when `answer_loading_animated_image_` starts showing and
+  // playing the animation. Used for metrics collection.
+  base::TimeTicks answer_start_loading_time_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, MahiQuestionAnswerView, views::FlexLayoutView)

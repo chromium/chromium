@@ -24,6 +24,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -239,6 +241,10 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
     case MahiUiUpdateType::kAnswerLoaded:
       RemoveLoadingAnimatedImage();
 
+      base::UmaHistogramTimes(
+          mahi_constants::kAnswerLoadingTimeHistogramName,
+          base::TimeTicks::Now() - answer_start_loading_time_);
+
       AddChildView(
           CreateQuestionAnswerRow(update.GetAnswer(), /*is_question=*/false));
       return;
@@ -297,6 +303,8 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
               .Build());
 
       answer_loading_animated_image_.SetView(answer_loading_animated_image);
+
+      answer_start_loading_time_ = base::TimeTicks::Now();
 
       return;
     }

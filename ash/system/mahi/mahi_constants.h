@@ -86,6 +86,10 @@ enum class PanelButton {
 inline constexpr char kMahiFeedbackHistogramName[] = "Ash.Mahi.Feedback";
 inline constexpr char kMahiButtonClickHistogramName[] =
     "Ash.Mahi.ButtonClicked";
+inline constexpr char kAnswerLoadingTimeHistogramName[] =
+    "Ash.Mahi.QuestionAnswer.LoadingTime";
+inline constexpr char kSummaryLoadingTimeHistogramName[] =
+    "Ash.Mahi.Summary.LoadingTime";
 inline constexpr char kMahiUserJourneyTimeHistogramName[] =
     "Ash.Mahi.UserJourneyTime";
 

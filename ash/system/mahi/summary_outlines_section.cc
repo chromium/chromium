@@ -13,6 +13,8 @@
 #include "ash/system/mahi/resources/grit/mahi_resources.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -191,6 +193,9 @@ void SummaryOutlinesSection::HandleOutlinesLoaded(
   outlines_loading_animated_image_->SetVisible(false);
   // TODO(b/330643995): Show the outlines section once it is ready.
   outlines_container_->SetVisible(false);
+
+  // TODO(b/333916944): Add metrics recording the outline loading animation time
+  // here.
 }
 
 void SummaryOutlinesSection::HandleSummaryLoaded(
@@ -199,6 +204,9 @@ void SummaryOutlinesSection::HandleSummaryLoaded(
   summary_label_->SetText(summary_text);
   summary_loading_animated_image_->Stop();
   summary_loading_animated_image_->SetVisible(false);
+
+  base::UmaHistogramTimes(mahi_constants::kSummaryLoadingTimeHistogramName,
+                          base::Time::Now() - summary_start_loading_time_);
 }
 
 void SummaryOutlinesSection::LoadSummaryAndOutlines() {
@@ -226,6 +234,8 @@ void SummaryOutlinesSection::LoadSummaryAndOutlines() {
       mahi_animation_utils::GetLottiePlaybackConfig(
           *outlines_loading_animated_image_->animated_image()->skottie(),
           IDR_MAHI_LOADING_OUTLINES_ANIMATION));
+
+  summary_start_loading_time_ = base::Time::Now();
 
   ui_controller_->UpdateSummaryAndOutlines();
 }

@@ -101,8 +101,9 @@ void PressEnter() {
 void ReturnDefaultAnswerAsyncly(
     base::test::TestFuture<void>& waiter,
     MahiResponseStatus status,
-    chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    chromeos::MahiManager::MahiAnswerQuestionCallback callback,
+    base::TimeDelta delay = base::TimeDelta()) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           [](base::OnceClosure unblock_closure, MahiResponseStatus status,
@@ -110,7 +111,8 @@ void ReturnDefaultAnswerAsyncly(
             std::move(callback).Run(u"fake answer", status);
             std::move(unblock_closure).Run();
           },
-          waiter.GetCallback(), status, std::move(callback)));
+          waiter.GetCallback(), status, std::move(callback)),
+      delay);
 }
 
 // Returns `kFakeOutlines` syncly.
@@ -142,8 +144,9 @@ void ReturnDefaultOutlinesAsyncly(
 void ReturnDefaultSummaryAsyncly(
     base::test::TestFuture<void>& waiter,
     MahiResponseStatus status,
-    chromeos::MahiManager::MahiSummaryCallback callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    chromeos::MahiManager::MahiSummaryCallback callback,
+    base::TimeDelta delay = base::TimeDelta()) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           [](base::OnceClosure unblock_closure, MahiResponseStatus status,
@@ -151,7 +154,8 @@ void ReturnDefaultSummaryAsyncly(
             std::move(callback).Run(u"fake summary", status);
             std::move(unblock_closure).Run();
           },
-          waiter.GetCallback(), status, std::move(callback)));
+          waiter.GetCallback(), status, std::move(callback)),
+      delay);
 }
 
 // Returns a long summary.
@@ -223,14 +227,18 @@ class MahiPanelViewTest : public AshTestBase {
 
   // Creates a widget hosting `MahiPanelView`. Recreates if there is one.
   void CreatePanelWidget() {
-    // Avoid creating a dangling pointer.
-    panel_view_ = nullptr;
-
-    widget_.reset();
+    ResetPanelWidget();
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
     panel_view_ = widget_->SetContentsView(
         std::make_unique<MahiPanelView>(&ui_controller_));
+  }
+
+  void ResetPanelWidget() {
+    // Avoid creating a dangling pointer.
+    panel_view_ = nullptr;
+
+    widget_.reset();
   }
 
   // Submit a test question by setting the text in the textfield and click send
@@ -611,6 +619,67 @@ TEST_F(MahiPanelViewTest, LoadingAnimations) {
   EXPECT_TRUE(summary_label->GetVisible());
   // TODO(b/330643995): Expect TRUE after outlines are shown by default.
   EXPECT_FALSE(outlines_container->GetVisible());
+}
+
+TEST_F(MahiPanelViewTest, SummaryLoadingAnimationsMetricsRecord) {
+  // Reset the default panel to avoid unnecessary histogram record.
+  ResetPanelWidget();
+
+  base::HistogramTester histogram_tester;
+  auto delay_time = base::Milliseconds(100);
+
+  // Config the mock mahi manager to return a summary asyncly.
+  base::test::TestFuture<void> summary_waiter;
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault([&summary_waiter, delay_time](
+                         chromeos::MahiManager::MahiSummaryCallback callback) {
+        ReturnDefaultSummaryAsyncly(
+            summary_waiter, MahiResponseStatus::kSuccess, std::move(callback),
+            /*delay=*/delay_time);
+      });
+
+  MahiPanelView mahi_view(ui_controller());
+
+  histogram_tester.ExpectTimeBucketCount(
+      mahi_constants::kSummaryLoadingTimeHistogramName, delay_time, 0);
+
+  // Test that loading time metrics is recorded when summary is loaded.
+  ASSERT_TRUE(summary_waiter.WaitAndClear());
+  histogram_tester.ExpectTimeBucketCount(
+      mahi_constants::kSummaryLoadingTimeHistogramName, delay_time, 1);
+
+  // Test that loading time metrics is recorded when the content is refreshed.
+  ui_controller()->RefreshContents();
+  ASSERT_TRUE(summary_waiter.Wait());
+  histogram_tester.ExpectTimeBucketCount(
+      mahi_constants::kSummaryLoadingTimeHistogramName, delay_time, 2);
+}
+
+TEST_F(MahiPanelViewTest, AnswerLoadingAnimationsMetricsRecord) {
+  base::HistogramTester histogram_tester;
+  auto delay_time = base::Milliseconds(100);
+
+  // Config the mock mahi manager to return an answer asyncly.
+  base::test::TestFuture<void> answer_waiter;
+  EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillOnce(
+          [&answer_waiter, delay_time](
+              const std::u16string& question, bool current_panel_content,
+              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            ReturnDefaultAnswerAsyncly(
+                answer_waiter, MahiResponseStatus::kSuccess,
+                std::move(callback), /*delay=*/delay_time);
+          });
+
+  SubmitTestQuestion();
+
+  histogram_tester.ExpectTimeBucketCount(
+      mahi_constants::kAnswerLoadingTimeHistogramName, delay_time, 0);
+
+  // Test that loading time metrics is recorded when a question is answered.
+  ASSERT_TRUE(answer_waiter.Wait());
+  histogram_tester.ExpectTimeBucketCount(
+      mahi_constants::kAnswerLoadingTimeHistogramName, delay_time, 1);
 }
 
 // Tests that pressing on the send button with a valid textfield takes the user
