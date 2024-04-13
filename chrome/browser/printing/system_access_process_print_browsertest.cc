@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/buildflags/buildflags.h"
@@ -793,6 +794,12 @@ class SystemAccessProcessPrintBrowserTestBase
     CheckForQuit();
   }
 
+  void OnRenderFrameDeleted() override {
+    if (check_for_render_frame_deleted_) {
+      CheckForQuit();
+    }
+  }
+
   // PrintJob::Observer:
   void OnDestruction() override {
     ++print_job_destruction_count_;
@@ -1055,6 +1062,10 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 #endif
 
+  void SetCheckForRenderFrameDeleted(bool check) {
+    check_for_render_frame_deleted_ = check;
+  }
+
   const std::optional<bool> system_print_registration_succeeded() const {
     return system_print_registration_succeeded_;
   }
@@ -1255,6 +1266,7 @@ class SystemAccessProcessPrintBrowserTestBase
 #endif
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   bool check_for_print_preview_done_ = false;
+  bool check_for_render_frame_deleted_ = false;
   TestPrintJobWorker::PrintCallbacks test_print_job_worker_callbacks_;
   TestPrintJobWorkerOop::PrintCallbacks test_print_job_worker_oop_callbacks_;
   CreatePrinterQueryCallback test_create_printer_query_callback_;
@@ -2437,6 +2449,65 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   EXPECT_EQ(print_job_destruction_count(), 0);
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+// TODO(crbug.com/332512063):  Enable test once crash is resolved.
+IN_PROC_BROWSER_TEST_P(
+    SystemAccessProcessSandboxedServicePrintBrowserTest,
+    DISABLED_PrintPreviewPrintAfterSystemPrintRendererCrash) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
+  content::RenderProcessHost* frame_rph = frame->GetProcess();
+
+  KillPrintRenderFrame frame_content(frame_rph,
+                                     GetPrintRenderFrame(frame).get());
+  frame_content.OverrideBinderForTesting(frame);
+
+  // With the renderer being prepared to fake a crash, the test needs to watch
+  // for it being deleted.
+  SetCheckForRenderFrameDeleted(/*check=*/true);
+  content::ScopedAllowRendererCrashes allow_renderer_crash;
+
+  // First invoke system print directly.
+
+  // The expected events for this are:
+  // 1.  Printing is attempted, but quickly get notified that the render frame
+  //     has been deleted because the renderer "crashed".
+  SetNumExpectedMessages(/*num=*/1);
+
+  StartBasicPrint(web_contents);
+
+  WaitUntilCallbackReceived();
+
+  // After renderer crash, reload the page again in the same tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Now try to initiate print from a Print Preview.
+  PrepareRunloop();
+  ResetNumReceivedMessages();
+
+  // No longer interested in when the renderer is deleted.
+  SetCheckForRenderFrameDeleted(/*check=*/false);
+
+  // The expected events for this are:
+  // 1.  Printing is attempted, but the browser crashes on a CHECK because of
+  //     inconsistent OOPPD browser state leftover after renderer crash.
+  // TODO(crbug.com/332512063):  Update expectations once CHECK no longer
+  // occurs.
+  SetNumExpectedMessages(/*num=*/1);
+
+  PrintAfterPreviewIsReadyAndLoaded();
+}
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
                        StartBasicPrint) {

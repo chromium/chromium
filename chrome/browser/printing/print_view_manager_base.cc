@@ -897,6 +897,10 @@ void PrintViewManagerBase::RenderFrameDeleted(
   if (render_frame_host != printing_rfh_)
     return;
 
+  for (auto& observer : GetTestObservers()) {
+    observer.OnRenderFrameDeleted();
+  }
+
   printing_rfh_ = nullptr;
 
   PrintManager::PrintingRenderFrameDeleted();

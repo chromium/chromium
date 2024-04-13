@@ -96,6 +96,8 @@ class PrintBrowserTest : public InProcessBrowserTest {
       : public mojom::PrintRenderFrameInterceptorForTesting {
    public:
     explicit KillPrintRenderFrame(content::RenderProcessHost* rph);
+    KillPrintRenderFrame(content::RenderProcessHost* rph,
+                         mojom::PrintRenderFrame* print_render_frame);
     ~KillPrintRenderFrame() override;
 
     void OverrideBinderForTesting(content::RenderFrameHost* render_frame_host);
@@ -113,6 +115,7 @@ class PrintBrowserTest : public InProcessBrowserTest {
 
    private:
     const raw_ptr<content::RenderProcessHost> rph_;
+    const raw_ptr<mojom::PrintRenderFrame> print_render_frame_;
     mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
   };
 

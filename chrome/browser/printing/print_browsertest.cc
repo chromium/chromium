@@ -391,7 +391,12 @@ PrintBrowserTest::WorkerHelper::WorkerHelper(
 
 PrintBrowserTest::KillPrintRenderFrame::KillPrintRenderFrame(
     content::RenderProcessHost* rph)
-    : rph_(rph) {}
+    : rph_(rph), print_render_frame_(nullptr) {}
+
+PrintBrowserTest::KillPrintRenderFrame::KillPrintRenderFrame(
+    content::RenderProcessHost* rph,
+    mojom::PrintRenderFrame* print_render_frame)
+    : rph_(rph), print_render_frame_(print_render_frame) {}
 
 PrintBrowserTest::KillPrintRenderFrame::~KillPrintRenderFrame() = default;
 
@@ -418,8 +423,9 @@ void PrintBrowserTest::KillPrintRenderFrame::Bind(
 
 mojom::PrintRenderFrame*
 PrintBrowserTest::KillPrintRenderFrame::GetForwardingInterface() {
-  NOTREACHED();
-  return nullptr;
+  CHECK(print_render_frame_);
+  rph_->Shutdown(0);
+  return print_render_frame_;
 }
 
 void PrintBrowserTest::KillPrintRenderFrame::PrintFrameContent(
