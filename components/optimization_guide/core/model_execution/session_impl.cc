@@ -658,11 +658,11 @@ void SessionImpl::SendResponse(
   proto::OnDeviceModelServiceResponse* logged_response =
       on_device_state_->MutableLoggedResponse();
 
-  std::string current_response = on_device_state_->current_response;
-  logged_response->set_output_string(current_response);
+  logged_response->set_output_string(on_device_state_->current_response);
 
+  std::string redacted_response = on_device_state_->current_response;
   auto redact_result =
-      on_device_state_->opts.adapter->Redact(*last_message_, current_response);
+      on_device_state_->opts.adapter->Redact(*last_message_, redacted_response);
   if (redact_result == RedactResult::kReject) {
     logged_response->set_status(
         proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
@@ -699,8 +699,8 @@ void SessionImpl::SendResponse(
     }
   }
 
-  auto output =
-      on_device_state_->opts.adapter->ConstructOutputMetadata(current_response);
+  auto output = on_device_state_->opts.adapter->ConstructOutputMetadata(
+      redacted_response);
   if (!output) {
     CancelPendingResponse(
         ExecuteModelResult::kFailedConstructingResponseMessage,
