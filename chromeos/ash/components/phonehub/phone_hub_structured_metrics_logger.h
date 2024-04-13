@@ -16,7 +16,6 @@
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "components/metrics/structured/event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -61,8 +60,6 @@ enum class NetworkState {
   kDifferentNetwork = 2,
   kPhoneOnCellular = 3
 };
-
-enum class Medium { kBluetooth = 0, kWebRTC = 1 };
 
 class PhoneHubStructuredMetricsLogger
     : public ash::secure_channel::SecureChannelStructuredMetricsLogger {
@@ -113,7 +110,6 @@ class PhoneHubStructuredMetricsLogger
   void OnNetworkStateListFetched(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
-  void UploadDeviceInfo();
 
   // Phone information
   std::optional<proto::NetworkStatus> phone_network_status_;
@@ -125,7 +121,6 @@ class PhoneHubStructuredMetricsLogger
   std::string chromebook_locale_;
 
   std::string phone_hub_session_id_;
-  Medium medium_ = Medium::kBluetooth;
 
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_;
