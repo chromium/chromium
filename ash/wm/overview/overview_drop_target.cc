@@ -143,6 +143,10 @@ views::View* OverviewDropTarget::GetBackDropView() const {
   return nullptr;
 }
 
+bool OverviewDropTarget::ShouldHaveShadow() const {
+  return false;
+}
+
 void OverviewDropTarget::UpdateRoundedCornersAndShadow() {}
 
 void OverviewDropTarget::SetOpacity(float opacity) {}

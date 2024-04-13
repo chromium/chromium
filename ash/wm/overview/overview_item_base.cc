@@ -68,16 +68,26 @@ bool OverviewItemBase::IsDragItem() const {
 }
 
 void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
-  // Shadow is normally turned off during animations and reapplied when on
-  // animation complete. On destruction, `shadow_` is cleaned up before
-  // `transform_window_`, which may call this function, so early exit if
-  // `shadow_` is nullptr.
+  const bool should_have_shadow = ShouldHaveShadow();
+  if (should_have_shadow != !!shadow_) {
+    if (should_have_shadow) {
+      CreateShadow();
+    } else {
+      shadow_.reset();
+    }
+  }
+
+  // On destruction, `shadow_` is cleaned up before `transform_window_`, which
+  // may call this function, so early exit if `shadow_` is nullptr.
   if (!shadow_) {
     return;
   }
 
   const gfx::RectF shadow_bounds_in_screen = target_bounds_;
   auto* shadow_layer = shadow_->GetLayer();
+
+  // Shadow is normally turned off during animations and reapplied when on
+  // animation complete.
   if (!shadow_visible || shadow_bounds_in_screen.IsEmpty()) {
     shadow_layer->SetVisible(false);
     return;
@@ -93,7 +103,9 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
 }
 
 void OverviewItemBase::UpdateShadowTypeForDrag(bool is_dragging) {
-  shadow_->SetType(is_dragging ? kDraggedShadowType : kDefaultShadowType);
+  if (shadow_) {
+    shadow_->SetType(is_dragging ? kDraggedShadowType : kDefaultShadowType);
+  }
 }
 
 void OverviewItemBase::HandleGestureEventForTabletModeLayout(
@@ -241,7 +253,7 @@ views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
   return params;
 }
 
-void OverviewItemBase::ConfigureTheShadow() {
+void OverviewItemBase::CreateShadow() {
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
       kDefaultShadowType, SystemShadow::LayerRecreatedCallback());
   auto* shadow_layer = shadow_->GetLayer();

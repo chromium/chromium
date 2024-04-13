@@ -48,6 +48,7 @@ class OverviewDropTarget : public OverviewItemBase {
   void EnsureVisible() override;
   std::vector<OverviewFocusableView*> GetFocusableViews() const override;
   views::View* GetBackDropView() const override;
+  bool ShouldHaveShadow() const override;
   void UpdateRoundedCornersAndShadow() override;
   void SetOpacity(float opacity) override;
   float GetOpacity() const override;

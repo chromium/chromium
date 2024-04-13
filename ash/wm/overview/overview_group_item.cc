@@ -293,6 +293,10 @@ views::View* OverviewGroupItem::GetBackDropView() const {
   return overview_group_container_view_;
 }
 
+bool OverviewGroupItem::ShouldHaveShadow() const {
+  return overview_items_.size() > 1u;
+}
+
 void OverviewGroupItem::UpdateRoundedCornersAndShadow() {
   for (const auto& overview_item : overview_items_) {
     overview_item->UpdateRoundedCorners();
@@ -422,12 +426,16 @@ void OverviewGroupItem::OnOverviewItemWindowDestroying(
 
   for (const auto& item : overview_items_) {
     if (item && item.get() != overview_item) {
+      // Remove the group-level shadow and apply it on the window-level to
+      // ensure that the shadow bounds get updated properly.
+      item->set_eligible_for_shadow_config(/*eligible_for_shadow_config=*/true);
+
       OverviewItemView* item_view = item->overview_item_view();
       item_view->ResetRoundedCorners();
     }
   }
 
-  overview_grid_->PositionWindows(/*animate=*/false);
+  overview_grid_->PositionWindows(/*animate=*/true);
 }
 
 void OverviewGroupItem::HandleDragEvent(const gfx::PointF& location_in_screen) {
@@ -445,7 +453,7 @@ void OverviewGroupItem::CreateItemWidget() {
       desks_util::GetActiveDeskContainerForRoot(overview_grid_->root_window()),
       "OverviewGroupItemWidget", /*accept_events=*/true));
 
-  ConfigureTheShadow();
+  CreateShadow();
 
   overview_group_container_view_ = item_widget_->SetContentsView(
       std::make_unique<OverviewGroupContainerView>(this));

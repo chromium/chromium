@@ -204,6 +204,9 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // Returns the backdrop view of `this`.
   virtual views::View* GetBackDropView() const = 0;
 
+  // Returns true if `shadow_` should be created on the item, false otherwise.
+  virtual bool ShouldHaveShadow() const = 0;
+
   // Updates the rounded corners and shadow on `this`.
   virtual void UpdateRoundedCornersAndShadow() = 0;
 
@@ -307,8 +310,10 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
     target_bounds_ = target_bounds;
   }
 
+  SystemShadow* shadow_for_testing() { return shadow_.get(); }
+
   gfx::Rect get_shadow_content_bounds_for_testing() const {
-    return shadow_.get()->GetContentBounds();
+    return shadow_ ? shadow_.get()->GetContentBounds() : gfx::Rect();
   }
 
   RoundedLabelWidget* get_cannot_snap_widget_for_testing() {
@@ -328,7 +333,7 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
 
   // Creates the `shadow_` and stacks the shadow layer to be at the bottom after
   // `item_widget_` has been created.
-  void ConfigureTheShadow();
+  void CreateShadow();
 
   // Drag event can be handled differently based on the concreate instance of
   // `this`. For `OverviewItem`, the drag will be on window-level. For

@@ -577,6 +577,10 @@ views::View* OverviewItem::GetBackDropView() const {
   return overview_item_view_->backdrop_view();
 }
 
+bool OverviewItem::ShouldHaveShadow() const {
+  return eligible_for_shadow_config_;
+}
+
 void OverviewItem::UpdateRoundedCornersAndShadow() {
   UpdateRoundedCorners();
 
@@ -1148,7 +1152,7 @@ void OverviewItem::CreateItemWidget(
   wm::SetWindowVisibilityAnimationTransition(widget_window, wm::ANIMATE_NONE);
 
   if (eligible_for_shadow_config_) {
-    ConfigureTheShadow();
+    CreateShadow();
   }
 
   overview_item_view_ =
