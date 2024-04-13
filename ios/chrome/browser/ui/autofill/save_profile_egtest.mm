@@ -7,7 +7,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -114,14 +116,18 @@ BOOL WaitForKeyboardToAppear() {
   config.features_disabled.push_back(
       autofill::features::test::kAutofillServerCommunication);
 
+  if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
+    config.features_enabled.push_back(kAutofillStickyInfobarIos);
+  }
+
   return config;
 }
 
 #pragma mark - Test helper methods
 
 // Fills the president profile in the form by clicking on the button, submits
-// the form and accepts the save address banner.
-- (void)fillPresidentProfileAndShowSaveModal {
+// the form to the save address profile infobar.
+- (void)fillPresidentProfileAndShowSaveInfobar {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
 
@@ -132,6 +138,10 @@ BOOL WaitForKeyboardToAppear() {
   [ChromeEarlGrey tapWebStateElementWithID:@"fill_profile_president"];
   [ChromeEarlGrey tapWebStateElementWithID:@"submit_profile"];
   [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
+}
+
+- (void)fillPresidentProfileAndShowSaveModal {
+  [self fillPresidentProfileAndShowSaveInfobar];
 
   // Accept the banner.
   [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
@@ -355,6 +365,52 @@ BOOL WaitForKeyboardToAppear() {
                   @"Profile should have been saved.");
 
   [SigninEarlGrey signOut];
+}
+
+// Tests the sticky address prompt journey where the prompt remains there when
+// navigating without an explicit user gesture, and then the prompt is dismissed
+// when navigating with a user gesture. Test with the address save prompt but
+// the type of address prompt doesn't matter in this test case.
+- (void)testStickySavePromptJourney {
+  [self fillPresidentProfileAndShowSaveInfobar];
+
+  {
+    // Reloading page from script shouldn't dismiss the infobar.
+    NSString* script = @"location.reload();";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+  {
+    // Assigning url from script to the page aka open an url shouldn't dismiss
+    // the infobar.
+    NSString* script = @"window.location.assign(window.location.href);";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+  {
+    // Pushing new history entry without reloading content shouldn't dismiss the
+    // infobar.
+    NSString* script = @"history.pushState({}, '', 'destination2.html');";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+  {
+    // Replacing history entry without reloading content shouldn't dismiss the
+    // infobar.
+    NSString* script = @"history.replaceState({}, '', 'destination3.html');";
+    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  }
+
+  // Wait some time for things to settle.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(200));
+
+  // Verify that the prompt is still there after the non-user initiated
+  // navigations.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kInfobarBannerViewIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Navigate with an emulated user gesture and verify that dismisses the
+  // prompt.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 }
 
 @end
