@@ -290,6 +290,9 @@ message CrosState {
   // Request Eche feature status info from the phone through Phone hub.
   bool should_provide_eche_status = 5;
 
+  optional int64 pseudonymous_id_next_rotation_date = 6;
+  optional string phone_hub_session_id = 7;
+
   reserved 3;  // deprecated notification_icon_styling field.
 }
 

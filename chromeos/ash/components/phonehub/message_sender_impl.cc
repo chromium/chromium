@@ -59,6 +59,7 @@ void MessageSenderImpl::SendCrosState(
   proto::CrosState request;
   request.set_notification_setting(is_notification_enabled);
   request.set_camera_roll_setting(is_camera_roll_enabled);
+  phone_hub_structured_metrics_logger_->SetChromebookInfo(request);
 
   if (attestation_certs != nullptr) {
     proto::AttestationData* attestation_data =

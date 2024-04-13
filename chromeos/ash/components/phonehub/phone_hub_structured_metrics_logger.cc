@@ -12,7 +12,6 @@
 #include "base/i18n/rtl.h"
 #include "base/system/sys_info.h"
 #include "base/uuid.h"
-#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/pref_names.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "components/metrics/structured/structured_metrics_features.h"
@@ -265,6 +264,23 @@ void PhoneHubStructuredMetricsLogger::ResetSessionId() {
     return;
   }
   phone_hub_session_id_ = std::string();
+}
+
+void PhoneHubStructuredMetricsLogger::SetChromebookInfo(
+    proto::CrosState& cros_state_message) {
+  if (!base::FeatureList::IsEnabled(
+          metrics::structured::kPhoneHubStructuredMetrics)) {
+    return;
+  }
+
+  if (!phone_hub_session_id_.empty()) {
+    cros_state_message.set_phone_hub_session_id(phone_hub_session_id_);
+  }
+  if (!pref_service_->GetTime(prefs::kPseudonymousIdRotationDate).is_null()) {
+    cros_state_message.set_pseudonymous_id_next_rotation_date(
+        pref_service_->GetTime(prefs::kPseudonymousIdRotationDate)
+            .InMillisecondsSinceUnixEpoch());
+  }
 }
 
 void PhoneHubStructuredMetricsLogger::OnNetworkStateListFetched(

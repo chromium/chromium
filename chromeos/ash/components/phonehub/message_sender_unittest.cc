@@ -40,6 +40,7 @@ class MessageSenderImplTest : public testing::Test {
         std::make_unique<PhoneHubUiReadinessRecorder>(
             fake_feature_status_provider_.get(),
             fake_connection_manager_.get());
+    PhoneHubStructuredMetricsLogger::RegisterPrefs(pref_service_.registry());
     phone_hub_structured_metrics_logger_ =
         std::make_unique<PhoneHubStructuredMetricsLogger>(&pref_service_);
     message_sender_ = std::make_unique<MessageSenderImpl>(
@@ -88,6 +89,7 @@ TEST_F(MessageSenderImplTest, SendCrosStateWithoutAttestation) {
   request.set_camera_roll_setting(proto::CameraRollSetting::CAMERA_ROLL_OFF);
   request.set_allocated_attestation_data(nullptr);
   request.set_should_provide_eche_status(true);
+  phone_hub_structured_metrics_logger_->SetChromebookInfo(request);
   message_sender_->SendCrosState(/*notification_enabled=*/true,
                                  /*camera_roll_enabled=*/false,
                                  /*certs=*/nullptr);
@@ -104,6 +106,7 @@ TEST_F(MessageSenderImplTest, SendCrosStateWithAttestation) {
   request.mutable_attestation_data()->set_type(
       proto::AttestationData::CROS_SOFT_BIND_CERT_CHAIN);
   request.mutable_attestation_data()->add_certificates("certificate");
+  phone_hub_structured_metrics_logger_->SetChromebookInfo(request);
 
   std::vector<std::string> certificates = {"certificate"};
 

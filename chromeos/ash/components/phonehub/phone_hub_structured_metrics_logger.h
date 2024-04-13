@@ -97,6 +97,8 @@ class PhoneHubStructuredMetricsLogger
 
   void ResetSessionId();
 
+  void SetChromebookInfo(proto::CrosState& cros_state_message);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PhoneHubStructuredMetricsLoggerTest,
                            ProcessPhoneInformation_MissingFields);
