@@ -6,11 +6,13 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -38,6 +40,9 @@
 #include "url/gurl.h"
 
 namespace {
+
+// Delay before reading persisted reports at startup.
+base::TimeDelta kReadPersistedReportsDelay = base::Seconds(15);
 
 GURL GetSanitizedUrl(const GURL& url) {
   GURL::Replacements replacements;
@@ -128,6 +133,28 @@ void PingManager::Persister::WriteReport(const std::string& serialized_report) {
   base::WriteFile(file_path, serialized_report);
 }
 
+std::vector<std::string> PingManager::Persister::ReadAndDeleteReports() {
+  if (!base::DirectoryExists(dir_path_)) {
+    return {};
+  }
+  base::FileEnumerator directory_enumerator(dir_path_,
+                                            /*recursive=*/false,
+                                            base::FileEnumerator::FILES);
+  std::vector<std::string> persisted_reports;
+  for (base::FilePath file_name = directory_enumerator.Next();
+       !file_name.empty(); file_name = directory_enumerator.Next()) {
+    std::string persisted_report;
+    bool success = base::ReadFileToString(file_name, &persisted_report);
+    if (success) {
+      persisted_reports.emplace_back(std::move(persisted_report));
+    }
+  }
+  // Since persisted reports are uncommon, delete the directory so that we don't
+  // leave an empty directory going forward.
+  base::DeletePathRecursively(dir_path_);
+  return persisted_reports;
+}
+
 // SafeBrowsingPingManager implementation ----------------------------------
 
 // static
@@ -143,12 +170,14 @@ std::unique_ptr<PingManager> PingManager::Create(
     base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
         get_page_load_token_callback,
     std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate,
-    const base::FilePath& persister_root_path) {
+    const base::FilePath& persister_root_path,
+    base::RepeatingCallback<bool()> get_should_send_persisted_report) {
   return std::make_unique<PingManager>(
       config, url_loader_factory, std::move(token_fetcher),
       get_should_fetch_access_token, webui_delegate, ui_task_runner,
       get_user_population_callback, get_page_load_token_callback,
-      std::move(hats_delegate), persister_root_path);
+      std::move(hats_delegate), persister_root_path,
+      std::move(get_should_send_persisted_report));
 }
 
 PingManager::PingManager(
@@ -163,7 +192,8 @@ PingManager::PingManager(
     base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
         get_page_load_token_callback,
     std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate,
-    const base::FilePath& persister_root_path)
+    const base::FilePath& persister_root_path,
+    base::RepeatingCallback<bool()> get_should_send_persisted_report)
     : config_(config),
       url_loader_factory_(url_loader_factory),
       token_fetcher_(std::move(token_fetcher)),
@@ -172,14 +202,21 @@ PingManager::PingManager(
       ui_task_runner_(ui_task_runner),
       get_user_population_callback_(get_user_population_callback),
       get_page_load_token_callback_(get_page_load_token_callback),
-      hats_delegate_(std::move(hats_delegate)) {
+      hats_delegate_(std::move(hats_delegate)),
+      get_should_send_persisted_report_(
+          std::move(get_should_send_persisted_report)) {
   persister_ = base::SequenceBound<Persister>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
       persister_root_path);
-  // TODO(crbug.com/329471668): Schedule tasks to read reports from persister
-  // and send them.
+  // Post this task with a delay to avoid running right at Chrome startup
+  // when a lot of other startup tasks are running.
+  ui_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PingManager::ReadPersistedReports,
+                     weak_factory_.GetWeakPtr()),
+      kReadPersistedReportsDelay);
 }
 
 PingManager::~PingManager() {}
@@ -312,6 +349,29 @@ PingManager::PersistThreatDetailsAndReportOnNextStartup(
   persister_.AsyncCall(&Persister::WriteReport)
       .WithArgs(std::move(serialized_report));
   return PersistThreatDetailsResult::kPersistTaskPosted;
+}
+
+void PingManager::ReadPersistedReports() {
+  persister_.AsyncCall(&PingManager::Persister::ReadAndDeleteReports)
+      .Then(base::BindOnce(&PingManager::OnReadPersistedReportsDone,
+                           weak_factory_.GetWeakPtr()));
+}
+
+void PingManager::OnReadPersistedReportsDone(
+    std::vector<std::string> serialized_reports) {
+  CHECK(!get_should_send_persisted_report_.is_null());
+  if (!get_should_send_persisted_report_.Run()) {
+    return;
+  }
+  for (const std::string& seralized_report : serialized_reports) {
+    if (seralized_report.empty()) {
+      continue;
+    }
+    auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+    if (report->ParseFromString(seralized_report)) {
+      ReportThreatDetails(std::move(report));
+    }
+  }
 }
 
 void PingManager::AttachThreatDetailsAndLaunchSurvey(

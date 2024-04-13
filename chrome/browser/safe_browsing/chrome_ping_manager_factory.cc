@@ -19,10 +19,15 @@
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace safe_browsing {
+
+namespace {
+bool kAllowPingManagerInTests = false;
+}  // namespace
 
 // static
 ChromePingManagerFactory* ChromePingManagerFactory::GetInstance() {
@@ -74,7 +79,9 @@ ChromePingManagerFactory::BuildServiceInstanceForBrowserContext(
       content::GetUIThreadTaskRunner({}),
       base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
       base::BindRepeating(&safe_browsing::GetPageLoadTokenForURL, profile),
-      std::move(hats_delegate), /*persister_root_path=*/profile->GetPath());
+      std::move(hats_delegate), /*persister_root_path=*/profile->GetPath(),
+      base::BindRepeating(&ChromePingManagerFactory::ShouldSendPersistedReport,
+                          profile));
 }
 
 // static
@@ -85,6 +92,31 @@ bool ChromePingManagerFactory::ShouldFetchAccessTokenForReport(
       IdentityManagerFactory::GetForProfile(profile);
   return IsEnhancedProtectionEnabled(*prefs) && identity_manager &&
          safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager);
+}
+
+// static
+bool ChromePingManagerFactory::ShouldSendPersistedReport(Profile* profile) {
+  return !profile->IsOffTheRecord() &&
+         IsExtendedReportingEnabled(*profile->GetPrefs()) &&
+         base::FeatureList::IsEnabled(kDownloadReportWithoutUserDecision);
+}
+
+bool ChromePingManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+  // When kDownloadReportWithoutUserDecision is enabled, PingManager is created
+  // at startup to send persisted reports.
+  return base::FeatureList::IsEnabled(kDownloadReportWithoutUserDecision);
+}
+
+bool ChromePingManagerFactory::ServiceIsNULLWhileTesting() const {
+  return !kAllowPingManagerInTests;
+}
+
+ChromePingManagerAllowerForTesting::ChromePingManagerAllowerForTesting() {
+  kAllowPingManagerInTests = true;
+}
+
+ChromePingManagerAllowerForTesting::~ChromePingManagerAllowerForTesting() {
+  kAllowPingManagerInTests = false;
 }
 
 }  // namespace safe_browsing

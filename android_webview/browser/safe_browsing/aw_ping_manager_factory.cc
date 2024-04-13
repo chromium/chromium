@@ -39,6 +39,10 @@ AwPingManagerFactory::BuildServiceInstanceForBrowserContext(
   // Never fetch the access token for android_webview since ESB is unsupported
   auto get_should_fetch_access_token =
       base::BindRepeating([]() { return false; });
+  // Persisted report is not supported on WebView, because only download reports
+  // are persisted and WebView doesn't have download protection.
+  auto get_should_send_persisted_report =
+      base::BindRepeating([]() { return false; });
   return PingManager::Create(
       safe_browsing::GetV4ProtocolConfig(GetProtocolConfigClientName(),
                                          /*disable_auto_update=*/false),
@@ -51,7 +55,9 @@ AwPingManagerFactory::BuildServiceInstanceForBrowserContext(
       // threading the user population through for client reports
       /*get_user_population_callback=*/base::NullCallback(),
       /*get_page_load_token_callback_=*/base::NullCallback(),
-      /*hats_delegate=*/nullptr, /*persister_root_path=*/context->GetPath());
+      /*hats_delegate=*/nullptr, /*persister_root_path=*/context->GetPath(),
+      /*get_should_send_persisted_report=*/
+      std::move(get_should_send_persisted_report));
 }
 
 std::string AwPingManagerFactory::GetProtocolConfigClientName() const {

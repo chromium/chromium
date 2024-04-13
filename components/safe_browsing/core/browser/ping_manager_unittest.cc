@@ -76,14 +76,21 @@ class PingManagerTest : public testing::Test {
           get_user_population_callback,
       std::optional<
           base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>>
-          get_page_load_token_callback);
+          get_page_load_token_callback,
+      std::optional<base::RepeatingCallback<bool()>>
+          get_should_send_persisted_report);
   void SetUpFeatureList(bool should_enable_remove_cookies);
+  // Returns a copy of the serialized persisted report that can be used to
+  // verify the data sent through URL loader.
+  std::string CallPersistThreatDetails(const std::string& url);
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::string key_param_;
   std::unique_ptr<MockWebUIDelegate> webui_delegate_ =
       std::make_unique<MockWebUIDelegate>();
   base::FilePath persister_root_path_;
+  base::FilePath persister_dir_;
   FakeSafeBrowsingHatsDelegate* SetUpHatsDelegate();
 
  private:
@@ -100,7 +107,8 @@ void PingManagerTest::SetUp() {
         "&key=%s", base::EscapeQueryParamValue(key, true).c_str());
   }
   persister_root_path_ = base::CreateUniqueTempDirectoryScopedToTest();
-  SetNewPingManager(std::nullopt, std::nullopt, std::nullopt);
+  persister_dir_ = persister_root_path_.AppendASCII("DownloadReports");
+  SetNewPingManager(std::nullopt, std::nullopt, std::nullopt, std::nullopt);
 }
 
 void PingManagerTest::TearDown() {
@@ -119,7 +127,9 @@ void PingManagerTest::SetNewPingManager(
         get_user_population_callback,
     std::optional<
         base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>>
-        get_page_load_token_callback) {
+        get_page_load_token_callback,
+    std::optional<base::RepeatingCallback<bool()>>
+        get_should_send_persisted_report) {
   ping_manager_.reset(new PingManager(
       safe_browsing::GetTestV4ProtocolConfig(), nullptr, nullptr,
       get_should_fetch_access_token.value_or(
@@ -127,7 +137,9 @@ void PingManagerTest::SetNewPingManager(
       webui_delegate_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
       get_user_population_callback.value_or(base::NullCallback()),
       get_page_load_token_callback.value_or(base::NullCallback()), nullptr,
-      persister_root_path_));
+      persister_root_path_,
+      get_should_send_persisted_report.value_or(
+          base::BindRepeating([]() { return false; }))));
 }
 
 void PingManagerTest::SetUpFeatureList(bool should_enable_remove_cookies) {
@@ -139,6 +151,24 @@ void PingManagerTest::SetUpFeatureList(bool should_enable_remove_cookies) {
     disabled_features.push_back(kSafeBrowsingRemoveCookiesInAuthRequests);
   }
   feature_list_.InitWithFeatures(enabled_features, disabled_features);
+}
+
+std::string PingManagerTest::CallPersistThreatDetails(const std::string& url) {
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(
+      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_PROFILE_CLOSED);
+  report->set_url(url);
+  std::string serialized_report;
+  EXPECT_TRUE(report->SerializeToString(&serialized_report));
+
+  PingManager::PersistThreatDetailsResult result =
+      ping_manager()->PersistThreatDetailsAndReportOnNextStartup(
+          std::move(report));
+  EXPECT_EQ(result,
+            PingManager::PersistThreatDetailsResult::kPersistTaskPosted);
+  task_environment_.RunUntilIdle();
+  return serialized_report;
 }
 
 TestSafeBrowsingTokenFetcher* PingManagerTest::SetUpTokenFetcher() {
@@ -519,7 +549,8 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithAccessToken) {
       /*get_should_fetch_access_token=*/base::BindRepeating(
           []() { return true; }),
       /*get_user_population_callback=*/std::nullopt,
-      /*get_page_load_token_callback=*/std::nullopt);
+      /*get_page_load_token_callback=*/std::nullopt,
+      /*get_should_send_persisted_report=*/std::nullopt);
   SetUpFeatureList(/*should_enable_remove_cookies=*/true);
   RunReportThreatDetailsTest(/*expect_access_token=*/true,
                              /*expected_user_population=*/std::nullopt,
@@ -532,7 +563,8 @@ TEST_F(PingManagerTest,
       /*get_should_fetch_access_token=*/base::BindRepeating(
           []() { return true; }),
       /*get_user_population_callback=*/std::nullopt,
-      /*get_page_load_token_callback=*/std::nullopt);
+      /*get_page_load_token_callback=*/std::nullopt,
+      /*get_should_send_persisted_report=*/std::nullopt);
   SetUpFeatureList(/*should_enable_remove_cookies=*/false);
   RunReportThreatDetailsTest(/*expect_access_token=*/true,
                              /*expected_user_population=*/std::nullopt,
@@ -547,7 +579,8 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithUserPopulation) {
         population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
         return population;
       }),
-      /*get_page_load_token_callback=*/std::nullopt);
+      /*get_page_load_token_callback=*/std::nullopt,
+      /*get_should_send_persisted_report=*/std::nullopt);
   auto population = ChromeUserPopulation();
   population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
   RunReportThreatDetailsTest(/*expect_access_token=*/false,
@@ -564,7 +597,8 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
         ChromeUserPopulation::PageLoadToken token;
         token.set_token_value("testing_page_load_token");
         return token;
-      }));
+      }),
+      /*get_should_send_persisted_report=*/std::nullopt);
   RunReportThreatDetailsTest(
       /*expect_access_token=*/false,
       /*expected_user_population=*/std::nullopt,
@@ -572,23 +606,10 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
       /*expect_cookies_removed=*/false);
 }
 
-TEST_F(PingManagerTest, PersistThreatDetails) {
-  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
-      std::make_unique<ClientSafeBrowsingReportRequest>();
-  report->set_type(
-      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_PROFILE_CLOSED);
-  report->set_url("https://some.url.com/");
-  PingManager::PersistThreatDetailsResult result =
-      ping_manager()->PersistThreatDetailsAndReportOnNextStartup(
-          std::move(report));
-  EXPECT_EQ(result,
-            PingManager::PersistThreatDetailsResult::kPersistTaskPosted);
-  task_environment_.RunUntilIdle();
-
-  base::FilePath persister_dir =
-      persister_root_path_.AppendASCII("DownloadReports");
-  ASSERT_TRUE(base::PathExists(persister_dir));
-  base::FileEnumerator directory_enumerator(persister_dir,
+TEST_F(PingManagerTest, PersistThreatDetailsAtShutdown) {
+  CallPersistThreatDetails("https://some.url.com/");
+  ASSERT_TRUE(base::PathExists(persister_dir_));
+  base::FileEnumerator directory_enumerator(persister_dir_,
                                             /*recursive=*/false,
                                             base::FileEnumerator::FILES);
   int number_of_files = 0;
@@ -617,6 +638,126 @@ TEST_F(PingManagerTest, PersistThreatDetailsAtShutdown_EmptyReport) {
       ping_manager()->PersistThreatDetailsAndReportOnNextStartup(
           std::move(report));
   EXPECT_EQ(result, PingManager::PersistThreatDetailsResult::kEmptyReport);
+}
+
+TEST_F(PingManagerTest, SendPersistedThreatDetailsOnStartup) {
+  std::string persisted_report1 =
+      CallPersistThreatDetails("https://some.url1.com/");
+  std::string persisted_report2 =
+      CallPersistThreatDetails("https://some.url2.com/");
+  EXPECT_TRUE(base::PathExists(persister_dir_));
+
+  // Create a new ping manager instance to simulate browser startup.
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/std::nullopt,
+      /*get_user_population_callback=*/std::nullopt,
+      /*get_page_load_token_callback=*/std::nullopt,
+      /*get_should_send_persisted_report=*/base::BindRepeating([]() {
+        return true;
+      }));
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  bool report1_sent = false, report2_sent = false;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::string upload_data = GetUploadData(request);
+        if (upload_data == persisted_report1) {
+          report1_sent = true;
+        } else if (upload_data == persisted_report2) {
+          report2_sent = true;
+        }
+      }));
+  ping_manager()->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+  EXPECT_CALL(*webui_delegate_.get(), AddToCSBRRsSent(_)).Times(2);
+
+  // Request is sent after delay.
+  task_environment_.FastForwardBy(base::Seconds(14));
+  EXPECT_EQ(test_url_loader_factory.total_requests(), 0u);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(test_url_loader_factory.total_requests(), 2u);
+  EXPECT_TRUE(report1_sent);
+  EXPECT_TRUE(report2_sent);
+  // Directory is deleted.
+  EXPECT_FALSE(base::PathExists(persister_dir_));
+}
+
+TEST_F(PingManagerTest, SendPersistedThreatDetailsOnStartup_MalformedReports) {
+  base::CreateDirectory(persister_dir_);
+  base::FilePath empty_file = persister_dir_.AppendASCII("empty");
+  base::WriteFile(empty_file, "");
+  base::FilePath malformed_file = persister_dir_.AppendASCII("malformed");
+  base::WriteFile(malformed_file, "malformed_report");
+
+  // Create a new ping manager instance to simulate browser startup.
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/std::nullopt,
+      /*get_user_population_callback=*/std::nullopt,
+      /*get_page_load_token_callback=*/std::nullopt,
+      /*get_should_send_persisted_report=*/base::BindRepeating([]() {
+        return true;
+      }));
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  ping_manager()->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+
+  task_environment_.FastForwardBy(base::Seconds(15));
+  // Persisted report should not be sent because their content is invalid.
+  EXPECT_EQ(test_url_loader_factory.total_requests(), 0u);
+  // Persisted report should still be deleted from disk.
+  EXPECT_FALSE(base::PathExists(persister_dir_));
+}
+
+TEST_F(PingManagerTest, SendPersistedThreatDetailsOnStartup_EmptyDirectory) {
+  base::CreateDirectory(persister_dir_);
+
+  // Create a new ping manager instance to simulate browser startup.
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/std::nullopt,
+      /*get_user_population_callback=*/std::nullopt,
+      /*get_page_load_token_callback=*/std::nullopt,
+      /*get_should_send_persisted_report=*/base::BindRepeating([]() {
+        return true;
+      }));
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  ping_manager()->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+
+  task_environment_.FastForwardBy(base::Seconds(15));
+  // The directory should be cleaned up.
+  EXPECT_FALSE(base::PathExists(persister_dir_));
+}
+
+TEST_F(PingManagerTest,
+       SendPersistedThreatDetailsOnStartup_ShouldNotSendReport) {
+  CallPersistThreatDetails("https://some.url1.com/");
+  EXPECT_TRUE(base::PathExists(persister_dir_));
+
+  // Create a new ping manager instance to simulate browser startup.
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/std::nullopt,
+      /*get_user_population_callback=*/std::nullopt,
+      /*get_page_load_token_callback=*/std::nullopt,
+      /*get_should_send_persisted_report=*/base::BindRepeating([]() {
+        return false;
+      }));
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  ping_manager()->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+
+  task_environment_.FastForwardBy(base::Seconds(15));
+  // Persisted report should not be sent because
+  // get_should_send_persisted_report is false.
+  EXPECT_EQ(test_url_loader_factory.total_requests(), 0u);
+  // Persisted report should still be deleted from disk.
+  EXPECT_FALSE(base::PathExists(persister_dir_));
 }
 
 TEST_F(PingManagerTest, ReportSafeBrowsingHit) {
@@ -663,7 +804,8 @@ TEST_F(PingManagerTest, AttachThreatDetailsAndLaunchSurvey) {
         ChromeUserPopulation::PageLoadToken token;
         token.set_token_value("testing_page_load_token");
         return token;
-      }));
+      }),
+      /*get_should_send_persisted_report=*/std::nullopt);
   FakeSafeBrowsingHatsDelegate* raw_fake_sb_hats_delegate = SetUpHatsDelegate();
   ping_manager()->AttachThreatDetailsAndLaunchSurvey(std::move(report));
   std::string deserialized_report_string;

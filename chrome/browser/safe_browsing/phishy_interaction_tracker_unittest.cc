@@ -214,6 +214,7 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   std::unique_ptr<PhishyInteractionTracker> phishy_interaction_tracker_;
   scoped_refptr<MockSafeBrowsingUIManager> ui_manager_;
+  safe_browsing::ChromePingManagerAllowerForTesting allow_ping_manager_;
 };
 
 TEST_F(PhishyInteractionTrackerTest, CheckHistogramCountsOnPhishyUserEvents) {

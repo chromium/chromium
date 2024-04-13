@@ -78,6 +78,11 @@ class PingManager : public KeyedService {
     // Writes |serialized_report| to a new file in |dir_path_|.
     void WriteReport(const std::string& serialized_report);
 
+    // Reads all persisted reports in |dir_path_|. The reports are deleted
+    // regardless of whether the read was successful or not.
+    // Returns a list of string representation of the reports.
+    std::vector<std::string> ReadAndDeleteReports();
+
    private:
     // The directory that the files will be written in.
     base::FilePath dir_path_;
@@ -95,7 +100,8 @@ class PingManager : public KeyedService {
       base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
           get_page_load_token_callback,
       std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate,
-      const base::FilePath& persister_root_path);
+      const base::FilePath& persister_root_path,
+      base::RepeatingCallback<bool()> get_should_send_persisted_report);
   PingManager(const PingManager&) = delete;
   PingManager& operator=(const PingManager&) = delete;
 
@@ -114,7 +120,8 @@ class PingManager : public KeyedService {
       base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
           get_page_load_token_callback,
       std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate,
-      const base::FilePath& persister_root_path);
+      const base::FilePath& persister_root_path,
+      base::RepeatingCallback<bool()> get_should_send_persisted_report);
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            std::unique_ptr<std::string> response_body);
@@ -187,6 +194,12 @@ class PingManager : public KeyedService {
   void ReportThreatDetailsOnGotAccessToken(const std::string& serialized_report,
                                            const std::string& access_token);
 
+  // Reads persisted reports from disk.
+  void ReadPersistedReports();
+
+  // Sends `serialized_reports` to Safe Browsing.
+  void OnReadPersistedReportsDone(std::vector<std::string> serialized_reports);
+
   // Track outstanding SafeBrowsing report fetchers for clean up.
   // We add both "hit" and "detail" fetchers in this set.
   Reports safebrowsing_reports_;
@@ -220,6 +233,9 @@ class PingManager : public KeyedService {
   std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate_;
 
   base::SequenceBound<Persister> persister_;
+
+  // Determines whether the user has opted in to send persisted reports.
+  base::RepeatingCallback<bool()> get_should_send_persisted_report_;
 
   base::WeakPtrFactory<PingManager> weak_factory_{this};
 };

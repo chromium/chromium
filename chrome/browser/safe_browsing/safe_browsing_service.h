@@ -145,6 +145,11 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   void FlushNetworkInterfaceForTesting(
       content::BrowserContext* browser_context);
 
+  void SetURLLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    url_loader_factory_for_testing_ = url_loader_factory;
+  }
+
   const scoped_refptr<SafeBrowsingUIManager>& ui_manager() const;
 
   virtual const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager()
@@ -361,6 +366,9 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   std::unique_ptr<TriggerManager> trigger_manager_;
 
   bool url_is_allowlisted_for_testing_ = false;
+
+  scoped_refptr<network::SharedURLLoaderFactory>
+      url_loader_factory_for_testing_;
 };
 
 SafeBrowsingServiceFactory* GetSafeBrowsingServiceFactory();

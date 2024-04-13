@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+
 #include <memory>
 
 #include "base/test/bind.h"
@@ -59,6 +60,10 @@ class SafeBrowsingServiceTest : public testing::Test {
     // the interface in components/safe_browsing, and remove this cast.
     sb_service_ = static_cast<SafeBrowsingService*>(
         safe_browsing::SafeBrowsingService::CreateSafeBrowsingService());
+    auto ref_counted_url_loader_factory =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
+    sb_service_->SetURLLoaderFactoryForTesting(ref_counted_url_loader_factory);
     browser_process_->SetSafeBrowsingService(sb_service_.get());
     sb_service_->Initialize();
     base::RunLoop().RunUntilIdle();
@@ -72,6 +77,7 @@ class SafeBrowsingServiceTest : public testing::Test {
   }
 
   void TearDown() override {
+    sb_service_->SetURLLoaderFactoryForTesting(nullptr);
     browser_process_->safe_browsing_service()->ShutDown();
     browser_process_->SetSafeBrowsingService(nullptr);
     safe_browsing::SafeBrowsingServiceInterface::RegisterFactory(nullptr);
@@ -194,7 +200,9 @@ class SafeBrowsingServiceTest : public testing::Test {
   GURL download_url_ = GURL(kTestDownloadUrl);
 
  private:
+  network::TestURLLoaderFactory test_url_loader_factory_;
   base::test::ScopedFeatureList feature_list_;
+  ChromePingManagerAllowerForTesting allow_ping_manager_;
 };
 
 TEST_F(SafeBrowsingServiceTest, SendDownloadReport_Success) {
