@@ -31,7 +31,7 @@ build_webui_tests("build_webui_tests") {
     "onboarding_wp_disable_complete_page_test.ts",
     "reboot_page_test.ts",
     "reimaging_calibration_failed_page_test.ts",
-    "reimaging_calibration_run_page_test.js",
+    "reimaging_calibration_run_page_test.ts",
     "reimaging_calibration_setup_page_test.js",
     "reimaging_device_information_page_test.js",
     "reimaging_firmware_update_page_test.js",
