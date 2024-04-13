@@ -7324,7 +7324,7 @@
 <translation id="6671320560732140690">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
 <translation id="6671497123040790595">正在设置为受 <ph name="MANAGER" /> 管理</translation>
 <translation id="6672917148207387131">添加 <ph name="DOMAIN" /></translation>
-<translation id="6673353404516008367">无痕模式可确保<ph name="BEGIN_LINK" />实现私密浏览<ph name="END_LINK" />，让与您共用设备的人员无从得知您的浏览活动</translation>
+<translation id="6673353404516008367">无痕模式可<ph name="BEGIN_LINK" />实现私密浏览<ph name="END_LINK" />，其他使用此设备的人员无法得知您的浏览信息</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6673797129585578649">通过降低亮度、限制后台活动和视觉效果、延迟通知和开启 Chrome 节能模式来延长电池续航时间。</translation>
 <translation id="6673898378497337661">调高键盘亮度</translation>
