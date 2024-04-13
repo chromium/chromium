@@ -169,6 +169,7 @@ mojom("test_extra_cpp_template_mojom") {
 mojom("test_mojom") {
   testonly = true
   sources = [
+    "associated_interface_unittest.test-mojom",
     "binder_map_unittest.test-mojom",
     "connection_group_unittest.test-mojom",
     "default_construct_unittest.test-mojom",

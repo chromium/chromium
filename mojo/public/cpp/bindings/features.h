@@ -19,6 +19,9 @@ BASE_DECLARE_FEATURE(kMojoRecordUnreadMessageCount);
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 BASE_DECLARE_FEATURE(kMojoPredictiveAllocation);
 
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+BASE_DECLARE_FEATURE(kMojoFixAssociatedHandleLeak);
+
 }  // namespace features
 }  // namespace mojo
 

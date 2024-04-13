@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -19,6 +20,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
+#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
 #include "mojo/public/cpp/bindings/lib/may_auto_lock.h"
@@ -509,6 +511,24 @@ void MultiplexRouter::CloseEndpointHandle(
     control_message_proxy_.NotifyPeerEndpointClosed(id, reason);
   }
 
+  ProcessTasks(NO_DIRECT_CLIENT_CALLS, nullptr);
+}
+
+void MultiplexRouter::NotifyLocalEndpointOfPeerClosure(InterfaceId id) {
+  if (!base::FeatureList::IsEnabled(features::kMojoFixAssociatedHandleLeak)) {
+    return;
+  }
+
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MultiplexRouter::NotifyLocalEndpointOfPeerClosure,
+                       base::WrapRefCounted(this), id));
+    return;
+  }
+  OnPeerAssociatedEndpointClosed(id, std::nullopt);
+
+  MayAutoLock locker(&lock_);
   ProcessTasks(NO_DIRECT_CLIENT_CALLS, nullptr);
 }
 

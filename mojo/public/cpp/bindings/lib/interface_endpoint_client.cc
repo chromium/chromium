@@ -598,8 +598,10 @@ bool InterfaceEndpointClient::SendMessage(Message* message,
   // to work properly.
   message->SerializeHandles(handle_.group_controller());
 
-  if (encountered_error_)
+  if (encountered_error_) {
+    message->NotifyPeerClosureForSerializedHandles(handle_.group_controller());
     return false;
+  }
 
   InitControllerIfNecessary();
 
@@ -609,8 +611,10 @@ bool InterfaceEndpointClient::SendMessage(Message* message,
 #endif
 
   message->set_heap_profiler_tag(interface_name_);
-  if (!controller_->SendMessage(message))
+  if (!controller_->SendMessage(message)) {
+    message->NotifyPeerClosureForSerializedHandles(handle_.group_controller());
     return false;
+  }
 
   if (!is_control_message && idle_handler_)
     ++num_unacked_messages_;
@@ -630,8 +634,10 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
   // Please see comments in Accept().
   message->SerializeHandles(handle_.group_controller());
 
-  if (encountered_error_)
+  if (encountered_error_) {
+    message->NotifyPeerClosureForSerializedHandles(handle_.group_controller());
     return false;
+  }
 
   InitControllerIfNecessary();
 
@@ -653,8 +659,10 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
   const bool exclusive_wait =
       message->has_flag(Message::kFlagNoInterrupt) ||
       !SyncCallRestrictions::AreSyncCallInterruptsEnabled();
-  if (!controller_->SendMessage(message))
+  if (!controller_->SendMessage(message)) {
+    message->NotifyPeerClosureForSerializedHandles(handle_.group_controller());
     return false;
+  }
 
   if (!is_control_message && idle_handler_)
     ++num_unacked_messages_;

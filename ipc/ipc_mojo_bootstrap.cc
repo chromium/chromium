@@ -41,6 +41,7 @@
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/connector.h"
+#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
@@ -405,6 +406,22 @@ class ChannelAssociatedGroupController
 
     if (!mojo::IsPrimaryInterfaceId(id) || reason)
       control_message_proxy_.NotifyPeerEndpointClosed(id, reason);
+  }
+
+  void NotifyLocalEndpointOfPeerClosure(mojo::InterfaceId id) override {
+    if (!base::FeatureList::IsEnabled(
+            mojo::features::kMojoFixAssociatedHandleLeak)) {
+      return;
+    }
+
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&ChannelAssociatedGroupController::
+                                        NotifyLocalEndpointOfPeerClosure,
+                                    base::WrapRefCounted(this), id));
+      return;
+    }
+    OnPeerAssociatedEndpointClosed(id, std::nullopt);
   }
 
   mojo::InterfaceEndpointController* AttachEndpointClient(

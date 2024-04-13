@@ -257,6 +257,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   bool DeserializeAssociatedEndpointHandles(
       AssociatedGroupController* group_controller);
 
+  // If this message contains serialized associated interface endponits but is
+  // going to be destroyed without being sent across a pipe, this notifies any
+  // relevant local peer endpoints about peer closure. Must be called on any
+  // unsent Message that is going to be destroyed after calling
+  // SerializeHandles().
+  void NotifyPeerClosureForSerializedHandles(
+      AssociatedGroupController* group_controller);
+
   // If this Message has an unserialized message context attached, force it to
   // be serialized immediately. Otherwise this does nothing.
   void SerializeIfNecessary();

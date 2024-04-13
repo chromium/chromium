@@ -34,12 +34,14 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/test_shared_memory_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "ipc/ipc_channel_mojo_unittest.test-mojom.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
@@ -53,6 +55,7 @@
 #include "ipc/urgent_message_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -66,6 +69,7 @@
 #include "ipc/ipc_platform_file_attachment_posix.h"
 #endif
 
+namespace ipc_channel_mojo_unittest {
 namespace {
 
 void SendString(IPC::Sender* sender, const std::string& str) {
@@ -1384,6 +1388,75 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(SyncAssociatedInterface,
   DestroyProxy();
 }
 
+class ListenerWithClumsyBinder : public IPC::Listener {
+ public:
+  ListenerWithClumsyBinder() = default;
+  ~ListenerWithClumsyBinder() override = default;
+
+  void RunUntilClientQuit() { run_loop_.Run(); }
+
+ private:
+  // IPC::Listener:
+  bool OnMessageReceived(const IPC::Message& message) override {
+    run_loop_.Quit();
+    return true;
+  }
+
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override {
+    // Ignore and drop the endpoint so it's closed.
+  }
+
+  base::RunLoop run_loop_;
+};
+
+TEST_F(IPCChannelProxyMojoTest, DropAssociatedReceiverWithSyncCallInFlight) {
+  // Regression test for https://crbug.com/331636067. Verifies that endpoint
+  // lifetime is properly managed when associated endpoints are serialized into
+  // a message that gets dropped before transmission.
+
+  Init("SyncCallToDroppedReceiver");
+  ListenerWithClumsyBinder listener;
+  CreateProxy(&listener);
+  RunProxy();
+  listener.RunUntilClientQuit();
+  EXPECT_TRUE(WaitForClientShutdown());
+  DestroyProxy();
+}
+
+DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
+    SyncCallToDroppedReceiver,
+    ChannelProxyClient) {
+  // Force-enable the fix, since ipc_tests doesn't initialize FeatureList.
+  const base::test::ScopedFeatureList kFeatures(
+      mojo::features::kMojoFixAssociatedHandleLeak);
+
+  DummyListener listener;
+  CreateProxy(&listener);
+  RunProxy();
+
+  mojo::AssociatedRemote<mojom::Binder> binder;
+  proxy()->GetRemoteAssociatedInterface(
+      binder.BindNewEndpointAndPassReceiver());
+
+  // Wait for disconnection to be observed. This way we know any subsequent
+  // outgoing messages on `binder` will not be sent.
+  base::RunLoop loop;
+  binder.set_disconnect_handler(loop.QuitClosure());
+  loop.Run();
+
+  // Send another endpoint over. This receiver will be dropped, and the remote
+  // should be properly notified of peer closure to terminate the sync call. The
+  // call should return false (because no reply), but shouldn't hang.
+  mojo::AssociatedRemote<mojom::Binder> another_binder;
+  binder->Bind(another_binder.BindNewEndpointAndPassReceiver());
+  EXPECT_FALSE(another_binder->Ping());
+
+  SendString(proxy(), "ok bye");
+  DestroyProxy();
+}
+
 // TODO(https://crbug.com/1500560): Disabled for flaky behavior of forced
 // process termination. Will be re-enabled with a fix.
 TEST_F(IPCChannelProxyMojoTest, DISABLED_SyncAssociatedInterfacePipeError) {
@@ -2061,3 +2134,4 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
 }
 
 }  // namespace
+}  // namespace ipc_channel_mojo_unittest

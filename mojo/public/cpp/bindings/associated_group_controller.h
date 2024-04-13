@@ -49,6 +49,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) AssociatedGroupController
       InterfaceId id,
       const std::optional<DisconnectReason>& reason) = 0;
 
+  // Notifies the controller that the peer of interface `id` has been closed.
+  // Normally this notification comes from a remote client on the underlying
+  // pipe, but in some cases the remote client may never have been made aware of
+  // the new associated interface and will not be able to send such a
+  // notification.
+  virtual void NotifyLocalEndpointOfPeerClosure(InterfaceId id) = 0;
+
   // Attaches a client to the specified endpoint to send and receive messages.
   // The returned object is still owned by the controller. It must only be used
   // on the same sequence as this call, and only before the client is detached

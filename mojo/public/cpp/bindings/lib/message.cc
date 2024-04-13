@@ -588,6 +588,19 @@ bool Message::DeserializeAssociatedEndpointHandles(
   return result;
 }
 
+void Message::NotifyPeerClosureForSerializedHandles(
+    AssociatedGroupController* group_controller) {
+  const uint32_t num_ids = payload_num_interface_ids();
+  if (num_ids == 0) {
+    return;
+  }
+
+  const uint32_t* ids = header_v2()->payload_interface_ids.Get()->storage();
+  for (uint32_t i = 0; i < num_ids; ++i) {
+    group_controller->NotifyLocalEndpointOfPeerClosure(ids[i]);
+  }
+}
+
 void Message::SerializeIfNecessary() {
   MojoResult rv = MojoSerializeMessage(handle_->value(), nullptr);
   if (rv == MOJO_RESULT_FAILED_PRECONDITION)
