@@ -420,10 +420,6 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
           {{0x056e, 0x0131},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
-          // ELECOM Trackball
-          {{0x056e, 0x1077},
-           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
-            mojom::MouseButtonConfig::kNoConfig}},
           // MosArt 2.4G Wireless Mouse
           {{0x062a, 0x4108},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
@@ -1292,6 +1288,9 @@ GetKeyboardMouseComboMetadataList() {
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites}},
           // Chicony Fujitsu Slim Keyboard with Touchpad
           {{0x04f2, 0x1322},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites}},
+          // ELECOM TK-TB01DMBK
+          {{0x056e, 0x1077},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites}},
           // MosArt Wireless Keyboard and Mouse
           {{0x062a, 0x0102},
