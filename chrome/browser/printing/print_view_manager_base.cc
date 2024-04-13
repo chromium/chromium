@@ -905,6 +905,11 @@ void PrintViewManagerBase::RenderFrameDeleted(
 
   PrintManager::PrintingRenderFrameDeleted();
   ReleasePrinterQuery();
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (ShouldPrintJobOop()) {
+    UnregisterSystemPrintClient();
+  }
+#endif
 
   if (!print_job_)
     return;

@@ -2450,10 +2450,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// TODO(crbug.com/332512063):  Enable test once crash is resolved.
-IN_PROC_BROWSER_TEST_P(
-    SystemAccessProcessSandboxedServicePrintBrowserTest,
-    DISABLED_PrintPreviewPrintAfterSystemPrintRendererCrash) {
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
+                       PrintPreviewPrintAfterSystemPrintRendererCrash) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
@@ -2500,13 +2498,28 @@ IN_PROC_BROWSER_TEST_P(
   SetCheckForRenderFrameDeleted(/*check=*/false);
 
   // The expected events for this are:
-  // 1.  Printing is attempted, but the browser crashes on a CHECK because of
-  //     inconsistent OOPPD browser state leftover after renderer crash.
-  // TODO(crbug.com/332512063):  Update expectations once CHECK no longer
-  // occurs.
-  SetNumExpectedMessages(/*num=*/1);
+  // 1.  Update print settings.
+  // 2.  A print job is started.
+  // 3.  Rendering for 1 page of document of content.
+  // 4.  Completes with document done.
+  // 5.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
+  SetNumExpectedMessages(/*num=*/5);
 
   PrintAfterPreviewIsReadyAndLoaded();
+
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/40100562)  Include Windows coverage of
+  // RenderPrintedDocument() once XPS print pipeline is added.
+  EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(render_printed_page_count(), 1);
+#else
+  EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
+#endif
+  EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
